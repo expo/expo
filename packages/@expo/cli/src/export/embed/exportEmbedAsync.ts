@@ -5,14 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
+import Server from '@expo/metro/metro/Server';
+import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
+import * as output from '@expo/metro/metro/shared/output/bundle';
+import type { BundleOptions } from '@expo/metro/metro/shared/types';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
-import Server from 'metro/src/Server';
-import splitBundleOptions from 'metro/src/lib/splitBundleOptions';
-import output from 'metro/src/shared/output/bundle';
-import type { BundleOptions } from 'metro/src/shared/types';
 import path from 'path';
 
 import { deserializeEagerKey, getExportEmbedOptionsKey, Options } from './resolveOptions';
@@ -21,7 +21,6 @@ import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
-import { assertMetroPrivateServer } from '../../start/server/metro/metroPrivateServer';
 import { DOM_COMPONENTS_BUNDLE_DIR } from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
@@ -38,15 +37,6 @@ import { ensureProcessExitsAfterDelay } from '../../utils/exit';
 import { resolveRealEntryFilePath } from '../../utils/filePath';
 
 const debug = require('debug')('expo:export:embed');
-
-/**
- * Extended type for the Metro server build result to support the `code` property as a `Buffer`.
- */
-type ExtendedMetroServerBuildResult =
-  | Awaited<ReturnType<Server['build']>>
-  | {
-      code: string | Buffer;
-    };
 
 function guessCopiedAppleBundlePath(bundleOutput: string) {
   // Ensure the path is familiar before guessing.
@@ -146,7 +136,6 @@ export async function exportEmbedInternalAsync(projectRoot: string, options: Opt
 
   // Persist bundle and source maps.
   await Promise.all([
-    // @ts-expect-error: The `save()` method from metro is typed to support `code: string` only but it also supports `Buffer` actually.
     output.save(bundle, options, Log.log),
 
     // Write dom components proxy files.
@@ -175,7 +164,7 @@ export async function exportEmbedBundleAndAssetsAsync(
   projectRoot: string,
   options: Options
 ): Promise<{
-  bundle: ExtendedMetroServerBuildResult;
+  bundle: Awaited<ReturnType<Server['build']>>;
   assets: readonly BundleAssetWithFileHashes[];
   files: ExportAssetMap;
 }> {
@@ -353,21 +342,29 @@ export async function createMetroServerAndBundleRequestAsync(
     sourceMapUrl = path.basename(sourceMapUrl);
   }
 
+  const directBundleOptions = getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
+    splitChunks: false,
+    mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
+    platform: options.platform,
+    minify: options.minify,
+    mode: options.dev ? 'development' : 'production',
+    engine: isHermes ? 'hermes' : undefined,
+    isExporting: true,
+    // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
+    bytecode: false,
+    hosted: false,
+  });
+
   // TODO(cedric): check if we can use the proper `bundleType=bundle` and `entryPoint=mainModuleName` properties
-  // @ts-expect-error: see above
   const bundleRequest: BundleOptions = {
     ...Server.DEFAULT_BUNDLE_OPTIONS,
-    ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
-      splitChunks: false,
-      mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
-      platform: options.platform,
-      minify: options.minify,
-      mode: options.dev ? 'development' : 'production',
-      engine: isHermes ? 'hermes' : undefined,
-      isExporting: true,
-      // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
-      bytecode: false,
-    }),
+    ...directBundleOptions,
+
+    // NOTE(@kitten): Cast non-optional defaults
+    lazy: directBundleOptions.lazy ?? Server.DEFAULT_BUNDLE_OPTIONS.lazy,
+    modulesOnly: directBundleOptions.modulesOnly ?? Server.DEFAULT_BUNDLE_OPTIONS.modulesOnly,
+    runModule: directBundleOptions.runModule ?? Server.DEFAULT_BUNDLE_OPTIONS.runModule,
+
     sourceMapUrl,
     unstable_transformProfile: (options.unstableTransformProfile ||
       (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
@@ -389,10 +386,9 @@ export async function exportEmbedAssetsAsync(
   try {
     const { entryFile, onProgress, resolverOptions, transformOptions } = splitBundleOptions({
       ...bundleRequest,
+      // @ts-ignore-error TODO(@kitten): Very unclear why this is here. Remove?
       bundleType: 'todo',
     });
-
-    assertMetroPrivateServer(server);
 
     const dependencies = await server._bundler.getDependencies(
       [entryFile],
@@ -411,6 +407,7 @@ export async function exportEmbedAssetsAsync(
       // behavior.
       projectRoot: config.projectRoot, // this._getServerRootDir(),
       publicPath: config.transformer.publicPath,
+      isHosted: false,
     });
   } catch (error: any) {
     if (isError(error)) {

@@ -1,6 +1,6 @@
 import GithubSlugger from 'github-slugger';
 
-import { BASE_HEADING_LEVEL, HeadingManager, HeadingType } from './headingManager';
+import { BASE_HEADING_LEVEL, HeadingType, createHeadingManager } from './headingManager';
 
 const SluggerStub: GithubSlugger = {
   occurrences: {},
@@ -11,7 +11,7 @@ const SluggerStub: GithubSlugger = {
 describe('HeadingManager tests', () => {
   test('instantiates properly', () => {
     const meta = { maxHeadingDepth: 2, headings: [] };
-    const headingManager = new HeadingManager(SluggerStub, meta);
+    const headingManager = createHeadingManager(SluggerStub, meta);
 
     expect(headingManager.headings).toEqual([]);
     expect(headingManager.metadata.headings).toEqual([]);
@@ -21,18 +21,18 @@ describe('HeadingManager tests', () => {
   test('_findMetaForTitle not returning same title twice', () => {
     const TITLE = 'Some Title';
     const meta = { headings: [{ title: TITLE, depth: 1, type: 'text', _processed: true }] };
-    const headingManager = new HeadingManager(SluggerStub, meta);
+    const headingManager = createHeadingManager(SluggerStub, meta);
 
-    const result = headingManager['findMetaForTitle'](TITLE);
+    const result = headingManager.findMetaForTitle?.(TITLE);
     expect(result).toBeUndefined();
   });
 
   test('_findMetaForTitle marks meta as processed', () => {
     const TITLE = 'Some Title';
     const meta = { headings: [{ title: TITLE, depth: 1, type: 'text' }] };
-    const headingManager = new HeadingManager(SluggerStub, meta);
+    const headingManager = createHeadingManager(SluggerStub, meta);
 
-    const result = headingManager['findMetaForTitle'](TITLE);
+    const result = headingManager.findMetaForTitle?.(TITLE);
     expect(result?._processed).toBeTruthy();
   });
 });
@@ -44,7 +44,7 @@ describe('HeadingManager.addHeading()', () => {
     maxHeadingDepth: 3,
     headings: [{ title: META_TITLE, depth: META_LEVEL, type: 'text' }],
   };
-  const headingManager = new HeadingManager(SluggerStub, meta);
+  const headingManager = createHeadingManager(SluggerStub, meta);
 
   test('finds info from meta', () => {
     const result = headingManager.addHeading(META_TITLE);

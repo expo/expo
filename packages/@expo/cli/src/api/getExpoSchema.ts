@@ -1,11 +1,11 @@
-import { JSONObject } from '@expo/json-file';
+import type { JSONObject } from '@expo/json-file';
+import { derefSchema } from '@expo/schema-utils';
 import fs from 'fs';
 import path from 'path';
 
 import { createCachedFetch, getResponseDataOrThrow } from './rest/client';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
-import { jsonSchemaDeref } from '../utils/jsonSchemaDeref';
 
 export type Schema = any;
 
@@ -17,12 +17,7 @@ const schemaJson: { [sdkVersion: string]: Schema } = {};
 
 export async function _getSchemaAsync(sdkVersion: string): Promise<Schema> {
   const json = await getSchemaJSONAsync(sdkVersion);
-  // NOTE(@kitten): This is a replacement for the `json-schema-deref-sync` package.
-  // We re-implemented it locally to remove it, since it comes with heavy dependencies
-  // and a large install time impact.
-  // The tests have been ported to match the behaviour closely, but we removed
-  // local file ref support. For our purposes the behaviour should be identical.
-  return jsonSchemaDeref(json.schema);
+  return derefSchema(json.schema);
 }
 
 /**

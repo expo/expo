@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 import { optionalRequire } from '../../navigation/routeBuilder';
-import ComponentListScreen, { ListElement } from '../ComponentListScreen';
+import ComponentListScreen, { componentScreensToListElements } from '../ComponentListScreen';
 
 export const MapsScreens = Platform.select({
   android: [
@@ -102,11 +102,35 @@ export const MapsScreens = Platform.select({
       },
     },
     {
+      name: 'Maps content padding',
+      route: 'expo-maps/content-padding',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsContentPaddingScreen'));
+      },
+    },
+    {
       name: 'Street view',
       route: 'expo-maps/street-view',
       options: {},
       getComponent() {
         return optionalRequire(() => require('./google/MapsStreetViewScreen'));
+      },
+    },
+    {
+      name: 'Maps map style options',
+      route: 'expo-maps/map-style-options',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsMapStyleOptionsScreen'));
+      },
+    },
+    {
+      name: 'Maps map ID',
+      route: 'expo-maps/map-id',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./google/MapsMapIdScreen'));
       },
     },
   ],
@@ -223,17 +247,19 @@ export const MapsScreens = Platform.select({
         return optionalRequire(() => require('./apple/MapsImageRefIntegrationScreen'));
       },
     },
+    {
+      name: 'Points of interest',
+      route: 'expo-maps/points-of-interest',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsPointOfInterestScreen'));
+      },
+    },
   ],
   default: [],
 });
 
 export default function ImageScreen() {
-  const apis: ListElement[] = MapsScreens.map((screen) => {
-    return {
-      name: screen.name,
-      isAvailable: true,
-      route: `/components/${screen.route}`,
-    };
-  });
+  const apis = componentScreensToListElements(MapsScreens);
   return <ComponentListScreen apis={apis} sort={false} />;
 }

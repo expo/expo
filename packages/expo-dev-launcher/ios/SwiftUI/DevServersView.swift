@@ -1,10 +1,15 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import SwiftUI
-import Combine
+
+// swiftlint:disable closure_body_length
 
 private func sanitizeUrlString(_ urlString: String) -> String? {
   var sanitizedUrl = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
+
+  if let decodedUrl = sanitizedUrl.removingPercentEncoding {
+    sanitizedUrl = decodedUrl
+  }
 
   if !sanitizedUrl.contains("://") {
     sanitizedUrl = "http://" + sanitizedUrl
@@ -22,13 +27,25 @@ struct DevServersView: View {
   @Binding var showingInfoDialog: Bool
   @State private var showingURLInput = false
   @State private var urlText = ""
-  @State private var cancellables = Set<AnyCancellable>()
+
+  private func connectToURL() {
+    if !urlText.isEmpty {
+      let sanitizedURL = sanitizeUrlString(urlText)
+      if let validURL = sanitizedURL {
+        viewModel.openApp(url: validURL)
+        withAnimation(.easeInOut(duration: 0.3)) {
+          showingURLInput = false
+        }
+        urlText = ""
+      }
+    }
+  }
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
       header
 
-      LazyVStack(alignment: .leading, spacing: 0) {
+      LazyVStack(alignment: .leading, spacing: 6) {
         if viewModel.devServers.isEmpty {
           Text("No development servers found")
             .foregroundColor(.primary)
@@ -40,20 +57,16 @@ struct DevServersView: View {
             DevServerRow(server: server) {
               viewModel.openApp(url: server.url)
             }
-            Divider()
           }
         }
-
         enterUrl
       }
-      .background(Color(.systemBackground))
-      .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     .onAppear {
-      startServerDiscovery()
+      viewModel.startServerDiscovery()
     }
     .onDisappear {
-      cancellables.removeAll()
+      viewModel.stopServerDiscovery()
     }
   }
 
@@ -66,25 +79,33 @@ struct DevServersView: View {
       } label: {
         HStack {
           Image(systemName: showingURLInput ? "chevron.down" : "chevron.right")
-            .font(.caption)
-            .foregroundColor(.secondary)
-
+            .font(.headline)
           Text("Enter URL manually")
-            .foregroundColor(.primary)
+            #if os(tvOS)
+            .font(.system(size: 28))
+            #else
+            .font(.system(size: 14))
+            #endif
           Spacer()
         }
       }
 
       if showingURLInput {
         TextField("http://10.0.0.25:8081", text: $urlText)
+        #if !os(macOS)
           .autocapitalization(.none)
+        #endif
           .disableAutocorrection(true)
           .padding(.horizontal, 16)
           .padding(.vertical, 12)
+          .foregroundColor(.primary)
+          .onSubmit(connectToURL)
+        #if !os(tvOS)
           .overlay(
             RoundedRectangle(cornerRadius: 5)
-              .stroke(Color(.systemGray4), lineWidth: 1)
+              .stroke(Color.expoSystemGray4, lineWidth: 1)
           )
+        #endif
           .clipShape(RoundedRectangle(cornerRadius: 5))
 
         connectButton
@@ -92,41 +113,37 @@ struct DevServersView: View {
     }
     .animation(.easeInOut, value: showingURLInput)
     .padding()
+    .background(showingURLInput ?
+      Color.expoSecondarySystemBackground :
+      Color.expoSystemBackground)
+    .clipShape(RoundedRectangle(cornerRadius: 12))
   }
 
   private var header: some View {
     HStack {
-      Image("terminal-icon", bundle: getDevLauncherBundle())
-        .resizable()
-        .frame(width: 16, height: 16)
-
-      Text("Development servers")
-        .font(.headline)
+      Text("development servers".uppercased())
+        .font(.caption)
+        .foregroundColor(.primary.opacity(0.6))
 
       Spacer()
 
       Button {
         showingInfoDialog = true
       } label: {
-        Image(systemName: "info.circle")
-          .font(.title3)
+        Text("info".uppercased())
+          #if os(tvOS)
+          .foregroundColor(.primary)
+          .font(.system(size: 24))
+          #else
+          .font(.system(size: 12))
+          #endif
       }
+      .buttonStyle(.automatic)
     }
   }
 
   private var connectButton: some View {
-    Button {
-      if !urlText.isEmpty {
-        let sanitizedURL = sanitizeUrlString(urlText)
-        if let validURL = sanitizedURL {
-          viewModel.openApp(url: validURL)
-          withAnimation(.easeInOut(duration: 0.3)) {
-            showingURLInput = false
-          }
-          urlText = ""
-        }
-      }
-    } label: {
+    Button(action: connectToURL) {
       Text("Connect")
         .font(.headline)
         .foregroundColor(.white)
@@ -138,19 +155,10 @@ struct DevServersView: View {
     .disabled(urlText.isEmpty)
     .buttonStyle(PlainButtonStyle())
   }
-
-  private func startServerDiscovery() {
-    Timer.publish(every: 2.0, on: .main, in: .common)
-      .autoconnect()
-      .receive(on: DispatchQueue.global(qos: .background))
-      .sink { [weak viewModel] _ in
-        viewModel?.discoverDevServers()
-      }
-      .store(in: &cancellables)
-  }
 }
 
 struct DevServerRow: View {
+  @EnvironmentObject var viewModel: DevLauncherViewModel
   let server: DevServer
   let onTap: () -> Void
 
@@ -162,18 +170,26 @@ struct DevServerRow: View {
       HStack {
         Circle()
           .fill(Color.green)
-          .frame(width: 15, height: 15)
+          .frame(width: 12, height: 12)
 
         Text(server.description)
           .foregroundColor(.primary)
 
         Spacer()
-        Image(systemName: "chevron.right")
-          .font(.caption)
-          .foregroundColor(.secondary)
+
+        if viewModel.isLoadingServer {
+          ProgressView()
+        } else {
+          Image(systemName: "chevron.right")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
       }
       .padding()
+      .background(Color.expoSecondarySystemBackground)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
     }
     .buttonStyle(PlainButtonStyle())
   }
 }
+// swiftlint:enable closure_body_length

@@ -3,10 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class GroupViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
+internal final class GroupViewProps: UIBaseViewProps {
   @Field var useTapGesture: Bool?
   var onTap = EventDispatcher()
 }
@@ -18,7 +15,6 @@ internal struct GroupView: ExpoSwiftUI.View {
     Group {
       Children()
     }
-    .modifier(CommonViewModifiers(props: props))
     .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap, useContentShape: true)
   }
 }

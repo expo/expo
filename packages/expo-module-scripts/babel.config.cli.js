@@ -1,9 +1,9 @@
-module.exports = function (api) {
+export default function (api) {
   api.cache(true);
   return {
     presets: [
       [
-        require('@babel/preset-env'),
+        '@babel/preset-env',
         {
           modules: false, // Disable the default `modules-commonjs`, to enable lazy evaluation
           targets: {
@@ -11,13 +11,13 @@ module.exports = function (api) {
           },
         },
       ],
-      require('@babel/preset-typescript'),
+      '@babel/preset-typescript',
     ],
     plugins: [
-      require('babel-plugin-dynamic-import-node'),
-      require('@babel/plugin-transform-export-namespace-from'),
+      'babel-plugin-dynamic-import-node',
+      '@babel/plugin-transform-export-namespace-from',
       [
-        require('@babel/plugin-transform-modules-commonjs'),
+        '@babel/plugin-transform-modules-commonjs',
         {
           lazy: () => true,
         },

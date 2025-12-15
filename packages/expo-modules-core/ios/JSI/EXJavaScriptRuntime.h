@@ -1,11 +1,17 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#import <React/RCTBridgeModule.h>
+#import <React/RCTCallInvoker.h>
+
 #import <Foundation/Foundation.h>
-#import <ExpoModulesCore/EXJavaScriptValue.h>
-#import <ExpoModulesCore/EXJavaScriptObject.h>
-#import <React/React-Core-umbrella.h>
+#import <ExpoModulesJSI/EXJavaScriptValue.h>
+#import <ExpoModulesJSI/EXJavaScriptObject.h>
 
 #ifdef __cplusplus
+
+namespace facebook::react {
+class RuntimeScheduler;
+}
 
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;
@@ -13,24 +19,23 @@ namespace react = facebook::react;
 
 @class EXJavaScriptValue;
 @class EXJavaScriptObject;
-@class EXJavaScriptSharedObject;
 
 typedef void (^JSRuntimeExecutionBlock)(void);
 
-typedef void (^JSAsyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
-                                     NSArray<EXJavaScriptValue *> * _Nonnull arguments,
-                                     RCTPromiseResolveBlock _Nonnull resolve,
-                                     RCTPromiseRejectBlock _Nonnull reject);
+typedef void (^JSAsyncFunctionBlock)(EXJavaScriptValue *_Nonnull thisValue,
+                                     NSArray<EXJavaScriptValue *> *_Nonnull arguments,
+                                     NS_SWIFT_SENDABLE RCTPromiseResolveBlock _Nonnull resolve,
+                                     NS_SWIFT_SENDABLE RCTPromiseRejectBlock _Nonnull reject);
 
-typedef EXJavaScriptValue * _Nullable (^JSSyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
-                                                             NSArray<EXJavaScriptValue *> * _Nonnull arguments,
-                                                             NSError * _Nullable __autoreleasing * _Nullable error);
+typedef EXJavaScriptValue *_Nullable (^JSSyncFunctionBlock)(EXJavaScriptValue *_Nonnull thisValue,
+                                                            NSArray<EXJavaScriptValue *> *_Nonnull arguments,
+                                                            NSError *_Nullable __autoreleasing *_Nullable error);
 
 #ifdef __cplusplus
 typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime,
                                           std::shared_ptr<react::CallInvoker> callInvoker,
-                                          EXJavaScriptValue * _Nonnull thisValue,
-                                          NSArray<EXJavaScriptValue *> * _Nonnull arguments);
+                                          EXJavaScriptValue *_Nonnull thisValue,
+                                          NSArray<EXJavaScriptValue *> *_Nonnull arguments);
 #endif // __cplusplus
 
 NS_SWIFT_NAME(JavaScriptRuntime)
@@ -43,8 +48,7 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 
 #ifdef __cplusplus
 
-- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
-                            callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker;
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime;
 
 /**
  Returns the underlying runtime object.
@@ -94,25 +98,10 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 
 #pragma mark - Classes
 
-typedef void (^ClassConstructorBlock)(EXJavaScriptObject * _Nonnull thisValue, NSArray<EXJavaScriptValue *> * _Nonnull arguments);
-
-- (nonnull EXJavaScriptObject *)createClass:(nonnull NSString *)name
-                                constructor:(nonnull ClassConstructorBlock)constructor;
-
 /**
  Creates a new object, using the provided object as the prototype.
  */
 - (nullable EXJavaScriptObject *)createObjectWithPrototype:(nonnull EXJavaScriptObject *)prototype;
-
-#pragma mark - Shared objects
-
-- (nonnull EXJavaScriptObject *)createSharedObjectClass:(nonnull NSString *)name
-                                            constructor:(nonnull ClassConstructorBlock)constructor;
-
-#pragma mark - Shared refs
-
-- (nonnull EXJavaScriptObject *)createSharedRefClass:(nonnull NSString *)name
-                                         constructor:(nonnull ClassConstructorBlock)constructor;
 
 #pragma mark - Script evaluation
 

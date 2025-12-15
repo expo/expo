@@ -1,7 +1,8 @@
 ---
-title: Common navigation patterns
+title: Common navigation patterns in Expo Router
 description: Apply Expo Router basics to real-life navigation patterns you could use in your app.
 sidebar_title: Common patterns
+searchRank: 8
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
@@ -234,7 +235,8 @@ Separating your navigation states into distinct routes is meant to serve you and
 Thinking back to authentication, the protected route setup works great if the user should simply not be able to visit certain pages without logging in. But what about when unauthenticated users can browse an app in read-only mode? In that case, you might want to show a login modal over the app, rather than redirecting the user to a login page:
 
 ```tsx app/(logged-in)/_layout.tsx
-import { SafeAreaView, Modal } from 'react-native';
+import { Modal } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 
 export default function Layout() {

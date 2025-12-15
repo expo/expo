@@ -1,17 +1,53 @@
 "use strict";
 'use client';
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackRouter = exports.stackRouterOverride = void 0;
 const native_1 = require("@react-navigation/native");
-const native_stack_1 = require("@react-navigation/native-stack");
 const non_secure_1 = require("nanoid/non-secure");
-const react_1 = require("react");
+const react_1 = __importStar(require("react"));
 const withLayoutContext_1 = require("./withLayoutContext");
+const createNativeStackNavigator_1 = require("../fork/native-stack/createNativeStackNavigator");
 const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
-const ModalStack_web_1 = require("../modal/web/ModalStack.web");
+const navigationParams_1 = require("../navigationParams");
 const useScreens_1 = require("../useScreens");
+const stack_utils_1 = require("./stack-utils");
+const children_1 = require("../utils/children");
 const Protected_1 = require("../views/Protected");
-const NativeStackNavigator = (0, native_stack_1.createNativeStackNavigator)().Navigator;
+const Screen_1 = require("../views/Screen");
+const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
 const RNStack = (0, withLayoutContext_1.withLayoutContext)(NativeStackNavigator);
 function isStackAction(action) {
     return (action.type === 'PUSH' ||
@@ -21,7 +57,21 @@ function isStackAction(action) {
         action.type === 'REPLACE' ||
         action.type === 'PRELOAD');
 }
-const isPreviewAction = (action) => !!action.payload && 'previewKey' in action.payload && !!action.payload.previewKey;
+const isPreviewAction = (action) => !!action.payload &&
+    'params' in action.payload &&
+    typeof action.payload.params === 'object' &&
+    !!(0, navigationParams_1.getInternalExpoRouterParams)(action.payload?.params ?? undefined)[navigationParams_1.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME];
+const getZoomTransitionIdFromAction = (action) => {
+    const allParams = !!action.payload && 'params' in action.payload && typeof action.payload.params === 'object'
+        ? action.payload.params
+        : undefined;
+    const internalParams = (0, navigationParams_1.getInternalExpoRouterParams)(allParams ?? undefined);
+    const val = internalParams[navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME];
+    if (val && typeof val === 'string') {
+        return val;
+    }
+    return undefined;
+};
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
  * When a screen has been uniquely identified, the Stack can only have one instance of that screen.
@@ -79,7 +129,7 @@ const stackRouterOverride = (original) => {
                     else if (action.type === 'NAVIGATE') {
                         const currentRoute = state.routes[state.index];
                         // If the route matches the current one, then navigate to it
-                        if (action.payload.name === currentRoute.name) {
+                        if (action.payload.name === currentRoute.name && !isPreviewAction(action)) {
                             route = currentRoute;
                         }
                         else if (action.payload.pop) {
@@ -87,12 +137,17 @@ const stackRouterOverride = (original) => {
                         }
                     }
                     // START FORK
-                    if (isPreviewAction(action)) {
+                    let isPreloadedRoute = false;
+                    if (isPreviewAction(action) && !route) {
                         route = state.preloadedRoutes.find((route) => route.name === action.payload.name && id === route.key);
+                        isPreloadedRoute = !!route;
                     }
                     // END FORK
                     if (!route) {
                         route = state.preloadedRoutes.find((route) => route.name === action.payload.name && id === getId?.({ params: route.params }));
+                        // START FORK
+                        isPreloadedRoute = !!route;
+                        // END FORK
                     }
                     let params;
                     if (action.type === 'NAVIGATE' && action.payload.merge && route) {
@@ -155,7 +210,8 @@ const stackRouterOverride = (original) => {
                             }
                             // If the routes length is the same as the state routes length, then we are navigating to a new route.
                             // Otherwise we are replacing an existing route.
-                            const key = routes.length === state.routes.length && !isPreviewAction(action)
+                            // For preloaded route, we want to use the same key, so that preloaded screen is used.
+                            const key = routes.length === state.routes.length && !isPreloadedRoute
                                 ? `${action.payload.name}-${(0, non_secure_1.nanoid)()}`
                                 : route.key;
                             routes.push({
@@ -200,6 +256,22 @@ const stackRouterOverride = (original) => {
                     if (actionSingularOptions) {
                         return filterSingular(result, getId);
                     }
+                    const zoomTransitionId = getZoomTransitionIdFromAction(action);
+                    if (zoomTransitionId) {
+                        const lastRoute = result.routes[result.routes.length - 1];
+                        const key = lastRoute.key;
+                        const modifiedLastRoute = {
+                            ...lastRoute,
+                            params: {
+                                ...lastRoute.params,
+                                [navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: key,
+                            },
+                        };
+                        return {
+                            ...result,
+                            routes: [...result.routes.slice(0, -1), modifiedLastRoute],
+                        };
+                    }
                     return result;
                     // return {
                     //   ...state,
@@ -212,6 +284,12 @@ const stackRouterOverride = (original) => {
                     // END FORK
                 }
                 case 'PRELOAD': {
+                    // START FORK
+                    // This will be the case for example for protected route
+                    if (!state.routeNames.includes(action.payload.name)) {
+                        return null;
+                    }
+                    // END FORK
                     const getId = options.routeGetIdList[action.payload.name];
                     const id = getId?.({ params: action.payload.params });
                     let route;
@@ -331,46 +409,98 @@ function filterSingular(state, getId) {
         routes,
     };
 }
+function mapProtectedScreen(props) {
+    return {
+        ...props,
+        children: react_1.Children.toArray(props.children)
+            .map((child, index) => {
+            if ((0, children_1.isChildOfType)(child, stack_utils_1.StackScreen)) {
+                const options = (0, stack_utils_1.appendScreenStackPropsToOptions)({}, child.props);
+                const { children, ...rest } = child.props;
+                return <Screen_1.Screen key={child.props.name} {...rest} options={options}/>;
+            }
+            else if ((0, children_1.isChildOfType)(child, Protected_1.Protected)) {
+                return <Protected_1.Protected key={`${index}-${props.guard}`} {...mapProtectedScreen(child.props)}/>;
+            }
+            else if ((0, children_1.isChildOfType)(child, stack_utils_1.StackHeader)) {
+                // Ignore Stack.Header, because it can be used to set header options for Stack
+                // and we use this function to process children of Stack, as well.
+                return null;
+            }
+            else {
+                if (react_1.default.isValidElement(child)) {
+                    console.warn(`Warning: Unknown child element passed to Stack: ${child.type}`);
+                }
+                else {
+                    console.warn(`Warning: Unknown child element passed to Stack: ${child}`);
+                }
+            }
+            return null;
+        })
+            .filter(Boolean),
+    };
+}
 const Stack = Object.assign((props) => {
-    const isWeb = process.env.EXPO_OS === 'web';
-    const { isPreviewOpen } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
+    const { isStackAnimationDisabled } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
+    const screenOptionsWithCompositionAPIOptions = (0, react_1.useMemo)(() => {
+        const stackHeader = react_1.Children.toArray(props.children).find((child) => (0, children_1.isChildOfType)(child, stack_utils_1.StackHeader));
+        if (stackHeader) {
+            const screenStackProps = { children: stackHeader };
+            const currentOptions = props.screenOptions;
+            if (currentOptions) {
+                if (typeof currentOptions === 'function') {
+                    return (...args) => {
+                        const options = currentOptions(...args);
+                        return (0, stack_utils_1.appendScreenStackPropsToOptions)(options, screenStackProps);
+                    };
+                }
+                return (0, stack_utils_1.appendScreenStackPropsToOptions)(currentOptions, screenStackProps);
+            }
+            else {
+                return (0, stack_utils_1.appendScreenStackPropsToOptions)({}, screenStackProps);
+            }
+        }
+        else {
+            return props.screenOptions;
+        }
+    }, [props.screenOptions, props.children]);
     const screenOptions = (0, react_1.useMemo)(() => {
-        if (isPreviewOpen) {
-            return disableAnimationInScreenOptions(props.screenOptions);
-        }
-        return props.screenOptions;
-    }, [props.screenOptions, isPreviewOpen]);
-    if (isWeb) {
-        return (<ModalStack_web_1.RouterModal {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
-    }
-    else {
-        return (<RNStack {...props} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
-    }
+        const condition = isStackAnimationDisabled ? () => true : shouldDisableAnimationBasedOnParams;
+        return disableAnimationInScreenOptions(screenOptionsWithCompositionAPIOptions, condition);
+    }, [screenOptionsWithCompositionAPIOptions, isStackAnimationDisabled]);
+    const rnChildren = (0, react_1.useMemo)(() => mapProtectedScreen({ guard: true, children: props.children }).children, [props.children]);
+    return (<RNStack {...props} children={rnChildren} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
 }, {
-    Screen: RNStack.Screen,
+    Screen: stack_utils_1.StackScreen,
     Protected: Protected_1.Protected,
+    Header: stack_utils_1.StackHeader,
 });
-function disableAnimationInScreenOptions(options) {
-    const animationNone = 'none';
-    if (options) {
-        if (typeof options === 'function') {
-            const newOptions = (...args) => {
-                const oldResult = options(...args);
+function disableAnimationInScreenOptions(options, condition) {
+    if (options && typeof options === 'function') {
+        return (props) => {
+            const oldOptions = options(props);
+            if (condition(props.route)) {
                 return {
-                    ...oldResult,
-                    animation: animationNone,
+                    ...oldOptions,
+                    animation: 'none',
                 };
-            };
-            return newOptions;
-        }
-        return {
-            ...options,
-            animation: animationNone,
+            }
+            return oldOptions ?? {};
         };
     }
-    return {
-        animation: animationNone,
+    return (props) => {
+        if (condition(props.route)) {
+            return {
+                ...(options ?? {}),
+                animation: 'none',
+            };
+        }
+        return options ?? {};
     };
+}
+function shouldDisableAnimationBasedOnParams(route) {
+    const expoParams = (0, navigationParams_1.getInternalExpoRouterParams)(route.params);
+    return !!expoParams[navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME];
 }
 exports.default = Stack;
 const StackRouter = (options) => {

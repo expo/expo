@@ -6,18 +6,120 @@
 
 ### 🎉 New features
 
-- Add support for `@babel/plugin-transform-class-static-block` on web and native. ([#37495](https://github.com/expo/expo/pull/37495) by [@EvanBacon](https://github.com/EvanBacon))
-- Add `worklets` option to enable/disable Worklets Babel plugin ([#36783](https://github.com/expo/expo/pull/36783) by [@tjzel](https://github.com/tjzel))
+- Ensure `loader()` functions are stripped from client bundles ([#40670](https://github.com/expo/expo/pull/40670) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.83.x. ([#41564](https://github.com/expo/expo/pull/41564) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 54.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.7 - 2025-11-07
+
+### 🐛 Bug fixes
+
+- Ensure React Fast Refresh is disabled in `jest-expo` and other non-Expo environments ([#40774](https://github.com/expo/expo/pull/40774) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Add `enableReactFastRefresh` option to allow force-disabling `react-refresh` ([#40774](https://github.com/expo/expo/pull/40774) by [@kitten](https://github.com/kitten))
+
+## 54.0.6 - 2025-10-21
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.5 - 2025-10-20
+
+### 💡 Others
+
+- Bump to `@expo/metro@54.1.0` and `metro@0.83.2` ([#39826](https://github.com/expo/expo/pull/39826) by [@kitten](https://github.com/kitten))
+
+## 54.0.4 - 2025-10-09
+
+### 💡 Others
+
+- Update to `babel-plugin-react-compiler@^1.0.0` ([#40281](https://github.com/expo/expo/pull/40281) by [@kitten](https://github.com/kitten))
+
+## 54.0.3 - 2025-09-22
+
+### 💡 Others
+
+- Remove unused module check. ([#39822](https://github.com/expo/expo/pull/39822) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 54.0.2 - 2025-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.1 — 2025-09-12
+
+### 🐛 Bug fixes
+
+- Realign `babel-plugin-syntax-hermes-parser@^0.29.1` with `react-native@0.81.4`. ([#39600](https://github.com/expo/expo/pull/39600) by [@byCedric](https://github.com/byCedric))
+
+## 54.0.0 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.4 — 2025-08-27
+
+### 💡 Others
+
+- Set default `@babel/runtime` minimum version to the project's installed version, if any (as determined by `@expo/metro-config`), or `^7.20.0` ([#39040](https://github.com/expo/expo/pull/39040) by [@kitten](https://github.com/kitten))
+
+## 14.0.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- Add support for `@babel/plugin-transform-class-static-block` on web and native. ([#37495](https://github.com/expo/expo/pull/37495) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `worklets` option to enable/disable Worklets Babel plugin ([#36783](https://github.com/expo/expo/pull/36783) by [@tjzel](https://github.com/tjzel))
+
+### 🐛 Bug fixes
+
+- Define default `@babel/runtime` minimum version as `^7.20.0` by default ([#38790](https://github.com/expo/expo/pull/38790) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Upgrade react-compiler to `19.1.0-rc.2`. ([#38309](https://github.com/expo/expo/pull/38309) by [@EvanBacon](https://github.com/EvanBacon))
 - Add fork of `@babel/transform-export-namespace-from` to preserve location of the transformed import/export statements ([#38042](https://github.com/expo/expo/pull/38042) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Remove Babel value-imports instead only relying on types and the `@babel/core` instance passed to the preset and plugins ([#38171](https://github.com/expo/expo/pull/38171) by [@kitten](https://github.com/kitten))
+- Updated test snapshot. ([#38430](https://github.com/expo/expo/pull/38430) by [@kudo](https://github.com/kudo))
+- Replace `react-refresh` dependency with peer dependency fulfilled by `expo` ([#38562](https://github.com/expo/expo/pull/38562) by [@kitten](https://github.com/kitten))
+- Add optional reverse peer dependency on `expo` (for inline-manifest plugin) ([#38600](https://github.com/expo/expo/pull/38600) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 📚 3rd party library updates
+
+- Bumped `react-native-web` and `babel-plugin-react-native-web` to 0.21.0. ([#38425](https://github.com/expo/expo/pull/38425) by [@kudo](https://github.com/kudo))
 
 ## 13.2.3 - 2025-07-03
 

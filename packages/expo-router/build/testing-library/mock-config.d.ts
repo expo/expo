@@ -10,6 +10,24 @@ export declare function getMockConfig(context: MockContextConfig, metaOnly?: boo
             screens: Record<string, import("../getReactNavigationConfig").Screen>;
             path: string;
         };
+    } | {
+        __root: {
+            initialRouteName: undefined;
+            screens: Record<string, import("../getReactNavigationConfig").Screen>;
+            path: string;
+        };
+    } | {
+        __root: {
+            initialRouteName: undefined;
+            screens: Record<string, import("../getReactNavigationConfig").Screen>;
+            path: string;
+        };
+    } | {
+        __root: {
+            initialRouteName: undefined;
+            screens: Record<string, import("../getReactNavigationConfig").Screen>;
+            path: string;
+        };
     };
 };
 export declare function getMockContext(context: MockContextConfig): ((id: string) => any) & {

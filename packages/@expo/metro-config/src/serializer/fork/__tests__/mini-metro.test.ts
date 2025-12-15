@@ -59,8 +59,8 @@ it(`can create a micro Metro graph fixture`, async () => {
                   "code": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       "use strict";
 
-      var foo = _$$_REQUIRE(_dependencyMap[0], "./foo").foo;
-      console.log(foo);
+      var _foo = _$$_REQUIRE(_dependencyMap[0], "./foo");
+      console.log(_foo.foo);
     });",
                   "expoDomComponentReference": undefined,
                   "functionMap": {
@@ -82,53 +82,40 @@ it(`can create a micro Metro graph fixture`, async () => {
                       4,
                       6,
                       2,
+                      4,
+                      "_foo",
+                    ],
+                    [
+                      4,
+                      10,
+                      2,
+                      4,
+                    ],
+                    [
+                      4,
                       13,
-                      "foo",
-                    ],
-                    [
-                      4,
-                      9,
                       2,
-                      16,
-                    ],
-                    [
                       4,
-                      12,
-                      2,
-                      16,
                       "_$$_REQUIRE",
-                    ],
-                    [
-                      4,
-                      23,
-                      2,
-                      16,
                     ],
                     [
                       4,
                       24,
                       2,
-                      16,
+                      4,
+                    ],
+                    [
+                      4,
+                      25,
+                      2,
+                      4,
                       "_dependencyMap",
                     ],
                     [
                       4,
-                      38,
+                      39,
                       2,
-                      16,
-                    ],
-                    [
                       4,
-                      52,
-                      2,
-                      13,
-                      "foo",
-                    ],
-                    [
-                      4,
-                      55,
-                      2,
-                      16,
                     ],
                     [
                       5,
@@ -165,13 +152,26 @@ it(`can create a micro Metro graph fixture`, async () => {
                     ],
                     [
                       5,
-                      17,
+                      18,
                       3,
                       19,
                     ],
                     [
                       5,
-                      18,
+                      19,
+                      3,
+                      19,
+                      "foo",
+                    ],
+                    [
+                      5,
+                      22,
+                      3,
+                      19,
+                    ],
+                    [
+                      5,
+                      23,
                       3,
                       20,
                     ],
@@ -209,8 +209,13 @@ it(`can create a micro Metro graph fixture`, async () => {
       Object.defineProperty(exports, '__esModule', {
         value: true
       });
+      Object.defineProperty(exports, "foo", {
+        enumerable: true,
+        get: function () {
+          return foo;
+        }
+      });
       const foo = 'foo';
-      exports.foo = foo;
     });",
                   "expoDomComponentReference": undefined,
                   "functionMap": {
@@ -220,86 +225,156 @@ it(`can create a micro Metro graph fixture`, async () => {
                     ],
                   },
                   "hasCjsExports": false,
-                  "lineCount": 9,
+                  "lineCount": 14,
                   "map": [
                     [
                       7,
                       2,
                       2,
-                      11,
+                      4,
+                      "Object",
                     ],
                     [
                       7,
+                      8,
+                      2,
+                      4,
+                    ],
+                    [
+                      7,
+                      9,
+                      2,
+                      4,
+                      "defineProperty",
+                    ],
+                    [
+                      7,
+                      23,
+                      2,
+                      4,
+                    ],
+                    [
+                      7,
+                      24,
+                      2,
+                      4,
+                      "exports",
+                    ],
+                    [
+                      7,
+                      31,
+                      2,
+                      4,
+                    ],
+                    [
+                      8,
+                      4,
+                      2,
+                      4,
+                      "enumerable",
+                    ],
+                    [
+                      8,
+                      14,
+                      2,
+                      4,
+                    ],
+                    [
+                      9,
+                      4,
+                      2,
+                      4,
+                      "get",
+                    ],
+                    [
+                      9,
+                      7,
+                      2,
+                      4,
+                    ],
+                    [
+                      9,
+                      18,
+                      2,
+                      4,
+                      "get",
+                    ],
+                    [
+                      9,
+                      19,
+                      2,
+                      4,
+                    ],
+                    [
+                      10,
+                      6,
+                      2,
+                      4,
+                    ],
+                    [
+                      10,
+                      13,
+                      2,
+                      4,
+                      "foo",
+                    ],
+                    [
+                      10,
+                      16,
+                      2,
+                      4,
+                    ],
+                    [
+                      11,
+                      4,
+                      2,
+                      4,
+                    ],
+                    [
+                      12,
+                      2,
+                      2,
+                      4,
+                    ],
+                    [
+                      13,
+                      2,
+                      2,
+                      11,
+                    ],
+                    [
+                      13,
                       8,
                       2,
                       17,
                       "foo",
                     ],
                     [
-                      7,
+                      13,
                       11,
                       2,
                       20,
                     ],
                     [
-                      7,
+                      13,
                       14,
                       2,
                       23,
                     ],
                     [
-                      7,
+                      13,
                       19,
                       2,
                       28,
                     ],
                     [
-                      8,
-                      2,
-                      2,
-                      4,
-                      "exports",
-                    ],
-                    [
-                      8,
-                      9,
-                      2,
-                      4,
-                    ],
-                    [
-                      8,
-                      10,
-                      2,
-                      4,
-                      "foo",
-                    ],
-                    [
-                      8,
-                      13,
-                      2,
-                      4,
-                    ],
-                    [
-                      8,
-                      16,
-                      2,
-                      4,
-                      "foo",
-                    ],
-                    [
-                      8,
-                      19,
-                      2,
-                      4,
-                    ],
-                    [
-                      9,
+                      14,
                       0,
                       2,
                       29,
                     ],
                     [
-                      9,
+                      14,
                       3,
                     ],
                   ],
@@ -325,7 +400,6 @@ it(`can create a micro Metro graph fixture`, async () => {
           },
           "dev": true,
           "experimentalImportSupport": true,
-          "hot": false,
           "inlineRequires": false,
           "minify": false,
           "platform": "web",

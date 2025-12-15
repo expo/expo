@@ -25,6 +25,7 @@ class UpdatesConfigSpec : ExpoSpec {
         expect(config.checkOnLaunch) == .ErrorRecoveryOnly
         expect(config.codeSigningConfiguration).toNot(beNil())
         expect(config.enableExpoUpdatesProtocolV0CompatibilityMode) == false
+        expect(config.enableBsdiffPatchSupport) == true
         expect(config.runtimeVersion) == "fake-version-1"
         expect(config.hasEmbeddedUpdate) == true
       }
@@ -40,6 +41,7 @@ class UpdatesConfigSpec : ExpoSpec {
           UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "overridden",
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "http://google.com",
           UpdatesConfig.EXUpdatesConfigRequestHeadersKey: ["Foo": "Bar"],
+          UpdatesConfig.EXUpdatesConfigEnableBsdiffPatchSupportKey: false,
         ]
 
         guard let configNSDictionary = NSDictionary(contentsOfFile: configPlistPath) as? [String: Any] else {
@@ -56,6 +58,7 @@ class UpdatesConfigSpec : ExpoSpec {
         expect(config.checkOnLaunch) == .ErrorRecoveryOnly
         expect(config.codeSigningConfiguration).toNot(beNil())
         expect(config.enableExpoUpdatesProtocolV0CompatibilityMode) == false
+        expect(config.enableBsdiffPatchSupport) == false
         expect(config.runtimeVersion) == "overridden"
         expect(config.hasEmbeddedUpdate) == true
       }
@@ -75,6 +78,63 @@ class UpdatesConfigSpec : ExpoSpec {
       it("is correct with other port") {
         let urlOtherPort = URL(string: "https://exp.host:47/test")!
         expect(UpdatesConfig.normalizedURLOrigin(url: urlOtherPort)) == "https://exp.host:47"
+      }
+    }
+
+    describe("isValidRequestHeadersOverride") {
+      it("should return true for headers matched with embedded headers") {
+        let originalHeaders = ["expo-channel-name": "default"]
+        let requestHeadersOverride = ["Expo-Channel-Name": "preview"]
+        let result = UpdatesConfig.isValidRequestHeadersOverride(
+          originalEmbeddedRequestHeaders: originalHeaders,
+          requestHeadersOverride: requestHeadersOverride
+        )
+        expect(result) == true
+      }
+
+      it("should return false for headers unmatched with embedded headers") {
+        let originalHeaders = ["expo-channel-name": "default"]
+        let requestHeadersOverride = [
+          "Expo-Channel-Name": "preview",
+          "X-Custom": "custom"
+        ]
+        let result = UpdatesConfig.isValidRequestHeadersOverride(
+          originalEmbeddedRequestHeaders: originalHeaders,
+          requestHeadersOverride: requestHeadersOverride
+        )
+        expect(result) == false
+      }
+
+      it("should return false for Host override header") {
+        let originalHeaders = [
+          "expo-channel-name": "default",
+          "Host": "example.org"
+        ]
+        let requestHeadersOverride = [
+          "Expo-Channel-Name": "preview",
+          "Host": "override.org"
+        ]
+        let result = UpdatesConfig.isValidRequestHeadersOverride(
+          originalEmbeddedRequestHeaders: originalHeaders,
+          requestHeadersOverride: requestHeadersOverride
+        )
+        expect(result) == false
+      }
+
+      it("should handle Host override header normalization") {
+        let originalHeaders = [
+          "expo-channel-name": "default",
+          " Host ": "example.org"
+        ]
+        let requestHeadersOverride = [
+          "Expo-Channel-Name": "preview",
+          " Host ": "override.org"
+        ]
+        let result = UpdatesConfig.isValidRequestHeadersOverride(
+          originalEmbeddedRequestHeaders: originalHeaders,
+          requestHeadersOverride: requestHeadersOverride
+        )
+        expect(result) == false
       }
     }
   }

@@ -5,6 +5,7 @@ import android.os.Build
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import java.net.URL
 
 class AudioSource(
   @Field val uri: String?,
@@ -14,7 +15,8 @@ class AudioSource(
 class AudioMode(
   @Field val shouldPlayInBackground: Boolean = false,
   @Field val shouldRouteThroughEarpiece: Boolean?,
-  @Field val interruptionMode: InterruptionMode?
+  @Field val interruptionMode: InterruptionMode?,
+  @Field val allowsBackgroundRecording: Boolean = false
 ) : Record
 
 // Data class because we want `equals`
@@ -26,7 +28,15 @@ data class RecordingOptions(
   @Field val outputFormat: AndroidOutputFormat?,
   @Field val audioEncoder: AndroidAudioEncoder?,
   @Field val maxFileSize: Int?,
-  @Field val isMeteringEnabled: Boolean = false
+  @Field val isMeteringEnabled: Boolean = false,
+  @Field val audioSource: RecordingSource?
+) : Record
+
+class Metadata(
+  @Field val title: String?,
+  @Field val artist: String?,
+  @Field val albumTitle: String?,
+  @Field val artworkUrl: URL?
 ) : Record
 
 enum class AndroidOutputFormat(val value: String) : Enumerable {
@@ -77,7 +87,44 @@ enum class AndroidAudioEncoder(val value: String) : Enumerable {
   }
 }
 
+enum class LockScreenButtons(val value: Int) : Enumerable {
+  SEEK_FORWARD(0),
+  SEEK_BACKWARD(1)
+}
+
+class AudioLockScreenOptions(
+  @Field val showSeekForward: Boolean,
+  @Field val showSeekBackward: Boolean
+) : Record
+
 enum class InterruptionMode(val value: String) : Enumerable {
   DO_NOT_MIX("doNotMix"),
   DUCK_OTHERS("duckOthers")
+}
+
+class RecordOptions(
+  @Field val atTime: Double?,
+  @Field val forDuration: Double?
+) : Record
+
+enum class RecordingSource(val value: String) : Enumerable {
+  CAMCORDER("camcorder"),
+  DEFAULT("default"),
+  MIC("mic"),
+  REMOTE_SUBMIX("remote_submix"),
+  UNPROCESSED("unprocessed"),
+  VOICE_COMMUNICATION("voice_communication"),
+  VOICE_PERFORMANCE("voice_performance"),
+  VOICE_RECOGNITION("voice_recognition");
+
+  fun toAudioSource() = when (this) {
+    CAMCORDER -> MediaRecorder.AudioSource.CAMCORDER
+    DEFAULT -> MediaRecorder.AudioSource.DEFAULT
+    MIC -> MediaRecorder.AudioSource.MIC
+    REMOTE_SUBMIX -> MediaRecorder.AudioSource.REMOTE_SUBMIX
+    UNPROCESSED -> MediaRecorder.AudioSource.UNPROCESSED
+    VOICE_COMMUNICATION -> MediaRecorder.AudioSource.VOICE_COMMUNICATION
+    VOICE_PERFORMANCE -> MediaRecorder.AudioSource.VOICE_PERFORMANCE
+    VOICE_RECOGNITION -> MediaRecorder.AudioSource.VOICE_RECOGNITION
+  }
 }

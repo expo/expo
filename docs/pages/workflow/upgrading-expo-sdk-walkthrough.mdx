@@ -1,18 +1,25 @@
 ---
 title: Upgrade Expo SDK
 description: Learn how to incrementally upgrade the Expo SDK version in your project.
+hasVideoLink: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 > **info** We recommend upgrading SDK versions incrementally, one at a time. Doing so will help you pinpoint breakages and issues that arise during the upgrade process.
 
 With a new SDK release, the latest version enters the current release status. This applies to Expo Go as it only supports the latest SDK version and previous versions are no longer supported. We recommend using [development builds](/develop/development-builds/introduction/) for production apps as the backwards compatibility for older SDK versions on EAS services tends to be much longer, but not forever.
 
 If you are looking to install a specific version of Expo Go, visit [expo.dev/go](https://expo.dev/go). It supports downloads for Android devices/emulators and iOS simulators. However, due to iOS platform restrictions, only the latest version of Expo Go is available for installation on physical iOS devices.
+
+<VideoBoxLink
+  videoId="QuN63BRRhAM"
+  title="Watch: How to upgrade from Expo SDK 53 to SDK 54 in 5 minutes"
+/>
 
 ## How to upgrade to the latest SDK version
 
@@ -23,34 +30,21 @@ If you are looking to install a specific version of Expo Go, visit [expo.dev/go]
 Install the new version of the Expo package:
 
 <Tabs>
-<Tab label="npm">
-
-<Terminal
-  cmd={[
-    '# Install latest',
-    '$ npx expo install expo@latest',
-    '',
-    '# Install a specific SDK version (for example, SDK 53)',
-    '$ npx expo install expo@^53.0.0',
-  ]}
-/>
-
-</Tab>
-
-<Tab label="Yarn">
-
-<Terminal
-  cmd={[
-    '# Install latest',
-    '$ yarn expo install expo@latest',
-    '',
-    '# Install a specific SDK version (for example, SDK 53)',
-    '$ yarn expo install expo@^53.0.0',
-  ]}
-/>
-
-</Tab>
+  <Tab label="npm">
+    <Terminal cmd={['$ npm install expo@^54.0.0']} />
+  </Tab>
+  <Tab label="Yarn">
+    <Terminal cmd={['$ yarn add expo@^54.0.0']} />
+  </Tab>
+  <Tab label="pnpm">
+    <Terminal cmd={['$ pnpm add expo@^54.0.0']} />
+  </Tab>
+  <Tab label="Bun">
+    <Terminal cmd={['$ bun install expo@^54.0.0']} />
+  </Tab>
 </Tabs>
+
+Depending on which SDK you're upgrading to, substitute the `expo@^54.0.0` with the version range of the Expo SDK version you're targeting. For example, `expo@^54.0.0` stands for SDK 54.
 
 </Step>
 
@@ -58,9 +52,12 @@ Install the new version of the Expo package:
 
 ### Upgrade dependencies
 
-Upgrade all dependencies to match the installed SDK version.
+Upgrade all dependencies to match the installed SDK version. Then run [`expo-doctor`](/develop/tools/#expo-doctor) command to check for common problems.
 
-<Terminal cmd={['$ npx expo install --fix']} />
+<Terminal
+  cmd={['$ npx expo install --fix', '', '$ npx expo-doctor']}
+  cmdCopy="npx expo install --fix && npx expo-doctor"
+/>
 
 </Step>
 
@@ -69,7 +66,7 @@ Upgrade all dependencies to match the installed SDK version.
 ### Update native projects
 
 - **If you use [Continuous Native Generation](/workflow/continuous-native-generation/)**: Delete the **android** and **ios** directories if you generated them for a previous SDK version in your local project directory. They'll be re-generated next time you run a build, either with `npx expo run:ios`, `npx expo prebuild`, or with EAS Build.
-- **If you don't use [Continuous Native Generation](/workflow/continuous-native-generation/)**: Run `npx pod-install` if you have an `ios` directory. Apply any relevant changes from the [Native project upgrade helper](/bare/upgrade/). Alternatively, you could consider [adopting prebuild](/guides/adopting-prebuild/) for easier upgrades in the future.
+- **If you don't use [Continuous Native Generation](/workflow/continuous-native-generation/)**: Run `npx pod-install` if you have an **ios** directory. Apply any relevant changes from the [Native project upgrade helper](/bare/upgrade/). Alternatively, you could consider [adopting prebuild](/guides/adopting-prebuild/) for easier upgrades in the future.
 
 </Step>
 
@@ -77,7 +74,7 @@ Upgrade all dependencies to match the installed SDK version.
 
 ### Follow the release notes for any other instructions
 
-Read the [SDK changelogs](#sdk-changelogs) for the SDK version you are upgrading to. They contain important information about breaking changes, deprecations, and other changes that may affect your app. Refer to tue "Upgrading your app" section at the bottom of the release notes page for any additional instructions.
+Read the [SDK changelogs](#sdk-changelogs) for the SDK version you are upgrading to. They contain important information about breaking changes, deprecations, and other changes that may affect your app. Refer to the "Upgrading your app" section at the bottom of the release notes page for any additional instructions.
 
 </Step>
 
@@ -85,10 +82,10 @@ Read the [SDK changelogs](#sdk-changelogs) for the SDK version you are upgrading
 
 Each SDK announcement release notes post contains information deprecations, breaking changes, and anything else that might be unique to that particular SDK version. When upgrading, be sure to check these out to make sure you don't miss anything.
 
+- **SDK 54**: [Release notes](https://expo.dev/changelog/sdk-54)
 - **SDK 53**: [Release notes](https://expo.dev/changelog/sdk-53)
 - **SDK 52**: [Release notes](https://expo.dev/changelog/2024-11-12-sdk-52)
   - **React Native 0.77 is available with Expo SDK 52**. To upgrade, see these [Release notes](https://expo.dev/changelog/2025/01-21-react-native-0.77).
-- **SDK 51**: [Release notes](https://expo.dev/changelog/2024-05-07-sdk-51)
 
 ### Deprecated SDK Version Changelogs
 
@@ -96,6 +93,7 @@ The following blog posts may included outdated information, but they are still u
 
 <Collapsible summary="See a full list of deprecated SDK release changelogs">
 
+- **SDK 51**: [Release notes](https://expo.dev/changelog/2024-05-07-sdk-51)
 - **SDK 50**: [Release notes](https://expo.dev/changelog/2024-01-18-sdk-50)
 - **SDK 49**: [Release notes](https://blog.expo.dev/expo-sdk-49-c6d398cdf740)
 - **SDK 48**: [Release notes](https://blog.expo.dev/expo-sdk-48-ccb8302e231)

@@ -34,6 +34,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     private set
   var error: Exception? = null
     private set
+  var redirectMode: NativeRequestRedirect? = null
 
   val bodyUsed: Boolean
     get() = this.sink.bodyUsed
@@ -99,7 +100,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
 
   override fun onFailure(call: Call, e: IOException) {
     // Canceled request should be handled by emitRequestCanceled
-    if (e.message === "Canceled") {
+    if (e.message == "Canceled") {
       return
     }
 
@@ -122,6 +123,18 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   }
 
   override fun onResponse(call: Call, response: Response) {
+    if (response.isRedirect && redirectMode == NativeRequestRedirect.ERROR) {
+      response.close()
+      val error = FetchRedirectException()
+      this.error = error
+      if (state == ResponseState.BODY_STREAMING_STARTED) {
+        emit("didFailWithError", error.localizedMessageWithCauseLocalizedMessage())
+      }
+      state = ResponseState.ERROR_RECEIVED
+      emit("readyForJSFinalization")
+      return
+    }
+
     responseInit = createResponseInit(response)
     state = ResponseState.RESPONSE_RECEIVED
 

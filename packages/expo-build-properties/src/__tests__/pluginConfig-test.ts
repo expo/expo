@@ -68,6 +68,30 @@ describe(validateConfig, () => {
     ).toThrow();
   });
 
+  it('should use `enableShrinkResourcesInReleaseBuilds` with `enableMinifyInReleaseBuilds`', () => {
+    expect(() =>
+      validateConfig({ android: { enableShrinkResourcesInReleaseBuilds: true } })
+    ).toThrow();
+
+    expect(() =>
+      validateConfig({
+        android: {
+          enableShrinkResourcesInReleaseBuilds: true,
+          enableMinifyInReleaseBuilds: true,
+        },
+      })
+    ).not.toThrow();
+
+    expect(() =>
+      validateConfig({
+        android: {
+          enableShrinkResourcesInReleaseBuilds: true,
+          enableMinifyInReleaseBuilds: false,
+        },
+      })
+    ).toThrow();
+  });
+
   it('should validate android.enablePngCrunchInReleaseBuilds', () => {
     expect(() =>
       validateConfig({
@@ -97,6 +121,32 @@ describe(validateConfig, () => {
 
     expect(() => {
       validateConfig({ ios: { extraPods: [{}] } });
+    }).toThrow();
+  });
+
+  it('should validate ios.forceStaticLinking', () => {
+    expect(() => {
+      validateConfig({ ios: {} });
+    }).not.toThrow();
+
+    expect(() => {
+      validateConfig({ ios: { forceStaticLinking: ['SomePod'] } });
+    }).not.toThrow();
+
+    expect(() => {
+      validateConfig({ ios: { forceStaticLinking: [] } });
+    }).not.toThrow();
+
+    expect(() => {
+      validateConfig({ ios: { forceStaticLinking: ['SomePod', 'AnotherPod'] } });
+    }).not.toThrow();
+
+    expect(() => {
+      validateConfig({ ios: { forceStaticLinking: [123] as any } });
+    }).toThrow();
+
+    expect(() => {
+      validateConfig({ ios: { forceStaticLinking: 'SomePod' as any } });
     }).toThrow();
   });
 

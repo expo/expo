@@ -24,7 +24,7 @@ type IncorrectDependency = {
 
 export function doctor(
   pkg: PackageJSONConfig,
-  appReactNavigationPath: string,
+  appReactNavigationPath: string | undefined,
   // Reuse the formatting functions from expo-cli
   {
     bold,
@@ -50,7 +50,9 @@ export function doctor(
    * version of @react-navigation/native.
    */
   if (
+    // NOTE(@kitten): This looks inverted. However, this check will soon be redundant
     userExcluded.has('@react-navigation/native') &&
+    appReactNavigationPath &&
     appReactNavigationPath !== libReactNavigationPath
   ) {
     console.warn(

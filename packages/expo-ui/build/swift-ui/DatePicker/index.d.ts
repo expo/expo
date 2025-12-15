@@ -1,56 +1,38 @@
-import { StyleProp, ViewStyle } from 'react-native';
-import { ViewEvent } from '../../types';
-export type IOSVariant = 'wheel' | 'automatic' | 'graphical' | 'compact';
-export type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
-export type DateTimePickerProps = {
+import { type CommonViewModifierProps } from '../types';
+export type DatePickerComponent = 'date' | 'hourAndMinute';
+export type DateRange = {
+    start?: Date;
+    end?: Date;
+};
+export type DatePickerProps = {
     /**
-     * The initial date to display on the picker.
-     */
-    initialDate?: string | null;
-    /**
-     * A title displayed on the picker on iOS.
-     * @platform ios
+     * A title/label displayed on the picker.
      */
     title?: string;
     /**
-     * Callback function that is called when a date is selected.
+     * The currently selected date.
      */
-    onDateSelected?: (date: Date) => void;
+    selection?: Date;
     /**
-     * The variant of the picker, which determines its appearance and behavior.
-     * @default 'automatic'
+     * The selectable date range.
      */
-    variant?: IOSVariant;
+    range?: DateRange;
     /**
-     * The components that the picker should display.
-     * On iOS, you can have a picker that selects both date and time.
-     * @default 'date'
+     * The components to display: 'date' and/or 'hourAndMinute'.
+     * @default ['date']
      */
-    displayedComponents?: DisplayedComponents;
+    displayedComponents?: DatePickerComponent[];
     /**
-     * The tint color to use on the picker elements.
+     * Callback when the date selection changes.
      */
-    color?: string;
-};
-type NativeDatePickerProps = Omit<DateTimePickerProps, 'variant' | 'onDateSelected'> & {
-    variant?: IOSVariant;
-} & ViewEvent<'onDateSelected', {
-    date: Date;
-}>;
+    onDateChange?: (date: Date) => void;
+    /**
+     * Children to use as a custom label.
+     */
+    children?: React.ReactNode;
+} & CommonViewModifierProps;
 /**
- * @hidden
+ * Renders a SwiftUI `DatePicker` component.
  */
-export declare function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePickerProps;
-/**
- * `<DateTimePicker>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export declare function DateTimePickerPrimitive(props: DateTimePickerProps): import("react").JSX.Element;
-/**
- * Renders a `DateTimePicker` component.
- */
-export declare function DateTimePicker(props: DateTimePickerProps & {
-    style?: StyleProp<ViewStyle>;
-}): import("react").JSX.Element;
-export {};
+export declare function DatePicker(props: DatePickerProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

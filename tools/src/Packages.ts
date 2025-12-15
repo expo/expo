@@ -9,6 +9,7 @@ import * as Npm from './Npm';
 const ANDROID_DIR = Directories.getExpoGoAndroidDir();
 const IOS_DIR = Directories.getExpoGoIosDir();
 const PACKAGES_DIR = Directories.getPackagesDir();
+const TEMPLATES_DIR = Directories.getTemplatesDir();
 
 /**
  * Cached list of packages or `null` if they haven't been loaded yet. See `getListOfPackagesAsync`.
@@ -60,7 +61,7 @@ export type PackageDependency = {
 /**
  * Union with possible platform names.
  */
-type Platform = 'ios' | 'android' | 'web';
+type Platform = 'ios' | 'android' | 'web' | 'apple';
 
 /**
  * Type representing `expo-modules.config.json` structure.
@@ -206,6 +207,10 @@ export class Package {
     return !!this.expoModuleConfig;
   }
 
+  isTemplate() {
+    return !!this.path.startsWith(TEMPLATES_DIR);
+  }
+
   containsPodspecFile() {
     return [
       ...fs.readdirSync(this.path),
@@ -216,7 +221,12 @@ export class Package {
   isSupportedOnPlatform(platform: 'ios' | 'android'): boolean {
     if (this.expoModuleConfig && !fs.existsSync(path.join(this.path, 'react-native.config.js'))) {
       // check platform support from expo autolinking but not rn-cli linking which is not platform aware
-      return this.expoModuleConfig.platforms?.includes(platform) ?? false;
+      const platforms = this.expoModuleConfig.platforms ?? [];
+      if (platform === 'ios') {
+        return platforms.includes(platform) || platforms.includes('apple');
+      } else {
+        return platforms.includes(platform);
+      }
     } else if (platform === 'android') {
       return fs.existsSync(path.join(this.path, this.androidSubdirectory, 'build.gradle'));
     } else if (platform === 'ios') {
@@ -386,6 +396,10 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
         '**/__fixtures__/**',
       ],
     });
+    const templatesPaths = await glob('**/package.json', {
+      cwd: TEMPLATES_DIR,
+      ignore: ['**/node_modules/**', '**/__tests__/**', '**/__mocks__/**', '**/__fixtures__/**'],
+    });
     cachedPackages = paths
       .map((packageJsonPath) => {
         const fullPackageJsonPath = path.join(PACKAGES_DIR, packageJsonPath);
@@ -394,6 +408,15 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
 
         return new Package(packagePath, packageJson);
       })
+      .concat(
+        templatesPaths.map((packageJsonPath) => {
+          const fullPackageJsonPath = path.join(TEMPLATES_DIR, packageJsonPath);
+          const packagePath = path.dirname(fullPackageJsonPath);
+          const packageJson = require(fullPackageJsonPath);
+
+          return new Package(packagePath, packageJson);
+        })
+      )
       .filter((pkg) => !!pkg.packageName);
   }
   return cachedPackages;

@@ -494,7 +494,7 @@ By default, Metro will match different conditions depending on the platform and 
 
 For native platforms, the condition `react-native` is added, for web exports, the `browser` condition is added, and for server exports (such as API routes or React Server functions), the `node`, `react-server`, and `workerd` conditions are added. These conditions aren't matched in the order they're defined in. Instead, they're matched against the order of properties in the `package.json:exports` map.
 
-TypeScript performs ES Module resolution separately from Metro and will also respect `package.json:exports` maps, when its `compilerOptions.moduleResolution` configuration option has either been set to `"bundler"` (which matches Metro's behaviour more closely) or to `"node16"` / `"nodenext"`. TypeScript will however also match the `types` condition. As such, types may not resolve properly when a package doesn't put the `types` condition first in its exports map.
+TypeScript performs ES Module resolution separately from Metro and will also respect `package.json:exports` maps, when its `compilerOptions.moduleResolution` configuration option has either been set to `"bundler"` (which matches Metro's behavior more closely) or to `"node16"` / `"nodenext"`. TypeScript will however also match the `types` condition. As such, types may not resolve properly when a package doesn't put the `types` condition first in its exports map.
 
 Since an exports map may contain subpaths, a package import may not have to match a file in the package's modules folder any longer, but may be a "redirected" import. Importing `'package/submodule'` may match a different file than **node_modules/package/submodule.js** if it's specified in `package.json:exports`.
 
@@ -569,7 +569,7 @@ export async function GET(req: Request) {
 new Worker(new URL('./worker', window.location.href));
 ```
 
-Expo Metro has experimental web worker support in SDK 53 and above. This feature is currently web-only and does not work on native, usage on native will trigger an error "Property 'Worker' doesn't exist".
+Expo Metro has experimental web worker support in SDK 53 and later. This feature is currently web-only and does not work on native, usage on native will trigger an error "Property 'Worker' doesn't exist".
 
 Web workers can be used to offload work to a separate thread on web, allowing the main thread to remain responsive. This is useful for computationally expensive tasks, such as image processing, cryptography, or other tasks that would otherwise block the main thread.
 

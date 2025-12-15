@@ -29,7 +29,7 @@ public:
   int sqlite3_get_autocommit();
   int64_t sqlite3_last_insert_rowid();
   int sqlite3_load_extension(const std::string &libPath,
-                             const std::string &entryProc);
+                             const std::string &entryPoint);
   int sqlite3_open(const std::string &dbPath);
   int sqlite3_prepare_v2(
       const std::string &source,

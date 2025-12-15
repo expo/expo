@@ -47,6 +47,8 @@ exports.canGoBack = canGoBack;
 exports.canDismiss = canDismiss;
 exports.setParams = setParams;
 exports.linkTo = linkTo;
+exports.getPayloadFromStateRoute = getPayloadFromStateRoute;
+exports.findDivergentState = findDivergentState;
 const dom_1 = require("expo/dom");
 const Linking = __importStar(require("expo-linking"));
 const react_native_1 = require("react-native");
@@ -55,6 +57,7 @@ const emitDomEvent_1 = require("../domComponents/emitDomEvent");
 const getRoutesRedirects_1 = require("../getRoutesRedirects");
 const href_1 = require("../link/href");
 const matchers_1 = require("../matchers");
+const navigationParams_1 = require("../navigationParams");
 const url_1 = require("../utils/url");
 function assertIsReady() {
     if (!router_store_1.store.navigationRef.isReady()) {
@@ -74,23 +77,29 @@ exports.routingQueue = {
         return exports.routingQueue.queue;
     },
     add(action) {
-        // Reset the identity of the queue.
-        if (exports.routingQueue.queue.length === 0) {
-            exports.routingQueue.queue = [];
-        }
         exports.routingQueue.queue.push(action);
         for (const callback of exports.routingQueue.subscribers) {
             callback();
         }
     },
-    run() {
-        const queue = exports.routingQueue.queue;
-        if (queue.length === 0 || !router_store_1.store.navigationRef) {
-            return;
-        }
+    run(ref) {
+        // Reset the identity of the queue.
+        const events = exports.routingQueue.queue;
         exports.routingQueue.queue = [];
-        for (const action of queue) {
-            router_store_1.store.navigationRef.dispatch(action);
+        let action;
+        while ((action = events.shift())) {
+            if (ref.current) {
+                if (action.type === 'ROUTER_LINK') {
+                    const { payload: { href, options }, } = action;
+                    action = getNavigateAction(href, options, options.event, options.withAnchor, options.dangerouslySingular, !!options.__internal__PreviewKey);
+                    if (action) {
+                        ref.current.dispatch(action);
+                    }
+                }
+                else {
+                    ref.current.dispatch(action);
+                }
+            }
         }
     },
 };
@@ -182,6 +191,29 @@ function linkTo(originalHref, options = {}) {
         Linking.openURL(href);
         return;
     }
+    if (href === '..' || href === '../') {
+        assertIsReady();
+        const navigationRef = router_store_1.store.navigationRef.current;
+        if (navigationRef == null) {
+            throw new Error("Couldn't find a navigation object. Is your component inside NavigationContainer?");
+        }
+        if (!router_store_1.store.linking) {
+            throw new Error('Attempted to link to route when no routes are present');
+        }
+        navigationRef.goBack();
+        return;
+    }
+    const linkAction = {
+        type: 'ROUTER_LINK',
+        payload: {
+            href,
+            options,
+        },
+    };
+    exports.routingQueue.add(linkAction);
+}
+function getNavigateAction(baseHref, options, type = 'NAVIGATE', withAnchor, singular, isPreviewNavigation) {
+    let href = baseHref;
     assertIsReady();
     const navigationRef = router_store_1.store.navigationRef.current;
     if (navigationRef == null) {
@@ -190,13 +222,9 @@ function linkTo(originalHref, options = {}) {
     if (!router_store_1.store.linking) {
         throw new Error('Attempted to link to route when no routes are present');
     }
-    if (href === '..' || href === '../') {
-        navigationRef.goBack();
-        return;
-    }
     const rootState = navigationRef.getRootState();
     href = (0, href_1.resolveHrefStringWithSegments)(href, router_store_1.store.getRouteInfo(), options);
-    href = (0, getRoutesRedirects_1.applyRedirects)(href, router_store_1.store.redirects);
+    href = (0, getRoutesRedirects_1.applyRedirects)(href, router_store_1.store.redirects) ?? undefined;
     // If the href is undefined, it means that the redirect has already been handled the navigation
     if (!href) {
         return;
@@ -206,9 +234,6 @@ function linkTo(originalHref, options = {}) {
         console.error('Could not generate a valid navigation state for the given path: ' + href);
         return;
     }
-    exports.routingQueue.add(getNavigateAction(state, rootState, options.event, options.withAnchor, options.dangerouslySingular, options.__internal__PreviewKey));
-}
-function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', withAnchor, singular, previewKey) {
     /**
      * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
      * lowest navigator is the target.
@@ -223,48 +248,12 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
      *
      * Other parameters such as search params and hash are not evaluated.
      */
-    let actionStateRoute;
-    // Traverse the state tree comparing the current state and the action state until we find where they diverge
-    while (actionState && navigationState) {
-        const stateRoute = navigationState.routes[navigationState.index];
-        actionStateRoute = actionState.routes[actionState.routes.length - 1];
-        const childState = actionStateRoute.state;
-        const nextNavigationState = stateRoute.state;
-        const dynamicName = (0, matchers_1.matchDynamicName)(actionStateRoute.name);
-        const didActionAndCurrentStateDiverge = actionStateRoute.name !== stateRoute.name ||
-            !childState ||
-            !nextNavigationState ||
-            (dynamicName &&
-                // @ts-expect-error: TODO(@kitten): This isn't properly typed, so the index access fails
-                actionStateRoute.params?.[dynamicName.name] !== stateRoute.params?.[dynamicName.name]);
-        if (didActionAndCurrentStateDiverge) {
-            break;
-        }
-        actionState = childState;
-        navigationState = nextNavigationState;
-    }
+    const { actionStateRoute, navigationState } = findDivergentState(state, rootState, type === 'PRELOAD');
     /*
      * We found the target navigator, but the payload is in the incorrect format
      * We need to convert the action state to a payload that can be dispatched
      */
-    const rootPayload = { params: {} };
-    let payload = rootPayload;
-    let params = payload.params;
-    // The root level of payload is a bit weird, its params are in the child object
-    while (actionStateRoute) {
-        Object.assign(params, { ...payload.params, ...actionStateRoute.params });
-        // Assign the screen name to the payload
-        payload.screen = actionStateRoute.name;
-        // Merge the params, ensuring that we create a new object
-        payload.params = { ...params };
-        // Params don't include the screen, thats a separate attribute
-        delete payload.params['screen'];
-        // Continue down the payload tree
-        // Initially these values are separate, but React Nav merges them after the first layer
-        payload = payload.params;
-        params = payload;
-        actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
-    }
+    const rootPayload = getPayloadFromStateRoute(actionStateRoute || {});
     if (type === 'PUSH' && navigationState.type !== 'stack') {
         type = 'NAVIGATE';
     }
@@ -291,16 +280,94 @@ function getNavigateAction(actionState, navigationState, type = 'NAVIGATE', with
          */
         rootPayload.params.initial = !withAnchor;
     }
+    const expoParams = isPreviewNavigation
+        ? {
+            [navigationParams_1.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
+            [navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
+        }
+        : {};
+    const params = (0, navigationParams_1.appendInternalExpoRouterParams)(rootPayload.params, expoParams);
     return {
         type,
         target: navigationState.key,
         payload: {
             // key: rootPayload.key,
             name: rootPayload.screen,
-            params: rootPayload.params,
+            params,
             singular,
-            previewKey,
         },
+    };
+}
+/**
+ * React Navigation uses params to store information about the screens, rather then create new state for each level.
+ * This function traverses the action state that will not be part of state and returns a payload that can be used in action.
+ */
+function getPayloadFromStateRoute(_actionStateRoute) {
+    const rootPayload = { params: {} };
+    let payload = rootPayload;
+    let params = payload.params;
+    let actionStateRoute = _actionStateRoute;
+    while (actionStateRoute) {
+        Object.assign(params, { ...payload.params, ...actionStateRoute.params });
+        // Assign the screen name to the payload
+        payload.screen = actionStateRoute.name;
+        // Merge the params, ensuring that we create a new object
+        payload.params = { ...params };
+        // Params don't include the screen, thats a separate attribute
+        delete payload.params['screen'];
+        // Continue down the payload tree
+        // Initially these values are separate, but React Nav merges them after the first layer
+        payload = payload.params;
+        params = payload;
+        actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
+    }
+    return rootPayload;
+}
+/*
+ * Traverse the state tree comparing the current state and the action state until we find where they diverge
+ */
+function findDivergentState(_actionState, _navigationState, 
+// If true, look through all tabs to find the target state, rather then just the current tab
+lookThroughAllTabs = false) {
+    let actionState = _actionState;
+    let navigationState = _navigationState;
+    let actionStateRoute;
+    const navigationRoutes = [];
+    while (actionState && navigationState) {
+        actionStateRoute = actionState.routes[actionState.routes.length - 1];
+        const stateRoute = (() => {
+            if (navigationState.type === 'tab' && lookThroughAllTabs) {
+                return (navigationState.routes.find((route) => route.name === actionStateRoute?.name) ||
+                    navigationState.routes[navigationState.index ?? 0]);
+            }
+            return navigationState.routes[navigationState.index ?? 0];
+        })();
+        const childState = actionStateRoute.state;
+        const nextNavigationState = stateRoute.state;
+        const dynamicName = (0, matchers_1.matchDynamicName)(actionStateRoute.name);
+        const didActionAndCurrentStateDiverge = actionStateRoute.name !== stateRoute.name ||
+            !childState ||
+            !nextNavigationState ||
+            (dynamicName &&
+                // @ts-expect-error: TODO(@kitten): This isn't properly typed, so the index access fails
+                actionStateRoute.params?.[dynamicName.name] !== stateRoute.params?.[dynamicName.name]);
+        if (didActionAndCurrentStateDiverge) {
+            // If we are looking through all tabs, we need to add new tab id if this is the last route
+            // Otherwise we wouldn't be able to change the tab
+            if (navigationState.type === 'tab' && lookThroughAllTabs) {
+                navigationRoutes.push(stateRoute);
+            }
+            break;
+        }
+        navigationRoutes.push(stateRoute);
+        actionState = childState;
+        navigationState = nextNavigationState;
+    }
+    return {
+        actionState,
+        navigationState,
+        actionStateRoute,
+        navigationRoutes,
     };
 }
 //# sourceMappingURL=routing.js.map

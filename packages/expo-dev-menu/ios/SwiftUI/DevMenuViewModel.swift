@@ -1,8 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
-import UIKit
 import Combine
+import ExpoModulesCore
 
 @MainActor
 class DevMenuViewModel: ObservableObject {
@@ -20,6 +20,7 @@ class DevMenuViewModel: ObservableObject {
     loadData()
     checkOnboardingStatus()
     observeRegisteredCallbacks()
+    observeManifestChanges()
   }
 
   private func loadData() {
@@ -68,11 +69,12 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func goHome() {
-    devMenuManager.closeMenu()
-    if let devLauncherClass = NSClassFromString("EXDevLauncherController") as? NSObject.Type {
-      let sharedInstance = devLauncherClass.perform(Selector(("sharedInstance")))?.takeUnretainedValue()
-      _ = sharedInstance?.perform(Selector(("navigateToLauncher")))
+    guard devMenuManager.canNavigateHome else {
+      return
     }
+
+    devMenuManager.closeMenu()
+    devMenuManager.navigateHome()
   }
 
   func togglePerformanceMonitor() {
@@ -92,7 +94,7 @@ class DevMenuViewModel: ObservableObject {
 
   func toggleFastRefresh() {
     devMenuManager.toggleFastRefresh()
-    devMenuManager.closeMenu()
+    loadDevSettings()
   }
 
   func openRNDevMenu() {
@@ -107,15 +109,18 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func copyToClipboard(_ content: String) {
+    #if !os(tvOS)
     UIPasteboard.general.string = content
     hostUrlCopiedMessage = "Copied!"
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
       self.hostUrlCopiedMessage = nil
     }
+    #endif
   }
 
   func copyAppInfo() {
+    #if !os(tvOS)
     guard let appInfo = appInfo else {
       return
     }
@@ -142,6 +147,7 @@ class DevMenuViewModel: ObservableObject {
     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
       self.clipboardMessage = nil
     }
+    #endif
   }
 
   func fireCallback(_ name: String) {
@@ -155,16 +161,16 @@ class DevMenuViewModel: ObservableObject {
     }
   }
 
-  var isDevLauncherInstalled: Bool {
-    return NSClassFromString("EXDevLauncherController") != nil
+  var canNavigateHome: Bool {
+    return devMenuManager.canNavigateHome
   }
 
   private func checkOnboardingStatus() {
-    isOnboardingFinished = UserDefaults.standard.bool(forKey: "EXDevMenuIsOnboardingFinished")
+    isOnboardingFinished = devMenuManager.isOnboardingFinished
   }
 
   func finishOnboarding() {
-    UserDefaults.standard.set(true, forKey: "EXDevMenuIsOnboardingFinished")
+    devMenuManager.setOnboardingFinished(true)
     isOnboardingFinished = true
   }
 
@@ -173,5 +179,14 @@ class DevMenuViewModel: ObservableObject {
       .map { $0.map { $0.name } }
       .receive(on: DispatchQueue.main)
       .assign(to: &$registeredCallbacks)
+  }
+
+  private func observeManifestChanges() {
+    devMenuManager.manifestPublisher
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] _ in
+        self?.loadAppInfo()
+      }
+      .store(in: &cancellables)
   }
 }

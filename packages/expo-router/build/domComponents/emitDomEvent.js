@@ -8,7 +8,7 @@ exports.emitDomLinkEvent = emitDomLinkEvent;
 const events_1 = require("./events");
 function emitDomEvent(type, data = {}) {
     // @ts-expect-error: ReactNativeWebView is a global variable injected by the WebView
-    if (typeof ReactNativeWebView !== 'undefined') {
+    if (typeof $$EXPO_INITIAL_PROPS !== 'undefined' && typeof ReactNativeWebView !== 'undefined') {
         window.ReactNativeWebView.postMessage(JSON.stringify({ type, data }));
         return true;
     }

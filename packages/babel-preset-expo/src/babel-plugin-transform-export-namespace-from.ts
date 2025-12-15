@@ -6,13 +6,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { PluginObj, types as t } from '@babel/core';
-import type { SourceLocation, Node } from '@babel/types';
+import type { ConfigAPI, PluginObj, types as t } from '@babel/core';
 
 // Original: https://github.com/babel/babel/blob/e5c8dc7330cb2f66c37637677609df90b31ff0de/packages/babel-plugin-transform-export-namespace-from/src/index.ts
 
 // NOTE: Original plugin asserts that Babel version 7 or newer is used. This was removed for simplicity.
-export default (): PluginObj => ({
+export default ({ types: t }: ConfigAPI & typeof import('@babel/core')): PluginObj => ({
   name: 'transform-export-namespace-from',
   manipulateOptions: process.env.BABEL_8_BREAKING
     ? undefined
@@ -64,9 +63,9 @@ export default (): PluginObj => ({
 });
 
 // Inspired by https://github.com/facebook/metro/blob/8e48aa823378962beccbe37d85f1aff2c34b28b1/packages/metro-transform-plugins/src/import-export-plugin.js#L143
-function withLocation<TNode extends Node>(
+function withLocation<TNode extends t.Node>(
   node: TNode,
-  loc: SourceLocation | null | undefined
+  loc: t.SourceLocation | null | undefined
 ): TNode {
   if (!node.loc) {
     return { ...node, loc };

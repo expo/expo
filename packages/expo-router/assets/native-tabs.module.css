@@ -1,0 +1,109 @@
+:root {
+  --expo-router-tabs-font-family: --apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.nativeTabsContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-height: 100vh;
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+.tabContent {
+  flex: 1;
+  display: flex;
+  max-height: 100%;
+  max-width: 100%;
+}
+.tabContent[data-state="inactive"] {
+  display: none;
+}
+
+.navigationMenuRoot {
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  position: fixed;
+  z-index: 10;
+  display: flex;
+  background-color: var(--expo-router-tabs-background-color, #272727);
+  height: 40px;
+  border-radius: 25px;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 5px;
+  box-sizing: border-box;
+  margin: 0;
+  max-width: 90vw;
+  overflow-x: auto;
+}
+
+.navigationMenuTrigger {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  list-style-position: inside;
+  height: 100%;
+  background-color: transparent;
+  border: none;
+  margin: 0;
+  height: 100%;
+  border-radius: 20px;
+  padding: 0 20px;
+  cursor: pointer;
+  outline-color: var(--expo-router-tabs-tab-outline-color, #444444);
+  position: relative;
+}
+
+.navigationMenuTrigger[data-state="active"] {
+  background-color: var(--expo-router-tabs-active-background-color, #444444);
+}
+
+.tabText {
+  font-weight: var(--expo-router-tabs-font-weight, 500);
+  font-size: var(--expo-router-tabs-font-size, 15px);
+  font-family: var(--expo-router-tabs-font-family);
+  font-style: var(--expo-router-tabs-font-style, normal);
+  opacity: var(--expo-router-tabs-text-opacity, 1);
+  color: var(--expo-router-tabs-text-color, #8b8b8b);
+  white-space: nowrap;
+}
+
+.navigationMenuTrigger[data-state="active"] .tabText {
+  color: var(--expo-router-tabs-active-text-color, #ffffff);
+  font-size: var(--expo-router-tabs-active-font-size, var(--expo-router-tabs-font-size, 15px));
+}
+
+.navigationMenuTrigger:not([data-state="active"]) .tabText:hover {
+  opacity: var(--expo-router-tabs-text-hover-opacity, 0.6);
+}
+
+.tabBadge {
+  --expo-router-tabs-local-badge-size: var(--expo-router-tabs-badge-size, 20px);
+
+  font-family: var(--expo-router-tabs-font-family);
+  position: absolute;
+  right: 0;
+  top: 0;
+  min-width: var(--expo-router-tabs-local-badge-size);
+  padding: 2px 4px;
+  width: auto;
+  height: var(--expo-router-tabs-local-badge-size);
+  box-sizing: border-box;
+  border-radius: calc(var(--expo-router-tabs-local-badge-size) / 2);
+  background-color: var(--expo-router-tabs-badge-background-color, red);
+  color: var(--expo-router-tabs-badge-text-color, #ffffff);
+  font-size: 12px;
+  text-align: center;
+}
+
+.emptyTabBadge {
+  --expo-router-tabs-local-badge-size: var(--expo-router-tabs-empty-badge-size, 14px);
+
+  right: 4px;
+  min-width: var(--expo-router-tabs-local-badge-size);
+  min-height: var(--expo-router-tabs-local-badge-size);
+  border-radius: calc(var(--expo-router-tabs-local-badge-size) / 2);
+}

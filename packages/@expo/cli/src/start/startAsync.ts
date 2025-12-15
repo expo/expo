@@ -15,6 +15,7 @@ import { getPlatformBundlers, PlatformBundlers } from './server/platformBundlers
 import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
+import { maybeCreateMCPServerAsync } from './server/MCP';
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
@@ -112,22 +113,30 @@ export async function startAsync(
   // Open project on devices.
   await profile(openPlatformsAsync)(devServerManager, options);
 
+  const defaultServerUrl = devServerManager.getDefaultDevServer()?.getDevServerUrl() ?? '';
+  const mcpServer =
+    (await profile(maybeCreateMCPServerAsync)({
+      projectRoot,
+      devServerUrl: defaultServerUrl,
+    })) ?? undefined;
+
   // Present the Terminal UI.
   if (isInteractive()) {
     await profile(startInterfaceAsync)(devServerManager, {
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
+      mcpServer,
     });
   } else {
     // Display the server location in CI...
-    const url = devServerManager.getDefaultDevServer()?.getDevServerUrl();
-    if (url) {
+    if (defaultServerUrl) {
       if (env.__EXPO_E2E_TEST) {
         // Print the URL to stdout for tests
-        console.info(`[__EXPO_E2E_TEST:server] ${JSON.stringify({ url })}`);
+        console.info(`[__EXPO_E2E_TEST:server] ${JSON.stringify({ url: defaultServerUrl })}`);
       }
-      Log.log(chalk`Waiting on {underline ${url}}`);
+      Log.log(chalk`Waiting on {underline ${defaultServerUrl}}`);
     }
   }
+  mcpServer?.start();
 
   // Final note about closing the server.
   const logLocation = settings.webOnly ? 'in the browser console' : 'below';

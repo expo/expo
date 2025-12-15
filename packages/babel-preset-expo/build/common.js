@@ -16,6 +16,7 @@ exports.getBaseUrl = getBaseUrl;
 exports.getReactCompiler = getReactCompiler;
 exports.getIsServer = getIsServer;
 exports.getMetroSourceType = getMetroSourceType;
+exports.getBabelRuntimeVersion = getBabelRuntimeVersion;
 exports.getExpoRouterAbsoluteAppRoot = getExpoRouterAbsoluteAppRoot;
 exports.getInlineEnvVarsEnabled = getInlineEnvVarsEnabled;
 exports.getAsyncRoutes = getAsyncRoutes;
@@ -91,7 +92,9 @@ function getIsFastRefreshEnabled(caller) {
     assertExpoBabelCaller(caller);
     if (!caller)
         return false;
-    return caller.isHMREnabled && !caller.isServer && !caller.isNodeModule && getIsDev(caller);
+    // NOTE(@kitten): `isHMREnabled` is always true in `@expo/metro-config`.
+    // However, we still use this option to ensure fast refresh is only enabled in supported runtimes (Metro + Expo)
+    return !!caller.isHMREnabled && !caller.isServer && !caller.isNodeModule && getIsDev(caller);
 }
 function getIsProd(caller) {
     assertExpoBabelCaller(caller);
@@ -118,6 +121,25 @@ function getIsServer(caller) {
 function getMetroSourceType(caller) {
     assertExpoBabelCaller(caller);
     return caller?.metroSourceType;
+}
+function getBabelRuntimeVersion(caller) {
+    assertExpoBabelCaller(caller);
+    let babelRuntimeVersion;
+    if (typeof caller?.babelRuntimeVersion === 'string') {
+        babelRuntimeVersion = caller.babelRuntimeVersion;
+    }
+    else {
+        try {
+            babelRuntimeVersion = require('@babel/runtime/package.json').version;
+        }
+        catch (error) {
+            if (error.code !== 'MODULE_NOT_FOUND')
+                throw error;
+        }
+    }
+    // NOTE(@kitten): The default shouldn't be higher than `expo/package.json`'s `@babel/runtime` version
+    // or `babel-preset-expo/package.json`'s peer dependency range for `@babel/runtime`
+    return babelRuntimeVersion ?? '^7.20.0';
 }
 function getExpoRouterAbsoluteAppRoot(caller) {
     assertExpoBabelCaller(caller);

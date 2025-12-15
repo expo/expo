@@ -2,22 +2,13 @@ import { Asset, useAssets } from 'expo-asset';
 import { ExpoWebGLRenderingContext, GLView, getWorkletContext } from 'expo-gl';
 import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
-import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import Animated, {
-  runOnUI,
-  useSharedValue,
-  useAnimatedGestureHandler,
-  withSpring,
-} from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { runOnUI, useSharedValue, withSpring } from 'react-native-reanimated';
 
 interface RenderContext {
   rotationLocation: WebGLUniformLocation;
   verticesLength: number;
 }
-type AnimatedGHContext = {
-  startX: number;
-  startY: number;
-};
 
 function initializeContext(gl: ExpoWebGLRenderingContext, asset: Asset): RenderContext {
   'worklet';
@@ -141,6 +132,9 @@ function useWorkletAwareGlContext<T>(
 }
 
 export default function GLReanimated() {
+  const x = useSharedValue(0);
+  const y = useSharedValue(0);
+
   const translation = {
     x: useSharedValue(0),
     y: useSharedValue(0),
@@ -155,23 +149,16 @@ export default function GLReanimated() {
       asset.value = { ...assets[0] } as Asset;
     }
   }, [assets]);
-  const gestureHandler = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    AnimatedGHContext
-  >({
-    onStart: (_, ctx) => {
-      ctx.startX = translation.x.value;
-      ctx.startY = translation.y.value;
-    },
-    onActive: (event, ctx) => {
-      translation.x.value = ctx.startX + event.translationX;
-      translation.y.value = ctx.startY + event.translationY;
-    },
-    onEnd: (_) => {
-      translation.x.value = withSpring(0);
-      translation.y.value = withSpring(0);
-    },
-  });
+
+  const panGestureHandler = Gesture.Pan()
+    .onUpdate((event) => {
+      x.value = event.translationX;
+      y.value = event.translationY;
+    })
+    .onEnd(() => {
+      x.value = withSpring(0);
+      y.value = withSpring(0);
+    });
 
   const onContextCreate = useWorkletAwareGlContext<RenderContext>(
     {
@@ -201,7 +188,7 @@ export default function GLReanimated() {
 
   return (
     <View style={styles.flex}>
-      <PanGestureHandler onGestureEvent={gestureHandler}>
+      <GestureDetector gesture={panGestureHandler}>
         <Animated.View style={styles.flex}>
           {assets ? (
             <GLView
@@ -213,7 +200,7 @@ export default function GLReanimated() {
             <Text>Loading</Text>
           )}
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
       <Text style={styles.text}>
         {(globalThis as any)._WORKLET_RUNTIME
           ? 'Running on UI thread inside reanimated worklet'

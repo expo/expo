@@ -206,6 +206,38 @@ describe('maybeThrowFromInconsistentEngineAsync - android', () => {
 });
 
 describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
+  it('should support either :hermes_enabled => true or hermes_enabled: true syntax', async () => {
+    const podfileTestCases = [
+      `
+  use_react_native!(
+    :path => config[:reactNativePath],
+    hermes_enabled: false
+  )`,
+      `
+  use_react_native!(
+    :path => config[:reactNativePath],
+    hermes_enabled: false, // with comments
+  )`,
+    ];
+
+    for (const content of podfileTestCases) {
+      const readPaths = addMockedFiles({
+        '/expo/ios/Podfile': content,
+      });
+
+      await expect(
+        maybeThrowFromInconsistentEngineAsync(
+          '/expo',
+          '/expo/app.json',
+          'ios',
+          /* isHermesManaged */ true
+        )
+      ).rejects.toThrow();
+
+      expect(readPaths).toEqual(['/expo/ios/Podfile']);
+    }
+  });
+
   it('should resolve if ":hermes_enabled => true" in Podfile and "jsEngine: \'hermes\'" in app.json', async () => {
     const podfileTestCases = [
       `
@@ -266,10 +298,6 @@ describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
     :path => config[:reactNativePath],
     :hermes_enabled => false
   )`,
-      `
-  use_react_native!(
-    :path => config[:reactNativePath],
-  )`,
     ];
 
     for (const content of podfileTestCases) {
@@ -290,21 +318,30 @@ describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
     }
   });
 
-  it('should resolve if "expo.jsEngine": \'hermes\' in Podfile.properties.json and "jsEngine: \'hermes\'" in app.json', async () => {
-    const readPaths = addMockedFiles({
-      '/expo/ios/Podfile.properties.json': '{"expo.jsEngine":"hermes"}',
-    });
+  it('should not throw if :hermes_enabled is not present in Podfile and "jsEngine: \'hermes\'" in app.json', async () => {
+    const podfileTestCases = [
+      `
+  use_react_native!(
+    :path => config[:reactNativePath],
+  )`,
+    ];
 
-    await expect(
-      maybeThrowFromInconsistentEngineAsync(
-        '/expo',
-        '/expo/app.json',
-        'ios',
-        /* isHermesManaged */ true
-      )
-    ).resolves.toBeUndefined();
+    for (const content of podfileTestCases) {
+      const readPaths = addMockedFiles({
+        '/expo/ios/Podfile': content,
+      });
 
-    expect(readPaths).toEqual(['/expo/ios/Podfile.properties.json']);
+      await expect(
+        maybeThrowFromInconsistentEngineAsync(
+          '/expo',
+          '/expo/app.json',
+          'ios',
+          /* isHermesManaged */ true
+        )
+      ).resolves.toBeUndefined();
+
+      expect(readPaths).toEqual(['/expo/ios/Podfile']);
+    }
   });
 
   describe('should handle the inconsistency between Podfile and Podfile.properties.json', () => {

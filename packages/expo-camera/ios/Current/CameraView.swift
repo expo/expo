@@ -39,7 +39,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   var videoQuality: VideoQuality = .video1080p {
     didSet {
       sessionQueue.async {
-        self.sessionManager.updateSessionPreset(preset: self.videoQuality.toPreset())
+        if self.mode == .video {
+          self.sessionManager.updateSessionPreset(preset: self.videoQuality.toPreset())
+        }
       }
     }
   }
@@ -89,6 +91,8 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     didSet {
       sessionQueue.async {
         self.sessionManager.setCameraMode()
+        let preset = self.mode == .video ? self.videoQuality.toPreset() : self.pictureSize.toCapturePreset()
+        self.sessionManager.updateSessionPreset(preset: preset)
       }
     }
   }
@@ -144,7 +148,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
     lifecycleManager = appContext?.legacyModule(implementing: EXAppLifecycleService.self)
-    permissionsManager = appContext?.legacyModule(implementing: EXPermissionsInterface.self)
+    permissionsManager = appContext?.permissions
 
     sessionManager = CameraSessionManager(delegate: self)
     photoCapture = CameraPhotoCapture(delegate: self)
@@ -201,8 +205,10 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   private func updatePictureSize() {
 #if !targetEnvironment(simulator)
     sessionQueue.async {
-      let preset = self.pictureSize.toCapturePreset()
-      self.sessionManager.updateSessionPreset(preset: preset)
+      if self.mode == .picture {
+        let preset = self.pictureSize.toCapturePreset()
+        self.sessionManager.updateSessionPreset(preset: preset)
+      }
     }
 #endif
   }

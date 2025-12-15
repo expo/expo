@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '1.10.0'
+version = '2.0.0'
 
 expoModule {
   canBePublished false
@@ -14,12 +14,12 @@ android {
   namespace "expo.interfaces.devmenu"
   defaultConfig {
     versionCode 6
-    versionName '1.10.0'
+    versionName '2.0.0'
   }
 }
 
 dependencies {
   implementation 'com.facebook.react:react-android'
-  implementation 'com.squareup.okhttp3:okhttp:3.14.9'
-  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3"
+  implementation 'com.squareup.okhttp3:okhttp:4.9.2'
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2"
 }

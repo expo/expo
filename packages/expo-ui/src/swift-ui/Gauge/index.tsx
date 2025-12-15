@@ -1,17 +1,16 @@
 import { requireNativeView } from 'expo';
-import { ColorValue, Platform, StyleProp, ViewStyle } from 'react-native';
+import { ColorValue } from 'react-native';
 
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
 /**
  * The type of `Gauge`.
- * @platform ios
  */
 export type GaugeType = 'default' | 'circular' | 'circularCapacity' | 'linear' | 'linearCapacity';
 
 /**
  * Value options for the `Gauge` component.
- * @platform ios
  */
 export type ValueOptions = {
   /**
@@ -57,33 +56,21 @@ export type GaugeProps = {
    * Color (or array of colors for gradient) of the `Gauge`.
    */
   color?: ColorValue | ColorValue[];
-};
+} & CommonViewModifierProps;
 
-let GaugeNativeView: React.ComponentType<GaugeProps> | null;
-
-if (Platform.OS === 'ios') {
-  GaugeNativeView = requireNativeView('ExpoUI', 'GaugeView');
-}
-
-/**
- * `<Gauge>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function GaugePrimitive({ type = 'default', ...props }: GaugeProps) {
-  if (!GaugeNativeView) {
-    return null;
-  }
-  return <GaugeNativeView type={type} {...props} />;
-}
+const GaugeNativeView: React.ComponentType<GaugeProps> = requireNativeView('ExpoUI', 'GaugeView');
 
 /**
  * Renders a native `Gauge` component.
- * @platform ios
+ * @platform ios 16.0+
  */
-export function Gauge(props: GaugeProps & { style?: StyleProp<ViewStyle> }) {
+export function Gauge({ type = 'default', modifiers, ...props }: GaugeProps) {
   return (
-    <Host style={props.style} matchContents>
-      <GaugePrimitive {...props} />
-    </Host>
+    <GaugeNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      type={type}
+      {...props}
+    />
   );
 }

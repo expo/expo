@@ -43,8 +43,9 @@ JavaScriptWeakObject::newInstance(
 }
 
 JavaScriptWeakObject::JavaScriptWeakObject(
-    WeakRuntimeHolder runtime, std::shared_ptr<jsi::Object> jsObject)
-    : _runtimeHolder(std::move(runtime)) {
+    WeakRuntimeHolder runtime,
+    const std::shared_ptr<jsi::Object>& jsObject
+) : _runtimeHolder(std::move(runtime)) {
   _runtimeHolder.ensureRuntimeIsValid();
   jsi::Runtime &rt = _runtimeHolder.getJSRuntime();
   _weakObject = std::make_shared<jsi::WeakObject>(rt, *jsObject);

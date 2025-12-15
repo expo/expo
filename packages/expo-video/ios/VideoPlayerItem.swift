@@ -28,8 +28,8 @@ class VideoPlayerItem: AVPlayerItem {
     self.createTracksLoadingTask()
   }
 
-  init?(videoSource: VideoSource) async throws {
-    guard let url = videoSource.uri else {
+  init?(videoSource: VideoSource, urlOverride: URL? = nil) async throws {
+    guard let url = urlOverride ?? videoSource.uri else {
       return nil
     }
     self.videoSource = videoSource
@@ -47,6 +47,10 @@ class VideoPlayerItem: AVPlayerItem {
 
     super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
     self.createTracksLoadingTask()
+  }
+
+  deinit {
+    tracksLoadingTask?.cancel()
   }
 
   func createTracksLoadingTask() {

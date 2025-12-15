@@ -6,11 +6,72 @@
 
 ### 🎉 New features
 
-- Add local package mocks. ([#37736](https://github.com/expo/expo/pull/37736) by [@aleqsio](https://github.com/aleqsio))
+- add support for line-height ([#41094](https://github.com/expo/expo/pull/41094) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- update ExpoFontUtils mock, to align with new API ([#40964](https://github.com/expo/expo/pull/40964) by [@Ubax](https://github.com/Ubax))
+
+## 14.0.10 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.9 - 2025-10-09
+
+### 🐛 Bug fixes
+
+- fix android image scaling in `renderToImageAsync` ([#40113](https://github.com/expo/expo/pull/40113) by [@vonovak](https://github.com/vonovak))
+
+## 14.0.8 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.7 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.6 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.5 — 2025-08-27
+
+### 🛠 Breaking changes
+
+- [android] improve bitmap rendering for `renderToImageAsync` ([#39118](https://github.com/expo/expo/pull/39118) by [@vonovak](https://github.com/vonovak))
+
+## 14.0.4 — 2025-08-26
+
+### 💡 Others
+
+- Fix types and adjust platform checks. ([#37302](https://github.com/expo/expo/pull/37302) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 14.0.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- expose `ExpoFontLoader` on web ([#37991](https://github.com/expo/expo/pull/37991) by [@vonovak](https://github.com/vonovak))
+- Add local package mocks. ([#37736](https://github.com/expo/expo/pull/37736) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+- [web] remove deprecated style 'type' attribute ([#38114](https://github.com/expo/expo/pull/38114) by [@vonovak](https://github.com/vonovak))
+- Add missing `react-native` peer dependency ([#38540](https://github.com/expo/expo/pull/38540) by [@kitten](https://github.com/kitten))
+- Update remaining `@expo/config-plugins` in config plugin to `expo/config-plugins` ([#38580](https://github.com/expo/expo/pull/38580) by [@kitten](https://github.com/kitten))
 
 ## 13.3.2 - 2025-07-01
 

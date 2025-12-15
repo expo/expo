@@ -2,12 +2,16 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeLinkPreviewAction = NativeLinkPreviewAction;
-exports.NativeLinkPreviewTrigger = NativeLinkPreviewTrigger;
 exports.NativeLinkPreview = NativeLinkPreview;
 exports.NativeLinkPreviewContent = NativeLinkPreviewContent;
+exports.LinkZoomTransitionEnabler = LinkZoomTransitionEnabler;
+exports.LinkZoomTransitionSource = LinkZoomTransitionSource;
+exports.LinkZoomTransitionAlignmentRectDetector = LinkZoomTransitionAlignmentRectDetector;
 const expo_1 = require("expo");
+const react_1 = require("react");
 const react_native_1 = require("react-native");
-const LinkPreviewNativeActionView = react_native_1.Platform.OS === 'ios'
+const areNativeViewsAvailable = process.env.EXPO_OS === 'ios' && !react_native_1.Platform.isTV && global.RN$Bridgeless === true;
+const LinkPreviewNativeActionView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeActionView')
     : null;
 function NativeLinkPreviewAction(props) {
@@ -16,16 +20,7 @@ function NativeLinkPreviewAction(props) {
     }
     return <LinkPreviewNativeActionView {...props}/>;
 }
-const NativeLinkPreviewTriggerView = react_native_1.Platform.OS === 'ios'
-    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewTrigger')
-    : null;
-function NativeLinkPreviewTrigger(props) {
-    if (!NativeLinkPreviewTriggerView) {
-        return null;
-    }
-    return <NativeLinkPreviewTriggerView {...props}/>;
-}
-const NativeLinkPreviewView = react_native_1.Platform.OS === 'ios'
+const NativeLinkPreviewView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewView')
     : null;
 function NativeLinkPreview(props) {
@@ -34,7 +29,7 @@ function NativeLinkPreview(props) {
     }
     return <NativeLinkPreviewView {...props}/>;
 }
-const NativeLinkPreviewContentView = react_native_1.Platform.OS === 'ios'
+const NativeLinkPreviewContentView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewContentView')
     : null;
 function NativeLinkPreviewContent(props) {
@@ -45,9 +40,42 @@ function NativeLinkPreviewContent(props) {
         props.style,
         {
             position: 'absolute',
+            top: 0,
+            left: 0,
         },
     ]);
     return <NativeLinkPreviewContentView {...props} style={style}/>;
+}
+// #endregion
+// #region Zoom transition enabler
+const LinkZoomTransitionEnablerNativeView = areNativeViewsAvailable
+    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionEnabler')
+    : null;
+function LinkZoomTransitionEnabler(props) {
+    if (!LinkZoomTransitionEnablerNativeView) {
+        return null;
+    }
+    return (<LinkZoomTransitionEnablerNativeView {...props} disableForceFlatten style={{ display: 'contents' }}/>);
+}
+const LinkZoomTransitionSourceNativeView = areNativeViewsAvailable
+    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionSource')
+    : null;
+function LinkZoomTransitionSource(props) {
+    if (!LinkZoomTransitionSourceNativeView) {
+        return null;
+    }
+    return (<LinkZoomTransitionSourceNativeView {...props} disableForceFlatten collapsable={false} collapsableChildren={false} style={{ display: 'contents' }}/>);
+}
+// #endregion
+// #region Zoom transition rect detector
+const LinkZoomTransitionAlignmentRectDetectorNative = areNativeViewsAvailable
+    ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionAlignmentRectDetector')
+    : react_1.Fragment;
+function LinkZoomTransitionAlignmentRectDetector(props) {
+    if (!LinkZoomTransitionAlignmentRectDetectorNative) {
+        return null;
+    }
+    return (<LinkZoomTransitionAlignmentRectDetectorNative {...props} disableForceFlatten collapsable={false} collapsableChildren={false} style={{ display: 'contents' }}/>);
 }
 // #endregion
 //# sourceMappingURL=native.js.map

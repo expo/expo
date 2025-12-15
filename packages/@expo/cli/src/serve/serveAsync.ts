@@ -1,6 +1,6 @@
-import { createRequestHandler } from '@expo/server/build/vendor/http';
 import chalk from 'chalk';
 import connect from 'connect';
+import { createRequestHandler } from 'expo-server/adapter/http';
 import http from 'http';
 import path from 'path';
 import send from 'send';
@@ -66,6 +66,7 @@ async function startStaticServerAsync(dist: string, options: Options) {
     send(req, filePath, {
       root: dist,
       index: 'index.html',
+      extensions: ['html'],
     })
       .on('error', (err: any) => {
         if (err.status === 404) {

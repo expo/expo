@@ -69,7 +69,7 @@ export interface ExpoConfig {
      */
     icon?: string;
     /**
-     * Configuration for remote (push) notifications.
+     * @deprecated in favor of expo-notifications config plugin. Configuration for remote (push) notifications.
      */
     notification?: {
         /**
@@ -136,6 +136,11 @@ export interface ExpoConfig {
          * Specifies the background color of the navigation bar.
          */
         backgroundColor?: string;
+        /**
+         * Determines whether the operating system should keep the navigation bar translucent to provide contrast between the navigation buttons and app content.
+         * Defaults to true.
+         */
+        enforceContrast?: boolean;
     };
     /**
      * Settings that apply specifically to running this app in a development client
@@ -215,6 +220,10 @@ export interface ExpoConfig {
          * Enable debugging of native code with updates enabled. Defaults to false. If set to true, the EX_UPDATES_NATIVE_DEBUG environment variable will be set in Podfile.properties.json and gradle.properties. This causes Xcode and Android Studio debug builds to be built with expo-updates enabled, and JS debugging (with dev client or packager) disabled. This should not be used in production.
          */
         useNativeDebug?: boolean;
+        /**
+         * Enable support for downloading and applying asset patches using the BSDiff format. Defaults to true. Set to false to force full asset downloads even when a server offers patch responses.
+         */
+        enableBsdiffPatchSupport?: boolean;
     };
     /**
      * Provide overrides by locale for application name and System Dialog prompts like Permissions Boxes. [Learn more](https://docs.expo.dev/guides/localization/#translating-app-metadata).
@@ -241,6 +250,15 @@ export interface ExpoConfig {
      * A Boolean value that indicates whether the app should use the new architecture. Defaults to true.
      */
     newArchEnabled?: boolean;
+    /**
+     * Enable downloading cached builds from remote.
+     */
+    buildCacheProvider?: 'eas' | {
+        plugin: string;
+        options?: {
+            [k: string]: any;
+        };
+    };
     ios?: IOS;
     android?: Android;
     web?: Web;
@@ -249,9 +267,22 @@ export interface ExpoConfig {
      */
     experiments?: {
         /**
+         * Apply Expo Autolinking's search results to Metro's module resolution. This forces your project's dependencies on `react`, `react-dom`, and `react-native`, and the autolinked versions of any Expo and React Native modules to be resolved when bundling your app. This prevents version misalignment and is useful for monorepos and to prevent conflicts.
+         */
+        autolinkingModuleResolution?: boolean;
+        /**
          * Export a website relative to a subpath of a domain. The path will be prepended as-is to links to all bundled resources. Prefix the path with a `/` (recommended) to load all resources relative to the server root. If the path **does not** start with a `/` then resources will be loaded relative to the code that requests them, this could lead to unexpected behavior. Example '/subpath'. Defaults to '' (empty string).
          */
         baseUrl?: string;
+        /**
+         * @deprecated This field is not longer marked as experimental and will be removed in a future release, use the `buildCacheProvider` field instead.
+         */
+        buildCacheProvider?: 'eas' | {
+            plugin: string;
+            options?: {
+                [k: string]: any;
+            };
+        };
         /**
          * If true, indicates that this project does not support tablets or handsets, and only supports Apple TV and Android TV
          */
@@ -270,6 +301,7 @@ export interface ExpoConfig {
         turboModules?: boolean;
         /**
          * Experimentally use a vendored canary build of React for testing upcoming features.
+         * @deprecated React 19 is enabled by default. Remove unused experiments.reactCanary flag.
          */
         reactCanary?: boolean;
         /**
@@ -284,29 +316,6 @@ export interface ExpoConfig {
          * Experimentally enable React Server Functions support in Expo CLI and Expo Router.
          */
         reactServerFunctions?: boolean;
-        /**
-         * Experimentally enable downloading cached builds from a provider.
-         */
-        buildCacheProvider?: 'eas' | {
-            plugin: string;
-            options?: {
-                [k: string]: any;
-            };
-        };
-        /**
-         * @deprecated This field will be removed in a future release, use the `buildCacheProvider` field instead.
-         */
-        remoteBuildCache?: {
-            /**
-             * Service provider for remote builds.
-             */
-            provider?: 'eas' | {
-                plugin: string;
-                options?: {
-                    [k: string]: any;
-                };
-            };
-        };
     };
     /**
      * Internal properties for developer tools
@@ -821,9 +830,14 @@ export interface Android {
      */
     version?: string;
     /**
-     * Enable your app to run in [edge-to-edge](https://developer.android.com/develop/ui/views/layout/edge-to-edge) mode. Default to false.
+     * Enable your app to run in [edge-to-edge](https://developer.android.com/develop/ui/views/layout/edge-to-edge) mode. Default to true.
+     * @deprecated Android 16+ (API level 36) requires edge-to-edge to be enabled. This feature can't be disabled anymore. [learn more](https://developer.android.com/about/versions/16/behavior-changes-16#edge-to-edge)
      */
-    edgeToEdgeEnabled?: boolean;
+    edgeToEdgeEnabled?: true;
+    /**
+     * Enable your app to use the [predictive back gesture](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture) on Android 13 (API level 33) and later. Default to false.
+     */
+    predictiveBackGestureEnabled?: boolean;
 }
 export interface AndroidIntentFiltersData {
     /**

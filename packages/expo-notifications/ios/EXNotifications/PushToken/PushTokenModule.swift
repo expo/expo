@@ -14,19 +14,28 @@ public class PushTokenModule: Module, NotificationDelegate {
 
     Events([onDevicePushTokenEventName])
 
-    OnStartObserving(onDevicePushTokenEventName) {
+    OnCreate {
       NotificationCenterManager.shared.addDelegate(self)
     }
 
-    OnStopObserving(onDevicePushTokenEventName) {
+    OnDestroy {
       NotificationCenterManager.shared.removeDelegate(self)
     }
 
     AsyncFunction("getDevicePushTokenAsync") { (promise: Promise) in
-      if promiseNotYetResolved != nil {
-        promise.reject("E_AWAIT_PROMISE", "Another async call to getDevicePushTokenAsync() is in progress. Await the first Promise.")
-        return
+      if let existingPromise = promiseNotYetResolved {
+        let message = """
+A newer async call to getDevicePushTokenAsync() was started.
+To obtain the push token, await the result of the newer call.
+"""
+        existingPromise.reject("E_PROMISE_REPLACED", message)
       }
+
+      #if targetEnvironment(simulator)
+      if let appContext = appContext {
+        appContext.jsLogger.warn("expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433")
+      }
+      #endif
       promiseNotYetResolved = promise
       UIApplication.shared.registerForRemoteNotifications()
     }
@@ -49,3 +58,4 @@ public class PushTokenModule: Module, NotificationDelegate {
     promiseNotYetResolved = nil
   }
 }
+

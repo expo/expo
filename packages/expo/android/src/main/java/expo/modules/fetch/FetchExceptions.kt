@@ -12,3 +12,6 @@ internal class FetchRequestCanceledException :
 
 internal class FetchAndroidContextLostException :
   CodedException("The Android context has been lost")
+
+internal class FetchRedirectException :
+  CodedException("Redirect is not allowed when redirect mode is 'error'")

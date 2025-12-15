@@ -45,12 +45,14 @@ const NavigationContainer_1 = require("./fork/NavigationContainer");
 const router_store_1 = require("./global-state/router-store");
 const serverLocationContext_1 = require("./global-state/serverLocationContext");
 const storeContext_1 = require("./global-state/storeContext");
-const imperative_api_1 = require("./imperative-api");
+const utils_1 = require("./global-state/utils");
 const LinkPreviewContext_1 = require("./link/preview/LinkPreviewContext");
-const ModalContext_1 = require("./modal/ModalContext");
 const primitives_1 = require("./primitives");
 const statusbar_1 = require("./utils/statusbar");
+const url_1 = require("./utils/url");
+const Sitemap_1 = require("./views/Sitemap");
 const SplashScreen = __importStar(require("./views/Splash"));
+const Unmatched_1 = require("./views/Unmatched");
 const isTestEnv = process.env.NODE_ENV === 'test';
 const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
     ? {
@@ -70,19 +72,19 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
      * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
      * is a HTML document, we need to ensure its inside the <body>
      */
-    const wrapper = ({ children }) => {
+    const wrapper = (0, react_1.useMemo)(() => ({ children }) => {
         return (<ParentWrapper>
-        <LinkPreviewContext_1.LinkPreviewContextProvider>
-          <react_native_safe_area_context_1.SafeAreaProvider 
+            <LinkPreviewContext_1.LinkPreviewContextProvider>
+              <react_native_safe_area_context_1.SafeAreaProvider 
         // SSR support
         initialMetrics={INITIAL_METRICS}>
-            {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-            {statusbar_1.canOverrideStatusBarBehavior && <AutoStatusBar />}
-            {children}
-          </react_native_safe_area_context_1.SafeAreaProvider>
-        </LinkPreviewContext_1.LinkPreviewContextProvider>
-      </ParentWrapper>);
-    };
+                {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
+                {statusbar_1.canOverrideStatusBarBehavior && <AutoStatusBar />}
+                {children}
+              </react_native_safe_area_context_1.SafeAreaProvider>
+            </LinkPreviewContext_1.LinkPreviewContextProvider>
+          </ParentWrapper>);
+    }, [ParentWrapper]);
     return <ContextNavigator {...props} wrapper={wrapper}/>;
 }
 function AutoStatusBar() {
@@ -107,7 +109,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         }
         else if (typeof initialLocation === 'string') {
             // The initial location is a string, so we need to parse it into a URL.
-            const url = new URL(initialLocation, 'http://placeholder.base');
+            const url = (0, url_1.parseUrlUsingCustomBase)(initialLocation);
             contextType = {
                 location: {
                     pathname: url.pathname,
@@ -140,24 +142,28 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         }
     }
     return (<storeContext_1.StoreContext.Provider value={store}>
-      <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} documentTitle={documentTitle} onReady={store.onReady}>
+      <NavigationContainer_1.NavigationContainer ref={store.navigationRef} initialState={store.state} linking={store.linking} onUnhandledAction={onUnhandledAction} onStateChange={store.onStateChange} documentTitle={documentTitle} onReady={store.onReady}>
         <serverLocationContext_1.ServerContext.Provider value={serverContext}>
           <WrapperComponent>
-            <ModalContext_1.ModalContextProvider>
-              <imperative_api_1.ImperativeApiEmitter />
-              <Content />
-            </ModalContext_1.ModalContextProvider>
+            <Content />
           </WrapperComponent>
         </serverLocationContext_1.ServerContext.Provider>
       </NavigationContainer_1.NavigationContainer>
     </storeContext_1.StoreContext.Provider>);
 }
 function Content() {
+    const children = [<primitives_1.Screen name={constants_1.INTERNAL_SLOT_NAME} component={router_store_1.store.rootComponent}/>];
+    if ((0, utils_1.shouldAppendNotFound)()) {
+        children.push(<primitives_1.Screen name={constants_1.NOT_FOUND_ROUTE_NAME} component={Unmatched_1.Unmatched}/>);
+    }
+    if ((0, utils_1.shouldAppendSitemap)()) {
+        children.push(<primitives_1.Screen name={constants_1.SITEMAP_ROUTE_NAME} component={Sitemap_1.Sitemap}/>);
+    }
     const { state, descriptors, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
-        children: <primitives_1.Screen name={constants_1.INTERNAL_SLOT_NAME} component={router_store_1.store.rootComponent}/>,
+        children,
         id: constants_1.INTERNAL_SLOT_NAME,
     });
-    return <NavigationContent>{descriptors[state.routes[0].key].render()}</NavigationContent>;
+    return (<NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>);
 }
 let onUnhandledAction;
 if (process.env.NODE_ENV !== 'production') {

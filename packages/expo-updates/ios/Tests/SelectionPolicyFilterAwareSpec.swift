@@ -142,7 +142,7 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
         database: database
       )
       
-      selectionPolicy = SelectionPolicyFactory.filterAwarePolicy(withRuntimeVersion: runtimeVersion)
+      selectionPolicy = SelectionPolicyFactory.filterAwarePolicy(withRuntimeVersion: runtimeVersion, config: config)
       manifestFilters = ["branchname": "rollout"]
     }
     

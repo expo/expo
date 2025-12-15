@@ -1,5 +1,5 @@
-import { ConfigPlugin, withInfoPlist } from 'expo/config-plugins';
-import { validate } from 'schema-utils';
+import { validate } from '@expo/schema-utils';
+import { ConfigPlugin, withInfoPlist, withPodfile } from 'expo/config-plugins';
 
 const schema = require('../options.json');
 
@@ -23,6 +23,21 @@ const withExpoHeadIos: ConfigPlugin = (config) => {
   });
 };
 
+const withGammaScreens: ConfigPlugin<
+  {
+    /** Enable experimental data loader support. Requires `web.output: 'static'` to be set in app config. */
+    unstable_splitView?: boolean;
+  } | void
+> = (config, props) => {
+  const value = props?.unstable_splitView ?? false;
+  return withPodfile(config, (config) => {
+    if (!config.modResults.contents.includes('RNS_GAMMA_ENABLED')) {
+      config.modResults.contents = `ENV['RNS_GAMMA_ENABLED']='${value ? 1 : 0}'\n${config.modResults.contents}`;
+    }
+    return config;
+  });
+};
+
 const withRouter: ConfigPlugin<
   {
     /** Production origin URL where assets in the public folder are hosted. The fetch function is polyfilled to support relative requests from this origin in production, development origin is inferred using the Expo CLI development server. */
@@ -37,12 +52,19 @@ const withRouter: ConfigPlugin<
     sitemap?: boolean;
     /** Generate partial typed routes */
     partialTypedGroups?: boolean;
+    /** A list of headers that are set on every route response from the server */
+    headers: Record<string, string | string[]>;
+    /** Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config. */
+    unstable_useServerMiddleware?: boolean;
+    /** Enable experimental data loader support. Requires `web.output: 'static'` to be set in app config. */
+    unstable_useServerDataLoaders?: boolean;
   } | void
 > = (config, _props) => {
   const props = _props || {};
   validate(schema, props);
 
   withExpoHeadIos(config);
+  withGammaScreens(config, props);
 
   return {
     ...config,

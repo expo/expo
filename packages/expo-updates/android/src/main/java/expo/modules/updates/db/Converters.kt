@@ -103,4 +103,26 @@ class Converters {
   fun hashTypeToInt(hashType: HashType?): Int {
     return 0 // only one hash type for now, SHA256 = 0
   }
+
+  @TypeConverter
+  fun stringToStringStringMap(value: String?): Map<String, String>? =
+    value?.let { jsonText ->
+      JSONObject(jsonText).let { json ->
+        buildMap {
+          val keys = json.keys()
+          while (keys.hasNext()) {
+            val key = keys.next()
+            put(key, json.optString(key))
+          }
+        }
+      }
+    }
+
+  @TypeConverter
+  fun stringStringMapToString(value: Map<String, String>?): String? =
+    value?.let { map ->
+      JSONObject().apply {
+        map.forEach { (k, v) -> put(k, v) }
+      }.toString()
+    }
 }

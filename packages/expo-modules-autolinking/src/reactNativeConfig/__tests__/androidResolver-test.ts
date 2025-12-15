@@ -1,4 +1,3 @@
-import { glob } from 'glob';
 import { vol } from 'memfs';
 
 import {
@@ -11,15 +10,6 @@ import {
 } from '../androidResolver';
 
 jest.mock('fs/promises');
-jest.mock('glob');
-
-const mockGlob = glob as jest.MockedFunction<typeof glob>;
-const mockGlobStream = glob.stream as jest.MockedFunction<typeof glob.stream>;
-
-function registerGlobStreamMockOnce(results: string[]) {
-  // NOTE: Cast to any since any async iterable is accepted here
-  mockGlobStream.mockReturnValueOnce(results as any);
-}
 
 describe(resolveDependencyConfigImplAndroidAsync, () => {
   afterEach(() => {
@@ -28,13 +18,6 @@ describe(resolveDependencyConfigImplAndroidAsync, () => {
   });
 
   it('should return android config if all native files found', async () => {
-    // AndroidManifest.xml
-    mockGlob.mockResolvedValueOnce(['src/main/AndroidManifest.xml']);
-    // build.gradle
-    mockGlob.mockResolvedValueOnce(['build.gradle']);
-    registerGlobStreamMockOnce(['src/main/com/test/TestPackage.java'] as any); // parseNativePackageClassNameAsync()
-    registerGlobStreamMockOnce([] as any); // parseComponentDescriptorsAsync()
-
     vol.fromJSON({
       '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
       '/app/node_modules/react-native-test/android/build.gradle': `
@@ -55,6 +38,7 @@ public class TestPackage implements ReactPackage {
 }
 `,
     });
+
     const result = await resolveDependencyConfigImplAndroidAsync(
       '/app/node_modules/react-native-test',
       undefined
@@ -67,6 +51,7 @@ public class TestPackage implements ReactPackage {
         "cxxModuleCMakeListsModuleName": null,
         "cxxModuleCMakeListsPath": null,
         "cxxModuleHeaderName": null,
+        "isPureCxxDependency": false,
         "packageImportPath": "import com.test.TestPackage;",
         "packageInstance": "new TestPackage()",
         "sourceDir": "/app/node_modules/react-native-test/android",
@@ -75,13 +60,6 @@ public class TestPackage implements ReactPackage {
   });
 
   it('should return android config if gradle found but not AndroidManifest.xml', async () => {
-    // AndroidManifest.xml
-    mockGlob.mockResolvedValueOnce([]);
-    // build.gradle
-    mockGlob.mockResolvedValueOnce(['build.gradle']);
-    registerGlobStreamMockOnce(['src/main/com/test/TestPackage.java']); // parseNativePackageClassNameAsync()
-    registerGlobStreamMockOnce([]); // parseComponentDescriptorsAsync()
-
     vol.fromJSON({
       '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
       '/app/node_modules/react-native-test/android/build.gradle': `
@@ -108,14 +86,52 @@ public class TestPackage implements ReactPackage {
     expect(result).not.toBeNull();
   });
 
-  it('should return android config from custom sourceDir', async () => {
-    // AndroidManifest.xml
-    mockGlob.mockResolvedValueOnce([]);
-    // build.gradle
-    mockGlob.mockResolvedValueOnce(['build.gradle']);
-    registerGlobStreamMockOnce(['src/main/com/test/TestPackage.java']); // parseNativePackageClassNameAsync()
-    registerGlobStreamMockOnce([]); // parseComponentDescriptorsAsync()
+  it('should return C++-only config without AndroidManifest.xml and gradle file', async () => {
+    vol.fromJSON({
+      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+      '/app/node_modules/react-native-test/android/build.gradle': '',
+      '/app/node_modules/react-native-test/android/src/main/AndroidManifest.xml': '',
+    });
+    const result = await resolveDependencyConfigImplAndroidAsync(
+      '/app/node_modules/react-native-test',
+      {
+        cxxModuleCMakeListsModuleName: 'TestMod',
+        cxxModuleCMakeListsPath: 'CMakeLists.txt',
+        cxxModuleHeaderName: 'TestModSpec',
+        sourceDir: 'cpp',
+      }
+    );
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "buildTypes": [],
+        "cmakeListsPath": "/app/node_modules/react-native-test/cpp/build/generated/source/codegen/jni/CMakeLists.txt",
+        "componentDescriptors": [],
+        "cxxModuleCMakeListsModuleName": "TestMod",
+        "cxxModuleCMakeListsPath": "/app/node_modules/react-native-test/cpp/CMakeLists.txt",
+        "cxxModuleHeaderName": "TestModSpec",
+        "isPureCxxDependency": true,
+        "packageImportPath": null,
+        "packageInstance": null,
+        "sourceDir": "/app/node_modules/react-native-test/cpp",
+      }
+    `);
+  });
 
+  it('should not misdetect an Expo module as a C++-only React Native module', async () => {
+    vol.fromJSON({
+      '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
+      '/app/node_modules/react-native-test/android/build.gradle': '',
+      '/app/node_modules/react-native-test/android/src/main/AndroidManifest.xml': '',
+      '/app/node_modules/react-native-test/expo-module.config.json': '{}',
+    });
+    const result = await resolveDependencyConfigImplAndroidAsync(
+      '/app/node_modules/react-native-test',
+      undefined
+    );
+    expect(result).toBe(null);
+  });
+
+  it('should return android config from custom sourceDir', async () => {
     vol.fromJSON({
       '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
       '/app/node_modules/react-native-test/custom/android/build.gradle': `
@@ -145,13 +161,6 @@ public class TestPackage implements ReactPackage {
   });
 
   it('should return null if gradle found but without namespace', async () => {
-    // AndroidManifest.xml
-    mockGlob.mockResolvedValueOnce([]);
-    // build.gradle
-    mockGlob.mockResolvedValueOnce(['build.gradle']);
-    registerGlobStreamMockOnce(['src/main/com/test/TestPackage.java']); // parseNativePackageClassNameAsync()
-    registerGlobStreamMockOnce([]); // parseComponentDescriptorsAsync()
-
     vol.fromJSON({
       '/app/node_modules/react-native-test/package.json': JSON.stringify({ version: '1.0.0' }),
       '/app/node_modules/react-native-test/android/build.gradle': `
@@ -186,7 +195,6 @@ public class TestPackage implements ReactPackage {
   });
 
   it('should return null if no gradle and AndroidManifest found', async () => {
-    mockGlob.mockResolvedValue([]);
     const result = await resolveDependencyConfigImplAndroidAsync(
       '/app/node_modules/react-native-test',
       undefined
@@ -213,9 +221,8 @@ android {
 `,
     });
     const result = await parsePackageNameAsync(
-      '/app/node_modules/test',
-      'src/main/AndroidManifest.xml',
-      'build.gradle'
+      '/app/node_modules/test/src/main/AndroidManifest.xml',
+      '/app/node_modules/test/build.gradle'
     );
     expect(result).toEqual('com.test');
   });
@@ -228,9 +235,8 @@ android {
       '/app/node_modules/test/build.gradle': '',
     });
     const result = await parsePackageNameAsync(
-      '/app/node_modules/test',
-      'src/main/AndroidManifest.xml',
-      'build.gradle'
+      '/app/node_modules/test/src/main/AndroidManifest.xml',
+      '/app/node_modules/test/build.gradle'
     );
     expect(result).toEqual('com.test');
   });
@@ -243,7 +249,6 @@ describe(parseNativePackageClassNameAsync, () => {
   });
 
   it('should parse component descriptors from java file', async () => {
-    registerGlobStreamMockOnce(['src/main/com/test/TestPackage.java']);
     vol.fromJSON({
       '/app/node_modules/test/android/src/main/com/test/TestPackage.java': `\
 package com.test;
@@ -263,7 +268,6 @@ public class TestPackage implements ReactPackage {
   });
 
   it('should parse component descriptors from kotlin file', async () => {
-    registerGlobStreamMockOnce(['src/main/com/test/TestPackage.kt']);
     vol.fromJSON({
       '/app/node_modules/test/android/src/main/com/test/TestPackage.kt': `\
 package com.test
@@ -329,13 +333,6 @@ describe(parseComponentDescriptorsAsync, () => {
   });
 
   it('should parse component descriptors', async () => {
-    registerGlobStreamMockOnce([
-      'Test.ts',
-      'SearchBarNativeComponent.js',
-      'ScreenNativeComponent.ts',
-      'specs/SpecComponent.ts',
-      'node_modules/ScreenNested.tsx',
-    ]);
     vol.fromJSON({
       // not matched: no `codegenNativeComponent` pattern
       '/app/node_modules/test/Test.ts': `export default {};`,
@@ -362,7 +359,7 @@ export default codegenNativeComponent<NativeProps>('RNSSearchBar', {});
     });
 
     const results = await parseComponentDescriptorsAsync('/app/node_modules/test', {});
-    expect(results).toEqual(['RNSSearchBarComponentDescriptor', 'RNSpecComponentDescriptor']);
+    expect(results).toEqual(['RNSpecComponentDescriptor', 'RNSSearchBarComponentDescriptor']);
   });
 
   describe(matchNativePackageClassName, () => {

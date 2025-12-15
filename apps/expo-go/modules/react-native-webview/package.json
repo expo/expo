@@ -10,7 +10,7 @@
     "Thibault Malbranche <malbranche.thibault@gmail.com>"
   ],
   "license": "MIT",
-  "version": "13.13.5",
+  "version": "13.15.0",
   "homepage": "https://github.com/react-native-webview/react-native-webview#readme",
   "scripts": {
     "android": "react-native run-android",
@@ -95,6 +95,14 @@
     "jsSrcsDir": "./src",
     "android": {
       "javaPackageName": "com.reactnativecommunity.webview"
+    },
+    "ios": {
+      "componentProvider": {
+        "RNCWebView": "RNCWebView"
+      },
+      "modulesProvider": {
+        "RNCWebViewModule": "RNCWebViewModule"
+      }
     }
   },
   "packageManager": "yarn@1.22.19"

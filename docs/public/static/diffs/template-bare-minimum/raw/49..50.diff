@@ -1,5 +1,5 @@
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index 7105aaaa3f..27c6e63957 100644
+index 7105aaaa3fc..27c6e63957e 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -1,4 +1,5 @@
@@ -91,7 +91,7 @@ index 7105aaaa3f..27c6e63957 100644
  applyNativeModulesAppBuildGradle(project)
 diff --git a/templates/expo-template-bare-minimum/android/app/src/debug/java/com/helloworld/ReactNativeFlipper.java b/templates/expo-template-bare-minimum/android/app/src/debug/java/com/helloworld/ReactNativeFlipper.java
 deleted file mode 100644
-index 595dd5831c..0000000000
+index 595dd5831c3..00000000000
 --- a/templates/expo-template-bare-minimum/android/app/src/debug/java/com/helloworld/ReactNativeFlipper.java
 +++ /dev/null
 @@ -1,75 +0,0 @@
@@ -171,7 +171,7 @@ index 595dd5831c..0000000000
 -  }
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index 34a7ca8314..f8d77fc832 100644
+index 34a7ca8314a..f8d77fc832f 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 @@ -21,7 +21,7 @@
@@ -192,7 +192,7 @@ index 34a7ca8314..f8d77fc832 100644
 \ No newline at end of file
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java
 deleted file mode 100644
-index 176fbf6a2a..0000000000
+index 176fbf6a2ae..00000000000
 --- a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.java
 +++ /dev/null
 @@ -1,65 +0,0 @@
@@ -263,7 +263,7 @@ index 176fbf6a2a..0000000000
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.kt
 new file mode 100644
-index 0000000000..c4467326aa
+index 00000000000..c4467326aa2
 --- /dev/null
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.kt
 @@ -0,0 +1,61 @@
@@ -330,7 +330,7 @@ index 0000000000..c4467326aa
 +}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.java b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.java
 deleted file mode 100644
-index e7f376902d..0000000000
+index e7f376902dd..00000000000
 --- a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.java
 +++ /dev/null
 @@ -1,82 +0,0 @@
@@ -418,7 +418,7 @@ index e7f376902d..0000000000
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 new file mode 100644
-index 0000000000..8258c40ed4
+index 00000000000..8258c40ed4c
 --- /dev/null
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 @@ -0,0 +1,65 @@
@@ -489,7 +489,7 @@ index 0000000000..8258c40ed4
 +}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/release/java/com/helloworld/ReactNativeFlipper.java b/templates/expo-template-bare-minimum/android/app/src/release/java/com/helloworld/ReactNativeFlipper.java
 deleted file mode 100644
-index b510364404..0000000000
+index b5103644047..00000000000
 --- a/templates/expo-template-bare-minimum/android/app/src/release/java/com/helloworld/ReactNativeFlipper.java
 +++ /dev/null
 @@ -1,20 +0,0 @@
@@ -514,7 +514,7 @@ index b510364404..0000000000
 -  }
 -}
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index bf861dbf33..513b766148 100644
+index bf861dbf33e..513b766148a 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
 @@ -2,26 +2,26 @@
@@ -562,7 +562,7 @@ index bf861dbf33..513b766148 100644
  
          google()
 diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
-index 240ca06cbf..41b173c48a 100644
+index 240ca06cbf7..41b173c48a1 100644
 --- a/templates/expo-template-bare-minimum/android/gradle.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle.properties
 @@ -25,9 +25,6 @@ android.useAndroidX=true
@@ -583,10 +583,10 @@ index 240ca06cbf..41b173c48a 100644
 +# Use legacy packaging to compress native libraries in the resulting APK.
 +expo.useLegacyPackaging=false
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar
-index 249e5832f0..7f93135c49 100644
+index 249e5832f09..7f93135c49b 100644
 Binary files a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar and b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar differ
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
-index 6ec1567a0f..d11cdd907d 100644
+index 6ec1567a0f8..d11cdd907dd 100644
 --- a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
 @@ -1,6 +1,7 @@
@@ -599,7 +599,7 @@ index 6ec1567a0f..d11cdd907d 100644
  zipStoreBase=GRADLE_USER_HOME
  zipStorePath=wrapper/dists
 diff --git a/templates/expo-template-bare-minimum/android/gradlew b/templates/expo-template-bare-minimum/android/gradlew
-index a69d9cb6c2..1aa94a4269 100755
+index a69d9cb6c20..1aa94a42690 100755
 --- a/templates/expo-template-bare-minimum/android/gradlew
 +++ b/templates/expo-template-bare-minimum/android/gradlew
 @@ -55,7 +55,7 @@
@@ -682,7 +682,7 @@ index a69d9cb6c2..1aa94a4269 100755
  set -- \
          "-Dorg.gradle.appname=$APP_BASE_NAME" \
 diff --git a/templates/expo-template-bare-minimum/android/settings.gradle b/templates/expo-template-bare-minimum/android/settings.gradle
-index d172e59a6e..0fcba3d9bb 100644
+index d172e59a6e4..0fcba3d9bb5 100644
 --- a/templates/expo-template-bare-minimum/android/settings.gradle
 +++ b/templates/expo-template-bare-minimum/android/settings.gradle
 @@ -1,10 +1,18 @@
@@ -707,7 +707,7 @@ index d172e59a6e..0fcba3d9bb 100644
 -includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile())
 +includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
-index 7d3e30a627..efbdc6e741 100644
+index 7d3e30a6275..efbdc6e741d 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 @@ -139,7 +139,6 @@
@@ -837,7 +837,7 @@ index 7d3e30a627..efbdc6e741 100644
  				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
  				MTL_ENABLE_DEBUG_INFO = NO;
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
-index f8e88bbe0c..37d415b57d 100644
+index f8e88bbe0c7..37d415b57d9 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm
 @@ -17,6 +17,11 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
@@ -853,7 +853,7 @@ index f8e88bbe0c..37d415b57d 100644
  #if DEBUG
    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
-index 0a2a4dfa13..5a1db7145b 100644
+index 0a2a4dfa130..5a1db7145bb 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 @@ -2,6 +2,8 @@
@@ -916,7 +916,7 @@ index 0a2a4dfa13..5a1db7145b 100644
  </dict>
  </plist>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 2402cc34b2..b3978b9515 100644
+index 2402cc34b2c..b3978b9515d 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
 @@ -7,7 +7,7 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
@@ -951,7 +951,7 @@ index 2402cc34b2..b3978b9515 100644
      # This is necessary for Xcode 14, because it signs resource bundles by default
      # when building for devices.
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index a02dbebe41..f8f8993585 100644
+index a02dbebe413..f8f8993585f 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,7 @@

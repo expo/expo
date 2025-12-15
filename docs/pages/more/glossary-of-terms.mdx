@@ -58,7 +58,7 @@ This is in contrast to using [app config and prebuild](/workflow/prebuild), wher
 
 ### Bun
 
-A JavaScript runtime and a drop-in alternative for Node.js. For more information about usage with Expo and EAS, see [using Bun](/guides/using-bun/) guide.
+A JavaScript runtime and a drop-in alternative for Node.js. Bun can also be used as a [package manager for JavaScript](#package-manager). For more information about usage with Expo and EAS, see [using Bun](/guides/using-bun/) guide.
 
 ### CocoaPods
 
@@ -98,9 +98,9 @@ This package can be used by running any of the following commands:
 - `yarn create expo-app`
 - `npm create expo-app`
 
-### Dangerous Mods
+### Dangerous mods
 
-Config [modifiers](#config-mods) that apply unstable changes to a native project during [prebuild](#prebuild). Using these modifiers is unpredictable and prone to breaking changes between major version bumps in [Expo SDK](#expo-sdk).
+Config [modifiers](#config-mods) that apply unstable changes to a native project during [prebuild](#prebuild). Using these modifiers is unpredictable and prone to breaking changes between major version bumps in [Expo SDK](#expo-sdk). For more information, see [Using a dangerous mod](/config-plugins/dangerous-mods/).
 
 ### Development build
 
@@ -251,7 +251,7 @@ Formerly Facebook, Meta is the group that develops [React Native](#react-native)
 
 The bundler used for converting JavaScript files and assets into a format that runs on a [native runtime](#native-runtime). This bundler is maintained by [Meta](#meta) and used for React Native (including web) apps. For more information, see [Metro documentation](https://metrobundler.dev/).
 
-### Metro Config
+### Metro config
 
 The **metro.config.js** file used to configure [Metro bundler](#metro-bundler). This should extend the package `@expo/metro-config` when using [Expo CLI](#expo-cli). For more information, see [Customizing Metro](/guides/customizing-metro).
 
@@ -273,11 +273,15 @@ A native application containing a [JavaScript engine](#javascript-engine), and i
 
 ### npm
 
-[npm](https://www.npmjs.com/) is a package manager for JavaScript and the registry where the packages are stored. An alternative package manager, which we use internally at Expo, is [Yarn](#yarn).
+[npm](https://www.npmjs.com/) is a [package manager for JavaScript](#package-manager) and the registry where the packages are stored.
 
 ### Package manager
 
-Automates the process of installing, upgrading, configuring, and removing libraries, also known as dependencies, from your project. See [npm](#npm) and [Yarn](#yarn).
+Automates the process of installing, upgrading, configuring, and removing libraries, also known as dependencies, from your project. See [Bun](#bun), [npm](#npm), [pnpm](#pnpm), and [Yarn](#yarn).
+
+### Package manager workspaces
+
+The recommended [monorepo](#monorepo) solution for Expo users. See [Working with Monorepos](/guides/monorepos) guide for more information on how to configure workspaces with supported package managers.
 
 ### Platform extensions
 
@@ -290,6 +294,10 @@ By default, platform extensions are resolved in `@expo/metro-config` using the f
 - Web: **\*.web.js**, **\*.js**
 
 {/* TODO: Multi-Resolution Asset Extensions */}
+
+### pnpm
+
+[pnpm](https://pnpm.io/) is [package manager for JavaScript](#package-manager), focused on disk space efficiency.
 
 ### Prebuild
 
@@ -347,7 +355,7 @@ A development agency in Kraków, Poland. Maintainers of `react-native-gesture-ha
 
 Synonymous with "Production build". An application binary that can be submitted to the Google Play Store or Apple App Store. For more information, see [Build your project for app stores](/deploy/build-project/) or [Run builds locally or on your own infrastructure](/build-reference/local-builds/).
 
-### Store Config
+### Store config
 
 The **store.config.json** file used to configure [EAS Metadata](#eas-metadata). This file can be generated from an existing App Store entry using `eas metadata:pull`.
 
@@ -377,11 +385,7 @@ The deprecated bundler used by [Expo CLI](#expo-cli) for developing [`react-nati
 
 ### Yarn
 
-A package manager for JavaScript. For more information, see [Yarn](https://yarnpkg.com/) documentation.
-
-### Yarn workspaces
-
-The [monorepo](#monorepo) solution we recommend for Expo users. See [Working with Monorepos](/guides/monorepos) for more information on how to configure Yarn workspaces.
+[Yarn](https://yarnpkg.com/) is a [package manager for JavaScript](#package-manager), created at Meta. It has two mainline versions [Yarn v1 (Classic)](https://classic.yarnpkg.com/lang/en/) and [Yarn Berry](https://github.com/yarnpkg/berry).
 
 ### Yoga
 

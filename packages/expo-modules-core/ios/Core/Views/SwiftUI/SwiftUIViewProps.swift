@@ -2,7 +2,16 @@
 
 import SwiftUI
 
+internal let GLOBAL_EVENT_NAME = "onGlobalEvent"
+
 extension ExpoSwiftUI {
+  /**
+   Protocol for view props that support controlling safe area behavior of SwiftUI content. Used by HostView
+   */
+  public protocol SafeAreaControllable {
+    var ignoreSafeAreaKeyboardInsets: Bool { get set }
+  }
+
   /**
    Base implementation of the view props object for SwiftUI views.
    It's a record that can be observed by SwiftUI to re-render on its changes.
@@ -13,7 +22,14 @@ extension ExpoSwiftUI {
     /**
      An array of views passed by React as children.
      */
-    @Field public var children: [any AnyChild]?
+    public var children: [any AnyChild]?
+
+    public internal(set) weak var appContext: AppContext?
+
+    /**
+     A global event dispatcher that allows views to call `view.dispatchEvent(_:payload)` directly
+     */
+    public let globalEventDispatcher = EventDispatcher(GLOBAL_EVENT_NAME)
 
     internal func updateRawProps(_ rawProps: [String: Any], appContext: AppContext) throws {
       // Update the props just like the records
@@ -24,7 +40,12 @@ extension ExpoSwiftUI {
     }
 
     internal func setUpEvents(_ dispatcher: @escaping (_ eventName: String, _ payload: Any) -> Void) {
-      Mirror(reflecting: self).children.forEach { (label: String?, value: Any) in
+      globalEventDispatcher.handler = { payload in
+        dispatcher(GLOBAL_EVENT_NAME, payload)
+      }
+
+      let mirror = Mirror(reflecting: self)
+      allMirrorChildren(mirror).forEach { (label: String?, value: Any) in
         guard let event = value as? EventDispatcher else {
           return
         }

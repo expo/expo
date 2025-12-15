@@ -1,13 +1,27 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExpoModuleConfig = exports.ExpoAndroidProjectConfig = void 0;
-exports.requireAndResolveExpoModuleConfig = requireAndResolveExpoModuleConfig;
+exports.discoverExpoModuleConfigAsync = exports.ExpoModuleConfig = exports.ExpoAndroidProjectConfig = exports.ExpoAndroidModuleConfig = void 0;
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
+const utils_1 = require("./utils");
 function arrayize(value) {
     if (Array.isArray(value)) {
         return value;
     }
     return value != null ? [value] : [];
 }
+class ExpoAndroidModuleConfig {
+    classifier;
+    name;
+    constructor(classifier, name) {
+        this.classifier = classifier;
+        this.name = name;
+    }
+}
+exports.ExpoAndroidModuleConfig = ExpoAndroidModuleConfig;
 class ExpoAndroidProjectConfig {
     name;
     path;
@@ -44,13 +58,25 @@ class ExpoModuleConfig {
      */
     supportsPlatform(platform) {
         const supportedPlatforms = this.rawConfig.platforms ?? [];
-        if (platform === 'apple') {
+        if (platform === 'web') {
+            // Web platform is implicitly supported for autolinking resolution but has no special behavior
+            return true;
+        }
+        else if (platform === 'apple') {
             // Apple platform is supported when any of iOS, macOS and tvOS is supported.
             return supportedPlatforms.some((supportedPlatform) => {
                 return ['apple', 'ios', 'macos', 'tvos'].includes(supportedPlatform);
             });
         }
-        return supportedPlatforms.includes(platform);
+        switch (platform) {
+            case 'ios':
+            case 'macos':
+            case 'tvos':
+                // ios|macos|tvos are supported when the module supports "apple" as a platform in general
+                return supportedPlatforms.includes(platform) || supportedPlatforms.includes('apple');
+            default:
+                return supportedPlatforms.includes(platform);
+        }
     }
     /**
      * Returns the generic config for all Apple platforms with a fallback to the legacy iOS config.
@@ -101,10 +127,14 @@ class ExpoModuleConfig {
     androidProjects(defaultProjectName) {
         const androidProjects = [];
         // Adding the "root" Android project - it might not be valide.
-        androidProjects.push(new ExpoAndroidProjectConfig(this.rawConfig.android?.name ?? defaultProjectName, this.rawConfig.android?.path ?? 'android', this.rawConfig.android?.modules, this.rawConfig.android?.publication, this.rawConfig.android?.gradleAarProjects, this.rawConfig.android?.shouldUsePublicationScriptPath, !this.rawConfig.android?.path // it's default project because path is not defined
+        androidProjects.push(new ExpoAndroidProjectConfig(this.rawConfig.android?.name ?? defaultProjectName, this.rawConfig.android?.path ?? 'android', this.rawConfig.android?.modules?.map((module) => typeof module === 'string'
+            ? new ExpoAndroidModuleConfig(module, null)
+            : new ExpoAndroidModuleConfig(module.class, module.name)), this.rawConfig.android?.publication, this.rawConfig.android?.gradleAarProjects, this.rawConfig.android?.shouldUsePublicationScriptPath, !this.rawConfig.android?.path // it's default project because path is not defined
         ));
         this.rawConfig.android?.projects?.forEach((project) => {
-            androidProjects.push(new ExpoAndroidProjectConfig(project.name, project.path, project.modules, project.publication, project.gradleAarProjects, project.shouldUsePublicationScriptPath));
+            androidProjects.push(new ExpoAndroidProjectConfig(project.name, project.path, project.modules?.map((module) => typeof module === 'string'
+                ? new ExpoAndroidModuleConfig(module, null)
+                : new ExpoAndroidModuleConfig(module.class, module.name)), project.publication, project.gradleAarProjects, project.shouldUsePublicationScriptPath));
         });
         return androidProjects;
     }
@@ -140,12 +170,23 @@ class ExpoModuleConfig {
     }
 }
 exports.ExpoModuleConfig = ExpoModuleConfig;
-/**
- * Reads the config at given path and returns the config wrapped by `ExpoModuleConfig` class.
- */
-function requireAndResolveExpoModuleConfig(path) {
-    // TODO: Validate the raw config against a schema.
-    // TODO: Support for `*.js` files, not only static `*.json`.
-    return new ExpoModuleConfig(require(path));
-}
+/** Names of Expo Module config files (highest to lowest priority) */
+const EXPO_MODULE_CONFIG_FILENAMES = ['expo-module.config.json', 'unimodule.json'];
+exports.discoverExpoModuleConfigAsync = (0, utils_1.memoize)(async function discoverExpoModuleConfigAsync(directoryPath) {
+    for (let idx = 0; idx < EXPO_MODULE_CONFIG_FILENAMES.length; idx++) {
+        // TODO: Validate the raw config against a schema.
+        // TODO: Support for `*.js` files, not only static `*.json`.
+        const targetPath = path_1.default.join(directoryPath, EXPO_MODULE_CONFIG_FILENAMES[idx]);
+        let text;
+        try {
+            text = await fs_1.default.promises.readFile(targetPath, 'utf8');
+        }
+        catch {
+            // try the next file
+            continue;
+        }
+        return new ExpoModuleConfig(JSON.parse(text));
+    }
+    return null;
+});
 //# sourceMappingURL=ExpoModuleConfig.js.map

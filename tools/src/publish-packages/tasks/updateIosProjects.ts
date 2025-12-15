@@ -20,7 +20,11 @@ export const updateIosProjects = new Task<TaskArgs>(
     dependsOn: [selectPackagesToPublish],
     filesToStage: ['apps/*/ios/**'],
   },
-  async (parcels: Parcel[]) => {
+  async (parcels: Parcel[], options) => {
+    // Skip when publishing templates only
+    if (options.templatesOnly) {
+      return;
+    }
     logger.info('\n🍎 Updating iOS projects...');
 
     const nativeApps = Workspace.getNativeApps();

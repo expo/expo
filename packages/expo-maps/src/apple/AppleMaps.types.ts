@@ -97,6 +97,156 @@ export enum AppleMapsContourStyle {
 /**
  * @platform ios
  */
+export enum AppleMapsMapStyleElevation {
+  /**
+   * The default elevation style, that renders a flat, 2D map.
+   */
+  AUTOMATIC = 'AUTOMATIC',
+  /**
+   * A flat elevation style.
+   */
+  FLAT = 'FLAT',
+  /**
+   * A value that renders a realistic, 3D map.
+   */
+  REALISTIC = 'REALISTIC',
+}
+
+/**
+ * @platform ios
+ */
+export enum AppleMapsMapStyleEmphasis {
+  /**
+   * The default level of emphasis.
+   */
+  AUTOMATIC = 'AUTOMATIC',
+  /**
+   * A muted emphasis style, that deemphasizes the map’s imagery.
+   */
+  MUTED = 'MUTED',
+}
+
+/**
+ * @platform ios
+ * @see https://developer.apple.com/documentation/mapkit/AppleMapPointOfInterestCategory
+ */
+export enum AppleMapPointOfInterestCategory {
+  // Arts and culture
+  MUSEUM = 'MUSEUM',
+  MUSIC_VENUE = 'MUSIC_VENUE',
+  THEATER = 'THEATER',
+
+  // Education
+  LIBRARY = 'LIBRARY',
+  PLANETARIUM = 'PLANETARIUM',
+  SCHOOL = 'SCHOOL',
+  UNIVERSITY = 'UNIVERSITY',
+
+  // Entertainment
+  MOVIE_THEATER = 'MOVIE_THEATER',
+  NIGHTLIFE = 'NIGHTLIFE',
+
+  // Health and safety
+  FIRE_STATION = 'FIRE_STATION',
+  HOSPITAL = 'HOSPITAL',
+  PHARMACY = 'PHARMACY',
+  POLICE = 'POLICE',
+
+  // Historical and cultural landmarks
+  CASTLE = 'CASTLE',
+  FORTRESS = 'FORTRESS',
+  LANDMARK = 'LANDMARK',
+  NATIONAL_MONUMENT = 'NATIONAL_MONUMENT',
+
+  // Food and drink
+  BAKERY = 'BAKERY',
+  BREWERY = 'BREWERY',
+  CAFE = 'CAFE',
+  DISTILLERY = 'DISTILLERY',
+  FOOD_MARKET = 'FOOD_MARKET',
+  RESTAURANT = 'RESTAURANT',
+  WINERY = 'WINERY',
+
+  // Personal services
+  ANIMAL_SERVICE = 'ANIMAL_SERVICE',
+  ATM = 'ATM',
+  AUTOMOTIVE_REPAIR = 'AUTOMOTIVE_REPAIR',
+  BANK = 'BANK',
+  BEAUTY = 'BEAUTY',
+  EV_CHARGER = 'EV_CHARGER',
+  FITNESS_CENTER = 'FITNESS_CENTER',
+  LAUNDRY = 'LAUNDRY',
+  MAILBOX = 'MAILBOX',
+  POST_OFFICE = 'POST_OFFICE',
+  RESTROOM = 'RESTROOM',
+  SPA = 'SPA',
+  STORE = 'STORE',
+
+  // Parks and recreation
+  AMUSEMENT_PARK = 'AMUSEMENT_PARK',
+  AQUARIUM = 'AQUARIUM',
+  BEACH = 'BEACH',
+  CAMPGROUND = 'CAMPGROUND',
+  FAIRGROUND = 'FAIRGROUND',
+  MARINA = 'MARINA',
+  NATIONAL_PARK = 'NATIONAL_PARK',
+  PARK = 'PARK',
+  RV_PARK = 'RV_PARK',
+  ZOO = 'ZOO',
+
+  // Sports
+  BASEBALL = 'BASEBALL',
+  BASKETBALL = 'BASKETBALL',
+  BOWLING = 'BOWLING',
+  GO_KART = 'GO_KART',
+  GOLF = 'GOLF',
+  HIKING = 'HIKING',
+  MINI_GOLF = 'MINI_GOLF',
+  ROCK_CLIMBING = 'ROCK_CLIMBING',
+  SKATE_PARK = 'SKATE_PARK',
+  SKATING = 'SKATING',
+  SKIING = 'SKIING',
+  SOCCER = 'SOCCER',
+  STADIUM = 'STADIUM',
+  TENNIS = 'TENNIS',
+  VOLLEYBALL = 'VOLLEYBALL',
+
+  // Travel
+  AIRPORT = 'AIRPORT',
+  CAR_RENTAL = 'CAR_RENTAL',
+  CONVENTION_CENTER = 'CONVENTION_CENTER',
+  GAS_STATION = 'GAS_STATION',
+  HOTEL = 'HOTEL',
+  PARKING = 'PARKING',
+  PUBLIC_TRANSPORT = 'PUBLIC_TRANSPORT',
+
+  // Water sports
+  FISHING = 'FISHING',
+  KAYAKING = 'KAYAKING',
+  SURFING = 'SURFING',
+  SWIMMING = 'SWIMMING',
+}
+
+/**
+ * @platform ios
+ */
+export type AppleMapsPointOfInterestCategories = {
+  /**
+   * The POI categories to include.
+   * To hide all POIs, set this to an empty array.
+   */
+  including?: AppleMapPointOfInterestCategory[];
+
+  /**
+   * The POI categories to exclude.
+   * To show all POIs, set this to an empty array.
+   */
+  excluding?: AppleMapPointOfInterestCategory[];
+};
+
+/**
+ * @platform ios
+ */
 export type AppleMapsProperties = {
   /**
    * Whether the user location is shown on the map.
@@ -113,6 +263,21 @@ export type AppleMapsProperties = {
    * Defines which map type should be used.
    */
   mapType?: AppleMapsMapType;
+
+  /**
+   * A structure you use to define points of interest to include or exclude on a map.
+   */
+  pointsOfInterest?: AppleMapsPointOfInterestCategories;
+
+  /**
+   * Values you use to determine whether a map renders elevation.
+   */
+  elevation?: AppleMapsMapStyleElevation;
+
+  /**
+   * Values that control how the framework emphasizes map features.
+   */
+  emphasis?: AppleMapsMapStyleEmphasis;
 
   /**
    * If true, the user can select a location on the map to get more information.

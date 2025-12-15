@@ -5,7 +5,7 @@ inputs:
   avd-api:
     description: 'API version used in AVD'
     required: false
-    default: '34'
+    default: '36'
   avd-name:
     description: 'Created AVD name'
     required: true
@@ -34,7 +34,8 @@ runs:
         sudo udevadm trigger --name-match=kvm
 
     # NOTE: When updating any emulator settings, please make sure all the settings are also updated in each retry step.
-    # Sorry that we can't use a loop here, because GitHub Actions doesn't support it yet.
+    # We can't use a loop here, because GitHub Actions doesn't support it yet.
+    # When e2e tests fail on one emulator, the next step will retry the whole setup again with the next emulator.
     - name: '💿 Setup Android Emulator #1'
       id: retries-1
       continue-on-error: true
@@ -43,17 +44,16 @@ runs:
         api-level: ${{ inputs.avd-api }}
         avd-name: ${{ inputs.avd-name }}
         arch: x86_64
+        disable-animations: true
         target: google_apis
+        profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
+        disk-size: 4G # Reduced disk size to avoid running out of disk space when setting up the emulator
+        # gpu hw acceleration is not available on GitHub-hosted runners
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
-          # Wait for emulator to fully ready
-          sleep 20
           # Try to close SystemUI ANR prompt
           adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
           adb shell settings put secure immersive_mode_confirmations confirmed
-          adb shell settings put global window_animation_scale 0.0
-          adb shell settings put global transition_animation_scale 0.0
-          adb shell settings put global animator_duration_scale 0.0
           adb shell input keyevent 3
           ${{ inputs.script }}
         working-directory: ${{ inputs.working-directory }}
@@ -67,17 +67,15 @@ runs:
         api-level: ${{ inputs.avd-api }}
         avd-name: ${{ inputs.avd-name }}
         arch: x86_64
+        disable-animations: true
         target: google_apis
+        profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
+        disk-size: 4G # Reduced disk size to avoid running out of disk space when setting up the emulator
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
-          # Wait for emulator to fully ready
-          sleep 20
           # Try to close SystemUI ANR prompt
           adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
           adb shell settings put secure immersive_mode_confirmations confirmed
-          adb shell settings put global window_animation_scale 0.0
-          adb shell settings put global transition_animation_scale 0.0
-          adb shell settings put global animator_duration_scale 0.0
           adb shell input keyevent 3
           ${{ inputs.script }}
         working-directory: ${{ inputs.working-directory }}
@@ -91,17 +89,15 @@ runs:
         api-level: ${{ inputs.avd-api }}
         avd-name: ${{ inputs.avd-name }}
         arch: x86_64
+        disable-animations: true
         target: google_apis
+        profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
+        disk-size: 4G # Reduced disk size to avoid running out of disk space when setting up the emulator
         emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
         script: |
-          # Wait for emulator to fully ready
-          sleep 20
           # Try to close SystemUI ANR prompt
           adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
           adb shell settings put secure immersive_mode_confirmations confirmed
-          adb shell settings put global window_animation_scale 0.0
-          adb shell settings put global transition_animation_scale 0.0
-          adb shell settings put global animator_duration_scale 0.0
           adb shell input keyevent 3
           ${{ inputs.script }}
         working-directory: ${{ inputs.working-directory }}

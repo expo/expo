@@ -1,7 +1,7 @@
+import type { Module, MixedOutput } from '@expo/metro/metro/DeltaBundler';
+import CountingSet from '@expo/metro/metro/lib/CountingSet';
+import countLines from '@expo/metro/metro/lib/countLines';
 import assert from 'assert';
-import { Module, MixedOutput } from 'metro';
-import CountingSet from 'metro/src/lib/CountingSet';
-import countLines from 'metro/src/lib/countLines';
 
 import { microBundle, projectRoot } from './mini-metro';
 import { reconcileTransformSerializerPlugin } from '../../reconcileTransformSerializerPlugin';
@@ -63,12 +63,14 @@ export async function serializeSplitAsync(
   fs: Record<string, string>,
   options: Partial<Parameters<typeof microBundle>[0]['options']> = {},
   processors: SerializerPlugin[] = [],
-  configOptions: SerializerConfigOptions = {}
+  configOptions: SerializerConfigOptions = {},
+  preModulesFs: Record<string, string> = {}
 ) {
   return await serializeTo(
     {
       fs,
       options: { platform: 'web', dev: false, output: 'static', splitChunks: true, ...options },
+      preModulesFs,
     },
     processors,
     configOptions

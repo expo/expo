@@ -1,0 +1,52 @@
+---
+title: Button
+description: A SwiftUI Button component for displaying native buttons.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+A button component for displaying native buttons.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="Button component on iOS."
+      src="/static/images/expo-ui/button/ios.png"
+      className="max-w-[480px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { Button, Host } from '@expo/ui/swift-ui';
+
+    <Host style={{ flex: 1 }}>
+      <Button
+        variant="default"
+        onPress={() => {
+          setEditingProfile(true);
+        }}>
+        Edit profile
+      </Button>
+    </Host>
+    ```
+
+  </Tab>
+</Tabs>
+
+> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/button) for more information.
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/button" apiName="Button" />

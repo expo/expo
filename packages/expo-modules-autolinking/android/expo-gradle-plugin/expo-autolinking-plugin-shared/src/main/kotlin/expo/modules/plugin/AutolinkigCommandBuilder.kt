@@ -3,7 +3,7 @@ package expo.modules.plugin
 /**
  * Builder for creating command to run using `expo-modules-autolinking`.
  */
-class AutolinkigCommandBuilder {
+class AutolinkingCommandBuilder {
   /**
    * Command for finding and running `expo-modules-autolinking`.
    */
@@ -11,8 +11,8 @@ class AutolinkigCommandBuilder {
     "node",
     "--no-warnings",
     "--eval",
-    "require(require.resolve('expo-modules-autolinking', { paths: [require.resolve('expo/package.json')] }))(process.argv.slice(1))",
-    "--"
+    "require('expo/bin/autolinking')",
+    "expo-modules-autolinking"
   )
 
   private val platform = listOf(
@@ -22,7 +22,7 @@ class AutolinkigCommandBuilder {
 
   private var autolinkingCommand = emptyList<String>()
   private var useJson = emptyList<String>()
-  private val optionsMap = mutableMapOf<String, String>()
+  private val optionsMap = mutableSetOf<Pair<String, String>>()
   private var searchPaths = emptyList<String>()
 
   /**
@@ -36,14 +36,14 @@ class AutolinkigCommandBuilder {
    * Add an option to the command.
    */
   fun option(key: String, value: String) = apply {
-    optionsMap[key] = value
+    optionsMap.add(key to value)
   }
 
   /**
    * Add a list of values as an option to the command.
    */
   fun option(key: String, value: List<String>) = apply {
-    optionsMap[key] = value.joinToString(" ")
+    value.forEach { optionsMap.add(key to it) }
   }
 
   /**
@@ -61,7 +61,6 @@ class AutolinkigCommandBuilder {
   }
 
   fun useAutolinkingOptions(autolinkingOptions: AutolinkingOptions) = apply {
-    autolinkingOptions.ignorePaths?.let { option(IGNORE_PATHS_KEY, it) }
     autolinkingOptions.exclude?.let { option(EXCLUDE_KEY, it) }
     autolinkingOptions.searchPaths?.let { searchPaths(it) }
   }
@@ -77,7 +76,6 @@ class AutolinkigCommandBuilder {
   }
 
   companion object {
-    const val IGNORE_PATHS_KEY = "ignore-paths"
     const val EXCLUDE_KEY = "exclude"
   }
 }

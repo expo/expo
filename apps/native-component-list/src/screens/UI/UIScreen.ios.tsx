@@ -1,5 +1,5 @@
 import { optionalRequire } from '../../navigation/routeBuilder';
-import ComponentListScreen, { ListElement } from '../ComponentListScreen';
+import ComponentListScreen, { componentScreensToListElements } from '../ComponentListScreen';
 
 export const UIScreens = [
   {
@@ -19,11 +19,11 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Date Time Picker component',
+    name: 'DatePicker component',
     route: 'ui/date-picker',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./DateTimePickerScreen'));
+      return optionalRequire(() => require('./DatePickerScreen'));
     },
   },
   {
@@ -35,11 +35,11 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Section component',
-    route: 'ui/section',
+    name: 'Form component',
+    route: 'ui/form',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./SectionScreen'));
+      return optionalRequire(() => require('./FormScreen'));
     },
   },
   {
@@ -56,6 +56,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./SliderScreen'));
+    },
+  },
+  {
+    name: 'Stepper component',
+    route: 'ui/stepper',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./StepperScreen'));
     },
   },
   {
@@ -115,24 +123,114 @@ export const UIScreens = [
     },
   },
   {
-    name: 'SwiftUI primitives',
-    route: 'ui/swiftui-primitives',
+    name: 'Chart component',
+    route: 'ui/chart',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./SwiftUIPrimitivesScreen'));
+      return optionalRequire(() => require('./ChartScreen'));
+    },
+  },
+  {
+    name: 'Hosting RN Views',
+    route: 'ui/hosting-rn-views',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HostingRNViewsScreen'));
+    },
+  },
+  {
+    name: 'Modifiers',
+    route: 'ui/modifiers',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ModifiersScreen'));
+    },
+  },
+  {
+    name: 'Animation Modifier',
+    route: 'ui/animation-modifier',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AnimationModifierScreen'));
+    },
+  },
+  {
+    name: 'Glass Effect',
+    route: 'ui/glass-effect',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GlassEffectScreen'));
+    },
+  },
+  {
+    name: 'Matched Geometry Effect',
+    route: 'ui/matched-geometry-effect',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MatchedGeometryEffectScreen'));
+    },
+  },
+  {
+    name: 'Shapes',
+    route: 'ui/shapes',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ShapesScreen'));
+    },
+  },
+  {
+    name: 'Image component',
+    route: 'ui/image',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImageScreen'));
+    },
+  },
+  {
+    name: 'Text component',
+    route: 'ui/text',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TextScreen'));
+    },
+  },
+  {
+    name: 'Popover component',
+    route: 'ui/popover',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./PopoverScreen'));
+    },
+  },
+  {
+    name: 'RTL Layout',
+    route: 'ui/rtl',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./RTLScreen'));
+    },
+  },
+  {
+    name: 'Grid component',
+    route: 'ui/grid',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GridScreen'));
+    },
+  },
+  {
+    name: 'Host Ignore Safe Area Keyboard',
+    route: 'ui/host-ignore-safe-area-keyboard',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HostIgnoreSafeAreaKeyboardScreen'));
     },
   },
 ];
 
 export default function UIScreen() {
-  const apis: ListElement[] = UIScreens.map((screen) => {
-    return {
-      name: screen.name,
-      isAvailable: true,
-      route: `/components/${screen.route}`,
-    };
-  });
-  return <ComponentListScreen apis={apis} sort={false} />;
+  const apis = componentScreensToListElements(UIScreens);
+  return <ComponentListScreen apis={apis} sort />;
 }
 
 UIScreen.navigationOptions = {

@@ -1,0 +1,1 @@
+{"version":3,"file":"SortDescriptor.d.ts","sourceRoot":"","sources":["../../../src/next/types/SortDescriptor.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,cAAc,CAAC;AAE1C,MAAM,MAAM,cAAc,GAAG;IAC3B,GAAG,EAAE,UAAU,CAAC;IAChB,SAAS,CAAC,EAAE,OAAO,CAAC;CACrB,CAAC"}

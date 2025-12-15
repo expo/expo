@@ -8,12 +8,14 @@ export type Options = {
     internal_stripLoadRoute?: boolean;
     skipGenerated?: boolean;
     notFound?: boolean;
+    unstable_useServerMiddleware?: boolean;
     importMode?: string;
     platformRoutes?: boolean;
     sitemap?: boolean;
     platform?: string;
     redirects?: RedirectConfig[];
     rewrites?: RewriteConfig[];
+    headers?: Record<string, string | string[]>;
     preserveRedirectAndRewrites?: boolean;
     /** Get the system route for a location. Useful for shimming React Native imports in SSR environments. */
     getSystemRoute: (route: Pick<RouteNode, 'route' | 'type'> & {

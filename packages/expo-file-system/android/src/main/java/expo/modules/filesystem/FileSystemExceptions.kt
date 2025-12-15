@@ -1,48 +1,58 @@
 package expo.modules.filesystem
-
-import android.net.Uri
+import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.exception.CodedException
 
-internal class FileSystemOkHttpNullException :
-  CodedException("okHttpClient is null")
+internal class CopyOrMoveDirectoryToFileException :
+  CodedException("Unable to copy or move a folder to a file")
 
-internal class FileSystemCannotReadDirectoryException(uri: Uri?) :
-  CodedException("Uri '$uri' doesn't exist or isn't a directory")
+internal class InvalidTypeFolderException :
+  CodedException("A file with the same name already exists in the folder location")
 
-internal class FileSystemCannotCreateDirectoryException(uri: Uri?) :
+internal class InvalidTypeFileException :
+  CodedException("A folder with the same name already exists in the file location")
+
+internal class DestinationDoesNotExistException :
+  CodedException("The destination path does not exist")
+
+internal class UnableToDownloadException(reason: String) :
   CodedException(
-    uri?.let {
-      "Directory '$it' could not be created or already exists"
-    } ?: "Unknown error"
+    "Unable to download a file: $reason"
   )
 
-internal class FileSystemUnreadableDirectoryException(uri: String) :
-  CodedException("No readable files with the uri '$uri'. Please use other uri")
-
-internal class FileSystemCannotCreateFileException(uri: Uri?) :
+internal class UnableToDeleteException(reason: String) :
   CodedException(
-    uri?.let {
-      "Provided uri '$it' is not pointing to a directory"
-    } ?: "Unknown error"
+    "Unable to delete file or directory: $reason"
   )
 
-internal class FileSystemFileNotFoundException(uri: Uri?) :
-  CodedException("File '$uri' could not be deleted because it could not be found")
+internal class UnableToCreateException(reason: String) :
+  CodedException(
+    "Unable to create file or directory: $reason"
+  )
 
-internal class FileSystemPendingPermissionsRequestException :
-  CodedException("You have an unfinished permission request")
+internal class InvalidPermissionException(permission: Permission) :
+  CodedException(
+    "Missing '${permission.name}' permission for accessing the file."
+  )
 
-internal class FileSystemCannotMoveFileException(fromUri: Uri, toUri: Uri) :
-  CodedException("File '$fromUri' could not be moved to '$toUri'")
+internal class UnableToReadHandleException(reason: String) :
+  CodedException(
+    "Unable to read from a file handle: '$reason'"
+  )
 
-internal class FileSystemUnsupportedSchemeException :
-  CodedException("Can't read Storage Access Framework directory, use StorageAccessFramework.readDirectoryAsync() instead")
+internal class UnableToWriteHandleException(reason: String) :
+  CodedException(
+    "Unable to write to a file handle: '$reason'"
+  )
 
-internal class FileSystemCannotFindTaskException :
-  CodedException("Cannot find task")
+internal class MissingAppContextException :
+  CodedException(
+    "The app context is missing."
+  )
 
-internal class FileSystemCopyFailedException(uri: Uri?) :
-  CodedException("File '$uri' could not be copied because it could not be found")
+internal class PickerCancelledException :
+  CodedException("The file picker was cancelled by the user")
 
-internal class CookieHandlerNotFoundException :
-  CodedException("Failed to find CookieHandler")
+internal class DestinationAlreadyExistsException :
+  CodedException(
+    "Destination already exists"
+  )

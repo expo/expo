@@ -16,8 +16,6 @@ test.describe(inputDir, () => {
       E2E_ROUTER_JS_ENGINE: 'hermes',
       E2E_ROUTER_SRC: inputDir,
       E2E_ROUTER_ASYNC: 'development',
-      // Explicitly turn off Expo fast resolver to test Metro's default resolver
-      EXPO_USE_FAST_RESOLVER: 'false',
       // Ensure CI is disabled otherwise the file watcher won't run.
       CI: '0',
     },

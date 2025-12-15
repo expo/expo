@@ -23,11 +23,8 @@ jobs:
         env:
           NPM_TOKEN_READ_ONLY: ${{ secrets.NPM_TOKEN_READ_ONLY }}
       - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: failure()
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
         with:
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
+          webhook: ${{ secrets.slack_webhook_api }}
           author_name: Validate npm owners

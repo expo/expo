@@ -13,7 +13,10 @@ import { registerStaticFont } from './server';
  */
 export function isLoaded(fontFamily) {
     if (Platform.OS === 'web') {
-        return isLoadedInCache(fontFamily) || !!ExpoFontLoader.isLoaded(fontFamily);
+        if (typeof ExpoFontLoader.isLoaded !== 'function') {
+            throw new Error(`expected ExpoFontLoader.isLoaded to be a function, was ${typeof ExpoFontLoader.isLoaded}`);
+        }
+        return isLoadedInCache(fontFamily) || ExpoFontLoader.isLoaded(fontFamily);
     }
     return isLoadedNative(fontFamily);
 }
@@ -42,7 +45,7 @@ export function isLoading(fontFamily) {
  * with the platform's native text elements. In the browser, this generates a `@font-face` block in
  * a shared style sheet for fonts. No CSS is needed to use this method.
  *
- * > **Note**: We recommend using the [config plugin](#configuration-in-appjsonappconfigjs) instead whenever possible.
+ * > **Note**: We recommend using the [config plugin](#configuration-in-app-config) instead whenever possible.
  *
  * @param fontFamilyOrFontMap String or map of values that can be used as the `fontFamily` [style prop](https://reactnative.dev/docs/text#style)
  * with React Native `Text` elements.
@@ -155,6 +158,9 @@ async function unloadFontInNamespaceAsync(fontFamily, options) {
     // loop from this point.
     if (!fontFamily) {
         throw new CodedError(`ERR_FONT_FAMILY`, `Cannot unload an empty name`);
+    }
+    if (!ExpoFontLoader.unloadAsync) {
+        throw new UnavailabilityError('expo-font', 'unloadAsync');
     }
     await ExpoFontLoader.unloadAsync(fontFamily, options);
 }

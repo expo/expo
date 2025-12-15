@@ -1,24 +1,18 @@
 import SwiftUI
-
-func loadAppIcon(from path: String) -> UIImage? {
-  if let url = URL(string: path), url.isFileURL {
-    return UIImage(contentsOfFile: url.path)
-  }
-  return nil
-}
+import ExpoModulesCore
 
 struct HeaderView: View {
   @EnvironmentObject var viewModel: DevMenuViewModel
+  @State private var appIcon: UIImage? = nil
 
   var body: some View {
     HStack(spacing: 12) {
-      if let iconPath = viewModel.appInfo?.appIcon,
-        let image = loadAppIcon(from: iconPath) {
-        Image(uiImage: image)
+      if let icon = appIcon {
+        Image(uiImage: icon)
           .resizable()
-          .aspectRatio(contentMode: .fit)
-          .frame(width: 42, height: 42)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .scaledToFit()
+          .frame(width: 38, height: 38)
+          .clipShape(RoundedRectangle(cornerRadius: 16))
       }
 
       versionInfo
@@ -28,15 +22,50 @@ struct HeaderView: View {
       Button {
         viewModel.hideMenu()
       } label: {
-        Image(systemName: "xmark")
-          .font(.title2)
-          .foregroundColor(.primary)
-          .frame(width: 24, height: 24)
+        ZStack {
+          Circle()
+          #if os(tvOS)
+            .fill(Color.expoSystemGray4.opacity(0.2))
+          #else
+            .fill(Color.expoSystemGray6)
+          #endif
+            .frame(width: 36, height: 36)
+
+          Image(systemName: "xmark")
+            .font(.headline)
+            .tint(.gray.opacity(0.6))
+        }
       }
     }
-    .padding(.horizontal)
-    .padding(.vertical, 12)
-    .background(Color(.systemBackground))
+    .onChange(of: viewModel.appInfo?.appIcon) { newIconPath in
+      Task {
+        await loadIcon(from: newIconPath)
+      }
+    }
+    .task {
+      await loadIcon(from: viewModel.appInfo?.appIcon)
+    }
+    .padding()
+  }
+
+  private func loadIcon(from path: String?) async {
+    guard let path, let url = URL(string: path) else {
+      appIcon = nil
+      return
+    }
+
+    if url.isFileURL {
+      appIcon = UIImage(contentsOfFile: url.path)
+    } else {
+      do {
+        let (data, _) = try await URLSession.shared.data(from: url)
+        if let loadedImage = UIImage(data: data) {
+          appIcon = loadedImage
+        }
+      } catch {
+        appIcon = nil
+      }
+    }
   }
 
   private var versionInfo: some View {
@@ -59,8 +88,4 @@ struct HeaderView: View {
       }
     }
   }
-}
-
-#Preview {
-  HeaderView()
 }

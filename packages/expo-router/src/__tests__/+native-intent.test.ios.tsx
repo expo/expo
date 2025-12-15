@@ -1,8 +1,8 @@
-import { act } from '@testing-library/react-native';
+import { screen, act } from '@testing-library/react-native';
 import React from 'react';
 import { View } from 'react-native';
 
-import { renderRouter, screen } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 it('can use redirectSystemPath initial', () => {
   renderRouter({

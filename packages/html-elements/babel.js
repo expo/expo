@@ -78,12 +78,18 @@ function getPlatform(caller) {
   return caller && caller.platform;
 }
 
+const REGEXP_REPLACE_SLASHES = /\\/g;
+
+function toPosixPath(filePath) {
+  return filePath.replace(REGEXP_REPLACE_SLASHES, '/');
+}
+
 module.exports = ({ types: t, ...api }, { expo }) => {
   const platform = api.caller(getPlatform);
 
   function replaceElement(path, state) {
     // Not supported in node modules
-    if (/\/node_modules\//.test(state.filename)) {
+    if (/\/node_modules\//.test(toPosixPath(state.filename))) {
       return;
     }
 

@@ -17,6 +17,7 @@ import { withAndroidIcons } from './icons/withAndroidIcons';
 import { withIosIcons } from './icons/withIosIcons';
 import { withSdk52ReactNative77CompatAndroid } from './sdk52/ReactNative77CompatPlugin';
 import { withSdk52ReactNative78CompatAndroid } from './sdk52/ReactNative78CompatPlugin';
+import withEdgeToEdge from './unversioned/edge-to-edge/withEdgeToEdge';
 import withAdMob from './unversioned/expo-ads-admob/expo-ads-admob';
 import withAppleAuthentication from './unversioned/expo-apple-authentication';
 import withContacts from './unversioned/expo-contacts';
@@ -26,7 +27,7 @@ import withNotifications from './unversioned/expo-notifications/expo-notificatio
 import withSplashScreen from './unversioned/expo-splash-screen/expo-splash-screen';
 import withSystemUI from './unversioned/expo-system-ui/expo-system-ui';
 import withUpdates from './unversioned/expo-updates';
-import withEdgeToEdge from './unversioned/react-native-edge-to-edge/withEdgeToEdge';
+import withNewArchPlistHotfix from './unversioned/new-arch-plist-hotfix/new-arch-plist-hotfix';
 import withMaps from './unversioned/react-native-maps';
 
 const debug = Debug('expo:prebuild-config');
@@ -66,6 +67,8 @@ export const withIosExpoPlugins: ConfigPlugin<{
     // Dangerous
     withIosIcons,
     IOSConfig.PrivacyInfo.withPrivacyInfo,
+    // Temporary hotfix
+    withNewArchPlistHotfix,
   ]);
 };
 
@@ -99,6 +102,7 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
     // AndroidManifest.xml
     AndroidConfig.AllowBackup.withAllowBackup,
     AndroidConfig.WindowSoftInputMode.withWindowSoftInputMode,
+    AndroidConfig.PredictiveBackGesture.withPredictiveBackGesture,
     // Note: The withAndroidIntentFilters plugin must appear before the withScheme
     // plugin or withScheme will override the output of withAndroidIntentFilters.
     AndroidConfig.IntentFilters.withAndroidIntentFilters,
@@ -119,7 +123,7 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
     // Modify colors.xml and styles.xml
     AndroidConfig.StatusBar.withStatusBar,
     AndroidConfig.PrimaryColor.withPrimaryColor,
-    (config) => withEdgeToEdge(config, props),
+    withEdgeToEdge,
 
     withAndroidIcons,
     // If we renamed the package, we should also move it around and rename it in source files

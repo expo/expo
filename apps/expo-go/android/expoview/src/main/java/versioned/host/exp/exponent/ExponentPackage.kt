@@ -2,6 +2,7 @@
 package versioned.host.exp.exponent
 
 import android.content.Context
+import com.airbnb.android.react.lottie.LottiePackage
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -13,19 +14,18 @@ import com.reactnativecommunity.picker.RNCPickerPackage
 import com.reactnativecommunity.slider.ReactSliderPackage
 import com.reactnativecommunity.webview.RNCWebViewModule
 import com.reactnativecommunity.webview.RNCWebViewPackage
+import com.reactnativekeyboardcontroller.KeyboardControllerModule
+import com.reactnativekeyboardcontroller.KeyboardControllerPackage
 import com.reactnativepagerview.PagerViewPackage
 import com.reactnativestripesdk.StripeSdkPackage
 import com.rnmaps.maps.MapsPackage
-import com.shopify.reactnative.flash_list.ReactNativeFlashListPackage
 import com.shopify.reactnative.skia.RNSkiaPackage
 import com.swmansion.gesturehandler.RNGestureHandlerPackage
 import com.swmansion.gesturehandler.react.RNGestureHandlerModule
 import com.swmansion.rnscreens.RNScreensPackage
-import com.th3rdwave.safeareacontext.SafeAreaContextPackage
 import com.th3rdwave.safeareacontext.SafeAreaContextModule
+import com.th3rdwave.safeareacontext.SafeAreaContextPackage
 import com.zoontek.rnedgetoedge.EdgeToEdgeModule
-import com.reactnativekeyboardcontroller.KeyboardControllerModule
-import com.reactnativekeyboardcontroller.KeyboardControllerPackage
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
@@ -44,7 +44,6 @@ import versioned.host.exp.exponent.modules.api.PedometerModule
 import versioned.host.exp.exponent.modules.api.ScreenOrientationModule
 import versioned.host.exp.exponent.modules.api.URLHandlerModule
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule
-import versioned.host.exp.exponent.modules.internal.DevMenuModule
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule
 import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule
 import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule
@@ -116,10 +115,6 @@ class ExponentPackage : ReactPackage {
       nativeModules.add((ExponentKernelModuleProvider.newInstance(reactContext) as NativeModule?)!!)
       // WHEN_VERSIONING_REMOVE_TO_HERE
     }
-    if (!isKernel) {
-      // We need DevMenuModule only in non-home apps.
-      nativeModules.add(DevMenuModule(reactContext, experienceProperties, manifest))
-    }
 
     if (isVerified) {
       try {
@@ -172,6 +167,7 @@ class ExponentPackage : ReactPackage {
       viewManagers,
       listOf(
         SvgPackage(),
+        LottiePackage(),
         MapsPackage(),
         RNGestureHandlerPackage(),
         RNScreensPackage(),
@@ -184,7 +180,6 @@ class ExponentPackage : ReactPackage {
         SafeAreaContextPackage(),
         stripePackage,
         skiaPackage,
-        ReactNativeFlashListPackage(),
         KeyboardControllerPackage()
       )
     )

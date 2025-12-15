@@ -11,7 +11,7 @@ import { CommandOptions, Parcel, TaskArgs } from '../types';
 const { cyan, green } = chalk;
 const MODULE_TEMPLATE_PKG_NAME = 'expo-module-template';
 const TEMPLATE_PACKAGE_JSON_FILENAME = '$package.json';
-const PACKAGES_TO_UPDATE = ['expo-modules-core', 'expo-module-scripts'];
+const PACKAGES_TO_UPDATE = ['expo-modules-core', 'expo-module-scripts', 'expo'];
 
 /**
  * Updates the module template if necessary.

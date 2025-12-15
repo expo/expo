@@ -23,6 +23,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import java.util.Calendar
@@ -56,29 +57,30 @@ enum class Variant(val value: String) : Enumerable {
 
 data class DateTimePickerProps(
   val title: MutableState<String> = mutableStateOf(""),
-  val initialDate: MutableState<Date?> = mutableStateOf(null),
+  val initialDate: MutableState<Long?> = mutableStateOf(null),
   val variant: MutableState<Variant> = mutableStateOf(Variant.PICKER),
   val displayedComponents: MutableState<DisplayedComponents> = mutableStateOf(DisplayedComponents.DATE),
   val showVariantToggle: MutableState<Boolean> = mutableStateOf(true),
   val is24Hour: MutableState<Boolean> = mutableStateOf(true),
-  val color: MutableState<AndroidColor?> = mutableStateOf(null)
+  val color: MutableState<AndroidColor?> = mutableStateOf(null),
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 @SuppressLint("ViewConstructor")
 @OptIn(ExperimentalMaterial3Api::class)
 class DateTimePickerView(context: Context, appContext: AppContext) :
-  ExpoComposeView<DateTimePickerProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<DateTimePickerProps>(context, appContext) {
   override val props = DateTimePickerProps()
   private val onDateSelected by EventDispatcher<DatePickerResult>()
 
   @Composable
-  override fun Content() {
+  override fun ComposableScope.Content() {
     if (props.displayedComponents.value == DisplayedComponents.HOUR_AND_MINUTE) {
-      ExpoTimePicker(props = props) {
+      ExpoTimePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)) {
         onDateSelected(it)
       }
     } else {
-      ExpoDatePicker(props = props) {
+      ExpoDatePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)) {
         onDateSelected(it)
       }
     }
@@ -96,8 +98,8 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
     DatePickerState(
       initialDisplayMode = variant,
       locale = locale,
-      initialSelectedDateMillis = initialDate?.time ?: Date().time,
-      initialDisplayedMonthMillis = initialDate?.time ?: Date().time,
+      initialSelectedDateMillis = initialDate ?: Date().time,
+      initialDisplayedMonthMillis = initialDate ?: Date().time,
       yearRange = DatePickerDefaults.YearRange,
       selectableDates = DatePickerDefaults.AllDates
     )
@@ -107,19 +109,17 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
     onDateSelected(DatePickerResult(date = state.selectedDateMillis))
   }
 
-  DynamicTheme {
-    DatePicker(
-      modifier = modifier,
-      state = state,
-      showModeToggle = props.showVariantToggle.value,
-      colors = DatePickerDefaults.colors().copy(
-        titleContentColor = colorToComposeColor(props.color.value),
-        selectedDayContainerColor = colorToComposeColor(props.color.value),
-        todayDateBorderColor = colorToComposeColor(props.color.value),
-        headlineContentColor = colorToComposeColor(props.color.value)
-      )
+  DatePicker(
+    modifier = modifier,
+    state = state,
+    showModeToggle = props.showVariantToggle.value,
+    colors = DatePickerDefaults.colors().copy(
+      titleContentColor = colorToComposeColor(props.color.value),
+      selectedDayContainerColor = colorToComposeColor(props.color.value),
+      todayDateBorderColor = colorToComposeColor(props.color.value),
+      headlineContentColor = colorToComposeColor(props.color.value)
     )
-  }
+  )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,7 +128,12 @@ fun ExpoTimePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
   val cal = Calendar.getInstance()
 
   val state = remember(props.initialDate.value, props.is24Hour.value) {
-    cal.time = props.initialDate.value ?: Date()
+    val initialDate = props.initialDate.value
+    if (initialDate != null) {
+      cal.timeInMillis = initialDate
+    } else {
+      cal.time = Date()
+    }
     val hour = cal.get(Calendar.HOUR_OF_DAY)
     val minute = cal.get(Calendar.MINUTE)
 

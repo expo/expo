@@ -1,4 +1,5 @@
-import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import { NativeSyntheticEvent } from 'react-native';
+import { ExpoModifier } from '../../types';
 /**
  * Only for switch.
  */
@@ -31,7 +32,7 @@ export type SwitchProps = {
      */
     label?: string;
     /**
-     * Type of the switch component. Can be `'checkbox'`, `'switch'`, or `'button'`. The `'button'` style is iOS only.
+     * Type of the switch component. Can be `'checkbox'`, `'switch'`, or `'button'`.
      * @default 'switch'
      */
     variant?: 'checkbox' | 'switch' | 'button';
@@ -40,13 +41,13 @@ export type SwitchProps = {
      */
     onValueChange?: (value: boolean) => void;
     /**
-     * Optional style for the switch component.
-     */
-    style?: StyleProp<ViewStyle>;
-    /**
-     * Picker color. On iOS, it only applies to the `menu` variant.
+     * Picker color.
      */
     color?: string;
+    /**
+     * Modifiers for the component.
+     */
+    modifiers?: ExpoModifier[];
 } & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps);
 export type SwitchSwitchVariantProps = {
     variant?: 'switch';

@@ -28,11 +28,11 @@ If your build takes longer than 2 hours to run, it will be canceled. This limit 
 
 If you have more than 50 builds pending for a platform, new builds will be rejected until the number of pending builds drops below the limit.
 
-## Yarn workspaces is recommended for monorepos
+## Package managers with workspaces support may require special setup
 
-> **Note**: Official guidance for package managers other than Yarn is limited.
+> **Note**: Official guidance for package managers other than Bun, npm, pnpm, and Yarn is limited.
 
-While you likely can have success using other monorepo tools like Nx if you are willing to dig in and understand the tooling and get your hands dirty, the Expo team will be unable to provide support and guidance on those tools. We recommend using [Yarn Workspaces](https://yarnpkg.com/en/docs/workspaces) because it is the only monorepo tool that we provide first-class integration with at the moment.
+EAS Build supports monorepos managed with package managers supporting workspaces. However, third-party monorepo or workspaces tooling may not work as expected or require additional setup. Increased complexity is common when setting up and configuring monorepos and workspaces. Check whether your tools and libraries work well within a monorepo before setting one up. See [Work with monorepos](/guides/monorepos/).
 
 ## Get notified about changes
 

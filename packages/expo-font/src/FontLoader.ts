@@ -17,9 +17,6 @@ export function getAssetForSource(source: FontSource): Asset | FontResource {
     return getAssetForSource(source.uri);
   }
 
-  // @ts-ignore Error: Type 'string' is not assignable to type 'Asset'
-  // We can't have a string here, we would have thrown an error if !isWeb
-  // or returned Asset.fromModule if isWeb.
   return source;
 }
 

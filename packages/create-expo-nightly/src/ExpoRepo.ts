@@ -1,12 +1,9 @@
-import fs from 'fs';
-import { createRequire } from 'node:module';
+import fs from 'node:fs';
 import path from 'node:path';
 
+import { mergeJsonFilesAsync, readJsonFileAsync } from './JsonFile.js';
 import { REACT_NATIVE_TRANSITIVE_DEPENDENCIES } from './Packages.js';
 import { runAsync } from './Processes.js';
-
-const require = createRequire(import.meta.url);
-const { default: JsonFile } = require('@expo/json-file') as typeof import('@expo/json-file');
 
 /**
  * Clone the expo/expo repository and install dependencies.
@@ -37,6 +34,15 @@ export async function setupExpoRepoAsync(
   console.log(`Running \`yarn install\` in ${expoRepoPath}`);
   console.time('Installed dependencies in expo repository');
   await setupDependenciesAsync(expoRepoPath, nightlyVersion);
+
+  // log-box on-demand bundle doesn't work well in out-of-tree setups
+  await fs.promises.rm(
+    path.join(expoRepoPath, 'packages', '@expo', 'log-box', '.bundle-on-demand'),
+    {
+      force: true,
+    }
+  );
+
   try {
     await runAsync('yarn', ['install'], { cwd: expoRepoPath });
   } catch (e) {
@@ -67,11 +73,11 @@ export async function packExpoBareTemplateTarballAsync(
 
 async function setupDependenciesAsync(expoRepoPath: string, nightlyVersion: string) {
   const packageJsonPath = path.join(expoRepoPath, 'package.json');
-  const packageJson = await JsonFile.readAsync(packageJsonPath);
+  const packageJson = await readJsonFileAsync(packageJsonPath);
   const resolutions: Record<string, string> =
     (packageJson.resolutions as Record<string, string>) ?? {};
   for (const name of REACT_NATIVE_TRANSITIVE_DEPENDENCIES) {
     resolutions[name] = `${nightlyVersion}`;
   }
-  await JsonFile.mergeAsync(packageJsonPath, { resolutions });
+  await mergeJsonFilesAsync(packageJsonPath, { resolutions });
 }

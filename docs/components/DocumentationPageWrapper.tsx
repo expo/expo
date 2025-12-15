@@ -1,7 +1,7 @@
 import GithubSlugger from 'github-slugger';
 import type { PropsWithChildren } from 'react';
 
-import { HeadingManager } from '~/common/headingManager';
+import { createHeadingManager } from '~/common/headingManager';
 import { HeadingsContext } from '~/common/withHeadingManager';
 import DocumentationPage from '~/components/DocumentationPage';
 import { PageApiVersionProvider } from '~/providers/page-api-version';
@@ -16,7 +16,7 @@ type DocumentationElementsProps = PropsWithChildren<{
 
 export function DocumentationPageWrapper(props: DocumentationElementsProps) {
   const slugger = new GithubSlugger();
-  const manager = new HeadingManager(slugger, {
+  const manager = createHeadingManager(slugger, {
     ...props.meta,
     headings: props.headings,
   });

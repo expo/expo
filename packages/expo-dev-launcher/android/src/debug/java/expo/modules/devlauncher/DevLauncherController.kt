@@ -5,14 +5,17 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.UiThread
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactApplication
+import com.facebook.react.ReactHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext
-import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.DevLauncherMetadataHelper
 import expo.modules.devlauncher.helpers.DevLauncherUrl
@@ -20,84 +23,62 @@ import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
 import expo.modules.devlauncher.helpers.hasUrlQueryParam
 import expo.modules.devlauncher.helpers.isDevLauncherUrl
 import expo.modules.devlauncher.helpers.runBlockingOnMainThread
-import expo.modules.devlauncher.koin.DevLauncherKoinComponent
-import expo.modules.devlauncher.koin.DevLauncherKoinContext
-import expo.modules.devlauncher.koin.devLauncherKoin
-import expo.modules.devlauncher.koin.optInject
 import expo.modules.devlauncher.launcher.DevLauncherActivity
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
-import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
+import expo.modules.devlauncher.launcher.DevLauncherIntentRegistry
 import expo.modules.devlauncher.launcher.DevLauncherLifecycle
 import expo.modules.devlauncher.launcher.DevLauncherNetworkInterceptor
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
-import expo.modules.devlauncher.launcher.DevLauncherReactHost
-import expo.modules.devlauncher.launcher.DevLauncherReactNativeHost
 import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
 import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
 import expo.modules.devlauncher.launcher.errors.DevLauncherUncaughtExceptionHandler
-import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoaderFactoryInterface
+import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoaderFactory
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import expo.modules.devlauncher.services.DependencyInjection
-import expo.modules.devlauncher.tests.DevLauncherTestInterceptor
-import expo.modules.devmenu.DevMenuManager
+import expo.modules.kotlin.weak
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
-import org.koin.core.component.get
-import org.koin.core.component.inject
-import org.koin.dsl.module
-
-// Use this to load from a development server for the development client launcher UI
-// private val DEV_LAUNCHER_HOST = "10.0.0.175:8090";
-private val DEV_LAUNCHER_HOST: String? = null
 
 private const val NEW_ACTIVITY_FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK or
   Intent.FLAG_ACTIVITY_CLEAR_TASK or
   Intent.FLAG_ACTIVITY_NO_ANIMATION
 
-class DevLauncherController private constructor() :
-  DevLauncherKoinComponent, DevLauncherControllerInterface {
-  private val context: Context by lazy {
-    DevLauncherKoinContext.app.koin.get()
-  }
-  override val appHost: ReactHostWrapper by inject()
-  private val httpClient: OkHttpClient by inject()
-  private val lifecycle: DevLauncherLifecycle by inject()
-  private val pendingIntentRegistry: DevLauncherIntentRegistryInterface by inject()
-  private val installationIDHelper: DevLauncherInstallationIDHelper by inject()
-  val internalUpdatesInterface: UpdatesInterface? by optInject()
-  var devMenuManager: DevMenuManager = DevMenuManager
+class DevLauncherController private constructor(
+  context: Context,
+  override val appHost: ReactHost
+) : DevLauncherControllerInterface {
+  private val contextHolder = context.weak()
+  val context: Context
+    get() = checkNotNull(contextHolder.get()) {
+      "DevLauncherController's context reference is null"
+    }
+  val nullableContext: Context?
+    get() = contextHolder.get()
+
+  val httpClient by lazy { OkHttpClient() }
+  val lifecycle by lazy { DevLauncherLifecycle() }
+  private val pendingIntentRegistry by lazy { DevLauncherIntentRegistry() }
+  private val installationIDHelper by lazy { DevLauncherInstallationIDHelper() }
+
+  private var _updatesInterface: UpdatesInterface? = null
   override var updatesInterface: UpdatesInterface?
-    get() = internalUpdatesInterface
+    get() = _updatesInterface
     set(value) = run {
       if (value != null) {
-        DependencyInjection.appService.setUpUpdateInterface(value, context)
+        DependencyInjection.appService?.setUpUpdateInterface(value, context)
       }
-
-      DevLauncherKoinContext.app.koin.loadModules(
-        listOf(
-          module {
-            single { value }
-          }
-        )
-      )
+      _updatesInterface = value
     }
 
   override val coroutineScope = CoroutineScope(Dispatchers.Default)
-
-  override val devClientHost by lazy {
-    ReactHostWrapper(
-      reactNativeHost = DevLauncherReactNativeHost(context as Application, DEV_LAUNCHER_HOST),
-      reactHostProvider = { DevLauncherReactHost.create(context as Application, DEV_LAUNCHER_HOST) }
-    )
-  }
 
   private val recentlyOpedAppsRegistry = DevLauncherRecentlyOpenedAppsRegistry(context)
   override var manifest: Manifest? = null
@@ -108,7 +89,6 @@ class DevLauncherController private constructor() :
 
   override var latestLoadedApp: Uri? = null
   override var useDeveloperSupport = true
-  var canLaunchDevMenuOnStart = false
 
   enum class Mode {
     LAUNCHER,
@@ -118,6 +98,10 @@ class DevLauncherController private constructor() :
   override var mode = Mode.LAUNCHER
 
   private var appIsLoading = false
+
+  private val _isLoadingToBundler = mutableStateOf(false)
+  val isLoadingToBundler: State<Boolean>
+    get() = _isLoadingToBundler
 
   private var networkInterceptor: DevLauncherNetworkInterceptor? = null
   private var pendingIntentExtras: Bundle? = null
@@ -142,6 +126,7 @@ class DevLauncherController private constructor() :
         return
       }
       appIsLoading = true
+      _isLoadingToBundler.value = true
     }
 
     try {
@@ -161,20 +146,29 @@ class DevLauncherController private constructor() :
       val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl, installationIDHelper.getOrCreateInstallationID(context))
       val appIntent = createAppIntent()
 
-      DevLauncherKoinContext.app.koin.getOrNull<UpdatesInterface>()?.reset()
+      updatesInterface?.reset()
 
-      val appLoaderFactory = get<DevLauncherAppLoaderFactoryInterface>()
+      val appLoaderFactory = DevLauncherAppLoaderFactory(
+        context,
+        appHost,
+        updatesInterface,
+        this,
+        installationIDHelper
+      )
       val appLoader = appLoaderFactory.createAppLoader(parsedUrl, parsedProjectUrl, manifestParser)
       useDeveloperSupport = appLoaderFactory.shouldUseDeveloperSupport()
       manifest = appLoaderFactory.getManifest()
       manifestURL = parsedUrl
 
-      setupDevMenu(url.toString())
+      if (url.toString().contains("disableOnboarding=1") || manifestURL?.toString()?.contains("disableOnboarding=1") == true) {
+        DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
+      }
 
       val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
       lifecycle.addListener(appLoaderListener)
       mode = Mode.APP
 
+      _isLoadingToBundler.value = false
       // Note that `launch` method is a suspend one. So the execution will be stopped here until the method doesn't finish.
       if (appLoader.launch(appIntent)) {
         recentlyOpedAppsRegistry.appWasOpened(parsedUrl.toString(), devLauncherUrl.queryParams, manifest)
@@ -186,11 +180,11 @@ class DevLauncherController private constructor() :
         mode = Mode.LAUNCHER
         manifest = null
         manifestURL = null
-        invalidateDevMenu()
       }
     } catch (e: Exception) {
       synchronized(this) {
         appIsLoading = false
+        _isLoadingToBundler.value = false
       }
       throw e
     }
@@ -234,8 +228,6 @@ class DevLauncherController private constructor() :
     manifest = null
     manifestURL = null
 
-    invalidateDevMenu()
-
     context.applicationContext.startActivity(createLauncherIntent())
   }
 
@@ -245,8 +237,8 @@ class DevLauncherController private constructor() :
       ?.let { uri ->
         // used by appetize for snack
         if (intent.getBooleanExtra("EXDevMenuDisableAutoLaunch", false)) {
-          canLaunchDevMenuOnStart = false
-          this.devMenuManager.setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart)
+          DependencyInjection.devMenuPreferences?.showsAtLaunch = false
+          DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
         }
 
         if (!isDevLauncherUrl(uri)) {
@@ -305,8 +297,8 @@ class DevLauncherController private constructor() :
     return false
   }
 
-  private fun ensureHostWasCleared(host: ReactHostWrapper, activityToBeInvalidated: ReactActivity? = null) {
-    if (host.hasInstance) {
+  private fun ensureHostWasCleared(host: ReactHost, activityToBeInvalidated: ReactActivity? = null) {
+    if (host.currentReactContext?.hasActiveReactInstance() == true) {
       runBlockingOnMainThread {
         networkInterceptor?.close()
         networkInterceptor = null
@@ -315,24 +307,9 @@ class DevLauncherController private constructor() :
     }
   }
 
-  private fun setupDevMenu(launchUrl: String) {
-    devMenuManager.setGoToHomeAction {
-      navigateToLauncher()
-    }
-    devMenuManager.currentManifest = manifest
-    devMenuManager.currentManifestURL = manifestURL.toString()
-    devMenuManager.launchUrl = launchUrl
-  }
-
-  private fun invalidateDevMenu() {
-    devMenuManager.currentManifest = null
-    devMenuManager.currentManifestURL = null
-    devMenuManager.launchUrl = null
-  }
-
   @UiThread
-  private fun clearHost(host: ReactHostWrapper, activityToBeInvalidated: ReactActivity?) {
-    host.destroy()
+  private fun clearHost(host: ReactHost, activityToBeInvalidated: ReactActivity?) {
+    host.destroy("DevLauncher reloading app", null)
     activityToBeInvalidated?.let {
       invalidateActivity(it)
     }
@@ -415,35 +392,36 @@ class DevLauncherController private constructor() :
 
     @JvmStatic
     fun wasInitialized() =
-      DevLauncherKoinContext.app.koin.getOrNull<DevLauncherControllerInterface>() != null
+      nullableInstance != null
 
     @JvmStatic
-    val instance: DevLauncherControllerInterface
+    val instance: DevLauncherController
       get() = checkNotNull(
-        DevLauncherKoinContext.app.koin.getOrNull()
+        nullableInstance
       ) {
         "DevelopmentClientController.getInstance() was called before the module was initialized"
       }
 
     @JvmStatic
-    internal fun initialize(context: Context, reactHost: ReactHostWrapper) {
-      val testInterceptor = DevLauncherKoinContext.app.koin.get<DevLauncherTestInterceptor>()
-      if (!testInterceptor.allowReinitialization()) {
-        check(!wasInitialized()) { "DevelopmentClientController was initialized." }
+    var nullableInstance: DevLauncherController? = null
+
+    @JvmStatic
+    internal fun initialize(context: Context, reactHost: ReactHost) {
+      try {
+        val splashScreenManagerClass = Class.forName("expo.modules.splashscreen.SplashScreenManager")
+        val splashScreenManager = splashScreenManagerClass
+          .kotlin
+          .objectInstance
+        splashScreenManagerClass.getMethod("hide")
+          .invoke(splashScreenManager)
+      } catch (e: Throwable) {
+        Log.e("DevLauncherController", "Failed to hide splash screen", e)
       }
-      DevLauncherKoinContext.app.koin.loadModules(
-        listOf(
-          module {
-            single { context }
-            single { reactHost }
-          }
-        ),
-        allowOverride = true
-      )
 
-      val controller = DevLauncherController()
-      DevLauncherKoinContext.app.koin.declare<DevLauncherControllerInterface>(controller)
+      val controller = DevLauncherController(context, reactHost)
+      DependencyInjection.init(context, controller)
 
+      nullableInstance = controller
       if (!sErrorHandlerWasInitialized && context is Application) {
         val handler = DevLauncherUncaughtExceptionHandler(
           controller,
@@ -456,33 +434,39 @@ class DevLauncherController private constructor() :
     }
 
     @JvmStatic
-    fun initialize(context: Context, reactHost: ReactHostWrapper, launcherClass: Class<*>? = null) {
+    fun initialize(context: Context, reactHost: ReactHost, launcherClass: Class<*>? = null) {
       initialize(context, reactHost)
       sLauncherClass = launcherClass
     }
 
     @JvmStatic
     fun initialize(reactApplication: ReactApplication, additionalPackages: List<ReactPackage>? = null, launcherClass: Class<*>? = null) {
-      initialize(reactApplication as Context, ReactHostWrapper(reactApplication.reactNativeHost, { reactApplication.reactHost }))
+      val reactHost = reactApplication.reactHost
+      checkNotNull(reactHost) {
+        "DevLauncherController.initialize() was called before reactHost was initialized"
+      }
+
+      initialize(reactApplication as Context, reactHost)
       sAdditionalPackages = additionalPackages
       sLauncherClass = launcherClass
     }
 
     @JvmStatic
     fun wrapReactActivityDelegate(activity: ReactActivity, devLauncherReactActivityDelegateSupplier: DevLauncherReactActivityDelegateSupplier): ReactActivityDelegate {
-      devLauncherKoin()
-        .get<DevLauncherLifecycle>()
+      // Set activity class as launcher for createBasicAppIntent() to correctly identify the React Native Intent when launching,
+      // otherwise it will just use the main app intent, which is not always true in brownfield.
+      sLauncherClass = activity::class.java
+
+      instance.lifecycle
         .delegateWillBeCreated(activity)
 
-      return devLauncherKoin()
-        .get<DevLauncherControllerInterface>()
+      return instance
         .getCurrentReactActivityDelegate(activity, devLauncherReactActivityDelegateSupplier)
     }
 
     @JvmStatic
     fun tryToHandleIntent(activity: ReactActivity, intent: Intent): Boolean {
-      return devLauncherKoin()
-        .get<DevLauncherControllerInterface>()
+      return instance
         .handleIntent(intent, activityToBeInvalidated = activity)
     }
   }

@@ -1,0 +1,42 @@
+---
+title: Divider
+description: A SwiftUI Divider component for creating visual separators.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A visual element that can be used to separate other content.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+```tsx
+import { Divider, Host, VStack, Text } from '@expo/ui/swift-ui';
+
+function DividerExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack>
+        <Text>First section</Text>
+        <Divider />
+        <Text>Second section</Text>
+        <Divider />
+        <Text>Third section</Text>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/divider) for more information.
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/divider" apiName="Divider" />

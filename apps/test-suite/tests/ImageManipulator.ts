@@ -1,5 +1,5 @@
 import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { manipulateAsync, ImageManipulator, FlipType, SaveFormat } from 'expo-image-manipulator';
 import { Platform } from 'react-native';
 

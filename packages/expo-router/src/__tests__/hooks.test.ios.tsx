@@ -1,20 +1,21 @@
-import { renderHook as tlRenderHook } from '@testing-library/react-native';
+import { renderHook as tlRenderHook, act } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
 import { expectType } from 'tsd';
 
-import { ExpoRoot, Slot, router } from '../exports';
+import { ExpoRoot, router, Slot } from '../exports';
 import {
   useGlobalSearchParams,
   useLocalSearchParams,
-  useSearchParams,
   usePathname,
-  useSegments,
   useRootNavigationState,
+  useSearchParams,
+  useSegments,
+  useLoaderData,
 } from '../hooks';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
-import { act, renderRouter } from '../testing-library';
+import { renderRouter } from '../testing-library';
 import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs';
 
 /*
@@ -540,7 +541,7 @@ describe(useRootNavigationState, () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -581,7 +582,7 @@ describe(useRootNavigationState, () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -626,7 +627,7 @@ describe(useRootNavigationState, () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -664,7 +665,7 @@ describe(useRootNavigationState, () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -692,5 +693,52 @@ describe(useRootNavigationState, () => {
       stale: false,
       type: 'stack',
     });
+  });
+});
+
+describe(useLoaderData, () => {
+  const originalWindow = global.window;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    global.window = {
+      location: { origin: 'http://localhost:8081' },
+    } as any;
+  });
+
+  afterEach(() => {
+    global.window = originalWindow;
+    delete (globalThis as any).__EXPO_ROUTER_LOADER_DATA__;
+  });
+
+  it('retrieves data from globalThis.__EXPO_ROUTER_LOADER_DATA__', () => {
+    const asyncLoader = async () => ({ data: 'test' });
+
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/index': { some: 'data' },
+    };
+
+    const { result } = renderHook(() => useLoaderData(asyncLoader), ['index'], {
+      initialUrl: '/',
+    });
+
+    expect(result.current).toEqual({ some: 'data' });
+  });
+
+  it(`uses the loader function's return types`, () => {
+    const asyncLoader = async () => {
+      return { user: { id: 1, name: 'async user' }, timestamp: Date.now() };
+    };
+
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/index': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
+    };
+
+    type AsyncResult = Awaited<ReturnType<typeof asyncLoader>>;
+    const { result } = renderHook(() => useLoaderData<AsyncResult>(asyncLoader), ['index'], {
+      initialUrl: '/',
+    });
+
+    expectType<{ user: { id: number; name: string }; timestamp: number }>(result.current);
   });
 });

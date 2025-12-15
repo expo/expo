@@ -14,7 +14,7 @@ protocol DynamicModuleWrapperProtocol {
  Unfortunately, we can't use just one class because React Native checks for duplicated classes.
  We're generating its subclasses in runtime as a workaround.
  */
-@objc
+@objc(EXViewModuleWrapper)
 public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtocol {
   /**
    A reference to the module holder that stores the module definition.
@@ -90,7 +90,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   @objc
   public func viewName() -> String {
-    guard let moduleHolder, let viewDefinition else {
+    guard let viewDefinition else {
       fatalError("Failed to create ModuleHolder or a viewDefinition")
     }
     return self.isDefaultModuleView ? DEFAULT_MODULE_VIEW : viewDefinition.name
@@ -160,4 +160,4 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
 }
 
 // The direct event implementation can be cached and lazy-loaded (global and static variables are lazy by default in Swift).
-let directEventBlockImplementation = imp_implementationWithBlock({ ["RCTDirectEventBlock"] } as @convention(block) () -> [String])
+nonisolated(unsafe) let directEventBlockImplementation = imp_implementationWithBlock({ ["RCTDirectEventBlock"] } as @convention(block) () -> [String])

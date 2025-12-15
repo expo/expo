@@ -21,12 +21,23 @@ public final class SQLiteModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoSQLite")
 
-    Constants {
-      let defaultDatabaseDirectory =
-        appContext?.config.documentDirectory?.appendingPathComponent("SQLite").standardized.path
-      return [
-        "defaultDatabaseDirectory": defaultDatabaseDirectory
+    Constant("defaultDatabaseDirectory") {
+      #if os(tvOS)
+      return appContext?.config.cacheDirectory?.appendingPathComponent("SQLite").standardized.path
+      #else
+      return appContext?.config.documentDirectory?.appendingPathComponent("SQLite").standardized.path
+      #endif
+    }
+
+    Constant("bundledExtensions") {
+      var bundledExtensions: [String: [String: String?]] = [:]
+      #if WITH_SQLITE_VEC
+      bundledExtensions["sqlite-vec"] = [
+        "libPath": Bundle(identifier: "sqlite-vec")?.path(forResource: "vec", ofType: ""),
+        "entryPoint": "sqlite3_vec_init"
       ]
+      #endif
+      return bundledExtensions
     }
 
     Events("onDatabaseChange")
@@ -57,7 +68,7 @@ public final class SQLiteModule: Module {
     AsyncFunction("importAssetDatabaseAsync") { (databasePath: String, assetDatabasePath: String, forceOverwrite: Bool) in
       let path = try ensureDatabasePathExists(path: databasePath)
       let fileManager = FileManager.default
-      if fileManager.fileExists(atPath: path.standardizedFileURL.path) && !forceOverwrite {
+      if fileManager.fileExists(atPath: path.toFilePath()) && !forceOverwrite {
         return
       }
       guard let assetPath = Utilities.urlFrom(string: assetDatabasePath)?.path,
@@ -65,7 +76,7 @@ public final class SQLiteModule: Module {
         throw DatabaseNotFoundException(assetDatabasePath)
       }
       try? fileManager.removeItem(atPath: path.absoluteString)
-      try fileManager.copyItem(atPath: assetPath, toPath: path.standardizedFileURL.path)
+      try fileManager.copyItem(atPath: assetPath, toPath: path.toFilePath())
     }.runOnQueue(moduleQueue)
 
     AsyncFunction("ensureDatabasePathExistsAsync") { (databasePath: String) in
@@ -100,7 +111,7 @@ public final class SQLiteModule: Module {
           }
 
           let path = try ensureDatabasePathExists(path: databasePath)
-          if exsqlite3_open(path.standardizedFileURL.path, &db) != SQLITE_OK {
+          if exsqlite3_open(path.toFilePath(), &db) != SQLITE_OK {
             throw DatabaseException()
           }
         }
@@ -165,6 +176,13 @@ public final class SQLiteModule: Module {
       }.runOnQueue(moduleQueue)
       Function("createSessionSync") { (database: NativeDatabase, session: NativeSession, dbName: String) in
         try sessionCreate(database: database, session: session, dbName: dbName)
+      }
+
+      AsyncFunction("loadExtensionAsync") { (database: NativeDatabase, libPath: String, entryPoint: String?) in
+        try loadExtension(database: database, libPath: libPath, entryPoint: entryPoint)
+      }.runOnQueue(moduleQueue)
+      Function("loadExtensionSync") { (database: NativeDatabase, libPath: String, entryPoint: String?) in
+        try loadExtension(database: database, libPath: libPath, entryPoint: entryPoint)
       }
     }
 
@@ -296,7 +314,7 @@ public final class SQLiteModule: Module {
     guard let pathUrl = URL(string: path) else {
       throw DatabaseInvalidPathException(path)
     }
-    fileSystem.ensureDirExists(withPath: pathUrl.deletingLastPathComponent().standardizedFileURL.path)
+    fileSystem.ensureDirExists(withPath: pathUrl.deletingLastPathComponent().toFilePath())
 
     return pathUrl
   }
@@ -497,7 +515,7 @@ public final class SQLiteModule: Module {
     if databasePath == MEMORY_DB_NAME {
       return
     }
-    let path = try ensureDatabasePathExists(path: databasePath).standardizedFileURL.path
+    let path = try ensureDatabasePathExists(path: databasePath).toFilePath()
 
     if !FileManager.default.fileExists(atPath: path) {
       throw DatabaseNotFoundException(path)
@@ -546,6 +564,18 @@ public final class SQLiteModule: Module {
       }
     },
     contextPair.toOpaque())
+  }
+
+  private func loadExtension(database: NativeDatabase, libPath: String, entryPoint: String?) throws {
+    try maybeThrowForClosedDatabase(database)
+    exsqlite3_enable_load_extension(database.pointer, 1)
+    var error: UnsafeMutablePointer<CChar>?
+    let ret = exsqlite3_load_extension(database.pointer, libPath.cString(using: .utf8), entryPoint, &error)
+    if ret != SQLITE_OK, let error = error {
+      let errorString = String(cString: error)
+      exsqlite3_free(error)
+      throw SQLiteErrorException(errorString)
+    }
   }
 
   private func getColumnNames(statement: NativeStatement) throws -> SQLiteColumnNames {
@@ -698,7 +728,7 @@ public final class SQLiteModule: Module {
       let nextStmt = exsqlite3_next_stmt(database.pointer, currentStmt)
       let ret = exsqlite3_finalize(currentStmt)
       if ret != SQLITE_OK {
-        ExpoModulesCore.log.warn("sqlite3_finalize failed: \(convertSqlLiteErrorToString(database))")
+        ExpoModulesCore.log.warn("exsqlite3_finalize failed: \(convertSqlLiteErrorToString(database))")
       }
       stmt = nextStmt
     }

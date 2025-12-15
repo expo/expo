@@ -1,5 +1,7 @@
+import { usePreventRemove } from '@react-navigation/native';
 import { Link } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const styles = StyleSheet.create({
   button: {
@@ -15,6 +17,10 @@ const styles = StyleSheet.create({
 });
 
 export default function Page() {
+  const [isPrevented, setIsPrevented] = useState(false);
+  usePreventRemove(isPrevented, () => {
+    Alert.alert('Prevented!', 'You cannot dismiss this modal right now.');
+  });
   return (
     <ScrollView style={{ padding: 16 }}>
       <Text
@@ -38,6 +44,12 @@ export default function Page() {
           Modal (transparent)
         </Link>
       </View>
+      <Pressable
+        onPress={() => {
+          setIsPrevented((p) => !p);
+        }}>
+        <Text style={styles.button}>{isPrevented ? 'Disable' : 'Enable'} preventRemove</Text>
+      </Pressable>
     </ScrollView>
   );
 }

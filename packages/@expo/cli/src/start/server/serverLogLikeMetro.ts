@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import type { SourcePosition } from '@expo/metro/metro-source-map/Consumer/types';
 import { INTERNAL_CALLSITES_REGEX } from '@expo/metro-config';
 import chalk from 'chalk';
 import path from 'path';
-// @ts-expect-error
 import { mapSourcePosition } from 'source-map-support';
 import * as stackTraceParser from 'stacktrace-parser';
 
@@ -19,16 +19,29 @@ import { getStackAsFormattedLog } from './metro/metroErrorInterface';
 
 const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
+const CONSOLE_METHODS = [
+  'trace',
+  'info',
+  'error',
+  'warn',
+  'log',
+  'group',
+  'groupCollapsed',
+  'groupEnd',
+  'debug',
+] as const;
+
+type ConsoleMethod = (typeof CONSOLE_METHODS)[number];
+
 const groupStack: any = [];
 let collapsedGuardTimer: ReturnType<typeof setTimeout> | undefined;
 
 export function logLikeMetro(
   originalLogFunction: (...args: any[]) => void,
-  level: string,
-  platform: string,
+  level: ConsoleMethod,
+  platform: 'BRIDGE' | 'NOBRIDGE' | 'λ' | null,
   ...data: any[]
 ) {
-  // @ts-expect-error
   const logFunction = console[level] && level !== 'trace' ? level : 'log';
   const color =
     level === 'error'
@@ -68,7 +81,8 @@ export function logLikeMetro(
       data[data.length - 1] = lastItem.trimEnd();
     }
 
-    const modePrefix = platform === '' ? '' : chalk.bold`${platform} `;
+    const modePrefix =
+      platform && platform !== 'BRIDGE' && platform !== 'NOBRIDGE' ? chalk.bold`${platform} ` : '';
     originalLogFunction(
       modePrefix +
         color.bold(` ${logFunction.toUpperCase()} `) +
@@ -83,14 +97,17 @@ const SERVER_STACK_MATCHER = new RegExp(
   `${escapedPathSep}(react-dom|metro-runtime|expo-router)${escapedPathSep}`
 );
 
-export async function maybeSymbolicateAndFormatReactErrorLogAsync(
+export async function maybeSymbolicateAndFormatJSErrorStackLogAsync(
   projectRoot: string,
-  level: 'error' | 'warn',
+  level: 'error' | 'warn' | (string & {}),
   error: {
     message: string;
     stack: StackFrame[];
   }
-): Promise<string> {
+): Promise<{
+  isFallback: boolean;
+  stack: string;
+}> {
   const log = new LogBoxLog({
     level: level as 'error' | 'warn',
     message: {
@@ -105,18 +122,23 @@ export async function maybeSymbolicateAndFormatReactErrorLogAsync(
 
   await new Promise((res) => log.symbolicate('stack', res));
 
-  const symbolicatedErrorMessageAndStackLog = [
-    log.message.content,
-    getStackAsFormattedLog(projectRoot, {
-      stack: log.symbolicated?.stack?.stack ?? [],
-      codeFrame: log.codeFrame,
-    }),
-  ].join('\n\n');
+  const formatted = getStackAsFormattedLog(projectRoot, {
+    stack: log.symbolicated?.stack?.stack ?? [],
+    codeFrame: log.codeFrame,
+  });
 
-  return symbolicatedErrorMessageAndStackLog;
+  // NOTE: Message is printed above stack by the default Metro logic. So we don't need to include it here.
+  const symbolicatedErrorStackLog = `\n\n${formatted.stack}`;
+
+  return {
+    isFallback: formatted.isFallback,
+    stack: symbolicatedErrorStackLog,
+  };
 }
 
-/** Attempt to parse an error message string to an unsymbolicated stack.  */
+/**
+ * Attempt to parse an error message string to an unsymbolicated stack.
+ */
 export function parseErrorStringToObject(errorString: string) {
   // Find the first line of the possible stack trace
   const stackStartIndex = errorString.indexOf('\n    at ');
@@ -141,9 +163,12 @@ export function parseErrorStringToObject(errorString: string) {
   }
 }
 
+type ConsoleLogAugmented = typeof console.log & {
+  __polyfilled?: typeof console.log;
+};
+
 function augmentLogsInternal(projectRoot: string) {
-  const augmentLog = (name: string, fn: typeof console.log) => {
-    // @ts-expect-error: TypeScript doesn't know about polyfilled functions.
+  const augmentLog = (name: ConsoleMethod, fn: ConsoleLogAugmented) => {
     if (fn.__polyfilled) {
       return fn;
     }
@@ -169,25 +194,20 @@ function augmentLogsInternal(projectRoot: string) {
 
             try {
               const parsedStack = parseErrorStack(customStack);
-              const symbolicatedStack = parsedStack.map((line: any) => {
+              const symbolicatedStack = parsedStack.map((line) => {
+                // TODO(@kitten): Is there overlap here with metro-source-map?
                 const mapped = mapSourcePosition({
-                  source: line.file,
-                  line: line.lineNumber,
-                  column: line.column,
-                }) as {
-                  // '/Users/evanbacon/Documents/GitHub/lab/sdk51-beta/node_modules/react-native-web/dist/exports/View/index.js',
-                  source: string;
-                  line: number;
-                  column: number;
-                  // 'hrefAttrs'
-                  name: string | null;
-                };
+                  // TODO(@kitten): Check if these non-null casts are correct and cannot fail
+                  source: line.file!,
+                  line: line.lineNumber!,
+                  column: line.column!,
+                }) as SourcePosition;
 
                 const fallbackName = mapped.name ?? '<unknown>';
                 return {
-                  file: mapped.source,
-                  lineNumber: mapped.line,
-                  column: mapped.column,
+                  file: mapped.source ?? null,
+                  lineNumber: mapped.line ?? null,
+                  column: mapped.column ?? null,
                   // Attempt to preserve the react component name if possible.
                   methodName: line.methodName
                     ? line.methodName === '<unknown>'
@@ -218,12 +238,9 @@ function augmentLogsInternal(projectRoot: string) {
     return logWithStack;
   };
 
-  ['trace', 'info', 'error', 'warn', 'log', 'group', 'groupCollapsed', 'groupEnd', 'debug'].forEach(
-    (name) => {
-      // @ts-expect-error
-      console[name] = augmentLog(name, console[name]);
-    }
-  );
+  for (const name of CONSOLE_METHODS) {
+    console[name] = augmentLog(name, console[name]);
+  }
 }
 
 export function formatStackLikeMetro(projectRoot: string, stack: string) {

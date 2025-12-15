@@ -7,48 +7,22 @@
 /**
  Factory creating an instance of the dynamic type wrapper conforming to `AnyDynamicType`.
  Depending on the given type, it may return one of `DynamicArrayType`, `DynamicOptionalType`, `DynamicConvertibleType`, etc.
- Note that this goes through many type checks, thus it might be a bit more expensive than using generic type constraints,
- see the `~` prefix operator below that handles types conforming to `AnyArgument` in a faster way.
+ It does some type checks in runtime when the type's conformance/inheritance is unknown for the compiler.
+ See the `~` prefix operator overloads that are used for types known for the compiler.
+ You can add more type checks for types that don't conform to `AnyArgument`, but are allowed to be used as return types.
+ `Void` is a good example as it cannot conform to anything or language protocols that cannot be extended to implement `AnyArgument`.
  */
 private func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
-  if type is any Numeric.Type {
-    return DynamicNumberType(numberType: T.self)
-  }
-  if type is String.Type {
-    return DynamicStringType.shared
-  }
-  if let ArrayType = T.self as? AnyArray.Type {
-    return DynamicArrayType(elementType: ArrayType.getElementDynamicType())
-  }
-  if let DictionaryType = T.self as? AnyDictionary.Type {
-    return DynamicDictionaryType(valueType: DictionaryType.getValueDynamicType())
-  }
-  if let OptionalType = T.self as? any AnyOptional.Type {
-    return DynamicOptionalType(wrappedType: OptionalType.getWrappedDynamicType())
-  }
-  if let ConvertibleType = T.self as? Convertible.Type {
-    return DynamicConvertibleType(innerType: ConvertibleType)
-  }
-  if let EnumType = T.self as? any Enumerable.Type {
-    return DynamicEnumType(innerType: EnumType)
-  }
-  if let ViewType = T.self as? UIView.Type {
-    return DynamicViewType(innerType: ViewType)
-  }
-  if let SharedObjectType = T.self as? SharedObject.Type {
-    return DynamicSharedObjectType(innerType: SharedObjectType)
-  }
-  if let TypedArrayType = T.self as? AnyTypedArray.Type {
-    return DynamicTypedArrayType(innerType: TypedArrayType)
-  }
-  if T.self is Data.Type {
-    return DynamicDataType.shared
-  }
-  if let JavaScriptValueType = T.self as? any AnyJavaScriptValue.Type {
-    return DynamicJavaScriptType(innerType: JavaScriptValueType)
+  if let AnyArgumentType = T.self as? AnyArgument.Type {
+    return AnyArgumentType.getDynamicType()
   }
   if T.self == Void.self {
     return DynamicVoidType.shared
+  }
+  if T.self is Encodable.Type {
+    // There is no dedicated `~` operator overload for encodables to avoid ambiguity
+    // when the type is both `AnyArgument` and `Encodable` (e.g. strings, numeric types).
+    return DynamicEncodableType.shared
   }
   return DynamicRawType(innerType: T.self)
 }

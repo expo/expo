@@ -12,6 +12,7 @@ public func Object(@ObjectDefinitionBuilder @_implicitSelfCapture _ body: () -> 
 /**
  Definition function setting the module's constants to export.
  */
+@available(*, deprecated, message: "Use `Constant` or `Property` instead")
 public func Constants(@_implicitSelfCapture _ body: @escaping () -> [String: Any?]) -> AnyDefinition {
   return ConstantsDefinition(body: body)
 }
@@ -19,6 +20,7 @@ public func Constants(@_implicitSelfCapture _ body: @escaping () -> [String: Any
 /**
  Definition function setting the module's constants to export.
  */
+@available(*, deprecated, message: "Use `Constant` or `Property` instead")
 public func Constants(@_implicitSelfCapture _ body: @autoclosure @escaping () -> [String: Any?]) -> AnyDefinition {
   return ConstantsDefinition(body: body)
 }

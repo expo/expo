@@ -29,10 +29,4 @@ Pod::Spec.new do |s|
   s.resource_bundles = {'ExpoFileSystem_privacy' => ['PrivacyInfo.xcprivacy']}
 
   s.source_files = "**/*.{h,m,swift}"
-
-  s.exclude_files = 'Tests/'
-  s.test_spec 'Tests' do |test_spec|
-    test_spec.dependency 'ExpoModulesTestCore'
-    test_spec.source_files = 'Tests/**/*.{m,swift}'
-  end
 end

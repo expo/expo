@@ -95,6 +95,8 @@ public final class ClassDefinition: ObjectDefinition {
   }
 
   public override func decorate(object: JavaScriptObject, appContext: AppContext) throws {
+    try decorateWithStaticFunctions(object: object, appContext: appContext)
+
     // Here we actually don't decorate the input object (constructor) but its prototype.
     // Properties are intentionally skipped here — they have to decorate an instance instead of the prototype.
     let prototype = object.getProperty("prototype").getObject()
@@ -123,7 +125,7 @@ internal protocol ClassAssociatedObject {}
 
 // Basically we only need these two
 extension JavaScriptObject: ClassAssociatedObject, AnyArgument, AnyJavaScriptValue {
-  internal static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self {
+  public static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self {
     guard value.kind == .object else {
       throw Conversions.ConvertingException<JavaScriptObject>(value)
     }

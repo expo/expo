@@ -1,31 +1,27 @@
 import SwiftUI
 
 struct DevMenuActions: View {
-  let isDevLauncherInstalled: Bool
+  let canNavigateHome: Bool
   let onReload: () -> Void
   let onGoHome: () -> Void
 
   var body: some View {
-    VStack(spacing: 0) {
+    HStack {
       DevMenuActionButton(
         title: "Reload",
         icon: "arrow.clockwise",
         action: onReload
       )
+      .cornerRadius(18)
 
-      if isDevLauncherInstalled {
-        Divider()
-
+      if canNavigateHome {
         DevMenuActionButton(
           title: "Go home",
           icon: "house.fill",
           action: onGoHome
         )
+        .cornerRadius(18)
       }
     }
-    .background(Color(.systemBackground))
-    .cornerRadius(12)
-    .padding(.horizontal)
-    .padding(.vertical, 8)
   }
 }

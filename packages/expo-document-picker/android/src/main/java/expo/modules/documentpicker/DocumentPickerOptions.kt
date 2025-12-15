@@ -1,7 +1,6 @@
 package expo.modules.documentpicker
 
 import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.IsNotEmpty
 import expo.modules.kotlin.records.Record
 
 data class DocumentPickerOptions(
@@ -9,7 +8,6 @@ data class DocumentPickerOptions(
   val copyToCacheDirectory: Boolean,
 
   @Field
-  @IsNotEmpty
   val type: List<String>,
 
   @Field

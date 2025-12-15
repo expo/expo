@@ -34,6 +34,9 @@ internal struct DynamicSwiftUIViewType<ViewType: ExpoSwiftUIView>: AnyDynamicTyp
     guard Thread.isMainThread else {
       throw NonMainThreadException()
     }
+    if let view = appContext.findView(withTag: viewTag, ofType: ExpoSwiftUI.SwiftUIVirtualView<ViewType.Props, ViewType>.self) {
+      return view.contentView
+    }
     guard let view = appContext.findView(withTag: viewTag, ofType: AnyExpoSwiftUIHostingView.self) else {
       throw Exceptions.SwiftUIViewNotFound((tag: viewTag, type: innerType.self))
     }

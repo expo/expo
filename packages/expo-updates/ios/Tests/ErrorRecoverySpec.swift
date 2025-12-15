@@ -271,7 +271,9 @@ class ErrorRecoverySpec : ExpoSpec {
           keep: true,
           status: .Status0_Unused,
           isDevelopmentMode: false,
-          assetsFromManifest: []
+          assetsFromManifest: [],
+          url: URL(string: "https://example.com"),
+          requestHeaders: [:]
         )
         mockUpdate.successfulLaunchCount = 1
         
@@ -344,7 +346,9 @@ class ErrorRecoverySpec : ExpoSpec {
           keep: true,
           status: .Status0_Unused,
           isDevelopmentMode: false,
-          assetsFromManifest: []
+          assetsFromManifest: [],
+          url: nil,
+          requestHeaders: [:]
         )
         mockUpdate.successfulLaunchCount = 1
         

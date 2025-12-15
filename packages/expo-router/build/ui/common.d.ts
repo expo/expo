@@ -1,11 +1,10 @@
 import { LinkingOptions, ParamListBase, PartialRoute, Route } from '@react-navigation/native';
-import { ViewProps, View, SafeAreaView } from 'react-native';
 import type { ExpoTabActionType } from './TabRouter';
 import { UrlObject } from '../LocationProvider';
 import { RouteNode } from '../Route';
 import { Href } from '../types';
-export declare const ViewSlot: React.ForwardRefExoticComponent<ViewProps & React.RefAttributes<View>>;
-export declare const SafeAreaViewSlot: React.ForwardRefExoticComponent<ViewProps & React.RefAttributes<SafeAreaView>>;
+import { Slot } from './Slot';
+export declare const ViewSlot: Slot<import("react-native").ViewProps, import("react").Component<import("react-native").ViewProps, {}, any>>;
 export type ScreenTrigger = {
     type: 'internal';
     href: Href;

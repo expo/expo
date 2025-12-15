@@ -6,9 +6,107 @@
 
 ### 🎉 New features
 
-- Add experimental support for macOS. ([#37629](https://github.com/expo/expo/pull/37629) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Remove `ExpoAppDelegate` inheritance requirement ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add patch content negotiation headers. ([#40583](https://github.com/expo/expo/pull/40583) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
+
+- [iOS] forward `PROJECT_ROOT` env var to create updates resources script ([#41418](https://github.com/expo/expo/pull/41418) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
+- [android] Remove references to reactNativeHost ([#40182](https://github.com/expo/expo/pull/40182) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Reverted "Removed Detox testing workaround code on Android." ([#41204](https://github.com/expo/expo/pull/41204) by [@kudo](https://github.com/kudo))
+- Remove unused `js-yaml` dependency. ([#41202](https://github.com/expo/expo/pull/41202) by [@kudo](https://github.com/kudo))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 29.0.14 - 2025-12-04
+
+### 💡 Others
+
+- Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
+
+## 29.0.13 - 2025-11-21
+
+### 🐛 Bug fixes
+
+- [Android] Fix issue where launch is called twice on the same database instance. ([#41152](https://github.com/expo/expo/pull/41152) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 29.0.11 - 2025-09-18
+
+### 🐛 Bug fixes
+
+- [iOS] Fix resizeMode on reload screen image. ([#39768](https://github.com/expo/expo/pull/39768) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 29.0.10 — 2025-09-11
+
+### 💡 Others
+
+- Surface iOS compilation errors in updates E2E tests. ([#39542](https://github.com/expo/expo/pull/39542) by [@douglowder](https://github.com/douglowder))
+- Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
+
+## 29.0.9 — 2025-09-10
+
+### 🐛 Bug fixes
+
+- [Android] Propagate controller scope to state machine. ([#39526](https://github.com/expo/expo/pull/39526) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 29.0.8 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 29.0.7 — 2025-08-31
+
+### 💡 Others
+
+- [iOS] Migrate multipart parsers to Swift. ([#39144](https://github.com/expo/expo/pull/39144) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 29.0.6 — 2025-08-28
+
+_This version does not introduce any user-facing changes._
+
+## 29.0.5 — 2025-08-26
+
+_This version does not introduce any user-facing changes._
+
+## 29.0.4 — 2025-08-21
+
+### 🐛 Bug fixes
+
+- Fix `unexpected ',' separator` issue ([#39027](https://github.com/expo/expo/pull/39027) by [@phil9l](https://github.com/phil9l))
+
+## 29.0.3 — 2025-08-18
+
+_This version does not introduce any user-facing changes._
+
+## 29.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 29.0.1 — 2025-08-15
+
+### 💡 Others
+
+- Bump `@vercel/ncc` build ([#38801](https://github.com/expo/expo/pull/38801) by [@kitten](https://github.com/kitten))
+
+## 29.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- Add experimental support for macOS. ([#37629](https://github.com/expo/expo/pull/37629) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add support for a customisable reloading view when `reloadAsync` is called. ([#38074](https://github.com/expo/expo/pull/38074) by [@alanjhughes](https://github.com/alanjhughes)), ([#38362](https://github.com/expo/expo/pull/38362) by [@alanjhughes](https://github.com/alanjhughes)) and ([#38409](https://github.com/expo/expo/pull/38409) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add `downloadProgress` state to the `useUpdates` hook to support listening to overall asset download progress. ([#38307](https://github.com/expo/expo/pull/38307)) by [@nishan](https://github.com/intergalacticspacehighway)
+- [iOS] dev-client support for Apple TV. ([#38388](https://github.com/expo/expo/pull/38388) by [@douglowder](https://github.com/douglowder))
+- Added reload support to `setUpdateURLAndRequestHeadersOverride`. ([#38167](https://github.com/expo/expo/pull/38167), [#38180](https://github.com/expo/expo/pull/38180) by [@kudo](https://github.com/kudo))
+- Added `setUpdateRequestHeadersOverride` to allow runtime `requestHeaders` override. ([#38623](https://github.com/expo/expo/pull/38623), [#38628](https://github.com/expo/expo/pull/38628), [#38624](https://github.com/expo/expo/pull/38624) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fixed imports after upgrading to Metro 0.83 ([#38375](https://github.com/expo/expo/pull/38375) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
@@ -22,6 +120,16 @@
 - [CI] Removed Detox dependency and unused files in E2E code. ([#37751](https://github.com/expo/expo/pull/37751) by [@douglowder](https://github.com/douglowder))
 - Updates imports from `@expo/config`, `@expo/config-plugins` to `expo/config`, `expo/config-plugins`. ([#37860](https://github.com/expo/expo/pull/37860) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Migrate loaders and file downloader to coroutines. ([#37959](https://github.com/expo/expo/pull/37959) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix procedure scope no surviving app reloads. ([#38073](https://github.com/expo/expo/pull/38073) by [@alanjhughes](https://github.com/alanjhughes))
+- [Internal] Replace dependency chain to `@expo/cli` internals with an internal entrypoint ([#38574](https://github.com/expo/expo/pull/38574) by [@kitten](https://github.com/kitten))
+
+### 📚 3rd party library updates
+
+- Bumped `form-data@4.0.4`. ([#38214](https://github.com/expo/expo/pull/38214) by [@kudo](https://github.com/kudo))
+
+## 0.28.17 - 2025-07-08
+
+_This version does not introduce any user-facing changes._
 
 ## 0.28.16 - 2025-07-03
 

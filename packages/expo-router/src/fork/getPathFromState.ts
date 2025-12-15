@@ -4,6 +4,7 @@ import * as queryString from 'query-string';
 
 import * as expo from './getPathFromState-forks';
 import type { ExpoConfigItem, ExpoOptions } from './getPathFromState-forks';
+import { removeInternalExpoRouterParams } from '../navigationParams';
 
 // START FORK
 export type Options<ParamList extends object> = ExpoOptions & {
@@ -209,7 +210,8 @@ export function getPathDataFromState<ParamList extends object>(
           : undefined;
 
         if (screen && screens && currentOptions[route.name].screens?.[screen]) {
-          route = { ...screens[screen], name: screen, key: screen };
+          const nestedParams = (route.params as { params?: object } | undefined)?.params;
+          route = { ...screens[screen], name: screen, key: screen, params: nestedParams };
           currentOptions = screens;
         } else {
           hasNext = false;
@@ -300,6 +302,7 @@ export function getPathDataFromState<ParamList extends object>(
 
       // START FORK
       delete focusedParams['#'];
+      focusedParams = removeInternalExpoRouterParams(focusedParams);
       // END FORK
 
       const query = queryString.stringify(focusedParams, { sort: false });

@@ -1,12 +1,24 @@
 import ExpoModulesCore
 
 public class LinkPreviewNativeModule: Module {
+  static let moduleName: String = "ExpoRouterNativeLinkPreview"
+  lazy var zoomSourceRepository = LinkZoomTransitionsSourceRepository(logger: appContext?.jsLogger)
+  lazy var zoomAlignmentViewRepository = LinkZoomTransitionsAlignmentViewRepository()
+
   public func definition() -> ModuleDefinition {
-    Name("ExpoRouterNativeLinkPreview")
+    Name(LinkPreviewNativeModule.moduleName)
 
     View(NativeLinkPreviewView.self) {
       Prop("nextScreenId") { (view: NativeLinkPreviewView, nextScreenId: String) in
-        view.setNextScreenId(nextScreenId)
+        view.nextScreenId = nextScreenId
+      }
+
+      Prop("tabPath") { (view: NativeLinkPreviewView, tabPath: TabPathPayload) in
+        view.tabPath = tabPath
+      }
+
+      Prop("disableForceFlatten") { (_: NativeLinkPreviewView, _: Bool) in
+        // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
       }
 
       Events(
@@ -15,8 +27,7 @@ public class LinkPreviewNativeModule: Module {
         "onWillPreviewOpen",
         "onDidPreviewOpen",
         "onPreviewWillClose",
-        "onPreviewDidClose",
-        "onActionSelected"
+        "onPreviewDidClose"
       )
     }
 
@@ -38,17 +49,102 @@ public class LinkPreviewNativeModule: Module {
     }
 
     View(LinkPreviewNativeActionView.self) {
-      Prop("id") { (view: LinkPreviewNativeActionView, id: String) in
-        view.id = id
-      }
       Prop("title") { (view: LinkPreviewNativeActionView, title: String) in
         view.title = title
       }
-      Prop("icon") { (view: LinkPreviewNativeActionView, icon: String) in
+      Prop("identifier") { (view: LinkPreviewNativeActionView, identifier: String) in
+        view.identifier = identifier
+      }
+      Prop("icon") { (view: LinkPreviewNativeActionView, icon: String?) in
         view.icon = icon
+      }
+      Prop("disabled") { (view: LinkPreviewNativeActionView, disabled: Bool?) in
+        view.disabled = disabled
+      }
+      Prop("destructive") { (view: LinkPreviewNativeActionView, destructive: Bool?) in
+        view.destructive = destructive
+      }
+      Prop("singleSelection") { (view: LinkPreviewNativeActionView, singleSelection: Bool) in
+        view.singleSelection = singleSelection
+      }
+      Prop("displayAsPalette") { (view: LinkPreviewNativeActionView, displayAsPalette: Bool) in
+        view.displayAsPalette = displayAsPalette
+      }
+      Prop("isOn") { (view: LinkPreviewNativeActionView, isOn: Bool?) in
+        view.isOn = isOn
+      }
+      Prop("keepPresented") { (view: LinkPreviewNativeActionView, keepPresented: Bool?) in
+        view.keepPresented = keepPresented
+      }
+      Prop("displayInline") { (view: LinkPreviewNativeActionView, displayInline: Bool) in
+        view.displayInline = displayInline
+      }
+
+      Events("onSelected")
+    }
+
+    View(LinkZoomTransitionSource.self) {
+      Prop("disableForceFlatten") { (_: LinkZoomTransitionSource, _: Bool) in
+        // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
+      }
+      Prop("identifier") { (view: LinkZoomTransitionSource, identifier: String) in
+        view.identifier = identifier
+      }
+      Prop("alignment") { (view: LinkZoomTransitionSource, alignment: LinkSourceAlignmentRect?) in
+        if let alignment = alignment {
+          view.alignment = CGRect(
+            x: alignment.x,
+            y: alignment.y,
+            width: alignment.width,
+            height: alignment.height
+          )
+        } else {
+          view.alignment = nil
+        }
+      }
+      Prop("animateAspectRatioChange") { (view: LinkZoomTransitionSource, value: Bool?) in
+        view.animateAspectRatioChange = value ?? false
       }
     }
 
-    View(NativeLinkPreviewTrigger.self) {}
+    View(LinkZoomTransitionEnabler.self) {
+      Prop("zoomTransitionSourceIdentifier") {
+        (view: LinkZoomTransitionEnabler, identifier: String) in
+        view.zoomTransitionSourceIdentifier = identifier
+      }
+      Prop("disableForceFlatten") { (_: LinkZoomTransitionEnabler, _: Bool) in
+        // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
+      }
+
+      Prop("preventInteractiveDismissal") { (view: LinkZoomTransitionEnabler, prevent: Bool) in
+        view.isPreventingInteractiveDismissal = prevent
+      }
+    }
+
+    View(LinkZoomTransitionAlignmentRectDetector.self) {
+      Prop("identifier") {
+        (view: LinkZoomTransitionAlignmentRectDetector, identifier: String) in
+        view.identifier = identifier
+      }
+      Prop("disableForceFlatten") { (_: LinkZoomTransitionAlignmentRectDetector, _: Bool) in
+        // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
+      }
+    }
   }
+}
+
+struct TabPathPayload: Record {
+  @Field var path: [TabStatePath]
+}
+
+struct TabStatePath: Record {
+  @Field var oldTabKey: String
+  @Field var newTabKey: String
+}
+
+struct LinkSourceAlignmentRect: Record {
+  @Field var x: Double
+  @Field var y: Double
+  @Field var width: Double
+  @Field var height: Double
 }

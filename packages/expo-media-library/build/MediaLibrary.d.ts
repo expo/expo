@@ -256,6 +256,13 @@ export type AssetsOptions = {
      * date.
      */
     createdBefore?: Date | number;
+    /**
+     * Whether to resolve full info for the assets during the query.
+     * This is useful to get the full EXIF data for images. It can fix the orientation of the image.
+     * @default false
+     * @platform android
+     */
+    resolveWithFullInfo?: boolean;
 };
 export type PagedInfo<T> = {
     /**
@@ -263,8 +270,10 @@ export type PagedInfo<T> = {
      */
     assets: T[];
     /**
-     * ID of the last fetched asset. It should be passed as `after` option in order to get the
-     * next page.
+     * A marker that indicates where the next page of results should start.
+     * On iOS, it is the ID of the last fetched asset.
+     * On Android, it is the index of the last fetched asset in the query results.
+     * This value should be passed as the `after` option to load the next page.
      */
     endCursor: string;
     /**

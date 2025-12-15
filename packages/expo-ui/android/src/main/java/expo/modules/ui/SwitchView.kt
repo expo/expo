@@ -14,7 +14,7 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.AutoSizingComposable
+import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import java.io.Serializable
@@ -58,7 +58,8 @@ class SwitchColors : Record {
 data class SwitchProps(
   val value: MutableState<Boolean> = mutableStateOf(false),
   val variant: MutableState<String> = mutableStateOf("switch"),
-  val elementColors: MutableState<SwitchColors> = mutableStateOf(SwitchColors())
+  val elementColors: MutableState<SwitchColors> = mutableStateOf(SwitchColors()),
+  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 @Composable
@@ -106,21 +107,19 @@ fun ThemedHybridSwitch(
   colors: SwitchColors,
   modifier: Modifier = Modifier
 ) {
-  DynamicTheme {
-    when (variant) {
-      "switch" -> SwitchComposable(checked, onCheckedChange, colors, modifier)
-      else -> CheckboxComposable(checked, onCheckedChange, colors, modifier)
-    }
+  when (variant) {
+    "switch" -> SwitchComposable(checked, onCheckedChange, colors, modifier)
+    else -> CheckboxComposable(checked, onCheckedChange, colors, modifier)
   }
 }
 
 class SwitchView(context: Context, appContext: AppContext) :
-  ExpoComposeView<SwitchProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<SwitchProps>(context, appContext) {
   override val props = SwitchProps()
   private val onValueChange by EventDispatcher<ValueChangeEvent>()
 
   @Composable
-  override fun Content() {
+  override fun ComposableScope.Content() {
     val (checked) = props.value
     val (variant) = props.variant
     val (colors) = props.elementColors
@@ -128,8 +127,8 @@ class SwitchView(context: Context, appContext: AppContext) :
       onValueChange(ValueChangeEvent(checked))
     }
 
-    AutoSizingComposable(shadowNodeProxy) {
-      ThemedHybridSwitch(variant, checked, onCheckedChange, colors)
-    }
+    ThemedHybridSwitch(variant, checked, onCheckedChange, colors,
+      Modifier.fromExpoModifiers(props.modifiers.value,
+        this@Content))
   }
 }

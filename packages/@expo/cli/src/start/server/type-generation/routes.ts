@@ -1,5 +1,5 @@
+import type Server from '@expo/metro/metro/Server';
 import fs from 'fs/promises';
-import { Server } from 'metro';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -44,7 +44,7 @@ export async function setupTypedRoutes(options: SetupTypedRoutesOptions) {
    */
   const typedRoutesModule = resolveFrom.silent(
     options.projectRoot,
-    'expo-router/build/typed-routes'
+    '@expo/router-server/build/typed-routes'
   );
   return typedRoutesModule ? typedRoutes(typedRoutesModule, options) : legacyTypedRoutes(options);
 }
@@ -153,7 +153,9 @@ function debounce<U, T extends (this: U, ...args: any[]) => void>(fn: T, delay: 
   let timeoutId: NodeJS.Timeout | undefined;
   return function (this: U, ...args: any[]) {
     clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn.apply(this, args), delay);
+    // NOTE(@hassankhan): The cast to `NodeJS.Timeout` below is a hack to work around an issue
+    // with TypeScript where React Native's types are being imported before Node types
+    timeoutId = setTimeout(() => fn.apply(this, args), delay) as unknown as NodeJS.Timeout;
   } as T;
 }
 

@@ -19,7 +19,9 @@ export function SettingsScreen() {
     <KeyboardAwareScrollView
       style={styles.container}
       keyboardShouldPersistTaps="always"
-      keyboardDismissMode="on-drag">
+      keyboardDismissMode="on-drag"
+      showsVerticalScrollIndicator={false}
+      contentInsetAdjustmentBehavior="automatic">
       <CappedWidthContainerView style={padding.padding.medium}>
         <ThemeSection />
         <Spacer.Vertical size="medium" />

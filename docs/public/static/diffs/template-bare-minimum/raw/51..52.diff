@@ -1,5 +1,5 @@
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index a4b0833035..84879d83ac 100644
+index a4b08330359..84879d83acd 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -4,27 +4,6 @@ apply plugin: "com.facebook.react"
@@ -82,7 +82,7 @@ index a4b0833035..84879d83ac 100644
 -    applyNativeModulesAppBuildGradle(project)
 -}
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index 5217550826..150248b6b3 100644
+index 52175508263..150248b6b3c 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 @@ -18,13 +18,12 @@
@@ -101,7 +101,7 @@ index 5217550826..150248b6b3 100644
    </application>
  </manifest>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
-index 5f6e05ce07..e61349d130 100644
+index 5f6e05ce071..e61349d1301 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt
 @@ -10,6 +10,7 @@ import com.facebook.react.ReactPackage
@@ -135,29 +135,29 @@ index 5f6e05ce07..e61349d130 100644
        load()
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-hdpi/splashscreen_logo.png b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-hdpi/splashscreen_logo.png
 new file mode 100644
-index 0000000000..31df827b18
+index 00000000000..31df827b18b
 Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-hdpi/splashscreen_logo.png differ
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-mdpi/splashscreen_logo.png b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-mdpi/splashscreen_logo.png
 new file mode 100644
-index 0000000000..ef243aab6c
+index 00000000000..ef243aab6c0
 Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-mdpi/splashscreen_logo.png differ
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xhdpi/splashscreen_logo.png b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xhdpi/splashscreen_logo.png
 new file mode 100644
-index 0000000000..e9d5474519
+index 00000000000..e9d5474519c
 Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xhdpi/splashscreen_logo.png differ
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xxhdpi/splashscreen_logo.png b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xxhdpi/splashscreen_logo.png
 new file mode 100644
-index 0000000000..d61da15d24
+index 00000000000..d61da15d241
 Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xxhdpi/splashscreen_logo.png differ
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png
 new file mode 100644
-index 0000000000..4aeed11d00
+index 00000000000..4aeed11d00b
 Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png differ
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen.xml b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
 similarity index 53%
 rename from templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen.xml
 rename to templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
-index 12f2f76980..883b2a080f 100644
+index 12f2f769806..883b2a080f3 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
 @@ -1,4 +1,6 @@
@@ -171,7 +171,7 @@ index 12f2f76980..883b2a080f 100644
 \ No newline at end of file
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen_image.png b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen_image.png
 deleted file mode 100644
-index cc94f379de..0000000000
+index cc94f379de3..00000000000
 Binary files a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen_image.png and /dev/null differ
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.png b/templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-hdpi/ic_launcher.webp
 similarity index 100%
@@ -214,7 +214,7 @@ similarity index 100%
 rename from templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 rename to templates/expo-template-bare-minimum/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml b/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml
-index 90bcc87b8e..51fbc1e5a7 100644
+index 90bcc87b8e8..51fbc1e5a72 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/res/values/styles.xml
 @@ -10,6 +10,6 @@
@@ -226,7 +226,7 @@ index 90bcc87b8e..51fbc1e5a7 100644
    </style>
  </resources>
 diff --git a/templates/expo-template-bare-minimum/android/build.gradle b/templates/expo-template-bare-minimum/android/build.gradle
-index 932bf7b34b..abbcb8ec8a 100644
+index 932bf7b34ba..abbcb8ec8a1 100644
 --- a/templates/expo-template-bare-minimum/android/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/build.gradle
 @@ -2,11 +2,11 @@
@@ -246,7 +246,7 @@ index 932bf7b34b..abbcb8ec8a 100644
          ndkVersion = "26.1.10909125"
      }
 diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
-index 40220def8d..de47429c64 100644
+index 40220def8da..de47429c64c 100644
 --- a/templates/expo-template-bare-minimum/android/gradle.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle.properties
 @@ -22,9 +22,6 @@ org.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=512m
@@ -260,10 +260,10 @@ index 40220def8d..de47429c64 100644
  android.enablePngCrunchInReleaseBuilds=true
  
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar
-index e6441136f3..a4b76b9530 100644
+index e6441136f3d..a4b76b9530d 100644
 Binary files a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar and b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.jar differ
 diff --git a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
-index 6f7a6eb33e..79eb9d003f 100644
+index 6f7a6eb33e8..79eb9d003fe 100644
 --- a/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
 +++ b/templates/expo-template-bare-minimum/android/gradle/wrapper/gradle-wrapper.properties
 @@ -1,6 +1,6 @@
@@ -275,7 +275,7 @@ index 6f7a6eb33e..79eb9d003f 100644
  validateDistributionUrl=true
  zipStoreBase=GRADLE_USER_HOME
 diff --git a/templates/expo-template-bare-minimum/android/gradlew b/templates/expo-template-bare-minimum/android/gradlew
-index 1aa94a4269..f5feea6d6b 100755
+index 1aa94a42690..f5feea6d6b1 100755
 --- a/templates/expo-template-bare-minimum/android/gradlew
 +++ b/templates/expo-template-bare-minimum/android/gradlew
 @@ -15,6 +15,8 @@
@@ -307,7 +307,7 @@ index 1aa94a4269..f5feea6d6b 100755
  # Use the maximum available, or set MAX_FD != -1 to use that value.
  MAX_FD=maximum
 diff --git a/templates/expo-template-bare-minimum/android/gradlew.bat b/templates/expo-template-bare-minimum/android/gradlew.bat
-index 7101f8e467..9b42019c79 100644
+index 7101f8e4676..9b42019c791 100644
 --- a/templates/expo-template-bare-minimum/android/gradlew.bat
 +++ b/templates/expo-template-bare-minimum/android/gradlew.bat
 @@ -13,6 +13,8 @@
@@ -321,7 +321,7 @@ index 7101f8e467..9b42019c79 100644
  @rem ##########################################################################
 diff --git a/templates/expo-template-bare-minimum/android/react-settings-plugin/build.gradle.kts b/templates/expo-template-bare-minimum/android/react-settings-plugin/build.gradle.kts
 deleted file mode 100644
-index b4f6668e9e..0000000000
+index b4f6668e9eb..00000000000
 --- a/templates/expo-template-bare-minimum/android/react-settings-plugin/build.gradle.kts
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -346,7 +346,7 @@ index b4f6668e9e..0000000000
 -}
 diff --git a/templates/expo-template-bare-minimum/android/react-settings-plugin/src/main/kotlin/expo/plugins/ReactSettingsPlugin.kt b/templates/expo-template-bare-minimum/android/react-settings-plugin/src/main/kotlin/expo/plugins/ReactSettingsPlugin.kt
 deleted file mode 100644
-index c54f6c7a6a..0000000000
+index c54f6c7a6ad..00000000000
 --- a/templates/expo-template-bare-minimum/android/react-settings-plugin/src/main/kotlin/expo/plugins/ReactSettingsPlugin.kt
 +++ /dev/null
 @@ -1,10 +0,0 @@
@@ -361,7 +361,7 @@ index c54f6c7a6a..0000000000
 -  }
 -}
 diff --git a/templates/expo-template-bare-minimum/android/settings.gradle b/templates/expo-template-bare-minimum/android/settings.gradle
-index 80b1bc3267..39b188e065 100644
+index 80b1bc3267b..39b188e065c 100644
 --- a/templates/expo-template-bare-minimum/android/settings.gradle
 +++ b/templates/expo-template-bare-minimum/android/settings.gradle
 @@ -1,46 +1,23 @@
@@ -440,7 +440,7 @@ index 80b1bc3267..39b188e065 100644
  includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())
 diff --git a/templates/expo-template-bare-minimum/babel.config.js b/templates/expo-template-bare-minimum/babel.config.js
 deleted file mode 100644
-index baac9e50ca..0000000000
+index baac9e50ca8..00000000000
 --- a/templates/expo-template-bare-minimum/babel.config.js
 +++ /dev/null
 @@ -1,6 +0,0 @@
@@ -451,7 +451,7 @@ index baac9e50ca..0000000000
 -  };
 -};
 diff --git a/templates/expo-template-bare-minimum/gitignore b/templates/expo-template-bare-minimum/gitignore
-index 05647d55c7..d16e1efbb3 100644
+index 05647d55c75..d16e1efbb3f 100644
 --- a/templates/expo-template-bare-minimum/gitignore
 +++ b/templates/expo-template-bare-minimum/gitignore
 @@ -7,6 +7,7 @@ node_modules/
@@ -463,7 +463,7 @@ index 05647d55c7..d16e1efbb3 100644
  # Native
  *.orig.*
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
-index f945940c25..1ccb9b422d 100644
+index f945940c256..1ccb9b422d5 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 @@ -287,7 +287,7 @@
@@ -504,7 +504,7 @@ index f945940c25..1ccb9b422d 100644
  				MTL_ENABLE_DEBUG_INFO = NO;
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json
 deleted file mode 100644
-index e67cd6c5e2..0000000000
+index e67cd6c5e28..00000000000
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/Contents.json
 +++ /dev/null
 @@ -1,21 +0,0 @@
@@ -532,11 +532,11 @@ index e67cd6c5e2..0000000000
 \ No newline at end of file
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/splashscreen.png b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/splashscreen.png
 deleted file mode 100644
-index cc94f379de..0000000000
+index cc94f379de3..00000000000
 Binary files a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreen.imageset/splashscreen.png and /dev/null differ
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json
 deleted file mode 100644
-index b5914aac6a..0000000000
+index b5914aac6a8..00000000000
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/Contents.json
 +++ /dev/null
 @@ -1,21 +0,0 @@
@@ -564,10 +564,10 @@ index b5914aac6a..0000000000
 \ No newline at end of file
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/background.png b/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/background.png
 deleted file mode 100644
-index ff3dd16fd7..0000000000
+index ff3dd16fd70..00000000000
 Binary files a/templates/expo-template-bare-minimum/ios/HelloWorld/Images.xcassets/SplashScreenBackground.imageset/background.png and /dev/null differ
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
-index 53d78e8903..596dc7ce6b 100644
+index 53d78e89033..596dc7ce6b5 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
 @@ -24,6 +24,8 @@
@@ -580,7 +580,7 @@ index 53d78e8903..596dc7ce6b 100644
  	<dict>
  		<key>NSAllowsArbitraryLoads</key>
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard b/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
-index 24eec3df5c..447b418898 100644
+index 24eec3df5cb..447b4188985 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
 @@ -1,91 +1,42 @@
@@ -716,7 +716,7 @@ index 24eec3df5c..447b418898 100644
 +    </resources>
  </document>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 57c1dd3834..f740040e7b 100644
+index 57c1dd38343..f740040e7be 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
 @@ -7,11 +7,18 @@ podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties
@@ -780,7 +780,7 @@ index 57c1dd3834..f740040e7b 100644
 -  end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 563853071f..2f5d2c4280 100644
+index 563853071f0..ce89a2c49b2 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,8 @@
@@ -789,7 +789,7 @@ index 563853071f..2f5d2c4280 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "51.0.56",
 +  "license": "0BSD",
-+  "version": "52.0.76",
++  "version": "52.0.77",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -801,7 +801,7 @@ index 563853071f..2f5d2c4280 100644
 -    "expo-status-bar": "~1.12.1",
 -    "react": "18.2.0",
 -    "react-native": "0.74.5"
-+    "expo": "~52.0.46",
++    "expo": "~52.0.47",
 +    "expo-status-bar": "~2.0.1",
 +    "react": "18.3.1",
 +    "react-native": "0.76.9"

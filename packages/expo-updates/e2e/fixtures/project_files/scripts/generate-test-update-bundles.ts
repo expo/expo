@@ -96,6 +96,9 @@ async function createUpdateBundleAsync(projectRoot: string, platform?: string) {
   const args = ['expo', 'export'];
   if (platform) {
     args.push('--platform', platform);
+  } else {
+    args.push('--platform', 'ios');
+    args.push('--platform', 'android');
   }
   await spawnAsync('npx', args, {
     cwd: projectRoot,

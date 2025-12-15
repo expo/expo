@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 exports.getAutolinkedPackagesAsync = getAutolinkedPackagesAsync;
 exports.resolvePackagesList = resolvePackagesList;
 exports.shouldSkipAutoPlugin = shouldSkipAutoPlugin;
-function _importExpoModulesAutolinking() {
-  const data = require("./importExpoModulesAutolinking");
-  _importExpoModulesAutolinking = function () {
+function _unstableAutolinkingExports() {
+  const data = require("expo/internal/unstable-autolinking-exports");
+  _unstableAutolinkingExports = function () {
     return data;
   };
   return data;
@@ -21,15 +21,13 @@ function _importExpoModulesAutolinking() {
  * @returns list of packages ex: `['expo-camera', 'react-native-screens']`
  */
 async function getAutolinkedPackagesAsync(projectRoot, platforms = ['ios', 'android']) {
-  const autolinking = (0, _importExpoModulesAutolinking().importExpoModulesAutolinking)(projectRoot);
-  const searchPaths = await autolinking.resolveSearchPathsAsync(null, projectRoot);
-  const platformPaths = await Promise.all(platforms.map(platform => autolinking.findModulesAsync({
-    projectRoot,
-    platform,
-    searchPaths,
-    silent: true
-  })));
-  return resolvePackagesList(platformPaths);
+  const linker = (0, _unstableAutolinkingExports().makeCachedDependenciesLinker)({
+    projectRoot
+  });
+  const dependenciesPerPlatform = await Promise.all(platforms.map(platform => {
+    return (0, _unstableAutolinkingExports().scanExpoModuleResolutionsForPlatform)(linker, platform);
+  }));
+  return resolvePackagesList(dependenciesPerPlatform);
 }
 function resolvePackagesList(platformPaths) {
   const allPlatformPaths = platformPaths.map(paths => Object.keys(paths)).flat();

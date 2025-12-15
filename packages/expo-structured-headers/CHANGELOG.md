@@ -6,11 +6,17 @@
 
 ### 🎉 New features
 
-- Add support for macOS. ([#37629](https://github.com/expo/expo/pull/37629) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Remove iOS test files from the published package content. ([#39547](https://github.com/expo/expo/pull/39547) by [@Simek](https://github.com/Simek))
+
+## 5.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- Add support for macOS. ([#37629](https://github.com/expo/expo/pull/37629) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 4.1.0 — 2025-04-04
 

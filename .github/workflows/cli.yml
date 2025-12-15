@@ -14,11 +14,13 @@ on:
       - packages/@expo/json-file/src/**
       - packages/@expo/package-manager/src/**
       - packages/@expo/prebuild-config/src/**
-      - packages/@expo/server/src/**
+      - packages/@expo/router-server/**
+      - packages/@expo/log-box/**
       - packages/create-expo/**
       - packages/eslint-config-expo/**
       - packages/eslint-plugin-expo/**
       - packages/expo-router/**
+      - packages/expo-server/**
       - yarn.lock
       - '!**.md'
   pull_request:
@@ -33,11 +35,13 @@ on:
       - packages/@expo/json-file/src/**
       - packages/@expo/package-manager/src/**
       - packages/@expo/prebuild-config/src/**
-      - packages/@expo/server/src/**
+      - packages/@expo/router-server/**
+      - packages/@expo/log-box/**
       - packages/create-expo/**
       - packages/eslint-config-expo/**
       - packages/eslint-plugin-expo/**
       - packages/expo-router/**
+      - packages/expo-server/**
       - yarn.lock
       - '!**.md'
   schedule:
@@ -162,7 +166,8 @@ jobs:
 
       - name: 🧶 Install node modules in root dir
         # NOTE(cedric): yarn v1 on Windows has networking issues, we need to set `--network-timeout` to a higher value
-        run: yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000
+        # NOTE(@kitten): --ignore-engines is needed due to Node 18 being required (see above)
+        run: yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000 --ignore-engines
         env:
           YARN_IGNORE_SCRIPTS: 'true'
 
@@ -309,7 +314,11 @@ jobs:
 
       - name: 🧶 Install node modules in root dir
         # NOTE(cedric): yarn v1 on Windows has networking issues, we need to set `--network-timeout` to a higher value
-        run: yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000
+        # NOTE(@kitten): --ignore-engines is needed due to Node 18 being required (see above)
+        # NOTE(@krystofwoldrich): Using .yarnrc file to set ignore-engines work also for the rest of the yarn commands (otherwise some test won't build)
+        run: |
+          Set-Content -Path ".yarnrc" -Value "ignore-engines true"
+          yarn install --prefer-offline --frozen-lockfile --network-timeout 1000000
         env:
           YARN_IGNORE_SCRIPTS: 'true'
 

@@ -159,6 +159,6 @@ function useFocusEffect(effect, do_not_pass_a_second_prop) {
             unsubscribeFocus();
             unsubscribeBlur();
         };
-    }, [effect, navigation, optionalNavigation, navigation.isFocused()]);
+    }, [effect, navigation, optionalNavigation]);
 }
 //# sourceMappingURL=useFocusEffect.js.map

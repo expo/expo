@@ -20,6 +20,8 @@ void FrontendConverterProvider::createConverters() {
   RegisterConverter(CppType::TYPED_ARRAY, TypedArrayFrontendConverter);
   RegisterConverter(CppType::JS_OBJECT, JavaScriptObjectFrontendConverter);
   RegisterConverter(CppType::JS_VALUE, JavaScriptValueFrontendConverter);
+  RegisterConverter(CppType::JS_ARRAY_BUFFER, JavaScriptArrayBufferFrontendConverter);
+  RegisterConverter(CppType::NATIVE_ARRAY_BUFFER, NativeArrayBufferFrontendConverter);
   RegisterConverter(CppType::JS_FUNCTION, JavaScriptFunctionFrontendConverter);
   RegisterConverter(CppType::STRING, StringFrontendConverter);
   RegisterConverter(CppType::READABLE_MAP, ReadableNativeMapArrayFrontendConverter);
@@ -72,6 +74,10 @@ std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverter(
 
   if (combinedType == CppType::MAP) {
     return std::make_shared<MapFrontendConverter>(expectedType->getFirstType());
+  }
+
+  if (combinedType == CppType::VALUE_OR_UNDEFINED) {
+    return std::make_shared<ValueOrUndefinedFrontendConverter>(expectedType->getFirstType());
   }
 
   std::vector<std::shared_ptr<FrontendConverter>> converters;

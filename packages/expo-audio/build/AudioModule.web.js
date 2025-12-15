@@ -1,7 +1,7 @@
+import { Asset } from 'expo-asset';
 import { PermissionStatus } from 'expo-modules-core';
 import { PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE } from './AudioEventKeys';
 import { RecordingPresets } from './RecordingConstants';
-import resolveAssetSource from './utils/resolveAssetSource';
 const nextId = (() => {
     let id = 0;
     return () => id++;
@@ -68,17 +68,19 @@ function getStatusFromMedia(media, id) {
         didJustFinish: media.ended,
         isBuffering: false,
         playbackRate: media.playbackRate,
-        shouldCorrectPitch: false,
+        shouldCorrectPitch: true,
         mute: media.muted,
         loop: media.loop,
     };
     return status;
 }
 export class AudioPlayerWeb extends globalThis.expo.SharedObject {
-    constructor(source, interval) {
+    constructor(source, options = {}) {
         super();
+        const { updateInterval = 500, crossOrigin } = options;
         this.src = source;
-        this.interval = interval;
+        this.interval = Math.max(updateInterval, 1);
+        this.crossOrigin = crossOrigin;
         this.media = this._createMediaElement();
     }
     id = nextId();
@@ -87,10 +89,10 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
     shouldCorrectPitch = false;
     src = null;
     media;
-    // @ts-expect-error: TODO(@kitten): Is this unintentionally unused?
-    interval = 100;
+    interval = 500;
     isPlaying = false;
     loaded = false;
+    crossOrigin;
     get playing() {
         return this.isPlaying;
     }
@@ -142,8 +144,17 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.isPlaying = false;
     }
     replace(source) {
+        const wasPlaying = this.isPlaying;
+        // we need to remove the current media element and create a new one
+        this.remove();
         this.src = source;
+        this.isPlaying = false;
+        this.loaded = false;
         this.media = this._createMediaElement();
+        // Resume playback if it was playing before
+        if (wasPlaying) {
+            this.play();
+        }
     }
     async seekTo(seconds, toleranceMillisBefore, toleranceMillisAfter) {
         this.media.currentTime = seconds;
@@ -163,14 +174,55 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         this.media.load();
         getStatusFromMedia(this.media, this.id);
     }
+    setActiveForLockScreen(active, metadata) { }
+    updateLockScreenMetadata(metadata) { }
+    clearLockScreenControls() { }
     _createMediaElement() {
         const newSource = getSourceUri(this.src);
         const media = new Audio(newSource);
+        if (this.crossOrigin !== undefined) {
+            media.crossOrigin = this.crossOrigin;
+        }
+        let lastEmitTime = 0;
+        const intervalSec = this.interval / 1000;
+        // Throttled status updates based on interval
         media.ontimeupdate = () => {
+            const now = media.currentTime;
+            // Handle backwards time (loop/seek)
+            if (now < lastEmitTime) {
+                lastEmitTime = now;
+            }
+            if (now - lastEmitTime >= intervalSec) {
+                lastEmitTime = now;
+                this.emit(PLAYBACK_STATUS_UPDATE, getStatusFromMedia(media, this.id));
+            }
+        };
+        media.onplay = () => {
+            this.isPlaying = true;
+            lastEmitTime = media.currentTime;
+            this.emit(PLAYBACK_STATUS_UPDATE, {
+                ...getStatusFromMedia(media, this.id),
+                playing: this.isPlaying,
+            });
+        };
+        media.onpause = () => {
+            this.isPlaying = false;
+            lastEmitTime = media.currentTime;
+            this.emit(PLAYBACK_STATUS_UPDATE, {
+                ...getStatusFromMedia(media, this.id),
+                playing: this.isPlaying,
+            });
+        };
+        media.onseeked = () => {
+            lastEmitTime = media.currentTime;
             this.emit(PLAYBACK_STATUS_UPDATE, getStatusFromMedia(media, this.id));
+        };
+        media.onended = () => {
+            lastEmitTime = 0;
         };
         media.onloadeddata = () => {
             this.loaded = true;
+            lastEmitTime = media.currentTime;
             this.emit(PLAYBACK_STATUS_UPDATE, {
                 ...getStatusFromMedia(media, this.id),
                 isLoaded: this.loaded,
@@ -184,10 +236,12 @@ function getSourceUri(source) {
         return source;
     }
     if (typeof source === 'number') {
-        return resolveAssetSource(source)?.uri ?? undefined;
+        const asset = Asset.fromModule(source);
+        return asset.uri;
     }
     if (typeof source?.assetId === 'number' && !source?.uri) {
-        return resolveAssetSource(source.assetId)?.uri ?? undefined;
+        const asset = Asset.fromModule(source.assetId);
+        return asset.uri;
     }
     return source?.uri ?? undefined;
 }
@@ -210,10 +264,23 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
     get isRecording() {
         return this.mediaRecorder?.state === 'recording';
     }
-    record() {
+    record(options) {
         if (this.mediaRecorder === null) {
             throw new Error('Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.');
         }
+        // Clear any existing timeouts
+        this.clearTimeouts();
+        // Note: atTime is not supported on Web (no native equivalent), so we ignore it entirely
+        // Only forDuration is implemented using setTimeout
+        const { forDuration } = options || {};
+        this.startActualRecording();
+        if (forDuration !== undefined) {
+            this.timeoutIds.push(setTimeout(() => {
+                this.stop();
+            }, forDuration * 1000));
+        }
+    }
+    startActualRecording() {
         if (this.mediaRecorder?.state === 'paused') {
             this.mediaRecorder.resume();
         }
@@ -225,11 +292,11 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         return [];
     }
     getCurrentInput() {
-        return {
+        return Promise.resolve({
             type: 'Default',
             name: 'Default',
             uid: 'Default',
-        };
+        });
     }
     async prepareToRecordAsync() {
         return this.setup();
@@ -250,16 +317,11 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         this.mediaRecorder?.pause();
     }
     recordForDuration(seconds) {
-        this.record();
-        this.timeoutIds.push(setTimeout(() => {
-            this.stop();
-        }, seconds * 1000));
+        this.record({ forDuration: seconds });
     }
     setInput(input) { }
     startRecordingAtTime(seconds) {
-        this.timeoutIds.push(setTimeout(() => {
-            this.record();
-        }, seconds * 1000));
+        this.record({ atTime: seconds });
     }
     async stop() {
         if (this.mediaRecorder === null) {
@@ -289,7 +351,22 @@ export class AudioRecorderWeb extends globalThis.expo.SharedObject {
         this.mediaRecorderUptimeOfLastStartResume = 0;
         this.currentTime = 0;
         const stream = await getUserMedia({ audio: true });
-        const mediaRecorder = new window.MediaRecorder(stream, options?.web || RecordingPresets.HIGH_QUALITY.web);
+        const defaults = RecordingPresets.HIGH_QUALITY.web;
+        const mediaRecorderOptions = {};
+        const mimeType = options.mimeType ?? defaults.mimeType;
+        if (mimeType && MediaRecorder.isTypeSupported(mimeType)) {
+            mediaRecorderOptions.mimeType = mimeType;
+        }
+        if (options.bitsPerSecond) {
+            mediaRecorderOptions.bitsPerSecond = options.bitsPerSecond;
+        }
+        else if (options.bitRate) {
+            mediaRecorderOptions.audioBitsPerSecond = options.bitRate;
+        }
+        else {
+            mediaRecorderOptions.bitsPerSecond = defaults.bitsPerSecond;
+        }
+        const mediaRecorder = new MediaRecorder(stream, mediaRecorderOptions);
         mediaRecorder.addEventListener('pause', () => {
             this.currentTime = this.getAudioRecorderDurationMillis();
             this.mediaRecorderIsRecording = false;

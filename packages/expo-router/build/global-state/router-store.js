@@ -59,6 +59,7 @@ const storeRef = {
     current: {},
 };
 const routeInfoCache = new WeakMap();
+const routeInfoValuesCache = new Map();
 let splashScreenAnimationFrame;
 let hasAttemptedToHideSplash = false;
 exports.store = {
@@ -103,12 +104,14 @@ exports.store = {
                 SplashScreen._internal_maybeHideAsync?.();
             });
         }
-        storeRef.current.navigationRef.addListener('state', (e) => {
-            if (!e.data.state) {
-                return;
-            }
+    },
+    onStateChange(newState) {
+        if (!newState) {
+            return;
+        }
+        if (process.env.NODE_ENV === 'development') {
             let isStale = false;
-            let state = e.data.state;
+            let state = newState;
             while (!isStale && state) {
                 isStale = state.stale;
                 state =
@@ -116,14 +119,16 @@ exports.store = {
                         ? state.index
                         : state.routes.length - 1]?.state;
             }
-            storeRef.current.state = e.data.state;
-            if (!isStale) {
-                storeRef.current.routeInfo = getCachedRouteInfo(e.data.state);
+            if (isStale) {
+                // This should never happen, as onStateChange should provide a full state. However, adding this check to catch any undocumented behavior.
+                console.error('Detected stale state in onStateChange. This is likely a bug in Expo Router.');
             }
-            for (const callback of routeInfoSubscribers) {
-                callback();
-            }
-        });
+        }
+        storeRef.current.state = newState;
+        storeRef.current.routeInfo = getCachedRouteInfo(newState);
+        for (const callback of routeInfoSubscribers) {
+            callback();
+        }
     },
     assertIsReady() {
         if (!storeRef.current.navigationRef.isReady()) {
@@ -139,6 +144,7 @@ function useStore(context, linkingConfigOptions, serverUrl) {
     let initialState;
     const routeNode = (0, getRoutes_1.getRoutes)(context, {
         ...config,
+        skipGenerated: true,
         ignoreEntryPoints: true,
         platform: react_native_1.Platform.OS,
         preserveRedirectAndRewrites: true,
@@ -159,6 +165,9 @@ function useStore(context, linkingConfigOptions, serverUrl) {
             metaOnly: linkingConfigOptions.metaOnly,
             serverUrl,
             redirects,
+            skipGenerated: config?.skipGenerated ?? false,
+            sitemap: config?.sitemap ?? true,
+            notFound: config?.notFound ?? true,
         });
         rootComponent = (0, useScreens_1.getQualifiedRouteComponent)(routeNode);
         // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
@@ -173,6 +182,7 @@ function useStore(context, linkingConfigOptions, serverUrl) {
             initialState = linking.getStateFromPath(initialPath, linking.config);
             const initialRouteInfo = (0, routeInfo_1.getRouteInfoFromState)(initialState);
             routeInfoCache.set(initialState, initialRouteInfo);
+            routeInfoValuesCache.set(JSON.stringify(initialRouteInfo), initialRouteInfo);
         }
     }
     else {
@@ -233,15 +243,14 @@ function getCachedRouteInfo(state) {
     let routeInfo = routeInfoCache.get(state);
     if (!routeInfo) {
         routeInfo = (0, routeInfo_1.getRouteInfoFromState)(state);
-        const previousRouteInfo = storeRef.current.routeInfo;
-        if (previousRouteInfo) {
-            const areEqual = routeInfo.segments.length === previousRouteInfo.segments.length &&
-                routeInfo.segments.every((segment, index) => previousRouteInfo.segments[index] === segment) &&
-                routeInfo.pathnameWithParams === previousRouteInfo.pathnameWithParams;
-            if (areEqual) {
-                // If they are equal, keep the previous route info for object reference equality
-                routeInfo = previousRouteInfo;
-            }
+        const routeInfoString = JSON.stringify(routeInfo);
+        // Using cached values to avoid re-renders, to increase the chance that the object reference is the same
+        const cachedRouteInfo = routeInfoValuesCache.get(routeInfoString);
+        if (cachedRouteInfo) {
+            routeInfo = cachedRouteInfo;
+        }
+        else {
+            routeInfoValuesCache.set(routeInfoString, routeInfo);
         }
         routeInfoCache.set(state, routeInfo);
     }

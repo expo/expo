@@ -3,9 +3,8 @@ import fs from 'fs';
 import path from 'path';
 
 import { runExportSideEffects } from './export-side-effects';
-import { executeExpoAsync } from '../../utils/expo';
-import { createStaticServe } from '../../utils/server';
-import { findProjectFiles, getPageHtml, getRouterE2ERoot } from '../utils';
+import { createExpoServe, executeExpoAsync } from '../../utils/expo';
+import { findProjectFiles, getHtml, getPageHtml, getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
@@ -24,14 +23,13 @@ describe('exports static', () => {
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: '',
-          EXPO_USE_FAST_RESOLVER: 'true',
         },
       }
     );
   });
 
-  xdescribe('server', () => {
-    const server = createStaticServe({
+  describe('server', () => {
+    const server = createExpoServe({
       cwd: projectRoot,
       env: {
         NODE_ENV: 'production',
@@ -48,7 +46,22 @@ describe('exports static', () => {
     });
 
     it(`can serve up index html`, async () => {
-      expect(await server.fetchAsync('/').then((res) => res.text())).toMatch(/<div id="root">/);
+      const html = getHtml(await server.fetchAsync('/').then((res) => res.text()));
+      expect(html.querySelector('[data-testid="index-text"]')?.textContent).toEqual('Index');
+    });
+
+    it(`can serve up non-index html`, async () => {
+      const html = getHtml(await server.fetchAsync('/styled').then((res) => res.text()));
+      expect(html.querySelector('[data-testid="styled-text"]')?.textContent).toEqual('Hello World');
+    });
+
+    ['other', 'welcome-to-the-universe'].forEach((post) => {
+      it(`can serve up statically generated html for post: ${post}`, async () => {
+        const html = getHtml(await server.fetchAsync(`/${post}`).then((res) => res.text()));
+        expect(html.querySelector('[data-testid="post-text"]')?.textContent).toEqual(
+          `Post: ${post}`
+        );
+      });
     });
 
     it(`gets a 404`, async () => {
@@ -76,6 +89,8 @@ describe('exports static', () => {
     expect(files).toContain('[post].html');
     expect(files).toContain('welcome-to-the-universe.html');
     expect(files).toContain('other.html');
+
+    expect(files).toContain('_expo/.routes.json');
   });
 
   it('has source maps', async () => {
@@ -92,7 +107,15 @@ describe('exports static', () => {
         expect.arrayContaining([
           '__prelude__',
           // NOTE: No `/Users/evanbacon/`...
-          expect.pathMatching(/\/node_modules\/metro-runtime\/src\/polyfills\/require\.js/),
+          // NOTE(@kitten): We can slot in our own runtime here
+          expect.pathMatching(
+            new RegExp(
+              [
+                '/node_modules/metro-runtime/src/polyfills/require.js',
+                '/@expo/cli/build/metro-require/require.js',
+              ].join('|')
+            )
+          ),
 
           // NOTE: relative to the server root for optimal source map support
           expect.pathMatching(/\/apps\/router-e2e\/__e2e__\/static-rendering\/app\/\[post\]\.tsx/),
@@ -172,8 +195,8 @@ describe('exports static', () => {
       return link.attributes.as !== 'font';
     });
     expect(links.length).toBe(
-      // Global CSS, CSS Module, Vaul Modal CSS (and entry point)
-      6
+      // Global CSS, CSS Module
+      4
     );
 
     const linkStrings = links.map((l) => l.toString());
@@ -186,13 +209,6 @@ describe('exports static', () => {
         ),
         expect.stringMatching(
           /<link rel="stylesheet" href="\/_expo\/static\/css\/global-(?<md5>[0-9a-fA-F]{32})\.css">/
-        ),
-        // Modal CSS module extracted from Vaul modal
-        expect.stringMatching(
-          /<link rel="preload" href="\/_expo\/static\/css\/modal\.module-(?<md5>[0-9a-fA-F]{32})\.css" as="style">/
-        ),
-        expect.stringMatching(
-          /<link rel="stylesheet" href="\/_expo\/static\/css\/modal\.module-(?<md5>[0-9a-fA-F]{32})\.css">/
         ),
         // Example test CSS module (preload + stylesheet)
         expect.stringMatching(
@@ -215,8 +231,8 @@ describe('exports static', () => {
 
     // CSS Module
     expect(
-      fs.readFileSync(path.join(outputDir, links[3].attributes.href), 'utf-8')
-    ).toMatchInlineSnapshot(`"div{background:#0ff}"`);
+      fs.readFileSync(path.join(outputDir, links[2].attributes.href), 'utf-8')
+    ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
 
     const styledHtml = await getPageHtml(outputDir, 'styled.html');
 

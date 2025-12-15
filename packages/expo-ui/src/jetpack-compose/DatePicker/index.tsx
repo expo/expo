@@ -1,7 +1,6 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle, StyleSheet, PixelRatio } from 'react-native';
 
-import { ViewEvent } from '../../types';
+import { ExpoModifier, ViewEvent } from '../../types';
 
 export type AndroidVariant = 'picker' | 'input';
 
@@ -35,10 +34,6 @@ export type DateTimePickerProps = {
    */
   displayedComponents?: DisplayedComponents;
   /**
-   * Optional style to apply to the component.
-   */
-  style?: StyleProp<ViewStyle>;
-  /**
    * The tint color to use on the picker elements.
    */
   color?: string;
@@ -47,34 +42,38 @@ export type DateTimePickerProps = {
    * @default true
    */
   is24Hour?: boolean;
+  /**
+   * Modifiers for the component.
+   */
+  modifiers?: ExpoModifier[];
 };
 
-type NativeDatePickerProps = Omit<DateTimePickerProps, 'variant' | 'onDateSelected'> & {
+type NativeDatePickerProps = Omit<
+  DateTimePickerProps,
+  'variant' | 'onDateSelected' | 'initialDate'
+> & {
   variant?: AndroidVariant;
+  initialDate?: number | null;
 } & ViewEvent<'onDateSelected', { date: Date }>;
 
 /**
  * @hidden
  */
 export function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePickerProps {
-  const { variant, ...rest } = props;
-  const { minWidth, minHeight, ...restStyle } = StyleSheet.flatten(rest.style) || {};
+  const { variant, initialDate, ...rest } = props;
 
-  // On Android, the picker’s minWidth and minHeight must be 12dp.
-  // Otherwise, the picker will crash the app.
-  const minSize = PixelRatio.getPixelSizeForLayoutSize(12);
-
-  // However, when users pass the minWidth and minHeight props, we trust that they know what they are doing.
-  const parsedMinWidth = minWidth ? minSize : undefined;
-  const parsedMinHeight = minHeight ? minSize : undefined;
+  // Convert ISO string to timestamp for Android
+  const initialDateTimestamp = initialDate ? new Date(initialDate).getTime() : null;
 
   return {
     ...rest,
+    initialDate: initialDateTimestamp,
     onDateSelected: ({ nativeEvent: { date } }) => {
       props?.onDateSelected?.(new Date(date));
     },
     variant,
-    style: [restStyle, { minWidth: parsedMinWidth, minHeight: parsedMinHeight }],
+    // @ts-expect-error
+    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 

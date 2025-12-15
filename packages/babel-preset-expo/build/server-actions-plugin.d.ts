@@ -7,7 +7,5 @@
  *
  * https://github.com/lubieowoce/tangle/blob/5229666fb317d0da9363363fc46dc542ba51e4f7/packages/babel-rsc/src/babel-rsc-actions.ts#L1C1-L909C25
  */
-import { ConfigAPI, types, type PluginObj, type PluginPass } from '@babel/core';
-export declare function reactServerActionsPlugin(api: ConfigAPI & {
-    types: typeof types;
-}): PluginObj<PluginPass>;
+import type { ConfigAPI, PluginObj, PluginPass } from '@babel/core';
+export declare function reactServerActionsPlugin(api: ConfigAPI & typeof import('@babel/core')): PluginObj<PluginPass>;

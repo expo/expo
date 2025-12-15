@@ -30,6 +30,20 @@ function isEnableHermesManaged(
       return false;
   }
 }
+function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, platform: string) {
+  let asyncRoutesSetting;
+
+  if (exp.extra?.router?.asyncRoutes) {
+    const asyncRoutes = exp.extra?.router?.asyncRoutes;
+    if (['boolean', 'string'].includes(typeof asyncRoutes)) {
+      asyncRoutesSetting = asyncRoutes;
+    } else if (typeof asyncRoutes === 'object') {
+      asyncRoutesSetting = asyncRoutes[platform] ?? asyncRoutes.default;
+    }
+  }
+
+  return [mode, true].includes(asyncRoutesSetting);
+}
 
 function getRouterDirectoryModuleIdWithManifest(projectRoot: string, exp: ExpoConfig): string {
   return exp.extra?.router?.root ?? getRouterDirectory(projectRoot);
@@ -56,6 +70,7 @@ export function getRewriteRequestUrl(projectRoot: string) {
       // TODO: Maybe this function could be memoized in some capacity?
       const { searchParams } = ensured;
 
+      const isDev = searchParams.has('dev') ? searchParams.get('dev') === 'true' : true;
       const platform = searchParams.get('platform') ?? 'web';
 
       debug('Rewriting magic request url to entry point', { url, platform });
@@ -84,6 +99,16 @@ export function getRewriteRequestUrl(projectRoot: string) {
           'transform.reactCompiler',
           String(!!exp.experiments?.reactCompiler)
         );
+      }
+      if (!ensured.searchParams.has('transform.asyncRoutes')) {
+        const asyncRoutes = getAsyncRoutesFromExpoConfig(
+          exp,
+          isDev ? 'development' : 'production',
+          platform
+        );
+        if (asyncRoutes) {
+          ensured.searchParams.set('transform.asyncRoutes', String(asyncRoutes));
+        }
       }
 
       if (!ensured.searchParams.has('transform.engine')) {

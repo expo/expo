@@ -1,8 +1,11 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle } from 'react-native';
+import type { ColorValue } from 'react-native';
+import { type SFSymbol } from 'sf-symbols-typescript';
 
-import { ViewEvent } from '../../types';
-import { Host } from '../Host';
+import { type ViewEvent } from '../../types';
+import { getTextFromChildren } from '../../utils';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
 /**
  * The role of the button.
@@ -13,21 +16,33 @@ import { Host } from '../Host';
 export type ButtonRole = 'default' | 'cancel' | 'destructive';
 
 /**
+ * Sets the size for controls within this view.
+ * - `mini` - A control version that is minimally sized.
+ * - `small` - A control version that is proportionally smaller size for space-constrained views.
+ * - `regular` - A control version that is the default size.
+ * - `large` - A control version that is prominently sized.
+ * - `extraLarge` - A control version that is substantially sized. The largest control size. Resolves to ControlSize.large on platforms other than visionOS.
+ */
+export type ButtonControlSize = 'mini' | 'small' | 'regular' | 'large' | 'extraLarge';
+
+/**
  * The built-in button styles available on iOS.
  *
  * Common styles:
  * - `default` - The default system button style.
- * - `bordered` - A button with a light fill. On Android, equivalent to `FilledTonalButton`.
- * - `borderless` - A button with no background or border. On Android, equivalent to `TextButton`.
+ * - `bordered` - A button with a light fill.
+ * - `borderless` - A button with no background or border
  * - `borderedProminent` - A bordered button with a prominent appearance.
  * - `plain` - A button with no border or background and a less prominent text.
+ * - `glass` – A liquid glass button effect (available only from iOS 26, when built with Xcode 26).
+ * - `glassProminent` – A liquid glass button effect – (available only from iOS 26, when built with Xcode 26)
  * macOS-only styles:
- * - `glass` – A liquid glass button effect – (available only since iOS 26, for now only when built with beta version of Xcode)
- * - `glassProminent` – A liquid glass button effect – (available only since iOS 26, for now only when built with beta 3 version of Xcode)
- * - `accessoryBar` - A button style for accessory bars.
+ *  - `accessoryBar` - A button style for accessory bars.
  * - `accessoryBarAction` - A button style for accessory bar actions.
  * - `card` - A button style for cards.
  * - `link` - A button style for links.
+ *
+ * > **warning** The `borderless` variant is unavailable on Apple TV.
  */
 export type ButtonVariant =
   // Common
@@ -52,14 +67,17 @@ export type ButtonProps = {
   /**
    * A string describing the system image to display in the button.
    * This is only used if `children` is a string.
-   * Uses Material Icons on Android and SF Symbols on iOS.
+   * Uses SF Symbols.
    */
-  systemImage?: string;
+  systemImage?: SFSymbol;
   /**
    * Indicated the role of the button.
-   * @platform ios
    */
   role?: ButtonRole;
+  /**
+   * The size for controls within this view.
+   */
+  controlSize?: ButtonControlSize;
   /**
    * The button variant.
    */
@@ -71,23 +89,24 @@ export type ButtonProps = {
   /**
    * Button color.
    */
-  color?: string;
+  color?: ColorValue;
   /**
    * Disabled state of the button.
    */
   disabled?: boolean;
-};
+} & CommonViewModifierProps;
 
 /**
+ * exposed for ContextMenu
  * @hidden
  */
 export type NativeButtonProps = Omit<
   ButtonProps,
-  'role' | 'onPress' | 'children' | 'systemImage'
+  'role' | 'onPress' | 'children' | 'systemImage' | 'controlSize'
 > & {
   buttonRole?: ButtonRole;
   text: string | undefined;
-  systemImage?: string;
+  systemImage?: SFSymbol;
 } & ViewEvent<'onButtonPressed', void>;
 
 // We have to work around the `role` and `onPress` props being reserved by React Native.
@@ -97,14 +116,17 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
 );
 
 /**
+ * exposed for ContextMenu
  * @hidden
  */
 export function transformButtonProps(
   props: Omit<ButtonProps, 'children'>,
   text: string | undefined
 ): NativeButtonProps {
-  const { role, onPress, systemImage, ...restProps } = props;
+  const { role, onPress, systemImage, modifiers, ...restProps } = props;
   return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     text,
     systemImage,
@@ -114,17 +136,16 @@ export function transformButtonProps(
 }
 
 /**
- * `<Button>` component without a host view.
- * You should use this with a `Host` component in ancestor.
+ * Displays a native button component.
  */
-export function ButtonPrimitive(props: ButtonProps) {
+export function Button(props: ButtonProps) {
   const { children, ...restProps } = props;
 
   if (!children && !restProps.systemImage) {
     throw new Error('Button without systemImage prop should have React children');
   }
 
-  const text = typeof children === 'string' ? children : undefined;
+  const text = getTextFromChildren(children);
 
   const transformedProps = transformButtonProps(restProps, text);
 
@@ -135,16 +156,4 @@ export function ButtonPrimitive(props: ButtonProps) {
     return <ButtonNativeView {...transformedProps} />;
   }
   return <ButtonNativeView {...transformedProps}>{children}</ButtonNativeView>;
-}
-
-/**
- * Displays a native button component.
- */
-export function Button(props: ButtonProps & { style?: StyleProp<ViewStyle> }) {
-  const useViewportSizeMeasurement = props.style == null;
-  return (
-    <Host style={props.style} matchContents useViewportSizeMeasurement={useViewportSizeMeasurement}>
-      <ButtonPrimitive {...props} />
-    </Host>
-  );
 }

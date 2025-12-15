@@ -57,11 +57,10 @@ jni::local_ref<jni::JByteBuffer> JavaScriptTypedArray::toDirectBuffer() {
   jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
 
   auto byteLength = typedArrayWrapper->byteLength(jsRuntime);
-  auto byteOffset = typedArrayWrapper->byteOffset(jsRuntime);
 
   auto byteBuffer = jni::JByteBuffer::wrapBytes(
     static_cast<uint8_t *>(typedArrayWrapper->getRawPointer(jsRuntime)),
-    byteLength - byteOffset
+    byteLength
   );
 
   byteBuffer->order(jni::JByteOrder::nativeOrder());

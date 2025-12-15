@@ -231,7 +231,6 @@ redirects[workflow/hermes]=guides/using-hermes
 # Redirects based on Algolia 404 report
 redirects[workflow/build/building-on-ci]=build/building-on-ci
 redirects[versions/v52.0.0/sdk/taskmanager]=versions/v52.0.0/sdk/task-manager
-redirects[versions/v51.0.0/sdk/taskmanager]=versions/v51.0.0/sdk/task-manager
 redirects[task-manager]=versions/latest/sdk/task-manager
 redirects[versions/latest/sdk/filesystem.md]=versions/latest/sdk/filesystem
 redirects[guides/how-expo-works]=faq
@@ -363,6 +362,20 @@ redirects[guides/configuring-statusbar]=develop/user-interface/system-bars
 
 # After changing "Privacy Shield" to "Data Privacy Framework" and deleting Privacy Shield page
 redirects[regulatory-compliance/privacy-shield]=regulatory-compliance/data-and-privacy-protection
+
+# After changing brownfield docs
+redirects[brownfield/installing-expo-modules]=brownfield/get-started
+
+# After removing Navigation section from Home and adding a Navigation page
+redirects[develop/file-based-routing]=develop/app-navigation
+redirects[develop/dynamic-routes]=develop/app-navigation
+redirects[develop/next-steps]=develop/app-navigation
+
+# After moving server-focused Expo Router docs under /router/web/**
+redirects[router/reference/api-routes]=router/web/api-routes
+redirects[router/reference/middleware]=router/web/middleware
+redirects[router/reference/static-rendering]=router/web/static-rendering
+redirects[router/reference/async-routes]=router/web/async-routes
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

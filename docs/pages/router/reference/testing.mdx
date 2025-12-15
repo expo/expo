@@ -14,10 +14,6 @@ Before you proceed, ensure you have set up `jest-expo` according to the [Unit te
 
 > **Note**: When using Expo Router, do not put your test files inside the **app** directory. All files inside your **app** directory must be either routes or layout files. Instead, use the **\_\_tests\_\_** directory or a separate directory. This approach is explained in [Unit testing with Jest](/develop/unit-testing/#structure-your-tests).
 
-### Jest Native Matchers (optional)
-
-[`@testing-library/jest-native`](https://testing-library.com/docs/ecosystem-jest-native/) provides custom Jest matchers that can be used to extend the functionality of `@testing-library/react-native`. If installed, Expo Router will automatically perform the `@testing-library/jest-native` setup.
-
 ## `renderRouter`
 
 `renderRouter` extends the functionality of [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render) to simplify testing with Expo Router. It returns the same query object as [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render), and is compatible with [`screen`](https://callstack.github.io/react-native-testing-library/docs/api#screen), allowing you to use the standard [query API](https://callstack.github.io/react-native-testing-library/docs/api/queries) to locate components.
@@ -32,6 +28,7 @@ Before you proceed, ensure you have set up `jest-expo` according to the [Unit te
 
 ```tsx app.test.tsx
 import { renderRouter, screen } from 'expo-router/testing-library';
+import { View } from 'react-native';
 
 it('my-test', async () => {
   const MockComponent = jest.fn(() => <View />);
@@ -79,7 +76,10 @@ it('my-test', async () => {
 
 `renderRouter` can accept a directory path to mock an existing fixture. Ensure that the provided path is relative to the current test file.
 
-```tsx app.test.js
+```tsx app.test.tsx
+import { renderRouter } from 'expo-router/testing-library';
+import { View } from 'react-native';
+
 it('my-test', async () => {
   const MockComponent = jest.fn(() => <View />);
   renderRouter('./my-test-fixture');
@@ -94,7 +94,10 @@ it('my-test', async () => {
 
 For more intricate testing scenarios, `renderRouter` can leverage both directory path and inline-mocking methods simultaneously. The `appDir` parameter takes a string representing a pathname to a directory. The overrides parameter is an inline mock that can be used to override specific paths within the `appDir`. This combination allows for fine-tuned control over the mock environment.
 
-```tsx app.test.js
+```tsx app.test.tsx
+import { renderRouter } from 'expo-router/testing-library';
+import { View } from 'react-native';
+
 it('my-test', async () => {
   const MockAuthLayout = jest.fn(() => <View />);
   renderRouter({
@@ -116,7 +119,7 @@ The following matches have been added to `expect` and can be used to assert valu
 
 Assert the current pathname against a given string. The matcher uses the value of the [`usePathname`](/router/reference/hooks/#usepathname) hook on the current `screen`.
 
-```tsx app.test.ts
+```tsx app.test.tsx
 expect(screen).toHavePathname('/my-router');
 ```
 
@@ -126,7 +129,7 @@ expect(screen).toHavePathname('/my-router');
 
 Assert the current pathname, including URL parameters, against a given string. This is useful to assert the appearance of URL in a web browser.
 
-```tsx app.test.ts
+```tsx app.test.tsx
 expect(screen).toHavePathnameWithParams('/my-router?hello=world');
 ```
 
@@ -136,7 +139,7 @@ expect(screen).toHavePathnameWithParams('/my-router?hello=world');
 
 Assert the current segments against an array of strings. The matcher uses the value of the [`useSegments`](/router/reference/hooks/#usesegments) hook on the current `screen`.
 
-```tsx app.test.ts
+```tsx app.test.tsx
 expect(screen).toHaveSegments(['[id]']);
 ```
 
@@ -145,7 +148,7 @@ expect(screen).toHaveSegments(['[id]']);
 
 Assert the current local URL parameters against an object. The matcher uses the value of the [`useLocalSearchParams`](/router/reference/hooks/#uselocalsearchparams) hook on the current `screen`.
 
-```tsx app.test.ts
+```tsx app.test.tsx
 expect(screen).useLocalSearchParams({ first: 'abc' });
 ```
 
@@ -156,7 +159,7 @@ Assert the current screen's pathname that matches a value. Compares using the va
 
 Assert the current global URL parameters against an object. The matcher uses the value of the [`useGlobalSearchParams`](/router/reference/hooks/#useglobalsearchparams) hook on the current `screen`.
 
-```tsx app.test.ts
+```tsx app.test.tsx
 expect(screen).useGlobalSearchParams({ first: 'abc' });
 ```
 
@@ -166,7 +169,7 @@ expect(screen).useGlobalSearchParams({ first: 'abc' });
 
 An advanced matcher that asserts the current router state against an object.
 
-```tsx app.test.ts
+```tsx app.test.tsx
 expect(screen).toHaveRouterState({
   routes: [{ name: 'index', path: '/' }],
 });

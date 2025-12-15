@@ -1,11 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import UIKit
 import SwiftUI
+import ExpoModulesCore
 
 class DevMenuViewController: UIViewController {
-  static let ContentDidAppearNotification = Notification.Name("DevMenuContentDidAppearNotification")
-
   private let manager: DevMenuManager
   private var hostingController: UIHostingController<DevMenuRootView>?
 
@@ -13,10 +11,13 @@ class DevMenuViewController: UIViewController {
     self.manager = manager
     super.init(nibName: nil, bundle: nil)
 
+#if !os(macOS)
     edgesForExtendedLayout = UIRectEdge.init(rawValue: 0)
     extendedLayoutIncludesOpaqueBars = true
+#endif
   }
 
+  @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
@@ -26,21 +27,20 @@ class DevMenuViewController: UIViewController {
     setupSwiftUIView()
   }
 
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    NotificationCenter.default.post(name: DevMenuViewController.ContentDidAppearNotification, object: nil)
-  }
-
+  #if !os(tvOS) && !os(macOS)
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
     return UIInterfaceOrientationMask.all
   }
+  #endif
 
+#if !os(macOS)
   override var overrideUserInterfaceStyle: UIUserInterfaceStyle {
     get {
       return manager.userInterfaceStyle
     }
     set {}
   }
+#endif
 
   private func setupSwiftUIView() {
     let rootView = DevMenuRootView()
@@ -50,7 +50,9 @@ class DevMenuViewController: UIViewController {
 
     addChild(hostingController)
     view.addSubview(hostingController.view)
+#if !os(macOS)
     hostingController.didMove(toParent: self)
+#endif
 
     hostingController.view.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([

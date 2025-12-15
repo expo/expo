@@ -1,5 +1,5 @@
 import { Asset } from 'expo-asset';
-import * as FS from 'expo-file-system';
+import * as FS from 'expo-file-system/legacy';
 import * as SQLite from 'expo-sqlite';
 import { SQLiteStorage } from 'expo-sqlite/kv-store';
 import path from 'path';
@@ -119,6 +119,71 @@ CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(6
       // If running twice, the second insertion will fail because of the primary key constraint
       expect(error).toBeNull();
 
+      await db.closeAsync();
+    });
+
+    it('should support tagged template literals syntax', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.sql`DROP TABLE IF EXISTS users`;
+      await db.sql`CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL)`;
+      await db.sql`INSERT INTO users (name, k, j) VALUES (${'John'}, ${42}, ${42.1})`;
+      const inputs = {
+        name: 'Alice',
+        k: 123,
+        j: 123.4,
+      };
+      await db.sql`INSERT INTO users (name, k, j) VALUES (${inputs.name}, ${inputs.k}, ${inputs.j})`;
+
+      const sql = db.sql;
+      const results = await sql<UserEntity>`SELECT * FROM users`;
+      expect(results.length).toBe(2);
+      expect(results[0].name).toBe('John');
+      expect(results[0].k).toBe(42);
+      expect(results[0].j).toBeCloseTo(42.1);
+      expect(results[1].name).toBe('Alice');
+      expect(results[1].k).toBe(123);
+      expect(results[1].j).toBeCloseTo(123.4);
+
+      const results2 = await sql<UserEntity>`SELECT * FROM users WHERE name = ${inputs.name}`;
+      expect(results2.length).toBe(1);
+      expect(results2[0].name).toBe('Alice');
+
+      const updated =
+        (await sql`INSERT INTO users (name, k, j) VALUES (${'Bob'}, ${33}, ${33.1})`) as SQLite.SQLiteRunResult;
+      expect(updated.lastInsertRowId).toBeGreaterThan(0);
+      expect(updated.changes).toBe(1);
+
+      const results3 = await sql<UserEntity>`SELECT * FROM users`;
+      expect(results3.length).toBe(3);
+
+      const names: string[] = [];
+      for await (const user of sql<UserEntity>`SELECT * FROM users ORDER BY name ASC`.each()) {
+        names.push(user.name);
+      }
+      expect(names).toEqual(['Alice', 'Bob', 'John']);
+
+      const firstEntity =
+        await sql<UserEntity>`SELECT * FROM users ORDER BY name ASC LIMIT 1`.first();
+      expect(firstEntity?.name).toBe('Alice');
+      const firstEntity2 =
+        sql<UserEntity>`SELECT * FROM users ORDER BY name ASC LIMIT 1`.firstSync();
+      expect(firstEntity2?.name).toBe('Alice');
+
+      const notFoundEntity =
+        await sql<UserEntity>`SELECT * FROM users WHERE name = ${'Non-existent'}`.first();
+      expect(notFoundEntity).toBeNull();
+
+      await db.closeAsync();
+    });
+
+    it('should support math functions', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      expect(
+        (await db.getFirstAsync<{ result: number }>('SELECT sqrt(2) as result')).result
+      ).toBeCloseTo(1.4142135623730951);
+      expect(
+        (await db.getFirstAsync<{ result: number }>('SELECT pi() as result')).result
+      ).toBeCloseTo(3.141592653589793);
       await db.closeAsync();
     });
   });
@@ -988,6 +1053,7 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
 
   addSessionExtensionTestSuiteAsync({ describe, expect, it, beforeEach, ...t });
   addAppleAppGroupsTestSuiteAsync({ describe, expect, it, beforeEach, ...t });
+  addExtensionTestSuiteAsync({ describe, expect, it, beforeEach, ...t });
 }
 
 function addSessionExtensionTestSuiteAsync({ describe, expect, it, beforeEach, ...t }) {
@@ -1174,9 +1240,9 @@ INSERT INTO todo (title, group_id, counter) VALUES ('initial todo', 1, 0);
 }
 
 function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, beforeEach, ...t }) {
-  let Paths: typeof import('expo-file-system/next').Paths | null = null;
+  let Paths: typeof import('expo-file-system').Paths | null = null;
   try {
-    Paths = require('expo-file-system/next').Paths as typeof import('expo-file-system/next').Paths;
+    Paths = require('expo-file-system').Paths as typeof import('expo-file-system').Paths;
   } catch {}
   const sharedContainerRoot = Paths ? Object.values(Paths.appleSharedContainers)?.[0] : null;
   const sharedContainerDir = sharedContainerRoot ? sharedContainerRoot.uri + 'SQLite' : null;
@@ -1228,6 +1294,49 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
         await db.closeAsync();
       }
     );
+  });
+}
+
+function addExtensionTestSuiteAsync({ describe, expect, it, beforeEach, ...t }) {
+  const vecExt = SQLite.bundledExtensions['sqlite-vec'];
+  const scopedIt = vecExt ? it : t.xit;
+
+  describe('Extensions', () => {
+    scopedIt('should load sqlite-vec extension', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.loadExtensionAsync(vecExt.libPath, vecExt.entryPoint);
+      // Example from https://github.com/asg017/sqlite-vec?#sample-usage
+      await db.execAsync(`
+create virtual table vec_examples using vec0(
+  sample_embedding float[8]
+);
+
+-- vectors can be provided as JSON or in a compact binary format
+insert into vec_examples(rowid, sample_embedding)
+  values
+    (1, '[-0.200, 0.250, 0.341, -0.211, 0.645, 0.935, -0.316, -0.924]'),
+    (2, '[0.443, -0.501, 0.355, -0.771, 0.707, -0.708, -0.185, 0.362]'),
+    (3, '[0.716, -0.927, 0.134, 0.052, -0.669, 0.793, -0.634, -0.162]'),
+    (4, '[-0.710, 0.330, 0.656, 0.041, -0.990, 0.726, 0.385, -0.958]');
+`);
+
+      const rows = await db.getAllAsync<{ rowid: number; distance: number }>(`
+-- KNN style query
+select
+  rowid,
+  distance
+from vec_examples
+where sample_embedding match '[0.890, 0.544, 0.825, 0.961, 0.358, 0.0196, 0.521, 0.175]'
+order by distance
+limit 2;
+`);
+      expect(rows.length).toBe(2);
+      expect(rows[0].rowid).toBe(2);
+      expect(rows[0].distance).toBeCloseTo(2.3868);
+      expect(rows[1].rowid).toBe(1);
+      expect(rows[1].distance).toBeCloseTo(2.3897);
+      await db.closeAsync();
+    });
   });
 }
 

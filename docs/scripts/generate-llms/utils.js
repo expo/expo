@@ -171,7 +171,18 @@ export function cleanContent(content) {
       .replace(/<\/PaddedAPIBox>/g, '')
       .replace(/<CodeBlocksTable[^>]*>/g, '')
       .replace(/<\/CodeBlocksTable>/g, '')
-      .replace(/<FileTree[\S\s]*?\/>/g, '')
+      .replace(/<FileTree\s+files={(\[[\S\s]*?])}\s*\/>/g, (_match, filesLiteral) => {
+        const files = parseFileTreeFilesLiteral(filesLiteral);
+        if (!files || files.length === 0) {
+          return '';
+        }
+        const structure = buildFileTreeStructure(files);
+        const lines = renderFileTreeAscii(structure);
+        if (lines.length === 0) {
+          return '';
+        }
+        return ['```', ...lines, '```'].join('\n');
+      })
       .replace(
         /<ContentSpotlight(?:\s+(?:src|file|alt|controls|caption|className|loop|containerClassName)(?:="[^"]*"|={`[^`]*`})?)*\s*\/>/g,
         ''
@@ -216,6 +227,114 @@ export function cleanContent(content) {
   });
 
   return processed.join('').replace(/^\s*[\n\r]/gm, '');
+}
+
+function parseFileTreeFilesLiteral(literal) {
+  const parse = value => {
+    // eslint-disable-next-line no-new-func
+    return new Function(`return (${value})`)();
+  };
+
+  const sanitizeFileTreeFilesLiteral = value => {
+    const stripTags = text =>
+      text
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    const toJSONString = text => JSON.stringify(stripTags(text));
+
+    let sanitized = value;
+
+    sanitized = sanitized.replace(/<code>([\S\s]*?)<\/code>/gi, (_, inner) => toJSONString(inner));
+    sanitized = sanitized.replace(/<a[^>]*>([\S\s]*?)<\/a>/gi, (_, inner) => toJSONString(inner));
+    sanitized = sanitized.replace(/<span[^>]*>([\S\s]*?)<\/span>/gi, (_, inner) =>
+      toJSONString(inner)
+    );
+    sanitized = sanitized.replace(/<callout[^>]*>([\S\s]*?)<\/callout>/gi, (_, inner) =>
+      toJSONString(inner)
+    );
+    sanitized = sanitized.replace(/<strong[^>]*>([\S\s]*?)<\/strong>/gi, (_, inner) =>
+      toJSONString(inner)
+    );
+    sanitized = sanitized.replace(/<b[^>]*>([\S\s]*?)<\/b>/gi, (_, inner) => toJSONString(inner));
+
+    sanitized = sanitized.replace(/<>\s*([\S\s]*?)\s*<\/>/g, (_, inner) => toJSONString(inner));
+    sanitized = sanitized.replace(/<[^>]+\/>/g, '');
+    sanitized = sanitized.replace(/<[^>]+>/g, '');
+
+    return sanitized;
+  };
+
+  try {
+    return parse(literal);
+    // eslint-disable-next-line no-unused-vars
+  } catch (error) {
+    try {
+      return parse(sanitizeFileTreeFilesLiteral(literal));
+    } catch (sanitizedError) {
+      console.warn('Unable to parse FileTree files literal:', sanitizedError);
+      return [];
+    }
+  }
+}
+
+function buildFileTreeStructure(files = []) {
+  const root = [];
+
+  function modifyPath(path, note) {
+    const segments = path.split('/');
+    let currentLevel = root;
+
+    segments.forEach((segment, index) => {
+      let existing = currentLevel.find(node => node.name === segment);
+      if (!existing) {
+        existing = { name: segment, note: undefined, children: [] };
+        currentLevel.push(existing);
+      }
+
+      if (note && index === segments.length - 1) {
+        existing.note = note;
+      }
+
+      currentLevel = existing.children;
+    });
+  }
+
+  files.forEach(entry => {
+    if (Array.isArray(entry)) {
+      modifyPath(entry[0], entry[1]);
+    } else if (typeof entry === 'string') {
+      modifyPath(entry);
+    }
+  });
+
+  return root;
+}
+
+function renderFileTreeAscii(structure) {
+  const lines = [];
+
+  function renderNodes(nodes, prefix) {
+    nodes.forEach((node, index) => {
+      const isLast = index === nodes.length - 1;
+      const connector = `${prefix}${isLast ? '└── ' : '├── '}`;
+      const isDirectory = node.children.length > 0;
+      const name = isDirectory ? `${node.name}/` : node.name;
+      const note = node.note ? `  # ${node.note}` : '';
+
+      lines.push(`${connector}${name}${note}`);
+
+      if (isDirectory) {
+        const childPrefix = `${prefix}${isLast ? '    ' : '│   '}`;
+        renderNodes(node.children, childPrefix);
+      }
+    });
+  }
+
+  renderNodes(structure, '');
+
+  return lines;
 }
 
 function generateItemMarkdown(item) {

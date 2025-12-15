@@ -8,9 +8,60 @@
 
 ### 🐛 Bug fixes
 
+- Fix race condition bug for **web** env for `onLayout` callback. ([#41460](https://github.com/expo/expo/pull/41460) by [@psnet](https://github.com/psnet))
+
+### 💡 Others
+
+- Methods of the legacy `EXGLObjectManager` module are now exported from the existing native module in Swift. ([#41171](https://github.com/expo/expo/pull/41171) by [@tsapeta](https://github.com/tsapeta))
+- [android] rename module to align with iOS ([#41193](https://github.com/expo/expo/pull/41193) by [@Ubax](https://github.com/Ubax))
+
+### ⚠️ Notices
+
+- **Performance optimization**: remove support of **GIF** image format in image decoding in `texImage2D` expo wrapper. ([#41499](https://github.com/expo/expo/pull/41499) by [@psnet](https://github.com/psnet))
+- **Performance optimization**: reduce supported old image formats in lib `stb_image.h` used for image decoding in `texImage2D` expo wrapper to support only **JPEG, PNG, GIF** image formats. Formats **BMP, PSD, TGA, HDR, PIC, PNM** are no longer supported. ([#41001](https://github.com/expo/expo/pull/41001) by [@psnet](https://github.com/psnet))
+- Updated library `stb_image.h` used for image decoding in `texImage2D` expo wraper method. A lot of fixes and performance improvements, see related PR. ([#41000](https://github.com/expo/expo/pull/41000) by [@psnet](https://github.com/psnet))
+- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 16.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.7 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 16.0.1 — 2025-08-15
+
+### 💡 Others
+
+- [Web] Remove `findDOMNode` usage. ([#38800](https://github.com/expo/expo/pull/38800) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 16.0.0 — 2025-08-13
+
 ### 💡 Others
 
 - Use pointerEvents style instead of prop for components on web. ([#38023](https://github.com/expo/expo/pull/38023) by [@EvanBacon](https://github.com/EvanBacon))
+- Add missing optional `react-dom` and `react-native-reanimated` peer dependencies ([#38569](https://github.com/expo/expo/pull/38569) by [@kitten](https://github.com/kitten))
 
 ## 15.1.7 - 2025-07-01
 

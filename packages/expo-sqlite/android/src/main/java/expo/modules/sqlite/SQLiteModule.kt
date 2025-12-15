@@ -29,11 +29,22 @@ class SQLiteModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoSQLite")
 
-    Constants {
-      val defaultDatabaseDirectory = context.filesDir.canonicalPath + File.separator + "SQLite"
-      return@Constants mapOf(
-        "defaultDatabaseDirectory" to defaultDatabaseDirectory
-      )
+    Constant("defaultDatabaseDirectory") {
+      context.filesDir.canonicalPath + File.separator + "SQLite"
+    }
+
+    Constant("bundledExtensions") {
+      buildMap {
+        if (BuildConfig.WITH_SQLITE_VEC) {
+          put(
+            "sqlite-vec",
+            mapOf(
+              "libPath" to "vec",
+              "entryPoint" to "sqlite3_vec_init"
+            )
+          )
+        }
+      }
     }
 
     Events("onDatabaseChange")
@@ -179,6 +190,13 @@ class SQLiteModule : Module() {
       }.runOnQueue(moduleCoroutineScope)
       Function("createSessionSync") { database: NativeDatabase, session: NativeSession, dbName: String ->
         sessionCreate(database, session, dbName)
+      }
+
+      AsyncFunction("loadExtensionAsync") { database: NativeDatabase, libPath: String, entryPoint: String? ->
+        loadExtension(database, libPath, entryPoint)
+      }.runOnQueue(moduleCoroutineScope)
+      Function("loadExtensionSync") { database: NativeDatabase, libPath: String, entryPoint: String? ->
+        loadExtension(database, libPath, entryPoint)
       }
 
       AsyncFunction("syncLibSQL") { database: NativeDatabase ->
@@ -479,6 +497,16 @@ class SQLiteModule : Module() {
           "typeId" to SQLAction.fromCode(operationType).value
         )
       )
+    }
+  }
+
+  @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
+  private fun loadExtension(database: NativeDatabase, libPath: String, entryPoint: String?) {
+    maybeThrowForClosedDatabase(database)
+    database.ref.sqlite3_enable_load_extension(1)
+    val ret = database.ref.sqlite3_load_extension(libPath, entryPoint ?: "")
+    if (ret != NativeDatabaseBinding.SQLITE_OK) {
+      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
   }
 

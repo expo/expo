@@ -30,7 +30,10 @@ function doctor(pkg, appReactNavigationPath,
      * when the versions must not have matched and the package manager installed a nested node_module folder with a different
      * version of @react-navigation/native.
      */
-    if (userExcluded.has('@react-navigation/native') &&
+    if (
+    // NOTE(@kitten): This looks inverted. However, this check will soon be redundant
+    userExcluded.has('@react-navigation/native') &&
+        appReactNavigationPath &&
         appReactNavigationPath !== libReactNavigationPath) {
         console.warn(`Detected multiple versions of ${bold('@react-navigation/native')} in your ${bold('node_modules')}. This may lead to unexpected navigation behavior and errors. ${learnMore('https://expo.fyi/router-navigation-deps')}.`);
     }

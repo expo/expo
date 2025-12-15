@@ -1,9 +1,13 @@
 import { requireNativeView } from 'expo';
-import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import { ColorValue } from 'react-native';
 
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
-export type CircularProgressProps = {
+type ClosedRangeDate = { lower: Date; upper: Date };
+type ClosedRangeInternal = { lower: number; upper: number };
+
+export type ProgressProps = {
   /**
    * The current progress value of the slider. This is a number between `0` and `1`.
    */
@@ -12,24 +16,25 @@ export type CircularProgressProps = {
    * Progress color.
    */
   color?: ColorValue;
-};
-
-export type LinearProgressProps = {
   /**
-   * The current progress value of the slider. This is a number between `0` and `1`.
+   * The style of the progress indicator.
+   * @default 'circular'
    */
-  progress?: number | null;
+  variant?: 'linear' | 'circular';
   /**
-   * Progress color.
+   * The lower and upper bounds for automatic timer progress.
    */
-  color?: ColorValue;
-};
+  timerInterval?: ClosedRangeDate;
+  /**
+   * Whether the progress counts down instead of up.
+   * @default false
+   */
+  countsDown?: boolean;
+} & CommonViewModifierProps;
 
-type NativeProgressProps =
-  | CircularProgressProps
-  | (LinearProgressProps & {
-      variant: 'linear' | 'circular';
-    });
+type NativeProgressProps = Omit<ProgressProps, 'timerInterval'> & {
+  timerInterval?: ClosedRangeInternal;
+};
 
 const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNativeView(
   'ExpoUI',
@@ -37,39 +42,23 @@ const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNati
 );
 
 /**
- * `<CircularProgress>` component without a host view.
- * You should use this with a `Host` component in ancestor.
+ * Renders a `Progress` component.
  */
-export function CircularProgressPrimitive(props: CircularProgressProps) {
-  return <NativeProgressView {...props} variant="circular" />;
-}
-
-/**
- * `<LinearProgress>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function LinearProgressPrimitive(props: LinearProgressProps) {
-  return <NativeProgressView {...props} variant="linear" />;
-}
-
-/**
- * Renders a `CircularProgress` component.
- */
-export function CircularProgress(props: CircularProgressProps & { style?: StyleProp<ViewStyle> }) {
+export function Progress(props: ProgressProps) {
+  const { modifiers, timerInterval, ...restProps } = props;
   return (
-    <Host style={props.style} matchContents>
-      <CircularProgressPrimitive {...props} />
-    </Host>
-  );
-}
-
-/**
- * Renders a `LinearProgress` component.
- */
-export function LinearProgress(props: LinearProgressProps & { style?: StyleProp<ViewStyle> }) {
-  return (
-    <Host style={props.style} matchContents>
-      <LinearProgressPrimitive {...props} />
-    </Host>
+    <NativeProgressView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      timerInterval={
+        timerInterval
+          ? {
+              lower: timerInterval.lower.getTime(),
+              upper: timerInterval.upper.getTime(),
+            }
+          : undefined
+      }
+    />
   );
 }

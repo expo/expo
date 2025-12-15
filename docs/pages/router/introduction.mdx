@@ -3,11 +3,14 @@ title: Introduction to Expo Router
 description: Expo Router is an open-source routing library for Universal React Native applications built with Expo.
 hideTOC: true
 sidebar_title: Introduction
+searchRank: 15
 ---
 
+import { DocsLogo } from '@expo/styleguide';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { Rocket02Icon } from '@expo/styleguide-icons/outline/Rocket02Icon';
+import { YoutubeIcon } from '@expo/styleguide-icons/outline/YoutubeIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -15,6 +18,22 @@ import { Collapsible } from '~/ui/components/Collapsible';
 Expo Router is a file-based router for React Native and web applications. It allows you to manage navigation between screens in your app, allowing users to move seamlessly between different parts of your app's UI, using the same components on multiple platforms (Android, iOS, and web).
 
 It brings the best file-system routing concepts from the web to a universal application &mdash; allowing your routing to work across every platform. When a file is added to the **app** directory, the file automatically becomes a route in your navigation.
+
+<BoxLink
+  title="Expo Router reference"
+  Icon={DocsLogo}
+  description="For information on API components, hooks, methods, and more, see the Expo Router reference."
+  href="/versions/latest/sdk/router/"
+/>
+
+You can also see the following playlist to get started with Expo Router:
+
+<BoxLink
+  title="Expo Router playlist"
+  Icon={YoutubeIcon}
+  description="A tutorial series for Expo Router from the core concepts to more complex navigation flows."
+  href="https://www.youtube.com/playlist?list=PLsXDmrmFV_AT17JDf-otXSNE_eH7s0uDD"
+/>
 
 ## Features
 
@@ -38,7 +57,7 @@ If you are looking to use [React Native Navigation by Wix](https://github.com/wi
 
 Historically, React Native has been non prescriptive about how apps should be built which is similar to using React without a modern web framework. Expo Router is an opinionated framework for React Native, similar to how Remix and Next.js are opinionated frameworks for web-only React.
 
-Expo Router is designed to bring the best architectural patterns to everyone, to ensure React Native is leveraged to its fullest. For example, Expo Router's [Async Routes](/router/reference/async-routes) feature enables lazy bundling for everyone. Previously, lazy bundling was only used at Meta to build the Facebook app.
+Expo Router is designed to bring the best architectural patterns to everyone, to ensure React Native is leveraged to its fullest. For example, Expo Router's [Async Routes](/router/web/async-routes) feature enables lazy bundling for everyone. Previously, lazy bundling was only used at Meta to build the Facebook app.
 
 </Collapsible>
 
@@ -91,6 +110,12 @@ Basic static rendering (SSG) is supported in Expo Router. Server-side rendering 
   Icon={BookOpen02Icon}
   description="Detailed instructions on how to get started and add Expo Router to your existing app."
   href="/router/installation/#manual-installation"
+/>
+<BoxLink
+  title="Router 101"
+  Icon={BookOpen02Icon}
+  description="For information core concepts, notation patterns, navigation layouts, and common navigation patterns, start with Router 101 section."
+  href="/router/basics/core-concepts/"
 />
 <BoxLink
   title="Example app"

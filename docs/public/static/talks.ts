@@ -109,6 +109,20 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
+    title: 'Expo SDK 54, Expo Router v6 & Expo UI Beta for iOS with Beto Moedano',
+    event: 'Rocket Ship #081',
+    description: 'Alberto Moedano',
+    videoId: '1_J4xJk6XSc',
+    link: 'https://podcast.galaxies.dev/episodes/081-expo-sdk-54-expo-router-v6-expo-ui-beta-for-ios-with-beto-moedano',
+  },
+  {
+    title: 'RN Web vs React Strict DOM: Part 2, with Evan Bacon and James Ide',
+    event: 'React Native Radio #340',
+    description: 'Evan Bacon, James Ide',
+    thumbnail: 'rnr-340.jpeg',
+    link: 'https://infinite.red/react-native-radio/rnr-340-rn-web-vs-react-strict-dom-part-2-with-evan-bacon-and-james-ide',
+  },
+  {
     title: 'Expo Atlas with Cedric van Putten',
     event: 'React Native Radio #333',
     description: 'Cedric van Putten',
@@ -237,6 +251,21 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: 'Announcing the 2025 Expo App Award winners!',
+    event: 'Expo Live Stream',
+    videoId: 'KnZ3LWkXzSk',
+  },
+  {
+    title: "What's new in Expo SDK 54?",
+    event: 'Expo Live Stream',
+    videoId: 'KBlbkjqxNbM',
+  },
+  {
+    title: 'Shipping with Expo: How to get your Bolt app to the app stores',
+    event: 'Expo Live Stream',
+    videoId: 'ViU7207_W54',
+  },
+  {
     title: 'How to use Protected Routes in Expo Router V5 for smooth auth',
     event: 'Expo Live Stream',
     videoId: 'XCTaMu0qnFY',
@@ -356,6 +385,111 @@ export const LIVE_STREAMS = [
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
+  {
+    title: 'How to add native iOS Widgets to your Expo app',
+    event: 'Expo Tutorials',
+    videoId: 'UH4ejdz3fko',
+  },
+  {
+    title: 'How to send emails with Resend from your Expo app',
+    event: 'Expo Tutorials',
+    videoId: '8sPD8SNcUFA',
+  },
+  {
+    title: 'The fastest mobile QA workflow: Expo pull request previews in GitHub Actions',
+    event: 'EAS Tutorials',
+    videoId: '7UVIrqrrrso',
+  },
+  {
+    title: 'Getting started with Meta Horizon Development using Expo',
+    event: 'Expo Tutorials',
+    videoId: '24G2tui0Ts8',
+  },
+  {
+    title: 'How to make Expo apps faster | Expo app development best practices',
+    event: 'Expo Tutorials',
+    videoId: 'vFbim_U1Lmc',
+  },
+  {
+    title: 'Learn how to use the new Icon Composer with Expo',
+    event: 'Expo Tutorials',
+    videoId: 'RZ_QMym3adw',
+  },
+  {
+    title: 'Introducing Expo MCP Server',
+    event: 'Expo Tutorials',
+    videoId: 'dp9dpIgDxZQ',
+  },
+  {
+    title: 'How to adopt Liquid Glass in an Expo app',
+    event: 'Expo Tutorials',
+    videoId: 'NMCQOBIwW2M',
+  },
+  {
+    title: 'Liquid Glass Tabs with Expo Router v6 | Native Tabs',
+    event: 'Expo Tutorials',
+    videoId: 'QqNZXdGFl44',
+  },
+  {
+    title: 'Expo UI iOS Liquid Glass Tutorial',
+    event: 'Expo Tutorials',
+    videoId: '2wXYLWz3YEQ',
+  },
+  {
+    title: 'Expo SDK 54: Liquid Glass, Expo UI, Expo Router v6, React 19, Link Previews',
+    event: 'Expo Tutorials',
+    videoId: 'iYh-7WfJTR0',
+  },
+  {
+    title: 'How to upgrade from Expo SDK 53 to SDK 54 in 5 minutes',
+    event: 'Expo Tutorials',
+    videoId: 'QuN63BRRhAM',
+  },
+  {
+    title: 'When to use over the air updates | Three important OTA use cases',
+    event: 'EAS Tutorials',
+    videoId: 'PMRekmaeb1o',
+  },
+  {
+    title: "Top 5 Expo SDK Features You're Not Using",
+    event: 'Expo Tutorials',
+    videoId: 'HQ_xzbq_BnQ',
+  },
+  {
+    title: 'Repack Workflow Demo | Speed up CI builds by ~80%',
+    event: 'EAS Tutorials',
+    videoId: 'peZ36U87k-M',
+  },
+  {
+    title: 'How to Add In-App Subscriptions with RevenueCat + Expo',
+    event: 'Expo Tutorials',
+    videoId: 'R3fLKC-2Qh0',
+  },
+  {
+    title: 'How to build a Custom Expo Module',
+    event: 'Expo Tutorials',
+    videoId: 'zReFsPgUdMs',
+  },
+  {
+    title: 'Speed up your Expo Builds with Remote Build Cache',
+    event: 'Expo Tutorials',
+    videoId: '5SmaC-JQS_k',
+  },
+  {
+    title: 'Build a Local-First Sketch App with Expo, Instant & Reanimated',
+    event: 'Expo Tutorials',
+    videoId: 'DEJIcaGN3vY',
+  },
+  {
+    title: 'How to use Expo Background Tasks',
+    event: 'Expo Tutorials',
+    videoId: '4lFus7TvayI',
+  },
+  {
+    title: 'Building auth and onboarding flows with protected routes',
+    event: 'Expo Tutorials',
+    videoId: 'zHZjJDTTHJg',
+  },
   {
     title: 'Golden Workflow: Automate the creation of development builds',
     event: 'EAS Tutorials',

@@ -2,16 +2,15 @@ package expo.modules.devlauncher.launcher.errors
 
 import android.app.Activity
 import android.app.Application
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.os.Process
 import android.util.Log
 import expo.modules.devlauncher.DevLauncherController
-import expo.modules.devlauncher.koin.DevLauncherKoinContext
 import expo.modules.devlauncher.logs.DevLauncherRemoteLogManager
 import java.lang.ref.WeakReference
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
 import kotlin.concurrent.schedule
 import kotlin.system.exitProcess
 
@@ -94,7 +93,7 @@ class DevLauncherUncaughtExceptionHandler(
   }
 
   private fun tryToSaveException(exception: Throwable) {
-    val context = DevLauncherKoinContext.app.koin.getOrNull<Context>() ?: return
+    val context = controller.nullableContext ?: return
     val errorRegistry = DevLauncherErrorRegistry(context)
     errorRegistry.storeException(exception)
   }
@@ -102,7 +101,7 @@ class DevLauncherUncaughtExceptionHandler(
   private fun tryToSendExceptionToBundler(exception: Throwable) {
     if (
       controller.mode != DevLauncherController.Mode.APP ||
-      !controller.appHost.hasInstance ||
+      controller.appHost.currentReactContext?.hasActiveReactInstance() != true ||
       controller.appHost.currentReactContext === null
     ) {
       return
@@ -110,7 +109,7 @@ class DevLauncherUncaughtExceptionHandler(
 
     try {
       val url = getWebSocketUrl()
-      val remoteLogManager = DevLauncherRemoteLogManager(DevLauncherKoinContext.app.koin.get(), url)
+      val remoteLogManager = DevLauncherRemoteLogManager(DevLauncherController.instance.httpClient, url)
         .apply {
           deferError("Your app just crashed. See the error below.")
           deferError(exception)

@@ -5,8 +5,10 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.content.Context
 import android.util.Log
 import android.view.View
+import android.view.accessibility.CaptioningManager
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.widget.ImageButton
@@ -15,6 +17,7 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.FullscreenOptions
 import expo.modules.video.utils.FullscreenActivityOrientationHelper
+import expo.modules.video.utils.SubtitleUtils
 import expo.modules.video.utils.applyPiPParams
 import expo.modules.video.utils.applyRectHint
 import expo.modules.video.utils.calculatePiPAspectRatio
@@ -31,6 +34,7 @@ class FullscreenPlayerActivity : Activity() {
   private var wasAutoPaused = false
   private lateinit var options: FullscreenOptions
   private lateinit var orientationHelper: FullscreenActivityOrientationHelper
+  private var captioningChangeListener: CaptioningManager.CaptioningChangeListener? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -73,7 +77,11 @@ class FullscreenPlayerActivity : Activity() {
     requestedOrientation = options.orientation.toActivityOrientation()
 
     videoPlayer = videoView.videoPlayer
-    videoPlayer?.changePlayerView(playerView)
+    videoPlayer?.player?.let {
+      PlayerView.switchTargetView(it, videoView.playerView, playerView)
+      videoPlayer?.hasBeenDisconnectedFromVideoView() // The video player is disconnected. We are only using the ExoPlayer it contained
+    }
+
     VideoManager.registerFullscreenPlayerActivity(hashCode().toString(), this)
     playerView.player?.let {
       val aspectRatio = calculatePiPAspectRatio(it.videoSize, playerView.width, playerView.height, videoView.contentFit)
@@ -92,6 +100,12 @@ class FullscreenPlayerActivity : Activity() {
       playerView.setTimeBarInteractive(videoPlayer?.requiresLinearPlayback ?: true)
     }
     playerView.setShowSubtitleButton(videoView.showsSubtitlesButton)
+
+    // Configure subtitle view to fix sizing issues with embedded styles (same as VideoView)
+    SubtitleUtils.configureSubtitleView(playerView, this)
+
+    // Set up listener for accessibility caption changes
+    setupCaptioningChangeListener()
 
     playerView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
       applyRectHint(this, calculateRectHint(playerView))
@@ -114,7 +128,9 @@ class FullscreenPlayerActivity : Activity() {
 
   override fun onResume() {
     orientationHelper.startOrientationEventListener()
-    playerView.useController = videoView.useNativeControls
+    playerView.useController = true
+    // Reconfigure subtitles when resuming (handles returning from settings)
+    SubtitleUtils.configureSubtitleView(playerView, this)
     super.onResume()
   }
 
@@ -132,6 +148,14 @@ class FullscreenPlayerActivity : Activity() {
 
   override fun onDestroy() {
     super.onDestroy()
+
+    // Clean up captioning change listener
+    captioningChangeListener?.let {
+      val captioningManager = getSystemService(Context.CAPTIONING_SERVICE) as? CaptioningManager
+      captioningManager?.removeCaptioningChangeListener(it)
+      captioningChangeListener = null
+    }
+
     videoView.exitFullscreen()
     VideoManager.unregisterFullscreenPlayerActivity(hashCode().toString())
     orientationHelper.stopOrientationEventListener()
@@ -173,6 +197,16 @@ class FullscreenPlayerActivity : Activity() {
           or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
           or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
         )
+    }
+  }
+
+  private fun setupCaptioningChangeListener() {
+    val captioningManager = getSystemService(Context.CAPTIONING_SERVICE) as? CaptioningManager
+
+    captioningChangeListener = SubtitleUtils.createCaptioningChangeListener(playerView, this)
+
+    captioningChangeListener?.let { listener ->
+      captioningManager?.addCaptioningChangeListener(listener)
     }
   }
 

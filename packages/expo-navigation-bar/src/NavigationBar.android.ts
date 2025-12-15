@@ -1,6 +1,6 @@
 import { type EventSubscription } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
-import { processColor } from 'react-native';
+import { Appearance, processColor } from 'react-native';
 import { isEdgeToEdge } from 'react-native-is-edge-to-edge';
 
 import ExpoNavigationBar from './ExpoNavigationBar';
@@ -13,15 +13,24 @@ import type {
   NavigationBarVisibilityEvent,
 } from './NavigationBar.types';
 
-// This line only imports the type information for TypeScript type checking.  It
-// doesn't import the actual module in the compiled JavaScript code.  The actual
-// module is imported conditionally with require() below, in order to avoid
-// importing the module if edge-to-edge is not enabled (which could throw if
-// it's not linked).
-let SystemBars: typeof import('react-native-edge-to-edge').SystemBars | null = null;
+function isLightColorScheme() {
+  const colorScheme = Appearance?.getColorScheme() ?? 'light';
+  return colorScheme === 'light';
+}
 
-if (isEdgeToEdge()) {
-  SystemBars = require('react-native-edge-to-edge').SystemBars;
+function navigationBarStyleToButtonStyle(
+  navigationBarStyle: NavigationBarStyle
+): NavigationBarButtonStyle {
+  switch (navigationBarStyle) {
+    case 'auto':
+      return isLightColorScheme() ? 'dark' : 'light';
+    case 'light':
+      return 'dark';
+    case 'dark':
+      return 'light';
+    case 'inverted':
+      return isLightColorScheme() ? 'light' : 'dark';
+  }
 }
 
 export function addVisibilityListener(
@@ -31,7 +40,7 @@ export function addVisibilityListener(
 }
 
 export async function setBackgroundColorAsync(color: string): Promise<void> {
-  if (SystemBars != null) {
+  if (isEdgeToEdge()) {
     console.warn('`setBackgroundColorAsync` is not supported with edge-to-edge enabled.');
     return;
   }
@@ -41,7 +50,7 @@ export async function setBackgroundColorAsync(color: string): Promise<void> {
 }
 
 export async function getBackgroundColorAsync(): Promise<string> {
-  if (SystemBars != null) {
+  if (isEdgeToEdge()) {
     console.warn('`getBackgroundColorAsync` is not supported with edge-to-edge enabled.');
     return `#00000000`;
   }
@@ -50,7 +59,7 @@ export async function getBackgroundColorAsync(): Promise<string> {
 }
 
 export async function setBorderColorAsync(color: string): Promise<void> {
-  if (SystemBars != null) {
+  if (isEdgeToEdge()) {
     console.warn('`setBorderColorAsync` is not supported with edge-to-edge enabled.');
     return;
   }
@@ -60,7 +69,7 @@ export async function setBorderColorAsync(color: string): Promise<void> {
 }
 
 export async function getBorderColorAsync(): Promise<string> {
-  if (SystemBars != null) {
+  if (isEdgeToEdge()) {
     console.warn('`getBorderColorAsync` is not supported with edge-to-edge enabled.');
     return `#00000000`;
   }
@@ -69,11 +78,6 @@ export async function getBorderColorAsync(): Promise<string> {
 }
 
 export async function setVisibilityAsync(visibility: NavigationBarVisibility): Promise<void> {
-  if (SystemBars != null) {
-    SystemBars.setHidden({ navigationBar: visibility === 'hidden' });
-    return;
-  }
-
   await ExpoNavigationBar.setVisibilityAsync(visibility);
 }
 
@@ -82,16 +86,11 @@ export async function getVisibilityAsync(): Promise<NavigationBarVisibility> {
 }
 
 export async function setButtonStyleAsync(style: NavigationBarButtonStyle): Promise<void> {
-  if (SystemBars != null) {
-    SystemBars.setStyle({ navigationBar: style });
-    return;
-  }
-
   await ExpoNavigationBar.setButtonStyleAsync(style);
 }
 
 export async function getButtonStyleAsync(): Promise<NavigationBarButtonStyle> {
-  if (SystemBars != null) {
+  if (isEdgeToEdge()) {
     console.warn('`getButtonStyleAsync` is not supported with edge-to-edge enabled.');
     return 'light';
   }
@@ -100,7 +99,7 @@ export async function getButtonStyleAsync(): Promise<NavigationBarButtonStyle> {
 }
 
 export async function setPositionAsync(position: NavigationBarPosition): Promise<void> {
-  if (SystemBars != null) {
+  if (isEdgeToEdge()) {
     console.warn('`setPositionAsync` is not supported with edge-to-edge enabled.');
     return;
   }
@@ -109,7 +108,7 @@ export async function setPositionAsync(position: NavigationBarPosition): Promise
 }
 
 export async function unstable_getPositionAsync(): Promise<NavigationBarPosition> {
-  if (SystemBars != null) {
+  if (isEdgeToEdge()) {
     console.warn('`unstable_getPositionAsync` is not supported with edge-to-edge enabled.');
     return 'relative';
   }
@@ -118,7 +117,7 @@ export async function unstable_getPositionAsync(): Promise<NavigationBarPosition
 }
 
 export async function setBehaviorAsync(behavior: NavigationBarBehavior): Promise<void> {
-  if (SystemBars != null) {
+  if (isEdgeToEdge()) {
     console.warn('`setBehaviorAsync` is not supported with edge-to-edge enabled.');
     return;
   }
@@ -127,7 +126,7 @@ export async function setBehaviorAsync(behavior: NavigationBarBehavior): Promise
 }
 
 export async function getBehaviorAsync(): Promise<NavigationBarBehavior> {
-  if (SystemBars != null) {
+  if (isEdgeToEdge()) {
     console.warn('`getBehaviorAsync` is not supported with edge-to-edge enabled.');
     return 'inset-touch';
   }
@@ -136,14 +135,7 @@ export async function getBehaviorAsync(): Promise<NavigationBarBehavior> {
 }
 
 export function setStyle(style: NavigationBarStyle) {
-  if (SystemBars != null) {
-    SystemBars.setStyle({ navigationBar: style });
-    return;
-  }
-
-  throw new Error(
-    '`setStyle` is only supported on Android when edge-to-edge is enabled. Enable edge-to-edge or use the `setButtonStyle` function instead.'
-  );
+  ExpoNavigationBar.setButtonStyleAsync(navigationBarStyleToButtonStyle(style));
 }
 
 export function useVisibility(): NavigationBarVisibility | null {

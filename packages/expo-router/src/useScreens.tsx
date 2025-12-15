@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  useIsFocused,
   useStateForPath,
   type EventMapBase,
   type NavigationState,
@@ -9,11 +8,19 @@ import {
   type RouteProp,
   type ScreenListeners,
 } from '@react-navigation/native';
-import React from 'react';
+import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
+import React, { useEffect } from 'react';
 
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
+import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
+import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
+import {
+  hasParam,
+  INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
+  removeParams,
+} from './navigationParams';
 import { Screen } from './primitives';
 import { UnknownOutputParams } from './types';
 import { EmptyRoute } from './views/EmptyRoute';
@@ -147,13 +154,19 @@ function getSortedChildren(
  */
 export function useSortedScreens(
   order: ScreenProps[],
-  protectedScreens: Set<string>
+  protectedScreens: Set<string>,
+  useOnlyUserDefinedScreens: boolean = false
 ): React.ReactNode[] {
   const node = useRouteNode();
 
-  const sorted = node?.children?.length
-    ? getSortedChildren(node.children, order, node.initialRouteName)
-    : [];
+  const nodeChildren = node?.children ?? [];
+  const children = useOnlyUserDefinedScreens
+    ? nodeChildren.filter((child) =>
+        order.some((userDefinedScreen) => userDefinedScreen.name === child.route)
+      )
+    : nodeChildren;
+
+  const sorted = children.length ? getSortedChildren(children, order, node?.initialRouteName) : [];
   return React.useMemo(
     () =>
       sorted
@@ -249,7 +262,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     ...props
   }: any) {
     const stateForPath = useStateForPath();
-    const isFocused = useIsFocused();
+    const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
 
     if (isFocused) {
@@ -258,16 +271,50 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
     }
 
+    useEffect(
+      () =>
+        navigation.addListener('focus', () => {
+          const state = navigation.getState();
+          const isLeaf = !('state' in state.routes[state.index]);
+          // Because setFocusedState caches the route info, this call will only trigger rerenders
+          // if the component itself didn’t rerender and the route info changed.
+          // Otherwise, the update from the `if` above will handle it,
+          // and this won’t cause a redundant second update.
+          if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
+        }),
+      [navigation]
+    );
+
+    useEffect(() => {
+      return navigation.addListener(
+        'transitionEnd',
+        (e?: NativeStackNavigationEventMap['transitionEnd']) => {
+          if (!e?.data?.closing) {
+            // When navigating to a screen, remove the no animation param to re-enable animations
+            // Otherwise the navigation back would also have no animation
+            if (hasParam(route?.params, INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
+              navigation.replaceParams(
+                removeParams(route?.params, [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME])
+              );
+            }
+          }
+        }
+      );
+    }, [navigation]);
+
     return (
       <Route node={value} route={route}>
-        <React.Suspense fallback={<SuspenseFallback route={value} />}>
-          <ScreenComponent
-            {...props}
-            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-            // the intention is to make it possible to deduce shared routes.
-            segment={value.route}
-          />
-        </React.Suspense>
+        <ZoomTransitionEnabler route={route} />
+        <ZoomTransitionTargetContextProvider route={route}>
+          <React.Suspense fallback={<SuspenseFallback route={value} />}>
+            <ScreenComponent
+              {...props}
+              // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+              // the intention is to make it possible to deduce shared routes.
+              segment={value.route}
+            />
+          </React.Suspense>
+        </ZoomTransitionTargetContextProvider>
       </Route>
     );
   }

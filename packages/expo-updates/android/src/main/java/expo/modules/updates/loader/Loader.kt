@@ -19,9 +19,11 @@ import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.Update
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import java.io.File
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Abstract class responsible for loading an update, enumerating the assets required for
@@ -37,7 +39,7 @@ abstract class Loader protected constructor(
   private val database: UpdatesDatabase,
   private val updatesDirectory: File,
   private val loaderFiles: LoaderFiles,
-  private var scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+  private var scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 ) {
   private var updateResponse: UpdateResponse? = null
   private var updateEntity: UpdateEntity? = null
@@ -46,6 +48,10 @@ abstract class Loader protected constructor(
   private var existingAssetList = mutableListOf<AssetEntity>()
   private var finishedAssetList = mutableListOf<AssetEntity>()
   private val _progressFlow = MutableSharedFlow<AssetLoadProgress>()
+  private var assetProgressMap: MutableMap<AssetEntity, Double> = ConcurrentHashMap()
+
+  internal var assetLoadProgressBlock: ((Double) -> Unit)? = null
+
   val progressFlow: Flow<AssetLoadProgress> = _progressFlow.asSharedFlow()
 
   data class LoaderResult(val updateEntity: UpdateEntity?, val updateDirective: UpdateDirective?)
@@ -59,6 +65,18 @@ abstract class Loader protected constructor(
     val totalAssetCount: Int
   )
 
+  fun assetLoadProgressListener(asset: AssetEntity, progress: Double) {
+    assetProgressMap[asset] = progress
+    notifyAssetLoadProgress()
+  }
+
+  private fun notifyAssetLoadProgress() {
+    if (assetTotal > 0) {
+      val progress = assetProgressMap.values.sum() / assetTotal.toDouble()
+      assetLoadProgressBlock?.invoke(progress)
+    }
+  }
+
   protected abstract suspend fun loadRemoteUpdate(
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration
@@ -66,7 +84,7 @@ abstract class Loader protected constructor(
 
   protected abstract suspend fun loadAsset(
     assetEntity: AssetEntity,
-    updatesDirectory: File?,
+    updatesDirectory: File,
     configuration: UpdatesConfiguration,
     requestedUpdate: UpdateEntity?,
     embeddedUpdate: UpdateEntity?
@@ -100,6 +118,8 @@ abstract class Loader protected constructor(
     erroredAssetList = mutableListOf()
     existingAssetList = mutableListOf()
     finishedAssetList = mutableListOf()
+    assetProgressMap = ConcurrentHashMap()
+    assetLoadProgressBlock = null
   }
 
   private fun finish(): LoaderResult {
@@ -248,7 +268,13 @@ abstract class Loader protected constructor(
       AssetLoadResult.ERRORED -> erroredAssetList.add(assetEntity)
     }
 
-    // Emit progress update through Flow
+    // do not emit progress update for errored assets
+    // let the progress bar stay at whatever the last successful progress was
+    if (result == AssetLoadResult.FINISHED || result == AssetLoadResult.ALREADY_EXISTS) {
+      assetProgressMap[assetEntity] = 1.0
+      notifyAssetLoadProgress()
+    }
+
     _progressFlow.emit(
       AssetLoadProgress(
         asset = assetEntity,

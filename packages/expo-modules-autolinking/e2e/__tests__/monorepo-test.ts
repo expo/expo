@@ -21,6 +21,8 @@ const apps = ['ejected', 'managed', 'with-sentry'];
 const testCases = combinations('app', apps, 'platform', ['android', 'apple']);
 
 jest.setTimeout(5 * 60 * 1000);
+jest.unmock('fs/promises');
+jest.unmock('fs');
 
 describe('monorepo', () => {
   let monorepoProject: string | undefined;
@@ -106,16 +108,14 @@ describe('monorepo', () => {
     });
   });
 
-  describe('generate-package-list / generate-modules-provider', () => {
+  describe('generate-modules-provider', () => {
     test.each(testCases)('%s', async ({ app, platform }) => {
-      const command =
-        platform === 'android' ? 'generate-package-list' : 'generate-modules-provider';
+      if (platform === 'android') return;
       const appPath = projectPath(app);
       const target = join(appPath, 'generated', 'file.txt');
-      const platformExtraArgs = platform === 'android' ? ['--namespace', 'com.test'] : [];
 
       const generatePackageListResult = await autolinkingRunAsync(
-        [command, '--platform', platform, '--target', target, ...platformExtraArgs],
+        ['generate-modules-provider', '--platform', platform, '--target', target],
         {
           cwd: appPath,
         }

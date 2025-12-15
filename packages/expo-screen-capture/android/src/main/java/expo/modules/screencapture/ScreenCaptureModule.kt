@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.WindowManager
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
@@ -32,6 +33,14 @@ class ScreenCaptureModule : Module() {
   private var screenshotEventEmitter: ScreenshotEventEmitter? = null
   private var isRegistered = false
 
+  private fun emitEvent() {
+    try {
+      sendEvent(eventName)
+    } catch (error: Throwable) {
+      Log.e("ExpoScreenCapture", "Failed to emit event $eventName: ${error.message}")
+    }
+  }
+
   override fun definition() = ModuleDefinition {
     Name("ExpoScreenCapture")
 
@@ -40,13 +49,13 @@ class ScreenCaptureModule : Module() {
     OnCreate {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         screenCaptureCallback = Activity.ScreenCaptureCallback {
-          sendEvent(eventName)
+          emitEvent()
         }
         // Let's try to register the callback
         registerCallback()
       } else {
         screenshotEventEmitter = ScreenshotEventEmitter(context) {
-          sendEvent(eventName)
+          emitEvent()
         }
       }
     }

@@ -1,6 +1,7 @@
+import type { Terminal } from '@expo/metro/metro-core';
 import chalk from 'chalk';
-import { Terminal } from 'metro-core';
 import path from 'path';
+import { stripVTControlCharacters } from 'util';
 
 import { logWarning, TerminalReporter } from './TerminalReporter';
 import {
@@ -15,9 +16,10 @@ import { env } from '../../../utils/env';
 import { learnMore } from '../../../utils/link';
 import {
   logLikeMetro,
-  maybeSymbolicateAndFormatReactErrorLogAsync,
+  maybeSymbolicateAndFormatJSErrorStackLogAsync,
   parseErrorStringToObject,
 } from '../serverLogLikeMetro';
+import { attachImportStackToRootMessage, nearestImportStack } from './metroErrorInterface';
 
 const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
@@ -75,35 +77,59 @@ export class MetroTerminalReporter extends TerminalReporter {
           break;
         }
 
-        const mode = event.mode === 'NOBRIDGE' || event.mode === 'BRIDGE' ? '' : (event.mode ?? '');
-        // @ts-expect-error
-        if (level === 'warn' || level === 'error') {
-          // Quick check to see if an unsymbolicated stack is being logged.
-          const msg = event.data.join('\n');
-          if (msg.includes('.bundle//&platform=')) {
-            const parsed = parseErrorStringToObject(msg);
-
-            if (parsed) {
-              maybeSymbolicateAndFormatReactErrorLogAsync(this.projectRoot, level, parsed)
-                .then((res) => {
-                  // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
-                  logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, res);
-                })
-                .catch((e) => {
-                  // Fallback on the original error message if we can't symbolicate the stack.
-                  debug('Error formatting stack', e);
-
-                  // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
-                  logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...event.data);
-                });
-
-              return;
+        if (level === 'warn' || (level as string) === 'error') {
+          let hasStack = false;
+          const parsed = event.data.map((msg) => {
+            // Quick check to see if an unsymbolicated stack is being logged.
+            if (msg.includes('.bundle//&platform=')) {
+              const stack = parseErrorStringToObject(msg);
+              if (stack) {
+                hasStack = true;
+              }
+              return stack;
             }
+            return msg;
+          });
+
+          if (hasStack) {
+            (async () => {
+              const symbolicating = parsed.map((p) => {
+                if (typeof p === 'string') return p;
+                return maybeSymbolicateAndFormatJSErrorStackLogAsync(this.projectRoot, level, p);
+              });
+
+              let usefulStackCount = 0;
+              const fallbackIndices: number[] = [];
+              const symbolicated = (await Promise.allSettled(symbolicating)).map((s, index) => {
+                if (s.status === 'rejected') {
+                  debug('Error formatting stack', parsed[index], s.reason);
+                  return parsed[index];
+                } else if (typeof s.value === 'string') {
+                  return s.value;
+                } else {
+                  if (!s.value.isFallback) {
+                    usefulStackCount++;
+                  } else {
+                    fallbackIndices.push(index);
+                  }
+                  return s.value.stack;
+                }
+              });
+
+              // Using EXPO_DEBUG we can print all stack
+              const filtered =
+                usefulStackCount && !env.EXPO_DEBUG
+                  ? symbolicated.filter((_, index) => !fallbackIndices.includes(index))
+                  : symbolicated;
+
+              logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...filtered);
+            })();
+            return;
           }
         }
 
         // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
-        logLikeMetro(this.terminal.log.bind(this.terminal), level, mode, ...event.data);
+        logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...event.data);
         return;
       }
     }
@@ -234,17 +260,22 @@ export class MetroTerminalReporter extends TerminalReporter {
 
   _logBundlingError(error: SnippetError): void {
     const moduleResolutionError = formatUsingNodeStandardLibraryError(this.projectRoot, error);
-    const cause = error.cause as undefined | { _expoImportStack?: string };
     if (moduleResolutionError) {
       let message = maybeAppendCodeFrame(moduleResolutionError, error.message);
-      if (cause?._expoImportStack) {
-        message += `\n\n${cause?._expoImportStack}`;
-      }
+      message += '\n\n' + nearestImportStack(error);
       return this.terminal.log(message);
     }
-    if (cause?._expoImportStack) {
-      error.message += `\n\n${cause._expoImportStack}`;
+
+    attachImportStackToRootMessage(error);
+
+    // NOTE(@kitten): Metro drops the stack forcefully when it finds a `SyntaxError`. However,
+    // this is really unhelpful, since it prevents debugging Babel plugins or reporting bugs
+    // in Babel plugins or a transformer entirely
+    if (error.snippet == null && error.stack != null && error instanceof SyntaxError) {
+      error.message = error.stack;
+      delete error.stack;
     }
+
     return super._logBundlingError(error);
   }
 }
@@ -302,11 +333,27 @@ export function isNodeStdLibraryModule(moduleName: string): boolean {
 
 /** If the code frame can be found then append it to the existing message.  */
 function maybeAppendCodeFrame(message: string, rawMessage: string): string {
-  const codeFrame = stripMetroInfo(rawMessage);
+  const codeFrame = extractCodeFrame(stripMetroInfo(rawMessage));
   if (codeFrame) {
     message += '\n' + codeFrame;
   }
   return message;
+}
+
+/** Extract fist code frame presented in the error message */
+export function extractCodeFrame(errorMessage: string): string {
+  const codeFrameLine = /^(?:\s*(?:>?\s*\d+\s*\||\s*\|).*\n?)+/;
+  let wasPreviousLineCodeFrame: boolean | null = null;
+  return errorMessage
+    .split('\n')
+    .filter((line) => {
+      if (wasPreviousLineCodeFrame === false) return false;
+      const keep = codeFrameLine.test(stripVTControlCharacters(line));
+      if (keep && wasPreviousLineCodeFrame === null) wasPreviousLineCodeFrame = true;
+      else if (!keep && wasPreviousLineCodeFrame) wasPreviousLineCodeFrame = false;
+      return keep;
+    })
+    .join('\n');
 }
 
 /**
@@ -314,15 +361,15 @@ function maybeAppendCodeFrame(message: string, rawMessage: string): string {
  * In future versions we won't need this.
  * Returns the remaining code frame logs.
  */
-export function stripMetroInfo(errorMessage: string): string | null {
+export function stripMetroInfo(errorMessage: string): string {
   // Newer versions of Metro don't include the list.
   if (!errorMessage.includes('4. Remove the cache')) {
-    return null;
+    return errorMessage;
   }
   const lines = errorMessage.split('\n');
   const index = lines.findIndex((line) => line.includes('4. Remove the cache'));
   if (index === -1) {
-    return null;
+    return errorMessage;
   }
   return lines.slice(index + 1).join('\n');
 }

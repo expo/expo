@@ -1,7 +1,9 @@
-import { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
+import type { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
+import type { PluginOptions as ReactCompilerOptions } from 'babel-plugin-react-compiler';
 
 import { reactClientReferencesPlugin } from './client-module-proxy-plugin';
 import {
+  getBabelRuntimeVersion,
   getBaseUrl,
   getBundler,
   getInlineEnvVarsEnabled,
@@ -23,6 +25,7 @@ import { expoInlineEnvVars } from './inline-env-vars';
 import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
 import { reactServerActionsPlugin } from './server-actions-plugin';
+import { serverDataLoadersPlugin } from './server-data-loaders-plugin';
 import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
 
 type BabelPresetExpoPlatformOptions = {
@@ -50,60 +53,15 @@ type BabelPresetExpoPlatformOptions = {
   // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
   disableFlowStripTypesTransform?: boolean;
   // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
-  enableBabelRuntime?: boolean;
+  enableBabelRuntime?: boolean | string;
   // Defaults to `'default'`, can also use `'hermes-canary'`
   unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
 
   /** Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the plugin. */
-  'react-compiler'?:
-    | false
-    | {
-        // TODO: Add full types and doc blocks.
-        enableUseMemoCachePolyfill?: boolean;
-        compilationMode?: 'infer' | 'strict';
-        panicThreshold?: 'none' | 'all_errors' | 'critical_errors';
-        logger?: any;
-        environment?: {
-          customHooks?: unknown;
-          enableResetCacheOnSourceFileChanges?: boolean;
-          enablePreserveExistingMemoizationGuarantees?: boolean;
-          /** @default true */
-          validatePreserveExistingMemoizationGuarantees?: boolean;
-          enableForest?: boolean;
-          enableUseTypeAnnotations?: boolean;
-          /** @default true */
-          enableReactiveScopesInHIR?: boolean;
-          /** @default true */
-          validateHooksUsage?: boolean;
-          validateRefAccessDuringRender?: boolean;
-          /** @default true */
-          validateNoSetStateInRender?: boolean;
-          validateMemoizedEffectDependencies?: boolean;
-          validateNoCapitalizedCalls?: string[] | null;
-          /** @default true */
-          enableAssumeHooksFollowRulesOfReact?: boolean;
-          /** @default true */
-          enableTransitivelyFreezeFunctionExpressions: boolean;
-          enableEmitFreeze?: unknown;
-          enableEmitHookGuards?: unknown;
-          enableEmitInstrumentForget?: unknown;
-          assertValidMutableRanges?: boolean;
-          enableChangeVariableCodegen?: boolean;
-          enableMemoizationComments?: boolean;
-          throwUnknownException__testonly?: boolean;
-          enableTreatFunctionDepsAsConditional?: boolean;
-          /** Automatically enabled when reanimated plugin is added. */
-          enableCustomTypeDefinitionForReanimated?: boolean;
-          /** @default `null` */
-          hookPattern?: string | null;
-        };
-        gating?: unknown;
-        noEmit?: boolean;
-        runtimeModule?: string | null;
-        eslintSuppressionRules?: unknown | null;
-        flowSuppressions?: boolean;
-        ignoreUseNoForget?: boolean;
-      };
+  'react-compiler'?: false | ReactCompilerOptions;
+
+  /** Only set to `false` to disable `react-refresh/babel` forcefully, defaults to `undefined` */
+  enableReactFastRefresh?: boolean;
 
   /** Enable `typeof window` runtime checks. The default behavior is to minify `typeof window` on web clients to `"object"` and `"undefined"` on servers. */
   minifyTypeofWindow?: boolean;
@@ -214,11 +172,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     // Give users the ability to opt-out of the feature, per-platform.
     platformOptions['react-compiler'] !== false
   ) {
-    if (!hasModule('babel-plugin-react-compiler')) {
-      throw new Error(
-        'The `babel-plugin-react-compiler` must be installed before you can use React Compiler.'
-      );
-    }
     extraPlugins.push([
       require('babel-plugin-react-compiler'),
       {
@@ -317,6 +270,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   if (hasModule('expo-router')) {
     extraPlugins.push(expoRouterBabelPlugin);
+
+    // Strip loader() functions from client bundles
+    if (!isServerEnv) {
+      extraPlugins.push(serverDataLoadersPlugin);
+    }
   }
 
   extraPlugins.push(reactClientReferencesPlugin);
@@ -334,12 +292,15 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   // This plugin is fine to run whenever as the server-only imports were introduced as part of RSC and shouldn't be used in any client code.
   extraPlugins.push(environmentRestrictedImportsPlugin);
 
-  if (isFastRefreshEnabled) {
+  if (
+    platformOptions.enableReactFastRefresh ||
+    (isFastRefreshEnabled && platformOptions.enableReactFastRefresh !== false)
+  ) {
     extraPlugins.push([
       require('react-refresh/babel'),
       {
-        // We perform the env check to enable `isFastRefreshEnabled`.
-        skipEnvCheck: true,
+        // We perform the env check to enable `isFastRefreshEnabled`, unless the plugin is force-enabled
+        skipEnvCheck: platformOptions.enableReactFastRefresh !== true,
       },
     ]);
   }
@@ -358,8 +319,13 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         const presetOpts = {
           // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
           disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
-          // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
-          enableBabelRuntime: platformOptions.enableBabelRuntime,
+          // Defaults to Babel caller's `babelRuntimeVersion` or the version of `@babel/runtime` for this package's peer
+          // Set to `false` to disable `@babel/plugin-transform-runtime`
+          enableBabelRuntime:
+            platformOptions.enableBabelRuntime == null ||
+            platformOptions.enableBabelRuntime === true
+              ? getBabelRuntimeVersion()
+              : platformOptions.enableBabelRuntime,
           // This reduces the amount of transforms required, as Hermes supports many modern language features.
           unstable_transformProfile: platformOptions.unstable_transformProfile,
           // Set true to disable `@babel/plugin-transform-react-jsx` and

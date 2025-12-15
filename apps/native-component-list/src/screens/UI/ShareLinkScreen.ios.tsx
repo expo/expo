@@ -1,4 +1,4 @@
-import { ShareLink, LabelPrimitive } from '@expo/ui/swift-ui';
+import { Host, Label, ShareLink as ShareLinkPrimitive } from '@expo/ui/swift-ui';
 import { useAssets } from 'expo-asset';
 import * as React from 'react';
 import { ScrollView, StyleSheet, Text, View, Image } from 'react-native';
@@ -11,6 +11,21 @@ export default function ShareLinkScreen() {
   return (
     <Page>
       <ScrollView showsVerticalScrollIndicator={false}>
+        <Section title="Async URL Loading">
+          <ShareLink
+            getItemAsync={async () => {
+              await new Promise((resolve) => setTimeout(resolve, 1000));
+              return `https://docs.expo.dev/versions/latest/sdk/ui?q=${Math.random()}`;
+            }}
+            subject="Expo UI docs"
+            preview={{
+              title: 'Expo UI docs',
+              image:
+                'https://pbs.twimg.com/profile_images/1940486720190820352/7gl2X1b2_400x400.jpg',
+            }}>
+            <Label title="Async Share" systemImage="clock" />
+          </ShareLink>
+        </Section>
         <Section title="Default">
           <ShareLink item="https://docs.expo.dev/versions/latest/sdk/ui/" />
         </Section>
@@ -23,7 +38,7 @@ export default function ShareLinkScreen() {
         </Section>
         <Section title="With Custom Label">
           <ShareLink item="https://docs.expo.dev/versions/latest/sdk/ui/">
-            <LabelPrimitive title="Expo UI" systemImage="swift" />
+            <Label title="Expo UI" systemImage="swift" />
           </ShareLink>
         </Section>
         <Section title="With Preview Image">
@@ -33,7 +48,7 @@ export default function ShareLinkScreen() {
               title: 'Expo Splash Screen Logo',
               image: 'SplashScreenLogo',
             }}>
-            <LabelPrimitive title="Expo Splash Screen Logo" />
+            <Label title="Expo Splash Screen Logo" />
           </ShareLink>
         </Section>
         <Section title="Share Image">
@@ -41,7 +56,7 @@ export default function ShareLinkScreen() {
             item={assets?.[0].localUri ?? ''}
             subject="Share Image Example"
             message="A set of components that allow you to build UIs directly with SwiftUI and Jetpack Compose from React.">
-            <LabelPrimitive title="Share Image" systemImage="photo" />
+            <Label title="Share Image" systemImage="photo" />
           </ShareLink>
         </Section>
         <Section title="With children">
@@ -61,6 +76,14 @@ export default function ShareLinkScreen() {
         </Section>
       </ScrollView>
     </Page>
+  );
+}
+
+function ShareLink(props: React.ComponentProps<typeof ShareLinkPrimitive>) {
+  return (
+    <Host matchContents>
+      <ShareLinkPrimitive {...props} />
+    </Host>
   );
 }
 

@@ -79,6 +79,10 @@ function addSplashScreenStyle(
         $: { name: 'postSplashScreenTheme' },
         _: '@style/AppTheme',
       },
+      {
+        $: { name: 'android:windowSplashScreenBehavior' },
+        _: 'icon_preferred',
+      },
     ];
   }
 

@@ -1,15 +1,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
   <application>
+    <meta-data
+      android:name="com.google.mlkit.vision.DEPENDENCIES"
+      android:value="barcode_ui"/>
+
     <activity
       android:name="expo.modules.devlauncher.launcher.DevLauncherActivity"
       android:exported="true"
       android:launchMode="singleTask"
-      android:theme="@style/Theme.DevLauncher.LauncherActivity" />
+      android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
 
     <activity
       android:name="expo.modules.devlauncher.compose.AuthActivity"
       android:exported="true"
-      android:launchMode="singleTask">
+      android:launchMode="singleTask"
+      android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
 

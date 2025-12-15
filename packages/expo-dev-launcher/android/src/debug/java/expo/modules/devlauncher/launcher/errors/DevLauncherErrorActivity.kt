@@ -4,61 +4,46 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.core.view.ViewCompat
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
-import androidx.fragment.app.FragmentActivity
-import com.facebook.react.ReactActivity
-import expo.modules.devlauncher.databinding.ErrorFragmentBinding
-import expo.modules.devlauncher.koin.DevLauncherKoinComponent
-import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
-import kotlinx.coroutines.launch
-import org.koin.core.component.inject
+import expo.modules.devlauncher.compose.models.ErrorViewModel
+import expo.modules.devlauncher.compose.screens.ErrorScreen
 import java.lang.ref.WeakReference
 
-class DevLauncherErrorActivity :
-  FragmentActivity(), DevLauncherKoinComponent {
-
-  private val controller: DevLauncherControllerInterface by inject()
-  private lateinit var binding: ErrorFragmentBinding
-  private val adapter = DevLauncherStackAdapter(this, null)
+class DevLauncherErrorActivity : AppCompatActivity() {
+  val viewModel by viewModels<ErrorViewModel>()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     // Enables edge-to-edge
     WindowCompat.setDecorFitsSystemWindows(window, false)
     super.onCreate(savedInstanceState)
 
-    binding = ErrorFragmentBinding.inflate(layoutInflater)
-    binding.homeButton.setOnClickListener { this.launchHome() }
-    binding.reloadButton.setOnClickListener { this.reload() }
-
-    // Set footer padding to avoid the navigation bar
-    ViewCompat.setOnApplyWindowInsetsListener(binding.errorFooterContent) { view, windowInsets ->
-      val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-      view.updatePadding(bottom = insets.bottom)
-      WindowInsetsCompat.CONSUMED
-    }
-
-    // Set title padding to account for status bar
-    ViewCompat.setOnApplyWindowInsetsListener(binding.errorTitle) { view, windowInsets ->
-      val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-      view.updatePadding(top = insets.top)
-      WindowInsetsCompat.CONSUMED
-    }
-
-    synchronized(DevLauncherErrorActivity) {
-      val error = currentError
-      if (error != null) {
-        displayError(currentError!!)
-        currentError = null
-      } else {
-        finish()
-        return
+    onBackPressedDispatcher.addCallback(
+      this,
+      object : OnBackPressedCallback(
+        true
+      ) {
+        override fun handleOnBackPressed() {}
       }
+    )
+
+    val error = currentError
+    if (error == null) {
+      finish()
+      return
     }
 
-    setContentView(binding.root)
+    viewModel.setError(error)
+
+    setContent {
+      ErrorScreen(
+        stack = viewModel.appError?.error?.stackTraceToString() ?: "No stack trace available",
+        onAction = viewModel::onAction
+      )
+    }
   }
 
   override fun onResume() {
@@ -71,47 +56,6 @@ class DevLauncherErrorActivity :
     openedErrorActivity = WeakReference(null)
   }
 
-  fun displayError(error: DevLauncherAppError) {
-    adapter.data = error
-
-    binding.errorStack.let {
-      it.adapter = adapter
-      adapter.notifyDataSetChanged()
-    }
-    binding.errorDetails.text = error.message ?: "Unknown error"
-  }
-
-  private fun launchHome() {
-    synchronized(DevLauncherErrorActivity) {
-      currentError = null
-    }
-
-    controller.navigateToLauncher()
-  }
-
-  private fun reload() {
-    synchronized(DevLauncherErrorActivity) {
-      currentError = null
-    }
-
-    val appUrl = controller.latestLoadedApp
-
-    if (appUrl == null) {
-      controller.navigateToLauncher()
-      return
-    }
-
-    controller.coroutineScope.launch {
-      controller
-        .loadApp(
-          appUrl,
-          controller.appHost.currentReactContext?.currentActivity as? ReactActivity?
-        )
-    }
-  }
-
-  override fun onBackPressed() {}
-
   companion object {
     private var openedErrorActivity = WeakReference<DevLauncherErrorActivity?>(null)
     private var currentError: DevLauncherAppError? = null
@@ -119,19 +63,6 @@ class DevLauncherErrorActivity :
     fun isVisible(): Boolean {
       val errorActivity = openedErrorActivity.get()
       return !(errorActivity == null || errorActivity.isDestroyed || errorActivity.isFinishing)
-    }
-
-    fun showErrorIfNotVisible(activity: Activity, error: DevLauncherAppError) {
-      val errorActivity = openedErrorActivity.get()
-      if (errorActivity == null || errorActivity.isDestroyed || errorActivity.isFinishing) {
-        synchronized(this) {
-          currentError = error
-        }
-
-        activity.startActivity(
-          Intent(activity, DevLauncherErrorActivity::class.java)
-        )
-      }
     }
 
     fun showError(activity: Activity, error: DevLauncherAppError) {
@@ -145,7 +76,7 @@ class DevLauncherErrorActivity :
           Intent(activity, DevLauncherErrorActivity::class.java)
         )
       } else {
-        errorActivity.displayError(error)
+        errorActivity.viewModel.setError(error)
       }
     }
 

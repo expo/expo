@@ -1,7 +1,5 @@
 #import "EXAppLoadingProgressWindowController.h"
 
-#import <React/React-Core-umbrella.h> // Keeps this import to fix the error from building React module: `error: definition of 'RCTBridge' must be imported from module 'React' before it is required`
-
 #import <ExpoModulesCore/EXDefines.h>
 
 #import "Expo_Go-Swift.h"
@@ -11,6 +9,7 @@
 @interface EXAppLoadingProgressWindowController ()
 
 @property (nonatomic, assign) BOOL enabled;
+@property (nonatomic, assign) BOOL remainsHidden;
 @property (nonatomic, strong) UIWindow *window;
 @property (nonatomic, strong) UILabel *textLabel;
 
@@ -22,13 +21,14 @@
 {
   if (self = [super init]) {
     _enabled = enabled;
+    _remainsHidden = NO;
   }
   return self;
 }
 
 - (void)show
 {
-  if (!_enabled) {
+  if (!_enabled || _remainsHidden) {
     return;
   }
 
@@ -72,6 +72,8 @@
   if (!_enabled) {
     return;
   }
+
+  _remainsHidden = YES;
 
   EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{

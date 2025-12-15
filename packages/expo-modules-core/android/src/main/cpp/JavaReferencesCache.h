@@ -48,6 +48,8 @@ public:
   jclass jJavaScriptObject;
   jclass jJavaScriptValue;
   jclass jJavaScriptTypedArray;
+  jclass jJavaScriptArrayBuffer;
+  jclass jNativeArrayBuffer;
 
   jclass jReadableNativeArray;
   jclass jReadableNativeMap;
@@ -57,8 +59,12 @@ public:
   jclass jSharedObject;
   jclass jJavaScriptModuleObject;
 
+  jobject jUndefined;
+
   void unLoad(JNIEnv *env);
 private:
+  static jobject getJUndefined(JNIEnv *env);
+
   std::unordered_map<std::string, jclass> jClassRegistry;
 };
 

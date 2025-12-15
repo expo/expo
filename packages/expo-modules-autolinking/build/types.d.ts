@@ -3,58 +3,9 @@ type Required<T, K extends keyof T> = T & {
     [P in K]-?: T[P];
 };
 type WithRequired<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>> & Required<T, K>;
-export type SupportedPlatform = 'apple' | 'ios' | 'android' | 'web' | 'macos' | 'tvos' | 'devtools';
-/**
- * Options that can be passed through `expo.autolinking` config in the package.json file.
- */
-export type AutolinkingOptions = {
-    searchPaths?: string[] | null;
-    ignorePaths?: string[] | null;
-    exclude?: string[] | null;
-    flags?: Record<string, any>;
-};
-export type AndroidAutolinkingOptions = AutolinkingOptions & {
-    buildFromSource?: string[] | null;
-};
-export type BaseAutolinkingOptions = AutolinkingOptions & {
-    [key in SupportedPlatform]?: AutolinkingOptions;
-};
-export interface PlatformAutolinkingOptions extends BaseAutolinkingOptions {
-    android?: AndroidAutolinkingOptions;
-}
-export interface SearchOptions {
-    searchPaths: string[];
-    ignorePaths?: string[] | null;
-    exclude?: string[] | null;
-    platform: SupportedPlatform;
-    silent?: boolean;
-    nativeModulesDir?: string | null;
-    projectRoot: string;
-    /**
-     * Filter the search results to only include the project dependencies.
-     * In a monorepo, you may like to set this to false and link all modules from the monorepo.
-     * @default true
-     */
-    onlyProjectDeps?: boolean;
-    flags?: Record<string, any>;
-    android?: {
-        buildFromSource?: string[] | null;
-    };
-}
-export interface ResolveOptions extends SearchOptions {
-    json?: boolean;
-}
-export interface GenerateOptions extends ResolveOptions {
-    target: string;
-    namespace?: string;
-    empty?: boolean;
-}
-export interface GenerateModulesProviderOptions extends ResolveOptions {
-    target: string;
-    entitlement?: string;
-    packages: string[];
-}
+export type SupportedPlatform = 'apple' | 'ios' | 'android' | 'web' | 'macos' | 'tvos' | 'devtools' | (string & {});
 export type PackageRevision = {
+    name: string;
     path: string;
     version: string;
     config?: ExpoModuleConfig;
@@ -66,10 +17,15 @@ export type SearchResults = {
 export interface ModuleAndroidProjectInfo {
     name: string;
     sourceDir: string;
-    modules: string[];
+    modules: ModuleAndroidModuleInfo[];
+    packages: string[];
     publication?: AndroidPublication;
     aarProjects?: AndroidGradleAarProjectDescriptor[];
     shouldUsePublicationScriptPath?: string;
+}
+export interface ModuleAndroidModuleInfo {
+    name: string | null;
+    classifier: string;
 }
 export interface ModuleAndroidPluginInfo {
     id: string;
@@ -90,8 +46,12 @@ export interface ModuleIosPodspecInfo {
     podName: string;
     podspecDir: string;
 }
+export interface ModuleIosConfig {
+    name: string | null;
+    class: string;
+}
 export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
-    modules: string[];
+    modules: ModuleIosConfig[];
     pods: ModuleIosPodspecInfo[];
     flags: Record<string, any> | undefined;
     swiftModuleNames: string[];
@@ -102,9 +62,27 @@ export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
 export interface ModuleDescriptorDevTools {
     packageName: string;
     packageRoot: string;
-    webpageRoot: string;
+    webpageRoot?: string;
+    cliExtensions?: {
+        description: string;
+        commands: {
+            name: string;
+            title: string;
+            environments: ('cli' | 'mcp')[];
+            parameters?: {
+                name: string;
+                type: 'text' | 'number' | 'confirm';
+                description?: string;
+            }[];
+        }[];
+        entryPoint: string;
+    };
 }
-export type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos | ModuleDescriptorDevTools;
+export interface ModuleDescriptorWeb {
+    packageName: string;
+    packageRoot: string;
+}
+export type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos | ModuleDescriptorDevTools | ModuleDescriptorWeb;
 export interface AndroidGradlePluginDescriptor {
     /**
      * Gradle plugin ID
@@ -155,6 +133,10 @@ export interface AndroidPublication {
      */
     repository: string;
 }
+export type RawAppleModuleConfig = {
+    name: string;
+    class: string;
+};
 /**
  * Represents a raw config specific to Apple platforms.
  */
@@ -162,7 +144,7 @@ export type RawModuleConfigApple = {
     /**
      * Names of Swift native modules classes to put to the generated modules provider file.
      */
-    modules?: string[];
+    modules?: (string | RawAppleModuleConfig)[];
     /**
      * Names of Swift classes that hooks into `ExpoAppDelegate` to receive AppDelegate life-cycle events.
      */
@@ -186,6 +168,13 @@ export type RawModuleConfigApple = {
      * Defaults to false.
      */
     debugOnly?: boolean;
+};
+export type RawAndroidModuleConfig = {
+    /**
+     * Names of the modules to be linked in the project.
+     */
+    name: string;
+    class: string;
 };
 /**
  * Represents a raw config specific to Android platforms.
@@ -213,11 +202,12 @@ export type RawAndroidProjectConfig = {
     /**
      * Names of the modules to be linked in the project.
      */
-    modules?: string[];
+    modules?: (string | RawAndroidModuleConfig)[];
     /**
      * Prebuilded AAR projects.
      */
     gradleAarProjects?: AndroidGradleAarProjectDescriptor[];
+    gradlePath?: string;
 };
 export type RawAndroidConfig = {
     projects?: WithRequired<RawAndroidProjectConfig, 'name' | 'path'>[];
@@ -256,9 +246,56 @@ export interface RawExpoModuleConfig {
      */
     devtools?: {
         /**
-         * The webpage root directory for Expo CLI DevTools to serve the web resources.
+         * The webpage root directory for Expo CLI DevTools to serve the web resources. Only set if the module has a web interface.
          */
-        webpageRoot: string;
+        webpageRoot?: string;
+        /**
+         * Cli extension config for the module.
+         */
+        cliExtensions?: {
+            description: string;
+            /**
+             * The commands that the module provides in the CLI.
+             * Each command has a name and a caption.
+             */
+            commands: {
+                /**
+                 * Name of command
+                 */
+                name: string;
+                /**
+                 * Title for the command that will be displayed in the CLI.
+                 */
+                title: string;
+                /**
+                 * Optional array of disabled environments for the command. By default all commands are enabled on all environments.
+                 * Environments can be 'cli' for the CLI or 'mcp' for the Model Context Protocol.
+                 */
+                environments: ('cli' | 'mcp')[];
+                /**
+                 * Optional parameters for the command.
+                 */
+                parameters?: {
+                    /**
+                     * Name of the parameter.
+                     */
+                    name: string;
+                    /**
+                     * Type of the parameter.
+                     * Can be 'text', 'number', or 'confirm'.
+                     */
+                    type: 'text' | 'number' | 'confirm';
+                    /**
+                     * Description of the parameter that will be displayed in the CLI.
+                     */
+                    description?: string;
+                }[];
+            }[];
+            /**
+             * The main entry point for the module in the CLI.
+             */
+            entryPoint: string;
+        };
     };
 }
 interface AndroidMavenRepositoryPasswordCredentials {

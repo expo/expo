@@ -341,7 +341,10 @@ class CameraSessionManager: NSObject {
       self.photoOutput = photoOutput
     }
 
-    session.sessionPreset = delegate.mode == .video ? delegate.pictureSize.toCapturePreset() : .photo
+    session.sessionPreset = delegate.mode == .video
+    ? delegate.videoQuality.toPreset()
+    : delegate.pictureSize.toCapturePreset()
+
     session.commitConfiguration()
     addErrorNotification()
     delegate.changePreviewOrientation()

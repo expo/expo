@@ -3,6 +3,7 @@ package expo.modules.kotlin.sharedobjects
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.IncorrectRefTypeException
+import expo.modules.kotlin.fastIsSupperClassOf
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.toStrongReference
@@ -10,7 +11,6 @@ import expo.modules.kotlin.types.NonNullableTypeConverter
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
-import kotlin.reflect.full.isSuperclassOf
 
 class SharedObjectTypeConverter<T : SharedObject>(
   val type: KType
@@ -74,7 +74,8 @@ class SharedRefTypeConverter<T : SharedRef<*>>(
     val ref = sharedRef.ref ?: return sharedRef
     val sharedRefClass = sharedRefType?.classifier as? KClass<*>
       ?: return sharedRef
-    if (sharedRefClass.isSuperclassOf(ref.javaClass.kotlin)) {
+
+    if (sharedRefClass.fastIsSupperClassOf(ref.javaClass)) {
       return sharedRef
     }
 

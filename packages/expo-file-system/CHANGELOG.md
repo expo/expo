@@ -6,10 +6,153 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- [file-system] Fix package exports for Typescript projects ([#39543](https://github.com/expo/expo/pull/39543) by [@smoores-dev](https://github.com/smoores-dev))
+
+### 💡 Others
+
+- [Android] Add `android:maxSdkVersion` annotation to  `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
+
+## 19.0.20 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.19 - 2025-11-18
+
+### 🎉 New features
+
+- [Android] Add contentUri property. ([#40002](https://github.com/expo/expo/pull/40002) by [@aleqsio](https://github.com/aleqsio))
+
+### 🐛 Bug fixes
+
+- [iOS] Add missing `createFile` and `createDirectory` methods. ([#40314](https://github.com/expo/expo/pull/40314) by [@jakex7](https://github.com/jakex7))
+
+## 19.0.18 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.17 - 2025-10-09
+
+### 🐛 Bug fixes
+
+- [Android] Fix recursive file deletion. ([#40248](https://github.com/expo/expo/pull/40248) by [@aleqsio](https://github.com/aleqsio))
+
+## 19.0.16 - 2025-10-01
+
+### 🎉 New features
+
+- Add write options for base64 encoded bytes. ([#39963](https://github.com/expo/expo/pull/39963) by [@aleqsio](https://github.com/aleqsio))
+- [iOS] Add file sharing config options ([#39286](https://github.com/expo/expo/pull/39286) by [@kosmydel](https://github.com/kosmydel))
+
+### 🐛 Bug fixes
+
+- Fix typedoc in the File class. ([#40064](https://github.com/expo/expo/pull/40064) by [@aleqsio](https://github.com/aleqsio))
+- [Android] Fix getContentUri. ([#40001](https://github.com/expo/expo/pull/40001) by [@aleqsio](https://github.com/aleqsio))
+
+## 19.0.15 - 2025-09-22
+
+### 🎉 New features
+
+- add `idempotent` option to `downloadFileAsync` ([#39681](https://github.com/expo/expo/pull/39681) by [@vonovak](https://github.com/vonovak))
+
+## 19.0.14 — 2025-09-13
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.13 — 2025-09-12
+
+### 🐛 Bug fixes
+
+- [Android] Fix incorrect AndroidManifest.xml location. ([#39134](https://github.com/expo/expo/pull/39134) by [@robertying](https://github.com/robertying))
+
+## 19.0.12 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.11 — 2025-09-10
+
+### 🎉 New features
+
+- [iOS] Add `pickDirectoryAsync` support ([#39210](https://github.com/expo/expo/pull/39210) by [@kosmydel](https://github.com/kosmydel))
+
+### 🐛 Bug fixes
+
+- Add minimal web stub to fix broken imports on web ([#39400](https://github.com/expo/expo/pull/39400) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
+
+## 19.0.10 — 2025-09-08
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.9 — 2025-09-03
+
+### 🎉 New features
+
+- Add stubs for legacy methods imported from "expo-file-system". ([#39244](https://github.com/expo/expo/pull/39244) by [@aleqsio](https://github.com/aleqsio))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix tvOS compile error. ([#39345](https://github.com/expo/expo/pull/39345) by [@douglowder](https://github.com/douglowder))
+
+## 19.0.8 — 2025-09-02
+
+### 🎉 New features
+
+- [iOS] Add `pickFileAsync` support ([#39173](https://github.com/expo/expo/pull/39173) by [@kosmydel](https://github.com/kosmydel))
+
+## 19.0.7 — 2025-08-31
+
+### 🎉 New features
+
+- Add `rename` method for files and directories ([#39138](https://github.com/expo/expo/pull/39138) by [@kosmydel](https://github.com/kosmydel))
+- Add `idempotent` option for creating directories ([#39121](https://github.com/expo/expo/pull/39121) by [@kosmydel](https://github.com/kosmydel))
+
+## 19.0.6 — 2025-08-26
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.5 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.4 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.3 — 2025-08-18
+
+### 🐛 Bug fixes
+
+- Fixed type definition for `textSync()` to return `string` instead of `Promise<string>` ([#38898](https://github.com/expo/expo/pull/38898) by [@LeonDvlpmnt](https://github.com/LeonDvlpmnt))
+
+## 19.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 19.0.1 — 2025-08-15
+
+### 💡 Others
+
+- Update typings for `typescript@5.9` ([#38833](https://github.com/expo/expo/pull/38833) by [@kitten](https://github.com/kitten))
+- Change Constants to Constant/Property. ([#38926](https://github.com/expo/expo/pull/38926) by [@jakex7](https://github.com/jakex7))
+
+## 19.0.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
+- Make the modern filesystem API the default, move previous one to `expo-file-system/legacy`. ([#38404](https://github.com/expo/expo/pull/38404) by [@aleqsio](https://github.com/aleqsio))
+
+### 🎉 New features
+
+- [android] Add file and directory pickers. ([#38455](https://github.com/expo/expo/pull/38455) by [@aleqsio](https://github.com/aleqsio))
+- Add support for asset uris. ([#38785](https://github.com/expo/expo/pull/38785) by [@aleqsio](https://github.com/aleqsio))
+- Make file implement blob interface directly. ([#38160](https://github.com/expo/expo/pull/38160) by [@aleqsio](https://github.com/aleqsio))
 - Add directory info function ([#37910](https://github.com/expo/expo/pull/37910) by [@Wenszel](https://github.com/Wenszel))
 - Add total and available sizes, directory sizes. ([#37594](https://github.com/expo/expo/pull/37594) by [@aleqsio](https://github.com/aleqsio))
 - Add info method, modificationTime and creationTime properties to file-system/next. ([#37505](https://github.com/expo/expo/pull/37505) by [@Wenszel](https://github.com/Wenszel))
 - Add support for custom headers in downloadFileAsync ([#36108](https://github.com/expo/expo/pull/36108) by [@leonhh](https://github.com/leonhh))
+- [next] Add limited support for SAF Uris. ([#38075](https://github.com/expo/expo/pull/38075) by [@aleqsio](https://github.com/aleqsio))
+- [next] Add full support for SAF Uris. ([#38075](https://github.com/expo/expo/pull/38075) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 
@@ -17,8 +160,6 @@
 - Fix memory usage issue in getInfoAsync ([#37417](https://github.com/expo/expo/pull/37417) by [@Wenszel](https://github.com/Wenszel))
 - Improved type safety in the FileSystem module to support tsconfig setups with stricter rules than the default. ([#37107](https://github.com/expo/expo/pull/37107) by [@hirbod](https://github.com/hirbod))
 - Added required modifiers in the FileSystem module to support tsconfig setups with stricter rules than the default. ([#37467](https://github.com/expo/expo/pull/37467)
-
-### 💡 Others
 
 ## 18.1.11 - 2025-07-01
 

@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+// swiftlint:disable type_name
 @objc
 public class EXDevLauncherBundleURLProviderInterceptor: NSObject {
   @objc
@@ -28,3 +29,4 @@ extension RCTBundleURLProvider {
     return nil
   }
 }
+// swiftlint:enable type_name

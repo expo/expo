@@ -4,11 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import type { MetroConfig } from '@expo/metro/metro';
+import type { Module, ReadOnlyGraph, MixedOutput } from '@expo/metro/metro/DeltaBundler';
+import { sourceMapString } from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
+import type { SerializerOptions } from '@expo/metro/metro/DeltaBundler/types';
+import bundleToString from '@expo/metro/metro/lib/bundleToString';
+import type { ConfigT, InputConfigT } from '@expo/metro/metro-config';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
-import { MetroConfig, MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
-import sourceMapStringMod from 'metro/src/DeltaBundler/Serializers/sourceMapString';
-import bundleToString from 'metro/src/lib/bundleToString';
-import { ConfigT, InputConfigT } from 'metro-config';
 
 import { stringToUUID } from './debugId';
 import {
@@ -44,11 +46,6 @@ export type SerializerConfigOptions = {
 export type SerializerPlugin = (
   ...props: SerializerParameters
 ) => SerializerParameters | Promise<SerializerParameters>;
-
-const sourceMapString =
-  typeof sourceMapStringMod !== 'function'
-    ? sourceMapStringMod.sourceMapString
-    : sourceMapStringMod;
 
 export function withExpoSerializers(
   config: InputConfigT,
@@ -104,7 +101,10 @@ export function createDefaultExportCustomSerializer(
     graph: ReadOnlyGraph<MixedOutput>,
     inputOptions: SerializerOptions<MixedOutput>
   ): Promise<string | { code: string; map: string }> => {
-    const isPossiblyDev = graph.transformOptions.hot;
+    // NOTE(@kitten): My guess is that this was supposed to always be disabled for `node` since we set `hot: true` manually for it
+    const isPossiblyDev =
+      graph.transformOptions.dev ||
+      graph.transformOptions.customTransformOptions?.environment === 'node';
     // TODO: This is a temporary solution until we've converged on using the new serializer everywhere.
     const enableDebugId = inputOptions.inlineSourceMap !== true && !isPossiblyDev;
 

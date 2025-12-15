@@ -25,6 +25,7 @@ public typealias PersistentFileLogCompletionHandler = (Error?) -> Void
  * - Clear the file (remove all entries)
  *
  */
+@preconcurrency
 public class PersistentFileLog {
   private static let EXPO_MODULES_CORE_LOG_QUEUE_LABEL = "dev.expo.modules.core.logging"
   private static let serialQueue = DispatchQueue(label: EXPO_MODULES_CORE_LOG_QUEUE_LABEL)

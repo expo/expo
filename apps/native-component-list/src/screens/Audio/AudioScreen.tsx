@@ -1,5 +1,5 @@
 import { optionalRequire } from '../../navigation/routeBuilder';
-import ComponentListScreen, { ListElement } from '../ComponentListScreen';
+import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
 
 export const AudioScreens = [
   {
@@ -7,7 +7,7 @@ export const AudioScreens = [
     route: 'audio/expo-audio',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-audio/AudioScreen'));
+      return optionalRequire(() => require('./AudioPlayerScreen'));
     },
   },
   {
@@ -15,7 +15,7 @@ export const AudioScreens = [
     route: 'audio/expo-audio-recording',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-audio/RecordingScreen'));
+      return optionalRequire(() => require('./RecordingScreen'));
     },
   },
   {
@@ -23,34 +23,21 @@ export const AudioScreens = [
     route: 'audio/expo-audio-createAudioPlayer',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-audio/CreateAudioPlayerScreen'));
+      return optionalRequire(() => require('./CreateAudioPlayerScreen'));
     },
   },
+
   {
-    name: 'Expo AV Player',
-    route: 'audio/expo-av',
+    name: 'Expo Audio Lock Screen Controls',
+    route: 'audio/expo-audio-controls',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./AV/AudioScreen'));
-    },
-  },
-  {
-    name: 'Expo AV Recording',
-    route: 'audio/expo-av-recording',
-    options: {},
-    getComponent() {
-      return optionalRequire(() => require('./AV/RecordingScreen'));
+      return optionalRequire(() => require('./AudioControlsScreen'));
     },
   },
 ];
 
 export default function AudioScreen() {
-  const apis: ListElement[] = AudioScreens.map((screen) => {
-    return {
-      name: screen.name,
-      isAvailable: true,
-      route: `/apis/${screen.route}`,
-    };
-  });
+  const apis = apiScreensToListElements(AudioScreens);
   return <ComponentListScreen apis={apis} sort={false} />;
 }

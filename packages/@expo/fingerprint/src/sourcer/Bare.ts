@@ -107,7 +107,6 @@ export async function getCoreAutolinkingSourcesFromRncCliAsync(
 export async function getCoreAutolinkingSourcesFromExpoAndroid(
   projectRoot: string,
   options: NormalizedOptions,
-  coreAutolinkingTransitiveDeps: string[],
   useRNCoreAutolinkingFromExpo?: boolean
 ): Promise<HashSource[]> {
   if (useRNCoreAutolinkingFromExpo === false || !options.platforms.includes('android')) {
@@ -120,9 +119,6 @@ export async function getCoreAutolinkingSourcesFromExpoAndroid(
     '--platform',
     'android',
   ];
-  if (coreAutolinkingTransitiveDeps.length > 0) {
-    args.push('--transitive-linking-dependencies', ...coreAutolinkingTransitiveDeps);
-  }
   try {
     const { stdout } = await spawnAsync('node', args, { cwd: projectRoot });
     const config = JSON.parse(stdout);

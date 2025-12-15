@@ -11,7 +11,7 @@ export declare class FetchResponse extends ConcreteNativeResponse implements Res
     private streamingState;
     private bodyStream;
     constructor(abortCleanupFunction: AbortSubscriptionCleanupFunction);
-    get body(): ReadableStream<Uint8Array> | null;
+    get body(): ReadableStream<Uint8Array<ArrayBuffer>> | null;
     get headers(): Headers;
     get ok(): boolean;
     readonly type = "default";
@@ -21,7 +21,7 @@ export declare class FetchResponse extends ConcreteNativeResponse implements Res
     blob(): Promise<Blob>;
     formData(): Promise<UniversalFormData>;
     json(): Promise<any>;
-    bytes(): Promise<Uint8Array>;
+    bytes(): Promise<Uint8Array<ArrayBuffer>>;
     toString(): string;
     toJSON(): object;
     clone(): Response;

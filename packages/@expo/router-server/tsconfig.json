@@ -1,0 +1,22 @@
+{
+  "extends": "expo-module-scripts/tsconfig.base",
+  "compilerOptions": {
+    "outDir": "./build",
+    "rootDir": "./src",
+    "module": "commonjs",
+    "moduleResolution": "node10",
+    "noEmit": false,
+    "resolveJsonModule": true,
+    "types": [
+      "jest",
+      "jest-require",
+      "node"
+    ]
+  },
+  "include": [
+    "./src",
+    "../cli/ts-declarations",
+    "../../expo/src/ts-declarations"
+  ],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__rsc_tests__/*"]
+}

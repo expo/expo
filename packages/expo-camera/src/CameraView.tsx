@@ -80,7 +80,7 @@ function _onPictureSaved({
 
 export default class CameraView extends Component<CameraViewProps> {
   /**
-   * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+).
+   * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+) or the Google code scanner (Android).
    */
   static isModernBarcodeScannerAvailable: boolean = CameraManager.isModernBarcodeScannerAvailable;
   /**
@@ -173,11 +173,27 @@ export default class CameraView extends Component<CameraViewProps> {
   _lastEvents: { [eventName: string]: string } = {};
   _lastEventsTimes: { [eventName: string]: Date } = {};
 
-  // @needsAudit
+  /**
+   * Takes a picture and returns an object that references the native image instance.
+   * > **Note**: Make sure to wait for the [`onCameraReady`](#oncameraready) callback before calling this method.
+   *
+   * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
+   *
+   * @param optionsWithRef An object in form of `CameraPictureOptions` type and `pictureRef` key set to `true`.
+   * @return Returns a Promise that resolves to `PictureRef` class which contains basic image data, and a reference to native image instance which can be passed
+   * to other Expo packages supporting handling such an instance.
+   */
+  async takePictureAsync(
+    optionsWithRef: CameraPictureOptions & { pictureRef: true }
+  ): Promise<PictureRef>;
+
   /**
    * Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation
    * (if `options.skipProcessing` flag is not enabled) and scaled to match the preview.
    * > **Note**: Make sure to wait for the [`onCameraReady`](#oncameraready) callback before calling this method.
+   *
+   * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
+   *
    * @param options An object in form of `CameraPictureOptions` type.
    * @return Returns a Promise that resolves to `CameraCapturedPicture` object, where `uri` is a URI to the local image file on Android,
    * iOS, and a base64 string on web (usable as the source for an `Image` element). The `width` and `height` properties specify
@@ -190,13 +206,11 @@ export default class CameraView extends Component<CameraViewProps> {
    * `exif` is included if the `exif` option was truthy, and is an object containing EXIF
    * data for the image. The names of its properties are EXIF tags and their values are the values for those tags.
    *
-   * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem/#filesystemcopyasyncoptions)
+   * > On native platforms, the local image URI is temporary. Use [`FileSystem.copy`](filesystem/#copydestination-1)
    * > to make a permanent copy of the image.
-   *
-   * > **Note:** Avoid calling this method while the preview is paused. On Android, this will throw an error. On iOS, this will take a picture of the last frame that is currently on screen.
    */
-  async takePictureAsync(options: CameraPictureOptions & { pictureRef: true }): Promise<PictureRef>;
   async takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
+
   async takePictureAsync(options?: CameraPictureOptions) {
     const pictureOptions = ensurePictureOptions(options);
 

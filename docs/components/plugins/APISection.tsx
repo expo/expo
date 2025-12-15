@@ -44,19 +44,19 @@ const filterDataByKind = (
       additionalCondition(entry)
   );
 
-const isHook = ({ name }: { name: string }) =>
-  name.startsWith('use') &&
-  // note(simek): hardcode this exception until the method will be renamed
-  name !== 'useSystemBrightnessAsync';
+const isHook = ({ name }: { name: string }) => name.startsWith('use');
 
 const isListener = ({ name }: GeneratedData) =>
   name.endsWith('Listener') || name.endsWith('Listeners');
+
+const PROP_EXCEPTIONS = new Set(['StackHeaderItemSharedProps']);
 
 const isProp = ({ name }: GeneratedData) =>
   name.includes('Props') &&
   name !== 'ErrorRecoveryProps' &&
   name !== 'WebAnchorProps' &&
-  name !== 'ScreenProps';
+  name !== 'ScreenProps' &&
+  !PROP_EXCEPTIONS.has(name);
 
 const componentTypeNames = new Set(['React.FC', 'ForwardRefExoticComponent', 'ComponentType']);
 
@@ -188,7 +188,7 @@ const renderAPI = (
     const interfaces = filterDataByKind(
       data,
       TypeDocKind.Interface,
-      entry => !entry.name.includes('Props')
+      entry => !entry.name.includes('Props') || PROP_EXCEPTIONS.has(entry.name)
     );
     const constants = filterDataByKind(data, TypeDocKind.Variable, entry => isConstant(entry));
 

@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError, UnavailabilityError } from 'expo-modules-core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
 /**
@@ -6,6 +6,9 @@ import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
  * @private
  */
 export function getServerResources() {
+    if (!ExpoFontLoader.getServerResources) {
+        throw new UnavailabilityError('expo-font', 'getServerResources');
+    }
     return ExpoFontLoader.getServerResources();
 }
 /**
@@ -13,6 +16,9 @@ export function getServerResources() {
  * @private
  */
 export function resetServerContext() {
+    if (!ExpoFontLoader.resetServerContext) {
+        throw new UnavailabilityError('expo-font', 'resetServerContext');
+    }
     return ExpoFontLoader.resetServerContext();
 }
 export function registerStaticFont(fontFamily, source) {

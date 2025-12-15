@@ -1,6 +1,6 @@
-import { ConfigT } from 'metro-config';
-import FailedToResolveNameError from 'metro-resolver/src/errors/FailedToResolveNameError';
-import FailedToResolvePathError from 'metro-resolver/src/errors/FailedToResolvePathError';
+import { ConfigT } from '@expo/metro/metro-config';
+import FailedToResolveNameError from '@expo/metro/metro-resolver/errors/FailedToResolveNameError';
+import FailedToResolvePathError from '@expo/metro/metro-resolver/errors/FailedToResolvePathError';
 
 import { withMetroResolvers } from '../withMetroResolvers';
 
@@ -15,7 +15,7 @@ describe(withMetroResolvers, () => {
       const mockCandidate = {
         type: 'asset',
         name: 'foobar',
-      };
+      } as const;
       throw new FailedToResolvePathError({ dir: mockCandidate, file: mockCandidate });
     });
     const customResolver3 = jest.fn(() => {

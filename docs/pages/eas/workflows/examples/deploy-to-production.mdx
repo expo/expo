@@ -1,5 +1,6 @@
 ---
-title: Deploy to production
+title: Deploy to production with EAS Workflows
+sidebar_title: Deploy to production
 description: Learn how to deploy to production with EAS Workflows.
 hideTOC: true
 ---
@@ -82,6 +83,7 @@ jobs:
   fingerprint:
     name: Fingerprint
     type: fingerprint
+    environment: production
   get_android_build:
     name: Check for existing android build
     needs: [fingerprint]

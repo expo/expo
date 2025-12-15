@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import SwiftUI
-import UIKit
 
 public struct DevLauncherRootView: View {
   @ObservedObject var viewModel: DevLauncherViewModel
@@ -12,53 +11,83 @@ public struct DevLauncherRootView: View {
   }
 
   public var body: some View {
-    NavigationView {
-      TabView {
-        HomeTabView()
-          .tabItem {
-            Image(systemName: "house.fill")
-            Text("Home")
-          }
+    let tabView = TabView {
+      HomeTabView()
+        .tabItem {
+          Image(systemName: "house.fill")
+          Text("Home")
+        }
 
-        UpdatesTabView()
-          .tabItem {
-            Image(systemName: "arrow.2.circlepath")
-            Text("Updates")
-          }
+      UpdatesTabView()
+        .tabItem {
+          Image(systemName: "arrow.2.circlepath")
+          Text("Updates")
+        }
 
-        SettingsTabView()
-          .tabItem {
-            Image(systemName: "gear")
-            Text("Settings")
-          }
-      }
-      .accentColor(Color("TabBarTint", bundle: getDevLauncherBundle()))
-      .onAppear {
-        DevLauncherTabBarManager.shared.setCustomAppearance()
-      }
-      .onDisappear {
-        DevLauncherTabBarManager.shared.restoreOriginalAppearance()
-      }
-      .navigationBarHidden(true)
-      .environmentObject(viewModel)
-      .environmentObject(DevLauncherNavigation(showingUserProfile: $showingUserProfile))
+      SettingsTabView()
+        .tabItem {
+          Image(systemName: "gearshape")
+          Text("Settings")
+        }
     }
+    .onAppear {
+      DevLauncherTabBarManager.shared.setCustomAppearance()
+    }
+    .onDisappear {
+      DevLauncherTabBarManager.shared.restoreOriginalAppearance()
+    }
+#if !os(macOS)
+    .navigationBarHidden(true)
+#endif
+    .environmentObject(viewModel)
+    .environmentObject(DevLauncherNavigation(showingUserProfile: $showingUserProfile))
+
+#if !os(macOS)
+    let navigationStack = NavigationView {
+      tabView
+    }.navigationViewStyle(.stack)
+#else
+    let navigationStack = NavigationStack {
+      tabView
+    }
+#endif
+
+    navigationStack
     .sheet(isPresented: $showingUserProfile) {
       AccountSheet()
         .environmentObject(viewModel)
     }
-    .fullScreenCover(isPresented: $viewModel.showingError) {
+#if !os(macOS)
+    .fullScreenCover(isPresented: $viewModel.showingCrashReport) {
       if let error = viewModel.currentError {
-        ErrorView(
+        CrashReportView(
           error: error,
-          onReload: {
-            viewModel.reloadCurrentApp()
-          },
-          onGoHome: {
-            viewModel.dismissError()
+          errorInstance: viewModel.storedCrashInstance,
+          onDismiss: {
+            viewModel.dismissCrashReport()
           }
         )
       }
+    }
+#else
+    .sheet(isPresented: $viewModel.showingCrashReport) {
+      if let error = viewModel.currentError {
+        CrashReportView(
+          error: error,
+          errorInstance: viewModel.storedCrashInstance,
+          onDismiss: {
+            viewModel.dismissCrashReport()
+          }
+        )
+      }
+    }
+#endif
+    .alert("Error loading app", isPresented: $viewModel.showingErrorAlert) {
+      Button("OK") {
+        viewModel.dismissErrorAlert()
+      }
+    } message: {
+      Text(viewModel.errorAlertMessage)
     }
   }
 }
@@ -66,15 +95,31 @@ public struct DevLauncherRootView: View {
 struct RecentlyOpenedAppRow: View {
   let app: RecentlyOpenedApp
   let onTap: () -> Void
+  @EnvironmentObject var viewModel: DevLauncherViewModel
+
+  private var isServerActive: Bool {
+    guard let url = URL(string: app.url),
+    let port = url.port else {
+      return false
+    }
+
+    return viewModel.devServers.contains { server in
+      guard let serverURL = URL(string: server.url),
+        let serverPort = serverURL.port else {
+        return false
+      }
+      return serverPort == port
+    }
+  }
 
   var body: some View {
     Button {
       onTap()
     } label: {
-      HStack(alignment: .firstTextBaseline) {
+      HStack(alignment: .center) {
         Circle()
-          .fill(Color.green)
-          .frame(width: 15, height: 15)
+          .fill(isServerActive ? Color.green : Color.gray)
+          .frame(width: 12, height: 12)
         VStack(alignment: .leading) {
           Text(app.name)
             .font(.headline)
@@ -84,8 +129,6 @@ struct RecentlyOpenedAppRow: View {
             .foregroundColor(.secondary)
             .lineLimit(1)
         }
-        // hack: figure out how to do precise layout
-        .offset(y: -1)
 
         Spacer()
         Image(systemName: "chevron.right")
@@ -93,7 +136,8 @@ struct RecentlyOpenedAppRow: View {
           .foregroundColor(.secondary)
       }
       .padding()
-      .background(Color(.systemBackground))
+      .background(Color.expoSecondarySystemBackground)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
     }
     .buttonStyle(PlainButtonStyle())
   }

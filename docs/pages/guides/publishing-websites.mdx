@@ -21,7 +21,7 @@ An Expo web app can be served locally for testing the production behavior, and d
   Icon={Cloud01Icon}
 />
 
-> For SDK 49 and below, you may need the [guide for publishing `webpack` builds](/archive/publishing-websites-webpack/).
+> For SDK 49 and earlier, you may need the [guide for publishing `webpack` builds](/archive/publishing-websites-webpack/).
 
 ## Output targets
 
@@ -95,7 +95,7 @@ Install the Netlify CLI by running the following command:
 
 Configure redirects for single-page applications.
 
-> If your app uses [static rendering](/router/reference/static-rendering), then you can skip this step.
+> If your app uses [static rendering](/router/web/static-rendering), then you can skip this step.
 
 `expo.web.output: 'single'` generates a single-page application. It means there's only one **dist/index.html** file to which all requests must be redirected. This can be done in Netlify by creating a **./public/\_redirects** file and redirecting all requests to **/index.html**.
 
@@ -157,7 +157,7 @@ Create a **vercel.json** file at the root of your app and add the following conf
 }
 ```
 
-If your app uses [static rendering](/router/reference/static-rendering), then you may want to add additional [dynamic route configuration](/router/reference/static-rendering#dynamic-routes).
+If your app uses [static rendering](/router/web/static-rendering), then you may want to add additional [dynamic route configuration](/router/web/static-rendering#dynamic-routes).
 
 </Step>
 
@@ -419,8 +419,8 @@ Now that the web app is published to the `gh-pages` branch, configure GitHub Pag
 
 <Step label="7">
 
-Once the web app is published and the GitHub Pages configuration is set, a GitHub action will deploy your website. You can monitor its progress by navigating to your repository's **Actions** tab. Upon completion, your web app will be available at the URL `http://username-on-github.github.io/repo-name`.
+Once the web app is published and the GitHub Pages configuration is set, a GitHub Action will deploy your website. You can monitor its progress by navigating to your repository's **Actions** tab. Upon completion, your web app will be available at the URL `http://username-on-github.github.io/repo-name`.
 
-For subsequent deployments and updates, run the `deploy` command and the GitHub action will start automatically to update your web app.
+For subsequent deployments and updates, run the `deploy` command and the GitHub Action will start automatically to update your web app.
 
 </Step>

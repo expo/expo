@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Expo
+import React
 import FirebaseCore
 import ReactAppDependencyProvider
 
@@ -20,7 +21,6 @@ class AppDelegate: ExpoAppDelegate {
 
     reactNativeDelegate = delegate
     reactNativeFactory = factory
-    bindReactNativeFactory(factory)
 
     FirebaseApp.configure()
 

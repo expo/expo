@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import rimraf from 'rimraf';
 
-import getFingerprintHashFromCLIAsync from './utils/CLIUtils';
+import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import { createProjectHashAsync } from '../../src/Fingerprint';
 
 jest.mock('../../src/ExpoConfigLoader', () => ({
@@ -69,6 +69,13 @@ describe('updates managed support', () => {
     await spawnAsync('npx', ['expo', 'prebuild'], {
       stdio: 'ignore',
       cwd: projectRoot,
+      env: {
+        ...process.env,
+        // NOTE(cedric): for some reason older version of `@expo/image-utils` find a binary of sharp on Windows.
+        // Unfortunately, this doesn't mean we can use Sharp and will cause prebuild to fail.
+        // Manually disable Sharp for this test to avoid falky test behavior on Windows CI.
+        EXPO_IMAGE_UTILS_NO_SHARP: '1',
+      },
     });
     const fingerprintHash2 = await createProjectHashAsync(projectRoot, {
       ignorePaths: ['android/**/*', 'ios/**/*'],

@@ -1,10 +1,13 @@
 import { requireNativeView } from 'expo';
-import { useState } from 'react';
-import { StyleProp, ViewStyle, type ColorSchemeName } from 'react-native';
+import { type ColorSchemeName, I18nManager, StyleProp, ViewStyle } from 'react-native';
+
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
 export type HostProps = {
   /**
    * When true, the host view will update its size in the React Native view tree to match the content's layout from SwiftUI.
+   * Can be only set once on mount.
    * @default false
    */
   matchContents?: boolean | { vertical?: boolean; horizontal?: boolean };
@@ -27,38 +30,55 @@ export type HostProps = {
    */
   colorScheme?: ColorSchemeName;
 
+  /**
+   * The layout direction for the SwiftUI content.
+   * Defaults to the current locale direction from I18nManager.
+   */
+  layoutDirection?: 'leftToRight' | 'rightToLeft';
+
+  /**
+   * When `true`, the SwiftUI content will not perform keyboard avoidance behaviour when keyboard is shown.
+   * Can be only set once on mount.
+   * @default false
+   */
+  ignoreSafeAreaKeyboardInsets?: boolean;
+
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-};
+} & CommonViewModifierProps;
 
-const HostNativeView: React.ComponentType<HostProps> = requireNativeView('ExpoUI', 'HostView');
+const HostNativeView: React.ComponentType<
+  HostProps & { matchContentsVertical?: boolean; matchContentsHorizontal?: boolean }
+> = requireNativeView('ExpoUI', 'HostView');
 
 /**
  * A hosting component for SwiftUI views.
  */
 export function Host(props: HostProps) {
-  const { matchContents, onLayoutContent, style, ...restProps } = props;
-  const [containerStyle, setContainerStyle] = useState<ViewStyle | null>(null);
+  const {
+    matchContents,
+    onLayoutContent,
+    ignoreSafeAreaKeyboardInsets,
+    modifiers,
+    layoutDirection,
+    ...restProps
+  } = props;
+
   return (
     <HostNativeView
-      style={[style, containerStyle]}
-      onLayoutContent={(e) => {
-        onLayoutContent?.(e);
-        if (matchContents) {
-          const matchVertical =
-            typeof matchContents === 'object' ? matchContents.vertical : matchContents;
-          const matchHorizontal =
-            typeof matchContents === 'object' ? matchContents.horizontal : matchContents;
-          const newContainerStyle: ViewStyle = {};
-          if (matchVertical) {
-            newContainerStyle.height = e.nativeEvent.height;
-          }
-          if (matchHorizontal) {
-            newContainerStyle.width = e.nativeEvent.width;
-          }
-          setContainerStyle(newContainerStyle);
-        }
-      }}
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      matchContentsVertical={
+        typeof matchContents === 'object' ? matchContents.vertical : matchContents
+      }
+      matchContentsHorizontal={
+        typeof matchContents === 'object' ? matchContents.horizontal : matchContents
+      }
+      onLayoutContent={onLayoutContent}
+      layoutDirection={
+        layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
+      }
+      ignoreSafeAreaKeyboardInsets={ignoreSafeAreaKeyboardInsets}
       {...restProps}
     />
   );

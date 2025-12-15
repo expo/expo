@@ -28,7 +28,7 @@ import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
 
 ## Configuration in app config
 
-You can configure `expo-location` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+You can configure `expo-location` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
 
 <ConfigPluginExample>
 
@@ -69,7 +69,6 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
     {
       name: 'locationWhenInUsePermission',
       platform: 'ios',
-      deprecated: true,
       description:
         'A string to set the [`NSLocationWhenInUseUsageDescription`](#permission-nslocationwheninuseusagedescription) permission message.',
       default: '"Allow $(PRODUCT_NAME) to use your location"',
@@ -380,4 +379,5 @@ The following usage description keys are used by this library:
   ]}
 />
 
-**NSLocationAlwaysUsageDescription** and **NSLocationWhenInUseUsageDescription** are deprecated in favor of **NSLocationAlwaysAndWhenInUseUsageDescription** from iOS 11.
+`NSLocationAlwaysUsageDescription` is deprecated in favor of
+`NSLocationAlwaysAndWhenInUseUsageDescription` from iOS 11.

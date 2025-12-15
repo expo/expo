@@ -7,7 +7,10 @@
 import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
+import { getLoaderModulePath } from 'expo-router/build/loaders/utils';
 import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
+import { shouldLinkExternally } from 'expo-router/build/utils/url';
+import { type RoutesManifest } from 'expo-server/private';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
@@ -20,13 +23,17 @@ import {
   ExpoRouterRuntimeManifest,
   MetroBundlerDevServer,
 } from '../start/server/metro/MetroBundlerDevServer';
-import { ExpoRouterServerManifestV1 } from '../start/server/metro/fetchRouterManifest';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
-import { getApiRoutesForDirectory } from '../start/server/metro/router';
+import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
+
+type ExtraScriptTag = {
+  platform: string;
+  src: string;
+};
 
 type Options = {
   mode: 'production' | 'development';
@@ -43,6 +50,8 @@ type Options = {
   maxWorkers?: number;
   isExporting: boolean;
   exp?: ExpoConfig;
+  // <script type="type/expo" data-platform="ios" src="..." />
+  scriptTags?: ExtraScriptTag[];
 };
 
 type HtmlRequestLocation = {
@@ -54,6 +63,18 @@ type HtmlRequestLocation = {
   route: RouteNode;
 };
 
+export function injectScriptTags(html: string, scriptTags: ExtraScriptTag[]): string {
+  const scriptTagsHtml = scriptTags
+    .map((tag) =>
+      tag.platform === 'web'
+        ? `<script src="${tag.src}"></script>`
+        : `<script type="type/expo" src="${tag.src}" data-platform="${tag.platform}"></script>`
+    )
+    .join('\n');
+  html = html.replace('</head>', `${scriptTagsHtml}\n</head>`);
+  return html;
+}
+
 /** Match `(page)` -> `page` */
 function matchGroupName(name: string): string | undefined {
   return name.match(/^\(([^/]+?)\)$/)?.[1];
@@ -63,6 +84,7 @@ export async function getFilesToExportFromServerAsync(
   projectRoot: string,
   {
     manifest,
+    serverManifest,
     renderAsync,
     // Servers can handle group routes automatically and therefore
     // don't require the build-time generation of every possible group
@@ -72,14 +94,33 @@ export async function getFilesToExportFromServerAsync(
     files = new Map(),
   }: {
     manifest: ExpoRouterRuntimeManifest;
+    serverManifest: RoutesManifest;
     renderAsync: (requestLocation: HtmlRequestLocation) => Promise<string>;
     exportServer?: boolean;
     files?: ExportAssetMap;
   }
 ): Promise<ExportAssetMap> {
+  if (!exportServer && serverManifest) {
+    // When we're not exporting a `server` output, we provide a `_expo/.routes.json` for
+    // EAS Hosting to recognize the `headers` and `redirects` configs
+    const subsetServerManifest = {
+      headers: serverManifest.headers,
+      redirects: serverManifest.redirects,
+    };
+    files.set('_expo/.routes.json', {
+      contents: JSON.stringify(subsetServerManifest, null, 2),
+      targetDomain: 'client',
+    });
+  }
+
   await Promise.all(
     getHtmlFiles({ manifest, includeGroupVariations: !exportServer }).map(
       async ({ route, filePath, pathname }) => {
+        // Rewrite routes should not be statically generated
+        if (route.type === 'rewrite') {
+          return;
+        }
+
         try {
           const targetDomain = exportServer ? 'server' : 'client';
           files.set(filePath, { contents: '', targetDomain });
@@ -121,6 +162,11 @@ function makeRuntimeEntryPointsAbsolute(manifest: ExpoRouterRuntimeManifest, app
   modifyRouteNodeInRuntimeManifest(manifest, (route) => {
     if (Array.isArray(route.entryPoints)) {
       route.entryPoints = route.entryPoints.map((entryPoint) => {
+        // TODO(@hassankhan): ENG-16577
+        if (shouldLinkExternally(entryPoint)) {
+          return entryPoint;
+        }
+
         if (entryPoint.startsWith('.')) {
           return path.resolve(appDir, entryPoint);
         } else if (!path.isAbsolute(entryPoint)) {
@@ -144,6 +190,7 @@ export async function exportFromServerAsync(
     routerRoot,
     files = new Map(),
     exp,
+    scriptTags,
   }: Options
 ): Promise<ExportAssetMap> {
   Log.log(
@@ -161,12 +208,13 @@ export async function exportFromServerAsync(
     exp,
   });
 
-  const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
-    devServer.getStaticResourcesAsync({
-      includeSourceMaps,
-    }),
-    devServer.getStaticRenderFunctionAsync(),
-  ]);
+  const [resources, { manifest, serverManifest, renderAsync, executeLoaderAsync }] =
+    await Promise.all([
+      devServer.getStaticResourcesAsync({
+        includeSourceMaps,
+      }),
+      devServer.getStaticRenderFunctionAsync(),
+    ]);
 
   makeRuntimeEntryPointsAbsolute(manifest, appDir);
 
@@ -175,9 +223,32 @@ export async function exportFromServerAsync(
   await getFilesToExportFromServerAsync(projectRoot, {
     files,
     manifest,
+    serverManifest,
     exportServer,
     async renderAsync({ pathname, route }) {
-      const template = await renderAsync(pathname);
+      const normalizedPathname =
+        pathname === '' ? '/' : pathname.startsWith('/') ? pathname : `/${pathname}`;
+
+      const useServerLoaders = exp?.extra?.router?.unstable_useServerDataLoaders;
+      let renderOpts;
+
+      if (useServerLoaders) {
+        const loaderData = await executeLoaderAsync(normalizedPathname, route);
+
+        if (loaderData != null) {
+          const loaderPath = getLoaderModulePath(normalizedPathname);
+          const fileSystemPath = loaderPath.startsWith('/') ? loaderPath.slice(1) : loaderPath;
+          files.set(fileSystemPath, {
+            contents: JSON.stringify(loaderData, null, 2),
+            targetDomain: 'client',
+            loaderId: normalizedPathname,
+          });
+
+          renderOpts = { loader: { data: loaderData } };
+        }
+      }
+
+      const template = await renderAsync(normalizedPathname, route, renderOpts);
       let html = await serializeHtmlWithAssets({
         isExporting,
         resources: resources.artifacts,
@@ -189,6 +260,12 @@ export async function exportFromServerAsync(
 
       if (injectFaviconTag) {
         html = injectFaviconTag(html);
+      }
+
+      if (scriptTags) {
+        // Inject script tags into the HTML.
+        // <script type="type/expo" data-platform="ios" src="..." />
+        html = injectScriptTags(html, scriptTags);
       }
 
       return html;
@@ -251,7 +328,7 @@ export function getHtmlFiles({
       let leaf: string | null = null;
       if (typeof value === 'string') {
         leaf = value;
-      } else if (Object.keys(value.screens).length === 0) {
+      } else if (value.screens && Object.keys(value.screens).length === 0) {
         // Ensure the trailing index is accounted for.
         if (key === value.path + '/index') {
           leaf = key;
@@ -424,6 +501,7 @@ export async function exportApiRoutesStandaloneAsync(
     // TODO: Export an HTML entry for each file. This is a temporary solution until we have SSR/SSG for RSC.
     await getFilesToExportFromServerAsync(devServer.projectRoot, {
       manifest: htmlManifest,
+      serverManifest,
       exportServer: true,
       files,
       renderAsync: async ({ pathname, filePath }) => {
@@ -448,7 +526,7 @@ async function exportApiRoutesAsync({
   ...props
 }: Pick<Options, 'includeSourceMaps'> & {
   server: MetroBundlerDevServer;
-  manifest: ExpoRouterServerManifestV1;
+  manifest: RoutesManifest<string>;
   platform: string;
   apiRoutesOnly?: boolean;
 }): Promise<ExportAssetMap> {
@@ -481,6 +559,13 @@ function warnPossibleInvalidExportType(appDir: string) {
       chalk.yellow`Skipping export for API routes because \`web.output\` is not "server". You may want to remove the routes: ${apiRoutes
         .map((v) => path.relative(appDir, v))
         .join(', ')}`
+    );
+  }
+
+  const middlewareFile = getMiddlewareForDirectory(appDir);
+  if (middlewareFile) {
+    Log.warn(
+      chalk.yellow`Skipping export for middleware because \`web.output\` is not "server". You may want to remove ${path.relative(appDir, middlewareFile)}`
     );
   }
 }

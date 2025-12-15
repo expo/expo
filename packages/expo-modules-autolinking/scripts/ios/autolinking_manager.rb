@@ -6,6 +6,7 @@ require_relative 'packages_config'
 require_relative 'cocoapods/sandbox'
 require_relative 'cocoapods/target_definition'
 require_relative 'cocoapods/user_project_integrator'
+require_relative 'cocoapods/installer'
 
 module Expo
   class AutolinkingManager
@@ -34,6 +35,15 @@ module Expo
       global_flags = @options.fetch(:flags, {})
       tests_only = @options.fetch(:testsOnly, false)
       include_tests = @options.fetch(:includeTests, false)
+
+      # Add any additional framework modules to patch using the patched Podfile class in installer.rb
+      # We'll be reading from Podfile.properties.json and optionally parameters passed to use_expo_modules!
+      podfile_properties = JSON.parse(File.read(File.join(Pod::Config.instance.project_root, 'Podfile.properties.json'))) rescue {}
+      additional_framework_modules_to_patch = @options.fetch(:additionalFrameworkModulesToPatch, []) +
+        JSON.parse(podfile_properties['ios.forceStaticLinking'] || "[]")
+
+      Pod::UI.puts("Forcing static linking for pods: #{additional_framework_modules_to_patch}") if !additional_framework_modules_to_patch.empty?
+      @podfile.expo_add_modules_to_patch(additional_framework_modules_to_patch) if !additional_framework_modules_to_patch.empty?
 
       project_directory = Pod::Config.instance.project_root
 
@@ -156,6 +166,12 @@ module Expo
       return @target_definition.platform&.string_name
     end
 
+    # Returns the app project root if provided in the options.
+    public def custom_app_root
+      # TODO: Follow up on renaming `:projectRoot` and migrate to `appRoot`
+      return @options.fetch(:appRoot, @options.fetch(:projectRoot, nil))
+    end
+
     # privates
 
     private def resolve
@@ -200,7 +216,8 @@ module Expo
         'node',
         '--no-warnings',
         '--eval',
-        'require(require.resolve(\'expo-modules-autolinking\', { paths: [\'' +  __dir__ + '\'] }))(process.argv.slice(1))',
+        'require(\'expo/bin/autolinking\')',
+        'expo-modules-autolinking',
         command_name,
         '--platform',
         'apple'
@@ -209,16 +226,26 @@ module Expo
     end
 
     private def resolve_command_args
-      node_command_args('resolve').concat(['--json'])
+      resolve_command_args = ['--json']
+
+      project_root = @options.fetch(:projectRoot, nil)
+      if project_root
+        resolve_command_args.concat(['--project-root', project_root])
+      end
+
+      node_command_args('resolve').concat(resolve_command_args)
     end
 
     public def generate_modules_provider_command_args(target_path)
+      command_args = ['--target', target_path]
+
+      if !custom_app_root.nil?
+        command_args.concat(['--app-root', custom_app_root])
+      end
+
       node_command_args('generate-modules-provider').concat(
-        [
-          '--target',
-          target_path,
-          '--packages'
-        ],
+        command_args,
+        ['--packages'],
         packages_to_generate.map(&:name)
       )
     end

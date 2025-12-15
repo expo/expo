@@ -8,65 +8,31 @@
  *
  * https://github.com/lubieowoce/tangle/blob/5229666fb317d0da9363363fc46dc542ba51e4f7/packages/babel-rsc/src/babel-rsc-actions.ts#L1C1-L909C25
  */
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactServerActionsPlugin = reactServerActionsPlugin;
-const core_1 = require("@babel/core");
-const t = __importStar(require("@babel/types"));
 const node_path_1 = require("node:path");
 const node_url_1 = __importDefault(require("node:url"));
 const common_1 = require("./common");
 const debug = require('debug')('expo:babel:server-actions');
 const LAZY_WRAPPER_VALUE_KEY = 'value';
-// React doesn't like non-enumerable properties on serialized objects (see `isSimpleObject`),
-// so we have to use closure scope for the cache (instead of a non-enumerable `this._cache`)
-const _buildLazyWrapperHelper = (0, core_1.template)(`(thunk) => {
-  let cache;
-  return {
-    get ${LAZY_WRAPPER_VALUE_KEY}() {
-      return cache || (cache = thunk());
-    }
-  }
-}`);
-const buildLazyWrapperHelper = () => {
-    return _buildLazyWrapperHelper().expression;
-};
 function reactServerActionsPlugin(api) {
+    const { types: t } = api;
+    // React doesn't like non-enumerable properties on serialized objects (see `isSimpleObject`),
+    // so we have to use closure scope for the cache (instead of a non-enumerable `this._cache`)
+    const _buildLazyWrapperHelper = api.template(`(thunk) => {
+    let cache;
+    return {
+      get ${LAZY_WRAPPER_VALUE_KEY}() {
+        return cache || (cache = thunk());
+      }
+    }
+  }`);
+    const buildLazyWrapperHelper = () => {
+        return _buildLazyWrapperHelper().expression;
+    };
     const possibleProjectRoot = api.caller(common_1.getPossibleProjectRoot);
     let addReactImport;
     let wrapBoundArgs;
@@ -153,7 +119,9 @@ function reactServerActionsPlugin(api) {
         else {
             // Fallback to inserting after the last import if no enclosing declaration is found
             const programBody = moduleScope.path.get('body');
-            const lastImportPath = findLast(Array.isArray(programBody) ? programBody : [programBody], (stmt) => stmt.isImportDeclaration());
+            const lastImportPath = (Array.isArray(programBody) ? programBody : [programBody]).findLast((statement) => {
+                return statement.isImportDeclaration();
+            });
             [inserted] = lastImportPath.insertAfter(functionDeclaration);
             moduleScope.registerBinding(bindingKind, inserted);
             inserted.addComment('leading', ' hoisted action: ' + (getFnPathName(path) ?? '<anonymous>'), true);
@@ -179,6 +147,10 @@ function reactServerActionsPlugin(api) {
             boundArgs,
         ]);
     };
+    function hasUseServerDirective(path) {
+        const { body } = path.node;
+        return t.isBlockStatement(body) && body.directives.some((d) => d.value.value === 'use server');
+    }
     return {
         name: 'expo-server-actions',
         pre(file) {
@@ -578,13 +550,6 @@ const isChildScope = ({ root, parent, child, }) => {
     }
     return false;
 };
-const findLast = (arr, predicate) => {
-    for (let i = arr.length - 1; i >= 0; i--) {
-        if (predicate(arr[i]))
-            return arr[i];
-    }
-    return undefined;
-};
 function findImmediatelyEnclosingDeclaration(path) {
     let currentPath = path;
     while (!currentPath.isProgram()) {
@@ -634,8 +599,4 @@ function assertExpoMetadata(metadata) {
     if (!metadata || typeof metadata !== 'object') {
         throw new Error('Expected Babel state.file.metadata to be an object');
     }
-}
-function hasUseServerDirective(path) {
-    const { body } = path.node;
-    return t.isBlockStatement(body) && body.directives.some((d) => d.value.value === 'use server');
 }

@@ -6,11 +6,53 @@
 
 ### 🎉 New features
 
-- Added `APP_OPEN_BY_DEFAULT_SETTINGS` action. ([#38054](https://github.com/expo/expo/pull/38054) by [@jakex7](https://github.com/jakex7))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [Android] Removed unused `androidx.annotation:annotation` dependency. ([#39760](https://github.com/expo/expo/pull/39760) by [@lukmccall](https://github.com/lukmccall))
+
+## 13.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.7 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2025-08-13
+
+### 🛠 Breaking changes
+
+- Updated intent actions list. ([#38131](https://github.com/expo/expo/pull/38131) by [@jakex7](https://github.com/jakex7))
+
+### 🎉 New features
+
+- Added `APP_OPEN_BY_DEFAULT_SETTINGS` action. ([#38054](https://github.com/expo/expo/pull/38054) by [@jakex7](https://github.com/jakex7))
 
 ## 12.1.5 - 2025-06-06
 

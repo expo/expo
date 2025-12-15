@@ -1,9 +1,12 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
-    "modules": ["MediaLibraryModule"]
+    "modules": ["MediaLibraryModule", "MediaLibraryNextModule"]
   },
   "android": {
-    "modules": ["expo.modules.medialibrary.MediaLibraryModule"]
+    "modules": [
+      "expo.modules.medialibrary.MediaLibraryModule",
+      "expo.modules.medialibrary.next.MediaLibraryNextModule"
+    ]
   }
 }

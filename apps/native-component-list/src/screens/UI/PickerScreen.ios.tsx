@@ -1,80 +1,84 @@
-import { Picker, PickerPrimitive, Section as NativeSection } from '@expo/ui/swift-ui';
+import { Host, List, Picker, Section, Text } from '@expo/ui/swift-ui';
+import {
+  font,
+  PickerStyleType,
+  pickerStyle,
+  tag,
+  animation,
+  Animation,
+} from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
-import { ScrollView, Text } from 'react-native';
 
-import { Page, Section } from '../../components/Page';
-
+const pickerTypes: PickerStyleType[] = ['segmented', 'menu', 'inline', 'wheel', 'palette'];
 export default function PickerScreen() {
-  const [selectedIndex, setSelectedIndex] = React.useState<number>(0);
+  const [selectedTag, setSelectedTag] = React.useState<string | number>('$');
   const options = ['$', '$$', '$$$', '$$$$'];
+  const [pickerType, setPickerType] = React.useState<PickerStyleType>('menu');
+  const [animationState, setAnimationState] = React.useState(false);
+
   return (
-    <ScrollView>
-      <Page>
+    <Host style={{ flex: 1 }}>
+      <List modifiers={[animation(Animation.default, animationState)]}>
         <Section title="Selected value">
-          <Text>{[...options, 'unset'][selectedIndex ?? options.length]}</Text>
+          <Text>{selectedTag}</Text>
         </Section>
-        <Section title="Segmented picker">
+        <Section title="Picker type">
           <Picker
-            options={options}
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedIndex(index);
-            }}
-            variant="segmented"
-          />
+            selection={pickerType}
+            onSelectionChange={(selection) => {
+              setAnimationState(!animationState);
+              setPickerType(selection);
+            }}>
+            {pickerTypes.map((type) => (
+              <Text key={type} modifiers={[tag(type)]}>
+                {type}
+              </Text>
+            ))}
+          </Picker>
         </Section>
-        <Section title="Menu picker">
-          <NativeSection style={{ height: 100 }}>
-            <Picker
-              options={options}
-              selectedIndex={selectedIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => {
-                setSelectedIndex(index);
-              }}
-              label="Cost"
-              variant="menu"
-            />
-          </NativeSection>
-        </Section>
-        <Section title="Inline picker">
-          <NativeSection style={{ height: 300 }}>
-            <PickerPrimitive
-              options={options}
-              selectedIndex={selectedIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => {
-                setSelectedIndex(index);
-              }}
-              label="Cost"
-              variant="inline"
-            />
-          </NativeSection>
-        </Section>
-        <Section title="Wheel picker">
+        <Section title={`${pickerType} picker`}>
           <Picker
-            options={options}
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedIndex(index);
-            }}
-            variant="wheel"
-            style={{
-              width: 300,
-              height: 200,
-            }}
-          />
+            modifiers={[pickerStyle(pickerType)]}
+            selection={selectedTag}
+            onSelectionChange={setSelectedTag}>
+            {options.map((option) => (
+              <Text key={option} modifiers={[tag(option)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
         </Section>
-        <Section title="Tinted picker">
+        <Section title={`${pickerType} picker with label`}>
           <Picker
-            options={options}
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedIndex(index);
-            }}
-            color="#ff5500"
-          />
+            modifiers={[pickerStyle(pickerType)]}
+            label="Select a tag"
+            selection={selectedTag}
+            onSelectionChange={setSelectedTag}>
+            {options.map((option) => (
+              <Text key={option} modifiers={[tag(option)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
         </Section>
-      </Page>
-    </ScrollView>
+        <Section title={`${pickerType} picker with custom label`}>
+          <Picker
+            modifiers={[pickerStyle(pickerType)]}
+            label={<Text modifiers={[font({ size: 16, weight: 'bold' })]}>Select a tag</Text>}
+            selection={selectedTag}
+            onSelectionChange={(selection) => {
+              console.log('selection', selection);
+              setSelectedTag(selection);
+            }}>
+            {options.map((option) => (
+              <Text key={option} modifiers={[tag(option)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
+        </Section>
+      </List>
+    </Host>
   );
 }
 

@@ -147,5 +147,5 @@ export function useFocusEffect(effect: EffectCallback, do_not_pass_a_second_prop
       unsubscribeFocus();
       unsubscribeBlur();
     };
-  }, [effect, navigation, optionalNavigation, navigation.isFocused()]);
+  }, [effect, navigation, optionalNavigation]);
 }

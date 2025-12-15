@@ -1,70 +1,95 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle } from 'react-native';
+import type { NativeSyntheticEvent } from 'react-native';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
-export type PickerProps = {
+type SelectionValueType = string | number | null;
+export type PickerProps<T extends SelectionValueType = any> = {
   /**
-   * An array of options to be displayed in the picker.
+   * The name of the system image (SF Symbol).
+   * For example: 'photo', 'heart.fill', 'star.circle'
    */
-  options: string[];
+  systemImage?: SFSymbol;
   /**
-   * The index of the currently selected option.
+   * A label displayed on the picker.
    */
-  selectedIndex: number | null;
+  label?: string | React.ReactNode;
   /**
-   * A label displayed on the picker when in `'menu'` variant inside a form section on iOS.
+   * The selected option's `tag` modifier value.
    */
-  label?: string;
+  selection?: T;
   /**
    * Callback function that is called when an option is selected.
+   * Gets called with the selected `tag` value.
    */
-  onOptionSelected?: (event: { nativeEvent: { index: number; label: string } }) => void;
+  onSelectionChange?: (selection: T) => void;
+
   /**
-   * The variant of the picker, which determines its appearance and behavior.
-   * The `'wheel'`, `'inline'`, `'palette'` and `'menu'` variants are iOS only, the `'radio'` variant is Android only. The `'inline'` variant can only be used inside sections or lists. The `'palette'` variant displays differently inside menus.
-   * @default 'segmented'
+   * The content of the picker. You can use `Text` components with `tag` modifiers to display the options.
    */
-  variant?: 'wheel' | 'segmented' | 'menu' | 'inline' | 'palette';
-  /**
-   * Picker color. On iOS it only applies to the `'menu'` variant.
-   */
-  color?: string;
+  children?: React.ReactNode;
+} & CommonViewModifierProps;
+
+type NativePickerProps = Omit<PickerProps, 'onSelectionChange'> & {
+  onSelectionChange?: (event: NativeSyntheticEvent<{ selection: SelectionValueType }>) => void;
+  children?: React.ReactNode;
 };
 
-const PickerNativeView: React.ComponentType<PickerProps> = requireNativeView(
+const PickerNativeView: React.ComponentType<NativePickerProps> = requireNativeView(
   'ExpoUI',
   'PickerView'
 );
 
-type NativePickerProps = PickerProps;
+const PickerContentNativeView: React.ComponentType<{ children: React.ReactNode }> =
+  requireNativeView('ExpoUI', 'PickerContentView');
 
-/**
- * @hidden
- */
-export function transformPickerProps(props: PickerProps): NativePickerProps {
+const PickerLabelNativeView: React.ComponentType<{ children: React.ReactNode }> = requireNativeView(
+  'ExpoUI',
+  'PickerLabelView'
+);
+
+function transformPickerProps<T extends SelectionValueType>(
+  props: PickerProps<T>
+): NativePickerProps {
+  const { modifiers, onSelectionChange, ...restProps } = props;
   return {
-    ...props,
-    variant: props.variant ?? 'segmented',
-    color: props.color,
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+    onSelectionChange: onSelectionChange
+      ? ({ nativeEvent: { selection } }) => {
+          onSelectionChange(selection as T);
+        }
+      : undefined,
   };
 }
 
 /**
- * `<Picker>` component without a host view.
- * You should use this with a `Host` component in ancestor.
+ * Displays a native picker component
+ * @example
+ * ```tsx
+ * <Picker modifiers={[pickerStyle('segmented')]}>
+ *   <Text modifiers={[tag('option1')]}>Option 1</Text>
+ *   <Text modifiers={[tag(0)]}>Option 3</Text>
+ * </Picker>
+ * ```
  */
-export function PickerPrimitive(props: PickerProps) {
-  return <PickerNativeView {...transformPickerProps(props)} />;
-}
-
-/**
- * Displays a native picker component. Depending on the variant it can be a segmented button, an inline picker, a list of choices or a radio button.
- */
-export function Picker(props: PickerProps & { style?: StyleProp<ViewStyle> }) {
-  return (
-    <Host style={props.style} matchContents>
-      <PickerPrimitive {...props} />
-    </Host>
-  );
+export function Picker<T extends SelectionValueType>(props: PickerProps<T>) {
+  const { label, children, ...restProps } = transformPickerProps(props);
+  if (typeof label === 'string') {
+    return (
+      <PickerNativeView {...restProps} label={label}>
+        <PickerContentNativeView>{children}</PickerContentNativeView>
+      </PickerNativeView>
+    );
+  } else {
+    return (
+      <PickerNativeView {...restProps}>
+        <PickerLabelNativeView>{label}</PickerLabelNativeView>
+        <PickerContentNativeView>{children}</PickerContentNativeView>
+      </PickerNativeView>
+    );
+  }
 }

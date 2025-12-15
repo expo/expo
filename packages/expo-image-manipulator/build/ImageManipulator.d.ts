@@ -13,7 +13,7 @@ import ExpoImageManipulator from './NativeImageManipulatorModule';
  * @param saveOptions A map defining how modified image should be saved.
  * @return Promise which fulfils with [`ImageResult`](#imageresult) object.
  * @deprecated It has been replaced by the new, contextual and object-oriented API.
- * Use [`ImageManipulator.manipulate`](#manipulateuri) or [`useImageManipulator`](#useimagemanipulatoruri) instead.
+ * Use [`ImageManipulator.manipulate`](#manipulatesource) or [`useImageManipulator`](#useimagemanipulatorsource) instead.
  */
 export declare function manipulateAsync(uri: string, actions?: Action[], saveOptions?: SaveOptions): Promise<ImageResult>;
 export declare function useImageManipulator(source: string | SharedRef<'image'>): ImageManipulatorContext;

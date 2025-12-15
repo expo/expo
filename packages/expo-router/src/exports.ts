@@ -11,11 +11,13 @@ export {
   useSegments,
   useRootNavigation,
   useRootNavigationState,
+  useLoaderData,
 } from './hooks';
 
 export { router, Router } from './imperative-api';
 
-export { Link, Redirect, RedirectProps, LinkProps, WebAnchorProps } from './link/Link';
+export * from './link/Link';
+export * from './link/elements';
 export { useIsPreview } from './link/preview/PreviewRouteContext';
 
 export { withLayoutContext } from './layouts/withLayoutContext';
@@ -29,7 +31,6 @@ export { useSitemap, SitemapType } from './views/useSitemap';
 export { ErrorBoundaryProps } from './views/Try';
 export { ErrorBoundary } from './views/ErrorBoundary';
 export type { ScreenProps } from './useScreens';
-export { Modal } from './modal/Modal';
 
 // Platform
 /**
@@ -46,3 +47,18 @@ export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';
 
 export type * from './types';
+
+export * from './color';
+
+export {
+  Badge,
+  BadgeProps,
+  Icon,
+  IconProps,
+  Label,
+  LabelProps,
+  VectorIcon,
+  VectorIconProps,
+} from './primitives';
+
+export * from './layouts/stack-utils';

@@ -38,6 +38,7 @@ private fun defaultAppContextMock(): Pair<AppContext, RuntimeContext> {
   every { runtimeContext.appContext } answers { appContextMock }
   every { appContextMock.findView<View>(capture(slot())) } answers { mockk() }
   every { appContextMock.hostingRuntimeContext } answers { runtimeContext }
+  every { appContextMock.runtime } answers { runtimeContext }
 
   return appContextMock to runtimeContext
 }
@@ -86,19 +87,18 @@ internal inline fun withJSIInterop(
   repeat(numberOfReloads) {
     val coreModule = run {
       val module = CoreModule()
-      module._runtimeContext = runtimeContext
-      ModuleHolder(module)
+      module._appContextHolder = appContextMock.weak()
+      ModuleHolder(module, "CoreModule")
     }
     every { runtimeContext.coreModule } answers { coreModule }
 
-    val registry = ModuleRegistry(appContextMock.hostingRuntimeContext.weak()).apply {
+    val registry = ModuleRegistry(appContextMock.weak()).apply {
       modules.forEach {
-        register(it)
+        register(it, null)
       }
     }
-    val sharedObjectRegistry = SharedObjectRegistry(appContextMock.hostingRuntimeContext)
+    val sharedObjectRegistry = SharedObjectRegistry(appContextMock.runtime)
     every { appContextMock.registry } answers { registry }
-    every { runtimeContext.registry } answers { registry }
     every { runtimeContext.sharedObjectRegistry } answers { sharedObjectRegistry }
 
     // We aim to closely replicate the lifecycle of each part as it functions in the real app.
@@ -163,6 +163,17 @@ class SingleTestContext(
 
     return jsiInterop.evaluateScript("(new $moduleRef.$className()).$functionName($args)")
   }
+
+  fun callClassStatic(className: String, functionName: String, args: String = "") = jsiInterop.evaluateScript(
+    "$moduleRef.$className.$functionName($args)"
+  )
+
+  fun callClassStaticAsync(className: String, functionName: String, args: String = "", shouldBeResolved: Boolean = true) =
+    jsiInterop.waitForAsyncFunction(
+      methodQueue,
+      "$moduleRef.$className.$functionName($args)",
+      shouldBeResolved
+    )
 
   fun classProperty(className: String, propertyName: String) =
     jsiInterop.evaluateScript("(new $moduleRef.$className()).$propertyName")

@@ -13,10 +13,12 @@ const withSQLiteAndroidProps = (config, props) => {
         const enableFTS = props?.android?.enableFTS ?? props?.enableFTS;
         const useSQLCipher = props?.android?.useSQLCipher ?? props?.useSQLCipher;
         const useLibSQL = props?.android?.useLibSQL ?? props?.useLibSQL;
+        const withSQLiteVecExtension = props?.android?.withSQLiteVecExtension ?? props?.withSQLiteVecExtension;
         config.modResults = updateAndroidBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.customBuildFlags', customBuildFlags);
         config.modResults = updateAndroidBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.enableFTS', enableFTS);
         config.modResults = updateAndroidBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.useSQLCipher', useSQLCipher);
         config.modResults = updateAndroidBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.useLibSQL', useLibSQL);
+        config.modResults = updateAndroidBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.withSQLiteVecExtension', withSQLiteVecExtension);
         return config;
     });
 };
@@ -26,10 +28,12 @@ const withSQLiteIOSProps = (config, props) => {
         const enableFTS = props?.ios?.enableFTS ?? props?.enableFTS;
         const useSQLCipher = props?.ios?.useSQLCipher ?? props?.useSQLCipher;
         const useLibSQL = props?.ios?.useLibSQL ?? props?.useLibSQL;
+        const withSQLiteVecExtension = props?.ios?.withSQLiteVecExtension ?? props?.withSQLiteVecExtension;
         config.modResults = updateIOSBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.customBuildFlags', customBuildFlags);
         config.modResults = updateIOSBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.enableFTS', enableFTS);
         config.modResults = updateIOSBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.useSQLCipher', useSQLCipher);
         config.modResults = updateIOSBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.useLibSQL', useLibSQL);
+        config.modResults = updateIOSBuildPropertyIfNeeded(config.modResults, 'expo.sqlite.withSQLiteVecExtension', withSQLiteVecExtension);
         return config;
     });
 };

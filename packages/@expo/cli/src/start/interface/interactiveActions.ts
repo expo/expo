@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
 import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
+import { createDevToolsMenuItems } from './createDevToolsMenuItems';
 import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { learnMore } from '../../utils/link';
@@ -56,9 +57,7 @@ export class DevServerManagerActions {
         Log.log(printItem(chalk`Metro waiting on {underline ${nativeRuntimeUrl}}`));
         if (options.devClient === false) {
           // TODO: if development build, change this message!
-          Log.log(
-            printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)')
-          );
+          Log.log(printItem('Scan the QR code above to open the project in Expo Go.'));
         } else {
           Log.log(
             printItem(
@@ -141,23 +140,20 @@ export class DevServerManagerActions {
         { title: 'Reload app', value: 'reload' },
         // TODO: Maybe a "View Source" option to open code.
       ];
-      const pluginMenuItems = (
-        await this.devServerManager.devtoolsPluginManager.queryPluginsAsync()
-      ).map((plugin) => ({
-        title: chalk`Open {bold ${plugin.packageName}}`,
-        value: `devtoolsPlugin:${plugin.packageName}`,
-        action: async () => {
-          const url = new URL(
-            plugin.webpageEndpoint,
-            this.devServerManager
-              .getDefaultDevServer()
-              .getUrlCreator()
-              .constructUrl({ scheme: 'http' })
-          );
-          await openBrowserAsync(url.toString());
-        },
-      }));
-      const menuItems = [...defaultMenuItems, ...pluginMenuItems];
+
+      const defaultServerUrl = this.devServerManager
+        .getDefaultDevServer()
+        .getUrlCreator()
+        .constructUrl({ scheme: 'http' });
+
+      const metroServerOrigin = this.devServerManager.getDefaultDevServer().getJsInspectorBaseUrl();
+      const plugins = await this.devServerManager.devtoolsPluginManager.queryPluginsAsync();
+      Log.log();
+      const menuItems = [
+        ...defaultMenuItems,
+        ...createDevToolsMenuItems(plugins, defaultServerUrl, metroServerOrigin),
+      ];
+
       const value = await selectAsync(chalk`Dev tools {dim (native only)}`, menuItems);
       const menuItem = menuItems.find((item) => item.value === value);
       if (menuItem?.action) {

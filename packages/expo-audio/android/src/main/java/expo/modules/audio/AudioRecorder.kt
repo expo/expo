@@ -9,12 +9,16 @@ import android.media.MediaRecorder
 import android.media.MediaRecorder.MEDIA_ERROR_SERVER_DIED
 import android.media.MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN
 import android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
+import expo.modules.audio.service.AudioRecordingService
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.util.UUID
@@ -39,13 +43,27 @@ class AudioRecorder(
   var startTime = 0L
   var isRecording = false
   var isPaused = false
+  private var recordingTimerJob: Job? = null
+  var useForegroundService = false
+  private var isRegisteredWithService = false
+
+  private fun currentFileUrl(): String? =
+    filePath?.let(::File)?.toUri()?.toString()
 
   private fun getAudioRecorderLevels(): Double? {
     if (!meteringEnabled || recorder == null || !isRecording) {
       return null
     }
 
-    val amplitude: Int = recorder?.maxAmplitude ?: 0
+    val amplitude: Int = try {
+      recorder?.maxAmplitude ?: 0
+    } catch (e: Exception) {
+      // MediaRecorder maxAmplitude can throw various exceptions:
+      // - IllegalStateException: invalid recorder state/race condition
+      // - RuntimeException: getMaxAmplitude failed (hardware/driver issues)
+      // We return 0 (silence) as fallback for any amplitude reading failure
+      0
+    }
     return if (amplitude == 0) {
       -160.0
     } else {
@@ -54,14 +72,20 @@ class AudioRecorder(
   }
 
   fun prepareRecording(options: RecordingOptions?) {
-    recorder = options?.let { createRecorder(it) } ?: createRecorder(this.options)
+    if (recorder != null || isPrepared || isRecording || isPaused) {
+      throw AudioRecorderAlreadyPreparedException()
+    }
+    val recordingOptions = options ?: this.options
+    val mediaRecorder = createRecorder(recordingOptions)
+    recorder = mediaRecorder
     try {
-      recorder?.prepare()
+      mediaRecorder.prepare()
       isPrepared = true
-    } catch (_: Exception) {
-      recorder?.release()
+    } catch (cause: Exception) {
+      mediaRecorder.release()
       recorder = null
       isPrepared = false
+      throw AudioRecorderPrepareException(cause)
     }
   }
 
@@ -74,6 +98,40 @@ class AudioRecorder(
     startTime = System.currentTimeMillis()
     isRecording = true
     isPaused = false
+
+    if (useForegroundService && !isRegisteredWithService) {
+      AudioRecordingService.startService(context, this)
+      isRegisteredWithService = true
+    }
+  }
+
+  fun recordWithOptions(atTimeSeconds: Double? = null, forDurationSeconds: Double? = null) {
+    recordingTimerJob?.cancel()
+
+    // Note: atTime is not supported on Android (no native equivalent), so we ignore it entirely
+    // Only forDuration is implemented using coroutines
+
+    forDurationSeconds?.let {
+      record()
+      recordingTimerJob = appContext?.mainQueue?.launch {
+        delay((it * 1000).toLong())
+        // Stop recording regardless of current state
+        // This matches the iOS behaviour where the timer continues regardless of if
+        // the recording was paused.
+        if (isRecording || isPaused) {
+          stopRecording()
+        }
+      }
+    } ?: record()
+  }
+
+  // Keep backward compatibility methods
+  fun recordForDuration(seconds: Double) {
+    recordWithOptions(forDurationSeconds = seconds)
+  }
+
+  fun startRecordingAtTime(seconds: Double) {
+    recordWithOptions(atTimeSeconds = seconds)
   }
 
   fun pauseRecording() {
@@ -84,15 +142,49 @@ class AudioRecorder(
   }
 
   fun stopRecording(): Bundle {
+    val url = currentFileUrl()
+    var durationMillis: Long
+
+    if (useForegroundService && isRegisteredWithService) {
+      AudioRecordingService.getInstance()?.unregisterRecorder(this)
+      isRegisteredWithService = false
+    }
+
     try {
       recorder?.stop()
+      durationMillis = getAudioRecorderDurationMillis()
     } finally {
       reset()
     }
-    return getAudioRecorderStatus()
+
+    val status = Bundle().apply {
+      putBoolean("canRecord", false)
+      putBoolean("isRecording", false)
+      putLong("durationMillis", durationMillis)
+      url?.let { putString("url", it) }
+    }
+
+    // Emit completion event on the main thread
+    appContext?.mainQueue?.launch {
+      emit(
+        RECORDING_STATUS_UPDATE,
+        mapOf(
+          "id" to id,
+          "isFinished" to true,
+          "hasError" to false,
+          "error" to null,
+          "url" to url
+        )
+      )
+    }
+
+    return status
   }
 
   private fun reset() {
+    recordingTimerJob?.cancel()
+    recordingTimerJob = null
+
     recorder?.release()
     recorder = null
     isRecording = false
@@ -116,7 +208,7 @@ class AudioRecorder(
       return
     }
     with(recorder) {
-      setAudioSource(MediaRecorder.AudioSource.MIC)
+      setAudioSource(options.audioSource?.toAudioSource() ?: MediaRecorder.AudioSource.MIC)
       if (options.outputFormat != null) {
         setOutputFormat(options.outputFormat.toMediaOutputFormat())
       } else {
@@ -159,6 +251,10 @@ class AudioRecorder(
 
   override fun sharedObjectDidRelease() {
     super.sharedObjectDidRelease()
+    if (useForegroundService && isRegisteredWithService) {
+      AudioRecordingService.getInstance()?.unregisterRecorder(this)
+      isRegisteredWithService = false
+    }
     reset()
   }
 
@@ -170,10 +266,7 @@ class AudioRecorder(
       getAudioRecorderLevels()?.let {
         putDouble("metering", it)
       }
-      filePath?.let {
-        val path = Uri.fromFile(File(it)).toString()
-        putString("url", path)
-      }
+      currentFileUrl()?.let { putString("url", it) }
     }
   } else {
     Bundle().apply {
@@ -219,7 +312,7 @@ class AudioRecorder(
             "isFinished" to true,
             "hasError" to true,
             "error" to null,
-            "url" to Uri.parse(filePath).toString()
+            "url" to currentFileUrl()
           )
         )
       }
@@ -233,13 +326,15 @@ class AudioRecorder(
       throw GetAudioInputNotSupportedException()
     }
 
-    try {
-      // getRoutedDevice() is the most reliable way to return the actual mic input, however it
-      // only returns a valid device when actively recording, and may throw otherwise.
-      // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
-      deviceInfo = recorder?.routedDevice
-    } catch (e: java.lang.Exception) {
-      // no-op
+    if (isRecording) {
+      try {
+        // getRoutedDevice() is the most reliable way to return the actual mic input, however it
+        // only returns a valid device when actively recording, and may throw otherwise.
+        // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
+        deviceInfo = recorder?.routedDevice
+      } catch (e: java.lang.Exception) {
+        // no-op
+      }
     }
 
     // If no routed device is found try preferred device
@@ -254,7 +349,7 @@ class AudioRecorder(
         val type = availableDeviceInfo.type
         if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC) {
           deviceInfo = availableDeviceInfo
-          recorder?.setPreferredDevice(deviceInfo)
+          recorder?.preferredDevice = deviceInfo
           break
         }
       }

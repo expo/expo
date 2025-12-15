@@ -6,6 +6,7 @@ import { StyleSheet, type View } from 'react-native';
 
 import ExpoImage from './ExpoImage';
 import {
+  ImageCacheConfig,
   ImageLoadOptions,
   ImagePrefetchOptions,
   ImageProps,
@@ -128,6 +129,15 @@ export class Image extends React.PureComponent<ImageProps> {
   }
 
   /**
+   * Configures the image cache. This allows you to manage the cache eviction policy.
+   * @param config - The cache configuration.
+   * @platform ios
+   */
+  static configureCache(config: ImageCacheConfig): void {
+    return ImageModule.configureCache(config);
+  }
+
+  /**
    * Asynchronously generates a [Blurhash](https://blurha.sh) from an image.
    * @param source - The image source, either a URL (string) or an ImageRef
    * @param numberOfComponents - The number of components to encode the blurhash with.
@@ -141,6 +151,17 @@ export class Image extends React.PureComponent<ImageProps> {
     numberOfComponents: [number, number] | { width: number; height: number }
   ): Promise<string | null> {
     return ImageModule.generateBlurhashAsync(source, numberOfComponents);
+  }
+
+  /**
+   * Asynchronously generates a [Thumbhash](https://evanw.github.io/thumbhash/) from an image.
+   * @param source - The image source, either a URL (string) or an ImageRef
+   * @platform android
+   * @platform ios
+   * @return A promise resolving to the thumbhash string.
+   */
+  static async generateThumbhashAsync(source: string | ImageRef): Promise<string> {
+    return ImageModule.generateThumbhashAsync(source);
   }
 
   /**

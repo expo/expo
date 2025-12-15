@@ -1,14 +1,21 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle } from 'react-native';
+import { useCallback, useRef } from 'react';
 
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
 export type ShareLinkProps = {
   /**
    * The URL or item to be shared.
    * This can be a web URL, a file path, or any other shareable item.
    */
-  item: string;
+  item?: string;
+  /**
+   * A function that returns a promise resolving to the URL to be shared.
+   * When provided, the `ShareLink` will wait for this promise to resolve before sharing.
+   * > *Note*: `preview` prop is required when using `getItemAsync`.
+   */
+  getItemAsync?: () => Promise<string>;
   /**
    * Optional subject for the share action.
    * This is typically used as the title of the shared content.
@@ -28,32 +35,50 @@ export type ShareLinkProps = {
    * Optional children to be rendered inside the share link.
    */
   children?: React.ReactNode;
+} & CommonViewModifierProps;
+
+type ShareLinkNativeRef = {
+  setItem: (url: string | null) => Promise<void>;
 };
 
-const ShareLinkNativeView: React.ComponentType<ShareLinkProps> = requireNativeView(
-  'ExpoUI',
-  'ShareLinkView'
-);
-
-/**
- * `<ShareLink>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function ShareLinkPrimitive(props: ShareLinkProps) {
-  return <ShareLinkNativeView {...props} />;
-}
+const ShareLinkNativeView: React.ComponentType<
+  ShareLinkProps & {
+    ref?: React.Ref<ShareLinkNativeRef>;
+    onAsyncItemRequest?: () => Promise<void>;
+  }
+> = requireNativeView('ExpoUI', 'ShareLinkView');
 
 /**
  * Renders the native ShareLink component with the provided properties.
  *
  * @param {ShareLinkProps} props - The properties passed to the ShareLink component.
  * @returns {JSX.Element} The rendered native ShareLink component.
- * @platform ios
+ * @platform ios 16.0+
  */
-export function ShareLink(props: ShareLinkProps & { style?: StyleProp<ViewStyle> }) {
+export function ShareLink(props: ShareLinkProps) {
+  const { modifiers, getItemAsync, item, ...restProps } = props;
+  const shareLinkRef = useRef<ShareLinkNativeRef>(null);
+
+  const handleAsyncItemRequest = useCallback(async () => {
+    if (getItemAsync && shareLinkRef.current && !item) {
+      try {
+        const url = await getItemAsync();
+        shareLinkRef.current.setItem(url);
+      } catch (error) {
+        shareLinkRef.current.setItem(null);
+        throw error;
+      }
+    }
+  }, [getItemAsync, item]);
+
   return (
-    <Host style={props.style} matchContents>
-      <ShareLinkPrimitive {...props} />
-    </Host>
+    <ShareLinkNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      ref={shareLinkRef}
+      item={item}
+      onAsyncItemRequest={handleAsyncItemRequest}
+    />
   );
 }

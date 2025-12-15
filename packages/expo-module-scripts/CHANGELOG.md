@@ -6,9 +6,54 @@
 
 ### 🎉 New features
 
+- Ensure `loader()` functions are stripped from client bundles ([#40670](https://github.com/expo/expo/pull/40670) by [@hassankhan](https://github.com/hassankhan))
+- Rewrite using Node.js to add Windows support. ([#36296](https://github.com/expo/expo/pull/36296) by [@Simek](https://github.com/Simek) and [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Add more tests related files to the `.npmignore` template. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
+
+## 5.0.8 - 2025-12-04
+
+### 💡 Others
+
+- Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
+
+## 5.0.7 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.6 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.5 — 2025-08-28
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.4 — 2025-08-26
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.3 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.1 — 2025-08-15
+
+### 💡 Others
+
+- Bump to `typescript@5.9` ([#38833](https://github.com/expo/expo/pull/38833) by [@kitten](https://github.com/kitten))
+
+## 5.0.0 — 2025-08-13
+
+_This version does not introduce any user-facing changes._
 
 ## 4.1.9 - 2025-07-03
 

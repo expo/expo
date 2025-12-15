@@ -35,10 +35,10 @@ sealed interface AuthResult {
 
 class AuthActivity : AppCompatActivity() {
   class Contract : ActivityResultContract<AuthRequestType, AuthResult>() {
-    override fun createIntent(context: Context, type: AuthRequestType): Intent {
+    override fun createIntent(context: Context, input: AuthRequestType): Intent {
       return Intent(context, AuthActivity::class.java).apply {
         action = ACTION_VIEW
-        putExtra(AUTH_REQUEST_TYPE_KEY, type.type)
+        putExtra(AUTH_REQUEST_TYPE_KEY, input.type)
       }
     }
 

@@ -1,12 +1,10 @@
-import * as babel from '@babel/core';
-import traverse from '@babel/traverse';
-import * as t from '@babel/types';
+import { transformFileSync, traverse, types as t } from '@babel/core';
 
 import preset from '..';
 
 it('bundles `@react-native/js-polyfills/console.js` without imports', () => {
   const sourceFile = require.resolve('@react-native/js-polyfills/console.js');
-  const result = babel.transformFileSync(
+  const result = transformFileSync(
     sourceFile,
     getConfig({
       ast: true,
@@ -24,7 +22,7 @@ it('bundles `@react-native/js-polyfills/console.js` without imports', () => {
 
   // Collect all `import` or `require` statements from the AST
   const importRefs: Set<any> = new Set();
-  traverse(result!.ast, {
+  traverse(result!.ast!, {
     ImportDeclaration(path) {
       importRefs.add(path.node);
     },

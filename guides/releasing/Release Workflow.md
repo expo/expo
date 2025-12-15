@@ -50,8 +50,6 @@ We use our fork of React Native for building Expo Go, but it is not used otherwi
 
 - Go to `react-native-lab/react-native` submodule.
 - Coordinate with whoever did the React Native upgrade (if anyone) or Brent (@brentvatne) to create a new branch for new SDK in our `react-native` fork (`sdk-XX` typically, where `XX` is the major number of the SDK version).
-- Run `et update-react-native`. This expotools command copies `ReactAndroid` and `ReactCommon` folders from the submodule to the respective paths: `android/ReactAndroid` and `android/ReactCommon` and then executes `ReactAndroidCodeTransformer` that applies some Expo-specific code transformations.
-- Add your git changes from both `react-native-lab` and `android` folders and create a pull request to `main` branch.
 - Run `git tag -a 'sdk-XX.X.X' -m 'React Native X.Y.Z for Expo SDKXX'` (where `X.Y.Z` is the React Native version and `XX` is the major number of SDK version), to make a tag for the latest commit in your local repo.
 - Push the tag to the remote using `git push --tags`.
 
@@ -219,7 +217,10 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 **How:**
 
-- Run `et eas ios-simulator-client-build-and-publish` or `et eas android-apk-build-and-publish` to trigger building Expo Go for simulators, uploading the archive to S3 and updating URL in versions endpoint.
+- Run `et eas ios-simulator-build` to trigger building Expo Go for iOS simulators on EAS.
+- Run `GITHUB_TOKEN=${GITHUB_TOKEN} et eas ios-simulator-upload` to download the build artifact and upload it to [the expo-go-releases GitHub repo](https://github.com/expo/expo-go-releases/releases). The `GITHUB_TOKEN` environment variable should have contents read/write access to the repo.
+- Run `et eas android-apk-build` to trigger building Expo Go for Android APK on EAS.
+- Run `GITHUB_TOKEN=${GITHUB_TOKEN} et eas android-apk-upload` to download the build artifact and upload it to [the expo-go-releases GitHub repo](https://github.com/expo/expo-go-releases/releases). The `GITHUB_TOKEN` environment variable should have contents read/write access to the repo.
 - Once the job is finished, test if this simulator build work as expected. You can install and launch it using expotools command `et client-install -p {ios,android}`.
 - Ensure that you update the root `iosVersion`/`androidVersion` `iosUrl`/`androidUrl` properties, eg:
   - `et update-versions-endpoint -k 'iosVersion' -v '2.19.3' --root`

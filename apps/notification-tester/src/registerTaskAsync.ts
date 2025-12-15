@@ -3,6 +3,7 @@ import {
   addNotificationResponseReceivedListener,
   setNotificationHandler,
   NotificationTaskPayload,
+  BackgroundNotificationTaskResult,
 } from 'expo-notifications';
 import { defineTask } from 'expo-task-manager';
 import { AppState, Platform } from 'react-native';
@@ -80,6 +81,11 @@ export const registerTask = () => {
           source: 'BACKGROUND_TASK_RESPONSE_RECEIVED',
           data: taskPayload,
         });
+        Notifications.dismissNotificationAsync(taskPayload.notification.request.identifier).catch(
+          (err) => {
+            console.error('Error dismissing notification:', err);
+          }
+        );
       } else {
         const categoryIdentifier = taskPayload.data.categoryId;
         const expoData = taskPayload.data.dataString && JSON.parse(taskPayload.data.dataString);
@@ -115,11 +121,13 @@ export const registerTask = () => {
       }
 
       doSomeAsyncWork('BG_ASYNC_FETCH_RESULT');
+      return BackgroundNotificationTaskResult.NewData;
     } catch (err: any) {
       addItemToStorage({
         source: 'BACKGROUND_TASK_ERR',
         data: { err: err.toString(), payload: JSON.stringify(taskPayload, null, 2) },
       });
+      return BackgroundNotificationTaskResult.Failed;
     }
   });
 

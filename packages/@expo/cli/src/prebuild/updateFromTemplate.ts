@@ -106,7 +106,13 @@ export async function cloneTemplateAndCopyToProjectAsync({
   const ora = logNewSection(`Creating native ${pluralized} (${platformDirectories})`);
 
   try {
-    const templateChecksum = await cloneTemplateAsync({ templateDirectory, template, exp, ora });
+    const templateChecksum = await cloneTemplateAsync({
+      templateDirectory,
+      projectRoot,
+      template,
+      exp,
+      ora,
+    });
 
     const platforms = validateTemplatePlatforms({
       templateDirectory,

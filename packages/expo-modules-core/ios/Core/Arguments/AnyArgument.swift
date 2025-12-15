@@ -4,7 +4,7 @@
  A protocol for classes/structs accepted as an argument of functions.
  */
 public protocol AnyArgument {
-  static func getDynamicType() -> AnyDynamicType
+  nonisolated static func getDynamicType() -> AnyDynamicType
 }
 
 extension AnyArgument {

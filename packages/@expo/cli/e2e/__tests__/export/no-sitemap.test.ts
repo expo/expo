@@ -9,7 +9,7 @@ runExportSideEffects();
 
 describe('static-rendering with no sitemap', () => {
   const projectRoot = getRouterE2ERoot();
-  const outputName = 'dist-static-rendering-asset-prefix';
+  const outputName = 'dist-static-rendering-no-sitemap';
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
@@ -19,7 +19,6 @@ describe('static-rendering with no sitemap', () => {
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: 'true',
         E2E_ROUTER_SITEMAP: 'false',
       },
     });

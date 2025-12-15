@@ -13,11 +13,14 @@ import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.procedures.RecreateReactContextProcedure
+import expo.modules.updates.reloadscreen.ReloadScreenManager
 import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -43,13 +46,13 @@ class DisabledUpdatesController(
 ) : IUpdatesController {
   /** Keep the activity for [RecreateReactContextProcedure] to relaunch the app. */
   private var weakActivity: WeakReference<Activity>? = null
-  private val controllerScope = CoroutineScope(Dispatchers.IO)
+  private val controllerScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
   private val logger = UpdatesLogger(context.filesDir)
   override val eventManager: IUpdatesEventManager = UpdatesEventManager(logger)
 
   // disabled controller state machine can only be idle or restarting
-  private val stateMachine = UpdatesStateMachine(logger, eventManager, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting))
+  private val stateMachine = UpdatesStateMachine(logger, eventManager, setOf(UpdatesStateValue.Idle, UpdatesStateValue.Restarting), controllerScope)
 
   private var isStarted = false
   private var startupStartTimeMillis: Long? = null
@@ -79,6 +82,8 @@ class DisabledUpdatesController(
 
   override val bundleAssetName: String?
     get() = launcher?.bundleAssetName
+  override val reloadScreenManager: ReloadScreenManager?
+    get() = null
 
   override fun onEventListenerStartObserving() {
     stateMachine.sendContextToJS()
@@ -102,7 +107,7 @@ class DisabledUpdatesController(
     isStarted = true
     startupStartTimeMillis = System.currentTimeMillis()
 
-    launcher = NoDatabaseLauncher(context, logger, fatalException)
+    launcher = NoDatabaseLauncher(context, logger, fatalException, controllerScope)
 
     startupEndTimeMillis = System.currentTimeMillis()
     notifyController()
@@ -139,7 +144,8 @@ class DisabledUpdatesController(
         override fun onSuccess() {
           continuation.resume(Unit)
         }
-      }
+      },
+      controllerScope
     )
     stateMachine.queueExecution(procedure)
   }
@@ -167,6 +173,10 @@ class DisabledUpdatesController(
     throw UpdatesDisabledException("Updates.setUpdateURLAndRequestHeadersOverride() is not supported when expo-updates is not enabled.")
   }
 
+  override fun setUpdateRequestHeadersOverride(requestHeaders: Map<String, String>?) {
+    throw UpdatesDisabledException("Updates.setUpdateRequestHeadersOverride() is not supported when expo-updates is not enabled.")
+  }
+
   @Synchronized
   private fun notifyController() {
     controllerScope.launch {
@@ -182,7 +192,7 @@ class DisabledUpdatesController(
   }
 
   override fun shutdown() {
-    // no-op
+    controllerScope.cancel()
   }
 
   companion object {

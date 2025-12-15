@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '4.1.0'
+version = '5.0.0'
 
 expoModule {
   canBePublished false
@@ -14,12 +14,12 @@ android {
   namespace "expo.modules.structuredheaders"
   defaultConfig {
     versionCode 1
-    versionName '4.1.0'
+    versionName '5.0.0'
   }
 }
 
 dependencies {
-  implementation "androidx.appcompat:appcompat:1.2.0"
+  implementation "androidx.appcompat:appcompat:1.7.1"
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'commons-codec:commons-codec:1.14'

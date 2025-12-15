@@ -12,9 +12,11 @@ import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.MissingTypeConverter
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
+import expo.modules.kotlin.jni.JavaScriptArrayBuffer
 import expo.modules.kotlin.jni.JavaScriptFunction
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptValue
+import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.RecordTypeConverter
 import expo.modules.kotlin.sharedobjects.SharedObject
@@ -159,6 +161,10 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return JavaScriptFunctionTypeConverter<Any>(type)
     }
 
+    if (ValueOrUndefined::class.java.isAssignableFrom(jClass)) {
+      return ValueOrUndefinedTypeConverter(this, type)
+    }
+
     return handelEither(type, jClass)
       ?: throw MissingTypeConverter(type)
   }
@@ -229,6 +235,12 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       ),
       JavaScriptObject::class to createTrivialTypeConverter(
         ExpectedType(CppType.JS_OBJECT)
+      ),
+      JavaScriptArrayBuffer::class to createTrivialTypeConverter(
+        ExpectedType(CppType.JS_ARRAY_BUFFER)
+      ),
+      NativeArrayBuffer::class to createTrivialTypeConverter(
+        ExpectedType(CppType.NATIVE_ARRAY_BUFFER)
       ),
 
       Int8Array::class to Int8ArrayTypeConverter(),

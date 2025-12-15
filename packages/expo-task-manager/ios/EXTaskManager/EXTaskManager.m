@@ -191,7 +191,7 @@ EX_EXPORT_METHOD_AS(unregisterAllTasksAsync,
     // Module's event emitter is already being observed, so we can send events.
     [_eventEmitter sendEventWithName:EXTaskManagerEventName body:body];
   } else {
-    // Otherwise add event body to the queue (it will be send in `startObserving`).
+    // Otherwise add event body to the queue (it will be sent in `startObserving`).
     [_eventsQueue addObject:body];
   }
 }

@@ -1,0 +1,183 @@
+---
+title: Calendar
+description: A library that provides an API for interacting with the device's system calendars, events, reminders, and associated records.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-54/packages/expo-calendar'
+packageName: 'expo-calendar'
+platforms: ['android', 'ios']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/ui/components/ConfigSection';
+import { SnackInline } from '~/ui/components/Snippet';
+
+`expo-calendar` provides an API for interacting with the device's system calendars, events, reminders, and associated records.
+
+Additionally, it provides methods to launch the [system-provided calendar UI](#launching-system-provided-calendar-dialogs) to allow user view or edit events. On Android, these methods start the system calendar app using an Intent. On iOS, they present either [`EKEventViewController`](https://developer.apple.com/documentation/eventkitui/ekeventviewcontroller) or [`EKEventEditViewController`](https://developer.apple.com/documentation/eventkitui/ekeventeditviewcontroller) as a modal.
+
+## Installation
+
+<APIInstallSection />
+
+## Configuration in app config
+
+You can configure `expo-calendar` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "The app needs to access your calendar."
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'calendarPermission',
+      platform: 'ios',
+      description: 'A string to set the [`NSCalendarsUsageDescription`](#ios) permission message.',
+      default: '"Allow $(PRODUCT_NAME) to access your calendar"',
+    },
+    {
+      name: 'remindersPermission',
+      platform: 'ios',
+      description: 'A string to set the [`NSRemindersUsageDescription`](#ios) permission message.',
+      default: '"Allow $(PRODUCT_NAME) to access your reminders"',
+    },
+  ]}
+/>
+
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **android** and **ios** projects manually), then you need to configure following permissions in your native projects:
+
+- For Android, add `android.permission.READ_CALENDAR` and `android.permission.WRITE_CALENDAR` permissions to your project's **android/app/src/main/AndroidManifest.xml**:
+
+  ```xml
+  <uses-permission android:name="android.permission.READ_CALENDAR" />
+  <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+  ```
+
+- For iOS, add `NSCalendarsUsageDescription` and `NSRemindersUsageDescription` to your project's **ios/[app]/Info.plist**:
+
+  ```xml
+  <key>NSCalendarsUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your calendar</string>
+  <key>NSRemindersUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your reminders</string>
+  ```
+
+</ConfigReactNative>
+
+## Usage
+
+<SnackInline label='Basic Calendar usage' dependencies={['expo-calendar']}>
+
+```jsx
+import { useEffect } from 'react';
+import { StyleSheet, View, Text, Button, Platform } from 'react-native';
+import * as Calendar from 'expo-calendar';
+
+export default function App() {
+  useEffect(() => {
+    (async () => {
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      if (status === 'granted') {
+        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+        console.log('Here are all your calendars:');
+        console.log({ calendars });
+      }
+    })();
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Text>Calendar Module Example</Text>
+      <Button title="Create a new calendar" onPress={createCalendar} />
+    </View>
+  );
+}
+
+async function getDefaultCalendarSource() {
+  const defaultCalendar = await Calendar.getDefaultCalendarAsync();
+  return defaultCalendar.source;
+}
+
+async function createCalendar() {
+  const defaultCalendarSource =
+    Platform.OS === 'ios'
+      ? await getDefaultCalendarSource()
+      : { isLocalAccount: true, name: 'Expo Calendar' };
+  const newCalendarID = await Calendar.createCalendarAsync({
+    title: 'Expo Calendar',
+    color: 'blue',
+    entityType: Calendar.EntityTypes.EVENT,
+    sourceId: defaultCalendarSource.id,
+    source: defaultCalendarSource,
+    name: 'internalCalendarName',
+    ownerAccount: 'personal',
+    accessLevel: Calendar.CalendarAccessLevel.OWNER,
+  });
+  console.log(`Your new calendar ID is: ${newCalendarID}`);
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+});
+```
+
+</SnackInline>
+
+## API
+
+```js
+import * as Calendar from 'expo-calendar';
+```
+
+<APISection
+  packageName="expo-calendar"
+  apiName="Calendar"
+  headersMapping={{
+    systemProvidedUI: 'Launching system-provided calendar dialogs',
+  }}
+/>
+
+## Permissions
+
+### Android
+
+If you only intend to use the [system-provided calendar UI](#launching-system-provided-calendar-dialogs), you don't need to request any permissions.
+
+Otherwise, you must add the following permissions to your **app.json** inside the [`expo.android.permissions`](../config/app/#permissions) array.
+
+<AndroidPermissions permissions={['READ_CALENDAR', 'WRITE_CALENDAR']} />
+
+### iOS
+
+If you only intend to create events using system-provided calendar UI with [`createEventInCalendarAsync`](#createeventincalendarasynceventdata-presentationoptions), you don't need to request permissions.
+
+The following usage description keys are used by this library:
+
+<IOSPermissions permissions={['NSCalendarsUsageDescription', 'NSRemindersUsageDescription']} />

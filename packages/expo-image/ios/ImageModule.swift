@@ -115,6 +115,12 @@ public final class ImageModule: Module {
         view.enforceEarlyResizing = enforceEarlyResizing
       }
 
+      Prop("preferHighDynamicRange", false) { (view, preferHighDynamicRange: Bool) in
+        if #available(iOS 17.0, macCatalyst 17.0, tvOS 17.0, *) {
+          view.sdImageView.preferredImageDynamicRange = preferHighDynamicRange ? .constrainedHigh : .unspecified
+        }
+      }
+
       AsyncFunction("startAnimating") { (view: ImageView) in
         view.sdImageView.startAnimating()
       }
@@ -138,6 +144,10 @@ public final class ImageModule: Module {
       OnViewDidUpdateProps { view in
         view.reload()
       }
+    }
+
+    Function("configureCache") { (config: ImageCacheConfig) in
+      ImageModule.configureCache(config: config)
     }
 
     AsyncFunction("prefetch") { (urls: [URL], cachePolicy: ImageCachePolicy, headersMap: [String: String]?, promise: Promise) in
@@ -171,26 +181,20 @@ public final class ImageModule: Module {
     }
 
     AsyncFunction("generateBlurhashAsync") { (source: Either<Image, URL>, numberOfComponents: CGSize, promise: Promise) in
-      let downloader = SDWebImageDownloader()
       let parsedNumberOfComponents = (width: Int(numberOfComponents.width), height: Int(numberOfComponents.height))
-
-      if let image: Image = source.get() {
-        if let blurhashString = blurhash(fromImage: image.ref, numberOfComponents: parsedNumberOfComponents) {
+      generatePlaceholder(source: source) { (image: UIImage) in
+        if let blurhashString = blurhash(fromImage: image, numberOfComponents: parsedNumberOfComponents) {
           promise.resolve(blurhashString)
         } else {
           promise.reject(BlurhashGenerationException())
         }
-      } else if let url: URL = source.get() {
-        downloader.downloadImage(with: url, progress: nil, completed: { image, _, _, _ in
-          DispatchQueue.global().async {
-            if let downloadedImage = image {
-              let blurhashString = blurhash(fromImage: downloadedImage, numberOfComponents: parsedNumberOfComponents)
-              promise.resolve(blurhashString)
-            } else {
-              promise.reject(BlurhashGenerationException())
-            }
-          }
-        })
+      }
+    }
+
+    AsyncFunction("generateThumbhashAsync") { (source: Either<Image, URL>, promise: Promise) in
+      generatePlaceholder(source: source) { (image: UIImage) in
+        let blurhashString = thumbHash(fromImage: image)
+        promise.resolve(blurhashString.base64EncodedString())
       }
     }
 
@@ -237,6 +241,24 @@ public final class ImageModule: Module {
     }
   }
 
+  func generatePlaceholder(
+    source: Either<Image, URL>,
+    generator: @escaping (UIImage) -> Void
+  ) {
+    if let image: Image = source.get() {
+      generator(image.ref)
+    } else if let url: URL = source.get() {
+      let downloader = SDWebImageDownloader()
+      downloader.downloadImage(with: url, progress: nil, completed: { image, _, _, _ in
+        DispatchQueue.global().async {
+          if let downloadedImage = image {
+            generator(downloadedImage)
+          }
+        }
+      })
+    }
+  }
+
   static func registerCoders() {
     SDImageCodersManager.shared.addCoder(WebPCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageAVIFCoder.shared)
@@ -248,5 +270,17 @@ public final class ImageModule: Module {
     SDImageLoadersManager.shared.addLoader(BlurhashLoader())
     SDImageLoadersManager.shared.addLoader(ThumbhashLoader())
     SDImageLoadersManager.shared.addLoader(PhotoLibraryAssetLoader())
+  }
+
+  static func configureCache(config: ImageCacheConfig) {
+    if let maxMemoryCount = config.maxMemoryCount {
+      SDImageCache.shared.config.maxMemoryCount = maxMemoryCount
+    }
+    if let maxDiskSize = config.maxDiskSize {
+      SDImageCache.shared.config.maxDiskSize = maxDiskSize
+    }
+    if let maxMemoryCost = config.maxMemoryCost {
+      SDImageCache.shared.config.maxMemoryCost = maxMemoryCost
+    }
   }
 }

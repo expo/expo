@@ -1,3 +1,4 @@
+import { act, screen } from '@testing-library/react-native';
 import React from 'react';
 import { Text, View } from 'react-native';
 
@@ -6,7 +7,7 @@ import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
-import { act, renderRouter, screen, testRouter } from '../testing-library';
+import { renderRouter, testRouter } from '../testing-library';
 import { Slot } from '../views/Navigator';
 
 it('stacks should always push a new route', () => {
@@ -23,8 +24,7 @@ it('stacks should always push a new route', () => {
 
   // Initial stale state
   expect(store.state).toStrictEqual({
-    routes: [{ name: '__root', state: { routes: [{ name: 'index', path: '/' }], stale: true } }],
-    stale: true,
+    routes: [{ name: '__root', state: { routes: [{ name: 'index', path: '/' }] } }],
   });
 
   /**
@@ -41,7 +41,7 @@ it('stacks should always push a new route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -51,7 +51,7 @@ it('stacks should always push a new route', () => {
           index: 1,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '(group)', '_sitemap', '+not-found'],
+          routeNames: ['index', '(group)'],
           routes: [
             {
               key: expect.any(String),
@@ -83,6 +83,24 @@ it('stacks should always push a new route', () => {
                       screen: 'index',
                     },
                     path: undefined,
+                    state: {
+                      index: 0,
+                      key: expect.any(String),
+                      preloadedRoutes: [],
+                      routeNames: ['index'],
+                      routes: [
+                        {
+                          key: expect.any(String),
+                          name: 'index',
+                          params: {
+                            id: '1',
+                          },
+                          path: undefined,
+                        },
+                      ],
+                      stale: false,
+                      type: 'stack',
+                    },
                   },
                   {
                     key: expect.any(String),
@@ -95,6 +113,24 @@ it('stacks should always push a new route', () => {
                       screen: 'index',
                     },
                     path: undefined,
+                    state: {
+                      index: 0,
+                      key: expect.any(String),
+                      preloadedRoutes: [],
+                      routeNames: ['index'],
+                      routes: [
+                        {
+                          key: expect.any(String),
+                          name: 'index',
+                          params: {
+                            id: '1',
+                          },
+                          path: undefined,
+                        },
+                      ],
+                      stale: false,
+                      type: 'stack',
+                    },
                   },
                   {
                     key: expect.any(String),
@@ -107,6 +143,24 @@ it('stacks should always push a new route', () => {
                       screen: 'index',
                     },
                     path: undefined,
+                    state: {
+                      index: 0,
+                      key: expect.any(String),
+                      preloadedRoutes: [],
+                      routeNames: ['index'],
+                      routes: [
+                        {
+                          key: expect.any(String),
+                          name: 'index',
+                          params: {
+                            id: '2',
+                          },
+                          path: undefined,
+                        },
+                      ],
+                      stale: false,
+                      type: 'stack',
+                    },
                   },
                   {
                     key: expect.any(String),
@@ -242,7 +296,7 @@ it('works in a nested layout Stack->Tab->Stack', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -252,7 +306,7 @@ it('works in a nested layout Stack->Tab->Stack', () => {
           index: 2,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '(tabs)', 'd', '_sitemap', '+not-found'],
+          routeNames: ['index', '(tabs)', 'd'],
           routes: [
             {
               key: expect.any(String),
@@ -385,7 +439,7 @@ it('targets the correct Stack when pushing to a nested layout', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -395,7 +449,7 @@ it('targets the correct Stack when pushing to a nested layout', () => {
           index: 3,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['a', 'b', 'one', '_sitemap', '+not-found'],
+          routeNames: ['a', 'b', 'one'],
           routes: [
             {
               key: expect.any(String),
@@ -506,11 +560,9 @@ it('push should also add anchor routes', () => {
               path: '/',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => router.push('/orange', { withAnchor: true }));
@@ -519,7 +571,7 @@ it('push should also add anchor routes', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -529,7 +581,7 @@ it('push should also add anchor routes', () => {
           index: 1,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '(group)', '_sitemap', '+not-found'],
+          routeNames: ['index', '(group)'],
           routes: [
             {
               key: expect.any(String),
@@ -593,7 +645,7 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -605,7 +657,7 @@ describe('singular', () => {
             index: 3,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routeNames: ['[slug]'],
             routes: [
               {
                 key: expect.any(String),
@@ -656,7 +708,7 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -668,7 +720,7 @@ describe('singular', () => {
             index: 1,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routeNames: ['[slug]'],
             routes: [
               {
                 key: expect.any(String),
@@ -716,7 +768,7 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -728,7 +780,7 @@ describe('singular', () => {
             index: 4,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routeNames: ['[slug]'],
             routes: [
               {
                 key: expect.any(String),
@@ -792,7 +844,7 @@ describe('singular', () => {
       index: 0,
       key: expect.any(String),
       preloadedRoutes: [],
-      routeNames: ['__root'],
+      routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
           key: expect.any(String),
@@ -804,7 +856,7 @@ describe('singular', () => {
             index: 1,
             key: expect.any(String),
             preloadedRoutes: [],
-            routeNames: ['_sitemap', '[slug]', '+not-found'],
+            routeNames: ['[slug]'],
             routes: [
               {
                 key: expect.any(String),

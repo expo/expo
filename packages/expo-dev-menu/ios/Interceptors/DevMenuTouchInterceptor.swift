@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
+#if os(iOS) || os(tvOS)
 import UIKit
 
 class DevMenuTouchInterceptor {
@@ -47,7 +48,10 @@ extension UIWindow {
       self.addGestureRecognizer(recognizer)
     }
 
-    // `EXDevMenu_gestureRecognizers` implementation has been swizzled with `gestureRecognizers` - it might be confusing that we call it recursively, but we don't.
+    // `EXDevMenu_gestureRecognizers` implementation has been swizzled with `gestureRecognizers`
+    // It might be confusing that we call it recursively, but we don't.
     return self.EXDevMenu_gestureRecognizers
   }
 }
+
+#endif

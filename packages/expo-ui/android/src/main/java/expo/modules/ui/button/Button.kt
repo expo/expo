@@ -10,8 +10,6 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
-import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -19,16 +17,23 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposeProps
-import java.io.Serializable
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.ui.DynamicTheme
+import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.ui.ExpoModifier
+import expo.modules.ui.ShapeRecord
 import expo.modules.ui.compose
+import expo.modules.ui.fromExpoModifiers
 import expo.modules.ui.getImageVector
+import expo.modules.ui.shapeFromShapeRecord
+import java.io.Serializable
 
 open class ButtonPressedEvent() : Record, Serializable
 
@@ -58,12 +63,23 @@ data class ButtonProps(
   val text: MutableState<String> = mutableStateOf(""),
   val variant: MutableState<ButtonVariant?> = mutableStateOf(ButtonVariant.DEFAULT),
   val elementColors: MutableState<ButtonColors> = mutableStateOf(ButtonColors()),
-  val systemImage: MutableState<String?> = mutableStateOf(null),
-  val disabled: MutableState<Boolean> = mutableStateOf(false)
+  val leadingIcon: MutableState<String?> = mutableStateOf(null),
+  val trailingIcon: MutableState<String?> = mutableStateOf(null),
+  val disabled: MutableState<Boolean?> = mutableStateOf(false),
+  val modifiers: MutableState<List<ExpoModifier>?> = mutableStateOf(emptyList()),
+  val shape: MutableState<ShapeRecord?> = mutableStateOf(null)
 ) : ComposeProps
 
 @Composable
-fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean, onPress: () -> Unit, content: @Composable (RowScope.() -> Unit)) {
+fun StyledButton(
+  variant: ButtonVariant,
+  colors: ButtonColors,
+  disabled: Boolean,
+  onPress: () -> Unit,
+  modifier: Modifier = Modifier,
+  shape: Shape?,
+  content: @Composable (RowScope.() -> Unit)
+) {
   when (variant) {
     ButtonVariant.BORDERED -> FilledTonalButton(
       onPress,
@@ -74,7 +90,9 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         contentColor = colors.contentColor.compose,
         disabledContainerColor = colors.disabledContainerColor.compose,
         disabledContentColor = colors.disabledContentColor.compose
-      )
+      ),
+      shape = shape ?: ButtonDefaults.filledTonalShape,
+      modifier = modifier
     )
 
     ButtonVariant.BORDERLESS -> TextButton(
@@ -86,7 +104,9 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         contentColor = colors.contentColor.compose,
         disabledContainerColor = colors.disabledContainerColor.compose,
         disabledContentColor = colors.disabledContentColor.compose
-      )
+      ),
+      shape = shape ?: ButtonDefaults.textShape,
+      modifier = modifier
     )
 
     ButtonVariant.OUTLINED -> OutlinedButton(
@@ -98,7 +118,9 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         contentColor = colors.contentColor.compose,
         disabledContainerColor = colors.disabledContainerColor.compose,
         disabledContentColor = colors.disabledContentColor.compose
-      )
+      ),
+      shape = shape ?: ButtonDefaults.outlinedShape,
+      modifier = modifier
     )
 
     ButtonVariant.ELEVATED -> ElevatedButton(
@@ -110,7 +132,9 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         contentColor = colors.contentColor.compose,
         disabledContainerColor = colors.disabledContainerColor.compose,
         disabledContentColor = colors.disabledContentColor.compose
-      )
+      ),
+      shape = shape ?: ButtonDefaults.elevatedShape,
+      modifier = modifier
     )
 
     else -> androidx.compose.material3.Button(
@@ -122,13 +146,15 @@ fun StyledButton(variant: ButtonVariant, colors: ButtonColors, disabled: Boolean
         contentColor = colors.contentColor.compose,
         disabledContainerColor = colors.disabledContainerColor.compose,
         disabledContentColor = colors.disabledContentColor.compose
-      )
+      ),
+      shape = shape ?: ButtonDefaults.shape,
+      modifier = modifier
     )
   }
 }
 
 class Button(context: Context, appContext: AppContext) :
-  ExpoComposeView<ButtonProps>(context, appContext, withHostingView = true) {
+  ExpoComposeView<ButtonProps>(context, appContext) {
   override val props = ButtonProps()
   private val onButtonPressed by EventDispatcher<ButtonPressedEvent>()
 
@@ -138,32 +164,44 @@ class Button(context: Context, appContext: AppContext) :
   }
 
   @Composable
-  override fun Content() {
+  override fun ComposableScope.Content() {
     val (variant) = props.variant
     val (text) = props.text
     val (colors) = props.elementColors
-    val (systemImage) = props.systemImage
+    val (leadingIcon) = props.leadingIcon
+    val (trailingIcon) = props.trailingIcon
     val (disabled) = props.disabled
-    DynamicTheme {
-      StyledButton(
-        variant ?: ButtonVariant.DEFAULT,
-        colors,
-        disabled,
-        { onButtonPressed.invoke(ButtonPressedEvent()) }
-      ) {
-        if (systemImage != null) {
-          Row(verticalAlignment = Alignment.CenterVertically) {
-            getImageVector(systemImage)?.let {
-              Icon(
-                it,
-                contentDescription = systemImage,
-                modifier = Modifier.padding(end = 8.dp)
-              )
-            }
-            Text(text)
+
+    StyledButton(
+      variant ?: ButtonVariant.DEFAULT,
+      colors,
+      disabled ?: false,
+      onPress = { onButtonPressed.invoke(ButtonPressedEvent()) },
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, composableScope = this@Content),
+      shape = shapeFromShapeRecord(props.shape.value)
+    ) {
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Children(ComposableScope(rowScope = this))
+        leadingIcon?.let { iconName ->
+          getImageVector(iconName)?.let {
+            Icon(
+              it,
+              contentDescription = iconName,
+              modifier = Modifier.padding(end = 8.dp)
+            )
           }
-        } else {
-          Text(text)
+        }
+
+        Text(text)
+
+        trailingIcon?.let { iconName ->
+          getImageVector(iconName)?.let {
+            Icon(
+              it,
+              contentDescription = iconName,
+              modifier = Modifier.padding(start = 8.dp)
+            )
+          }
         }
       }
     }

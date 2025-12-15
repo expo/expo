@@ -6,12 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.hasSideEffectWithDebugTrace = hasSideEffectWithDebugTrace;
 exports._createSideEffectMatcher = _createSideEffectMatcher;
 exports.isVirtualModule = isVirtualModule;
-/**
- * Copyright © 2024 650 Industries.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+const isResolvedDependency_1 = require("@expo/metro/metro/lib/isResolvedDependency");
 const fs_1 = __importDefault(require("fs"));
 const minimatch_1 = require("minimatch");
 const path_1 = __importDefault(require("path"));
@@ -24,7 +19,7 @@ function hasSideEffectWithDebugTrace(options, graph, value, parentTrace = [value
     }
     // Recursively check if any of the dependencies have side effects.
     for (const depReference of value.dependencies.values()) {
-        if (checked.has(depReference.absolutePath)) {
+        if (!(0, isResolvedDependency_1.isResolvedDependency)(depReference) || checked.has(depReference.absolutePath)) {
             continue;
         }
         checked.add(depReference.absolutePath);

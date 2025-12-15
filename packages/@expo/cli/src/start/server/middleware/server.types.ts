@@ -1,5 +1,5 @@
-import express from 'express';
-import http from 'http';
+import type express from 'express';
+import type http from 'http';
 
 /** Headers */
 export type ServerHeaders = Map<string, number | string | readonly string[]>;

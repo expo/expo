@@ -4,12 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { NodePath, traverse } from '@babel/core';
+import { type NodePath, traverse, types } from '@babel/core';
 import generate from '@babel/generator';
-import * as types from '@babel/types';
+import type {
+  AsyncDependencyType,
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+} from '@expo/metro/metro/DeltaBundler/types';
+import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
+import type { SerializerConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
-import { AsyncDependencyType, MixedOutput, Module, ReadOnlyGraph } from 'metro';
-import { SerializerConfigT } from 'metro-config';
 
 import { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { isExpoJsOutput } from './jsOutput';
@@ -112,11 +117,8 @@ function getExportsThatAreNotUsedInModule(ast: types.File) {
 
   // Second pass: find all used identifiers
   traverse(ast, {
-    Identifier(path) {
-      if (path.isReferencedIdentifier()) {
-        // console.log('referenced:', path.node.name);
-        usedIdentifiers.add(path.node.name);
-      }
+    ReferencedIdentifier(path) {
+      usedIdentifiers.add(path.node.name);
     },
   });
 
@@ -167,6 +169,12 @@ function markUnused(path: NodePath) {
   path.remove();
 }
 
+interface ModuleStarExports {
+  exportNames: Set<string>;
+  isStatic: boolean;
+  hasUnresolvableStarExport: boolean;
+}
+
 export async function treeShakeSerializer(
   entryPoint: string,
   preModules: readonly Module<MixedOutput>[],
@@ -182,10 +190,7 @@ export async function treeShakeSerializer(
     return [entryPoint, preModules, graph, options];
   }
 
-  const starExportsForModules = new Map<
-    string,
-    { exportNames: string[]; isStatic: boolean; hasUnresolvableStarExport: boolean }
-  >();
+  const starExportsForModules = new Map<string, ModuleStarExports>();
 
   for (const value of graph.dependencies.values()) {
     // TODO: Move this to the transformer and combine with collect dependencies.
@@ -233,7 +238,7 @@ export async function treeShakeSerializer(
   function getExportsForModule(
     value: Module<AdvancedMixedOutput>,
     checkedModules: Set<string> = new Set()
-  ): { exportNames: string[]; isStatic: boolean; hasUnresolvableStarExport: boolean } {
+  ): ModuleStarExports {
     if (starExportsForModules.has(value.path)) {
       return starExportsForModules.get(value.path)!;
     }
@@ -253,9 +258,11 @@ export async function treeShakeSerializer(
       const targetHashId = getDependencyHashIdForImportModuleId(value, importModuleId);
       // If the dependency was already removed, then we don't need to do anything.
 
-      const importInstance = value.dependencies.get(targetHashId)!;
-
-      const graphEntryForTargetImport = graph.dependencies.get(importInstance.absolutePath);
+      const importInstance = value.dependencies.get(targetHashId);
+      const graphEntryForTargetImport =
+        importInstance &&
+        isResolvedDependency(importInstance) &&
+        graph.dependencies.get(importInstance.absolutePath);
       // Should never happen but we're playing with fire here.
       if (!graphEntryForTargetImport) {
         throw new Error(
@@ -267,7 +274,7 @@ export async function treeShakeSerializer(
       return graphEntryForTargetImport;
     }
 
-    const exportNames: string[] = [];
+    const exportNames = new Set<string>();
     // Indicates that the module does not have any dynamic exports, e.g. `module.exports`, `Object.assign(exports)`, etc.
     let isStatic = true;
     let hasUnresolvableStarExport = false;
@@ -285,6 +292,40 @@ export async function treeShakeSerializer(
       if (outputItem.data.hasCjsExports) {
         isStatic = false;
       }
+
+      // Collect export names
+      traverse(ast, {
+        ExportNamedDeclaration(path) {
+          const { declaration, specifiers } = path.node;
+          if (declaration) {
+            if ('declarations' in declaration && declaration.declarations) {
+              declaration.declarations.forEach((decl) => {
+                if (types.isIdentifier(decl.id)) {
+                  exportNames.add(decl.id.name);
+                }
+              });
+            } else if ('id' in declaration && types.isIdentifier(declaration.id)) {
+              exportNames.add(declaration.id.name);
+            }
+          }
+          specifiers.forEach((spec) => {
+            if (types.isIdentifier(spec.exported)) {
+              exportNames.add(spec.exported.name);
+            }
+          });
+        },
+
+        ExportDefaultDeclaration(path) {
+          // Default exports need to be handled separately
+          // Assuming the default export is a function or class declaration
+          if ('id' in path.node.declaration && types.isIdentifier(path.node.declaration.id)) {
+            exportNames.add(path.node.declaration.id.name);
+          }
+
+          // If it's an expression, then it's a static export.
+          isStatic = true;
+        },
+      });
 
       traverse(ast, {
         // export * from 'a'
@@ -308,20 +349,26 @@ export async function treeShakeSerializer(
               // export { a, b, c } from 'a';
               // ```
               // NOTE: It's important we only use one statement so we don't skew the multi-dep tracking from collect dependencies.
-              path.replaceWithMultiple([
-                // @ts-expect-error: missing type
-                types.ExportNamedDeclaration(
-                  null,
-                  exportResults.exportNames.map((exportName) =>
+              // The `default` specifier isn't re-exported by export-all, as per the spec
+              const exportSpecifiers: types.ExportSpecifier[] = [];
+              for (const exportName of exportResults.exportNames) {
+                if (exportName !== 'default' && !exportNames.has(exportName)) {
+                  exportNames.add(exportName);
+                  exportSpecifiers.push(
                     types.exportSpecifier(
                       types.identifier(exportName),
                       types.identifier(exportName)
                     )
-                  ),
+                  );
+                }
+              }
+              path.replaceWith(
+                types.exportNamedDeclaration(
+                  null,
+                  exportSpecifiers,
                   types.stringLiteral(path.node.source.value)
-                ),
-              ]);
-
+                )
+              );
               // TODO: Update deps
               populateModuleWithImportUsage(value);
             } else {
@@ -335,43 +382,9 @@ export async function treeShakeSerializer(
           }
         },
       });
-
-      // Collect export names
-      traverse(ast, {
-        ExportNamedDeclaration(path) {
-          const { declaration, specifiers } = path.node;
-          if (declaration) {
-            if ('declarations' in declaration && declaration.declarations) {
-              declaration.declarations.forEach((decl) => {
-                if (types.isIdentifier(decl.id)) {
-                  exportNames.push(decl.id.name);
-                }
-              });
-            } else if ('id' in declaration && types.isIdentifier(declaration.id)) {
-              exportNames.push(declaration.id.name);
-            }
-          }
-          specifiers.forEach((spec) => {
-            if (types.isIdentifier(spec.exported)) {
-              exportNames.push(spec.exported.name);
-            }
-          });
-        },
-
-        ExportDefaultDeclaration(path) {
-          // Default exports need to be handled separately
-          // Assuming the default export is a function or class declaration
-          if ('id' in path.node.declaration && types.isIdentifier(path.node.declaration.id)) {
-            exportNames.push(path.node.declaration.id.name);
-          }
-
-          // If it's an expression, then it's a static export.
-          isStatic = true;
-        },
-      });
     }
 
-    const starExport = {
+    const starExport: ModuleStarExports = {
       exportNames,
       isStatic,
       hasUnresolvableStarExport,
@@ -386,6 +399,7 @@ export async function treeShakeSerializer(
     if (!node) return;
     // Recursively remove all dependencies.
     for (const dep of node.dependencies.values()) {
+      if (!isResolvedDependency(dep)) continue;
       const child = graph.dependencies.get(dep.absolutePath);
       if (!child) continue;
 
@@ -410,7 +424,7 @@ export async function treeShakeSerializer(
     // Unlink the module in the graph
 
     // The hash key for the dependency instance in the module.
-    const depId = [...graphModule.dependencies.entries()].find(([key, dep]) => {
+    const depId = [...graphModule.dependencies.entries()].find(([_key, dep]) => {
       return dep.data.name === importModuleId;
     })?.[0];
 
@@ -437,9 +451,11 @@ export async function treeShakeSerializer(
     const targetHashId = getDependencyHashIdForImportModuleId(graphModule, importModuleId);
     // If the dependency was already removed, then we don't need to do anything.
 
-    const importInstance = graphModule.dependencies.get(targetHashId)!;
-
-    const graphEntryForTargetImport = graph.dependencies.get(importInstance.absolutePath);
+    const importInstance = graphModule.dependencies.get(targetHashId);
+    const graphEntryForTargetImport =
+      importInstance &&
+      isResolvedDependency(importInstance) &&
+      graph.dependencies.get(importInstance.absolutePath);
     // Should never happen but we're playing with fire here.
     if (!graphEntryForTargetImport) {
       throw new Error(
@@ -723,9 +739,11 @@ export async function treeShakeSerializer(
               });
               if (removeRequest.removed) {
                 dirtyImports.push(removeRequest.path);
-                // TODO: Update source maps
-                markUnused(path);
               }
+              // TODO: Update source maps
+              // We still want to remove the empty `export {} from 'a'` declaration even if the graph node was kept
+              // due to the duplicate default export
+              markUnused(path);
             }
           }
         },
@@ -746,7 +764,7 @@ export async function treeShakeSerializer(
 
   function removeUnusedImportsFromModule(
     value: Module<MixedOutput>,
-    ast: Parameters<typeof traverse>[0]
+    ast: types.Node | undefined
   ): string[] {
     // json, asset, script, etc.
     if (!ast) {
@@ -787,7 +805,11 @@ export async function treeShakeSerializer(
       },
       Identifier(path) {
         // Make sure this identifier isn't coming from an import specifier
-        if (!path.scope.bindingIdentifierEquals(path.node.name, path.node)) {
+        if (
+          !path.scope.bindingIdentifierEquals(path.node.name, path.node) &&
+          // `import { Foo as Bar } from 'bax'` Foo should not be marked as used.
+          path.parent.type !== 'ImportSpecifier'
+        ) {
           usedIdentifiers.add(path.node.name);
         }
       },
@@ -797,7 +819,6 @@ export async function treeShakeSerializer(
 
         // NOTE: This could be a problem if the AST is re-parsed.
         // TODO: This doesn't account for `import {} from './foo'`
-        // @ts-expect-error: custom property
         path.opts.originalSpecifiers ??= path.node.specifiers.length;
         importDecs.push(path);
       },
@@ -815,30 +836,25 @@ export async function treeShakeSerializer(
 
     // Remove the unused imports from the AST
     importDecs.forEach((path) => {
+      const importModuleId = path.node.source.value;
       const originalSize = path.node.specifiers.length;
-
-      // @ts-expect-error: custom property
       const absoluteOriginalSize = path.opts.originalSpecifiers ?? originalSize;
 
-      path.node.specifiers = path.node.specifiers.filter((specifier) => {
-        if (
-          specifier.type === 'ImportDefaultSpecifier' ||
-          specifier.type === 'ImportNamespaceSpecifier'
-        ) {
-          return !unusedImports.includes(specifier.local.name);
-        } else if (types.isIdentifier(specifier.imported)) {
-          return !unusedImports.includes(specifier.imported.name);
-        }
-        return false;
-      });
-
-      const importModuleId = path.node.source.value;
+      const isUsed = (
+        specifier: // import { imported as local } from './foo'
+        | types.ImportSpecifier
+          // import local from './foo'
+          | types.ImportDefaultSpecifier
+          // import * as local from './foo'
+          | types.ImportNamespaceSpecifier
+      ) => !unusedImports.includes(specifier.local.name);
+      path.node.specifiers = path.node.specifiers.filter(isUsed);
 
       if (originalSize !== path.node.specifiers.length) {
         // The hash key for the dependency instance in the module.
         const targetHashId = getDependencyHashIdForImportModuleId(value, importModuleId);
         const importInstance = value.dependencies.get(targetHashId);
-        if (importInstance) {
+        if (importInstance && isResolvedDependency(importInstance)) {
           dirtyImports.push(importInstance.absolutePath);
         }
       }
@@ -916,7 +932,7 @@ export async function treeShakeSerializer(
       // Optimize all deps without marking as dirty to prevent
       // circular dependencies from creating infinite loops.
       dep.dependencies.forEach((dep) => {
-        paths.push(dep.absolutePath);
+        if (isResolvedDependency(dep)) paths.push(dep.absolutePath);
       });
     }
 

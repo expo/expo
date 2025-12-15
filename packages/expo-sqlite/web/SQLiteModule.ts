@@ -137,6 +137,12 @@ class NativeDatabase {
       dbName,
     });
   }
+  loadExtensionAsync(filePath: string, entryPoint?: string): Promise<void> {
+    throw new Error('Not implemented on web');
+  }
+  loadExtensionSync(filePath: string, entryPoint?: string): void {
+    throw new Error('Not implemented on web');
+  }
 }
 
 class NativeStatement {
@@ -384,6 +390,7 @@ export class NativeSession {
 
 export class SQLiteModule extends NativeModule {
   readonly defaultDatabaseDirectory = '.';
+  readonly bundledExtensions = {};
 
   async deleteDatabaseAsync(databasePath: string): Promise<void> {
     await invokeWorkerAsync(getWorker(), 'deleteDatabase', {

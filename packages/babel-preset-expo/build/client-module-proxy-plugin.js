@@ -4,14 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactClientReferencesPlugin = reactClientReferencesPlugin;
-/**
- * Copyright © 2024 650 Industries.
- */
-const core_1 = require("@babel/core");
 const node_path_1 = require("node:path");
 const node_url_1 = __importDefault(require("node:url"));
 const common_1 = require("./common");
 function reactClientReferencesPlugin(api) {
+    const { template, types } = api;
     const isReactServer = api.caller(common_1.getIsReactServer);
     const possibleProjectRoot = api.caller(common_1.getPossibleProjectRoot);
     return {
@@ -81,7 +78,7 @@ function reactClientReferencesPlugin(api) {
                             }
                             else {
                                 exportPath.node.specifiers.forEach((specifier) => {
-                                    if (core_1.types.isIdentifier(specifier.exported)) {
+                                    if (types.isIdentifier(specifier.exported)) {
                                         const exportName = specifier.exported.name;
                                         exportNames.add(exportName);
                                         callback(exportName, exportPath);
@@ -115,7 +112,7 @@ function reactClientReferencesPlugin(api) {
                     // Assert that assignment to `module.exports` or `exports` is not allowed.
                     path.traverse({
                         AssignmentExpression(path) {
-                            if (core_1.types.isMemberExpression(path.node.left) &&
+                            if (types.isMemberExpression(path.node.left) &&
                                 'name' in path.node.left.object &&
                                 (path.node.left.object.name === 'module' ||
                                     path.node.left.object.name === 'exports')) {
@@ -124,7 +121,7 @@ function reactClientReferencesPlugin(api) {
                         },
                         // Also check Object.assign
                         CallExpression(path) {
-                            if (core_1.types.isMemberExpression(path.node.callee) &&
+                            if (types.isMemberExpression(path.node.callee) &&
                                 'name' in path.node.callee.property &&
                                 'name' in path.node.callee.object &&
                                 path.node.callee.property.name === 'assign' &&
@@ -159,7 +156,7 @@ function reactClientReferencesPlugin(api) {
                     // Clear the body
                     path.node.body = [];
                     path.node.directives = [];
-                    path.pushContainer('body', core_1.template.ast(proxyModule.join('\n')));
+                    path.pushContainer('body', template.ast(proxyModule.join('\n')));
                     assertExpoMetadata(state.file.metadata);
                     // Store the proxy export names for testing purposes.
                     state.file.metadata.proxyExports = [...proxyExports];
@@ -210,7 +207,7 @@ function reactClientReferencesPlugin(api) {
                     // Clear the body
                     path.node.body = [];
                     path.node.directives = [];
-                    path.pushContainer('body', core_1.template.ast(proxyModule.join('\n')));
+                    path.pushContainer('body', template.ast(proxyModule.join('\n')));
                     assertExpoMetadata(state.file.metadata);
                     // Store the proxy export names for testing purposes.
                     state.file.metadata.proxyExports = [...proxyExports];

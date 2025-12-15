@@ -6,11 +6,53 @@
 
 ### 🎉 New features
 
-- Use modern monospace font for web and iOS. ([#37789](https://github.com/expo/expo/pull/37789) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
+
+## 0.13.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.7 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.6 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.5 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.4 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.3 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.2 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.0 — 2025-08-13
+
+### 🎉 New features
+
+- Use modern monospace font for web and iOS. ([#37789](https://github.com/expo/expo/pull/37789) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Add missing peer dependencies on `react` and `react-native` and optional peer dependency on `react-native-web` ([#38570](https://github.com/expo/expo/pull/38570) by [@kitten](https://github.com/kitten))
 
 ## 0.12.5 — 2025-04-30
 

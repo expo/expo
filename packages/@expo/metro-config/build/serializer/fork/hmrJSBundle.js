@@ -13,28 +13,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const metro_transform_plugins_1 = require("@expo/metro/metro-transform-plugins");
 const jsc_safe_url_1 = __importDefault(require("jsc-safe-url"));
-const metro_transform_plugins_1 = require("metro-transform-plugins");
 const node_path_1 = __importDefault(require("node:path"));
-const node_url_1 = __importDefault(require("node:url"));
 const js_1 = require("./js");
+const debug = require('debug')('Metro:HMR');
 function generateModules(sourceModules, graph, options) {
     const modules = [];
     for (const module of sourceModules) {
         if ((0, js_1.isJsModule)(module)) {
-            // Construct a bundle URL for this specific module only
-            const getURL = (extension) => {
-                const moduleUrl = node_url_1.default.parse(node_url_1.default.format(options.clientUrl), true);
-                // the legacy url object is parsed with both "search" and "query" fields.
-                // for the "query" field to be used when formatting the object bach to string, the "search" field must be empty.
-                // https://nodejs.org/api/url.html#urlformaturlobject:~:text=If%20the%20urlObject.search%20property%20is%20undefined
-                moduleUrl.search = '';
-                moduleUrl.pathname = node_path_1.default.relative(options.serverRoot ?? options.projectRoot, node_path_1.default.join(node_path_1.default.dirname(module.path), node_path_1.default.basename(module.path, node_path_1.default.extname(module.path)) + '.' + extension));
-                delete moduleUrl.query.excludeSource;
-                return node_url_1.default.format(moduleUrl);
+            const getPathname = (extension) => {
+                return (node_path_1.default
+                    .relative(options.serverRoot ?? options.projectRoot, node_path_1.default.join(node_path_1.default.dirname(module.path), node_path_1.default.basename(module.path, node_path_1.default.extname(module.path)) + '.' + extension))
+                    .split(node_path_1.default.sep)
+                    // using this Metro particular convention for encoding file paths as URL paths.
+                    .map((segment) => encodeURIComponent(segment))
+                    .join('/'));
             };
-            const sourceMappingURL = getURL('map');
-            const sourceURL = jsc_safe_url_1.default.toJscSafeUrl(getURL('bundle'));
+            const clientUrl = new URL(options.clientUrl);
+            clientUrl.searchParams.delete('excludeSource');
+            clientUrl.pathname = getPathname('map');
+            const sourceMappingURL = clientUrl.toString();
+            clientUrl.pathname = getPathname('bundle');
+            const sourceURL = jsc_safe_url_1.default.toJscSafeUrl(clientUrl.toString());
+            debug('got sourceMappingURL: %s\nand sourceURL: %s\nfor module: %s', sourceMappingURL, sourceURL, module.path);
             const code = prepareModule(module, graph, options) +
                 `\n//# sourceMappingURL=${sourceMappingURL}\n` +
                 `//# sourceURL=${sourceURL}\n`;
@@ -50,7 +52,7 @@ function generateModules(sourceModules, graph, options) {
 function prepareModule(module, graph, options) {
     const code = (0, js_1.wrapModule)(module, {
         ...options,
-        sourceUrl: node_url_1.default.format(options.clientUrl),
+        sourceUrl: options.clientUrl.toString(),
         dev: true,
         skipWrapping: false,
         computedAsyncModulePaths: null,

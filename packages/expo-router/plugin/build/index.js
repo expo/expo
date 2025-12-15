@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const schema_utils_1 = require("@expo/schema-utils");
 const config_plugins_1 = require("expo/config-plugins");
-const schema_utils_1 = require("schema-utils");
 const schema = require('../options.json');
 const withExpoHeadIos = (config) => {
     return (0, config_plugins_1.withInfoPlist)(config, (config) => {
@@ -21,10 +21,20 @@ const withExpoHeadIos = (config) => {
         return config;
     });
 };
+const withGammaScreens = (config, props) => {
+    const value = props?.unstable_splitView ?? false;
+    return (0, config_plugins_1.withPodfile)(config, (config) => {
+        if (!config.modResults.contents.includes('RNS_GAMMA_ENABLED')) {
+            config.modResults.contents = `ENV['RNS_GAMMA_ENABLED']='${value ? 1 : 0}'\n${config.modResults.contents}`;
+        }
+        return config;
+    });
+};
 const withRouter = (config, _props) => {
     const props = _props || {};
     (0, schema_utils_1.validate)(schema, props);
     withExpoHeadIos(config);
+    withGammaScreens(config, props);
     return {
         ...config,
         extra: {

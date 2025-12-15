@@ -68,6 +68,7 @@ export default function App() {
     isDownloading,
     isRestarting,
     restartCount,
+    downloadProgress,
   } = Updates.useUpdates();
 
   React.useEffect(() => {
@@ -121,6 +122,16 @@ export default function App() {
       updateUrl: `${Constants.expoConfig?.updates?.url}-override`,
       requestHeaders: {},
     });
+  });
+
+  const handleToggleUpdateRequestHeadersOverride = runBlockAsync(async () => {
+    if (currentlyRunning.channel !== 'preview') {
+      Updates.setUpdateRequestHeadersOverride({
+        'expo-channel-name': 'preview',
+      });
+    } else {
+      Updates.setUpdateRequestHeadersOverride(null);
+    }
   });
 
   const handleReadAssetFiles = runBlockAsync(async () => {
@@ -217,6 +228,7 @@ export default function App() {
       <TestValue testID="extraParamsString" value={`${extraParamsString}`} />
       <TestValue testID="isReloading" value={`${isReloading}`} />
       <TestValue testID="startTime" value={`${startTime}`} />
+      <TestValue testID="channel" value={`${currentlyRunning.channel}`} />
 
       <TestValue
         testID="wasIsStartupProcedureRunningEverTrue"
@@ -241,6 +253,7 @@ export default function App() {
       />
       <TestValue testID="state.isRestarting" value={`${isRestarting}`} />
       <TestValue testID="state.restartCount" value={`${restartCount}`} />
+      <TestValue testID="state.downloadProgress" value={`${downloadProgress}`} />
 
       <Text>Log messages</Text>
       <ScrollView contentContainerStyle={styles.logEntriesContainer}>
@@ -283,6 +296,10 @@ export default function App() {
           <TestButton
             testID="setUpdateURLAndRequestHeadersOverride"
             onPress={handleSetUpdateURLAndRequestHeadersOverride}
+          />
+          <TestButton
+            testID="toggleUpdateRequestHeadersOverride"
+            onPress={handleToggleUpdateRequestHeadersOverride}
           />
         </View>
       </View>

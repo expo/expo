@@ -1,99 +1,79 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle, StyleSheet, PixelRatio } from 'react-native';
+import { type NativeSyntheticEvent } from 'react-native';
 
-import { ViewEvent } from '../../types';
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
-export type IOSVariant = 'wheel' | 'automatic' | 'graphical' | 'compact';
+export type DatePickerComponent = 'date' | 'hourAndMinute';
 
-export type DisplayedComponents = 'date' | 'hourAndMinute' | 'dateAndTime';
+export type DateRange = {
+  start?: Date;
+  end?: Date;
+};
 
-export type DateTimePickerProps = {
+export type DatePickerProps = {
   /**
-   * The initial date to display on the picker.
-   */
-  initialDate?: string | null;
-  /**
-   * A title displayed on the picker on iOS.
-   * @platform ios
+   * A title/label displayed on the picker.
    */
   title?: string;
   /**
-   * Callback function that is called when a date is selected.
+   * The currently selected date.
    */
-  onDateSelected?: (date: Date) => void;
+  selection?: Date;
   /**
-   * The variant of the picker, which determines its appearance and behavior.
-   * @default 'automatic'
+   * The selectable date range.
    */
-  variant?: IOSVariant;
+  range?: DateRange;
   /**
-   * The components that the picker should display.
-   * On iOS, you can have a picker that selects both date and time.
-   * @default 'date'
+   * The components to display: 'date' and/or 'hourAndMinute'.
+   * @default ['date']
    */
-  displayedComponents?: DisplayedComponents;
+  displayedComponents?: DatePickerComponent[];
   /**
-   * The tint color to use on the picker elements.
+   * Callback when the date selection changes.
    */
-  color?: string;
+  onDateChange?: (date: Date) => void;
+  /**
+   * Children to use as a custom label.
+   */
+  children?: React.ReactNode;
+} & CommonViewModifierProps;
+
+type NativeDatePickerProps = Omit<DatePickerProps, 'selection' | 'range' | 'onDateChange'> & {
+  selection?: string;
+  range?: { start?: string; end?: string };
+  onDateChange?: (event: NativeSyntheticEvent<{ date: Date }>) => void;
 };
 
-type NativeDatePickerProps = Omit<DateTimePickerProps, 'variant' | 'onDateSelected'> & {
-  variant?: IOSVariant;
-} & ViewEvent<'onDateSelected', { date: Date }>;
-
-/**
- * @hidden
- */
-export function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePickerProps {
-  const { variant, ...rest } = props;
+function transformDatePickerProps(props: DatePickerProps): NativeDatePickerProps {
+  const { modifiers, onDateChange, selection, range, ...rest } = props;
   return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...rest,
-    onDateSelected: ({ nativeEvent: { date } }) => {
-      props?.onDateSelected?.(new Date(date));
-    },
-    variant,
+    selection: selection?.toISOString(),
+    range: range
+      ? {
+          start: range.start?.toISOString(),
+          end: range.end?.toISOString(),
+        }
+      : undefined,
+    onDateChange: onDateChange
+      ? ({ nativeEvent: { date } }) => {
+          onDateChange(new Date(date));
+        }
+      : undefined,
   };
-}
-
-function transformDateTimePickerStyle(
-  style: StyleProp<ViewStyle> | undefined
-): StyleProp<ViewStyle> {
-  const { minWidth, minHeight, ...restStyle } = StyleSheet.flatten(style) || {};
-
-  // On Android, the picker’s minWidth and minHeight must be 12dp.
-  // Otherwise, the picker will crash the app.
-  const minSize = PixelRatio.getPixelSizeForLayoutSize(12);
-
-  // However, when users pass the minWidth and minHeight props, we trust that they know what they are doing.
-  const parsedMinWidth = minWidth ? minSize : undefined;
-  const parsedMinHeight = minHeight ? minSize : undefined;
-
-  return [restStyle, { minWidth: parsedMinWidth, minHeight: parsedMinHeight }];
 }
 
 const DatePickerNativeView: React.ComponentType<NativeDatePickerProps> = requireNativeView(
   'ExpoUI',
-  'DateTimePickerView'
+  'DatePickerView'
 );
 
 /**
- * `<DateTimePicker>` component without a host view.
- * You should use this with a `Host` component in ancestor.
+ * Renders a SwiftUI `DatePicker` component.
  */
-export function DateTimePickerPrimitive(props: DateTimePickerProps) {
-  return <DatePickerNativeView {...transformDateTimePickerProps(props)} />;
-}
-
-/**
- * Renders a `DateTimePicker` component.
- */
-export function DateTimePicker(props: DateTimePickerProps & { style?: StyleProp<ViewStyle> }) {
-  const transformedStyle = transformDateTimePickerStyle(props.style);
-  return (
-    <Host style={transformedStyle} matchContents>
-      <DateTimePickerPrimitive {...props} />
-    </Host>
-  );
+export function DatePicker(props: DatePickerProps) {
+  return <DatePickerNativeView {...transformDatePickerProps(props)} />;
 }

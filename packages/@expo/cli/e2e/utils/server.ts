@@ -48,7 +48,7 @@ export type BackgroundServer = {
   readonly process: ChildProcess;
   readonly url: URL;
   /** Fetch using URL pathnames from the server, the full URL of the server will be added */
-  fetchAsync(url: string | URL, init?: RequestInit): Promise<Response>;
+  fetchAsync(url: string | URL, init?: RequestInit, opts?: { attempts: number }): Promise<Response>;
   /** Start the background server, and wait until the server URL is resolved */
   startAsync(flags?: string[]): Promise<void>;
   /** Stop the background server, when passing `true` will ensure the server is killed - even when not started */
@@ -81,8 +81,21 @@ export function createBackgroundServer({
       assert(url, 'Server URL is unavailable, likely not fully started');
       return url;
     },
-    fetchAsync(url, init) {
-      return fetch(new URL(url, this.url), init);
+    async fetchAsync(url, init, { attempts } = { attempts: 1 }) {
+      let lastError: unknown;
+      for (let attempt = 0; attempt < attempts; attempt++) {
+        try {
+          return await fetch(new URL(url, this.url), init);
+        } catch (error) {
+          lastError = error;
+          // Wait a little longer between each retry
+          if (attempt < attempts - 1) {
+            await wait(10);
+          }
+        }
+      }
+      // If all attempts fail, throw the last error
+      throw lastError ?? new Error('Failed to fetch after multiple attempts');
     },
     async startAsync(flags = []) {
       if (child) {
@@ -203,4 +216,8 @@ export function createStaticServe(options: Partial<BackgroundServerOptions> = {}
     host: (chunk) => processFindPrefixedValue(chunk, 'Accepting connections at'),
     ...options,
   });
+}
+
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

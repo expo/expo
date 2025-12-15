@@ -1,9 +1,6 @@
-import fs from 'fs/promises';
+import fs from 'fs';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
-import { getIsolatedModulesPath } from '../autolinking/utils';
-import { fileExistsAsync } from '../fileUtils';
 import type { SupportedPlatform } from '../types';
 import {
   findGradleAndManifestAsync,
@@ -13,144 +10,59 @@ import {
 import { loadConfigAsync } from './config';
 import { resolveDependencyConfigImplIosAsync } from './iosResolver';
 import type {
-  RNConfigCommandOptions,
   RNConfigDependency,
+  RNConfigDependencyAndroid,
+  RNConfigDependencyIos,
+  RNConfigDependencyWeb,
   RNConfigReactNativeAppProjectConfig,
   RNConfigReactNativeLibraryConfig,
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
 } from './reactNativeConfig.types';
-import { resolveGradlePropertyAsync } from '../platforms/android';
+import { discoverExpoModuleConfigAsync, ExpoModuleConfig } from '../ExpoModuleConfig';
+import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import {
+  DependencyResolution,
+  filterMapResolutionResult,
+  mergeResolutionResults,
+  scanDependenciesFromRNProjectConfig,
+  scanDependenciesInSearchPath,
+  scanDependenciesRecursively,
+} from '../dependencies';
+import { checkDependencyWebAsync } from './webResolver';
 
-const EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_KEY = 'expo.edgeToEdgeEnabled';
-
-/**
- * Create config for react-native core autolinking.
- */
-export async function createReactNativeConfigAsync({
-  platform,
-  projectRoot,
-  searchPaths,
-  transitiveLinkingDependencies,
-}: RNConfigCommandOptions): Promise<RNConfigResult> {
-  const projectConfig = await loadConfigAsync<RNConfigReactNativeProjectConfig>(projectRoot);
-  const dependencyRoots = {
-    ...(await findDependencyRootsAsync(projectRoot, searchPaths)),
-    ...findProjectLocalDependencyRoots(projectConfig),
-  };
-
-  // For Expo SDK 53 onwards, `react-native-edge-to-edge` is a transitive dependency of every expo project. Unless the user
-  // has also included it as a project dependency, we have to autolink it manually (transitive non-expo module dependencies are not autolinked).
-  // There are two reasons why we don't want to autolink `edge-to-edge` when `edgeToEdge` property is set to `false`:
-  // 1. `react-native-is-edge-to-edge` tries to check if the `edge-to-edge` turbomodule is present to determine whether edge-to-edge is enabled.
-  // 2. `react-native-edge-to-edge` applies edge-to-edge in `onHostResume` and has no property to disable this behavior.
-  const shouldAutolinkEdgeToEdge =
-    platform === 'android' &&
-    !('react-native-edge-to-edge' in dependencyRoots) &&
-    ((await resolveGradleEdgeToEdgeEnabled(projectRoot)) ||
-      transitiveLinkingDependencies.includes('react-native-edge-to-edge'));
-
-  if (shouldAutolinkEdgeToEdge) {
-    const edgeToEdgeRoot = resolveEdgeToEdgeDependencyRoot(projectRoot);
-    if (edgeToEdgeRoot) {
-      dependencyRoots['react-native-edge-to-edge'] = edgeToEdgeRoot;
-    }
-  }
-
-  // NOTE(@kitten): If this isn't resolved to be the realpath and is a symlink,
-  // the Cocoapods resolution will detect path mismatches and generate nonsensical
-  // relative paths that won't resolve
-  let reactNativePath: string;
+const isMissingFBReactNativeSpecCodegenOutput = async (reactNativePath: string) => {
+  const generatedDir = path.resolve(reactNativePath, 'React/FBReactNativeSpec');
   try {
-    reactNativePath = await fs.realpath(dependencyRoots['react-native']);
+    const stat = await fs.promises.lstat(generatedDir);
+    return !stat.isDirectory();
   } catch {
-    reactNativePath = dependencyRoots['react-native'];
+    return true;
   }
+};
 
-  const dependencyConfigs = await Promise.all(
-    Object.entries(dependencyRoots).map(async ([name, packageRoot]) => {
-      const config = await resolveDependencyConfigAsync(platform, name, packageRoot, projectConfig);
-      return [name, config];
-    })
-  );
-  const dependencyResults = Object.fromEntries<RNConfigDependency>(
-    dependencyConfigs.filter(([, config]) => config != null) as Iterable<
-      [string, RNConfigDependency]
-    >
-  );
-  const projectData = await resolveAppProjectConfigAsync(projectRoot, platform);
-  return {
-    root: projectRoot,
-    reactNativePath,
-    dependencies: dependencyResults,
-    project: projectData,
-  };
-}
-
-/**
- * Find all dependencies and their directories from the project.
- */
-export async function findDependencyRootsAsync(
-  projectRoot: string,
-  searchPaths: string[]
-): Promise<Record<string, string>> {
-  const packageJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf8'));
-  const dependencies = [
-    ...Object.keys(packageJson.dependencies ?? {}),
-    ...Object.keys(packageJson.devDependencies ?? {}),
-  ];
-
-  const results: Record<string, string> = {};
-  // `searchPathSet` can be mutated to discover all "isolated modules groups", when using isolated modules
-  const searchPathSet = new Set(searchPaths);
-
-  for (const name of dependencies) {
-    for (const searchPath of searchPathSet) {
-      const packageConfigPath = path.resolve(searchPath, name, 'package.json');
-      if (await fileExistsAsync(packageConfigPath)) {
-        const packageRoot = path.dirname(packageConfigPath);
-        results[name] = packageRoot;
-
-        const maybeIsolatedModulesPath = getIsolatedModulesPath(packageRoot, name);
-        if (maybeIsolatedModulesPath) {
-          searchPathSet.add(maybeIsolatedModulesPath);
-        }
-        break;
-      }
-    }
-  }
-
-  return results;
-}
-
-/**
- * Find local dependencies that specified in the `react-native.config.js` file.
- */
-function findProjectLocalDependencyRoots(
-  projectConfig: RNConfigReactNativeProjectConfig | null
-): Record<string, string> {
-  if (!projectConfig?.dependencies) {
-    return {};
-  }
-  const results: Record<string, string> = {};
-  for (const [name, config] of Object.entries(projectConfig.dependencies)) {
-    if (typeof config.root === 'string') {
-      results[name] = config.root;
-    }
-  }
-  return results;
-}
-
-export async function resolveDependencyConfigAsync(
+export async function resolveReactNativeModule(
+  resolution: DependencyResolution,
+  projectConfig: RNConfigReactNativeProjectConfig | null,
   platform: SupportedPlatform,
-  name: string,
-  packageRoot: string,
-  projectConfig: RNConfigReactNativeProjectConfig | null
+  excludeNames: Set<string>
 ): Promise<RNConfigDependency | null> {
-  const libraryConfig = await loadConfigAsync<RNConfigReactNativeLibraryConfig>(packageRoot);
+  if (excludeNames.has(resolution.name)) {
+    return null;
+  } else if (resolution.name === 'react-native' || resolution.name === 'react-native-macos') {
+    // Starting from version 0.76, the `react-native` package only defines platforms
+    // when @react-native-community/cli-platform-android/ios is installed.
+    // Therefore, we need to manually filter it out.
+    // NOTE(@kitten): `loadConfigAsync` is skipped too, because react-native's config is too slow
+    return null;
+  }
+
+  const libraryConfig = (await loadConfigAsync(
+    resolution.path
+  )) as RNConfigReactNativeLibraryConfig;
   const reactNativeConfig = {
     ...libraryConfig?.dependency,
-    ...projectConfig?.dependencies?.[name],
+    ...projectConfig?.dependencies?.[resolution.name],
   };
 
   if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
@@ -158,65 +70,143 @@ export async function resolveDependencyConfigAsync(
     // The rnc-cli will skip this package.
     return null;
   }
-  if (name === 'react-native' || name === 'react-native-macos') {
-    // Starting from version 0.76, the `react-native` package only defines platforms
-    // when @react-native-community/cli-platform-android/ios is installed.
-    // Therefore, we need to manually filter it out.
-    return null;
+
+  let maybeExpoModuleConfig: ExpoModuleConfig | null | undefined;
+  if (!libraryConfig) {
+    // NOTE(@kitten): If we don't have an explicit react-native.config.{js,ts} file,
+    // we should pass the Expo Module config (if it exists) to the resolvers below,
+    // which can then decide if the React Native inferred config and Expo Module
+    // configs conflict
+    try {
+      maybeExpoModuleConfig = await discoverExpoModuleConfigAsync(resolution.path);
+    } catch {
+      // We ignore invalid Expo Modules for the purpose of auto-linking and
+      // pretend the config doesn't exist, if it isn't valid JSON
+    }
   }
 
-  let platformData = null;
+  let platformData:
+    | RNConfigDependencyAndroid
+    | RNConfigDependencyIos
+    | RNConfigDependencyWeb
+    | null = null;
   if (platform === 'android') {
     platformData = await resolveDependencyConfigImplAndroidAsync(
-      packageRoot,
-      reactNativeConfig.platforms?.android
+      resolution.path,
+      reactNativeConfig.platforms?.android,
+      maybeExpoModuleConfig
     );
   } else if (platform === 'ios') {
     platformData = await resolveDependencyConfigImplIosAsync(
-      packageRoot,
-      reactNativeConfig.platforms?.ios
+      resolution,
+      reactNativeConfig.platforms?.ios,
+      maybeExpoModuleConfig
+    );
+  } else if (platform === 'web') {
+    platformData = await checkDependencyWebAsync(
+      resolution,
+      reactNativeConfig,
+      maybeExpoModuleConfig
     );
   }
-  if (!platformData) {
-    return null;
-  }
-  return {
-    root: packageRoot,
-    name,
-    platforms: {
-      [platform]: platformData,
-    },
-  };
+  return (
+    platformData && {
+      root: resolution.path,
+      name: resolution.name,
+      platforms: {
+        [platform]: platformData,
+      },
+    }
+  );
 }
 
-export function resolveEdgeToEdgeDependencyRoot(projectRoot: string): string | null {
-  const expoPackageRoot = resolveFrom.silent(projectRoot, 'expo/package.json');
-  const edgeToEdgePath = resolveFrom.silent(
-    expoPackageRoot ?? projectRoot,
-    'react-native-edge-to-edge/package.json'
+interface CreateRNConfigParams {
+  appRoot: string;
+  sourceDir: string | undefined;
+  autolinkingOptions: AutolinkingOptions & { platform: SupportedPlatform };
+}
+
+/**
+ * Create config for react-native core autolinking.
+ */
+export async function createReactNativeConfigAsync({
+  appRoot,
+  sourceDir,
+  autolinkingOptions,
+}: CreateRNConfigParams): Promise<RNConfigResult> {
+  const excludeNames = new Set(autolinkingOptions.exclude);
+  const projectConfig = (await loadConfigAsync(appRoot)) as RNConfigReactNativeProjectConfig;
+
+  // custom native modules should be resolved first so that they can override other modules
+  const searchPaths = autolinkingOptions.nativeModulesDir
+    ? [autolinkingOptions.nativeModulesDir, ...autolinkingOptions.searchPaths]
+    : autolinkingOptions.searchPaths;
+
+  const limitDepth = autolinkingOptions.legacy_shallowReactNativeLinking ? 1 : undefined;
+
+  const resolutions = mergeResolutionResults(
+    await Promise.all([
+      scanDependenciesFromRNProjectConfig(appRoot, projectConfig),
+      ...searchPaths.map((searchPath) => scanDependenciesInSearchPath(searchPath)),
+      scanDependenciesRecursively(appRoot, { limitDepth }),
+    ])
   );
-  if (edgeToEdgePath) {
-    return path.dirname(edgeToEdgePath);
+
+  const dependencies = await filterMapResolutionResult(resolutions, (resolution) =>
+    resolveReactNativeModule(resolution, projectConfig, autolinkingOptions.platform, excludeNames)
+  );
+
+  // See: https://github.com/facebook/react-native/pull/53690
+  // When we're building react-native from source without these generated files, we need to force them to be generated
+  // Every published react-native version (or out-of-tree version) should have these files, but building from the raw repo won't (e.g. Expo Go)
+  const reactNativeResolution = resolutions['react-native'];
+  if (
+    reactNativeResolution &&
+    autolinkingOptions.platform === 'ios' &&
+    (await isMissingFBReactNativeSpecCodegenOutput(reactNativeResolution.path))
+  ) {
+    dependencies['react-native'] = {
+      root: reactNativeResolution.path,
+      name: 'react-native',
+      platforms: {
+        ios: {
+          // This will trigger a warning in list_native_modules but will trigger the artifacts
+          // codegen codepath as expected
+          podspecPath: '',
+          version: reactNativeResolution.version,
+          configurations: [],
+          scriptPhases: [],
+        },
+      },
+    };
   }
-  return null;
+
+  return {
+    root: appRoot,
+    reactNativePath: resolutions['react-native']?.path!,
+    dependencies,
+    project: await resolveAppProjectConfigAsync(appRoot, autolinkingOptions.platform, sourceDir),
+  };
 }
 
 export async function resolveAppProjectConfigAsync(
   projectRoot: string,
-  platform: SupportedPlatform
+  platform: SupportedPlatform,
+  sourceDir?: string
 ): Promise<RNConfigReactNativeAppProjectConfig> {
+  // TODO(@kitten): use the commandRoot here to find these files in non <projectRoot>/<platform> folders
   if (platform === 'android') {
-    const androidDir = path.join(projectRoot, 'android');
+    const androidDir = sourceDir ?? path.join(projectRoot, 'android');
     const { gradle, manifest } = await findGradleAndManifestAsync({ androidDir, isLibrary: false });
     if (gradle == null || manifest == null) {
       return {};
     }
-    const packageName = await parsePackageNameAsync(androidDir, manifest, gradle);
+    const packageName = await parsePackageNameAsync(manifest, gradle);
 
     return {
       android: {
         packageName: packageName ?? '',
-        sourceDir: path.join(projectRoot, 'android'),
+        sourceDir: sourceDir ?? path.join(projectRoot, 'android'),
       },
     };
   }
@@ -224,22 +214,10 @@ export async function resolveAppProjectConfigAsync(
   if (platform === 'ios') {
     return {
       ios: {
-        sourceDir: path.join(projectRoot, 'ios'),
+        sourceDir: sourceDir ?? path.join(projectRoot, 'ios'),
       },
     };
   }
 
   return {};
-}
-
-/**
- * Resolve the `expo.edgeToEdgeEnabled` property from the `gradle.properties` file.
- */
-async function resolveGradleEdgeToEdgeEnabled(projectRoot: string): Promise<boolean> {
-  return (
-    (await resolveGradlePropertyAsync(
-      path.join(projectRoot, 'android'),
-      EDGE_TO_EDGE_ENABLED_GRADLE_PROPERTY_KEY
-    )) === 'true'
-  );
 }

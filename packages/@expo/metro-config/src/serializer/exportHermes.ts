@@ -1,17 +1,22 @@
+import { composeSourceMaps } from '@expo/metro/metro-source-map';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
-import { composeSourceMaps } from 'metro-source-map';
 import os from 'os';
 import path from 'path';
 import process from 'process';
+import resolveFrom from 'resolve-from';
 
 const debug = require('debug')('expo:metro:hermes') as typeof console.log;
 
-function importHermesCommandFromProject(): string {
+function importHermesCommandFromProject(projectRoot: string): string {
   const platformExecutable = getHermesCommandPlatform();
 
-  const reactNativeRoot = path.dirname(require.resolve('react-native/package.json'));
+  const reactNativeRoot = path.dirname(resolveFrom(projectRoot, 'react-native/package.json'));
+  const hermesCompilerRoot = path.dirname(
+    resolveFrom(reactNativeRoot, 'hermes-compiler/package.json')
+  );
+
   const hermescPaths = [
     // Override hermesc dir by environment variables
     process.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']
@@ -20,6 +25,9 @@ function importHermesCommandFromProject(): string {
 
     // Building hermes from source
     `${reactNativeRoot}/ReactAndroid/hermes-engine/build/hermes/bin/hermesc`,
+
+    // react-native 0.83+ moved hermesc to a separate package
+    `${hermesCompilerRoot}/hermesc/${platformExecutable}`,
 
     // Prebuilt hermesc in official react-native 0.69+
     `${reactNativeRoot}/sdks/hermesc/${platformExecutable}`,
@@ -54,6 +62,7 @@ interface HermesBundleOutput {
 }
 
 type BuildHermesOptions = {
+  projectRoot: string;
   filename: string;
   code: string;
   map: string | null;
@@ -75,6 +84,7 @@ export async function buildHermesBundleAsync(
 }
 
 async function directlyBuildHermesBundleAsync({
+  projectRoot,
   code,
   map,
   minify = false,
@@ -92,7 +102,7 @@ async function directlyBuildHermesBundleAsync({
     }
 
     const tempHbcFile = path.join(tempDir, 'index.hbc');
-    const hermesCommand = importHermesCommandFromProject();
+    const hermesCommand = importHermesCommandFromProject(projectRoot);
     const args = ['-emit-binary', '-out', tempHbcFile, tempBundleFile];
     if (minify) {
       args.push('-O');

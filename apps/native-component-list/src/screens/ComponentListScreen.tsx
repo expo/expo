@@ -15,12 +15,38 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScreenConfig } from 'src/types/ScreenConfig';
+import { getScreenIdForLinking } from 'test-suite/screens/getScreenIdForLinking';
 
 export interface ListElement {
   screenName?: string;
   name: string;
-  route?: string;
-  isAvailable?: boolean;
+  route: string;
+  isAvailable: boolean;
+}
+
+/**
+ * Converts component screen configs to ListElements with '/components/' prefix.
+ * @param screens - Array of screen configurations
+ */
+export function componentScreensToListElements(screens: ScreenConfig[]): ListElement[] {
+  return screens.map((screen) => ({
+    name: screen.name,
+    isAvailable: true,
+    route: `/components/${getScreenIdForLinking(screen)}`,
+  }));
+}
+
+/**
+ * Converts API screen configs to ListElements with '/apis/' prefix.
+ * @param screens - Array of screen configurations
+ */
+export function apiScreensToListElements(screens: ScreenConfig[]): ListElement[] {
+  return screens.map((screen) => ({
+    name: screen.name,
+    isAvailable: true,
+    route: `/apis/${getScreenIdForLinking(screen)}`,
+  }));
 }
 
 interface Props {

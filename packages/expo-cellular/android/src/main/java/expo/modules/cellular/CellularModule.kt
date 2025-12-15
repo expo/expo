@@ -18,15 +18,25 @@ const val moduleName = "ExpoCellular"
 class CellularModule : Module() {
   override fun definition() = ModuleDefinition {
     Name(moduleName)
-    Constants {
-      val telephonyManager = telephonyManager()
-      mapOf(
-        "allowsVoip" to SipManager.isVoipSupported(context),
-        "isoCountryCode" to telephonyManager?.simCountryIso,
-        "carrier" to telephonyManager?.simOperatorName,
-        "mobileCountryCode" to telephonyManager?.simOperator?.substring(0, 3),
-        "mobileNetworkCode" to telephonyManager?.simOperator?.substring(3)
-      )
+
+    Constant("allowsVoip") {
+      SipManager.isVoipSupported(context)
+    }
+
+    Constant("isoCountryCode") {
+      telephonyManager()?.simCountryIso
+    }
+
+    Constant("carrier") {
+      telephonyManager()?.simOperatorName
+    }
+
+    Constant("mobileCountryCode") {
+      telephonyManager()?.simOperator?.substring(0, 3)
+    }
+
+    Constant("mobileNetworkCode") {
+      telephonyManager()?.simOperator?.substring(3)
     }
 
     AsyncFunction<Int>("getCellularGenerationAsync") {

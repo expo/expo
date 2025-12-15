@@ -27,7 +27,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 ## Configuration in app config
 
-You can configure `expo-media-library` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+You can configure `expo-media-library` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
 
 <ConfigPluginExample>
 
@@ -93,7 +93,7 @@ You can configure `expo-media-library` using its built-in [config plugin](/confi
 
 <ConfigReactNative>
 
-If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using native **android** **ios** projects manually, then you need to add following permissions and configuration to your native projects:
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using native **android** and **ios** projects manually, then you need to add following permissions and configuration to your native projects:
 
 **Android**
 
@@ -131,7 +131,7 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 {/* prettier-ignore */}
 ```jsx
 import { useState, useEffect } from 'react';
-import { Button, Text, SafeAreaView, ScrollView, StyleSheet, Image, View, Platform } from 'react-native';
+import { Button, Text, ScrollView, StyleSheet, Image, View, Platform } from 'react-native';
 import * as MediaLibrary from 'expo-media-library';
 
 export default function App() {
@@ -149,12 +149,12 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Button onPress={getAlbums} title="Get albums" />
       <ScrollView>
         {albums && albums.map((album) => <AlbumEntry album={album} />)}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -189,11 +189,6 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 8,
     justifyContent: 'center',
-    ...Platform.select({
-      android: {
-        paddingTop: 40,
-      },
-    }),
   },
   albumContainer: {
     paddingHorizontal: 20,
@@ -220,6 +215,10 @@ Due to system limitations on Android, it is impossible to create empty albums. I
 
 Android 11 introduced permission changes that make the operation of moving assets between albums require confirmation from the user every time.
 Therefore, when creating a new asset, instead of creating the asset and then moving it to the album, it is recommended to pass the `album` parameter to the [`createAssetAsync`](#medialibrarycreateassetasynclocaluri-album) method, which will automatically add the asset to the album without the need for user confirmation.
+
+### Wrong orientation of images
+
+On Android, when using `getAssetsAsync` without `resolveWithFullInfo: true`, image orientation may be incorrect because EXIF data (which includes orientation) is only read when that option is enabled.
 
 ## API
 

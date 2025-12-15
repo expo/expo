@@ -24,18 +24,30 @@ class ImageLoaderService(
       }
     }
 
+  private val inMemoryCache = mutableMapOf<String, Bitmap>()
+
+  fun loadFromMemory(url: String): Bitmap? {
+    return inMemoryCache[url]
+  }
+
   suspend fun loadImage(url: String): Bitmap? = withContext(Dispatchers.IO) {
     val fileName = URLUtil.guessFileName(url, null, null)
     val imageFile = imageDirector.resolve(fileName)
-    if (imageFile.exists()) {
-      return@withContext loadFromFile(imageFile)
+    val bitmap = if (imageFile.exists()) {
+      loadFromFile(imageFile)
+    } else if (downloadImage(url, imageFile)) {
+      loadFromFile(imageFile)
+    } else {
+      null
     }
 
-    if (downloadImage(url, imageFile)) {
-      return@withContext loadFromFile(imageFile)
+    if (bitmap == null) {
+      inMemoryCache.remove(url)
+    } else {
+      inMemoryCache[url] = bitmap
     }
 
-    return@withContext null
+    return@withContext bitmap
   }
 
   private fun loadFromFile(file: File): Bitmap {

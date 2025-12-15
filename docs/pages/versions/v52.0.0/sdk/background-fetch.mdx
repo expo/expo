@@ -90,7 +90,7 @@ async function unregisterBackgroundFetchAsync() {
 
 export default function BackgroundFetchScreen() {
   const [isRegistered, setIsRegistered] = useState(false);
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState<BackgroundFetch.BackgroundFetchStatus | null>(null);
 
   useEffect(() => {
     checkStatusAsync();

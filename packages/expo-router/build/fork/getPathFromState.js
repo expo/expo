@@ -38,6 +38,7 @@ exports.getPathDataFromState = getPathDataFromState;
 exports.appendBaseUrl = appendBaseUrl;
 const queryString = __importStar(require("query-string"));
 const expo = __importStar(require("./getPathFromState-forks"));
+const navigationParams_1 = require("../navigationParams");
 // END FORK
 const getActiveRoute = (state) => {
     const route = typeof state.index === 'number'
@@ -185,7 +186,8 @@ function getPathDataFromState(state, options) {
                         : Object.keys(screens)[0]
                     : undefined;
                 if (screen && screens && currentOptions[route.name].screens?.[screen]) {
-                    route = { ...screens[screen], name: screen, key: screen };
+                    const nestedParams = route.params?.params;
+                    route = { ...screens[screen], name: screen, key: screen, params: nestedParams };
                     currentOptions = screens;
                 }
                 else {
@@ -269,6 +271,7 @@ function getPathDataFromState(state, options) {
             }
             // START FORK
             delete focusedParams['#'];
+            focusedParams = (0, navigationParams_1.removeInternalExpoRouterParams)(focusedParams);
             // END FORK
             const query = queryString.stringify(focusedParams, { sort: false });
             if (query) {

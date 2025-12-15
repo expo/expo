@@ -1,4 +1,4 @@
-import { StyleProp, ViewStyle } from 'react-native';
+import { type CommonViewModifierProps } from '../types';
 export type ColorPickerProps = {
     /**
      * The currently selected color in the format `#RRGGBB` or `#RRGGBBAA`.
@@ -16,17 +16,10 @@ export type ColorPickerProps = {
      * Whether the color picker should support opacity.
      */
     supportsOpacity?: boolean;
-};
-/**
- * `<ColorPicker>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export declare function ColorPickerPrimitive({ selection, onValueChanged, ...restProps }: ColorPickerProps): import("react").JSX.Element;
+} & CommonViewModifierProps;
 /**
  * Renders a `ColorPicker` component using SwiftUI.
  * @platform ios
  */
-export declare function ColorPicker(props: ColorPickerProps & {
-    style?: StyleProp<ViewStyle>;
-}): import("react").JSX.Element;
+export declare function ColorPicker({ selection, onValueChanged, modifiers, ...restProps }: ColorPickerProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

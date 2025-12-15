@@ -8,7 +8,6 @@ import java.security.MessageDigest
 @Serializable
 data class AutolinkingOptions(
   val searchPaths: List<String>? = null,
-  val ignorePaths: List<String>? = null,
   val exclude: List<String>? = null
 ) {
   fun toJson(): String {
@@ -27,7 +26,8 @@ data class AutolinkingOptions(
  */
 open class ExpoGradleExtension(
   val config: ExpoAutolinkingConfig,
-  val options: AutolinkingOptions = AutolinkingOptions()
+  val options: AutolinkingOptions = AutolinkingOptions(),
+  val projectRoot: java.io.File,
 ) {
   /**
    * MD5 hash of the configuration.

@@ -2,27 +2,8 @@
 // https://wintercg.org/
 import 'react-native/Libraries/Core/InitializeCore';
 
-// @ts-ignore: PolyfillFunctions does not have types exported
-import { polyfillGlobal as installGlobal } from 'react-native/Libraries/Utilities/PolyfillFunctions';
-
 import { installFormDataPatch } from './FormData';
-// Add a well-known shared symbol that doesn't show up in iteration or inspection
-// this can be used to detect if the global object abides by the Expo team's documented
-// built-in requirements.
-const BUILTIN_SYMBOL = Symbol.for('expo.builtin');
-
-function addBuiltinSymbol(obj: object) {
-  Object.defineProperty(obj, BUILTIN_SYMBOL, {
-    value: true,
-    enumerable: false,
-    configurable: false,
-  });
-  return obj;
-}
-
-function install(name: string, getValue: () => any) {
-  installGlobal(name, () => addBuiltinSymbol(getValue()));
-}
+import { installGlobal as install } from './installGlobal';
 
 // https://encoding.spec.whatwg.org/#textdecoder
 install('TextDecoder', () => require('./TextDecoder').TextDecoder);
@@ -52,6 +33,9 @@ install('WritableStreamDefaultController', () => require('web-streams-polyfill/p
 install('WritableStreamDefaultWriter', () => require('web-streams-polyfill/ponyfill').WritableStreamDefaultWriter);
 
 install('__ExpoImportMetaRegistry', () => require('./ImportMetaRegistry').ImportMetaRegistry);
+
+// https://html.spec.whatwg.org/multipage/structured-data.html#structuredclone
+install('structuredClone', () => require('@ungap/structured-clone').default);
 
 installFormDataPatch(FormData);
 

@@ -59,9 +59,7 @@ describe(convertFormDataAsync, () => {
   it(`should convert expo-file-system FileBlob`, async () => {
     const formData = new ExpoFormData();
     const mockFileBlob = {
-      file: {
-        bytes: () => new Uint8Array([65, 66, 67]),
-      },
+      bytes: () => new Uint8Array([65, 66, 67]),
     };
     // @ts-ignore
     formData.append('blob', mockFileBlob);

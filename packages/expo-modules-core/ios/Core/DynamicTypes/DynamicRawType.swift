@@ -7,7 +7,7 @@
 internal struct DynamicRawType<InnerType>: AnyDynamicType {
   let innerType: InnerType.Type
 
-  func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
+  func wraps<AnyInnerType>(_ type: AnyInnerType.Type) -> Bool {
     return type == innerType
   }
 

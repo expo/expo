@@ -260,6 +260,8 @@ export enum UpdatesCheckAutomaticallyValue {
  */
 export type LocalAssets = Record<string, string>;
 
+export type { ReloadScreenOptions, ReloadScreenImageSource } from './ReloadScreen.types';
+
 /**
  * @hidden
  */
@@ -288,6 +290,7 @@ export type UpdatesNativeStateMachineContext = {
   downloadError?: Error;
   lastCheckForUpdateTime?: Date;
   sequenceNumber: number;
+  downloadProgress: number;
 };
 
 /**

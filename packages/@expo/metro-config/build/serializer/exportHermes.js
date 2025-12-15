@@ -4,17 +4,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildHermesBundleAsync = buildHermesBundleAsync;
+const metro_source_map_1 = require("@expo/metro/metro-source-map");
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = __importDefault(require("fs"));
-const metro_source_map_1 = require("metro-source-map");
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const process_1 = __importDefault(require("process"));
+const resolve_from_1 = __importDefault(require("resolve-from"));
 const debug = require('debug')('expo:metro:hermes');
-function importHermesCommandFromProject() {
+function importHermesCommandFromProject(projectRoot) {
     const platformExecutable = getHermesCommandPlatform();
-    const reactNativeRoot = path_1.default.dirname(require.resolve('react-native/package.json'));
+    const reactNativeRoot = path_1.default.dirname((0, resolve_from_1.default)(projectRoot, 'react-native/package.json'));
+    const hermesCompilerRoot = path_1.default.dirname((0, resolve_from_1.default)(reactNativeRoot, 'hermes-compiler/package.json'));
     const hermescPaths = [
         // Override hermesc dir by environment variables
         process_1.default.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']
@@ -22,6 +24,8 @@ function importHermesCommandFromProject() {
             : '',
         // Building hermes from source
         `${reactNativeRoot}/ReactAndroid/hermes-engine/build/hermes/bin/hermesc`,
+        // react-native 0.83+ moved hermesc to a separate package
+        `${hermesCompilerRoot}/hermesc/${platformExecutable}`,
         // Prebuilt hermesc in official react-native 0.69+
         `${reactNativeRoot}/sdks/hermesc/${platformExecutable}`,
     ];
@@ -57,7 +61,7 @@ async function buildHermesBundleAsync(options) {
     currentHermesBuild = directlyBuildHermesBundleAsync(options);
     return await currentHermesBuild;
 }
-async function directlyBuildHermesBundleAsync({ code, map, minify = false, filename, }) {
+async function directlyBuildHermesBundleAsync({ projectRoot, code, map, minify = false, filename, }) {
     const tempDir = path_1.default.join(os_1.default.tmpdir(), `expo-bundler-${Math.random()}-${Date.now()}`);
     await fs_1.default.promises.mkdir(tempDir, { recursive: true });
     try {
@@ -68,7 +72,7 @@ async function directlyBuildHermesBundleAsync({ code, map, minify = false, filen
             await fs_1.default.promises.writeFile(tempSourcemapFile, map, 'utf8');
         }
         const tempHbcFile = path_1.default.join(tempDir, 'index.hbc');
-        const hermesCommand = importHermesCommandFromProject();
+        const hermesCommand = importHermesCommandFromProject(projectRoot);
         const args = ['-emit-binary', '-out', tempHbcFile, tempBundleFile];
         if (minify) {
             args.push('-O');

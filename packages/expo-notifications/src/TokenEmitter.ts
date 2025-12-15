@@ -46,17 +46,3 @@ export function addPushTokenListener(listener: PushTokenListener): EventSubscrip
     listener({ data: devicePushToken, type: Platform.OS })
   );
 }
-
-/**
- * @deprecated call `remove()` on the subscription object instead.
- *
- * Removes a push token subscription returned by an `addPushTokenListener` call.
- * @param subscription A subscription returned by `addPushTokenListener` method.
- * @header fetch
- */
-export function removePushTokenSubscription(subscription: EventSubscription) {
-  console.warn(
-    '`removePushTokenSubscription` is deprecated. Call `subscription.remove()` instead.'
-  );
-  subscription.remove();
-}

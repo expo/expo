@@ -1,69 +1,7 @@
-import type { EventEmitter } from './EventEmitter';
-import type { NativeModule } from './NativeModule';
-import type { SharedObject } from './SharedObject';
-import type { SharedRef } from './SharedRef';
-export interface ExpoGlobal {
-    /**
-     * Host object that is used to access native Expo modules.
-     */
-    modules: Record<string, any>;
-    /**
-     * @see EventEmitter
-     */
-    EventEmitter: typeof EventEmitter;
-    /**
-     * @see SharedObject
-     */
-    SharedObject: typeof SharedObject;
-    /**
-     * @see SharedRef
-     */
-    SharedRef: typeof SharedRef;
-    /**
-     * @see NativeModule
-     */
-    NativeModule: typeof NativeModule;
-    /**
-     * The version of the `expo-modules-core` package.
-     * @platform android
-     * @platform ios
-     */
-    expoModulesCoreVersion?: {
-        version: string;
-        major: number;
-        minor: number;
-        patch: number;
-    };
-    /**
-     * The path to the cache directory
-     * @platform android
-     * @platform ios
-     */
-    cacheDir?: string;
-    /**
-     * The path to the documents directory
-     * @platform android
-     * @platform ios
-     */
-    documentsDir?: string;
-    /**
-     * Generates a random UUID v4 string.
-     */
-    uuidv4(): string;
-    /**
-     * Generates a UUID v5 string representation of the value in the specified namespace.
-     */
-    uuidv5(name: string, namespace: string): string;
-    /**
-     * Returns a static view config of the native view with the given name
-     * or `null` if the view has not been registered.
-     */
-    getViewConfig(moduleName: string, viewName?: string): ViewConfig | null;
-    /**
-     * Reloads the app.
-     */
-    reloadAppAsync(reason: string): Promise<void>;
-}
+import { EventEmitter } from './EventEmitter';
+import { NativeModule } from './NativeModule';
+import { SharedObject } from './SharedObject';
+import { SharedRef } from './SharedRef';
 type ViewConfig = {
     validAttributes: Record<string, any>;
     directEventTypes: Record<string, {
@@ -81,11 +19,65 @@ export interface ExpoProcessEnv {
     EXPO_BASE_URL?: string;
     /** Build-time representation of the `Platform.OS` value that the current JavaScript was bundled for. Does not support platform shaking wrapped require statements. */
     EXPO_OS?: string;
+    /** Run-time representation of the `Platform.OS` for the top-most platform that's hosting the DOM component. Only defined in DOM components, undefined in standard runtimes and on web. */
+    EXPO_DOM_HOST_OS?: 'ios' | 'android' | (string & {});
     [key: string]: any;
 }
 export interface ExpoProcess {
     env: ExpoProcessEnv;
     [key: string]: any;
+}
+/**
+ * Global object containing all the native bindings installed by Expo.
+ * This object is not available in projects without the `expo` package installed.
+ */
+declare namespace ExpoGlobal {
+    /** Host object that is used to access native Expo modules. */
+    export let modules: Record<string, any>;
+    export { EventEmitter };
+    export { SharedObject };
+    export { SharedRef };
+    export { NativeModule };
+    /**
+     * The version of the `expo-modules-core` package.
+     * @platform android
+     * @platform ios
+     */
+    export const expoModulesCoreVersion: undefined | {
+        version: string;
+        major: number;
+        minor: number;
+        patch: number;
+    };
+    /**
+     * The path to the cache directory
+     * @platform android
+     * @platform ios
+     */
+    export const cacheDir: undefined | string;
+    /**
+     * The path to the documents directory
+     * @platform android
+     * @platform ios
+     */
+    export const documentsDir: undefined | string;
+    /**
+     * Generates a random UUID v4 string.
+     */
+    export function uuidv4(): string;
+    /**
+     * Generates a UUID v5 string representation of the value in the specified namespace.
+     */
+    export function uuidv5(name: string, namespace: string): string;
+    /**
+     * Returns a static view config of the native view with the given name
+     * or `null` if the view has not been registered.
+     */
+    export function getViewConfig(moduleName: string, viewName?: string): ViewConfig | null;
+    /**
+     * Reloads the app.
+     */
+    export function reloadAppAsync(reason: string): Promise<void>;
 }
 declare global {
     namespace NodeJS {
@@ -95,16 +87,13 @@ declare global {
             env: ProcessEnv;
         }
     }
-    /**
-     * Global object containing all the native bindings installed by Expo.
-     * This object is not available in projects without the `expo` package installed.
-     */
-    var expo: ExpoGlobal;
+    var expo: typeof ExpoGlobal;
     var process: NodeJS.Process;
     /**
      * ExpoDomWebView is defined in `@expo/dom-webview` runtime.
      */
-    var ExpoDomWebView: Record<string, any> | undefined;
+    var ExpoDomWebView: ExpoDomWebView;
 }
-export {};
+export type ExpoDomWebView = Record<string, unknown>;
+export type { ExpoGlobal };
 //# sourceMappingURL=global.d.ts.map

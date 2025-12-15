@@ -46,7 +46,7 @@ import java.io.File
 class DatabaseLauncher(
   private val context: Context,
   private val configuration: UpdatesConfiguration,
-  private val updatesDirectory: File?,
+  private val updatesDirectory: File,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
   private val logger: UpdatesLogger,
@@ -94,7 +94,7 @@ class DatabaseLauncher(
     }
 
     val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)
-    val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(launchedUpdate, embeddedUpdate?.updateEntity, launchedUpdate)
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(launchedUpdate, embeddedUpdate?.updateEntity, null)
 
     val embeddedLaunchAsset = if (!shouldCopyEmbeddedAssets) {
       embeddedUpdate?.assetEntityList
@@ -147,16 +147,19 @@ class DatabaseLauncher(
   suspend fun getLaunchableUpdate(database: UpdatesDatabase): UpdateEntity? {
     val launchableUpdates = database.updateDao().loadLaunchableUpdatesForScope(configuration.scopeKey)
 
-    // We can only run an update marked as embedded if it's actually the update embedded in the
-    // current binary. We might have an older update from a previous binary still listed as
-    // "EMBEDDED" in the database so we need to do this check.
-    val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)
+    val embeddedUpdate = EmbeddedManifestUtils.getOriginalEmbeddedUpdate(context, configuration)
     val filteredLaunchableUpdates = mutableListOf<UpdateEntity>()
     for (update in launchableUpdates) {
-      if (update.status == UpdateStatus.EMBEDDED) {
-        if (embeddedUpdate != null && embeddedUpdate.updateEntity.id != update.id) {
-          continue
-        }
+      // We can only run an update marked as embedded if it's actually the update embedded in the
+      // current binary. We might have an older update from a previous binary still listed as
+      // "EMBEDDED" in the database so we need to do this check.
+      if (update.status == UpdateStatus.EMBEDDED && embeddedUpdate?.updateEntity?.id != update.id) {
+        continue
+      }
+
+      // If embedded update is disabled, we should exclude embedded update from launchable updates
+      if (!configuration.hasEmbeddedUpdate && embeddedUpdate?.updateEntity?.id == update.id) {
+        continue
       }
       filteredLaunchableUpdates.add(update)
     }
@@ -246,7 +249,9 @@ class DatabaseLauncher(
         val result = fileDownloader.downloadAsset(
           asset,
           updatesDirectory,
-          extraHeaders
+          extraHeaders,
+          launchedUpdate,
+          null
         )
 
         database.assetDao().updateAsset(result.assetEntity)

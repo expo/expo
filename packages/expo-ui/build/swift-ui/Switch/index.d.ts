@@ -1,4 +1,6 @@
-import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import type { ColorValue } from 'react-native';
+import { type SFSymbol } from 'sf-symbols-typescript';
+import { type CommonViewModifierProps } from '../types';
 export type SwitchProps = {
     /**
      * Indicates whether the switch is checked.
@@ -9,6 +11,10 @@ export type SwitchProps = {
      */
     label?: string;
     /**
+     * The name of the SFSymbol to be displayed in the label.
+     */
+    systemImage?: SFSymbol;
+    /**
      * Type of the switch component. Can be `'checkbox'`, `'switch'`, or `'button'`.
      * @default 'switch'
      */
@@ -18,10 +24,10 @@ export type SwitchProps = {
      */
     onValueChange?: (value: boolean) => void;
     /**
-     * Picker color. On iOS, it only applies to the `menu` variant.
+     * Picker color.
      */
-    color?: string;
-} & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps);
+    color?: ColorValue;
+} & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps) & CommonViewModifierProps;
 export type SwitchSwitchVariantProps = {
     variant?: 'switch';
 };
@@ -32,25 +38,8 @@ export type SwitchButtonVariantProps = {
     variant: 'button';
     elementColors?: undefined;
 };
-type NativeSwitchProps = Omit<SwitchProps, 'onValueChange'> & {
-    onValueChange: (event: NativeSyntheticEvent<{
-        value: boolean;
-    }>) => void;
-};
-/**
- * @hidden
- */
-export declare function transformSwitchProps(props: SwitchProps): NativeSwitchProps;
-/**
- * `<Switch>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export declare function SwitchPrimitive(props: SwitchProps): import("react").JSX.Element;
 /**
  * Displays a native switch component.
  */
-export declare function Switch(props: SwitchProps & {
-    style?: StyleProp<ViewStyle>;
-}): import("react").JSX.Element;
-export {};
+export declare function Switch(props: SwitchProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

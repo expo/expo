@@ -86,10 +86,7 @@ describe('patch-project', () => {
     const appGradlePath = path.join(projectRoot, 'android', 'app', 'build.gradle');
     let contents = await fs.readFile(appGradlePath, 'utf8');
     const maunalChange = `# Some maunual changes ${crypto.randomUUID()}`;
-    contents = contents.replace(
-      /^(def enableProguardInReleaseBuilds.*)$/m,
-      `$1\n\n${maunalChange}`
-    );
+    contents = contents.replace(/^(def enableMinifyInReleaseBuilds.*)$/m, `$1\n\n${maunalChange}`);
     await fs.writeFile(appGradlePath, contents, 'utf8');
 
     await spawnAsync(
@@ -143,7 +140,7 @@ describe('patch-project', () => {
     const contents = await fs.readFile(appGradlePath, 'utf8');
     const maunalChange = `# Some maunual changes ${crypto.randomUUID()}`;
     const patchedContents = contents.replace(
-      /^(def enableProguardInReleaseBuilds.*)$/m,
+      /^(def enableMinifyInReleaseBuilds.*)$/m,
       `$1\n\n${maunalChange}`
     );
     await fs.writeFile(appGradlePath, patchedContents, 'utf8');

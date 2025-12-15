@@ -17,6 +17,7 @@ import { PaletteIcon } from '@expo/styleguide-icons/outline/PaletteIcon';
 import { Phone01Icon } from '@expo/styleguide-icons/outline/Phone01Icon';
 import { PlaySquareIcon } from '@expo/styleguide-icons/outline/PlaySquareIcon';
 import { Rocket01Icon } from '@expo/styleguide-icons/outline/Rocket01Icon';
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 import { TerminalBrowserIcon } from '@expo/styleguide-icons/outline/TerminalBrowserIcon';
 import { useRouter } from 'next/compat/router';
 
@@ -65,7 +66,9 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
       <div className="mb-5">
         {!shouldSkipTitle(route, parentRoute) && title && (
           <div className="flex flex-row items-center justify-between py-0">
-            <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
+            <SidebarTitle Icon={Icon} sectionName={title}>
+              {title}
+            </SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentage} />{' '}
               <p className="ml-2 text-xs text-tertiary">{`${completedChaptersCount} of ${totalChapters}`}</p>
@@ -135,7 +138,9 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
       <div className="mb-5">
         {!shouldSkipTitle(route, parentRoute) && title && (
           <div className="flex flex-row items-center justify-between py-0">
-            <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
+            <SidebarTitle Icon={Icon} sectionName={title}>
+              {title}
+            </SidebarTitle>
             <div className="flex flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentageForGetStarted} />{' '}
               <p className="ml-2 text-xs text-tertiary">{`${completedGetStartedChaptersCount} of ${totalGetStartedChapters}`}</p>
@@ -181,7 +186,9 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   return (
     <div className="mb-5">
       {!shouldSkipTitle(route, parentRoute) && title && (
-        <SidebarTitle Icon={Icon}>{title}</SidebarTitle>
+        <SidebarTitle Icon={Icon} sectionName={title}>
+          {title}
+        </SidebarTitle>
       )}
       {(route.children ?? []).map(child =>
         child.type === 'page' ? (
@@ -220,6 +227,8 @@ function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
 
 function getIconElement(iconName?: string) {
   switch (iconName) {
+    case 'AI':
+      return Star06Icon;
     case 'Develop':
       return TerminalBrowserIcon;
     case 'Review':

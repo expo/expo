@@ -1,9 +1,32 @@
 import spawnAsync, { SpawnResult } from '@expo/spawn-async';
+import resolveFrom from 'resolve-from';
+import semver from 'semver';
 
 import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import { learnMore } from '../utils/TerminalLink';
+import { parseInstallCheckOutput } from '../utils/parseInstallCheckOutput';
 
 function isSpawnResult(result: any): result is SpawnResult {
   return 'stderr' in result && 'stdout' in result && 'status' in result;
+}
+
+async function spawnExpoCLI(
+  projectRoot: string,
+  args: string[],
+  options: Omit<spawnAsync.SpawnOptions, 'cwd'>
+) {
+  const expoCliPath = resolveFrom.silent(projectRoot, 'expo/bin/cli');
+  if (expoCliPath) {
+    return await spawnAsync('node', [expoCliPath, ...args], {
+      cwd: projectRoot,
+      ...options,
+    });
+  } else {
+    return await spawnAsync('npx', ['expo', ...args], {
+      cwd: projectRoot,
+      ...options,
+    });
+  }
 }
 
 export class InstalledDependencyVersionCheck implements DoctorCheck {
@@ -11,31 +34,76 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
 
   sdkVersionRange = '>=46.0.0';
 
-  async runAsync({ projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
+  async runAsync({ exp, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
+    const advice: string[] = [];
 
-    try {
-      // only way to check dependencies without automatically fixing them is to use interactive prompt
-      // In the future, we should add JSON output to npx expo install, check for support, and use that instead
-      await spawnAsync('npx', ['expo', 'install', '--check'], {
-        stdio: 'pipe',
-        cwd: projectRoot,
-        env: { ...process.env, CI: '1' },
-      });
-    } catch (error: any) {
-      if (isSpawnResult(error)) {
-        issues.push(error.stderr.trim());
-      } else {
-        throw error;
+    // Expo CLI introduced support for --json output in SDK 54
+    // Command: npx expo install --check --json
+    // Output format:
+    // {
+    //   "upToDate": false,
+    //   "dependencies": [
+    //     {
+    //       "packageName": "expo-image",
+    //       "packageType": "dependencies",
+    //       "expectedVersionOrRange": "~2.2.1",
+    //       "actualVersion": "2.2.0",
+    //     }
+    //   ]
+    // }
+    const projectMajorSdkVersion = exp.sdkVersion ? semver.major(exp.sdkVersion) : null;
+
+    if (projectMajorSdkVersion && projectMajorSdkVersion >= 54) {
+      let commandResult: SpawnResult;
+
+      try {
+        commandResult = await spawnExpoCLI(projectRoot, ['install', '--check', '--json'], {
+          stdio: 'pipe',
+          env: { ...process.env, CI: '1', EXPO_DEBUG: '0' },
+        });
+      } catch (error: any) {
+        if (isSpawnResult(error) && error.status === 1) {
+          // Exit code 1 is expected when dependencies are out of date - this is normal behavior
+          commandResult = error;
+        } else {
+          throw error;
+        }
       }
+
+      parseInstallCheckOutput(commandResult.stdout, issues, projectMajorSdkVersion);
+
+      // We rely on EXPO_DEBUG=0 to ensure stdout contains only JSON output.
+    } else {
+      // SDK versions <54 don't support --json output
+      // In the future, we should remove this and use the --json output above
+      try {
+        await spawnExpoCLI(projectRoot, ['install', '--check'], {
+          stdio: 'pipe',
+          env: { ...process.env, CI: '1', EXPO_DEBUG: '0' },
+        });
+      } catch (error: any) {
+        if (isSpawnResult(error)) {
+          issues.push(error.stderr.trim());
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    if (issues.length) {
+      advice.push(`Use 'npx expo install --check' to review and upgrade your dependencies.`);
+      advice.push(
+        `To ignore specific packages, add them to "expo.install.exclude" in package.json. ${learnMore(
+          'https://expo.fyi/dependency-validation'
+        )}`
+      );
     }
 
     return {
       isSuccessful: issues.length === 0,
       issues,
-      advice: issues.length
-        ? [`Use 'npx expo install --check' to review and upgrade your dependencies.`]
-        : [],
+      advice,
     };
   }
 }

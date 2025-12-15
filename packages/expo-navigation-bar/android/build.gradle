@@ -4,17 +4,17 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '4.2.4'
+version = '5.0.8'
 
 android {
   namespace "expo.modules.navigationbar"
   defaultConfig {
     versionCode 1
-    versionName '4.2.4'
+    versionName '5.0.8'
   }
 }
 
 dependencies {
-  implementation 'androidx.core:core:1.6.0'
-  implementation 'androidx.appcompat:appcompat:1.2.0'
+  implementation 'androidx.core:core:1.17.0'
+  implementation 'androidx.appcompat:appcompat:1.7.1'
 }

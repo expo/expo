@@ -37,6 +37,19 @@ export type ManifestIntentFilter = {
     data?: ManifestData[];
     category?: ManifestCategory[];
 };
+export type ManifestActivityAlias = {
+    $?: {
+        'android:name': string;
+        'android:enabled'?: StringBoolean;
+        'android:exported'?: StringBoolean;
+        'android:label'?: string;
+        'android:permission'?: string;
+        'android:icon'?: string;
+        'android:targetActivity': string;
+    };
+    'intent-filter'?: ManifestIntentFilter[];
+    'meta-data'?: ManifestMetaData[];
+};
 export type ManifestMetaData = {
     $: ManifestMetaDataAttributes;
 };
@@ -60,6 +73,7 @@ type ManifestApplicationAttributes = {
     'android:requestLegacyExternalStorage'?: StringBoolean;
     'android:supportsPictureInPicture'?: StringBoolean;
     'android:usesCleartextTraffic'?: StringBoolean;
+    'android:enableOnBackInvokedCallback'?: StringBoolean;
     [key: string]: string | undefined;
 };
 export type ManifestActivity = {
@@ -84,6 +98,7 @@ export type ManifestApplication = {
     receiver?: ManifestReceiver[];
     'meta-data'?: ManifestMetaData[];
     'uses-library'?: ManifestUsesLibrary[];
+    'activity-alias'?: ManifestActivityAlias[];
 };
 type ManifestPermission = {
     $: AndroidManifestAttributes & {

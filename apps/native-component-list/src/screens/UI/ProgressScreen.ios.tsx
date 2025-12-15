@@ -1,4 +1,4 @@
-import { CircularProgress, LinearProgress } from '@expo/ui/swift-ui';
+import { Host, Progress, VStack } from '@expo/ui/swift-ui';
 import * as React from 'react';
 
 import { Page, Section } from '../../components/Page';
@@ -18,16 +18,28 @@ export default function ProgressScreen() {
   return (
     <Page>
       <Section title="Indeterminate progress" gap={16}>
-        <CircularProgress />
-        <LinearProgress />
+        <Host matchContents>
+          <VStack spacing={16}>
+            <Progress variant="circular" />
+            <Progress variant="linear" />
+          </VStack>
+        </Host>
       </Section>
       <Section title="Determinate progress" gap={16}>
-        <CircularProgress progress={progress} />
-        <LinearProgress progress={progress} />
+        <Host matchContents>
+          <VStack spacing={16}>
+            <Progress progress={progress} variant="circular" />
+            <Progress progress={progress} variant="linear" />
+          </VStack>
+        </Host>
       </Section>
       <Section title="Color" gap={16}>
-        <CircularProgress progress={progress} color="red" />
-        <LinearProgress progress={progress} color="red" />
+        <Host matchContents>
+          <VStack spacing={16}>
+            <Progress progress={progress} color="red" variant="circular" />
+            <Progress progress={progress} color="red" variant="linear" />
+          </VStack>
+        </Host>
       </Section>
     </Page>
   );

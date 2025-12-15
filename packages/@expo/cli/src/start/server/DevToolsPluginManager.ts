@@ -1,20 +1,11 @@
 import type { ModuleDescriptorDevTools } from 'expo-modules-autolinking/exports';
-import path from 'path';
-import resolveFrom from 'resolve-from';
+
+import { DevToolsPlugin } from './DevToolsPlugin';
+import { Log } from '../../log';
 
 const debug = require('debug')('expo:start:server:devtools');
 
 export const DevToolsPluginEndpoint = '/_expo/plugins';
-
-interface AutolinkingPlugin {
-  packageName: string;
-  packageRoot: string;
-  webpageRoot: string;
-}
-
-export interface DevToolsPlugin extends AutolinkingPlugin {
-  webpageEndpoint: string;
-}
 
 export default class DevToolsPluginManager {
   private plugins: DevToolsPlugin[] | null = null;
@@ -22,14 +13,9 @@ export default class DevToolsPluginManager {
   constructor(private projectRoot: string) {}
 
   public async queryPluginsAsync(): Promise<DevToolsPlugin[]> {
-    if (this.plugins) {
-      return this.plugins;
+    if (!this.plugins) {
+      this.plugins = await this.queryAutolinkedPluginsAsync(this.projectRoot);
     }
-    const plugins = (await this.queryAutolinkedPluginsAsync(this.projectRoot)).map((plugin) => ({
-      ...plugin,
-      webpageEndpoint: `${DevToolsPluginEndpoint}/${plugin.packageName}`,
-    }));
-    this.plugins = plugins;
     return this.plugins;
   }
 
@@ -39,31 +25,19 @@ export default class DevToolsPluginManager {
     return plugin?.webpageRoot ?? null;
   }
 
-  private async queryAutolinkedPluginsAsync(projectRoot: string): Promise<AutolinkingPlugin[]> {
-    const expoPackagePath = resolveFrom.silent(projectRoot, 'expo/package.json');
-    if (!expoPackagePath) {
-      return [];
-    }
-    const resolvedPath = resolveFrom.silent(
-      path.dirname(expoPackagePath),
-      'expo-modules-autolinking/exports'
-    );
-    if (!resolvedPath) {
-      return [];
-    }
-    const autolinkingModule = require(
-      resolvedPath
-    ) as typeof import('expo-modules-autolinking/exports');
-    if (!autolinkingModule.queryAutolinkingModulesFromProjectAsync) {
-      throw new Error(
-        'Missing exported `queryAutolinkingModulesFromProjectAsync()` function from `expo-modules-autolinking`'
-      );
-    }
-    const plugins = (await autolinkingModule.queryAutolinkingModulesFromProjectAsync(projectRoot, {
-      platform: 'devtools',
-      onlyProjectDeps: false,
-    })) as ModuleDescriptorDevTools[];
-    debug('Found autolinked plugins', this.plugins);
-    return plugins;
+  private async queryAutolinkedPluginsAsync(projectRoot: string): Promise<DevToolsPlugin[]> {
+    const autolinking: typeof import('expo/internal/unstable-autolinking-exports') = require('expo/internal/unstable-autolinking-exports');
+    const linker = autolinking.makeCachedDependenciesLinker({ projectRoot });
+    const revisions = await autolinking.scanExpoModuleResolutionsForPlatform(linker, 'devtools');
+    const { resolveModuleAsync } = autolinking.getLinkingImplementationForPlatform('devtools');
+    const plugins: ModuleDescriptorDevTools[] = (
+      await Promise.all(
+        Object.values(revisions).map((revision) => resolveModuleAsync(revision.name, revision))
+      )
+    ).filter((maybePlugin) => maybePlugin != null);
+    debug('Found autolinked plugins', plugins);
+    return plugins
+      .map((pluginInfo) => new DevToolsPlugin(pluginInfo, this.projectRoot))
+      .filter((p) => p != null) as DevToolsPlugin[];
   }
 }

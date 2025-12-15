@@ -72,10 +72,13 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
         }
       );
     } else if (bundler === 'metro') {
-      requiredPackages.push({
+      // NOTE(@kitten): We used to require `@expo/metro-runtime` here but part of what we required from
+      // it has moved out of that package (async-require). Hence, this isn't needed anymore, and if
+      // a user has `expo-router`, this is fulfilled anyway.
+      /*requiredPackages.push({
         file: '@expo/metro-runtime/package.json',
         pkg: '@expo/metro-runtime',
-      });
+      });*/
     }
 
     try {

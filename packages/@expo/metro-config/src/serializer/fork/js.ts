@@ -9,12 +9,15 @@
  * https://github.com/facebook/metro/blob/bbdd7d7c5e6e0feb50a9967ffae1f723c1d7c4e8/packages/metro/src/DeltaBundler/Serializers/helpers/js.js#L1
  */
 
+import type { MixedOutput, Module } from '@expo/metro/metro/DeltaBundler';
+import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
+import { addParamsToDefineCall } from '@expo/metro/metro-transform-plugins';
+import type { JsOutput } from '@expo/metro/metro-transform-worker';
 import assert from 'assert';
 import jscSafeUrl from 'jsc-safe-url';
-import type { MixedOutput, Module } from 'metro';
-import { addParamsToDefineCall } from 'metro-transform-plugins';
-import type { JsOutput } from 'metro-transform-worker';
 import path from 'path';
+
+import { toPosixPath as normalizePathSeparatorsToPosix } from '../../utils/filePath';
 
 export type Options = {
   createModuleId: (module: string) => number | string;
@@ -63,6 +66,9 @@ export function getModuleParams(
   let hasPaths = false;
 
   const dependencyMapArray = Array.from(module.dependencies.values()).map((dependency) => {
+    if (!isResolvedDependency(dependency)) {
+      return null;
+    }
     let modulePath = dependency.absolutePath;
 
     if (modulePath == null) {
@@ -110,6 +116,7 @@ export function getModuleParams(
           paths[id] =
             '/' +
             path.join(
+              // TODO: This is not the proper Metro URL encoding of a file path
               path.dirname(bundlePath),
               // Strip the file extension
               path.basename(bundlePath, path.extname(bundlePath))
@@ -139,7 +146,7 @@ export function getModuleParams(
   if (options.dev) {
     // Add the relative path of the module to make debugging easier.
     // This is mapped to `module.verboseName` in `require.js`.
-    params.push(path.relative(options.projectRoot, module.path));
+    params.push(normalizePathSeparatorsToPosix(path.relative(options.projectRoot, module.path)));
   }
 
   return { params, paths };

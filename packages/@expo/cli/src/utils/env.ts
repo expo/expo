@@ -156,19 +156,19 @@ class Env {
     return boolish('EXPO_NO_METRO_LAZY', false);
   }
 
-  /** Enable the unstable inverse dependency stack trace for Metro bundling errors. */
+  /**
+   * Enable the unstable inverse dependency stack trace for Metro bundling errors.
+   * @deprecated This will be removed in the future.
+   */
   get EXPO_METRO_UNSTABLE_ERRORS() {
-    return boolish('EXPO_METRO_UNSTABLE_ERRORS', false);
+    return boolish('EXPO_METRO_UNSTABLE_ERRORS', true);
   }
 
-  /** Enable the experimental sticky resolver for Metro. */
+  /** Enable the experimental sticky resolver for Metro (Uses Expo Autolinking results and applies them to Metro's resolution)
+   * @deprecated Replaced by `exp.experiments.autolinkingModuleResolution`
+   */
   get EXPO_USE_STICKY_RESOLVER() {
     return boolish('EXPO_USE_STICKY_RESOLVER', false);
-  }
-
-  /** Enable the unstable fast resolver for Metro. */
-  get EXPO_USE_FAST_RESOLVER() {
-    return boolish('EXPO_USE_FAST_RESOLVER', false);
   }
 
   /** Disable Environment Variable injection in client bundles. */
@@ -268,6 +268,32 @@ class Env {
 
   get EXPO_BUNDLE_BUILT_IN(): boolean {
     return boolish('EXPO_BUNDLE_BUILT_IN', false);
+  }
+
+  /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
+  get EXPO_UNSTABLE_WEB_MODAL(): boolean {
+    return boolish('EXPO_UNSTABLE_WEB_MODAL', false);
+  }
+
+  /** Disable by falsy value live binding in experimental import export support. Enabled by default. */
+  get EXPO_UNSTABLE_LIVE_BINDINGS(): boolean {
+    return boolish('EXPO_UNSTABLE_LIVE_BINDINGS', true);
+  }
+
+  /**
+   * Enable the experimental MCP integration or further specify the MCP server URL.
+   */
+  get EXPO_UNSTABLE_MCP_SERVER(): string {
+    const value = string('EXPO_UNSTABLE_MCP_SERVER', '');
+    if (value === '1' || value.toLowerCase() === 'true') {
+      return this.EXPO_STAGING ? 'staging-mcp.expo.dev' : 'mcp.expo.dev';
+    }
+    return value;
+  }
+
+  /** Enable Expo Log Box for iOS and Android (Web is enabled by default) */
+  get EXPO_UNSTABLE_LOG_BOX(): boolean {
+    return boolish('EXPO_UNSTABLE_LOG_BOX', false);
   }
 }
 

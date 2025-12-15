@@ -4,18 +4,18 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '0.2.7'
-
-dependencies {
-  implementation 'androidx.work:work-runtime-ktx:2.9.1'
-  implementation 'com.facebook.react:react-android'
-}
+version = '1.0.7'
 
 android {
   namespace "expo.modules.backgroundtask"
   defaultConfig {
     versionCode 23
-    versionName "0.2.7"
+    versionName "1.0.7"
     consumerProguardFiles("proguard-rules.pro")
   }
+}
+
+dependencies {
+  implementation 'androidx.work:work-runtime-ktx:2.9.1'
+  implementation 'com.facebook.react:react-android'
 }

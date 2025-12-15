@@ -107,8 +107,8 @@ export async function createFromFixtureAsync(
     copySync(fixturePath, projectRoot);
 
     // Add additional modifications to the package.json
+    pkg ??= {};
     if (pkg || linkExpoPackages || linkExpoPackagesDev) {
-      pkg ??= {};
       const pkgPath = path.join(projectRoot, 'package.json');
       const fixturePkg = (await JsonFile.readAsync(pkgPath)) as PackageJSONConfig;
 
@@ -133,6 +133,9 @@ export async function createFromFixtureAsync(
           resolutions[pkg] = tarball.packageReference;
         }
       }
+
+      // TODO(@kitten): Temporary addition until we have at least one publish with the `@expo/metro` dependency
+      devDependencies['@expo/metro'] = '~0.1.0';
 
       await JsonFile.writeAsync(pkgPath, {
         ...pkg,
@@ -165,6 +168,12 @@ export async function createFromFixtureAsync(
 
     // Install the packages for e2e experience.
     await executeBunAsync(projectRoot, ['install']);
+
+    // TODO(cedric): Remove this once we publish `@expo/metro-config` with `export --dev` fixes
+    // Or when we can build `@expo/metro-config` on Windows
+    const srcMetroConfig = path.resolve(__dirname, '../../../metro-config/build');
+    const destMetroConfig = path.join(projectRoot, 'node_modules/@expo/metro-config/build');
+    await fs.promises.cp(srcMetroConfig, destMetroConfig, { recursive: true, force: true });
   } catch (error) {
     log.error(error);
     throw error;
@@ -180,11 +189,9 @@ export async function setupTestProjectWithOptionsAsync(
   fixtureName: string,
   {
     reuseExisting = testingLocally,
-    sdkVersion = '52.0.0',
     linkExpoPackages,
     linkExpoPackagesDev,
   }: {
-    sdkVersion?: string;
     reuseExisting?: boolean;
     linkExpoPackages?: string[];
     linkExpoPackagesDev?: string[];
@@ -198,15 +205,6 @@ export async function setupTestProjectWithOptionsAsync(
     linkExpoPackages,
     linkExpoPackagesDev,
   });
-
-  // Many of the factors in this test are based on the expected SDK version that we're testing against.
-  const { exp } = getConfig(projectRoot, { skipPlugins: true });
-  if (!linkExpoPackages?.includes('expo')) {
-    assert(
-      exp.sdkVersion === sdkVersion,
-      `Expected exp.sdkVersion to be ${sdkVersion}, but it is set to ${exp.sdkVersion} for ${projectRoot} project.`
-    );
-  }
   return projectRoot;
 }
 
@@ -231,6 +229,10 @@ export async function getPage(output: string, route: string): Promise<string> {
 
 export async function getPageHtml(output: string, route: string) {
   return htmlParser.parse(await getPage(output, route));
+}
+
+export function getHtml(html: string) {
+  return htmlParser.parse(html);
 }
 
 export function getRouterE2ERoot(): string {
@@ -286,4 +288,8 @@ export function findProjectFiles(projectRoot: string) {
     )
     .filter(Boolean)
     .sort() as string[];
+}
+
+export function stripWhitespace(str: string): string {
+  return str.replace(/\s+/g, '').trim();
 }

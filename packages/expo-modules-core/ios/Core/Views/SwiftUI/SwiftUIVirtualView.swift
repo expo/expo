@@ -2,11 +2,11 @@
 
 import SwiftUI
 
-/**
- An NSObject acting as a fake UIView for RCTMountingManager to represent a SwiftUI view.
- This class is the Swift component of SwiftUIVirtualView, as referenced in ExpoFabricView.swift.
- */
 extension ExpoSwiftUI {
+  /**
+   An NSObject acting as a fake UIView for RCTMountingManager to represent a SwiftUI view.
+   This class is the Swift component of SwiftUIVirtualView, as referenced in ExpoFabricView.swift.
+   */
   final class SwiftUIVirtualView<Props: ViewProps, ContentView: View<Props>>: SwiftUIVirtualViewObjC, ExpoSwiftUIView {
     /**
      A weak reference to the app context associated with this view.
@@ -92,6 +92,8 @@ extension ExpoSwiftUI {
     /**
      Calls lifecycle methods registered by `OnViewDidUpdateProps` definition component.
      */
+    @MainActor
+    @preconcurrency
     override func viewDidUpdateProps() {
       guard let viewDefinition else {
         return
@@ -153,6 +155,15 @@ extension ExpoSwiftUI {
     }
 
     // MARK: - Privates
+
+    override func removeFromSuperview() {
+      // When the view is unmounted, the focus on TextFieldView stays active and it causes a crash, so we blur it here
+      // UIView does something similar to resign the first responder in removeFromSuperview, so we do the same for our virtual view
+      if let focusableView = contentView as? any ExpoSwiftUI.FocusableView {
+        focusableView.forceResignFirstResponder()
+      }
+      super.removeFromSuperview()
+    }
 
     /**
      Installs convenient event dispatchers for declared events, so the view can just invoke the block to dispatch the proper event.

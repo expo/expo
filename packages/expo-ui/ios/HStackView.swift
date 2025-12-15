@@ -26,10 +26,7 @@ internal enum VerticalAlignmentOptions: String, Enumerable {
   }
 }
 
-internal final class HStackViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
+internal final class HStackViewProps: UIBaseViewProps {
   @Field var spacing: Double?
   @Field var useTapGesture: Bool?
   @Field var alignment: VerticalAlignmentOptions?
@@ -46,7 +43,6 @@ internal struct HStackView: ExpoSwiftUI.View {
       spacing: CGFloat(props.spacing ?? 0)) {
       Children()
     }
-    .modifier(CommonViewModifiers(props: props))
     .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap, useContentShape: true)
     .background(props.backgroundColor)
   }

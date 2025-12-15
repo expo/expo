@@ -1,20 +1,29 @@
+import { type PropsWithChildren } from 'react';
 import { type ViewProps } from 'react-native';
 export interface NativeLinkPreviewActionProps {
+    identifier: string;
     title: string;
     icon?: string;
-    id: string;
     children?: React.ReactNode;
+    disabled?: boolean;
+    destructive?: boolean;
+    displayAsPalette?: boolean;
+    displayInline?: boolean;
+    isOn?: boolean;
+    keepPresented?: boolean;
+    onSelected: () => void;
 }
 export declare function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps): import("react").JSX.Element | null;
-export type NativeLinkPreviewTriggerProps = ViewProps;
-export declare function NativeLinkPreviewTrigger(props: NativeLinkPreviewTriggerProps): import("react").JSX.Element | null;
+export interface TabPath {
+    oldTabKey: string;
+    newTabKey: string;
+}
 export interface NativeLinkPreviewProps extends ViewProps {
     nextScreenId: string | undefined;
-    onActionSelected?: (event: {
-        nativeEvent: {
-            id: string;
-        };
-    }) => void;
+    tabPath: {
+        path: TabPath[];
+    } | undefined;
+    disableForceFlatten?: boolean;
     onWillPreviewOpen?: () => void;
     onDidPreviewOpen?: () => void;
     onPreviewWillClose?: () => void;
@@ -31,4 +40,25 @@ export interface NativeLinkPreviewContentProps extends ViewProps {
     };
 }
 export declare function NativeLinkPreviewContent(props: NativeLinkPreviewContentProps): import("react").JSX.Element | null;
+export declare function LinkZoomTransitionEnabler(props: {
+    zoomTransitionSourceIdentifier: string;
+    preventInteractiveDismissal?: boolean;
+}): import("react").JSX.Element | null;
+interface LinkSourceAlignmentRect {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+interface LinkZoomTransitionSourceProps extends PropsWithChildren {
+    identifier: string;
+    alignment?: LinkSourceAlignmentRect;
+    animateAspectRatioChange?: boolean;
+}
+export declare function LinkZoomTransitionSource(props: LinkZoomTransitionSourceProps): import("react").JSX.Element | null;
+export declare function LinkZoomTransitionAlignmentRectDetector(props: {
+    identifier: string;
+    children: React.ReactNode;
+}): import("react").JSX.Element | null;
+export {};
 //# sourceMappingURL=native.d.ts.map

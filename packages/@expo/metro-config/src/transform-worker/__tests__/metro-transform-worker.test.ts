@@ -9,12 +9,16 @@
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/index.js#L1
  */
 
+import { fromRawMappings } from '@expo/metro/metro-source-map';
+import type {
+  JsTransformerConfig,
+  JsTransformOptions,
+  JsOutput,
+} from '@expo/metro/metro-transform-worker';
 import { TraceMap, originalPositionFor, generatedPositionFor } from '@jridgewell/trace-mapping';
 import { Buffer } from 'buffer';
 import * as fs from 'fs';
 import { vol } from 'memfs';
-import { fromRawMappings } from 'metro-source-map';
-import type { JsTransformerConfig, JsTransformOptions, JsOutput } from 'metro-transform-worker';
 import * as path from 'path';
 
 /** Converts source mappings from Metro to a “TraceMap”, which is similar to source-map’s SourceMapConsumer */
@@ -39,15 +43,20 @@ afterEach(() => {
 });
 
 jest
-  .mock('metro-transform-worker/src/utils/getMinifier', () => () => ({ code, map, config }) => {
-    const trimmed = config.output.comments ? code : code.replace('/*#__PURE__*/', '');
-    return {
-      code: trimmed.replace('arbitrary(code)', 'minified(code)'),
-      map,
-    };
-  })
-  .mock('metro-transform-plugins', () => ({
-    ...jest.requireActual('metro-transform-plugins'),
+  .mock(
+    '@expo/metro/metro-transform-worker/utils/getMinifier',
+    () =>
+      () =>
+      ({ code, map, config }) => {
+        const trimmed = config.output.comments ? code : code.replace('/*#__PURE__*/', '');
+        return {
+          code: trimmed.replace('arbitrary(code)', 'minified(code)'),
+          map,
+        };
+      }
+  )
+  .mock('@expo/metro/metro-transform-plugins', () => ({
+    ...jest.requireActual('@expo/metro/metro-transform-plugins'),
     inlinePlugin: () => ({}),
     constantFoldingPlugin: () => ({}),
   }))
@@ -88,7 +97,6 @@ const baseConfig: JsTransformerConfig = {
 
 const baseTransformOptions: JsTransformOptions = {
   dev: true,
-  hot: false,
   inlinePlatform: false,
   inlineRequires: false,
   minify: false,
@@ -233,7 +241,7 @@ it('transforms a module with dependencies', async () => {
       HEADER_DEV,
       '  "use strict";',
       '',
-      '  var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault");',
+      '  var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault").default;',
       '  var _c = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[1], "./c"));',
       '  _$$_REQUIRE(_dependencyMap[2], "./a");',
       '  arbitrary(code);',
@@ -367,7 +375,8 @@ it('transforms async generators', async () => {
 });
 
 it('transforms import/export syntax when experimental flag is on', async () => {
-  const contents = ['import c from "./c";'].join('\n');
+  // NOTE(@kitten): We have to add a side-effect, or the import will be dropped
+  const contents = ['import c from "./c"; test(c);'].join('\n');
 
   const result = await Transformer.transform(
     baseConfig,
@@ -383,7 +392,14 @@ it('transforms import/export syntax when experimental flag is on', async () => {
       HEADER_DEV,
       '  "use strict";',
       '',
-      '  var c = _$$_IMPORT_DEFAULT(_dependencyMap[0], "./c");',
+      '  function _interopDefault(e) {',
+      '    return e && e.__esModule ? e : {',
+      '      default: e',
+      '    };',
+      '  }',
+      '  var _c = _$$_REQUIRE(_dependencyMap[0], "./c");',
+      '  var c = _interopDefault(_c);',
+      '  test(c.default);',
       '});',
     ].join('\n')
   );
@@ -391,25 +407,19 @@ it('transforms import/export syntax when experimental flag is on', async () => {
   const trace = toTraceMap(result.output[0], contents);
 
   expect(generatedPositionFor(trace, { source: '', line: 1, column: 7 })).toMatchObject({
-    line: 4,
-    column: 6,
+    line: 10,
+    column: 28,
   });
 
-  expect(originalPositionFor(trace, { line: 4, column: 6 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 11, column: 7 })).toMatchObject({
     line: 1,
-    column: 7,
+    column: 26,
     name: 'c',
   });
 
-  // NOTE: If downgraded below @babel/generator@7.21.0, names will be missing here
-  expect(originalPositionFor(trace, { line: 4, column: 10 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 9, column: 30 })).toMatchObject({
     line: 1,
-    column: 8,
-    name: '_$$_IMPORT_DEFAULT',
-  });
-  expect(originalPositionFor(trace, { line: 4, column: 29 })).toMatchObject({
-    line: 1,
-    column: 8,
+    column: 0,
     name: '_dependencyMap',
   });
 
@@ -739,10 +749,12 @@ it('allows the constantFoldingPlugin to not remove used helpers when `dev: false
   // NOTE(kitten): The `constantFoldingPlugin` removes used, inlined Babel helpers, unless
   // the AST path has been re-crawled. If this regressed, check whether `programPath.scope.crawl()`
   // is called before this plugin is run.
-  jest.mock('metro-transform-plugins', () => ({
-    ...jest.requireActual('metro-transform-plugins'),
+  jest.mock('@expo/metro/metro-transform-plugins', () => ({
+    ...jest.requireActual('@expo/metro/metro-transform-plugins'),
     inlinePlugin: () => ({}),
-    constantFoldingPlugin: jest.requireActual('metro-transform-plugins').constantFoldingPlugin,
+    constantFoldingPlugin: jest.requireActual<typeof import('@expo/metro/metro-transform-plugins')>(
+      '@expo/metro/metro-transform-plugins'
+    ).constantFoldingPlugin,
   }));
 
   const contents = ['import * as test from "test-module";', 'export { test };'].join('\n');

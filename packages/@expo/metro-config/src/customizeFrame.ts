@@ -1,5 +1,5 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
-import { SymbolicatorConfigT } from 'metro-config';
+import type { SymbolicatorConfigT } from '@expo/metro/metro-config';
 import { URL } from 'url';
 
 type CustomizeFrameFunc = SymbolicatorConfigT['customizeFrame'];
@@ -33,7 +33,7 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     // Babel helpers that implement language features
     'node_modules/@babel/runtime/.+\\.js$',
     // Hide Hermes internal bytecode
-    '/InternalBytecode/InternalBytecode\\.js$',
+    '/(?:InternalBytecode/)?InternalBytecode\\.js$',
     // Block native code invocations
     `\\[native code\\]`,
     // Block builtin code invocations. This is defined in the sourceUrl for built-in modules.
@@ -45,6 +45,7 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     // Block expo's metro-runtime
     '@expo/metro-runtime/.+\\.ts',
     '@expo/server/.+\\.ts',
+    'expo-server/.+\\.ts',
     // Block upstream metro-runtime
     '/metro-runtime/.+\\.js$',
     // Expo's metro-runtime require patch:
@@ -107,6 +108,13 @@ export function getDefaultCustomizeFrame(): CustomizeFrameFunc {
         ['global', 'global code'].includes(frame.methodName) &&
         frame.file?.match(/^https?:\/\//g)
       ) {
+        collapse = true;
+      } else if (
+        (frame.file === 'unknown' || frame.file === '<anonymous>') &&
+        (frame.column == null || frame.column === -1)
+      ) {
+        // If we definitively don't have a file, as indicated by the invalid column value,
+        // this frame won't be able to desymbolicate properly
         collapse = true;
       } else if (frame.file === '<native>') {
         collapse = true;

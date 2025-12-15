@@ -16,6 +16,7 @@ export declare class NativeDatabase {
   public serializeAsync(databaseName: string): Promise<Uint8Array>;
   public prepareAsync(nativeStatement: NativeStatement, source: string): Promise<NativeStatement>;
   public createSessionAsync(nativeSession: NativeSession, dbName: string): Promise<NativeSession>;
+  public loadExtensionAsync(libPath: string, entryPoint?: string): Promise<void>;
 
   //#endregion
 
@@ -28,6 +29,7 @@ export declare class NativeDatabase {
   public serializeSync(databaseName: string): Uint8Array;
   public prepareSync(nativeStatement: NativeStatement, source: string): NativeStatement;
   public createSessionSync(nativeSession: NativeSession, dbName: string): NativeSession;
+  public loadExtensionSync(libPath: string, entryPoint?: string): void;
 
   //#endregion
 

@@ -1,18 +1,40 @@
 import {
   Button,
   ColorPicker,
-  LabelPrimitive,
+  Host,
+  HStack,
+  Image,
+  Label,
   List,
-  ListStyle,
+  type ListStyle,
   Picker,
+  Section,
   Switch,
+  Text,
 } from '@expo/ui/swift-ui';
+import {
+  background,
+  clipShape,
+  disabled,
+  frame,
+  headerProminence,
+  padding,
+  pickerStyle,
+  refreshable,
+  scrollDismissesKeyboard,
+  foregroundStyle,
+  shapes,
+  tag,
+} from '@expo/ui/swift-ui/modifiers';
+import { useNavigation } from '@react-navigation/native';
+import type { SFSymbol } from 'expo-symbols';
 import * as React from 'react';
+import { useLayoutEffect } from 'react';
 
 export default function ListScreen() {
   const [color, setColor] = React.useState<string>('blue');
-  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(0);
-  const data = [
+  const [selectedIndex, setSelectedIndex] = React.useState<number>(0);
+  const data: { text: string; systemImage: SFSymbol }[] = [
     { text: 'Good Morning', systemImage: 'sun.max.fill' },
     { text: 'Weather', systemImage: 'cloud.sun.fill' },
     { text: 'Settings', systemImage: 'gearshape.fill' },
@@ -28,91 +50,179 @@ export default function ListScreen() {
     'grouped',
     'sidebar',
   ];
+  const scrollDismissesKeyboardOptions = [
+    'automatic',
+    'never',
+    'interactively',
+    'immediately',
+  ] as const;
   const [selectEnabled, setSelectEnabled] = React.useState<boolean>(true);
   const [deleteEnabled, setDeleteEnabled] = React.useState<boolean>(true);
   const [moveEnabled, setMoveEnabled] = React.useState<boolean>(true);
   const [editModeEnabled, setEditModeEnabled] = React.useState<boolean>(false);
+  const [scrollDismissesKeyboardIndex, setScrollDismissesKeyboardIndex] = React.useState<number>(0);
+  const [increasedHeader, setIncreasedHeader] = React.useState(false);
+  const [collapsible, setCollapsible] = React.useState<boolean>(false);
+  const [customHeaderFooter, setCustomHeaderFooter] = React.useState<{
+    header: boolean;
+    footer: boolean;
+  }>({ header: false, footer: false });
+  const [lastRefresh, setLastRefresh] = React.useState<Date | null>(null);
+  const [refreshEnabled, setRefreshEnabled] = React.useState<boolean>(false);
+
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: 'List',
+      headerSearchBarOptions: {
+        placeholder: 'Test different keyboard dismissals',
+      },
+    });
+  }, [navigation]);
 
   return (
-    <>
-      <List listStyle="automatic" scrollEnabled={false}>
-        <Button onPress={() => setEditModeEnabled(!editModeEnabled)}>Toggle Edit</Button>
-        <Switch
-          value={selectEnabled}
-          label="Select enabled"
-          onValueChange={setSelectEnabled}
-          style={{
-            width: 300,
-            height: 100,
-          }}
-        />
-        <Switch
-          value={deleteEnabled}
-          label="Delete enabled"
-          onValueChange={setDeleteEnabled}
-          style={{
-            width: 300,
-            height: 100,
-          }}
-        />
-        <Switch
-          value={moveEnabled}
-          label="Move enabled"
-          onValueChange={setMoveEnabled}
-          style={{
-            width: 300,
-            height: 100,
-          }}
-        />
-        <ColorPicker
-          label="Item icon color"
-          selection={color}
-          supportsOpacity
-          onValueChanged={setColor}
-          style={{
-            width: 300,
-            height: 100,
-          }}
-        />
-        <Picker
-          label="List style"
-          options={listStyleOptions}
-          selectedIndex={selectedIndex}
-          onOptionSelected={({ nativeEvent: { index } }) => {
-            setSelectedIndex(index);
-          }}
-          variant="menu"
-          style={{
-            width: 300,
-            height: 100,
-          }}
-        />
-      </List>
-
+    <Host style={{ flex: 1 }}>
       <List
-        scrollEnabled={false}
         editModeEnabled={editModeEnabled}
         onSelectionChange={(items) => alert(`indexes of selected items: ${items.join(', ')}`)}
         moveEnabled={moveEnabled}
         onMoveItem={(from, to) => alert(`moved item at index ${from} to index ${to}`)}
         onDeleteItem={(item) => alert(`deleted item at index: ${item}`)}
-        style={{ flex: 1 }}
         listStyle={listStyleOptions[selectedIndex ?? 0]}
+        modifiers={[
+          scrollDismissesKeyboard(
+            scrollDismissesKeyboardOptions[scrollDismissesKeyboardIndex ?? 0]
+          ),
+          headerProminence(increasedHeader ? 'increased' : 'standard'),
+          ...(refreshEnabled
+            ? [
+                refreshable(async () => {
+                  // Simulate async data fetching
+                  await new Promise((resolve) => setTimeout(resolve, 2000));
+                  setLastRefresh(new Date());
+                }),
+              ]
+            : []),
+        ]}
         deleteEnabled={deleteEnabled}
         selectEnabled={selectEnabled}>
-        {data.map((item, index) => (
-          <LabelPrimitive
-            key={index}
-            title={item.text}
-            systemImage={item.systemImage}
-            color={color}
+        <Section
+          collapsible={collapsible}
+          title="Collapsible section"
+          {...(customHeaderFooter.header && {
+            header: (
+              <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
+                <HStack modifiers={[padding({ all: 8 })]}>
+                  <Image systemName="list.bullet" color="white" size={22} />
+                  <Text color="white" size={16}>
+                    Custom header
+                  </Text>
+                </HStack>
+              </HStack>
+            ),
+          })}
+          footer={
+            <>
+              {customHeaderFooter.footer && (
+                <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
+                  <Text size={16} color="white" modifiers={[padding({ all: 8 })]}>
+                    Custom Footer
+                  </Text>
+                </HStack>
+              )}
+            </>
+          }>
+          <Switch
+            label="Use increased section header"
+            value={increasedHeader}
+            onValueChange={setIncreasedHeader}
           />
-        ))}
+          <Switch label="Collapsible" value={collapsible} onValueChange={setCollapsible} />
+          <Switch
+            label="Custom header"
+            value={customHeaderFooter.header}
+            onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, header: v }))}
+          />
+          <Switch
+            label="Custom footer"
+            value={customHeaderFooter.footer}
+            onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, footer: v }))}
+            modifiers={[disabled(collapsible)]}
+          />
+        </Section>
+        <Section title="Controls" collapsible>
+          <Button onPress={() => setEditModeEnabled(!editModeEnabled)}>Toggle Edit</Button>
+          <Switch value={selectEnabled} label="Select enabled" onValueChange={setSelectEnabled} />
+          <Switch value={deleteEnabled} label="Delete enabled" onValueChange={setDeleteEnabled} />
+          <Switch value={moveEnabled} label="Move enabled" onValueChange={setMoveEnabled} />
+          <Switch
+            value={refreshEnabled}
+            label="Refreshable enabled"
+            onValueChange={setRefreshEnabled}
+          />
+          {lastRefresh && (
+            <Text size={12} color="gray">
+              Last refresh: {lastRefresh.toLocaleTimeString()}
+            </Text>
+          )}
+          <ColorPicker
+            label="Item icon color"
+            selection={color}
+            supportsOpacity
+            onValueChanged={setColor}
+          />
+          <Picker
+            label="Scroll dismisses keyboard"
+            modifiers={[pickerStyle('menu')]}
+            selection={scrollDismissesKeyboardIndex}
+            onSelectionChange={setScrollDismissesKeyboardIndex}>
+            {scrollDismissesKeyboardOptions.map((option, index) => (
+              <Text key={index} modifiers={[tag(index)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
+          <Picker
+            label="List style"
+            modifiers={[pickerStyle('menu')]}
+            selection={selectedIndex}
+            onSelectionChange={setSelectedIndex}>
+            {listStyleOptions.map((option, index) => (
+              <Text key={index} modifiers={[tag(index)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
+        </Section>
+        <Section title="Data">
+          <Label
+            icon={
+              <Image
+                systemName="sun.max.fill"
+                color="white"
+                size={15}
+                modifiers={[
+                  padding({ all: 4 }),
+                  background(
+                    'blue',
+                    shapes.roundedRectangle({ cornerRadius: 12, roundedCornerStyle: 'continuous' })
+                  ),
+                ]}
+              />
+            }
+            title="Label with custom icon"
+          />
+          {data.map((item, index) => (
+            <Label
+              key={index}
+              modifiers={[frame({ height: 24 }), foregroundStyle(color)]}
+              title={item.text}
+              systemImage={item.systemImage}
+            />
+          ))}
+        </Section>
       </List>
-    </>
+    </Host>
   );
 }
-
-ListScreen.navigationOptions = {
-  title: 'List',
-};

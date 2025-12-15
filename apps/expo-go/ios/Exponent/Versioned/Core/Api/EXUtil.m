@@ -38,6 +38,17 @@ EX_EXPORT_SCOPED_MODULE(ExponentUtil, UtilService);
   return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 }
 
++ (BOOL)isExcludedExpoHost:(NSString *)host
+{
+  NSArray *excludedHosts = @[
+    @"launch.expo.dev",
+    @"docs.expo.dev",
+    @"blog.expo.dev",
+    @"chat.expo.dev",
+    @"snack.expo.dev"
+  ];
+  return [excludedHosts containsObject:host];
+}
 
 + (BOOL)isExpoHostedUrl:(NSURL *)url
 {
@@ -47,6 +58,10 @@ EX_EXPORT_SCOPED_MODULE(ExponentUtil, UtilService);
 + (BOOL)isExpoHostedUrlComponents:(NSURLComponents *)components
 {
   if (components.host) {
+    if ([self isExcludedExpoHost:components.host]) {
+      return NO;
+    }
+    
     return [components.host isEqualToString:@"exp.host"] ||
       [components.host isEqualToString:@"expo.io"] ||
       [components.host isEqualToString:@"exp.direct"] ||

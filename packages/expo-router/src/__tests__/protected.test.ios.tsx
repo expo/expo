@@ -1,3 +1,4 @@
+import { act, fireEvent, screen } from '@testing-library/react-native';
 import React, { createContext, Dispatch, SetStateAction, use, useState } from 'react';
 import { Text } from 'react-native';
 
@@ -5,7 +6,7 @@ import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
-import { act, fireEvent, renderRouter, screen } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 it('should protect routes during the initial load', () => {
   let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
@@ -44,11 +45,9 @@ it('should protect routes during the initial load', () => {
               path: '/a',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
@@ -68,7 +67,7 @@ it('should protect routes during the initial load', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -78,7 +77,7 @@ it('should protect routes during the initial load', () => {
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['a', 'index', 'b', 'c', '_sitemap', '+not-found'],
+          routeNames: ['a', 'index', 'b', 'c'],
           routes: [
             {
               key: expect.any(String),
@@ -94,6 +93,101 @@ it('should protect routes during the initial load', () => {
     stale: false,
     type: 'stack',
   });
+});
+
+it('should protect nested protected routes', () => {
+  let useStateResultA: [boolean, Dispatch<SetStateAction<boolean>>];
+  let useStateResultB: [boolean, Dispatch<SetStateAction<boolean>>];
+  let useStateResultC: [boolean, Dispatch<SetStateAction<boolean>>];
+
+  renderRouter({
+    _layout: function Layout() {
+      useStateResultA = useState(false);
+      useStateResultB = useState(false);
+      useStateResultC = useState(false);
+
+      return (
+        <Stack id={undefined}>
+          <Stack.Protected guard={useStateResultA[0]}>
+            <Stack.Screen name="a" />
+
+            <Stack.Protected guard={useStateResultB[0]}>
+              <Stack.Screen name="b" />
+
+              <Stack.Protected guard={useStateResultC[0]}>
+                <Stack.Screen name="c" />
+              </Stack.Protected>
+            </Stack.Protected>
+          </Stack.Protected>
+        </Stack>
+      );
+    },
+    index: () => {
+      return <Text testID="index">index</Text>;
+    },
+    a: () => <Text testID="a">a</Text>,
+    b: () => <Text testID="b">B</Text>,
+    c: () => <Text testID="c">C</Text>,
+  });
+
+  // try to navigate to all protected routes should not change the current
+  // route since all the guards are false
+  act(() => router.replace('/a'));
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+
+  act(() => router.replace('/b'));
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+
+  act(() => router.replace('/c'));
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+
+  // change the guards for routes A and C to true: should make A available but
+  // not C as it is nested under B and the guard for B is still false
+  act(() => {
+    useStateResultA[1](true);
+    useStateResultC[1](true);
+  });
+
+  act(() => router.replace('/a'));
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
+
+  act(() => router.replace('/b'));
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
+
+  act(() => router.replace('/c'));
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
+
+  expect(store.state.index).toBe(0);
+  expect(store.state.routes[0].name).toBe('__root');
+  expect(store.state.routes[0].state.routeNames).toStrictEqual(['a', 'index']);
+
+  // change the guard for route B to true: should make B available and also C
+  // should be available now as all its parents guards are true
+  act(() => {
+    useStateResultB[1](true);
+  });
+
+  act(() => router.replace('/a'));
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
+
+  act(() => router.replace('/b'));
+  expect(screen.getByTestId('b')).toBeVisible();
+  expect(screen).toHavePathname('/b');
+
+  act(() => router.replace('/c'));
+  expect(screen.getByTestId('c')).toBeVisible();
+  expect(screen).toHavePathname('/c');
+
+  expect(store.state.index).toBe(0);
+  expect(store.state.routes[0].name).toBe('__root');
+  expect(store.state.routes[0].state.routeNames).toStrictEqual(['a', 'b', 'c', 'index']);
 });
 
 it('should default to anchor during initial load', () => {
@@ -143,11 +237,9 @@ it('should default to anchor during initial load', () => {
               path: '/a',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   expect(screen.getByTestId('b')).toBeVisible();
@@ -166,7 +258,7 @@ it('should default to anchor during initial load', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -176,7 +268,7 @@ it('should default to anchor during initial load', () => {
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['a', 'b', 'index', '_sitemap', '+not-found'],
+          routeNames: ['a', 'b', 'index'],
           routes: [
             {
               key: expect.any(String),
@@ -276,7 +368,7 @@ it('works with tabs', () => {
     },
   });
 
-  expect(screen.queryByLabelText('protected, tab, 2 of 4')).toBeNull();
+  expect(screen.queryByLabelText('protected, tab, 2 of 2')).toBeNull();
 
   fireEvent.press(screen.getByTestId('index'));
 
@@ -285,5 +377,5 @@ it('works with tabs', () => {
   fireEvent(screen.getByTestId('index'), 'longPress');
 
   expect(screen).toHavePathname('/protected');
-  expect(screen.queryByLabelText('protected, tab, 2 of 4')).toBeVisible();
+  expect(screen.queryByLabelText('protected, tab, 2 of 2')).toBeVisible();
 });

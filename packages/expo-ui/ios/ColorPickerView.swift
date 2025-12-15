@@ -3,7 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class ColorPickerProps: ExpoSwiftUI.ViewProps {
+final class ColorPickerProps: UIBaseViewProps {
   @Field var selection: Color = .clear
   @Field var label: String?
   @Field var supportsOpacity: Bool = true

@@ -117,16 +117,9 @@ public final class ImageView: ExpoView {
     addSubview(sdImageView)
   }
 
-  public override func didMoveToWindow() {
-    if window == nil {
-      // Cancel pending requests when the view is unmounted.
-      cancelPendingOperation()
-    } else if !bounds.isEmpty {
-      // Reload the image after mounting the view with non-empty bounds.
-      reload()
-    } else {
-      loadPlaceholderIfNecessary()
-    }
+  deinit {
+    // Cancel pending requests when the view is deallocated.
+    cancelPendingOperation()
   }
 
   public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -154,7 +147,7 @@ public final class ImageView: ExpoView {
     if sdImageView.image == nil {
       sdImageView.contentMode = contentFit.toContentMode()
     }
-    var context = createSDWebImageContext(forSource: source, cachePolicy: cachePolicy, useAppleWebpCodec: useAppleWebpCodec)
+    var context = createBaseImageContext(source: source)
 
     // Cancel currently running load requests.
     cancelPendingOperation()
@@ -165,7 +158,7 @@ public final class ImageView: ExpoView {
 
     // It seems that `UIImageView` can't tint some vector graphics. If the `tintColor` prop is specified,
     // we tell the SVG coder to decode to a bitmap instead. This will become useless when we switch to SVGNative coder.
-    let shouldEarlyResize = imageTintColor != nil || enforceEarlyResizing
+    let shouldEarlyResize = imageTintColor != nil || enforceEarlyResizing || source.isPhotoLibraryAsset
     if shouldEarlyResize {
       context[.imagePreserveAspectRatio] = true
       context[.imageThumbnailPixelSize] = CGSize(
@@ -339,7 +332,7 @@ public final class ImageView: ExpoView {
     // to cache them or apply the same policy as with the proper image?
     // Basically they are also cached in memory as the `placeholderImage` property,
     // so just `disk` policy sounds like a good idea.
-    var context = createSDWebImageContext(forSource: placeholder, cachePolicy: .disk, useAppleWebpCodec: useAppleWebpCodec)
+    let context = createBaseImageContext(source: placeholder, cachePolicy: .disk)
 
     let isPlaceholderHash = placeholder.isBlurhash || placeholder.isThumbhash
 
@@ -492,6 +485,27 @@ public final class ImageView: ExpoView {
    */
   var hasAnySource: Bool {
     return sources?.isEmpty == false
+  }
+
+  /**
+   Creates a base SDWebImageContext for this view. It should include options that are shared by both placeholders and final images.
+   */
+  private func createBaseImageContext(source: ImageSource, cachePolicy: ImageCachePolicy? = nil) -> SDWebImageContext {
+    var context = createSDWebImageContext(
+      forSource: source,
+      cachePolicy: cachePolicy ?? self.cachePolicy,
+      useAppleWebpCodec: useAppleWebpCodec
+    )
+
+    // Decode to HDR if the `preferHighDynamicRange` prop is on (in this case `preferredImageDynamicRange` is set to high).
+    if #available(iOS 17.0, macCatalyst 17.0, tvOS 17.0, *) {
+      context[.imageDecodeToHDR] = sdImageView.preferredImageDynamicRange == .constrainedHigh || sdImageView.preferredImageDynamicRange == .high
+    }
+
+    // Some loaders (e.g. PhotoLibraryAssetLoader) may need to know the screen scale.
+    context[ImageView.screenScaleKey] = screenScale
+
+    return context
   }
 
   // MARK: - Live Text Interaction

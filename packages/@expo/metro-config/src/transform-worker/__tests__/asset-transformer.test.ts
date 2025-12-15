@@ -1,7 +1,7 @@
 import * as generator from '@babel/generator';
+import { getAssetData } from '@expo/metro/metro/Assets';
 import * as fs from 'fs';
 import { vol } from 'memfs';
-import { getAssetData } from 'metro/src/Assets';
 
 import { transform } from '../asset-transformer';
 
@@ -44,7 +44,7 @@ function getMockImageExport() {
 
 jest.mock('fs');
 
-jest.mock('metro/src/Assets', () => ({ getAssetData: jest.fn() }));
+jest.mock('@expo/metro/metro/Assets', () => ({ getAssetData: jest.fn() }));
 
 beforeEach(() => {
   jest.resetModules();
@@ -99,7 +99,10 @@ it(`parses asset for dom components export`, async () => {
     "module.exports = {
       uri: "/assets/assets/images/icon.4e3f888fc8475f69fd5fa32f1ad5216a.png",
       width: 1024,
-      height: 1024
+      height: 1024,
+      toString() {
+        return this.uri;
+      }
     };"
   `);
   expect(results.reactClientReference).toBeUndefined();
@@ -124,7 +127,10 @@ it(`parses asset as string in client environment for web`, async () => {
     "module.exports = {
       uri: "/assets/?unstable_path=.%2Fassets%2Fimages/icon.png",
       width: 1024,
-      height: 1024
+      height: 1024,
+      toString() {
+        return this.uri;
+      }
     };"
   `);
   expect(results.reactClientReference).toBeUndefined();
@@ -170,7 +176,10 @@ it(`parses asset as string in client environment for web during export`, async (
     "module.exports = {
       uri: "/assets/assets/images/icon.4e3f888fc8475f69fd5fa32f1ad5216a.png",
       width: 1024,
-      height: 1024
+      height: 1024,
+      toString() {
+        return this.uri;
+      }
     };"
   `);
   expect(results.reactClientReference).toBeUndefined();
@@ -194,13 +203,15 @@ it(`parses asset as string in react server environment for web`, async () => {
     []
   );
   expect(getAssetData).toHaveBeenCalledTimes(1);
-  expect(astString(results.ast)).toMatchInlineSnapshot(`
+  const asset = astString(results.ast);
+  expect(asset).toMatchInlineSnapshot(`
     "module.exports = {
       uri: "/assets/?unstable_path=.%2Fassets%2Fimages/icon.png",
       width: 1024,
       height: 1024
     };"
   `);
+  expect(asset).not.toContain('toString');
   expect(results.reactClientReference).toBe('file:///root/local/foo.png');
 });
 

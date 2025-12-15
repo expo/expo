@@ -21,7 +21,6 @@ import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.ReactInstanceManager
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.core.PermissionListener
@@ -55,15 +54,12 @@ class ReactActivityDelegateWrapper(
   private val reactActivityHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
-  private val _reactNativeHost: ReactNativeHost by lazy {
-    invokeDelegateMethod("getReactNativeHost")
-  }
   private val _reactHost: ReactHost? by lazy {
     delegate.reactHost
   }
   private val delayLoadAppHandler: DelayLoadAppHandler? by lazy {
     reactActivityHandlers.asSequence()
-      .mapNotNull { it.getDelayLoadAppHandler(activity, reactNativeHost) }
+      .mapNotNull { it.getDelayLoadAppHandler(activity, reactHost) }
       .firstOrNull()
   }
 
@@ -102,10 +98,6 @@ class ReactActivityDelegateWrapper(
     return invokeDelegateMethod("getReactDelegate")
   }
 
-  override fun getReactNativeHost(): ReactNativeHost {
-    return _reactNativeHost
-  }
-
   override fun getReactHost(): ReactHost? {
     return _reactHost
   }
@@ -131,6 +123,11 @@ class ReactActivityDelegateWrapper(
     val newDelegate = reactActivityHandlers.asSequence()
       .mapNotNull { it.onDidCreateReactActivityDelegate(activity, this) }
       .firstOrNull()
+
+    reactActivityHandlers.forEach { handler ->
+      handler.onDidCreateReactActivityDelegateNotification(activity, newDelegate)
+    }
+
     if (newDelegate != null && newDelegate != this) {
       val mDelegateField = ReactActivity::class.java.getDeclaredField("mDelegate")
       mDelegateField.isAccessible = true
@@ -172,7 +169,7 @@ class ReactActivityDelegateWrapper(
             launchOptions,
             isFabricEnabled
           ) {
-            override fun createRootView(): ReactRootView {
+            override fun createRootView(): ReactRootView? {
               return this@ReactActivityDelegateWrapper.createRootView() ?: super.createRootView()
             }
           }
@@ -292,7 +289,7 @@ class ReactActivityDelegateWrapper(
     }
   }
 
-  override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+  override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
     if (!loadAppReady.isCompleted) {
       return false
     }
@@ -303,7 +300,7 @@ class ReactActivityDelegateWrapper(
       .fold(false) { accu, current -> accu || current } || delegate.onKeyDown(keyCode, event)
   }
 
-  override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+  override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
     if (!loadAppReady.isCompleted) {
       return false
     }
@@ -314,7 +311,7 @@ class ReactActivityDelegateWrapper(
       .fold(false) { accu, current -> accu || current } || delegate.onKeyUp(keyCode, event)
   }
 
-  override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
+  override fun onKeyLongPress(keyCode: Int, event: KeyEvent): Boolean {
     if (!loadAppReady.isCompleted) {
       return false
     }
@@ -354,14 +351,14 @@ class ReactActivityDelegateWrapper(
     }
   }
 
-  override fun requestPermissions(permissions: Array<out String>?, requestCode: Int, listener: PermissionListener?) {
+  override fun requestPermissions(permissions: Array<out String>, requestCode: Int, listener: PermissionListener?) {
     launchLifecycleScopeWithLock {
       loadAppReady.await()
       delegate.requestPermissions(permissions, requestCode, listener)
     }
   }
 
-  override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>?, grantResults: IntArray?) {
+  override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
     launchLifecycleScopeWithLock {
       loadAppReady.await()
       delegate.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -388,7 +385,7 @@ class ReactActivityDelegateWrapper(
     return invokeDelegateMethod("composeLaunchOptions")
   }
 
-  override fun onConfigurationChanged(newConfig: Configuration?) {
+  override fun onConfigurationChanged(newConfig: Configuration) {
     launchLifecycleScopeWithLock {
       loadAppReady.await()
       delegate.onConfigurationChanged(newConfig)
@@ -438,7 +435,7 @@ class ReactActivityDelegateWrapper(
       mReactDelegate.isAccessible = true
       val reactDelegate = mReactDelegate[delegate] as ReactDelegate
 
-      reactDelegate.loadApp(appKey)
+      reactDelegate.loadApp(requireNotNull(appKey))
       val reactRootView = reactDelegate.reactRootView
       (reactRootView?.parent as? ViewGroup)?.removeView(reactRootView)
       rootViewContainer.addView(reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)

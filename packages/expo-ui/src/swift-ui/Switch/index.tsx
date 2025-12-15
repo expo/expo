@@ -1,7 +1,10 @@
 import { requireNativeView } from 'expo';
-import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import { NativeSyntheticEvent } from 'react-native';
+import type { ColorValue } from 'react-native';
+import { type SFSymbol } from 'sf-symbols-typescript';
 
-import { Host } from '../Host';
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
 
 export type SwitchProps = {
   /**
@@ -14,6 +17,11 @@ export type SwitchProps = {
   label?: string;
 
   /**
+   * The name of the SFSymbol to be displayed in the label.
+   */
+  systemImage?: SFSymbol;
+
+  /**
    * Type of the switch component. Can be `'checkbox'`, `'switch'`, or `'button'`.
    * @default 'switch'
    */
@@ -23,10 +31,11 @@ export type SwitchProps = {
    */
   onValueChange?: (value: boolean) => void;
   /**
-   * Picker color. On iOS, it only applies to the `menu` variant.
+   * Picker color.
    */
-  color?: string;
-} & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps);
+  color?: ColorValue;
+} & (SwitchSwitchVariantProps | SwitchCheckboxVariantProps | SwitchButtonVariantProps) &
+  CommonViewModifierProps;
 
 export type SwitchSwitchVariantProps = {
   variant?: 'switch';
@@ -50,12 +59,12 @@ const SwitchNativeView: React.ComponentType<NativeSwitchProps> = requireNativeVi
   'SwitchView'
 );
 
-/**
- * @hidden
- */
-export function transformSwitchProps(props: SwitchProps): NativeSwitchProps {
+function transformSwitchProps(props: SwitchProps): NativeSwitchProps {
+  const { modifiers, ...restProps } = props;
   return {
-    ...props,
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
     variant: props.variant ?? 'switch',
     color: props.color,
     onValueChange: ({ nativeEvent: { value } }) => {
@@ -65,20 +74,8 @@ export function transformSwitchProps(props: SwitchProps): NativeSwitchProps {
 }
 
 /**
- * `<Switch>` component without a host view.
- * You should use this with a `Host` component in ancestor.
- */
-export function SwitchPrimitive(props: SwitchProps) {
-  return <SwitchNativeView {...transformSwitchProps(props)} />;
-}
-
-/**
  * Displays a native switch component.
  */
-export function Switch(props: SwitchProps & { style?: StyleProp<ViewStyle> }) {
-  return (
-    <Host style={props.style} matchContents>
-      <SwitchPrimitive {...props} />
-    </Host>
-  );
+export function Switch(props: SwitchProps) {
+  return <SwitchNativeView {...transformSwitchProps(props)} />;
 }

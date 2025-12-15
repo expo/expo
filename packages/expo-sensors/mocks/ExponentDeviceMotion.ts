@@ -10,3 +10,7 @@ export async function isAvailableAsync(): Promise<any> {}
 export async function setUpdateInterval(intervalMs: number): Promise<any> {}
 
 export const Gravity = 9.80665;
+
+export async function getPermissionsAsync(): Promise<any> {}
+
+export async function requestPermissionsAsync(): Promise<any> {}

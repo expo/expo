@@ -1,22 +1,16 @@
-import fs from 'fs';
-import { glob } from 'glob';
+import { vol } from 'memfs';
 import path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
-import { registerGlobMock } from '../../__tests__/mockHelpers';
 import {
   formatArrayOfReactDelegateHandler,
   getSwiftModuleNames,
   resolveExtraBuildDependenciesAsync,
   resolveModuleAsync,
-} from '../apple';
-
-jest.mock('glob');
-jest.mock('fs');
-
-const mockFsReadFile = jest.spyOn(fs.promises, 'readFile');
+} from '../apple/apple';
 
 afterEach(() => {
+  vol.reset();
   jest.resetAllMocks();
 });
 
@@ -112,17 +106,19 @@ describe(resolveModuleAsync, () => {
     const podName = 'RNThirdParty';
     const pkgDir = path.join('node_modules', name);
 
-    registerGlobMock(glob, [`ios/${podName}.podspec`], pkgDir);
+    vol.fromJSON({ [`ios/${podName}.podspec`]: '' }, pkgDir);
 
     const result = await resolveModuleAsync(
       name,
       {
+        name: '',
         path: pkgDir,
         version: '0.0.1',
         config: new ExpoModuleConfig({ platforms: ['ios'] }),
       },
-      { searchPaths: [expoRoot], platform: 'ios' }
+      {}
     );
+
     expect(result).toEqual({
       packageName: 'react-native-third-party',
       pods: [
@@ -145,16 +141,17 @@ describe(resolveModuleAsync, () => {
     const podName = 'RNThirdParty';
     const pkgDir = path.join('node_modules', name);
 
-    registerGlobMock(glob, [`ios/${podName}.podspec`], pkgDir);
+    vol.fromJSON({ [`ios/${podName}.podspec`]: '' }, pkgDir);
 
     const result = await resolveModuleAsync(
       name,
       {
+        name: '',
         path: pkgDir,
         version: '0.0.1',
         config: new ExpoModuleConfig({ platforms: ['ios'], coreFeatures: ['swiftui'] }),
       },
-      { searchPaths: [expoRoot], platform: 'ios' }
+      {}
     );
     expect(result).toEqual({
       packageName: 'react-native-third-party',
@@ -180,16 +177,23 @@ describe(resolveModuleAsync, () => {
     const podName2 = 'RNThirdParty2';
     const pkgDir = path.join('node_modules', name);
 
-    registerGlobMock(glob, [`ios/${podName}.podspec`, `pod2/${podName2}.podspec`], pkgDir);
+    vol.fromJSON(
+      {
+        [`ios/${podName}.podspec`]: '',
+        [`pod2/${podName2}.podspec`]: '',
+      },
+      pkgDir
+    );
 
     const result = await resolveModuleAsync(
       name,
       {
+        name: '',
         path: pkgDir,
         version: '0.0.1',
         config: new ExpoModuleConfig({ platforms: ['ios'] }),
       },
-      { searchPaths: [expoRoot], platform: 'ios' }
+      {}
     );
     expect(result).toEqual({
       packageName: 'react-native-third-party',
@@ -215,29 +219,30 @@ describe(resolveModuleAsync, () => {
 
 describe(resolveExtraBuildDependenciesAsync, () => {
   it('should resolve extra build dependencies from Podfile.properties.json', async () => {
-    mockFsReadFile.mockResolvedValueOnce(`{
-"apple.extraPods": "[{\\"name\\":\\"test\\"}]"
-}`);
+    vol.fromJSON(
+      { 'Podfile.properties.json': `{"apple.extraPods": "[{\\"name\\":\\"test\\"}]"}` },
+      '/app/ios'
+    );
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/ios');
     expect(extraBuildDeps).toEqual([{ name: 'test' }]);
   });
 
   it('should return null for invalid JSON', async () => {
-    mockFsReadFile.mockResolvedValueOnce(`{
-  "apple.extraPods": [{ name }]
-}`);
+    vol.fromJSON({ 'Podfile.properties.json': `{"apple.extraPods": [{ name }]}` }, '/app/ios');
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/ios');
     expect(extraBuildDeps).toBe(null);
   });
 
-  it('should return null if no speicifed any properties', async () => {
-    mockFsReadFile.mockResolvedValueOnce(``);
+  it('should return null if it does not contain any known properties', async () => {
+    vol.fromJSON({ 'Podfile.properties.json': '' }, '/app/ios');
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/ios');
     expect(extraBuildDeps).toBe(null);
   });
 
   it('should return null if Podfile.properties.json not found', async () => {
-    mockFsReadFile.mockRejectedValueOnce(new Error('File not found'));
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/macos');
     expect(extraBuildDeps).toBe(null);
   });

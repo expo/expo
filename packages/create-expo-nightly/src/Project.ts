@@ -1,22 +1,22 @@
-import type { JSONArray, JSONObject, JSONValue } from '@expo/json-file';
-import fs from 'fs';
 import assert from 'node:assert';
-import { createRequire } from 'node:module';
+import fs from 'node:fs';
 import path from 'node:path';
 
 import { setupExpoRepoAsync } from './ExpoRepo.js';
+import {
+  type JSONArray,
+  type JSONObject,
+  type JSONValue,
+  mergeJsonFilesAsync,
+  readJsonFileAsync,
+  writeJsonFileAsync,
+} from './JsonFile.js';
 import { REACT_NATIVE_TRANSITIVE_DEPENDENCIES } from './Packages.js';
 import { runAsync } from './Processes.js';
-
-const require = createRequire(import.meta.url);
-const { default: JsonFile } = require('@expo/json-file') as typeof import('@expo/json-file');
 
 export interface ProjectProperties {
   /** The Android applicationId and iOS bundleIdentifier. */
   appId: string;
-
-  /** Enable the New Architecture mode. */
-  newArchEnabled: boolean;
 
   /** react-native nightly version */
   nightlyVersion: string;
@@ -61,7 +61,6 @@ export async function createExpoApp(
   await setupMetroConfigAsync(projectRoot, expoRepoPath);
   await setupAppJsonAsync(projectRoot, {
     appId: props.appId,
-    newArchEnabled: props.newArchEnabled,
   });
 
   return expoRepoPath;
@@ -76,7 +75,7 @@ async function setupProjectPackageJsonAsync(
   nightlyVersion: string
 ) {
   const packageJsonPath = path.join(projectRoot, 'package.json');
-  const packageJson = await JsonFile.readAsync(packageJsonPath);
+  const packageJson = await readJsonFileAsync(packageJsonPath);
 
   const scripts: Record<string, string> = (packageJson.scripts as Record<string, string>) ?? {};
   scripts['postinstall'] = 'bun --cwd expo postinstall';
@@ -94,7 +93,7 @@ async function setupProjectPackageJsonAsync(
   for (const name of REACT_NATIVE_TRANSITIVE_DEPENDENCIES) {
     resolutions[name] = `${nightlyVersion}`;
   }
-  await JsonFile.mergeAsync(packageJsonPath, {
+  await mergeJsonFilesAsync(packageJsonPath, {
     // Add workspaces
     workspaces: [`${workspacePrefix}/packages/*`, `${workspacePrefix}/packages/@expo/*`],
 
@@ -141,7 +140,7 @@ module.exports = config;`
 }
 
 export async function prebuildAppAsync(projectRoot: string, templateTarballPath: string) {
-  await runAsync('npx', ['expo', 'prebuild', '--no-install', '--template', templateTarballPath], {
+  await runAsync('bunx', ['expo', 'prebuild', '--no-install', '--template', templateTarballPath], {
     cwd: projectRoot,
   });
 }
@@ -153,12 +152,9 @@ export async function installCocoaPodsAsync(projectRoot: string) {
 /**
  * Setup app.json
  */
-async function setupAppJsonAsync(
-  projectRoot: string,
-  { appId, newArchEnabled }: { appId: string; newArchEnabled: boolean }
-) {
+async function setupAppJsonAsync(projectRoot: string, { appId }: { appId: string }) {
   const appJsonPath = path.join(projectRoot, 'app.json');
-  const appJson = await JsonFile.readAsync(appJsonPath);
+  const appJson = await readJsonFileAsync(appJsonPath);
 
   const exp = appJson.expo;
   assert(isJSONObject(exp));
@@ -181,8 +177,7 @@ async function setupAppJsonAsync(
   exp.android = sectionAndroid;
   exp.ios = sectionIos;
   exp.plugins = plugins;
-  exp.newArchEnabled = newArchEnabled;
-  await JsonFile.writeAsync(appJsonPath, appJson);
+  await writeJsonFileAsync(appJsonPath, appJson);
 }
 
 function isJSONObject(value: JSONValue | undefined): value is JSONObject {

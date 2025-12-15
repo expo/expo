@@ -1,4 +1,3 @@
-import { S3 } from '@aws-sdk/client-s3';
 import { Command } from '@expo/commander';
 import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
@@ -6,18 +5,23 @@ import assert from 'assert';
 import fs, { mkdirp } from 'fs-extra';
 import { glob } from 'glob';
 import inquirer from 'inquirer';
-import os from 'os';
+import ora from 'ora';
 import path from 'path';
 import semver from 'semver';
+import * as tar from 'tar';
 import { v4 as uuidv4 } from 'uuid';
 
-import { EXPO_DIR, EXPO_GO_IOS_DIR } from '../Constants';
+import {
+  EAS_EXPO_GO_PROJECT_DIR,
+  EXPO_GO_IOS_DIR,
+  REPO_OWNER,
+  RELEASES_REPO_NAME,
+} from '../Constants';
 import Git from '../Git';
+import { getOrCreateReleaseAsync, uploadReleaseAssetAsync, updateReleaseTitle } from '../GitHub';
 import logger from '../Logger';
 import { androidAppVersionAsync, iosAppVersionAsync } from '../ProjectVersions';
 import { modifySdkVersionsAsync, modifyVersionsAsync } from '../Versions';
-
-const s3Client = new S3({ region: 'us-east-1' });
 
 const RELEASE_BUILD_PROFILE = 'release-client';
 const PUBLISH_CLIENT_BUILD_PROFILE = 'publish-client';
@@ -35,20 +39,30 @@ const CUSTOM_ACTIONS: Record<string, Action> = {
     actionId: 'ios-client-build-and-submit',
     action: iosBuildAndSubmitAsync,
   },
-  'ios-simulator-client-build-and-publish': {
-    name: 'Build a new iOS Client simulator and publish it to S3',
-    actionId: 'ios-simulator-client-build-and-publish',
-    action: iosSimulatorBuildAndPublishAsync,
-  },
   'android-client-build-and-submit': {
     name: 'Build a new Android client and submit it to the Play Store.',
     actionId: 'android-client-build-and-submit',
     action: androidBuildAndSubmitAsync,
   },
-  'android-apk-build-and-publish': {
-    name: 'Build a new Android client APK and publish it to S3',
-    actionId: 'android-apk-build-and-publish',
-    action: androidAPKBuildAndPublishAsync,
+  'ios-simulator-build': {
+    name: '[internal] Build a new iOS Client simulator on EAS',
+    actionId: 'ios-simulator-build',
+    action: iosSimulatorBuildAsync,
+  },
+  'ios-simulator-upload': {
+    name: '[internal] Upload a new iOS Client simulator to expo/expo-go-releases repo and updates www endpoint',
+    actionId: 'ios-simulator-upload',
+    action: iosSimulatorUploadAsync,
+  },
+  'android-apk-build': {
+    name: '[internal] Build a new Android Client APK on EAS',
+    actionId: 'android-apk-build',
+    action: androidApkBuildAsync,
+  },
+  'android-apk-upload': {
+    name: '[internal] Upload a new Android Client APK to expo/expo-go-releases repo and updates www endpoint',
+    actionId: 'android-apk-upload',
+    action: androidApkUploadAsync,
   },
   'remove-background-permissions-from-info-plist': {
     name: '[internal] Removes permissions for background features that should be disabled in the App Store.',
@@ -56,22 +70,10 @@ const CUSTOM_ACTIONS: Record<string, Action> = {
     action: internalRemoveBackgroundPermissionsFromInfoPlistAsync,
     internal: true,
   },
-  'ios-simulator-publish': {
-    name: '[internal] Upload simulator builds to S3 and update www endpoint',
-    actionId: 'ios-simulator-publish',
-    action: internalIosSimulatorPublishAsync,
-    internal: true,
-  },
   'verify-versions-endpoint-available': {
     name: '[internal] Verify that the versions endpoint is available',
     actionId: 'verify-versions-endpoint-available',
     action: verifyVersionsEndpointAvailableAsync,
-    internal: true,
-  },
-  'android-apk-publish': {
-    name: '[internal] Upload Android client to S3 and update www endpoint',
-    actionId: 'android-apk-publish',
-    action: internalAndroidAPKPublishAsync,
     internal: true,
   },
 };
@@ -123,12 +125,16 @@ async function main(actionId: string | undefined) {
   CUSTOM_ACTIONS[actionId].action();
 }
 
+function getAppName(appVersion: string): string {
+  return `Expo-Go-${appVersion}`;
+}
+
 function getAndroidApkUrl(appVersion: string): string {
-  return `https://d1ahtucjixef4r.cloudfront.net/Exponent-${appVersion}.apk`;
+  return `https://github.com/${REPO_OWNER}/${RELEASES_REPO_NAME}/releases/download/${getAppName(appVersion)}/${getAppName(appVersion)}.apk`;
 }
 
 function getIosSimulatorUrl(appVersion: string): string {
-  return `https://dpq5q02fu5f55.cloudfront.net/Exponent-${appVersion}.tar.gz`;
+  return `https://github.com/${REPO_OWNER}/${RELEASES_REPO_NAME}/releases/download/${getAppName(appVersion)}/${getAppName(appVersion)}.tar.gz`;
 }
 
 async function confirmPromptIfOverridingRemoteFileAsync(
@@ -144,7 +150,7 @@ async function confirmPromptIfOverridingRemoteFileAsync(
         type: 'confirm',
         name: 'selection',
         default: false,
-        message: `${appVersion} version of a client was already uploaded to S3. Do you want to override it?`,
+        message: `${appVersion} version of a client was already uploaded to GitHub. Do you want to override it?`,
       },
     ]);
     if (!selection) {
@@ -165,7 +171,7 @@ async function enforceRunningOnSdkReleaseBranchAsync(): Promise<string> {
 async function iosBuildAndSubmitAsync() {
   await enforceRunningOnSdkReleaseBranchAsync();
   const isDebug = !!process.env.EXPO_DEBUG;
-  const projectDir = path.join(EXPO_DIR, 'apps/eas-expo-go');
+  const projectDir = EAS_EXPO_GO_PROJECT_DIR;
   const credentialsDir = path.join(projectDir, 'credentials');
   const fastlaneMatchBucketCopyPath = path.join(credentialsDir, 'fastlane-match');
   const releaseSecretsPath = path.join(credentialsDir, 'secrets');
@@ -295,23 +301,6 @@ async function iosBuildAndSubmitAsync() {
   );
 }
 
-async function iosSimulatorBuildAndPublishAsync() {
-  const projectDir = path.join(EXPO_DIR, 'apps/eas-expo-go');
-  await enforceRunningOnSdkReleaseBranchAsync();
-
-  const appVersion = await iosAppVersionAsync();
-  await confirmPromptIfOverridingRemoteFileAsync(getIosSimulatorUrl(appVersion), appVersion);
-
-  await spawnAsync(
-    'eas',
-    ['build', '--platform', 'ios', '--profile', PUBLISH_CLIENT_BUILD_PROFILE],
-    {
-      cwd: projectDir,
-      stdio: 'inherit',
-    }
-  );
-}
-
 async function prepareAndroidCredentialsAsync(projectDir: string): Promise<void> {
   const isDebug = !!process.env.EXPO_DEBUG;
   const credentialsDir = path.join(projectDir, 'credentials');
@@ -356,7 +345,7 @@ async function prepareAndroidCredentialsAsync(projectDir: string): Promise<void>
 }
 
 async function androidBuildAndSubmitAsync() {
-  const projectDir = path.join(EXPO_DIR, 'apps/eas-expo-go');
+  const projectDir = EAS_EXPO_GO_PROJECT_DIR;
   await enforceRunningOnSdkReleaseBranchAsync();
   await prepareAndroidCredentialsAsync(projectDir);
 
@@ -377,28 +366,6 @@ async function androidBuildAndSubmitAsync() {
   await spawnAsync(
     'eas',
     ['build:version:sync', '--platform', 'android', '--profile', RELEASE_BUILD_PROFILE],
-    {
-      cwd: projectDir,
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID: 'host.exp.exponent',
-      },
-    }
-  );
-}
-
-async function androidAPKBuildAndPublishAsync() {
-  const projectDir = path.join(EXPO_DIR, 'apps/eas-expo-go');
-  await enforceRunningOnSdkReleaseBranchAsync();
-  await prepareAndroidCredentialsAsync(projectDir);
-
-  const appVersion = await androidAppVersionAsync();
-  await confirmPromptIfOverridingRemoteFileAsync(getAndroidApkUrl(appVersion), appVersion);
-
-  await spawnAsync(
-    'eas',
-    ['build', '--platform', 'android', '--profile', PUBLISH_CLIENT_BUILD_PROFILE],
     {
       cwd: projectDir,
       stdio: 'inherit',
@@ -436,66 +403,365 @@ async function internalRemoveBackgroundPermissionsFromInfoPlistAsync(): Promise<
   await fs.writeFile(INFO_PLIST_PATH, plist.build(parsedPlist));
 }
 
-async function internalIosSimulatorPublishAsync() {
-  const tmpTarGzPath = path.join(os.tmpdir(), 'simulator.tar.gz');
-  const projectDir = path.join(EXPO_DIR, 'apps/eas-expo-go');
-  const sdkVersion = await enforceRunningOnSdkReleaseBranchAsync();
-  const artifactPaths = glob.sync('ios/build/Build/Products/*simulator/*.app', {
-    absolute: true,
-    cwd: projectDir,
-  });
+async function androidApkBuildAsync() {
+  const projectDir = EAS_EXPO_GO_PROJECT_DIR;
+  await enforceRunningOnSdkReleaseBranchAsync();
+  await prepareAndroidCredentialsAsync(projectDir);
 
-  if (artifactPaths.length !== 1) {
-    logger.error(`Expected exactly one .app directory. Found: ${artifactPaths}.`);
-  }
-  await spawnAsync('tar', ['-zcvf', tmpTarGzPath, '-C', artifactPaths[0], '.'], {
-    stdio: ['ignore', 'ignore', 'inherit'], // only stderr
-  });
-  const appVersion = await iosAppVersionAsync();
-  const file = fs.createReadStream(tmpTarGzPath);
-
-  logger.info(`Uploading Exponent-${appVersion}.tar.gz to S3`);
-  await s3Client.putObject({
-    Bucket: 'exp-ios-simulator-apps',
-    Key: `Exponent-${appVersion}.tar.gz`,
-    Body: file,
-    ACL: 'public-read',
-  });
-
-  logger.info('Updating versions endpoint');
-  await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
-    sdkVersions.iosClientUrl = getIosSimulatorUrl(appVersion);
-    sdkVersions.iosClientVersion = appVersion;
-    return sdkVersions;
-  });
+  await spawnAsync(
+    'eas',
+    ['build', '--platform', 'android', '--profile', PUBLISH_CLIENT_BUILD_PROFILE],
+    {
+      cwd: projectDir,
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID: 'host.exp.exponent',
+      },
+    }
+  );
 }
 
-async function internalAndroidAPKPublishAsync() {
-  const projectDir = path.join(EXPO_DIR, 'apps/eas-expo-go');
-  const sdkVersion = await enforceRunningOnSdkReleaseBranchAsync();
-  const artifactPaths = glob.sync('android/app/build/outputs/**/*.apk', {
-    absolute: true,
-    cwd: projectDir,
-  });
-
-  if (artifactPaths.length !== 1) {
-    logger.error(`Expected exactly one .apk file. Found: ${artifactPaths}`);
+async function androidApkUploadAsync() {
+  if (!process.env.GITHUB_TOKEN) {
+    logger.error('GITHUB_TOKEN is not set. Please set it in your environment.');
+    return;
   }
+
+  const sdkVersion = await enforceRunningOnSdkReleaseBranchAsync();
   const appVersion = await androidAppVersionAsync();
-  const file = fs.createReadStream(artifactPaths[0]);
+  await confirmPromptIfOverridingRemoteFileAsync(getAndroidApkUrl(appVersion), appVersion);
+  const projectDir = EAS_EXPO_GO_PROJECT_DIR;
+  const archivePath = await downloadBuildArtifactAsync(
+    projectDir,
+    'android',
+    appVersion,
+    sdkVersion
+  );
 
-  logger.info(`Uploading Exponent-${appVersion}.apk to S3`);
-  await s3Client.putObject({
-    Bucket: 'exp-android-apks',
-    Key: `Exponent-${appVersion}.apk`,
-    Body: file,
-    ACL: 'public-read',
+  logger.info(`Build archive downloaded to: ${archivePath}`);
+
+  const repoOwner = REPO_OWNER;
+  const repoName = RELEASES_REPO_NAME;
+
+  const releaseTag = getAppName(appVersion);
+
+  try {
+    const release = await getOrCreateReleaseAsync(
+      repoOwner,
+      repoName,
+      releaseTag,
+      appVersion,
+      sdkVersion
+    );
+
+    logger.info(`Release on GitHub: ${release.data.html_url}`);
+
+    const artifactName = path.basename(archivePath);
+    const fileStats = fs.statSync(archivePath);
+    const totalBytes = fileStats.size;
+
+    const spinner = ora(
+      `Uploading to GitHub: ${artifactName} (${(totalBytes / 1024 / 1024).toFixed(1)} MB)...`
+    ).start();
+
+    try {
+      const artifactContent = await fs.readFile(archivePath);
+
+      const res = await uploadReleaseAssetAsync(
+        repoOwner,
+        repoName,
+        release.data.id,
+        artifactName,
+        artifactContent
+      );
+
+      const githubArtifactUrl = res.data.browser_download_url;
+      spinner.succeed(`Upload completed successfully! ${githubArtifactUrl}`);
+
+      await updateReleaseTitle(
+        repoOwner,
+        repoName,
+        release.data.id,
+        appVersion,
+        getAppName(appVersion)
+      );
+
+      await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
+        sdkVersions.androidClientUrl = githubArtifactUrl;
+        sdkVersions.androidClientVersion = appVersion;
+        return sdkVersions;
+      });
+    } catch (error) {
+      spinner.fail('Upload failed!');
+      throw error;
+    }
+  } catch (error: any) {
+    logger.error(`Error creating release: ${error.message}`);
+    throw error;
+  } finally {
+    await fs.unlink(archivePath);
+  }
+}
+
+async function iosSimulatorUploadAsync() {
+  if (!process.env.GITHUB_TOKEN) {
+    logger.error('GITHUB_TOKEN is not set. Please set it in your environment.');
+    return;
+  }
+
+  const appVersion = await iosAppVersionAsync();
+  const sdkVersion = await enforceRunningOnSdkReleaseBranchAsync();
+  await confirmPromptIfOverridingRemoteFileAsync(getIosSimulatorUrl(appVersion), appVersion);
+  const projectDir = EAS_EXPO_GO_PROJECT_DIR;
+  const tempArchivePath = await downloadBuildArtifactAsync(
+    projectDir,
+    'ios',
+    appVersion,
+    sdkVersion
+  );
+  const archivePath = await processIosTarArchiveAsync(tempArchivePath, projectDir);
+
+  const repoOwner = REPO_OWNER;
+  const repoName = RELEASES_REPO_NAME;
+
+  const releaseTag = getAppName(appVersion);
+
+  try {
+    const release = await getOrCreateReleaseAsync(
+      repoOwner,
+      repoName,
+      releaseTag,
+      appVersion,
+      sdkVersion
+    );
+
+    logger.info(`Release on GitHub: ${release.data.html_url}`);
+
+    const artifactName = path.basename(archivePath);
+    const fileStats = fs.statSync(archivePath);
+    const totalBytes = fileStats.size;
+
+    const spinner = ora(
+      `Uploading to GitHub: ${artifactName} (${(totalBytes / 1024 / 1024).toFixed(1)} MB)...`
+    ).start();
+
+    try {
+      const artifactContent = await fs.readFile(archivePath);
+
+      const res = await uploadReleaseAssetAsync(
+        repoOwner,
+        repoName,
+        release.data.id,
+        artifactName,
+        artifactContent
+      );
+
+      const githubArtifactUrl = res.data.browser_download_url;
+      spinner.succeed(`Upload completed successfully! ${githubArtifactUrl}`);
+
+      await updateReleaseTitle(
+        repoOwner,
+        repoName,
+        release.data.id,
+        appVersion,
+        getAppName(appVersion)
+      );
+
+      await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
+        sdkVersions.iosClientUrl = githubArtifactUrl;
+        sdkVersions.iosClientVersion = appVersion;
+        return sdkVersions;
+      });
+    } catch (error) {
+      spinner.fail('Upload failed!');
+      throw error;
+    }
+  } catch (error: any) {
+    logger.error(`Error creating release: ${error.message}`);
+    throw error;
+  } finally {
+    await fs.unlink(archivePath);
+  }
+}
+
+export async function iosSimulatorBuildAsync() {
+  const projectDir = EAS_EXPO_GO_PROJECT_DIR;
+  await enforceRunningOnSdkReleaseBranchAsync();
+
+  await spawnAsync(
+    'eas',
+    ['build', '--platform', 'ios', '--profile', PUBLISH_CLIENT_BUILD_PROFILE],
+    {
+      cwd: projectDir,
+      stdio: 'inherit',
+    }
+  );
+}
+
+async function downloadBuildArtifactAsync(
+  projectDir: string,
+  platform: 'ios' | 'android',
+  appVersion: string,
+  sdkVersion: string
+) {
+  const buildInfo = await spawnAsync(
+    'eas',
+    [
+      'build:list',
+      '--platform',
+      platform,
+      '--limit',
+      '3',
+      '--json',
+      '--non-interactive',
+      '--status',
+      'finished',
+      '--profile',
+      PUBLISH_CLIENT_BUILD_PROFILE,
+      '--sdk-version',
+      sdkVersion,
+    ],
+    {
+      cwd: projectDir,
+      stdio: 'pipe',
+      env: {
+        ...process.env,
+        EAS_BUILD_PROFILE: PUBLISH_CLIENT_BUILD_PROFILE,
+      },
+    }
+  );
+
+  const builds = JSON.parse(buildInfo.stdout.toString());
+
+  if (!builds || builds.length === 0) {
+    throw new Error(`No builds found. Make sure you have run ${platform}-build first.`);
+  }
+
+  const buildChoices = builds.map((build: any, index: number) => {
+    const createdAt = build.createdAt
+      ? new Date(build.createdAt).toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        })
+      : 'Unknown date';
+
+    return {
+      name: `Build ${index + 1}: ${build.platform} - ${build.status} - ${createdAt} - ${build.id}`,
+      value: build,
+    };
   });
 
-  logger.info('Updating versions endpoint');
-  await modifySdkVersionsAsync(sdkVersion, (sdkVersions) => {
-    sdkVersions.androidClientUrl = getAndroidApkUrl(appVersion);
-    sdkVersions.androidClientVersion = appVersion;
-    return sdkVersions;
+  buildChoices.push({
+    name: 'Enter custom build artifact URL',
+    value: 'custom',
   });
+
+  const { selectedBuild } = await inquirer.prompt<{ selectedBuild: any }>([
+    {
+      type: 'list',
+      name: 'selectedBuild',
+      message: 'Select a build to download or enter a custom URL:',
+      choices: buildChoices,
+    },
+  ]);
+
+  let buildUrl: string;
+
+  if (selectedBuild === 'custom') {
+    const { customUrl } = await inquirer.prompt<{ customUrl: string }>([
+      {
+        type: 'input',
+        name: 'customUrl',
+        message: 'Enter the build artifact URL:',
+        validate: (input: string) => {
+          if (!input.trim()) {
+            return 'URL cannot be empty';
+          }
+          if (!input.startsWith('http')) {
+            return 'URL must start with http:// or https://';
+          }
+          if (platform === 'android' && !input.endsWith('.apk')) {
+            return 'URL must end with .apk';
+          } else if (platform === 'ios' && !input.endsWith('.tar.gz')) {
+            return 'URL must end with .tar.gz';
+          }
+          return true;
+        },
+      },
+    ]);
+    buildUrl = customUrl;
+  } else {
+    if (!selectedBuild.artifacts?.buildUrl) {
+      throw new Error('Selected build does not have a build URL available');
+    }
+    buildUrl = selectedBuild.artifacts.buildUrl;
+  }
+
+  const archivePath = path.join(
+    projectDir,
+    `${getAppName(appVersion)}.${platform === 'android' ? 'apk' : 'tar.gz'}`
+  );
+
+  logger.info(`Downloading build from: ${buildUrl}`);
+  await spawnAsync('curl', ['-L', '-o', archivePath, buildUrl], {
+    cwd: projectDir,
+    stdio: 'inherit',
+  });
+
+  return archivePath;
+}
+
+// Downloaded tar.gz could be of two formats:
+// tar.gz/Expo go.app/[App Contents] or tar.gz/[App Contents]
+async function processIosTarArchiveAsync(archivePath: string, projectDir: string): Promise<string> {
+  const tempExtractDir = path.join(projectDir, 'temp-extract');
+  try {
+    await mkdirp(tempExtractDir);
+    await tar.extract({
+      file: archivePath,
+      cwd: tempExtractDir,
+    });
+
+    // delete the original archive and create a new later in the same path
+    fs.removeSync(archivePath);
+
+    const extractedContents = await fs.readdir(tempExtractDir);
+    // if there is a .app bundle, the file is downloaded from EAS, create the tar file from it's contents
+    const appBundle = extractedContents.find((item) => item.endsWith('.app'));
+    if (appBundle) {
+      const appBundlePath = path.join(tempExtractDir, appBundle);
+      await tar.create(
+        {
+          gzip: true,
+          file: archivePath,
+          cwd: appBundlePath,
+        },
+        ['.']
+      );
+      logger.info(`Created tar from .app bundle contents: ${archivePath}`);
+    }
+    // If no .app file, check if it's a valid iOS app bundle. tar.gz could be from Cloudfront URL.
+    else if (fs.existsSync(path.join(tempExtractDir, 'Info.plist'))) {
+      await tar.create(
+        {
+          gzip: true,
+          file: archivePath,
+          cwd: tempExtractDir,
+        },
+        ['.']
+      );
+      logger.info(`Created tar from extracted contents: ${archivePath}`);
+    } else {
+      throw new Error('Unknown archive format');
+    }
+
+    return archivePath;
+  } finally {
+    await fs.remove(tempExtractDir);
+  }
 }

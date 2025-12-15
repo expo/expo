@@ -27,6 +27,9 @@ export function normalizeParams(...params) {
         if (value instanceof Uint8Array) {
             blobParams[key] = value;
         }
+        else if (typeof value === 'boolean') {
+            primitiveParams[key] = value ? 1 : 0;
+        }
         else {
             primitiveParams[key] = value;
         }
@@ -70,5 +73,25 @@ export function composeRows(columnNames, columnValuesList) {
         results.push(row);
     }
     return results;
+}
+/**
+ * Normalize the index for the Storage.getKeyByIndexSync and Storage.getKeyByIndexAsync methods.
+ * @returns The normalized index or `null` if the index is out of bounds.
+ * @hidden
+ */
+export function normalizeStorageIndex(index) {
+    const value = Math.floor(Number(index));
+    // Boundary checks
+    if (Object.is(value, -0)) {
+        return 0;
+    }
+    if (!Number.isSafeInteger(value)) {
+        // Chromium uses zero index when the index is out of bounds
+        return 0;
+    }
+    if (value < 0) {
+        return null;
+    }
+    return value;
 }
 //# sourceMappingURL=paramUtils.js.map

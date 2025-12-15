@@ -18,10 +18,12 @@ exports.getModuleParams = getModuleParams;
 exports.getJsOutput = getJsOutput;
 exports.isJsModule = isJsModule;
 exports.isJsOutput = isJsOutput;
+const isResolvedDependency_1 = require("@expo/metro/metro/lib/isResolvedDependency");
+const metro_transform_plugins_1 = require("@expo/metro/metro-transform-plugins");
 const assert_1 = __importDefault(require("assert"));
 const jsc_safe_url_1 = __importDefault(require("jsc-safe-url"));
-const metro_transform_plugins_1 = require("metro-transform-plugins");
 const path_1 = __importDefault(require("path"));
+const filePath_1 = require("../../utils/filePath");
 function wrapModule(module, options) {
     const output = getJsOutput(module);
     if (output.type.startsWith('js/script')) {
@@ -36,6 +38,9 @@ function getModuleParams(module, options) {
     const paths = {};
     let hasPaths = false;
     const dependencyMapArray = Array.from(module.dependencies.values()).map((dependency) => {
+        if (!(0, isResolvedDependency_1.isResolvedDependency)(dependency)) {
+            return null;
+        }
         let modulePath = dependency.absolutePath;
         if (modulePath == null) {
             if (dependency.data.data.isOptional) {
@@ -72,7 +77,9 @@ function getModuleParams(module, options) {
                     const bundlePath = path_1.default.relative(options.serverRoot, dependency.absolutePath);
                     paths[id] =
                         '/' +
-                            path_1.default.join(path_1.default.dirname(bundlePath), 
+                            path_1.default.join(
+                            // TODO: This is not the proper Metro URL encoding of a file path
+                            path_1.default.dirname(bundlePath), 
                             // Strip the file extension
                             path_1.default.basename(bundlePath, path_1.default.extname(bundlePath))) +
                             '.bundle?' +
@@ -99,7 +106,7 @@ function getModuleParams(module, options) {
     if (options.dev) {
         // Add the relative path of the module to make debugging easier.
         // This is mapped to `module.verboseName` in `require.js`.
-        params.push(path_1.default.relative(options.projectRoot, module.path));
+        params.push((0, filePath_1.toPosixPath)(path_1.default.relative(options.projectRoot, module.path)));
     }
     return { params, paths };
 }

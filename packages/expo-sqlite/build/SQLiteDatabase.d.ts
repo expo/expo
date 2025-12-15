@@ -2,6 +2,7 @@ import { type EventSubscription } from 'expo-modules-core';
 import { NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
 import { SQLiteSession } from './SQLiteSession';
 import { SQLiteBindParams, SQLiteRunResult, SQLiteStatement, SQLiteVariadicBindParams } from './SQLiteStatement';
+import { SQLiteTaggedQuery } from './SQLiteTaggedQuery';
 export { SQLiteOpenOptions };
 /**
  * A SQLite database.
@@ -45,6 +46,27 @@ export declare class SQLiteDatabase {
      */
     createSessionAsync(dbName?: string): Promise<SQLiteSession>;
     /**
+     * Load a SQLite extension.
+     * @param libPath The path to the extension library file.
+     * @param entryPoint The entry point of the extension. If not provided, the default entry point is inferred by [`sqlite3_load_extension`](https://www.sqlite.org/c3ref/load_extension.html).
+     *
+     * @platform android
+     * @platform ios
+     * @platform macos
+     * @platform tvos
+     *
+     * @example
+     * ```ts
+     * // Load `sqlite-vec` from `bundledExtensions`. You need to enable `withSQLiteVecExtension` to include `sqlite-vec`.
+     * const extension = SQLite.bundledExtensions['sqlite-vec'];
+     * await db.loadExtensionAsync(extension.libPath, extension.entryPoint);
+     *
+     * // You can also load a custom extension.
+     * await db.loadExtensionAsync('/path/to/extension');
+     * ```
+     */
+    loadExtensionAsync(libPath: string, entryPoint?: string): Promise<void>;
+    /**
      * Execute a transaction and automatically commit/rollback based on the `task` result.
      *
      * > **Note:** This transaction is not exclusive and can be interrupted by other async queries.
@@ -84,6 +106,7 @@ export declare class SQLiteDatabase {
      * @platform android
      * @platform ios
      * @platform macos
+     * @platform tvos
      *
      * @example
      * ```ts
@@ -137,6 +160,28 @@ export declare class SQLiteDatabase {
      */
     createSessionSync(dbName?: string): SQLiteSession;
     /**
+     * Load a SQLite extension.
+     * @param libPath The path to the extension library file.
+     * @param entryPoint The entry point of the extension. If not provided, the default entry point is inferred by [`sqlite3_load_extension`](https://www.sqlite.org/c3ref/load_extension.html).
+     *
+     * @platform android
+     * @platform ios
+     * @platform macos
+     * @platform tvos
+     *
+     * @example
+     * ```ts
+     * // Load `sqlite-vec` from `bundledExtensions`. You need to enable `withSQLiteVecExtension` to include `sqlite-vec`.
+     * const extension = SQLite.bundledExtensions['sqlite-vec'];
+     * db.loadExtensionSync(extension.libPath, extension.entryPoint);
+     *
+     * // You can also load a custom extension.
+     * db.loadExtensionSync('/path/to/extension');
+     * ```
+  
+     */
+    loadExtensionSync(libPath: string, entryPoint?: string): void;
+    /**
      * Execute a transaction and automatically commit/rollback based on the `task` result.
      *
      * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
@@ -144,6 +189,40 @@ export declare class SQLiteDatabase {
      * @param task An async function to execute within a transaction.
      */
     withTransactionSync(task: () => void): void;
+    /**
+     * Execute SQL queries using tagged template literals (Bun-style API).
+     * Queries are automatically protected against SQL injection using prepared statements.
+     *
+     * The query result is directly awaitable and returns an array of objects by default.
+     * Use `.values()`, `.first()`, or `.each()` for different result formats.
+     *
+     * @example
+     * ```ts
+     * // Direct await - returns array of objects
+     * const users = await sql<User>`SELECT * FROM users WHERE age > ${21}`;
+     *
+     * // Get first row only
+     * const user = await sql<User>`SELECT * FROM users WHERE id = ${userId}`.first();
+     *
+     * // Get values as arrays
+     * const rows = await sql`SELECT name, age FROM users`.values();
+     * // Returns: [["Alice", 30], ["Bob", 25]]
+     *
+     * // INSERT/UPDATE/DELETE - returns SQLiteRunResult
+     * const result = await sql`INSERT INTO users (name, age) VALUES (${name}, ${age})` as SQLiteRunResult;
+     * console.log('Inserted row:', result.lastInsertRowId);
+     *
+     * // Iteration
+     * for await (const user of db<User>`SELECT * FROM users`.each()) {
+     *   console.log(user.name);
+     * }
+     *
+     * // Synchronous API
+     * const users = sql<User>`SELECT * FROM users WHERE age > ${21}`.allSync();
+     * const user = sql<User>`SELECT * FROM users WHERE id = ${userId}`.firstSync();
+     * ```
+     */
+    sql: <T = unknown>(strings: TemplateStringsArray, ...values: unknown[]) => SQLiteTaggedQuery<T>;
     /**
      * A convenience wrapper around [`SQLiteDatabase.prepareAsync()`](#prepareasyncsource), [`SQLiteStatement.executeAsync()`](#executeasyncparams), and [`SQLiteStatement.finalizeAsync()`](#finalizeasync).
      * @param source A string containing the SQL query.
@@ -251,6 +330,13 @@ export declare class SQLiteDatabase {
  * The default directory for SQLite databases.
  */
 export declare const defaultDatabaseDirectory: any;
+/**
+ * The pre-bundled SQLite extensions.
+ */
+export declare const bundledExtensions: Record<string, {
+    libPath: string;
+    entryPoint: string;
+} | undefined>;
 /**
  * Open a database.
  *

@@ -49,8 +49,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    * at which playback will begin once the `play()` method is called.
    *
    * Setting `currentTime` to a new value seeks the player to the given time.
-   * Note that frame accurate seeking may incur additional decoding delay which can impact seeking performance.
-   * Consider using the [`seekBy`](#seekbyseconds) function if the time does not have to be set precisely.
+   * Check out the [`seekTolerance`](#seektolerance) property to configure the seeking precision.
    */
   currentTime: number;
 
@@ -111,6 +110,17 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   playbackRate: number;
 
   /**
+   * Boolean indicating if the player should keep the screen on while playing.
+   *
+   * > On Android, this property has an effect only when a [`VideoView`](#videoview) is visible. If you want to keep the screen awake at all times use [`expo-keep-awake`](./keep-awake/).
+   *
+   * @default true
+   * @platform android
+   * @platform ios
+   */
+  keepScreenOnWhilePlaying: boolean;
+
+  /**
    * Boolean value indicating whether the player is currently playing a live stream.
    */
   readonly isLive: boolean;
@@ -123,6 +133,8 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   /**
    * Boolean value determining whether the player should show the now playing notification.
    *
+   * > **Note**: On Android, `supportsBackgroundPlayback` property of the [config plugin](#configuration-in-app-config)
+   * > has to be `true` for the now playing notification to work.
    * @default false
    * @platform android
    * @platform ios
@@ -131,6 +143,9 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
 
   /**
    * Determines whether the player should continue playing after the app enters the background.
+   *
+   * > **Note**: The `supportsBackgroundPlayback` property of the [config plugin](#configuration-in-app-config)
+   * > has to be `true` for the background playback to work.
    * @default false
    * @platform ios
    * @platform android
@@ -215,6 +230,25 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    * @platform ios
    */
   readonly isExternalPlaybackActive: boolean;
+
+  /**
+   * Determines the time that the actual position seeked to may precede or exceed the requested seek position.
+   *
+   * This property affects the precision of setting the [`currentTime`](#currenttime) property and the [`seekBy`](#seekbyseconds) method, and on Android, it also affects the accuracy of the scrubber from the default native controls.
+   *
+   * By default, the player seeks to the exact requested time.
+   *
+   * > If you are trying to optimize for scrubbing (many frequent seeks), also see [`ScrubbingModeOptions`](#scrubbingmodeoptions-1).
+   */
+  seekTolerance: SeekTolerance;
+
+  /**
+   * Determines whether the scrubbing mode is enabled and what scrubbing optimizations should be enabled.
+   *
+   * > See [`SeekTolerance`](#seektolerance) to set the seeking tolerance, which can also affect the scrubbing performance.
+   *
+   */
+  scrubbingModeOptions: ScrubbingModeOptions;
 
   /**
    * Initializes a new video player instance with the given source.
@@ -304,64 +338,64 @@ export type VideoThumbnailOptions = {
  */
 export type VideoPlayerStatus = 'idle' | 'loading' | 'readyToPlay' | 'error';
 
-export type VideoSource =
-  | string
-  | number
-  | null
-  | {
-      /**
-       * The URI of the video.
-       *
-       * This property is exclusive with the `assetId` property. When both are present, the `assetId` will be ignored.
-       */
-      uri?: string;
+export type VideoSource = string | number | null | VideoSourceObject;
 
-      /**
-       * The asset ID of a local video asset, acquired with the `require` function.
-       * This property is exclusive with the `uri` property. When both are present, the `assetId` will be ignored.
-       */
-      assetId?: number;
+export type VideoSourceObject = {
+  /**
+   * The URI of the video.
+   *
+   * On iOS, `PHAsset` URIs are supported, but can only be loaded using the [`replaceAsync`](#replaceasyncsource) method or the default [`VideoPlayer`](#videoplayer) constructor.
+   *
+   * This property is exclusive with the `assetId` property. When both are present, the `assetId` will be ignored.
+   */
+  uri?: string;
 
-      /**
-       * Specifies the DRM options which will be used by the player while loading the video.
-       */
-      drm?: DRMOptions;
+  /**
+   * The asset ID of a local video asset, acquired with the `require` function.
+   * This property is exclusive with the `uri` property. When both are present, the `assetId` will be ignored.
+   */
+  assetId?: number;
 
-      /**
-       * Specifies information which will be displayed in the now playing notification.
-       * When undefined the player will display information contained in the video metadata.
-       * @platform android
-       * @platform ios
-       */
-      metadata?: VideoMetadata;
+  /**
+   * Specifies the DRM options which will be used by the player while loading the video.
+   */
+  drm?: DRMOptions;
 
-      /**
-       * Specifies headers sent with the video request.
-       * > For DRM license headers use the `headers` field of [`DRMOptions`](#drmoptions).
-       * @platform android
-       * @platform ios
-       */
-      headers?: Record<string, string>;
+  /**
+   * Specifies information which will be displayed in the now playing notification.
+   * When undefined the player will display information contained in the video metadata.
+   * @platform android
+   * @platform ios
+   */
+  metadata?: VideoMetadata;
 
-      /**
-       * Specifies whether the player should use caching for the video.
-       * > Due to platform limitations, the cache cannot be used with HLS video sources on iOS. Caching DRM-protected videos is not supported on Android and iOS.
-       * @default false
-       * @platform android
-       * @platform ios
-       */
-      useCaching?: boolean;
+  /**
+   * Specifies headers sent with the video request.
+   * > For DRM license headers use the `headers` field of [`DRMOptions`](#drmoptions).
+   * @platform android
+   * @platform ios
+   */
+  headers?: Record<string, string>;
 
-      /**
-       * Specifies the content type of the video source. When set to `'auto'`, the player will try to automatically determine the content type.
-       *
-       * You should use this property when playing HLS, SmoothStreaming or DASH videos from an uri, which does not contain a standardized extension for the corresponding media type.
-       * @default 'auto'
-       * @platform android
-       * @platform ios
-       */
-      contentType?: ContentType;
-    };
+  /**
+   * Specifies whether the player should use caching for the video.
+   * > Due to platform limitations, the cache cannot be used with HLS video sources on iOS. Caching DRM-protected videos is not supported on Android and iOS.
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  useCaching?: boolean;
+
+  /**
+   * Specifies the content type of the video source. When set to `'auto'`, the player will try to automatically determine the content type.
+   *
+   * You should use this property when playing HLS, SmoothStreaming or DASH videos from an uri, which does not contain a standardized extension for the corresponding media type.
+   * @default 'auto'
+   * @platform android
+   * @platform ios
+   */
+  contentType?: ContentType;
+};
 
 /**
  * Contains information about any errors that the player encountered during the playback
@@ -535,7 +569,7 @@ export type SubtitleTrack = {
    *
    * @platform android
    */
-  id: string;
+  id?: string;
 
   /**
    * Language of the subtitle track. For example, `en`, `pl`, `de`.
@@ -578,8 +612,21 @@ export type VideoTrack = {
 
   /**
    * Specifies the bitrate in bits per second. This is the peak bitrate if known, or else the average bitrate if known, or else null.
+   *
+   * @deprecated Use `peakBitrate` or `averageBitrate` instead.
    */
   bitrate: number | null;
+
+  /**
+   * Specifies the average bitrate in bits per second or null if the value is unknown.
+   *
+   */
+  averageBitrate: number | null;
+
+  /**
+   * Specifies the average bitrate in bits per second or null if the value is unknown.
+   */
+  peakBitrate: number | null;
 
   /**
    * Specifies the frame rate of the video track in frames per second.
@@ -606,7 +653,7 @@ export type AudioTrack = {
    * A string used by expo-video to identify the audio track.
    * @platform android
    */
-  id: string;
+  id?: string;
 
   /**
    * Language of the audio track. For example, 'en', 'pl', 'de'.
@@ -617,4 +664,86 @@ export type AudioTrack = {
    * Label of the audio track in the language of the device.
    */
   label: string;
+};
+
+/**
+ * Determines the time that the actual position seeked to may precede or exceed the requested seek position.
+ * Larger tolerance will usually result in faster seeking.
+ * This property affects the precision of setting the [`currentTime`](#currenttime) property and the [`seekBy`](#seekbyseconds) method, and on Android, it also affects the accuracy of the scrubber from the default native controls.
+ *
+ * > If you are trying to optimize for scrubbing (many frequent seeks), also see [`ScrubbingModeOptions`](#scrubbingmodeoptions-1).
+ *
+ * @platform android
+ * @platform ios
+ */
+export type SeekTolerance = {
+  /**
+   * The maximum time that the actual position seeked to may precede the requested seek position, in seconds. Must be non-negative.
+   * @default 0
+   */
+  toleranceBefore?: number;
+
+  /**
+   * The maximum time that the actual position seeked to may exceed the requested seek position, in seconds. Must be non-negative.
+   * @default 0
+   */
+  toleranceAfter?: number;
+};
+
+/**
+ * Defines scrubbing mode options used by a [`VideoPlayer`](#videoplayer).
+ */
+export type ScrubbingModeOptions = {
+  /**
+   * Whether the codec operating rate should be increased in scrubbing mode.
+   *
+   * You should only enable this when the player is receiving a large number of seeks in a short period of time. For less frequent seeks, fine-tuning the [`SeekTolerance`](#seektolerance-1) may be sufficient.
+   *
+   * On Android, the player may consume more resources in this mode, so it should only be used for short periods of time in response to user interaction (for example, dragging on a progress bar UI element).
+   *
+   * On Android, when `scrubbingModeEnabled` is `true`, the playback is suppressed. You should set this property back to `false` when the user interaction ends to allow the playback to resume.
+   * For best results, on iOS you should pause the playback when scrubbing.
+   *
+   * > For best scrubbing performance, consider also increasing the seeking tolerance using the [`SeekTolerance`](#seektolerance-1) property.
+   *
+   * > Other scrubbing mode options will have no effect when this is `false`.
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  scrubbingModeEnabled?: boolean;
+
+  /**
+   * Whether the codec operating rate should be increased in scrubbing mode.
+   *
+   * @platform android
+   * @default true
+   */
+  increaseCodecOperatingRate?: boolean;
+
+  /**
+   * Sets whether ExoPlayer's dynamic scheduling should be enabled in scrubbing mode.
+   * This can result in available output buffers being handled more quickly when seeking.
+   *
+   * @platform android
+   * @default true
+   */
+  enableDynamicScheduling?: boolean;
+  /**
+   * Sets whether to use `MediaCodec.BUFFER_FLAG_DECODE_ONLY` in scrubbing mode.
+   * When playback is using MediaCodec on API 34+, this flag can speed up seeking by signalling that the decoded output of buffers between the previous keyframe and the target frame is not needed by the player.
+   *
+   * @platform android
+   * @default true
+   */
+  useDecodeOnlyFlag?: boolean;
+
+  /**
+   * Sets whether to avoid flushing the decoder (where possible) in scrubbing mode.
+   * When `true`, avoids flushing the decoder when a new seek starts decoding from a key-frame in compatible content.
+   *
+   * @platform android
+   * @default true
+   */
+  allowSkippingMediaCodecFlush?: boolean;
 };

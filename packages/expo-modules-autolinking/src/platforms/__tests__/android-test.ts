@@ -1,22 +1,16 @@
-import fs from 'fs';
-import { glob } from 'glob';
-import path from 'path';
+import { vol } from 'memfs';
+import * as path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
-import { registerGlobMock } from '../../__tests__/mockHelpers';
 import {
   convertPackageToProjectName,
   convertPackageWithGradleToProjectName,
   resolveExtraBuildDependenciesAsync,
   resolveModuleAsync,
-} from '../android';
-
-jest.mock('fs');
-jest.mock('glob');
-
-const mockFsReadFile = jest.spyOn(fs.promises, 'readFile');
+} from '../android/android';
 
 afterEach(() => {
+  vol.reset();
   jest.resetAllMocks();
 });
 
@@ -24,8 +18,8 @@ describe(resolveModuleAsync, () => {
   it('should not resolve module without `android` folder ', async () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);
-
     const result = await resolveModuleAsync(name, {
+      name,
       path: pkgDir,
       version: '0.0.1',
       config: new ExpoModuleConfig({
@@ -38,8 +32,8 @@ describe(resolveModuleAsync, () => {
   it('should resolve android/build.gradle', async () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);
-
     const result = await resolveModuleAsync(name, {
+      name,
       path: pkgDir,
       version: '0.0.1',
       config: new ExpoModuleConfig({
@@ -54,6 +48,7 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          packages: [],
         },
       ],
     });
@@ -62,10 +57,8 @@ describe(resolveModuleAsync, () => {
   it('should contain coreFeature field', async () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);
-
-    registerGlobMock(glob, ['android/build.gradle'], pkgDir);
-
     const result = await resolveModuleAsync(name, {
+      name,
       path: pkgDir,
       version: '0.0.1',
       config: new ExpoModuleConfig({
@@ -81,6 +74,7 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          packages: [],
         },
       ],
       coreFeatures: ['jetpackcompose'],
@@ -90,10 +84,8 @@ describe(resolveModuleAsync, () => {
   it('should resolve android/build.gradle.kts', async () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);
-
-    registerGlobMock(glob, ['android/build.gradle.kts'], pkgDir);
-
     const result = await resolveModuleAsync(name, {
+      name,
       path: pkgDir,
       version: '0.0.1',
       config: new ExpoModuleConfig({ platforms: ['android'], android: { path: 'android' } }),
@@ -105,6 +97,7 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          packages: [],
         },
       ],
     });
@@ -113,14 +106,8 @@ describe(resolveModuleAsync, () => {
   it('should resolve multiple gradle files', async () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);
-
-    registerGlobMock(
-      glob,
-      ['android/build.gradle', 'subproject/build.gradle', 'kotlinSubProject/build.gradle.kts'],
-      pkgDir
-    );
-
     const result = await resolveModuleAsync(name, {
+      name,
       path: pkgDir,
       version: '0.0.1',
       config: new ExpoModuleConfig({
@@ -147,16 +134,19 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          packages: [],
         },
         {
           name: 'react-native-third-party$subproject',
           sourceDir: 'node_modules/react-native-third-party/subproject',
           modules: [],
+          packages: [],
         },
         {
           name: 'react-native-third-party$kotlinSubProject',
           sourceDir: 'node_modules/react-native-third-party/kotlinSubProject',
           modules: [],
+          packages: [],
         },
       ],
     });
@@ -198,21 +188,27 @@ describe(convertPackageWithGradleToProjectName, () => {
 
 describe(resolveExtraBuildDependenciesAsync, () => {
   it('should resolve extra build dependencies from gradle.properties', async () => {
-    mockFsReadFile.mockResolvedValueOnce(`
-# gradle.properties
-android.extraMavenRepos=[{"url":"https://customers.pspdfkit.com/maven/"}]
-`);
+    vol.fromJSON(
+      {
+        'gradle.properties':
+          'android.extraMavenRepos=[{"url":"https://customers.pspdfkit.com/maven/"}]',
+      },
+      '/app/android'
+    );
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toEqual([{ url: 'https://customers.pspdfkit.com/maven/' }]);
   });
 
   it('should resolve extra build dependencies from the first matched property', async () => {
-    mockFsReadFile.mockResolvedValueOnce(`
-# gradle.properties
-android.extraMavenRepos=[{"url":"https://customers.pspdfkit.com/maven/"}]
-# the next property is ignored because we only match the first one
-android.extraMavenRepos=[{"url":"https://www.example.com/maven/"}]
-`);
+    vol.fromJSON(
+      {
+        // the second extraMavenRepos property is ignored because we only match the first one
+        'gradle.properties':
+          'android.extraMavenRepos=[{"url":"https://customers.pspdfkit.com/maven/"}]\n' +
+          'android.extraMavenRepos=[{"url":"https://www.example.com/maven/"}]',
+      },
+      '/app/android'
+    );
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toEqual([{ url: 'https://customers.pspdfkit.com/maven/' }]);
   });
@@ -229,9 +225,11 @@ android.extraMavenRepos=[{"url":"https://www.example.com/maven/"}]
       },
     ];
 
-    mockFsReadFile.mockResolvedValueOnce(`
-android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}
-`);
+    vol.fromJSON(
+      { 'gradle.properties': `android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}` },
+      '/app/android'
+    );
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toEqual(extraMavenRepos);
   });
@@ -248,9 +246,11 @@ android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}
       },
     ];
 
-    mockFsReadFile.mockResolvedValueOnce(`
-android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}
-`);
+    vol.fromJSON(
+      { 'gradle.properties': `android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}` },
+      '/app/android'
+    );
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toEqual(extraMavenRepos);
   });
@@ -267,9 +267,11 @@ android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}
       },
     ];
 
-    mockFsReadFile.mockResolvedValueOnce(`
-android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}
-`);
+    vol.fromJSON(
+      { 'gradle.properties': `android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}` },
+      '/app/android'
+    );
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toEqual(extraMavenRepos);
   });
@@ -286,30 +288,31 @@ android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}
       },
     ];
 
-    mockFsReadFile.mockResolvedValueOnce(`
-android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}
-`);
+    vol.fromJSON(
+      { 'gradle.properties': `android.extraMavenRepos=${JSON.stringify(extraMavenRepos)}` },
+      '/app/android'
+    );
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toEqual(extraMavenRepos);
   });
 
   it('should return null for invalid JSON', async () => {
-    mockFsReadFile.mockResolvedValueOnce(`{
-# gradle.properties
-android.extraMavenRepos=[{ name }]
-}`);
+    vol.fromJSON({ 'gradle.properties': 'android.extraMavenRepos=[{ name }]' }, '/app/android');
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toBe(null);
   });
 
-  it('should return null if no speicifed any properties', async () => {
-    mockFsReadFile.mockResolvedValueOnce(``);
+  it('should return null if it does not contain any known properties', async () => {
+    vol.fromJSON({ 'gradle.properties': '' }, '/app/android');
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toBe(null);
   });
 
   it('should return null if gradle.properties not found', async () => {
-    mockFsReadFile.mockRejectedValueOnce(new Error('File not found'));
+    vol.fromJSON({ 'gradle.properties': null }, '/app/android');
+
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/android');
     expect(extraBuildDeps).toBe(null);
   });

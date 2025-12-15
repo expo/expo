@@ -171,6 +171,8 @@ exports[`DevelopmentTeam module setDevelopmentTeamForPbxproj adds the \`DEVELOPM
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/.xcode.env",
+				"$(SRCROOT)/.xcode.env.local",
 			);
 			name = "Bundle React Native code and images";
 			outputPaths = (

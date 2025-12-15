@@ -4,6 +4,10 @@ The e2e runner for Expo Router and Metro web.
 
 The runnable projects are located in the `__e2e__` directory. We use scripts in the package.json to configure the environment using environment variables such as `E2E_ROUTER_SRC=link-preview` where `link-preview` is the sub-directory in `__e2e__` containing an Expo Router routes directory named `app`.
 
+### E2E Tests
+
+To run the E2E tests, navigate to `packages/@expo/cli` and run `yarn test:e2e <NAME_OF_RUNNABLE_PROJECT>`, or `yarn test:playwright <NAME_OF_RUNNABLE_PROJECT>`
+
 ### Native
 
 - Run `yarn prebuild` to create the ios and android directories using the latest `expo-template-bare-minimum` template.

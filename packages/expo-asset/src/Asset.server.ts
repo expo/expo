@@ -78,8 +78,9 @@ export class Asset {
 
   static fromMetadata(meta: AssetMetadata): Asset {
     const metaHash = meta.hash;
-    if (Asset.byHash[metaHash]) {
-      return Asset.byHash[metaHash];
+    const maybeHash = Asset.byHash[metaHash];
+    if (maybeHash) {
+      return maybeHash;
     }
 
     const { uri, hash } = selectAssetSource(meta);

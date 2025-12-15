@@ -8,7 +8,124 @@
 
 ### 🐛 Bug fixes
 
+- Fix dependecy check failure when using EXPO_DEBUG=1 ([#39929](https://github.com/expo/expo/pull/39929) by [@betomoedano](https://github.com/betomoedano))
+- Circumvent `npx expo` Expo CLI invocation to avoid debug warnings from npm polluting standard output ([#40731](https://github.com/expo/expo/pull/40731) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+## 1.17.12 - 2025-12-04
+
+### 💡 Others
+
+- Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
+
+## 1.17.11 - 2025-10-20
+
+### 💡 Others
+
+- Bump to `@expo/metro@54.1.0` and `metro@0.83.2` ([#39826](https://github.com/expo/expo/pull/39826) by [@kitten](https://github.com/kitten))
+
+## 1.17.10 - 2025-10-09
+
+### 🎉 New features
+
+- Update autolinking messages to be clearer about isolated dependencies and add note on corrupted installations ([#40279](https://github.com/expo/expo/pull/40279) by [@kitten](https://github.com/kitten))
+
+## 1.17.9 - 2025-10-01
+
+### 🐛 Bug fixes
+
+- Prevent peer dependency check from warning on peer/regular hybrid dependency ([#39916](https://github.com/expo/expo/pull/39916) by [@kitten](https://github.com/kitten))
+
+## 1.17.8 - 2025-09-18
+
+_This version does not introduce any user-facing changes._
+
+## 1.17.7 — 2025-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 1.17.6 — 2025-09-10
+
+### 💡 Others
+
+- Remove `expo-dev-launcher`, `expo-dev-menu`, `expo-dev-menu-interface`, `expo-updates-interface`, and `expo-eas-client` to ignore RN Directory packages ([#39409](https://github.com/expo/expo/pull/39409) by [@kitten](https://github.com/kitten))
+
+## 1.17.5 — 2025-09-04
+
+### 💡 Others
+
+- Use autolinking information to filter out packages that aren't native modules from React Native Directory check ([#39272](https://github.com/expo/expo/pull/39272) by [@kitten](https://github.com/kitten))
+- Warn about dangerous/invalid Metro config entries ([#39384](https://github.com/expo/expo/pull/39384) by [@kitten](https://github.com/kitten))
+
+## 1.17.4 — 2025-09-02
+
+_This version does not introduce any user-facing changes._
+
+## 1.17.3 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 1.17.2 — 2025-08-27
+
+### 💡 Others
+
+- Add link to FYI about excluding dependencies from packages validation check. ([#39132](https://github.com/expo/expo/pull/39132) by by [@betomoedano](https://github.com/betomoedano))
+
+## 1.17.1 — 2025-08-25
+
+### 🐛 Bug fixes
+
+- Fix bug for lockfile check in monorepos. ([#39072](https://github.com/expo/expo/pull/39072) by [@entiendonull](https://github.com/entiendonull))
+
+## 1.17.0 — 2025-08-21
+
+### 🎉 New features
+
+- Add EAS platform detection, Android gitignore validation, and .expo gitignore check to project setup. ([#39007](https://github.com/expo/expo/pull/39007) by [@entiendonull](https://github.com/entiendonull))
+
+### 💡 Others
+
+- Inform users of corrupted `node_modules` if autolinking finds duplicates with all identical versions ([#39026](https://github.com/expo/expo/pull/39026) by [@kitten](https://github.com/kitten))
+
+## 1.16.0 — 2025-08-19
+
+### 🎉 New features
+
+- Add check for lock-files. ([#38963](https://github.com/expo/expo/pull/38963) by [@entiendonull](https://github.com/entiendonull))
+
+## 1.15.1 — 2025-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 1.15.0 — 2025-08-15
+
+### 🎉 New features
+
+- Add links to changelogs for new package versions in version mismatch messages. ([#38765](https://github.com/expo/expo/pull/38765) by [@betomoedano](https://github.com/betomoedano))
+
+### 🐛 Bug fixes
+
+- Link to changelogs based on the project's SDK version. ([#38877](https://github.com/expo/expo/pull/38877) by [@betomoedano](https://github.com/betomoedano))
+
+### 💡 Others
+
+- Bump `@vercel/ncc` build ([#38801](https://github.com/expo/expo/pull/38801) by [@kitten](https://github.com/kitten))
+
+## 1.14.0 — 2025-08-13
+
+### 🎉 New features
+
+- Add a check for required peer dependencies ([#38445](https://github.com/expo/expo/pull/38445) by [@kadikraman](https://github.com/kadikraman))
+- Add check that detects duplicated native modules ([#38683](https://github.com/expo/expo/pull/38683) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Switch Metro imports to `@expo/metro` wrapper package ([#38166](https://github.com/expo/expo/pull/38166) by [@kitten](https://github.com/kitten))
+- Add missing packages to `DirectPackageInstallCheck` ([#38701](https://github.com/expo/expo/pull/38701) by [@kitten](https://github.com/kitten))
+- Hide "no metadata available" for React Native Directory output if it's the only reported issue ([#38728](https://github.com/expo/expo/pull/38728) by [@kitten](https://github.com/kitten))
 
 ## 1.13.5 - 2025-07-03
 

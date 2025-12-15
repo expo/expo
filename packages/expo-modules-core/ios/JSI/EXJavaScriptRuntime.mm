@@ -1,24 +1,20 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
+#import <ExpoModulesJSI/EXJSIUtils.h>
+#import <ExpoModulesJSI/EXJSIConversions.h>
+#import <ExpoModulesJSI/TestingJSCallInvoker.h>
+#import <ExpoModulesJSI/JSIUtils.h>
+
 #import <jsi/jsi.h>
-
-#if __has_include(<reacthermes/React-hermes-umbrella.h>)
-#import <reacthermes/React-hermes-umbrella.h>
-#elif __has_include(<React_jsc/React-jsc-umbrella.h>)
-#import <React_jsc/React-jsc-umbrella.h>
-#endif
-
-#import <ExpoModulesCore/EXJavaScriptRuntime.h>
-#import <ExpoModulesCore/ExpoModulesHostObject.h>
-#import <ExpoModulesCore/EXJSIUtils.h>
-#import <ExpoModulesCore/EXJSIConversions.h>
-#import <ExpoModulesCore/SharedObject.h>
-#import <ExpoModulesCore/Swift.h>
-#import <ExpoModulesCore/TestingJSCallInvoker.h>
+#import <hermes/hermes.h>
+#import <ReactCommon/SchedulerPriority.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 
 @implementation EXJavaScriptRuntime {
   std::shared_ptr<jsi::Runtime> _runtime;
   std::shared_ptr<react::CallInvoker> _jsCallInvoker;
+  std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
 }
 
 /**
@@ -50,15 +46,15 @@
   return self;
 }
 
-- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
-                            callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime
 {
   if (self = [super init]) {
     // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
     // In this code flow, the runtime should be owned by something else like the RCTBridge.
     // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
-    _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
-    _jsCallInvoker = callInvoker;
+    _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), &runtime);
+    _runtimeScheduler = expo::runtimeSchedulerFromRuntime(runtime);
+    _jsCallInvoker = std::make_shared<RuntimeSchedulerCallInvoker>(_runtimeScheduler);
   }
   return self;
 }
@@ -152,73 +148,10 @@
 
 #pragma mark - Classes
 
-typedef jsi::Function (^InstanceFactory)(jsi::Runtime& runtime, NSString * name, expo::common::ClassConstructor constructor);
-
-- (nonnull EXJavaScriptObject *)createInstance:(nonnull NSString *)name
-                               instanceFactory:(nonnull InstanceFactory)instanceFactory
-                                   constructor:(nonnull ClassConstructorBlock)constructor
-{
-  expo::common::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
-    std::shared_ptr<jsi::Object> thisPtr = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
-    EXJavaScriptObject *caller = [[EXJavaScriptObject alloc] initWith:thisPtr runtime:self];
-    NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
-
-    // Returning something else than `this` is not supported in native constructors.
-    @try {
-      constructor(caller, arguments);
-    } @catch (NSException *exception) {
-      jsi::String jsMessage = expo::convertNSStringToJSIString(runtime, exception.reason ?: @"Constructor failed");
-      jsi::Value error = runtime
-        .global()
-        .getProperty(runtime, "Error")
-        .asObject(runtime)
-        .asFunction(runtime)
-        .callAsConstructor(runtime, {
-          jsi::Value(runtime, jsMessage)
-        });
-      
-      if (exception.userInfo[@"code"]) {
-        jsi::String jsCode = expo::convertNSStringToJSIString(runtime, exception.userInfo[@"code"]);
-        error.asObject(runtime).setProperty(runtime, "code", jsi::Value(runtime, jsCode));
-      }
-      
-      throw jsi::JSError(runtime, jsi::Value(runtime, error));
-    }
-
-    return jsi::Value(runtime, thisValue);
-  };
-  std::shared_ptr<jsi::Function> klass = std::make_shared<jsi::Function>(instanceFactory(*_runtime, name, jsConstructor));
-  return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
-}
-
 - (nullable EXJavaScriptObject *)createObjectWithPrototype:(nonnull EXJavaScriptObject *)prototype
 {
   std::shared_ptr<jsi::Object> object = std::make_shared<jsi::Object>(expo::common::createObjectWithPrototype(*_runtime, [prototype getShared].get()));
   return object ? [[EXJavaScriptObject alloc] initWith:object runtime:self] : nil;
-}
-
-#pragma mark - Shared objects
-
-- (nonnull EXJavaScriptObject *)createSharedObjectClass:(nonnull NSString *)name
-                                            constructor:(nonnull ClassConstructorBlock)constructor
-{
-  InstanceFactory instanceFactory = ^(jsi::Runtime& runtime, NSString * name, expo::common::ClassConstructor constructor){
-    return expo::SharedObject::createClass(*self->_runtime, [name UTF8String], constructor);
-  };
-  
-  return [self createInstance:name instanceFactory:instanceFactory constructor:constructor];
-}
-
-#pragma mark - Shared refs
-
-- (nonnull EXJavaScriptObject *)createSharedRefClass:(nonnull NSString *)name
-                                         constructor:(nonnull ClassConstructorBlock)constructor
-{
-  InstanceFactory instanceFactory = ^(jsi::Runtime& runtime, NSString * name, expo::common::ClassConstructor constructor){
-    return expo::SharedRef::createClass(*self->_runtime, [name UTF8String], constructor);
-  };
-  
-  return [self createInstance:name instanceFactory:instanceFactory constructor:constructor];
 }
 
 #pragma mark - Script evaluation
@@ -252,13 +185,17 @@ typedef jsi::Function (^InstanceFactory)(jsi::Runtime& runtime, NSString * name,
 
 - (void)schedule:(nonnull JSRuntimeExecutionBlock)block priority:(int)priority
 {
-#if REACT_NATIVE_TARGET_VERSION >= 75
+  if (_runtimeScheduler) {
+    auto schedulerPriority = static_cast<facebook::react::SchedulerPriority>(priority);
+    auto callback = [block](jsi::Runtime &) {
+      block();
+    };
+    _runtimeScheduler->scheduleTask(schedulerPriority, std::move(callback));
+    return;
+  }
   _jsCallInvoker->invokeAsync(SchedulerPriority(priority), [block = std::move(block)](jsi::Runtime&) {
     block();
   });
-#else
-  _jsCallInvoker->invokeAsync(SchedulerPriority(priority), block);
-#endif
 }
 
 #pragma mark - Private

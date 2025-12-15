@@ -27,7 +27,8 @@ import expo.modules.core.interfaces.Package
 import expo.modules.device.DeviceModule
 import expo.modules.easclient.EASClientModule
 import expo.modules.filesystem.FileSystemModule
-import expo.modules.filesystem.FileSystemPackage
+import expo.modules.filesystem.legacy.FileSystemLegacyModule
+import expo.modules.filesystem.legacy.FileSystemPackage
 import expo.modules.font.FontLoaderModule
 import expo.modules.font.FontUtilsModule
 import expo.modules.haptics.HapticsModule
@@ -112,7 +113,6 @@ open class HomeActivity : BaseExperienceActivity() {
 
   fun onEventMainThread(event: KernelStartedRunningEvent?) {
     reactHost = kernel.reactHost
-    reactNativeHost = kernel.reactNativeHost
     reactSurface = kernel.surface
 
     reactHost?.onHostResume(this, this)
@@ -175,26 +175,27 @@ open class HomeActivity : BaseExperienceActivity() {
       )
     }
 
-    override fun getModulesList(): List<Class<out Module>> {
-      return listOf(
-        AssetModule::class.java,
-        BlurModule::class.java,
-        CameraViewModule::class.java,
-        ClipboardModule::class.java,
-        ConstantsModule::class.java,
-        DeviceModule::class.java,
-        EASClientModule::class.java,
-        FileSystemModule::class.java,
-        FontLoaderModule::class.java,
-        FontUtilsModule::class.java,
-        HapticsModule::class.java,
-        KeepAwakeModule::class.java,
-        LinearGradientModule::class.java,
-        SplashScreenModule::class.java,
-        TrackingTransparencyModule::class.java,
-        StoreReviewModule::class.java,
-        WebBrowserModule::class.java,
-        ApplicationModule::class.java
+    override fun getModulesMap(): Map<Class<out Module>, String?> {
+      return mapOf(
+        AssetModule::class.java to null,
+        BlurModule::class.java to null,
+        CameraViewModule::class.java to null,
+        ClipboardModule::class.java to null,
+        ConstantsModule::class.java to null,
+        DeviceModule::class.java to null,
+        EASClientModule::class.java to null,
+        FileSystemModule::class.java to null,
+        FileSystemLegacyModule::class.java to null,
+        FontLoaderModule::class.java to null,
+        FontUtilsModule::class.java to null,
+        HapticsModule::class.java to null,
+        KeepAwakeModule::class.java to null,
+        LinearGradientModule::class.java to null,
+        SplashScreenModule::class.java to null,
+        TrackingTransparencyModule::class.java to null,
+        StoreReviewModule::class.java to null,
+        WebBrowserModule::class.java to null,
+        ApplicationModule::class.java to null
       )
     }
   }

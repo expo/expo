@@ -14,7 +14,12 @@
 #endif // USE_HERMES
 #endif // __has_include(<reacthermes/HermesExecutorFactory.h>)
 
+#if __has_include(<React_RCTAppDelegate/React-RCTAppDelegate-umbrella.h>)
 #import <React_RCTAppDelegate/React-RCTAppDelegate-umbrella.h>
+#else
+#import <React_RCTAppDelegate/React_RCTAppDelegate-umbrella.h>
+#endif
+
 
 #if INLINE_USE_HERMES
 

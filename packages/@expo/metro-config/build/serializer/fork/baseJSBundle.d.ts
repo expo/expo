@@ -8,7 +8,7 @@
  * Fork with bundle splitting and better source map support.
  * https://github.com/facebook/metro/blob/bbdd7d7c5e6e0feb50a9967ffae1f723c1d7c4e8/packages/metro/src/DeltaBundler/Serializers/baseJSBundle.js#L1
  */
-import type { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+import type { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from '@expo/metro/metro/DeltaBundler/types';
 export type ModuleMap = [number, string][];
 export type Bundle = {
     modules: ModuleMap;

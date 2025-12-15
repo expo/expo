@@ -1,0 +1,154 @@
+---
+title: NavigationBar
+description: A library that provides access to various interactions with the native navigation bar on Android.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-54/packages/expo-navigation-bar'
+packageName: 'expo-navigation-bar'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/ui/components/ConfigSection';
+
+`expo-navigation-bar` enables you to modify and observe the native navigation bar on Android devices. Due to some Android platform restrictions, parts of this API overlap with the `expo-status-bar` API.
+
+Properties are named after style properties; visibility, position, backgroundColor, borderColor, and so on.
+
+The APIs in this package have no impact when "Gesture Navigation" is enabled on the Android device. There is currently no native Android API to detect if "Gesture Navigation" is enabled or not.
+
+## Installation
+
+<APIInstallSection />
+
+## Configuration in app config
+
+You can configure `expo-navigation-bar` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-navigation-bar",
+        {
+          "backgroundColor": "#0f172a",
+          "barStyle": "light",
+          "borderColor": "#1f2937",
+          "visibility": "visible",
+          "behavior": "inset-swipe",
+          "position": "relative"
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'backgroundColor',
+      description:
+        'Sets the navigation bar background color. Accepts color string supported by React Native. For example, `"#0f172a"`.',
+      default: 'undefined',
+    },
+    {
+      name: 'barStyle',
+      description:
+        'Controls whether Android renders light or dark navigation bar buttons. Accepts `light` and `dark` as values.',
+      default: 'undefined',
+    },
+    {
+      name: 'borderColor',
+      description: 'Sets the divider color above the navigation bar.',
+      default: 'undefined',
+    },
+    {
+      name: 'visibility',
+      description:
+        'Determines whether the navigation bar starts visible or hidden. Accepts `visible` to show the bar immediately and `hidden` to hide it until the user reveals it with a system gesture.',
+      default: 'undefined',
+    },
+    {
+      name: 'behavior',
+      description:
+        'Controls how hidden system bars behave when revealed. Accepts `overlay-swipe`, `inset-swipe`, or `inset-touch` as values.',
+      default: 'undefined',
+    },
+    {
+      name: 'position',
+      description:
+        'Sets whether your layout is inset for the navigation bar. Accepts `relative` to keep the navigation bar outside the content and `absolute` to draw the content edge-to-edge under the bar.',
+      default: 'undefined',
+    },
+    {
+      name: 'legacyVisible',
+      description:
+        'Legacy equivalent of `androidNavigationBar.visible`. Accepts `leanback`, `immersive`, or `sticky-immersive` as values.',
+      default: 'undefined',
+    },
+  ]}
+/>
+
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native **android** project manually, then you need to add the following configuration to your native project:
+
+- To apply `backgroundColor` to the navigation bar, add `navigationBarColor` to **android/app/src/main/res/values/colors.xml**:
+
+  ```xml
+  <resources>
+    <!-- ... -->
+    <color name="navigationBarColor">#0f172a</color>
+  </resources>
+  ```
+
+  Then, apply `android:navigationBarColor` to **android/app/src/main/res/values/styles.xml**:
+
+  ```xml
+  <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <!-- ... -->
+    <item name="android:navigationBarColor">@color/navigationBarColor</item>
+  </style>
+  ```
+
+- To apply `borderColor`, `visibility`, `position`, and `behavior` to the navigation bar, add `expo_navigation_bar_border_color`, `expo_navigation_bar_visibility`, `expo_navigation_bar_position`, and `expo_navigation_bar_behavior` to **android/app/src/main/res/values/strings.xml**:
+
+  ```xml
+  <resources>
+    <!-- ... -->
+    <!-- For `expo_navigation_bar_border_color`, convert the color string to a 32-bit integer. -->
+    <string name="expo_navigation_bar_border_color"
+    translatable="false">-14735049</string>
+    <string name="expo_navigation_bar_visibility" translatable="false">visible</string>
+    <string name="expo_navigation_bar_position" translatable="false">relative</string>
+    <string name="expo_navigation_bar_behavior" translatable="false">inset-swipe</string>
+  </resources>
+  ```
+
+- To apply `legacyVisible` to the navigation bar, add `expo_navigation_bar_legacy_visible` to **android/app/src/main/res/values/strings.xml**:
+
+  ```xml
+  <resources>
+    <!-- ... -->
+    <string name="expo_navigation_bar_legacy_visible" translatable="false">immersive</string>
+  </resources>
+  ```
+
+</ConfigReactNative>
+
+## API
+
+```js
+import * as NavigationBar from 'expo-navigation-bar';
+```
+
+<APISection packageName="expo-navigation-bar" apiName="NavigationBar" />

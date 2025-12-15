@@ -5,9 +5,9 @@ import android.graphics.Color
 import android.util.Log
 import android.view.View
 import com.facebook.react.ReactActivity
+import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.appearance.AppearanceModule
-import expo.interfaces.devmenu.ReactHostWrapper
 import expo.modules.devlauncher.helpers.isValidColor
 import expo.modules.devlauncher.helpers.setProtectedDeclaredField
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
@@ -17,7 +17,7 @@ import expo.modules.manifests.core.Manifest
 
 abstract class DevLauncherExpoAppLoader(
   private val manifest: Manifest,
-  appHost: ReactHostWrapper,
+  appHost: ReactHost,
   context: Context,
   controller: DevLauncherControllerInterface,
   private val activityConfigurator: DevLauncherExpoActivityConfigurator =
@@ -50,7 +50,7 @@ abstract class DevLauncherExpoAppLoader(
       try {
         appearanceModule::class.java.setProtectedDeclaredField(
           obj = appearanceModule,
-          filedName = "mOverrideColorScheme",
+          filedName = "overrideColorScheme",
           newValue = object : AppearanceModule.OverrideColorScheme {
             override fun getScheme(): String {
               return userInterfaceStyle
@@ -61,7 +61,7 @@ abstract class DevLauncherExpoAppLoader(
 
         appearanceModule::class.java.setProtectedDeclaredField(
           obj = appearanceModule,
-          filedName = "mColorScheme",
+          filedName = "colorScheme",
           newValue = userInterfaceStyle
         )
       } catch (e: Exception) {

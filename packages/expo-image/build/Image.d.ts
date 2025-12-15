@@ -1,7 +1,7 @@
 import React from 'react';
 import { type View } from 'react-native';
 import ExpoImage from './ExpoImage';
-import { ImageLoadOptions, ImagePrefetchOptions, ImageProps, ImageRef, ImageSource } from './Image.types';
+import { ImageCacheConfig, ImageLoadOptions, ImagePrefetchOptions, ImageProps, ImageRef, ImageSource } from './Image.types';
 export declare class Image extends React.PureComponent<ImageProps> {
     nativeViewRef: React.RefObject<ExpoImage | null>;
     containerViewRef: React.RefObject<View | null>;
@@ -65,6 +65,12 @@ export declare class Image extends React.PureComponent<ImageProps> {
      */
     static getCachePathAsync(cacheKey: string): Promise<string | null>;
     /**
+     * Configures the image cache. This allows you to manage the cache eviction policy.
+     * @param config - The cache configuration.
+     * @platform ios
+     */
+    static configureCache(config: ImageCacheConfig): void;
+    /**
      * Asynchronously generates a [Blurhash](https://blurha.sh) from an image.
      * @param source - The image source, either a URL (string) or an ImageRef
      * @param numberOfComponents - The number of components to encode the blurhash with.
@@ -77,6 +83,14 @@ export declare class Image extends React.PureComponent<ImageProps> {
         width: number;
         height: number;
     }): Promise<string | null>;
+    /**
+     * Asynchronously generates a [Thumbhash](https://evanw.github.io/thumbhash/) from an image.
+     * @param source - The image source, either a URL (string) or an ImageRef
+     * @platform android
+     * @platform ios
+     * @return A promise resolving to the thumbhash string.
+     */
+    static generateThumbhashAsync(source: string | ImageRef): Promise<string>;
     /**
      * Asynchronously starts playback of the view's image if it is animated.
      * @platform android

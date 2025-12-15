@@ -13,6 +13,7 @@ type SidebarSingleEntryProps = {
   secondary?: boolean;
   shouldLeakReferrer?: boolean;
   allowCompactDisplay?: boolean;
+  mainSection?: string;
 };
 
 export const SidebarSingleEntry = ({
@@ -24,6 +25,7 @@ export const SidebarSingleEntry = ({
   secondary = false,
   shouldLeakReferrer = false,
   allowCompactDisplay = false,
+  mainSection,
 }: SidebarSingleEntryProps) => {
   return (
     <Tooltip.Root delayDuration={500} disableHoverableContent>
@@ -39,7 +41,8 @@ export const SidebarSingleEntry = ({
             isActive &&
               '!bg-palette-blue3 font-medium text-link hocus:!bg-palette-blue4 hocus:text-link'
           )}
-          {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}>
+          {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
+          {...(isActive && mainSection && { 'data-main-section': mainSection })}>
           <Icon
             className={mergeClasses(
               'shrink-0',

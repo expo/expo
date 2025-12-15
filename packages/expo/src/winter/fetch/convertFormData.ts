@@ -1,4 +1,33 @@
 import { blobToArrayBufferAsync } from '../../utils/blobUtils';
+import { type ExpoFormDataValue } from '../FormData';
+
+function encodeFilename(filename: string): string {
+  return encodeURIComponent(filename.replace(/\//g, '_'));
+}
+
+type ExpoFormHeaders = {
+  'content-disposition': string | undefined;
+  'content-type': string | undefined;
+};
+
+function getFormDataPartHeaders(part: ExpoFormDataValue, name: string) {
+  const contentDisposition = 'form-data; name="' + name + '"';
+
+  const headers: ExpoFormHeaders = {
+    'content-disposition': contentDisposition,
+    'content-type': undefined,
+  };
+
+  if (typeof part === 'object') {
+    if ('name' in part && typeof part.name === 'string') {
+      headers['content-disposition'] += `; filename="${encodeFilename(part.name)}"`;
+    }
+    if ('type' in part && typeof part.type === 'string') {
+      headers['content-type'] = part.type;
+    }
+  }
+  return headers;
+}
 
 /**
  * Convert FormData to Uint8Array with a boundary
@@ -10,40 +39,40 @@ export async function convertFormDataAsync(
   formData: FormData,
   boundary: string = createBoundary()
 ): Promise<{ body: Uint8Array; boundary: string }> {
-  // @ts-expect-error: React Native's FormData is not compatible with the web's FormData
-  if (typeof formData.getParts !== 'function') {
-    throw new Error('Unsupported FormData implementation');
+  if (typeof formData.entries !== 'function') {
+    // @ts-expect-error: React Native's FormData is not 100% compatible with ours
+    if (typeof formData.getParts == 'function') {
+      formData.entries = function () {
+        // @ts-expect-error
+        return formData.getParts().map((part) => {
+          if (part.string) return part.string;
+          if (part.file) return part.file;
+          if (part.blob) return part.blob;
+        });
+      };
+    } else {
+      throw new Error('Unsupported FormData implementation');
+    }
   }
   // @ts-expect-error: React Native's FormData is not 100% compatible with ours
-  const parts: ExpoFormDataPart[] = formData.getParts();
+  const entries: [string, ExpoFormDataValue][] = formData.entries();
 
   const results: (Uint8Array | string)[] = [];
-  for (const entry of parts) {
+  for (const [name, entry] of entries) {
     results.push(`--${boundary}\r\n`);
-    for (const [headerKey, headerValue] of Object.entries(entry.headers)) {
-      results.push(`${headerKey}: ${headerValue}\r\n`);
+    for (const [headerKey, headerValue] of Object.entries(getFormDataPartHeaders(entry, name))) {
+      if (headerValue) {
+        results.push(`${headerKey}: ${headerValue}\r\n`);
+      }
     }
     results.push(`\r\n`);
-    if ('string' in entry) {
-      results.push(entry.string);
-    } else if ('file' in entry) {
-      results.push(entry.file.bytes());
-    } else if ('blob' in entry) {
-      results.push(new Uint8Array(await blobToArrayBufferAsync(entry.blob)));
-    } else if (entry._data?.blobId != null) {
-      // When `FormData.getParts()` is called, React Native will use the spread syntax to copy the object and lose the Blob type info.
-      // We should find the original Blob instance from the `FormData._parts` internal properties.
-      // @ts-expect-error: react-native's proprietary Blob type
-      const formDatum = formData._parts?.find(
-        ([_name, value]: [name: string, value: any]) => value.data?.blobId === entry._data.blobId
-      );
-      if (formDatum == null) {
-        throw new Error('Cannot find the original Blob instance from FormData');
-      }
-      if (!(formDatum[1] instanceof Blob)) {
-        throw new Error('Unexpected value type for Blob entry in FormData');
-      }
-      results.push(new Uint8Array(await blobToArrayBufferAsync(formDatum[1])));
+    if (typeof entry === 'string') {
+      results.push(entry);
+    } else if (entry instanceof Blob) {
+      results.push(new Uint8Array(await blobToArrayBufferAsync(entry)));
+    } else if (typeof entry === 'object' && 'bytes' in entry) {
+      // @ts-expect-error: File or ExpoBlob don't extend Blob but implement the interface.
+      results.push(await entry.bytes());
     } else {
       throw new Error('Unsupported FormDataPart implementation');
     }

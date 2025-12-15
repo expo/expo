@@ -4,9 +4,10 @@ import android.app.Application
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.shell.MainReactPackage
+import com.swmansion.worklets.WorkletsPackage
+import com.swmansion.reanimated.ReanimatedPackage
 import host.exp.exponent.ExponentManifest
 import host.exp.expoview.Exponent
-import versioned.host.exp.exponent.ExpoReanimatedPackage
 import versioned.host.exp.exponent.ExpoTurboPackage
 import versioned.host.exp.exponent.ExponentPackage
 
@@ -26,11 +27,11 @@ class ExpoGoReactNativeHost(
     return devSupportEnabled
   }
 
-  override fun getJSMainModuleName(): String {
+  public override fun getJSMainModuleName(): String {
     return mainModuleName ?: super.getJSMainModuleName()
   }
 
-  override fun getJSBundleFile(): String? {
+  public override fun getJSBundleFile(): String? {
     return instanceManagerBuilderProperties.jsBundlePath
   }
 
@@ -38,10 +39,11 @@ class ExpoGoReactNativeHost(
 
   override val isNewArchEnabled = true
 
-  override fun getPackages(): MutableList<ReactPackage> {
+  public override fun getPackages(): MutableList<ReactPackage> {
     return mutableListOf(
       MainReactPackage(null),
-      ExpoReanimatedPackage(),
+      WorkletsPackage(),
+      ReanimatedPackage(),
       ExponentPackage(
         instanceManagerBuilderProperties.experienceProperties,
         instanceManagerBuilderProperties.manifest,
@@ -80,11 +82,11 @@ class KernelReactNativeHost(
 
   override val isNewArchEnabled = true
 
-  override fun getJSBundleFile(): String? {
+  public override fun getJSBundleFile(): String? {
     return data?.localBundlePath
   }
 
-  override fun getJSMainModuleName(): String {
+  public override fun getJSMainModuleName(): String {
     return if (devSupportEnabled) {
       exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest.getMainModuleName()
     } else {
@@ -92,10 +94,11 @@ class KernelReactNativeHost(
     }
   }
 
-  override fun getPackages(): MutableList<ReactPackage> {
+  public override fun getPackages(): MutableList<ReactPackage> {
     return mutableListOf(
       MainReactPackage(null),
-      ExpoReanimatedPackage(),
+      WorkletsPackage(),
+      ReanimatedPackage(),
       ExponentPackage.kernelExponentPackage(
         application.applicationContext,
         exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest,

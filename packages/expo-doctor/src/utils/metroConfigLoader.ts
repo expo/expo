@@ -1,17 +1,38 @@
-import type MetroConfig from 'metro-config';
+import type { InputConfigT } from '@expo/metro/metro-config';
+import path from 'path';
 import resolveFrom from 'resolve-from';
 
-function importMetroConfigFromProject(projectDir: string): typeof MetroConfig {
-  const resolvedPath = resolveFrom.silent(projectDir, 'metro-config');
-  if (!resolvedPath) {
-    throw new MetroConfigPackageMissingError(
-      'Missing package "metro-config" in the project. ' +
-        'This usually means `react-native` is not installed. ' +
-        'Verify that dependencies in package.json include "react-native" ' +
-        'and run `yarn` or `npm install`.'
-    );
+const notFoundError = (basePackage: string): Error =>
+  new MetroConfigPackageMissingError(
+    `Missing package "${basePackage}" in the project. ` +
+      `This usually means "${basePackage}" is not installed correctly. ` +
+      `Verify that dependencies in package.json include "${basePackage}" ` +
+      'and run `yarn` or `npm install`.'
+  );
+
+function importMetroConfigFromProject(
+  projectDir: string
+): typeof import('@expo/metro/metro-config') {
+  const expoResolved = resolveFrom.silent(projectDir, 'expo/package.json');
+  if (!expoResolved) {
+    throw notFoundError('expo');
   }
-  return require(resolvedPath);
+  try {
+    // NOTE(@kitten): We need to use the version of metro-config that Expo uses
+    // Luckily, we can import `@expo/metro` via `expo` to get to the same version
+    const expoMetro = require.resolve('@expo/metro/metro-config', {
+      paths: [path.dirname(expoResolved)],
+    });
+    return require(expoMetro);
+  } catch {
+    // NOTE(@kitten): Older versions of expo will not have `@expo/metro`. Let's try to
+    // require `metro-config` directly
+    const metroConfig = resolveFrom.silent(projectDir, 'metro-config');
+    if (!metroConfig) {
+      throw notFoundError('react-native');
+    }
+    return require(metroConfig);
+  }
 }
 
 export async function configExistsAsync(projectRoot: string): Promise<boolean> {
@@ -28,9 +49,19 @@ export async function configExistsAsync(projectRoot: string): Promise<boolean> {
   }
 }
 
-export async function loadConfigAsync(projectDir: string): Promise<MetroConfig.ConfigT> {
+export async function loadConfigAsync(projectDir: string): Promise<InputConfigT> {
   const MetroConfig = importMetroConfigFromProject(projectDir);
   return await MetroConfig.loadConfig({ cwd: projectDir }, {});
+}
+
+export async function loadExpoMetroConfig(
+  projectDir: string
+): Promise<typeof import('expo/metro-config')> {
+  const expoMetroConfigResolved = resolveFrom.silent(projectDir, 'expo/metro-config');
+  if (!expoMetroConfigResolved) {
+    throw notFoundError('expo');
+  }
+  return require(expoMetroConfigResolved);
 }
 
 class MetroConfigPackageMissingError extends Error {}

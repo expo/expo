@@ -12,6 +12,7 @@ import * as Orientation from './Orientation';
 import * as Package from './Package';
 import * as Paths from './Paths';
 import * as Permissions from './Permissions';
+import * as PredictiveBackGesture from './PredictiveBackGesture';
 import * as PrimaryColor from './PrimaryColor';
 import * as Properties from './Properties';
 import * as Resources from './Resources';
@@ -42,5 +43,6 @@ export {
   Updates,
   Version,
   WindowSoftInputMode,
+  PredictiveBackGesture,
   CodeMod,
 };

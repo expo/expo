@@ -1,0 +1,546 @@
+---
+title: Web modals
+description: Learn how to implement and customize the behavior of a modal in your web app using Expo Router.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { FileTree } from '~/ui/components/FileTree';
+
+> **important** Web modals are an experimental feature available in SDK 54 and later. To use this feature, you must set the `EXPO_UNSTABLE_WEB_MODAL=1` environment variable in your project.
+
+Modern web apps require a flexible modal experience that adapts to different content sizes and user interactions. Expo Router provides various modal presentation patterns for modern web experiences. These patterns leverage `presentation` with `modal`, `formSheet`, `transparentModal`, or `containedTransparentModal` to present either a modal based on different screen widths, and provide customizable styling props using `webModalStyle`.
+
+## Get started
+
+> **info** To use the new web modal features, you must set the `EXPO_UNSTABLE_WEB_MODAL=1` environment variable for both development and [export](/deploy/web/#export-your-web-project) builds. You can do this by adding it to your **.env** file at the root of your project or by prefixing your commands, for example: `EXPO_UNSTABLE_WEB_MODAL=1 npx expo start`.
+
+Modals in Expo Router are configured using `Stack.Screen` component with specific options. This requires the modal screen to be added to the layout file of your app's `Stack`.
+
+Consider the following navigation tree, which includes a stack navigator defined in the layout file, a home screen where the modal is accessed, and the modal screen component:
+
+<FileTree files={['app/_layout.tsx', 'app/index.tsx', 'app/modal.tsx']} />
+
+In the layout file (**app/\_layout.tsx**), the modal screen component is added to the Stack navigator:
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export const unstable_settings = {
+  anchor: 'index',
+};
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="modal"
+        options={{
+          presentation: 'modal', // Enables modal behavior
+          sheetAllowedDetents: [0.5, 1], // Array of snap positions for screens that have a width less than 768px.
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+The **modal.tsx** is used to display the contents of a modal:
+
+```tsx app/modal.tsx
+import { Text, View } from 'react-native';
+
+export default function Modal() {
+  return <View style={{ flex: 1, padding: 16 }}>{/* Modal content goes here */}</View>;
+}
+```
+
+Now, to open the modal from **index.tsx**, you can use `router.push('/modal')` in your index route:
+
+```tsx app/index.tsx
+import { router } from 'expo-router';
+import { Pressable, Text, View, StyleSheet } from 'react-native';
+
+export default function Home() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Home Screen</Text>
+      <Pressable onPress={() => router.push('/modal')} style={styles.button}>
+        <Text style={styles.buttonText}>Open Modal</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    padding: 16,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
+```
+
+Here's the result of the above example:
+
+<ContentSpotlight file="expo-router/web-modals/01.mp4" />
+
+## Anchors and nested stacks
+
+When working with stack or nested stack navigators, modals need to be properly anchored to ensure correct navigation behavior, especially when deep-linking to modal routes. Without anchoring, the screen behind the modal will be wiped away, leaving no navigation context.
+
+An _anchor_ serves as the base for the modal. In complex apps, when you have nested stacks, the anchor must be defined for the nested stack, and its value becomes the initial route of the stack.
+
+You can configure an anchor by exporting `unable_settings` from your stack's layout file:
+
+```tsx
+export const unstable_settings = {
+  anchor: 'index', // Anchor to the index route
+};
+```
+
+In the above example, the `anchor: 'index'` tells the Expo Router that it should maintain the specified anchor route in the background when presenting a modal.
+
+## Modal presentation style
+
+The difference between the presentation of how a modal appears in your web app on a large screen (for example, a desktop) while maintaining the sheet behavior when the web app runs on a mobile device, depends on the configuration options. The following are options available for configuring a web modal's appearance that can be passed to the `options` object of a `Stack.Screen`.
+
+| Option                | Type                                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| --------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `presentation`        | `'modal'`, `'formSheet'`, `'transparentModal'`, `'containedTransparentModal'` | Modal presentation style. On screens with width more than 768px, all styles display as a centered overlay (for example, a lightbox). <br /><br /> On screens with width less than `768px`, `formSheet` is used to display as a bottom sheet.<br /><br /> When set to `transparentModal`, it displays as an overlay without a completely obscure background content. Detents and sheet grabber properties are not applied. This presentation is useful when building your own custom modal. <br /><br /> Similar to `transparentModal`, when set to `containedTransparentModal`, it displays as an overlay without a completely obscure background content. Detents and other properties are not applied. This presentation is useful when building your own custom modal. |
+| `sheetAllowedDetents` | `number[]`, `'fitToContents'`                                                 | Snap positions as percentages (0.0-1.0) or automatic fitting. Only applies to screens with less than `768px` width.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `sheetGrabberVisible` | `boolean`                                                                     | **On iOS, s**hows/hides the drag handle at the top of the sheet. Not supported on Android and web. We recommend using a custom sheet header component to imitate the grabber across all platforms.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `sheetCornerRadius`   | `number`                                                                      | Corner radius of the sheet in pixels.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `webModalStyle`       | `WebModalStyle`                                                               | Special prop that allows web-specific styling options for fine-tuning modal appearance.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+
+## Custom modal styling with `webModalStyle`
+
+> **info** **Note:** The `webModalStyle` properties only apply to web platforms. On mobile, the modal will automatically adapt to use sheet-like behavior for touch interaction.
+
+You can use `webModalStyle` to customize the dimensions and appearance of your modals on web. It provides the following properties for further customization:
+
+| Property            | Type              | Description                                                                                                                    | Default                |
+| ------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------ | ---------------------- |
+| `width`             | `number` `string` | Override the width of the modal (px or percentage). Only applies for web platform on a desktop.                                | `83vw`                 |
+| `height`            | `number` `string` | Override the height of the modal (px or percentage). Only applies for web platform on a desktop.                               | `79vh`                 |
+| `minHeight`         | `number` `string` | Minimum height of the desktop modal (px or percentage). Overrides the default iOS 26 sizing.                                   | `min(586px, 79vh)`     |
+| `minWidth`          | `number` `string` | Minimum width of the desktop modal (px or percentage). Overrides the default iOS 26 sizing.                                    | `min(936px, 83vw)`     |
+| `border`            | `string`          | Override the border of the desktop modal (any valid CSS border value, for example, '1px solid #ccc' or 'none')                 | None                   |
+| `overlayBackground` | `string`          | Override the overlay background color (any valid CSS color or rgba/hsla value).                                                | Semi-transparent black |
+| `shadow`            | `string`          | Override the modal shadow filter (any valid CSS filter value, for example, 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))' or 'none') | Drop-shadow filter     |
+
+### Custom CSS properties
+
+Expo Router uses custom CSS properties to style modals, which you can override globally using `webModalStyle`. These variables provide fine-grained control over a modal's appearance.
+
+#### Width and height sizing variables
+
+```css
+/* Default modal width (83vw on desktop, following iOS 26 specifications) */
+--expo-router-modal-width: 83vw;
+
+/* Maximum modal width (936px max, 83vw by default, following iOS 26) */
+--expo-router-modal-max-width: min(936px, 83vw);
+
+/* Minimum modal width (auto by default) */
+--expo-router-modal-min-width: auto;
+
+/* Default modal height (79vh, following iOS 26 specifications) */
+--expo-router-modal-height: 79vh;
+
+/* Minimum modal height (586px max, 79vh by default, following iOS 26) */
+--expo-router-modal-min-height: min(586px, 79vh);
+```
+
+#### Border and overlay styling variables
+
+```css
+/* Modal border (none by default) */
+--expo-router-modal-border: none;
+
+/* Modal corner radius (24px by default, following iOS 26) */
+--expo-router-modal-border-radius: 24px;
+
+/* Modal shadow filter (drop-shadow by default) */
+--expo-router-modal-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04))
+  drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+
+/* Overlay background color (25% black by default) */
+--expo-router-modal-overlay-background: rgba(0, 0, 0, 0.25);
+```
+
+#### How `webModalStyle` maps to CSS variables
+
+When you use `webModalStyle` to override any of the sizing variables, Expo Router automatically sets these CSS variables to the values you provide:
+
+```tsx
+// This webModalStyle configuration
+webModalStyle: {
+  width: 800,
+  height: 600,
+  border: '2px solid blue',
+  overlayBackground: 'rgba(0, 0, 0, 0.7)',
+  shadow: 'drop-shadow(0 8px 16px rgba(0,0,0,0.2))',
+}
+
+// ...automatically sets these CSS variables:
+// --expo-router-modal-width: 800px
+// --expo-router-modal-height: 600px
+// --expo-router-modal-border: 2px solid blue
+// --expo-router-modal-overlay-background: rgba(0, 0, 0, 0.7)
+// --expo-router-modal-shadow: drop-shadow(0 8px 16px rgba(0,0,0,0.2))
+```
+
+## Common examples
+
+<Collapsible summary="Full screen modal example">
+
+To create a full screen modal for content that covers maximum space, you can use `webModalStyle` property in your modal route's `Stack.Screen` options:
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export const unstable_settings = {
+  anchor: 'index',
+};
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="modal"
+        options={{
+          presentation: 'modal',
+          webModalStyle: {
+            width: '95vw',
+            height: '95vh',
+            border: 'none',
+          },
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+Here's the result of the above example:
+
+<ContentSpotlight file="expo-router/web-modals/02.mp4" />
+
+When running your web app on mobile devices, you can set `sheetAllowedDetents` to `fitToContents` or a custom value if you want to avoid showing a full screen modal:
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export const unstable_settings = {
+  anchor: 'index',
+};
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="modal"
+        options={{
+          presentation: 'modal',
+          webModalStyle: {
+            width: '95vw',
+            height: '95vh',
+            border: 'none',
+          },
+          sheetAllowedDetents: 'fitToContents',
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+The modal appears as a sheet on a mobile device:
+
+<ContentSpotlight file="expo-router/web-modals/03.mp4" />
+
+</Collapsible>
+
+<Collapsible summary="Compact modal example">
+
+For smaller interactions, you can create a compact modal that fits its content:
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export const unstable_settings = {
+  anchor: 'index',
+};
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="modal"
+        options={{
+          presentation: 'modal',
+          webModalStyle: {
+            width: 400,
+            height: 'auto',
+            minHeight: 200,
+            border: '1px solid #e5e7eb',
+            overlayBackground: 'rgba(0, 0, 0, 0.3)',
+          },
+          sheetCornerRadius: 12,
+          sheetAllowedDetents: 'fitToContents',
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+Here's the result of the above example:
+
+<ContentSpotlight file="expo-router/web-modals/04.mp4" />
+
+</Collapsible>
+
+<Collapsible summary="Transparent modal example">
+
+You can set the `presentation` option to `transparentModal` when you want to display an overlay that should maintain the visual context of the underlying screen:
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export const unstable_settings = {
+  anchor: 'index',
+};
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="modal"
+        options={{
+          presentation: 'transparentModal',
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+Here's the result of the above example:
+
+<ContentSpotlight file="expo-router/web-modals/05.mp4" />
+
+</Collapsible>
+
+<Collapsible summary="Corner radius example">
+
+You customize the corner radius using `sheetCornerRadius`:
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export const unstable_settings = {
+  anchor: 'index',
+};
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="modal"
+        options={{
+          presentation: 'formSheet',
+          sheetAllowedDetents: [0.4],
+          sheetCornerRadius: 32,
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+Here's the result of the above example:
+
+<ContentSpotlight
+  src="/static/images/expo-router/web-modal-with-corner-radius.png"
+  alt="Web modal with corner radius."
+/>
+
+</Collapsible>
+
+<Collapsible summary="Custom detents example">
+
+You can use `sheetAllowedDetents` to define the height at which the modal can rest:
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export const unstable_settings = {
+  anchor: 'index',
+};
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="modal"
+        options={{
+          presentation: 'formSheet',
+          sheetAllowedDetents: [0.2, 0.5, 0.8, 0.98],
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+Here's the result of the above example:
+
+<ContentSpotlight file="expo-router/web-modals/06.mp4" />
+
+</Collapsible>
+
+## Global CSS customization
+
+For your web app, if you are using a [global CSS](https://docs.expo.dev/versions/latest/config/metro/#global-css) file in your project, you can also override width, height, border, and overlay variables.
+
+You can add custom values using the `--expo-router-*` variables in your global CSS file:
+
+```css
+/* Override default modal styling globally */
+:root {
+  --expo-router-modal-width: 700px;
+  --expo-router-modal-min-width: auto;
+  --expo-router-modal-max-width: 95vw;
+  --expo-router-modal-height: 640px;
+  --expo-router-modal-min-height: 640px;
+  --expo-router-modal-border: none;
+  --expo-router-modal-border-radius: 16px;
+  --expo-router-modal-shadow: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+  --expo-router-modal-overlay-background: rgba(0, 0, 0, 0.5);
+}
+```
+
+## Custom modal route implementation
+
+{/* TODO (@aman): When publishing this guide, remove "Web modals implementation" from the modals.tsx file. */}
+
+<ContentSpotlight file="expo-router/web-modal.mp4" />
+
+The video above demonstrates a modal window that appears over the main content of the web page. The background dims to draw focus to the modal, which contains information for the user. This is typical behavior for web modals, where users can interact with the modal or close it to return to the main page.
+
+You can achieve the above web modal behavior by using the [`transparentModal`](https://reactnavigation.org/docs/stack-navigator/#transparent-modals) presentation mode, styling the overlay and modal content, and utilizing [`react-native-reanimated`](/versions/latest/sdk/reanimated/#installation) to animate the modal's presentation.
+
+Modify your project's root layout (**app/\_layout.tsx**) to add an `options` object to the modal route:
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+/* @info <CODE>unstable_settings</CODE> can be set in any stack's <CODE>_layout.tsx</CODE> file. It is used to define the initial route name for the stack, which ensures that users have a consistent starting point, especially when deep linking. */
+export const unstable_settings = {
+  initialRouteName: 'index',
+};
+/* @end */
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="modal"
+        options={{
+          /* @info Set the <CODE>presentation</CODE> mode to <CODE>transparentModal</CODE> for the modal route.*/
+          presentation: 'transparentModal',
+          /* @end */
+          /* @info (Optional) Set the <CODE>animation</CODE> to <CODE>fade</CODE>.*/
+          animation: 'fade',
+          /* @end */
+          /* @info Prevents showing the header. Useful for the behavior of web modals.*/
+          headerShown: false,
+          /* @end */
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+> **info** **Note:** `unstable_settings` currently works only with `Stack` navigators.
+
+The above example sets the `index` screen as the [`initialRouteName`](/router/advanced/router-settings/#initialroutename) using [`unstable_settings`](/router/advanced/router-settings). This ensures that the transparent modal is always rendered on top of the current screen, even when users navigate to the modal screen via a direct link.
+
+Style the overlay and modal content in **modal.tsx** as shown below:
+
+{/* prettier-ignore */}
+```tsx app/modal.tsx|collapseHeight=250
+import { Link } from 'expo-router';
+import { Pressable, StyleSheet, Text } from 'react-native';
+import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
+
+export default function Modal() {
+  return (
+    <Animated.View
+      /* @info Fade in animation when the modal is presented.*/
+      entering={FadeIn}
+      /* @end */
+      /* @info This style ensures the view takes the entire screen space, sets the overlay to black with 40% opacity, and centers the content.*/
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#00000040',
+      }}
+      /* @end */
+    >
+      {/* Dismiss modal when pressing outside */}
+      <Link href={'/'} asChild>
+        <Pressable style={StyleSheet.absoluteFill} />
+      </Link>
+      <Animated.View
+        /* @info Slide in animation when the modal is presented.*/
+        entering={SlideInDown}
+        /* @end */
+        /* @info This view contains the modal content.*/
+        style={{
+          width: '90%',
+          height: '80%',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'white',
+        }}
+        /* @end */
+      >
+        <Text style={{ fontWeight: 'bold', marginBottom: 10 }}>Modal Screen</Text>
+        <Link href="/">
+          <Text>← Go back</Text>
+        </Link>
+      </Animated.View>
+    </Animated.View>
+  );
+}
+```
+
+You can customize the modal's appearance as per your needs.

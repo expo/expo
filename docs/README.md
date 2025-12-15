@@ -231,7 +231,6 @@ cd expo/packages/expo-constants
 - Then, open **.ts** file in your code editor/IDE where you want to make changes/updates.
 - Start the TypeScript build compilation in watch mode using `yarn build` in the terminal window.
 - Make the update. For example, we want to update the TypeDoc description of [`expoConfig` property](https://docs.expo.dev/versions/latest/sdk/constants/#nativeconstants)
-
   - Inside the **src/** directory, open **Constants.types.ts** file.
   - Search for `expoConfig` property. It has a current description as shown below:
 
@@ -270,7 +269,7 @@ et generate-docs-api-data --packageName expo-constants
 
 #### NOTE ####
 # To update a specific SDK reference, run the command by mentioning the SDK version
-et gdad -p expo-constants --sdk 51
+et gdad -p expo-constants --sdk 54
 
 # For more information about et command, run: et gdad --help
 ```
@@ -318,7 +317,7 @@ This will make sure that the ExpoBot on GitHub will not complain about updating 
 
 ##### Use the correct package name
 
-Some of the packages have documentation spread over multiple pages. For example, `expo-av` package has a separate base interface, and some of the information is separated into `Audio` and `Video` components. For such packages, always make sure to check the [name of the package](https://github.com/expo/expo/blob/main/tools/src/commands/GenerateDocsAPIData.ts#L24) for `et` command.
+Some of the packages have documentation spread over multiple pages. For example, `expo-sensors` package has a separate overview page in Expo Sensors reference, and rest of the information is separated into components such as, `Accelerometer`, `Gyroscope`, `Magnetometer`, and more. For such packages, always make sure to check the [name of the package](https://github.com/expo/expo/blob/main/tools/src/commands/GenerateDocsAPIData.ts#L24) for `et` command.
 
 ### Sync app config with the schema
 
@@ -347,7 +346,7 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 ### Add video links from Expo's YouTube channel
 
-To reference a video from Expo's YouTube channel, use the `VideBoxLink` component. This component is imported from `~/ui/components/VideBoxLink`.
+To reference a video from Expo's YouTube channel, use the `VideoBoxLink` component. This component is imported from `~/ui/components/VideoBoxLink`.
 
 ```tsx
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
@@ -473,18 +472,48 @@ If you just want to hide a single page from the sidebar, set `hideInSidebar: tru
 
 Whenever shell commands are used or referred, use `Terminal` component to make the code snippets copy/pasteable. This component can be imported into any markdown file.
 
+#### Supported props
+
+| Option          | Type                              | Description                                                                                                                                                                    |
+| --------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `cmd`           | `string[]`                        | **Required**. Lines to render. Use `$` to mark commands, `#` for comments, and empty strings for spacing.                                                                      |
+| `cmdCopy`       | `string`                          | **Optional**. Overrides the auto-generated copy text. Helpful when multiple commands should be chained (for example with `&&`) or when you want to control the copied content. |
+| `title`         | `string`                          | **Optional**. Overrides the default header label of "Terminal".                                                                                                                |
+| `browserAction` | `{ href: string; label: string }` | **Optional**. Adds a launch button in the header that opens the link in a new tab—ideal for flows that continue in a web UI.                                                   |
+| `hideOverflow`  | `boolean`                         | **Optional**. Prevents horizontal scrollbars when you prefer the content to clip instead of scroll.                                                                            |
+| `className`     | `string`                          | **Optional**. Additional utility classes for adjusting layout or spacing around the snippet.                                                                                   |
+
 ```mdx
 import { Terminal } from '~/ui/components/Snippet';
 
-{/* for single command and one prop: */}
+{/* For single command and one prop */}
 
 <Terminal cmd={['$ npx expo install package']} />
 
-{/* for multiple commands: */}
+{/* For multiple commands */}
 
 <Terminal
   cmd={['# Create a new Expo project', '$ npx create-expo-app --template bare-minimum', '']}
   cmdCopy="npx create-expo-app --template bare-minimum"
+/>
+
+{/* Clamp long outputs and tweak spacing */}
+
+<Terminal
+  className="mt-6"
+  hideOverflow
+  cmd={[
+    '$ npx expo config --json',
+    '# Output is trimmed visually because hideOverflow is enabled.',
+  ]}
+/>
+
+{/* Surface a button that opens related browser flows */}
+
+<Terminal
+  title="Deploy website with EAS"
+  cmd={['$ npx eas-cli deploy']}
+  browserAction={{ href: 'https://expo.dev/eas', label: 'Open in expo.dev' }}
 />
 ```
 

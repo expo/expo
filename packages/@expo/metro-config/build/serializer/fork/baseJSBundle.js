@@ -17,10 +17,10 @@ exports.getPlatformOption = getPlatformOption;
 exports.getBaseUrlOption = getBaseUrlOption;
 exports.baseJSBundle = baseJSBundle;
 exports.baseJSBundleWithDependencies = baseJSBundleWithDependencies;
+const CountingSet_1 = __importDefault(require("@expo/metro/metro/lib/CountingSet"));
+const countLines_1 = __importDefault(require("@expo/metro/metro/lib/countLines"));
+const getAppendScripts_1 = __importDefault(require("@expo/metro/metro/lib/getAppendScripts"));
 const jsc_safe_url_1 = require("jsc-safe-url");
-const CountingSet_1 = __importDefault(require("metro/src/lib/CountingSet"));
-const countLines_1 = __importDefault(require("metro/src/lib/countLines"));
-const getAppendScripts_1 = __importDefault(require("metro/src/lib/getAppendScripts"));
 const processModules_1 = require("./processModules");
 function getPlatformOption(graph, options) {
     if (graph.transformOptions?.platform != null) {
@@ -90,6 +90,7 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
         asyncRequireModulePath: options.asyncRequireModulePath,
         createModuleId: options.createModuleId,
         getRunModuleStatement: options.getRunModuleStatement,
+        globalPrefix: options.globalPrefix,
         inlineSourceMap: options.inlineSourceMap,
         runBeforeMainModule: options.runBeforeMainModule,
         runModule: options.runModule,

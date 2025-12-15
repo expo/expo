@@ -1,4 +1,4 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontSource } from './Font.types';
@@ -9,6 +9,9 @@ import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
  * @private
  */
 export function getServerResources(): string[] {
+  if (!ExpoFontLoader.getServerResources) {
+    throw new UnavailabilityError('expo-font', 'getServerResources');
+  }
   return ExpoFontLoader.getServerResources();
 }
 
@@ -17,6 +20,9 @@ export function getServerResources(): string[] {
  * @private
  */
 export function resetServerContext() {
+  if (!ExpoFontLoader.resetServerContext) {
+    throw new UnavailabilityError('expo-font', 'resetServerContext');
+  }
   return ExpoFontLoader.resetServerContext();
 }
 

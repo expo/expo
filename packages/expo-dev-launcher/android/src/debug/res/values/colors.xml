@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="dev_launcher_backgroundColor">#F8F8FA</color>
+  <color name="dev_launcher_primary">#1B1F23</color>
+
+  <color name="dev_launcher_secondaryBackgroundColor">#F0F1F2</color>
+  <color name="dev_launcher_white">#FFFFFF</color>
+
+  <color name="dev_launcher_colorPrimaryDark">#011A2D</color>
+
+  <color name="dev_launcher_colorAccentDark">#FFFFFF</color>
+</resources>

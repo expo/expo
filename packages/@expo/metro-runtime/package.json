@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-runtime",
-  "version": "5.0.4",
+  "version": "6.1.2",
   "description": "Tools for making advanced Metro bundler features work",
   "sideEffects": true,
   "main": "src/index.ts",
@@ -15,8 +15,6 @@
     "rsc",
     "async-require.js",
     "async-require.d.ts",
-    "error-overlay.js",
-    "error-overlay.d.ts",
     "assets",
     "!**/__tests__"
   ],
@@ -34,6 +32,25 @@
     "url": "https://github.com/expo/expo.git"
   },
   "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-dom": "*",
     "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@expo/log-box": "0.0.13-canary-20251023-4c86f95",
+    "anser": "^1.4.9",
+    "stacktrace-parser": "^0.1.10",
+    "pretty-format": "^29.7.0",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^5.0.7",
+    "react-dom": "19.2.0"
   }
 }

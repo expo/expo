@@ -33,13 +33,7 @@ export default function MeshGradientScreen() {
       };
     })
     .onEnd(() => {
-      point.value = withSpring(
-        { x: 0.5, y: 0.5 },
-        {
-          restDisplacementThreshold: 0.0001,
-          restSpeedThreshold: 0.02,
-        }
-      );
+      point.value = withSpring({ x: 0.5, y: 0.5 });
     });
 
   const animatedProps = useAnimatedProps(() => {

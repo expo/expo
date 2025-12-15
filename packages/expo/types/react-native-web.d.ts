@@ -45,15 +45,9 @@ declare module 'react-native' {
     /** @platform web */
     backgroundSize?: string;
     /** @platform web */
-    boxShadow?: string;
-    /** @platform web */
     boxSizing?: string;
     /** @platform web */
     clip?: string;
-    /** @platform web */
-    cursor?: string;
-    /** @platform web */
-    filter?: string;
     /** @platform web */
     gridAutoColumns?: string;
     /** @platform web */
@@ -81,8 +75,6 @@ declare module 'react-native' {
     /** @platform web */
     outline?: string;
     /** @platform web */
-    outlineColor?: string;
-    /** @platform web */
     overflowX?: string;
     /** @platform web */
     overflowY?: string;
@@ -101,7 +93,7 @@ declare module 'react-native' {
     /** @platform web */
     transitionDelay?: string | string[];
     /** @platform web */
-    transitionDuration?: string | string[];
+    transitionDuration?: string | string[] | number;
     /** @platform web */
     transitionProperty?: string | string[];
     /** @platform web */
@@ -225,8 +217,6 @@ declare module 'react-native' {
     transitionProperty?: string | string[];
     /** @platform web */
     transitionTimingFunction?: string | Function | (string | Function)[];
-    /** @platform web */
-    userSelect?: string;
     /** @platform web */
     visibility?: string;
     /** @platform web */

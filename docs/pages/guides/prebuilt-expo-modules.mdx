@@ -1,0 +1,81 @@
+---
+title: Prebuilt Expo Modules for Android
+sidebar_title: Prebuilt Expo Modules
+description: Learn how prebuilt Expo Modules reduce Android build times by up to 25% on your machine.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+When building React Native apps, longer build times can slow down your development workflow and reduce productivity. Each time you make changes to your code, you might need to wait for the build process to complete, which can add up to significant delays.
+
+**Starting from SDK 53**, Expo introduces prebuilt Expo Modules for Android to address this pain point. Instead of compiling Expo Modules source code from scratch during each build, your project can now use pre-compiled versions of these modules. Ultimately, this results in faster build times.
+
+## Benefits
+
+- **Faster local development**: Up to 25% reduction in Android build times on local machines
+- **Improved developer experience**: Less waiting time during development iterations
+- **Automatic optimization**: Works out of the box with new projects for SDK 53 and later
+
+## How prebuilt Expo Modules for Android work
+
+During your project's Android build process, look for the `[📦]` emoji prefix next to package names in the build output. This indicates that those packages are using prebuilt versions rather than being compiled from source.
+
+For example, after creating a project with SDK 53's default template, and running the `npx expo run:android` command, you will notice the `[📦 package-name` prefix next to packages that are precompiled:
+
+<ContentSpotlight
+  alt="An example of the prebuilt Expo Modules for Android build output."
+  src="/static/images/guides/prebuilt-expo-modules-on-android.png"
+  className="max-w-[280px]"
+/>
+
+## Configuration
+
+**For SDK 53 and later, no configuration steps are required for projects** that are created with one of the available [Expo templates](/more/create-expo/#--template).
+
+### Opting out of prebuilt Expo Modules
+
+You can opt out of prebuilt modules. This might be required when you are modifying the module source code yourself. In this scenario, you can configure the Expo Autolinking configuration by adding `buildFromSource` to the **package.json** file:
+
+{/* prettier-ignore */}
+```json package.json
+{
+  "name": "your-app-name",
+  "expo": {
+    "autolinking": {
+      "android": {
+        "buildFromSource": [
+          ".*"
+        ]
+      }
+    }
+  }
+}
+```
+
+### Selectively opt out
+
+You can also opt out of specific modules while keeping others prebuilt by specifying individual package names instead of the wildcard `".*"`:
+
+{/* prettier-ignore */}
+```json package.json
+{
+  "name": "your-app-name",
+  "expo": {
+    "autolinking": {
+      "android": {
+        "buildFromSource": [
+          "expo-camera",
+          "expo-web-browser",
+          "expo-linking",
+        ]
+      }
+    }
+  }
+}
+```
+
+## Considerations
+
+- Existing projects can benefit from this feature when upgrading to SDK 53 and later
+- Performance improvements may vary based on your hardware configuration
+- Current improvements on EAS Builds are more modest but provide groundwork for future caching mechanisms

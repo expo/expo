@@ -324,6 +324,13 @@ export type AssetsOptions = {
    * date.
    */
   createdBefore?: Date | number;
+  /**
+   * Whether to resolve full info for the assets during the query.
+   * This is useful to get the full EXIF data for images. It can fix the orientation of the image.
+   * @default false
+   * @platform android
+   */
+  resolveWithFullInfo?: boolean;
 };
 
 // @needsAudit
@@ -333,8 +340,10 @@ export type PagedInfo<T> = {
    */
   assets: T[];
   /**
-   * ID of the last fetched asset. It should be passed as `after` option in order to get the
-   * next page.
+   * A marker that indicates where the next page of results should start.
+   * On iOS, it is the ID of the last fetched asset.
+   * On Android, it is the index of the last fetched asset in the query results.
+   * This value should be passed as the `after` option to load the next page.
    */
   endCursor: string;
   /**
@@ -827,8 +836,17 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     throw new UnavailabilityError('MediaLibrary', 'getAssetsAsync');
   }
 
-  const { first, after, album, sortBy, mediaType, createdAfter, createdBefore, mediaSubtypes } =
-    assetsOptions;
+  const {
+    first,
+    after,
+    album,
+    sortBy,
+    mediaType,
+    createdAfter,
+    createdBefore,
+    mediaSubtypes,
+    resolveWithFullInfo,
+  } = assetsOptions;
 
   const options = {
     first: first == null ? 20 : first,
@@ -839,6 +857,7 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
     mediaSubtypes: arrayize(mediaSubtypes),
     createdAfter: dateToNumber(createdAfter),
     createdBefore: dateToNumber(createdBefore),
+    resolveWithFullInfo: resolveWithFullInfo ?? false,
   };
 
   if (first != null && typeof options.first !== 'number') {

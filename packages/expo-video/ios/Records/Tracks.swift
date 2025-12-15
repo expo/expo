@@ -37,7 +37,9 @@ internal struct VideoTrack: Record, Equatable {
   @Field var id: String? = nil
   @Field var size: VideoSize? = nil
   @Field var mimeType: String? = nil
-  @Field var bitrate: Int? = nil
+  @Field var bitrate: Int? = nil // deprecated as of SDK 55
+  @Field var peakBitrate: Int? = nil
+  @Field var averageBitrate: Int? = nil
   @Field var isSupported: Bool = true
   @Field var frameRate: Float? = nil
 
@@ -49,20 +51,32 @@ internal struct VideoTrack: Record, Equatable {
   }
 
   static func from(assetTrack: AVAssetTrack) async -> VideoTrack {
-    var bitrate: Int?
+    var averageBitrate: Int?
     var size: VideoSize?
     let supported = (try? await assetTrack.load(.isPlayable)) ?? true
     let mediaFormat = try? await assetTrack.mediaFormat
     let frameRate = try? await assetTrack.load(.nominalFrameRate)
 
     if let bitrateFloat = try? await assetTrack.load(.estimatedDataRate) {
-      bitrate = Int(bitrateFloat)
+      averageBitrate = Int(bitrateFloat)
     }
+
+    let peakBitrate = await assetTrack.getPeakBitrate()
+
     if let cgSize = try? await assetTrack.load(.naturalSize) {
       size = VideoSize.from(cgSize)
     }
 
-    return VideoTrack(id: "\(assetTrack.trackID)", size: size, mimeType: mediaFormat, bitrate: bitrate, isSupported: supported, frameRate: frameRate)
+    return VideoTrack(
+      id: "\(assetTrack.trackID)",
+      size: size,
+      mimeType: mediaFormat,
+      bitrate: peakBitrate ?? averageBitrate,
+      peakBitrate: peakBitrate,
+      averageBitrate: averageBitrate,
+      isSupported: supported,
+      frameRate: frameRate
+    )
   }
 
   static func from(hlsHeaderLine: String, idLine: String) -> VideoTrack? {
@@ -93,18 +107,32 @@ internal struct VideoTrack: Record, Equatable {
 
     let size = VideoSize(width: width, height: height)
     let mimeType = codecsToMimeType(codecs: details["CODECS"])
-    var bitrate: Int? = nil
+    var peakBitrage: Int? = nil
+    var averageBitrate: Int? = nil
     var frameRate: Float? = nil
 
-    // Use the default Andorid behavior for reporting the bitrate
-    if let bitrateString = details["BANDWIDTH"] ?? details["AVERAGE-BANDWIDTH"] {
-      bitrate = Int(bitrateString)
+    if let peakBitrateString = details["BANDWIDTH"] {
+      peakBitrage = Int(peakBitrateString)
+    }
+    if let averageBitrateString = details["AVERAGE-BANDWIDTH"] {
+      averageBitrate = Int(averageBitrateString)
     }
     if let frameRateString = details["FRAME-RATE"] {
       frameRate = Float(frameRateString)
     }
 
-    return VideoTrack(id: idLine, size: size, mimeType: mimeType, bitrate: bitrate, frameRate: frameRate)
+    // Use the default Andorid behavior for reporting the bitrate
+    let bitrate = peakBitrage ?? averageBitrate
+
+    return VideoTrack(
+      id: idLine,
+      size: size,
+      mimeType: mimeType,
+      bitrate: bitrate,
+      peakBitrate: peakBitrage,
+      averageBitrate: averageBitrate,
+      frameRate: frameRate
+    )
   }
 
   // I'm not aware of any built in conversion functions. For HLS sources we only need to worry about a few formats though.
@@ -156,6 +184,40 @@ private extension AVAssetTrack {
       }
       return format
     }
+  }
+
+  // Decently reliable way to extract peak bitrate from MP4 containers
+  // Unlike for average bitrate, we can't get this information from AVKit API
+  func getPeakBitrate() async -> Int? {
+    guard let videoDescriptions = try? await self.load(.formatDescriptions),
+      let videoDescription = (videoDescriptions.first { $0.mediaType == .video }),
+      let extensions = videoDescription.getBitrateParentExtension(),
+      // If the container publishes the peak bitrate at all, it should be declared in this box
+      let btrtData = extensions["btrt"] as? Data, btrtData.count >= 12
+    else {
+      return nil
+    }
+
+    // https://mpeggroup.github.io/FileFormatConformance/?query=%3D%22btrt%22 (see under `Syntax`)
+    // Byte 0-3 (00060dd5): Buffer Size
+    // Byte 4-7 (0051fb78): Max Bitrate (Peak)
+    // Byte 8-11 (001e6270): Average Bitrate
+
+    // Extract bytes 4-7 (The MaxBitrate field)
+    let maxBitrateData = btrtData.subdata(in: 4..<8)
+
+    let maxBitrate = maxBitrateData.reduce(0) { result, byte in
+      return (result << 8) | UInt32(byte)
+    }
+
+    return Int(maxBitrate)
+  }
+}
+
+private extension CMFormatDescription {
+  func getBitrateParentExtension() -> [String: Any]? {
+    let extensionKey = kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms
+    return CMFormatDescriptionGetExtension(self, extensionKey: extensionKey) as? [String: Any]
   }
 }
 

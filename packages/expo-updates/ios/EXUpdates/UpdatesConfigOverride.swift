@@ -9,7 +9,7 @@ public struct UpdatesConfigOverride: Codable {
   private static let kUpdatesConfigOverride = "dev.expo.updates.updatesConfigOverride"
 
   let updateUrl: URL?
-  let requestHeaders: [String: String]
+  let requestHeaders: [String: String]?
 
   public static func load() -> UpdatesConfigOverride? {
     guard let data = UserDefaults.standard.data(forKey: kUpdatesConfigOverride) else {
@@ -19,7 +19,7 @@ public struct UpdatesConfigOverride: Codable {
     return try? decoder.decode(UpdatesConfigOverride.self, from: Data(data))
   }
 
-  internal static func save(_ configOverride: UpdatesConfigOverride?) {
+  internal static func save(configOverride: UpdatesConfigOverride?) {
     if let configOverride {
       let encoder = JSONEncoder()
       guard let data = try? encoder.encode(configOverride) else {
@@ -29,5 +29,15 @@ public struct UpdatesConfigOverride: Codable {
     } else {
       UserDefaults.standard.removeObject(forKey: kUpdatesConfigOverride)
     }
+  }
+
+  internal static func save(requestHeaders: [String: String]?) -> UpdatesConfigOverride? {
+    let newOverride = UpdatesConfigOverride(
+      updateUrl: load()?.updateUrl,
+      requestHeaders: requestHeaders
+    )
+    let finalOverride = (newOverride.updateUrl != nil || newOverride.requestHeaders != nil) ? newOverride : nil
+    save(configOverride: finalOverride)
+    return finalOverride
   }
 }

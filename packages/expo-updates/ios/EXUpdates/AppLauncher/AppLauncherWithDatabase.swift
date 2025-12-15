@@ -92,18 +92,21 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
           return
         }
 
-        // We can only run an update marked as embedded if it's actually the update embedded in the
-        // current binary. We might have an older update from a previous binary still listed in the
-        // database with Embedded status so we need to filter that out here.
-        let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database)
+        let embeddedManifest = EmbeddedAppLoader.originalEmbeddedManifest(withConfig: config, database: database)
         var filteredLaunchableUpdates: [Update] = []
-
         for update in launchableUpdates {
-          if update.status == UpdateStatus.StatusEmbedded {
-            if embeddedManifest != nil && update.updateId != embeddedManifest!.updateId {
-              continue
-            }
+          // We can only run an update marked as embedded if it's actually the update embedded in the
+          // current binary. We might have an older update from a previous binary still listed in the
+          // database with Embedded status so we need to filter that out here.
+          if update.status == UpdateStatus.StatusEmbedded && update.updateId != embeddedManifest?.updateId {
+            continue
           }
+
+          // If embedded update is disabled, we should exclude embedded update from launchable updates
+          if !config.hasEmbeddedUpdate && embeddedManifest?.updateId == update.updateId {
+            continue
+          }
+
           filteredLaunchableUpdates.append(update)
         }
 
@@ -338,10 +341,13 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
 
     FileDownloader.assetFilesQueue.async {
       self.downloader.downloadAsset(
+        asset: asset,
         fromURL: assetUrl,
         verifyingHash: asset.expectedHash,
         toPath: assetLocalUrl.path,
-        extraHeaders: asset.extraRequestHeaders ?? [:]
+        extraHeaders: asset.extraRequestHeaders ?? [:],
+        allowPatch: false,
+        launchedUpdate: self.launchedUpdate
       ) { _, response, base64URLEncodedSHA256Hash in
         self.launcherQueue.async {
           if let response = response as? HTTPURLResponse {
@@ -360,7 +366,12 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
   }
 
   private lazy var downloader: FileDownloader = {
-    FileDownloader(config: config, logger: self.logger)
+    FileDownloader(
+      config: config,
+      logger: self.logger,
+      updatesDirectory: self.directory,
+      database: self.database
+    )
   }()
 }
 // swiftlint:enable closure_body_length

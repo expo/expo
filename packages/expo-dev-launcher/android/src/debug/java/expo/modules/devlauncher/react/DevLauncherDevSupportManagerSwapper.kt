@@ -2,8 +2,6 @@ package expo.modules.devlauncher.react
 
 import android.util.Log
 import com.facebook.react.ReactHost
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.ReactNativeHost
 import com.facebook.react.common.ShakeDetector
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.DevSupportManagerBase
@@ -11,52 +9,22 @@ import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.packagerconnection.JSPackagerClient
 import com.facebook.react.runtime.ReactHostImpl
-import expo.interfaces.devmenu.ReactHostWrapper
+import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.helpers.getProtectedFieldValue
 import expo.modules.devlauncher.helpers.setProtectedDeclaredField
-import expo.modules.devlauncher.koin.DevLauncherKoinComponent
-import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
+import expo.modules.devmenu.api.DevMenuApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.core.component.inject
 
-internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
-  private val controller: DevLauncherControllerInterface by inject()
+internal class DevLauncherDevSupportManagerSwapper {
+  private val controller = DevLauncherController.instance
 
-  fun swapDevSupportManagerImpl(reactHost: ReactHostWrapper) {
-    if (reactHost.isBridgelessMode) {
-      swapDevSupportManagerImpl(reactHost.reactHost)
-    } else {
-      swapDevSupportManagerImpl(reactHost.reactNativeHost)
-    }
-  }
-
-  private fun swapDevSupportManagerImpl(reactNativeHost: ReactNativeHost) {
-    val reactInstanceManager = reactNativeHost.reactInstanceManager
-    val currentDevSupportManager = reactInstanceManager.devSupportManager
-    if (currentDevSupportManager is DevLauncherBridgeDevSupportManager) {
-      // DevSupportManager was swapped by the DevLauncherReactNativeHostHandler
-      return
-    }
-    if (currentDevSupportManager is ReleaseDevSupportManager) {
-      Log.i("DevLauncher", "DevSupportManager is disabled. So we don't want to override it.")
-      return
-    }
-
-    try {
-      val devManagerClass = DevSupportManagerBase::class.java
-      val newDevSupportManager = createDevLauncherBridgeDevSupportManager(devManagerClass, currentDevSupportManager)
-
-      ReactInstanceManager::class.java.setProtectedDeclaredField(reactInstanceManager, "mDevSupportManager", newDevSupportManager)
-
-      closeExistingConnection(devManagerClass, currentDevSupportManager)
-    } catch (e: Exception) {
-      Log.i("DevLauncher", "Couldn't inject `DevLauncherDevSupportManager`.", e)
-    }
-  }
-
-  private fun swapDevSupportManagerImpl(reactHost: ReactHost) {
+  fun swapDevSupportManagerImpl(reactHost: ReactHost) {
     val currentDevSupportManager = requireNotNull(reactHost.devSupportManager)
+
+    DevMenuApi.installWebSocketHandlers(currentDevSupportManager)
+    DevMenuApi.uninstallDefaultShakeDetector(currentDevSupportManager)
+
     if (currentDevSupportManager is DevLauncherBridgelessDevSupportManager) {
       // DevSupportManager was swapped by the DevLauncherReactNativeHostHandler
       return
@@ -73,28 +41,12 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
         currentDevSupportManager
       )
 
-      ReactHostImpl::class.java.setProtectedDeclaredField(reactHost, "mDevSupportManager", newDevSupportManager)
+      ReactHostImpl::class.java.setProtectedDeclaredField(reactHost, "devSupportManager", newDevSupportManager)
 
       closeExistingConnection(devManagerClass, currentDevSupportManager)
     } catch (e: Exception) {
       Log.i("DevLauncher", "Couldn't inject `DevLauncherDevSupportManager`.", e)
     }
-  }
-
-  private fun createDevLauncherBridgeDevSupportManager(
-    devManagerClass: Class<*>,
-    currentDevSupportManager: DevSupportManager
-  ): DevLauncherBridgeDevSupportManager {
-    return DevLauncherBridgeDevSupportManager(
-      applicationContext = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "applicationContext"),
-      reactInstanceDevHelper = devManagerClass.getProtectedFieldValue(currentDevSupportManager, DevLauncherBridgeDevSupportManager.getDevHelperInternalFieldName()),
-      packagerPathForJSBundleName = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "jsAppBundleName"),
-      enableOnCreate = true,
-      redBoxHandler = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "redBoxHandler"),
-      devBundleDownloadListener = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "devBundleDownloadListener"),
-      minNumShakes = 1,
-      customPackagerCommandHandlers = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "customPackagerCommandHandlers")
-    )
   }
 
   private fun createDevLauncherBridgelessDevSupportManager(
@@ -103,7 +55,7 @@ internal class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
   ): DevLauncherBridgelessDevSupportManager {
     return DevLauncherBridgelessDevSupportManager(
       applicationContext = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "applicationContext"),
-      reactInstanceDevHelper = devManagerClass.getProtectedFieldValue(currentDevSupportManager, DevLauncherBridgeDevSupportManager.getDevHelperInternalFieldName()),
+      reactInstanceDevHelper = devManagerClass.getProtectedFieldValue(currentDevSupportManager, DevLauncherBridgelessDevSupportManager.getDevHelperInternalFieldName()),
       packagerPathForJSBundleName = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "jsAppBundleName"),
       enableOnCreate = true,
       redBoxHandler = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "redBoxHandler"),

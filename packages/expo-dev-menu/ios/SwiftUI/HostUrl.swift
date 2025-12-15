@@ -6,35 +6,30 @@ struct HostUrl: View {
   let copiedMessage: String?
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text("Connected to:")
-        .font(.subheadline)
-        .foregroundColor(.secondary)
-
-      Button {
-        onCopy(hostUrl)
-      } label: {
-        HStack {
-          Circle()
-            .fill(Color.green)
-            .frame(width: 10, height: 10)
+    Button {
+      onCopy(hostUrl)
+    } label: {
+      HStack {
+        VStack(alignment: .leading) {
+          Text("Connected to:")
+            .font(.subheadline)
+            .foregroundColor(.secondary)
 
           Text(copiedMessage ?? hostUrl)
-            .font(.system(.caption, design: .monospaced))
+            .font(.subheadline)
             .foregroundColor(.primary)
             .lineLimit(2)
-
-          Spacer()
-
-          Image(systemName: "doc.on.clipboard")
-            .foregroundColor(.secondary)
         }
-        .background(Color(.systemBackground))
-        .cornerRadius(8)
+
+        Spacer()
+
+        Image(systemName: "doc.on.clipboard")
+          .foregroundColor(.secondary.opacity(0.7))
       }
-      .buttonStyle(.plain)
+      .padding()
+      .background(Color.expoSecondarySystemBackground)
+      .cornerRadius(20)
     }
-    .padding()
-    .background(Color(.systemBackground))
+    .buttonStyle(.plain)
   }
 }

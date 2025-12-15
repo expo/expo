@@ -2,6 +2,7 @@ package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
+import expo.modules.kotlin.sharedobjects.SharedObject
 import org.junit.Assert
 import org.junit.Test
 
@@ -72,5 +73,30 @@ internal class JSIPropertiesTest {
     }
     val p1 = property("p").getInt()
     Truth.assertThat(p1).isEqualTo(567)
+  }
+
+  @Test
+  fun returns_list_of_shared_objects() {
+    class MySharedObject : SharedObject()
+    withSingleModule({
+      Class<MySharedObject> {
+        Constructor { MySharedObject() }
+      }
+
+      Property("f") { ->
+        listOf(
+          MySharedObject(),
+          MySharedObject(),
+          MySharedObject()
+        )
+      }
+    }) {
+      val result = evaluateScript("$moduleRef.f").getArray()
+
+      Truth.assertThat(result.size).isEqualTo(3)
+      for (obj in result) {
+        Truth.assertThat(obj.isObject()).isTrue()
+      }
+    }
   }
 }

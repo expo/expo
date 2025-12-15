@@ -1,45 +1,41 @@
-import { StyleProp, ViewStyle } from 'react-native';
-import { ViewEvent } from '../../types';
+import { type CommonViewModifierProps } from '../types';
 export type SliderProps = {
     /**
      * The current value of the slider.
-     * @default 0
      */
     value?: number;
     /**
-     * The number of steps between the minimum and maximum values, `0` signifies infinite steps.
-     * @default 0
+     * The step increment for the slider.
      */
-    steps?: number;
+    step?: number;
     /**
      * The minimum value of the slider. Updating this value does not trigger callbacks if the current value is below `min`.
-     * @default 0
      */
     min?: number;
     /**
      * The maximum value of the slider. Updating this value does not trigger callbacks if the current value is above `max`.
-     * @default 1
      */
     max?: number;
     /**
-     * Slider color.
+     * A label describing the slider's purpose.
      */
-    color?: string;
+    label?: React.ReactNode;
+    /**
+     * A label displayed at the minimum value position.
+     */
+    minimumValueLabel?: React.ReactNode;
+    /**
+     * A label displayed at the maximum value position.
+     */
+    maximumValueLabel?: React.ReactNode;
     /**
      * Callback triggered on dragging along the slider.
      */
     onValueChange?: (value: number) => void;
-};
-type NativeSliderProps = Omit<SliderProps, 'onValueChange'> & ViewEvent<'onValueChanged', {
-    value: number;
-}>;
-/**
- * @hidden
- */
-export declare function transformSliderProps(props: SliderProps): NativeSliderProps;
-export declare function SliderPrimitive(props: SliderProps): import("react").JSX.Element;
-export declare function Slider(props: SliderProps & {
-    style?: StyleProp<ViewStyle>;
-}): import("react").JSX.Element;
-export {};
+    /**
+     * Callback triggered when the user starts or ends editing the slider.
+     */
+    onEditingChanged?: (isEditing: boolean) => void;
+} & CommonViewModifierProps;
+export declare function Slider(props: SliderProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

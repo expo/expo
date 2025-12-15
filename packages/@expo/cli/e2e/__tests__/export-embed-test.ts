@@ -113,7 +113,6 @@ it('runs `npx expo export:embed`', async () => {
         E2E_ROUTER_JS_ENGINE: 'hermes',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: 'true',
       },
     }
   );
@@ -176,7 +175,6 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: '1',
       },
     }
   );
@@ -234,7 +232,6 @@ it('runs `npx expo export:embed --platform ios` with a robot user', async () => 
         NODE_ENV: 'production',
         E2E_ROUTER_SRC: 'react-native-canary',
         E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: '1',
 
         // Most important part:
         // NOTE(EvanBacon): This is a robot user token for an expo-managed account that can authenticate with view-only permission.
@@ -274,7 +271,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
   await fs.promises.mkdir(path.join(projectRoot, output));
 
   // `npx expo export:embed`
-  const { stdout } = await executeExpoAsync(
+  await executeExpoAsync(
     projectRoot,
     // yarn expo export:embed --platform android --dev false --reset-cache --entry-file /Users/cedric/Desktop/test-expo-29656/node_modules/expo/AppEntry.js --bundle-output /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/assets/createBundleReleaseJsAndAssets/index.android.bundle --assets-dest /Users/cedric/Desktop/test-expo-29656/android/app/build/generated/res/createBundleReleaseJsAndAssets
     // --sourcemap-output /Users/cedric/Desktop/test-expo-29656/android/app/build/intermediates/sourcemaps/react/release/index.android.bundle.packager.map --minify false
@@ -301,13 +298,9 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: '1',
       },
     }
   );
-
-  // Ensure the experimental module resolution warning is logged
-  expect(stdout).toMatch('Fast resolver is enabled.');
 
   const outputDir = path.join(projectRoot, output);
 
@@ -367,7 +360,6 @@ it('runs `npx expo export:embed --bytecode`', async () => {
         E2E_ROUTER_JS_ENGINE: 'hermes',
         E2E_ROUTER_SRC: 'static-rendering',
         E2E_ROUTER_ASYNC: 'development',
-        EXPO_USE_FAST_RESOLVER: 'true',
       },
     }
   );

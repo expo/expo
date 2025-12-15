@@ -12,6 +12,7 @@ const ERROR_PREFIX = 'Error: ';
 export class CommandError extends Error {
   name = 'CommandError';
   readonly isCommandError = true;
+  [prop: string]: unknown;
 
   constructor(
     public code: string,
@@ -57,7 +58,7 @@ export function logCmdError(error: any): never {
   }
   if (error instanceof AbortCommandError || error instanceof SilentError) {
     // Do nothing, this is used for prompts or other cases that were custom logged.
-    process.exit(0);
+    process.exit(1);
   } else if (
     error instanceof CommandError ||
     error instanceof AssertionError ||

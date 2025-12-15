@@ -1,9 +1,10 @@
 import type { RNConfigDependencyAndroid, RNConfigReactNativePlatformsConfigAndroid } from './reactNativeConfig.types';
-export declare function resolveDependencyConfigImplAndroidAsync(packageRoot: string, reactNativeConfig: RNConfigReactNativePlatformsConfigAndroid | null | undefined): Promise<RNConfigDependencyAndroid | null>;
+import type { ExpoModuleConfig } from '../ExpoModuleConfig';
+export declare function resolveDependencyConfigImplAndroidAsync(packageRoot: string, reactNativeConfig: RNConfigReactNativePlatformsConfigAndroid | null | undefined, expoModuleConfig?: ExpoModuleConfig | null): Promise<RNConfigDependencyAndroid | null>;
 /**
  * Parse the `RNConfigDependencyAndroid.packageName`
  */
-export declare function parsePackageNameAsync(androidDir: string, manifestPath: string | null, gradlePath: string | null): Promise<string | null>;
+export declare function parsePackageNameAsync(manifestPath: string | null, gradlePath: string | null): Promise<string | null>;
 /**
  * Parse the Java or Kotlin class name to for `ReactPackage` or `(Base|Turbo)ReactPackage`.
  */

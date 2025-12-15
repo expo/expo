@@ -1,5 +1,39 @@
 import { getPathFromState } from '../getPathFromState';
 
+it(`handles nested params.screen/params.params for dynamic routes`, () => {
+  const state = {
+    routes: [
+      {
+        name: '(group)',
+        params: {
+          screen: 'foo',
+          params: {
+            screen: '[id]/index',
+            params: { id: 'bar' },
+          },
+        },
+      },
+    ],
+  };
+
+  const config = {
+    screens: {
+      '(group)': {
+        screens: {
+          foo: {
+            screens: {
+              index: '(group)/foo',
+              '[id]/index': '(group)/foo/:id',
+            },
+          },
+        },
+      },
+    },
+  };
+
+  expect(getPathFromState(state, config)).toBe('/foo/bar');
+});
+
 describe('hash support', () => {
   it('appends hash to the path', () => {
     const state = {
@@ -32,7 +66,7 @@ describe('hash support', () => {
     const state = {
       index: 1,
       key: 'key',
-      routeNames: ['index', '[test]', '_sitemap', '+not-found'],
+      routeNames: ['index', '[test]'],
       routes: [
         {
           key: 'key',

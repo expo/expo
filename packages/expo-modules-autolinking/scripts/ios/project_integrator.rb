@@ -210,6 +210,21 @@ module Expo
       # Make sure the build script in Xcode is up to date, but probably it's not going to change
       # as it just runs the script generated in the target support files
       xcode_build_script.shell_script = generate_xcode_build_script(support_script_relative_path)
+
+      modules_provider_relative_path = Pathname.new(modules_provider_path).relative_path_from(project.project_dir)
+      entitlement_relative_path = entitlement_path.nil? ? nil : Pathname.new(entitlement_path).relative_path_from(project.project_dir)
+
+      # Add input and output files to the build script phase to support ENABLE_USER_SCRIPT_SANDBOXING
+      xcode_build_script.input_paths = [
+        ".xcode.env",
+        ".xcode.env.local",
+        entitlement_relative_path,
+        support_script_relative_path,
+      ].compact.map { |path| "$(SRCROOT)/#{path}" }
+
+      xcode_build_script.output_paths = [
+        "$(SRCROOT)/#{modules_provider_relative_path}",
+      ]
     end
 
     # Generates the shell script of the build script phase.
@@ -230,6 +245,7 @@ module Expo
       platform = autolinking_manager.platform_name.downcase
       package_names = autolinking_manager.packages_to_generate.map { |package| "\"#{package.name}\"" }
       entitlement_param = entitlement_path.nil? ? '' : "--entitlement \"#{entitlement_path}\""
+      app_root_param = autolinking_manager.custom_app_root.nil? ? '' : "--app-root \"#{autolinking_manager.custom_app_root}\""
 
       <<~SUPPORT_SCRIPT
       #!/usr/bin/env bash
@@ -277,10 +293,12 @@ module Expo
 
       with_node \\
         --no-warnings \\
-        --eval "require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))" \\
+        --eval "require(\'expo/bin/autolinking\')" \\
+        expo-modules-autolinking \\
         generate-modules-provider #{args.join(' ')} \\
         --target "#{modules_provider_path}" \\
         #{entitlement_param} \\
+        #{app_root_param} \\
         --platform "apple" \\
         --packages #{package_names.join(' ')}
       SUPPORT_SCRIPT

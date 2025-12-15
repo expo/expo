@@ -1,23 +1,16 @@
 import * as babel from '@babel/core';
+import type { ExpoBabelCaller } from '@expo/metro-config/build/babel-transformer';
 
 import preset from '..';
 
-type Caller = {
-  name: string;
-  platform: string;
-  isHMREnabled: boolean;
-  isDev: boolean;
-  isServer: boolean;
-  isNodeModule: boolean;
-};
-
-const ENABLED_CALLER: Caller = {
+const ENABLED_CALLER: ExpoBabelCaller = {
   name: 'metro',
   platform: 'ios',
-  isHMREnabled: true,
+  projectRoot: '.',
   isDev: true,
   isServer: false,
   isNodeModule: false,
+  isHMREnabled: true,
 };
 
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
@@ -39,9 +32,6 @@ const DEF_OPTIONS = {
 (
   [
     {
-      isHMREnabled: false,
-    },
-    {
       isServer: true,
     },
     {
@@ -50,7 +40,7 @@ const DEF_OPTIONS = {
     {
       isNodeModule: true,
     },
-  ] as Partial<Caller>[]
+  ] as Partial<ExpoBabelCaller>[]
 ).forEach((caller) => {
   const key = Object.entries(caller)
     .map(([key, value]) => `${key}: ${value}`)

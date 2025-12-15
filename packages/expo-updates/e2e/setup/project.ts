@@ -3,6 +3,7 @@
 import spawnAsync from '@expo/spawn-async';
 import { rmSync, existsSync } from 'fs';
 import fs from 'fs/promises';
+import { glob } from 'glob';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
@@ -35,7 +36,11 @@ function getExpoDependencyChunks({
     ['@expo/config-types', '@expo/env', '@expo/json-file'],
     ['@expo/config'],
     ['@expo/config-plugins'],
+    ['@expo/plist'],
+    ['@expo/local-build-cache-provider'],
     ['expo-modules-core'],
+    ['unimodules-app-loader'],
+    ['expo-task-manager'],
     ['@expo/cli', 'expo', 'expo-asset', 'expo-modules-autolinking'],
     ['expo-manifests'],
     ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
@@ -55,27 +60,33 @@ function getExpoDependencyChunks({
       'expo-updates-interface',
     ],
     ...(includeSplashScreen ? [['expo-splash-screen']] : []),
-    ...(includeDevClient
+    ...(includeDevClient || includeTV
       ? [['expo-dev-menu-interface'], ['expo-dev-menu'], ['expo-dev-launcher'], ['expo-dev-client']]
       : []),
     ...(includeTV
       ? [
           [
+            'expo-app-integrity',
             'expo-audio',
-            'expo-av',
+            'expo-background-task',
             'expo-blur',
             'expo-crypto',
             'expo-image',
+            'expo-image-loader',
+            'expo-image-manipulator',
+            'expo-insights',
             'expo-linear-gradient',
             'expo-linking',
             'expo-localization',
             'expo-media-library',
             'expo-network',
             'expo-secure-store',
+            'expo-sqlite',
             'expo-symbols',
             'expo-system-ui',
             'expo-ui',
             'expo-video',
+            'expo-video-thumbnails',
           ],
         ]
       : []),
@@ -216,6 +227,21 @@ async function copyCommonFixturesToProject(
   // copy .prettierrc
   await fs.copyFile(path.resolve(repoRoot, '.prettierrc'), path.join(projectRoot, '.prettierrc'));
 
+  if (!isTV) {
+    // Copy react-native patch
+    await fs.mkdir(path.join(projectRoot, 'patches'));
+    const patchFile = await glob('react-native+*.patch', {
+      cwd: path.join(repoRoot, 'patches'),
+      absolute: true,
+    });
+    if (patchFile.length > 0) {
+      await fs.copyFile(
+        patchFile[0],
+        path.join(projectRoot, 'patches', path.basename(patchFile[0]))
+      );
+    }
+  }
+
   // Modify specific files for TV
   if (isTV) {
     // Add TV environment variable to EAS build config
@@ -307,6 +333,9 @@ async function preparePackageJson(
   // Additional scripts and dependencies for Maestro testing
   const extraScripts = configureE2E
     ? {
+        start: 'expo start --private-key-path ./keys/private-key.pem',
+        'ios:pod-install-old-arch': 'npx pod-install',
+        'ios:pod-install': 'RCT_USE_PREBUILT_RNCORE=1 RCT_USE_RN_DEP=1 npx pod-install',
         'maestro:android:debug:build': 'cd android; ./gradlew :app:assembleDebug; cd ..',
         'maestro:android:debug:install':
           'adb install android/app/build/outputs/apk/debug/app-debug.apk',
@@ -315,11 +344,11 @@ async function preparePackageJson(
           'adb install android/app/build/outputs/apk/release/app-release.apk',
         'maestro:android:uninstall': 'adb uninstall dev.expo.updatese2e',
         'maestro:ios:debug:build':
-          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
+          'set -o pipefail && xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
         'maestro:ios:debug:install':
           'xcrun simctl install booted ios/build/Build/Products/Debug-iphonesimulator/updatese2e.app',
         'maestro:ios:release:build':
-          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Release -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
+          'set -o pipefail && xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Release -sdk iphonesimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
         'maestro:ios:release:install':
           'xcrun simctl install booted ios/build/Build/Products/Release-iphonesimulator/updatese2e.app',
         'maestro:ios:uninstall': 'xcrun simctl uninstall booted dev.expo.updatese2e',
@@ -327,7 +356,7 @@ async function preparePackageJson(
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
         'check-android-emulator': 'npx ts-node ./scripts/check-android-emulator.ts',
         'tvos:build':
-          'xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
+          'set -o pipefail && xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build | npx @expo/xcpretty',
         postinstall: 'patch-package',
         'start:dev-client':
           'npx expo start --private-key-path ./keys/private-key.pem > /dev/null 2>&1 &',
@@ -384,8 +413,8 @@ async function preparePackageJson(
       ...packageJson,
       dependencies: {
         ...packageJson.dependencies,
-        'react-native': 'npm:react-native-tvos@0.80.0-0',
-        '@react-native-tvos/config-tv': '^0.1.3',
+        'react-native': 'npm:react-native-tvos@0.82.0-0rc5',
+        '@react-native-tvos/config-tv': '^0.1.4',
       },
       expo: {
         install: {
@@ -512,6 +541,9 @@ function transformAppJsonForE2E(
         url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
         assetPatternsToBeBundled: ['includedAssets/*'],
         useNativeDebug: true,
+        requestHeaders: {
+          'expo-channel-name': 'default',
+        },
       },
       extra: {
         eas: {
@@ -845,7 +877,7 @@ export async function initAsync(
   // enable proguard on Android, and custom init if needed
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
-    `\nandroid.enableProguardInReleaseBuilds=true${useCustomInit ? '\nEX_UPDATES_CUSTOM_INIT=true' : ''}`,
+    `\nandroid.enableMinifyInReleaseBuilds=true${useCustomInit ? '\nEX_UPDATES_CUSTOM_INIT=true' : ''}`,
     'utf-8'
   );
 
@@ -1082,12 +1114,12 @@ export async function setupUpdatesBrickingMeasuresDisabledE2EAppAsync(
 
 export async function setupUpdatesDevClientE2EAppAsync(
   projectRoot: string,
-  { localCliBin, repoRoot }: { localCliBin: string; repoRoot: string }
+  { localCliBin, repoRoot, isTV }: { localCliBin: string; repoRoot: string; isTV?: boolean }
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
     ['tsconfig.json', '.env', 'eas.json', 'maestro', 'includedAssets', 'scripts'],
-    { appJsFileName: 'App.tsx', repoRoot, isTV: false }
+    { appJsFileName: 'App.tsx', repoRoot, isTV: isTV ?? false }
   );
 
   // install extra fonts package

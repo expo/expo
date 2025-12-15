@@ -12,8 +12,10 @@ import React, {
 } from 'react';
 
 import { useContextKey } from '../Route';
+import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
 import { PickPartial } from '../types';
 import { useSortedScreens, ScreenProps } from '../useScreens';
+import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
 
@@ -44,14 +46,31 @@ export function useFilterScreenChildren(
         return;
       }
 
-      if (isProtectedReactElement(child)) {
-        if (child.props.guard) {
-          Children.forEach(child.props.children, (protectedChild) => flattenChild(protectedChild));
+      if (isNativeTabTrigger(child, contextKey)) {
+        if (exclude) {
+          protectedScreens.add(child.props.name);
         } else {
-          Children.forEach(child.props.children, (protectedChild) => {
-            flattenChild(protectedChild, true);
-          });
+          const options = convertTabPropsToOptions(child.props);
+          if (options.hidden === false) {
+            screens.push({
+              ...child.props,
+              options,
+            });
+          } else {
+            // - hidden = undefined -> then the route was not specified in navigator
+            // - hidden = true -> then the route is hidden
+            // In this cases we should treat the tab as protected
+            protectedScreens.add(child.props.name);
+          }
         }
+        return;
+      }
+
+      if (isProtectedReactElement(child)) {
+        const excludeChildren = exclude || !child.props.guard;
+        Children.forEach(child.props.children, (protectedChild) => {
+          flattenChild(protectedChild, excludeChildren);
+        });
         return;
       }
 
@@ -94,6 +113,10 @@ export function useFilterScreenChildren(
  * 
  * Enables use of other built-in React Navigation navigators and other navigators built with the React Navigation custom navigator API.
  *
+ * @param Nav - The navigator component to wrap.
+ * @param processor - A function that processes the screens before passing them to the navigator.
+ * @param useOnlyUserDefinedScreens - If true, all screens not specified as navigator's children will be ignored.
+ *
  *  @example
  * ```tsx app/_layout.tsx
  * import { ParamListBase, TabNavigationState } from "@react-navigation/native";
@@ -123,7 +146,11 @@ export function withLayoutContext<
   T extends ComponentType<any>,
   TState extends NavigationState,
   TEventMap extends EventMapBase,
->(Nav: T, processor?: (options: ScreenProps[]) => ScreenProps[]) {
+>(
+  Nav: T,
+  processor?: (options: ScreenProps[]) => ScreenProps[],
+  useOnlyUserDefinedScreens: boolean = false
+) {
   return Object.assign(
     forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
       const contextKey = useContextKey();
@@ -134,14 +161,18 @@ export function withLayoutContext<
 
       const processed = processor ? processor(screens ?? []) : screens;
 
-      const sorted = useSortedScreens(processed ?? [], protectedScreens);
+      const sorted = useSortedScreens(processed ?? [], protectedScreens, useOnlyUserDefinedScreens);
 
       // Prevent throwing an error when there are no screens.
       if (!sorted.length) {
         return null;
       }
 
-      return <Nav {...props} id={contextKey} ref={ref} children={sorted} />;
+      return (
+        <IsWithinLayoutContext value>
+          <Nav {...props} id={contextKey} ref={ref} children={sorted} />
+        </IsWithinLayoutContext>
+      );
     }),
     {
       Screen,

@@ -1,6 +1,6 @@
 {
   "name": "patch-project",
-  "version": "0.2.7",
+  "version": "0.3.9",
   "description": "An Expo config-plugin and tool to support patch-based CNG",
   "main": "build/withPatchPlugin.js",
   "types": "build/withPatchPlugin.d.ts",
@@ -42,20 +42,21 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/patch-project#readme",
   "devDependencies": {
-    "expo-module-scripts": "^4.1.7",
+    "@expo/cli": "*",
+    "expo-module-scripts": "^5.0.7",
     "memfs": "^3.2.0"
   },
   "dependencies": {
     "@bacons/xcode": "1.0.0-alpha.24",
-    "@expo/config": "~11.0.10",
-    "@expo/config-plugins": "~10.0.2",
-    "@expo/env": "~1.0.5",
+    "@expo/config": "~12.0.9",
+    "@expo/config-plugins": "~54.0.1",
+    "@expo/env": "~2.0.7",
     "@expo/spawn-async": "^1.7.2",
     "arg": "5.0.2",
     "chalk": "^4.0.0",
     "debug": "^4.3.1",
     "getenv": "^2.0.0",
-    "glob": "^10.4.1",
+    "glob": "^13.0.0",
     "resolve-from": "^5.0.0"
   },
   "peerDependencies": {

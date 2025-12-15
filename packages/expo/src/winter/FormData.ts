@@ -73,15 +73,14 @@ function normalizeArgs(
   blobFilename: string | undefined
 ): [string, File | string] {
   if (value instanceof Blob) {
-    // @ts-expect-error: `Blob.data.blobId` is react-native's proprietary property.
-    if (value.data?.blobId != null) {
-      // For react-native created Blob objects,
-      // we need to keep its original form as-is without breaking functionality.
-      // However, we need to pass `name` for our file name handling.
-      // @ts-expect-error: Mutating the Blob object to add the `name` property.
+    const descriptor = Object.getOwnPropertyDescriptor(value, 'name');
+
+    if (descriptor && descriptor.writable) {
+      // @ts-expect-error: `name` is not accessible in blob
+      value.name = blobFilename ?? value.name ?? 'blob';
+    } else if (!descriptor && Object.isExtensible(value)) {
+      // @ts-expect-error: `name` is not accessible in blob
       value.name = blobFilename ?? 'blob';
-    } else {
-      value = { type: value.type, name: blobFilename ?? 'blob', blob: value };
     }
   } else if (typeof value !== 'object') {
     value = String(value);

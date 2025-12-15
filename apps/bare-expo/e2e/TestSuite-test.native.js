@@ -6,7 +6,6 @@ const TESTS = [
   // 'Asset',
   // 'FileSystem',
   // 'Font',
-  'Permissions',
   // 'Blur',
   'LinearGradient',
   'Constants',
@@ -18,12 +17,9 @@ const TESTS = [
   // 'SecureStore',
   // 'Segment',
   'SQLite',
-  'Random',
-  'Permissions',
   'KeepAwake',
   // 'Audio',
-  'HTML',
-  'FileSystem@next',
+  'FileSystem',
   'Fetch',
 ];
 

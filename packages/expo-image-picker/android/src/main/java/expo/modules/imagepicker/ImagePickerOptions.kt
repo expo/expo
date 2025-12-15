@@ -44,6 +44,9 @@ internal class ImagePickerOptions : Record, Serializable {
   var aspect: Pair<Int, Int>? = null
 
   @Field
+  var shape: CropShape = CropShape.RECTANGLE
+
+  @Field
   var cameraType: CameraType = CameraType.BACK
 
   @Field
@@ -72,18 +75,15 @@ internal enum class JSMediaTypes(val value: String) : Enumerable {
   LIVE_PHOTOS("livePhotos")
 }
 
+internal enum class CropShape(val value: String) : Enumerable {
+  RECTANGLE("rectangle"),
+  OVAL("oval")
+}
+
 internal enum class MediaTypes(val value: String) : Enumerable {
   IMAGES("Images"),
   VIDEOS("Videos"),
   ALL("All");
-
-  fun toMimeType(): String {
-    return when (this) {
-      IMAGES -> ImageAllMimeType
-      VIDEOS -> VideoAllMimeType
-      ALL -> AllMimeType
-    }
-  }
 
   fun toFileExtension(): String {
     return when (this) {
@@ -103,10 +103,6 @@ internal enum class MediaTypes(val value: String) : Enumerable {
   }
 
   companion object {
-    private const val ImageAllMimeType = "image/*"
-    private const val VideoAllMimeType = "video/*"
-    private const val AllMimeType = "*/*"
-
     fun fromJSMediaTypesArray(mediaTypes: Array<JSMediaTypes>): MediaTypes {
       return if (!mediaTypes.contains(JSMediaTypes.VIDEOS)) {
         IMAGES

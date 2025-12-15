@@ -1,0 +1,226 @@
+---
+title: FileSystem
+description: A library that provides access to the local file system on the device.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-54/packages/expo-file-system'
+packageName: 'expo-file-system'
+iconUrl: '/static/images/packages/expo-file-system.png'
+platforms: ['android', 'ios', 'tvos']
+isNew: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { CODE } from '~/ui/components/Text';
+
+`expo-file-system` provides access to files and directories stored on a device or bundled as assets into the native project. It also allows downloading files from the network.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+```js
+import { File, Directory, Paths } from 'expo-file-system';
+```
+
+The `File` and `Directory` instances hold a reference to a file, content, or asset URI.
+
+The file or directory does not need to exist &mdash; an error will be thrown from the constructor only if the wrong class is used to represent an existing path (so if you try to create a `File` instance passing a path to an already existing directory).
+
+## Features
+
+- Both synchronous and asynchronous, read and write access to file contents
+- Creation, modification and deletion
+- Available properties, such as `type`, `size`, `creationDate`, and more
+- Ability to read and write files as streams or using the `FileHandle` class
+- Easy file download/upload using `downloadFileAsync` or `expo/fetch`
+
+## Examples
+
+<Collapsible summary="Writing and reading text files">
+
+```ts example.ts
+import { File, Paths } from 'expo-file-system';
+
+try {
+  const file = new File(Paths.cache, 'example.txt');
+  file.create(); // can throw an error if the file already exists or no permission to create it
+  file.write('Hello, world!');
+  console.log(file.textSync()); // Hello, world!
+} catch (error) {
+  console.error(error);
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Picking files using system pickers">
+
+Usage with `expo-document-picker`:
+
+```ts example.ts
+import { File } from 'expo-file-system';
+import * as DocumentPicker from 'expo-document-picker';
+
+try {
+  const result = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
+  const file = new File(result.assets[0]);
+  console.log(file.textSync());
+} catch (error) {
+  console.error(error);
+}
+```
+
+Using the built-in `pickFileAsync` or `pickDirectoryAsync` method on Android:
+
+```ts example.ts
+import { File } from 'expo-file-system';
+
+try {
+  const file = new File.pickFileAsync();
+  console.log(file.textSync());
+} catch (error) {
+  console.error(error);
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Downloading files">
+
+Using `downloadFileAsync`:
+
+```ts example.ts
+import { Directory, File, Paths } from 'expo-file-system';
+
+const url = 'https://pdfobject.com/pdf/sample.pdf';
+const destination = new Directory(Paths.cache, 'pdfs');
+try {
+  destination.create();
+  const output = await File.downloadFileAsync(url, destination);
+  console.log(output.exists); // true
+  console.log(output.uri); // path to the downloaded file, e.g., '${cacheDirectory}/pdfs/sample.pdf'
+} catch (error) {
+  console.error(error);
+}
+```
+
+Or using `expo/fetch`:
+
+```ts example.ts
+import { fetch } from 'expo/fetch';
+import { File, Paths } from 'expo-file-system';
+
+const url = 'https://pdfobject.com/pdf/sample.pdf';
+const response = await fetch(url);
+const src = new File(Paths.cache, 'file.pdf');
+src.write(await response.bytes());
+```
+
+</Collapsible>
+
+<Collapsible summary={<>Uploading files using <CODE>expo/fetch</CODE></>}>
+
+You can upload files as blobs directly with `fetch` built into the Expo package:
+
+```ts example.ts
+import { fetch } from 'expo/fetch';
+import { File, Paths } from 'expo-file-system';
+
+const file = new File(Paths.cache, 'file.txt');
+file.write('Hello, world!');
+
+const response = await fetch('https://example.com', {
+  method: 'POST',
+  body: file,
+});
+```
+
+Or using the `FormData` constructor:
+
+```ts example.ts
+import { fetch } from 'expo/fetch';
+import { File, Paths } from 'expo-file-system';
+
+const file = new File(Paths.cache, 'file.txt');
+file.write('Hello, world!');
+const formData = new FormData();
+formData.append('data', file);
+const response = await fetch('https://example.com', {
+  method: 'POST',
+  body: formData,
+});
+```
+
+</Collapsible>
+
+<Collapsible summary="Moving and copying files">
+
+```ts example.ts
+import { Directory, File, Paths } from 'expo-file-system';
+try {
+  const file = new File(Paths.document, 'example.txt');
+  file.create();
+  console.log(file.uri); // '${documentDirectory}/example.txt'
+  const copiedFile = new File(Paths.cache, 'example-copy.txt');
+  file.copy(copiedFile);
+  console.log(copiedFile.uri); // '${cacheDirectory}/example-copy.txt'
+  file.move(Paths.cache);
+  console.log(file.uri); // '${cacheDirectory}/example.txt'
+  file.move(new Directory(Paths.cache, 'newFolder'));
+  console.log(file.uri); // '${cacheDirectory}/newFolder/example.txt'
+} catch (error) {
+  console.error(error);
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Using legacy FileSystem API">
+
+```ts example.ts
+import * as FileSystem from 'expo-file-system/legacy';
+import { File, Paths } from 'expo-file-system';
+
+try {
+  const file = new File(Paths.cache, 'example.txt');
+  const content = await FileSystem.readAsStringAsync(file.uri);
+  console.log(content);
+} catch (error) {
+  console.error(error);
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Listing directory contents recursively">
+
+```ts example.ts
+import { Directory, Paths } from 'expo-file-system';
+
+function printDirectory(directory: Directory, indent: number = 0) {
+  console.log(`${' '.repeat(indent)} + ${directory.name}`);
+  const contents = directory.list();
+  for (const item of contents) {
+    if (item instanceof Directory) {
+      printDirectory(item, indent + 2);
+    } else {
+      console.log(`${' '.repeat(indent + 2)} - ${item.name} (${item.size} bytes)`);
+    }
+  }
+}
+
+try {
+  printDirectory(new Directory(Paths.cache));
+} catch (error) {
+  console.error(error);
+}
+```
+
+</Collapsible>
+
+## API
+
+<APISection packageName="expo-file-system" apiName="FileSystem" />

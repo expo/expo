@@ -109,53 +109,57 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
         </span>
       </p>
       <pre
-        class="relative my-4 overflow-x-auto whitespace-pre rounded-md border border-secondary bg-subtle p-4 [p+&]:mt-0"
+        class="relative my-4 overflow-x-auto whitespace-pre rounded-md border border-secondary bg-subtle [p+&]:mt-0"
         data-text="true"
       >
-        <code
-          class="text-2xs text-default"
+        <div
+          class="w-fit p-4"
         >
-          <span
-            class="token keyword"
+          <code
+            class="text-2xs text-default"
           >
-            await
-          </span>
-           Application
-          <span
-            class="token punctuation"
-          >
-            .
-          </span>
-          <span
-            class="token function"
-          >
-            getInstallReferrerAsync
-          </span>
-          <span
-            class="token punctuation"
-          >
-            (
-          </span>
-          <span
-            class="token punctuation"
-          >
-            )
-          </span>
-          <span
-            class="token punctuation"
-          >
-            ;
-          </span>
-          
+            <span
+              class="token keyword"
+            >
+              await
+            </span>
+             Application
+            <span
+              class="token punctuation"
+            >
+              .
+            </span>
+            <span
+              class="token function"
+            >
+              getInstallReferrerAsync
+            </span>
+            <span
+              class="token punctuation"
+            >
+              (
+            </span>
+            <span
+              class="token punctuation"
+            >
+              )
+            </span>
+            <span
+              class="token punctuation"
+            >
+              ;
+            </span>
+            
 
-          <span
-            class="token comment"
-          >
-            // "utm_source=google-play&utm_medium=organic"
-          </span>
-          
+            <span
+              class="token comment"
+            >
+              // "utm_source=google-play&utm_medium=organic"
+            </span>
+            
 
-        </code>
+          </code>
+        </div>
       </pre>
     </div>
   </div>

@@ -1,3 +1,4 @@
+import { screen, act, fireEvent } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
 
@@ -5,7 +6,7 @@ import { RedirectConfig, router } from '../exports';
 import { store } from '../global-state/router-store';
 import Stack from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
-import { screen, act, renderRouter, fireEvent } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 const mockRedirects = jest.fn(() => [] as RedirectConfig[]);
 const mockOpenURL = jest.fn((url: string) => undefined);
@@ -66,11 +67,9 @@ it('deep link to a redirect', () => {
               path: '/bar',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 });
 
@@ -109,11 +108,9 @@ it('deep link to a dynamic redirect', () => {
               path: '/deeply/nested/route/bar',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 });
 
@@ -146,11 +143,9 @@ it('keeps extra params as query params', () => {
               path: '/bar',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 });
 
@@ -189,11 +184,9 @@ it('can redirect from single to catch all', () => {
               path: '/bar/bar',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 });
 
@@ -221,11 +214,9 @@ it('can push to a redirect', () => {
               path: '/',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => router.push('/foo'));
@@ -234,7 +225,7 @@ it('can push to a redirect', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -244,7 +235,7 @@ it('can push to a redirect', () => {
           index: 1,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', 'bar', 'foo', '_sitemap', '+not-found'],
+          routeNames: ['index', 'bar', 'foo'],
           routes: [
             {
               key: expect.any(String),
@@ -402,7 +393,7 @@ it('not existing nested route redirects correctly', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -412,7 +403,7 @@ it('not existing nested route redirects correctly', () => {
           index: 1,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', 'explore', '_sitemap', 'test/1234', '[id]', '+not-found'],
+          routeNames: ['index', 'explore', 'test/1234', '[id]'],
           routes: [
             {
               key: expect.any(String),

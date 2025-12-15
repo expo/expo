@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
-import { ViewStyle } from 'react-native';
+
+import { ExpoModifier } from '../../types';
 
 export type ShapeProps = {
   /**
@@ -27,38 +28,91 @@ export type ShapeProps = {
    * @default 1.0
    */
   radius?: number;
-  /** Style of the component */
-  style?: ViewStyle;
   /** Color of the shape */
   color?: string;
+  /**
+   * Modifiers for the component.
+   */
+  modifiers?: ExpoModifier[];
 };
 
 const ShapeNativeView: React.ComponentType<any> = requireNativeView('ExpoUI', 'ShapeView');
 
+export type ShapeJSXElement = React.JSX.Element & { __expo_shape_jsx_element_marker: true };
+
 function Star(props: ShapeProps) {
-  return <ShapeNativeView {...props} style={props.style} type="star" />;
+  return (
+    <ShapeNativeView
+      {...props}
+      // @ts-expect-error
+      modifiers={props?.modifiers?.map((m) => m.__expo_shared_object_id__)}
+      type="star"
+    />
+  ) as ShapeJSXElement;
 }
 
 function PillStar(props: ShapeProps) {
-  return <ShapeNativeView {...props} style={props.style} type="pillStar" />;
+  return (
+    <ShapeNativeView
+      {...props}
+      // @ts-expect-error
+      modifiers={props?.modifiers?.map((m) => m.__expo_shared_object_id__)}
+      type="pillStar"
+    />
+  ) as ShapeJSXElement;
 }
 
-function Pill(props: Pick<ShapeProps, 'smoothing' | 'style' | 'color'>) {
-  return <ShapeNativeView {...props} style={props.style} type="pill" />;
+function Pill(props: Pick<ShapeProps, 'smoothing' | 'color' | 'modifiers'>) {
+  return (
+    <ShapeNativeView
+      {...props}
+      // @ts-expect-error
+      modifiers={props?.modifiers?.map((m) => m.__expo_shared_object_id__)}
+      type="pill"
+    />
+  ) as ShapeJSXElement;
 }
 
-function Circle(props: Pick<ShapeProps, 'radius' | 'verticesCount' | 'style' | 'color'>) {
-  return <ShapeNativeView {...props} style={props.style} type="circle" />;
+function Circle(props: Pick<ShapeProps, 'radius' | 'verticesCount' | 'color' | 'modifiers'>) {
+  return (
+    <ShapeNativeView
+      {...props}
+      // @ts-expect-error
+      modifiers={props?.modifiers?.map((m) => m.__expo_shared_object_id__)}
+      type="circle"
+    />
+  ) as ShapeJSXElement;
 }
 
-function Rectangle(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'style' | 'color'>) {
-  return <ShapeNativeView {...props} style={props.style} type="rectangle" />;
+function Rectangle(
+  props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'color' | 'modifiers'>
+) {
+  return (
+    <ShapeNativeView
+      {...props}
+      // @ts-expect-error
+      modifiers={props?.modifiers?.map((m) => m.__expo_shared_object_id__)}
+      type="rectangle"
+    />
+  ) as ShapeJSXElement;
 }
 
 function Polygon(
-  props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'verticesCount' | 'style' | 'color'>
+  props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'verticesCount' | 'color' | 'modifiers'>
 ) {
-  return <ShapeNativeView {...props} style={props.style} type="polygon" />;
+  return (
+    <ShapeNativeView
+      {...props}
+      // @ts-expect-error
+      modifiers={props?.modifiers?.map((m) => m.__expo_shared_object_id__)}
+      type="polygon"
+    />
+  ) as ShapeJSXElement;
+}
+
+export function parseJSXShape(shape?: ShapeJSXElement) {
+  if (!shape) return undefined;
+  return shape.props;
 }
 
 export const Shape = {

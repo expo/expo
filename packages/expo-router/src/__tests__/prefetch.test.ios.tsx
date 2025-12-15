@@ -1,3 +1,4 @@
+import { screen, act } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
 
@@ -5,7 +6,7 @@ import { Link } from '../exports';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
-import { screen, renderRouter, act } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 it('prefetch a sibling route', () => {
   renderRouter({
@@ -28,11 +29,9 @@ it('prefetch a sibling route', () => {
               path: '/',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -43,7 +42,7 @@ it('prefetch a sibling route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -59,7 +58,7 @@ it('prefetch a sibling route', () => {
               params: {},
             },
           ],
-          routeNames: ['index', 'test', '_sitemap', '+not-found'],
+          routeNames: ['index', 'test'],
           routes: [
             {
               key: expect.any(String),
@@ -97,11 +96,9 @@ it('will prefetch the correct route within a group', () => {
               path: '/',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -112,7 +109,7 @@ it('will prefetch the correct route within a group', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -128,7 +125,7 @@ it('will prefetch the correct route within a group', () => {
               params: {},
             },
           ],
-          routeNames: ['(a)/test', '(b)/test', '(a)/index', '(b)/index', '_sitemap', '+not-found'],
+          routeNames: ['(a)/test', '(b)/test', '(a)/index', '(b)/index'],
           routes: [
             {
               key: expect.any(String),
@@ -166,11 +163,9 @@ it('will prefetch the correct route within nested groups', () => {
               path: '/',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -181,7 +176,7 @@ it('will prefetch the correct route within nested groups', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -197,14 +192,7 @@ it('will prefetch the correct route within nested groups', () => {
               params: {},
             },
           ],
-          routeNames: [
-            '(b)/test',
-            '(a)/index',
-            '(b)/index',
-            '(a)/(c)/test',
-            '_sitemap',
-            '+not-found',
-          ],
+          routeNames: ['(b)/test', '(a)/index', '(b)/index', '(a)/(c)/test'],
           routes: [
             {
               key: expect.any(String),
@@ -240,11 +228,9 @@ it('works with relative Href', () => {
               path: '/',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -255,7 +241,7 @@ it('works with relative Href', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -271,7 +257,7 @@ it('works with relative Href', () => {
               params: {},
             },
           ],
-          routeNames: ['index', 'test', '_sitemap', '+not-found'],
+          routeNames: ['index', 'test'],
           routes: [
             {
               key: expect.any(String),
@@ -307,11 +293,9 @@ it('works with params', () => {
               path: '/',
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -322,7 +306,7 @@ it('works with params', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -340,7 +324,7 @@ it('works with params', () => {
               },
             },
           ],
-          routeNames: ['index', 'test', '_sitemap', '+not-found'],
+          routeNames: ['index', 'test'],
           routes: [
             {
               key: expect.any(String),
@@ -387,15 +371,12 @@ it('ignores the current route', () => {
                     path: '/directory',
                   },
                 ],
-                stale: true,
               },
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -406,7 +387,7 @@ it('ignores the current route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -416,7 +397,7 @@ it('ignores the current route', () => {
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '_sitemap', 'directory', '+not-found'],
+          routeNames: ['index', 'directory'],
           routes: [
             {
               key: expect.any(String),
@@ -498,15 +479,12 @@ it('can prefetch a deeply nested route', () => {
                     path: '/directory',
                   },
                 ],
-                stale: true,
               },
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -520,7 +498,7 @@ it('can prefetch a deeply nested route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -530,7 +508,7 @@ it('can prefetch a deeply nested route', () => {
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '_sitemap', 'directory', '+not-found'],
+          routeNames: ['index', 'directory'],
           routes: [
             {
               key: expect.any(String),
@@ -621,23 +599,18 @@ it('can prefetch a parent route', () => {
                                 path: '/directory/apple/banana',
                               },
                             ],
-                            stale: true,
                           },
                         },
                       ],
-                      stale: true,
                     },
                   },
                 ],
-                stale: true,
               },
             },
           ],
-          stale: true,
         },
       },
     ],
-    stale: true,
   });
 
   act(() => {
@@ -650,7 +623,7 @@ it('can prefetch a parent route', () => {
     index: 0,
     key: expect.any(String),
     preloadedRoutes: [],
-    routeNames: ['__root'],
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
@@ -660,7 +633,7 @@ it('can prefetch a parent route', () => {
           index: 0,
           key: expect.any(String),
           preloadedRoutes: [],
-          routeNames: ['index', '_sitemap', 'directory', '+not-found'],
+          routeNames: ['index', 'directory'],
           routes: [
             {
               key: expect.any(String),
@@ -683,21 +656,35 @@ it('can prefetch a parent route', () => {
                     name: 'apple',
                     params: undefined,
                     state: {
+                      index: 0,
+                      key: expect.any(String),
+                      preloadedRoutes: [],
+                      routeNames: ['banana'],
                       routes: [
                         {
+                          key: expect.any(String),
                           name: 'banana',
+                          params: undefined,
                           state: {
+                            index: 0,
+                            key: expect.any(String),
+                            preloadedRoutes: [],
+                            routeNames: ['index'],
                             routes: [
                               {
+                                key: expect.any(String),
                                 name: 'index',
+                                params: undefined,
                                 path: '/directory/apple/banana',
                               },
                             ],
-                            stale: true,
+                            stale: false,
+                            type: 'stack',
                           },
                         },
                       ],
-                      stale: true,
+                      stale: false,
+                      type: 'stack',
                     },
                   },
                 ],
@@ -737,6 +724,7 @@ it('can still use <Screen /> while prefetching in stack', () => {
   });
 
   expect(headerTitle.mock.calls).toStrictEqual([
+    // TODO(@ubax): find out why this is called twice on initial render
     [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
     [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
     [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
@@ -749,12 +737,12 @@ it('can still use <Screen /> while prefetching in stack', () => {
   act(() => router.push('/second'));
 
   expect(headerTitle.mock.calls).toStrictEqual([
+    // Call after navigation
     [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
     [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
-    [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
+    // Call from the <Stack.Screen />
     [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
     [{ tintColor: 'rgb(0, 122, 255)', children: 'Should only change after focus' }],
-    [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
   ]);
 });
 

@@ -3,18 +3,17 @@ import { TriggerMap } from './common';
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
     triggerMap: TriggerMap;
 };
-export type ExpoTabsResetValue = 'always' | 'onFocus' | 'never';
 export type ExpoTabActionType = RNTabActionType | CommonNavigationAction | {
     type: 'JUMP_TO';
     source?: string;
     target?: string;
     payload: {
         name: string;
-        reset?: ExpoTabsResetValue;
+        resetOnFocus?: boolean;
         params?: object;
     };
 };
-export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterOptions): Router<TabNavigationState<ParamListBase>, {
+export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<TabNavigationState<ParamListBase>, {
     type: "GO_BACK";
     source?: string;
     target?: string;
@@ -77,6 +76,13 @@ export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterO
     source?: string;
     target?: string;
 } | {
+    type: "REPLACE_PARAMS";
+    payload: {
+        params?: object;
+    };
+    source?: string;
+    target?: string;
+} | {
     type: "PRELOAD";
     payload: {
         name: string;
@@ -90,7 +96,7 @@ export declare function ExpoTabRouter({ triggerMap, ...options }: ExpoTabRouterO
     target?: string;
     payload: {
         name: string;
-        reset?: ExpoTabsResetValue;
+        resetOnFocus?: boolean;
         params?: object;
     };
 }>;

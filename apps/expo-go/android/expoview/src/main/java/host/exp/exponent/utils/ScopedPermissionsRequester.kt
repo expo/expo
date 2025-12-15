@@ -6,6 +6,7 @@ import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.provider.Settings
 import com.facebook.react.modules.core.PermissionListener
+import expo.modules.core.utilities.VRUtilities
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.exponent.kernel.ExperienceKey
@@ -123,8 +124,14 @@ class ScopedPermissionsRequester(private val experienceKey: ExperienceKey) {
   }
 
   private fun permissionToResId(permission: String): Int {
+    // Manifest.permission.CAMERA Asks for the front (avatar) camera on Horizon OS
+    val cameraMessageId = if (VRUtilities.isQuest()) {
+      R.string.perm_hzos_use_avatar_camera
+    } else {
+      R.string.perm_camera
+    }
     return when (permission) {
-      Manifest.permission.CAMERA -> R.string.perm_camera
+      Manifest.permission.CAMERA -> cameraMessageId
       Manifest.permission.READ_CONTACTS -> R.string.perm_contacts_read
       Manifest.permission.WRITE_CONTACTS -> R.string.perm_contacts_write
       Manifest.permission.READ_EXTERNAL_STORAGE -> R.string.perm_camera_roll_read
@@ -140,6 +147,7 @@ class ScopedPermissionsRequester(private val experienceKey: ExperienceKey) {
       Manifest.permission.READ_PHONE_STATE -> R.string.perm_read_phone_state
       Manifest.permission.READ_MEDIA_AUDIO -> R.string.perm_read_media_audio
       Manifest.permission.POST_NOTIFICATIONS -> R.string.perm_notifications
+      VRUtilities.HZOS_CAMERA_PERMISSION -> R.string.perm_hzos_use_headset_camera
       else -> -1
     }
   }

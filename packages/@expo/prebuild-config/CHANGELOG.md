@@ -6,17 +6,111 @@
 
 ### 🎉 New features
 
-- Support Liquid Glass app icons. ([#37609](https://github.com/expo/expo/pull/37609) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
-- revert remove `expo-notifications` from auto plugins ([#37886](https://github.com/expo/expo/pull/37886) by [@vonovak](https://github.com/vonovak))
+- Fix withEdgeToEdge types ([#41510](https://github.com/expo/expo/pull/41510) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Scope `.icon` build setting to app target. ([#41536](https://github.com/expo/expo/pull/41536) by [@patrickmichalik](https://github.com/patrickmichalik))
 
 ### 💡 Others
 
 ### ⚠️ Notices
 
+- Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.83.x. ([#41564](https://github.com/expo/expo/pull/41564) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 54.0.7 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.6 - 2025-10-21
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.5 - 2025-10-09
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.4 - 2025-10-01
+
+### 🐛 Bug fixes
+
+- fixed race condition when generating ios splashscreen assets ([#37559](https://github.com/expo/expo/pull/37559) by [@alfonsocj](https://github.com/alfonsocj))
+
+## 54.0.3 — 2025-09-12
+
+### 🐛 Bug fixes
+
+- Always set RCTNewArchEnabled ([#39626](https://github.com/expo/expo/pull/39626) by [@brentvatne](https://github.com/brentvatne))
+
+## 54.0.2 — 2025-09-12
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.1 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.0 — 2025-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.8 — 2025-09-02
+
+### 💡 Others
+
+- warn when using the deprecated notification app config field ([#39325](https://github.com/expo/expo/pull/39325) by [@vonovak](https://github.com/vonovak))
+
+## 10.0.7 — 2025-08-31
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.6 — 2025-08-27
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.5 — 2025-08-25
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.4 — 2025-08-21
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.3 — 2025-08-18
+
+### 💡 Others
+
+- Use React Native's `edgeToEdgeEnabled` Gradle property to provide edge-to-edge support. ([#38767](https://github.com/expo/expo/pull/38767) by [@behenate](https://github.com/behenate))
+
+## 10.0.2 — 2025-08-16
+
+### 💡 Others
+
+- Switch autolinked package internal to `expo/internal/unstable-autolinking-exports` ([#38909](https://github.com/expo/expo/pull/38909) by [@kitten](https://github.com/kitten))
+
+## 10.0.1 — 2025-08-15
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.0 — 2025-08-13
+
+### 🎉 New features
+
+- Support Liquid Glass app icons. ([#37609](https://github.com/expo/expo/pull/37609) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Support `android.predictiveBackGestureEnabled` field in app config. ([#38774](https://github.com/expo/expo/pull/38774) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- revert remove `expo-notifications` from auto plugins ([#37886](https://github.com/expo/expo/pull/37886) by [@vonovak](https://github.com/vonovak))
+- [Android] Fix splash screen icon not showing when app launched from push notifications ([#38700](https://github.com/expo/expo/pull/38700) by [@hirbod](https://github.com/hirbod))
+
+### ⚠️ Notices
+
 - Added support for React Native 0.80.x. ([#37400](https://github.com/expo/expo/pull/37400) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 9.0.11 - 2025-07-08
+
+_This version does not introduce any user-facing changes._
 
 ## 9.0.10 - 2025-07-03
 

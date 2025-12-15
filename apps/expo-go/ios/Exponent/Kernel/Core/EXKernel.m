@@ -16,12 +16,10 @@
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
+#import "EXDevMenu-Swift.h"
+#import "EXDevMenuInterface-Swift.h"
 
-// Kernel is DevMenu's delegate only in non-detached builds.
-#import "EXDevMenuManager.h"
-#import "EXDevMenuDelegateProtocol.h"
-
-@interface EXKernel () <EXDevMenuDelegateProtocol>
+@interface EXKernel () <DevMenuHostDelegate>
 @end
 
 NS_ASSUME_NONNULL_BEGIN
@@ -63,8 +61,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     // init service registry: classes which manage shared resources among all hosts
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
 
-    // Set the delegate of dev menu manager. Maybe it should be a separate class? Will see later once the delegate protocol gets too big.
-    [[EXDevMenuManager sharedInstance] setDelegate:self];
+    [DevMenuManager.shared setDelegate:self];
 
     // register for notifications to request reloading the visible app
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -165,10 +162,10 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   if (!_browserController) {
     return;
   }
-  
+
   if (_visibleApp != _appRegistry.homeAppRecord) {
     [EXUtil performSynchronouslyOnMainThread:^{
-      [[EXDevMenuManager sharedInstance] toggle];
+      [_browserController moveHomeToVisible];
     }];
   } else {
     EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
@@ -294,19 +291,10 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   }
 }
 
-#pragma mark - EXDevMenuDelegateProtocol
+#pragma mark - DevMenuHostDelegate
 
-- (RCTHost *)mainHostForDevMenuManager:(EXDevMenuManager *)manager {
-  return _appRegistry.homeAppRecord.appManager.reactHost;
-}
-
-- (nullable RCTReactNativeFactory *)appDelegateForDevMenuManager:(EXDevMenuManager *)manager {
-  return _appRegistry.homeAppRecord.appManager.expoAppInstance.reactNativeFactory;
-}
-
-- (BOOL)devMenuManager:(EXDevMenuManager *)manager canChangeVisibility:(BOOL)visibility
-{
-  return !visibility || _visibleApp != _appRegistry.homeAppRecord;
+- (void)devMenuNavigateHome {
+  [self switchTasks];
 }
 
 @end

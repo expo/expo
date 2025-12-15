@@ -21,7 +21,7 @@ class GLView(context: Context, appContext: AppContext) : TextureView(context), S
   private var glContext = GLContext(
     appContext
       .registry
-      .getModule<GLObjectManagerModule>()
+      .getModule<GLModule>()
   )
 
   private val exglContextId: Int

@@ -245,11 +245,11 @@ export type ImagePickerAsset = {
      */
     assetId?: string | null;
     /**
-     * Width of the image or video.
+     * Width of the image or video. Can be `0` if the system did not provide the width.
      */
     width: number;
     /**
-     * Height of the image or video.
+     * Height of the image or video. Can be `0` if the system did not provide the height.
      */
     height: number;
     /**
@@ -258,8 +258,9 @@ export type ImagePickerAsset = {
      * - `'video'` - for videos.
      * - `'livePhoto'` - for live photos. (iOS only)
      * - `'pairedVideo'` - for videos paired with photos, which can be combined to create a live photo. (iOS only)
+     * - `null` - when the type could not be determined. This is rare but can happen with some Android ContentProviders.
      */
-    type?: 'image' | 'video' | 'livePhoto' | 'pairedVideo';
+    type?: 'image' | 'video' | 'livePhoto' | 'pairedVideo' | null;
     /**
      * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
      * or user gave limited permission to access the media library.
@@ -367,6 +368,10 @@ export type ImagePickerCancelledResult = ImagePickerCanceledResult;
  * @deprecated `ImagePickerMultipleResult` has been deprecated in favor of `ImagePickerResult`.
  */
 export type ImagePickerMultipleResult = ImagePickerResult;
+/**
+ * The shape of the crop area.
+ */
+export type CropShape = 'rectangle' | 'oval';
 export type ImagePickerOptions = {
     /**
      * Whether to show a UI to edit the image after it is picked. On Android the user can crop and
@@ -387,6 +392,14 @@ export type ImagePickerOptions = {
      * Android, since on iOS the crop rectangle is always a square.
      */
     aspect?: [number, number];
+    /**
+     * Specify the shape of the crop area if the user is allowed to edit the image
+     * (by passing `allowsEditing: true`). This option is only applicable on Android.
+     *
+     * @default rectangle
+     * @platform android
+     */
+    shape?: CropShape;
     /**
      * Specify the quality of compression, from `0` to `1`. `0` means compress for small size,
      * `1` means compress for maximum quality.
@@ -506,6 +519,17 @@ export type ImagePickerOptions = {
      * @default false
      */
     legacy?: boolean;
+    /**
+     * When enabled, allows the picker to access and download media from iCloud or other remote sources
+     * if the asset is not stored locally on the device.
+     *
+     * For videos, this option applies only when [`videoExportPreset`](#videoexportpreset) is set to `Passthrough`.
+     * In all other cases, the video will be downloaded from iCloud automatically.
+     *
+     * @platform ios
+     * @default false
+     */
+    shouldDownloadFromNetwork?: boolean;
 };
 /**
  * @hidden

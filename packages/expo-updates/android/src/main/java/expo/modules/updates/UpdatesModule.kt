@@ -6,6 +6,7 @@ import android.os.Bundle
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
@@ -16,6 +17,7 @@ import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updates.reloadscreen.ReloadScreenOptions
 import expo.modules.updates.statemachine.UpdatesStateContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -59,10 +61,10 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
 
     OnDestroy {
       UpdatesController.removeUpdatesEventManagerObserver()
-      UpdatesController.instance.shutdown()
     }
 
-    AsyncFunction("reload") Coroutine { ->
+    AsyncFunction("reload") Coroutine { options: ReloadScreenOptions? ->
+      UpdatesController.instance.reloadScreenManager?.setConfiguration(options)
       UpdatesController.instance.relaunchReactApplicationForModule()
     }
 
@@ -162,6 +164,24 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
     Function("setUpdateURLAndRequestHeadersOverride") { configOverride: UpdatesConfigurationOverrideParam? ->
       UpdatesController.instance.setUpdateURLAndRequestHeadersOverride(configOverride?.toUpdatesConfigurationOverride())
     }
+
+    Function("setUpdateRequestHeadersOverride") { requestHeaders: Map<String, String>? ->
+      UpdatesController.instance.setUpdateRequestHeadersOverride(requestHeaders)
+    }
+
+    AsyncFunction("showReloadScreen") { options: ReloadScreenOptions? ->
+      if (BuildConfig.DEBUG) {
+        val activity = appContext.currentActivity
+        UpdatesController.instance.reloadScreenManager?.setConfiguration(options)
+        UpdatesController.instance.reloadScreenManager?.show(activity)
+      }
+    }.runOnQueue(Queues.MAIN)
+
+    AsyncFunction("hideReloadScreen") {
+      if (BuildConfig.DEBUG) {
+        UpdatesController.instance.reloadScreenManager?.hide()
+      }
+    }.runOnQueue(Queues.MAIN)
   }
 
   companion object {

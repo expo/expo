@@ -3,12 +3,15 @@ package expo.modules.imagepicker.contracts
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Build
 import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import com.canhub.cropper.CropImage
 import com.canhub.cropper.CropImageOptions
+import com.canhub.cropper.CropImageView
+import expo.modules.imagepicker.CropShape
 import expo.modules.imagepicker.ImagePickerOptions
 import expo.modules.imagepicker.MediaType
 import expo.modules.imagepicker.copyExifData
@@ -25,7 +28,7 @@ internal class CropImageContract(
 ) : AppContextActivityResultContract<CropImageContractOptions, ImagePickerContractResult> {
   override fun createIntent(context: Context, input: CropImageContractOptions) = Intent(context, expo.modules.imagepicker.ExpoCropImageActivity::class.java).apply {
     val mediaType = expo.modules.imagepicker.getType(context.contentResolver, input.sourceUri.toUri())
-    val compressFormat = mediaType.toBitmapCompressFormat()
+    val compressFormat = mediaType?.toBitmapCompressFormat() ?: Bitmap.CompressFormat.JPEG
     val cacheDirectory = appContextProvider.appContext.cacheDirectory
     val outputUri = createOutputFile(cacheDirectory, compressFormat.toImageFileExtension()).toUri()
 
@@ -44,6 +47,11 @@ internal class CropImageContract(
             aspectRatioY = y
             fixAspectRatio = true
             initialCropWindowPaddingRatio = 0f
+          }
+
+          cropShape = when (input.options.shape) {
+            CropShape.RECTANGLE -> CropImageView.CropShape.RECTANGLE
+            CropShape.OVAL -> CropImageView.CropShape.OVAL
           }
         }
       )

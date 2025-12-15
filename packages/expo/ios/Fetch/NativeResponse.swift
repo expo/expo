@@ -5,7 +5,7 @@ import ExpoModulesCore
 /**
  A SharedObject for response.
  */
-internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
+internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @unchecked Sendable {
   internal let sink: ResponseSink
 
   private let dispatchQueue: DispatchQueue
@@ -26,6 +26,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
   private(set) var responseInit: NativeResponseInit?
   private(set) var redirected = false
   private(set) var error: Error?
+  var redirectMode: NativeRequestRedirect = .follow
 
   var bodyUsed: Bool {
     return self.sink.bodyUsed
@@ -71,7 +72,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
   /**
    Waits for given states and when it meets the requirement, executes the callback.
    */
-  func waitFor(states: [ResponseState], callback: @escaping (ResponseState) -> Void) {
+  func waitFor(states: [ResponseState], callback: @escaping @Sendable (ResponseState) -> Void) {
     if states.contains(state) {
       callback(state)
       return
@@ -156,8 +157,26 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate {
     // no-op in .bodyStreamingCanceled state
   }
 
-  func urlSession(_ session: ExpoURLSessionTask, didRedirect response: URLResponse) {
-    redirected = true
+  func urlSession(
+    _ session: ExpoURLSessionTask,
+    task: URLSessionTask,
+    willPerformHTTPRedirection response: HTTPURLResponse,
+    newRequest request: URLRequest,
+    completionHandler: @escaping (URLRequest?) -> Void
+  ) {
+    let shouldFollowRedirects = self.redirectMode == .follow
+    completionHandler(shouldFollowRedirects ? request : nil)
+    self.redirected = shouldFollowRedirects
+
+    if self.redirectMode == .error {
+      let error = FetchRedirectException()
+      self.error = error
+      if state == .bodyStreamingStarted {
+        emit(event: "didFailWithError", arguments: error.localizedDescription)
+      }
+      state = .errorReceived
+      emit(event: "readyForJSFinalization")
+    }
   }
 
   func urlSession(_ session: ExpoURLSessionTask, task: URLSessionTask, didCompleteWithError error: (any Error)?) {

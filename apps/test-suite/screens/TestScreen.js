@@ -2,10 +2,11 @@
 import Immutable from 'immutable';
 import jasmineModule from 'jasmine-core/lib/jasmine-core/jasmine';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 
 import ExponentTest from '../ExponentTest';
 import { getTestModules } from '../TestModules';
+import { getScreenIdForLinking, getSelectedTestNames } from './getScreenIdForLinking';
 import Portal from '../components/Portal';
 import RunnerError from '../components/RunnerError';
 import Suites from '../components/Suites';
@@ -16,6 +17,7 @@ const initialState = {
     suites: [],
     path: ['suites'], // Path to current 'children' List in state
   }),
+  selectedModules: [],
   testPortal: null,
   numFailed: 0,
   done: false,
@@ -25,21 +27,43 @@ export default class TestScreen extends React.Component {
   state = initialState;
   _results = '';
   _failures = '';
-  _scrollViewRef = null;
+
+  getSelectionQuery() {
+    return this.props.route.params?.tests ?? '';
+  }
 
   componentDidMount() {
-    const selectionQuery = this.props.route.params?.tests ?? [];
-    const selectedTestNames = selectionQuery.split(' ');
+    this._isMounted = true;
+    this._handleTestsParam(this.getSelectionQuery());
+  }
 
+  componentDidUpdate(prevProps) {
+    const currentTestsParam = this.getSelectionQuery();
+    const previousTestsParam = prevProps.route.params?.tests ?? '';
+
+    // Re-run tests if the tests param has changed
+    if (currentTestsParam && currentTestsParam !== previousTestsParam) {
+      this._handleTestsParam(currentTestsParam);
+    }
+  }
+
+  _handleTestsParam(selectionQuery) {
+    const selectedTestNames = getSelectedTestNames(selectionQuery);
     // We get test modules here to make sure that React Native will reload this component when tests were changed.
-    const selectedModules = getTestModules().filter((m) => selectedTestNames.includes(m.name));
+    const selectedModules = getTestModules().filter((m) =>
+      selectedTestNames.includes(getScreenIdForLinking(m))
+    );
 
     if (!selectedModules.length) {
-      console.log('[TEST_SUITE]', 'No selected modules', selectedTestNames);
+      console.warn('[TEST_SUITE]', 'No selected modules', selectedTestNames);
+    }
+    if (selectedTestNames.length !== selectedModules.length) {
+      const selectedModuleNames = selectedModules.map((m) => getScreenIdForLinking(m));
+      const missing = selectedTestNames.filter((n) => !selectedModuleNames.includes(n));
+      throw new Error(`[TEST_SUITE]: Some selected modules were not found: ${missing}`);
     }
 
     this._runTests(selectedModules);
-    this._isMounted = true;
   }
 
   componentWillUnmount() {
@@ -56,14 +80,14 @@ export default class TestScreen extends React.Component {
     });
   };
 
-  _runTests = async (modules) => {
+  async _runTests(selectedModules) {
     // Reset results state
-    this.setState(initialState);
+    this.setState({ ...initialState, selectedModules });
 
     const { jasmineEnv, jasmine } = await this._setupJasmine();
 
     await Promise.all(
-      modules.map((m) =>
+      selectedModules.map((m) =>
         m.test(jasmine, {
           setPortalChild: this.setPortalChild,
           cleanupPortal: this.cleanupPortal,
@@ -72,7 +96,7 @@ export default class TestScreen extends React.Component {
     );
 
     jasmineEnv.execute();
-  };
+  }
 
   async _setupJasmine() {
     // Init
@@ -263,13 +287,32 @@ export default class TestScreen extends React.Component {
       state,
       portalChildShouldBeVisible,
       testPortal,
+      selectedModules,
     } = this.state;
+    if (this._isMounted && !selectedModules?.length) {
+      const moduleLinks = getTestModules().map(getScreenIdForLinking);
+
+      return (
+        <ScrollView>
+          <RunnerError>
+            No tests were found for link: "{this.props.route?.params?.tests}"{'\n'}
+            Available links: {JSON.stringify(moduleLinks, null, 2)}
+          </RunnerError>
+        </ScrollView>
+      );
+    }
     if (testRunnerError) {
       return <RunnerError>{testRunnerError}</RunnerError>;
     }
     return (
       <View testID="test_suite_container" style={styles.container}>
-        <Suites numFailed={numFailed} results={results} done={done} suites={state.get('suites')} />
+        <Suites
+          numFailed={numFailed}
+          results={results}
+          done={done}
+          suites={state.get('suites')}
+          selectionQuery={this.getSelectionQuery()}
+        />
         <Portal isVisible={portalChildShouldBeVisible}>{testPortal}</Portal>
       </View>
     );

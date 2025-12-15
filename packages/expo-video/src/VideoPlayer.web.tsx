@@ -10,6 +10,8 @@ import type {
   AudioMixingMode,
   VideoTrack,
   AudioTrack,
+  ScrubbingModeOptions,
+  SeekTolerance,
 } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import { VideoThumbnail } from './VideoThumbnail';
@@ -28,7 +30,7 @@ export function useVideoPlayer(
   }, [JSON.stringify(source)]);
 }
 
-export function getSourceUri(source: VideoSource): string | null {
+export function getSourceUri(source?: VideoSource): string | null {
   if (typeof source === 'string') {
     return source;
   }
@@ -86,6 +88,9 @@ export default class VideoPlayerWeb
   videoTrack: VideoTrack | null = null; // Not supported on web. Dummy to match the interface.
   availableVideoTracks: VideoTrack[] = []; // Not supported on web. Dummy to match the interface.
   isExternalPlaybackActive: boolean = false; // Not supported on web. Dummy to match the interface.
+  keepScreenOnWhilePlaying: boolean = false; // Not supported on web. Dummy to match the interface
+  seekTolerance: SeekTolerance = {} as SeekTolerance; // Not supported on web. Dummy to match the interface.
+  scrubbingModeOptions: ScrubbingModeOptions = {} as ScrubbingModeOptions; // Not supported on web. Dummy to match the interface.
 
   set muted(value: boolean) {
     this._mountedVideos.forEach((video) => {
@@ -364,25 +369,29 @@ export default class VideoPlayerWeb
   }
 
   _addListeners(video: HTMLVideoElement): void {
-    video.onplay = () => {
+    video.onplay = (e) => {
       this._emitOnce(video, 'playingChange', {
         isPlaying: true,
         oldIsPlaying: this.playing,
       });
       this.playing = true;
       this._mountedVideos.forEach((mountedVideo) => {
-        mountedVideo.play();
+        if (e.target !== mountedVideo) {
+          mountedVideo.play();
+        }
       });
     };
 
-    video.onpause = () => {
+    video.onpause = (e) => {
       this._emitOnce(video, 'playingChange', {
         isPlaying: false,
         oldIsPlaying: this.playing,
       });
       this.playing = false;
       this._mountedVideos.forEach((mountedVideo) => {
-        mountedVideo.pause();
+        if (e.target !== mountedVideo) {
+          mountedVideo.pause();
+        }
       });
     };
 

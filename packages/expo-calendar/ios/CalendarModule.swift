@@ -5,7 +5,7 @@ import EventKitUI
 
 public class CalendarModule: Module {
   private var permittedEntities: EKEntityMask = .event
-  private static let sharedEventStore = EKEventStore()
+  public static let sharedEventStore = EKEventStore()
   private var eventStore: EKEventStore {
     return CalendarModule.sharedEventStore
   }
@@ -223,12 +223,14 @@ public class CalendarModule: Module {
         reminder.url = URL(string: url)
       }
 
+      let isAllDay = details.allDay ?? false
+
       if let startDate {
-        reminder.startDateComponents = createDateComponents(for: startDate)
+        reminder.startDateComponents = createDateComponents(for: startDate, allDay: isAllDay)
       }
 
       if let dueDate {
-        reminder.dueDateComponents = createDateComponents(for: dueDate)
+        reminder.dueDateComponents = createDateComponents(for: dueDate, allDay: isAllDay)
       }
 
       if let completionDate {

@@ -1,4 +1,10 @@
-import { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+/**
+ * Copyright © 2024 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+import type { MixedOutput, Module, ReadOnlyGraph, SerializerOptions } from '@expo/metro/metro/DeltaBundler/types';
 type AdvancedModule = Module<MixedOutput> & {
     sideEffects?: boolean | null;
 };

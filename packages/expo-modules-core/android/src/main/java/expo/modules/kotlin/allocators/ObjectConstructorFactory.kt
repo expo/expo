@@ -8,7 +8,8 @@ import kotlin.reflect.KParameter
  */
 class ObjectConstructorFactory {
   fun <T : Any> get(clazz: KClass<T>): ObjectConstructor<T> =
-    tryToUseDefaultConstructor(clazz.java) ?: tryToUseDefaultKotlinConstructor(clazz)
+    tryToUseDefaultConstructor(clazz.java)
+      ?: tryToUseDefaultKotlinConstructor(clazz)
       ?: useUnsafeAllocator(clazz.java)
 
   private fun <T> tryToUseDefaultConstructor(clazz: Class<T>): ObjectConstructor<T>? {
@@ -21,7 +22,7 @@ class ObjectConstructorFactory {
       ObjectConstructor {
         ctor.newInstance() as T
       }
-    } catch (e: NoSuchMethodException) {
+    } catch (_: NoSuchMethodException) {
       null
     }
   }

@@ -1,4 +1,3 @@
-// @ts-expect-error
 import TestScreen from 'test-suite/screens/TestScreen';
 
 const NotificationTestScreen = require('test-suite/tests/Notifications');
@@ -8,11 +7,24 @@ const NotificationTestScreen = require('test-suite/tests/Notifications');
 
 // yes, this is a hack - but the cost is low and benefit is high
 export default class NotificationTesterScreen extends TestScreen {
-  componentDidMount() {
-    const selectedModules = [NotificationTestScreen];
-    // @ts-expect-error
-    this._runTests(selectedModules);
-    // @ts-expect-error
-    this._isMounted = true;
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      ...this.state,
+      // @ts-expect-error
+      selectedModules: [NotificationTestScreen],
+    };
+  }
+
+  _handleTestsParam() {
+    this._runTests([NotificationTestScreen]);
+  }
+
+  componentDidUpdate() {
+    // noop
+  }
+
+  getSelectionQuery() {
+    return '';
   }
 }
