@@ -30,23 +30,23 @@ internal enum PickerStyleType: String, Enumerable {
         content.pickerStyle(.automatic)
       }
     case .palette:
-      #if !os(tvOS)
+#if !os(tvOS)
       if #available(iOS 17.0, *) {
         content.pickerStyle(.palette)
       } else {
         content.pickerStyle(.automatic)
       }
-      #else
+#else
       content.pickerStyle(.automatic)
-      #endif
+#endif
     case .segmented:
       content.pickerStyle(.segmented)
     case .wheel:
-      #if !os(tvOS)
+#if !os(tvOS)
       content.pickerStyle(.wheel)
-      #else
+#else
       content.pickerStyle(.automatic)
-      #endif
+#endif
     default:
       content.pickerStyle(.automatic)
     }
