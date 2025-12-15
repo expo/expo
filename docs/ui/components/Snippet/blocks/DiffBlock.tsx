@@ -90,7 +90,9 @@ export const DiffBlock = ({
   SnippetHeaderComponent = SnippetHeader,
 }: Props) => {
   const initialRaw = typeof raw === 'string' && raw.trim().length > 0 ? normalizeDiff(raw) : null;
-  const [diff, setDiff] = useState<RenderLine[] | null>(initialRaw ? safeParseDiff(initialRaw) : null);
+  const [diff, setDiff] = useState<RenderLine[] | null>(
+    initialRaw ? safeParseDiff(initialRaw) : null
+  );
   useEffect(() => {
     if (source) {
       const fetchDiffAsync = async () => {
