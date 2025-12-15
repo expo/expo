@@ -42,9 +42,6 @@ class NotSupportedException(message: String) : CodedException(message)
 class PedometerModule : Module() {
   private var stepsAtTheBeginning: Int? = null
 
-  private val context: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-
   private val sensorProxy by lazy {
     createSensorProxy(EventName, Sensor.TYPE_STEP_COUNTER, appContext) { sensorEvent ->
       if (stepsAtTheBeginning == null) {
@@ -56,15 +53,124 @@ class PedometerModule : Module() {
     }
   }
 
-  private val activityRecognitionClient by lazy {
-    ActivityRecognition.getClient(context)
-  }
-
   private var transitionPendingIntent: PendingIntent? = null
   private var transitionsReceiver: BroadcastReceiver? = null
   private var isEventUpdatesActive = false
 
   override fun definition() = ModuleDefinition {
+    val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+    val activityRecognitionClient = ActivityRecognition.getClient(context)
+
+    fun isRecordingAvailable(): Boolean {
+      return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
+        context,
+        LocalRecordingClient.LOCAL_RECORDING_CLIENT_MIN_VERSION_CODE
+      ) == ConnectionResult.SUCCESS
+    }
+
+    fun ensureTransitionPendingIntent(): PendingIntent {
+      transitionPendingIntent?.let { return it }
+
+      val intent = Intent(TransitionAction).setPackage(context.packageName)
+      val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+      } else {
+        PendingIntent.FLAG_UPDATE_CURRENT
+      }
+
+      val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, flags)
+      transitionPendingIntent = pendingIntent
+      return pendingIntent
+    }
+
+    fun unregisterTransitionsReceiver() {
+      transitionsReceiver?.let {
+        try {
+          context.unregisterReceiver(it)
+        } catch (_: IllegalArgumentException) {
+          // Receiver already unregistered.
+        }
+      }
+      transitionsReceiver = null
+    }
+
+    fun ensureTransitionsReceiver(): Boolean {
+      if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) != ConnectionResult.SUCCESS) {
+        return false
+      }
+
+      if (transitionsReceiver != null) {
+        return true
+      }
+
+      val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+          if (intent == null) {
+            return
+          }
+          if (!ActivityTransitionResult.hasResult(intent)) {
+            return
+          }
+
+          val result = ActivityTransitionResult.extractResult(intent) ?: return
+
+          for (event in result.transitionEvents) {
+            when (event.activityType) {
+              DetectedActivity.WALKING, DetectedActivity.RUNNING -> {
+                val type = if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
+                  "resume"
+                } else {
+                  "pause"
+                }
+
+                val elapsedNow = SystemClock.elapsedRealtimeNanos()
+                val eventAgeNanos = elapsedNow - event.elapsedRealTimeNanos
+                val eventTimestamp = System.currentTimeMillis() - TimeUnit.NANOSECONDS.toMillis(eventAgeNanos)
+
+                val bundle = Bundle().apply {
+                  putString("type", type)
+                  putDouble("date", eventTimestamp.toDouble())
+                }
+
+                sendEvent(EventNameEvent, bundle)
+              }
+
+              else -> Unit
+            }
+          }
+        }
+      }
+
+      transitionsReceiver = receiver
+      val intentFilter = IntentFilter(TransitionAction)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        context.registerReceiver(receiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+      } else {
+        @Suppress("DEPRECATION")
+        context.registerReceiver(receiver, intentFilter)
+      }
+
+      return true
+    }
+
+    fun stopActivityTransitionUpdates() {
+      val pendingIntent = transitionPendingIntent
+      if (pendingIntent != null) {
+        if (isEventUpdatesActive) {
+          try {
+            Tasks.await(activityRecognitionClient.removeActivityTransitionUpdates(pendingIntent))
+          } catch (_: SecurityException) {
+            // ignore missing permission at cleanup time
+          }
+        }
+        pendingIntent.cancel()
+      }
+
+      isEventUpdatesActive = false
+      transitionPendingIntent = null
+      unregisterTransitionsReceiver()
+    }
+
     Name("ExponentPedometer")
 
     Events(EventNameEvent)
@@ -211,118 +317,5 @@ class PedometerModule : Module() {
     OnDestroy {
       stopActivityTransitionUpdates()
     }
-  }
-
-  private fun isRecordingAvailable(): Boolean {
-    return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(
-      context,
-      LocalRecordingClient.LOCAL_RECORDING_CLIENT_MIN_VERSION_CODE
-    ) == ConnectionResult.SUCCESS
-  }
-
-  private fun ensureTransitionPendingIntent(): PendingIntent {
-    transitionPendingIntent?.let { return it }
-
-    val intent = Intent(TransitionAction).setPackage(context.packageName)
-    val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-    } else {
-      PendingIntent.FLAG_UPDATE_CURRENT
-    }
-
-    val pendingIntent = PendingIntent.getBroadcast(context, 0, intent, flags)
-    transitionPendingIntent = pendingIntent
-    return pendingIntent
-  }
-
-  private fun ensureTransitionsReceiver(): Boolean {
-    if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) != ConnectionResult.SUCCESS) {
-      return false
-    }
-
-    if (transitionsReceiver != null) {
-      return true
-    }
-
-    val receiver = object : BroadcastReceiver() {
-      override fun onReceive(context: Context?, intent: Intent?) {
-        if (intent == null) {
-          return
-        }
-        if (!ActivityTransitionResult.hasResult(intent)) {
-          return
-        }
-
-        val result = ActivityTransitionResult.extractResult(intent) ?: return
-
-        for (event in result.transitionEvents) {
-          when (event.activityType) {
-            DetectedActivity.WALKING, DetectedActivity.RUNNING -> {
-              val type = if (event.transitionType == ActivityTransition.ACTIVITY_TRANSITION_ENTER) {
-                "resume"
-              } else {
-                "pause"
-              }
-
-              val elapsedNow = SystemClock.elapsedRealtimeNanos()
-              val eventAgeNanos = elapsedNow - event.elapsedRealTimeNanos
-              val eventTimestamp = System.currentTimeMillis() - TimeUnit.NANOSECONDS.toMillis(eventAgeNanos)
-
-              val bundle = Bundle().apply {
-                putString("type", type)
-                putDouble("date", eventTimestamp.toDouble())
-              }
-
-              sendEvent(EventNameEvent, bundle)
-            }
-
-            else -> Unit
-          }
-        }
-      }
-    }
-
-    transitionsReceiver = receiver
-    val intentFilter = IntentFilter(TransitionAction)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      context.registerReceiver(receiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
-    } else {
-      @Suppress("DEPRECATION")
-      context.registerReceiver(receiver, intentFilter)
-    }
-
-    return true
-  }
-
-  private fun stopActivityTransitionUpdates() {
-    if (!isEventUpdatesActive) {
-      unregisterTransitionsReceiver()
-      return
-    }
-
-    val pendingIntent = transitionPendingIntent
-    if (pendingIntent != null) {
-      try {
-        Tasks.await(activityRecognitionClient.removeActivityTransitionUpdates(pendingIntent))
-      } catch (_: SecurityException) {
-        // ignore missing permission at cleanup time
-      }
-      pendingIntent.cancel()
-    }
-
-    isEventUpdatesActive = false
-    transitionPendingIntent = null
-    unregisterTransitionsReceiver()
-  }
-
-  private fun unregisterTransitionsReceiver() {
-    transitionsReceiver?.let {
-      try {
-        context.unregisterReceiver(it)
-      } catch (_: IllegalArgumentException) {
-        // Receiver already unregistered.
-      }
-    }
-    transitionsReceiver = null
   }
 }
