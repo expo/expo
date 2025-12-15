@@ -34,22 +34,24 @@ const PopoverNativeView: React.ComponentType<NativePopoverViewProps> = requireNa
   'PopoverView'
 );
 
-const PopoverViewContent: React.ComponentType<object> = requireNativeView(
+const PopoverViewTrigger: React.ComponentType<object> = requireNativeView(
   'ExpoUI',
-  'PopoverViewContent'
+  'PopoverViewTrigger'
 );
 
-const PopoverViewPopContent: React.ComponentType<object> = requireNativeView(
-  'ExpoUI',
-  'PopoverViewPopContent'
-);
+const PopoverViewContent: React.ComponentType<{
+  modifiers?: CommonViewModifierProps['modifiers'];
+}> = requireNativeView('ExpoUI', 'PopoverViewContent');
 
 function PopoverTrigger(props: { children: React.ReactNode }) {
-  return <PopoverViewContent {...props} />;
+  return <PopoverViewTrigger {...props} />;
 }
 
-function PopoverContent(props: { children: React.ReactNode }) {
-  return <PopoverViewPopContent {...props} />;
+function PopoverContent(props: {
+  children: React.ReactNode;
+  modifiers?: CommonViewModifierProps['modifiers'];
+}) {
+  return <PopoverViewContent {...props} />;
 }
 
 Popover.Trigger = PopoverTrigger;

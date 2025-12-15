@@ -10,7 +10,13 @@ import {
   Text,
   VStack,
 } from '@expo/ui/swift-ui';
-import { frame, padding, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+import {
+  frame,
+  padding,
+  pickerStyle,
+  tag,
+  presentationCompactAdaptation,
+} from '@expo/ui/swift-ui/modifiers';
 import React, { useState } from 'react';
 import { Pressable, Text as RNText, View } from 'react-native';
 
@@ -36,7 +42,7 @@ export default function PopoverScreen() {
             <Popover.Trigger>
               <Button onPress={() => setShowBasicPopover(true)}>Show Popover</Button>
             </Popover.Trigger>
-            <Popover.Content>
+            <Popover.Content modifiers={[presentationCompactAdaptation('popover')]}>
               <VStack modifiers={[padding({ all: 16 }), frame({ minWidth: 200 })]}>
                 <Text>Hello from Popover!</Text>
                 <Text color="#666666">This is the popover content.</Text>

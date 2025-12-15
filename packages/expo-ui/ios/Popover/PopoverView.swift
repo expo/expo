@@ -17,12 +17,7 @@ internal struct PopoverView: ExpoSwiftUI.View {
           attachmentAnchor: props.attachmentAnchor?.anchor ?? .rect(.bounds),
           arrowEdge: props.arrowEdge?.edge
         ) {
-          if #available(iOS 16.4, *) {
-            popoverContent
-              .presentationCompactAdaptation(.popover)
-          } else {
-            popoverContent
-          }
+          popoverContent
         }
         .onChange(
           of: isPresented,
@@ -44,7 +39,7 @@ internal struct PopoverView: ExpoSwiftUI.View {
   @ViewBuilder
   private var triggerContent: some View {
     if let content = props.children?
-      .compactMap({ $0.childView as? PopoverViewContent })
+      .compactMap({ $0.childView as? PopoverViewTrigger })
       .first
     {
       content
@@ -54,7 +49,7 @@ internal struct PopoverView: ExpoSwiftUI.View {
   @ViewBuilder
   private var popoverContent: some View {
     if let content = props.children?
-      .compactMap({ $0.childView as? PopoverViewPopContent })
+      .compactMap({ $0.childView as? PopoverViewContent })
       .first
     {
       content

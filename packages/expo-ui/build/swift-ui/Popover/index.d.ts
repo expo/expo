@@ -24,6 +24,7 @@ declare function PopoverTrigger(props: {
 }): import("react").JSX.Element;
 declare function PopoverContent(props: {
     children: React.ReactNode;
+    modifiers?: CommonViewModifierProps['modifiers'];
 }): import("react").JSX.Element;
 export declare function Popover(props: PopoverViewProps): import("react").JSX.Element;
 export declare namespace Popover {

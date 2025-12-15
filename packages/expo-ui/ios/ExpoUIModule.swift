@@ -67,8 +67,6 @@ public final class ExpoUIModule: Module {
     View(ContextMenuPreview.self)
     View(ContextMenuContent.self)
     View(NamespaceView.self)
-    View(PopoverViewContent.self)
-    View(PopoverViewPopContent.self)
     View(SectionContent.self)
     View(SectionHeader.self)
     View(SectionFooter.self)
@@ -124,7 +122,12 @@ public final class ExpoUIModule: Module {
     ExpoUIView(CircleView.self)
     ExpoUIView(ConcentricRectangleView.self)
     ExpoUIView(DividerView.self)
+    
+    // Popover
     ExpoUIView(PopoverView.self)
+    View(PopoverViewTrigger.self)
+    View(PopoverViewContent.self)
+    
     ExpoUIView(GridView.self)
   }
 }

@@ -1741,5 +1741,9 @@ extension ViewModifierRegistry {
     register("datePickerStyle") { params, appContext, _ in
       return try DatePickerStyleModifier(from: params, appContext: appContext)
     }
+
+    register("presentationCompactAdaptation") { params, appContext, _ in
+      return try PresentationCompactAdaptationModifier(from: params, appContext: appContext)
+    }
   }
 }
