@@ -97,7 +97,7 @@ private struct BottomSheetSizeReader<Children: View>: View {
           onChildrenSizeChange(size)
         }
       }
-    }
+  }
 }
 
 struct BottomSheetView: ExpoSwiftUI.View {

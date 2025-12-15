@@ -12,13 +12,13 @@ internal struct GlassEffectContainerView: ExpoSwiftUI.View {
 
   var body: some View {
     if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
-      #if compiler(>=6.2) // Xcode 26
+#if compiler(>=6.2) // Xcode 26
       GlassEffectContainer(spacing: CGFloat(props.spacing ?? 0.0)) {
         Children()
       }
-      #else
+#else
       Children()
-      #endif
+#endif
     } else {
       Children()
     }

@@ -67,14 +67,14 @@ class TextFieldManager: ObservableObject {
   @Published var text: String
   @Published var isFocused: Bool
 
-  #if !os(tvOS)
+#if !os(tvOS)
   @Published var _selection: Any?
   @available(iOS 18.0, macOS 15.0, *)
   var selection: SwiftUI.TextSelection? {
     get { _selection as? SwiftUI.TextSelection }
     set { _selection = newValue }
   }
-  #endif
+#endif
 
   init(initialText: String = "") {
     self.text = initialText
@@ -83,11 +83,11 @@ class TextFieldManager: ObservableObject {
 }
 
 func allowMultiLine() -> Bool {
-  #if os(tvOS)
+#if os(tvOS)
   return false
-  #else
+#else
   return true
-  #endif
+#endif
 }
 
 struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
@@ -121,7 +121,7 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   }
 
   func setSelection(start: Int, end: Int) {
-    #if !os(tvOS)
+#if !os(tvOS)
     if #available(iOS 18.0, macOS 15.0, *) {
       let lowerBound = min(start, end)
       let upperBound = max(start, end)
@@ -129,25 +129,25 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
       let endIndex = textManager.text.index(textManager.text.startIndex, offsetBy: min(upperBound, textManager.text.count))
       textManager.selection = SwiftUI.TextSelection(range: startIndex..<endIndex)
     }
-    #endif
+#endif
   }
 
   var text: some View {
     let text = if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
-      #if !os(tvOS)
+#if !os(tvOS)
       TextField(
         props.placeholder,
         text: $textManager.text,
         selection: $textManager.selection,
         axis: (props.multiline && allowMultiLine()) ? .vertical : .horizontal
       )
-      #else
+#else
       TextField(
         props.placeholder,
         text: $textManager.text,
         axis: (props.multiline && allowMultiLine()) ? .vertical : .horizontal
       )
-      #endif
+#endif
     } else if #available(iOS 16.0, tvOS 16.0, *) {
       TextField(
         props.placeholder,
@@ -172,12 +172,12 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
             textManager.text.append("\n")
 
             // when selection state is set, the cursor does not auto update to added newline
-            #if !os(tvOS)
+#if !os(tvOS)
             if #available(iOS 18.0, macOS 15.0, *) {
               let cursorPosition = textManager.text.endIndex
               textManager.selection = SwiftUI.TextSelection(range: cursorPosition..<cursorPosition)
             }
-            #endif
+#endif
           }
           isFocused = true
         }
@@ -204,7 +204,7 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
         props.onFocusChanged(["value": newValue])
       }
 
-    #if !os(tvOS)
+#if !os(tvOS)
     if #available(iOS 18.0, macOS 15.0, *) {
       return baseView.onChange(of: textManager.selection) {
         if let selection = textManager.selection {
@@ -221,8 +221,8 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
     } else {
       return baseView
     }
-    #else
+#else
     return baseView
-    #endif
+#endif
   }
 }
