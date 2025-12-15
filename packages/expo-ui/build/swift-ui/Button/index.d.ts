@@ -1,5 +1,4 @@
 import { type SFSymbol } from 'sf-symbols-typescript';
-import { type ViewEvent } from '../../types';
 import { type CommonViewModifierProps } from '../types';
 /**
  * The role of the button.
@@ -32,10 +31,6 @@ export type ButtonProps = {
     children?: React.ReactNode;
 } & CommonViewModifierProps;
 /**
- * @hidden
- */
-export type NativeButtonProps = Omit<ButtonProps, 'onPress'> & ViewEvent<'onButtonPress', void>;
-/**
  * Displays a native button component.
  *
  * @example
@@ -43,22 +38,10 @@ export type NativeButtonProps = Omit<ButtonProps, 'onPress'> & ViewEvent<'onButt
  * import { Button } from '@expo/ui/swift-ui';
  * import { buttonStyle, controlSize, tint, disabled } from '@expo/ui/swift-ui/modifiers';
  *
- * // Simple text button
- * <Button label="Delete" onPress={handlePress} />
- *
- * // Button with SF Symbol
- * <Button label="Delete" systemImage="trash" onPress={handlePress} />
- *
- * // Button with custom content
- * <Button onPress={handlePress}>
- *   <Label text="Sign In" systemImage="arrow.up" />
- * </Button>
- *
- * // Button with modifiers
  * <Button
  *   role="destructive"
- *   label="Delete"
  *   onPress={handlePress}
+ *   label="Delete"
  *   modifiers={[
  *     buttonStyle('bordered'),
  *     controlSize('large'),
