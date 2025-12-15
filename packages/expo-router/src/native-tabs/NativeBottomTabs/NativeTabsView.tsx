@@ -201,7 +201,7 @@ function Screen(props: {
       iconResourceName={getAndroidIconResourceName(icon)}
       iconResource={getAndroidIconResource(icon)}
       icon={convertOptionsIconToPropsIcon(icon)}
-      selectedIcon={convertOptionsIconToPropsIcon(selectedIcon)}
+      selectedIcon={convertOptionsIconToIOSPropsIcon(selectedIcon)}
       title={title}
       freezeContents={false}
       tabKey={routeKey}
@@ -255,11 +255,56 @@ function convertOptionsIconToPropsIcon(
   if (!icon) {
     return undefined;
   }
-  if ('sf' in icon && icon.sf) {
-    return { sfSymbolName: icon.sf };
-  } else if ('src' in icon && icon.src) {
-    return { templateSource: icon.src };
+
+  const ios = convertOptionsIconToIOSPropsIcon(icon);
+  const android = convertOptionsIconToAndroidPropsIcon(icon);
+
+  if (!ios && !android) {
+    return undefined;
   }
+
+  // react-native-screens@4.18 expects the typed icon format:
+  // - iOS: { type: 'sfSymbol' | 'imageSource' | 'templateSource', ... }
+  // - Android: { type: 'imageSource' | 'drawableResource', ... }
+  const result: NonNullable<BottomTabsScreenProps['icon']> = {};
+  if (ios) result.ios = ios;
+  if (android) result.android = android;
+  return result;
+}
+
+function convertOptionsIconToIOSPropsIcon(
+  icon: AwaitedIcon | undefined
+): BottomTabsScreenProps['selectedIcon'] {
+  if (!icon) {
+    return undefined;
+  }
+
+  if ('sf' in icon && icon.sf) {
+    return { type: 'sfSymbol', name: icon.sf };
+  }
+
+  if ('src' in icon && icon.src) {
+    return { type: 'templateSource', templateSource: icon.src };
+  }
+
+  return undefined;
+}
+
+function convertOptionsIconToAndroidPropsIcon(
+  icon: AwaitedIcon | undefined
+): { type: 'drawableResource'; name: string } | { type: 'imageSource'; imageSource: ImageSourcePropType } | undefined {
+  if (!icon) {
+    return undefined;
+  }
+
+  if ('drawable' in icon && icon.drawable) {
+    return { type: 'drawableResource', name: icon.drawable };
+  }
+
+  if ('src' in icon && icon.src) {
+    return { type: 'imageSource', imageSource: icon.src };
+  }
+
   return undefined;
 }
 
