@@ -2,6 +2,7 @@ import { Themes, useTheme } from '@expo/styleguide';
 import { Contrast02SolidIcon } from '@expo/styleguide-icons/solid/Contrast02SolidIcon';
 import { Moon01SolidIcon } from '@expo/styleguide-icons/solid/Moon01SolidIcon';
 import { SunSolidIcon } from '@expo/styleguide-icons/solid/SunSolidIcon';
+
 import { Select } from '~/ui/components/Select';
 
 const options = [
