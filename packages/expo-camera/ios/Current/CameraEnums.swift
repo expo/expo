@@ -50,3 +50,23 @@ enum FocusMode: String, Enumerable {
     }
   }
 }
+
+enum VideoStabilizationMode: String, Enumerable {
+  case off
+  case standard
+  case cinematic
+  case auto
+
+  func toAVCaptureVideoStabilizationMode() -> AVCaptureVideoStabilizationMode {
+    switch self {
+    case .off:
+      return .off
+    case .standard:
+      return .standard
+    case .cinematic:
+      return .cinematic
+    case .auto:
+      return .auto
+    }
+  }
+}

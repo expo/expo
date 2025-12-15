@@ -62,6 +62,7 @@ import expo.modules.camera.records.CameraType
 import expo.modules.camera.records.FlashMode
 import expo.modules.camera.records.FocusMode
 import expo.modules.camera.records.VideoQuality
+import expo.modules.camera.records.VideoStabilizationMode
 import expo.modules.camera.tasks.ResolveTakenPicture
 import expo.modules.camera.utils.BarCodeScannerResult
 import expo.modules.camera.utils.BarCodeScannerResult.BoundingBox
@@ -180,6 +181,12 @@ class ExpoCameraView(
     }
 
   var videoEncodingBitrate: Int? = null
+    set(value) {
+      field = value
+      shouldCreateCamera = true
+    }
+
+  var videoStabilizationMode: VideoStabilizationMode = VideoStabilizationMode.AUTO
     set(value) {
       field = value
       shouldCreateCamera = true
@@ -572,7 +579,7 @@ class ExpoCameraView(
       if (mirror) {
         setMirrorMode(MirrorMode.MIRROR_MODE_ON_FRONT_ONLY)
       }
-      setVideoStabilizationEnabled(true)
+      setVideoStabilizationEnabled(videoStabilizationMode.isEnabled())
     }.build()
   }
 

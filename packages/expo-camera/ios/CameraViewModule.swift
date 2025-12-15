@@ -195,6 +195,16 @@ public final class CameraViewModule: Module, ScannerResultHandler {
         }
       }
 
+      Prop("videoStabilizationMode") { (view, mode: VideoStabilizationMode?) in
+        if let mode, view.videoStabilizationMode != mode {
+          view.videoStabilizationMode = mode
+          return
+        }
+        if mode == nil && view.videoStabilizationMode != .auto {
+          view.videoStabilizationMode = .auto
+        }
+      }
+
       Prop("autoFocus") { (view, focusMode: FocusMode?) in
         if let focusMode, view.autoFocus != focusMode.toAVCaptureFocusMode() {
           view.autoFocus = focusMode.toAVCaptureFocusMode()
