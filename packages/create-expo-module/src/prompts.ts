@@ -176,7 +176,14 @@ export async function getLocalSubstitutionDataPrompts(
       validate: (input) => !!input || 'The native module name cannot be empty',
     },
     {
-      type: 'select',
+      type: 'text',
+      name: 'description',
+      message: 'How would you describe the module?',
+      initial: 'My new module',
+      validate: (input) => !!input || 'The description cannot be empty',
+    },
+    {
+      type: 'multiselect',
       name: 'platform',
       message: 'Which platform do you want to generate?',
       choices: [

@@ -80,7 +80,8 @@ async function getCorrectLocalDirectory(targetOrSlug: string) {
         'For native modules to autolink correctly, you need to place them in the `modules` directory in the root of the project.'
       )
     );
-    return null;
+    packageJsonPath = packageJsonPath ?? ''; // remove this
+    // return null;//TODO: revert this
   }
   return path.join(packageJsonPath, '..', 'modules', targetOrSlug);
 }
@@ -454,6 +455,7 @@ async function askForSubstitutionDataAsync(
       project: {
         slug,
         name,
+        description,
         package: projectPackage,
         moduleName,
         viewName: resolvedViewName,

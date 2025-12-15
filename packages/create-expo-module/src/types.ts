@@ -43,6 +43,7 @@ export type LocalSubstitutionData = {
   project: {
     slug: string;
     name: string;
+    description: string;
     package: string;
     moduleName: string;
     viewName: string;
