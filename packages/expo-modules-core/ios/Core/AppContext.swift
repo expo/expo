@@ -162,12 +162,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   // MARK: - UI
 
-  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
-    if let view = hostWrapper?.findView(withTag: viewTag) as? ViewType {
-      return view
-    }
-    
-    return reactBridge?.uiManager.view(forReactTag: NSNumber(value: viewTag)) as? ViewType
+  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {    
+    return hostWrapper?.findView(withTag: viewTag) as? ViewType
   }
 
   // MARK: - Running on specific queues
