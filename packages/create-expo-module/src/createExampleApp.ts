@@ -183,7 +183,7 @@ async function modifyPackageJson(appPath: string): Promise<void> {
  * Runs `npx expo prebuild` in the example app.
  */
 async function prebuildExampleApp(exampleAppPath: string, data: SubstitutionData): Promise<void> {
-  const platforms: Array<'ios' | 'android'> = [];
+  const platforms: ('ios' | 'android')[] = [];
   if (data.features.ios) {
     platforms.push('ios');
   }

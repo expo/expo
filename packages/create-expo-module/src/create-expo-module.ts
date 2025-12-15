@@ -52,7 +52,10 @@ function deriveBaseIdentifierFromSlug(slug: string): string {
   // Take the last segment after scope if present
   const base = slug.replace(/^@/, '').split('/').pop() || slug;
   // Remove non-alphanumeric, strip reserved prefixes, lowercase
-  let namespace = base.replace(/[^a-zA-Z0-9]/g, '').replace(/^(expo|reactnative)/i, '').toLowerCase();
+  let namespace = base
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .replace(/^(expo|reactnative)/i, '')
+    .toLowerCase();
   if (!/^[a-z]/.test(namespace)) {
     namespace = `m${namespace}`;
   }
@@ -409,16 +412,8 @@ async function askForSubstitutionDataAsync(
 
   const baseAnswers = await prompts(promptQueries, { onCancel });
 
-  const {
-    name,
-    description,
-    authorName,
-    authorEmail,
-    authorUrl,
-    repo,
-    platform,
-    includeView,
-  } = baseAnswers;
+  const { name, description, authorName, authorEmail, authorUrl, repo, platform, includeView } =
+    baseAnswers;
 
   // we need to ask separately to validate against previous answers
   let viewName: string | undefined = undefined;
@@ -447,7 +442,7 @@ async function askForSubstitutionDataAsync(
   })();
 
   const moduleName = handleSuffix(name, 'Module');
-  let resolvedViewName = resolveViewName(name, moduleName, viewName);
+  const resolvedViewName = resolveViewName(name, moduleName, viewName);
 
   if (isLocal) {
     return {
