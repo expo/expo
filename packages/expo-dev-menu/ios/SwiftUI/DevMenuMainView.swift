@@ -2,7 +2,16 @@ import SwiftUI
 
 struct DevMenuMainView: View {
   @EnvironmentObject var viewModel: DevMenuViewModel
-  @State private var isEcho = true
+
+  private var shouldShowEcho: Bool {
+    guard let hostUrl = viewModel.appInfo?.hostUrl,
+          let url = URL(string: hostUrl),
+          let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+          let queryItems = components.queryItems else {
+      return false
+    }
+    return queryItems.first(where: { $0.name == "project-type" })?.value == "echo"
+  }
 
   var body: some View {
     ScrollView {
@@ -23,10 +32,10 @@ struct DevMenuMainView: View {
           )
         }
 
-        if isEcho {
+        if shouldShowEcho {
           // Chat message input UI
           VStack(alignment: .leading, spacing: 8) {
-            Text("AI")
+            Text("ECHO AI")
               .font(.caption)
               .foregroundColor(.primary.opacity(0.6))
 
