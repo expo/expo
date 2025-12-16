@@ -468,7 +468,7 @@ export type AudioMode = {
  * Controls how your app's audio interacts with other apps' audio when interruptions occur.
  * This affects what happens when phone calls, notifications, or other apps play audio.
  *
- * When using `setActiveForLockScreen`, this must be set to `noNotMix`.
+ * When using `setActiveForLockScreen`, this must be set to `doNotMix`.
  *
  * @platform ios
  */
