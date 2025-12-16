@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { Button, Host, List, Section, Text, Toggle } from '@expo/ui/swift-ui';
 import { labelsHidden, tint, toggleStyle } from '@expo/ui/swift-ui/modifiers';
+import { useState } from 'react';
 
 export default function ToggleScreen() {
   const [airplaneMode, setAirplaneMode] = useState(false);
