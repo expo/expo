@@ -96,7 +96,7 @@ struct DevMenuEchoAI: View {
           .frame(maxHeight: .infinity)
 
           // Fixed input at the bottom
-          HStack(alignment: .center, spacing: 12) {
+          HStack() {
               // Context menu button - outside input field, larger size
               Menu {
                 Button(action: {
@@ -106,32 +106,31 @@ struct DevMenuEchoAI: View {
                 }
               } label: {
                 Image(systemName: "plus.circle.fill")
-                  .font(.system(size: 28))
+                  .font(.system(size: 38))
                   .foregroundColor(.gray)
               }
               .buttonStyle(.plain)
 
               // Input text field with send button inside
-              HStack(spacing: 12) {
+              HStack() {
                 TextField("Generate code...", text: $inputText)
                   .textFieldStyle(.plain)
 
                 // Send button - inside input field
                 Button(action: {}) {
                   Image(systemName: "arrow.up.circle.fill")
-                    .font(.system(size: 20))
+                    .font(.system(size: 28))
                     .foregroundColor(.white)
                 }
                 .buttonStyle(.plain)
               }
-              .padding(.horizontal)
-              .padding(.vertical, 8)
+              .padding(.trailing, 6)
+              .padding(.leading, 16)
+              .padding(.vertical, 6)
               .background(Color.expoSecondarySystemBackground)
               .cornerRadius(20)
           }
-          .padding(.horizontal, 8)
-          .padding(.top, 8)
-          .padding(.bottom, 8)
+          .padding(.all, 8)
         }
       }
     }
@@ -154,12 +153,12 @@ struct ChatMessageView: View {
           .padding(.vertical, 12)
           .background(
             message.role == .user
-              ? Color.blue
+              ? Color.white
               : Color.expoSecondarySystemBackground
           )
           .foregroundColor(
             message.role == .user
-              ? .white
+              ? .black
               : .primary
           )
           .cornerRadius(16)
