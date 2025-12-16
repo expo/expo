@@ -102,24 +102,26 @@
 
 - (void)registerInternalModule:(id<EXInternalModule>)internalModule
 {
-  for (Protocol *exportedInterface in [[internalModule class] exportedInterfaces]) {
-    if (_internalModules) {
-      id<EXInternalModule> resolvedModule = internalModule;
-      if (_delegate && [_internalModules objectForKey:exportedInterface]) {
-        id<EXInternalModule> oldModule = [_internalModules objectForKey:exportedInterface];
-        resolvedModule = [_delegate pickInternalModuleImplementingInterface:exportedInterface fromAmongModules:@[oldModule, internalModule]];
+  @try {
+    for (Protocol *exportedInterface in [[internalModule class] exportedInterfaces]) {
+      if (_internalModules) {
+        id<EXInternalModule> resolvedModule = internalModule;
+        if (_delegate && [_internalModules objectForKey:exportedInterface]) {
+          id<EXInternalModule> oldModule = [_internalModules objectForKey:exportedInterface];
+          resolvedModule = [_delegate pickInternalModuleImplementingInterface:exportedInterface fromAmongModules:@[oldModule, internalModule]];
+        }
+        [_internalModules setObject:resolvedModule forKey:exportedInterface];
+        [self maybeAddRegistryConsumer:resolvedModule];
+        [_internalModulesSet addObject:resolvedModule];
+      } else {
+        if (![_internalModulesPreResolution objectForKey:exportedInterface]) {
+          [_internalModulesPreResolution setObject:[NSMutableArray array] forKey:exportedInterface];
+        }
+        
+        [[_internalModulesPreResolution objectForKey:exportedInterface] addObject:internalModule];
       }
-      [_internalModules setObject:resolvedModule forKey:exportedInterface];
-      [self maybeAddRegistryConsumer:resolvedModule];
-      [_internalModulesSet addObject:resolvedModule];
-    } else {
-      if (![_internalModulesPreResolution objectForKey:exportedInterface]) {
-        [_internalModulesPreResolution setObject:[NSMutableArray array] forKey:exportedInterface];
-      }
-
-      [[_internalModulesPreResolution objectForKey:exportedInterface] addObject:internalModule];
     }
-  }
+  } @catch (NSException *exception) {}
 }
 
 - (void)registerExportedModule:(EXExportedModule *)exportedModule
