@@ -171,6 +171,7 @@ exceptions:
   - '.*SASS.*'
   - '.*SDK.*'
   - '.*SecureStore.*'
+  - '.*SF Symbol.*'
   - '.*Sentry.*'
   - '.*Server-side.*'
   - '.*Sierra.*'
