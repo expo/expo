@@ -1,6 +1,39 @@
 import SwiftUI
 import Starscream
 import Foundation
+import Security
+
+// Based on https://github.com/expo/expo/blob/70e50e440ee3fda6a05c5a46a0b6fb9e6dee8b4e/apps/expo-go/ios/Exponent/Kernel/DevSupport/EXSession.m#L29
+// We need to read the keychain directly as we are in a different module.
+func getSessionSecret() -> String? {
+    let keychainKey = "host.exp.exponent.session"
+    let keychainService = "app"
+    
+    guard let encodedKey = keychainKey.data(using: .utf8) else {
+        return nil
+    }
+    
+    let query: [String: Any] = [
+        kSecClass as String: kSecClassGenericPassword,
+        kSecAttrService as String: keychainService,
+        kSecAttrGeneric as String: encodedKey,
+        kSecAttrAccount as String: encodedKey,
+        kSecMatchLimit as String: kSecMatchLimitOne,
+        kSecReturnData as String: kCFBooleanTrue!
+    ]
+    
+    var result: CFTypeRef?
+    let status = SecItemCopyMatching(query as CFDictionary, &result)
+    
+    guard status == errSecSuccess,
+          let data = result as? Data,
+          let session = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+          let sessionSecret = session["sessionSecret"] as? String else {
+        return nil
+    }
+    
+    return sessionSecret
+}
 
 struct ChatMessage {
   let id: String
@@ -191,11 +224,12 @@ struct DevMenuEchoAI: View {
     // Set up delegate handler callbacks
     delegateHandler.onConnected = {
       self.isConnected = true
+      let sessionSecret = getSessionSecret()
 
       var payload: [String: Any] = [
         "state": [
           "snackId": "@krystofwoldrich/tqh1io6agfh",
-          "authorization": "{\"id\":\"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\"version\":1,\"expires_at\":xxxxxxxxxxxx}",
+          "authorization": sessionSecret,
           "aiModel": "alibaba/qwen3-coder"
         ],
         "type": "cf_agent_state"
