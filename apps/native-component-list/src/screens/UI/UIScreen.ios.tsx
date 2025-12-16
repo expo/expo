@@ -35,6 +35,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Toggle component',
+    route: 'ui/toggle',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ToggleScreen'));
+    },
+  },
+  {
     name: 'Form component',
     route: 'ui/form',
     options: {},

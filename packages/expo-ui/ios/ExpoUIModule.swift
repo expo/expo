@@ -111,6 +111,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(SpacerView.self)
     ExpoUIView(StepperView.self)
     ExpoUIView(SwitchView.self)
+    ExpoUIView(ToggleView.self)
     ExpoUIView(TextView.self)
     ExpoUIView(VStackView.self)
     ExpoUIView(ZStackView.self)

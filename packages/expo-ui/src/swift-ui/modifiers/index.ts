@@ -445,6 +445,14 @@ export const buttonStyle = (
 ) => createModifier('buttonStyle', { style });
 
 /**
+ * Sets the style for toggles within this view.
+ * @param style - The toggle style.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/togglestyle(_:)).
+ */
+export const toggleStyle = (style: 'automatic' | 'switch' | 'button') =>
+  createModifier('toggleStyle', { style });
+
+/**
  * Sets the size of controls within this view.
  * @param size - The control size.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/controlsize(_:)).
@@ -459,6 +467,12 @@ export const controlSize = (size: 'mini' | 'small' | 'regular' | 'large' | 'extr
  */
 export const labelStyle = (style: 'automatic' | 'iconOnly' | 'titleAndIcon' | 'titleOnly') =>
   createModifier('labelStyle', { style });
+
+/**
+ * Hides the labels of any controls contained within this view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/labelshidden()).
+ */
+export const labelsHidden = () => createModifier('labelsHidden', {});
 
 /**
  * Sets the text field style for text field views.
@@ -885,8 +899,10 @@ export type BuiltInModifier =
   | ReturnType<typeof colorInvert>
   | ReturnType<typeof grayscale>
   | ReturnType<typeof buttonStyle>
+  | ReturnType<typeof toggleStyle>
   | ReturnType<typeof controlSize>
   | ReturnType<typeof labelStyle>
+  | ReturnType<typeof labelsHidden>
   | ReturnType<typeof textFieldStyle>
   | ReturnType<typeof menuActionDismissBehavior>
   | ReturnType<typeof accessibilityLabel>
