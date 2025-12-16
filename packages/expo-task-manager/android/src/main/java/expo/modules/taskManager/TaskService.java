@@ -349,10 +349,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
     TaskInterface task = getTask(taskName, appScopeKey);
 
-    // `notifyTaskJobCancelled` notifies TaskManagerUtils about a job for task being cancelled.
-    // It returns `true` if the job has been intentionally cancelled to be rescheduled,
-    // in that case we don't want to inform the consumer about cancellation.
-    if (task != null && !TaskManagerUtils.notifyTaskJobCancelled(task)) {
+    if (task != null) {
       TaskConsumerInterface consumer = task.getConsumer();
 
       if (consumer == null) {
@@ -361,7 +358,6 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
       Log.i(TAG, "Job for task '" + taskName + "' has been cancelled by the system.");
 
-      // cancels task
       return consumer.didCancelJob(jobService, params);
     }
 
