@@ -85,6 +85,9 @@ function memoize(fn) {
         return result;
     });
 }
+function asMetroConfigInput(config) {
+    return config;
+}
 function createStableModuleIdFactory(root) {
     const getModulePath = (modulePath, scope) => {
         // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
@@ -183,18 +186,20 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         console.log(`- Babel Runtime: ${babelRuntimeVersion}`);
         console.log();
     }
-    const { 
-    // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
-    // This prints a giant React logo which is less accessible to users on smaller terminals.
-    reporter, ...metroDefaultValues } = getDefaultMetroConfig.getDefaultValues(projectRoot);
+    const metroDefaultValues = getDefaultMetroConfig.getDefaultValues(projectRoot);
     const cacheStore = new file_store_1.FileStore({
         root: path_1.default.join(os_1.default.tmpdir(), 'metro-cache'),
     });
     const serverRoot = (0, paths_1.getMetroServerRoot)(projectRoot);
     const routerPackageRoot = resolve_from_1.default.silent(projectRoot, 'expo-router');
-    // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
-    // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
-    const metroConfig = mergeConfig(metroDefaultValues, {
+    const expoMetroConfig = asMetroConfigInput({
+        reporter: {
+            // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
+            // This prints a giant React logo which is less accessible to users on smaller terminals.
+            update() {
+                /*noop*/
+            },
+        },
         watchFolders,
         resolver: {
             unstable_conditionsByPlatform: {
@@ -287,7 +292,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         transformer: {
             // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
             unstable_renameRequire: false,
-            // @ts-expect-error: not on type.
             _expoRouterPath: routerPackageRoot ? path_1.default.relative(serverRoot, routerPackageRoot) : undefined,
             postcssHash: (0, postcss_1.getPostcssConfigHash)(projectRoot),
             browserslistHash: pkg?.browserslist
@@ -320,6 +324,13 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             }),
         },
     });
+    // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
+    // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
+    const metroConfig = mergeConfig(
+    // NOTE(@kitten): We neither want ConfigT/MetroConfig here, which is mostly marked as readonly,
+    // nor InputConfigT which is inexact and partial. Instead, we want an exact type combination of
+    // the default config and Expo's config
+    metroDefaultValues, expoMetroConfig);
     return (0, withExpoSerializers_1.withExpoSerializers)(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }
 /** Use to access the Expo Metro transformer path */
