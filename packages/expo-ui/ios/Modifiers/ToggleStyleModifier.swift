@@ -12,7 +12,15 @@ internal enum ToggleStyleType: String, Enumerable {
   func apply<Content: View>(to content: Content) -> some View {
     switch self {
     case .switch:
+      #if os(tvOS)
+      if #available(tvOS 18.0, *) {
+        content.toggleStyle(.switch)
+      } else {
+        content.toggleStyle(.automatic)
+      }
+      #else
       content.toggleStyle(.switch)
+      #endif
     case .button:
       #if os(tvOS)
       content.toggleStyle(.automatic)
