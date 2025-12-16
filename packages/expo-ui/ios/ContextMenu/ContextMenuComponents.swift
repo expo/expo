@@ -1,17 +1,6 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal struct LongPressContextMenu<ActivationElement: View, MenuContent: View>: View {
-  let activationElement: ActivationElement
-  let menuContent: MenuContent
-
-  var body: some View {
-    activationElement.contextMenu(menuItems: {
-      menuContent
-    })
-  }
-}
-
 internal struct ContextMenuPreview: ExpoSwiftUI.View {
   @ObservedObject var props: ContextMenuPreviewProps
 

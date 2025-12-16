@@ -1,9 +1,7 @@
 import { requireNativeView } from 'expo';
 import { ComponentType } from 'react';
 
-import { type SubmenuProps, type ContextMenuProps } from './types';
-
-export { type ActivationMethod, type ContextMenuProps } from './types';
+import { type ContextMenuProps } from './types';
 
 const MenuNativeView: ComponentType<NativeMenuProps> = requireNativeView('ExpoUI', 'ContextMenu');
 
@@ -41,7 +39,7 @@ export function Trigger(props: { children: React.ReactNode }) {
 /**
  * The component visible above the menu when it is opened.
  */
-export function Preview(props: { children: React.ReactNode }) {
+function Preview(props: { children: React.ReactNode }) {
   return <MenuNativePreviewView {...props} />;
 }
 
@@ -56,17 +54,6 @@ ContextMenu.Trigger = Trigger;
 ContextMenu.Preview = Preview;
 ContextMenu.Items = Items;
 
-/**
- * @deprecated Use `ContextMenu` component as submenu instead.
- */
-const Submenu = (props: SubmenuProps) => {
-  const { button, children, ...rest } = props;
-  return (
-    <ContextMenu {...rest}>
-      <ContextMenu.Items>{children}</ContextMenu.Items>
-      <ContextMenu.Trigger>{button}</ContextMenu.Trigger>
-    </ContextMenu>
-  );
-};
+export { ContextMenu };
 
-export { ContextMenu, Submenu };
+export { type ContextMenuProps } from './types';
