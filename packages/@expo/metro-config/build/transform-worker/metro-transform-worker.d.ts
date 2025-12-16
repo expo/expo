@@ -8,14 +8,15 @@
  * Fork of the Metro transformer worker, but with additional transforms moved to `babel-preset-expo` and modifications made for web support.
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/index.js#L1
  */
+import type { TransformResultDependency } from '@expo/metro/metro/DeltaBundler';
 import { types as t } from '@babel/core';
 import type { MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
 import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
-import { InvalidRequireCallError as InternalInvalidRequireCallError, CollectedDependencies, Options as CollectDependenciesOptions } from './collect-dependencies';
+import { InvalidRequireCallError as InternalInvalidRequireCallError, Options as CollectDependenciesOptions } from './collect-dependencies';
 import { ExpoJsOutput } from '../serializer/jsOutput';
 export { JsTransformOptions };
 interface TransformResponse {
-    readonly dependencies: CollectedDependencies['dependencies'];
+    readonly dependencies: readonly TransformResultDependency[];
     readonly output: readonly ExpoJsOutput[];
 }
 export declare class InvalidRequireCallError extends Error {
