@@ -341,9 +341,6 @@ export function getDefaultConfig(
       getRunModuleStatement: (moduleId, globalPrefix) =>
         `${globalPrefix ?? ''}__r(${JSON.stringify(moduleId)});`,
       getModulesRunBeforeMainModule: () => {
-        if (env.EXPO_BUNDLE_BUILT_IN) {
-          return [];
-        }
         const preModules: string[] = [
           // MUST be first
           require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
@@ -390,7 +387,6 @@ export function getDefaultConfig(
     transformerPath: require.resolve('./transform-worker/transform-worker'),
     // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
     transformer: {
-      globalPrefix: process.env.EXPO_BUNDLE_BUILT_IN ? '__expo' : '',
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
       unstable_renameRequire: false,
       // @ts-expect-error: not on type.

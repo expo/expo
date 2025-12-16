@@ -24,18 +24,18 @@ config.watchFolders = [
 // Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations
 config.transformer.enableBabelRCLookup = false;
 
-// Allow experimental import support to be turned on through `EXPO_USE_METRO_REQUIRE=true` for E2E tests
-config.transformer.getTransformOptions = () => ({
-  transform: {
-    experimentalImportSupport: true,
-    inlineRequires: false,
-  },
-});
 
 config.resolver.blockList = [
   /\/expo-router\/node_modules\/@react-navigation/,
   /node_modules\/@react-navigation\/native-stack\/node_modules\/@react-navigation\//,
   /node_modules\/pretty-format\/node_modules\/react-is/,
 ];
+
+// Built-in specifics
+// Use the special prefix for our nested runtime.
+config.transformer.globalPrefix = '__expo';
+// Disable the default `react-native` run statements.
+config.serializer.getModulesRunBeforeMainModule = () => ([]);
+
 
 module.exports = config;

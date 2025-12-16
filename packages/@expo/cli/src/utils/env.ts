@@ -269,6 +269,10 @@ class Env {
   get EXPO_BUNDLE_BUILT_IN(): boolean {
     return boolish('EXPO_BUNDLE_BUILT_IN', false);
   }
+  
+  get EXPO_USE_STD_RUNTIME(): boolean {
+    return boolish('EXPO_USE_STD_RUNTIME', false);
+  }
 
   /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
   get EXPO_UNSTABLE_WEB_MODAL(): boolean {
