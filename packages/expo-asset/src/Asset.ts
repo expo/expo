@@ -329,7 +329,7 @@ export class Asset {
    * @platform android
    * @platform web
    *
-   * @returns Returns a `Promise` that resolves with the contents of the asset as a `ArrayBuffer`.
+   * @returns a `Promise` that resolves with the contents of the asset as an `ArrayBuffer`.
    */
   async arrayBuffer(): Promise<ArrayBuffer> {
     if (Platform.OS === 'web') {
