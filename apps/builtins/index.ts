@@ -20,6 +20,15 @@ EXPOSE('react-refresh/runtime', () => require('react-refresh/runtime'));
 EXPOSE('@react-native/normalize-colors', () => require('@react-native/normalize-colors'));
 EXPOSE('anser', () => require('anser'));
 EXPOSE('react-native', () => require('react-native'));
+
+EXPOSE('react-native/Libraries/Utilities/HMRClient', () => require('react-native/Libraries/Utilities/HMRClient'));
+EXPOSE('react-native/Libraries/Core/ExceptionsManager', () => require('react-native/Libraries/Core/ExceptionsManager'));
+EXPOSE('react-native/Libraries/LogBox/LogBox', () => require('react-native/Libraries/LogBox/LogBox'));
+EXPOSE('react-native/Libraries/NativeModules/specs/NativeRedBox', () => require('react-native/Libraries/NativeModules/specs/NativeRedBox'));
+EXPOSE('react-native/Libraries/Utilities/DevSettings', () => require('react-native/Libraries/Utilities/DevSettings'));
+EXPOSE('react-native/Libraries/Utilities/DevLoadingView', () => require('react-native/Libraries/Utilities/DevLoadingView'));
+EXPOSE('react-native/Libraries/Core/NativeExceptionsManager', () => require('react-native/Libraries/Core/NativeExceptionsManager'));
+
 EXPOSE('react-native/src/private/setup/setUpDOM', () => require('react-native/src/private/setup/setUpDOM'));
 EXPOSE('react-native/src/private/featureflags/ReactNativeFeatureFlags', () => require('react-native/src/private/featureflags/ReactNativeFeatureFlags'));
 EXPOSE('react-native/Libraries/NativeComponent/NativeComponentRegistry', () => require('react-native/Libraries/NativeComponent/NativeComponentRegistry'));

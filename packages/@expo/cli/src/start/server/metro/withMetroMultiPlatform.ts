@@ -419,6 +419,15 @@ export function withExtendedResolver(
     'react-native/Libraries/Core/Devtools/getDevServer',
     'react-native/Libraries/Utilities/codegenNativeCommands',
     'react-native/Libraries/Utilities/codegenNativeComponent',
+
+'react-native/Libraries/Utilities/HMRClient',
+'react-native/Libraries/Core/ExceptionsManager',
+'react-native/Libraries/LogBox/LogBox',
+'react-native/Libraries/NativeModules/specs/NativeRedBox',
+'react-native/Libraries/Utilities/DevSettings',
+'react-native/Libraries/Utilities/DevLoadingView',
+'react-native/Libraries/Core/NativeExceptionsManager',
+
     'expo-modules-core',
     'expo-modules-core/src/LegacyEventEmitter',
     'expo',
@@ -571,6 +580,7 @@ export function withExtendedResolver(
       moduleName: string,
       platform: string | null
     ) {
+      
       // This resolution is dev-only to prevent bundling the production React packages in development.
       if (!context.dev || env.EXPO_BUNDLE_BUILT_IN) return null;
 
@@ -759,6 +769,15 @@ export function withExtendedResolver(
 
     // Basic moduleId aliases
     function requestAlias(context: ResolutionContext, moduleName: string, platform: string | null) {
+
+      if (env.EXPO_USE_STD_RUNTIME) {
+        if (moduleName.startsWith('react-native/')) {
+          console.error('Using nested import from local src that will break builtins', moduleName, context.originModulePath);
+        } else if (!moduleName.startsWith('.')) {
+          memoLog('>>', moduleName);
+        }
+      }
+      
       // Conditionally remap `react-native` to `react-native-web` on web in
       // a way that doesn't require Babel to resolve the alias.
       if (platform && platform in aliases && aliases[platform][moduleName]) {
