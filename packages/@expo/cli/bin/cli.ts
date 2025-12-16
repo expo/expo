@@ -27,7 +27,6 @@ const commands: { [command: string]: () => Promise<Command> } = {
   export: () => import('../src/export/index.js').then((i) => i.expoExport),
   'export:web': () => import('../src/export/web/index.js').then((i) => i.expoExportWeb),
   'export:embed': () => import('../src/export/embed/index.js').then((i) => i.expoExportEmbed),
-  'export:builtin': () => import('../src/export/builtin/index.js').then((i) => i.expoExportBuiltin),
 
   serve: () => import('../src/serve/index.js').then((i) => i.expoServe),
 

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "index.ts",
   "scripts": {
-    "bundle": "expo export:builtin -p ios --pkg index.ts --dev && yarn run cp-hbc",
+    "bundle": "expo export -p ios --dev --no-minify && expo export -p ios --dev --no-minify --no-bytecode --output-dir dist-debug && yarn run cp-hbc",
     "cp-hbc": "cp dist/_expo/static/js/ios/index-*.hbc ../builtins-tester/ios/builtins.hbc"
   },
   "dependencies": {
