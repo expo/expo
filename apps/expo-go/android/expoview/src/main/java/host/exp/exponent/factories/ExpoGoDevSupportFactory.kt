@@ -11,7 +11,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
-import com.facebook.react.devsupport.BridgelessDevSupportManager
+import host.exp.exponent.modules.perfmonitor.ExpoBridgelessDevSupportManager
 import versioned.host.exp.exponent.VersionedUtils
 
 class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDownloadListener?, private val minNumShakes: Int = 100) : DevSupportManagerFactory {
@@ -50,7 +50,7 @@ class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDo
       return ReleaseDevSupportManager()
     }
 
-    return BridgelessDevSupportManager(
+    return ExpoBridgelessDevSupportManager(
       applicationContext,
       reactInstanceManagerHelper,
       packagerPathForJSBundleName,
