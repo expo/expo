@@ -3,6 +3,9 @@ import Starscream
 import Foundation
 import Security
 
+let WS_BASE_URL = "ws://localhost:5173"
+// let WS_BASE_URL = "ws://localhost:5173"
+
 // Based on https://github.com/expo/expo/blob/70e50e440ee3fda6a05c5a46a0b6fb9e6dee8b4e/apps/expo-go/ios/Exponent/Kernel/DevSupport/EXSession.m#L29
 // We need to read the keychain directly as we are in a different module.
 func getSessionSecret() -> String? {
@@ -211,7 +214,7 @@ struct DevMenuEchoAI: View {
   }
   
   private func connectWebSocket() {
-    guard let url = URL(string: "ws://localhost:5173/agents/chat/@krystofwoldrich-a1741o7yzk?_pk=\(UUID().uuidString)") else {
+    guard let url = URL(string: "\(WS_BASE_URL)/agents/chat/@krystofwoldrich-a1741o7yzk?_pk=\(UUID().uuidString)") else {
       print("Invalid WebSocket URL")
       return
     }
