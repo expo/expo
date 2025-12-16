@@ -2,6 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
+import { sync as globSync } from 'glob';
 
 import * as XcodeBuild from './XcodeBuild';
 import { Options } from './XcodeBuild.types';
@@ -102,6 +103,23 @@ export async function runIosAsync(projectRoot: string, options: Options) {
       });
     } else {
       Log.warn('Bundle output not found at expected location:', possibleBundleOutput);
+    }
+
+    if (options.binary) {
+      // TODO: Hack for testing builtins in development branch
+      ['builtins.js', 'builtins.hbc'].forEach((file) => {
+  
+        const input = globSync(path.join(projectRoot, `ios/*/${file}`))[0];
+        if (!input) {
+          Log.warn(`Could not find '${file}' in the project. Skipping...`);
+        }
+        Log.log(`Updating: ${file}`)
+  
+        fs.copyFileSync(
+          input,
+          path.join(options.binary!, file)
+        );
+      });
     }
   }
 

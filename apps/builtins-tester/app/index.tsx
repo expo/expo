@@ -7,7 +7,7 @@ export default function Page() {
     <View style={styles.container}>
       <View style={styles.main}>
         {/* <SymbolView name="star" size={64} color="#000" /> */}
-        <Text style={styles.title}>Hello World</Text>
+        <Text style={styles.title}>Hello World {FUNKY}</Text>
         <Link href="/second">Go to second page</Link>
         <Text style={styles.subtitle}>This is the first page of your app.</Text>
       </View>
