@@ -6,6 +6,7 @@ description: Learn about the mechanism that allows the Expo Modules API to hook 
 
 import { Terminal } from '~/ui/components/Snippet';
 import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
+import { DiffBlock } from '~/ui/components/Snippet';
 
 Some Expo libraries need to handle system events such as deep links, push notifications, and configuration changes by implementing `Activity`/`Application` or `AppDelegate`  lifecycle callbacks.
 
@@ -27,59 +28,17 @@ Using these mechanisms allows modules to register behavior without requiring you
 
 To integrate `Application` lifecycle listeners on Android, forward the `onCreate()` and `onConfigurationChanged()` calls from your `Application` class to `ApplicationLifecycleDispatcher`:
 
-```diff
-class MainApplication : Application() {
-
-  override fun onCreate() {
-    super.onCreate()
-    ...
-+   ApplicationLifecycleDispatcher.onApplicationCreate(this)
-  }
-
-  override fun onConfigurationChanged(newConfig: Configuration) {
-    super.onConfigurationChanged(newConfig)
-    ...
-+   ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
-  }
-}
-```
+<DiffBlock source="/static/diffs/brownfield/lifecycle-listeners/application-lifecycle-dispatcher.diff" />
 
 ### iOS
 
 To integrate `AppDelegate` subscribers on iOS, forward the relevant calls to `ExpoAppDelegateSubscriberManager` in your existing `AppDelegate` implementation so that subscribers can respond to them:
 
-```diff AppDelegate.swift
-+import Expo
-
-public class AppDelegate: UIApplicationDelegate {
-
-  open func application(
-    _ application: UIApplication,
-    willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
-  ) -> Bool {
-+    return ExpoAppDelegateSubscriberManager.application(application, willFinishLaunchingWithOptions: launchOptions)
-  }
-
-  open func application(
-    _ application: UIApplication,
-    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
-  ) -> Bool {
-+    return ExpoAppDelegateSubscriberManager.application(application, didFinishLaunchingWithOptions: launchOptions)
-  }
-
-  ...
-}
-```
+<DiffBlock source="/static/diffs/brownfield/lifecycle-listeners/expo-app-delegate-subscriber-manager.diff" />
 
 Alternatively, if your `AppDelegate` doesn't already extend another class, you can simplify the setup by inheriting from `ExpoAppDelegate`, which handles the forwarding automatically:
 
-```diff AppDelegate.swift
-+import Expo
-
-@main
--public class AppDelegate: NSObject, UIApplicationDelegate {
-+public class AppDelegate: ExpoAppDelegate {
-```
+<DiffBlock source="/static/diffs/brownfield/lifecycle-listeners/expo-app-delegate.diff" />
 
 > **Note:** Not all `UIApplicationDelegate` methods that could cause significant side effects are supported. See the Expo source (**ExpoAppDelegate.swift**) for the full list of forwarded methods if you need to rely on a specific delegate.
 
