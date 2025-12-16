@@ -61,7 +61,7 @@ class ApolloClientService(
   }
 
   fun branches(
-    appId : String
+    appId: String
   ): Paginator<BranchesForProjectQuery.UpdateBranch> {
     return Paginator(
       fetch = { limit, offset ->
@@ -140,7 +140,7 @@ class ApolloClientService(
     )
   }
 
- suspend fun primaryAccount(): Home_ViewerPrimaryAccountNameQuery.PrimaryAccount? {
+  suspend fun primaryAccount(): Home_ViewerPrimaryAccountNameQuery.PrimaryAccount? {
     return apolloClient.query(
       Home_ViewerPrimaryAccountNameQuery()
     )
