@@ -9,7 +9,7 @@
 
 ### 🎉 New features
 
-- Add `skipIfExists` option to `installGlobal` to preserve preexisting globals like `TextDecoder`. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@greentriangle](https://github.com/greentriangle))
+- Add `skipIfExists` option to `installGlobal` to preserve preexisting globals like `TextDecoder`. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@greentriangle](https://github.com/greentriangle)) ([#41672](https://github.com/expo/expo/pull/41672) by [@savv](https://github.com/savv))
 - Add `process.env.EXPO_DOM_HOST_OS` for detecting the original platform of a DOM Component. ([#40382](https://github.com/expo/expo/pull/40382) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove `ExpoAppDelegate` inheritance requirement in ExpoReactNativeFactory ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Remove bindReactNativeFactory function ([#39418](https://github.com/expo/expo/pull/39418) by [@gabrieldonadel](https://github.com/gabrieldonadel))
