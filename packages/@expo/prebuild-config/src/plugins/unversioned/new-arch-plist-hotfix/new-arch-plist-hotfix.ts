@@ -10,17 +10,10 @@ const withNewArchPlistHotfix: ConfigPlugin = (config) => {
   });
 };
 
-function getNewArchEnabled(config: ExpoConfig) {
-  const newArchEnabled = (config.ios?.newArchEnabled ?? config.newArchEnabled)?.toString();
-  return newArchEnabled !== 'false';
-}
-
 function setNewArchPlistHotfixConfig(config: ExpoConfig, infoPlist: InfoPlist): InfoPlist {
-  const newArchEnabled = getNewArchEnabled(config);
-
   return {
     ...infoPlist,
-    RCTNewArchEnabled: newArchEnabled,
+    RCTNewArchEnabled: true,
   };
 }
 
