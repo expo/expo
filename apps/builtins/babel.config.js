@@ -6,6 +6,8 @@ module.exports = function (api) {
         'babel-preset-expo',
         {
           disableDeepImportWarnings: true,
+          // Turn off fast refresh since it isn't included in the custom metro runtime.
+          enableReactFastRefresh: false,
         },
       ],
     ],

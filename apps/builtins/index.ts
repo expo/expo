@@ -1,79 +1,95 @@
-const expose = (name, getter) => __native__d((_, __, ___, ____, module) => {module.exports=getter()}, `native:${name}`);
+const EXPOSE = (name, getter) => __native__d((_, __, ___, ____, module) => {module.exports=getter()}, `native:${name}`);
 
-__native__d((_, __, ___, ____, module) => {module.exports=require('react')}, 'native:react');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react/jsx-dev-runtime')}, 'native:react/jsx-dev-runtime');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react/jsx-runtime')}, 'native:react/jsx-runtime');
-__native__d((_, __, ___, ____, module) => {module.exports=require('url')}, 'native:url');
-__native__d((_, __, ___, ____, module) => {module.exports=require('whatwg-fetch')}, 'native:whatwg-fetch');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-devtools-core')}, 'native:react-devtools-core');
-__native__d((_, __, ___, ____, module) => {module.exports=require('base64-js')}, 'native:base64-js');
-__native__d((_, __, ___, ____, module) => {module.exports=require('buffer')}, 'native:buffer');
-__native__d((_, __, ___, ____, module) => {module.exports=require('punycode')}, 'native:punycode');
-__native__d((_, __, ___, ____, module) => {module.exports=require('whatwg-url-without-unicode')}, 'native:whatwg-url-without-unicode');
-__native__d((_, __, ___, ____, module) => {module.exports=require('pretty-format')}, 'native:pretty-format');
-__native__d((_, __, ___, ____, module) => {module.exports=require('event-target-shim')}, 'native:event-target-shim');
-__native__d((_, __, ___, ____, module) => {module.exports=require('invariant')}, 'native:invariant');
-__native__d((_, __, ___, ____, module) => {module.exports=require('scheduler')}, 'native:scheduler');
-__native__d((_, __, ___, ____, module) => {module.exports=require('regenerator-runtime/runtime')}, 'native:regenerator-runtime/runtime');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-refresh/runtime')}, 'native:react-refresh/runtime');
-__native__d((_, __, ___, ____, module) => {module.exports=require('@react-native/normalize-colors')},'native:@react-native/normalize-colors');
-__native__d((_, __, ___, ____, module) => {module.exports=require('anser')}, 'native:anser');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native')}, 'native:react-native');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native/src/private/setup/setUpDOM')},'native:react-native/src/private/setup/setUpDOM');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native/src/private/featureflags/ReactNativeFeatureFlags')},'native:react-native/src/private/featureflags/ReactNativeFeatureFlags');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native/Libraries/NativeComponent/NativeComponentRegistry')},'native:react-native/Libraries/NativeComponent/NativeComponentRegistry');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native/Libraries/Utilities/PolyfillFunctions')},'native:react-native/Libraries/Utilities/PolyfillFunctions');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native/Libraries/ReactPrivate/ReactNativePrivateInterface')},'native:react-native/Libraries/ReactPrivate/ReactNativePrivateInterface');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native/Libraries/Image/resolveAssetSource')},'native:react-native/Libraries/Image/resolveAssetSource');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native/Libraries/StyleSheet/processColor')},'native:react-native/Libraries/StyleSheet/processColor');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native/Libraries/NativeComponent/ViewConfigIgnore')},'native:react-native/Libraries/NativeComponent/ViewConfigIgnore');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native/Libraries/StyleSheet/processColorArray')},'native:react-native/Libraries/StyleSheet/processColorArray');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native/Libraries/NativeModules/specs/NativeSourceCode')},'native:react-native/Libraries/NativeModules/specs/NativeSourceCode');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native/Libraries/Image/AssetSourceResolver')},'native:react-native/Libraries/Image/AssetSourceResolver');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore')},'native:react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo-modules-core')}, 'native:expo-modules-core');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo-modules-core/src/LegacyEventEmitter')},'native:expo-modules-core/src/LegacyEventEmitter');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo')}, 'native:expo');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo/dom')}, 'native:expo/dom');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo/dom/global')}, 'native:expo/dom/global');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo-asset')}, 'native:expo-asset');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo-constants')}, 'native:expo-constants');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo-keep-awake')}, 'native:expo-keep-awake');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo-status-bar')}, 'native:expo-status-bar');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo-blur')}, 'native:expo-blur');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo-font')}, 'native:expo-font');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo-haptics')}, 'native:expo-haptics');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo-image')}, 'native:expo-image');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo-linking')}, 'native:expo-linking');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo-splash-screen')}, 'native:expo-splash-screen');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo-symbols')}, 'native:expo-symbols');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo-system-ui')}, 'native:expo-system-ui');
-__native__d((_, __, ___, ____, module) => {module.exports=require('expo-web-browser')}, 'native:expo-web-browser');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native-gesture-handler')}, 'native:react-native-gesture-handler');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native-reanimated')}, 'native:react-native-reanimated');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native-safe-area-context')},'native:react-native-safe-area-context');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native-screens')}, 'native:react-native-screens');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native-webview')}, 'native:react-native-webview');
-__native__d((_, __, ___, ____, module) => {module.exports=require('@react-native-masked-view/masked-view')},'native:@react-native-masked-view/masked-view');
-__native__d((_, __, ___, ____, module) => {module.exports=require('color')}, 'native:color');
-__native__d((_, __, ___, ____, module) => {module.exports=require('color-string')}, 'native:color-string');
-__native__d((_, __, ___, ____, module) => {module.exports=require('color-name')}, 'native:color-name');
-__native__d((_, __, ___, ____, module) => {module.exports=require('@radix-ui/react-compose-refs')}, 'native:@radix-ui/react-compose-refs');
-__native__d((_, __, ___, ____, module) => {module.exports=require('@react-navigation/routers')}, 'native:@react-navigation/routers');
-__native__d((_, __, ___, ____, module) => {module.exports=require('nanoid/non-secure')}, 'native:nanoid/non-secure');
-__native__d((_, __, ___, ____, module) => {module.exports=require('use-latest-callback')}, 'native:use-latest-callback');
-__native__d((_, __, ___, ____, module) => {module.exports=require('query-string')}, 'native:query-string');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-is')}, 'native:react-is');
-__native__d((_, __, ___, ____, module) => {module.exports=require('use-sync-external-store')}, 'native:use-sync-external-store');
-__native__d((_, __, ___, ____, module) => {module.exports=require('use-sync-external-store/with-selector')},'native:use-sync-external-store/with-selector');
-__native__d((_, __, ___, ____, module) => {module.exports=require('@react-navigation/core')}, 'native:@react-navigation/core');
-__native__d((_, __, ___, ____, module) => {module.exports=require('@react-navigation/native')}, 'native:@react-navigation/native');
-__native__d((_, __, ___, ____, module) => {module.exports=require('@react-navigation/elements')}, 'native:@react-navigation/elements');
-__native__d((_, __, ___, ____, module) => {module.exports=require('@react-navigation/native-stack')},'native:@react-navigation/native-stack');
-__native__d((_, __, ___, ____, module) => {module.exports=require('@react-navigation/bottom-tabs')}, 'native:@react-navigation/bottom-tabs');
-__native__d((_, __, ___, ____, module) => {module.exports=require('@radix-ui/react-slot')}, 'native:@radix-ui/react-slot');
-__native__d((_, __, ___, ____, module) => {module.exports=require('react-native-is-edge-to-edge')}, 'native:react-native-is-edge-to-edge');
-__native__d((_, __, ___, ____, module) => {module.exports=require('stacktrace-parser')}, 'native:stacktrace-parser');
+EXPOSE('react', () => require('react'));
+EXPOSE('react/jsx-dev-runtime', () => require('react/jsx-dev-runtime'));
+EXPOSE('react/jsx-runtime', () => require('react/jsx-runtime'));
+EXPOSE('url', () => require('url'));
+EXPOSE('whatwg-fetch', () => require('whatwg-fetch'));
+EXPOSE('react-devtools-core', () => require('react-devtools-core'));
+EXPOSE('base64-js', () => require('base64-js'));
+EXPOSE('buffer', () => require('buffer'));
+EXPOSE('punycode', () => require('punycode'));
+EXPOSE('whatwg-url-without-unicode', () => require('whatwg-url-without-unicode'));
+EXPOSE('pretty-format', () => require('pretty-format'));
+EXPOSE('event-target-shim', () => require('event-target-shim'));
+EXPOSE('invariant', () => require('invariant'));
+EXPOSE('scheduler', () => require('scheduler'));
+EXPOSE('regenerator-runtime/runtime', () => require('regenerator-runtime/runtime'));
+EXPOSE('react-refresh/runtime', () => require('react-refresh/runtime'));
+EXPOSE('@react-native/normalize-colors', () => require('@react-native/normalize-colors'));
+EXPOSE('anser', () => require('anser'));
+EXPOSE('react-native', () => require('react-native'));
+EXPOSE('react-native/src/private/setup/setUpDOM', () => require('react-native/src/private/setup/setUpDOM'));
+EXPOSE('react-native/src/private/featureflags/ReactNativeFeatureFlags', () => require('react-native/src/private/featureflags/ReactNativeFeatureFlags'));
+EXPOSE('react-native/Libraries/NativeComponent/NativeComponentRegistry', () => require('react-native/Libraries/NativeComponent/NativeComponentRegistry'));
+EXPOSE('react-native/Libraries/Utilities/PolyfillFunctions', () => require('react-native/Libraries/Utilities/PolyfillFunctions'));
+EXPOSE('react-native/Libraries/ReactPrivate/ReactNativePrivateInterface', () => require('react-native/Libraries/ReactPrivate/ReactNativePrivateInterface'));
+EXPOSE('react-native/Libraries/Image/resolveAssetSource', () => require('react-native/Libraries/Image/resolveAssetSource'));
+EXPOSE('react-native/Libraries/StyleSheet/processColor', () => require('react-native/Libraries/StyleSheet/processColor'));
+EXPOSE('react-native/Libraries/NativeComponent/ViewConfigIgnore', () => require('react-native/Libraries/NativeComponent/ViewConfigIgnore'));
+EXPOSE('react-native/Libraries/StyleSheet/processColorArray', () => require('react-native/Libraries/StyleSheet/processColorArray'));
+EXPOSE('react-native/Libraries/NativeModules/specs/NativeSourceCode', () => require('react-native/Libraries/NativeModules/specs/NativeSourceCode'));
+EXPOSE('react-native/Libraries/Image/AssetSourceResolver', () => require('react-native/Libraries/Image/AssetSourceResolver'));
+EXPOSE('react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore', () => require('react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore'));
+EXPOSE("react-native/Libraries/ReactNative/RendererProxy", () => require("react-native/Libraries/ReactNative/RendererProxy"))
+EXPOSE("react-native/Libraries/Core/ReactNativeVersion", () => require("react-native/Libraries/Core/ReactNativeVersion"))
+EXPOSE("react-native/Libraries/BatchedBridge/BatchedBridge", () => require("react-native/Libraries/BatchedBridge/BatchedBridge"))
+EXPOSE("react-native/Libraries/ReactNative/AppContainer", () => require("react-native/Libraries/ReactNative/AppContainer"))
+EXPOSE("react-native/Libraries/Utilities/dismissKeyboard", () => require("react-native/Libraries/Utilities/dismissKeyboard")) // for @react-native-community/viewpager
+EXPOSE("react-native/Libraries/Renderer/shims/ReactNative", () => require("react-native/Libraries/Renderer/shims/ReactNative")) // for react-native-reanimated
+EXPOSE("react-native/Libraries/Components/UnimplementedViews/UnimplementedView", () => require("react-native/Libraries/Components/UnimplementedViews/UnimplementedView")) // for @react-native-picker/picker@1.9.11
+EXPOSE("react-native/Libraries/Components/TextInput/TextInputState", () => require("react-native/Libraries/Components/TextInput/TextInputState")) // for @stripe/stripe-react-native
+EXPOSE("react-native/Libraries/Core/Devtools/parseErrorStack", () => require("react-native/Libraries/Core/Devtools/parseErrorStack")) // Used by @sentry/react-native@3.4.2
+EXPOSE("react-native/Libraries/Core/Devtools/symbolicateStackTrace", () => require("react-native/Libraries/Core/Devtools/symbolicateStackTrace")) // Used by @sentry/react-native@3.4.2
+EXPOSE("react-native/Libraries/Core/Devtools/getDevServer", () => require("react-native/Libraries/Core/Devtools/getDevServer")) // Used by @sentry/react-native@3.4.2
+EXPOSE("react-native/Libraries/Utilities/codegenNativeCommands", () => require("react-native/Libraries/Utilities/codegenNativeCommands")) // Used by react-native-webview@11.23.0
+EXPOSE("react-native/Libraries/Utilities/codegenNativeComponent", () => require("react-native/Libraries/Utilities/codegenNativeComponent")) // Used by react-native-svg
+EXPOSE('expo-modules-core', () => require('expo-modules-core'));
+EXPOSE('expo-modules-core/src/LegacyEventEmitter', () => require('expo-modules-core/src/LegacyEventEmitter'));
+EXPOSE('expo', () => require('expo'));
+EXPOSE('expo/fetch', () => require('expo/fetch'));
+EXPOSE('expo/dom', () => require('expo/dom'));
+EXPOSE('expo/dom/global', () => require('expo/dom/global'));
+EXPOSE('expo-file-system', () => require('expo-file-system'));
+EXPOSE('expo-file-system/next', () => require('expo-file-system/next'));
+EXPOSE('expo-asset', () => require('expo-asset'));
+EXPOSE('expo-constants', () => require('expo-constants'));
+EXPOSE('expo-keep-awake', () => require('expo-keep-awake'));
+EXPOSE('expo-status-bar', () => require('expo-status-bar'));
+EXPOSE('expo-blur', () => require('expo-blur'));
+EXPOSE('expo-font', () => require('expo-font'));
+EXPOSE('expo-haptics', () => require('expo-haptics'));
+EXPOSE('expo-image', () => require('expo-image'));
+EXPOSE('expo-linking', () => require('expo-linking'));
+EXPOSE('expo-splash-screen', () => require('expo-splash-screen'));
+EXPOSE('expo-symbols', () => require('expo-symbols'));
+EXPOSE('expo-system-ui', () => require('expo-system-ui'));
+EXPOSE('expo-web-browser', () => require('expo-web-browser'));
+EXPOSE('react-native-gesture-handler', () => require('react-native-gesture-handler'));
+EXPOSE('react-native-reanimated', () => require('react-native-reanimated'));
+EXPOSE('react-native-safe-area-context', () => require('react-native-safe-area-context'));
+EXPOSE('react-native-screens', () => require('react-native-screens'));
+EXPOSE('react-native-webview', () => require('react-native-webview'));
+EXPOSE('@react-native-masked-view/masked-view', () => require('@react-native-masked-view/masked-view'));
+EXPOSE('color', () => require('color'));
+EXPOSE('color-string', () => require('color-string'));
+EXPOSE('color-name', () => require('color-name'));
+EXPOSE('@radix-ui/react-compose-refs', () => require('@radix-ui/react-compose-refs'));
+EXPOSE('@react-navigation/routers', () => require('@react-navigation/routers'));
+EXPOSE('nanoid/non-secure', () => require('nanoid/non-secure'));
+EXPOSE('use-latest-callback', () => require('use-latest-callback'));
+EXPOSE('query-string', () => require('query-string'));
+EXPOSE('react-is', () => require('react-is'));
+EXPOSE('use-sync-external-store', () => require('use-sync-external-store'));
+EXPOSE('use-sync-external-store/with-selector', () => require('use-sync-external-store/with-selector'));
+EXPOSE('@react-navigation/core', () => require('@react-navigation/core'));
+EXPOSE('@react-navigation/native', () => require('@react-navigation/native'));
+EXPOSE('@react-navigation/elements', () => require('@react-navigation/elements'));
+EXPOSE('@react-navigation/native-stack', () => require('@react-navigation/native-stack'));
+EXPOSE('@react-navigation/bottom-tabs', () => require('@react-navigation/bottom-tabs'));
+EXPOSE('@radix-ui/react-slot', () => require('@radix-ui/react-slot'));
+EXPOSE('react-native-is-edge-to-edge', () => require('react-native-is-edge-to-edge'));
+EXPOSE('stacktrace-parser', () => require('stacktrace-parser'));
 
-// // TODO: Full metro-runtime will likely not work with native embedding.
-// // import "@expo/metro-runtime";
+
+// TODO: Figure out a shared asset registry so react-native can perform asset lookups.
