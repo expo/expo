@@ -163,5 +163,9 @@
   return ![@[@"notifications", @"userFacingNotifications", @"systemBrightness"] containsObject:permissionType];
 }
 
++ (const NSArray<Protocol *> *)exportedInterfaces {
+  return @[@protocol(EXPermissionsInterface)];
+}
+
 @end
 #endif
