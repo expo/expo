@@ -338,7 +338,12 @@ export function getDefaultConfig(
         ? createStableModuleIdFactory.bind(null, serverRoot)
         : createNumericModuleIdFactory,
 
+      getRunModuleStatement: (moduleId, globalPrefix) =>
+        `${globalPrefix ?? ''}__r(${JSON.stringify(moduleId)});`,
       getModulesRunBeforeMainModule: () => {
+        if (env.EXPO_BUNDLE_BUILT_IN) {
+          return [];
+        }
         const preModules: string[] = [
           // MUST be first
           require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),

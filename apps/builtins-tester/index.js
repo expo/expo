@@ -1,4 +1,4 @@
-import { registerRootComponent } from 'native:expo';
+import { registerRootComponent } from 'expo';
 
 import App from './App';
 

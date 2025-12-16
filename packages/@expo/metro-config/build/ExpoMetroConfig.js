@@ -240,7 +240,11 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             createModuleIdFactory: env_1.env.EXPO_USE_METRO_REQUIRE
                 ? createStableModuleIdFactory.bind(null, serverRoot)
                 : createNumericModuleIdFactory,
+            getRunModuleStatement: (moduleId, globalPrefix) => `${globalPrefix ?? ''}__r(${JSON.stringify(moduleId)});`,
             getModulesRunBeforeMainModule: () => {
+                if (env_1.env.EXPO_BUNDLE_BUILT_IN) {
+                    return [];
+                }
                 const preModules = [
                     // MUST be first
                     require.resolve(path_1.default.join(reactNativePath, 'Libraries/Core/InitializeCore')),

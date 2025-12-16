@@ -1,6 +1,16 @@
 {
   "name": "builtins-tester",
   "slug": "builtins-tester",
+  "plugins": [
+    [
+      "expo-build-properties",
+      {
+        "ios": {
+          "buildReactNativeFromSource": true
+        }
+      }
+    ]
+  ],
   "ios": {
     "bundleIdentifier": "com.bacon.builtins-tester"
   },

@@ -9,6 +9,7 @@ declare class Env {
     get EXPO_NO_CLIENT_ENV_VARS(): boolean;
     /** Enable the use of Expo's custom metro require implementation. The custom require supports better debugging, tree shaking, and React Server Components. */
     get EXPO_USE_METRO_REQUIRE(): boolean;
+    get EXPO_BUNDLE_BUILT_IN(): boolean;
 }
 export declare const env: Env;
 export {};

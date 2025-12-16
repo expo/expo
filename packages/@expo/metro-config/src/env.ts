@@ -25,6 +25,9 @@ class Env {
   get EXPO_USE_METRO_REQUIRE() {
     return boolish('EXPO_USE_METRO_REQUIRE', false);
   }
+  get EXPO_BUNDLE_BUILT_IN() {
+    return boolish('EXPO_BUNDLE_BUILT_IN', false);
+  }
 }
 
 export const env = new Env();
