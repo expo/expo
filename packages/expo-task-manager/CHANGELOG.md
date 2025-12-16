@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix job scheduling ANR caused by cancel/reschedule pattern that prevented jobs from executing and accumulated data until exceeding Binder transaction limit. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@tyrauber](https://github.com/tyrauber))
+
 ### 💡 Others
 
 ## 14.0.9 - 2025-12-05

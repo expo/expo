@@ -15,15 +15,11 @@ import android.os.PersistableBundle;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.collection.ArraySet;
 
 import expo.modules.interfaces.taskManager.TaskExecutionCallback;
 import expo.modules.interfaces.taskManager.TaskInterface;
@@ -31,7 +27,8 @@ import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface;
 
 public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
-  // Key that every job created by the task manager must contain in its extras bundle.
+  // Key that every job created by the task manager must contain in its extras
+  // bundle.
   private static final String EXTRAS_REQUIRED_KEY = "expo.modules.taskManager";
   private static final String TAG = "TaskManagerUtils";
 
@@ -40,9 +37,15 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
   private static final int DEFAULT_OVERRIDE_DEADLINE = 60 * 1000; // 1 minute
 
-  private static final Set<TaskInterface> sTasksReschedulingJob = new ArraySet<>();
+  // Leave buffer before Android's job limit to avoid edge cases.
+  private static final int JOB_LIMIT_BUFFER = 10;
 
-  //region TaskManagerUtilsInterface
+  private static int getJobLimit() {
+    // Android 12 (API 31+) increased limit from 100 to 150
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? 150 : 100;
+  }
+
+  // region TaskManagerUtilsInterface
 
   @Override
   public PendingIntent createTaskIntent(Context context, TaskInterface task) {
@@ -100,18 +103,6 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   }
 
   //endregion TaskManagerUtilsInterface
-  //region static helpers
-
-  static boolean notifyTaskJobCancelled(TaskInterface task) {
-    boolean isRescheduled = sTasksReschedulingJob.contains(task);
-
-    if (isRescheduled) {
-      sTasksReschedulingJob.remove(task);
-    }
-    return isRescheduled;
-  }
-
-  //endregion static helpers
   //region private helpers
 
   private void updateOrScheduleJob(Context context, TaskInterface task, List<PersistableBundle> data) {
@@ -129,47 +120,41 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
       pendingJobs = new ArrayList<>();
     }
 
-    Collections.sort(pendingJobs, new Comparator<JobInfo>() {
-      @Override
-      public int compare(JobInfo a, JobInfo b) {
-        return Integer.compare(a.getId(), b.getId());
-      }
-    });
-
-    // We will be looking for the lowest number that is not being used yet.
+    // Find newest job for this task (for merging if needed) and next available ID
     int newJobId = 0;
+    JobInfo newestJob = null;
 
     for (JobInfo jobInfo : pendingJobs) {
       int jobId = jobInfo.getId();
-
-      if (isJobInfoRelatedToTask(jobInfo, task)) {
-        JobInfo mergedJobInfo = createJobInfoByAddingData(jobInfo, data);
-
-        // Add the task to the list of rescheduled tasks.
-        sTasksReschedulingJob.add(task);
-
-        try {
-          // Cancel jobs with the same ID to let them be rescheduled.
-          jobScheduler.cancel(jobId);
-
-          // Reschedule job for given task.
-          jobScheduler.schedule(mergedJobInfo);
-        } catch (IllegalStateException e) {
-          Log.e(this.getClass().getName(), "Unable to reschedule a job: " + e.getMessage());
-        }
-        return;
+      if (jobId >= newJobId) {
+        newJobId = jobId + 1;
       }
-      if (newJobId == jobId) {
-        newJobId++;
+      if (isJobInfoRelatedToTask(jobInfo, task)) {
+        if (newestJob == null || jobId > newestJob.getId()) {
+          newestJob = jobInfo;
+        }
       }
     }
 
+    // At Android's job limit? Merge into newest job for this task.
+    if (pendingJobs.size() >= getJobLimit() - JOB_LIMIT_BUFFER && newestJob != null) {
+      Log.i(TAG, "Approaching job limit (" + pendingJobs.size() + "). Merging data for task '" + task.getName() + "'.");
+      try {
+        JobInfo mergedJobInfo = createJobInfoByAddingData(newestJob, data);
+        jobScheduler.cancel(newestJob.getId());
+        jobScheduler.schedule(mergedJobInfo);
+      } catch (IllegalStateException e) {
+        Log.e(this.getClass().getName(), "Unable to merge job: " + e.getMessage());
+      }
+      return;
+    }
+
+    // Under limit: schedule as new job. Don't touch existing jobs.
     try {
-      // Given task doesn't have any pending jobs yet, create a new JobInfo and schedule it then.
       JobInfo jobInfo = createJobInfo(context, task, newJobId, data);
       jobScheduler.schedule(jobInfo);
     } catch (IllegalStateException e) {
-      Log.e(this.getClass().getName(), "Unable to schedule a new job: " + e.getMessage());
+      Log.e(this.getClass().getName(), "Unable to schedule job: " + e.getMessage());
     }
   }
 
