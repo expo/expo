@@ -4,7 +4,8 @@
   "main": "index.ts",
   "scripts": {
     "bundle": "expo export -p ios --dev --no-minify && expo export -p ios --dev --no-minify --no-bytecode --output-dir dist-debug && yarn run cp-hbc",
-    "cp-hbc": "cp dist/_expo/static/js/ios/index-*.hbc ../builtins-tester/ios/builtins.hbc && cp dist/_expo/static/js/ios/index-*.hbc ../expo-go/ios/Exponent/Supporting/builtin.hbc"
+    "cp-hbc": "cp dist/_expo/static/js/ios/index-*.hbc ../builtins-tester/ios/builtinstester/builtins.hbc && cp dist/_expo/static/js/ios/index-*.hbc ../expo-go/ios/Exponent/Supporting/builtin.hbc",
+    "cp-js": "cp dist-debug/_expo/static/js/ios/index-*.js ../builtins-tester/ios/builtinstester/builtins.js && cp dist-debug/_expo/static/js/ios/index-*.js ../expo-go/ios/Exponent/Supporting/builtin.js"
   },
   "dependencies": {
     "expo": "~54.0.8",

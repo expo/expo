@@ -2,6 +2,7 @@
   "name": "builtins-tester",
   "slug": "builtins-tester",
   "plugins": [
+    "./with-builtin.js",
     [
       "expo-build-properties",
       {

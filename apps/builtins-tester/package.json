@@ -14,7 +14,11 @@
     "react": "19.2.0",
     "react-native": "0.83.0",
     "expo-splash-screen": "~31.0.10",
-    "expo-status-bar": "*"
+    "expo-status-bar": "*",
+    "expo-linking": "~8.0.8",
+    "expo-router": "^6.0.6",
+    "react-native-safe-area-context": "5.6.0",
+    "react-native-screens": "4.19.0-nightly-20251203-1746a584e"
   },
   "ext": {
     "@expo/vector-icons": "*",

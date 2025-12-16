@@ -1,3 +1,22 @@
+diff --git a/node_modules/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTHost.mm b/node_modules/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTHost.mm
+index 5c7bf6b..5772b4a 100644
+--- a/node_modules/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTHost.mm
++++ b/node_modules/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTHost.mm
+@@ -368,6 +368,14 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
+ - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime
+ {
+   [self.runtimeDelegate host:self didInitializeRuntime:runtime];
++  NSString *builtinsPath = [[NSBundle mainBundle] pathForResource:@"builtins" ofType:@"hbc"];
++  if (builtinsPath) {
++    NSData *builtinsData = [NSData dataWithContentsOfFile:builtinsPath];
++    if (builtinsData) {
++      auto buffer = std::make_shared<facebook::jsi::StringBuffer>(std::string((const char*)builtinsData.bytes, builtinsData.length));
++      runtime.evaluateJavaScript(buffer, "builtins.hbc");
++    }
++  }
+ }
+ 
+ - (void)loadBundleAtURL:(NSURL *)sourceURL
 diff --git a/node_modules/react-native/src/private/devsupport/rndevtools/setUpFuseboxReactDevToolsDispatcher.js b/node_modules/react-native/src/private/devsupport/rndevtools/setUpFuseboxReactDevToolsDispatcher.js
 index 79f7f4d..3c85d2f 100644
 --- a/node_modules/react-native/src/private/devsupport/rndevtools/setUpFuseboxReactDevToolsDispatcher.js

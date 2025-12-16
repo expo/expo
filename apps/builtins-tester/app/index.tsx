@@ -1,3 +1,4 @@
+import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
 // import { SymbolView} from 'expo-symbols'
@@ -7,6 +8,7 @@ export default function Page() {
       <View style={styles.main}>
         {/* <SymbolView name="star" size={64} color="#000" /> */}
         <Text style={styles.title}>Hello World</Text>
+        <Link href="/second">Go to second page</Link>
         <Text style={styles.subtitle}>This is the first page of your app.</Text>
       </View>
     </View>

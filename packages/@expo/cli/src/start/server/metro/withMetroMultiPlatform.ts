@@ -48,7 +48,9 @@ export type StrictResolverFactory = (
   platform: string | null
 ) => StrictResolver;
 
-const ASSET_REGISTRY_SRC = `const assets=[];module.exports={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};`;
+// Create a bundle-scoped global for the asset so the nested bundle can access built-in assets.
+// TODO: Remove assets in the built-in bundle.
+const ASSET_REGISTRY_SRC = `const assets=global[\`$\{__METRO_GLOBAL_PREFIX__\}__a\`]??=[];module.exports={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};`;
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
@@ -379,6 +381,7 @@ export function withExtendedResolver(
     'react/jsx-dev-runtime',
     'react/jsx-runtime',
     'url',
+    "@react-native/assets-registry/registry",
     'whatwg-fetch',
     'react-devtools-core',
     'base64-js',
@@ -419,15 +422,14 @@ export function withExtendedResolver(
     'react-native/Libraries/Core/Devtools/getDevServer',
     'react-native/Libraries/Utilities/codegenNativeCommands',
     'react-native/Libraries/Utilities/codegenNativeComponent',
-
-'react-native/Libraries/Utilities/HMRClient',
-'react-native/Libraries/Core/ExceptionsManager',
-'react-native/Libraries/LogBox/LogBox',
-'react-native/Libraries/NativeModules/specs/NativeRedBox',
-'react-native/Libraries/Utilities/DevSettings',
-'react-native/Libraries/Utilities/DevLoadingView',
-'react-native/Libraries/Core/NativeExceptionsManager',
-
+    'react-native/Libraries/Core/InitializeCore',
+    'react-native/Libraries/Utilities/HMRClient',
+    'react-native/Libraries/Core/ExceptionsManager',
+    'react-native/Libraries/LogBox/LogBox',
+    'react-native/Libraries/NativeModules/specs/NativeRedBox',
+    'react-native/Libraries/Utilities/DevSettings',
+    'react-native/Libraries/Utilities/DevLoadingView',
+    'react-native/Libraries/Core/NativeExceptionsManager',
     'expo-modules-core',
     'expo-modules-core/src/LegacyEventEmitter',
     'expo',
