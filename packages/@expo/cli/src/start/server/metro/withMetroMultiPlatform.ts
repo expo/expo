@@ -48,9 +48,7 @@ export type StrictResolverFactory = (
   platform: string | null
 ) => StrictResolver;
 
-// Create a bundle-scoped global for the asset so the nested bundle can access built-in assets.
-// TODO: Remove assets in the built-in bundle.
-const ASSET_REGISTRY_SRC = `const assets=global[\`$\{__METRO_GLOBAL_PREFIX__\}__a\`]??=[];module.exports={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};`;
+const ASSET_REGISTRY_SRC = `const assets=[];module.exports={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};`;
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
@@ -377,11 +375,13 @@ export function withExtendedResolver(
 
   // TODO: Send a signal from client that indicates this list.
   const builtins = [
+    // NOTE: Important that the asset registry uses the built-in registry so that assets in the
+    // built-in bundle (mainly from react-native) aren't erased by the redefined asset registry.
+    "@react-native/assets-registry/registry",
     'react',
     'react/jsx-dev-runtime',
     'react/jsx-runtime',
     'url',
-    "@react-native/assets-registry/registry",
     'whatwg-fetch',
     'react-devtools-core',
     'base64-js',
