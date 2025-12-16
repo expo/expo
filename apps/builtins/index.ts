@@ -1,5 +1,6 @@
 const EXPOSE = (name, getter) => __native__d((_, __, ___, ____, module) => {module.exports=getter()}, `native:${name}`);
 
+// TODO: Generate from a manifest.
 EXPOSE('react', () => require('react'));
 EXPOSE('react/jsx-dev-runtime', () => require('react/jsx-dev-runtime'));
 EXPOSE('react/jsx-runtime', () => require('react/jsx-runtime'));

@@ -611,6 +611,102 @@ export function withExtendedResolver(
   //   );
   // }
 
+  // TODO: Send a signal from client that indicates this list.
+  const builtins = [
+    'react',
+    'react/jsx-dev-runtime',
+    'react/jsx-runtime',
+    'url',
+    'whatwg-fetch',
+    'react-devtools-core',
+    'base64-js',
+    'buffer',
+    'punycode',
+    'whatwg-url-without-unicode',
+    'pretty-format',
+    'event-target-shim',
+    'invariant',
+    'scheduler',
+    'regenerator-runtime/runtime',
+    'react-refresh/runtime',
+    '@react-native/normalize-colors',
+    'anser',
+    'react-native',
+    'react-native/src/private/setup/setUpDOM',
+    'react-native/src/private/featureflags/ReactNativeFeatureFlags',
+    'react-native/Libraries/NativeComponent/NativeComponentRegistry',
+    'react-native/Libraries/Utilities/PolyfillFunctions',
+    'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface',
+    'react-native/Libraries/Image/resolveAssetSource',
+    'react-native/Libraries/StyleSheet/processColor',
+    'react-native/Libraries/NativeComponent/ViewConfigIgnore',
+    'react-native/Libraries/StyleSheet/processColorArray',
+    'react-native/Libraries/NativeModules/specs/NativeSourceCode',
+    'react-native/Libraries/Image/AssetSourceResolver',
+    'react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore',
+    'react-native/Libraries/ReactNative/RendererProxy',
+    'react-native/Libraries/Core/ReactNativeVersion',
+    'react-native/Libraries/BatchedBridge/BatchedBridge',
+    'react-native/Libraries/ReactNative/AppContainer',
+    'react-native/Libraries/Utilities/dismissKeyboard',
+    'react-native/Libraries/Renderer/shims/ReactNative',
+    'react-native/Libraries/Components/UnimplementedViews/UnimplementedView',
+    'react-native/Libraries/Components/TextInput/TextInputState',
+    'react-native/Libraries/Core/Devtools/parseErrorStack',
+    'react-native/Libraries/Core/Devtools/symbolicateStackTrace',
+    'react-native/Libraries/Core/Devtools/getDevServer',
+    'react-native/Libraries/Utilities/codegenNativeCommands',
+    'react-native/Libraries/Utilities/codegenNativeComponent',
+    'expo-modules-core',
+    'expo-modules-core/src/LegacyEventEmitter',
+    'expo',
+    'expo/fetch',
+    'expo/dom',
+    'expo/dom/global',
+    'expo-file-system',
+    'expo-file-system/next',
+    'expo-asset',
+    'expo-constants',
+    'expo-keep-awake',
+    'expo-status-bar',
+    'expo-blur',
+    'expo-font',
+    'expo-haptics',
+    'expo-image',
+    'expo-linking',
+    'expo-splash-screen',
+    'expo-symbols',
+    'expo-system-ui',
+    'expo-web-browser',
+    'react-native-gesture-handler',
+    'react-native-reanimated',
+    'react-native-safe-area-context',
+    'react-native-screens',
+    'react-native-webview',
+    '@react-native-masked-view/masked-view',
+    'color',
+    'color-string',
+    'color-name',
+    '@radix-ui/react-compose-refs',
+    '@react-navigation/routers',
+    'nanoid/non-secure',
+    'use-latest-callback',
+    'query-string',
+    'react-is',
+    'use-sync-external-store',
+    'use-sync-external-store/with-selector',
+    '@react-navigation/core',
+    '@react-navigation/native',
+    '@react-navigation/elements',
+    '@react-navigation/native-stack',
+    '@react-navigation/bottom-tabs',
+    '@radix-ui/react-slot',
+    'react-native-is-edge-to-edge',
+    'stacktrace-parser',
+  ];
+
+  const STD_EXPO_LIBS = new RegExp(`^\(native:\)?\(${builtins.join('\|')}\)$`);
+
   // If Node.js pass-through, then remap to a module like `module.exports = $$require_external(<module>)`.
   // If module should be shimmed, remap to an empty module.
   const externals: {
@@ -667,61 +763,7 @@ export function withExtendedResolver(
           return false;
         }
 
-        let match =
-          /^(native:)?(react-native-is-edge-to-edge|@react-navigation\/bottom-tabs|stacktrace-parser|@radix-ui\/react-slot|@react-navigation\/native-stack|@react-navigation\/elements|@react-navigation\/core|@react-navigation\/native|query-string|react-is|use-sync-external-store\/with-selector|use-latest-callback|@react-navigation\/routers|nanoid\/non-secure|@radix-ui\/react-compose-refs|@react-native-masked-view\/masked-view|color|color-convert|color-string|expo\/src\/winter|expo\/dom|expo\/dom\/global|warn-once|escape-string-regexp|metro-runtime\/src\/modules\/HMRClient|react-native-webview|react-native-screens|react-native-safe-area-context|react-native-reanimated|react-native-gesture-handler|expo-web-browser|expo-system-ui|expo-symbols|expo-splash-screen|expo-linking|expo-image|expo|expo-blur|expo-font|expo-haptics|expo-asset|expo-constants|expo-keep-awake|expo-status-bar|expo-modules-core|expo-modules-core\/src\/LegacyEventEmitter|react|url|whatwg-fetch|react-devtools-core|whatwg-url-without-unicode|buffer|punycode|base64-js|ieee754|pretty-format|event-target-shim|invariant|regenerator-runtime\/runtime|react-refresh\/runtime|react-native\/Libraries\/ReactNative\/RendererProxy|react\/jsx-runtime|react\/jsx-dev-runtime|@react-native\/normalize-colors|anser|react-native\/src\/private\/setup\/setUpDOM|scheduler)$/.test(
-            moduleName
-          );
-
-        // import "expo-blur"
-        // import "expo-font"
-        // import "expo-haptics"
-        // import "expo-image"
-        // import "expo-linking"
-        // import "expo-splash-screen"
-        // import "expo-symbols"
-        // import "expo-system-ui"
-        // import "expo-web-browser"
-
-        // import "react-native-gesture-handler"
-        // import "react-native-reanimated"
-        // import "react-native-safe-area-context"
-        // import "react-native-screens"
-        // import "react-native-webview"
-
-        if (!match) {
-          if (
-            context.originModulePath.endsWith('InitializeCore.js') &&
-            moduleName.startsWith('../../src/private/setup/setUpDOM')
-          ) {
-            match = true;
-            return {
-              name: 'react-native/src/private/setup/setUpDOM',
-              match: true,
-            };
-          }
-          // TODO: Match `(\/index(\.[tj]sx?)?)?` and strip the extras.
-
-          // TODO: Account for .js extensions.
-          match =
-            /^(native:)?(react-native|react-native\/index|react-native\/Libraries\/Utilities\/HMRClient|react-native\/Libraries\/Core\/Devtools\/getDevServer|react-native\/Libraries\/WebSocket\/WebSocket|react-native\/Libraries\/NativeModules\/specs\/NativeLogBox|react-native\/Libraries\/Core\/ExceptionsManager|react-native\/Libraries\/Network\/RCTNetworking|react-native\/Libraries\/Core\/Devtools\/symbolicateStackTrace|react-native\/Libraries\/Components\/View\/ReactNativeStyleAttributes|react-native\/Libraries\/Core\/InitializeCore|react-native\/src\/private\/featureflags\/ReactNativeFeatureFlags|react-native\/Libraries\/NativeComponent\/NativeComponentRegistry|react-native\/Libraries\/Utilities\/PolyfillFunctions|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInterface|react-native\/Libraries\/Image\/resolveAssetSource|react-native\/Libraries\/StyleSheet\/processColor|react-native\/Libraries\/NativeComponent\/ViewConfigIgnore|react-native\/Libraries\/StyleSheet\/processColorArray|react-native\/Libraries\/NativeModules\/specs\/NativeSourceCode|react-native\/Libraries\/Image\/AssetSourceResolver|react-native\/Libraries\/ReactPrivate\/ReactNativePrivateInitializeCore)$/.test(
-              moduleName
-            );
-          // else if (
-          //   context.originModulePath.includes('/react-native/') &&
-          //   moduleName.includes('/ReactNative/RendererProxy')
-          // ) {
-          //   match = true;
-          //   return {
-          //     name: 'react-native/Libraries/ReactNative/RendererProxy',
-          //     match: true,
-          //   };
-          // }
-        }
-
-        if (!match && !moduleName.startsWith('.') && moduleName.includes('/')) {
-          memoLog(moduleName);
-        }
-        return match;
+        return STD_EXPO_LIBS.test(moduleName);
       },
       replace: 'builtin',
     },
