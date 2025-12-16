@@ -104,7 +104,6 @@
     "@expo/metro-runtime": "workspace:*",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
-    "@types/react-test-renderer": "~19.1.0",
     "expo-module-scripts": "workspace:*",
     "expo-updates": "workspace:*",
     "metro-source-map": "^0.83.2",

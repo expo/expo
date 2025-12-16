@@ -20,6 +20,7 @@
     "./localStorage/install": {
       "default": "./localStorage/install.js"
     },
+    "./build/ExpoSQLite.js": "./build/ExpoSQLite.js",
     "./app.plugin.js": "./app.plugin.js"
   },
   "scripts": {
@@ -28,7 +29,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -58,9 +58,10 @@
     "await-lock": "^2.2.2"
   },
   "devDependencies": {
-    "@types/react": "~19.2.0",
+    "@babel/runtime": "^7.25.6",
     "@testing-library/react-native": "^13.2.0",
     "@types/better-sqlite3": "^7.6.6",
+    "@types/react": "~19.2.0",
     "better-sqlite3": "^11.6.0",
     "expo-module-scripts": "workspace:*",
     "react-error-boundary": "^4.0.11"

@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@expo/metro-config": "workspace:*",
+    "@testing-library/react-native": "^13.2.0",
     "@types/debug": "^4.1.7",
     "@types/getenv": "^1.0.0",
     "@types/jest": "^29.2.1",

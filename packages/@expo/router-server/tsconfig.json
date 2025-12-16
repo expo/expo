@@ -7,16 +7,8 @@
     "moduleResolution": "node10",
     "noEmit": false,
     "resolveJsonModule": true,
-    "types": [
-      "jest",
-      "jest-require",
-      "node"
-    ]
+    "types": ["node"]
   },
-  "include": [
-    "./src",
-    "../cli/ts-declarations",
-    "../../expo/src/ts-declarations"
-  ],
+  "include": ["./src"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__rsc_tests__/*"]
 }

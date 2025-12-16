@@ -6,8 +6,6 @@
   "scripts": {
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "jest .",
-
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },

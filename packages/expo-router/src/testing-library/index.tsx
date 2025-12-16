@@ -29,6 +29,7 @@ const rnTestingLibrary = ((): typeof import('@testing-library/react-native') => 
 export type * from '@testing-library/react-native';
 
 // TODO(@kitten): This is for backwards-compatibility. Consider removing this!
+// TODO(@kitten): `userEvent` is not easily exposable
 export declare const {
   act,
   cleanup,
@@ -43,7 +44,7 @@ export declare const {
   getDefaultNormalizer,
   renderHook,
   userEvent,
-}: typeof rnTestingLibrary;
+}: typeof rnTestingLibrary & { userEvent: any };
 
 export declare let screen: typeof rnTestingLibrary.screen;
 

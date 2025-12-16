@@ -45,11 +45,9 @@
       "import": "./*/jest-preset.cjs",
       "require": "./*/jest-preset.cjs"
     },
+    "./types/*": "./types/*",
     "./tsconfig.*": "./tsconfig.*.json",
-    "./tsconfig": "./tsconfig.json",
-    "./types/*.d.ts": {
-      "types": "./types/*.d.ts"
-    }
+    "./tsconfig": "./tsconfig.json"
   },
   "scripts": {
     "lint": "expo-module eslint ."
@@ -75,7 +73,7 @@
     "@babel/plugin-transform-export-namespace-from": "^7.23.4",
     "@babel/preset-env": "^7.23.8",
     "@babel/preset-typescript": "^7.23.3",
-    "@expo/metro": "~54.1.0",
+    "@expo/metro": "~54.2.0",
     "@expo/npm-proofread": "^1.0.1",
     "@expo/spawn-async": "^1.7.2",
     "@testing-library/react-native": "^13.2.0",

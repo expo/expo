@@ -17,20 +17,20 @@ export default function requireContext(
   files: Record<string, unknown> = {}
 ) {
   function readDirectory(directory: string) {
-    fs.readdirSync(directory).forEach((file: string) => {
-      const fullPath = path.resolve(directory, file);
+    const entries = fs.readdirSync(directory, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.resolve(directory, entry.name);
       const relativePath = `./${path.relative(base, fullPath).split(path.sep).join('/')}`;
 
-      if (fs.statSync(fullPath).isDirectory()) {
+      if (entry.isDirectory()) {
         if (scanSubDirectories) readDirectory(fullPath);
-
-        return;
+        continue;
       }
 
-      if (!regularExpression.test(relativePath)) return;
+      if (!regularExpression.test(relativePath)) continue;
 
       files[relativePath] = true;
-    });
+    }
   }
 
   if (fs.existsSync(base)) {
