@@ -15,14 +15,14 @@ struct DevMenuMainView: View {
             )
           }
 
-          DevMenuActions(
-            canNavigateHome: viewModel.canNavigateHome,
-            onReload: viewModel.reload,
-            onGoHome: viewModel.goHome
-          )
-        }
+        DevMenuActions(
+          canNavigateHome: viewModel.canNavigateHome,
+          onReload: viewModel.reload,
+          onGoHome: viewModel.goHome
+        )
+      }
 
-        if !viewModel.registeredCallbacks.isEmpty {
+      if !viewModel.registeredCallbacks.isEmpty {
           CustomItems(
             callbacks: viewModel.registeredCallbacks,
             onFireCallback: viewModel.fireCallback

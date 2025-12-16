@@ -19,6 +19,7 @@ prepare_react_native_project!
 target 'Expo Go' do
   pod 'CocoaLumberjack', '~> 3.5.3'
   pod 'MBProgressHUD', '~> 1.2.0'
+  pod 'Starscream', '~> 4.0.8'
 
   # Required by react-native-maps
   # See https://github.com/react-native-maps/react-native-maps/blob/master/docs/installation.md

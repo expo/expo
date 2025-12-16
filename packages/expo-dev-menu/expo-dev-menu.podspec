@@ -91,6 +91,7 @@ Pod::Spec.new do |s|
     main.dependency "EXManifests"
     main.dependency 'ExpoModulesCore'
     main.dependency 'expo-dev-menu-interface'
+    main.dependency 'Starscream'
   end
 
   s.test_spec 'Tests' do |test_spec|
