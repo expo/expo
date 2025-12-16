@@ -138,17 +138,24 @@ struct DevMenuEchoAI: View {
   @State private var messages: [ChatMessage] = []
   private let streamingStateManager = StreamingStateManager()
 
-  private var shouldShowEcho: Bool {
-    guard let hostUrl = viewModel.appInfo?.hostUrl,
-          let url = URL(string: hostUrl),
-          let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-          let queryItems = components.queryItems else {
-      return false
-    }
-    return queryItems.first(where: { $0.name == "project-type" })?.value == "echo"
+  private var hostUrlQueryItems: [URLQueryItem] {
+      guard let hostUrl = viewModel.appInfo?.hostUrl,
+        let url = URL(string: hostUrl),
+            let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+        let items = components.queryItems else {
+          return []
+      }
+      return items
   }
 
+  private var shouldShowEcho: Bool {
+      return hostUrlQueryItems.first(where: { $0.name == "project-type" })?.value == "echo"
+  }
 
+  private var projectId: ?String {
+      return hostUrlQueryItems.first(where: { $0.name == "snack" })?.value
+  }
+    
   var body: some View {
     if viewModel.showAIMode {
       GeometryReader { geometry in
@@ -214,7 +221,7 @@ struct DevMenuEchoAI: View {
   }
   
   private func connectWebSocket() {
-    guard let url = URL(string: "\(WS_BASE_URL)/agents/chat/@krystofwoldrich-a1741o7yzk?_pk=\(UUID().uuidString)") else {
+      guard let url = URL(string: "\(WS_BASE_URL)/agents/chat/\(projectId.replacingOccurrences(of: "/", with: "-"))?_pk=\(UUID().uuidString)") else {
       print("Invalid WebSocket URL")
       return
     }
@@ -231,7 +238,7 @@ struct DevMenuEchoAI: View {
 
       var payload: [String: Any] = [
         "state": [
-          "snackId": "@krystofwoldrich/tqh1io6agfh",
+          "snackId": projectId,
           "authorization": sessionSecret,
           "aiModel": "alibaba/qwen3-coder"
         ],
