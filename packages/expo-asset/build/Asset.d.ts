@@ -111,7 +111,7 @@ export declare class Asset {
      * @platform android
      * @platform web
      *
-     * @returns Returns a `Promise` that resolves with the contents of the asset as a `Uint8Array`.
+     * @returns a `Promise` that resolves with the contents of the asset as a `Uint8Array`.
      */
     bytes(): Promise<Uint8Array<ArrayBuffer>>;
     /**
@@ -120,7 +120,7 @@ export declare class Asset {
      * @platform android
      * @platform web
      *
-     * @returns Returns a `Promise` that resolves with the contents of the asset as a `ArrayBuffer`.
+     * @returns a `Promise` that resolves with the contents of the asset as an `ArrayBuffer`.
      */
     arrayBuffer(): Promise<ArrayBuffer>;
     /**
@@ -130,7 +130,8 @@ export declare class Asset {
      * @platform web
      *
      * @param moduleId Value of `require('path/to/file')` or external network URLs
-     * @returns Returns a `Promise` that resolves with the contents of the asset as a `Uint8Array`.
+     * @returns a `Promise` that resolves with the contents of the asset as a `Uint8Array`.
+     *
      * @example
      * ```ts
      * const uint8Array = await Asset.content(require('./assets/snack-icon.png'));
@@ -144,7 +145,8 @@ export declare class Asset {
      * @platform web
      *
      * @param moduleId Value of `require('path/to/file')` or external network URLs
-     * @returns Returns a `Promise` that resolves with the contents of the asset as a `ArrayBuffer`.
+     * @returns a `Promise` that resolves with the contents of the asset as an `ArrayBuffer`.
+     *
      * @example
      * ```ts
      * const arrayBuffer = await Asset.contentArrayBuffer(require('./assets/snack-icon.png'));
