@@ -27,14 +27,6 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Switch component',
-    route: 'ui/switch',
-    options: {},
-    getComponent() {
-      return optionalRequire(() => require('./SwitchScreen'));
-    },
-  },
-  {
     name: 'Toggle component',
     route: 'ui/toggle',
     options: {},
