@@ -385,7 +385,7 @@ function normalizeSlashes(p: string) {
 //       return relPath;
 //     };
 
-//     return 'native:' + result();
+//     return 'expo:' + result();
 //   };
 
 //   const memoizedGetModulePath = memoize(getModulePath);
@@ -705,7 +705,7 @@ export function withExtendedResolver(
     'stacktrace-parser',
   ];
 
-  const STD_EXPO_LIBS = new RegExp(`^\(native:\)?\(${builtins.join('\|')}\)$`);
+  const STD_EXPO_LIBS = new RegExp(`^\(expo:\)?\(${builtins.join('\|')}\)$`);
 
   // If Node.js pass-through, then remap to a module like `module.exports = $$require_external(<module>)`.
   // If module should be shimmed, remap to an empty module.
@@ -975,8 +975,8 @@ export function withExtendedResolver(
               filePath: virtualModuleId,
             };
           } else if (external.replace === 'builtin') {
-            const contents = `module.exports=__native__r('native:${interopName.replace(/^native:/, '')}')`;
-            const virtualModuleId = `\0native:${interopName}`;
+            const contents = `module.exports=__expo__r('expo:${interopName.replace(/^expo:/, '')}')`;
+            const virtualModuleId = `\0expo:${interopName}`;
             debug('Virtualizing Native built-in (custom):', interopName, '->', virtualModuleId);
             getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
               virtualModuleId,
@@ -1335,7 +1335,6 @@ export async function withMetroMultiPlatformAsync(
     asWritable(metroDefaults).moduleSystem = require.resolve(
       '@expo/cli/build/metro-require/native-require'
     );
-    asWritable(config.transformer)!.globalPrefix = '__native';
   }
 
   if (!config.projectRoot) {

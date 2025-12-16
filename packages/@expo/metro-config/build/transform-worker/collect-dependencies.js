@@ -487,9 +487,9 @@ function processRequireCall(path, state) {
         }
     }
     // TODO: Enable this optimization when bundling for native client only to skip over extra resolutions.
-    // if (name.startsWith('native:')) {
-    //   // Replace path `require(...)` with `__native__r(...)`
-    //   const nativeRequire = t.identifier('__native__r');
+    // if (name.startsWith('expo:')) {
+    //   // Replace path `require(...)` with `__expo__r(...)`
+    //   const nativeRequire = t.identifier('__expo__r');
     //   path.get('callee').replaceWith(nativeRequire);
     //   return;
     // }

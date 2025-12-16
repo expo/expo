@@ -1,4 +1,4 @@
-const EXPOSE = (name, getter) => __native__d((_, __, ___, ____, module) => {module.exports=getter()}, `native:${name}`);
+const EXPOSE = (name, getter) => __expo__d((_, __, ___, ____, module) => {module.exports=getter()}, `expo:${name}`);
 
 // TODO: Generate from a manifest.
 EXPOSE('react', () => require('react'));

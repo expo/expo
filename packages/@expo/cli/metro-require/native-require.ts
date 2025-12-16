@@ -19,7 +19,7 @@ declare let global: {
   [key: string]: any;
 };
 declare let __DEV__: boolean;
-// declare let __METRO_GLOBAL_PREFIX__: string;
+declare let __METRO_GLOBAL_PREFIX__: string;
 
 interface ArrayIndexable<T> {
   readonly [index: number]: T;
@@ -94,11 +94,11 @@ export type DefineFn = (
 type VerboseModuleNameForDev = string;
 type ModuleDefiner = (moduleId: ModuleID) => void;
 
-if (__DEV__ || !global.__native__d) {
-  global.__native__r = metroRequire as RequireFn;
-  global.__native__d = define as DefineFn;
+// NOTE(EvanBacon): Should be `__expo__d`
+if (__DEV__ || !global[`${__METRO_GLOBAL_PREFIX__}__d`]) {
+  global[`${__METRO_GLOBAL_PREFIX__}__r`] = metroRequire as RequireFn;
+  global[`${__METRO_GLOBAL_PREFIX__}__d`] = define as DefineFn;
   //   global.__c = clear;
-  //   global.__registerSegment = registerSegment;
 }
 
 var modules = new Map();
@@ -147,53 +147,11 @@ function metroRequire(
   moduleId: ModuleID | VerboseModuleNameForDev,
   moduleIdHint?: string
 ): Exports {
-  //   if (__DEV__) {
-  //     const initializingIndex = initializingModuleIds.indexOf(moduleId);
-  //     if (initializingIndex !== -1) {
-  //       const cycle = initializingModuleIds
-  //         .slice(initializingIndex)
-  //         .map((id) => modules.get(id)?.verboseName ?? '[unknown]');
-
-  //     //   if (shouldPrintRequireCycle(cycle)) {
-  //     //     cycle.push(cycle[0]); // We want to print A -> B -> A:
-
-  //     //     console.warn(
-  //     //       `Require cycle: ${cycle.join(' -> ')}\n\n` +
-  //     //         'Require cycles are allowed, but can result in uninitialized values. ' +
-  //     //         'Consider refactoring to remove the need for a cycle.'
-  //     //     );
-  //     //   }
-  //     }
-  //   }
-
   const module = modules.get(moduleId);
   return module && module.isInitialized
     ? module.publicModule.exports
     : loadModuleImplementation(moduleId, module, moduleIdHint);
-  //   const module = modules.get(moduleId);
-
-  //   return module && module.isInitialized
-  //     ? module.publicModule.exports
-  //     : guardedLoadModule(moduleId, module, moduleIdHint);
 }
-
-// We print require cycles unless they match a pattern in the
-// `requireCycleIgnorePatterns` configuration.
-// function shouldPrintRequireCycle(modules: readonly (string | null | undefined)[]): boolean {
-//   // const regExps = eval(`${__METRO_GLOBAL_PREFIX__}__requireCycleIgnorePatterns`);
-//   const rcip = __METRO_GLOBAL_PREFIX__ + '__requireCycleIgnorePatterns';
-//   // Try using the globalThis version to reach outside the bundle in SSR bundles.
-//   const regExps = globalThis[rcip] ?? global[rcip] ?? [/(^|\/|\\)node_modules($|\/|\\)/];
-//   if (!Array.isArray(regExps)) {
-//     return true;
-//   }
-
-//   const isIgnored = (module: string | null | undefined): boolean =>
-//     module != null && regExps.some((regExp) => regExp.test(module));
-
-//   // Print the cycle unless any part of it is ignored
-//   return modules.every((module) => !isIgnored(module));
-// }
 
 function metroImportDefault(moduleId: ModuleID | VerboseModuleNameForDev): any | Exports {
   if (modules.has(moduleId) && modules.get(moduleId)?.importedDefault !== EMPTY) {
@@ -242,74 +200,8 @@ metroRequire[Symbol.for('expo.embeddedRequire')] = true;
 
 metroRequire.importAll = metroImportAll;
 
-// let inGuard = false;
-// function guardedLoadModule(
-//   moduleId: ModuleID,
-//   module: ModuleDefinition | undefined | null,
-//   moduleIdHint?: string
-// ): Exports {
-//   if (!inGuard && global.ErrorUtils) {
-//     inGuard = true;
-//     let returnValue;
-//     try {
-//       returnValue = loadModuleImplementation(moduleId, module, moduleIdHint);
-//     } catch (e) {
-//       // TODO: (moti) T48204692 Type this use of ErrorUtils.
-//       global.ErrorUtils.reportFatalError(e);
-//     }
-//     inGuard = false;
-//     return returnValue;
-//   } else {
-//     return loadModuleImplementation(moduleId, module, moduleIdHint);
-//   }
-// }
-
-// const ID_MASK_SHIFT = 16;
-// const LOCAL_ID_MASK = ~0 >>> ID_MASK_SHIFT;
-
-// function unpackModuleId(moduleId: ModuleID): {
-//   localId: number;
-//   segmentId: number;
-// } {
-//   if (typeof moduleId !== 'number') {
-//     throw new Error('Module ID must be a number in unpackModuleId.');
-//   }
-//   const segmentId = moduleId >>> ID_MASK_SHIFT;
-//   const localId = moduleId & LOCAL_ID_MASK;
-//   return { segmentId, localId };
-// }
-// metroRequire.unpackModuleId = unpackModuleId;
-
-// function packModuleId(value: { localId: number; segmentId: number }): ModuleID {
-//   return (value.segmentId << ID_MASK_SHIFT) + value.localId;
-// }
-// metroRequire.packModuleId = packModuleId;
-
 const moduleDefinersBySegmentID: (ModuleDefiner | undefined)[] = [];
 const definingSegmentByModuleID: Map<ModuleID, number> = new Map();
-
-// function registerSegment(
-//   segmentId: number,
-//   moduleDefiner: ModuleDefiner,
-//   moduleIds?: readonly ModuleID[]
-// ): void {
-//   moduleDefinersBySegmentID[segmentId] = moduleDefiner;
-//   if (__DEV__) {
-//     if (segmentId === 0 && moduleIds) {
-//       throw new Error('registerSegment: Expected moduleIds to be null for main segment');
-//     }
-//     if (segmentId !== 0 && !moduleIds) {
-//       throw new Error('registerSegment: Expected moduleIds to be passed for segment #' + segmentId);
-//     }
-//   }
-//   if (moduleIds) {
-//     moduleIds.forEach((moduleId) => {
-//       if (!modules.has(moduleId) && !definingSegmentByModuleID.has(moduleId)) {
-//         definingSegmentByModuleID.set(moduleId, segmentId);
-//       }
-//     });
-//   }
-// }
 
 function loadModuleImplementation(
   moduleId: ModuleID,
@@ -325,15 +217,6 @@ function loadModuleImplementation(
       definingSegmentByModuleID.delete(moduleId);
     }
   }
-
-  // NOTE(EvanBacon): `nativeRequire` is used for legacy RAM bundles and the rest of the implementation doesn't appear to be public.
-  // We use modern bundle splitting (with bytecode support) instead.
-  //   const nativeRequire = global.nativeRequire;
-  //   if (!module && nativeRequire) {
-  //     const { segmentId, localId } = unpackModuleId(moduleId);
-  //     nativeRequire(localId, segmentId);
-  //     module = modules.get(moduleId);
-  //   }
 
   if (!module) {
     throw unknownModuleError(moduleId, moduleIdHint);

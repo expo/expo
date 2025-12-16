@@ -4,15 +4,15 @@ import { SafeAreaView, StyleSheet, Image, Text, View } from 'react-native';
 import React from 'react';
 
 export default function App() {
-  console.log('GOTVALUE:', __native__r('native:url'));
-  // console.log('GOTVALUE:', __native__r('native:react'));
+  console.log('GOTVALUE:', __expo__r('expo:url'));
+  // console.log('GOTVALUE:', __expo__r('expo:react'));
   // console.error('hey', globalThis.WritableStream);
   return (
     <SafeAreaView style={styles.container}>
       <Text>Runner</Text>
       {/* <Image
-        source={__native__r(
-          'native:node_modules/react-native/Libraries/LogBox/UI/LogBoxImages/chevron-left.png'
+        source={__expo__r(
+          'expo:node_modules/react-native/Libraries/LogBox/UI/LogBoxImages/chevron-left.png'
         )}
         style={{ width: 100, height: 100 }}
       /> */}
