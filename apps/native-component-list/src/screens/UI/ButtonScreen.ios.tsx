@@ -11,10 +11,15 @@ import {
 } from '@expo/ui/swift-ui';
 import {
   background,
+  buttonStyle,
+  controlSize,
+  disabled,
   fixedSize,
   foregroundStyle,
+  labelStyle,
   padding,
   shapes,
+  tint,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
@@ -53,65 +58,62 @@ export default function ButtonScreen() {
           </Button>
         </Section>
         <Section title="Default">
-          <Button>Test</Button>
+          <Button label="Test" />
         </Section>
         <Section title="System Styles">
-          <Button variant="default">Default</Button>
-          <Button variant="glass">Glass button</Button>
-          <Button variant="glassProminent">Glass Prominent</Button>
-          <Button variant="bordered">Bordered</Button>
-          <Button variant="borderless">Borderless</Button>
-          <Button variant="borderedProminent">Bordered Prominent</Button>
-          <Button variant="plain">Plain</Button>
+          <Button label="Default" />
+          <Button label="Glass button" modifiers={[buttonStyle('glass')]} />
+          <Button label="Glass Prominent" modifiers={[buttonStyle('glassProminent')]} />
+          <Button label="Bordered" modifiers={[buttonStyle('bordered')]} />
+          <Button label="Borderless" modifiers={[buttonStyle('borderless')]} />
+          <Button label="Bordered Prominent" modifiers={[buttonStyle('borderedProminent')]} />
+          <Button label="Plain" modifiers={[buttonStyle('plain')]} />
         </Section>
         <Section title="Control Size">
-          <Button controlSize="mini" variant="glassProminent" modifiers={[fixedSize()]}>
-            Mini glass prominent
-          </Button>
-          <Button controlSize="small" variant="bordered">
-            Small bordered
-          </Button>
-          <Button controlSize="regular" variant="glass">
-            Regular glass
-          </Button>
-          <Button controlSize="large" variant="glassProminent">
-            Large
-          </Button>
-          <Button controlSize="large" variant="glass">
-            Large glass
-          </Button>
           <Button
-            controlSize="extraLarge"
-            variant="glassProminent"
+            label="Mini glass prominent"
+            modifiers={[controlSize('mini'), buttonStyle('glassProminent'), fixedSize()]}
+          />
+          <Button
+            label="Small bordered"
+            modifiers={[controlSize('small'), buttonStyle('bordered')]}
+          />
+          <Button
+            label="Regular glass"
+            modifiers={[controlSize('regular'), buttonStyle('glass')]}
+          />
+          <Button label="Large" modifiers={[controlSize('large'), buttonStyle('glassProminent')]} />
+          <Button label="Large glass" modifiers={[controlSize('large'), buttonStyle('glass')]} />
+          <Button
+            label="Extra Large (iOS 17+)"
             systemImage="square.and.arrow.up"
-            color="orange">
-            Extra Large (iOS 17+)
-          </Button>
+            modifiers={[controlSize('extraLarge'), buttonStyle('glassProminent'), tint('orange')]}
+          />
         </Section>
         <Section title="Disabled">
-          <Button disabled>Disabled</Button>
-          <Button>Enabled</Button>
+          <Button label="Disabled" modifiers={[disabled()]} />
+          <Button label="Enabled" />
         </Section>
         <Section title="Button Roles">
-          <Button role="default">Default</Button>
-          <Button role="cancel">Cancel</Button>
-          <Button role="destructive">Destructive</Button>
+          <Button label="Default" role="default" />
+          <Button label="Cancel" role="cancel" />
+          <Button label="Destructive" role="destructive" />
         </Section>
         <Section title="Button Images">
-          <Button variant="bordered" systemImage="folder">
-            Folder
-          </Button>
-          <Button systemImage="tortoise">Tortoise</Button>
-          <Button variant="borderless" systemImage="trash">
-            Trash
-          </Button>
-          <Button systemImage="heart">Heart</Button>
-          <Button systemImage="gear" variant="glass" />
+          <Button label="Folder" systemImage="folder" modifiers={[buttonStyle('bordered')]} />
+          <Button label="Tortoise" systemImage="tortoise" />
+          <Button label="Trash" systemImage="trash" modifiers={[buttonStyle('borderless')]} />
+          <Button label="Heart" systemImage="heart" />
+          <Button
+            label="Settings"
+            systemImage="gear"
+            modifiers={[buttonStyle('glass'), labelStyle('iconOnly')]}
+          />
         </Section>
         <Section title="Tinted Buttons">
-          <Button color="#f00f0f">Red</Button>
+          <Button label="Red" modifiers={[tint('#f00f0f')]} />
         </Section>
-        <Section title="Custom children">
+        <Section title="Custom label">
           <Button>
             <VStack spacing={4}>
               <Image systemName="folder" />
@@ -120,12 +122,6 @@ export default function ButtonScreen() {
           </Button>
           <Button>
             <Progress color="blue" variant="circular" />
-          </Button>
-        </Section>
-        <Section title="interpolated strings">
-          <Button color="#FF6347">
-            {/* eslint-disable-next-line */}
-            Hello {'world'}
           </Button>
         </Section>
       </List>
