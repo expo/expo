@@ -8,66 +8,315 @@ platforms: ['ios', 'tvos']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-> **Note:** Also known as **DropdownMenu**.
+Expo UI ContextMenu matches the official SwiftUI [contextMenu API](https://developer.apple.com/documentation/swiftui/view/contextmenu(menuitems:)). It displays a context menu on long press with optional preview support (iOS 16+).
 
-A context menu component that displays a menu when triggered, commonly used for actions and options.
+> **Note:** For dropdown menus that appear on tap, use the [`Menu`](menu) component instead.
 
 ## Installation
 
 <APIInstallSection />
 
-## Usage
+## Basic context menu
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="ContextMenu component on iOS."
-      src="/static/images/expo-ui/contextMenu/ios.png"
-      className="max-w-[380px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { ContextMenu, Host } from '@expo/ui/swift-ui';
+```tsx BasicContextMenuExample.tsx
+import { Host, ContextMenu, Button } from '@expo/ui/swift-ui';
 
-    <Host style={{ width: 150, height: 50 }}>
+export default function BasicContextMenuExample() {
+  return (
+    <Host matchContents>
       <ContextMenu>
         <ContextMenu.Items>
-          <Button
-            systemImage="person.crop.circle.badge.xmark"
-            onPress={() => console.log('Pressed1')}>
-            Hello
-          </Button>
-          <Button
-            variant="bordered"
-            systemImage="heart"
-            onPress={() => console.log('Pressed2')}>
-            Love it
-          </Button>
-          <Picker
-            label="Doggos"
-            options={['very', 'veery', 'veeery', 'much']}
-            variant="menu"
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => setSelectedIndex(index)}
-          />
+          <Button label="Copy" systemImage="doc.on.doc" onPress={() => console.log('Copy')} />
+          <Button label="Share" systemImage="square.and.arrow.up" />
+          <Button label="Delete" systemImage="trash" role="destructive" />
         </ContextMenu.Items>
         <ContextMenu.Trigger>
-          <Button variant="bordered">
-            Show Menu
-          </Button>
+          <Text>Long press me</Text>
         </ContextMenu.Trigger>
       </ContextMenu>
     </Host>
-    ```
+  );
+}
+```
 
-  </Tab>
-</Tabs>
+## With preview
 
-> See [official SwiftUI documentation](<https://developer.apple.com/documentation/swiftui/view/contextmenu(menuitems:)>) for more information.
+On iOS 16+, you can show a custom preview above the context menu.
+
+```tsx ContextMenuWithPreviewExample.tsx
+import { Host, ContextMenu, Button, Text, VStack } from '@expo/ui/swift-ui';
+
+export default function ContextMenuWithPreviewExample() {
+  return (
+    <Host matchContents>
+      <ContextMenu>
+        <ContextMenu.Items>
+          <Button label="Play" systemImage="play.fill" />
+          <Button label="Share" systemImage="square.and.arrow.up" />
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <Text>Long press for preview</Text>
+        </ContextMenu.Trigger>
+        <ContextMenu.Preview>
+          <VStack>
+            <Text>Preview Content</Text>
+            <Text color="secondaryLabel">Additional details here</Text>
+          </VStack>
+        </ContextMenu.Preview>
+      </ContextMenu>
+    </Host>
+  );
+}
+```
+
+## With switches
+
+```tsx ContextMenuWithSwitchesExample.tsx
+import { useState } from 'react';
+import { Host, ContextMenu, Switch, Text } from '@expo/ui/swift-ui';
+
+export default function ContextMenuWithSwitchesExample() {
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+
+  return (
+    <Host matchContents>
+      <ContextMenu>
+        <ContextMenu.Items>
+          <Switch
+            label="Favorite"
+            systemImage="star"
+            value={isFavorite}
+            onValueChange={setIsFavorite}
+          />
+          <Switch
+            label="Notifications"
+            systemImage="bell"
+            variant="switch"
+            value={notificationsEnabled}
+            onValueChange={setNotificationsEnabled}
+          />
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <Text>Settings Menu</Text>
+        </ContextMenu.Trigger>
+      </ContextMenu>
+    </Host>
+  );
+}
+```
+
+## With picker
+
+```tsx ContextMenuWithPickerExample.tsx
+import { useState } from 'react';
+import { Host, ContextMenu, Picker, Button, Text, Divider } from '@expo/ui/swift-ui';
+import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+
+export default function ContextMenuWithPickerExample() {
+  const [selectedPriority, setSelectedPriority] = useState('medium');
+
+  return (
+    <Host matchContents>
+      <ContextMenu>
+        <ContextMenu.Items>
+          <Picker
+            label="Priority"
+            modifiers={[pickerStyle('menu')]}
+            selection={selectedPriority}
+            onSelectionChange={setSelectedPriority}>
+            <Text modifiers={[tag('low')]}>Low</Text>
+            <Text modifiers={[tag('medium')]}>Medium</Text>
+            <Text modifiers={[tag('high')]}>High</Text>
+          </Picker>
+          <Divider />
+          <Button label="Save" systemImage="checkmark" />
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <Text>Priority: {selectedPriority}</Text>
+        </ContextMenu.Trigger>
+      </ContextMenu>
+    </Host>
+  );
+}
+```
+
+## With sections
+
+Use `Section` to group related menu items together.
+
+```tsx ContextMenuWithSectionsExample.tsx
+import { Host, ContextMenu, Button, Section, Text } from '@expo/ui/swift-ui';
+
+export default function ContextMenuWithSectionsExample() {
+  return (
+    <Host matchContents>
+      <ContextMenu>
+        <ContextMenu.Items>
+          <Section title="Edit">
+            <Button label="Cut" systemImage="scissors" />
+            <Button label="Copy" systemImage="doc.on.doc" />
+            <Button label="Paste" systemImage="doc.on.clipboard" />
+          </Section>
+          <Section title="Actions">
+            <Button label="Share" systemImage="square.and.arrow.up" />
+            <Button label="Duplicate" systemImage="plus.square.on.square" />
+          </Section>
+          <Button label="Delete" systemImage="trash" role="destructive" />
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <Text>Grouped Actions</Text>
+        </ContextMenu.Trigger>
+      </ContextMenu>
+    </Host>
+  );
+}
+```
+
+## With submenus
+
+Use the `Menu` component inside `ContextMenu.Items` to create nested submenus.
+
+```tsx ContextMenuWithSubmenuExample.tsx
+import { Host, ContextMenu, Button, Menu, Divider, Text } from '@expo/ui/swift-ui';
+
+export default function ContextMenuWithSubmenuExample() {
+  return (
+    <Host matchContents>
+      <ContextMenu>
+        <ContextMenu.Items>
+          <Button label="Open" systemImage="doc" />
+          <Menu label="Share" systemImage="square.and.arrow.up">
+            <Button label="Messages" systemImage="message" />
+            <Button label="Mail" systemImage="envelope" />
+            <Button label="AirDrop" systemImage="airplayaudio" />
+          </Menu>
+          <Divider />
+          <Button label="Delete" systemImage="trash" role="destructive" />
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <Text>File Options</Text>
+        </ContextMenu.Trigger>
+      </ContextMenu>
+    </Host>
+  );
+}
+```
+
+## Button with subtitle
+
+Use children to create buttons with icon, title, and subtitle.
+
+```tsx ButtonWithSubtitleExample.tsx
+import { Host, ContextMenu, Button, Image, Text } from '@expo/ui/swift-ui';
+
+export default function ButtonWithSubtitleExample() {
+  return (
+    <Host matchContents>
+      <ContextMenu>
+        <ContextMenu.Items>
+          <Button>
+            <Image systemName="person.crop.circle" />
+            <Text>John Doe</Text>
+            <Text>View Profile</Text>
+          </Button>
+          <Button role="destructive">
+            <Image systemName="person.badge.minus" />
+            <Text>Remove Friend</Text>
+            <Text>This cannot be undone</Text>
+          </Button>
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <Text>User Actions</Text>
+        </ContextMenu.Trigger>
+      </ContextMenu>
+    </Host>
+  );
+}
+```
+
+## React Native view as trigger
+
+Use `RNHostView` to wrap React Native components as the context menu trigger.
+
+```tsx RNTriggerExample.tsx
+import { Host, ContextMenu, Button, RNHostView } from '@expo/ui/swift-ui';
+import { View, Text, Image, StyleSheet } from 'react-native';
+
+export default function RNTriggerExample() {
+  return (
+    <Host matchContents>
+      <ContextMenu>
+        <ContextMenu.Items>
+          <Button label="Save" systemImage="square.and.arrow.down" />
+          <Button label="Share" systemImage="square.and.arrow.up" />
+          <Button label="Delete" systemImage="trash" role="destructive" />
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <RNHostView matchContents>
+            <View style={styles.card}>
+              <Image source={{ uri: 'https://picsum.photos/200' }} style={styles.image} />
+              <Text style={styles.title}>Photo Title</Text>
+            </View>
+          </RNHostView>
+        </ContextMenu.Trigger>
+      </ContextMenu>
+    </Host>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: { width: 200, borderRadius: 12, overflow: 'hidden' },
+  image: { width: '100%', height: 150 },
+  title: { padding: 12, fontSize: 16, fontWeight: '600' },
+});
+```
+
+## React Native view as preview
+
+Use `RNHostView` inside `ContextMenu.Preview` to show React Native components as the preview.
+
+```tsx RNPreviewExample.tsx
+import { Host, ContextMenu, Button, Text, RNHostView } from '@expo/ui/swift-ui';
+import { View, Text as RNText, StyleSheet } from 'react-native';
+
+export default function RNPreviewExample() {
+  return (
+    <Host matchContents>
+      <ContextMenu>
+        <ContextMenu.Items>
+          <Button label="View Details" systemImage="info.circle" />
+          <Button label="Share" systemImage="square.and.arrow.up" />
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <Text>Long press for RN preview</Text>
+        </ContextMenu.Trigger>
+        <ContextMenu.Preview>
+          <RNHostView matchContents>
+            <View style={styles.preview}>
+              <RNText style={styles.previewTitle}>Custom Preview</RNText>
+              <RNText style={styles.previewSubtitle}>Built with React Native</RNText>
+            </View>
+          </RNHostView>
+        </ContextMenu.Preview>
+      </ContextMenu>
+    </Host>
+  );
+}
+
+const styles = StyleSheet.create({
+  preview: {
+    width: 280,
+    height: 160,
+    backgroundColor: '#1a1a2e',
+    padding: 20,
+    justifyContent: 'flex-end',
+  },
+  previewTitle: { color: 'white', fontSize: 18, fontWeight: 'bold' },
+  previewSubtitle: { color: '#aaa', fontSize: 14, marginTop: 4 },
+});
+```
 
 ## API
 
