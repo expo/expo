@@ -10,8 +10,8 @@ import { StackHeaderTitle, type StackHeaderTitleProps } from './StackHeaderTitle
 import { StackHeaderBadge, StackHeaderIcon, StackHeaderLabel, type StackHeaderBadgeProps, type StackHeaderIconProps, type StackHeaderLabelProps } from './common-primitives';
 import type { StackHeaderItemSharedProps } from './shared';
 export declare const StackHeader: typeof StackHeaderComponent & {
-    Left: typeof StackHeaderLeft;
-    Right: typeof StackHeaderRight;
+    Left: import("react").FC<StackHeaderLeftProps>;
+    Right: import("react").FC<StackHeaderRightProps>;
     BackButton: typeof StackHeaderBackButton;
     Title: typeof StackHeaderTitle;
     SearchBar: typeof StackHeaderSearchBar;

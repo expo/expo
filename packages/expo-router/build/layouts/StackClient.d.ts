@@ -154,8 +154,8 @@ declare const Stack: ((props: ComponentProps<typeof RNStack>) => React.JSX.Eleme
     Screen: typeof StackScreen;
     Protected: React.FunctionComponent<ProtectedProps>;
     Header: typeof import("./stack-utils/StackHeaderComponent").StackHeaderComponent & {
-        Left: typeof import("./stack-utils").StackHeaderLeft;
-        Right: typeof import("./stack-utils").StackHeaderRight;
+        Left: React.FC<import("./stack-utils").StackHeaderLeftProps>;
+        Right: React.FC<import("./stack-utils").StackHeaderRightProps>;
         BackButton: typeof import("./stack-utils").StackHeaderBackButton;
         Title: typeof import("./stack-utils").StackHeaderTitle;
         SearchBar: typeof import("./stack-utils").StackHeaderSearchBar;

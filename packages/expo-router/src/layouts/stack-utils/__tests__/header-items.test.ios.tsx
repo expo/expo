@@ -1,8 +1,27 @@
 import type { NativeStackHeaderItem } from '@react-navigation/native-stack/lib/typescript/src';
 import { isValidElement } from 'react';
 import { Text } from 'react-native';
+import {
+  ScreenStackItem as _ScreenStackItem,
+  SearchBar as _SearchBar,
+  ScreenStackHeaderConfig as _ScreenStackHeaderConfig,
+} from 'react-native-screens';
 
 import { StackHeader, appendScreenStackPropsToOptions } from '../';
+import { renderRouter, screen } from '../../../testing-library';
+import Stack from '../../Stack';
+
+jest.mock('react-native-screens', () => {
+  const actualScreens = jest.requireActual(
+    'react-native-screens'
+  ) as typeof import('react-native-screens');
+  return {
+    ...actualScreens,
+    ScreenStackItem: jest.fn((props) => <actualScreens.ScreenStackItem {...props} />),
+  };
+});
+
+const ScreenStackItem = _ScreenStackItem as jest.MockedFunction<typeof _ScreenStackItem>;
 
 it('should convert header items children, correctly to options', () => {
   function CustomHeaderElement() {
@@ -218,4 +237,247 @@ it('should convert header items children, correctly to options', () => {
 
   expect(typeof result.unstable_headerRightItems).toBe('function');
   expect(result.unstable_headerRightItems({})).toStrictEqual(expectedRightItems);
+});
+
+it('Changes options dynamically when Stack.Header is used without wrapper', () => {
+  function TestScreen() {
+    return (
+      <>
+        <Stack.Header>
+          <Stack.Header.Left>
+            <Stack.Header.Button>Left Button</Stack.Header.Button>
+          </Stack.Header.Left>
+          <Stack.Header.Right>
+            <Stack.Header.Menu>
+              <Stack.Header.Label>Dynamic Menu</Stack.Header.Label>
+              <Stack.Header.MenuAction>Action 1</Stack.Header.MenuAction>
+            </Stack.Header.Menu>
+          </Stack.Header.Right>
+        </Stack.Header>
+        <Text testID="content">Content</Text>
+      </>
+    );
+  }
+
+  renderRouter({
+    _layout: () => <Stack />,
+    index: TestScreen,
+  });
+
+  expect(screen.getByTestId('content')).toBeVisible();
+  expect(ScreenStackItem).toHaveBeenCalledTimes(2);
+  expect(ScreenStackItem.mock.calls[0][0].headerConfig).toBeDefined();
+  expect(ScreenStackItem.mock.calls[0][0].headerConfig.headerLeftBarButtonItems).toBeUndefined();
+  expect(ScreenStackItem.mock.calls[0][0].headerConfig.headerRightBarButtonItems).toBeUndefined();
+
+  expect(ScreenStackItem.mock.calls[1][0].headerConfig).toBeDefined();
+  expect(ScreenStackItem.mock.calls[1][0].headerConfig.headerLeftBarButtonItems).toEqual([
+    {
+      hidesSharedBackground: false,
+      icon: undefined,
+      index: 0,
+      onPress: expect.any(Function),
+      selected: false,
+      sharesBackground: true,
+      title: 'Left Button',
+      titleStyle: {
+        fontFamily: 'System',
+        fontWeight: '400',
+      },
+      type: 'button',
+    },
+  ]);
+  expect(ScreenStackItem.mock.calls[1][0].headerConfig.headerRightBarButtonItems).toEqual([
+    {
+      hidesSharedBackground: false,
+      icon: undefined,
+      index: 0,
+      menu: {
+        items: [
+          {
+            onPress: expect.any(Function),
+            state: 'off',
+            title: 'Action 1',
+            type: 'action',
+          },
+        ],
+      },
+      sharesBackground: true,
+      title: 'Dynamic Menu',
+      titleStyle: {
+        fontFamily: 'System',
+        fontWeight: '400',
+      },
+      type: 'menu',
+    },
+  ]);
+});
+
+it('Changes options dynamically when Stack.Header.Left is used without wrapper', () => {
+  function TestScreen() {
+    return (
+      <>
+        <Stack.Header.Left>
+          <Stack.Header.Button>Left Button</Stack.Header.Button>
+        </Stack.Header.Left>
+        <Text testID="content">Content</Text>
+      </>
+    );
+  }
+
+  renderRouter({
+    _layout: () => <Stack />,
+    index: TestScreen,
+  });
+
+  expect(screen.getByTestId('content')).toBeVisible();
+  expect(ScreenStackItem).toHaveBeenCalledTimes(2);
+  expect(ScreenStackItem.mock.calls[0][0].headerConfig).toBeDefined();
+  expect(ScreenStackItem.mock.calls[0][0].headerConfig.headerLeftBarButtonItems).toBeUndefined();
+  expect(ScreenStackItem.mock.calls[0][0].headerConfig.headerRightBarButtonItems).toBeUndefined();
+
+  expect(ScreenStackItem.mock.calls[1][0].headerConfig).toBeDefined();
+  expect(ScreenStackItem.mock.calls[1][0].headerConfig.headerLeftBarButtonItems).toEqual([
+    {
+      hidesSharedBackground: false,
+      icon: undefined,
+      index: 0,
+      onPress: expect.any(Function),
+      selected: false,
+      sharesBackground: true,
+      title: 'Left Button',
+      titleStyle: {
+        fontFamily: 'System',
+        fontWeight: '400',
+      },
+      type: 'button',
+    },
+  ]);
+  expect(ScreenStackItem.mock.calls[1][0].headerConfig.headerRightBarButtonItems).toBeUndefined();
+});
+
+it('Changes options dynamically when Stack.Header.Left and Stack.Header.Right are used without wrapper', () => {
+  function TestScreen() {
+    return (
+      <>
+        <Stack.Header.Right>
+          <Stack.Header.Menu>
+            <Stack.Header.Label>Dynamic Menu</Stack.Header.Label>
+            <Stack.Header.MenuAction>Action 1</Stack.Header.MenuAction>
+          </Stack.Header.Menu>
+        </Stack.Header.Right>
+        <Text testID="content">Content</Text>
+      </>
+    );
+  }
+
+  renderRouter({
+    _layout: () => <Stack />,
+    index: TestScreen,
+  });
+
+  expect(screen.getByTestId('content')).toBeVisible();
+  expect(ScreenStackItem).toHaveBeenCalledTimes(2);
+  expect(ScreenStackItem.mock.calls[0][0].headerConfig).toBeDefined();
+  expect(ScreenStackItem.mock.calls[0][0].headerConfig.headerLeftBarButtonItems).toBeUndefined();
+  expect(ScreenStackItem.mock.calls[0][0].headerConfig.headerRightBarButtonItems).toBeUndefined();
+
+  expect(ScreenStackItem.mock.calls[1][0].headerConfig).toBeDefined();
+  expect(ScreenStackItem.mock.calls[1][0].headerConfig.headerLeftBarButtonItems).toBeUndefined();
+  expect(ScreenStackItem.mock.calls[1][0].headerConfig.headerRightBarButtonItems).toEqual([
+    {
+      hidesSharedBackground: false,
+      icon: undefined,
+      index: 0,
+      menu: {
+        items: [
+          {
+            onPress: expect.any(Function),
+            state: 'off',
+            title: 'Action 1',
+            type: 'action',
+          },
+        ],
+      },
+      sharesBackground: true,
+      title: 'Dynamic Menu',
+      titleStyle: {
+        fontFamily: 'System',
+        fontWeight: '400',
+      },
+      type: 'menu',
+    },
+  ]);
+});
+
+it('Changes options dynamically when Stack.Header.Left and Stack.Header.Right are used without wrapper', () => {
+  function TestScreen() {
+    return (
+      <>
+        <Stack.Header.Left>
+          <Stack.Header.Button>Left Button</Stack.Header.Button>
+        </Stack.Header.Left>
+        <Stack.Header.Right>
+          <Stack.Header.Menu>
+            <Stack.Header.Label>Dynamic Menu</Stack.Header.Label>
+            <Stack.Header.MenuAction>Action 1</Stack.Header.MenuAction>
+          </Stack.Header.Menu>
+        </Stack.Header.Right>
+        <Text testID="content">Content</Text>
+      </>
+    );
+  }
+
+  renderRouter({
+    _layout: () => <Stack />,
+    index: TestScreen,
+  });
+
+  expect(screen.getByTestId('content')).toBeVisible();
+  expect(ScreenStackItem).toHaveBeenCalledTimes(2);
+  expect(ScreenStackItem.mock.calls[0][0].headerConfig).toBeDefined();
+  expect(ScreenStackItem.mock.calls[0][0].headerConfig.headerLeftBarButtonItems).toBeUndefined();
+  expect(ScreenStackItem.mock.calls[0][0].headerConfig.headerRightBarButtonItems).toBeUndefined();
+
+  expect(ScreenStackItem.mock.calls[1][0].headerConfig).toBeDefined();
+  expect(ScreenStackItem.mock.calls[1][0].headerConfig.headerLeftBarButtonItems).toEqual([
+    {
+      hidesSharedBackground: false,
+      icon: undefined,
+      index: 0,
+      onPress: expect.any(Function),
+      selected: false,
+      sharesBackground: true,
+      title: 'Left Button',
+      titleStyle: {
+        fontFamily: 'System',
+        fontWeight: '400',
+      },
+      type: 'button',
+    },
+  ]);
+  expect(ScreenStackItem.mock.calls[1][0].headerConfig.headerRightBarButtonItems).toEqual([
+    {
+      hidesSharedBackground: false,
+      icon: undefined,
+      index: 0,
+      menu: {
+        items: [
+          {
+            onPress: expect.any(Function),
+            state: 'off',
+            title: 'Action 1',
+            type: 'action',
+          },
+        ],
+      },
+      sharesBackground: true,
+      title: 'Dynamic Menu',
+      titleStyle: {
+        fontFamily: 'System',
+        fontWeight: '400',
+      },
+      type: 'menu',
+    },
+  ]);
 });

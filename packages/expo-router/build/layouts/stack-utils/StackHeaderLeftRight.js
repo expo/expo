@@ -33,22 +33,115 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackHeaderLeft = StackHeaderLeft;
-exports.StackHeaderRight = StackHeaderRight;
+exports.StackHeaderRight = exports.StackHeaderLeft = void 0;
 exports.appendStackHeaderRightPropsToOptions = appendStackHeaderRightPropsToOptions;
 exports.appendStackHeaderLeftPropsToOptions = appendStackHeaderLeftPropsToOptions;
 const react_1 = __importStar(require("react"));
+const react_2 = require("react");
 const StackHeaderButton_1 = require("./StackHeaderButton");
 const StackHeaderItem_1 = require("./StackHeaderItem");
 const StackHeaderMenu_1 = require("./StackHeaderMenu");
 const StackHeaderSpacer_1 = require("./StackHeaderSpacer");
 const children_1 = require("../../utils/children");
-function StackHeaderLeft(props) {
-    return null;
-}
-function StackHeaderRight(props) {
-    return null;
-}
+const Screen_1 = require("../../views/Screen");
+/**
+ * The component used to configure the left area of the stack header.
+ *
+ * When used inside a screen, it allows you to customize the left side of the header dynamically.
+ *
+ * @example
+ * ```tsx
+ * import { Stack } from 'expo-router';
+ *
+ * export default function Page() {
+ *   return (
+ *     <>
+ *       <Stack.Header.Left>
+ *         <Stack.Header.Button onPress={() => alert('Left button pressed!')} />
+ *       </Stack.Header.Left>
+ *       <ScreenContent />
+ *     </>
+ *   );
+ * }
+ * ```
+ *
+ * When used inside the layout, it needs to be wrapped in `Stack.Header` to take effect.
+ *
+ * @example
+ * ```tsx
+ * import { Stack } from 'expo-router';
+ *
+ * export default function Layout() {
+ *   return (
+ *     <Stack>
+ *       <Stack.Screen name="index">
+ *         <Stack.Header>
+ *           <Stack.Header.Left>
+ *             <Stack.Header.Button onPress={() => alert('Left button pressed!')} />
+ *           </Stack.Header.Left>
+ *         </Stack.Header>
+ *       </Stack.Screen>
+ *     </Stack>
+ *   );
+ * }
+ * ```
+ */
+const StackHeaderLeft = (props) => {
+    // This component will only render when used inside a page
+    // but only if it is not wrapped in Stack.Screen.Header
+    const updatedOptions = (0, react_2.useMemo)(() => appendStackHeaderLeftPropsToOptions({}, props), [props]);
+    return <Screen_1.Screen options={updatedOptions}/>;
+};
+exports.StackHeaderLeft = StackHeaderLeft;
+/**
+ * The component used to configure the right area of the stack header.
+ *
+ * When used inside a screen, it allows you to customize the right side of the header dynamically.
+ *
+ * @example
+ * ```tsx
+ * import { Stack } from 'expo-router';
+ *
+ * export default function Page() {
+ *   return (
+ *     <>
+ *       <Stack.Header.Right>
+ *         <Stack.Header.Button onPress={() => alert('Right button pressed!')} />
+ *       </Stack.Header.Right>
+ *       <ScreenContent />
+ *     </>
+ *   );
+ * }
+ * ```
+ *
+ * When used inside the layout, it needs to be wrapped in `Stack.Header` to take effect.
+ *
+ * @example
+ * ```tsx
+ * import { Stack } from 'expo-router';
+ *
+ * export default function Layout() {
+ *   return (
+ *     <Stack>
+ *       <Stack.Screen name="index">
+ *         <Stack.Header>
+ *           <Stack.Header.Right>
+ *             <Stack.Header.Button onPress={() => alert('Right button pressed!')} />
+ *           </Stack.Header.Right>
+ *         </Stack.Header>
+ *       </Stack.Screen>
+ *     </Stack>
+ *   );
+ * }
+ * ```
+ */
+const StackHeaderRight = (props) => {
+    // This component will only render when used inside a page
+    // but only if it is not wrapped in Stack.Screen.Header
+    const updatedOptions = (0, react_2.useMemo)(() => appendStackHeaderRightPropsToOptions({}, props), [props]);
+    return <Screen_1.Screen options={updatedOptions}/>;
+};
+exports.StackHeaderRight = StackHeaderRight;
 function convertHeaderRightLeftChildrenToUnstableItems(children, side) {
     const allChildren = react_1.default.Children.toArray(children);
     const actions = allChildren.filter((child) => (0, children_1.isChildOfType)(child, StackHeaderButton_1.StackHeaderButton) ||
