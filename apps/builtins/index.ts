@@ -55,13 +55,16 @@ EXPOSE("react-native/Libraries/Core/Devtools/getDevServer", () => require("react
 EXPOSE("react-native/Libraries/Utilities/codegenNativeCommands", () => require("react-native/Libraries/Utilities/codegenNativeCommands")) // Used by react-native-webview@11.23.0
 EXPOSE("react-native/Libraries/Utilities/codegenNativeComponent", () => require("react-native/Libraries/Utilities/codegenNativeComponent")) // Used by react-native-svg
 EXPOSE('expo-modules-core', () => require('expo-modules-core'));
-EXPOSE('expo-modules-core/src/LegacyEventEmitter', () => require('expo-modules-core/src/LegacyEventEmitter'));
+EXPOSE('expo-modules-core/types', () => require('expo-modules-core/types'));
+EXPOSE('expo-modules-core/src/polyfill/dangerous-internal', () => require('expo-modules-core/src/polyfill/dangerous-internal'));
+EXPOSE('expo-modules-core/src/uuid', () => require('expo-modules-core/src/uuid'));
 EXPOSE('expo', () => require('expo'));
 EXPOSE('expo/fetch', () => require('expo/fetch'));
 EXPOSE('expo/dom', () => require('expo/dom'));
 EXPOSE('expo/dom/global', () => require('expo/dom/global'));
 EXPOSE('expo-file-system', () => require('expo-file-system'));
 EXPOSE('expo-file-system/next', () => require('expo-file-system/next'));
+EXPOSE('expo-file-system/legacy', () => require('expo-file-system/legacy'));
 EXPOSE('expo-asset', () => require('expo-asset'));
 EXPOSE('expo-constants', () => require('expo-constants'));
 EXPOSE('expo-keep-awake', () => require('expo-keep-awake'));
@@ -100,6 +103,3 @@ EXPOSE('@react-navigation/bottom-tabs', () => require('@react-navigation/bottom-
 EXPOSE('@radix-ui/react-slot', () => require('@radix-ui/react-slot'));
 EXPOSE('react-native-is-edge-to-edge', () => require('react-native-is-edge-to-edge'));
 EXPOSE('stacktrace-parser', () => require('stacktrace-parser'));
-
-
-// TODO: Figure out a shared asset registry so react-native can perform asset lookups.

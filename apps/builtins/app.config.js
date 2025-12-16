@@ -7,6 +7,4 @@ module.exports = {
     reactCanary: false,
     reactCompiler: false,
   },
-  
-  
 };
