@@ -166,6 +166,7 @@ class ExpoViewComposableScope(val view: ComposeFunctionHolder<*>) {
 class ComposeFunctionHolder<Props : ComposeProps>(
   context: Context,
   appContext: AppContext,
+  val name: String,
   private val composableContent: @Composable ExpoViewComposableScope.(props: Props) -> Unit,
   override val props: Props
 ) : ExpoComposeView<Props>(context, appContext) {
