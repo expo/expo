@@ -49,7 +49,12 @@ export default function MenuWithIconExample() {
         <Button label="Settings" systemImage="gear" onPress={() => console.log('Settings')} />
         <Button label="Profile" systemImage="person" onPress={() => console.log('Profile')} />
         <Divider />
-        <Button label="Delete" role="destructive" systemImage="trash" onPress={() => console.log('Delete')} />
+        <Button
+          label="Delete"
+          role="destructive"
+          systemImage="trash"
+          onPress={() => console.log('Delete')}
+        />
       </Menu>
     </Host>
   );
