@@ -8,10 +8,10 @@
  * Fork of the Metro transformer worker, but with additional transforms moved to `babel-preset-expo` and modifications made for web support.
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/index.js#L1
  */
-import type { TransformResultDependency } from '@expo/metro/metro/DeltaBundler';
 import { transformFromAstSync, parse, types as t, template } from '@babel/core';
 import type { ParseResult, PluginItem, NodePath } from '@babel/core';
 import generate from '@babel/generator';
+import type { TransformResultDependency } from '@expo/metro/metro/DeltaBundler';
 import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
 import generateImportNames from '@expo/metro/metro/ModuleGraph/worker/generateImportNames';
 import {

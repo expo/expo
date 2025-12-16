@@ -41,6 +41,16 @@ exports.applyImportSupport = applyImportSupport;
 exports.transform = transform;
 exports.getCacheKey = getCacheKey;
 exports.collectDependenciesForShaking = collectDependenciesForShaking;
+/**
+ * Copyright 2023-present 650 Industries (Expo). All rights reserved.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * Fork of the Metro transformer worker, but with additional transforms moved to `babel-preset-expo` and modifications made for web support.
+ * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/index.js#L1
+ */
 const core_1 = require("@babel/core");
 const generator_1 = __importDefault(require("@babel/generator"));
 const JsFileWrapping = __importStar(require("@expo/metro/metro/ModuleGraph/worker/JsFileWrapping"));
