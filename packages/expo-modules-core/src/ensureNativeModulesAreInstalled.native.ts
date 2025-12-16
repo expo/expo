@@ -5,7 +5,10 @@ import { TurboModuleRegistry } from 'react-native';
  * Otherwise, it synchronously calls a native function that installs them.
  */
 export function ensureNativeModulesAreInstalled(): void {
-  if (globalThis.expo || typeof window === 'undefined') {
+  // Check that NativeModule class is installed, not just globalThis.expo.
+  // globalThis.expo gets created before NativeModule/EventEmitter classes are installed,
+  // which can cause race conditions where modules exist but methods like addListener are undefined.
+  if (globalThis.expo?.NativeModule || typeof window === 'undefined') {
     return;
   }
 

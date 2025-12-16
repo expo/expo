@@ -30,6 +30,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix race condition where `ensureNativeModulesAreInstalled` returns early before `NativeModule` class is installed. ([#41660](https://github.com/expo/expo/pull/41660) by [@kimchi-developer](https://github.com/kimchi-developer))
 - [iOS] Fix throwing `InvalidArgsNumberException` when declaring `AsyncFunction` with optional arguments and `Promise`. ([#41054](https://github.com/expo/expo/pull/41054) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] fix queue assertion crash ([#41296](https://github.com/expo/expo/pull/41296) by [@vonovak](https://github.com/vonovak))
 - [Android] check if `AppContextActivityResultLauncher` coroutine continuation is active before resuming ([#41319](https://github.com/expo/expo/pull/41319) by [@vonovak](https://github.com/vonovak))
