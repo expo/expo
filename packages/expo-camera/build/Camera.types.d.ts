@@ -22,7 +22,13 @@ export type FocusMode = 'on' | 'off';
 export type VideoCodec = 'avc1' | 'hvc1' | 'jpeg' | 'apcn' | 'ap4h';
 /**
  * This option specifies the stabilization mode to use when recording a video.
- * @platform ios
+ * - `off` - No stabilization.
+ * - `standard` - Standard stabilization.
+ * - `cinematic` - Cinematic stabilization (provides more aggressive stabilization).
+ * - `auto` - The system automatically chooses the best stabilization mode.
+ *
+ * On Android, `standard`, `cinematic`, and `auto` all enable video stabilization,
+ * while `off` disables it. The specific stabilization method is determined by the device.
  */
 export type VideoStabilization = 'off' | 'standard' | 'cinematic' | 'auto';
 export type VideoQuality = '2160p' | '1080p' | '720p' | '480p' | '4:3';
@@ -377,7 +383,7 @@ export type CameraViewProps = ViewProps & {
     /**
      * The video stabilization mode used for a video recording. Use one of [`VideoStabilization.<value>`](#videostabilization).
      * You can read more about each stabilization type in [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturevideostabilizationmode).
-     * @platform ios
+     * @default 'auto'
      */
     videoStabilizationMode?: VideoStabilization;
     /**

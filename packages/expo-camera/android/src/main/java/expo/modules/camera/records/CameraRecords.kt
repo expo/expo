@@ -69,6 +69,15 @@ enum class FocusMode(val value: String) : Enumerable {
   OFF("off")
 }
 
+enum class VideoStabilizationMode(val value: String) : Enumerable {
+  OFF("off"),
+  STANDARD("standard"),
+  CINEMATIC("cinematic"),
+  AUTO("auto");
+
+  fun isEnabled() = this != OFF
+}
+
 data class BarcodeSettings(
   @Field val barcodeTypes: List<BarcodeType>
 ) : Record
