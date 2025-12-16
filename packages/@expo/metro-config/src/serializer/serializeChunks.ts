@@ -32,6 +32,7 @@ import { SerialAsset } from './serializerAssets';
 import { SerializerConfigOptions } from './withExpoSerializers';
 import getMetroAssets from '../transform-worker/getAssets';
 import { toPosixPath } from '../utils/filePath';
+import { env } from '../env';
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;
@@ -338,7 +339,7 @@ export class Chunk {
   }
 
   private getAdjustedSourceMapUrl(serializerConfig: Partial<SerializerConfigT>): string | null {
-    if (process.env.EXPO_BUNDLE_BUILT_IN === '1') {
+    if (env.EXPO_BUNDLE_BUILT_IN) {
       // Remove `//# sourceMappingURL` comments and `//# sourceURL` comments from the source code.
       return null;
     }

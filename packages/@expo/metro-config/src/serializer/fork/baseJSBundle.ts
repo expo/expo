@@ -21,6 +21,7 @@ import getAppendScripts from '@expo/metro/metro/lib/getAppendScripts';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 
 import { processModules } from './processModules';
+import { env } from '../../env';
 
 export type ModuleMap = [number, string][];
 
@@ -169,7 +170,7 @@ export function baseJSBundleWithDependencies(
     // multiple files. It's usually used for things like TypeScript where you want the file name to appear with a
     // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web and native in production.
     sourceUrl:
-      process.env.EXPO_BUNDLE_BUILT_IN === '1'
+      env.EXPO_BUNDLE_BUILT_IN
         ? '[builtin code]'
         : options.platform === 'web'
           ? undefined
