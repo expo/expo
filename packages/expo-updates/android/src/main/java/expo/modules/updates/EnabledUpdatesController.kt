@@ -333,7 +333,7 @@ class EnabledUpdatesController(
     get() = updatesConfiguration.updateUrl
 
   override val launchedUpdateId: UUID?
-    get() = launchedUpdate?.id
+    get() = startupProcedure.launchedUpdate?.id
 
   override val embeddedUpdateId: UUID?
     get() = getEmbeddedUpdate()?.id
