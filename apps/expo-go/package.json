@@ -8,7 +8,8 @@
     "test": "jest",
     "lint": "eslint .",
     "start": "expo start --port 80",
-    "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml"
+    "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml",
+    "prepare-builtins": "cd ../builtins && yarn run bundle"
   },
   "author": "Expo",
   "license": "MIT",
