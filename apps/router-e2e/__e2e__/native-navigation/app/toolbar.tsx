@@ -291,7 +291,7 @@ export default function ToolbarScreen() {
 
         {/* Nested menu with dynamic content */}
         {showMenu && (
-          <Toolbar.Menu icon="ellipsis.circle" title="Actions">
+          <Toolbar.Menu icon="ellipsis.circle" title="Actions" tintColor={Color.ios.systemBrown}>
             {/* Simple actions */}
             <Toolbar.MenuAction icon="paperplane" title="Send email" onPress={handleSendEmail} />
             <Toolbar.MenuAction

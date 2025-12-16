@@ -1,6 +1,6 @@
 import type { NativeStackHeaderItem } from '@react-navigation/native-stack/lib/typescript/src';
 import { isValidElement } from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import {
   ScreenStackItem as _ScreenStackItem,
   SearchBar as _SearchBar,
@@ -45,9 +45,9 @@ it('should convert header items children, correctly to options', () => {
               <StackHeader.Icon sf="star" />
               <StackHeader.Badge>33</StackHeader.Badge>
             </StackHeader.Button>
-            <StackHeader.Item>
+            <StackHeader.View>
               <CustomHeaderElement />
-            </StackHeader.Item>
+            </StackHeader.View>
           </StackHeader.Left>
           <StackHeader.Right>
             <StackHeader.Menu
@@ -94,14 +94,12 @@ it('should convert header items children, correctly to options', () => {
       label: '1LB',
       onPress: expect.any(Function),
       sharesBackground: false,
-      hidesSharedBackground: false,
       selected: false,
     },
     {
       type: 'button',
       label: '2LB',
       sharesBackground: true,
-      hidesSharedBackground: false,
       icon: {
         type: 'sfSymbol',
         name: 'star',
@@ -120,6 +118,7 @@ it('should convert header items children, correctly to options', () => {
     {
       type: 'custom',
       element: expect.any(Object),
+      hidesSharedBackground: undefined,
     },
   ];
 
@@ -127,7 +126,6 @@ it('should convert header items children, correctly to options', () => {
     {
       type: 'menu',
       label: 'Menu',
-      hidesSharedBackground: false,
       sharesBackground: true,
       labelStyle: {
         color: '#00f',
@@ -204,7 +202,6 @@ it('should convert header items children, correctly to options', () => {
     {
       type: 'menu',
       label: 'Second',
-      hidesSharedBackground: false,
       sharesBackground: true,
       menu: {
         items: [],
@@ -216,7 +213,6 @@ it('should convert header items children, correctly to options', () => {
       label: 'Right',
       onPress: expect.any(Function),
       sharesBackground: true,
-      hidesSharedBackground: false,
       selected: false,
       labelStyle: {
         color: 'green',
@@ -237,6 +233,107 @@ it('should convert header items children, correctly to options', () => {
 
   expect(typeof result.unstable_headerRightItems).toBe('function');
   expect(result.unstable_headerRightItems({})).toStrictEqual(expectedRightItems);
+});
+
+it('omits hidden Stack.Header.Menu from header items', () => {
+  const result = appendScreenStackPropsToOptions(
+    {},
+    {
+      children: (
+        <StackHeader>
+          <StackHeader.Right>
+            <StackHeader.Menu hidden title="Hidden Menu">
+              <StackHeader.MenuAction>Should be hidden</StackHeader.MenuAction>
+            </StackHeader.Menu>
+            <StackHeader.Menu title="Visible Menu">
+              <StackHeader.MenuAction>Visible action</StackHeader.MenuAction>
+            </StackHeader.Menu>
+          </StackHeader.Right>
+        </StackHeader>
+      ),
+    }
+  );
+
+  expect(typeof result.unstable_headerRightItems).toBe('function');
+  const rightItems = result.unstable_headerRightItems({});
+  expect(rightItems).toHaveLength(1);
+  expect(rightItems[0].type).toBe('menu');
+  if (rightItems[0].type !== 'menu') throw new Error('Type is not menu');
+  expect(rightItems[0].menu?.title).toBe('Visible Menu');
+});
+
+it('omits hidden Stack.Header.Button from header items', () => {
+  const result = appendScreenStackPropsToOptions(
+    {},
+    {
+      children: (
+        <StackHeader>
+          <StackHeader.Right>
+            <StackHeader.Button hidden>Should be hidden</StackHeader.Button>
+            <StackHeader.Button>Visible Button</StackHeader.Button>
+          </StackHeader.Right>
+        </StackHeader>
+      ),
+    }
+  );
+
+  expect(typeof result.unstable_headerRightItems).toBe('function');
+  const rightItems = result.unstable_headerRightItems({});
+  expect(rightItems).toHaveLength(1);
+  expect(rightItems[0].type).toBe('button');
+  if (rightItems[0].type !== 'button') throw new Error('Type is not button');
+  expect(rightItems[0].label).toBe('Visible Button');
+});
+
+it('omits hidden Stack.Header.Spacer from header items', () => {
+  const result = appendScreenStackPropsToOptions(
+    {},
+    {
+      children: (
+        <StackHeader>
+          <StackHeader.Right>
+            <StackHeader.Spacer hidden width={8} />
+            <StackHeader.Spacer width={20} />
+          </StackHeader.Right>
+        </StackHeader>
+      ),
+    }
+  );
+
+  expect(typeof result.unstable_headerRightItems).toBe('function');
+  const rightItems = result.unstable_headerRightItems({});
+  expect(rightItems).toHaveLength(1);
+  expect(rightItems[0].type).toBe('spacing');
+  expect((rightItems[0] as any).spacing).toBe(20);
+});
+
+it('omits hidden Stack.Header.View from header items', () => {
+  const result = appendScreenStackPropsToOptions(
+    {},
+    {
+      children: (
+        <StackHeader>
+          <StackHeader.Right>
+            <StackHeader.View hidden>
+              <Text testID="hidden-view">Hidden</Text>
+            </StackHeader.View>
+            <StackHeader.View>
+              <Text testID="visible-view">Visible</Text>
+            </StackHeader.View>
+          </StackHeader.Right>
+        </StackHeader>
+      ),
+    }
+  );
+
+  expect(typeof result.unstable_headerRightItems).toBe('function');
+  const rightItems = result.unstable_headerRightItems({});
+  expect(rightItems).toHaveLength(1);
+  expect(rightItems[0].type).toBe('custom');
+  // Ensure the rendered element contains our visible child
+  const element = (rightItems[0] as any).element;
+  expect(isValidElement(element)).toBe(true);
+  expect(element.props.testID).toBe('visible-view');
 });
 
 it('Changes options dynamically when Stack.Header is used without wrapper', () => {
@@ -273,7 +370,6 @@ it('Changes options dynamically when Stack.Header is used without wrapper', () =
   expect(ScreenStackItem.mock.calls[1][0].headerConfig).toBeDefined();
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.headerLeftBarButtonItems).toEqual([
     {
-      hidesSharedBackground: false,
       icon: undefined,
       index: 0,
       onPress: expect.any(Function),
@@ -289,7 +385,6 @@ it('Changes options dynamically when Stack.Header is used without wrapper', () =
   ]);
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.headerRightBarButtonItems).toEqual([
     {
-      hidesSharedBackground: false,
       icon: undefined,
       index: 0,
       menu: {
@@ -339,7 +434,6 @@ it('Changes options dynamically when Stack.Header.Left is used without wrapper',
   expect(ScreenStackItem.mock.calls[1][0].headerConfig).toBeDefined();
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.headerLeftBarButtonItems).toEqual([
     {
-      hidesSharedBackground: false,
       icon: undefined,
       index: 0,
       onPress: expect.any(Function),
@@ -386,7 +480,6 @@ it('Changes options dynamically when Stack.Header.Left and Stack.Header.Right ar
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.headerLeftBarButtonItems).toBeUndefined();
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.headerRightBarButtonItems).toEqual([
     {
-      hidesSharedBackground: false,
       icon: undefined,
       index: 0,
       menu: {
@@ -442,7 +535,6 @@ it('Changes options dynamically when Stack.Header.Left and Stack.Header.Right ar
   expect(ScreenStackItem.mock.calls[1][0].headerConfig).toBeDefined();
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.headerLeftBarButtonItems).toEqual([
     {
-      hidesSharedBackground: false,
       icon: undefined,
       index: 0,
       onPress: expect.any(Function),
@@ -458,7 +550,6 @@ it('Changes options dynamically when Stack.Header.Left and Stack.Header.Right ar
   ]);
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.headerRightBarButtonItems).toEqual([
     {
-      hidesSharedBackground: false,
       icon: undefined,
       index: 0,
       menu: {
