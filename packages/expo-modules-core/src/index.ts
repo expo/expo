@@ -32,4 +32,3 @@ export { UnavailabilityError } from './errors/UnavailabilityError';
 
 // Deprecated
 export { LegacyEventEmitter } from './LegacyEventEmitter';
-export { default as NativeModulesProxy } from './NativeModulesProxy';
