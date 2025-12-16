@@ -12,7 +12,6 @@ apollo = "4.3.3"
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 
-apollo-normalized-cache = { module = "com.apollographql.apollo:apollo-normalized-cache", version.ref = "apollo" }
 fresco = { module = "com.facebook.fresco:fresco", version.ref = "fresco" }
 fresco-middleware = { module = "com.facebook.fresco:middleware", version.ref = "fresco" }
 fresco-animated-gif  = { module = "com.facebook.fresco:animated-gif", version.ref = "fresco" }
@@ -21,3 +20,4 @@ fresco-webpsupport = { module = "com.facebook.fresco:webpsupport", version.ref =
 
 apollo =  { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
 apollo-cache = { module = "com.apollographql.apollo:apollo-cache-normalized", version.ref = "apollo" }
+apollo-gradle = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
