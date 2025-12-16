@@ -112,54 +112,6 @@ struct DevMenuEchoAI: View {
     return queryItems.first(where: { $0.name == "project-type" })?.value == "echo"
   }
 
-  // Mock chat messages
-  private let mockMessages: [ChatMessage] = [
-    ChatMessage(
-      id: "1",
-      role: .user,
-      content: "create a mobile app",
-      toolCalls: nil
-    ),
-    ChatMessage(
-      id: "2",
-      role: .assistant,
-      content: "I'll help you create a mobile app. Let me set up the basic structure with a main screen, a button component, and an entry point.",
-      toolCalls: [
-        ToolCall(name: "file_edit", file: "index.tsx"),
-        ToolCall(name: "file_edit", file: "Button.tsx"),
-        ToolCall(name: "file_edit", file: "Screen.tsx")
-      ]
-    ),
-    ChatMessage(
-      id: "3",
-      role: .user,
-      content: "add a navigation bar with a title",
-      toolCalls: nil
-    ),
-    ChatMessage(
-      id: "4",
-      role: .assistant,
-      content: "I'll add a navigation bar with a title to your app. This will include the navigation component and update the main screen to use it.",
-      toolCalls: [
-        ToolCall(name: "file_edit", file: "NavigationBar.tsx"),
-        ToolCall(name: "file_edit", file: "Screen.tsx")
-      ]
-    ),
-    ChatMessage(
-      id: "5",
-      role: .user,
-      content: "make the button red",
-      toolCalls: nil
-    ),
-    ChatMessage(
-      id: "6",
-      role: .assistant,
-      content: "I'll update the button component to use a red color scheme.",
-      toolCalls: [
-        ToolCall(name: "file_edit", file: "Button.tsx")
-      ]
-    )
-  ]
 
   var body: some View {
     if viewModel.showAIMode {
@@ -168,7 +120,7 @@ struct DevMenuEchoAI: View {
           // Chat messages area - takes remaining space
           ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-              ForEach(messages.isEmpty ? mockMessages : messages, id: \.id) { message in
+              ForEach(messages, id: \.id) { message in
                 ChatMessageView(message: message, maxWidth: geometry.size.width)
               }
             }
