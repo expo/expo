@@ -366,7 +366,8 @@ export class Asset {
    * @platform web
    *
    * @param moduleId Value of `require('path/to/file')` or external network URLs
-   * @returns Returns a `Promise` that resolves with the contents of the asset as a `ArrayBuffer`.
+   * @returns a `Promise` that resolves with the contents of the asset as an `ArrayBuffer`.
+   *
    * @example
    * ```ts
    * const arrayBuffer = await Asset.contentArrayBuffer(require('./assets/snack-icon.png'));
