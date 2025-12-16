@@ -367,8 +367,7 @@ export function extrapolateGroupRoutes(
  * TODO: Version this code with `expo-router` or version expo-router with `@expo/cli`.
  */
 const routerDotTSTemplate = unsafeTemplate`/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable import/export */
-/* eslint-disable @typescript-eslint/no-restricted-types */
+/* eslint-disable */
 declare module "expo-router" {
   import type { LinkProps as OriginalLinkProps } from 'expo-router/build/link/Link';
   import type { Router as OriginalRouter } from 'expo-router/build/types';
