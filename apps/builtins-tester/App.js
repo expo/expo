@@ -4,7 +4,7 @@ import { SafeAreaView, StyleSheet, Image, Text, View } from 'react-native';
 import React from 'react';
 
 export default function App() {
-  console.log('GOTVALUE:', __expo__r('expo:url'));
+  console.log('GOTVALUE:', __expo__r);
   // console.log('GOTVALUE:', __expo__r('expo:react'));
   // console.error('hey', globalThis.WritableStream);
   return (
