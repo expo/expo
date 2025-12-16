@@ -311,7 +311,7 @@ export class Asset {
    * @platform android
    * @platform web
    *
-   * @returns Returns a `Promise` that resolves with the contents of the asset as a `Uint8Array`.
+   * @returns a `Promise` that resolves with the contents of the asset as a `Uint8Array`.
    */
   async bytes(): Promise<Uint8Array<ArrayBuffer>> {
     if (Platform.OS === 'web') {
