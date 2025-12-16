@@ -18,10 +18,9 @@ internal final class TextViewProps: UIBaseViewProps {
 internal struct TextView: ExpoSwiftUI.View {
   @ObservedObject var props: TextViewProps
 
-
   var body: some View {
     let hasDeprecatedFontProps = props.weight != nil || props.design != nil || props.size != nil
-    
+
     Text(props.text)
       .if(hasDeprecatedFontProps) { text in
         // TODO: remove this block of code once we remove the deprecated font props

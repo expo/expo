@@ -31,12 +31,12 @@ struct SecureFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   func blur() {
     textManager.isFocused = false
   }
-  
+
   func forceResignFirstResponder() {
     if textManager.isFocused {
       UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
-    
+
     textManager.isFocused = false
     isFocused = false
   }
