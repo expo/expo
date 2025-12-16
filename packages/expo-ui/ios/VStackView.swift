@@ -35,9 +35,9 @@ internal struct VStackView: ExpoSwiftUI.View {
     VStack(
       alignment: props.alignment?.toHorizontalAlignment() ?? .center,
       spacing: CGFloat(props.spacing ?? 0)) {
-      Children()
+        Children()
     }
-    .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap, useContentShape: true)
-    .background(props.backgroundColor)
+      .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap, useContentShape: true)
+      .background(props.backgroundColor)
   }
 }

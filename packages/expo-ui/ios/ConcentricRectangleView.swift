@@ -28,7 +28,7 @@ internal final class ConcentricRectangleViewProps: UIBaseViewProps {
 internal struct ConcentricRectangleView: ExpoSwiftUI.View {
   @ObservedObject var props: ConcentricRectangleViewProps
 
-  #if compiler(>=6.2) // Xcode 26
+#if compiler(>=6.2) // Xcode 26
   @available(iOS 26.0, tvOS 26.0, *)
   private func cornerStyle(from config: CornerStyleConfig?) -> Edge.Corner.Style {
     // default to concentric
@@ -49,10 +49,10 @@ internal struct ConcentricRectangleView: ExpoSwiftUI.View {
       return .fixed(config.radius ?? 0)
     }
   }
-  #endif
+#endif
 
   var body: some View {
-    #if compiler(>=6.2) // Xcode 26
+#if compiler(>=6.2) // Xcode 26
     if #available(iOS 26.0, tvOS 26.0, *) {
       let topLeadingCorner = cornerStyle(from: props.corners?.topLeadingCorner)
       let topTrailingCorner = cornerStyle(from: props.corners?.topTrailingCorner)
@@ -68,8 +68,8 @@ internal struct ConcentricRectangleView: ExpoSwiftUI.View {
     } else {
       EmptyView()
     }
-    #else
+#else
     EmptyView()
-    #endif
+#endif
   }
 }

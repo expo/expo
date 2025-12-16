@@ -327,7 +327,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - ExpoAgeRange (0.1.0):
+  - ExpoAgeRange (0.2.0):
     - ExpoModulesCore
   - ExpoAppIntegrity (0.1.7):
     - ExpoModulesCore
@@ -3749,7 +3749,7 @@ SPEC CHECKSUMS:
   expo-dev-launcher: 93ab1128548f72825f3fe290ff1c1690114e8def
   expo-dev-menu: 184ccee9963a02fc75367e8ef95bd718bc703d75
   expo-dev-menu-interface: 30d9aa2fbca275a1335ca7e076273dac1d42d40a
-  ExpoAgeRange: 5203a372b2f4ef4e5510acf025373d52de60f8df
+  ExpoAgeRange: 294504c50f493b0b5da2107fd47126486164ec09
   ExpoAppIntegrity: 6efc2990e5b2859bfe3595f3d289a96c12c1dd77
   ExpoAppleAuthentication: 414e4316f8e25a2afbc3943cf725579c910f24b8
   ExpoAsset: 4375a46b45b12bbfcf6efac8c8a33aebdb8ba12b

@@ -24,8 +24,7 @@ internal struct ImageView: ExpoSwiftUI.View {
       image = Image(systemName: props.systemName)
     }
 
-    return
-      image
+    return image
       .font(.system(size: CGFloat(props.size ?? 24)))
       .foregroundColor(props.color)
       .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)

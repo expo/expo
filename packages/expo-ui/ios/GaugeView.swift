@@ -3,6 +3,30 @@
 import SwiftUI
 import ExpoModulesCore
 
+struct ValueOptions: Record {
+  @Field var value: Double
+  @Field var label: String?
+  @Field var color: Color?
+}
+
+enum GaugeStyle: String, Enumerable {
+  case `default`
+  case circular
+  case circularCapacity
+  case linear
+  case linearCapacity
+}
+
+final class GaugeProps: UIBaseViewProps {
+  @Field var label: String?
+  @Field var labelColor: Color?
+  @Field var current: ValueOptions
+  @Field var min: ValueOptions?
+  @Field var max: ValueOptions?
+  @Field var type: GaugeStyle = .default
+  @Field var color: [Color] = []
+}
+
 struct GaugeView: ExpoSwiftUI.View {
   @ObservedObject var props: GaugeProps
 
