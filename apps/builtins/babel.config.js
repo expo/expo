@@ -10,6 +10,6 @@ module.exports = function (api) {
           enableReactFastRefresh: false,
         },
       ],
-    ],
+    ]
   };
 };

@@ -1,14 +1,10 @@
 /* eslint-env node */
 // Learn more https://docs.expo.dev/guides/customizing-metro/
 const { getDefaultConfig } = require('expo/metro-config');
-const { boolish } = require('getenv');
 const path = require('node:path');
 
 /** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(
-  __dirname,
- 
-);
+const config = getDefaultConfig(__dirname);
 
 const monorepoRoot = path.join(__dirname, '../..');
 
@@ -24,7 +20,6 @@ config.watchFolders = [
 // Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations
 config.transformer.enableBabelRCLookup = false;
 
-
 config.resolver.blockList = [
   /\/expo-router\/node_modules\/@react-navigation/,
   /node_modules\/@react-navigation\/native-stack\/node_modules\/@react-navigation\//,
@@ -35,7 +30,12 @@ config.resolver.blockList = [
 // Use the special prefix for our nested runtime.
 config.transformer.globalPrefix = '__expo';
 // Disable the default `react-native` run statements.
-config.serializer.getModulesRunBeforeMainModule = () => ([]);
+config.serializer.getModulesRunBeforeMainModule = () => [];
 
+const upstreamCreate = config.serializer.createModuleIdFactory;
+config.serializer.createModuleIdFactory = (...props) => {
+  const upstreamFactory = upstreamCreate(...props);
+  return (...props) => '_' + upstreamFactory(...props);
+};
 
 module.exports = config;

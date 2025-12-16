@@ -18,6 +18,7 @@ const baseJSBundle_1 = require("./fork/baseJSBundle");
 const getCssDeps_1 = require("./getCssDeps");
 const getAssets_1 = __importDefault(require("../transform-worker/getAssets"));
 const filePath_1 = require("../utils/filePath");
+const env_1 = require("../env");
 // Convert file paths to regex matchers.
 function pathToRegex(path) {
     // Escape regex special characters, except for '*'
@@ -234,7 +235,7 @@ class Chunk {
         return computedAsyncModulePaths;
     }
     getAdjustedSourceMapUrl(serializerConfig) {
-        if (process.env.EXPO_BUNDLE_BUILT_IN === '1') {
+        if (env_1.env.EXPO_BUNDLE_BUILT_IN) {
             // Remove `//# sourceMappingURL` comments and `//# sourceURL` comments from the source code.
             return null;
         }

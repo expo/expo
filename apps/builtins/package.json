@@ -1,11 +1,14 @@
 {
   "name": "@expo/builtins",
   "version": "0.0.0",
-  "main": "index.ts",
+  "main": "index.js",
   "scripts": {
-    "bundle": "expo export -p ios --dev --no-minify && expo export -p ios --dev --no-minify --no-bytecode --output-dir dist-debug && yarn run cp-hbc",
-    "cp-hbc": "cp dist/_expo/static/js/ios/index-*.hbc ../builtins-tester/ios/builtinstester/builtins.hbc && cp dist/_expo/static/js/ios/index-*.hbc ../expo-go/ios/Exponent/Supporting/builtin.hbc",
-    "cp-js": "cp dist-debug/_expo/static/js/ios/index-*.js ../builtins-tester/ios/builtinstester/builtins.js && cp dist-debug/_expo/static/js/ios/index-*.js ../expo-go/ios/Exponent/Supporting/builtin.js"
+    "bundle": "npm run generate && npm run bundle:hbc && npm run bundle:jsc && yarn run cp-hbc && yarn run cp-js",
+    "generate": "node scripts/std-runtime.js",
+    "bundle:hbc": "expo export -p ios --dev --no-minify --platform ios",
+    "bundle:jsc": "expo export -p ios --dev --no-minify --no-bytecode --platform ios --output-dir dist-jsc",
+    "cp-hbc": "cp dist/_expo/static/js/ios/index-*.hbc ../builtins-tester/ios/builtinstester/builtins.hbc && cp dist/_expo/static/js/ios/index-*.hbc ../expo-go/ios/Exponent/Supporting/builtins.hbc",
+    "cp-js": "cp dist-jsc/_expo/static/js/ios/index-*.js ../builtins-tester/ios/builtinstester/builtins.js && cp dist-jsc/_expo/static/js/ios/index-*.js ../expo-go/ios/Exponent/Supporting/builtins.js"
   },
   "dependencies": {
     "expo": "~54.0.8",

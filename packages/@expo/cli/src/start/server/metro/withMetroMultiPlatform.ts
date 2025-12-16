@@ -24,7 +24,10 @@ import {
   AutolinkingModuleResolverInput,
 } from './createExpoAutolinkingResolver';
 import { createFallbackModuleResolver } from './createExpoFallbackResolver';
-import { FailedToResolveNativeOnlyModuleError } from './errors/FailedToResolveNativeOnlyModuleError';
+import {
+  FailedToResolveNativeOnlyModuleError,
+  FailedToResolveRuntimeRestrictedModuleError,
+} from './errors/FailedToResolveNativeOnlyModuleError';
 import { isNodeExternal, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
@@ -51,6 +54,8 @@ export type StrictResolverFactory = (
 const ASSET_REGISTRY_SRC = `const assets=[];module.exports={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};`;
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
+
+const EXPO_STD_RUNTIME = require('@expo/cli/static/std-runtime.json').modules;
 
 function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
   return input;
@@ -132,15 +137,13 @@ function withWebPolyfills(
     }
 
     if (
-      env.EXPO_USE_STD_RUNTIME && 
+      env.EXPO_USE_STD_RUNTIME &&
       // standard runtime is not available on web.
       // TODO: Or in native server environments.
-      ctx.platform !== 'web') {
-
+      ctx.platform !== 'web'
+    ) {
       // Ignore the polyfills because they're included in the standard runtime.
-      return [
-        ...virtualModulesPolyfills,
-      ]
+      return [...virtualModulesPolyfills];
     }
 
     return [
@@ -373,112 +376,22 @@ export function withExtendedResolver(
   //   );
   // }
 
-  // TODO: Send a signal from client that indicates this list.
-  const builtins = [
-    // NOTE: Important that the asset registry uses the built-in registry so that assets in the
-    // built-in bundle (mainly from react-native) aren't erased by the redefined asset registry.
-    "@react-native/assets-registry/registry",
-    'react',
-    'react/jsx-dev-runtime',
-    'react/jsx-runtime',
-    'url',
-    'whatwg-fetch',
-    'react-devtools-core',
-    'base64-js',
-    'buffer',
-    'punycode',
-    'whatwg-url-without-unicode',
-    'pretty-format',
-    'event-target-shim',
-    'invariant',
-    'scheduler',
-    'regenerator-runtime/runtime',
-    'react-refresh/runtime',
-    '@react-native/normalize-colors',
-    'anser',
-    'react-native',
-    'react-native/src/private/setup/setUpDOM',
-    'react-native/src/private/featureflags/ReactNativeFeatureFlags',
-    'react-native/Libraries/NativeComponent/NativeComponentRegistry',
-    'react-native/Libraries/Utilities/PolyfillFunctions',
-    'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface',
-    'react-native/Libraries/Image/resolveAssetSource',
-    'react-native/Libraries/StyleSheet/processColor',
-    'react-native/Libraries/NativeComponent/ViewConfigIgnore',
-    'react-native/Libraries/StyleSheet/processColorArray',
-    'react-native/Libraries/NativeModules/specs/NativeSourceCode',
-    'react-native/Libraries/Image/AssetSourceResolver',
-    'react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore',
-    'react-native/Libraries/ReactNative/RendererProxy',
-    'react-native/Libraries/Core/ReactNativeVersion',
-    'react-native/Libraries/BatchedBridge/BatchedBridge',
-    'react-native/Libraries/ReactNative/AppContainer',
-    'react-native/Libraries/Utilities/dismissKeyboard',
-    'react-native/Libraries/Renderer/shims/ReactNative',
-    'react-native/Libraries/Components/UnimplementedViews/UnimplementedView',
-    'react-native/Libraries/Components/TextInput/TextInputState',
-    'react-native/Libraries/Core/Devtools/parseErrorStack',
-    'react-native/Libraries/Core/Devtools/symbolicateStackTrace',
-    'react-native/Libraries/Core/Devtools/getDevServer',
-    'react-native/Libraries/Utilities/codegenNativeCommands',
-    'react-native/Libraries/Utilities/codegenNativeComponent',
-    'react-native/Libraries/Core/InitializeCore',
-    'react-native/Libraries/Utilities/HMRClient',
-    'react-native/Libraries/Core/ExceptionsManager',
-    'react-native/Libraries/LogBox/LogBox',
-    'react-native/Libraries/NativeModules/specs/NativeRedBox',
-    'react-native/Libraries/Utilities/DevSettings',
-    'react-native/Libraries/Utilities/DevLoadingView',
-    'react-native/Libraries/Core/NativeExceptionsManager',
-    'expo-modules-core',
-    'expo-modules-core/src/LegacyEventEmitter',
-    'expo',
-    'expo/fetch',
-    'expo/dom',
-    'expo/dom/global',
-    'expo-file-system',
-    'expo-file-system/next',
-    'expo-asset',
-    'expo-constants',
-    'expo-keep-awake',
-    'expo-status-bar',
-    'expo-blur',
-    'expo-font',
-    'expo-haptics',
-    'expo-image',
-    'expo-linking',
-    'expo-splash-screen',
-    'expo-symbols',
-    'expo-system-ui',
-    'expo-web-browser',
-    'react-native-gesture-handler',
-    'react-native-reanimated',
-    'react-native-safe-area-context',
-    'react-native-screens',
-    'react-native-webview',
-    '@react-native-masked-view/masked-view',
-    'color',
-    'color-string',
-    'color-name',
-    '@radix-ui/react-compose-refs',
-    '@react-navigation/routers',
-    'nanoid/non-secure',
-    'use-latest-callback',
-    'query-string',
-    'react-is',
-    'use-sync-external-store',
-    'use-sync-external-store/with-selector',
-    '@react-navigation/core',
-    '@react-navigation/native',
-    '@react-navigation/elements',
-    '@react-navigation/native-stack',
-    '@react-navigation/bottom-tabs',
-    '@radix-ui/react-slot',
-    'react-native-is-edge-to-edge',
-    'stacktrace-parser',
-  ];
+  // Builtins are defined in ./builtins.ts - import BUILTINS from there.
+  // NOTE: Important that the asset registry uses the built-in registry so that assets in the
+  // built-in bundle (mainly from react-native) aren't erased by the redefined asset registry.
+  const STD_EXPO_LIBS = new RegExp(`^(expo:)?(${EXPO_STD_RUNTIME.join('|')})$`);
 
-  const STD_EXPO_LIBS = new RegExp(`^\(expo:\)?\(${builtins.join('\|')}\)$`);
+  // Only available when the client signals std runtime support via the 'expo-client' environment.
+  // This is derived from the 'expo-runtime-version' header sent by Expo Go clients combined with
+  // the EXPO_USE_STD_RUNTIME env var being enabled.
+  // Disable internal externals when exporting for production.
+  const isStdRuntimeEnabled = (context: ResolutionContext) => {
+    return (
+      env.EXPO_USE_STD_RUNTIME &&
+      context.customResolverOptions.environment === 'expo-client' &&
+      !context.customResolverOptions.exporting
+    );
+  };
 
   // If Node.js pass-through, then remap to a module like `module.exports = $$require_external(<module>)`.
   // If module should be shimmed, remap to an empty module.
@@ -525,19 +438,23 @@ export function withExtendedResolver(
     {
       match: (context: ResolutionContext, moduleName: string) => {
         if (
-          // Disable when creating built-ins -- TODO Remove since this is flagged now.
-          env.EXPO_BUNDLE_BUILT_IN || 
-          // Only available when using the standard runtime.
-          !env.EXPO_USE_STD_RUNTIME ||
+          // Only available when the client signals std runtime support via the 'expo-client' environment.
+          // This is derived from the 'expo-runtime-version' header sent by Expo Go clients combined with
+          // the EXPO_USE_STD_RUNTIME env var being enabled.
           // Disable internal externals when exporting for production.
-          context.customResolverOptions.exporting ||
+          !isStdRuntimeEnabled(context) ||
           // These externals are only for Node.js environments.
           isServerEnvironment(context.customResolverOptions?.environment)
         ) {
           return false;
         }
 
-        return STD_EXPO_LIBS.test(moduleName);
+        const match = STD_EXPO_LIBS.test(moduleName);
+
+        if (match) {
+          debug('Using std runtime:', moduleName);
+        }
+        return match;
       },
       replace: 'builtin',
     },
@@ -573,7 +490,7 @@ export function withExtendedResolver(
     },
   ];
 
-  const memoLog = memoize(console.log);
+  const memoDebug = memoize(debug);
 
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
@@ -582,7 +499,6 @@ export function withExtendedResolver(
       moduleName: string,
       platform: string | null
     ) {
-      
       // This resolution is dev-only to prevent bundling the production React packages in development.
       if (!context.dev || env.EXPO_BUNDLE_BUILT_IN) return null;
 
@@ -771,15 +687,23 @@ export function withExtendedResolver(
 
     // Basic moduleId aliases
     function requestAlias(context: ResolutionContext, moduleName: string, platform: string | null) {
-
-      if (env.EXPO_USE_STD_RUNTIME) {
+      // Debug logging for std runtime usage
+      if (isStdRuntimeEnabled(context)) {
         if (moduleName.startsWith('react-native/')) {
-          console.error('Using nested import from local src that will break builtins', moduleName, context.originModulePath);
+          Log.error(
+            'Using nested import from local src that will break builtins',
+            moduleName,
+            context.originModulePath
+          );
+          throw new FailedToResolveRuntimeRestrictedModuleError(
+            moduleName,
+            path.relative(config.projectRoot, context.originModulePath)
+          );
         } else if (!moduleName.startsWith('.')) {
-          memoLog('>>', moduleName);
+          memoDebug('module not included in std runtime:', moduleName);
         }
       }
-      
+
       // Conditionally remap `react-native` to `react-native-web` on web in
       // a way that doesn't require Babel to resolve the alias.
       if (platform && platform in aliases && aliases[platform][moduleName]) {

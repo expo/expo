@@ -109,9 +109,10 @@ export async function runIosAsync(projectRoot: string, options: Options) {
       // TODO: Hack for testing builtins in development branch
       ['builtins.js', 'builtins.hbc'].forEach((file) => {
   
-        const input = globSync(path.join(projectRoot, `ios/*/${file}`))[0];
+        const input = globSync(path.join(projectRoot, `ios/*/Supporting/${file}`))[0];
         if (!input) {
           Log.warn(`Could not find '${file}' in the project. Skipping...`);
+          return;
         }
         Log.log(`Updating: ${file}`)
   

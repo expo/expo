@@ -80,11 +80,14 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     }
 
     const expectSignature = req.headers['expo-expect-signature'];
+    // The client sends this header to indicate it's Expo Go.
+    const expoGoSDKVersion = req.headers['exponent-sdk-version'];
 
     return {
       responseContentType,
       platform,
       expectSignature: expectSignature ? String(expectSignature) : null,
+      expoSdkVersion: expoGoSDKVersion ? String(expoGoSDKVersion) : null,
       hostname: stripPort(req.headers['host']),
       protocol: req.headers['x-forwarded-proto'] as 'http' | 'https' | undefined,
     };

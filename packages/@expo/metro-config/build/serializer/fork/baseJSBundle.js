@@ -22,6 +22,7 @@ const countLines_1 = __importDefault(require("@expo/metro/metro/lib/countLines")
 const getAppendScripts_1 = __importDefault(require("@expo/metro/metro/lib/getAppendScripts"));
 const jsc_safe_url_1 = require("jsc-safe-url");
 const processModules_1 = require("./processModules");
+const env_1 = require("../../env");
 function getPlatformOption(graph, options) {
     if (graph.transformOptions?.platform != null) {
         return graph.transformOptions.platform;
@@ -99,7 +100,7 @@ function baseJSBundleWithDependencies(entryPoint, preModules, dependencies, opti
         // This directive doesn't make a lot of sense in the context of a large single bundle that represent
         // multiple files. It's usually used for things like TypeScript where you want the file name to appear with a
         // different extension. Since it's unclear to me (Bacon) how it is used on native, I'm only disabling in web and native in production.
-        sourceUrl: process.env.EXPO_BUNDLE_BUILT_IN === '1'
+        sourceUrl: env_1.env.EXPO_BUNDLE_BUILT_IN
             ? '[builtin code]'
             : options.platform === 'web'
                 ? undefined

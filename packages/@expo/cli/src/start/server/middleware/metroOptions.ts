@@ -9,7 +9,7 @@ import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 
 const debug = require('debug')('expo:metro:options') as typeof console.log;
 
-export type MetroEnvironment = 'node' | 'react-server' | 'client';
+export type MetroEnvironment = 'node' | 'react-server' | 'client' | 'expo-client';
 
 export type ExpoMetroOptions = {
   platform: string;
@@ -98,6 +98,7 @@ function withDefaults({
     optimize,
     usedExports: optimize && env.EXPO_UNSTABLE_TREE_SHAKING,
     lazy: !props.isExporting && lazy,
+    // Clear 'client' since it's the default, but keep 'expo-client' as it signals std runtime support
     environment: environment === 'client' ? undefined : environment,
     liveBindings: env.EXPO_UNSTABLE_LIVE_BINDINGS,
     ...props,
@@ -364,7 +365,12 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
 
   if (environment) {
     queryParams.append('resolver.environment', environment);
-    queryParams.append('transform.environment', environment);
+
+    // Ignore expo-client in the transformer since there's no difference in code transforms.
+    // TODO: Maybe we should do this and use a new transform pass + collect dependencies instead of virtual modules.
+    if (environment !== 'expo-client') {
+      queryParams.append('transform.environment', environment);
+    }
   }
 
   if (isExporting) {
@@ -463,8 +469,10 @@ function assertEnvironment(environment: string | undefined): MetroEnvironment | 
   if (!environment) {
     return undefined;
   }
-  if (!['node', 'react-server', 'client'].includes(environment)) {
-    throw new Error(`Expected transform.environment to be one of: node, react-server, client`);
+  if (!['node', 'react-server', 'client', 'expo-client'].includes(environment)) {
+    throw new Error(
+      `Expected transform.environment to be one of: node, react-server, client, expo-client`
+    );
   }
   return environment as MetroEnvironment;
 }

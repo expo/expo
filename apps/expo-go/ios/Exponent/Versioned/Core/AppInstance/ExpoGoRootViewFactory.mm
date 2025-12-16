@@ -79,22 +79,22 @@
 
 - (void)_loadBuiltinsIntoRuntime:(facebook::jsi::Runtime &)runtime
 {
-  NSString *builtinsPath = [[NSBundle mainBundle] pathForResource:@"builtin" ofType:@"hbc"];
+  NSString *builtinsPath = [[NSBundle mainBundle] pathForResource:@"builtins" ofType:@"hbc"];
   if (!builtinsPath) {
-    NSLog(@"[ExpoGoRootViewFactory] No builtin.hbc found in bundle, skipping builtins injection");
+    NSLog(@"[ExpoGoRootViewFactory] No builtins.hbc found in bundle, skipping builtins injection");
     return;
   }
 
   NSData *builtinsData = [NSData dataWithContentsOfFile:builtinsPath];
   if (!builtinsData || builtinsData.length == 0) {
-    NSLog(@"[ExpoGoRootViewFactory] Failed to load builtin.hbc or file is empty");
+    NSLog(@"[ExpoGoRootViewFactory] Failed to load builtins.hbc or file is empty");
     return;
   }
 
   @try {
     auto buffer = std::make_shared<facebook::jsi::StringBuffer>(
         std::string(static_cast<const char *>(builtinsData.bytes), builtinsData.length));
-    runtime.evaluateJavaScript(buffer, "builtin.hbc");
+    runtime.evaluateJavaScript(buffer, "builtins.hbc");
     NSLog(@"[ExpoGoRootViewFactory] Successfully loaded builtins");
   } @catch (NSException *exception) {
     NSLog(@"[ExpoGoRootViewFactory] Exception while loading builtins: %@", exception);

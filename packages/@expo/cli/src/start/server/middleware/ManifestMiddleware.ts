@@ -79,6 +79,8 @@ export interface ManifestRequestInfo {
   hostname?: string | null;
   /** The protocol used to request the manifest */
   protocol?: 'http' | 'https';
+  /** Version of the Expo SDK runtime supported by the client, if any. */
+  expoSdkVersion?: string | null;
 }
 
 /** Project related info. */
@@ -128,9 +130,10 @@ export abstract class ManifestMiddleware<
     platform,
     hostname,
     protocol,
+    expoSdkVersion,
   }: Pick<
     TManifestRequestInfo,
-    'hostname' | 'platform' | 'protocol'
+    'hostname' | 'platform' | 'protocol' | 'expoSdkVersion'
   >): Promise<ResponseProjectSettings> {
     // Read the config
     const projectConfig = getConfig(this.projectRoot);
@@ -165,6 +168,7 @@ export abstract class ManifestMiddleware<
       routerRoot: getRouterDirectoryModuleIdWithManifest(this.projectRoot, projectConfig.exp),
       protocol,
       reactCompiler: !!projectConfig.exp.experiments?.reactCompiler,
+      expoSdkVersion,
     });
 
     // Resolve all assets and set them on the manifest as URLs
@@ -222,6 +226,7 @@ export abstract class ManifestMiddleware<
     routerRoot,
     protocol,
     reactCompiler,
+    expoSdkVersion,
   }: {
     platform: string;
     hostname?: string | null;
@@ -233,7 +238,13 @@ export abstract class ManifestMiddleware<
     routerRoot: string;
     protocol?: 'http' | 'https';
     reactCompiler: boolean;
+    expoSdkVersion?: string | null;
   }): string {
+    // When the client supports the std runtime AND the env var is enabled,
+    // set the environment to 'expo-client' to enable built-in module resolution.
+    const environment =
+      expoSdkVersion && env.EXPO_USE_STD_RUNTIME && platform !== 'web' ? 'expo-client' : undefined;
+
     const path = createBundleUrlPath({
       mode: this.options.mode ?? 'development',
       minify: this.options.minify,
@@ -247,15 +258,18 @@ export abstract class ManifestMiddleware<
       asyncRoutes,
       routerRoot,
       reactCompiler,
+      environment,
     });
 
-    return (
+    const url =
       this.options.constructUrl({
         scheme: protocol ?? 'http',
         // hostType: this.options.location.hostType,
         hostname,
-      }) + path
-    );
+      }) + path;
+
+    debug(`Bundle URL: ${url}`);
+    return url;
   }
 
   /** Get the manifest response to return to the runtime. This file contains info regarding where the assets can be loaded from. Exposed for testing. */

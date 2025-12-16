@@ -109,24 +109,67 @@ sourceUrl: process.env.EXPO_BUNDLE_BUILT_IN === '1'
 
 ## Architecture
 
-### 1. Built-ins Bundle Definition (`apps/builtins/index.ts`)
+### 1. Builtins Manifest (`packages/@expo/cli/src/start/server/metro/builtins.ts`)
 
-The built-ins are defined using a special `EXPOSE` function that registers modules with the `expo:` prefix:
+The canonical list of builtin modules is defined in a single TypeScript file:
 
 ```typescript
+// packages/@expo/cli/src/start/server/metro/builtins.ts
+export const BUILTINS = [
+  'react',
+  'react/jsx-dev-runtime',
+  'react-native',
+  'expo',
+  // ... all builtin modules
+] as const;
+```
+
+This file is the **single source of truth** for which modules are pre-bundled. Both the Metro resolver and the builtins bundle generation use this array.
+
+### 2. Standard Runtime Manifest Generation
+
+A script generates a manifest with package versions from the monorepo:
+
+```bash
+cd packages/@expo/cli
+yarn generate-std-runtime
+```
+
+This creates `static/std-runtime.json` containing module names and their resolved versions. The file is placed in the `static/` folder so it's included in the published npm package:
+
+```json
+{
+  "version": "1.0.0",
+  "generatedAt": "2024-01-15T00:00:00.000Z",
+  "modules": ["react", "react-native", ...],
+  "packages": {
+    "react": { "version": "18.2.0", "modules": ["react", "react/jsx-runtime"] },
+    ...
+  }
+}
+```
+
+### 3. Built-ins Bundle Definition (`apps/builtins/index.ts`)
+
+The built-ins entry file uses a Babel plugin to dynamically generate EXPOSE calls from the manifest:
+
+```typescript
+// @generate-builtins
+// Cache bust: abc123
 const EXPOSE = (name, getter) => __expo__d((_, __, ___, ____, module) => {
   module.exports = getter()
 }, `expo:${name}`);
 
-// Examples:
-EXPOSE('react', () => require('react'));
-EXPOSE('react-native', () => require('react-native'));
-EXPOSE('expo-image', () => require('expo-image'));
+// Babel plugin generates EXPOSE() calls below based on std-runtime.json
 ```
+
+The `// @generate-builtins` comment triggers the Babel plugin (`babel/generate-builtins-plugin.js`) which reads `static/std-runtime.json` and generates all the EXPOSE calls during bundling.
+
+The `// Cache bust:` comment is updated with a random value before each build to ensure Metro's cache is invalidated.
 
 The `__expo__d` function is the custom Metro define function with the `__expo` prefix, which allows the built-ins bundle to have its own isolated module registry separate from the main app bundle.
 
-### 2. Custom Metro Configuration (`apps/builtins/metro.config.js`)
+### 4. Custom Metro Configuration (`apps/builtins/metro.config.js`)
 
 The built-ins bundle uses a specialized Metro configuration:
 
@@ -142,7 +185,7 @@ Key aspects:
 - **`globalPrefix: '__expo'`**: Changes the global functions from `__d`/`__r` to `__expo__d`/`__expo__r`, creating an isolated module registry
 - **Empty `getModulesRunBeforeMainModule`**: Prevents React Native initialization code from running automatically (the main bundle handles this)
 
-### 3. Native Integration (`ExpoGoRootViewFactory.mm`)
+### 5. Native Integration (`ExpoGoRootViewFactory.mm`)
 
 The Expo Go iOS app loads the built-ins bundle before the main app bundle using React Native's `RCTHostRuntimeDelegate`:
 
@@ -154,9 +197,9 @@ The Expo Go iOS app loads the built-ins bundle before the main app bundle using 
 
 - (void)_loadBuiltinsIntoRuntime:(facebook::jsi::Runtime &)runtime
 {
-  NSString *builtinsPath = [[NSBundle mainBundle] pathForResource:@"builtin" ofType:@"hbc"];
-  // ... load and evaluate builtin.hbc
-  runtime.evaluateJavaScript(buffer, "builtin.hbc");
+  NSString *builtinsPath = [[NSBundle mainBundle] pathForResource:@"builtins" ofType:@"hbc"];
+  // ... load and evaluate builtins.hbc
+  runtime.evaluateJavaScript(buffer, "builtins.hbc");
 }
 ```
 
@@ -166,19 +209,15 @@ The built-ins are:
 3. Evaluated **before** the main app bundle loads
 4. Registered under `__expo__d` / `__expo__r` globals
 
-### 4. Metro Resolver Integration (`withMetroMultiPlatform.ts`)
+### 6. Metro Resolver Integration (`withMetroMultiPlatform.ts`)
 
-When `EXPO_USE_STD_RUNTIME` is enabled, Metro's resolver creates virtual modules that delegate to the built-ins:
+When `EXPO_USE_STD_RUNTIME` is enabled, Metro's resolver creates virtual modules that delegate to the built-ins. The resolver imports the `BUILTINS` array from the canonical source:
 
 ```typescript
-const builtins = [
-  'react',
-  'react/jsx-dev-runtime',
-  'react-native',
-  'expo',
-  'expo-image',
-  // ... many more
-];
+import { BUILTINS } from './builtins';
+
+// Create regex to match builtin modules
+const STD_EXPO_LIBS = new RegExp(`^(expo:)?(${BUILTINS.join('|')})$`);
 
 // When resolving a builtin module:
 if (external.replace === 'builtin') {
@@ -193,12 +232,12 @@ if (external.replace === 'builtin') {
 ```
 
 For example, when user code imports `react`:
-1. Metro matches it against the `builtins` list
+1. Metro matches it against the `BUILTINS` array
 2. Instead of resolving to `node_modules/react/index.js`, it returns a virtual module
 3. The virtual module exports: `module.exports = __expo__r('expo:react')`
 4. At runtime, `__expo__r` looks up the module in the built-ins registry
 
-### 5. Virtual Module System
+### 7. Virtual Module System
 
 Expo CLI uses a virtual module system for creating modules that don't exist on disk. Virtual modules:
 - Start with a null byte (`\0`) to distinguish from real files
@@ -214,7 +253,7 @@ function ensureMetroBundlerPatchedWithSetVirtualModule(bundler) {
 }
 ```
 
-### 6. Custom Metro Require Runtime
+### 8. Custom Metro Require Runtime
 
 Two require runtimes exist:
 
@@ -233,17 +272,77 @@ Two require runtimes exist:
 
 | Variable | Description |
 |----------|-------------|
-| `EXPO_USE_STD_RUNTIME` | Enables built-in module resolution. When set, imports of listed modules resolve to virtual shims that delegate to `__expo__r` |
+| `EXPO_USE_STD_RUNTIME` | Enables built-in module resolution. When set AND the client sends `expo-builtins-version` header, imports of listed modules resolve to virtual shims that delegate to `__expo__r` |
 | `EXPO_BUNDLE_BUILT_IN` | Set when building the built-ins bundle itself. Changes Metro's global prefix to `__expo` and disables source maps |
+
+## Client-Server Protocol
+
+### Runtime Capability Detection
+
+Expo Go signals its support for the std runtime via the `expo-builtins-version` HTTP header when requesting the manifest:
+
+```
+GET /manifest HTTP/1.1
+Host: localhost:8081
+expo-platform: ios
+expo-builtins-version: 1
+```
+
+> **Note**: This is distinct from `expo-runtime-version` which is used by expo-updates for update compatibility checking.
+
+When the dev server receives this header AND `EXPO_USE_STD_RUNTIME` is enabled:
+1. The manifest response includes a bundle URL with `resolver.environment=expo-client`
+2. Metro uses this environment to enable built-in module resolution
+3. The resolver redirects BUILTINS imports to virtual shims that delegate to `__expo__r`
+
+### Bundle URL Parameters
+
+When std runtime is active, the bundle URL includes:
+```
+/index.bundle?platform=ios&resolver.environment=expo-client&...
+```
+
+The `expo-client` environment signals to Metro's resolver that:
+- Built-in modules should be resolved to virtual shims
+- The client has pre-bundled modules available via `__expo__r`
 
 ## Building the Built-ins
 
+### Adding a New Builtin Module
+
+1. Add the module to the `BUILTINS` array in `packages/@expo/cli/src/start/server/metro/builtins.ts`
+2. Generate the updated manifest:
+   ```bash
+   cd packages/@expo/cli
+   yarn generate-std-runtime
+   ```
+3. Build the builtins bundle:
+   ```bash
+   cd apps/builtins
+   yarn bundle
+   ```
+
+### Build Commands
+
 ```bash
 cd apps/builtins
-# Build for iOS
-npx expo export:embed --platform ios
-# Output: dist/builtin.hbc
+
+# Build for iOS (default)
+yarn bundle
+
+# Build for iOS only
+yarn bundle:ios
+
+# Build for Android
+yarn bundle:android
 ```
+
+The bundle script automatically:
+1. Updates the cache-bust value in `index.ts` to invalidate Metro's cache
+2. Runs `expo export` to build the bytecode bundle
+3. Copies the `.hbc` file to Expo Go
+
+### Build Configuration
 
 The `.env` file configures the build:
 ```
@@ -275,7 +374,7 @@ Current list includes:
 - **Navigation**: `@react-navigation/*` packages
 - **Utilities**: `color`, `query-string`, `invariant`, `buffer`, etc.
 
-See the full list in `apps/builtins/index.ts` and the `builtins` array in `withMetroMultiPlatform.ts`.
+See the full list in `packages/@expo/cli/src/start/server/metro/builtins.ts` or the generated manifest at `packages/@expo/cli/static/std-runtime.json`.
 
 ## Module Resolution Flow
 
@@ -283,10 +382,10 @@ See the full list in `apps/builtins/index.ts` and the `builtins` array in `withM
 User code: import React from 'react'
     |
     v
-Metro Resolver (EXPO_USE_STD_RUNTIME=1)
+Metro Resolver (environment='expo-client')
     |
     v
-Check: Is 'react' in builtins list?
+Check: Is 'react' in BUILTINS array?
     |
     v (yes)
 Create virtual module: \0expo:react
@@ -303,7 +402,9 @@ At runtime: __expo__r('expo:react') -> built-in registry -> React exports
 
 ## TODOs
 
-### 1. Prefix Internal Modules with Underscore
+### 1. ~~Prefix Internal Modules with Underscore~~ ✅ DONE
+
+**Implemented**: The metro config defines a custom module ID factory that prefixes all built-in module IDs with an underscore.
 
 Internal modules that aren't meant to be imported directly with the `expo:` prefix should be prefixed with an underscore to denote their privacy.
 
@@ -322,36 +423,9 @@ EXPOSE('_internal/rn-initialize-core', ...)
 
 This makes it clear which modules are part of the public API vs internal implementation details.
 
-### 2. Runtime Capability Detection
+### 2. ~~Runtime Capability Detection~~ ✅ DONE
 
-Expo Go should signal to the dev server that it supports built-ins, preventing the server from serving `EXPO_USE_STD_RUNTIME` bundles to runtimes that can't handle them.
-
-**Options**:
-
-a) **Query Parameter**: Add `?builtins=1` or `?runtime=std` to bundle requests
-```
-http://localhost:8081/index.bundle?platform=ios&builtins=1
-```
-
-b) **Custom Header**: Send `X-Expo-Builtins-Version: 1` or `X-Expo-Runtime: std`
-
-c) **User-Agent**: Include runtime info in User-Agent string
-```
-Expo Go/52.0.0 (Builtins/1.0)
-```
-
-**Server-side handling**:
-```typescript
-// In bundle request handler
-function shouldUseStdRuntime(req: Request): boolean {
-  const hasBuiltins =
-    req.query.builtins === '1' ||
-    req.headers['x-expo-builtins-version'] ||
-    req.headers['user-agent']?.includes('Builtins/');
-
-  return hasBuiltins && env.EXPO_USE_STD_RUNTIME;
-}
-```
+**Implemented**: Expo Go sends `expo-builtins-version` header, and the dev server uses this in conjunction with `EXPO_USE_STD_RUNTIME` env var to set `environment=expo-client` in bundle URLs. See "Client-Server Protocol" section above.
 
 ### 3. Additional Improvements
 

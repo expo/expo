@@ -1,0 +1,504 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2025-12-16T23:23:34.353Z",
+  "modules": [
+    "react",
+    "react/jsx-dev-runtime",
+    "react/jsx-runtime",
+    "react-is",
+    "scheduler",
+    "react-refresh/runtime",
+    "@react-native/assets-registry/registry",
+    "@react-native/normalize-colors",
+    "react-native",
+    "react-native/Libraries/Core/InitializeCore",
+    "react-native/Libraries/Utilities/HMRClient",
+    "react-native/Libraries/Core/ExceptionsManager",
+    "react-native/Libraries/LogBox/LogBox",
+    "react-native/Libraries/NativeModules/specs/NativeRedBox",
+    "react-native/Libraries/Utilities/DevSettings",
+    "react-native/Libraries/Utilities/DevLoadingView",
+    "react-native/Libraries/Core/NativeExceptionsManager",
+    "react-native/src/private/setup/setUpDOM",
+    "react-native/src/private/featureflags/ReactNativeFeatureFlags",
+    "react-native/Libraries/NativeComponent/NativeComponentRegistry",
+    "react-native/Libraries/Utilities/PolyfillFunctions",
+    "react-native/Libraries/ReactPrivate/ReactNativePrivateInterface",
+    "react-native/Libraries/Image/resolveAssetSource",
+    "react-native/Libraries/StyleSheet/processColor",
+    "react-native/Libraries/NativeComponent/ViewConfigIgnore",
+    "react-native/Libraries/StyleSheet/processColorArray",
+    "react-native/Libraries/NativeModules/specs/NativeSourceCode",
+    "react-native/Libraries/Image/AssetSourceResolver",
+    "react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore",
+    "react-native/Libraries/ReactNative/RendererProxy",
+    "react-native/Libraries/Core/ReactNativeVersion",
+    "react-native/Libraries/BatchedBridge/BatchedBridge",
+    "react-native/Libraries/ReactNative/AppContainer",
+    "react-native/Libraries/Utilities/dismissKeyboard",
+    "react-native/Libraries/Renderer/shims/ReactNative",
+    "react-native/Libraries/Components/UnimplementedViews/UnimplementedView",
+    "react-native/Libraries/Components/TextInput/TextInputState",
+    "react-native/Libraries/Core/Devtools/parseErrorStack",
+    "react-native/Libraries/Core/Devtools/symbolicateStackTrace",
+    "react-native/Libraries/Core/Devtools/getDevServer",
+    "react-native/Libraries/Utilities/codegenNativeCommands",
+    "react-native/Libraries/Utilities/codegenNativeComponent",
+    "url",
+    "whatwg-fetch",
+    "react-devtools-core",
+    "base64-js",
+    "buffer",
+    "punycode",
+    "whatwg-url-without-unicode",
+    "pretty-format",
+    "event-target-shim",
+    "invariant",
+    "regenerator-runtime/runtime",
+    "anser",
+    "stacktrace-parser",
+    "expo-modules-core",
+    "expo-modules-core/types",
+    "expo-modules-core/src/polyfill/dangerous-internal",
+    "expo-modules-core/src/uuid",
+    "expo-modules-core/src/LegacyEventEmitter",
+    "expo",
+    "expo/fetch",
+    "expo/dom",
+    "expo/dom/global",
+    "expo-file-system",
+    "expo-file-system/next",
+    "expo-file-system/legacy",
+    "expo-asset",
+    "expo-constants",
+    "expo-keep-awake",
+    "expo-status-bar",
+    "expo-blur",
+    "expo-font",
+    "expo-haptics",
+    "expo-image",
+    "expo-linking",
+    "expo-splash-screen",
+    "expo-symbols",
+    "expo-system-ui",
+    "expo-web-browser",
+    "react-native-gesture-handler",
+    "react-native-reanimated",
+    "react-native-safe-area-context",
+    "react-native-screens",
+    "react-native-webview",
+    "react-native-is-edge-to-edge",
+    "@react-native-masked-view/masked-view",
+    "@react-navigation/routers",
+    "@react-navigation/core",
+    "@react-navigation/native",
+    "@react-navigation/elements",
+    "@react-navigation/native-stack",
+    "@react-navigation/bottom-tabs",
+    "color",
+    "color-string",
+    "color-name",
+    "@radix-ui/react-compose-refs",
+    "@radix-ui/react-slot",
+    "nanoid/non-secure",
+    "use-latest-callback",
+    "query-string",
+    "use-sync-external-store",
+    "use-sync-external-store/with-selector"
+  ],
+  "packages": {
+    "@radix-ui/react-compose-refs": {
+      "version": "1.1.2",
+      "modules": [
+        "@radix-ui/react-compose-refs"
+      ]
+    },
+    "@radix-ui/react-slot": {
+      "version": "1.2.3",
+      "modules": [
+        "@radix-ui/react-slot"
+      ]
+    },
+    "@react-native-masked-view/masked-view": {
+      "version": "0.3.2",
+      "modules": [
+        "@react-native-masked-view/masked-view"
+      ]
+    },
+    "@react-native/assets-registry": {
+      "version": "0.83.0",
+      "modules": [
+        "@react-native/assets-registry/registry"
+      ]
+    },
+    "@react-native/normalize-colors": {
+      "version": "0.83.0",
+      "modules": [
+        "@react-native/normalize-colors"
+      ]
+    },
+    "@react-navigation/bottom-tabs": {
+      "version": "7.7.3",
+      "modules": [
+        "@react-navigation/bottom-tabs"
+      ]
+    },
+    "@react-navigation/core": {
+      "version": "7.13.2",
+      "modules": [
+        "@react-navigation/core"
+      ]
+    },
+    "@react-navigation/elements": {
+      "version": "2.8.3",
+      "modules": [
+        "@react-navigation/elements"
+      ]
+    },
+    "@react-navigation/native": {
+      "version": "7.1.21",
+      "modules": [
+        "@react-navigation/native"
+      ]
+    },
+    "@react-navigation/native-stack": {
+      "version": "7.8.0",
+      "modules": [
+        "@react-navigation/native-stack"
+      ]
+    },
+    "@react-navigation/routers": {
+      "version": "7.5.1",
+      "modules": [
+        "@react-navigation/routers"
+      ]
+    },
+    "anser": {
+      "version": "1.4.10",
+      "modules": [
+        "anser"
+      ]
+    },
+    "base64-js": {
+      "version": "1.5.1",
+      "modules": [
+        "base64-js"
+      ]
+    },
+    "buffer": {
+      "version": "5.7.1",
+      "modules": [
+        "buffer"
+      ]
+    },
+    "color": {
+      "version": "4.2.3",
+      "modules": [
+        "color"
+      ]
+    },
+    "color-name": {
+      "version": "1.1.4",
+      "modules": [
+        "color-name"
+      ]
+    },
+    "color-string": {
+      "version": "1.9.1",
+      "modules": [
+        "color-string"
+      ]
+    },
+    "event-target-shim": {
+      "version": "5.0.1",
+      "modules": [
+        "event-target-shim"
+      ]
+    },
+    "expo": {
+      "version": "54.0.8",
+      "modules": [
+        "expo",
+        "expo/fetch",
+        "expo/dom",
+        "expo/dom/global"
+      ]
+    },
+    "expo-asset": {
+      "version": "12.0.8",
+      "modules": [
+        "expo-asset"
+      ]
+    },
+    "expo-blur": {
+      "version": "15.0.7",
+      "modules": [
+        "expo-blur"
+      ]
+    },
+    "expo-constants": {
+      "version": "18.0.9",
+      "modules": [
+        "expo-constants"
+      ]
+    },
+    "expo-file-system": {
+      "version": "19.0.14",
+      "modules": [
+        "expo-file-system",
+        "expo-file-system/next",
+        "expo-file-system/legacy"
+      ]
+    },
+    "expo-font": {
+      "version": "14.0.8",
+      "modules": [
+        "expo-font"
+      ]
+    },
+    "expo-haptics": {
+      "version": "15.0.7",
+      "modules": [
+        "expo-haptics"
+      ]
+    },
+    "expo-image": {
+      "version": "3.0.8",
+      "modules": [
+        "expo-image"
+      ]
+    },
+    "expo-keep-awake": {
+      "version": "15.0.7",
+      "modules": [
+        "expo-keep-awake"
+      ]
+    },
+    "expo-linking": {
+      "version": "8.0.8",
+      "modules": [
+        "expo-linking"
+      ]
+    },
+    "expo-modules-core": {
+      "version": "3.0.16",
+      "modules": [
+        "expo-modules-core",
+        "expo-modules-core/types",
+        "expo-modules-core/src/polyfill/dangerous-internal",
+        "expo-modules-core/src/uuid",
+        "expo-modules-core/src/LegacyEventEmitter"
+      ]
+    },
+    "expo-splash-screen": {
+      "version": "31.0.10",
+      "modules": [
+        "expo-splash-screen"
+      ]
+    },
+    "expo-status-bar": {
+      "version": "3.0.8",
+      "modules": [
+        "expo-status-bar"
+      ]
+    },
+    "expo-symbols": {
+      "version": "1.0.7",
+      "modules": [
+        "expo-symbols"
+      ]
+    },
+    "expo-system-ui": {
+      "version": "6.0.7",
+      "modules": [
+        "expo-system-ui"
+      ]
+    },
+    "expo-web-browser": {
+      "version": "15.0.7",
+      "modules": [
+        "expo-web-browser"
+      ]
+    },
+    "invariant": {
+      "version": "2.2.4",
+      "modules": [
+        "invariant"
+      ]
+    },
+    "nanoid": {
+      "version": "3.3.11",
+      "modules": [
+        "nanoid/non-secure"
+      ]
+    },
+    "pretty-format": {
+      "version": "29.7.0",
+      "modules": [
+        "pretty-format"
+      ]
+    },
+    "punycode": {
+      "version": "2.1.1",
+      "modules": [
+        "punycode"
+      ]
+    },
+    "query-string": {
+      "version": "7.1.3",
+      "modules": [
+        "query-string"
+      ]
+    },
+    "react": {
+      "version": "19.2.0",
+      "modules": [
+        "react",
+        "react/jsx-dev-runtime",
+        "react/jsx-runtime"
+      ]
+    },
+    "react-devtools-core": {
+      "version": "6.1.5",
+      "modules": [
+        "react-devtools-core"
+      ]
+    },
+    "react-is": {
+      "version": "16.13.1",
+      "modules": [
+        "react-is"
+      ]
+    },
+    "react-native": {
+      "version": "0.83.0",
+      "modules": [
+        "react-native",
+        "react-native/Libraries/Core/InitializeCore",
+        "react-native/Libraries/Utilities/HMRClient",
+        "react-native/Libraries/Core/ExceptionsManager",
+        "react-native/Libraries/LogBox/LogBox",
+        "react-native/Libraries/NativeModules/specs/NativeRedBox",
+        "react-native/Libraries/Utilities/DevSettings",
+        "react-native/Libraries/Utilities/DevLoadingView",
+        "react-native/Libraries/Core/NativeExceptionsManager",
+        "react-native/src/private/setup/setUpDOM",
+        "react-native/src/private/featureflags/ReactNativeFeatureFlags",
+        "react-native/Libraries/NativeComponent/NativeComponentRegistry",
+        "react-native/Libraries/Utilities/PolyfillFunctions",
+        "react-native/Libraries/ReactPrivate/ReactNativePrivateInterface",
+        "react-native/Libraries/Image/resolveAssetSource",
+        "react-native/Libraries/StyleSheet/processColor",
+        "react-native/Libraries/NativeComponent/ViewConfigIgnore",
+        "react-native/Libraries/StyleSheet/processColorArray",
+        "react-native/Libraries/NativeModules/specs/NativeSourceCode",
+        "react-native/Libraries/Image/AssetSourceResolver",
+        "react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore",
+        "react-native/Libraries/ReactNative/RendererProxy",
+        "react-native/Libraries/Core/ReactNativeVersion",
+        "react-native/Libraries/BatchedBridge/BatchedBridge",
+        "react-native/Libraries/ReactNative/AppContainer",
+        "react-native/Libraries/Utilities/dismissKeyboard",
+        "react-native/Libraries/Renderer/shims/ReactNative",
+        "react-native/Libraries/Components/UnimplementedViews/UnimplementedView",
+        "react-native/Libraries/Components/TextInput/TextInputState",
+        "react-native/Libraries/Core/Devtools/parseErrorStack",
+        "react-native/Libraries/Core/Devtools/symbolicateStackTrace",
+        "react-native/Libraries/Core/Devtools/getDevServer",
+        "react-native/Libraries/Utilities/codegenNativeCommands",
+        "react-native/Libraries/Utilities/codegenNativeComponent"
+      ]
+    },
+    "react-native-gesture-handler": {
+      "version": "2.28.0",
+      "modules": [
+        "react-native-gesture-handler"
+      ]
+    },
+    "react-native-is-edge-to-edge": {
+      "version": "1.2.1",
+      "modules": [
+        "react-native-is-edge-to-edge"
+      ]
+    },
+    "react-native-reanimated": {
+      "version": "4.2.0",
+      "modules": [
+        "react-native-reanimated"
+      ]
+    },
+    "react-native-safe-area-context": {
+      "version": "5.6.0",
+      "modules": [
+        "react-native-safe-area-context"
+      ]
+    },
+    "react-native-screens": {
+      "version": "4.19.0-nightly-20251203-1746a584e",
+      "modules": [
+        "react-native-screens"
+      ]
+    },
+    "react-native-webview": {
+      "version": "13.15.0",
+      "modules": [
+        "react-native-webview"
+      ]
+    },
+    "react-refresh": {
+      "version": "0.14.2",
+      "modules": [
+        "react-refresh/runtime"
+      ]
+    },
+    "regenerator-runtime": {
+      "version": "0.13.11",
+      "modules": [
+        "regenerator-runtime/runtime"
+      ]
+    },
+    "scheduler": {
+      "version": "0.27.0",
+      "modules": [
+        "scheduler"
+      ]
+    },
+    "stacktrace-parser": {
+      "version": "0.1.10",
+      "modules": [
+        "stacktrace-parser"
+      ]
+    },
+    "url": {
+      "version": "0.11.0",
+      "modules": [
+        "url"
+      ]
+    },
+    "use-latest-callback": {
+      "version": "0.2.4",
+      "modules": [
+        "use-latest-callback"
+      ]
+    },
+    "use-sync-external-store": {
+      "version": "1.5.0",
+      "modules": [
+        "use-sync-external-store",
+        "use-sync-external-store/with-selector"
+      ]
+    },
+    "whatwg-fetch": {
+      "version": "3.6.2",
+      "modules": [
+        "whatwg-fetch"
+      ]
+    },
+    "whatwg-url-without-unicode": {
+      "version": "8.0.0-3",
+      "modules": [
+        "whatwg-url-without-unicode"
+      ]
+    }
+  }
+}
