@@ -594,6 +594,11 @@ export type VideoTrack = {
   id: string;
 
   /**
+   * The url of the VideoTrack for HLS video sources, null for other source types.
+   */
+  url: string | null;
+
+  /**
    * Size of the video track.
    */
   size: VideoSize;
