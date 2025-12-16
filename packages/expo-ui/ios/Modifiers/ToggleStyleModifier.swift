@@ -30,7 +30,7 @@ internal struct ToggleStyleModifier: ViewModifier, Record {
 
   @ViewBuilder
   func body(content: Content) -> some View {
-    if let style = style {
+    if let style {
       style.apply(to: content)
     } else {
       content
