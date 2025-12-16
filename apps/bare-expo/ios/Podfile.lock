@@ -47,7 +47,7 @@ PODS:
     - ExpoModulesTestCore
   - EXNotifications (0.29.14):
     - ExpoModulesCore
-  - Expo (52.0.44):
+  - Expo (52.0.48):
     - ExpoModulesCore
   - expo-dev-client (5.0.20):
     - EXManifests
@@ -527,7 +527,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSpeech (13.0.1):
     - ExpoModulesCore
-  - ExpoSplashScreen (0.29.22):
+  - ExpoSplashScreen (0.29.24):
     - ExpoModulesCore
   - ExpoSQLite (15.1.4):
     - ExpoModulesCore
@@ -3319,8 +3319,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BenchmarkingModule: 3e760b7a094a1ff8ef3b1308a7e3b836d1afab5d
-  boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
-  DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
+  boost: 1dca942403ed9342f98334bf4c3621f011aa7946
+  DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
   EASClient: 68ffef26f551980423751c44c870759842b3340f
   EXApplication: 27a524f5c3e671c6218220fba04752629466a1a9
   EXAV: 57ea461614a714b8b8fcc72c6fbc298b8f1ec78b
@@ -3329,7 +3329,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 01fc7492b66c234e395dcffdd5f53439c5c29c93
   EXManifests: 77e77c283c4c53a50b9bddebed25abe93f0b48f1
   EXNotifications: c024b19d69d31fbc22ed63682559cef38523da9e
-  Expo: 83a0ca93325155885341b6cfc988c9c711dd0048
+  Expo: df08d6ba6d04d146d4941ef58864db6bf6a04d7e
   expo-dev-client: ca3ebc270cb0d3f26e6d9c3e1da19957ef4fcac1
   expo-dev-launcher: dc460ac52ccec6e72f80de7c6fbe011ee312873c
   expo-dev-menu: 32f62936b2b3ebb3ff84fcdcb5b927a36f80393a
@@ -3381,7 +3381,7 @@ SPEC CHECKSUMS:
   ExpoSharing: c4540ef2e6615a92e05d2bddf019e1f58f27119e
   ExpoSMS: 2f90c7c780ef65c9f52b800183aab554360b34a2
   ExpoSpeech: acaa550b65ffecb079ab7599cdcce7f2503d424f
-  ExpoSplashScreen: 643666b96a84e8d97d55fac43926fb4183c692d9
+  ExpoSplashScreen: 0e176e85073dfb9686c100c7f9637975d00608dd
   ExpoSQLite: a55722487de46cdb8d87992e63a19c069818083c
   ExpoStoreReview: 32f7186925fdecacddf3c1bc9628dd11b10c3ddd
   ExpoSymbols: b9f255ce49868d46a73f30e12859efeb8117bcad
@@ -3397,7 +3397,7 @@ SPEC CHECKSUMS:
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: 7605ea4810e0e10ae4815292433c09bf4324ba45
   fmt: 01b82d4ca6470831d1cc0852a1af644be019e8f6
-  glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
+  glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
   hermes-engine: 9e868dc7be781364296d6ee2f56d0c1a9ef0bb11
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f

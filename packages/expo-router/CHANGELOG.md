@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 4.0.22 — 2025-12-16
+
+### 🐛 Bug fixes
+
 - Esacpe unsafe property characters when generating params in typed routes output ([#36824](https://github.com/expo/expo/pull/36824) by [@kitten](https://github.com/kitten))
 - - Fix search params types inference for routes without route params ([#41301](https://github.com/expo/expo/pull/41301) by [@AmauryLiet](https://github.com/AmauryLiet))
 
