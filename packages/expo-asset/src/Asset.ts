@@ -348,7 +348,8 @@ export class Asset {
    * @platform web
    *
    * @param moduleId Value of `require('path/to/file')` or external network URLs
-   * @returns Returns a `Promise` that resolves with the contents of the asset as a `Uint8Array`.
+   * @returns a `Promise` that resolves with the contents of the asset as a `Uint8Array`.
+   *
    * @example
    * ```ts
    * const uint8Array = await Asset.content(require('./assets/snack-icon.png'));
