@@ -19,7 +19,7 @@ plugins {
   alias libs.plugins.android.library
   alias libs.plugins.kotlin.android
   alias libs.plugins.download
-  id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
+  id("org.jetbrains.kotlin.plugin.compose") version "2.2.21"
 }
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
@@ -48,6 +48,7 @@ repositories {
 
 
 apply plugin: 'com.facebook.react'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 react {
   /* Autolinking */
@@ -59,7 +60,8 @@ android {
   namespace "host.exp.expoview"
 
   buildFeatures {
-    buildConfig = true
+    buildConfig true
+    compose true
   }
 
   composeOptions {
@@ -165,6 +167,14 @@ dependencies {
   implementation 'io.coil-kt.coil3:coil-network-okhttp:3.2.0'
   implementation 'androidx.compose.material3:material3:1.4.0-alpha10'
   implementation 'androidx.core:core-splashscreen:1.0.1'
+  implementation 'io.coil-kt:coil-compose:2.6.0'
+  implementation libs.androidx.navigation.compose
+  implementation libs.androidx.ui
+  implementation libs.androidx.runtime.saveable
+  implementation libs.androidx.material3
+  implementation libs.androidx.animation
+  implementation libs.androidx.foundation
+  implementation libs.androidx.lifecycle.viewmodel.ktx
 
 
   testImplementation 'junit:junit:4.13.2'
