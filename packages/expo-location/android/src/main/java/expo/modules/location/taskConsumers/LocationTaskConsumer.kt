@@ -43,7 +43,8 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
   private var mLastReportedLocation: Location? = null
   private var mDeferredDistance = 0.0
   private val mDeferredLocations: MutableList<Location> = ArrayList()
-  private var mIsHostPaused = true
+  // Apps start in foreground state; lifecycle callbacks update this after initialization
+  private var mIsHostPaused = false
   private val mLocationClient: FusedLocationProviderClient by lazy {
     LocationServices.getFusedLocationProviderClient(context)
   }
@@ -83,14 +84,24 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
     val result = LocationResult.extractResult(intent)
     if (result != null) {
       val locations = result.locations
-      deferLocations(locations)
-      maybeReportDeferredLocations()
+      // Foreground: report immediately for responsive UI (matches iOS behavior)
+      // Background: use deferred buffer for battery optimization
+      if (!mIsHostPaused) {
+        reportLocationsImmediately(locations)
+      } else {
+        deferLocations(locations)
+        maybeReportDeferredLocations()
+      }
     } else {
       try {
         mLocationClient.lastLocation.addOnCompleteListener { task ->
           task.result?.let {
-            deferLocations(listOf(it))
-            maybeReportDeferredLocations()
+            if (!mIsHostPaused) {
+              reportLocationsImmediately(listOf(it))
+            } else {
+              deferLocations(listOf(it))
+              maybeReportDeferredLocations()
+            }
           }
         }
       } catch (e: SecurityException) {
@@ -225,6 +236,32 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
 
   private fun stopForegroundService() {
     mService?.stop()
+  }
+
+  /**
+   * Reports locations immediately without deferred batching.
+   * Used in foreground mode to provide responsive location updates (matches iOS behavior).
+   */
+  private fun reportLocationsImmediately(locations: List<Location>) {
+    if (locations.isEmpty()) return
+    val context = context.applicationContext
+    val data: MutableList<PersistableBundle> = ArrayList()
+    var lastReported: Location? = null
+    for (location in locations) {
+      val timestamp = location.time
+      // Some devices may broadcast the same location multiple times (mostly twice)
+      // so we're filtering out these locations.
+      if (timestamp > sLastTimestamp) {
+        val bundle = LocationResponse(location).toBundle(PersistableBundle::class.java)
+        data.add(bundle)
+        sLastTimestamp = timestamp
+        lastReported = location
+      }
+    }
+    if (data.isNotEmpty()) {
+      mLastReportedLocation = lastReported
+      taskManagerUtils.scheduleJob(context, mTask, data)
+    }
   }
 
   private fun deferLocations(locations: List<Location>) {
