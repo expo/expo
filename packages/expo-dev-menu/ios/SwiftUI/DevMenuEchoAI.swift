@@ -1,4 +1,6 @@
 import SwiftUI
+import Starscream
+import Foundation
 
 struct ChatMessage {
   let id: String
@@ -17,9 +19,57 @@ struct ToolCall {
   let file: String
 }
 
+// WebSocket delegate handler class
+class WebSocketDelegateHandler: NSObject, WebSocketDelegate {
+  var onConnected: (() -> Void)?
+  var onDisconnected: ((String, UInt16) -> Void)?
+  var onText: ((String) -> Void)?
+  var onBinary: ((Data) -> Void)?
+  var onError: ((Error?) -> Void)?
+  
+  func didReceive(event: WebSocketEvent, client: WebSocketClient) {
+    switch event {
+    case .connected(let headers):
+      print("WebSocket connected: \(headers)")
+      onConnected?()
+    case .disconnected(let reason, let code):
+      print("WebSocket disconnected: \(reason) with code: \(code)")
+      onDisconnected?(reason, code)
+    case .text(let string):
+      print("Received text: \(string)")
+      onText?(string)
+    case .binary(let data):
+      print("Received data: \(data.count) bytes")
+      onBinary?(data)
+    case .ping(_):
+      break
+    case .pong(_):
+      break
+    case .viabilityChanged(_):
+      break
+    case .reconnectSuggested(_):
+      break
+    case .cancelled:
+      print("WebSocket cancelled")
+      onDisconnected?("Cancelled", 0)
+    case .error(let error):
+      if let error = error {
+        print("WebSocket error: \(error)")
+      }
+      onError?(error)
+    case .peerClosed:
+      print("WebSocket peer closed")
+      onDisconnected?("Peer closed", 0)
+    }
+  }
+}
+
 struct DevMenuEchoAI: View {
   @EnvironmentObject var viewModel: DevMenuViewModel
   @State private var inputText: String = ""
+  @State private var socket: WebSocket?
+  @State private var isConnected: Bool = false
+  @State private var delegateHandler = WebSocketDelegateHandler()
 
   private var shouldShowEcho: Bool {
     guard let hostUrl = viewModel.appInfo?.hostUrl,
@@ -100,7 +150,7 @@ struct DevMenuEchoAI: View {
               // Context menu button - outside input field, larger size
               Menu {
                 Button(action: {
-                  viewModel.showAIMode = false
+                    self.viewModel.showAIMode = false
                 }) {
                   Label("Switch to dev tools", systemImage: "wrench.and.screwdriver")
                 }
@@ -113,11 +163,13 @@ struct DevMenuEchoAI: View {
 
               // Input text field with send button inside
               HStack() {
-                TextField("Generate code...", text: $inputText)
+                  TextField("Generate code...", text: self.$inputText)
                   .textFieldStyle(.plain)
 
                 // Send button - inside input field
-                Button(action: {}) {
+                Button(action: {
+                    self.sendMessage()
+                }) {
                   Image(systemName: "arrow.up.circle.fill")
                     .font(.system(size: 28))
                     .foregroundColor(.white)
@@ -133,7 +185,127 @@ struct DevMenuEchoAI: View {
           .padding(.all, 8)
         }
       }
+      .onAppear {
+          self.connectWebSocket()
+      }
+      .onDisappear {
+          self.disconnectWebSocket()
+      }
     }
+  }
+  
+  private func connectWebSocket() {
+    guard let url = URL(string: "ws://localhost:5173/agents/chat/@krystofwoldrich-a1741o7yzk?_pk=\(UUID().uuidString)") else {
+      print("Invalid WebSocket URL")
+      return
+    }
+    
+    var request = URLRequest(url: url)
+    request.timeoutInterval = 5
+    
+    let newSocket = WebSocket(request: request)
+    
+    // Set up delegate handler callbacks
+    delegateHandler.onConnected = {
+      self.isConnected = true
+
+      var payload: [String: Any] = [
+        "state": [
+          "snackId": "@krystofwoldrich/tqh1io6agfh",
+          "authorization": "{\"id\":\"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\"version\":1,\"expires_at\":xxxxxxxxxxxx}",
+          "aiModel": "alibaba/qwen3-coder"
+        ],
+        "type": "cf_agent_state"
+      ]
+
+      guard let jsonData = try? JSONSerialization.data(withJSONObject: payload, options: []),
+            let jsonString = String(data: jsonData, encoding: .utf8) else {
+        print("Failed to serialize message")
+        return
+      }
+
+      newSocket.write(string: jsonString)
+    }
+    
+    delegateHandler.onDisconnected = { reason, code in
+      self.isConnected = false
+    }
+    
+    delegateHandler.onText = { text in
+      // Handle incoming text messages
+      // TODO: Parse and update messages
+    }
+    
+    delegateHandler.onError = { error in
+      self.isConnected = false
+    }
+    
+    newSocket.delegate = delegateHandler
+    self.socket = newSocket
+    newSocket.connect()
+  }
+  
+  private func disconnectWebSocket() {
+    socket?.disconnect()
+    socket = nil
+    isConnected = false
+  }
+  
+  private func sendMessage() {
+    guard !inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+      return
+    }
+    
+    let messageText = inputText
+    inputText = ""
+    
+    // Generate unique request ID
+    let requestId = UUID().uuidString
+    
+    // Create message in the same format as store.ts
+    let uiMessage: [String: Any] = [
+      "id": "user_\(requestId)",
+      "role": "user",
+      "parts": [
+        [
+          "type": "text",
+          "text": messageText
+        ]
+      ]
+    ]
+    
+    let messageBody: [String: Any] = [
+      "messages": [uiMessage]
+    ]
+    
+    guard let messageBodyData = try? JSONSerialization.data(withJSONObject: messageBody, options: []),
+          let messageBodyString = String(data: messageBodyData, encoding: .utf8) else {
+      print("Failed to serialize message body")
+      return
+    }
+    
+    let initPayload: [String: Any] = [
+      "method": "POST",
+      "body": messageBodyString
+    ]
+    
+    var payload: [String: Any] = [
+      "id": requestId,
+      "type": "cf_agent_use_chat_request",
+      "init": initPayload
+    ]
+    
+    // expo_pushNotificationToken is optional, can be nil
+    // For now, we'll omit it or set it to empty string
+    payload["expo_pushNotificationToken"] = "" as Any
+    
+    guard let jsonData = try? JSONSerialization.data(withJSONObject: payload, options: []),
+          let jsonString = String(data: jsonData, encoding: .utf8) else {
+      print("Failed to serialize message")
+      return
+    }
+    
+    socket?.write(string: jsonString)
   }
 }
 
