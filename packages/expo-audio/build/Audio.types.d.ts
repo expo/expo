@@ -484,7 +484,7 @@ export type AudioMode = {
  * - `'mixWithOthers'`: Audio plays alongside other apps without interrupting them.
  *   On Android, this means no audio focus is requested - best suited for sound effects,
  *   UI feedback, or short audio clips. Note that on Android your app won't receive
- *   audio focus loss callbacks (e.g., during phone calls) when using this mode.
+ *   audio focus loss callbacks (for example, during phone calls) when using this mode.
 >>>>>>> a2d89492e0 ([android][audio] Support mixWithOthers)
  */
 export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
