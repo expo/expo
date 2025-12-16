@@ -324,7 +324,20 @@ class ExpoCameraView(
   }
 
   fun setCameraFlashMode(mode: FlashMode) {
-    imageCaptureUseCase?.flashMode = mode.mapToLens()
+    val currentMode = if (mode == FlashMode.SCREEN && lensFacing != CameraType.FRONT) {
+      FlashMode.ON
+    } else {
+      mode
+    }
+
+    if (currentMode == FlashMode.SCREEN) {
+      appContext.currentActivity?.window?.let { window ->
+        previewView.setScreenFlashWindow(window)
+        imageCaptureUseCase?.screenFlash = previewView.screenFlash
+      }
+    }
+
+    imageCaptureUseCase?.flashMode = currentMode.mapToLens()
   }
 
   private fun setTorchEnabled(enabled: Boolean) {
@@ -457,10 +470,30 @@ class ExpoCameraView(
       .requireLensFacing(lensFacing.mapToCharacteristic())
       .build()
 
-    imageCaptureUseCase = ImageCapture.Builder()
+    // Screen flash only works with front camera - fall back to ON for back camera
+    val currentFlashMode = if (flashMode == FlashMode.SCREEN && lensFacing != CameraType.FRONT) {
+      FlashMode.ON
+    } else {
+      flashMode
+    }
+
+    if (currentFlashMode == FlashMode.SCREEN) {
+      appContext.currentActivity?.window?.let { window ->
+        previewView.setScreenFlashWindow(window)
+      }
+    }
+
+    val imageCaptureBuilder = ImageCapture.Builder()
       .setResolutionSelector(resolutionSelector)
-      .setFlashMode(flashMode.mapToLens())
-      .build()
+      .setFlashMode(currentFlashMode.mapToLens())
+
+    if (currentFlashMode == FlashMode.SCREEN) {
+      previewView.screenFlash?.let { screenFlash ->
+        imageCaptureBuilder.setScreenFlash(screenFlash)
+      }
+    }
+
+    imageCaptureUseCase = imageCaptureBuilder.build()
 
     val videoCapture = createVideoCapture()
     imageAnalysisUseCase = createImageAnalyzer()

@@ -14,7 +14,16 @@ import { PictureRef } from './PictureRef';
 
 export type CameraType = 'front' | 'back';
 
-export type FlashMode = 'off' | 'on' | 'auto';
+/**
+ * Flash mode for the camera.
+ * - `off` - Flash is disabled.
+ * - `on` - Flash will fire for every capture.
+ * - `auto` - Flash will fire automatically when required.
+ * - `screen` - Uses the device screen as a flash for front camera selfies.
+ *   On Android, this uses CameraX's dedicated screen flash mode.
+ *   On iOS, this maps to 'on' which triggers Retina Flash automatically.
+ */
+export type FlashMode = 'off' | 'on' | 'auto' | 'screen';
 
 export type ImageType = 'png' | 'jpg';
 

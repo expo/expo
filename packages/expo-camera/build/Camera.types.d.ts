@@ -4,7 +4,16 @@ import type { ViewProps } from 'react-native';
 import { AndroidBarcode } from './AndroidBarcode.types';
 import { PictureRef } from './PictureRef';
 export type CameraType = 'front' | 'back';
-export type FlashMode = 'off' | 'on' | 'auto';
+/**
+ * Flash mode for the camera.
+ * - `off` - Flash is disabled.
+ * - `on` - Flash will fire for every capture.
+ * - `auto` - Flash will fire automatically when required.
+ * - `screen` - Uses the device screen as a flash for front camera selfies.
+ *   On Android, this uses CameraX's dedicated screen flash mode.
+ *   On iOS, this maps to 'on' which triggers Retina Flash automatically.
+ */
+export type FlashMode = 'off' | 'on' | 'auto' | 'screen';
 export type ImageType = 'png' | 'jpg';
 export type CameraMode = 'picture' | 'video';
 export type CameraRatio = '4:3' | '16:9' | '1:1';

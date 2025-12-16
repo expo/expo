@@ -19,12 +19,13 @@ enum FlashMode: String, Enumerable {
   case off
   case on
   case auto
+  case screen
 
   func toDeviceFlashMode() -> AVCaptureDevice.FlashMode {
     switch self {
     case .off:
       return .off
-    case .on:
+    case .on, .screen:
       return .on
     case .auto:
       return .auto

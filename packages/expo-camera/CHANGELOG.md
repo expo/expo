@@ -8,6 +8,7 @@
 
 - Allow disabling the barcode scanner functionality via config plugin. ([#40444](https://github.com/expo/expo/pull/40444) by [@alanjhughes](https://github.com/alanjhughes))
 - Allow users to set video stabilization mode when recording videos. ([#41666](https://github.com/expo/expo/pull/41666) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Add support for screen flash on the front camera. ([#41667](https://github.com/expo/expo/pull/41667) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 

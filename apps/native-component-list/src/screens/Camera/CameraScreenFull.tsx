@@ -28,13 +28,15 @@ const { width: SCREEN_WIDTH } = Dimensions.get('screen');
 const flashModeOrder: Record<string, FlashMode> = {
   off: 'on',
   on: 'auto',
-  auto: 'off',
+  auto: 'screen',
+  screen: 'off',
 };
 
 const flashIcons: Record<string, string> = {
   off: 'flash-off',
   on: 'flash',
   auto: 'flash-outline',
+  screen: 'sunny',
 };
 
 const volumeIcons: Record<string, string> = {
