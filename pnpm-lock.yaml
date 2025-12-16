@@ -39,6 +39,9 @@ importers:
       expo-modules-core:
         specifier: workspace:*
         version: link:packages/expo-modules-core
+      jest-expo:
+        specifier: workspace:*
+        version: link:packages/jest-expo
       jsc-android:
         specifier: ^250231.0.0
         version: 250231.0.0
