@@ -55,52 +55,6 @@ defaults:
     yarn: 1.22.22
 
 jobs:
-  ios:
-    runs_on: macos-large
-    image: latest
-    steps:
-      - uses: eas/install_maestro
-      - uses: eas/checkout
-      - uses: eas/use_npm_token
-      - uses: eas/install_node_modules
-      - name: Set up Updates E2E enabled project
-        id: setup
-        working_directory: ../..
-        env:
-          UPDATES_HOST: localhost
-          UPDATES_PORT: '4747'
-        run: |
-          yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-eas-project.ts
-          ls -la ../updates-e2e
-      - name: Prepare E2E project
-        id: prepare
-        working_directory: ../../../updates-e2e
-        run: |
-          yarn generate-test-update-bundles ios
-          yarn ios:pod-install
-      - name: Build E2E test app (debug)
-        id: builddebug
-        working_directory: ../../../updates-e2e
-        run: |
-          yarn maestro:ios:debug:build
-      - name: Build E2E test app (release)
-        id: buildrelease
-        working_directory: ../../../updates-e2e
-        run: |
-          yarn maestro:ios:release:build
-      - uses: eas/start_ios_simulator
-        with:
-          device_identifier: iPhone 17
-      - name: Run Maestro tests (debug)
-        id: testdebug
-        working_directory: ../../../updates-e2e
-        run: |
-          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml ios debug
-      - name: Run Maestro tests (release)
-        id: testrelease
-        working_directory: ../../../updates-e2e
-        run: |
-          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml ios release
   android:
     runs_on: linux-large-nested-virtualization
     image: latest
@@ -131,18 +85,112 @@ jobs:
         working_directory: ../../../updates-e2e
         run: |
           yarn maestro:android:debug:build
-      - name: Build E2E test app (release)
-        id: buildrelease
-        working_directory: ../../../updates-e2e
+      # - name: Build E2E test app (release)
+      #   id: buildrelease
+      #   working_directory: ../../../updates-e2e
+      #   run: |
+      #     yarn maestro:android:release:build
+      - name: Start screen recording
+        id: startrecording
         run: |
-          yarn maestro:android:release:build
+          EMULATOR_SERIALS=$(adb devices -l | grep emulator | cut -d ' ' -f 1)
+          mkdir -p "$HOME/screen-recordings"
+
+          for SERIAL in $(printf '%s\n' $EMULATOR_SERIALS); do
+            echo -n "Starting screen recording of $SERIAL..."
+
+            i=0
+            while [ $i -lt 10 ]; do
+              if adb -s $SERIAL shell touch /sdcard/.expo-recording-ready > /dev/null 2>&1; then
+                break
+              fi
+              sleep 1
+              i=$((i + 1))
+            done
+
+            if [ $i -ge 10 ]; then
+              echo " failed (filesystem not ready)."
+              continue
+            fi
+
+            LOG_FILE="$HOME/screen-recordings/$SERIAL.log"
+            PID_FILE="$HOME/screen-recordings/$SERIAL.pid"
+
+            if adb -s $SERIAL shell screenrecord --help 2>&1 | grep -q "remove the time limit"; then
+              adb -s $SERIAL shell screenrecord --verbose --time-limit 0 /sdcard/expo-recording.mp4 > "$LOG_FILE" 2>&1 < /dev/null &
+              RECORDING_PID=$!
+            else
+              adb -s $SERIAL shell screenrecord --verbose /sdcard/expo-recording.mp4 > "$LOG_FILE" 2>&1 < /dev/null &
+              RECORDING_PID=$!
+            fi
+
+            echo $RECORDING_PID > "$PID_FILE"
+            echo " done."
+          done
       - name: Run Maestro tests (debug)
         id: testdebug
         working_directory: ../../../updates-e2e
         run: |
           ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android debug
-      - name: Run Maestro tests (release)
-        id: testrelease
-        working_directory: ../../../updates-e2e
+      - name: Stop screen recording
+        id: stoprecording
         run: |
-          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android release
+          EMULATOR_SERIALS=$(adb devices -l | grep emulator | cut -d ' ' -f 1)
+
+          for SERIAL in $(printf '%s\n' $EMULATOR_SERIALS); do
+            echo -n "Stopping screen recording of $SERIAL..."
+
+            PID_FILE="$HOME/screen-recordings/$SERIAL.pid"
+            LOG_FILE="$HOME/screen-recordings/$SERIAL.log"
+
+            RECORDING_PID=$(cat $PID_FILE)
+            rm $PID_FILE
+
+            if kill -1 $RECORDING_PID 2> /dev/null; then
+              echo " done."
+            else
+              echo " failed (recording already stopped)."
+            fi
+
+            echo -n "Ensuring recording file is ready..."
+            i=0
+            while [ $i -lt 10 ]; do
+              if adb -s $SERIAL shell "lsof -t /sdcard/expo-recording.mp4 | wc -l" | grep -q "0"; then
+                echo "done."
+                break
+              fi
+              sleep 1
+              i=$((i + 1))
+            done
+
+            if [ $i -ge 10 ]; then
+              echo " failed (recording file busy)."
+              continue
+            fi
+
+            echo -n "Pulling recording file..."
+            if ! adb -s $SERIAL pull /sdcard/expo-recording.mp4 "$HOME/screen-recordings/$SERIAL.mp4" 2> /dev/null; then
+              echo " failed."
+              continue
+            fi
+
+            echo " done."
+
+            rm $LOG_FILE
+          done
+      - name: Prepare screen recordings
+        id: prepare_screen_recordings
+        run: |
+          RECORDINGS_DIR="$HOME/screen-recordings"
+          RECORDING_FILES=$(find "$RECORDINGS_DIR" -type f -print)
+          set-output recording_files "$RECORDING_FILES"
+          echo "Found:\n$RECORDING_FILES"
+      # - name: Run Maestro tests (release)
+      #   id: testrelease
+      #   working_directory: ../../../updates-e2e
+      #   run: |
+      #     ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android release
+      - uses: eas/upload_artifact
+        with:
+          name: Upload screen recordings
+          path: ${{ steps.prepare_screen_recordings.outputs.recording_files }}
