@@ -1,0 +1,167 @@
+---
+title: Menu
+description: A SwiftUI Menu component for displaying dropdown menus.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Menu matches the official SwiftUI [Menu API](https://developer.apple.com/documentation/swiftui/menu) and supports styling via the [`buttonStyle`](modifiers/#buttonstylestyle) modifier.
+
+> **Note:** On tvOS, Menu requires tvOS 17.0 or later.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Simple text label
+
+```tsx SimpleMenuExample.tsx
+import { Host, Menu, Button } from '@expo/ui/swift-ui';
+
+export default function SimpleMenuExample() {
+  return (
+    <Host matchContents>
+      <Menu label="Options">
+        <Button label="Option 1" onPress={() => console.log('Option 1')} />
+        <Button label="Option 2" onPress={() => console.log('Option 2')} />
+        <Button label="Option 3" onPress={() => console.log('Option 3')} />
+      </Menu>
+    </Host>
+  );
+}
+```
+
+### Text label with SF Symbol
+
+```tsx MenuWithIconExample.tsx
+import { Host, Menu, Button, Divider } from '@expo/ui/swift-ui';
+
+export default function MenuWithIconExample() {
+  return (
+    <Host matchContents>
+      <Menu label="More" systemImage="ellipsis.circle">
+        <Button label="Settings" systemImage="gear" onPress={() => console.log('Settings')} />
+        <Button label="Profile" systemImage="person" onPress={() => console.log('Profile')} />
+        <Divider />
+        <Button label="Delete" role="destructive" systemImage="trash" onPress={() => console.log('Delete')} />
+      </Menu>
+    </Host>
+  );
+}
+```
+
+### Custom label
+
+You can pass a React node as the label for custom styling.
+
+```tsx CustomLabelMenuExample.tsx
+import { Host, Menu, Button, Text } from '@expo/ui/swift-ui';
+
+export default function CustomLabelMenuExample() {
+  return (
+    <Host matchContents>
+      <Menu label={<Text color="accentColor">Custom Label</Text>}>
+        <Button label="Action 1" onPress={() => console.log('Action 1')} />
+        <Button label="Action 2" onPress={() => console.log('Action 2')} />
+      </Menu>
+    </Host>
+  );
+}
+```
+
+### Nested menu
+
+Menus can be nested to create submenus.
+
+```tsx NestedMenuExample.tsx
+import { Host, Menu, Button } from '@expo/ui/swift-ui';
+
+export default function NestedMenuExample() {
+  return (
+    <Host matchContents>
+      <Menu label="Main Menu">
+        <Button label="Item 1" onPress={() => console.log('Item 1')} />
+        <Menu label="Submenu">
+          <Button label="Sub Item 1" onPress={() => console.log('Sub Item 1')} />
+          <Button label="Sub Item 2" onPress={() => console.log('Sub Item 2')} />
+        </Menu>
+        <Button label="Item 2" onPress={() => console.log('Item 2')} />
+      </Menu>
+    </Host>
+  );
+}
+```
+
+### With primary action
+
+When `onPrimaryAction` is provided, a single tap triggers the primary action while a long-press shows the menu.
+
+```tsx PrimaryActionMenuExample.tsx
+import { Host, Menu, Button } from '@expo/ui/swift-ui';
+
+export default function PrimaryActionMenuExample() {
+  return (
+    <Host matchContents>
+      <Menu
+        label="Tap or Hold"
+        systemImage="play.circle"
+        onPrimaryAction={() => console.log('Primary action triggered!')}>
+        <Button label="Menu Item 1" onPress={() => console.log('Menu Item 1')} />
+        <Button label="Menu Item 2" onPress={() => console.log('Menu Item 2')} />
+        <Button label="Menu Item 3" onPress={() => console.log('Menu Item 3')} />
+      </Menu>
+    </Host>
+  );
+}
+```
+
+### Styling with modifiers
+
+You can use the `buttonStyle` modifier to change the appearance of the menu trigger.
+
+```tsx StyledMenuExample.tsx
+import { Host, Menu, Button } from '@expo/ui/swift-ui';
+import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function StyledMenuExample() {
+  return (
+    <Host matchContents>
+      <Menu label="Styled Menu" modifiers={[buttonStyle('borderedProminent')]}>
+        <Button label="Styled Action 1" onPress={() => console.log('Styled 1')} />
+        <Button label="Styled Action 2" onPress={() => console.log('Styled 2')} />
+      </Menu>
+    </Host>
+  );
+}
+```
+
+### Icon only menu button
+
+Use the `labelStyle('iconOnly')` modifier to display only the icon without the label text. The `label` prop should still be provided for accessibility purposes.
+
+```tsx IconOnlyMenuExample.tsx
+import { Host, Menu, Button } from '@expo/ui/swift-ui';
+import { labelStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function IconOnlyMenuExample() {
+  return (
+    <Host matchContents>
+      <Menu label="Icon Only Button" systemImage="gear" modifiers={[labelStyle('iconOnly')]}>
+        <Button label="Menu Item 1" onPress={() => console.log('Menu Item 1')} />
+        <Button label="Menu Item 2" onPress={() => console.log('Menu Item 2')} />
+        <Button label="Menu Item 3" onPress={() => console.log('Menu Item 3')} />
+      </Menu>
+    </Host>
+  );
+}
+```
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/menu" apiName="Menu" />
