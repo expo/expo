@@ -19,5 +19,5 @@ fresco-animated-webp = { module = "com.facebook.fresco:animated-webp", version.r
 fresco-webpsupport = { module = "com.facebook.fresco:webpsupport", version.ref = "fresco" }
 
 apollo =  { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
-apollo-cache = { module = "com.apollographql.apollo:apollo-cache-normalized", version.ref = "apollo" }
+apollo-cache = { module = "com.apollographql.apollo:apollo-normalized-cache", version.ref = "apollo" }
 apollo-gradle = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
