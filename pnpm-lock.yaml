@@ -2370,6 +2370,9 @@ importers:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.12
       '@types/node':
         specifier: ^22.14.0
         version: 22.14.0
@@ -2385,6 +2388,9 @@ importers:
       tsd:
         specifier: ^0.28.1
         version: 0.28.1
+      tsd-lite:
+        specifier: ^0.8.0
+        version: 0.8.0(@tsd/typescript@5.0.4)
 
   packages/@expo/schema-utils:
     devDependencies:
