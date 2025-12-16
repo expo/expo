@@ -1,5 +1,3 @@
-const resolveFrom = require(require.resolve('resolve-from'));
-
 const silent = (fromDirectory: string, request: string) => {
   const fs = require('fs');
   const path = require('path');
@@ -32,7 +30,9 @@ const silent = (fromDirectory: string, request: string) => {
 module.exports = jest.fn((fromDirectory, request) => {
   const path = silent(fromDirectory, request);
   if (!path) {
-    return resolveFrom(fromDirectory, request);
+    const err: any = new Error(`Cannot find module '${request}'`);
+    err.code = 'MODULE_NOT_FOUND';
+    throw err;
   }
   return path;
 });
