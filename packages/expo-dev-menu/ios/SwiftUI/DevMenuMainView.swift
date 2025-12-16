@@ -3,16 +3,6 @@ import SwiftUI
 struct DevMenuMainView: View {
   @EnvironmentObject var viewModel: DevMenuViewModel
 
-  private var shouldShowEcho: Bool {
-    guard let hostUrl = viewModel.appInfo?.hostUrl,
-          let url = URL(string: hostUrl),
-          let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-          let queryItems = components.queryItems else {
-      return false
-    }
-    return queryItems.first(where: { $0.name == "project-type" })?.value == "echo"
-  }
-
   var body: some View {
     ScrollView {
       VStack(spacing: 32) {
@@ -25,38 +15,14 @@ struct DevMenuMainView: View {
             )
           }
 
-          DevMenuActions(
-            canNavigateHome: viewModel.canNavigateHome,
-            onReload: viewModel.reload,
-            onGoHome: viewModel.goHome
-          )
-        }
+        DevMenuActions(
+          canNavigateHome: viewModel.canNavigateHome,
+          onReload: viewModel.reload,
+          onGoHome: viewModel.goHome
+        )
+      }
 
-        if shouldShowEcho {
-          // Chat message input UI
-          VStack(alignment: .leading, spacing: 8) {
-            Text("ECHO AI")
-              .font(.caption)
-              .foregroundColor(.primary.opacity(0.6))
-
-            HStack(spacing: 12) {
-              TextField("Generate code...", text: .constant(""))
-                .textFieldStyle(.plain)
-
-              Button(action: {}) {
-                Image(systemName: "arrow.up.circle.fill")
-                  .font(.system(size: 24))
-                  .foregroundColor(.blue)
-              }
-              .buttonStyle(.plain)
-            }
-            .padding()
-            .background(Color.expoSecondarySystemBackground)
-            .cornerRadius(20)
-          }
-        }
-
-        if !viewModel.registeredCallbacks.isEmpty {
+      if !viewModel.registeredCallbacks.isEmpty {
           CustomItems(
             callbacks: viewModel.registeredCallbacks,
             onFireCallback: viewModel.fireCallback

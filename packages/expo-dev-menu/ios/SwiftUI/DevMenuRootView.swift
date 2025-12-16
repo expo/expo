@@ -11,8 +11,13 @@ struct DevMenuRootView: View {
         .environmentObject(viewModel)
 
       ZStack {
-        DevMenuMainView()
-          .environmentObject(viewModel)
+        if viewModel.showAIMode {
+          DevMenuEchoAI()
+            .environmentObject(viewModel)
+        } else {
+          DevMenuMainView()
+            .environmentObject(viewModel)
+        }
 
         #if !os(tvOS)
         if !viewModel.isOnboardingFinished {

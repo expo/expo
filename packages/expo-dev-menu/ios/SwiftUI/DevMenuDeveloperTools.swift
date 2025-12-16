@@ -5,6 +5,16 @@ import SwiftUI
 struct DevMenuDeveloperTools: View {
   @EnvironmentObject var viewModel: DevMenuViewModel
 
+  private var shouldShowEcho: Bool {
+    guard let hostUrl = viewModel.appInfo?.hostUrl,
+          let url = URL(string: hostUrl),
+          let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+          let queryItems = components.queryItems else {
+      return false
+    }
+    return queryItems.first(where: { $0.name == "project-type" })?.value == "echo"
+  }
+
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
       Text("TOOLS")
@@ -12,6 +22,18 @@ struct DevMenuDeveloperTools: View {
         .foregroundColor(.primary.opacity(0.6))
 
       VStack(spacing: 0) {
+        if shouldShowEcho {
+          DevMenuActionButton(
+            title: "Switch to AI",
+            icon: "sparkles",
+            action: {
+              viewModel.showAIMode = true
+            }
+          )
+
+          Divider()
+        }
+
         DevMenuActionButton(
           title: "Toggle performance monitor",
           icon: "speedometer",
