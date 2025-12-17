@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed deferred location updates being applied in foreground due to incorrect `mIsHostPaused` initialization. Location updates are now delivered immediately when app is in foreground, matching iOS behavior. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@tyrauber](https://github.com/tyrauber)) ([#41659](https://github.com/expo/expo/pull/41659) by [@tyrauber](https://github.com/tyrauber))
+- [Android] Fixed deferred location updates being applied in foreground due to incorrect `mIsHostPaused` initialization. Location updates are now delivered immediately when app is in foreground, matching iOS behavior. ([#41659](https://github.com/expo/expo/pull/41659) by [@tyrauber](https://github.com/tyrauber))
 - use WGS 84 as reference for altitude on iOS ([#41318](https://github.com/expo/expo/pull/41318) by [@vonovak](https://github.com/vonovak))
 - fix position of the `scope` field in a permissions request result ([#41328](https://github.com/expo/expo/pull/41328) by [@vonovak](https://github.com/vonovak))
 - [Web] Stop using legacy event emitter. ([#41680](https://github.com/expo/expo/pull/41680) by [@alanjhughes](https://github.com/alanjhughes))
