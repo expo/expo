@@ -126,6 +126,10 @@ function prefetch(href, options) {
             }
         }
     }
+    // Only queue navigation preload if router is ready - prefetch is best-effort
+    if (!router_store_1.store.navigationRef.isReady()) {
+        return;
+    }
     return linkTo((0, href_1.resolveHref)(href), { ...options, event: 'PRELOAD' });
 }
 function push(url, options) {

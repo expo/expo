@@ -121,6 +121,11 @@ export function prefetch(href: Href, options?: NavigationOptions) {
       }
     }
   }
+
+  // Only queue navigation preload if router is ready - prefetch is best-effort
+  if (!store.navigationRef.isReady()) {
+    return;
+  }
   return linkTo(resolveHref(href), { ...options, event: 'PRELOAD' });
 }
 
