@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { requireNativeView } from 'expo';
+import * as React from 'react';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
