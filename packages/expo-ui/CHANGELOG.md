@@ -45,7 +45,6 @@
 
 ### 🐛 Bug fixes
 
-- [android] Fix source sets for events for functional view definitions. ([#41685](https://github.com/expo/expo/pull/41685) by [@aleqsio](https://github.com/aleqsio))
 - [android] Fix events for functional view definitions. ([#41374](https://github.com/expo/expo/pull/41374) by [@aleqsio](https://github.com/aleqsio))
 - [android] Remove style prop from components. ([#41233](https://github.com/expo/expo/pull/41233) by [@aleqsio](https://github.com/aleqsio))
 - [android] Add missing scopes to modifiers. ([#41231](https://github.com/expo/expo/pull/41231) by [@aleqsio](https://github.com/aleqsio))
