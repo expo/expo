@@ -107,9 +107,19 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
     return true;
   });
 
-  const canExitProcess = !unexpectedActiveResources.length;
+  // Check if only Timeouts remain (no blocking resources like ProcessWrap/PipeWrap)
+  const hasBlockingResources = unexpectedActiveResources.some(
+    (resource) => resource !== 'Timeout' && resource !== 'CloseReq'
+  );
+
+  const canExitProcess = !unexpectedActiveResources.length || !hasBlockingResources;
   if (canExitProcess) {
-    return debug('no active resources detected, process can safely exit');
+    if (unexpectedActiveResources.length && !hasBlockingResources) {
+      debug('only non-blocking resources remain (Timeout/CloseReq), process can safely exit');
+    } else {
+      debug('no active resources detected, process can safely exit');
+    }
+    return;
   } else {
     debug(
       `process is trying to exit, but is stuck on unexpected active resources:`,
@@ -131,6 +141,10 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
     // Check if the process can exit
     ensureProcessExitsAfterDelay(waitUntilExitMs, startedAtMs);
   }, 100);
+
+  // Unref the timeout so it doesn't prevent the process from exiting naturally
+  // when this timeout is the only remaining active resource
+  timeoutId.unref();
 }
 
 /**
@@ -148,6 +162,7 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
 function tryWarnActiveProcesses() {
   let activeProcesses: string[] = [];
   let handleSummary: Record<string, number> = {};
+  let timeoutDetails: string[] = [];
 
   try {
     const handles = process._getActiveHandles();
@@ -161,10 +176,26 @@ function tryWarnActiveProcesses() {
       if (handle instanceof ChildProcess) {
         activeProcesses.push(handle.spawnargs.join(' '));
       }
+
+      // Try to get more info about Timeout handles
+      if (name === 'Timeout') {
+        try {
+          // Attempt to get callback name or source info
+          const callback = handle._onTimeout ?? handle._repeat;
+          const callbackName = callback?.name || '<anonymous>';
+          const delay = handle._idleTimeout ?? 'unknown';
+          timeoutDetails.push(`Timeout(${delay}ms, fn: ${callbackName})`);
+        } catch {
+          timeoutDetails.push('Timeout(details unavailable)');
+        }
+      }
     }
 
     // Log detailed handle info when debug is enabled
     debug('active handles by type:', handleSummary);
+    if (timeoutDetails.length) {
+      debug('timeout details:', timeoutDetails);
+    }
   } catch (error) {
     debug('failed to get active process information:', error);
   }
