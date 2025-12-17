@@ -78,14 +78,18 @@ export function convertOptionsIconToRNScreensPropsIcon(
 export function convertOptionsIconToIOSPropsIcon(
   icon: AwaitedIcon | undefined
 ): PlatformIconIOS | undefined {
-  if (icon && 'sf' in icon && icon.sf) {
-    return {
-      type: 'sfSymbol',
-      name: icon.sf,
-    };
+  if (!icon) {
+    return undefined;
   }
-  if (icon && 'src' in icon && icon.src) {
-    return { type: 'templateSource', templateSource: icon.src };
+  if ('sf' in icon && icon.sf) {
+    return { ios: { type: 'sfSymbol', name: icon.sf }, type: 'sfSymbol', name: icon.sf };
+  } else if ('src' in icon && icon.src) {
+    return {
+      ios: { type: 'templateSource', templateSource: icon.src },
+      android: { type: 'imageSource', imageSource: icon.src },
+      type: 'templateSource',
+      templateSource: icon.src,
+    };
   }
   return undefined;
 }
