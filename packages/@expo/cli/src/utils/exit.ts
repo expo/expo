@@ -161,9 +161,9 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
  * ```
  */
 function tryWarnActiveProcesses() {
-  let activeProcesses: string[] = [];
-  let handleSummary: Record<string, number> = {};
-  let timeoutDetails: string[] = [];
+  const activeProcesses: string[] = [];
+  const handleSummary: Record<string, number> = {};
+  const timeoutDetails: string[] = [];
 
   try {
     const handles = process._getActiveHandles();
