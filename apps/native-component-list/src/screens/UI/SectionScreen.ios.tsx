@@ -1,5 +1,5 @@
 import { Host, HStack, Image, List, Section, Text, Toggle } from '@expo/ui/swift-ui';
-import { background, clipShape, headerProminence, padding } from '@expo/ui/swift-ui/modifiers';
+import { headerProminence } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 
 export default function SectionScreen() {
