@@ -24,6 +24,7 @@
 
 - [jetpack-compose] Replaced `DynamicTheme` as `Host.colorScheme` prop. ([#41413](https://github.com/expo/expo/pull/41413) by [@kudo](https://github.com/kudo))
 - [jetpack-compose] Removed coupled `AutoSizingComposable`. ([#41595](https://github.com/expo/expo/pull/41595) by [@kudo](https://github.com/kudo))
+- [iOS] - Use constructor for `title` prop instead of a custom `Text` in `Section` ([#41722](https://github.com/expo/expo/pull/41722) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 0.2.0-beta.10 — 2025-12-09
 
