@@ -1,6 +1,7 @@
 import { type EventMapBase, type NavigationState, type ParamListBase, type RouteProp, type ScreenListeners } from '@react-navigation/native';
 import React from 'react';
 import { RouteNode } from './Route';
+import { ResultState } from './fork/getStateFromPath';
 import { UnknownOutputParams } from './types';
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>, TState extends NavigationState = NavigationState, TEventMap extends EventMapBase = EventMapBase> = {
     /** Name is required when used inside a Layout component. */
@@ -29,6 +30,18 @@ export type SingularOptions = boolean | ((name: string, params: UnknownOutputPar
  * @returns React Navigation screens sorted by the `route` property.
  */
 export declare function useSortedScreens(order: ScreenProps[], protectedScreens: Set<string>, useOnlyUserDefinedScreens?: boolean): React.ReactNode[];
+/**
+ * Prefetch a route's component by loading its module and caching the result.
+ * This allows bypassing React.lazy for prefetched routes.
+ */
+export declare function prefetchRouteComponent(node: RouteNode): Promise<void>;
+/**
+ * Find all RouteNodes that match a navigation state path.
+ * Returns nodes for all layouts and the final route.
+ */
+export declare function findRouteNodesForState(rootNode: RouteNode, state: ResultState): RouteNode[];
+/** @internal Exposed for testing */
+export declare function __testing_getPrefetchedComponentCache(): Map<RouteNode, React.ComponentType<any>>;
 /** Wrap the component with various enhancements and add access to child routes. */
 export declare function getQualifiedRouteComponent(value: RouteNode): React.ComponentType<any> | {
     ({ route, navigation, ...props }: any): React.JSX.Element;

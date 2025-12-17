@@ -32,6 +32,9 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.routingQueue = void 0;
 exports.navigate = navigate;
@@ -55,9 +58,11 @@ const react_native_1 = require("react-native");
 const router_store_1 = require("./router-store");
 const emitDomEvent_1 = require("../domComponents/emitDomEvent");
 const getRoutesRedirects_1 = require("../getRoutesRedirects");
+const import_mode_1 = __importDefault(require("../import-mode"));
 const href_1 = require("../link/href");
 const matchers_1 = require("../matchers");
 const navigationParams_1 = require("../navigationParams");
+const useScreens_1 = require("../useScreens");
 const url_1 = require("../utils/url");
 function assertIsReady() {
     if (!router_store_1.store.navigationRef.isReady()) {
@@ -111,6 +116,16 @@ function reload() {
     throw new Error('The reload method is not implemented in the client-side router yet.');
 }
 function prefetch(href, options) {
+    // Trigger JS chunk preloading on web when using lazy loading
+    if (react_native_1.Platform.OS === 'web' && import_mode_1.default === 'lazy' && router_store_1.store.routeNode) {
+        const state = router_store_1.store.getStateForHref(href, options);
+        if (state) {
+            const nodes = (0, useScreens_1.findRouteNodesForState)(router_store_1.store.routeNode, state);
+            for (const node of nodes) {
+                (0, useScreens_1.prefetchRouteComponent)(node); // fire and forget
+            }
+        }
+    }
     return linkTo((0, href_1.resolveHref)(href), { ...options, event: 'PRELOAD' });
 }
 function push(url, options) {

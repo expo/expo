@@ -21,6 +21,7 @@ import {
 } from '../domComponents/emitDomEvent';
 import { ResultState } from '../fork/getStateFromPath';
 import { applyRedirects } from '../getRoutesRedirects';
+import EXPO_ROUTER_IMPORT_MODE from '../import-mode';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { matchDynamicName } from '../matchers';
 import {
@@ -30,7 +31,7 @@ import {
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import { Href } from '../types';
-import { SingularOptions } from '../useScreens';
+import { findRouteNodesForState, prefetchRouteComponent, SingularOptions } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
 
 function assertIsReady() {
@@ -110,6 +111,16 @@ export function reload() {
 }
 
 export function prefetch(href: Href, options?: NavigationOptions) {
+  // Trigger JS chunk preloading on web when using lazy loading
+  if (Platform.OS === 'web' && EXPO_ROUTER_IMPORT_MODE === 'lazy' && store.routeNode) {
+    const state = store.getStateForHref(href, options);
+    if (state) {
+      const nodes = findRouteNodesForState(store.routeNode, state);
+      for (const node of nodes) {
+        prefetchRouteComponent(node); // fire and forget
+      }
+    }
+  }
   return linkTo(resolveHref(href), { ...options, event: 'PRELOAD' });
 }
 

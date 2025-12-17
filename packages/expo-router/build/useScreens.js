@@ -38,6 +38,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useSortedScreens = useSortedScreens;
+exports.prefetchRouteComponent = prefetchRouteComponent;
+exports.findRouteNodesForState = findRouteNodesForState;
+exports.__testing_getPrefetchedComponentCache = __testing_getPrefetchedComponentCache;
 exports.getQualifiedRouteComponent = getQualifiedRouteComponent;
 exports.screenOptionsFactory = screenOptionsFactory;
 exports.routeToScreen = routeToScreen;
@@ -45,6 +48,7 @@ exports.getSingularId = getSingularId;
 const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
+const constants_1 = require("./constants");
 const storeContext_1 = require("./global-state/storeContext");
 const import_mode_1 = __importDefault(require("./import-mode"));
 const ZoomTransitionEnabler_1 = require("./link/zoom/ZoomTransitionEnabler");
@@ -166,6 +170,58 @@ function fromLoadedRoute(value, res) {
 // TODO: Maybe there's a more React-y way to do this?
 // Without this store, the process enters a recursive loop.
 const qualifiedStore = new WeakMap();
+// Cache for prefetched components - bypasses React.lazy for instant navigation
+const prefetchedComponentCache = new Map();
+/**
+ * Prefetch a route's component by loading its module and caching the result.
+ * This allows bypassing React.lazy for prefetched routes.
+ */
+async function prefetchRouteComponent(node) {
+    if (prefetchedComponentCache.has(node))
+        return;
+    try {
+        const res = node.loadRoute();
+        const module = await fromLoadedRoute(node, res);
+        if (module.default) {
+            prefetchedComponentCache.set(node, module.default);
+        }
+    }
+    catch (error) {
+        if (__DEV__) {
+            console.warn(`Failed to prefetch route ${node.route}:`, error);
+        }
+    }
+}
+/**
+ * Find all RouteNodes that match a navigation state path.
+ * Returns nodes for all layouts and the final route.
+ */
+function findRouteNodesForState(rootNode, state) {
+    const nodes = [];
+    function traverse(currentState, currentNode) {
+        if (!currentState?.routes?.length)
+            return;
+        const route = currentState.routes[currentState.routes.length - 1];
+        // Skip __root wrapper (exists in state, not in RouteNode)
+        if (route.name === constants_1.INTERNAL_SLOT_NAME) {
+            traverse(route.state, currentNode);
+            return;
+        }
+        const matchingChild = currentNode.children.find((child) => child.route === route.name);
+        if (matchingChild) {
+            nodes.push(matchingChild);
+            if (route.state) {
+                traverse(route.state, matchingChild);
+            }
+        }
+    }
+    traverse(state, rootNode);
+    return nodes;
+}
+/** @internal Exposed for testing */
+function __testing_getPrefetchedComponentCache() {
+    return prefetchedComponentCache;
+}
 /** Wrap the component with various enhancements and add access to child routes. */
 function getQualifiedRouteComponent(value) {
     if (qualifiedStore.has(value)) {
@@ -174,10 +230,17 @@ function getQualifiedRouteComponent(value) {
     let ScreenComponent;
     // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
     if (import_mode_1.default === 'lazy') {
-        ScreenComponent = react_1.default.lazy(async () => {
-            const res = value.loadRoute();
-            return fromLoadedRoute(value, res);
-        });
+        // Check if component was prefetched - bypass React.lazy for instant navigation
+        const prefetchedComponent = prefetchedComponentCache.get(value);
+        if (prefetchedComponent) {
+            ScreenComponent = prefetchedComponent;
+        }
+        else {
+            ScreenComponent = react_1.default.lazy(async () => {
+                const res = value.loadRoute();
+                return fromLoadedRoute(value, res);
+            });
+        }
         if (__DEV__) {
             ScreenComponent.displayName = `AsyncRoute(${value.route})`;
         }
