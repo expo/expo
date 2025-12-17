@@ -34,7 +34,7 @@ export default function Layout() {
             }}
             drawable="ic_lock_open"
           />
-          <NativeTabs.Trigger.Label style={{ display: 'none' }} />
+          <NativeTabs.Trigger.Label hidden />
           <NativeTabs.Trigger.Badge>1</NativeTabs.Trigger.Badge>
         </NativeTabs.Trigger>
         <NativeTabs.Trigger name="dynamic">
