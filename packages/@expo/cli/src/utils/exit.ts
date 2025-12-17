@@ -140,11 +140,12 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
     clearTimeout(timeoutId);
     // Check if the process can exit
     ensureProcessExitsAfterDelay(waitUntilExitMs, startedAtMs);
-  }, 100);
+
+    // setTimeout is using the global definitions from React Native which is missing the unref method in Node.js.
+  }, 100) as unknown as NodeJS.Timeout;
 
   // Unref the timeout so it doesn't prevent the process from exiting naturally
   // when this timeout is the only remaining active resource
-  // @ts-expect-error: unref is a method on Timeout in Node.js
   timeoutId.unref();
 }
 
