@@ -1105,7 +1105,7 @@ describe(withExtendedResolver, () => {
         3,
         expect.objectContaining({
           originModulePath: '/node_modules/expo/index.js',
-          nodeModulesPaths: ['/node_modules/expo'],
+          nodeModulesPaths: [],
         }),
         '@babel/runtime/helpers/interopRequireDefault',
         platform
@@ -1183,7 +1183,7 @@ describe(withExtendedResolver, () => {
         4,
         expect.objectContaining({
           originModulePath: '/node_modules/expo-router/index.js',
-          nodeModulesPaths: ['/node_modules/expo-router'],
+          nodeModulesPaths: [],
         }),
         'example',
         platform
