@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
 import { createExpoStart } from '../../utils/expo';
+import { sanitizeRSCPayloadString } from '../../utils/rsc';
 import { pageCollectErrors } from '../page';
 
 test.beforeAll(() => clearEnv());
@@ -83,7 +84,7 @@ test.describe(inputDir, () => {
 
     const rscPayload = new TextDecoder().decode(await response.body());
 
-    expect(rscPayload).toMatch(
+    expect(sanitizeRSCPayloadString(rscPayload)).toMatch(
       '2:I["node_modules/react-native-web/dist/exports/Text/index.js",["/node_modules/react-native-web/dist/exports/Text/index.js.bundle?platform=web&dev=true&hot=false&transform.asyncRoutes=true&transform.routerRoot=__e2e__%2F03-server-actions-only%2Fapp&modulesOnly=true&runModule=false&resolver.clientboundary=true&xRSC=1"]'
     );
 
