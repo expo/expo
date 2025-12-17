@@ -94,6 +94,7 @@ import {
   createBundleUrlPath,
   ExpoMetroOptions,
   createBundleOsPath,
+  getAssetPrefixFromExpoConfig,
   getAsyncRoutesFromExpoConfig,
   getBaseUrlFromExpoConfig,
   getMetroDirectBundleOptions,
@@ -502,8 +503,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
    */
   private async getStaticPageAsync(pathname: string, route: RouteInfo<RegExp>) {
     const { exp } = getConfig(this.projectRoot);
-    const { mode, isExporting, clientBoundaries, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
-      this.instanceMetroOptions;
+    const {
+      mode,
+      isExporting,
+      clientBoundaries,
+      baseUrl,
+      assetPrefix,
+      reactCompiler,
+      routerRoot,
+      asyncRoutes,
+    } = this.instanceMetroOptions;
     assert(
       mode != null &&
         isExporting != null &&
@@ -571,6 +580,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       template: staticHtml,
       devBundleUrl: devBundleUrlPathname,
       baseUrl,
+      assetPrefix,
       hydrate: env.EXPO_WEB_DEV_HYDRATE,
     });
     return {
@@ -1077,6 +1087,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
     const hasApiRoutes = isReactServerComponentsEnabled || exp.web?.output === 'server';
     const baseUrl = getBaseUrlFromExpoConfig(exp);
+    const assetPrefix = getAssetPrefixFromExpoConfig(exp) || undefined;
     const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
     const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
     const reactCompiler = !!exp.experiments?.reactCompiler;
@@ -1103,6 +1114,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const instanceMetroOptions = {
       isExporting: !!options.isExporting,
       baseUrl,
+      assetPrefix,
       mode,
       routerRoot,
       reactCompiler,
