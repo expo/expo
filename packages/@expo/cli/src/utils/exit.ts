@@ -147,21 +147,34 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
  */
 function tryWarnActiveProcesses() {
   let activeProcesses: string[] = [];
+  let handleSummary: Record<string, number> = {};
 
   try {
-    const children: ChildProcess[] = process
-      ._getActiveHandles()
-      .filter((handle: any) => handle instanceof ChildProcess);
+    const handles = process._getActiveHandles();
 
-    if (children.length) {
-      activeProcesses = children.map((child) => child.spawnargs.join(' '));
+    // Categorize handles by their constructor name
+    for (const handle of handles) {
+      const name = handle?.constructor?.name ?? 'Unknown';
+      handleSummary[name] = (handleSummary[name] ?? 0) + 1;
+
+      // Collect ChildProcess command info
+      if (handle instanceof ChildProcess) {
+        activeProcesses.push(handle.spawnargs.join(' '));
+      }
     }
+
+    // Log detailed handle info when debug is enabled
+    debug('active handles by type:', handleSummary);
   } catch (error) {
     debug('failed to get active process information:', error);
   }
 
   if (!activeProcesses.length) {
     warn('Something prevented Expo from exiting, forcefully exiting now.');
+    // Log handle summary when no specific processes are identified
+    if (Object.keys(handleSummary).length > 0) {
+      debug('handle summary (use DEBUG=expo:utils:exit for details):', handleSummary);
+    }
   } else {
     const singularOrPlural =
       activeProcesses.length === 1 ? '1 process' : `${activeProcesses.length} processes`;
