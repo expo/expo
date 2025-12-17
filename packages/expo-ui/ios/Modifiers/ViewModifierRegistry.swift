@@ -1351,7 +1351,7 @@ internal class ViewModifierRegistry {
   }
 
   /**
-    * Applies text returning modifiers. Useful for Text concatenation in TextView.
+    * Applies `Text`  returning modifiers. Useful for Text concatenation in TextView.
    */
   func applyTextModifier(
     _ type: String,
@@ -1381,8 +1381,11 @@ internal class ViewModifierRegistry {
     case "foregroundStyle":
       guard let modifier = try? ForegroundStyleModifier(from: params, appContext: appContext) else { return text }
       if modifier.styleType == .color, let color = modifier.color {
-        if #available(iOS 17.0, *) {
+        if #available(iOS 17.0, tvOS 17.0, *) {
           return text.foregroundStyle(color)
+        } else {
+          // Fallback for earlier version
+          return text.foregroundColor(color)
         }
       }
       return text
@@ -1548,14 +1551,6 @@ extension ViewModifierRegistry {
 
     register("foregroundStyle") { params, appContext, _ in
       return try ForegroundStyleModifier(from: params, appContext: appContext)
-    }
-
-    register("bold") { params, appContext, _ in
-      return try BoldModifier(from: params, appContext: appContext)
-    }
-
-    register("italic") { params, appContext, _ in
-      return try ItalicModifier(from: params, appContext: appContext)
     }
 
     register("tint") { params, appContext, _ in
