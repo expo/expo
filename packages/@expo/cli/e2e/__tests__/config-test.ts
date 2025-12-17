@@ -56,7 +56,13 @@ it('runs `npx expo config --json`', async () => {
   // Add an environment variable file to test that it's not included in the config.
   await fs.writeFile(path.join(projectRoot, '.env'), 'FOOBAR=1');
 
-  const results = await executeExpoAsync(projectRoot, ['config', '--json']);
+  const results = await executeExpoAsync(projectRoot, ['config', '--json'], {
+    env: {
+      // TODO(@kitten): remove once hoist=false in pnpm; Prevent node_modules/.pnpm/node_modules hoist path from being passed
+      NODE_PATH: '',
+    },
+  });
+
   // @ts-ignore
   const exp = JSON.parse(results.stdout);
 
@@ -80,7 +86,13 @@ it('runs `npx expo config --json` with a warning', async () => {
     '{ "abc": true, "expo": { "name": "foobar" } }'
   );
 
-  const results = await executeExpoAsync(projectRoot, ['config', '--json']);
+  const results = await executeExpoAsync(projectRoot, ['config', '--json'], {
+    env: {
+      // TODO(@kitten): remove once hoist=false in pnpm; Prevent node_modules/.pnpm/node_modules hoist path from being passed
+      NODE_PATH: '',
+    },
+  });
+
   // @ts-ignore
   const exp = JSON.parse(results.stdout);
 
@@ -90,6 +102,12 @@ it('runs `npx expo config --json` with a warning', async () => {
 
 it('throws on invalid project root', async () => {
   await expect(
-    executeExpoAsync(projectRoot, ['config', 'very---invalid', '--json'], { verbose: false })
+    executeExpoAsync(projectRoot, ['config', 'very---invalid', '--json'], {
+      verbose: false,
+      env: {
+        // TODO(@kitten): remove once hoist=false in pnpm; Prevent node_modules/.pnpm/node_modules hoist path from being passed
+        NODE_PATH: '',
+      },
+    })
   ).rejects.toThrow(/^Invalid project root: .*very---invalid$/m);
 });
