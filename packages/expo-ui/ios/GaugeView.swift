@@ -17,7 +17,7 @@ enum GaugeStyle: String, Enumerable {
   case linearCapacity
 }
 
-final class GaugeProps: UIBaseViewProps {
+public final class GaugeProps: UIBaseViewProps {
   @Field var label: String?
   @Field var labelColor: Color?
   @Field var current: ValueOptions
@@ -27,10 +27,14 @@ final class GaugeProps: UIBaseViewProps {
   @Field var color: [Color] = []
 }
 
-struct GaugeView: ExpoSwiftUI.View {
-  @ObservedObject var props: GaugeProps
+public struct GaugeView: ExpoSwiftUI.View {
+  @ObservedObject public var props: GaugeProps
 
-  var body: some View {
+  public init(props: GaugeProps) {
+    self.props = props
+  }
+
+  public var body: some View {
 #if !os(tvOS)
     if #available(iOS 16.0, *) {
       let range = (props.min?.value ?? 0.0)...(props.max?.value ?? 1.0)

@@ -3,24 +3,32 @@
 import ExpoModulesCore
 import SwiftUI
 
-final class LabelViewProps: UIBaseViewProps {
+public final class LabelViewProps: UIBaseViewProps {
   @Field var title: String?
   @Field var systemImage: String?
 }
 
-internal final class LabelIconProps: ExpoSwiftUI.ViewProps {}
-internal struct LabelIcon: ExpoSwiftUI.View {
-  @ObservedObject var props: LabelIconProps
+public final class LabelIconProps: ExpoSwiftUI.ViewProps {}
+public struct LabelIcon: ExpoSwiftUI.View {
+  @ObservedObject public var props: LabelIconProps
 
-  var body: some View {
+  public init(props: LabelIconProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     Children()
   }
 }
 
-struct LabelView: ExpoSwiftUI.View {
-  @ObservedObject var props: LabelViewProps
+public struct LabelView: ExpoSwiftUI.View {
+  @ObservedObject public var props: LabelViewProps
 
-  var body: some View {
+  public init(props: LabelViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     if let title = props.title {
       if let customIcon {
         Label {

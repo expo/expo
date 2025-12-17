@@ -21,12 +21,16 @@ internal struct ConcentricRectangleCornerParams: Record {
   @Field var bottomTrailingCorner: CornerStyleConfig?
 }
 
-internal final class ConcentricRectangleViewProps: UIBaseViewProps {
+public final class ConcentricRectangleViewProps: UIBaseViewProps {
   @Field var corners: ConcentricRectangleCornerParams?
 }
 
-internal struct ConcentricRectangleView: ExpoSwiftUI.View {
-  @ObservedObject var props: ConcentricRectangleViewProps
+public struct ConcentricRectangleView: ExpoSwiftUI.View {
+  @ObservedObject public var props: ConcentricRectangleViewProps
+
+  public init(props: ConcentricRectangleViewProps) {
+    self.props = props
+  }
 
 #if compiler(>=6.2) // Xcode 26
   @available(iOS 26.0, tvOS 26.0, *)
@@ -51,7 +55,7 @@ internal struct ConcentricRectangleView: ExpoSwiftUI.View {
   }
 #endif
 
-  var body: some View {
+  public var body: some View {
 #if compiler(>=6.2) // Xcode 26
     if #available(iOS 26.0, tvOS 26.0, *) {
       let topLeadingCorner = cornerStyle(from: props.corners?.topLeadingCorner)

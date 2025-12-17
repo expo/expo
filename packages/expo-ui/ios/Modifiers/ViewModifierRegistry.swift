@@ -273,6 +273,12 @@ internal struct HiddenModifier: ViewModifier, Record {
   }
 }
 
+internal struct LabelsHiddenModifier: ViewModifier, Record {
+  func body(content: Content) -> some View {
+    content.labelsHidden()
+  }
+}
+
 internal struct DisabledModifier: ViewModifier, Record {
   @Field var disabled: Bool = true
 
@@ -1487,6 +1493,10 @@ extension ViewModifierRegistry {
       return try HiddenModifier(from: params, appContext: appContext)
     }
 
+    register("labelsHidden") { params, appContext, _ in
+      return try LabelsHiddenModifier(from: params, appContext: appContext)
+    }
+
     register("disabled") { params, appContext, _ in
       return try DisabledModifier(from: params, appContext: appContext)
     }
@@ -1617,6 +1627,10 @@ extension ViewModifierRegistry {
 
     register("buttonStyle") { params, appContext, _ in
       return try ButtonStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("toggleStyle") { params, appContext, _ in
+      return try ToggleStyleModifier(from: params, appContext: appContext)
     }
 
     register("controlSize") { params, appContext, _ in
