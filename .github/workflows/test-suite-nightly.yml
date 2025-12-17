@@ -60,7 +60,7 @@ jobs:
           bun-version: latest
 
       - name: 🧶 Install node modules
-        run: pnpm install --ignore-scripts
+        run: pnpm install --frozen-lockfile
 
       - name: ⚙️ Setup react-native nightly
         run: pnpm et setup-react-native-nightly
@@ -149,7 +149,7 @@ jobs:
           bun-version: latest
 
       - name: 🧶 Install node modules
-        run: pnpm install --ignore-scripts --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: 🍏 Run iOS tests
         run: ./scripts/start-ios-e2e-test.ts --test
@@ -219,7 +219,7 @@ jobs:
           bun-version: latest
 
       - name: 🧶 Install node modules
-        run: pnpm install --ignore-scripts
+        run: pnpm install --frozen-lockfile
 
       - name: ⚙️ Setup react-native nightly
         run: pnpm et setup-react-native-nightly
@@ -288,7 +288,7 @@ jobs:
           bun-version: latest
 
       - name: 🧶 Install node modules
-        run: pnpm install --ignore-scripts --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: 🤖 Run Android tests
         uses: ./.github/actions/use-android-emulator

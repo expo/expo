@@ -76,7 +76,7 @@ jobs:
           bun-version: latest
 
       - name: 🧶 Install node modules
-        run: pnpm install --ignore-scripts --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: 🕵️ Debug CocoaPods lockfiles
         run: git diff Podfile.lock Pods/Manifest.lock
@@ -187,7 +187,7 @@ jobs:
           bun-version: latest
 
       - name: 🧶 Install node modules
-        run: pnpm install --ignore-scripts --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: 🧶 Install image comparison server node modules
         run: yarn install --frozen-lockfile
@@ -292,7 +292,7 @@ jobs:
           bun-version: latest
 
       - name: 🧶 Install node modules
-        run: pnpm install --ignore-scripts --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: 🧶 Install image comparison server node modules
         run: yarn install --frozen-lockfile
@@ -390,7 +390,7 @@ jobs:
           bun-version: latest
 
       - name: 🧶 Install node modules
-        run: pnpm install --ignore-scripts --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: 🧶 Install image comparison server node modules
         run: yarn install --frozen-lockfile

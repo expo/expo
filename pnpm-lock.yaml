@@ -194,6 +194,12 @@ importers:
       '@babel/core':
         specifier: ^7.20.0
         version: 7.26.0
+      '@expo/cli':
+        specifier: workspace:*
+        version: link:../../packages/@expo/cli
+      '@expo/spawn-async':
+        specifier: ^1.7.2
+        version: 1.7.2
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.2
