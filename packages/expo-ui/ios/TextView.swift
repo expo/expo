@@ -18,17 +18,19 @@ public struct TextView: ExpoSwiftUI.View {
   }
 
   public var body: some View {
-    buildText()
+    buildText(applyModifiers: false)
+      .applyModifiers(props.modifiers, appContext: props.appContext, globalEventDispatcher: props.globalEventDispatcher)
   }
 
-  internal func buildText() -> Text {
-    var result = Text(props.text)
-      .applyTextModifiers(props.modifiers, appContext: props.appContext, eventDispatcher: props.globalEventDispatcher)
+  internal func buildText(applyModifiers: Bool = true) -> Text {
+    var result = applyModifiers
+    ? Text(props.text).applyTextModifiers(props.modifiers, appContext: props.appContext)
+    : Text(props.text)
 
     if let children = props.children {
       for child in children {
         if let textView = child.childView as? TextView {
-          result = result + textView.buildText()
+          result = result + textView.buildText(applyModifiers: true)
         }
       }
     }

@@ -3,15 +3,6 @@
 import ExpoModulesCore
 import SwiftUI
 
-/**
- Protocol for modifiers that can be applied directly to Text values.
- This is needed for Text concatenation where each segment can have different styling.
- Modifiers conforming to this protocol can be used both as View modifiers and Text modifiers.
- */
-internal protocol TextApplicableModifier {
-  func applyToText(_ text: Text) -> Text
-}
-
 // MARK: - Individual ViewModifier Structs
 
 internal enum ListSectionSpacingType: String, Enumerable {
@@ -154,7 +145,7 @@ internal struct OffsetModifier: ViewModifier, Record {
   }
 }
 
-internal struct ForegroundColorModifier: ViewModifier, Record, TextApplicableModifier {
+internal struct ForegroundColorModifier: ViewModifier, Record {
   @Field var color: Color?
 
   func body(content: Content) -> some View {
@@ -164,36 +155,21 @@ internal struct ForegroundColorModifier: ViewModifier, Record, TextApplicableMod
       content
     }
   }
-
-  func applyToText(_ text: Text) -> Text {
-    if let color = color {
-      return text.foregroundColor(color)
-    }
-    return text
-  }
 }
 
-internal struct BoldModifier: ViewModifier, Record, TextApplicableModifier {
+internal struct BoldModifier: ViewModifier, Record {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
       content.bold()
     }
   }
-
-  func applyToText(_ text: Text) -> Text {
-    text.bold()
-  }
 }
 
-internal struct ItalicModifier: ViewModifier, Record, TextApplicableModifier {
+internal struct ItalicModifier: ViewModifier, Record {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
       content.italic()
     }
-  }
-
-  func applyToText(_ text: Text) -> Text {
-    text.italic()
   }
 }
 
@@ -213,7 +189,7 @@ internal enum ForegroundHierarchicalStyleType: String, Enumerable {
   case quinary
 }
 
-internal struct ForegroundStyleModifier: ViewModifier, Record, TextApplicableModifier {
+internal struct ForegroundStyleModifier: ViewModifier, Record {
   @Field var styleType: ForegroundStyleType = .color
   @Field var hierarchicalStyle: ForegroundHierarchicalStyleType = .primary
   @Field var color: Color?
@@ -286,19 +262,6 @@ internal struct ForegroundStyleModifier: ViewModifier, Record, TextApplicableMod
         content
       }
     }
-  }
-
-  // Only color style is supported for Text concatenation
-  // Gradients and hierarchical styles will be applied as View modifiers by UIBaseView
-  func applyToText(_ text: Text) -> Text {
-    if styleType == .color, let color {
-      if #available(iOS 17.0, *) {
-        return text.foregroundStyle(color)
-      } else {
-        // Fallback on earlier versions
-      }
-    }
-    return text
   }
 }
 
@@ -1388,22 +1351,46 @@ internal class ViewModifierRegistry {
   }
 
   /**
-   * Applies a text-specific modifier to a Text value.
-   * Only works with modifiers that conform to TextApplicableModifier.
+   * Applies a modifier to a Text value, preserving the Text type for concatenation.
+   * Uses type-based dispatch to call Text-specific methods directly.
    * Returns the original text if the modifier doesn't support text application.
    */
   func applyTextModifier(
     _ type: String,
     to text: Text,
     appContext: AppContext,
-    params: [String: Any],
-    eventDispatcher: EventDispatcher
+    params: [String: Any]
   ) -> Text {
-    guard let viewModifier = try? modifierFactories[type]?(params, appContext, eventDispatcher),
-          let textModifier = viewModifier as? TextApplicableModifier else {
+    switch type {
+    case "bold":
+      return text.bold()
+    case "italic":
+      return text.italic()
+    case "font":
+      guard let modifier = try? FontModifier(from: params, appContext: appContext) else { return text }
+      if let family = modifier.family {
+        return text.font(Font.custom(family, size: modifier.size ?? 17))
+      }
+      return text.font(.system(
+        size: modifier.size ?? 17,
+        weight: modifier.weight?.toSwiftUI() ?? .regular,
+        design: modifier.design?.toSwiftUI() ?? .default
+      ))
+    case "foregroundColor":
+      guard let modifier = try? ForegroundColorModifier(from: params, appContext: appContext),
+            let color = modifier.color else { return text }
+      return text.foregroundColor(color)
+    case "foregroundStyle":
+      guard let modifier = try? ForegroundStyleModifier(from: params, appContext: appContext) else { return text }
+      if modifier.styleType == .color, let color = modifier.color {
+        if #available(iOS 17.0, *) {
+          return text.foregroundStyle(color)
+        }
+      }
+      return text
+    default:
       return text
     }
-    return textModifier.applyToText(text)
   }
 
   /**

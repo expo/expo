@@ -33,11 +33,7 @@ internal extension View {
 }
 
 internal extension Text {
-  /**
-   * Applies an array of text-specific modifiers to a Text value.
-   * Only modifiers that conform to TextApplicableModifier will be applied.
-   */
-  func applyTextModifiers(_ modifiers: ModifierArray?, appContext: AppContext?, eventDispatcher: EventDispatcher) -> Text {
+  func applyTextModifiers(_ modifiers: ModifierArray?, appContext: AppContext?) -> Text {
     guard let modifiers, let appContext else { return self }
 
     return modifiers.reduce(self) { currentText, modifierConfig in
@@ -49,8 +45,7 @@ internal extension Text {
         type,
         to: currentText,
         appContext: appContext,
-        params: modifierConfig,
-        eventDispatcher: eventDispatcher
+        params: modifierConfig
       )
     }
   }

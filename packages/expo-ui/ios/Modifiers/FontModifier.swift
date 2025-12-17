@@ -45,7 +45,7 @@ internal enum FontDesign: String, Enumerable {
   }
 }
 
-internal struct FontModifier: ViewModifier, Record, TextApplicableModifier {
+internal struct FontModifier: ViewModifier, Record {
   @Field var family: String?
   @Field var size: CGFloat?
   @Field var weight: FontWeight?
@@ -61,17 +61,5 @@ internal struct FontModifier: ViewModifier, Record, TextApplicableModifier {
         design: design?.toSwiftUI() ?? .default
       ))
     }
-  }
-
-  func applyToText(_ text: Text) -> Text {
-    if let family {
-      return text.font(Font.custom(family, size: size ?? 17))
-    }
-
-    return text.font(.system(
-      size: size ?? 17,
-      weight: weight?.toSwiftUI() ?? .regular,
-      design: design?.toSwiftUI() ?? .default
-    ))
   }
 }
