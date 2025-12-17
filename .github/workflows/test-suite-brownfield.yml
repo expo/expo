@@ -52,7 +52,7 @@ jobs:
           cache: 'pnpm'
 
       - name: 🧶 Install node modules
-        run: pnpm install --ignore-scripts --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: 🍏 Build iOS Project
         working-directory: ./apps/brownfield-tester
@@ -125,7 +125,7 @@ jobs:
           bun-version: latest
 
       - name: 🧶 Install node modules
-        run: pnpm install --ignore-scripts --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: 🤖 Build Android project
         run: |

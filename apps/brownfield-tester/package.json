@@ -1,0 +1,10 @@
+{
+  "name": "expo-brownfield-tester",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "expo": "workspace:*",
+    "react-native": "0.83.1",
+    "react": "19.2.0"
+  }
+}

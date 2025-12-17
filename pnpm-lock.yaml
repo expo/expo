@@ -213,6 +213,18 @@ importers:
         specifier: ^29.3.1
         version: 29.7.0(@types/node@22.14.0)(ts-node@10.9.2(@swc/core@1.11.11)(@types/node@22.14.0)(typescript@5.9.2))
 
+  apps/brownfield-tester:
+    dependencies:
+      expo:
+        specifier: workspace:*
+        version: link:../../packages/expo
+      react:
+        specifier: 19.2.0
+        version: 19.2.0
+      react-native:
+        specifier: 0.83.1
+        version: 0.83.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
+
   apps/common:
     dependencies:
       '@expo/styleguide-base':
