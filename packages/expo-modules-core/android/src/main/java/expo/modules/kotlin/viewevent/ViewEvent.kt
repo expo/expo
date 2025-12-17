@@ -8,7 +8,7 @@ import expo.modules.kotlin.getUnimoduleProxy
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.types.JSTypeConverter
 import expo.modules.kotlin.types.putGeneric
-import expo.modules.kotlin.views.ComposeFunctionHolder
+import expo.modules.kotlin.views.ViewFunctionHolder
 
 fun interface ViewEventCallback<T> {
   operator fun invoke(arg: T)
@@ -32,7 +32,7 @@ open class ViewEvent<T>(
         return
       }
 
-      val callbacksDefinition = if (view is ComposeFunctionHolder<*>) {
+      val callbacksDefinition = if (view is ViewFunctionHolder) {
         appContext.registry.getViewDefinition(holder, view.name)?.callbacksDefinition
       } else {
         appContext.registry.getViewDefinition(holder, view::class.java)?.callbacksDefinition
