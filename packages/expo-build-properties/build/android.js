@@ -110,6 +110,15 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propName: 'exclusiveEnterpriseRepository',
         propValueGetter: (config) => config.android?.exclusiveMavenMirror,
     },
+    {
+        propName: 'hermesV1Enabled',
+        propValueGetter: (config) => {
+            if (config.android?.useHermesV1 && config.android?.buildReactNativeFromSource !== true) {
+                config_plugins_1.WarningAggregator.addWarningAndroid('withAndroidBuildProperties', 'Hermes V1 requires building React Native from source. Set `buildReactNativeFromSource` to `true` to enable it.');
+            }
+            return config.android?.useHermesV1?.toString();
+        },
+    },
 ], 'withAndroidBuildProperties');
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`

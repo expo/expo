@@ -184,6 +184,15 @@ export interface PluginConfigTypeAndroid {
      * @default 'stable'
      */
     reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
+    /**
+     * Enable the experimental Hermes V1 engine.
+     *
+     * In React Native 0.83, using Hermes V1 requires building React Native from source.
+     * You must set `buildReactNativeFromSource` to `true` when enabling this option.
+     *
+     * @default false
+     */
+    useHermesV1?: boolean;
 }
 /**
  * @platform android
@@ -353,6 +362,15 @@ export interface PluginConfigTypeIos {
      * @default 'stable'
      */
     reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
+    /**
+     * Enable the experimental Hermes V1 engine.
+     *
+     * In React Native 0.83, using Hermes V1 requires building React Native from source.
+     * You must set `buildReactNativeFromSource` to `true` when enabling this option.
+     *
+     * @default false
+     */
+    useHermesV1?: boolean;
 }
 /**
  * Interface representing extra CocoaPods dependency.
