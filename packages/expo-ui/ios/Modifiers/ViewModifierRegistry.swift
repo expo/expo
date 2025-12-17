@@ -1351,9 +1351,7 @@ internal class ViewModifierRegistry {
   }
 
   /**
-   * Applies a modifier to a Text value, preserving the Text type for concatenation.
-   * Uses type-based dispatch to call Text-specific methods directly.
-   * Returns the original text if the modifier doesn't support text application.
+    * Applies text returning modifiers. Useful for Text concatenation in TextView.
    */
   func applyTextModifier(
     _ type: String,
