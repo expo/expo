@@ -21,7 +21,7 @@
     "expo": "~54.0.29",
     "expo-font": "14.0.10",
     "expo-linking": "8.0.10",
-    "expo-router": "6.0.19",
+    "expo-router": "6.0.20",
     "expo-device": "8.0.10",
     "expo-constants": "18.0.12",
     "expo-splash-screen": "31.0.12",

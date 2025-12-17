@@ -55,7 +55,7 @@
     "expo-linking": "^8.0.10",
     "expo-location": "~19.0.8",
     "expo-notifications": "~0.32.15",
-    "expo-router": "~6.0.19",
+    "expo-router": "~6.0.20",
     "expo-splash-screen": "~31.0.12",
     "expo-store-review": "~9.0.9",
     "expo-task-manager": "~14.0.9",

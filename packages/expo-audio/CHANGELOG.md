@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.1.1 — 2025-12-17
+
+_This version does not introduce any user-facing changes._
+
 ## 1.1.0 — 2025-12-11
 
 ### 🎉 New features

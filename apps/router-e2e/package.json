@@ -42,7 +42,7 @@
     "expo": "~54.0.29",
     "expo-haptics": "~15.0.8",
     "expo-linking": "~8.0.10",
-    "expo-router": "^6.0.19",
+    "expo-router": "^6.0.20",
     "expo-speech": "~14.0.8",
     "expo-sqlite": "~16.0.10",
     "jose": "^5",

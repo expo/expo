@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.0.20 — 2025-12-17
+
+### 🎉 New features
+
 - add icon api compatible with react-native-screens 4.16 and 4.18 ([#41631](https://github.com/expo/expo/pull/41631) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
 - [web] Fix dynamic route params becoming query params in getPathFromState. ([#41488](https://github.com/expo/expo/pull/41488) by [@erickreutz](https://github.com/erickreutz))
-
-### 💡 Others
 
 ## 6.0.19 — 2025-12-12
 
