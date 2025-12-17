@@ -27,11 +27,11 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Switch component',
-    route: 'ui/switch',
+    name: 'Toggle component',
+    route: 'ui/toggle',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./SwitchScreen'));
+      return optionalRequire(() => require('./ToggleScreen'));
     },
   },
   {
