@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -26,12 +27,17 @@ import androidx.compose.ui.zIndex
 import expo.modules.kotlin.jni.JavaScriptFunction
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.getValue
+import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ComposeProps
 import expo.modules.ui.button.Button
 import expo.modules.ui.button.IconButton
 import expo.modules.ui.menu.ContextMenu
-import kotlin.reflect.KProperty
+import java.io.Serializable
+
+open class OnClickEvent() : Record, Serializable
 
 class ExpoUIModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -55,6 +61,30 @@ class ExpoUIModule : Module() {
       val onIsOpenedChange by remember { EventDispatcher<IsOpenedChangeEvent>() }
       BottomSheetContent(props) { onIsOpenedChange(it) }
     }
+
+    View("NavigationDrawerView", events = {
+        Events("onDrawerStateChange")
+    }) { props: NavigationDrawerProps ->
+      val onDrawerStateChange by remember { EventDispatcher<DrawerStateChangeEvent>() }
+      NavigationDrawer(
+          enabled=props.enabled,
+          onStateChange = { onDrawerStateChange(DrawerStateChangeEvent(it)) },
+          drawerContent={ Child(0) },
+          content={ Child( 1) }
+      )
+    }
+
+      data class NavigationDrawerItemProps(val label: String = "", val selected: Boolean = false): ComposeProps
+
+
+      View("NavigationDrawerItem", events = {
+          Events("onItemClick")
+      }) { props: NavigationDrawerItemProps ->
+      val onItemClick by remember { EventDispatcher<OnClickEvent>() }
+        NavigationDrawerItem({Children()}, selected = props.selected, onClick = {
+            onItemClick(OnClickEvent())
+        })
+      }
 
     // Defines a single view for now – a single choice segmented control
     View(PickerView::class) {
