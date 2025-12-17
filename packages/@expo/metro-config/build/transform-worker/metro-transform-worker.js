@@ -66,6 +66,7 @@ const babel_timing_1 = require("babel-timing");
 const assetTransformer = __importStar(require("./asset-transformer"));
 const collect_dependencies_1 = __importStar(require("./collect-dependencies"));
 const count_lines_1 = require("./count-lines");
+const normalizePseudoGlobals_1 = __importDefault(require("./normalizePseudoGlobals"));
 const resolveOptions_1 = require("./resolveOptions");
 const env_1 = require("../env");
 const transform_plugins_1 = require("../transform-plugins");
@@ -390,7 +391,7 @@ async function transformJS(file, { config, options }) {
         // TODO: If the module wrapping is disabled then the normalize function needs to change to account for not being in a body.
         !unstable_disableModuleWrapping) {
         // NOTE(EvanBacon): Simply pushing this function will mutate the AST, so it must run before the `generate` step!!
-        reserved.push(...profiler.measure('metro:normalize-pseudo-globals', () => metroTransformPlugins.normalizePseudoGlobals(wrappedAst, {
+        reserved.push(...profiler.measure('metro:normalize-pseudo-globals', () => (0, normalizePseudoGlobals_1.default)(wrappedAst, {
             reservedNames: reserved,
         })));
     }

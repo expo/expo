@@ -48,6 +48,7 @@ import collectDependencies, {
   State,
 } from './collect-dependencies';
 import { countLinesAndTerminateMap } from './count-lines';
+import normalizePseudoGlobals from './normalizePseudoGlobals';
 import { shouldMinify } from './resolveOptions';
 import { env } from '../env';
 import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
@@ -542,7 +543,7 @@ async function transformJS(
     // NOTE(EvanBacon): Simply pushing this function will mutate the AST, so it must run before the `generate` step!!
     reserved.push(
       ...profiler.measure('metro:normalize-pseudo-globals', () =>
-        metroTransformPlugins.normalizePseudoGlobals(wrappedAst, {
+        normalizePseudoGlobals(wrappedAst, {
           reservedNames: reserved,
         })
       )
