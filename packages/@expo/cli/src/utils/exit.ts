@@ -144,6 +144,7 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
 
   // Unref the timeout so it doesn't prevent the process from exiting naturally
   // when this timeout is the only remaining active resource
+  // @ts-expect-error: unref is a method on Timeout in Node.js
   timeoutId.unref();
 }
 
