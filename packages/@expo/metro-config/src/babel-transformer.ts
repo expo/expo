@@ -14,6 +14,7 @@ const { Timer } = require('babel-timing');
 import type { TransformOptions } from './babel-core';
 import { loadBabelConfig } from './loadBabelConfig';
 import { transformSync } from './transformSync';
+import { env } from './env';
 
 export type ExpoBabelCaller = TransformOptions['caller'] & {
   babelRuntimeVersion?: string;
@@ -209,12 +210,17 @@ const transform: BabelTransformer['transform'] = ({
       return { ast: null };
     }
 
-    if (!result.metadata) {
-      result.metadata = {};
-    }
-    result.metadata.profile = timer.getResults();
-
     assert(result.ast);
+
+    if (env.EXPO_PROFILE) {
+      return {
+        ast: result.ast,
+        metadata: {
+          ...result.metadata,
+          profile: timer.getResults(),
+        },
+      };
+    }
     return { ast: result.ast, metadata: result.metadata };
   } finally {
     if (OLD_BABEL_ENV) {

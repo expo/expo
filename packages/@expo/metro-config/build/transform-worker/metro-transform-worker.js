@@ -127,18 +127,6 @@ const minifyCode = async (config, filename, code, source, map, reserved = []) =>
     }
 };
 exports.minifyCode = minifyCode;
-function renameTopLevelModuleVariables() {
-    // A babel plugin which renames variables in the top-level scope that are named "module".
-    return {
-        visitor: {
-            Program(path) {
-                ['global', 'require', 'module', 'exports'].forEach((name) => {
-                    path.scope.rename(name, path.scope.generateUidIdentifier(name).name);
-                });
-            },
-        },
-    };
-}
 function applyUseStrictDirective(ast) {
     // Add "use strict" if the file was parsed as a module, and the directive did
     // not exist yet.

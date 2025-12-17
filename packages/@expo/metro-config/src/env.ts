@@ -5,6 +5,10 @@ class Env {
   get EXPO_DEBUG() {
     return boolish('EXPO_DEBUG', false);
   }
+  /** Enable profiling */
+  get EXPO_PROFILE() {
+    return boolish('EXPO_PROFILE', false);
+  }
 
   /** Enable the experimental "exotic" mode. [Learn more](https://blog.expo.dev/drastically-faster-bundling-in-react-native-a54f268e0ed1). */
   get EXPO_USE_EXOTIC() {

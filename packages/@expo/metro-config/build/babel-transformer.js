@@ -7,6 +7,7 @@ const node_assert_1 = __importDefault(require("node:assert"));
 const { Timer } = require('babel-timing');
 const loadBabelConfig_1 = require("./loadBabelConfig");
 const transformSync_1 = require("./transformSync");
+const env_1 = require("./env");
 const debug = require('debug')('expo:metro-config:babel-transformer');
 function isCustomTruthy(value) {
     return String(value) === 'true';
@@ -135,11 +136,16 @@ plugins, }) => {
             // @ts-expect-error: see https://github.com/facebook/react-native/blob/401991c3f073bf734ee04f9220751c227d2abd31/packages/react-native-babel-transformer/src/index.js#L220-L224
             return { ast: null };
         }
-        if (!result.metadata) {
-            result.metadata = {};
-        }
-        result.metadata.profile = timer.getResults();
         (0, node_assert_1.default)(result.ast);
+        if (env_1.env.EXPO_PROFILE) {
+            return {
+                ast: result.ast,
+                metadata: {
+                    ...result.metadata,
+                    profile: timer.getResults(),
+                },
+            };
+        }
         return { ast: result.ast, metadata: result.metadata };
     }
     finally {

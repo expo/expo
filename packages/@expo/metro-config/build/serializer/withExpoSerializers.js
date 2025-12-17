@@ -167,36 +167,38 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
             platform: graph.transformOptions?.platform,
             environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
         };
-        const allData = [];
-        // Collect the profile info off the chunk metadata and print total time for each transform.
-        graph.dependencies.forEach((module) => {
-            allData.push(...module.output
-                .map((output) => {
-                return output.data.profile;
-            })
-                .filter(Boolean));
-        });
-        // Print a summary of the time spent in each plugin, sorted by slowest to fastest.
-        const totalTime = allData.reduce((sum, data) => sum + data.time, 0);
-        const plugins = [];
-        allData.forEach((data) => {
-            data.plugins.forEach((plugin) => {
-                const existing = plugins.find((p) => p.name === plugin.name);
-                if (existing) {
-                    existing.time += plugin.time;
-                }
-                else {
-                    plugins.push({ name: plugin.name, time: plugin.time });
-                }
+        if (env_1.env.EXPO_PROFILE) {
+            const allData = [];
+            // Collect the profile info off the chunk metadata and print total time for each transform.
+            graph.dependencies.forEach((module) => {
+                allData.push(...module.output
+                    .map((output) => {
+                    return output.data.profile;
+                })
+                    .filter(Boolean));
             });
-        });
-        console.log(`Total time spent in transformer: ${totalTime.toFixed(2)}ms`);
-        const sortedPlugins = plugins.sort((a, b) => b.time - a.time);
-        console.log('|   %   | Plugin | Time (ms) |');
-        console.log('| ----- | ------ | --------- |');
-        sortedPlugins.forEach((plugin) => {
-            console.log(`| ${((plugin.time / totalTime) * 100).toFixed(2)}% | ${plugin.name} | ${plugin.time.toFixed(2)} |`);
-        });
+            // Print a summary of the time spent in each plugin, sorted by slowest to fastest.
+            const totalTime = allData.reduce((sum, data) => sum + data.time, 0);
+            const plugins = [];
+            allData.forEach((data) => {
+                data.plugins.forEach((plugin) => {
+                    const existing = plugins.find((p) => p.name === plugin.name);
+                    if (existing) {
+                        existing.time += plugin.time;
+                    }
+                    else {
+                        plugins.push({ name: plugin.name, time: plugin.time });
+                    }
+                });
+            });
+            console.log(`Total time spent in transformer: ${totalTime.toFixed(2)}ms`);
+            const sortedPlugins = plugins.sort((a, b) => b.time - a.time);
+            console.log('|   %   | Plugin | Time (ms) |');
+            console.log('| ----- | ------ | --------- |');
+            sortedPlugins.forEach((plugin) => {
+                console.log(`| ${((plugin.time / totalTime) * 100).toFixed(2)}% | ${plugin.name} | ${plugin.time.toFixed(2)} |`);
+            });
+        }
         const options = {
             ...inputOptions,
             createModuleId: (moduleId, ...props) => {
