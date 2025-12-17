@@ -154,8 +154,7 @@ function expoInlineManifestPlugin(api) {
     return {
         name: 'expo-inline-manifest-plugin',
         pre() {
-            this.projectRoot =
-                possibleProjectRoot || this.file.opts.root || '';
+            this.projectRoot = possibleProjectRoot || this.file.opts.root || '';
         },
         visitor: {
             MemberExpression(path, state) {

@@ -174,8 +174,7 @@ export function expoInlineManifestPlugin(api: ConfigAPI & typeof import('@babel/
     name: 'expo-inline-manifest-plugin',
 
     pre() {
-      (this as InlineManifestState).projectRoot =
-        possibleProjectRoot || this.file.opts.root || '';
+      (this as InlineManifestState).projectRoot = possibleProjectRoot || this.file.opts.root || '';
     },
 
     visitor: {

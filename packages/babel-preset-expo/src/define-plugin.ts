@@ -14,7 +14,7 @@ interface ProcessedReplacements {
   /** Identifier name -> replacement value (e.g., "__DEV__" -> false) */
   identifiers: Map<string, unknown>;
   /** Member expression pattern -> replacement value (e.g., "process.env.NODE_ENV" -> "production") */
-  memberPatterns: Array<[string, unknown]>;
+  memberPatterns: [string, unknown][];
   /** typeof argument name -> replacement value (e.g., "window" -> "object") */
   typeofValues: Map<string, unknown>;
   /** Set of root object names from member patterns for quick filtering (e.g., "process", "Platform") */
@@ -63,7 +63,7 @@ function definePlugin({ types: t }: ConfigAPI & typeof import('@babel/core')): P
 
       // Pre-process replacements once per file
       const identifiers = new Map<string, unknown>();
-      const memberPatterns: Array<[string, unknown]> = [];
+      const memberPatterns: [string, unknown][] = [];
       const typeofValues = new Map<string, unknown>();
       const memberRoots = new Set<string>();
 
