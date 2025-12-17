@@ -24,6 +24,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/bottomsheet': ['jetpack-compose/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/text': ['swift-ui/Text/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/button': ['jetpack-compose/Button/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/circularprogress': ['swift-ui/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/circularprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],

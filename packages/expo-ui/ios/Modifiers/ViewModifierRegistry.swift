@@ -3,6 +3,15 @@
 import ExpoModulesCore
 import SwiftUI
 
+/**
+ Protocol for modifiers that can be applied directly to Text values.
+ This is needed for Text concatenation where each segment can have different styling.
+ Modifiers conforming to this protocol can be used both as View modifiers and Text modifiers.
+ */
+internal protocol TextApplicableModifier {
+  func applyToText(_ text: Text) -> Text
+}
+
 // MARK: - Individual ViewModifier Structs
 
 internal enum ListSectionSpacingType: String, Enumerable {
@@ -145,7 +154,7 @@ internal struct OffsetModifier: ViewModifier, Record {
   }
 }
 
-internal struct ForegroundColorModifier: ViewModifier, Record {
+internal struct ForegroundColorModifier: ViewModifier, Record, TextApplicableModifier {
   @Field var color: Color?
 
   func body(content: Content) -> some View {
@@ -154,6 +163,39 @@ internal struct ForegroundColorModifier: ViewModifier, Record {
     } else {
       content
     }
+  }
+
+  func applyToText(_ text: Text) -> Text {
+    if let color = color {
+      return text.foregroundColor(color)
+    }
+    return text
+  }
+}
+
+// MARK: - Text-only Modifiers (Bold, Italic)
+
+internal struct BoldModifier: ViewModifier, Record, TextApplicableModifier {
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, tvOS 16.0, *) {
+      content.bold()
+    }
+  }
+
+  func applyToText(_ text: Text) -> Text {
+    text.bold()
+  }
+}
+
+internal struct ItalicModifier: ViewModifier, Record, TextApplicableModifier {
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, tvOS 16.0, *) {
+      content.italic()
+    }
+  }
+
+  func applyToText(_ text: Text) -> Text {
+    text.italic()
   }
 }
 
@@ -173,7 +215,7 @@ internal enum ForegroundHierarchicalStyleType: String, Enumerable {
   case quinary
 }
 
-internal struct ForegroundStyleModifier: ViewModifier, Record {
+internal struct ForegroundStyleModifier: ViewModifier, Record, TextApplicableModifier {
   @Field var styleType: ForegroundStyleType = .color
   @Field var hierarchicalStyle: ForegroundHierarchicalStyleType = .primary
   @Field var color: Color?
@@ -246,6 +288,19 @@ internal struct ForegroundStyleModifier: ViewModifier, Record {
         content
       }
     }
+  }
+
+  // Only color style is supported for Text concatenation
+  // Gradients and hierarchical styles will be applied as View modifiers by UIBaseView
+  func applyToText(_ text: Text) -> Text {
+    if styleType == .color, let color {
+      if #available(iOS 17.0, *) {
+        return text.foregroundStyle(color)
+      } else {
+        // Fallback on earlier versions
+      }
+    }
+    return text
   }
 }
 
@@ -1053,6 +1108,14 @@ internal struct LineSpacing: ViewModifier, Record {
   }
 }
 
+internal struct LineLimitModifier: ViewModifier, Record {
+  @Field var limit: Int?
+
+  func body(content: Content) -> some View {
+    content.lineLimit(limit)
+  }
+}
+
 internal enum Prominence: String, Enumerable {
   case standard
   case increased
@@ -1327,6 +1390,25 @@ internal class ViewModifierRegistry {
   }
 
   /**
+   * Applies a text-specific modifier to a Text value.
+   * Only works with modifiers that conform to TextApplicableModifier.
+   * Returns the original text if the modifier doesn't support text application.
+   */
+  func applyTextModifier(
+    _ type: String,
+    to text: Text,
+    appContext: AppContext,
+    params: [String: Any],
+    eventDispatcher: EventDispatcher
+  ) -> Text {
+    guard let viewModifier = try? modifierFactories[type]?(params, appContext, eventDispatcher),
+          let textModifier = viewModifier as? TextApplicableModifier else {
+      return text
+    }
+    return textModifier.applyToText(text)
+  }
+
+  /**
    * Checks if a modifier type is registered.
    */
   func hasModifier(_ type: String) -> Bool {
@@ -1483,6 +1565,14 @@ extension ViewModifierRegistry {
 
     register("foregroundStyle") { params, appContext, _ in
       return try ForegroundStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("bold") { params, appContext, _ in
+      return try BoldModifier(from: params, appContext: appContext)
+    }
+
+    register("italic") { params, appContext, _ in
+      return try ItalicModifier(from: params, appContext: appContext)
     }
 
     register("tint") { params, appContext, _ in
@@ -1691,6 +1781,10 @@ extension ViewModifierRegistry {
 
     register("lineSpacing") { params, appContext, _ in
       return try LineSpacing(from: params, appContext: appContext)
+    }
+
+    register("lineLimit") { params, appContext, _ in
+      return try LineLimitModifier(from: params, appContext: appContext)
     }
 
     register("listRowInsets") { params, appContext, _ in

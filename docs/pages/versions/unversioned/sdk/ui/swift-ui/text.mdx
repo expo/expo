@@ -1,0 +1,181 @@
+---
+title: Text
+description: A SwiftUI Text component for displaying styled text with support for nested texts.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Text matches the official SwiftUI [Text API](https://developer.apple.com/documentation/swiftui/text).
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic text
+
+```tsx BasicTextExample.tsx
+import { Host, Text } from '@expo/ui/swift-ui';
+
+export default function BasicTextExample() {
+  return (
+    <Host matchContents>
+      <Text>Hello world</Text>
+    </Host>
+  );
+}
+```
+
+### Text with modifiers
+
+Use modifiers to style the entire text.
+
+```tsx StyledTextExample.tsx
+import { Host, Text } from '@expo/ui/swift-ui';
+import { font, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function StyledTextExample() {
+  return (
+    <Host matchContents>
+      <Text modifiers={[font({ size: 24, weight: 'bold' }), foregroundStyle('blue')]}>
+        Large Bold Blue Text
+      </Text>
+    </Host>
+  );
+}
+```
+
+### Nested text (per-segment styling)
+
+Nest Text components to style individual segments differently. This is useful for inline formatting like bold or colored words within a sentence.
+
+```tsx NestedTextExample.tsx
+import { Host, Text } from '@expo/ui/swift-ui';
+import { bold, italic, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function NestedTextExample() {
+  return (
+    <Host matchContents>
+      <Text>
+        Hello <Text modifiers={[bold(), foregroundStyle('red')]}>world</Text>!
+      </Text>
+    </Host>
+  );
+}
+```
+
+### Mixed inline styles
+
+Combine multiple styled segments for rich text formatting.
+
+```tsx MixedStylesExample.tsx
+import { Host, Text } from '@expo/ui/swift-ui';
+import { bold, italic, foregroundStyle, font } from '@expo/ui/swift-ui/modifiers';
+
+export default function MixedStylesExample() {
+  return (
+    <Host matchContents>
+      <Text>
+        This is <Text modifiers={[bold()]}>bold</Text>, <Text modifiers={[italic()]}>italic</Text>,
+        and <Text modifiers={[foregroundStyle('orange')]}>colored</Text> text.
+      </Text>
+    </Host>
+  );
+}
+```
+
+### Font weights
+
+Use the `font` modifier to apply different font weights.
+
+```tsx FontWeightsExample.tsx
+import { Host, Text, VStack } from '@expo/ui/swift-ui';
+import { font } from '@expo/ui/swift-ui/modifiers';
+
+export default function FontWeightsExample() {
+  return (
+    <Host matchContents>
+      <VStack spacing={4}>
+        <Text modifiers={[font({ weight: 'ultraLight' })]}>Ultra Light</Text>
+        <Text modifiers={[font({ weight: 'light' })]}>Light</Text>
+        <Text modifiers={[font({ weight: 'regular' })]}>Regular</Text>
+        <Text modifiers={[font({ weight: 'medium' })]}>Medium</Text>
+        <Text modifiers={[font({ weight: 'semibold' })]}>Semibold</Text>
+        <Text modifiers={[font({ weight: 'bold' })]}>Bold</Text>
+        <Text modifiers={[font({ weight: 'heavy' })]}>Heavy</Text>
+        <Text modifiers={[font({ weight: 'black' })]}>Black</Text>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Font designs
+
+Use the `font` modifier to apply different font designs.
+
+```tsx FontDesignsExample.tsx
+import { Host, Text, VStack } from '@expo/ui/swift-ui';
+import { font } from '@expo/ui/swift-ui/modifiers';
+
+export default function FontDesignsExample() {
+  return (
+    <Host matchContents>
+      <VStack spacing={4}>
+        <Text modifiers={[font({ design: 'default', size: 18 })]}>Default Design</Text>
+        <Text modifiers={[font({ design: 'rounded', size: 18 })]}>Rounded Design</Text>
+        <Text modifiers={[font({ design: 'serif', size: 18 })]}>Serif Design</Text>
+        <Text modifiers={[font({ design: 'monospaced', size: 18 })]}>Monospaced Design</Text>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Custom fonts
+
+Use the `font` modifier with a `family` parameter to use custom fonts. You can load custom fonts using [expo-font](/versions/latest/sdk/font/).
+
+```tsx CustomFontExample.tsx
+import { Host, Text, VStack } from '@expo/ui/swift-ui';
+import { font } from '@expo/ui/swift-ui/modifiers';
+
+export default function CustomFontExample() {
+  return (
+    <Host matchContents>
+      <VStack spacing={4}>
+        <Text modifiers={[font({ family: 'Inter-Bold', size: 18 })]}>Inter Bold</Text>
+        <Text modifiers={[font({ family: 'Inter-Regular', size: 18 })]}>Inter Regular</Text>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Text with line limit
+
+Use the `lineLimit` modifier to truncate text after a certain number of lines.
+
+```tsx LineLimitExample.tsx
+import { Host, Text } from '@expo/ui/swift-ui';
+import { lineLimit } from '@expo/ui/swift-ui/modifiers';
+
+export default function LineLimitExample() {
+  const longText = 'This is a very long text that will be truncated after two lines. '.repeat(5);
+
+  return (
+    <Host matchContents>
+      <Text modifiers={[lineLimit(2)]}>{longText}</Text>
+    </Host>
+  );
+}
+```
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/text" apiName="Text" />

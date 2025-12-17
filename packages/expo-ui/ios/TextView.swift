@@ -5,11 +5,6 @@ import ExpoModulesCore
 
 public final class TextViewProps: UIBaseViewProps {
   @Field var text: String = ""
-  @Field var weight: FontWeight?
-  @Field var design: FontDesign?
-  @Field var size: Double?
-  @Field var lineLimit: Int?
-  @Field var color: Color?
 
   // Override default frame alignment for text views
   override var defaultFrameAlignment: Alignment { .leading }
@@ -23,18 +18,20 @@ public struct TextView: ExpoSwiftUI.View {
   }
 
   public var body: some View {
-    let hasDeprecatedFontProps = props.weight != nil || props.design != nil || props.size != nil
+    buildText()
+  }
 
-    Text(props.text)
-      .if(hasDeprecatedFontProps) { text in
-        // TODO: remove this block of code once we remove the deprecated font props
-        text.font(.system(
-          size: CGFloat(props.size ?? 17),
-          weight: props.weight?.toSwiftUI() ?? .regular,
-          design: props.design?.toSwiftUI() ?? .default
-        ))
+  internal func buildText() -> Text {
+    var result = Text(props.text)
+      .applyTextModifiers(props.modifiers, appContext: props.appContext, eventDispatcher: props.globalEventDispatcher)
+
+    if let children = props.children {
+      for child in children {
+        if let textView = child.childView as? TextView {
+          result = result + textView.buildText()
+        }
       }
-      .lineLimit(props.lineLimit)
-      .foregroundColor(props.color)
+    }
+    return result
   }
 }
