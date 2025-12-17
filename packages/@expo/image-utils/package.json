@@ -9,7 +9,7 @@
     "lint": "expo-module lint",
     "prepublishOnly": "expo-module clean && pnpm run build",
     "test": "expo-module test",
-    "test:e2e": "pnpm run prepare && expo-module test --config e2e/jest.config.js",
+    "test:e2e": "expo-module test --config e2e/jest.config.js",
     "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch --preserveWatchOutput"
   },
