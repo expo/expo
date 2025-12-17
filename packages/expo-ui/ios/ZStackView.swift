@@ -3,17 +3,21 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class ZStackViewProps: UIBaseViewProps {
+public final class ZStackViewProps: UIBaseViewProps {
   @Field var useTapGesture: Bool?
   @Field var alignment: AlignmentOptions?
   @Field var backgroundColor: Color?
   var onTap = EventDispatcher()
 }
 
-internal struct ZStackView: ExpoSwiftUI.View {
-  @ObservedObject var props: ZStackViewProps
+public struct ZStackView: ExpoSwiftUI.View {
+  @ObservedObject public var props: ZStackViewProps
 
-  var body: some View {
+  public init(props: ZStackViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     ZStack(alignment: props.alignment?.toAlignment() ?? .center) {
       Children()
     }

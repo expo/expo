@@ -20,7 +20,7 @@ internal enum ButtonRole: String, Enumerable {
   }
 }
 
-final class ButtonProps: UIBaseViewProps, Observable {
+public final class ButtonProps: UIBaseViewProps, Observable {
   @Field var label: String?
   @Field var systemImage: String?
   @Field var role: ButtonRole?

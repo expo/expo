@@ -3,15 +3,19 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class GroupViewProps: UIBaseViewProps {
+public final class GroupViewProps: UIBaseViewProps {
   @Field var useTapGesture: Bool?
   var onTap = EventDispatcher()
 }
 
-internal struct GroupView: ExpoSwiftUI.View {
-  @ObservedObject var props: GroupViewProps
+public struct GroupView: ExpoSwiftUI.View {
+  @ObservedObject public var props: GroupViewProps
 
-  var body: some View {
+  public init(props: GroupViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     Group {
       Children()
     }

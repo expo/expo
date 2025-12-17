@@ -13,7 +13,7 @@ final class ClosedRangeDate: Record {
   @Field var upper: Date?
 }
 
-final class ProgressProps: UIBaseViewProps {
+public final class ProgressProps: UIBaseViewProps {
   @Field var variant: ProgressVariant = .circular
   @Field var timerInterval: ClosedRangeDate?
   @Field var countsDown: Bool?
@@ -21,10 +21,14 @@ final class ProgressProps: UIBaseViewProps {
   @Field var color: Color?
 }
 
-struct ProgressView: ExpoSwiftUI.View {
-  @ObservedObject var props: ProgressProps
+public struct ProgressView: ExpoSwiftUI.View {
+  @ObservedObject public var props: ProgressProps
 
-  var body: some View {
+  public init(props: ProgressProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     progressView
       .tint(props.color)
       .if(props.variant == .circular) {
