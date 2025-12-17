@@ -29,15 +29,15 @@ if [[ "$RN_MACOS_VERSION" != "null" ]]; then
 else
     RN_MINOR_VERSION=$(jq -r '.dependencies["react-native"] | capture("^(?<major>\\d+)\\.(?<minor>\\d+)") | "\( .major ).\( .minor )"' package.json)
     echo " ⚠️  Attempting to install react-native-macos@$RN_MINOR_VERSION..."
-    if ! yarn add "react-native-macos@$RN_MINOR_VERSION" --non-interactive --silent; then
+    if ! pnpm add "react-native-macos@$RN_MINOR_VERSION" --silent; then
         echo "⚠️  Failed to install react-native-macos@$RN_MINOR_VERSION, falling back to latest version"
         # Manually extract the last react-native-macos version (highest) from npm because we can't rely on the @latest tag
         latest_version=$(npm view react-native-macos versions --json | jq -r '.[-1]')
-        yarn add "react-native-macos@$latest_version"
+        pnpm add "react-native-macos@$latest_version"
 
     fi
 fi
 
-echo " Running yarn from root..."
+echo " Running pnpm from root..."
 cd ../../
-yarn install
+pnpm install --ignore-scripts
