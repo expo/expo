@@ -1,6 +1,6 @@
 package expo.modules.kotlin.sharedobjects
 
-import expo.modules.kotlin.RuntimeContext
+import expo.modules.kotlin.runtime.RuntimeContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.InvalidSharedObjectIdException
 import expo.modules.kotlin.exception.UsingReleasedSharedObjectException

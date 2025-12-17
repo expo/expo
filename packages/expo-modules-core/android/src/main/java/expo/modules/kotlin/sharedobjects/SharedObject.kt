@@ -2,7 +2,7 @@ package expo.modules.kotlin.sharedobjects
 
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.RuntimeContext
+import expo.modules.kotlin.runtime.RuntimeContext
 import expo.modules.kotlin.jni.JNIUtils
 import expo.modules.kotlin.jni.JavaScriptWeakObject
 import expo.modules.kotlin.logger

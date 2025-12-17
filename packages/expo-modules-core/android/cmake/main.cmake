@@ -13,6 +13,7 @@ file(
   "${main_dir}/types/*.cpp"
   "${main_dir}/javaclasses/*.cpp"
   "${main_dir}/decorators/*.cpp"
+  "${main_dir}/installers/*.cpp"
   "${main_dir}/worklets/*.cpp"
 )
 
@@ -38,6 +39,12 @@ target_include_directories(
   "${ANDROID_SRC_DIR}/fabric"
   "${COMMON_DIR}"
   "${COMMON_DIR}/fabric"
+)
+
+target_compile_options(
+  expo-modules-core
+  PRIVATE
+  ${WORKLETS_INTEGRATION_COMPILE_OPTIONS}
 )
 
 if (REACT_NATIVE_WORKLETS_DIR)

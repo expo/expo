@@ -585,7 +585,7 @@ inline fun Module.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptM
   val convertedConstants = Arguments.makeNativeMap(constants)
   val moduleName = "[Anonymous Object]"
 
-  val decorator = JSDecoratorsBridgingObject(runtimeContext.jniDeallocator)
+  val decorator = JSDecoratorsBridgingObject(runtimeContext.deallocator)
   decorator.registerConstants(convertedConstants)
 
   objectData
@@ -606,7 +606,7 @@ inline fun Module.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptM
       prop.attachToJSObject(decorator)
     }
 
-  return JavaScriptModuleObject(runtimeContext.jniDeallocator, moduleName).apply {
+  return JavaScriptModuleObject(runtimeContext.deallocator, moduleName).apply {
     decorate(decorator)
   }
 }
