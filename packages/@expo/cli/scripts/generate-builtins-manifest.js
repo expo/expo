@@ -96,6 +96,15 @@ const BUILTINS = [
   'expo/fetch',
   'expo/dom',
   'expo/dom/global',
+  'expo/internal/async-require-module',
+  '@expo/metro-runtime/rsc/runtime',
+  '@expo/metro-runtime',
+
+  '@expo/log-box',
+  '@expo/log-box/lib',
+  '@expo/log-box/src/LogBox',
+  'escape-string-regexp',
+
   'expo-file-system',
   'expo-file-system/next',
   'expo-file-system/legacy',

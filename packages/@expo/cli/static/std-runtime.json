@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2025-12-16T23:23:34.353Z",
+  "generatedAt": "2025-12-17T00:10:03.790Z",
   "modules": [
     "react",
     "react/jsx-dev-runtime",
@@ -66,6 +66,13 @@
     "expo/fetch",
     "expo/dom",
     "expo/dom/global",
+    "expo/internal/async-require-module",
+    "@expo/metro-runtime/rsc/runtime",
+    "@expo/metro-runtime",
+    "@expo/log-box",
+    "@expo/log-box/lib",
+    "@expo/log-box/src/LogBox",
+    "escape-string-regexp",
     "expo-file-system",
     "expo-file-system/next",
     "expo-file-system/legacy",
@@ -107,6 +114,21 @@
     "use-sync-external-store/with-selector"
   ],
   "packages": {
+    "@expo/log-box": {
+      "version": "0.0.13-canary-20251023-4c86f95",
+      "modules": [
+        "@expo/log-box",
+        "@expo/log-box/lib",
+        "@expo/log-box/src/LogBox"
+      ]
+    },
+    "@expo/metro-runtime": {
+      "version": "6.1.2",
+      "modules": [
+        "@expo/metro-runtime/rsc/runtime",
+        "@expo/metro-runtime"
+      ]
+    },
     "@radix-ui/react-compose-refs": {
       "version": "1.1.2",
       "modules": [
@@ -209,6 +231,12 @@
         "color-string"
       ]
     },
+    "escape-string-regexp": {
+      "version": "4.0.0",
+      "modules": [
+        "escape-string-regexp"
+      ]
+    },
     "event-target-shim": {
       "version": "5.0.1",
       "modules": [
@@ -221,7 +249,8 @@
         "expo",
         "expo/fetch",
         "expo/dom",
-        "expo/dom/global"
+        "expo/dom/global",
+        "expo/internal/async-require-module"
       ]
     },
     "expo-asset": {
