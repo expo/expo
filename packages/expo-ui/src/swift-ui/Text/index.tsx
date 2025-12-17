@@ -42,6 +42,28 @@ function transformChildren(children: React.ReactNode): React.ReactNode[] | null 
 export function Text(props: TextProps) {
   const { children, modifiers, ...restProps } = props;
 
+  if (!children) {
+    return null;
+  }
+
+  const childArray = React.Children.toArray(children);
+
+  const isSimpleText = childArray.every(
+    (child) => typeof child === 'string' || typeof child === 'number'
+  );
+
+  if (isSimpleText) {
+    const combinedText = childArray.map(String).join('');
+    return (
+      <TextNativeView
+        text={combinedText}
+        modifiers={modifiers}
+        {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+        {...restProps}
+      />
+    );
+  }
+
   const transformedChildren = transformChildren(children);
   return (
     <TextNativeView

@@ -6,5 +6,5 @@ export interface TextProps extends CommonViewModifierProps {
      */
     children?: React.ReactNode;
 }
-export declare function Text(props: TextProps): React.JSX.Element;
+export declare function Text(props: TextProps): React.JSX.Element | null;
 //# sourceMappingURL=index.d.ts.map
