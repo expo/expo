@@ -186,16 +186,17 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     ]);
   }
 
-  if (engine !== 'hermes') {
+  if (engine !== 'hermes' && !isModernEngine) {
     // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
     // getters and setters in spread objects. We need to add this plugin ourself without that option.
     // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
+    // NOTE: Object rest/spread is ES2018, supported in all modern browsers. Skip for web/server.
     extraPlugins.push([
       require('@babel/plugin-transform-object-rest-spread'),
       // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
       { loose: true, useBuiltIns: true },
     ]);
-  } else if (!isModernEngine) {
+  } else if (engine === 'hermes' && !isModernEngine) {
     // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
     // JSX is used in a function body. This is technically not required in production, but we
     // should retain the same behavior since it's hard to debug the differences.

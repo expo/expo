@@ -193,7 +193,7 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
         console.log(`Total time spent in transformer: ${totalTime.toFixed(2)}ms`);
         const sortedPlugins = plugins.sort((a, b) => b.time - a.time);
         console.log('|   %   | Plugin | Time (ms) |');
-        console.log('| ----- | --- | --- |');
+        console.log('| ----- | ------ | --------- |');
         sortedPlugins.forEach((plugin) => {
             console.log(`| ${((plugin.time / totalTime) * 100).toFixed(2)}% | ${plugin.name} | ${plugin.time.toFixed(2)} |`);
         });
