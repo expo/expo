@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
+import type { ReleaseType } from 'semver';
 import stripAnsi from 'strip-ansi';
 
 import {
@@ -8,12 +9,7 @@ import {
   GradleDependency,
   GradleDependencyUpdate,
 } from './types';
-import {
-  addColorBasedOnSemverDiff,
-  calculateSemverDiff,
-  getChangelogLink,
-  SemverDiff,
-} from './utils';
+import { addColorBasedOnSemverDiff, calculateSemverDiff, getChangelogLink } from './utils';
 import logger from '../Logger';
 
 function generateAndroidProjectsSelectionChoice({
@@ -82,7 +78,10 @@ async function promptForDependenciesVersions(
   return updates;
 }
 
-async function promptForDependencyVersion(dependency: GradleDependency, semverDiff: SemverDiff) {
+async function promptForDependencyVersion(
+  dependency: GradleDependency,
+  semverDiff: ReleaseType | null
+) {
   let version = (
     await inquirer.prompt<{ version: string | boolean }>([
       {
