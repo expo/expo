@@ -51,6 +51,7 @@
 - [ios] prevent native crash when Link.AppleZoom with direct child Text is rendered inside Text ([#41518](https://github.com/expo/expo/pull/41518) by [@Ubax](https://github.com/Ubax))
 - [ios] fix zoom transition with custom params in href ([#41508](https://github.com/expo/expo/pull/41508) by [@Ubax](https://github.com/Ubax))
 - [ios] fix zoom transition issues with external links and preview ([#41507](https://github.com/expo/expo/pull/41507) by [@Ubax](https://github.com/Ubax))
+- fix(native-tabs): support the new icon format expected by react-native-screens 4.19 ([#41720](https://github.com/expo/expo/pull/41720) by [@erentasci](https://github.com/erentasci))
 
 ### 💡 Others
 
@@ -119,7 +120,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Allow specifying user-defined headers for all routes ([#40173](https://github.com/expo/expo/pull/40173) by [@hassankhan](https://github.com/hassankhan))
-- Add support for customizing icon and title of search tab  ([#40139](https://github.com/expo/expo/pull/40139) by [@Ubax](https://github.com/Ubax))
+- Add support for customizing icon and title of search tab ([#40139](https://github.com/expo/expo/pull/40139) by [@Ubax](https://github.com/Ubax))
 - Add icon component to declare sf and androidSrc at the same time ([#40151](https://github.com/expo/expo/pull/40151) by [@Ubax](https://github.com/Ubax))
 - popToTop when tapping active bottom tab on web ([#40174](https://github.com/expo/expo/pull/40174) by [@juliesaia](https://github.com/juliesaia))
 
