@@ -16,13 +16,14 @@ export type SectionProps = {
     /**
      * Enables or disables collapsible behavior for the section.
      * > **Note**: Available only when the list style is set to `sidebar`.
+     * @platform ios 17.0+
+     * @platform tvos 17.0+
      * @default false
      */
     collapsible?: boolean;
 } & CommonViewModifierProps;
 /**
  * Section component uses the native [Section](https://developer.apple.com/documentation/swiftui/section) component.
- * It has no intrinsic dimensions, so it needs explicit height or flex set to display content (like `<ScrollView>`).
  */
 export declare function Section(props: SectionProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
