@@ -54,6 +54,8 @@ export default function StyledTextExample() {
 
 Nest Text components to style individual segments differently. This is useful for inline formatting like bold or colored words within a sentence.
 
+> **Note:** Nested text uses SwiftUI's [Text concatenation](https://developer.apple.com/documentation/swiftui/text), so only modifiers that return `Text` (such as `bold`, `italic`, `font`, `foregroundColor`, and `foregroundStyle` with color) will apply to nested segments.
+
 ```tsx NestedTextExample.tsx
 import { Host, Text } from '@expo/ui/swift-ui';
 import { bold, italic, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
