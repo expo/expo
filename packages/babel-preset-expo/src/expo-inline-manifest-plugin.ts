@@ -1,4 +1,4 @@
-import type { ConfigAPI, PluginObj } from '@babel/core';
+import type { ConfigAPI, PluginObj, PluginPass } from '@babel/core';
 import type { ExpoConfig, ProjectConfig } from 'expo/config';
 
 import { getIsReactServer, getPlatform, getPossibleProjectRoot } from './common';
@@ -149,6 +149,10 @@ function getConfigMemo(projectRoot: string): ConfigMemo | null {
   return configMemo;
 }
 
+interface InlineManifestState extends PluginPass {
+  projectRoot?: string;
+}
+
 // Convert `process.env.APP_MANIFEST` to a modified web-specific variation of the app.json public manifest.
 export function expoInlineManifestPlugin(api: ConfigAPI & typeof import('@babel/core')): PluginObj {
   const { types: t } = api;
@@ -157,41 +161,51 @@ export function expoInlineManifestPlugin(api: ConfigAPI & typeof import('@babel/
   const platform = api.caller(getPlatform);
   const possibleProjectRoot = api.caller(getPossibleProjectRoot);
   const shouldInline = platform === 'web' || isReactServer;
+
+  // Early exit: return a no-op plugin if we're not going to inline anything
+  if (!shouldInline) {
+    return {
+      name: 'expo-inline-manifest-plugin',
+      visitor: {},
+    };
+  }
+
   return {
     name: 'expo-inline-manifest-plugin',
+
+    pre() {
+      (this as InlineManifestState).projectRoot =
+        possibleProjectRoot || this.file.opts.root || '';
+    },
+
     visitor: {
-      MemberExpression(path: any, state: any) {
-        // Web-only/React Server-only feature: the native manifest is provided dynamically by the client.
-        if (!shouldInline) {
-          return;
-        }
+      MemberExpression(path, state: InlineManifestState) {
+        // We're looking for: process.env.APP_MANIFEST
+        // This visitor is called on every MemberExpression, so we need fast checks
 
-        if (
-          !t.isIdentifier(path.node.object, { name: 'process' }) ||
-          !t.isIdentifier(path.node.property, { name: 'env' })
-        ) {
-          return;
-        }
-
+        // Quick check: the property we're looking for is 'APP_MANIFEST'
+        // The parent must be a MemberExpression with property 'APP_MANIFEST'
         const parent = path.parentPath;
-        if (!t.isMemberExpression(parent.node)) {
-          return;
-        }
+        if (!parent?.isMemberExpression()) return;
 
-        const projectRoot = possibleProjectRoot || state.file.opts.root || '';
+        // Check if parent's property is APP_MANIFEST (most selective check first)
+        const parentProp = parent.node.property;
+        if (!t.isIdentifier(parentProp) || parentProp.name !== 'APP_MANIFEST') return;
 
-        if (
-          // Surfaces the `app.json` (config) as an environment variable which is then parsed by
-          // `expo-constants` https://docs.expo.dev/versions/latest/sdk/constants/
-          t.isIdentifier(parent.node.property, {
-            name: 'APP_MANIFEST',
-          }) &&
-          !parent.parentPath.isAssignmentExpression()
-        ) {
-          const manifest = getExpoAppManifest(projectRoot);
-          if (manifest !== null) {
-            parent.replaceWith(t.stringLiteral(manifest));
-          }
+        // Now verify this is process.env
+        const obj = path.node.object;
+        const prop = path.node.property;
+        if (!t.isIdentifier(obj) || obj.name !== 'process') return;
+        if (!t.isIdentifier(prop) || prop.name !== 'env') return;
+
+        // Skip if this is an assignment target
+        if (parent.parentPath?.isAssignmentExpression()) return;
+
+        // Surfaces the `app.json` (config) as an environment variable which is then parsed by
+        // `expo-constants` https://docs.expo.dev/versions/latest/sdk/constants/
+        const manifest = getExpoAppManifest(state.projectRoot!);
+        if (manifest !== null) {
+          parent.replaceWith(t.stringLiteral(manifest));
         }
       },
     },
