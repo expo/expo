@@ -4,8 +4,7 @@ import './async-require';
 import 'expo-asset';
 import 'expo/virtual/rsc';
 
-import Constants from 'expo-constants';
-import { AppRegistry, NativeModules, LogBox, Platform } from 'react-native';
+import { AppRegistry, NativeModules, LogBox } from 'react-native';
 
 import { isRunningInExpoGo } from './environment/ExpoGo';
 import { AppEntryNotFound } from './errors/AppEntryNotFound';

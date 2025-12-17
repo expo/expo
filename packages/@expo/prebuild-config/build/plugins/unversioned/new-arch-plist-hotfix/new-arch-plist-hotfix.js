@@ -19,15 +19,10 @@ const withNewArchPlistHotfix = config => {
     return config;
   });
 };
-function getNewArchEnabled(config) {
-  const newArchEnabled = (config.ios?.newArchEnabled ?? config.newArchEnabled)?.toString();
-  return newArchEnabled !== 'false';
-}
 function setNewArchPlistHotfixConfig(config, infoPlist) {
-  const newArchEnabled = getNewArchEnabled(config);
   return {
     ...infoPlist,
-    RCTNewArchEnabled: newArchEnabled
+    RCTNewArchEnabled: true
   };
 }
 var _default = exports.default = withNewArchPlistHotfix;

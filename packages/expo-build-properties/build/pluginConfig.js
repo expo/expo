@@ -27,7 +27,6 @@ const schema = {
         android: {
             type: 'object',
             properties: {
-                newArchEnabled: { type: 'boolean', nullable: true },
                 minSdkVersion: { type: 'integer', nullable: true },
                 compileSdkVersion: { type: 'integer', nullable: true },
                 targetSdkVersion: { type: 'integer', nullable: true },
@@ -153,7 +152,6 @@ const schema = {
         ios: {
             type: 'object',
             properties: {
-                newArchEnabled: { type: 'boolean', nullable: true },
                 deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
                 useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
                 forceStaticLinking: { type: 'array', items: { type: 'string' }, nullable: true },
