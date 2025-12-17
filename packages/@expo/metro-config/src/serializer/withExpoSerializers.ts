@@ -299,12 +299,11 @@ function getDefaultSerializer(
     console.log(`Total time spent in transformer: ${totalTime.toFixed(2)}ms`);
 
     const sortedPlugins = plugins.sort((a, b) => b.time - a.time);
+    console.log('|   %   | Plugin | Time (ms) |');
+    console.log('| ----- | --- | --- |');
     sortedPlugins.forEach((plugin) => {
       console.log(
-        `Plugin "${plugin.name}" took ${plugin.time.toFixed(2)}ms (${(
-          (plugin.time / totalTime) *
-          100
-        ).toFixed(2)}%)`
+        `| ${((plugin.time / totalTime) * 100).toFixed(2)}% | ${plugin.name} | ${plugin.time.toFixed(2)} |`
       );
     });
 
