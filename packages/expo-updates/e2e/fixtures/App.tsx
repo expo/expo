@@ -308,22 +308,6 @@ export default function App() {
       <Text>E2E Module</Text>
       <View>
         <TestValue testID="e2eModuleState.type" value={`${e2eModuleState?.type ?? ''}`} />
-        <TestValue
-          testID="e2eModuleState.manifest.id"
-          value={`${e2eModuleState?.manifest?.id ?? ''}`}
-        />
-        <TestValue
-          testID="e2eModuleState.runtimeVersion"
-          value={`${e2eModuleState?.runtimeVersion ?? ''}`}
-        />
-        <TestValue
-          testID="e2eModuleState.embeddedUpdateId"
-          value={`${e2eModuleState?.embeddedUpdateId ?? ''}`}
-        />
-        <TestValue
-          testID="e2eModuleState.launchedUpdateId"
-          value={`${e2eModuleState?.launchedUpdateId ?? ''}`}
-        />
       </View>
       <Text>Log messages</Text>
       <ScrollView contentContainerStyle={styles.logEntriesContainer}>
