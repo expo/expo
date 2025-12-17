@@ -60,6 +60,7 @@
     "@react-navigation/native": "^7.1.21",
     "@react-navigation/native-stack": "^7.8.0",
     "expo": "workspace:*",
+    "expo-build-properties": "workspace:*",
     "expo-haptics": "workspace:*",
     "expo-linking": "workspace:*",
     "expo-router": "workspace:*",
@@ -68,15 +69,18 @@
     "expo-symbols": "workspace:*",
     "jose": "^5",
     "react": "19.2.0",
+    "react-dom": "19.2.0",
     "react-native": "0.83.1",
     "react-native-safe-area-context": "5.6.0",
     "react-native-screens": "4.19.0",
-    "react-native-webview": "13.15.0"
+    "react-native-webview": "13.15.0",
+    "react-native-web": "^0.21.0"
   },
   "devDependencies": {
     "compression": "^1.8.0",
     "esbuild": "^0.25.8",
     "express": "^5.1.0",
+    "getenv": "^2.0.0",
     "morgan": "^1.10.0",
     "tailwindcss": "^3.3.5",
     "tiny": "^0.0.10",

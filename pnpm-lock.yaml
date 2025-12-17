@@ -1065,6 +1065,9 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
+      expo-build-properties:
+        specifier: workspace:*
+        version: link:../../packages/expo-build-properties
       expo-haptics:
         specifier: workspace:*
         version: link:../../packages/expo-haptics
@@ -1089,6 +1092,9 @@ importers:
       react:
         specifier: 19.2.0
         version: 19.2.0
+      react-dom:
+        specifier: 19.2.0
+        version: 19.2.0(react@19.2.0)
       react-native:
         specifier: 0.83.1
         version: 0.83.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0)
@@ -1098,6 +1104,9 @@ importers:
       react-native-screens:
         specifier: 4.19.0
         version: 4.19.0(react-native@0.83.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
+      react-native-web:
+        specifier: ^0.21.0
+        version: 0.21.0(encoding@0.1.13)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-native-webview:
         specifier: 13.15.0
         version: 13.15.0(react-native@0.83.1(@babel/core@7.26.0)(@types/react@19.2.2)(react@19.2.0))(react@19.2.0)
@@ -1111,6 +1120,9 @@ importers:
       express:
         specifier: ^5.1.0
         version: 5.1.0
+      getenv:
+        specifier: ^2.0.0
+        version: 2.0.0
       morgan:
         specifier: ^1.10.0
         version: 1.10.0
