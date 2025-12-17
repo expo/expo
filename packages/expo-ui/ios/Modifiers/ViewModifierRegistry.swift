@@ -173,8 +173,6 @@ internal struct ForegroundColorModifier: ViewModifier, Record, TextApplicableMod
   }
 }
 
-// MARK: - Text-only Modifiers (Bold, Italic)
-
 internal struct BoldModifier: ViewModifier, Record, TextApplicableModifier {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
