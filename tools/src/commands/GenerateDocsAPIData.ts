@@ -126,6 +126,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-router-ui': ['ui/index.ts', 'expo-router'],
   'expo-router-native-tabs': ['native-tabs/index.ts', 'expo-router'],
   'expo-router-split-view': ['split-view/index.ts', 'expo-router'],
+  'expo-router-toolbar': ['toolbar/index.ts', 'expo-router'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
   'expo-secure-store': ['SecureStore.ts'],
