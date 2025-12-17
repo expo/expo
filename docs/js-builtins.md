@@ -441,35 +441,6 @@ if (runtime.builtinsVersion !== expectedVersion) {
 }
 ```
 
-#### 3.2 Tree Shaking for Built-ins
-Enable tree shaking when building the built-ins bundle to reduce size:
-```
-# apps/builtins/.env
-EXPO_UNSTABLE_TREE_SHAKING=1
-```
-
-#### 3.3 Dynamic Built-ins Manifest
-Generate the `builtins` list in `withMetroMultiPlatform.ts` from a manifest file rather than hardcoding:
-```typescript
-// builtins-manifest.json
-{
-  "version": "1.0.0",
-  "modules": ["react", "react-native", ...],
-  "internal": ["_react-native/...", ...]
-}
-
-// withMetroMultiPlatform.ts
-import manifest from './builtins-manifest.json';
-const builtins = manifest.modules;
-```
-
-#### 3.5 Source Maps for Built-ins
-Currently source maps are disabled for built-ins (`EXPO_BUNDLE_BUILT_IN` removes sourceMappingURL). Consider generating and hosting source maps separately for debugging:
-```typescript
-// In ExpoGoRootViewFactory
-runtime.evaluateJavaScript(buffer, "builtin.hbc", sourceMapUrl);
-```
-
 #### 3.7 Android Support
 Implement equivalent built-ins loading on Android using the same pattern as iOS.
 
@@ -498,9 +469,3 @@ If built-ins fail to load, the app should gracefully fall back to bundling all d
   }
 }
 ```
-
-#### 3.10 Built-ins Bundle Splitting
-For very large built-ins, consider splitting into multiple bundles that can be loaded on demand:
-- Core bundle: React, React Native essentials
-- Navigation bundle: React Navigation packages
-- Expo bundle: Expo SDK packages
