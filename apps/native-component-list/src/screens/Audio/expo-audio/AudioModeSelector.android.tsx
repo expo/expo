@@ -11,13 +11,13 @@ export default function AudioModeSelector() {
     current: Partial<AudioMode>;
   }>({
     next: {
-      interruptionModeAndroid: 'doNotMix',
+      interruptionMode: 'doNotMix',
       shouldPlayInBackground: false,
       shouldRouteThroughEarpiece: false,
       allowsBackgroundRecording: false,
     },
     current: {
-      interruptionModeAndroid: 'doNotMix',
+      interruptionMode: 'doNotMix',
       shouldPlayInBackground: false,
       shouldRouteThroughEarpiece: false,
       allowsBackgroundRecording: false,
@@ -34,13 +34,13 @@ export default function AudioModeSelector() {
   };
 
   const modesEqual = (modeA: Partial<AudioMode>, modeB: Partial<AudioMode>) =>
-    modeA.interruptionModeAndroid === modeB.interruptionModeAndroid &&
+    modeA.interruptionMode === modeB.interruptionMode &&
     modeA.shouldRouteThroughEarpiece === modeB.shouldRouteThroughEarpiece &&
     modeA.shouldPlayInBackground === modeB.shouldPlayInBackground &&
     modeA.allowsBackgroundRecording === modeB.allowsBackgroundRecording;
 
-  const setMode = (interruptionModeAndroid: AudioMode['interruptionModeAndroid']) => () =>
-    setState((state) => ({ ...state, next: { ...state.next, interruptionModeAndroid } }));
+  const setMode = (interruptionMode: AudioMode['interruptionMode']) => () =>
+    setState((state) => ({ ...state, next: { ...state.next, interruptionMode } }));
 
   const renderToggle = ({
     title,
@@ -83,11 +83,11 @@ export default function AudioModeSelector() {
   }: {
     title: string;
     disabled?: boolean;
-    value: AudioMode['interruptionModeAndroid'];
+    value: AudioMode['interruptionMode'];
   }) => (
     <ListButton
       disabled={disabled}
-      title={`${state.next.interruptionModeAndroid === value ? '✓ ' : ''}${title}`}
+      title={`${state.next.interruptionMode === value ? '✓ ' : ''}${title}`}
       onPress={setMode(value)}
     />
   );
@@ -113,6 +113,10 @@ export default function AudioModeSelector() {
       {renderModeSelector({
         title: 'Duck others',
         value: 'duckOthers',
+      })}
+      {renderModeSelector({
+        title: 'Mix with others',
+        value: 'mixWithOthers',
       })}
       <Button
         title="Apply changes"
