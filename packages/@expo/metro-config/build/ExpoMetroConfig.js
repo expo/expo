@@ -227,6 +227,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         },
         cacheStores: [cacheStore],
         watcher: {
+            unstable_workerThreads: false,
             // strip starting dot from env files. We only support watching development variants of env files as production is inlined using a different system.
             additionalExts: ['env', 'local', 'development'],
         },
@@ -290,6 +291,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         transformerPath: require.resolve('./transform-worker/transform-worker'),
         // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
         transformer: {
+            unstable_workerThreads: true,
             // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
             unstable_renameRequire: false,
             _expoRouterPath: routerPackageRoot ? path_1.default.relative(serverRoot, routerPackageRoot) : undefined,
