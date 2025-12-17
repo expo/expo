@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_assert_1 = __importDefault(require("node:assert"));
-const { Timer } = require('babel-timing');
+const babel_timing_1 = require("babel-timing");
 const loadBabelConfig_1 = require("./loadBabelConfig");
 const transformSync_1 = require("./transformSync");
 const env_1 = require("./env");
@@ -98,7 +98,7 @@ plugins, }) => {
     const OLD_BABEL_ENV = process.env.BABEL_ENV;
     process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
     try {
-        const timer = new Timer(filename);
+        const timer = new babel_timing_1.Timer(filename);
         const babelConfig = {
             // ES modules require sourceType='module' but OSS may not always want that
             sourceType: 'unambiguous',

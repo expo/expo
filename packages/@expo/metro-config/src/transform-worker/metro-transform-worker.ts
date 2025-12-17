@@ -35,6 +35,7 @@ import type {
 } from '@expo/metro/metro-transform-worker';
 import getMinifier from '@expo/metro/metro-transform-worker/utils/getMinifier';
 import assert from 'node:assert';
+import { Timer } from 'babel-timing';
 
 import * as assetTransformer from './asset-transformer';
 import collectDependencies, {
@@ -48,6 +49,7 @@ import collectDependencies, {
 } from './collect-dependencies';
 import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
+import { env } from '../env';
 import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
 
@@ -219,7 +221,7 @@ export function applyImportSupport<TFile extends t.File>(
     collectLocations?: boolean;
     performConstantFolding?: boolean;
   }
-): { ast: TFile; metadata?: any } {
+): { ast: TFile; metadata?: any; profile?: JSFile['profile'] } {
   // Perform the import-export transform (in case it's still needed), then
   // fold requires and perform constant folding (if in dev).
   const plugins: PluginItem[] = [];
@@ -233,7 +235,10 @@ export function applyImportSupport<TFile extends t.File>(
   if (collectLocations) {
     plugins.push(
       // TODO: Only enable this during reconciling.
-      importLocationsPlugin
+      {
+        name: 'metro:import-locations',
+        ...importLocationsPlugin,
+      }
     );
   }
 
@@ -264,7 +269,9 @@ export function applyImportSupport<TFile extends t.File>(
 
   // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
   if (plugins.length) {
-    return nullthrows<{ ast: TFile; metadata?: any }>(
+    const timer = new Timer(filename);
+
+    const result = nullthrows<{ ast: TFile; metadata?: any }>(
       // @ts-expect-error
       transformFromAstSync(ast, '', {
         ast: true,
@@ -275,6 +282,7 @@ export function applyImportSupport<TFile extends t.File>(
         filename,
         plugins,
         sourceMaps: false,
+        wrapPluginVisitorMethod: timer.wrapPluginVisitorMethod,
 
         // NOTE(kitten): This was done to wipe the paths/scope caches, which the `constantFoldingPlugin` needs to work,
         // but has been replaced with `programPath.scope.crawl()`.
@@ -287,6 +295,10 @@ export function applyImportSupport<TFile extends t.File>(
         cloneInputAst: false,
       })
     );
+
+    const profile = env.EXPO_PROFILE ? timer.getResults() : undefined;
+
+    return { ...result, profile };
   }
   return { ast };
 }
@@ -297,6 +309,7 @@ function performConstantFolding(ast: t.File | ParseResult, { filename }: { filen
   // To fix the references we add an explicit `programPath.scope.crawl()`. Alternatively, we could also wipe the
   // Babel traversal cache (`traverse.cache.clear()`)
   const clearProgramScopePlugin: PluginItem = {
+    name: 'metro:clear-scope',
     visitor: {
       Program: {
         enter(path) {
@@ -330,10 +343,38 @@ function performConstantFolding(ast: t.File | ParseResult, { filename }: { filen
   return ast;
 }
 
+type ProfileEntry = NonNullable<JSFile['profile']>['plugins'][number];
+
+function createProfiler(isEnabled: boolean) {
+  const transforms: ProfileEntry[] = [];
+
+  function measure<T>(name: string, fn: () => T): T {
+    if (!isEnabled) return fn();
+    const start = performance.now();
+    const result = fn();
+    const time = performance.now() - start;
+    transforms.push({ name, time, visits: 1, timePerVisit: time });
+    return result;
+  }
+
+  async function measureAsync<T>(name: string, fn: () => Promise<T>): Promise<T> {
+    if (!isEnabled) return fn();
+    const start = performance.now();
+    const result = await fn();
+    const time = performance.now() - start;
+    transforms.push({ name, time, visits: 1, timePerVisit: time });
+    return result;
+  }
+
+  return { transforms, measure, measureAsync };
+}
+
 async function transformJS(
   file: JSFile,
   { config, options }: TransformationContext
 ): Promise<TransformResponse> {
+  const profiler = createProfiler(env.EXPO_PROFILE);
+
   const targetEnv = options.customTransformOptions?.environment;
   const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
 
@@ -356,10 +397,15 @@ async function transformJS(
   // Transformers can output null ASTs (if they ignore the file). In that case
   // we need to parse the module source code to get their AST.
   let ast: t.File | ParseResult =
-    file.ast ?? nullthrows(parse(file.code, { sourceType: 'unambiguous' }));
+    file.ast ??
+    profiler.measure('metro:parse', () =>
+      nullthrows(parse(file.code, { sourceType: 'unambiguous' }))
+    );
 
   // NOTE(EvanBacon): This can be really expensive on larger files. We should replace it with a cheaper alternative that just iterates and matches.
-  const { importDefault, importAll } = generateImportNames(ast);
+  const { importDefault, importAll } = profiler.measure('metro:generate-import-names', () =>
+    generateImportNames(ast)
+  );
 
   // Add "use strict" if the file was parsed as a module, and the directive did
   // not exist yet.
@@ -370,18 +416,25 @@ async function transformJS(
   // NOTE(@hassankhan): Constant folding can be an expensive/slow operation, so we limit it to
   // production builds, or files that have specifically seen a change in their exports
   if (!options.dev || file.performConstantFolding) {
-    ast = performConstantFolding(ast, { filename: file.filename });
+    ast = profiler.measure('metro:constant-folding', () =>
+      performConstantFolding(ast, { filename: file.filename })
+    );
   }
 
   // Disable all Metro single-file optimizations when full-graph optimization will be used.
+  let importSupportProfile: JSFile['profile'];
   if (!optimize) {
-    ast = applyImportSupport(ast, {
-      filename: file.filename,
-      performConstantFolding: Boolean(file.performConstantFolding),
-      options,
-      importDefault,
-      importAll,
-    }).ast;
+    const importSupportResult = profiler.measure('metro:apply-import-support', () =>
+      applyImportSupport(ast, {
+        filename: file.filename,
+        performConstantFolding: Boolean(file.performConstantFolding),
+        options,
+        importDefault,
+        importAll,
+      })
+    );
+    ast = importSupportResult.ast;
+    importSupportProfile = importSupportResult.profile;
   }
 
   let dependencyMapName: string = '';
@@ -395,7 +448,7 @@ async function transformJS(
   let collectDependenciesOptions: CollectDependenciesOptions | undefined;
   if (file.type === 'js/script') {
     dependencies = [];
-    wrappedAst = JsFileWrapping.wrapPolyfill(ast);
+    wrappedAst = profiler.measure('metro:wrap-polyfill', () => JsFileWrapping.wrapPolyfill(ast));
   } else {
     try {
       const importDeclarationLocs = file.unstable_importDeclarationLocs ?? null;
@@ -423,16 +476,20 @@ async function transformJS(
         collectOnly: optimize === true,
       };
 
-      ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
-        ...collectDependenciesOptions,
-        // This setting shouldn't be shared with the tree shaking transformer.
-        dependencyTransformer:
-          unstable_disableModuleWrapping === true ? disabledDependencyTransformer : undefined,
-        unstable_isESMImportAtSource:
-          importDeclarationLocs != null
-            ? (loc: t.SourceLocation) => importDeclarationLocs.has(locToKey(loc))
-            : null,
-      }));
+      ({ ast, dependencies, dependencyMapName } = profiler.measure(
+        'metro:collect-dependencies',
+        () =>
+          collectDependencies(ast, {
+            ...collectDependenciesOptions,
+            // This setting shouldn't be shared with the tree shaking transformer.
+            dependencyTransformer:
+              unstable_disableModuleWrapping === true ? disabledDependencyTransformer : undefined,
+            unstable_isESMImportAtSource:
+              importDeclarationLocs != null
+                ? (loc: t.SourceLocation) => importDeclarationLocs.has(locToKey(loc))
+                : null,
+          })
+      ));
 
       // Ensure we use the same name for the second pass of the dependency collection in the serializer.
       collectDependenciesOptions = {
@@ -450,16 +507,18 @@ async function transformJS(
       wrappedAst = ast;
     } else {
       // TODO: Replace this with a cheaper transform that doesn't require AST.
-      ({ ast: wrappedAst } = JsFileWrapping.wrapModule(
-        ast,
-        importDefault,
-        importAll,
-        dependencyMapName,
-        config.globalPrefix,
-        // TODO: This config is optional to allow its introduction in a minor
-        // release. It should be made non-optional in ConfigT or removed in
-        // future.
-        unstable_renameRequire === false
+      ({ ast: wrappedAst } = profiler.measure('metro:wrap-module', () =>
+        JsFileWrapping.wrapModule(
+          ast,
+          importDefault,
+          importAll,
+          dependencyMapName,
+          config.globalPrefix,
+          // TODO: This config is optional to allow its introduction in a minor
+          // release. It should be made non-optional in ConfigT or removed in
+          // future.
+          unstable_renameRequire === false
+        )
       ));
     }
   }
@@ -482,23 +541,27 @@ async function transformJS(
   ) {
     // NOTE(EvanBacon): Simply pushing this function will mutate the AST, so it must run before the `generate` step!!
     reserved.push(
-      ...metroTransformPlugins.normalizePseudoGlobals(wrappedAst, {
-        reservedNames: reserved,
-      })
+      ...profiler.measure('metro:normalize-pseudo-globals', () =>
+        metroTransformPlugins.normalizePseudoGlobals(wrappedAst, {
+          reservedNames: reserved,
+        })
+      )
     );
   }
 
-  const result = generate(
-    wrappedAst,
-    {
-      comments: true,
-      compact: config.unstable_compactOutput,
-      filename: file.filename,
-      retainLines: false,
-      sourceFileName: file.filename,
-      sourceMaps: true,
-    },
-    file.code
+  const result = profiler.measure('metro:generate', () =>
+    generate(
+      wrappedAst,
+      {
+        comments: true,
+        compact: config.unstable_compactOutput,
+        filename: file.filename,
+        retainLines: false,
+        sourceFileName: file.filename,
+        sourceMaps: true,
+      },
+      file.code
+    )
   );
 
   // @ts-expect-error: incorrectly typed upstream
@@ -507,13 +570,8 @@ async function transformJS(
 
   // NOTE: We might want to enable this on native + hermes when tree shaking is enabled.
   if (minify) {
-    ({ map, code } = await minifyCode(
-      config,
-      file.filename,
-      result.code,
-      file.code,
-      map,
-      reserved
+    ({ map, code } = await profiler.measureAsync('metro:minify', () =>
+      minifyCode(config, file.filename, result.code, file.code, map, reserved)
     ));
   }
 
@@ -543,6 +601,21 @@ async function transformJS(
   let lineCount;
   ({ lineCount, map } = countLinesAndTerminateMap(code, map));
 
+  // Merge transform worker profiling with babel profiling
+  const allTransforms = [...profiler.transforms, ...(importSupportProfile?.plugins ?? [])];
+  const profile: JSFile['profile'] = env.EXPO_PROFILE
+    ? file.profile
+      ? {
+          ...file.profile,
+          plugins: [...file.profile.plugins, ...allTransforms],
+        }
+      : {
+          name: file.filename,
+          time: allTransforms.reduce((acc, t) => acc + t.time, 0),
+          plugins: allTransforms,
+        }
+    : file.profile;
+
   const output: ExpoJsOutput[] = [
     {
       data: {
@@ -551,7 +624,7 @@ async function transformJS(
         map,
         functionMap: file.functionMap,
         hasCjsExports: file.hasCjsExports,
-        profile: file.profile,
+        profile,
         reactServerReference: file.reactServerReference,
         reactClientReference: file.reactClientReference,
         expoDomComponentReference: file.expoDomComponentReference,

@@ -127,6 +127,7 @@ export function importExportPlugin({
   const { isDeclaration, isVariableDeclaration } = t;
 
   return {
+    name: 'metro:import-export-plugin',
     visitor: {
       ExportAllDeclaration(path: NodePath<t.ExportAllDeclaration>, state: State): void {
         setFirst(state.originalImportOrder, path.node.source.value, path.node.source);

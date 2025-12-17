@@ -9,7 +9,7 @@
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
 import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 import assert from 'node:assert';
-const { Timer } = require('babel-timing');
+import { Timer } from 'babel-timing';
 
 import type { TransformOptions } from './babel-core';
 import { loadBabelConfig } from './loadBabelConfig';

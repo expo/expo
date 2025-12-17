@@ -9,11 +9,39 @@
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/index.js#L1
  */
 import { types as t } from '@babel/core';
-import type { MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
+import type { ParseResult } from '@babel/core';
+import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
 import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import { InvalidRequireCallError as InternalInvalidRequireCallError, CollectedDependencies, Options as CollectDependenciesOptions } from './collect-dependencies';
 import { ExpoJsOutput } from '../serializer/jsOutput';
 export { JsTransformOptions };
+interface BaseFile {
+    readonly code: string;
+    readonly filename: string;
+    readonly inputFileSize: number;
+}
+type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
+interface JSFile extends BaseFile {
+    readonly ast?: ParseResult | t.File | null;
+    readonly type: JSFileType;
+    readonly functionMap: FBSourceFunctionMap | null;
+    readonly unstable_importDeclarationLocs?: ReadonlySet<string> | null;
+    readonly reactServerReference?: string;
+    readonly profile?: {
+        name: string;
+        time: number;
+        plugins: {
+            name: string;
+            time: number;
+            visits: number;
+            timePerVisit: number;
+        }[];
+    };
+    readonly reactClientReference?: string;
+    readonly expoDomComponentReference?: string;
+    readonly hasCjsExports?: boolean;
+    readonly performConstantFolding?: boolean;
+}
 interface TransformResponse {
     readonly dependencies: CollectedDependencies['dependencies'];
     readonly output: readonly ExpoJsOutput[];
@@ -37,6 +65,7 @@ export declare function applyImportSupport<TFile extends t.File>(ast: TFile, { f
 }): {
     ast: TFile;
     metadata?: any;
+    profile?: JSFile['profile'];
 };
 export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;
 export declare function getCacheKey(config: JsTransformerConfig): string;

@@ -172,6 +172,7 @@ export function importExportLiveBindingsPlugin({
   };
 
   return {
+    name: 'metro:import-export-live-bindings',
     visitor: {
       // (1): Scan imports and prepare require calls
       ImportDeclaration(path, state) {

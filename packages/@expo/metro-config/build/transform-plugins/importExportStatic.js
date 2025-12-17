@@ -77,6 +77,7 @@ function resolvePath(node, resolve) {
 function importExportPlugin({ types: t, }) {
     const { isDeclaration, isVariableDeclaration } = t;
     return {
+        name: 'metro:import-export-plugin',
         visitor: {
             ExportAllDeclaration(path, state) {
                 setFirst(state.originalImportOrder, path.node.source.value, path.node.source);
