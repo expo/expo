@@ -27,24 +27,33 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
+
       - name: 🔨 Switch to Xcode 26.0
         run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+
       - name: 💎 Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
           ruby-version: 3.2.2
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          yarn-workspace: "true"
-          yarn-tools: "true"
-      - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: 🧶 Install node modules
+        run: pnpm install --ignore-scripts --frozen-lockfile
+
       - name: 🍏 Build iOS Project
         working-directory: ./apps/brownfield-tester
         run: |
@@ -54,12 +63,14 @@ jobs:
         env:
           NODE_ENV: production
           CONFIGURATION: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
+
       - name: 📸 Upload builds
         uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: ios-builds-${{ matrix.build-type }}
           path: ${{ runner.temp }}/brownfield-tester/ios/build/**/BrownfieldTester.app/
+
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
@@ -67,6 +78,7 @@ jobs:
           webhook: ${{ secrets.slack_webhook_ios }}
           channel: "#expo-ios"
           author_name: Brownfield Test Suite (iOS)
+
   android-build:
     strategy:
       fail-fast: true
@@ -79,28 +91,42 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
+
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
-      - name: 🚀 Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
+
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: "17"
+
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
           gradle: "true"
-          yarn-workspace: "true"
-          yarn-tools: "true"
           react-native-gradle-downloads: "true"
-      - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: 🚀 Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 🧶 Install node modules
+        run: pnpm install --ignore-scripts --frozen-lockfile
+
       - name: 🤖 Build Android project
         run: |
           cd android && ./gradlew ":app:assemble$VARIANT"
@@ -109,12 +135,14 @@ jobs:
         env:
           NODE_ENV: production
           VARIANT: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
+
       - name: 📸 Upload builds
         uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: android-builds-${{ matrix.build-type }}
           path: ./apps/brownfield-tester/android/app/build/outputs/apk/
+
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))

@@ -58,6 +58,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:packages/expo-module-scripts
+      expotools:
+        specifier: workspace:*
+        version: link:tools
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.14.0)(ts-node@10.9.2(@swc/core@1.11.11)(@types/node@22.14.0)(typescript@5.9.2))

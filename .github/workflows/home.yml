@@ -7,14 +7,14 @@ on:
       - .github/workflows/home.yml
       - apps/expo-go/**
       - react-native-lab/**
-      - yarn.lock
+      - pnpm-lock.yaml
   push:
     branches: [main, 'sdk-*']
     paths:
       - .github/workflows/home.yml
       - apps/expo-go/**
       - react-native-lab/**
-      - yarn.lock
+      - pnpm-lock.yaml
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -29,39 +29,38 @@ jobs:
         with:
           submodules: true
 
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'pnpm'
 
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-workspace: 'true'
-
-      - name: 🧶 Yarn install
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+      - name: 🧶 Install node modules
+        run: pnpm install --frozen-lockfile
 
       - name: 🧶 Yarn install (react-native-lab)
         run: yarn install --frozen-lockfile
         working-directory: react-native-lab/react-native
 
       - name: 🛠 Compile Home sources
-        run: yarn tsc
+        run: pnpm tsc
         working-directory: apps/expo-go
 
       - name: 🧪 Run Home tests
-        run: yarn jest --maxWorkers 1
+        run: pnpm jest --maxWorkers 1
         working-directory: apps/expo-go
 
       - name: 🚨 Lint Home app
-        run: yarn lint --max-warnings 0
+        run: pnpm lint --max-warnings 0
         working-directory: apps/expo-go
 
       - name: 👷 Build Home app
-        run: yarn expo export
+        run: pnpm expo export
         working-directory: apps/expo-go
 
       - name: 🔔 Notify on Slack

@@ -50,6 +50,7 @@
     "@types/jest": "^29.5.12",
     "@vercel/ncc": "^0.38.4",
     "expo-module-scripts": "workspace:*",
+    "expotools": "workspace:*",
     "jest": "^29.7.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"

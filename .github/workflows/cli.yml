@@ -21,7 +21,7 @@ on:
       - packages/eslint-plugin-expo/**
       - packages/expo-router/**
       - packages/expo-server/**
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!**.md'
   pull_request:
     paths:
@@ -42,7 +42,7 @@ on:
       - packages/eslint-plugin-expo/**
       - packages/expo-router/**
       - packages/expo-server/**
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!**.md'
   schedule:
     - cron: 0 14 * * *

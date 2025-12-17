@@ -2,12 +2,6 @@ name: 'Expo Caches'
 description: 'Composite action to perform cache related tasks.'
 
 inputs:
-  yarn-workspace:
-    description: 'Restore yarn workspace cache'
-    required: false
-  yarn-tools:
-    description: 'Restore yarn /tools cache'
-    required: false
   yarn-docs:
     description: 'Restore yarn /docs cache'
     required: false
@@ -48,12 +42,6 @@ inputs:
     required: false
 
 outputs:
-  yarn-workspace-hit:
-    description: 'Returns true, if yarn workspace cache is up-to-date'
-    value: steps.workspace-modules-cache.outputs.cache-hit
-  yarn-tools-hit:
-    description: 'Returns true, if yarn /tools cache is up-to-date'
-    value: steps.tools-modules-cache.outputs.cache-hit
   yarn-docs-hit:
     description: 'Returns true, if yarn /docs cache is up-to-date'
     value: steps.docs-modules-cache.outputs.cache-hit
@@ -79,30 +67,7 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: ♻️ Restore workspace node modules
-      if: inputs.yarn-workspace == 'true'
-      uses: actions/cache@v4
-      id: workspace-modules-cache
-      with:
-        # See "workspaces" → "packages" in the root package.json for the source of truth of
-        # which node_modules are affected by the root yarn.lock
-        path: |
-          node_modules
-          apps/*/node_modules
-          apps/*/__generated__/AppEntry.js
-          packages/*/node_modules
-          packages/@expo/*/node_modules
-          react-native-lab/react-native/node_modules
-        key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
 
-    - name: ♻️ Restore /tools node modules and bins
-      if: inputs.yarn-tools == 'true'
-      uses: actions/cache@v4
-      id: tools-modules-cache
-      with:
-        path: |
-          tools/node_modules
-        key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
 
     - name: ♻️ Restore /docs node modules
       if: inputs.yarn-docs == 'true'
@@ -203,7 +168,7 @@ runs:
       shell: bash
       run: |
         # Ensure node packages are installed when yarn-workspace cache miss
-        yarn install --frozen-lockfile
+        pnpm install --frozen-lockfile --ignore-scripts
         mkdir -p prebuiltHermes
         cp -f ../react-native-lab/react-native/packages/react-native/sdks/.hermesversion prebuiltHermes/
         ./gradlew :packages:react-native:ReactAndroid:hermes-engine:assembleRelease
@@ -224,5 +189,5 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ env.REACT_NATIVE_DOWNLOADS_DIR }}
-        key: gradle-downloads-${{ hashFiles('yarn.lock') }}
+        key: gradle-downloads-${{ hashFiles('pnpm-lock.yaml') }}
         restore-keys: gradle-downloads-

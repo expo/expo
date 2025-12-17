@@ -20,33 +20,32 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org/
+          cache: 'pnpm'
+
+      - name: 🧶 Install node modules
+        run: pnpm install --frozen-lockfile
+
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
-      - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
-      - name: 🧶 Install modules in tools dir
-        if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
-        run: yarn install --ignore-scripts --frozen-lockfile
-        working-directory: tools
+
       - name: 📦 Publish canaries
-        run: ./bin/expotools publish-packages --canary ${{ github.event_name != 'workflow_dispatch' && '--dry' || '' }}
+        run: pnpm expotools publish-packages --canary ${{ github.event_name != 'workflow_dispatch' && '--dry' || '' }}
         env:
           FORCE_COLOR: '2'
+
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && github.event_name == 'schedule'
