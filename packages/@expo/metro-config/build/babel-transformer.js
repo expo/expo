@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_assert_1 = __importDefault(require("node:assert"));
+const { Timer } = require('babel-timing');
 const loadBabelConfig_1 = require("./loadBabelConfig");
 const transformSync_1 = require("./transformSync");
 const debug = require('debug')('expo:metro-config:babel-transformer');
@@ -96,6 +97,7 @@ plugins, }) => {
     const OLD_BABEL_ENV = process.env.BABEL_ENV;
     process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
     try {
+        const timer = new Timer(filename);
         const babelConfig = {
             // ES modules require sourceType='module' but OSS may not always want that
             sourceType: 'unambiguous',
@@ -107,6 +109,7 @@ plugins, }) => {
             // the transformation time by a fair amount.
             // You get this behavior by default when using Babel's `transform` method directly.
             cloneInputAst: false,
+            wrapPluginVisitorMethod: timer.wrapPluginVisitorMethod,
             // Options for debugging
             cwd: options.projectRoot,
             filename,
@@ -132,6 +135,10 @@ plugins, }) => {
             // @ts-expect-error: see https://github.com/facebook/react-native/blob/401991c3f073bf734ee04f9220751c227d2abd31/packages/react-native-babel-transformer/src/index.js#L220-L224
             return { ast: null };
         }
+        if (!result.metadata) {
+            result.metadata = {};
+        }
+        result.metadata.profile = timer.getResults();
         (0, node_assert_1.default)(result.ast);
         return { ast: result.ast, metadata: result.metadata };
     }

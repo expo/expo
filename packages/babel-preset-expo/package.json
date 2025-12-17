@@ -54,6 +54,7 @@
     }
   },
   "dependencies": {
+    "babel-timing": "^0.9.1",
     "@babel/helper-module-imports": "^7.25.9",
     "@babel/plugin-proposal-decorators": "^7.12.9",
     "@babel/plugin-syntax-export-default-from": "^7.24.7",

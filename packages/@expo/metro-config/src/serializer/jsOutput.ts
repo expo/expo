@@ -32,6 +32,16 @@ export type JsOutput = {
 
     readonly reconcile?: ReconcileTransformSettings;
     readonly reactServerReference?: string;
+    readonly profile?: {
+      name: string;
+      time: number;
+      plugins: {
+        name: string;
+        time: number;
+        visits: number;
+        timePerVisit: number;
+      }[];
+    };
     readonly reactClientReference?: string;
     readonly expoDomComponentReference?: string;
   };

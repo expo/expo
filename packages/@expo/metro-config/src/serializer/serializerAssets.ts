@@ -18,6 +18,17 @@ export type SerialAsset = {
     reactClientReferences?: string[];
     // DOM Component references from the static babel pass.
     expoDomComponentReferences?: string[];
+
+    profile?: {
+      name: string;
+      time: number;
+      plugins: {
+        name: string;
+        time: number;
+        visits: number;
+        timePerVisit: number;
+      }[];
+    }[];
     requires?: string[];
   };
 };

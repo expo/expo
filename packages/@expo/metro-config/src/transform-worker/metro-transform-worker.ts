@@ -71,6 +71,16 @@ interface JSFile extends BaseFile {
   readonly functionMap: FBSourceFunctionMap | null;
   readonly unstable_importDeclarationLocs?: ReadonlySet<string> | null;
   readonly reactServerReference?: string;
+  readonly profile?: {
+    name: string;
+    time: number;
+    plugins: {
+      name: string;
+      time: number;
+      visits: number;
+      timePerVisit: number;
+    }[];
+  };
   readonly reactClientReference?: string;
   readonly expoDomComponentReference?: string;
   readonly hasCjsExports?: boolean;
@@ -554,6 +564,7 @@ async function transformJS(
         map,
         functionMap: file.functionMap,
         hasCjsExports: file.hasCjsExports,
+        profile: file.profile,
         reactServerReference: file.reactServerReference,
         reactClientReference: file.reactClientReference,
         expoDomComponentReference: file.expoDomComponentReference,
@@ -645,6 +656,7 @@ async function transformJSWithBabel(
     unstable_importDeclarationLocs:
       transformResult?.metadata?.metro?.unstable_importDeclarationLocs,
     hasCjsExports: transformResult.metadata?.hasCjsExports,
+    profile: transformResult.metadata?.profile,
     reactServerReference: transformResult.metadata?.reactServerReference,
     reactClientReference: transformResult.metadata?.reactClientReference,
     expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,

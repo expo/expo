@@ -8,7 +8,7 @@ import * as __metroDeltaBundlerTypes from '@expo/metro/metro/DeltaBundler/types'
 declare module '@expo/metro/metro/DeltaBundler/types' {
   const enum _AsyncDependencyType {
     /** @privateRemarks Augmentation adds `asyncType: 'worker'` to possible values for worker chunk splitting */
-    worker = 'worker'
+    worker = 'worker',
   }
 }
 
@@ -20,6 +20,17 @@ declare module '@expo/metro/metro-babel-transformer' {
   }
 
   interface MetroBabelFileMetadata {
+    /** @privateRemarks Augmentation used in metro transform worker. */
+    profile?: {
+      name: string;
+      time: number;
+      plugins: {
+        name: string;
+        time: number;
+        visits: number;
+        timePerVisit: number;
+      }[];
+    };
     /** @privateRemarks Augmentation used in babel-preset-expo/src/{client-module-proxy-plugin.ts,server-actions-plugin.ts} */
     reactServerReference?: string;
     /** @privateRemarks Augmentation used in babel-preset-expo/src/client-module-proxy-plugin.ts */
