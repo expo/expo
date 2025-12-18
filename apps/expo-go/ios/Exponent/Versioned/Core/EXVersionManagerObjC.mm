@@ -3,7 +3,6 @@
 #import "EXAppState.h"
 #import "EXDevSettings.h"
 #import "EXDisabledDevLoadingView.h"
-#import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
 #import "EXVersionManagerObjC.h"
 #import "EXStatusBarManager.h"
@@ -225,8 +224,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 {
   RCTAssertMainQueue();
   id devMenu = [self _moduleInstanceForHost:host named:@"DevMenu"];
-  // respondsToSelector: check is required because it's possible this bridge
-  // was instantiated with a `disabledDevMenu` instance and the gesture preference was recently updated.
   if ([devMenu respondsToSelector:@selector(show)]) {
     [((RCTDevMenu *)devMenu) show];
   }

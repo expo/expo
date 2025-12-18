@@ -39,4 +39,9 @@
  */
 @property (nonatomic, strong) UIView *contentView;
 
+/**
+ *  The app record this view controller manages.
+ */
+@property (nonatomic, readonly) EXKernelAppRecord *appRecord;
+
 @end

@@ -1,26 +1,22 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXKernelServiceRegistry.h"
-#import "EXCachedResourceManager.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
 #import "EXSensorManager.h"
 #import "EXUpdatesDatabaseManager.h"
 #import "EXUpdatesManager.h"
-#import "EXDeviceInstallationUUIDService.h"
 
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 @interface EXKernelServiceRegistry ()
 
-@property (nonatomic, strong) EXCachedResourceManager *cachedResourceManager;
 @property (nonatomic, strong) EXErrorRecoveryManager *errorRecoveryManager;
 @property (nonatomic, strong) EXKernelLinkingManager *linkingManager;
 @property (nonatomic, strong) EXSensorManager *sensorManager;
 @property (nonatomic, strong) EXUpdatesDatabaseManager *updatesDatabaseManager;
 @property (nonatomic, strong) EXUpdatesManager *updatesManager;
-@property (nonatomic, strong) EXDeviceInstallationUUIDService *deviceInstallationUUIDService;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *allServices;
 
 @end
@@ -31,31 +27,13 @@
 {
   if (self = [super init]) {
     // TODO: init these in some clean way
-    [self cachedResourceManager];
     [self errorRecoveryManager];
     [self linkingManager];
     [self sensorManager];
     [self updatesDatabaseManager];
     [self updatesManager];
-    [self deviceInstallationUUIDService];
   }
   return self;
-}
-
-- (EXDeviceInstallationUUIDService *)deviceInstallationUUIDService
-{
-  if (!_deviceInstallationUUIDService) {
-    _deviceInstallationUUIDService = [[EXDeviceInstallationUUIDService alloc] init];
-  }
-  return _deviceInstallationUUIDService;
-}
-
-- (EXCachedResourceManager *)cachedResourceManager
-{
-  if (!_cachedResourceManager) {
-    _cachedResourceManager = [[EXCachedResourceManager alloc] init];
-  }
-  return _cachedResourceManager;
 }
 
 - (EXErrorRecoveryManager *)errorRecoveryManager
@@ -109,13 +87,11 @@
     // New singleton modules should register themselves in EXModuleRegistryProvider's set
     // using EX_REGISTER_SINGLETON_MODULE macro.
     NSArray *registryServices = @[
-                                  self.cachedResourceManager,
                                   self.errorRecoveryManager,
                                   self.linkingManager,
                                   self.sensorManager,
                                   self.updatesDatabaseManager,
-                                  self.updatesManager,
-                                  self.deviceInstallationUUIDService
+                                  self.updatesManager
                                   ];
     NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[EXModuleRegistryProvider singletonModules] allObjects]];
     for (id service in allServices) {

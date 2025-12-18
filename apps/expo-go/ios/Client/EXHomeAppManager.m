@@ -1,6 +1,10 @@
 #import "EXReactAppManager+Private.h"
-#import "EXEmbeddedHomeLoader.h"
+#import "EXAbstractLoader.h"
+#import "EXSplashScreenService.h"
+#import "EXAppViewController.h"
+#import "EXKernel.h"
 #import <EXConstants/EXConstantsService.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import "Expo_Go-Swift.h"
 
 @implementation EXHomeAppManager
@@ -62,5 +66,29 @@
 }
 
 - (void)dispatchForegroundHomeEvent {}
+
+- (void)rebuildHost
+{
+  if (self.delegate && [self.delegate respondsToSelector:@selector(reactAppManagerIsReadyForLoad:)]) {
+    [self.delegate reactAppManagerIsReadyForLoad:self];
+
+    EXAppViewController *viewController = (EXAppViewController *)self.delegate;
+    BOOL isHomeApp = viewController.appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord;
+
+    if (isHomeApp) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+        if (self.delegate && [self.delegate respondsToSelector:@selector(reactAppManagerAppContentDidAppear:)]) {
+          [splashScreenService onAppContentDidAppear:(UIViewController *)self.delegate];
+        }
+      });
+    }
+  }
+}
+
+- (EXReactAppManagerStatus)status
+{
+  return kEXReactAppManagerStatusRunning;
+}
 
 @end

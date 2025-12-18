@@ -139,12 +139,6 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  UIViewController *rootViewController = [[application keyWindow] rootViewController];
-  if (rootViewController) {
-    [self showSplashScreenFor:rootViewController options:EXSplashScreenDefault];
-  }
-
-  [self addRootViewControllerListener];
   return YES;
 }
 
