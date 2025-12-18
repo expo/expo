@@ -20,9 +20,22 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
 
-  # Swift/Objective-C compatibility
+  install_modules_dependencies(s)
+
+  # Swift/Objective-C compatibility and worklets support
   s.pod_target_xcconfig = {
-    'DEFINES_MODULE' => 'YES'
+    'DEFINES_MODULE' => 'YES',
+    'OTHER_CPLUSPLUSFLAGS' => '$(inherited) -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1',
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
+    'HEADER_SEARCH_PATHS' => [
+      '$(inherited)',
+      '"$(PODS_ROOT)/Headers/Public/RNWorklets"',
+      '"$(PODS_ROOT)/Headers/Private/Yoga"',
+      '"$(PODS_ROOT)/RCT-Folly"',
+      '"$(PODS_ROOT)/boost"',
+      '"$(PODS_ROOT)/DoubleConversion"',
+      '"$(PODS_ROOT)/Headers/Private/React-Core"',
+    ].join(' '),
   }
 
   s.source_files = "**/*.{h,m,mm,swift,hpp,cpp}"

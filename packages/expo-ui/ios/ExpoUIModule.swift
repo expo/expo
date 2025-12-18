@@ -24,6 +24,10 @@ public final class ExpoUIModule: Module {
       RefreshableManager.shared.completeRefresh(id: id)
     }
 
+    Function("installWorkletGlobals") {
+      WorkletsHelper.installGlobals()
+    }
+
     // MARK: - Views with AsyncFunctions that need to explicitly add `.modifier(UIBaseViewModifier(props: props))`
 
     View(SecureFieldView.self) {

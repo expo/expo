@@ -14,6 +14,8 @@ import type { Color } from './types';
 
 const ExpoUI = requireNativeModule('ExpoUI');
 
+ExpoUI.installWorkletGlobals();
+
 /**
  * Creates a modifier with an event listener.
  */
