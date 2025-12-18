@@ -21,7 +21,7 @@ export declare class Container {
     readonly id: string;
     /**
      * Retrieves the name of the container.
-     * @returns A promise resolving to the container name string (e.g., "iCloud", "Gmail") or `null` if not available.
+     * @returns a promise resolving to the container name string (for example, "iCloud", "Gmail") or `null` if not available.
      * @platform ios
      * @example
      * ```ts
@@ -31,7 +31,7 @@ export declare class Container {
     getName(): Promise<string | null>;
     /**
      * Retrieves the type of the container.
-     * @returns A promise resolving to the {@link ContainerType} (e.g., 'cardDAV', 'exchange') or `null`.
+     * @returns a promise resolving to the {@link ContainerType} (for example, 'cardDAV', 'exchange') or `null`.
      * @platform ios
      * @example
      * ```ts
@@ -41,7 +41,7 @@ export declare class Container {
     getType(): Promise<ContainerType | null>;
     /**
      * Retrieves all groups associated with this container.
-     * @returns A promise resolving to an array of {@link Group} instances within this container.
+     * @returns a promise resolving to an array of {@link Group} instances within this container.
      * @platform ios
      * @example
      * ```ts
@@ -51,7 +51,7 @@ export declare class Container {
     getGroups(): Promise<Group[]>;
     /**
      * Retrieves all contacts stored in this container.
-     * @returns A promise resolving to an array of {@link Contact} instances within this container.
+     * @returns a promise resolving to an array of {@link Contact} instances within this container.
      * @platform ios
      * @example
      * ```ts
@@ -61,7 +61,7 @@ export declare class Container {
     getContacts(): Promise<Contact[]>;
     /**
      * A static method that retrieves all contact containers available on the device.
-     * @returns A promise resolving to an array of {@link Container} instances.
+     * @returns a promise resolving to an array of [`Container`](#container) instances.
      * @platform ios
      * @example
      * ```ts
@@ -72,7 +72,7 @@ export declare class Container {
     /**
      * A static method that retrieves the default container.
      * The default container is where new contacts are added if no specific container is specified.
-     * @returns A promise resolving to the default {@link Container} instance or `null` if not found.
+     * @returns a promise resolving to the default [`Container`](#container) instance or `null` if not found.
      * @platform ios
      * @example
      * ```ts

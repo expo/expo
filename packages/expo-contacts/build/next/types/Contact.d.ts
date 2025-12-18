@@ -17,7 +17,7 @@ export declare class Contact {
     id: string;
     /**
      * Deletes the contact from the device's address book.
-     * @returns A promise that resolves when the contact is successfully deleted.
+     * @returns a promise that resolves when the contact is successfully deleted.
      * @example
      * ```ts
      * await contact.delete();
@@ -61,7 +61,7 @@ export declare class Contact {
      * Retrieves specific details for the contact.
      * This method is useful when you want to retrieve only certain fields of the contact.
      * @param fields - An array of field names to retrieve. If omitted, all available fields are fetched.
-     * @returns A promise resolving to an object containing the requested details.
+     * @returns a promise resolving to an object containing the requested details.
      * @example
      * ```ts
      * const details = await contact.getDetails([ContactField.GivenName, ContactField.Phones]);
@@ -74,7 +74,7 @@ export declare class Contact {
     /**
      * Adds a new email address to the contact.
      * @param email - The new email object to add.
-     * @returns A promise resolving to the ID of the newly added email.
+     * @returns a promise resolving to the ID of the newly added email.
      * @example
      * ```ts
      * const newEmailId = await contact.addEmail({ label: 'work', address: 'work@example.com' });
@@ -83,7 +83,7 @@ export declare class Contact {
     addEmail(email: NewEmail): Promise<string>;
     /**
      * Retrieves all email addresses associated with the contact.
-     * @returns A promise resolving to an array of existing emails.
+     * @returns a promise resolving to an array of existing emails.
      * @example
      * ```ts
      * const emails = await contact.getEmails();
@@ -114,7 +114,7 @@ export declare class Contact {
     /**
      * Adds a new phone number to the contact.
      * @param phone - The new phone object to add.
-     * @returns A promise resolving to the ID of the newly added phone number.
+     * @returns a promise resolving to the ID of the newly added phone number.
      * @example
      * ```ts
      * const newPhoneId = await contact.addPhone({ label: 'home', number: '+12123456789' });
@@ -123,7 +123,7 @@ export declare class Contact {
     addPhone(phone: NewPhone): Promise<string>;
     /**
      * Retrieves all phone numbers associated with the contact.
-     * @returns A promise resolving to an array of existing phone numbers.
+     * @returns a promise resolving to an array of existing phone numbers.
      * @example
      * ```ts
      * const phones = await contact.getPhones();
@@ -154,7 +154,7 @@ export declare class Contact {
     /**
      * Adds a new date (e.g., anniversary, birthday) to the contact.
      * @param date - The new date object to add.
-     * @returns A promise resolving to the ID of the newly added date.
+     * @returns a promise resolving to the ID of the newly added date.
      * @example
      * ```ts
      * await contact.addDate({ label: 'anniversary', date: { day: 1, month: 1 } });
@@ -163,7 +163,7 @@ export declare class Contact {
     addDate(date: NewDate): Promise<string>;
     /**
      * Retrieves all dates associated with the contact.
-     * @returns A promise resolving to an array of existing dates.
+     * @returns a promise resolving to an array of existing dates.
      * @example
      * ```ts
      * const dates = await contact.getDates();
@@ -195,7 +195,7 @@ export declare class Contact {
      * Adds a new extra name (e.g., nickname, maiden name) to the contact.
      * @platform android
      * @param extraName - The new extra name object to add.
-     * @returns A promise resolving to the ID of the newly added extra name.
+     * @returns a promise resolving to the ID of the newly added extra name.
      * @example
      * ```ts
      * await contact.addExtraName({ label: 'nickname', name: 'Johnny' });
@@ -205,7 +205,7 @@ export declare class Contact {
     /**
      * Retrieves all extra names associated with the contact.
      * @platform android
-     * @returns A promise resolving to an array of existing extra names.
+     * @returns a promise resolving to an array of existing extra names.
      * @example
      * ```ts
      * const extraNames = await contact.getExtraNames();
@@ -238,7 +238,7 @@ export declare class Contact {
     /**
      * Adds a new postal address to the contact.
      * @param address - The new address object to add.
-     * @returns A promise resolving to the ID of the newly added address.
+     * @returns a promise resolving to the ID of the newly added address.
      * @example
      * ```ts
      * await contact.addAddress({ label: 'home', street: '123 Main St', city: 'London' });
@@ -247,7 +247,7 @@ export declare class Contact {
     addAddress(address: NewAddress): Promise<string>;
     /**
      * Retrieves all postal addresses associated with the contact.
-     * @returns A promise resolving to an array of existing addresses.
+     * @returns a promise resolving to an array of existing addresses.
      * @example
      * ```ts
      * const addresses = await contact.getAddresses();
@@ -278,7 +278,7 @@ export declare class Contact {
     /**
      * Adds a new relationship (e.g., brother, sister) to the contact.
      * @param relation - The new relation object to add.
-     * @returns A promise resolving to the ID of the newly added relation.
+     * @returns a promise resolving to the ID of the newly added relation.
      * @example
      * ```ts
      * await contact.addRelation({ label: 'brother', name: 'Mark' });
@@ -287,7 +287,7 @@ export declare class Contact {
     addRelation(relation: NewRelation): Promise<string>;
     /**
      * Retrieves all relations associated with the contact.
-     * @returns A promise resolving to an array of existing relations.
+     * @returns a promise resolving to an array of existing relations.
      * @example
      * ```ts
      * const relations = await contact.getRelations();
@@ -318,7 +318,7 @@ export declare class Contact {
     /**
      * Adds a new URL/website to the contact.
      * @param urlAddress - The new URL address object to add.
-     * @returns A promise resolving to the ID of the newly added URL.
+     * @returns a promise resolving to the ID of the newly added URL.
      * @example
      * ```ts
      * await contact.addUrlAddress({ label: 'blog', url: '[https://myblog.com](https://myblog.com)' });
@@ -327,7 +327,7 @@ export declare class Contact {
     addUrlAddress(urlAddress: NewUrlAddress): Promise<string>;
     /**
      * Retrieves all URL addresses associated with the contact.
-     * @returns A promise resolving to an array of existing URL addresses.
+     * @returns a promise resolving to an array of existing URL addresses.
      * @example
      * ```ts
      * const urls = await contact.getUrlAddresses();
@@ -359,7 +359,7 @@ export declare class Contact {
      * Adds a new social profile to the contact.
      * @platform ios
      * @param socialProfile - The new social profile object to add.
-     * @returns A promise resolving to the ID of the newly added social profile.
+     * @returns a promise resolving to the ID of the newly added social profile.
      * @example
      * ```ts
      * await contact.addSocialProfile({ service: 'twitter', username: 'myhandle' });
@@ -369,7 +369,7 @@ export declare class Contact {
     /**
      * Retrieves all social profiles associated with the contact.
      * @platform ios
-     * @returns A promise resolving to an array of existing social profiles.
+     * @returns a promise resolving to an array of existing social profiles.
      * @example
      * ```ts
      * const profiles = await contact.getSocialProfiles();
@@ -403,7 +403,7 @@ export declare class Contact {
      * Adds a new instant messaging address to the contact.
      * @platform ios
      * @param imAddress - The new IM address object to add.
-     * @returns A promise resolving to the ID of the newly added IM address.
+     * @returns a promise resolving to the ID of the newly added IM address.
      * @example
      * ```ts
      * await contact.addImAddress({ service: 'Skype', username: 'user123' });
@@ -413,7 +413,7 @@ export declare class Contact {
     /**
      * Retrieves all instant messaging addresses associated with the contact.
      * @platform ios
-     * @returns A promise resolving to an array of existing IM addresses.
+     * @returns a promise resolving to an array of existing IM addresses.
      * @example
      * ```ts
      * const ims = await contact.getImAddresses();
@@ -446,13 +446,13 @@ export declare class Contact {
     /**
      * Opens the native contact editor for this contact.
      * @param options - Configuration options for the form.
-     * @returns A promise resolving to `true` if changes were saved, `false` otherwise.
+     * @returns a promise resolving to `true` if changes were saved, `false` otherwise.
      */
     editWithForm(options?: FormOptions): Promise<boolean>;
     /**
      * Retrieves the full name of the contact. The shape of the full name depends on the platform.
      * This field is read-only and cannot be set directly. To modify name components, use the respective setters.
-     * @returns A promise resolving to the full name string.
+     * @returns a promise resolving to the full name string.
      * @example
      * ```ts
      * const fullName = await contact.getFullName(); // 'John Doe'
@@ -461,7 +461,7 @@ export declare class Contact {
     /**
      * Retrieves whether the contact is marked as a favorite.
      * @platform android
-     * @returns A promise resolving boolean indicating whether the contact is a favorite.
+     * @returns a promise resolving boolean indicating whether the contact is a favorite.
      * @example
      * ```ts
      *  const isFavourite = await contact.getIsFavourite() // true
@@ -471,8 +471,8 @@ export declare class Contact {
     /**
      * Sets the favorite status of the contact.
      * @platform android
-     * @param isFavourite - A boolean indicating whether to mark the contact as a favorite.
-     * @returns A promise resolving to boolean indicating whether the operation was successful.
+     * @param isFavourite - a boolean indicating whether to mark the contact as a favorite.
+     * @returns a promise resolving to boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setIsFavourite(true);
@@ -481,7 +481,7 @@ export declare class Contact {
     setIsFavourite(isFavourite: boolean): Promise<boolean>;
     /**
      * Retrieves the given name.
-     * @returns A promise resolving to the given name string or `null` if not set.
+     * @returns a promise resolving to the given name string or `null` if not set.
      * @example
      * ```ts
      * const givenName = await contact.getGivenName(); // 'John'
@@ -491,7 +491,7 @@ export declare class Contact {
     /**
      * Sets the given name.
      * @param givenName - The new given name string or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setGivenName('Jane');
@@ -500,7 +500,7 @@ export declare class Contact {
     setGivenName(givenName: string | null): Promise<boolean>;
     /**
      * Retrieves the family name.
-     * @returns A promise resolving to the family name string or `null` if not set.
+     * @returns a promise resolving to the family name string or `null` if not set.
      * @example
      * ```ts
      * const familyName = await contact.getFamilyName(); // 'Doe'
@@ -510,7 +510,7 @@ export declare class Contact {
     /**
      * Sets the family name.
      * @param familyName - The new family name string or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setFamilyName('Smith');
@@ -519,7 +519,7 @@ export declare class Contact {
     setFamilyName(familyName: string | null): Promise<boolean>;
     /**
      * Retrieves the middle name.
-     * @returns A promise resolving to the middle name string or `null` if not set.
+     * @returns a promise resolving to the middle name string or `null` if not set.
      * @example
      * ```ts
      * const middleName = await contact.getMiddleName(); // 'Marie'
@@ -529,7 +529,7 @@ export declare class Contact {
     /**
      * Sets the middle name.
      * @param middleName - The new middle name string or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setMiddleName('Lee');
@@ -539,7 +539,7 @@ export declare class Contact {
     /**
      * Retrieves the maiden name.
      * @platform ios
-     * @returns A promise resolving to the maiden name string or `null` if not set.
+     * @returns a promise resolving to the maiden name string or `null` if not set.
      * @example
      * ```ts
      * const maidenName = await contact.getMaidenName();
@@ -550,7 +550,7 @@ export declare class Contact {
      * Sets the maiden name. To set a maiden name on Android, use the `addExtraName` method with the label 'maidenname'.
      * @platform ios
      * @param maidenName - The new maiden name string or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setMaidenName('Johnson');
@@ -560,7 +560,7 @@ export declare class Contact {
     /**
      * Retrieves the nickname.
      * @platform ios
-     * @returns A promise resolving to the nickname string or `null` if not set.
+     * @returns a promise resolving to the nickname string or `null` if not set.
      * @example
      * ```ts
      * const nickname = await contact.getNickname(); // 'Johnny'
@@ -571,7 +571,7 @@ export declare class Contact {
      * Sets the nickname. To set a nickname on Android, use the `addExtraName` method with the label 'nickname'.
      * @platform ios
      * @param nickname - The new nickname string or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setNickname('Jojo');
@@ -580,7 +580,7 @@ export declare class Contact {
     setNickname(nickname: string | null): Promise<boolean>;
     /**
      * Retrieves the name prefix.
-     * @returns A promise resolving to the prefix string or `null` if not set.
+     * @returns a promise resolving to the prefix string or `null` if not set.
      * @example
      * ```ts
      * const prefix = await contact.getPrefix(); // 'Dr.'
@@ -590,7 +590,7 @@ export declare class Contact {
     /**
      * Sets the name prefix.
      * @param prefix - The new prefix string or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setPrefix('Ms.');
@@ -599,7 +599,7 @@ export declare class Contact {
     setPrefix(prefix: string | null): Promise<boolean>;
     /**
      * Retrieves the name suffix.
-     * @returns A promise resolving to the suffix string or `null` if not set.
+     * @returns a promise resolving to the suffix string or `null` if not set.
      * @example
      * ```ts
      * const suffix = await contact.getSuffix(); // 'Jr.'
@@ -609,7 +609,7 @@ export declare class Contact {
     /**
      * Sets the name suffix.
      * @param suffix - The new suffix string or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setSuffix('Jr.');
@@ -618,7 +618,7 @@ export declare class Contact {
     setSuffix(suffix: string | null): Promise<boolean>;
     /**
      * Retrieves the phonetic representation of the given name.
-     * @returns A promise resolving to the phonetic given name string or `null` if not set.
+     * @returns a promise resolving to the phonetic given name string or `null` if not set.
      * @example
      * ```ts
      * const phoneticGivenName = await contact.getPhoneticGivenName(); // 'Jon'
@@ -628,7 +628,7 @@ export declare class Contact {
     /**
      * Sets the phonetic given name.
      * @param phoneticGivenName - The new phonetic given name string or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setPhoneticGivenName('Jon');
@@ -637,7 +637,7 @@ export declare class Contact {
     setPhoneticGivenName(phoneticGivenName: string | null): Promise<boolean>;
     /**
      * Retrieves the phonetic representation of the middle name.
-     * @returns A promise resolving to the phonetic middle name string or `null` if not set.
+     * @returns a promise resolving to the phonetic middle name string or `null` if not set.
      * @example
      * ```ts
      * const phoneticMiddleName = await contact.getPhoneticMiddleName(); // 'Maree'
@@ -647,7 +647,7 @@ export declare class Contact {
     /**
      * Sets the phonetic middle name.
      * @param phoneticMiddleName - The new phonetic middle name string or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setPhoneticMiddleName('Maree');
@@ -656,7 +656,7 @@ export declare class Contact {
     setPhoneticMiddleName(phoneticMiddleName: string | null): Promise<boolean>;
     /**
      * Retrieves the phonetic representation of the family name.
-     * @returns A promise resolving to the phonetic family name string or `null` if not set.
+     * @returns a promise resolving to the phonetic family name string or `null` if not set.
      * @example
      * ```ts
      * const phoneticFamilyName = await contact.getPhoneticFamilyName(); // 'Smyth'
@@ -666,7 +666,7 @@ export declare class Contact {
     /**
      * Sets the phonetic family name.
      * @param phoneticFamilyName - The new phonetic family name string or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setPhoneticFamilyName('Smyth');
@@ -675,7 +675,7 @@ export declare class Contact {
     setPhoneticFamilyName(phoneticFamilyName: string | null): Promise<boolean>;
     /**
      * Retrieves the company name.
-     * @returns A promise resolving to the company name string or `null` if not set.
+     * @returns a promise resolving to the company name string or `null` if not set.
      * @example
      * ```ts
      * const company = await contact.getCompany(); // 'Example Inc.'
@@ -685,7 +685,7 @@ export declare class Contact {
     /**
      * Sets the company name.
      * @param company - The new company name string or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setCompany('Example Inc.');
@@ -694,7 +694,7 @@ export declare class Contact {
     setCompany(company: string | null): Promise<boolean>;
     /**
      * Retrieves the department name.
-     * @returns A promise resolving to the department name string or `null` if not set.
+     * @returns a promise resolving to the department name string or `null` if not set.
      * @example
      * ```ts
      * const department = await contact.getDepartment(); // 'Sales'
@@ -704,7 +704,7 @@ export declare class Contact {
     /**
      * Sets the department name.
      * @param department - The new department name string or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setDepartment('Sales');
@@ -713,7 +713,7 @@ export declare class Contact {
     setDepartment(department: string | null): Promise<boolean>;
     /**
      * Retrieves the job title.
-     * @returns A promise resolving to the job title string or `null` if not set.
+     * @returns a promise resolving to the job title string or `null` if not set.
      * @example
      * ```ts
      * const jobTitle = await contact.getJobTitle(); // 'Software Engineer'
@@ -723,7 +723,7 @@ export declare class Contact {
     /**
      * Sets the job title.
      * @param jobTitle - The new job title string or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setJobTitle('Product Manager');
@@ -732,7 +732,7 @@ export declare class Contact {
     setJobTitle(jobTitle: string | null): Promise<boolean>;
     /**
      * Retrieves the phonetic representation of the company name.
-     * @returns A promise resolving to the phonetic company name string or `null` if not set.
+     * @returns a promise resolving to the phonetic company name string or `null` if not set.
      * @example
      * ```ts
      * const phoneticCompanyName = await contact.getPhoneticCompanyName(); // 'Ekzampl Inc.'
@@ -742,7 +742,7 @@ export declare class Contact {
     /**
      * Sets the phonetic company name.
      * @param phoneticCompanyName - The new phonetic company name string or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setPhoneticCompanyName('Ekzampl Inc.');
@@ -754,7 +754,7 @@ export declare class Contact {
      * > On iOS the `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
      * > The Expo Go app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple](https://developer.apple.com/contact/request/contact-note-field),
      * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/create-a-build/).
-     * @returns A promise resolving to the note string or `null` if not set.
+     * @returns a promise resolving to the note string or `null` if not set.
      * @example
      * ```ts
      * const note = await contact.getNote(); // 'Met at the conference'
@@ -767,7 +767,7 @@ export declare class Contact {
      * > The Expo Go app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple](https://developer.apple.com/contact/request/contact-note-field),
      * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/create-a-build/).
      * @param note - The new note string or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setNote('Remember to call back');
@@ -776,7 +776,7 @@ export declare class Contact {
     setNote(note: string | null): Promise<boolean>;
     /**
      * Retrieves the URI of the contact's full-resolution image.
-     * @returns A promise resolving to the image URI string or `null` if not set.
+     * @returns a promise resolving to the image URI string or `null` if not set.
      * @example
      * ```ts
      * const imageUri = await contact.getImage();
@@ -787,7 +787,7 @@ export declare class Contact {
      * Sets the contact's image.
      * > **Note**: If you have a remote URI, you have to download the image to a local file first.
      * @param imageUri - The local file URI to the image or `null` to remove it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setImage('file:///path/to/new/image.jpg');
@@ -796,7 +796,7 @@ export declare class Contact {
     setImage(imageUri: string | null): Promise<boolean>;
     /**
      * Retrieves the URI of the contact's thumbnail image. This field is read-only and is derived from the full-resolution image.
-     * @returns A promise resolving to the thumbnail URI string or `null` if not set.
+     * @returns a promise resolving to the thumbnail URI string or `null` if not set.
      * @example
      * ```ts
      * const thumbnailUri = await contact.getThumbnail();
@@ -806,7 +806,7 @@ export declare class Contact {
     /**
      * Retrieves the birthday of the contact.
      * @platform ios
-     * @returns A promise resolving to the ContactDate object or `null` if not set.
+     * @returns a promise resolving to the ContactDate object or `null` if not set.
      * @example
      * ```ts
      * const birthday = await contact.getBirthday();
@@ -817,7 +817,7 @@ export declare class Contact {
      * Sets the birthday of the contact. To set a birthday on Android, use the `addDate` method with the label 'birthday'.
      * @platform ios
      * @param birthday - The new ContactDate object or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setBirthday({ year: '1990', month: '1', day: '1' });
@@ -827,7 +827,7 @@ export declare class Contact {
     /**
      * Retrieves the non-Gregorian birthday of the contact.
      * @platform ios
-     * @returns A promise resolving to the NonGregorianBirthday object or `null` if not set.
+     * @returns a promise resolving to the NonGregorianBirthday object or `null` if not set.
      * @example
      * ```ts
      * const nonGregorianBirthday = await contact.getNonGregorianBirthday();
@@ -838,7 +838,7 @@ export declare class Contact {
      * Sets the non-Gregorian birthday of the contact.
      * @platform ios
      * @param nonGregorianBirthday - The new NonGregorianBirthday object or `null` to clear it.
-     * @returns A promise resolving to a boolean indicating whether the operation was successful.
+     * @returns a promise resolving to a boolean indicating whether the operation was successful.
      * @example
      * ```ts
      * await contact.setNonGregorianBirthday({
@@ -853,7 +853,7 @@ export declare class Contact {
     /**
      * A static method that retrieves all contacts from the address book.
      * @param options - Options to filter, sort, or limit the results.
-     * @returns A promise resolving to an array of {@link Contact} instances.
+     * @returns a promise resolving to an array of [`Contact`](#contact) instances.
      * @example
      * ```ts
      * const contacts = await Contact.getAll({
@@ -868,7 +868,7 @@ export declare class Contact {
     /**
      * A static method that creates a new contact.
      * @param contact - The contact data to create.
-     * @returns A promise resolving to the newly created {@link Contact} instance.
+     * @returns a promise resolving to the newly created [`Contact`](#contact) instance.
      * @example
      * ```ts
      * const newContactDetails: CreateContactRecord = {
@@ -883,7 +883,7 @@ export declare class Contact {
     /**
      * A static method that opens the native "Create Contact" form.
      * @param contact - Optional pre-filled data for the form.
-     * @returns A promise resolving to `true` if a contact was created, `false` otherwise.
+     * @returns a promise resolving to `true` if a contact was created, `false` otherwise.
      * @example
      * ```ts
      * const wasCreated = await Contact.createWithForm({
@@ -895,7 +895,7 @@ export declare class Contact {
     static presentCreateForm(contact?: CreateContactRecord): Promise<boolean>;
     /**
      * A static method that retrieves the total count of contacts in the address book.
-     * @returns A promise resolving to the count of contacts.
+     * @returns a promise resolving to the count of contacts.
      * @example
      * ```ts
      * const contactCount = await Contact.getCount(); // 42
@@ -903,7 +903,7 @@ export declare class Contact {
     static getCount(): Promise<number>;
     /**
      * A static method that checks if there are any contacts in the address book.
-     * @returns A promise resolving to `true` if at least one contact exists.
+     * @returns a promise resolving to `true` if at least one contact exists.
      * @example
      * ```ts
      * const hasContacts = await Contact.hasAny(); // true
@@ -912,7 +912,7 @@ export declare class Contact {
     static hasAny(): Promise<boolean>;
     /**
      * A static method that opens the native contact picker UI allowing the user to select a contact.
-     * @returns A promise resolving to the selected {@link Contact} instance.
+     * @returns a promise resolving to the selected [`Contact`](#contact) instance.
      * @example
      * ```ts
      * const contact = await Contact.presentPicker();
@@ -922,7 +922,7 @@ export declare class Contact {
     /**
      * A static method that presents a system dialog to request access to contacts if not already granted.
      * @platform ios
-     * @returns A promise resolving to `true` if access is granted, `false` otherwise.
+     * @returns a promise resolving to `true` if access is granted, `false` otherwise.
      * @example
      * ```ts
      * const accessGranted = await Contact.presentAccessPicker();
@@ -931,10 +931,10 @@ export declare class Contact {
     static presentAccessPicker(): Promise<boolean>;
     /**
      * A static method that retrieves specific fields for all contacts or a subset of contacts.
-     * This is an optimized method for fetching bulk data; it avoids creating full {@link Contact} instances.
+     * This is an optimized method for fetching bulk data; it avoids creating full [`Contact`](#contact) instances.
      * @param fields - The list of fields to retrieve.
      * @param options - Query options to filter the contacts.
-     * @returns A promise resolving to an array of partial contact details objects.
+     * @returns a promise resolving to an array of partial contact details objects.
      * @example
      * ```ts
      * const allDetails = await Contact.getAllDetails(['givenName', 'phones'], {
@@ -945,7 +945,7 @@ export declare class Contact {
     static getAllDetails<T extends readonly ContactField[]>(fields: T, options?: ContactQueryOptions): Promise<PartialContactDetails<T>[]>;
     /**
      * A static method that requests permissions to access contacts.
-     * @returns A promise resolving to an object indicating if permission was granted.
+     * @returns a promise resolving to an object indicating if permission was granted.
      * @example
      * ```ts
      * const { granted } = await Contact.requestPermissionsAsync();

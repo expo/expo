@@ -39,7 +39,7 @@ if (Platform.OS === 'ios' && expoContactsModule.ContactNext) {
 export class Contact extends expoContactsModule.Contact {}
 
 /**
- * Represents a group of contacts (e.g., "Family", "Coworkers").
+ * Represents a group of contacts (for example, "Family", "Coworkers").
  * Groups belong to a specific Container and can contain multiple Contacts.
  * @platform ios
  */

@@ -67,7 +67,7 @@ export type ContactQueryOptions = {
   name?: string;
   /*
    * Whether to include raw contact data in the results. Default is false.
-   * @platform iOS
+   * @platform ios
    */
   rawContacts?: boolean;
 };

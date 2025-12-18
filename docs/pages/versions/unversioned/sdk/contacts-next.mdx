@@ -1,5 +1,5 @@
 ---
-title: Contacts (Next)
+title: Contacts (next)
 description: A library that provides access to the phone's system contacts.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-contacts'
 packageName: 'expo-contacts'
@@ -17,10 +17,8 @@ import {
   ConfigPluginProperties,
 } from '~/ui/components/ConfigSection';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { SnackInline } from '~/ui/components/Snippet';
 
-`expo-contacts` provides access to the device's system contacts, allowing you to get contact information as well as adding, editing, or removing contacts.
-
+`expo-contacts` provides access to the device's system contacts, allowing you to get contact information as well as add, edit, or remove contacts.
 On iOS, contacts have a multi-layered grouping system that you can also access through this API.
 
 ## Installation
@@ -84,9 +82,8 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 ## Usage
 
 <Collapsible summary="Contacts Manipulations">
-<SnackInline label="Contacts Manipulations" dependencies={['expo-contacts']}>
 
-```tsx
+```tsx Contacts Manipulations
 const contact = await Contact.create({ givenName: 'John', familyName: 'Doe' });
 // { givenName: "John", familyName: "Doe"}
 
@@ -99,27 +96,27 @@ await contact.addPhone({ label: 'work', number: '+12345678912' });
 const phones = await contact.getPhones();
 // Changes only the defined fields, leaves the rest unchanged
 await contact.patch({ phones: [...phones, { label: 'home', number: '+98765432198' }] });
-// {
-// givenName: "Andrew",
-// familyName: "Doe",
-// phones: [
-// {label: "work", number: "+12345678912"}
-// {label: "home", number: "+98765432198"}
-// ]
-// }
+/*
+{
+  givenName: "Andrew",
+  familyName: "Doe",
+  phones: [
+    {label: "work", number: "+12345678912"},
+    {label: "home", number: "+98765432198"}
+  ]
+}
+*/
 
 // Replaces all fields with the ones defined in the object
 await contact.update({ givenName: 'John', familyName: 'Doe' });
 // { givenName: "John", familyName: "Doe"}
 ```
 
-</SnackInline>
 </Collapsible>
 
 <Collapsible summary="Retreiving contacts">
-<SnackInline label="Retreiving contacts" dependencies={['expo-contacts']}>
 
-```tsx
+```tsx Retreiving contacts
 const contactDetails = await Contact.getAllDetails([ContactField.FULL_NAME, ContactField.PHONES], {
   limit: 20,
   offset: 10,
@@ -136,13 +133,11 @@ const contactsFromGetAll = await Contact.getAll({
 });
 ```
 
-</SnackInline>
 </Collapsible>
 
-<Collapsible summary="Example Contacts Infinite Scroll">
-<SnackInline label="Example Contacts Infinite" dependencies={['expo-contacts']}>
+<Collapsible summary="Contacts infinite scroll example">
 
-```tsx
+```tsx Contacts infinite scroll example
 import { Contact, ContactField, PartialContactDetails } from 'expo-contacts/next';
 import { useEffect, useState } from 'react';
 import { FlatList, Text, View } from 'react-native';
@@ -174,7 +169,7 @@ export default function InfiniteContacts() {
         renderItem={({ item }) => (
           <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}>
             <Text>{item.fullName}</Text>
-            <Text>{item.phones[0] ? item.phones[0].number : 'No phone number'}</Text>
+            <Text>{item.phones[0]?.number ?? 'No phone number'}</Text>
           </View>
         )}
       />
@@ -183,13 +178,11 @@ export default function InfiniteContacts() {
 }
 ```
 
-</SnackInline>
 </Collapsible>
 
-<Collapsible summary="Example Edit Contact Form">
-<SnackInline label="Example Edit Contact Form" dependencies={['expo-contacts']}>
+<Collapsible summary="Edit contact form example">
 
-```tsx
+```tsx Edit contact form example
 import { Contact, ContactField, ContactPatch } from 'expo-contacts/next';
 import { useEffect, useState } from 'react';
 import { Alert, Button, ScrollView, Text, TextInput, View } from 'react-native';
@@ -278,7 +271,6 @@ export default function ContactForm() {
 }
 ```
 
-</SnackInline>
 </Collapsible>
 
 ## API
@@ -302,4 +294,3 @@ This library automatically adds `READ_CONTACTS` and `WRITE_CONTACTS` permissions
 The following usage description keys are used by this library:
 
 <IOSPermissions permissions={['NSContactsUsageDescription']} />
-````

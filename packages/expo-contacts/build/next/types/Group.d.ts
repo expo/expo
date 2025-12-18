@@ -16,7 +16,7 @@ export declare class Group {
     readonly id: string;
     /**
      * Retrieves the name of the group.
-     * @returns A promise resolving to the group name string or `null` if not set.
+     * @returns a promise resolving to the group name string or `null` if not set.
      * @platform ios
      * @example
      * ```ts
@@ -28,7 +28,7 @@ export declare class Group {
      * Renames the group.
      * @param name - The new name for the group.
      * @platform ios
-     * @returns A promise that resolves when the group is successfully renamed.
+     * @returns a promise that resolves when the group is successfully renamed.
      * @example
      * ```ts
      * await group.setName('Close Friends');
@@ -37,9 +37,9 @@ export declare class Group {
     setName(name: string): Promise<void>;
     /**
      * Adds a contact to the group.
-     * @param contact - The {@link Contact} instance to add to the group.
+     * @param contact - The [`Contact`](#contact) instance to add to the group.
      * @platform ios
-     * @returns A promise that resolves when the contact is successfully added.
+     * @returns a promise that resolves when the contact is successfully added.
      * @example
      * ```ts
      * await group.addContact(contact);
@@ -48,9 +48,9 @@ export declare class Group {
     addContact(contact: Contact): Promise<void>;
     /**
      * Removes a contact from the group.
-     * @param contact - The {@link Contact} instance to remove from the group.
+     * @param contact - The [`Contact`](#contact) instance to remove from the group.
      * @platform ios
-     * @returns A promise that resolves when the contact is successfully removed.
+     * @returns a promise that resolves when the contact is successfully removed.
      * @example
      * ```ts
      * await group.removeContact(contact);
@@ -61,7 +61,7 @@ export declare class Group {
      * Retrieves contacts belonging to this group.
      * @param options - Options to filter, sort, or limit the results.
      * @platform ios
-     * @returns A promise resolving to an array of {@link Contact} instances in this group.
+     * @returns a promise resolving to an array of [`Contact`](#contact) instances in this group.
      * @example
      * ```ts
      * const groupMembers = await group.getContacts({ sort: 'firstName' });
@@ -70,8 +70,10 @@ export declare class Group {
     getContacts(options?: ContactQueryOptions): Promise<Contact[]>;
     /**
      * Deletes the group from the device.
-     * **Note:** This usually deletes the group definition but leaves the contacts themselves intact in the address book.
-     * @returns A promise that resolves when the group is successfully deleted.
+     *
+     * > **Note:** This usually deletes the group definition but leaves the contacts themselves intact in the address book.
+     *
+     * @returns a promise that resolves when the group is successfully deleted.
      * @platform ios
      * @example
      * ```ts
@@ -84,7 +86,7 @@ export declare class Group {
      * @param name - The name of the new group.
      * @param containerId - The ID of the container where the group should be created. If omitted, the default container is used.
      * @platform ios
-     * @returns A promise resolving to the newly created {@link Group} instance.
+     * @returns a promise resolving to the newly created [`Group`](#group) instance.
      * @example
      * ```ts
      * const newGroup = await Group.create('Gym Buddies');
@@ -95,7 +97,7 @@ export declare class Group {
      * A static method that retrieves all groups.
      * @param containerId - Optional ID of a container to filter groups by. If omitted, groups from all containers are returned.
      * @platform ios
-     * @returns A promise resolving to an array of {@link Group} instances.
+     * @returns a promise resolving to an array of [`Group`](#group) instances.
      * @example
      * ```ts
      * const allGroups = await Group.getAll();
