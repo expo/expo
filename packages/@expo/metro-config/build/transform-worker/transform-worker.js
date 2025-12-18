@@ -47,7 +47,6 @@ exports.transform = transform;
 const countLines_1 = __importDefault(require("@expo/metro/metro/lib/countLines"));
 const node_assert_1 = __importDefault(require("node:assert"));
 const node_path_1 = require("node:path");
-const nativeCSSCompiler = __importStar(require("react-native-css/compiler"));
 const browserslist_1 = require("./browserslist");
 const css_1 = require("./css");
 const css_modules_1 = require("./css-modules");
@@ -207,11 +206,13 @@ async function transformCss(config, projectRoot, filename, data, options) {
         const css = cssResults.output[0].data.css?.code.toString();
         (0, node_assert_1.default)(typeof css === 'string', 'Expected CSS to be a string');
         const cssModuleExports = cssResults.output[0].data.css?.exports;
+        const nativeCSSCompiler = require('react-native-css/compiler');
         // Parse evaluated CSS to a collection of JS values to inject.
         const productionJS = nativeCSSCompiler
             .compile(css, {
             filename,
             projectRoot,
+            inlineVariables: false,
         })
             .stylesheet();
         let cssToJs = getNativeInjectionCode([], [productionJS]);

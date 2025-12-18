@@ -15,7 +15,7 @@ import type {
 } from '@expo/metro/metro-transform-worker';
 import assert from 'node:assert';
 import { relative, dirname } from 'node:path';
-import * as nativeCSSCompiler from 'react-native-css/compiler';
+import type NativeCSSCompiler from 'react-native-css/compiler';
 
 import { getBrowserslistTargets } from './browserslist';
 import { wrapDevelopmentCSS } from './css';
@@ -254,11 +254,14 @@ async function transformCss(
     assert(typeof css === 'string', 'Expected CSS to be a string');
     const cssModuleExports = cssResults.output[0].data.css?.exports;
 
+    const nativeCSSCompiler = require('react-native-css/compiler') as typeof NativeCSSCompiler;
+
     // Parse evaluated CSS to a collection of JS values to inject.
     const productionJS = nativeCSSCompiler
       .compile(css, {
         filename,
         projectRoot,
+        inlineVariables: false,
       })
       .stylesheet();
 

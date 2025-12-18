@@ -75,7 +75,9 @@ describe('server', () => {
   let projectRoot: string;
 
   beforeAll(async () => {
-    projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
+    projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets', {
+      reuseExisting: true,
+    });
   });
 
   it('runs `npx expo export`', async () => {
