@@ -51,19 +51,11 @@ function extractSeeCode(body) {
   return match ? match[1] : '';
 }
 
-function deriveGroup(command) {
-  const parts = command.trim().split(/\s+/);
-  const token = parts[1] ?? '';
-  const group = token.split(':')[0];
-  return group || 'root';
-}
-
 function parseCommands(section) {
   const headingRegex = /^## `([^`]+)`/gm;
   const headings = Array.from(section.matchAll(headingRegex));
   const commands = [];
   const seen = new Set();
-  const duplicates = [];
 
   for (let index = 0; index < headings.length; index += 1) {
     const heading = headings[index];
@@ -73,7 +65,6 @@ function parseCommands(section) {
     const body = section.slice(start, end).trim();
 
     if (seen.has(command)) {
-      duplicates.push(command);
       continue;
     }
     seen.add(command);
@@ -82,19 +73,16 @@ function parseCommands(section) {
       command,
       description: extractDescription(body),
       usage: extractUsage(body),
-      group: deriveGroup(command),
       seeCode: extractSeeCode(body),
     });
   }
 
-  return { commands, duplicates };
+  return { commands };
 }
 
 function writeOutput(data) {
   const outputDir = path.dirname(OUTPUT_FILE);
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-  }
+  fs.mkdirSync(outputDir, { recursive: true });
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(data, null, 2));
 }
 
