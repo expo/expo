@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import SwiftUI
+import ExpoModulesCore
 
 extension Color {
   static let expoBlue = Color(red: 0.0, green: 0.46, blue: 1.0)
@@ -9,14 +10,6 @@ extension Color {
   static let expoRed = Color(red: 1.0, green: 0.23, blue: 0.19)
   static let expoPink = Color(red: 1.0, green: 0.18, blue: 0.58)
   static let expoPurple = Color(red: 0.56, green: 0.27, blue: 1.0)
-
-  static let expoSystemBackground = Color(.systemBackground)
-  static let expoSecondarySystemBackground = Color(.secondarySystemBackground)
-  static let expoSystemGroupedBackground = Color(.systemGroupedBackground)
-  static let expoSecondarySystemGroupedBackground = Color(.secondarySystemGroupedBackground)
-  static let expoSystemGray4 = Color(.systemGray4)
-  static let expoSystemGray5 = Color(.systemGray5)
-  static let expoSystemGray6 = Color(.systemGray6)
 
   static let expoPrimaryText = Color(.label)
   static let expoSecondaryText = Color(.secondaryLabel)

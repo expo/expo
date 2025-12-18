@@ -127,6 +127,24 @@ class HomeViewModel: ObservableObject {
   }
 
   func addToRecentlyOpened(url: String, name: String, iconUrl: String? = nil) {
+    let normalizedUrl = normalizeUrl(url)
+
+    if let existingIndex = recentlyOpenedApps.firstIndex(where: {
+      normalizeUrl($0.url) == normalizedUrl
+    }) {
+      let existingApp = recentlyOpenedApps[existingIndex]
+
+      if existingApp.name == name && iconUrl != nil && existingApp.iconUrl == nil {
+        var updatedApp = existingApp
+        updatedApp.iconUrl = iconUrl
+        recentlyOpenedApps[existingIndex] = updatedApp
+        persistenceManager.saveRecentlyOpened(recentlyOpenedApps)
+        return
+      }
+
+      recentlyOpenedApps.remove(at: existingIndex)
+    }
+
     let newApp = RecentlyOpenedApp(
       name: name,
       url: url,
@@ -135,7 +153,6 @@ class HomeViewModel: ObservableObject {
       iconUrl: iconUrl
     )
 
-    recentlyOpenedApps.removeAll { $0.url == url }
     recentlyOpenedApps.insert(newApp, at: 0)
 
     if recentlyOpenedApps.count > 10 {
@@ -143,6 +160,27 @@ class HomeViewModel: ObservableObject {
     }
 
     persistenceManager.saveRecentlyOpened(recentlyOpenedApps)
+  }
+
+  private func normalizeUrl(_ url: String) -> String {
+    guard let urlComponents = URLComponents(string: url) else {
+      return url
+    }
+
+    // Build URL without scheme
+    var components: [String] = []
+    if let host = urlComponents.host {
+      components.append(host)
+    }
+    if let port = urlComponents.port {
+      components.append(":\(port)")
+    }
+    components.append(urlComponents.path)
+    if let query = urlComponents.query {
+      components.append("?\(query)")
+    }
+
+    return components.joined()
   }
 
   func clearRecentlyOpenedApps() {
@@ -261,7 +299,7 @@ struct RecentlyOpenedApp: Identifiable, Codable {
   let url: String
   let timestamp: Date
   let isEasUpdate: Bool
-  let iconUrl: String?
+  var iconUrl: String?
 }
 
 struct DevelopmentServer: Identifiable {
