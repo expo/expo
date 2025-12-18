@@ -42,9 +42,9 @@ object EventMapper : ListDataPropertyMapper<ExistingEvent, DateRecord.Existing, 
   override fun toDto(model: ExistingEvent): DateRecord.Existing {
     val contactDateRecord = model.startDate?.let {
       DateRecord.ContactDateRecord(
-        year = it.year,
-        month = it.month,
-        day = it.day
+        year = it.year?.toInt(),
+        month = it.month.toInt(),
+        day = it.day.toInt()
       )
     }
     return DateRecord.Existing(
@@ -59,10 +59,13 @@ object EventMapper : ListDataPropertyMapper<ExistingEvent, DateRecord.Existing, 
       return null
     }
     val (year, month, day) = record
+    val yearString = "%02d".format(year)
+    val monthString = "%02d".format(month)
+    val dayString = "%02d".format(day)
     return if (year != null) {
-      ContactDate("$year-$month-$day")
+      ContactDate("$yearString-$monthString-$dayString")
     } else {
-      ContactDate("--$month-$day")
+      ContactDate("--$monthString-$dayString")
     }
   }
 }

@@ -64,7 +64,7 @@ export async function test(t) {
         phoneticGivenName: 'Ful-Dee',
         phoneticMiddleName: 'Tay',
         emails: [{ label: 'work', address: 'full.detail@expo.com' }],
-        dates: [{ label: 'birthday', date: { year: '1990', month: '01', day: '01' } }],
+        dates: [{ label: 'birthday', date: { year: 1990, month: 1, day: 1 } }],
         phones: [{ label: 'mobile', number: '987654321' }],
         addresses: [{ label: 'home', street: '123 Expo St', city: 'Expo City', country: 'USA' }],
         relations: [{ label: 'spouse', name: 'Partner User' }],
@@ -355,7 +355,7 @@ export async function test(t) {
     });
 
     t.it('.getDetails(ContactField.DATES) should return dates correctly', async () => {
-      const value = [{ label: 'birthday', date: { day: '01', month: '01', year: '2000' } }];
+      const value = [{ label: 'birthday', date: { day: 1, month: 1, year: 2000 } }];
       const newContact = await Contact.create({ dates: value });
       contacts.push(newContact);
 
@@ -844,6 +844,16 @@ export async function test(t) {
         const nullNickname = await contact.getNickname();
         t.expect(nullNickname).toBeNull();
       });
+
+      t.it('.get/set Birthday()', async () => {
+        const newBirthday = { day: 15, month: 6, year: 1990 };
+        await contact.setBirthday(newBirthday);
+        const retrievedBirthday = await contact.getBirthday();
+        t.expect(retrievedBirthday).toEqual(newBirthday);
+        await contact.setBirthday(null);
+        const nullBirthday = await contact.getBirthday();
+        t.expect(nullBirthday).toBeNull();
+      });
     }
 
     t.it('.get/set Prefix()', async () => {
@@ -967,27 +977,27 @@ export async function test(t) {
 
     if (Platform.OS === 'ios') {
       const calendarsToTest = [
-        { type: NonGregorianCalendar.buddhist, name: 'buddhist', year: '2567' },
-        { type: NonGregorianCalendar.chinese, name: 'chinese', year: '1' },
-        { type: NonGregorianCalendar.coptic, name: 'coptic', year: '1740' },
+        { type: NonGregorianCalendar.buddhist, name: 'buddhist', year: 2567 },
+        { type: NonGregorianCalendar.chinese, name: 'chinese', year: 1 },
+        { type: NonGregorianCalendar.coptic, name: 'coptic', year: 1740 },
         {
           type: NonGregorianCalendar.ethiopicAmeteMihret,
           name: 'ethiopicAmeteMihret',
-          year: '2016',
+          year: 2016,
         },
-        { type: NonGregorianCalendar.ethiopicAmeteAlem, name: 'ethiopicAmeteAlem', year: '7516' },
-        { type: NonGregorianCalendar.hebrew, name: 'hebrew', year: '5784' },
-        { type: NonGregorianCalendar.indian, name: 'indian', year: '1945' },
-        { type: NonGregorianCalendar.islamic, name: 'islamic', year: '1445' },
-        { type: NonGregorianCalendar.islamicCivil, name: 'islamicCivil', year: '1445' },
-        { type: NonGregorianCalendar.japanese, name: 'japanese', year: '6' },
-        { type: NonGregorianCalendar.persian, name: 'persian', year: '1403' },
-        { type: NonGregorianCalendar.republicOfChina, name: 'republicOfChina', year: '113' },
+        { type: NonGregorianCalendar.ethiopicAmeteAlem, name: 'ethiopicAmeteAlem', year: 7516 },
+        { type: NonGregorianCalendar.hebrew, name: 'hebrew', year: 5784 },
+        { type: NonGregorianCalendar.indian, name: 'indian', year: 1945 },
+        { type: NonGregorianCalendar.islamic, name: 'islamic', year: 1445 },
+        { type: NonGregorianCalendar.islamicCivil, name: 'islamicCivil', year: 1445 },
+        { type: NonGregorianCalendar.japanese, name: 'japanese', year: 6 },
+        { type: NonGregorianCalendar.persian, name: 'persian', year: 1403 },
+        { type: NonGregorianCalendar.republicOfChina, name: 'republicOfChina', year: 113 },
       ];
 
       calendarsToTest.forEach((calendarCase) => {
         t.it(`should set and get ${calendarCase.name} nonGregorianBirthday`, async () => {
-          const birthday = { year: calendarCase.year, month: '3', day: '15' };
+          const birthday = { year: calendarCase.year, month: 3, day: 15 };
 
           await contact.setNonGregorianBirthday({
             ...birthday,
@@ -1071,9 +1081,9 @@ export async function test(t) {
       const dateId = await contact.addDate({
         label: 'birthday',
         date: {
-          year: '1991',
-          month: '02',
-          day: '02',
+          year: 1991,
+          month: 2,
+          day: 2,
         },
       });
       t.expect(dateId).toBeDefined();
@@ -1085,16 +1095,16 @@ export async function test(t) {
         id: dateId,
         label: 'birthday-updated',
         date: {
-          year: '1991',
-          month: '02',
-          day: '02',
+          year: 1991,
+          month: 2,
+          day: 2,
         },
       });
       dates = await contact.getDates();
       t.expect(dates[0].label).toBe('birthday-updated');
-      t.expect(dates[0].date.year).toBe('1991');
-      t.expect(dates[0].date.month).toBe('02');
-      t.expect(dates[0].date.day).toBe('02');
+      t.expect(dates[0].date.year).toBe(1991);
+      t.expect(dates[0].date.month).toBe(2);
+      t.expect(dates[0].date.day).toBe(2);
       await contact.deleteDate(dates[0]);
       dates = await contact.getDates();
       t.expect(dates.length).toBe(0);
@@ -1276,7 +1286,7 @@ export async function test(t) {
         dates: [
           {
             label: 'birthday',
-            date: { year: '1990', month: '01', day: '01' },
+            date: { year: 1990, month: 1, day: 1 },
           },
         ],
       });
@@ -1285,7 +1295,7 @@ export async function test(t) {
         dates: [
           {
             label: 'anniversary',
-            date: { year: '2015', month: '06', day: '15' },
+            date: { year: 2015, month: 6, day: 15 },
           },
         ],
       });
@@ -1298,9 +1308,9 @@ export async function test(t) {
       t.expect(familyName).toBe(null);
       t.expect(dates.length).toBe(1);
       t.expect(dates[0].label).toBe('anniversary');
-      t.expect(dates[0].date.year).toBe('2015');
-      t.expect(dates[0].date.month).toBe('06');
-      t.expect(dates[0].date.day).toBe('15');
+      t.expect(dates[0].date.year).toBe(2015);
+      t.expect(dates[0].date.month).toBe(6);
+      t.expect(dates[0].date.day).toBe(15);
     });
 
     t.it('.update(allFields)', async () => {
@@ -1529,7 +1539,7 @@ export async function test(t) {
         dates: [
           {
             label: 'birthday',
-            date: { year: '1990', month: '01', day: '01' },
+            date: { year: 1990, month: 1, day: 1 },
           },
         ],
       });
@@ -1541,20 +1551,20 @@ export async function test(t) {
         dates: [
           {
             ...dates[0],
-            date: { year: '1991', month: '01', day: '01' },
+            date: { year: 1991, month: 1, day: 1 },
           },
           {
             label: 'anniversary',
-            date: { year: '2020', month: '01', day: '01' },
+            date: { year: 2020, month: 1, day: 1 },
           },
         ],
       });
 
       const updatedDates = await contact.getDates();
       t.expect(updatedDates.length).toBe(2);
-      t.expect(updatedDates.some((d) => d.date.year === '1991')).toBe(true);
-      t.expect(updatedDates.some((d) => d.date.year === '2020')).toBe(true);
-      t.expect(updatedDates.some((d) => d.date.year === '1990')).toBe(false);
+      t.expect(updatedDates.some((d) => d.date.year === 1991)).toBe(true);
+      t.expect(updatedDates.some((d) => d.date.year === 2020)).toBe(true);
+      t.expect(updatedDates.some((d) => d.date.year === 1990)).toBe(false);
     });
 
     t.it('.patch({ dates: [] })', async () => {
@@ -1564,7 +1574,7 @@ export async function test(t) {
         dates: [
           {
             label: 'birthday',
-            date: { year: '1990', month: '01', day: '01' },
+            date: { year: 1990, month: 1, day: 1 },
           },
         ],
       });
@@ -1777,7 +1787,7 @@ export async function test(t) {
         phoneticCompanyName: 'InitialPhoneticCompany',
         emails: [{ label: 'work', address: 'work@example.com' }],
         phones: [{ label: 'work', number: '111222333' }],
-        dates: [{ label: 'birthday', date: { year: '1990', month: '01', day: '01' } }],
+        dates: [{ label: 'birthday', date: { year: 1990, month: 1, day: 1 } }],
         extraNames: [{ label: 'nickname', name: 'InitialNickname' }],
         addresses: [
           {
@@ -1830,8 +1840,8 @@ export async function test(t) {
         ],
 
         dates: [
-          { ...initialDates[0], date: { year: '1991', month: '02', day: '02' } },
-          { label: 'anniversary', date: { year: '2021', month: '10', day: '10' } },
+          { ...initialDates[0], date: { year: 1991, month: 2, day: 2 } },
+          { label: 'anniversary', date: { year: 2021, month: 10, day: 10 } },
         ],
 
         extraNames: [
@@ -1876,8 +1886,8 @@ export async function test(t) {
 
       const updatedDates = await contact.getDates();
       t.expect(updatedDates.length).toBe(2);
-      t.expect(updatedDates.some((d) => d.date.year === '1991')).toBe(true);
-      t.expect(updatedDates.some((d) => d.date.year === '2021')).toBe(true);
+      t.expect(updatedDates.some((d) => d.date.year === 1991)).toBe(true);
+      t.expect(updatedDates.some((d) => d.date.year === 2021)).toBe(true);
 
       if (Platform.OS === 'android') {
         const updatedExtraNames = await contact.getExtraNames();

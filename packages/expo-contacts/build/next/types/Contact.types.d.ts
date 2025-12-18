@@ -114,9 +114,9 @@ export declare namespace SocialProfile {
     };
 }
 export type ContactDate = {
-    year?: string;
-    month: string;
-    day: string;
+    year?: number;
+    month: number;
+    day: number;
 };
 export declare enum NonGregorianCalendar {
     buddhist = "buddhist",
@@ -133,9 +133,9 @@ export declare enum NonGregorianCalendar {
     republicOfChina = "republicOfChina"
 }
 export type NonGregorianBirthday = {
-    year?: string;
-    month: string;
-    day: string;
+    year?: number;
+    month: number;
+    day: number;
     calendar: NonGregorianCalendar;
 };
 export type ContactPatch = {

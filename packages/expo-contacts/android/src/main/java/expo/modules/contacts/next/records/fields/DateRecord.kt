@@ -30,8 +30,8 @@ sealed interface DateRecord {
   }
 
   data class ContactDateRecord(
-    @Field val year: String? = null,
-    @Required @Field val month: String,
-    @Required @Field val day: String
+    @Field val year: Int? = null,
+    @Required @Field val month: Int,
+    @Required @Field val day: Int
   ) : Record
 }

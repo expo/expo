@@ -123,9 +123,9 @@ export namespace SocialProfile {
 }
 
 export type ContactDate = {
-  year?: string;
-  month: string;
-  day: string;
+  year?: number;
+  month: number;
+  day: number;
 };
 
 export enum NonGregorianCalendar {
@@ -144,9 +144,9 @@ export enum NonGregorianCalendar {
 }
 
 export type NonGregorianBirthday = {
-  year?: string;
-  month: string;
-  day: string;
+  year?: number;
+  month: number;
+  day: number;
   calendar: NonGregorianCalendar;
 };
 
