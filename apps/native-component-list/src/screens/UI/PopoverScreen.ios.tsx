@@ -1,5 +1,14 @@
 import { Button, Host, HStack, Image, Picker, Popover, Text, VStack } from '@expo/ui/swift-ui';
-import { background, clipShape, frame, onTapGesture, padding } from '@expo/ui/swift-ui/modifiers';
+import {
+  background,
+  buttonStyle,
+  clipShape,
+  frame,
+  onTapGesture,
+  padding,
+  pickerStyle,
+  tag,
+} from '@expo/ui/swift-ui/modifiers';
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import { Image as ExpoImage } from 'expo-image';
 import React from 'react';
@@ -23,22 +32,26 @@ export default function PopoverScreen() {
         <VStack spacing={20}>
           <Text>Attachment Anchor</Text>
           <Picker
-            options={[...attachmentAnchorOptions]}
-            selectedIndex={attachmentAnchor}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setAttachmentAnchor(index);
-            }}
-            variant="segmented"
-          />
+            modifiers={[pickerStyle('segmented')]}
+            selection={attachmentAnchor}
+            onSelectionChange={setAttachmentAnchor}>
+            {attachmentAnchorOptions.map((option, index) => (
+              <Text key={index} modifiers={[tag(index)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
           <Text>Arrow edge</Text>
           <Picker
-            options={[...arrowEdgeOptions]}
-            selectedIndex={arrowEdge}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setArrowEdge(index);
-            }}
-            variant="segmented"
-          />
+            modifiers={[pickerStyle('segmented')]}
+            selection={arrowEdge}
+            onSelectionChange={setArrowEdge}>
+            {arrowEdgeOptions.map((option, index) => (
+              <Text key={index} modifiers={[tag(index)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
         </VStack>
 
         <VStack alignment="center">
@@ -54,9 +67,11 @@ export default function PopoverScreen() {
                 </VStack>
               </Popover.Content>
               <Popover.Trigger>
-                <Button variant="borderedProminent" onPress={() => setShowPop(true)}>
-                  Button Popover
-                </Button>
+                <Button
+                  modifiers={[buttonStyle('borderedProminent')]}
+                  onPress={() => setShowPop(true)}
+                  label="Button Popover"
+                />
               </Popover.Trigger>
             </Popover>
             <Popover isPresented={textShowPop} onStateChange={(e) => setTextShowPop(e.isPresented)}>
@@ -85,10 +100,12 @@ export default function PopoverScreen() {
                   <Text size={18}>Hello is icon popover</Text>
                 </HStack>
                 <Button
-                  variant={isLiquidGlassAvailable() ? 'glassProminent' : 'borderedProminent'}
-                  onPress={() => Alert.alert('This allert from popover!')}>
-                  Press me
-                </Button>
+                  modifiers={[
+                    buttonStyle(isLiquidGlassAvailable() ? 'glassProminent' : 'borderedProminent'),
+                  ]}
+                  onPress={() => Alert.alert('This allert from popover!')}
+                  label="Press me"
+                />
               </VStack>
             </Popover.Content>
             <Popover.Trigger>
@@ -129,18 +146,24 @@ export default function PopoverScreen() {
                   ))}
                   <Host matchContents>
                     <Button
-                      variant={isLiquidGlassAvailable() ? 'glassProminent' : 'borderedProminent'}
-                      onPress={() => Alert.alert('This allert from popover!')}>
-                      Press me
-                    </Button>
+                      modifiers={[
+                        buttonStyle(
+                          isLiquidGlassAvailable() ? 'glassProminent' : 'borderedProminent'
+                        ),
+                      ]}
+                      onPress={() => Alert.alert('This allert from popover!')}
+                      label="Press me"
+                    />
                   </Host>
                 </ScrollView>
               </VStack>
             </Popover.Content>
             <Popover.Trigger>
-              <Button variant="borderedProminent" onPress={() => setScrollShowPop(true)}>
-                ScrollView Popover
-              </Button>
+              <Button
+                modifiers={[buttonStyle('borderedProminent')]}
+                onPress={() => setScrollShowPop(true)}
+                label="ScrollView Popover"
+              />
             </Popover.Trigger>
           </Popover>
           <Popover
@@ -157,9 +180,11 @@ export default function PopoverScreen() {
               </VStack>
             </Popover.Content>
             <Popover.Trigger>
-              <Button variant="borderedProminent" onPress={() => setImageShowPop(true)}>
-                Image popover
-              </Button>
+              <Button
+                modifiers={[buttonStyle('borderedProminent')]}
+                onPress={() => setImageShowPop(true)}
+                label="Image popover"
+              />
             </Popover.Trigger>
           </Popover>
         </HStack>

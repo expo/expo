@@ -10,13 +10,13 @@ public final class GlassView: ExpoView {
   private var glassStyle: GlassStyle?
   private var glassTintColor: UIColor?
   private var glassIsInteractive: Bool?
-  
+
   private var radius: CGFloat?
   private var bottomLeftRadius: CGFloat?
   private var bottomRightRadius: CGFloat?
   private var topLeftRadius: CGFloat?
   private var topRightRadius: CGFloat?
-  
+
   private var bottomStartRadius: CGFloat?
   private var bottomEndRadius: CGFloat?
   private var topStartRadius: CGFloat?
@@ -30,7 +30,25 @@ public final class GlassView: ExpoView {
     addSubview(glassEffectView)
   }
 
+  // UIGlassEffect initialiser is crashing for iOS 26 beta versions for some reason, so we need to check if it's available at runtime
+  // https://github.com/expo/expo/issues/40911
+  private func isGlassEffectAvailable() -> Bool {
+    #if compiler(>=6.2)
+    if #available(iOS 26.0, *) {
+      guard let glassEffectClass = NSClassFromString("UIGlassEffect") as? NSObject.Type else {
+        return false
+      }
+      let respondsToSelector = glassEffectClass.responds(to: Selector(("effectWithStyle:")))
+      return respondsToSelector
+    }
+    #endif
+    return false
+  }
+
   public func updateBorderRadius() {
+    guard isGlassEffectAvailable() else {
+      return
+    }
     if #available(iOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
       let isRTL = RCTI18nUtil.sharedInstance()?.isRTL() ?? false
@@ -70,14 +88,17 @@ public final class GlassView: ExpoView {
   public func setGlassStyle(_ style: GlassStyle) {
     if glassStyle != style {
       glassStyle = style
+      guard isGlassEffectAvailable() else {
+        return
+      }
       if #available(iOS 26.0, *) {
-        #if compiler(>=6.2) // Xcode 26
+      #if compiler(>=6.2) // Xcode 26
         let effect = UIGlassEffect(style: glassStyle?.toUIGlassEffectStyle() ?? .regular)
         glassEffectView.effect = effect
         glassEffect = effect
+        updateEffect()
         #endif
       }
-      updateEffect()
     }
   }
 
@@ -163,6 +184,9 @@ public final class GlassView: ExpoView {
   }
 
   private func updateEffect() {
+    guard isGlassEffectAvailable() else {
+      return
+    }
     if #available(iOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
       if let effect = glassEffect as? UIGlassEffect {

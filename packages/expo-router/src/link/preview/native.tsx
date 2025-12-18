@@ -1,6 +1,7 @@
 'use client';
 
 import { requireNativeView } from 'expo';
+import { Fragment, type PropsWithChildren } from 'react';
 import { Platform, StyleSheet, type ViewProps } from 'react-native';
 
 const areNativeViewsAvailable =
@@ -8,6 +9,7 @@ const areNativeViewsAvailable =
 
 // #region Action View
 export interface NativeLinkPreviewActionProps {
+  identifier: string;
   title: string;
   icon?: string;
   children?: React.ReactNode;
@@ -93,5 +95,91 @@ export function NativeLinkPreviewContent(props: NativeLinkPreviewContentProps) {
     } as const,
   ]);
   return <NativeLinkPreviewContentView {...props} style={style} />;
+}
+// #endregion
+
+// #region Zoom transition enabler
+const LinkZoomTransitionEnablerNativeView: React.ComponentType<
+  ViewProps & { zoomTransitionSourceIdentifier: string; disableForceFlatten?: boolean }
+> | null = areNativeViewsAvailable
+  ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionEnabler')
+  : null;
+export function LinkZoomTransitionEnabler(props: {
+  zoomTransitionSourceIdentifier: string;
+  preventInteractiveDismissal?: boolean;
+}) {
+  if (!LinkZoomTransitionEnablerNativeView) {
+    return null;
+  }
+  return (
+    <LinkZoomTransitionEnablerNativeView
+      {...props}
+      disableForceFlatten
+      style={{ display: 'contents' }}
+    />
+  );
+}
+// #endregion
+
+// #region Zoom transition source
+interface LinkSourceAlignmentRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+interface LinkZoomTransitionSourceProps extends PropsWithChildren {
+  identifier: string;
+  alignment?: LinkSourceAlignmentRect;
+  animateAspectRatioChange?: boolean;
+}
+
+interface LinkZoomTransitionSourceNativeProps extends ViewProps, LinkZoomTransitionSourceProps {
+  disableForceFlatten?: boolean;
+}
+
+const LinkZoomTransitionSourceNativeView: React.ComponentType<LinkZoomTransitionSourceNativeProps> | null =
+  areNativeViewsAvailable
+    ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionSource')
+    : null;
+export function LinkZoomTransitionSource(props: LinkZoomTransitionSourceProps) {
+  if (!LinkZoomTransitionSourceNativeView) {
+    return null;
+  }
+  return (
+    <LinkZoomTransitionSourceNativeView
+      {...props}
+      disableForceFlatten
+      collapsable={false}
+      collapsableChildren={false}
+      style={{ display: 'contents' }}
+    />
+  );
+}
+// #endregion
+
+// #region Zoom transition rect detector
+const LinkZoomTransitionAlignmentRectDetectorNative: React.ComponentType<
+  ViewProps & { identifier: string; disableForceFlatten?: boolean; children?: React.ReactNode }
+> | null = areNativeViewsAvailable
+  ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionAlignmentRectDetector')
+  : Fragment;
+export function LinkZoomTransitionAlignmentRectDetector(props: {
+  identifier: string;
+  children: React.ReactNode;
+}) {
+  if (!LinkZoomTransitionAlignmentRectDetectorNative) {
+    return null;
+  }
+  return (
+    <LinkZoomTransitionAlignmentRectDetectorNative
+      {...props}
+      disableForceFlatten
+      collapsable={false}
+      collapsableChildren={false}
+      style={{ display: 'contents' }}
+    />
+  );
 }
 // #endregion

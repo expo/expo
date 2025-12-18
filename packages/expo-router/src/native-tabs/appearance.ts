@@ -11,6 +11,7 @@ import {
   type NativeTabsBlurEffect,
   type NativeTabsLabelStyle,
 } from './types';
+import { convertFontWeightToStringFontWeight } from '../utils/style';
 
 const supportedBlurEffectsSet = new Set<string>(SUPPORTED_BLUR_EFFECTS);
 
@@ -183,10 +184,7 @@ export function convertStyleToItemStateAppearance(
     tabBarItemIconColor: style.iconColor,
     tabBarItemTitleFontFamily: style.fontFamily,
     tabBarItemTitleFontSize: style.fontSize,
-    // Only string values are accepted by rn-screens
-    tabBarItemTitleFontWeight: style?.fontWeight
-      ? (String(style.fontWeight) as `${NonNullable<(typeof style)['fontWeight']>}`)
-      : undefined,
+    tabBarItemTitleFontWeight: convertFontWeightToStringFontWeight(style.fontWeight),
     tabBarItemTitleFontStyle: style.fontStyle,
     tabBarItemTitleFontColor: style.color,
   };

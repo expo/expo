@@ -10,7 +10,13 @@ import { HrefPreview } from '../../link/preview/HrefPreview';
 import { renderRouter, within } from '../../testing-library';
 import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
-import { Badge, Icon, Label, VectorIcon, type IconProps } from '../common/elements';
+import {
+  type DrawableIcon,
+  type MaterialIcon,
+  type NativeTabsTriggerIconProps,
+  type SFSymbolIcon,
+  type SrcIcon,
+} from '../common/elements';
 import type { NativeTabOptions } from '../types';
 
 jest.mock('react-native-screens', () => {
@@ -24,20 +30,20 @@ jest.mock('react-native-screens', () => {
 
 const BottomTabsScreen = _BottomTabsScreen as jest.MockedFunction<typeof _BottomTabsScreen>;
 
-it('can pass options via options prop', () => {
-  const indexOptions: NativeTabOptions = {
+it('can pass props via unstable_nativeProps', () => {
+  const indexOptions = {
     title: 'Test Title',
     iconColor: 'blue',
   };
-  const secondOptions: NativeTabOptions = {
+  const secondOptions = {
     title: 'Second Title',
     iconColor: 'red',
   };
   renderRouter({
     _layout: () => (
       <NativeTabs>
-        <NativeTabs.Trigger name="index" options={{ ...indexOptions }} />
-        <NativeTabs.Trigger name="second" options={{ ...secondOptions }} />
+        <NativeTabs.Trigger name="index" unstable_nativeProps={{ ...indexOptions }} />
+        <NativeTabs.Trigger name="second" unstable_nativeProps={{ ...secondOptions }} />
       </NativeTabs>
     ),
     index: () => <View testID="index" />,
@@ -60,7 +66,7 @@ it('can pass options via elements', () => {
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index">
-          <Icon sf="homepod.2.fill" />
+          <NativeTabs.Trigger.Icon sf="homepod.2.fill" />
         </NativeTabs.Trigger>
       </NativeTabs>
     ),
@@ -70,9 +76,9 @@ it('can pass options via elements', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
   expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-    icon: { sfSymbolName: 'homepod.2.fill' },
+    icon: { ios: { type: 'sfSymbol', name: 'homepod.2.fill' } },
     selectedIcon: undefined,
-  } as NativeTabOptions);
+  } as BottomTabsScreenProps);
 });
 
 it('when no options are passed, default ones are used', () => {
@@ -94,11 +100,10 @@ it('when no options are passed, default ones are used', () => {
     tabKey: expect.stringMatching(/^index-[-\w]+/),
     isFocused: true,
     children: expect.objectContaining({}),
-    iconResourceName: undefined,
     icon: undefined,
     selectedIcon: undefined,
     freezeContents: false,
-  } as NativeTabOptions);
+  } as BottomTabsScreenProps);
 });
 
 describe('Icons', () => {
@@ -107,7 +112,7 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf="homepod.2.fill" />
+            <NativeTabs.Trigger.Icon sf="homepod.2.fill" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -117,8 +122,8 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      icon: { sfSymbolName: 'homepod.2.fill' },
-    } as NativeTabOptions);
+      icon: { ios: { type: 'sfSymbol', name: 'homepod.2.fill' } },
+    } as BottomTabsScreenProps);
   });
 
   it('when using Icon with sf selected prop, it is passed as selected icon sfSymbolName', () => {
@@ -126,7 +131,7 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf={{ selected: 'homepod.2.fill' }} />
+            <NativeTabs.Trigger.Icon sf={{ selected: 'homepod.2.fill' }} />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -136,8 +141,8 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      selectedIcon: { sfSymbolName: 'homepod.2.fill' },
-    } as NativeTabOptions);
+      selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' },
+    } as BottomTabsScreenProps);
   });
 
   it('when using Icon with sf object, values are passed correctly', () => {
@@ -145,7 +150,7 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
+            <NativeTabs.Trigger.Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -155,9 +160,9 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      selectedIcon: { sfSymbolName: 'star.bubble' },
-      icon: { sfSymbolName: 'stairs' },
-    } as NativeTabOptions);
+      selectedIcon: { type: 'sfSymbol', name: 'star.bubble' },
+      icon: { ios: { type: 'sfSymbol', name: 'stairs' } },
+    } as BottomTabsScreenProps);
   });
 
   it('when using Icon drawable on iOS, no value is passed', () => {
@@ -165,7 +170,7 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon drawable="stairs" />
+            <NativeTabs.Trigger.Icon drawable="stairs" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -176,7 +181,6 @@ describe('Icons', () => {
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0].icon).toBeUndefined();
     expect(BottomTabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
-    expect(BottomTabsScreen.mock.calls[0][0].iconResourceName).toBeUndefined();
   });
 
   it('uses last Icon sf value when multiple are provided', () => {
@@ -184,8 +188,8 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf="stairs" />
-            <Icon sf="homepod.2.fill" />
+            <NativeTabs.Trigger.Icon sf="stairs" />
+            <NativeTabs.Trigger.Icon sf="homepod.2.fill" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -195,9 +199,9 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      icon: { sfSymbolName: 'homepod.2.fill' },
+      icon: { ios: { type: 'sfSymbol', name: 'homepod.2.fill' } },
       selectedIcon: undefined,
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
   });
 
   it('uses last Icon sf selected when multiple are provided', () => {
@@ -205,8 +209,8 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf={{ selected: 'stairs' }} />
-            <Icon sf={{ selected: 'homepod.2.fill' }} />
+            <NativeTabs.Trigger.Icon sf={{ selected: 'stairs' }} />
+            <NativeTabs.Trigger.Icon sf={{ selected: 'homepod.2.fill' }} />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -216,8 +220,8 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      selectedIcon: { sfSymbolName: 'homepod.2.fill' },
-    } as NativeTabOptions);
+      selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' },
+    } as BottomTabsScreenProps);
   });
 
   it('uses last Icon sf for each type when multiple are provided', () => {
@@ -225,9 +229,11 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
-            <Icon sf={{ default: 'homepod.2.fill', selected: 'homepod.2.fill' }} />
-            <Icon sf="0.circle.ar" />
+            <NativeTabs.Trigger.Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
+            <NativeTabs.Trigger.Icon
+              sf={{ default: 'homepod.2.fill', selected: 'homepod.2.fill' }}
+            />
+            <NativeTabs.Trigger.Icon sf="0.circle.ar" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -238,8 +244,8 @@ describe('Icons', () => {
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       selectedIcon: undefined,
-      icon: { sfSymbolName: '0.circle.ar' },
-    } as NativeTabOptions);
+      icon: { ios: { type: 'sfSymbol', name: '0.circle.ar' } },
+    } as BottomTabsScreenProps);
   });
 
   it('uses last Icon sf for each type when multiple are provided', () => {
@@ -247,9 +253,11 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
-            <Icon sf={{ default: 'homepod.2.fill', selected: 'homepod.2.fill' }} />
-            <Icon sf={{ selected: '0.circle.ar' }} />
+            <NativeTabs.Trigger.Icon sf={{ default: 'stairs', selected: 'star.bubble' }} />
+            <NativeTabs.Trigger.Icon
+              sf={{ default: 'homepod.2.fill', selected: 'homepod.2.fill' }}
+            />
+            <NativeTabs.Trigger.Icon sf={{ selected: '0.circle.ar' }} />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -259,9 +267,9 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
-      selectedIcon: { sfSymbolName: '0.circle.ar' },
+      selectedIcon: { type: 'sfSymbol', name: '0.circle.ar' },
       icon: undefined,
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
   });
 
   it('when selectedIconColor is provided, it is passed to screen', () => {
@@ -291,7 +299,7 @@ describe('Icons', () => {
       _layout: () => (
         <NativeTabs iconColor={{ selected: 'red' }}>
           <NativeTabs.Trigger name="index">
-            <Icon selectedColor="blue" />
+            <NativeTabs.Trigger.Icon selectedColor="blue" />
           </NativeTabs.Trigger>
           <NativeTabs.Trigger name="one" />
         </NativeTabs>
@@ -320,6 +328,65 @@ describe('Icons', () => {
       },
     } as Partial<BottomTabsScreenProps>);
   });
+
+  it.each([
+    { expectedIcon: undefined },
+    { sf: '0.circle', expectedIcon: { type: 'sfSymbol', name: '0.circle' } },
+    {
+      sf: '0.circle',
+      src: { uri: 'some-uri' },
+      expectedIcon: { type: 'sfSymbol', name: '0.circle' },
+    },
+    {
+      sf: '0.circle',
+      src: { uri: 'some-uri' },
+      drawable: 'ic_some_drawable',
+      expectedIcon: { type: 'sfSymbol', name: '0.circle' },
+    },
+    {
+      sf: '0.circle',
+      src: { uri: 'some-uri' },
+      material: 'ic_some_drawable',
+      expectedIcon: { type: 'sfSymbol', name: '0.circle' },
+    },
+    {
+      src: { uri: 'some-uri' },
+      expectedIcon: { type: 'templateSource', templateSource: { uri: 'some-uri' } },
+    },
+    {
+      src: { uri: 'some-uri' },
+      drawable: 'ic_some_drawable',
+      expectedIcon: { type: 'templateSource', templateSource: { uri: 'some-uri' } },
+    },
+    {
+      src: { uri: 'some-uri' },
+      material: 'ic_some_drawable',
+      expectedIcon: { type: 'templateSource', templateSource: { uri: 'some-uri' } },
+    },
+  ] as (DrawableIcon &
+    MaterialIcon &
+    SrcIcon &
+    SFSymbolIcon & {
+      expectedIcon: BottomTabsScreenProps['icon']['ios'];
+    })[])(
+    'For <Icon sf="$sf" src="$src" drawable="$drawable">, icon is $expectedIcon',
+    ({ sf, src, drawable, material, expectedIcon }) => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon sf={sf} material={material} src={src} drawable={drawable} />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+      expect(BottomTabsScreen.mock.calls[0][0].icon?.ios).toEqual(expectedIcon);
+    }
+  );
 });
 
 describe('Badge', () => {
@@ -328,7 +395,7 @@ describe('Badge', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Badge>5</Badge>
+            <NativeTabs.Trigger.Badge>5</NativeTabs.Trigger.Badge>
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -339,7 +406,7 @@ describe('Badge', () => {
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       badgeValue: '5',
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
   });
 
   it('passes badge value as string', () => {
@@ -347,7 +414,7 @@ describe('Badge', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Badge>New</Badge>
+            <NativeTabs.Trigger.Badge>New</NativeTabs.Trigger.Badge>
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -358,7 +425,7 @@ describe('Badge', () => {
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       badgeValue: 'New',
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
   });
 
   it('does not pass badge when Badge is not used', () => {
@@ -381,9 +448,9 @@ describe('Badge', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Badge>1</Badge>
-            <Badge>2</Badge>
-            <Badge>3</Badge>
+            <NativeTabs.Trigger.Badge>1</NativeTabs.Trigger.Badge>
+            <NativeTabs.Trigger.Badge>2</NativeTabs.Trigger.Badge>
+            <NativeTabs.Trigger.Badge>3</NativeTabs.Trigger.Badge>
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -394,7 +461,7 @@ describe('Badge', () => {
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       badgeValue: '3',
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
   });
 
   it('when empty Badge is used, passes space to badgeValue', () => {
@@ -402,7 +469,7 @@ describe('Badge', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Badge />
+            <NativeTabs.Trigger.Badge />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -419,7 +486,7 @@ describe('Badge', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Badge hidden />
+            <NativeTabs.Trigger.Badge hidden />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -438,7 +505,7 @@ describe('Label', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Label>Custom Title</Label>
+            <NativeTabs.Trigger.Label>Custom Title</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -449,7 +516,7 @@ describe('Label', () => {
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Custom Title',
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
   });
 
   it('when title is not set, uses the route name', () => {
@@ -476,9 +543,9 @@ describe('Label', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Label>First Title</Label>
-            <Label>Second Title</Label>
-            <Label>Last Title</Label>
+            <NativeTabs.Trigger.Label>First Title</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Label>Second Title</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Label>Last Title</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -489,7 +556,7 @@ describe('Label', () => {
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Last Title',
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
   });
 
   it('when empty Label is used, passes route name to title', () => {
@@ -497,7 +564,7 @@ describe('Label', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Label />
+            <NativeTabs.Trigger.Label />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -514,7 +581,7 @@ describe('Label', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Label hidden />
+            <NativeTabs.Trigger.Label hidden />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -554,7 +621,7 @@ describe('Label', () => {
       _layout: () => (
         <NativeTabs labelStyle={{ selected: { fontSize: 24, color: 'red' } }}>
           <NativeTabs.Trigger name="index">
-            <Label selectedStyle={{ fontSize: 32, color: 'blue' }} />
+            <NativeTabs.Trigger.Label selectedStyle={{ fontSize: 32, color: 'blue' }} />
           </NativeTabs.Trigger>
           <NativeTabs.Trigger name="one" />
         </NativeTabs>
@@ -594,7 +661,7 @@ describe('Tab options', () => {
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" disablePopToTop>
-              <Label>Custom Title</Label>
+              <NativeTabs.Trigger.Label>Custom Title</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
           </NativeTabs>
         ),
@@ -609,7 +676,7 @@ describe('Tab options', () => {
             popToRoot: false,
           },
         },
-      } as NativeTabOptions);
+      } as BottomTabsScreenProps);
     });
 
     it('When disablePopToTop is not set or false, popToRoot is true', () => {
@@ -617,10 +684,10 @@ describe('Tab options', () => {
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
-              <Label>Custom Title</Label>
+              <NativeTabs.Trigger.Label>Custom Title</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="one" disablePopToTop={false}>
-              <Label>One</Label>
+              <NativeTabs.Trigger.Label>One</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
           </NativeTabs>
         ),
@@ -637,7 +704,7 @@ describe('Tab options', () => {
             popToRoot: true,
           },
         },
-      } as NativeTabOptions);
+      } as BottomTabsScreenProps);
       expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
         title: 'One',
         specialEffects: {
@@ -645,7 +712,7 @@ describe('Tab options', () => {
             popToRoot: true,
           },
         },
-      } as NativeTabOptions);
+      } as BottomTabsScreenProps);
     });
   });
 
@@ -655,7 +722,7 @@ describe('Tab options', () => {
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" disableScrollToTop>
-              <Label>Custom Title</Label>
+              <NativeTabs.Trigger.Label>Custom Title</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
           </NativeTabs>
         ),
@@ -670,7 +737,7 @@ describe('Tab options', () => {
             scrollToTop: false,
           },
         },
-      } as NativeTabOptions);
+      } as BottomTabsScreenProps);
     });
 
     it('When disableScrollToTop is not set or false, scrollToTop is true', () => {
@@ -678,10 +745,10 @@ describe('Tab options', () => {
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
-              <Label>Custom Title</Label>
+              <NativeTabs.Trigger.Label>Custom Title</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="one" disableScrollToTop={false}>
-              <Label>One</Label>
+              <NativeTabs.Trigger.Label>One</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
           </NativeTabs>
         ),
@@ -698,7 +765,7 @@ describe('Tab options', () => {
             scrollToTop: true,
           },
         },
-      } as NativeTabOptions);
+      } as BottomTabsScreenProps);
       expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
         title: 'One',
         specialEffects: {
@@ -706,22 +773,42 @@ describe('Tab options', () => {
             scrollToTop: true,
           },
         },
-      } as NativeTabOptions);
+      } as BottomTabsScreenProps);
     });
+
+    it.each([true, false, undefined])(
+      'When disableAutomaticContentInsets is %p, overrideScrollViewContentInsetAdjustmentBehavior is the opposite',
+      (value) => {
+        renderRouter({
+          _layout: () => (
+            <NativeTabs>
+              <NativeTabs.Trigger name="index" disableAutomaticContentInsets={value} />
+            </NativeTabs>
+          ),
+          index: () => <View testID="index" />,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+        expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+          overrideScrollViewContentInsetAdjustmentBehavior: !value,
+        } as BottomTabsScreenProps);
+      }
+    );
   });
 });
 
 describe('Dynamic options', () => {
-  it('updates options dynamically', () => {
+  it('updates nativeProps dynamically', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
-          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
+          <NativeTabs.Trigger name="index" unstable_nativeProps={{ title: 'Initial Title' }} />
         </NativeTabs>
       ),
       index: () => (
         <View testID="index">
-          <NativeTabs.Trigger name="index" options={{ title: 'Updated Title' }} />
+          <NativeTabs.Trigger name="index" unstable_nativeProps={{ title: 'Updated Title' }} />
         </View>
       ),
     });
@@ -737,8 +824,7 @@ describe('Dynamic options', () => {
       freezeContents: false,
       icon: undefined,
       selectedIcon: undefined,
-      iconResourceName: undefined,
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
     expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
@@ -749,23 +835,22 @@ describe('Dynamic options', () => {
       freezeContents: false,
       icon: undefined,
       selectedIcon: undefined,
-      iconResourceName: undefined,
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
   });
 
-  it('can use components as children', () => {
+  it('unstable_nativeProps override dynamic options configuration', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
-          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
+          <NativeTabs.Trigger name="index" unstable_nativeProps={{ title: 'Initial Title' }} />
         </NativeTabs>
       ),
       index: () => (
         <View testID="index">
           <NativeTabs.Trigger name="index">
-            <Label>Updated Title</Label>
-            <Badge>5</Badge>
-            <Icon sf="homepod.2.fill" />
+            <NativeTabs.Trigger.Label>Updated Title</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Badge>5</NativeTabs.Trigger.Badge>
+            <NativeTabs.Trigger.Icon sf="homepod.2.fill" />
           </NativeTabs.Trigger>
         </View>
       ),
@@ -778,34 +863,36 @@ describe('Dynamic options', () => {
       specialEffects: {},
       tabKey: expect.stringMatching(/^index-[-\w]+/),
       isFocused: true,
-      iconResourceName: undefined,
       icon: undefined,
       selectedIcon: undefined,
       freezeContents: false,
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
     expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
-      title: 'Updated Title',
+      title: 'Initial Title',
       hidden: false,
       specialEffects: {},
       tabKey: expect.stringMatching(/^index-[-\w]+/),
       isFocused: true,
       badgeValue: '5',
       icon: {
-        sfSymbolName: 'homepod.2.fill',
+        ios: {
+          type: 'sfSymbol',
+          name: 'homepod.2.fill',
+        },
       },
       selectedIcon: undefined,
       freezeContents: false,
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
   });
 
-  it('can override component children from _layout with options', () => {
+  it('can override component children from _layout with unstable_nativeProps', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Label>Initial Title</Label>
-            <Badge>3</Badge>
-            <Icon sf="0.circle" />
+            <NativeTabs.Trigger.Label>Initial Title</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Badge>3</NativeTabs.Trigger.Badge>
+            <NativeTabs.Trigger.Icon sf="0.circle" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -813,10 +900,12 @@ describe('Dynamic options', () => {
         <View testID="index">
           <NativeTabs.Trigger
             name="index"
-            options={{
+            unstable_nativeProps={{
               title: 'Updated Title',
               badgeValue: '5',
-              icon: { sf: 'homepod.2.fill' },
+              icon: {
+                ios: { type: 'sfSymbol', name: 'homepod.2.fill' },
+              },
             }}
           />
         </View>
@@ -827,12 +916,17 @@ describe('Dynamic options', () => {
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       badgeValue: '3',
-      icon: { sfSymbolName: '0.circle' },
+      icon: {
+        ios: {
+          type: 'sfSymbol',
+          name: '0.circle',
+        },
+      },
       hidden: false,
       specialEffects: {},
       tabKey: expect.stringMatching(/^index-[-\w]+/),
       isFocused: true,
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
     expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
@@ -841,9 +935,12 @@ describe('Dynamic options', () => {
       isFocused: true,
       badgeValue: '5',
       icon: {
-        sfSymbolName: 'homepod.2.fill',
+        ios: {
+          type: 'sfSymbol',
+          name: 'homepod.2.fill',
+        },
       },
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
   });
 
   it('can override component children from _layout with dynamic children', () => {
@@ -851,18 +948,18 @@ describe('Dynamic options', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Label>Initial Title</Label>
-            <Badge>3</Badge>
-            <Icon sf="0.circle" />
+            <NativeTabs.Trigger.Label>Initial Title</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Badge>3</NativeTabs.Trigger.Badge>
+            <NativeTabs.Trigger.Icon sf="0.circle" />
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
       index: () => (
         <View testID="index">
           <NativeTabs.Trigger name="index">
-            <Label>Updated Title</Label>
-            <Badge>5</Badge>
-            <Icon sf="homepod.2.fill" />
+            <NativeTabs.Trigger.Label>Updated Title</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Badge>5</NativeTabs.Trigger.Badge>
+            <NativeTabs.Trigger.Icon sf="homepod.2.fill" />
           </NativeTabs.Trigger>
         </View>
       ),
@@ -872,12 +969,17 @@ describe('Dynamic options', () => {
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       badgeValue: '3',
-      icon: { sfSymbolName: '0.circle' },
+      icon: {
+        ios: {
+          type: 'sfSymbol',
+          name: '0.circle',
+        },
+      },
       hidden: false,
       specialEffects: {},
       tabKey: expect.stringMatching(/^index-[-\w]+/),
       isFocused: true,
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
     expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
@@ -886,9 +988,12 @@ describe('Dynamic options', () => {
       isFocused: true,
       badgeValue: '5',
       icon: {
-        sfSymbolName: 'homepod.2.fill',
+        ios: {
+          type: 'sfSymbol',
+          name: 'homepod.2.fill',
+        },
       },
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
   });
 
   it('can dynamically update options with state update', () => {
@@ -896,7 +1001,7 @@ describe('Dynamic options', () => {
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
-            <Label>Initial Title</Label>
+            <NativeTabs.Trigger.Label>Initial Title</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
         </NativeTabs>
       ),
@@ -906,7 +1011,7 @@ describe('Dynamic options', () => {
         return (
           <View testID="index">
             <NativeTabs.Trigger name="index">
-              <Label>{label}</Label>
+              <NativeTabs.Trigger.Label>{label}</NativeTabs.Trigger.Label>
             </NativeTabs.Trigger>
             <Button title="Update" testID="update-button" onPress={() => setValue((v) => v + 1)} />
           </View>
@@ -929,8 +1034,12 @@ describe('Dynamic options', () => {
     renderRouter({
       _layout: () => (
         <NativeTabs>
-          <NativeTabs.Trigger name="index" options={{ title: 'Initial Title' }} />
-          <NativeTabs.Trigger name="second" options={{ title: 'Second' }} />
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Label>Initial Title</NativeTabs.Trigger.Label>
+          </NativeTabs.Trigger>
+          <NativeTabs.Trigger name="second">
+            <NativeTabs.Trigger.Label>Second</NativeTabs.Trigger.Label>
+          </NativeTabs.Trigger>
         </NativeTabs>
       ),
       index: () => (
@@ -941,9 +1050,9 @@ describe('Dynamic options', () => {
       second: () => (
         <View testID="second">
           <NativeTabs.Trigger name="second">
-            <Label>Updated Title</Label>
-            <Badge>5</Badge>
-            <Icon sf="homepod.2.fill" />
+            <NativeTabs.Trigger.Label>Updated Title</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger.Badge>5</NativeTabs.Trigger.Badge>
+            <NativeTabs.Trigger.Icon sf="homepod.2.fill" />
           </NativeTabs.Trigger>
         </View>
       ),
@@ -959,11 +1068,10 @@ describe('Dynamic options', () => {
       specialEffects: {},
       tabKey: expect.stringMatching(/^index-[-\w]+/),
       isFocused: true,
-      iconResourceName: undefined,
       icon: undefined,
       selectedIcon: undefined,
       freezeContents: false,
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
     expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Second',
       hidden: false,
@@ -973,7 +1081,7 @@ describe('Dynamic options', () => {
       icon: undefined,
       selectedIcon: undefined,
       freezeContents: false,
-    } as NativeTabOptions);
+    } as BottomTabsScreenProps);
   });
 });
 
@@ -1003,11 +1111,11 @@ describe(appendIconOptions, () => {
     [
       {
         sf: '0.circle',
-        androidSrc: <VectorIcon family={ICON_FAMILY} name="a" />,
+        src: <NativeTabs.Trigger.VectorIcon family={ICON_FAMILY} name="a" />,
       },
       { icon: { sf: '0.circle' }, selectedIcon: undefined },
     ],
-  ] as [IconProps, NativeTabOptions][])(
+  ] as [NativeTabsTriggerIconProps, NativeTabOptions][])(
     'should append icon props %p to options correctly',
     (props, expected) => {
       const options: NativeTabOptions = {};
@@ -1017,9 +1125,9 @@ describe(appendIconOptions, () => {
   );
   it('when vector icon is used, promise is set', () => {
     const options: NativeTabOptions = {};
-    const props: IconProps = {
+    const props: NativeTabsTriggerIconProps = {
       src: {
-        default: <VectorIcon family={ICON_FAMILY} name="a" />,
+        default: <NativeTabs.Trigger.VectorIcon family={ICON_FAMILY} name="a" />,
         selected: { uri: 'yyy' },
       },
     };

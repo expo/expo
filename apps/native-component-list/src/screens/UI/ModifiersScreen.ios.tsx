@@ -25,7 +25,7 @@ import {
   scaleEffect,
   rotationEffect,
   offset,
-  foregroundColor,
+  listRowSeparator,
   border,
   onTapGesture,
   onLongPressGesture,
@@ -55,6 +55,9 @@ import {
   badge,
   badgeProminence,
   listSectionMargins,
+  pickerStyle,
+  tag,
+  font,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
@@ -121,13 +124,15 @@ export default function ModifiersScreen() {
             <Text modifiers={[badge('Hello'), badgeProminence(badgeType[badgeIndex])]}>Badge</Text>
             <Picker
               label="Select dabge type"
-              options={[...badgeType]}
-              selectedIndex={badgeIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => {
-                setBadgeIndex(index);
-              }}
-              variant="menu"
-            />
+              modifiers={[pickerStyle('menu')]}
+              selection={badgeIndex}
+              onSelectionChange={setBadgeIndex}>
+              {badgeType.map((type, index) => (
+                <Text key={index} modifiers={[tag(index)]}>
+                  {type}
+                </Text>
+              ))}
+            </Picker>
           </Section>
 
           {/* List modifiers */}
@@ -190,13 +195,19 @@ export default function ModifiersScreen() {
             </VStack>
           </VStack>
 
+          <Section title="List row separator">
+            <Text>Default separator</Text>
+            <Text>Default separator</Text>
+            <Text modifiers={[listRowSeparator('hidden')]}>Hidden separator</Text>
+          </Section>
+
           {/* Text modifiers */}
           <Section title="Text modifier">
             <Text
               color={color ?? 'primary'}
-              size={16}
               lineLimit={1}
               modifiers={[
+                font({ size: 16 }),
                 allowsTightening(allowTightening),
                 truncationMode(
                   truncationModeOptions[truncationModeIndex] as 'head' | 'middle' | 'tail'
@@ -207,82 +218,100 @@ export default function ModifiersScreen() {
             </Text>
             <Picker
               label="Select mode"
-              options={truncationModeOptions}
-              selectedIndex={truncationModeIndex}
-              onOptionSelected={({ nativeEvent: { index } }) => {
-                setTruncationMode(index);
-              }}
-              variant="menu"
-            />
+              modifiers={[pickerStyle('menu')]}
+              selection={truncationModeIndex}
+              onSelectionChange={setTruncationMode}>
+              {truncationModeOptions.map((option, index) => (
+                <Text key={index} modifiers={[tag(index)]}>
+                  {option}
+                </Text>
+              ))}
+            </Picker>
             <Switch
               label="Allow Tightening"
               value={allowTightening}
               onValueChange={setAllowsTightening}
             />
-            <Text size={14} modifiers={[kerning(kerningValue)]}>
-              Kerning Text
-            </Text>
+            <Text modifiers={[font({ size: 14 }), kerning(kerningValue)]}>Kerning Text</Text>
             <Slider min={0} max={10} onValueChange={setKerning} />
 
             <HStack spacing={20}>
-              <Text size={14} modifiers={[textCase('lowercase')]}>
-                lowercase
-              </Text>
-              <Text size={14} modifiers={[textCase('uppercase')]}>
-                uppercase
-              </Text>
+              <Text modifiers={[font({ size: 14 }), textCase('lowercase')]}>lowercase</Text>
+              <Text modifiers={[font({ size: 14 }), textCase('uppercase')]}>uppercase</Text>
             </HStack>
 
             <HStack alignment="center" spacing={80}>
               <VStack spacing={15}>
-                <Text size={16}>Underline text</Text>
+                <Text modifiers={[font({ size: 16 })]}>Underline text</Text>
                 <Text
-                  size={14}
-                  modifiers={[underline({ isActive: true, pattern: 'solid', color: 'red' })]}>
+                  modifiers={[
+                    font({ size: 14 }),
+                    underline({ isActive: true, pattern: 'solid', color: 'red' }),
+                  ]}>
                   Text 1
                 </Text>
                 <Text
-                  size={14}
-                  modifiers={[underline({ isActive: true, pattern: 'dash', color: 'green' })]}>
+                  modifiers={[
+                    font({ size: 14 }),
+                    underline({ isActive: true, pattern: 'dash', color: 'green' }),
+                  ]}>
                   Text 2
                 </Text>
                 <Text
-                  size={14}
-                  modifiers={[underline({ isActive: true, pattern: 'dot', color: 'blue' })]}>
+                  modifiers={[
+                    font({ size: 14 }),
+                    underline({ isActive: true, pattern: 'dot', color: 'blue' }),
+                  ]}>
                   Text 3
                 </Text>
-                <Text size={14} modifiers={[underline({ isActive: true, pattern: 'dashDot' })]}>
+                <Text
+                  modifiers={[
+                    font({ size: 14 }),
+                    underline({ isActive: true, pattern: 'dashDot' }),
+                  ]}>
                   Text 4
                 </Text>
                 <Text
-                  size={14}
-                  modifiers={[underline({ isActive: true, pattern: 'dashDotDot', color: 'pink' })]}>
+                  modifiers={[
+                    font({ size: 14 }),
+                    underline({ isActive: true, pattern: 'dashDotDot', color: 'pink' }),
+                  ]}>
                   Text 5
                 </Text>
               </VStack>
               <VStack spacing={15}>
-                <Text size={16}>Strikethrough text</Text>
+                <Text modifiers={[font({ size: 16 })]}>Strikethrough text</Text>
                 <Text
-                  size={14}
-                  modifiers={[strikethrough({ isActive: true, pattern: 'solid', color: 'red' })]}>
+                  modifiers={[
+                    font({ size: 14 }),
+                    strikethrough({ isActive: true, pattern: 'solid', color: 'red' }),
+                  ]}>
                   Text 1
                 </Text>
                 <Text
-                  size={14}
-                  modifiers={[strikethrough({ isActive: true, pattern: 'dot', color: 'green' })]}>
+                  modifiers={[
+                    font({ size: 14 }),
+                    strikethrough({ isActive: true, pattern: 'dot', color: 'green' }),
+                  ]}>
                   Text 2
                 </Text>
                 <Text
-                  size={14}
-                  modifiers={[strikethrough({ isActive: true, pattern: 'dash', color: 'blue' })]}>
+                  modifiers={[
+                    font({ size: 14 }),
+                    strikethrough({ isActive: true, pattern: 'dash', color: 'blue' }),
+                  ]}>
                   Text 3
                 </Text>
-                <Text size={14} modifiers={[strikethrough({ isActive: true, pattern: 'dashDot' })]}>
+                <Text
+                  modifiers={[
+                    font({ size: 14 }),
+                    strikethrough({ isActive: true, pattern: 'dashDot' }),
+                  ]}>
                   Text 4
                 </Text>
                 <Text
-                  size={14}
                   modifiers={[
+                    font({ size: 14 }),
                     strikethrough({ isActive: true, pattern: 'dashDotDot', color: 'pink' }),
                   ]}>
                   Text 5
@@ -293,16 +322,18 @@ export default function ModifiersScreen() {
             <VStack spacing={15}>
               <Picker
                 label="Select alignment"
-                options={multilineTextAlignmentOptions}
-                selectedIndex={multilineTextAlignmentIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  setMultilineTextAlignment(index);
-                }}
-                variant="menu"
-              />
+                modifiers={[pickerStyle('menu')]}
+                selection={multilineTextAlignmentIndex}
+                onSelectionChange={setMultilineTextAlignment}>
+                {multilineTextAlignmentOptions.map((option, index) => (
+                  <Text key={index} modifiers={[tag(index)]}>
+                    {option}
+                  </Text>
+                ))}
+              </Picker>
               <Text
-                size={14}
                 modifiers={[
+                  font({ size: 14 }),
                   multilineTextAlignment(
                     multilineTextAlignmentOptions[multilineTextAlignmentIndex] as
                       | 'center'
@@ -321,26 +352,28 @@ export default function ModifiersScreen() {
                 onValueChange={setEnabledSelection}
               />
               <Text
-                size={14}
                 color={enabledSelection ? 'black' : 'gray'}
-                modifiers={[textSelection(enabledSelection)]}>
+                modifiers={[font({ size: 14 }), textSelection(enabledSelection)]}>
                 This is selected text
               </Text>
             </VStack>
 
             <HStack spacing={30}>
               <VStack alignment="center">
-                <Text size={14}>Default</Text>
-                <Text size={12} modifiers={[frame({ width: 150, height: 120 })]}>
+                <Text modifiers={[font({ size: 14 })]}>Default</Text>
+                <Text modifiers={[font({ size: 12 }), frame({ width: 150, height: 120 })]}>
                   This is a string with default spacing between the bottom of one line and the top
                   of the next.
                 </Text>
               </VStack>
               <VStack alignment="center">
-                <Text size={14}>Spacing</Text>
+                <Text modifiers={[font({ size: 14 })]}>Spacing</Text>
                 <Text
-                  size={12}
-                  modifiers={[frame({ width: 150, height: 120 }), lineSpacing(lineSpacingValue)]}>
+                  modifiers={[
+                    font({ size: 12 }),
+                    frame({ width: 150, height: 120 }),
+                    lineSpacing(lineSpacingValue),
+                  ]}>
                   This is a string with 20 point spacing between the bottom of one line and the top
                   of the next.
                 </Text>
@@ -390,7 +423,7 @@ export default function ModifiersScreen() {
                 endPoint: { x: 1, y: 1 },
               }),
             ]}>
-            <Text color={color ?? 'primary'} size={12}>
+            <Text color={color ?? 'primary'} modifiers={[font({ size: 12 })]}>
               Hello world, I don't react on foregroundStyle
             </Text>
             <ColorPicker
@@ -411,7 +444,7 @@ export default function ModifiersScreen() {
                 cornerRadius(12),
                 padding({ all: 16 }),
                 shadow({ radius: 4, x: 0, y: 2, color: '#FF6B6B40' }),
-                foregroundColor('#FFFFFF'),
+                foregroundStyle({ type: 'color', color: '#FFFFFF' }),
                 onTapGesture(() => console.log('Red card tapped!')),
               ]}>
               🔴 Tap me! Red card with shadow
@@ -441,7 +474,7 @@ export default function ModifiersScreen() {
                 scaleEffect(1.05),
                 rotationEffect(2),
                 offset({ x: 10, y: 0 }),
-                foregroundColor('#FFFFFF'),
+                foregroundStyle({ type: 'color', color: '#FFFFFF' }),
                 shadow({ radius: 6, x: 2, y: 3, color: '#9B59B640' }),
               ]}>
               🎨 Scaled, rotated & offset purple
@@ -478,7 +511,7 @@ export default function ModifiersScreen() {
                 background('#1ABC9C'),
                 padding({ all: 20 }),
                 clipShape('circle'),
-                foregroundColor('#FFFFFF'),
+                foregroundStyle({ type: 'color', color: '#FFFFFF' }),
                 shadow({ radius: 10, x: 0, y: 5, color: '#1ABC9C30' }),
               ]}>
               ⭕ Circular clipped text
@@ -492,7 +525,7 @@ export default function ModifiersScreen() {
                 padding({ all: 12 }),
                 aspectRatio({ ratio: 2.0, contentMode: 'fit' }),
                 frame({ maxWidth: 280 }),
-                foregroundColor('#FFFFFF'),
+                foregroundStyle({ type: 'color', color: '#FFFFFF' }),
                 shadow({ radius: 3, y: 2 }),
               ]}>
               📐 2:1 Aspect ratio blue card
@@ -524,7 +557,7 @@ export default function ModifiersScreen() {
                 saturation(1.4),
                 scaleEffect(0.95),
                 offset({ x: -5, y: 0 }),
-                foregroundColor('#FFFFFF'),
+                foregroundStyle({ type: 'color', color: '#FFFFFF' }),
                 border({ color: '#9B59B6', width: 1 }),
                 accessibilityLabel('Complex styled card with multiple effects'),
                 onTapGesture(() => alert('Complex card with multiple modifiers tapped!')),
@@ -535,14 +568,13 @@ export default function ModifiersScreen() {
             {/* Legacy + Modern Combination */}
             <Text
               testID="legacy-modern-combo"
-              weight="bold"
-              size={16}
               modifiers={[
+                font({ size: 16, weight: 'bold' }),
                 background('#16A085'),
                 cornerRadius(12),
                 padding({ all: 16 }),
                 shadow({ radius: 4, y: 2 }),
-                foregroundColor('#FFFFFF'),
+                foregroundStyle({ type: 'color', color: '#FFFFFF' }),
               ]}>
               🔗 Legacy props + modern modifiers
             </Text>
@@ -556,7 +588,7 @@ export default function ModifiersScreen() {
                 ...(playSounds
                   ? [shadow({ radius: 6, y: 3, color: '#2ECC7140' }), scaleEffect(1.02)]
                   : [grayscale(0.5), opacity(0.7)]),
-                foregroundColor('#FFFFFF'),
+                foregroundStyle({ type: 'color', color: '#FFFFFF' }),
                 onTapGesture(() => setPlaySounds(!playSounds)),
               ]}>
               {playSounds ? '🔊 Sounds ON (tap to toggle)' : '🔇 Sounds OFF (tap to toggle)'}
@@ -570,20 +602,24 @@ export default function ModifiersScreen() {
                 label="Enable Picker"
               />
               <Picker
-                options={['Option 1', 'Option 2', 'Option 3', 'Option 4']}
-                selectedIndex={1}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                  console.log('Picker option selected:', index);
+                selection={1}
+                onSelectionChange={(selection) => {
+                  console.log('Picker option selected:', selection);
                 }}
-                variant="segmented"
                 modifiers={[
+                  pickerStyle('segmented'),
                   disabled(isDisabled),
                   background(isDisabled ? '#BDC3C7' : '#3498DB'),
                   cornerRadius(8),
                   padding({ all: 4 }),
                   shadow({ radius: 2, y: 1, color: isDisabled ? '#BDC3C740' : '#3498DB40' }),
-                ]}
-              />
+                ]}>
+                {['Option 1', 'Option 2', 'Option 3', 'Option 4'].map((option, index) => (
+                  <Text key={index} modifiers={[tag(index)]}>
+                    {option}
+                  </Text>
+                ))}
+              </Picker>
             </VStack>
           </Section>
 
@@ -607,8 +643,20 @@ export default function ModifiersScreen() {
                   padding({ all: 12 }),
                   shadow({ radius: 4, y: 2, color: '#667eea30' }),
                 ]}>
-                <Text modifiers={[foregroundColor('#FFFFFF'), padding({ all: 8 })]}>H0V0</Text>
-                <Text modifiers={[foregroundColor('#FFFFFF'), padding({ all: 8 })]}>H1V0</Text>
+                <Text
+                  modifiers={[
+                    foregroundStyle({ type: 'color', color: '#FFFFFF' }),
+                    padding({ all: 8 }),
+                  ]}>
+                  H0V0
+                </Text>
+                <Text
+                  modifiers={[
+                    foregroundStyle({ type: 'color', color: '#FFFFFF' }),
+                    padding({ all: 8 }),
+                  ]}>
+                  H1V0
+                </Text>
               </HStack>
 
               {/* Nested styled layout */}
@@ -622,8 +670,12 @@ export default function ModifiersScreen() {
                     scaleEffect(0.95),
                     shadow({ radius: 3, y: 1 }),
                   ]}>
-                  <Text modifiers={[foregroundColor('#FFFFFF')]}>H0V1</Text>
-                  <Text modifiers={[foregroundColor('#FFFFFF')]}>H1V1</Text>
+                  <Text modifiers={[foregroundStyle({ type: 'color', color: '#FFFFFF' })]}>
+                    H0V1
+                  </Text>
+                  <Text modifiers={[foregroundStyle({ type: 'color', color: '#FFFFFF' })]}>
+                    H1V1
+                  </Text>
                 </HStack>
               </HStack>
 
@@ -648,7 +700,7 @@ export default function ModifiersScreen() {
                   cornerRadius(25),
                   padding({ horizontal: 20, vertical: 12 }),
                   shadow({ radius: 5, y: 3 }),
-                  foregroundColor('#FFFFFF'),
+                  foregroundStyle({ type: 'color', color: '#FFFFFF' }),
                   scaleEffect(1.05),
                   onTapGesture(() => alert('Layout section modifier demo!')),
                 ]}>
@@ -664,7 +716,9 @@ export default function ModifiersScreen() {
                     },
                   }),
                 ]}>
-                <Text modifiers={[foregroundColor('#000000')]}>Hello world</Text>
+                <Text modifiers={[foregroundStyle({ type: 'color', color: '#000000' })]}>
+                  Hello world
+                </Text>
               </HStack>
             </VStack>
           </Section>

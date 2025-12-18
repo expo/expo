@@ -23,7 +23,12 @@ import { ResultState } from '../fork/getStateFromPath';
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import { matchDynamicName } from '../matchers';
-import { appendInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
+import {
+  appendInternalExpoRouterParams,
+  INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
+  type InternalExpoRouterParams,
+} from '../navigationParams';
 import { Href } from '../types';
 import { SingularOptions } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
@@ -352,8 +357,8 @@ function getNavigateAction(
 
   const expoParams: InternalExpoRouterParams = isPreviewNavigation
     ? {
-        __internal__expo_router_is_preview_navigation: true,
-        __internal_expo_router_no_animation: true,
+        [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
+        [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
       }
     : {};
   const params = appendInternalExpoRouterParams(rootPayload.params, expoParams);

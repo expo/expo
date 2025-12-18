@@ -6,14 +6,14 @@ description: Learn how to migrate a project using React Navigation to Expo Route
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
-import { Terminal } from '~/ui/components/Snippet';
+import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
 Both React Navigation and Expo Router are Expo frameworks for routing and navigation. Expo Router is a wrapper around React Navigation and many of the concepts are the same.
 
 ## Pitch
 
-Along with all the benefits of React Navigation, Expo Router enables automatic deep linking, [type safety](/router/reference/typed-routes), [deferred bundling](/router/reference/async-routes), [static rendering on web](/router/reference/static-rendering), and more.
+Along with all the benefits of React Navigation, Expo Router enables automatic deep linking, [type safety](/router/reference/typed-routes), [deferred bundling](/router/web/async-routes), [static rendering on web](/router/web/static-rendering), and more.
 
 ## Anti-pitch
 
@@ -57,7 +57,7 @@ It's common in React Native apps to `return null` from the root component while 
 
 Historically this pattern exists because React Native will throw errors if you use custom fonts that haven't loaded yet. We changed this upstream in React Native 0.72 (SDK 49) so the default behavior is to swap the default font when the custom font loads. If you'd like to hide individual text elements until a font has finished loading, write a wrapper `<Text>`, which returns null until the font has loaded.
 
-On web, returning `null` from the root will cause [static rendering](/router/reference/static-rendering) to skip all of the children, resulting in no searchable content. This can be tested by using "View Page Source" in Chrome, or by disabling JavaScript and reloading the page.
+On web, returning `null` from the root will cause [static rendering](/router/web/static-rendering) to skip all of the children, resulting in no searchable content. This can be tested by using "View Page Source" in Chrome, or by disabling JavaScript and reloading the page.
 
 ## Migration
 
@@ -65,17 +65,7 @@ On web, returning `null` from the root will cause [static rendering](/router/ref
 
 Expo Router automatically adds `react-native-safe-area-context` support.
 
-```diff
-- import { SafeAreaProvider } from 'react-native-safe-area-context';
-
-export default function App() {
-  return (
--    <SafeAreaProvider>
-      <MyApp />
--    </SafeAreaProvider>
-  )
-}
-```
+<DiffBlock source="/static/diffs/router/migrate-from-react-navigation/remove-safe-area-provider.diff" />
 
 Expo Router **does not** add `react-native-gesture-handler` (as of v3), so you'll have to add this yourself if you are using Gesture Handler or `<Drawer />` layout. Avoid using this package on web since it adds a lot of JavaScript that is often unused.
 
@@ -182,46 +172,15 @@ React Navigation v6 and lower will pass the props `{ navigation, route }` to eve
 
 Instead, migrate `navigation` to the `useRouter` hook.
 
-```diff
-+ import { useRouter } from 'expo-router';
-
-export default function Page({
--  navigation
-}) {
--  navigation.push('User', { user: 'bacon' });
-
-+  const router = useRouter();
-+  router.push('/users/bacon');
-}
-```
+<DiffBlock source="/static/diffs/router/migrate-from-react-navigation/use-router-hook.diff" />
 
 Similarly, migrate from the `route` prop to the [`useLocalSearchParams`](/router/reference/hooks/#uselocalsearchparams) hook.
 
-```diff
-+ import { useLocalSearchParams } from 'expo-router';
-
-export default function Page({
--  route
-}) {
--  const user = route?.params?.user;
-
-+  const { user } = useLocalSearchParams();
-}
-```
+<DiffBlock source="/static/diffs/router/migrate-from-react-navigation/use-local-search-params.diff" />
 
 To access the [`navigation.navigate`](https://reactnavigation.org/docs/navigation-object/#navigate), import the `navigation` prop from [`useNavigation`](/router/reference/hooks/#usenavigation) hook.
 
-```diff
-+ import { useNavigation } from 'expo-router';
-
-export default function Page({
-+  const navigation = useNavigation();
-
-  return (
-    <Button onPress={navigation.navigate('screenName')}>
-  )
-})
-```
+<DiffBlock source="/static/diffs/router/migrate-from-react-navigation/use-navigation-hook.diff" />
 
 ### Migrate the Link component
 
@@ -376,7 +335,7 @@ Expo Router does not support [`independent`](https://reactnavigation.org/docs/na
 
 #### `documentTitle`
 
-Use the [Head component](/router/reference/static-rendering#meta-tags) to set the webpage title.
+Use the [Head component](/router/web/static-rendering#meta-tags) to set the webpage title.
 
 #### `ref`
 

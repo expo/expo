@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+- bump base64-js from 1.2.3 to 1.5.1 ([#41211](https://github.com/expo/expo/pull/41211) by [@hassankhan](https://github.com/hassankhan))
+- remove `ExpoCrypto.getRandomBase64String()` fallback in `getRandomBytes()` ([#41517](https://github.com/expo/expo/pull/41517) by [@hassankhan](https://github.com/hassankhan))
+
+## 15.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 15.0.7 — 2025-09-11
 
 _This version does not introduce any user-facing changes._

@@ -92,7 +92,7 @@ export async function setVisibilityAsync(visibility) {
  *
  * @example
  * ```ts
- * const visibility = await NavigationBar.getVisibilityAsync("hidden");
+ * const visibility = await NavigationBar.getVisibilityAsync();
  * ```
  * @returns Navigation bar's current visibility status. Returns `hidden` on unsupported platforms (iOS, web).
  */

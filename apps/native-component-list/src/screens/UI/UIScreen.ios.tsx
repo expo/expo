@@ -19,19 +19,19 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Date Time Picker component',
+    name: 'DatePicker component',
     route: 'ui/date-picker',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./DateTimePickerScreen'));
+      return optionalRequire(() => require('./DatePickerScreen'));
     },
   },
   {
-    name: 'Switch component',
-    route: 'ui/switch',
+    name: 'Toggle component',
+    route: 'ui/toggle',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./SwitchScreen'));
+      return optionalRequire(() => require('./ToggleScreen'));
     },
   },
   {
@@ -216,6 +216,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./GridScreen'));
+    },
+  },
+  {
+    name: 'Host Ignore Safe Area Keyboard',
+    route: 'ui/host-ignore-safe-area-keyboard',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HostIgnoreSafeAreaKeyboardScreen'));
     },
   },
 ];

@@ -1,22 +1,35 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
 
-set -eo pipefail
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-script_dir="$(dirname "$0")"
+import { commandRunner } from '../utils/commandUtils.js';
+import { directoryExistsAsync } from '../utils/fileUtils.js';
 
-export EXPO_NONINTERACTIVE=1
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-echo "Configuring module"
-"$script_dir/expo-module-clean"
-"$script_dir/expo-module-configure"
-"$script_dir/expo-module-build"
+process.env.EXPO_NONINTERACTIVE = 1;
 
-extra_module_build_types=("plugin" "cli" "utils" "scripts")
-for i in "${extra_module_build_types[@]}"
-do
-  if [[ -d "$i" ]]; then
-    echo "Configuring $i"
-    "$script_dir/expo-module-clean" "$i"
-    "$script_dir/expo-module-build" "$i"
-  fi
-done
+async function runAsync() {
+  console.log('Configuring module');
+  await commandRunner(path.join(dirname, 'expo-module-clean'));
+  await commandRunner(path.join(dirname, 'expo-module-configure'));
+  await commandRunner(path.join(dirname, 'expo-module-build'));
+
+  for (const target of ['plugin', 'cli', 'utils', 'scripts']) {
+    if (await directoryExistsAsync(path.join(process.cwd(), target))) {
+      console.log(`Configuring ${target}`);
+      await commandRunner(path.join(dirname, 'expo-module-clean'), [target]);
+      await commandRunner(path.join(dirname, 'expo-module-build'), [target]);
+    }
+  }
+}
+
+(async () => {
+  try {
+    await runAsync();
+  } catch (error) {
+    console.error(error);
+    process.exit(error.status || error.code || 1);
+  }
+})();

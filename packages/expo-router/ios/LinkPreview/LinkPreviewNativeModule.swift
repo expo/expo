@@ -1,8 +1,12 @@
 import ExpoModulesCore
 
 public class LinkPreviewNativeModule: Module {
+  static let moduleName: String = "ExpoRouterNativeLinkPreview"
+  lazy var zoomSourceRepository = LinkZoomTransitionsSourceRepository(logger: appContext?.jsLogger)
+  lazy var zoomAlignmentViewRepository = LinkZoomTransitionsAlignmentViewRepository()
+
   public func definition() -> ModuleDefinition {
-    Name("ExpoRouterNativeLinkPreview")
+    Name(LinkPreviewNativeModule.moduleName)
 
     View(NativeLinkPreviewView.self) {
       Prop("nextScreenId") { (view: NativeLinkPreviewView, nextScreenId: String) in
@@ -48,6 +52,9 @@ public class LinkPreviewNativeModule: Module {
       Prop("title") { (view: LinkPreviewNativeActionView, title: String) in
         view.title = title
       }
+      Prop("identifier") { (view: LinkPreviewNativeActionView, identifier: String) in
+        view.identifier = identifier
+      }
       Prop("icon") { (view: LinkPreviewNativeActionView, icon: String?) in
         view.icon = icon
       }
@@ -75,6 +82,54 @@ public class LinkPreviewNativeModule: Module {
 
       Events("onSelected")
     }
+
+    View(LinkZoomTransitionSource.self) {
+      Prop("disableForceFlatten") { (_: LinkZoomTransitionSource, _: Bool) in
+        // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
+      }
+      Prop("identifier") { (view: LinkZoomTransitionSource, identifier: String) in
+        view.identifier = identifier
+      }
+      Prop("alignment") { (view: LinkZoomTransitionSource, alignment: LinkSourceAlignmentRect?) in
+        if let alignment = alignment {
+          view.alignment = CGRect(
+            x: alignment.x,
+            y: alignment.y,
+            width: alignment.width,
+            height: alignment.height
+          )
+        } else {
+          view.alignment = nil
+        }
+      }
+      Prop("animateAspectRatioChange") { (view: LinkZoomTransitionSource, value: Bool?) in
+        view.animateAspectRatioChange = value ?? false
+      }
+    }
+
+    View(LinkZoomTransitionEnabler.self) {
+      Prop("zoomTransitionSourceIdentifier") {
+        (view: LinkZoomTransitionEnabler, identifier: String) in
+        view.zoomTransitionSourceIdentifier = identifier
+      }
+      Prop("disableForceFlatten") { (_: LinkZoomTransitionEnabler, _: Bool) in
+        // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
+      }
+
+      Prop("preventInteractiveDismissal") { (view: LinkZoomTransitionEnabler, prevent: Bool) in
+        view.isPreventingInteractiveDismissal = prevent
+      }
+    }
+
+    View(LinkZoomTransitionAlignmentRectDetector.self) {
+      Prop("identifier") {
+        (view: LinkZoomTransitionAlignmentRectDetector, identifier: String) in
+        view.identifier = identifier
+      }
+      Prop("disableForceFlatten") { (_: LinkZoomTransitionAlignmentRectDetector, _: Bool) in
+        // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
+      }
+    }
   }
 }
 
@@ -85,4 +140,11 @@ struct TabPathPayload: Record {
 struct TabStatePath: Record {
   @Field var oldTabKey: String
   @Field var newTabKey: String
+}
+
+struct LinkSourceAlignmentRect: Record {
+  @Field var x: Double
+  @Field var y: Double
+  @Field var width: Double
+  @Field var height: Double
 }

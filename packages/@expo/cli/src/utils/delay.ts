@@ -48,9 +48,18 @@ export function resolveWithTimeout<T>(
   }
 ): Promise<T> {
   return new Promise((resolve, reject) => {
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       reject(new CommandError('TIMEOUT', errorMessage));
     }, timeout);
-    action().then(resolve, reject);
+    action().then(
+      (result) => {
+        clearTimeout(timeoutId);
+        resolve(result);
+      },
+      (error) => {
+        clearTimeout(timeoutId);
+        reject(error);
+      }
+    );
   });
 }

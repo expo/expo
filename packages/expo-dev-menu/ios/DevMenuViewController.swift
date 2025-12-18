@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import UIKit
 import SwiftUI
+import ExpoModulesCore
 
 class DevMenuViewController: UIViewController {
   private let manager: DevMenuManager
@@ -11,8 +11,10 @@ class DevMenuViewController: UIViewController {
     self.manager = manager
     super.init(nibName: nil, bundle: nil)
 
+#if !os(macOS)
     edgesForExtendedLayout = UIRectEdge.init(rawValue: 0)
     extendedLayoutIncludesOpaqueBars = true
+#endif
   }
 
   @available(*, unavailable)
@@ -25,18 +27,20 @@ class DevMenuViewController: UIViewController {
     setupSwiftUIView()
   }
 
-  #if !os(tvOS)
+  #if !os(tvOS) && !os(macOS)
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
     return UIInterfaceOrientationMask.all
   }
   #endif
 
+#if !os(macOS)
   override var overrideUserInterfaceStyle: UIUserInterfaceStyle {
     get {
       return manager.userInterfaceStyle
     }
     set {}
   }
+#endif
 
   private func setupSwiftUIView() {
     let rootView = DevMenuRootView()
@@ -46,7 +50,9 @@ class DevMenuViewController: UIViewController {
 
     addChild(hostingController)
     view.addSubview(hostingController.view)
+#if !os(macOS)
     hostingController.didMove(toParent: self)
+#endif
 
     hostingController.view.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([

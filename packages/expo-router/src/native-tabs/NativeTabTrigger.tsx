@@ -1,30 +1,25 @@
 'use client';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { isValidElement, type ReactElement, type ReactNode } from 'react';
-import type { ImageSourcePropType } from 'react-native';
+import { isValidElement, useCallback, type ReactElement, type ReactNode } from 'react';
+import { StyleSheet, type ImageSourcePropType } from 'react-native';
 
-import { NativeTabsTriggerTabBar } from './NativeTabsTriggerTabBar';
-import type {
-  ExtendedNativeTabOptions,
-  NativeTabOptions,
-  NativeTabsTriggerTabBarProps,
-  NativeTabTriggerProps,
-} from './types';
-import { filterAllowedChildrenElements, isChildOfType } from './utils';
-import { useIsPreview } from '../link/preview/PreviewRouteContext';
-import { useSafeLayoutEffect } from '../views/useSafeLayoutEffect';
 import {
-  Icon,
-  Badge,
-  Label,
-  type LabelProps,
-  type IconProps,
-  type BadgeProps,
-  type SourceIconCombination,
-  VectorIcon,
-  type VectorIconProps,
+  NativeTabsTriggerIcon,
+  NativeTabsTriggerBadge,
+  NativeTabsTriggerLabel,
+  NativeTabsTriggerVectorIcon,
+  type NativeTabsTriggerBadgeProps,
+  type NativeTabsTriggerLabelProps,
+  type NativeTabsTriggerIconProps,
+  type SrcIcon,
 } from './common/elements';
+import type { NativeTabOptions, NativeTabTriggerProps } from './types';
+import { useIsPreview } from '../link/preview/PreviewRouteContext';
+import { useFocusEffect } from '../useFocusEffect';
+import { filterAllowedChildrenElements, isChildOfType } from '../utils/children';
+import { convertComponentSrcToImageSource } from './utils/icon';
+import { convertMaterialIconNameToImageSource } from './utils/materialIconConverter';
 
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
@@ -56,7 +51,7 @@ import {
  *   return (
  *     <View>
  *       <NativeTabs.Trigger>
- *         <Label>Home</Label>
+ *         <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
  *       </NativeTabs.Trigger>
  *       <Text>This is home screen!</Text>
  *     </View>
@@ -69,39 +64,53 @@ import {
 function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
   const route = useRoute();
   const navigation = useNavigation();
-  const isFocused = navigation.isFocused();
   const isInPreview = useIsPreview();
 
-  useSafeLayoutEffect(() => {
-    // This will cause the tab to update only when it is focused.
-    // As long as all tabs are loaded at the start, we don't need this check.
-    // It is here to ensure similar behavior to stack
-    if (isFocused && !isInPreview) {
-      if (navigation.getState()?.type !== 'tab') {
-        throw new Error(
-          `Trigger component can only be used in the tab screen. Current route: ${route.name}`
-        );
+  useFocusEffect(
+    useCallback(() => {
+      // This will cause the tab to update only when it is focused.
+      // As long as all tabs are loaded at the start, we don't need this check.
+      // It is here to ensure similar behavior to stack
+      if (!isInPreview) {
+        if (navigation.getState()?.type !== 'tab') {
+          throw new Error(
+            `Trigger component can only be used in the tab screen. Current route: ${route.name}`
+          );
+        }
+        const options = convertTabPropsToOptions(props, true);
+        navigation.setOptions(options);
       }
-      const options = convertTabPropsToOptions(props, true);
-      navigation.setOptions(options);
-    }
-  }, [isFocused, props, isInPreview]);
+    }, [props, isInPreview])
+  );
 
   return null;
 }
 
 export const NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
-  TabBar: NativeTabsTriggerTabBar,
+  Label: NativeTabsTriggerLabel,
+  Icon: NativeTabsTriggerIcon,
+  Badge: NativeTabsTriggerBadge,
+  VectorIcon: NativeTabsTriggerVectorIcon,
 });
 
 export function convertTabPropsToOptions(
-  { options, hidden, children, role, disablePopToTop, disableScrollToTop }: NativeTabTriggerProps,
+  {
+    hidden,
+    children,
+    role,
+    disablePopToTop,
+    disableScrollToTop,
+    unstable_nativeProps,
+    disableAutomaticContentInsets,
+    contentStyle,
+  }: NativeTabTriggerProps,
   isDynamic: boolean = false
 ) {
-  const initialOptions: ExtendedNativeTabOptions = isDynamic
-    ? { ...options }
+  const initialOptions: NativeTabOptions = isDynamic
+    ? {
+        ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
+      }
     : {
-        ...options,
         hidden: !!hidden,
         specialEffects: {
           repeatedTabSelection: {
@@ -109,24 +118,24 @@ export function convertTabPropsToOptions(
             scrollToTop: !disableScrollToTop,
           },
         },
-        role: role ?? options?.role,
+        contentStyle,
+        role,
+        nativeProps: unstable_nativeProps,
+        disableAutomaticContentInsets,
       };
   const allowedChildren = filterAllowedChildrenElements(children, [
-    Badge,
-    Label,
-    Icon,
-    NativeTabsTriggerTabBar,
+    NativeTabsTriggerBadge,
+    NativeTabsTriggerLabel,
+    NativeTabsTriggerIcon,
   ]);
-  return allowedChildren.reduce<ExtendedNativeTabOptions>(
+  return allowedChildren.reduce<NativeTabOptions>(
     (acc, child) => {
-      if (isChildOfType(child, Badge)) {
+      if (isChildOfType(child, NativeTabsTriggerBadge)) {
         appendBadgeOptions(acc, child.props);
-      } else if (isChildOfType(child, Label)) {
+      } else if (isChildOfType(child, NativeTabsTriggerLabel)) {
         appendLabelOptions(acc, child.props);
-      } else if (isChildOfType(child, Icon)) {
+      } else if (isChildOfType(child, NativeTabsTriggerIcon)) {
         appendIconOptions(acc, child.props);
-      } else if (isChildOfType(child, NativeTabsTriggerTabBar)) {
-        appendTabBarOptions(acc, child.props);
       }
       return acc;
     },
@@ -134,7 +143,7 @@ export function convertTabPropsToOptions(
   );
 }
 
-function appendBadgeOptions(options: ExtendedNativeTabOptions, props: BadgeProps) {
+function appendBadgeOptions(options: NativeTabOptions, props: NativeTabsTriggerBadgeProps) {
   if (props.children) {
     options.badgeValue = String(props.children);
     options.selectedBadgeBackgroundColor = props.selectedBackgroundColor;
@@ -146,23 +155,19 @@ function appendBadgeOptions(options: ExtendedNativeTabOptions, props: BadgeProps
   }
 }
 
-function appendLabelOptions(options: ExtendedNativeTabOptions, props: LabelProps) {
+function appendLabelOptions(options: NativeTabOptions, props: NativeTabsTriggerLabelProps) {
   if (props.hidden) {
     options.title = '';
   } else {
     options.title = props.children;
     if (props.selectedStyle) {
-      options.selectedLabelStyle = props.selectedStyle;
+      options.selectedLabelStyle = StyleSheet.flatten(props.selectedStyle);
     }
   }
 }
 
-export function appendIconOptions(options: ExtendedNativeTabOptions, props: IconProps) {
-  if ('src' in props && props.src) {
-    const icon = convertIconSrcToIconOption(props);
-    options.icon = icon?.icon;
-    options.selectedIcon = icon?.selectedIcon;
-  } else if ('sf' in props && process.env.EXPO_OS === 'ios') {
+export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTriggerIconProps) {
+  if ('sf' in props && props.sf && process.env.EXPO_OS === 'ios') {
     if (typeof props.sf === 'string') {
       options.icon = props.sf
         ? {
@@ -182,13 +187,27 @@ export function appendIconOptions(options: ExtendedNativeTabOptions, props: Icon
           }
         : undefined;
     }
-  } else if ('androidSrc' in props && process.env.EXPO_OS === 'android') {
-    const icon = convertIconSrcToIconOption({ src: props.androidSrc });
-    options.icon = icon?.icon;
-    options.selectedIcon = icon?.selectedIcon;
-  } else if ('drawable' in props && process.env.EXPO_OS === 'android') {
+  } else if ('drawable' in props && props.drawable && process.env.EXPO_OS === 'android') {
+    if ('md' in props) {
+      console.warn(
+        'Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.'
+      );
+    }
     options.icon = { drawable: props.drawable };
     options.selectedIcon = undefined;
+  } else if ('md' in props && props.md && process.env.EXPO_OS === 'android') {
+    if (process.env.NODE_ENV !== 'production') {
+      if ('drawable' in props) {
+        console.warn(
+          'Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.'
+        );
+      }
+    }
+    options.icon = convertMaterialIconNameToImageSource(props.md);
+  } else if ('src' in props && props.src) {
+    const icon = convertIconSrcToIconOption(props);
+    options.icon = icon?.icon;
+    options.selectedIcon = icon?.selectedIcon;
   }
   if (props.selectedColor) {
     options.selectedIconColor = props.selectedColor;
@@ -196,7 +215,7 @@ export function appendIconOptions(options: ExtendedNativeTabOptions, props: Icon
 }
 
 function convertIconSrcToIconOption(
-  icon: SourceIconCombination | undefined
+  icon: SrcIcon | undefined
 ): Pick<NativeTabOptions, 'icon' | 'selectedIcon'> | undefined {
   if (icon && icon.src) {
     const { defaultIcon, selected } =
@@ -216,66 +235,12 @@ function convertIconSrcToIconOption(
 function convertSrcOrComponentToSrc(src: ImageSourcePropType | ReactElement | undefined) {
   if (src) {
     if (isValidElement(src)) {
-      if (src.type === VectorIcon) {
-        const props = src.props as VectorIconProps<string>;
-        return { src: props.family.getImageSource(props.name, 24, 'white') };
-      } else {
-        console.warn('Only VectorIcon is supported as a React element in Icon.src');
-      }
+      return convertComponentSrcToImageSource(src);
     } else {
       return { src };
     }
   }
   return undefined;
-}
-
-function appendTabBarOptions(
-  options: ExtendedNativeTabOptions,
-  props: NativeTabsTriggerTabBarProps
-) {
-  const {
-    backgroundColor,
-    blurEffect,
-    iconColor,
-    disableTransparentOnScrollEdge,
-    badgeBackgroundColor,
-    badgeTextColor,
-    indicatorColor,
-    labelStyle,
-    shadowColor,
-  } = props;
-
-  if (backgroundColor) {
-    options.backgroundColor = backgroundColor;
-  }
-  // We need better native integration of this on Android
-  // Simulating from JS side creates ugly transitions
-  if (process.env.EXPO_OS !== 'android') {
-    if (blurEffect) {
-      options.blurEffect = blurEffect;
-    }
-    if (shadowColor) {
-      options.shadowColor = shadowColor;
-    }
-    if (iconColor) {
-      options.iconColor = iconColor;
-    }
-    if (disableTransparentOnScrollEdge !== undefined) {
-      options.disableTransparentOnScrollEdge = disableTransparentOnScrollEdge;
-    }
-    if (badgeBackgroundColor) {
-      options.badgeBackgroundColor = badgeBackgroundColor;
-    }
-    if (badgeTextColor) {
-      options.badgeTextColor = badgeTextColor;
-    }
-    if (indicatorColor) {
-      options.indicatorColor = indicatorColor;
-    }
-    if (labelStyle) {
-      options.labelStyle = labelStyle;
-    }
-  }
 }
 
 export function isNativeTabTrigger(

@@ -15,13 +15,10 @@ NSString * const EXPermissionExpiresNever = @"never";
 
 @property (nonatomic, strong) NSMutableDictionary<NSString *, id<EXPermissionsRequester>> *requesters;
 @property (nonatomic, strong) NSMapTable<Class, id<EXPermissionsRequester>> *requestersByClass;
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXPermissionsService
-
-EX_EXPORT_MODULE();
 
 - (instancetype)init
 {
@@ -32,21 +29,11 @@ EX_EXPORT_MODULE();
   return self;
 }
 
-+ (const NSArray<Protocol *> *)exportedInterfaces
-{
-  return @[@protocol(EXPermissionsInterface)];
-}
-
 - (void)registerRequesters:(NSArray<id<EXPermissionsRequester>> *)newRequesters {
   for (id<EXPermissionsRequester> requester in newRequesters) {
     [_requesters setObject:requester forKey:[[requester class] permissionType]];
     [_requestersByClass setObject:requester forKey:[requester class]];
   }
-}
-
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
-{
-  _moduleRegistry = moduleRegistry;
 }
 
 # pragma mark - permission requsters / getters
@@ -183,4 +170,3 @@ EX_EXPORT_MODULE();
 }
 
 @end
-

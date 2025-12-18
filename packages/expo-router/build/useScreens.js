@@ -47,6 +47,9 @@ const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const storeContext_1 = require("./global-state/storeContext");
 const import_mode_1 = __importDefault(require("./import-mode"));
+const ZoomTransitionEnabler_1 = require("./link/zoom/ZoomTransitionEnabler");
+const zoom_transition_context_providers_1 = require("./link/zoom/zoom-transition-context-providers");
+const navigationParams_1 = require("./navigationParams");
 const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
 const SuspenseFallback_1 = require("./views/SuspenseFallback");
@@ -208,13 +211,27 @@ function getQualifiedRouteComponent(value) {
             if (isLeaf && stateForPath)
                 store.setFocusedState(stateForPath);
         }), [navigation]);
+        (0, react_1.useEffect)(() => {
+            return navigation.addListener('transitionEnd', (e) => {
+                if (!e?.data?.closing) {
+                    // When navigating to a screen, remove the no animation param to re-enable animations
+                    // Otherwise the navigation back would also have no animation
+                    if ((0, navigationParams_1.hasParam)(route?.params, navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
+                        navigation.replaceParams((0, navigationParams_1.removeParams)(route?.params, [navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]));
+                    }
+                }
+            });
+        }, [navigation]);
         return (<Route_1.Route node={value} route={route}>
-        <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
-          <ScreenComponent {...props} 
+        <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
+        <zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider route={route}>
+          <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
+            <ScreenComponent {...props} 
         // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
         // the intention is to make it possible to deduce shared routes.
         segment={value.route}/>
-        </react_1.default.Suspense>
+          </react_1.default.Suspense>
+        </zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider>
       </Route_1.Route>);
     }
     if (__DEV__) {

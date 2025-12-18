@@ -71,17 +71,18 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
         )}
       />
       {children}
+      {info.isDeprecated && <span className="sr-only">Deprecated</span>}
       {info.hasVideoLink && !isSelected && (
-        <PlaySquareIcon className="icon-xs ml-1.5 text-icon-secondary" />
+        <PlaySquareIcon className="icon-xs ml-1.5 text-icon-secondary" aria-hidden="true" />
       )}
       {info.hasVideoLink && isSelected && (
-        <PlaySquareDuotoneIcon className="icon-xs ml-1.5 text-palette-blue11" />
+        <PlaySquareDuotoneIcon className="icon-xs ml-1.5 text-palette-blue11" aria-hidden="true" />
       )}
       {info.isDeprecated && !isSelected && (
-        <AlertTriangleIcon className="icon-xs ml-1.5 !text-icon-warning" />
+        <AlertTriangleIcon className="icon-xs ml-1.5 !text-icon-warning" aria-hidden="true" />
       )}
       {info.isDeprecated && isSelected && (
-        <AlertTriangleSolidIcon className="icon-xs ml-1.5 !text-icon-warning" />
+        <AlertTriangleSolidIcon className="icon-xs ml-1.5 !text-icon-warning" aria-hidden="true" />
       )}
       {info.isNew && (
         <div

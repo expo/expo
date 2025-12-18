@@ -9,6 +9,7 @@
       "xcode": "16.1+",
       "react-native": "0.81",
       "react-native-web": "0.21.0",
+      "react-native-tvos": "0.81-stable",
       "react": "19.1.0",
       "node": "20.19.x"
     },
@@ -21,6 +22,7 @@
       "xcode": "16.0+",
       "react-native": "0.79",
       "react-native-web": "0.20.0",
+      "react-native-tvos": "0.79-stable",
       "react": "19.0.0",
       "node": "20.18.x"
     },
@@ -33,6 +35,7 @@
       "xcode": "16.0+",
       "react-native": "0.76",
       "react-native-web": "0.19.13",
+      "react-native-tvos": "0.77-stable",
       "react": "18.3.1",
       "node": "20.18.x"
     },
@@ -45,6 +48,7 @@
       "xcode": "15.4 - 16.2",
       "react-native": "0.74",
       "react-native-web": "0.19.10",
+      "react-native-tvos": "0.74-stable",
       "react": "18.2.0",
       "node": "18.20.x"
     },
@@ -57,6 +61,7 @@
       "xcode": "15.4",
       "react-native": "0.73",
       "react-native-web": "0.19.6",
+      "react-native-tvos": "0.74-stable",
       "react": "18.2.0",
       "node": "18.19.x"
     },
@@ -69,6 +74,7 @@
       "xcode": "15.4",
       "react-native": "0.72",
       "react-native-web": "0.19.6",
+      "react-native-tvos": "Not supported",
       "react": "18.2.0",
       "node": "16.20.x"
     }

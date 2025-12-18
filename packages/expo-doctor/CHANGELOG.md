@@ -13,6 +13,14 @@
 
 ### 💡 Others
 
+- Bump to `@expo/metro@54.2.0` and `metro@0.83.3` ([#41142](https://github.com/expo/expo/pull/41142) by [@kitten](https://github.com/kitten))
+
+## 1.17.12 - 2025-12-04
+
+### 💡 Others
+
+- Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
+
 ## 1.17.11 - 2025-10-20
 
 ### 💡 Others

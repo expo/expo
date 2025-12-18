@@ -22,6 +22,7 @@ import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { Screen } from './primitives';
 import { RequireContext } from './types';
 import { canOverrideStatusBarBehavior } from './utils/statusbar';
+import { parseUrlUsingCustomBase } from './utils/url';
 import { Sitemap } from './views/Sitemap';
 import * as SplashScreen from './views/Splash';
 import { Unmatched } from './views/Unmatched';
@@ -116,7 +117,7 @@ function ContextNavigator({
       };
     } else if (typeof initialLocation === 'string') {
       // The initial location is a string, so we need to parse it into a URL.
-      const url = new URL(initialLocation, 'http://placeholder.base');
+      const url = parseUrlUsingCustomBase(initialLocation);
       contextType = {
         location: {
           pathname: url.pathname,

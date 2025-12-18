@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 import GithubSlugger from 'github-slugger';
 
-import { HeadingManager, HeadingType } from '~/common/headingManager';
+import { HeadingType, createHeadingManager } from '~/common/headingManager';
 import { renderWithHeadings } from '~/common/test-utilities';
 import { HeadingsContext } from '~/common/withHeadingManager';
 
@@ -13,7 +13,7 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 const prepareHeadingManager = () => {
-  const headingManager = new HeadingManager(new GithubSlugger(), { headings: [] });
+  const headingManager = createHeadingManager(new GithubSlugger(), { headings: [] });
   headingManager.addHeading('Base level heading', undefined, {});
   headingManager.addHeading('Level 3 subheading', 3, {});
   headingManager.addHeading('Code heading depth 1', 0, {

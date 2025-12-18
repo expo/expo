@@ -4,8 +4,8 @@
 #import <React/RCTCallInvoker.h>
 
 #import <Foundation/Foundation.h>
-#import <ExpoModulesCore/EXJavaScriptValue.h>
-#import <ExpoModulesCore/EXJavaScriptObject.h>
+#import <ExpoModulesJSI/EXJavaScriptValue.h>
+#import <ExpoModulesJSI/EXJavaScriptObject.h>
 
 #ifdef __cplusplus
 
@@ -19,7 +19,6 @@ namespace react = facebook::react;
 
 @class EXJavaScriptValue;
 @class EXJavaScriptObject;
-@class EXJavaScriptSharedObject;
 
 typedef void (^JSRuntimeExecutionBlock)(void);
 
@@ -49,11 +48,7 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 
 #ifdef __cplusplus
 
-- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
-                            callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker;
-- (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
-                            callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
-                       runtimeScheduler:(std::shared_ptr<facebook::react::RuntimeScheduler>)runtimeScheduler;
+- (nonnull instancetype)initWithRuntime:(jsi::Runtime &)runtime;
 
 /**
  Returns the underlying runtime object.
@@ -103,25 +98,10 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 
 #pragma mark - Classes
 
-typedef void (^ClassConstructorBlock)(EXJavaScriptObject *_Nonnull thisValue, NSArray<EXJavaScriptValue *> *_Nonnull arguments);
-
-- (nonnull EXJavaScriptObject *)createClass:(nonnull NSString *)name
-                                constructor:(nonnull ClassConstructorBlock)constructor;
-
 /**
  Creates a new object, using the provided object as the prototype.
  */
 - (nullable EXJavaScriptObject *)createObjectWithPrototype:(nonnull EXJavaScriptObject *)prototype;
-
-#pragma mark - Shared objects
-
-- (nonnull EXJavaScriptObject *)createSharedObjectClass:(nonnull NSString *)name
-                                            constructor:(nonnull ClassConstructorBlock)constructor;
-
-#pragma mark - Shared refs
-
-- (nonnull EXJavaScriptObject *)createSharedRefClass:(nonnull NSString *)name
-                                         constructor:(nonnull ClassConstructorBlock)constructor;
 
 #pragma mark - Script evaluation
 

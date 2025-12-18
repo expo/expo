@@ -24,6 +24,7 @@ export * from './Spacer';
 export * from './Stepper';
 export * from './Switch';
 export * from './Text';
+export * from './Toggle';
 export * from './TextField';
 export * from './SecureField';
 export * from './Namespace';
@@ -31,4 +32,5 @@ export * from './GlassEffectContainer';
 export * from './Shapes';
 export * from './Popover';
 export * from './Grid';
+export * from './RNHostView';
 //# sourceMappingURL=index.d.ts.map

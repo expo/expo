@@ -8,7 +8,6 @@ export const nonLinkableTypes = [
   'BufferSource',
   'CodedError',
   'ColorValue',
-  'CommonViewModifierProps',
   'ComponentClass',
   'ComponentProps',
   'ComponentType',
@@ -113,6 +112,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
   CameraPosition: '/versions/latest/sdk/maps/#cameraposition-2',
   ColorValue: 'https://reactnative.dev/docs/colors',
+  CommonViewModifierProps: 'modifiers',
   Component: 'https://react.dev/reference/react/Component',
   CreateURLOptions: '/versions/latest/sdk/linking/#createurloptions',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
@@ -149,6 +149,8 @@ export const hardcodedTypeLinks: Record<string, string> = {
   Platform: 'https://reactnative.dev/docs/platform',
   Playback: '/versions/latest/sdk/av/#playback',
   Promise:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
+  PromiseLike:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   PromptMethod: '/versions/latest/sdk/auth-session/#promptmethodoptions',
   PureComponent: 'https://react.dev/reference/react/PureComponent',

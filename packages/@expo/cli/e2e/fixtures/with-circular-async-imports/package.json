@@ -6,7 +6,7 @@
     "expo": "^52",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-native": "0.83.0-nightly-20251030-26ad9492b",
+    "react-native": "0.83.0",
     "react-native-web": "~0.20.0"
   },
   "devDependencies": {

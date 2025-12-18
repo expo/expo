@@ -7,7 +7,7 @@ export const AudioScreens = [
     route: 'audio/expo-audio',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-audio/AudioScreen'));
+      return optionalRequire(() => require('./AudioPlayerScreen'));
     },
   },
   {
@@ -15,7 +15,7 @@ export const AudioScreens = [
     route: 'audio/expo-audio-recording',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-audio/RecordingScreen'));
+      return optionalRequire(() => require('./RecordingScreen'));
     },
   },
   {
@@ -23,7 +23,7 @@ export const AudioScreens = [
     route: 'audio/expo-audio-createAudioPlayer',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-audio/CreateAudioPlayerScreen'));
+      return optionalRequire(() => require('./CreateAudioPlayerScreen'));
     },
   },
 
@@ -32,23 +32,7 @@ export const AudioScreens = [
     route: 'audio/expo-audio-controls',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./expo-audio/AudioControlsScreen'));
-    },
-  },
-  {
-    name: 'Expo AV Player',
-    route: 'audio/expo-av',
-    options: {},
-    getComponent() {
-      return optionalRequire(() => require('./AV/AudioScreen'));
-    },
-  },
-  {
-    name: 'Expo AV Recording',
-    route: 'audio/expo-av-recording',
-    options: {},
-    getComponent() {
-      return optionalRequire(() => require('./AV/RecordingScreen'));
+      return optionalRequire(() => require('./AudioControlsScreen'));
     },
   },
 ];

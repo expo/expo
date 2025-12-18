@@ -49,13 +49,12 @@
     "expo-structured-headers": "~5.0.0",
     "expo-updates-interface": "~2.0.0",
     "getenv": "^2.0.0",
-    "glob": "^10.4.2",
+    "glob": "^13.0.0",
     "ignore": "^5.3.1",
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",
-    "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.14.0",
     "@types/node-forge": "^1.0.0",
     "@types/picomatch": "^4.0.0",
@@ -63,7 +62,6 @@
     "expo-module-scripts": "^5.0.7",
     "express": "^5.1.0",
     "form-data": "^4.0.4",
-    "js-yaml": "^4.1.0",
     "memfs": "^3.2.0",
     "picomatch": "^4.0.2",
     "xstate": "^4.37.2"

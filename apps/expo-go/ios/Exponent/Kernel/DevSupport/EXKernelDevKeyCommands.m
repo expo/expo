@@ -223,6 +223,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                              action:^(__unused UIKeyCommand *_) {
                                [weakSelf _handleMenuCommand];
                              }];
+  [self registerKeyCommandWithInput:@"d"
+                      modifierFlags:UIKeyModifierControl
+                             action:^(__unused UIKeyCommand *_) {
+                               [weakSelf _handleMenuCommand];
+                             }];
+  [self registerKeyCommandWithInput:@"d"
+                      modifierFlags:0
+                             action:^(__unused UIKeyCommand *_) {
+                               [weakSelf _handleMenuCommand];
+                             }];
   [self registerKeyCommandWithInput:@"r"
                       modifierFlags:0
                              action:^(__unused UIKeyCommand *_) {
@@ -233,17 +243,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                              action:^(__unused UIKeyCommand *_) {
                                [weakSelf _handleToggleInspectorCommand];
                              }];
+  [self registerKeyCommandWithInput:@"p"
+                      modifierFlags:UIKeyModifierCommand
+                             action:^(__unused UIKeyCommand *_) {
+                               [weakSelf _handleTogglePerformanceMonitorCommand];
+                             }];
   [self registerKeyCommandWithInput:@"k"
                       modifierFlags:UIKeyModifierCommand | UIKeyModifierControl
                              action:^(__unused UIKeyCommand *_) {
                                [weakSelf _handleKernelMenuCommand];
                              }];
-
 }
 
 - (void)_handleMenuCommand
 {
-  [[EXKernel sharedInstance] switchTasks];
+  
+  [[EXKernel sharedInstance].visibleApp.appManager showDevMenu];
 }
 
 - (void)_handleRefreshCommand

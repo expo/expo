@@ -37,6 +37,7 @@ function getExpoDependencyChunks({
     ['@expo/config'],
     ['@expo/config-plugins'],
     ['@expo/plist'],
+    ['@expo/local-build-cache-provider'],
     ['expo-modules-core'],
     ['unimodules-app-loader'],
     ['expo-task-manager'],
@@ -67,7 +68,6 @@ function getExpoDependencyChunks({
           [
             'expo-app-integrity',
             'expo-audio',
-            'expo-av',
             'expo-background-task',
             'expo-blur',
             'expo-crypto',
@@ -234,7 +234,12 @@ async function copyCommonFixturesToProject(
       cwd: path.join(repoRoot, 'patches'),
       absolute: true,
     });
-    await fs.copyFile(patchFile[0], path.join(projectRoot, 'patches', path.basename(patchFile[0])));
+    if (patchFile.length > 0) {
+      await fs.copyFile(
+        patchFile[0],
+        path.join(projectRoot, 'patches', path.basename(patchFile[0]))
+      );
+    }
   }
 
   // Modify specific files for TV

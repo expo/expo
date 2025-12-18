@@ -261,7 +261,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   NSMutableSet *visitedSweetModules = [NSMutableSet new];
 
   // Add dynamic wrappers for view modules written in Sweet API.
-  for (ViewModuleWrapper *swiftViewModule in [_appContext getViewManagers]) {
+  for (EXViewModuleWrapper *swiftViewModule in [_appContext getViewManagers]) {
     Class wrappedViewModuleClass = [self registerComponentData:swiftViewModule
                                                       inBridge:bridge
                                                       forAppId:_appContext.appIdentifier];
@@ -269,8 +269,8 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     [visitedSweetModules addObject:swiftViewModule.name];
   }
 
-  [additionalModuleClasses addObject:[ViewModuleWrapper class]];
-  [self registerLegacyComponentData:[ViewModuleWrapper class] inBridge:bridge];
+  [additionalModuleClasses addObject:[EXViewModuleWrapper class]];
+  [self registerLegacyComponentData:[EXViewModuleWrapper class] inBridge:bridge];
 
   // Add modules from legacy module registry only when the NativeModulesProxy owns the registry.
   if (ownsModuleRegistry) {
@@ -335,12 +335,12 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   }
 }
 
-- (Class)registerComponentData:(ViewModuleWrapper *)viewModule inBridge:(RCTBridge *)bridge forAppId:(NSString *)appId
+- (Class)registerComponentData:(EXViewModuleWrapper *)viewModule inBridge:(RCTBridge *)bridge forAppId:(NSString *)appId
 {
   // Hacky way to get a dictionary with `RCTComponentData` from UIManager.
   NSMutableDictionary<NSString *, RCTComponentData *> *componentDataByName = [[bridge uiManager] valueForKey:@"_componentDataByName"];
 
-  Class wrappedViewModuleClass = [ViewModuleWrapper createViewModuleWrapperClassWithModule:viewModule appId:appId];
+  Class wrappedViewModuleClass = [EXViewModuleWrapper createViewModuleWrapperClassWithModule:viewModule appId:appId];
   NSString *className = NSStringFromClass(wrappedViewModuleClass);
 
   if (componentDataByName[className]) {

@@ -1,6 +1,10 @@
 import Constants from 'expo-constants';
 import React, { createContext, isValidElement, use, type ReactNode } from 'react';
-import { SplitViewHost, SplitViewScreen, type SplitViewHostProps } from 'react-native-screens';
+import {
+  SplitViewHost,
+  SplitViewScreen,
+  type SplitViewHostProps,
+} from 'react-native-screens/experimental';
 
 import { SplitViewColumn, SplitViewInspector } from './elements';
 import { IsWithinLayoutContext } from '../layouts/IsWithinLayoutContext';
@@ -8,6 +12,9 @@ import { Slot } from '../views/Navigator';
 
 const IsWithinSplitViewContext = createContext(false);
 
+/**
+ * For full list of supported props, see [`SplitViewHostProps`](https://github.com/software-mansion/react-native-screens/blob/main/src/components/gamma/split-view/SplitViewHost.types.ts#L124)
+ */
 export interface SplitViewProps extends Omit<SplitViewHostProps, 'children'> {
   children?: ReactNode;
 }

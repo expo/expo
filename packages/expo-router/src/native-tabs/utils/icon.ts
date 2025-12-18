@@ -1,8 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { ColorValue, ImageSourcePropType } from 'react-native';
-import type { BottomTabsScreenProps } from 'react-native-screens';
+import type {
+  BottomTabsScreenProps,
+  PlatformIconAndroid,
+  PlatformIconIOS,
+} from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import { isChildOfType } from '../../utils/children';
+import { NativeTabsTriggerPromiseIcon, NativeTabsTriggerVectorIcon } from '../common/elements';
 import type { NativeTabOptions, NativeTabsProps } from '../types';
 
 export function convertIconColorPropToObject(iconColor: NativeTabsProps['iconColor']): {
@@ -63,28 +69,50 @@ export function convertOptionsIconToRNScreensPropsIcon(
   if (!icon) {
     return undefined;
   }
-  if ('sf' in icon && icon.sf) {
-    return { sfSymbolName: icon.sf };
-  } else if ('src' in icon && icon.src) {
-    return { templateSource: icon.src };
-  }
-  return undefined;
+  return {
+    ios: convertOptionsIconToIOSPropsIcon(icon),
+    android: convertOptionsIconToAndroidPropsIcon(icon),
+  };
 }
 
-export function getRNScreensAndroidIconResourceFromAwaitedIcon(
+export function convertOptionsIconToIOSPropsIcon(
   icon: AwaitedIcon | undefined
-): BottomTabsScreenProps['iconResource'] {
+): PlatformIconIOS | undefined {
+  if (icon && 'sf' in icon && icon.sf) {
+    return {
+      type: 'sfSymbol',
+      name: icon.sf,
+    };
+  }
   if (icon && 'src' in icon && icon.src) {
-    return icon.src;
+    return { type: 'templateSource', templateSource: icon.src };
   }
   return undefined;
 }
 
-export function getRNScreensAndroidIconResourceNameFromAwaitedIcon(
-  icon: AwaitedIcon | undefined
-): BottomTabsScreenProps['iconResourceName'] {
+export function convertOptionsIconToAndroidPropsIcon(
+  icon: AwaitedIcon
+): PlatformIconAndroid | undefined {
   if (icon && 'drawable' in icon && icon.drawable) {
-    return icon.drawable;
+    return {
+      type: 'drawableResource',
+      name: icon.drawable,
+    };
+  }
+  if (icon && 'src' in icon && icon.src) {
+    return { type: 'imageSource', imageSource: icon.src };
+  }
+  return undefined;
+}
+
+export function convertComponentSrcToImageSource(src: React.ReactElement) {
+  if (isChildOfType(src, NativeTabsTriggerVectorIcon)) {
+    const props = src.props;
+    return { src: props.family.getImageSource(props.name, 24, 'white') };
+  } else if (isChildOfType(src, NativeTabsTriggerPromiseIcon)) {
+    return { src: src.props.loader() };
+  } else {
+    console.warn('Only VectorIcon is supported as a React element in Icon.src');
   }
   return undefined;
 }

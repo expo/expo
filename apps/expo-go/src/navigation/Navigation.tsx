@@ -133,7 +133,12 @@ function TabNavigator(props: { theme: string }) {
         options={{
           tabBarIcon: (props: any) =>
             Platform.OS === 'ios' ? (
-              { sfSymbolName: 'house.fill' }
+              {
+                ios: {
+                  type: 'sfSymbol',
+                  name: 'house.fill',
+                },
+              }
             ) : (
               <HomeFilledIcon {...props} style={styles.icon} size={24} />
             ),
@@ -148,7 +153,7 @@ function TabNavigator(props: { theme: string }) {
           options={{
             tabBarIcon: (props: any) =>
               Platform.OS === 'ios' ? (
-                { sfSymbolName: 'ecg.text.page.fill' }
+                { ios: { name: 'ecg.text.page.fill', type: 'sfSymbol' } }
               ) : (
                 <DiagnosticsIcon {...props} style={styles.icon} size={24} />
               ),
@@ -163,7 +168,7 @@ function TabNavigator(props: { theme: string }) {
           title: 'Settings',
           tabBarIcon: (props: any) =>
             Platform.OS === 'ios' ? (
-              { sfSymbolName: 'gearshape.fill' }
+              { ios: { name: 'gearshape.fill', type: 'sfSymbol' } }
             ) : (
               <SettingsFilledIcon {...props} style={styles.icon} size={24} />
             ),

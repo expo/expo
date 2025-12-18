@@ -16,8 +16,9 @@ import ReactDOMServer from 'react-dom/server.node';
 
 import { getRootComponent } from './getRootComponent';
 import { PreloadedDataScript } from './html';
+import { createDebug } from '../utils/debug';
 
-const debug = require('debug')('expo:router:server:renderStaticContent');
+const debug = createDebug('expo:router:server:renderStaticContent');
 
 function resetReactNavigationContexts() {
   // https://github.com/expo/router/discussions/588
@@ -29,7 +30,7 @@ function resetReactNavigationContexts() {
   (globalThis as any)[contexts] = new Map<string, React.Context<any>>();
 }
 
-type GetStaticContentOptions = {
+export type GetStaticContentOptions = {
   loader?: {
     data?: any;
   };

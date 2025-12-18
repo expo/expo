@@ -1,5 +1,7 @@
+import { type PropsWithChildren } from 'react';
 import { type ViewProps } from 'react-native';
 export interface NativeLinkPreviewActionProps {
+    identifier: string;
     title: string;
     icon?: string;
     children?: React.ReactNode;
@@ -38,4 +40,25 @@ export interface NativeLinkPreviewContentProps extends ViewProps {
     };
 }
 export declare function NativeLinkPreviewContent(props: NativeLinkPreviewContentProps): import("react").JSX.Element | null;
+export declare function LinkZoomTransitionEnabler(props: {
+    zoomTransitionSourceIdentifier: string;
+    preventInteractiveDismissal?: boolean;
+}): import("react").JSX.Element | null;
+interface LinkSourceAlignmentRect {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+interface LinkZoomTransitionSourceProps extends PropsWithChildren {
+    identifier: string;
+    alignment?: LinkSourceAlignmentRect;
+    animateAspectRatioChange?: boolean;
+}
+export declare function LinkZoomTransitionSource(props: LinkZoomTransitionSourceProps): import("react").JSX.Element | null;
+export declare function LinkZoomTransitionAlignmentRectDetector(props: {
+    identifier: string;
+    children: React.ReactNode;
+}): import("react").JSX.Element | null;
+export {};
 //# sourceMappingURL=native.d.ts.map
