@@ -9,7 +9,7 @@
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
 #import "EXVersions.h"
-#import "EXHomeModule.h"
+#import "EXKernelDevKeyCommands.h"
 
 #import <EXConstants/EXConstantsService.h>
 #import <React/RCTBridge+Private.h>
@@ -62,6 +62,9 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
 
     [DevMenuManager.shared setDelegate:self];
+
+    // Register keyboard commands (e.g., Cmd+D) for simulator
+    [[EXKernelDevKeyCommands sharedInstance] registerDevCommands];
 
     // register for notifications to request reloading the visible app
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -165,7 +168,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
   if (_visibleApp != _appRegistry.homeAppRecord) {
     [EXUtil performSynchronouslyOnMainThread:^{
-      [_browserController moveHomeToVisible];
+      [self->_browserController moveHomeToVisible];
     }];
   } else {
     EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;

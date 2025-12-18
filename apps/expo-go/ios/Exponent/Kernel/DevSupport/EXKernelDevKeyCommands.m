@@ -257,16 +257,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_handleMenuCommand
 {
-  
   [[EXKernel sharedInstance].visibleApp.appManager showDevMenu];
 }
 
 - (void)_handleRefreshCommand
 {
-  // This reloads only JS
-  //  [[EXKernel sharedInstance].visibleApp.appManager reloadBridge];
-
-  // This reloads manifest and JS
   [[EXKernel sharedInstance] reloadVisibleApp];
 }
 

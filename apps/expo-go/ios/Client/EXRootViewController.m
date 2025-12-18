@@ -150,7 +150,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)moveHomeToVisible
 {
   [DevMenuManager.shared hideMenu];
-  [[self _getHomeAppManager] dispatchForegroundHomeEvent];
   [self moveAppToVisible:[EXKernel sharedInstance].appRegistry.homeAppRecord];
 }
 
@@ -163,8 +162,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reloadVisibleApp
 {
   if ([self _isHomeVisible]) {
-    EXReactAppManager *homeAppManager = [EXKernel sharedInstance].appRegistry.homeAppRecord.appManager;
-    [homeAppManager reloadApp];
     return;
   }
 
