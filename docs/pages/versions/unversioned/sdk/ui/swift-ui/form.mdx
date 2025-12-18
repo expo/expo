@@ -24,12 +24,10 @@ import { useState } from 'react';
 import { Host, Form, TextField } from '@expo/ui/swift-ui';
 
 export default function BasicFormExample() {
-  const [name, setName] = useState('');
-
   return (
     <Host style={{ flex: 1 }}>
       <Form>
-        <TextField value={name} onChangeText={setName} placeholder="Enter your name" />
+        <TextField placeholder="Enter your name" />
       </Form>
     </Host>
   );
@@ -45,8 +43,6 @@ import { useState } from 'react';
 import { Host, Form, Section, TextField, Toggle, Button } from '@expo/ui/swift-ui';
 
 export default function FormWithSectionsExample() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [notifications, setNotifications] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
@@ -54,8 +50,8 @@ export default function FormWithSectionsExample() {
     <Host style={{ flex: 1 }}>
       <Form>
         <Section title="Profile">
-          <TextField value={name} onChangeText={setName} placeholder="Name" />
-          <TextField value={email} onChangeText={setEmail} placeholder="Email" />
+          <TextField placeholder="Name" />
+          <TextField placeholder="Email" />
         </Section>
 
         <Section title="Preferences">
@@ -86,13 +82,11 @@ import { Host, Form, Section, TextField } from '@expo/ui/swift-ui';
 import { scrollContentBackground, background } from '@expo/ui/swift-ui/modifiers';
 
 export default function FormBackgroundExample() {
-  const [value, setValue] = useState('');
-
   return (
     <Host style={{ flex: 1 }}>
       <Form modifiers={[scrollContentBackground('hidden'), background('#F0F0F0')]}>
         <Section title="Custom Background">
-          <TextField value={value} onChangeText={setValue} placeholder="Enter text" />
+          <TextField placeholder="Enter text" />
         </Section>
       </Form>
     </Host>
@@ -138,11 +132,10 @@ import { refreshable } from '@expo/ui/swift-ui/modifiers';
 export default function RefreshableFormExample() {
   const [lastRefresh, setLastRefresh] = useState(new Date());
 
-  const handleRefresh = useCallback(async (complete: () => void) => {
+  const handleRefresh = useCallback(async () => {
     // Simulate network request
     await new Promise(resolve => setTimeout(resolve, 1500));
     setLastRefresh(new Date());
-    complete();
   }, []);
 
   return (
