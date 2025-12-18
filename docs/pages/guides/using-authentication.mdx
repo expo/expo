@@ -1,0 +1,46 @@
+---
+title: Using authentication SDKs and libraries
+sidebar_title: Overview
+description: An overview of authentication integrations available in the Expo and React Native ecosystem.
+hideTOC: true
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { CODE } from '~/ui/components/Text';
+
+Authentication in mobile apps is how you identify who a user is, let them sign up or sign in, and keep their session securely connected across launches and devices. Authentication SDKs and libraries help you add these flows without building a custom auth backend. The guides below highlight popular SDKs and providers for your Expo and React Native projects.
+
+> **warning** Some providers require custom native code and aren't supported in Expo Go. Use a [development build](/develop/development-builds/introduction/) when needed.
+
+<BoxLink
+  title="Using Clerk"
+  description="Add Clerk authentication and user management to your Expo and React Native projects."
+  href="/guides/using-clerk/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Using Facebook authentication"
+  description={
+    <>
+      Configure <CODE>react-native-fbsdk-next</CODE> to add Facebook authentication in your Expo
+      project.
+    </>
+  }
+  href="/guides/facebook-authentication/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Using Google authentication"
+  description={
+    <>
+      Configure <CODE>@react-native-google-signin/google-signin</CODE> to add Google authentication
+      in your Expo project.
+    </>
+  }
+  href="/guides/google-authentication/"
+  Icon={BookOpen02Icon}
+/>

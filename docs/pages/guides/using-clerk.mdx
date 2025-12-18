@@ -1,0 +1,31 @@
+---
+title: Using Clerk
+description: Learn how to integrate Clerk authentication in your Expo and React Native projects.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+[Clerk](https://clerk.com/) is a full-stack authentication and user management platform that helps you add sign-up, sign-in, and account management without building your own auth backend. It supports multiple authentication strategies, session management, and organizations for multi-tenant apps.
+
+For Expo and React Native projects, Clerk provides hooks, UI, and control components so you can build custom authentication screens. Pair it with `expo-secure-store` to keep session tokens encrypted on device, and configure your projects's providers and policies in the Clerk Dashboard.
+
+> **Note:** Clerk's [prebuilt UI components](https://clerk.com/docs/expo/reference/components/overview) are available for web. For native platforms, Clerk recommends building custom flows.
+
+## Features
+
+- **Authentication flows:** Email and password sign-up/sign-in plus other strategies like social providers and enterprise connections.
+- **Session management:** Secure token handling with [`expo-secure-store`](/versions/latest/sdk/secure-store/).
+- **User management:** Profile data, account settings, and organization membership for multi-tenant apps.
+
+## Get started
+
+To get started, follow the instructions in the Clerk's documentation:
+
+<BoxLink
+  title="Clerk Expo quickstart"
+  description="Follow the official quickstart for installing the Expo SDK, configuring secure token storage, and building sign-in and sign-up flows."
+  href="https://clerk.com/docs/expo/getting-started/quickstart"
+  Icon={BookOpen02Icon}
+/>
