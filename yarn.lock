@@ -13284,7 +13284,7 @@ react-mixin@^3.0.5:
     object-assign "^4.0.1"
     smart-mixin "^2.0.0"
 
-react-native-css@~3.0.1:
+react-native-css@3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/react-native-css/-/react-native-css-3.0.1.tgz#b7c4e2cc09db9174ef1fc1ab948d48bf869ebffb"
   integrity sha512-sE/Qp2p+UaV9+W6T+GwsRH5sIynaTfhM2Khn+tN1q1YKYq1STVyAWyC+0i6ac4mFAO/FxQ/a03BDmrrt48qiuQ==
