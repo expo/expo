@@ -9,6 +9,7 @@
 
 ### 🎉 New features
 
+- migrate off of legacy core apis on Android ([#41731](https://github.com/expo/expo/pull/41731) by [@vonovak](https://github.com/vonovak))
 - improve runtime validation for NotificationTriggerInput ([#41538](https://github.com/expo/expo/pull/41538) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
