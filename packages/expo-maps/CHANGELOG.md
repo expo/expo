@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.12.10 — 2025-12-18
+
+### 🐛 Bug fixes
+
 - [iOS] Fix MapKit built-in buttons not responding ([#41151](https://github.com/expo/expo/pull/41151) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix Map resets camera position on navigation tab switch. ([#41639](https://github.com/expo/expo/pull/41639) by [@nishan](https://github.com/intergalacticspacehighway))
-
-### 💡 Others
 
 ## 0.12.9 — 2025-12-05
 

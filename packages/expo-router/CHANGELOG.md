@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.0.21 — 2025-12-18
+
+_This version does not introduce any user-facing changes._
+
 ## 6.0.20 — 2025-12-17
 
 ### 🎉 New features
