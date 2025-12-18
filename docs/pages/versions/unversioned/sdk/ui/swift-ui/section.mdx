@@ -79,23 +79,33 @@ export default function CustomHeaderFooterExample() {
 
 ### Collapsible section
 
-Set `collapsible` to `true` to allow users to collapse and expand the section.
+Use the `isExpanded` prop to control whether the section is expanded or collapsed. When provided, the section becomes collapsible. Use `onIsExpandedChange` to handle state changes.
 
 > **Note:** Collapsible sections require iOS 17+ and tvOS 17+, and the list must use the `sidebar` style. Footer is not supported for collapsible sections.
 
 ```tsx CollapsibleSectionExample.tsx
+import { useState } from 'react';
 import { Host, List, Section, Text } from '@expo/ui/swift-ui';
 
 export default function CollapsibleSectionExample() {
+  const [favoritesExpanded, setFavoritesExpanded] = useState(false);
+  const [recentsExpanded, setRecentsExpanded] = useState(false);
+
   return (
     <Host style={{ flex: 1 }}>
       <List listStyle="sidebar">
-        <Section title="Favorites" collapsible>
+        <Section
+          title="Favorites"
+          isExpanded={favoritesExpanded}
+          onIsExpandedChange={setFavoritesExpanded}>
           <Text>Home</Text>
           <Text>Work</Text>
           <Text>Gym</Text>
         </Section>
-        <Section title="Recents" collapsible>
+        <Section
+          title="Recents"
+          isExpanded={recentsExpanded}
+          onIsExpandedChange={setRecentsExpanded}>
           <Text>Coffee Shop</Text>
           <Text>Library</Text>
           <Text>Park</Text>
