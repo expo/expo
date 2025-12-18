@@ -64,7 +64,7 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
         }): boolean;
         createModuleIdFactory: () => (path: string, context?: {
             platform: string;
-            environment?: string | null;
+            environment?: string;
         }) => number;
         getModulesRunBeforeMainModule: () => string[];
         getPolyfills: ({ platform }: {

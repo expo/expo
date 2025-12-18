@@ -33,7 +33,6 @@ import type {
   JsTransformOptions,
   Type,
 } from '@expo/metro/metro-transform-worker';
-import getMinifier from '@expo/metro/metro-transform-worker/utils/getMinifier';
 import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
@@ -50,6 +49,7 @@ import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
 import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
+import { getMinifier, resolveMinifier } from './utils/getMinifier';
 
 export { JsTransformOptions };
 
@@ -786,7 +786,7 @@ export function getCacheKey(config: JsTransformerConfig): string {
   // TODO(@kitten): We can now tie this into `@expo/metro`, which could also simply export a static version export
   const filesKey = getMetroCacheKey([
     require.resolve(babelTransformerPath),
-    require.resolve(minifierPath),
+    resolveMinifier(minifierPath),
     require.resolve('@expo/metro/metro-transform-worker/utils/getMinifier'),
     require.resolve('./collect-dependencies'),
     require.resolve('./asset-transformer'),

@@ -60,13 +60,13 @@ const metro_cache_1 = require("@expo/metro/metro-cache");
 const metro_cache_key_1 = require("@expo/metro/metro-cache-key");
 const metro_source_map_1 = require("@expo/metro/metro-source-map");
 const metroTransformPlugins = __importStar(require("@expo/metro/metro-transform-plugins"));
-const getMinifier_1 = __importDefault(require("@expo/metro/metro-transform-worker/utils/getMinifier"));
 const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
 const collect_dependencies_1 = __importStar(require("./collect-dependencies"));
 const count_lines_1 = require("./count-lines");
 const resolveOptions_1 = require("./resolveOptions");
 const transform_plugins_1 = require("../transform-plugins");
+const getMinifier_1 = require("./utils/getMinifier");
 class InvalidRequireCallError extends Error {
     innerError;
     filename;
@@ -105,7 +105,7 @@ const minifyCode = async (config, filename, code, source, map, reserved = []) =>
             isIgnored: false,
         },
     ]).toMap(undefined, {});
-    const minify = (0, getMinifier_1.default)(config.minifierPath);
+    const minify = (0, getMinifier_1.getMinifier)(config.minifierPath);
     try {
         const minified = await minify({
             code,
@@ -589,7 +589,7 @@ function getCacheKey(config) {
     // TODO(@kitten): We can now tie this into `@expo/metro`, which could also simply export a static version export
     const filesKey = (0, metro_cache_key_1.getCacheKey)([
         require.resolve(babelTransformerPath),
-        require.resolve(minifierPath),
+        (0, getMinifier_1.resolveMinifier)(minifierPath),
         require.resolve('@expo/metro/metro-transform-worker/utils/getMinifier'),
         require.resolve('./collect-dependencies'),
         require.resolve('./asset-transformer'),

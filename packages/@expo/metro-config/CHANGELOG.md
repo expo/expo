@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `minifierPath` resolution for cache key generation for strict isolated installations ([#41686](https://github.com/expo/expo/pull/41686) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 54.0.12 — 2025-12-18
