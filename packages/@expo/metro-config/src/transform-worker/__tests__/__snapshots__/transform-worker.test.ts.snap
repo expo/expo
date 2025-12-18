@@ -32,6 +32,13 @@ if (module.hot) module.hot.accept();
         "data": {
           "css": {
             "code": "._R_BGG_container{background:red}",
+            "exports": {
+              "container": {
+                "composes": [],
+                "isReferenced": false,
+                "name": "_R_BGG_container",
+              },
+            },
             "externalImports": [],
             "functionMap": null,
             "lineCount": 1,
@@ -84,6 +91,13 @@ if (module.hot) module.hot.accept();
   background: red;
 }
 ",
+            "exports": {
+              "container": {
+                "composes": [],
+                "isReferenced": false,
+                "name": "_R_BGG_container",
+              },
+            },
             "externalImports": [],
             "functionMap": null,
             "lineCount": 4,
