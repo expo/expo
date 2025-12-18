@@ -1,35 +1,8 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import "EXUtil.h"
-#import "EXScopedModuleRegistry.h"
-
-@interface EXUtil ()
-
-@property (nonatomic, weak) id<EXUtilService> kernelUtilService;
-
-@end
-
-EX_DEFINE_SCOPED_MODULE_GETTER(EXUtil, util)
 
 @implementation EXUtil
-
-EX_EXPORT_SCOPED_MODULE(ExponentUtil, UtilService);
-
-- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
-                                        scopeKey:(NSString *)scopeKey
-                                    easProjectId:(NSString *)easProjectId
-                           kernelServiceDelegate:(id<EXUtilService>)kernelServiceInstance
-                                          params:(NSDictionary *)params
-{
-  if (self = [super initWithExperienceStableLegacyId:experienceStableLegacyId
-                                            scopeKey:scopeKey
-                                        easProjectId:easProjectId
-                               kernelServiceDelegate:kernelServiceInstance
-                                              params:params]) {
-    _kernelUtilService = kernelServiceInstance;
-  }
-  return self;
-}
 
 + (NSString *)escapedResourceName:(NSString *)name
 {
@@ -129,16 +102,6 @@ EX_EXPORT_SCOPED_MODULE(ExponentUtil, UtilService);
                            alpha:1.0f];
   }
   return nil;
-}
-
-- (UIViewController *)currentViewController
-{
-  return [_kernelUtilService currentViewController];
-}
-
-- (nullable NSDictionary *)launchOptions
-{
-  return [_kernelUtilService launchOptions];
 }
 
 @end
