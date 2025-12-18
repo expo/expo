@@ -23,7 +23,6 @@
 - (void)homeModule:(EXHomeModule *)module didOpenUrl:(NSString *)url;
 - (void)homeModuleDidSelectRefresh:(EXHomeModule *)module;
 - (void)homeModuleDidSelectGoToHome:(EXHomeModule *)module;
-- (void)homeModuleDidSelectQRReader:(EXHomeModule *)module;
 
 @end
 
