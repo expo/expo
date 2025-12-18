@@ -1,0 +1,35 @@
+import ExpoModulesCore
+
+enum ContactField: String, Enumerable {
+  case FULL_NAME = "fullName"
+  case GIVEN_NAME = "givenName"
+  case MIDDLE_NAME = "middleName"
+  case FAMILY_NAME = "familyName"
+  case PREFIX = "prefix"
+  case SUFFIX = "suffix"
+  case PHONETIC_GIVEN_NAME = "phoneticGivenName"
+  case PHONETIC_MIDDLE_NAME = "phoneticMiddleName"
+  case PHONETIC_FAMILY_NAME = "phoneticFamilyName"
+  case COMPANY = "company"
+  case DEPARTMENT = "department"
+  case JOB_TITLE = "jobTitle"
+  case PHONETIC_COMPANY_NAME = "phoneticCompanyName"
+  case IMAGE = "image"
+  case THUMBNAIL = "thumbnail"
+  case EMAILS = "emails"
+  case PHONES = "phones"
+  case ADDRESSES = "addresses"
+  case DATES = "dates"
+  case RELATIONS = "relations"
+  case URL_ADDRESSES = "urlAddresses"
+  case IM_ADDRESSES = "imAddresses"
+  // iOS fields:
+  case NICKNAME = "nickname"
+  case MAIDEN_NAME = "maidenName"
+  case BIRTHDAY = "birthday"
+  case NON_GREGORIAN_BIRTHDAY = "nonGregorianBirthday"
+  case SOCIAL_PROFILES = "socialProfiles"
+  // Android fields:
+  case IS_FAVOURITE = "isFavourite"
+  case EXTRA_NAMES = "extraNames"
+}
