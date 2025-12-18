@@ -8,6 +8,7 @@ import {
   padding,
   pickerStyle,
   tag,
+  font,
 } from '@expo/ui/swift-ui/modifiers';
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import { Image as ExpoImage } from 'expo-image';
@@ -63,7 +64,7 @@ export default function PopoverScreen() {
               arrowEdge={arrowEdgeOptions[arrowEdge]}>
               <Popover.Content>
                 <VStack modifiers={[padding({ all: 20 })]}>
-                  <Text size={16}>Hello is button popover</Text>
+                  <Text modifiers={[font({ size: 16 })]}>Hello is button popover</Text>
                 </VStack>
               </Popover.Content>
               <Popover.Trigger>
@@ -77,7 +78,7 @@ export default function PopoverScreen() {
             <Popover isPresented={textShowPop} onStateChange={(e) => setTextShowPop(e.isPresented)}>
               <Popover.Content>
                 <VStack modifiers={[padding({ all: 20 })]}>
-                  <Text size={16}>Hello is text popover</Text>
+                  <Text modifiers={[font({ size: 16 })]}>Hello is text popover</Text>
                 </VStack>
               </Popover.Content>
               <Popover.Trigger>
@@ -97,7 +98,7 @@ export default function PopoverScreen() {
               <VStack modifiers={[padding({ all: 20 })]} spacing={10}>
                 <HStack alignment="center" spacing={6}>
                   <Image systemName="star.fill" size={24} color="green" />
-                  <Text size={18}>Hello is icon popover</Text>
+                  <Text modifiers={[font({ size: 18 })]}>Hello is icon popover</Text>
                 </HStack>
                 <Button
                   modifiers={[
