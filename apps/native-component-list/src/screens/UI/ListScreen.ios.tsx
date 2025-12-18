@@ -129,7 +129,7 @@ export default function ListScreen() {
             onIsOnChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, header: v }))}
           />
         </Section>
-        <Section title="Controls" isExpanded>
+        <Section title="Controls">
           <Button onPress={() => setEditModeEnabled(!editModeEnabled)} label="Toggle Edit" />
           <Toggle isOn={selectEnabled} label="Select enabled" onIsOnChange={setSelectEnabled} />
           <Toggle isOn={deleteEnabled} label="Delete enabled" onIsOnChange={setDeleteEnabled} />
