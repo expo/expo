@@ -7,7 +7,7 @@ struct SnacksSection: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
-      SectionHeader(title: "SNACKS")
+      SectionHeader(title: "snacks".uppercased())
 
       VStack(spacing: 6) {
         ForEach(viewModel.snacks.prefix(3)) { snack in

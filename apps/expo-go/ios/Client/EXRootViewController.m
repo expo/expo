@@ -13,7 +13,6 @@
 #import "EXDevMenu-Swift.h"
 #import "EXUtil.h"
 
-
 #import "Expo_Go-Swift.h"
 
 #import <React/RCTBridge+Private.h>
