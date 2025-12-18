@@ -2,24 +2,15 @@ import { type EventSubscription, UnavailabilityError, Platform } from 'expo-modu
 
 import type {
   ClipboardImage,
-  ContentType,
+  ClipboardEvent,
   GetImageOptions,
   GetStringOptions,
   SetStringOptions,
 } from './Clipboard.types';
 import { ClipboardPasteButton } from './ClipboardPasteButton';
-import ExpoClipboard from './ExpoClipboard';
+import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
 
-const onClipboardEventName = 'onClipboardChanged';
-
-type ClipboardEvent = {
-  /**
-   * An array of content types that are available on the clipboard.
-   */
-  contentTypes: ContentType[];
-};
-
-export { EventSubscription as Subscription, ClipboardEvent };
+export { EventSubscription as Subscription };
 
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
@@ -216,7 +207,7 @@ export async function hasImageAsync(): Promise<boolean> {
  * ```
  */
 export function addClipboardListener(listener: (event: ClipboardEvent) => void): EventSubscription {
-  return ExpoClipboard.addListener(onClipboardEventName, listener);
+  return ExpoClipboard.addListener(clipboardEventName, listener);
 }
 
 /**
