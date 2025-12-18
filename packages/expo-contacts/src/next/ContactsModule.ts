@@ -5,6 +5,7 @@ import { Container as ContainerType, FallbackContainer } from './types/Container
 import { Group as GroupType, FallbackGroup } from './types/Group';
 
 declare class ExpoContactsModule extends NativeModule {
+  ContactNext?: typeof ContactType;
   Contact: typeof ContactType;
   Group: typeof GroupType;
   Container: typeof ContainerType;
@@ -12,7 +13,7 @@ declare class ExpoContactsModule extends NativeModule {
 
 const expoContactsModule = requireNativeModule<ExpoContactsModule>('ExpoContactsNext');
 
-if (Platform.OS === 'ios') {
+if (Platform.OS === 'ios' && expoContactsModule.ContactNext) {
   expoContactsModule.Contact = expoContactsModule.ContactNext;
 }
 

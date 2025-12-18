@@ -3,6 +3,7 @@ import { Contact as ContactType } from './types/Contact';
 import { Container as ContainerType } from './types/Container';
 import { Group as GroupType } from './types/Group';
 declare class ExpoContactsModule extends NativeModule {
+    ContactNext?: typeof ContactType;
     Contact: typeof ContactType;
     Group: typeof GroupType;
     Container: typeof ContainerType;
