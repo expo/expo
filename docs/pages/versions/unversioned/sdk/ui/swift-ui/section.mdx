@@ -44,7 +44,7 @@ export default function BasicSectionExample() {
 Use the `header` and `footer` props for custom views. These props are only used when `title` is not provided.
 
 ```tsx CustomHeaderFooterExample.tsx
-import { Host, List, Section, Switch, Text, HStack, Image } from '@expo/ui/swift-ui';
+import { Host, List, Section, Toggle, Text, HStack, Image } from '@expo/ui/swift-ui';
 import { useState } from 'react';
 
 export default function CustomHeaderFooterExample() {
@@ -65,10 +65,10 @@ export default function CustomHeaderFooterExample() {
               Enabling location services allows the app to provide personalized recommendations.
             </Text>
           }>
-          <Switch
+          <Toggle
             label="Enable Location"
-            value={locationEnabled}
-            onValueChange={setLocationEnabled}
+            isOn={locationEnabled}
+            onIsOnChange={setLocationEnabled}
           />
         </Section>
       </List>
@@ -122,7 +122,7 @@ Sections work within `Form` components to organize form controls into logical gr
 
 ```tsx FormSectionsExample.tsx
 import { useState } from 'react';
-import { Host, Form, Section, Switch, Picker, Text, Button } from '@expo/ui/swift-ui';
+import { Host, Form, Section, Toggle, Picker, Text, Button } from '@expo/ui/swift-ui';
 import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 
 export default function FormSectionsExample() {
@@ -135,7 +135,7 @@ export default function FormSectionsExample() {
     <Host style={{ flex: 1 }}>
       <Form>
         <Section title="Appearance">
-          <Switch label="Dark Mode" value={darkMode} onValueChange={setDarkMode} />
+          <Toggle label="Dark Mode" isOn={darkMode} onIsOnChange={setDarkMode} />
           <Picker
             label="Language"
             selection={language}
@@ -149,11 +149,7 @@ export default function FormSectionsExample() {
           </Picker>
         </Section>
         <Section title="Notifications">
-          <Switch
-            label="Push Notifications"
-            value={notifications}
-            onValueChange={setNotifications}
-          />
+          <Toggle label="Push Notifications" isOn={notifications} onIsOnChange={setNotifications} />
         </Section>
         <Section title="Account">
           <Button label="Sign Out" role="destructive" onPress={() => alert('Signed out')} />
