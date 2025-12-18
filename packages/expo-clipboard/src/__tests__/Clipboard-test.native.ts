@@ -5,15 +5,8 @@ describe('Clipboard', () => {
   it('getStringAsync', () => {
     expect(Clipboard.getStringAsync).toBeDefined();
   });
-  it('setString', () => {
-    expect(Clipboard.setString).toBeDefined();
-  });
   it('setStringAsync', () => {
     expect(Clipboard.setStringAsync).toBeDefined();
-  });
-  it('setString delegates to native setStringAsync', () => {
-    Clipboard.setString('test');
-    expect(ExpoClipboard.setStringAsync).toHaveBeenCalledWith('test', {});
   });
   it('addClipboardListener', () => {
     expect(Clipboard.addClipboardListener).toBeDefined();

@@ -47,23 +47,6 @@ export default {
             }
         }
     },
-    // TODO: (barthap) The `setString` was deprecated in SDK 45. Remove this function in a few SDK cycles.
-    setString(text) {
-        const textField = document.createElement('textarea');
-        textField.textContent = text;
-        document.body.appendChild(textField);
-        textField.select();
-        try {
-            document.execCommand('copy');
-            return true;
-        }
-        catch {
-            return false;
-        }
-        finally {
-            document.body.removeChild(textField);
-        }
-    },
     async setStringAsync(text, options) {
         switch (options.inputFormat) {
             case StringFormat.HTML: {
@@ -95,7 +78,7 @@ export default {
                 catch {
                     // we can fall back to legacy behavior in any kind of failure
                     // including navigator.clipboard unavailability
-                    return this.setString(text);
+                    return legacySetString(text);
                 }
             }
         }
@@ -179,5 +162,21 @@ function createHtmlClipboardItem(htmlString) {
         'text/html': new Blob([htmlString], { type: 'text/html' }),
         'text/plain': new Blob([htmlToPlainText(htmlString)], { type: 'text/plain' }),
     });
+}
+function legacySetString(text) {
+    const textField = document.createElement('textarea');
+    textField.textContent = text;
+    document.body.appendChild(textField);
+    textField.select();
+    try {
+        document.execCommand('copy');
+        return true;
+    }
+    catch {
+        return false;
+    }
+    finally {
+        document.body.removeChild(textField);
+    }
 }
 //# sourceMappingURL=ClipboardModule.js.map

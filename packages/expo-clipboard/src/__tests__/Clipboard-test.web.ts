@@ -12,10 +12,4 @@ describe('Clipboard', () => {
     // Browser needs to allow access to Clipboard, so the above will
     // be called, but it will fail.
   });
-
-  it('copies the provided string with legacy setString', () => {
-    document.execCommand = jest.fn().mockReturnValueOnce(true);
-    expect(Clipboard.setString('Dumbledore')).toBe(true);
-    expect(document.execCommand).toHaveBeenCalledWith('copy');
-  });
 });
