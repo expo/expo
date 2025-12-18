@@ -15,7 +15,6 @@
 #import "ExpoKit.h"
 #import "EXKernel.h"
 #import "EXKernelLinkingManager.h"
-#import "EXHomeAppManager.h"
 #import "EXBuildConstants.h"
 #import "EXVersions.h"
 #import "EXRootViewController.h"
