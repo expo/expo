@@ -6,7 +6,7 @@ import ExpoModulesCore
 internal final class DisclosureGroupViewProps: UIBaseViewProps {
   @Field var label: String
   @Field var isExpanded: Bool = true
-  var onStateChange = EventDispatcher()
+  var onIsExpandedChange = EventDispatcher()
 }
 
 internal struct DisclosureGroupView: ExpoSwiftUI.View {
@@ -25,7 +25,7 @@ internal struct DisclosureGroupView: ExpoSwiftUI.View {
     }
     .onChange(of: isExpanded) { newValue in
       let payload = ["isExpanded": newValue]
-      props.onStateChange(payload)
+      props.onIsExpandedChange(payload)
     }
     .onChange(of: props.isExpanded) { newValue in
       isExpanded = newValue
