@@ -11,7 +11,7 @@
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/native": "^7.1.6",
     "expo": "~54.0.29",
-    "expo-linking": "~8.0.10",
+    "expo-linking": "~8.0.11",
     "expo-router": "^6.0.20",
     "expo-splash-screen": "~31.0.12",
     "react": "19.1.0",

@@ -37,7 +37,7 @@
     "expo-application": "~7.0.8",
     "expo-constants": "~18.0.12",
     "expo-crypto": "~15.0.8",
-    "expo-linking": "~8.0.10",
+    "expo-linking": "~8.0.11",
     "expo-web-browser": "~15.0.10",
     "invariant": "^2.2.4"
   },

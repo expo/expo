@@ -82,7 +82,7 @@
     "@testing-library/react-native": ">= 12.0.0",
     "expo": "*",
     "expo-constants": "^18.0.12",
-    "expo-linking": "^8.0.10",
+    "expo-linking": "^8.0.11",
     "react": "*",
     "react-dom": "*",
     "react-native": "*",

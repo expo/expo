@@ -85,7 +85,7 @@
     "@expo/vector-icons": "^15.0.3",
     "@ungap/structured-clone": "^1.3.0",
     "babel-preset-expo": "~54.0.8",
-    "expo-asset": "~12.0.11",
+    "expo-asset": "~12.0.12",
     "expo-constants": "~18.0.12",
     "expo-file-system": "~19.0.21",
     "expo-font": "~14.0.10",

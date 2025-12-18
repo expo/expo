@@ -20,7 +20,7 @@
     "@react-navigation/native": "^7.1.8",
     "expo": "~54.0.29",
     "expo-font": "14.0.10",
-    "expo-linking": "8.0.10",
+    "expo-linking": "8.0.11",
     "expo-router": "6.0.20",
     "expo-device": "8.0.10",
     "expo-constants": "18.0.12",

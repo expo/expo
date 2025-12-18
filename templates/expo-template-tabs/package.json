@@ -16,7 +16,7 @@
     "expo": "~54.0.29",
     "expo-constants": "~18.0.12",
     "expo-font": "~14.0.10",
-    "expo-linking": "~8.0.10",
+    "expo-linking": "~8.0.11",
     "expo-router": "~6.0.20",
     "expo-splash-screen": "~31.0.12",
     "expo-status-bar": "~3.0.9",
