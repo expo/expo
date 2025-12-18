@@ -27,17 +27,7 @@ struct NavigationHeader: View {
         navigation.showUserProfile()
       } label: {
         if viewModel.isLoggedIn, let user = viewModel.user {
-          let firstLetter = String(user.username.prefix(1).uppercased())
-          let color = getExpoAvatarColor(for: firstLetter)
-
-          Circle()
-            .fill(color.background)
-            .frame(width: 36, height: 36)
-            .overlay(
-              Text(firstLetter)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(color.foreground)
-            )
+          createUserAvatar(user: user)
         } else {
           ZStack {
             Circle()
@@ -56,5 +46,43 @@ struct NavigationHeader: View {
     .padding(.horizontal)
     .padding(.vertical, 8)
     .background(Color.expoSystemBackground)
+  }
+
+  @ViewBuilder
+  private func createUserAvatar(user: UserActor) -> some View {
+    let profilePhoto = user.profilePhoto
+
+    if let profilePhoto,
+      !profilePhoto.isEmpty,
+      let url = URL(string: profilePhoto) {
+      Avatar(url: url) { image in
+        image
+          .resizable()
+          .scaledToFill()
+      } placeholder: {
+        Circle()
+          .fill(Color.expoSystemGray5)
+          .overlay(
+            Image(systemName: "person")
+              .font(.system(size: 16))
+              .foregroundColor(.secondary)
+          )
+      }
+      .frame(width: 36, height: 36)
+      .clipShape(Circle())
+      .id("\(user.id)-\(profilePhoto)")
+    } else {
+      let firstLetter = String(user.username.prefix(1).uppercased())
+      let color = getExpoAvatarColor(for: firstLetter)
+
+      Circle()
+        .fill(color.background)
+        .frame(width: 36, height: 36)
+        .overlay(
+          Text(firstLetter)
+            .font(.system(size: 16, weight: .medium))
+            .foregroundColor(color.foreground)
+        )
+    }
   }
 }

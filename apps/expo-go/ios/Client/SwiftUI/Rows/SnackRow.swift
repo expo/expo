@@ -3,35 +3,79 @@
 import SwiftUI
 
 struct SnackRow: View {
-  let snack: ExpoSnack
+  let snack: Snack
+  let onTap: () -> Void
+
+  private var isSupported: Bool {
+    let supportedSDK = getSupportedSDKVersion()
+    let snackSDKMajor = getSDKMajorVersion(snack.sdkVersion)
+    let supportedSDKMajor = getSDKMajorVersion(supportedSDK)
+    return snackSDKMajor == supportedSDKMajor
+  }
 
   var body: some View {
-    HStack {
-      Image(systemName: "doc.text")
-        .foregroundColor(.orange)
-        .frame(width: 24, height: 24)
+    Button(action: onTap) {
+      HStack {
+        VStack(alignment: .leading, spacing: 4) {
+          Text(snack.name)
+            .font(.body)
+            .fontWeight(.semibold)
+            .foregroundColor(.primary)
+            .opacity(isSupported ? 1 : 0.5)
 
-      VStack(alignment: .leading, spacing: 2) {
-        Text(snack.name)
-          .font(.headline)
-          .foregroundColor(.primary)
+          if let description = snack.description, !description.isEmpty {
+            Text(description)
+              .font(.caption)
+              .foregroundColor(.secondary)
+              .lineLimit(1)
+          } else {
+            Text(snack.fullName)
+              .font(.caption)
+              .foregroundColor(.secondary)
+          }
 
-        if let description = snack.description {
-          Text(description)
-            .font(.caption)
-            .foregroundColor(.secondary)
-            .lineLimit(1)
+          HStack(spacing: 6) {
+            if !isSupported {
+              Text("Unsupported SDK (\(snack.sdkVersion))")
+                .font(.caption2)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(Color.expoSecondarySystemGroupedBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+            }
+
+            if snack.isDraft {
+              Text("Draft")
+                .font(.caption2)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(Color.expoSecondarySystemGroupedBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+            }
+          }
         }
+
+        Spacer()
+
+        Image(systemName: "chevron.right")
+          .font(.caption)
+          .foregroundColor(.secondary)
       }
-
-      Spacer()
-
-      Image(systemName: "chevron.right")
-        .font(.caption)
-        .foregroundColor(.secondary)
+      .padding()
+      .background(Color.expoSecondarySystemBackground)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
     }
-    .padding()
-    .background(Color.expoSecondarySystemGroupedBackground)
-    .clipShape(RoundedRectangle(cornerRadius: 12))
+    .buttonStyle(PlainButtonStyle())
+  }
+
+  private func getSupportedSDKVersion() -> String {
+    let versions = EXVersions.sharedInstance()
+    return versions.sdkVersion
+  }
+
+  private func getSDKMajorVersion(_ sdkVersion: String) -> String {
+    return sdkVersion.components(separatedBy: ".").first ?? sdkVersion
   }
 }
