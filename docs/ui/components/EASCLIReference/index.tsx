@@ -1,11 +1,10 @@
 import { Terminal } from '~/ui/components/Snippet';
-import { A, CODE, H3, H4, LI, P, UL } from '~/ui/components/Text';
+import { CODE, H3, H4, LI, P, UL } from '~/ui/components/Text';
 
 import easCliData from './data/eas-cli-commands.json';
 import {
   countNonEmptyLines,
   formatDescription,
-  formatDescriptionForInlineLink,
   formatSentence,
   parseListEntries,
   parseSubItems,
@@ -20,7 +19,6 @@ type CommandData = {
   command: string;
   description: string;
   usage: string;
-  seeCode: string;
 };
 
 type EasCliReferenceData = {
@@ -69,9 +67,7 @@ const ListSection = ({ entries }: { entries: ListEntry[] }) => {
 
 const CommandSection = ({ command }: { command: CommandData }) => {
   const sections = parseUsageSections(command.usage);
-  const description = command.seeCode
-    ? formatDescriptionForInlineLink(command.description ?? '')
-    : formatDescription(command.description ?? '');
+  const description = formatDescription(command.description ?? '');
   const slug = slugify(command.command);
   const argumentsList = sections.arguments ? parseListEntries(sections.arguments) : [];
   const flagsList = sections.flags ? parseListEntries(sections.flags) : [];
@@ -79,21 +75,9 @@ const CommandSection = ({ command }: { command: CommandData }) => {
   return (
     <section className="border-b border-secondary pb-8 last:border-0 last:pb-0">
       <H3 id={slug} className="translate-y-[2px] self-center">
-        {command.command}
+        <CODE className="font-mono text-[inherit]">{command.command}</CODE>
       </H3>
-      <P className="mb-5 mt-2">
-        {renderInlineContent(description)}
-        {command.seeCode && (
-          <>
-            {' '}
-            (
-            <A href={command.seeCode} openInNewTab>
-              see code
-            </A>
-            ).
-          </>
-        )}
-      </P>
+      <P className="mb-5 mt-2">{renderInlineContent(description)}</P>
 
       {sections.usage && (
         <div className="mb-6">

@@ -13,7 +13,7 @@ type UrlSplitPart = {
   suffix?: string;
 };
 
-type CommandSections = {
+export type CommandSections = {
   usage?: string;
   arguments?: string;
   flags?: string;
@@ -26,7 +26,7 @@ export type ListEntry = {
   description: string;
 };
 
-type SubItemGroup = {
+export type SubItemGroup = {
   lead: string;
   items: ListEntry[];
 };
@@ -131,11 +131,6 @@ export function formatDescription(value: string) {
     return 'No description available.';
   }
   return formatSentence(trimmed);
-}
-
-export function formatDescriptionForInlineLink(value: string) {
-  const formatted = formatDescription(value);
-  return formatted.endsWith('.') ? formatted.slice(0, -1) : formatted;
 }
 
 function renderWithBoldFilenames(text: string): ReactNode[] {

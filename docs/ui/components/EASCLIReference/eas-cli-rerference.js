@@ -46,11 +46,6 @@ function extractUsage(body) {
   return match ? match[1].trim() : '';
 }
 
-function extractSeeCode(body) {
-  const match = body.match(/_See code: \[[^\]]+]\(([^)]+)\)_/);
-  return match ? match[1] : '';
-}
-
 function parseCommands(section) {
   const headingRegex = /^## `([^`]+)`/gm;
   const headings = Array.from(section.matchAll(headingRegex));
@@ -73,7 +68,6 @@ function parseCommands(section) {
       command,
       description: extractDescription(body),
       usage: extractUsage(body),
-      seeCode: extractSeeCode(body),
     });
   }
 
