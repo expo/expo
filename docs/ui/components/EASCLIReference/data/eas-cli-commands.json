@@ -1,7 +1,7 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2025-12-18T13:13:01.365Z",
+    "fetchedAt": "2025-12-18T17:56:11.644Z",
     "cliVersion": "16.28.0"
   },
   "totalCommands": 101,
@@ -9,709 +9,507 @@
     {
       "command": "eas account:login",
       "description": "log in with your Expo account",
-      "usage": "USAGE\n  $ eas account:login [-s]\n\nFLAGS\n  -s, --sso  Login with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login",
-      "group": "account",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/account/login.ts"
+      "usage": "USAGE\n  $ eas account:login [-s]\n\nFLAGS\n  -s, --sso  Login with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login"
     },
     {
       "command": "eas account:logout",
       "description": "log out",
-      "usage": "USAGE\n  $ eas account:logout\n\nDESCRIPTION\n  log out\n\nALIASES\n  $ eas logout",
-      "group": "account",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/account/logout.ts"
+      "usage": "USAGE\n  $ eas account:logout\n\nDESCRIPTION\n  log out\n\nALIASES\n  $ eas logout"
     },
     {
       "command": "eas account:view",
       "description": "show the username you are logged in as",
-      "usage": "USAGE\n  $ eas account:view\n\nDESCRIPTION\n  show the username you are logged in as\n\nALIASES\n  $ eas whoami",
-      "group": "account",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/account/view.ts"
+      "usage": "USAGE\n  $ eas account:view\n\nDESCRIPTION\n  show the username you are logged in as\n\nALIASES\n  $ eas whoami"
     },
     {
       "command": "eas analytics [STATUS]",
       "description": "display or change analytics settings",
-      "usage": "USAGE\n  $ eas analytics [STATUS]\n\nDESCRIPTION\n  display or change analytics settings",
-      "group": "analytics",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/analytics.ts"
+      "usage": "USAGE\n  $ eas analytics [STATUS]\n\nDESCRIPTION\n  display or change analytics settings"
     },
     {
       "command": "eas autocomplete [SHELL]",
       "description": "display autocomplete installation instructions",
-      "usage": "USAGE\n  $ eas autocomplete [SHELL] [-r]\n\nARGUMENTS\n  SHELL  (zsh|bash|powershell) Shell type\n\nFLAGS\n  -r, --refresh-cache  Refresh cache (ignores displaying instructions)\n\nDESCRIPTION\n  display autocomplete installation instructions\n\nEXAMPLES\n  $ eas autocomplete\n\n  $ eas autocomplete bash\n\n  $ eas autocomplete zsh\n\n  $ eas autocomplete powershell\n\n  $ eas autocomplete --refresh-cache",
-      "group": "autocomplete",
-      "seeCode": "https://github.com/oclif/plugin-autocomplete/blob/v2.3.10/packages/eas-cli/src/commands/autocomplete/index.ts"
+      "usage": "USAGE\n  $ eas autocomplete [SHELL] [-r]\n\nARGUMENTS\n  SHELL  (zsh|bash|powershell) Shell type\n\nFLAGS\n  -r, --refresh-cache  Refresh cache (ignores displaying instructions)\n\nDESCRIPTION\n  display autocomplete installation instructions\n\nEXAMPLES\n  $ eas autocomplete\n\n  $ eas autocomplete bash\n\n  $ eas autocomplete zsh\n\n  $ eas autocomplete powershell\n\n  $ eas autocomplete --refresh-cache"
     },
     {
       "command": "eas branch:create [NAME]",
       "description": "create a branch",
-      "usage": "USAGE\n  $ eas branch:create [NAME] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the branch to create\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  create a branch",
-      "group": "branch",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/branch/create.ts"
+      "usage": "USAGE\n  $ eas branch:create [NAME] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the branch to create\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  create a branch"
     },
     {
       "command": "eas branch:delete [NAME]",
       "description": "delete a branch",
-      "usage": "USAGE\n  $ eas branch:delete [NAME] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the branch to delete\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  delete a branch",
-      "group": "branch",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/branch/delete.ts"
+      "usage": "USAGE\n  $ eas branch:delete [NAME] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the branch to delete\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  delete a branch"
     },
     {
       "command": "eas branch:list",
       "description": "list all branches",
-      "usage": "USAGE\n  $ eas branch:list [--offset <value>] [--limit <value>] [--json --non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>    The number of items to fetch each query. Defaults to 50 and is capped at 100.\n  --non-interactive  Run the command in non-interactive mode.\n  --offset=<value>   Start queries from specified index. Use for paginating results. Defaults to 0.\n\nDESCRIPTION\n  list all branches",
-      "group": "branch",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/branch/list.ts"
+      "usage": "USAGE\n  $ eas branch:list [--offset <value>] [--limit <value>] [--json --non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>    The number of items to fetch each query. Defaults to 50 and is capped at 100.\n  --non-interactive  Run the command in non-interactive mode.\n  --offset=<value>   Start queries from specified index. Use for paginating results. Defaults to 0.\n\nDESCRIPTION\n  list all branches"
     },
     {
       "command": "eas branch:rename",
       "description": "rename a branch",
-      "usage": "USAGE\n  $ eas branch:rename [--from <value>] [--to <value>] [--json --non-interactive]\n\nFLAGS\n  --from=<value>     current name of the branch.\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n  --to=<value>       new name of the branch.\n\nDESCRIPTION\n  rename a branch",
-      "group": "branch",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/branch/rename.ts"
+      "usage": "USAGE\n  $ eas branch:rename [--from <value>] [--to <value>] [--json --non-interactive]\n\nFLAGS\n  --from=<value>     current name of the branch.\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n  --to=<value>       new name of the branch.\n\nDESCRIPTION\n  rename a branch"
     },
     {
       "command": "eas branch:view [NAME]",
       "description": "view a branch",
-      "usage": "USAGE\n  $ eas branch:view [NAME] [--offset <value>] [--limit <value>] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the branch to view\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>    The number of items to fetch each query. Defaults to 25 and is capped at 50.\n  --non-interactive  Run the command in non-interactive mode.\n  --offset=<value>   Start queries from specified index. Use for paginating results. Defaults to 0.\n\nDESCRIPTION\n  view a branch",
-      "group": "branch",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/branch/view.ts"
+      "usage": "USAGE\n  $ eas branch:view [NAME] [--offset <value>] [--limit <value>] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the branch to view\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>    The number of items to fetch each query. Defaults to 25 and is capped at 50.\n  --non-interactive  Run the command in non-interactive mode.\n  --offset=<value>   Start queries from specified index. Use for paginating results. Defaults to 0.\n\nDESCRIPTION\n  view a branch"
     },
     {
       "command": "eas build",
       "description": "start a build",
-      "usage": "USAGE\n  $ eas build [-p android|ios|all] [-e <value>] [--local] [--output <value>] [--wait] [--clear-cache] [-s |\n    --auto-submit-with-profile <value>] [--what-to-test <value>] [-m <value>] [--build-logger-level\n    trace|debug|info|warn|error|fatal] [--freeze-credentials] [--verbose-logs] [--json --non-interactive]\n\nFLAGS\n  -e, --profile=PROFILE_NAME                                Name of the build profile from eas.json. Defaults to\n                                                            \"production\" if defined in eas.json.\n  -m, --message=<value>                                     A short message describing the build\n  -p, --platform=(android|ios|all)\n  -s, --auto-submit                                         Submit on build complete using the submit profile with the\n                                                            same name as the build profile\n  --auto-submit-with-profile=PROFILE_NAME                   Submit on build complete using the submit profile with\n                                                            provided name\n  --build-logger-level=(trace|debug|info|warn|error|fatal)  The level of logs to output during the build process.\n                                                            Defaults to \"info\".\n  --clear-cache                                             Clear cache before the build\n  --freeze-credentials                                      Prevent the build from updating credentials in\n                                                            non-interactive mode\n  --json                                                    Enable JSON output, non-JSON messages will be printed to\n                                                            stderr.\n  --local                                                   Run build locally [experimental]\n  --non-interactive                                         Run the command in non-interactive mode.\n  --output=<value>                                          Output path for local build\n  --verbose-logs                                            Use verbose logs for the build process\n  --[no-]wait                                               Wait for build(s) to complete\n  --what-to-test=<value>                                    Specify the \"What to Test\" information for the build in\n                                                            TestFlight (iOS-only). To be used with the `auto-submit`\n                                                            flag\n\nDESCRIPTION\n  start a build",
-      "group": "build",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/build/index.ts"
+      "usage": "USAGE\n  $ eas build [-p android|ios|all] [-e <value>] [--local] [--output <value>] [--wait] [--clear-cache] [-s |\n    --auto-submit-with-profile <value>] [--what-to-test <value>] [-m <value>] [--build-logger-level\n    trace|debug|info|warn|error|fatal] [--freeze-credentials] [--verbose-logs] [--json --non-interactive]\n\nFLAGS\n  -e, --profile=PROFILE_NAME                                Name of the build profile from eas.json. Defaults to\n                                                            \"production\" if defined in eas.json.\n  -m, --message=<value>                                     A short message describing the build\n  -p, --platform=(android|ios|all)\n  -s, --auto-submit                                         Submit on build complete using the submit profile with the\n                                                            same name as the build profile\n  --auto-submit-with-profile=PROFILE_NAME                   Submit on build complete using the submit profile with\n                                                            provided name\n  --build-logger-level=(trace|debug|info|warn|error|fatal)  The level of logs to output during the build process.\n                                                            Defaults to \"info\".\n  --clear-cache                                             Clear cache before the build\n  --freeze-credentials                                      Prevent the build from updating credentials in\n                                                            non-interactive mode\n  --json                                                    Enable JSON output, non-JSON messages will be printed to\n                                                            stderr.\n  --local                                                   Run build locally [experimental]\n  --non-interactive                                         Run the command in non-interactive mode.\n  --output=<value>                                          Output path for local build\n  --verbose-logs                                            Use verbose logs for the build process\n  --[no-]wait                                               Wait for build(s) to complete\n  --what-to-test=<value>                                    Specify the \"What to Test\" information for the build in\n                                                            TestFlight (iOS-only). To be used with the `auto-submit`\n                                                            flag\n\nDESCRIPTION\n  start a build"
     },
     {
       "command": "eas build:cancel [BUILD_ID]",
       "description": "cancel a build",
-      "usage": "USAGE\n  $ eas build:cancel [BUILD_ID] [--non-interactive] [-p android|ios|all] [-e <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME        Filter builds by build profile if build ID is not provided\n  -p, --platform=(android|ios|all)  Filter builds by the platform if build ID is not provided\n  --non-interactive                 Run the command in non-interactive mode.\n\nDESCRIPTION\n  cancel a build",
-      "group": "build",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/build/cancel.ts"
+      "usage": "USAGE\n  $ eas build:cancel [BUILD_ID] [--non-interactive] [-p android|ios|all] [-e <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME        Filter builds by build profile if build ID is not provided\n  -p, --platform=(android|ios|all)  Filter builds by the platform if build ID is not provided\n  --non-interactive                 Run the command in non-interactive mode.\n\nDESCRIPTION\n  cancel a build"
     },
     {
       "command": "eas build:configure",
       "description": "configure the project to support EAS Build",
-      "usage": "USAGE\n  $ eas build:configure [-p android|ios|all]\n\nFLAGS\n  -p, --platform=(android|ios|all)  Platform to configure\n\nDESCRIPTION\n  configure the project to support EAS Build",
-      "group": "build",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/build/configure.ts"
+      "usage": "USAGE\n  $ eas build:configure [-p android|ios|all]\n\nFLAGS\n  -p, --platform=(android|ios|all)  Platform to configure\n\nDESCRIPTION\n  configure the project to support EAS Build"
     },
     {
       "command": "eas build:delete [BUILD_ID]",
       "description": "delete a build",
-      "usage": "USAGE\n  $ eas build:delete [BUILD_ID] [--non-interactive] [-p android|ios|all] [-e <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME        Filter builds by build profile if build ID is not provided\n  -p, --platform=(android|ios|all)  Filter builds by the platform if build ID is not provided\n  --non-interactive                 Run the command in non-interactive mode.\n\nDESCRIPTION\n  delete a build",
-      "group": "build",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/build/delete.ts"
+      "usage": "USAGE\n  $ eas build:delete [BUILD_ID] [--non-interactive] [-p android|ios|all] [-e <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME        Filter builds by build profile if build ID is not provided\n  -p, --platform=(android|ios|all)  Filter builds by the platform if build ID is not provided\n  --non-interactive                 Run the command in non-interactive mode.\n\nDESCRIPTION\n  delete a build"
     },
     {
       "command": "eas build:dev",
       "description": "run dev client simulator/emulator build with matching fingerprint or create a new one",
-      "usage": "USAGE\n  $ eas build:dev [-p ios|android] [-e <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME    Name of the build profile from eas.json. It must be a profile allowing to create\n                                emulator/simulator internal distribution dev client builds. The \"development-simulator\"\n                                build profile will be selected by default.\n  -p, --platform=(ios|android)\n\nDESCRIPTION\n  run dev client simulator/emulator build with matching fingerprint or create a new one",
-      "group": "build",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/build/dev.ts"
+      "usage": "USAGE\n  $ eas build:dev [-p ios|android] [-e <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME    Name of the build profile from eas.json. It must be a profile allowing to create\n                                emulator/simulator internal distribution dev client builds. The \"development-simulator\"\n                                build profile will be selected by default.\n  -p, --platform=(ios|android)\n\nDESCRIPTION\n  run dev client simulator/emulator build with matching fingerprint or create a new one"
     },
     {
       "command": "eas build:download",
       "description": "download simulator/emulator builds for a given fingerprint hash",
-      "usage": "USAGE\n  $ eas build:download --fingerprint <value> [-p ios|android] [--dev-client] [--json --non-interactive]\n\nFLAGS\n  -p, --platform=(ios|android)\n  --[no-]dev-client             Filter only dev-client builds.\n  --fingerprint=<value>         (required) Fingerprint hash of the build to download\n  --json                        Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive             Run the command in non-interactive mode.\n\nDESCRIPTION\n  download simulator/emulator builds for a given fingerprint hash",
-      "group": "build",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/build/download.ts"
+      "usage": "USAGE\n  $ eas build:download --fingerprint <value> [-p ios|android] [--dev-client] [--json --non-interactive]\n\nFLAGS\n  -p, --platform=(ios|android)\n  --[no-]dev-client             Filter only dev-client builds.\n  --fingerprint=<value>         (required) Fingerprint hash of the build to download\n  --json                        Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive             Run the command in non-interactive mode.\n\nDESCRIPTION\n  download simulator/emulator builds for a given fingerprint hash"
     },
     {
       "command": "eas build:inspect",
       "description": "inspect the state of the project at specific build stages, useful for troubleshooting",
-      "usage": "USAGE\n  $ eas build:inspect -p android|ios -s archive|pre-build|post-build -o <value> [-e <value>] [--force] [-v]\n\nFLAGS\n  -e, --profile=PROFILE_NAME\n      Name of the build profile from eas.json. Defaults to \"production\" if defined in eas.json.\n\n  -o, --output=OUTPUT_DIRECTORY\n      (required) Output directory.\n\n  -p, --platform=(android|ios)\n      (required)\n\n  -s, --stage=(archive|pre-build|post-build)\n      (required) Stage of the build you want to inspect.\n      archive - builds the project archive that would be uploaded to EAS when building\n      pre-build - prepares the project to be built with Gradle/Xcode. Does not run the native build.\n      post-build - builds the native project and leaves the output directory for inspection\n\n  -v, --verbose\n\n  --force\n      Delete OUTPUT_DIRECTORY if it already exists.\n\nDESCRIPTION\n  inspect the state of the project at specific build stages, useful for troubleshooting",
-      "group": "build",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/build/inspect.ts"
+      "usage": "USAGE\n  $ eas build:inspect -p android|ios -s archive|pre-build|post-build -o <value> [-e <value>] [--force] [-v]\n\nFLAGS\n  -e, --profile=PROFILE_NAME\n      Name of the build profile from eas.json. Defaults to \"production\" if defined in eas.json.\n\n  -o, --output=OUTPUT_DIRECTORY\n      (required) Output directory.\n\n  -p, --platform=(android|ios)\n      (required)\n\n  -s, --stage=(archive|pre-build|post-build)\n      (required) Stage of the build you want to inspect.\n      archive - builds the project archive that would be uploaded to EAS when building\n      pre-build - prepares the project to be built with Gradle/Xcode. Does not run the native build.\n      post-build - builds the native project and leaves the output directory for inspection\n\n  -v, --verbose\n\n  --force\n      Delete OUTPUT_DIRECTORY if it already exists.\n\nDESCRIPTION\n  inspect the state of the project at specific build stages, useful for troubleshooting"
     },
     {
       "command": "eas build:list",
       "description": "list all builds for your project",
-      "usage": "USAGE\n  $ eas build:list [-p android|ios|all] [--status\n    new|in-queue|in-progress|pending-cancel|errored|finished|canceled] [--distribution store|internal|simulator]\n    [--channel <value>] [--app-version <value>] [--app-build-version <value>] [--sdk-version <value>] [--runtime-version\n    <value>] [--app-identifier <value>] [-e <value>] [--git-commit-hash <value>] [--fingerprint-hash <value>] [--offset\n    <value>] [--limit <value>] [--json --non-interactive] [--simulator]\n\nFLAGS\n  -e, --build-profile=<value>                                                   Filter only builds created with the\n                                                                                specified build profile\n  -p, --platform=(android|ios|all)\n  --app-build-version=<value>                                                   Filter only builds created with the\n                                                                                specified app build version\n  --app-identifier=<value>                                                      Filter only builds created with the\n                                                                                specified app identifier\n  --app-version=<value>                                                         Filter only builds created with the\n                                                                                specified main app version\n  --channel=<value>\n  --distribution=(store|internal|simulator)                                     Filter only builds with the specified\n                                                                                distribution type\n  --fingerprint-hash=<value>                                                    Filter only builds with the specified\n                                                                                fingerprint hash\n  --git-commit-hash=<value>                                                     Filter only builds created with the\n                                                                                specified git commit hash\n  --json                                                                        Enable JSON output, non-JSON messages\n                                                                                will be printed to stderr.\n  --limit=<value>                                                               The number of items to fetch each query.\n                                                                                Defaults to 10 and is capped at 50.\n  --non-interactive                                                             Run the command in non-interactive mode.\n  --offset=<value>                                                              Start queries from specified index. Use\n                                                                                for paginating results. Defaults to 0.\n  --runtime-version=<value>                                                     Filter only builds created with the\n                                                                                specified runtime version\n  --sdk-version=<value>                                                         Filter only builds created with the\n                                                                                specified Expo SDK version\n  --simulator                                                                   Filter only iOS simulator builds. Can\n                                                                                only be used with --platform flag set to\n                                                                                \"ios\"\n  --status=(new|in-queue|in-progress|pending-cancel|errored|finished|canceled)  Filter only builds with the specified\n                                                                                status\n\nDESCRIPTION\n  list all builds for your project",
-      "group": "build",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/build/list.ts"
+      "usage": "USAGE\n  $ eas build:list [-p android|ios|all] [--status\n    new|in-queue|in-progress|pending-cancel|errored|finished|canceled] [--distribution store|internal|simulator]\n    [--channel <value>] [--app-version <value>] [--app-build-version <value>] [--sdk-version <value>] [--runtime-version\n    <value>] [--app-identifier <value>] [-e <value>] [--git-commit-hash <value>] [--fingerprint-hash <value>] [--offset\n    <value>] [--limit <value>] [--json --non-interactive] [--simulator]\n\nFLAGS\n  -e, --build-profile=<value>                                                   Filter only builds created with the\n                                                                                specified build profile\n  -p, --platform=(android|ios|all)\n  --app-build-version=<value>                                                   Filter only builds created with the\n                                                                                specified app build version\n  --app-identifier=<value>                                                      Filter only builds created with the\n                                                                                specified app identifier\n  --app-version=<value>                                                         Filter only builds created with the\n                                                                                specified main app version\n  --channel=<value>\n  --distribution=(store|internal|simulator)                                     Filter only builds with the specified\n                                                                                distribution type\n  --fingerprint-hash=<value>                                                    Filter only builds with the specified\n                                                                                fingerprint hash\n  --git-commit-hash=<value>                                                     Filter only builds created with the\n                                                                                specified git commit hash\n  --json                                                                        Enable JSON output, non-JSON messages\n                                                                                will be printed to stderr.\n  --limit=<value>                                                               The number of items to fetch each query.\n                                                                                Defaults to 10 and is capped at 50.\n  --non-interactive                                                             Run the command in non-interactive mode.\n  --offset=<value>                                                              Start queries from specified index. Use\n                                                                                for paginating results. Defaults to 0.\n  --runtime-version=<value>                                                     Filter only builds created with the\n                                                                                specified runtime version\n  --sdk-version=<value>                                                         Filter only builds created with the\n                                                                                specified Expo SDK version\n  --simulator                                                                   Filter only iOS simulator builds. Can\n                                                                                only be used with --platform flag set to\n                                                                                \"ios\"\n  --status=(new|in-queue|in-progress|pending-cancel|errored|finished|canceled)  Filter only builds with the specified\n                                                                                status\n\nDESCRIPTION\n  list all builds for your project"
     },
     {
       "command": "eas build:resign",
       "description": "re-sign a build archive",
-      "usage": "USAGE\n  $ eas build:resign [-p android|ios] [-e <value>] [--source-profile <value>] [--wait] [--id <value>] [--offset\n    <value>] [--limit <value>] [--json --non-interactive]\n\nFLAGS\n  -e, --target-profile=PROFILE_NAME  Name of the target build profile from eas.json. Credentials and environment\n                                     variables from this profile will be used when re-signing. Defaults to \"production\"\n                                     if defined in eas.json.\n  -p, --platform=(android|ios)\n  --id=<value>                       ID of the build to re-sign.\n  --json                             Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>                    The number of items to fetch each query. Defaults to 50 and is capped at 100.\n  --non-interactive                  Run the command in non-interactive mode.\n  --offset=<value>                   Start queries from specified index. Use for paginating results. Defaults to 0.\n  --source-profile=PROFILE_NAME      Name of the source build profile from eas.json. Used to filter builds eligible for\n                                     re-signing.\n  --[no-]wait                        Wait for build(s) to complete.\n\nDESCRIPTION\n  re-sign a build archive",
-      "group": "build",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/build/resign.ts"
+      "usage": "USAGE\n  $ eas build:resign [-p android|ios] [-e <value>] [--source-profile <value>] [--wait] [--id <value>] [--offset\n    <value>] [--limit <value>] [--json --non-interactive]\n\nFLAGS\n  -e, --target-profile=PROFILE_NAME  Name of the target build profile from eas.json. Credentials and environment\n                                     variables from this profile will be used when re-signing. Defaults to \"production\"\n                                     if defined in eas.json.\n  -p, --platform=(android|ios)\n  --id=<value>                       ID of the build to re-sign.\n  --json                             Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>                    The number of items to fetch each query. Defaults to 50 and is capped at 100.\n  --non-interactive                  Run the command in non-interactive mode.\n  --offset=<value>                   Start queries from specified index. Use for paginating results. Defaults to 0.\n  --source-profile=PROFILE_NAME      Name of the source build profile from eas.json. Used to filter builds eligible for\n                                     re-signing.\n  --[no-]wait                        Wait for build(s) to complete.\n\nDESCRIPTION\n  re-sign a build archive"
     },
     {
       "command": "eas build:run",
       "description": "run simulator/emulator builds from eas-cli",
-      "usage": "USAGE\n  $ eas build:run [--latest | --id <value> | --path <value> | --url <value>] [-p android|ios] [-e <value>]\n    [--offset <value>] [--limit <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME    Name of the build profile used to create the build to run. When specified, only builds\n                                created with the specified build profile will be queried.\n  -p, --platform=(android|ios)\n  --id=<value>                  ID of the simulator/emulator build to run\n  --latest                      Run the latest simulator/emulator build for specified platform\n  --limit=<value>               The number of items to fetch each query. Defaults to 50 and is capped at 100.\n  --offset=<value>              Start queries from specified index. Use for paginating results. Defaults to 0.\n  --path=<value>                Path to the simulator/emulator build archive or app\n  --url=<value>                 Simulator/Emulator build archive url\n\nDESCRIPTION\n  run simulator/emulator builds from eas-cli",
-      "group": "build",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/build/run.ts"
+      "usage": "USAGE\n  $ eas build:run [--latest | --id <value> | --path <value> | --url <value>] [-p android|ios] [-e <value>]\n    [--offset <value>] [--limit <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME    Name of the build profile used to create the build to run. When specified, only builds\n                                created with the specified build profile will be queried.\n  -p, --platform=(android|ios)\n  --id=<value>                  ID of the simulator/emulator build to run\n  --latest                      Run the latest simulator/emulator build for specified platform\n  --limit=<value>               The number of items to fetch each query. Defaults to 50 and is capped at 100.\n  --offset=<value>              Start queries from specified index. Use for paginating results. Defaults to 0.\n  --path=<value>                Path to the simulator/emulator build archive or app\n  --url=<value>                 Simulator/Emulator build archive url\n\nDESCRIPTION\n  run simulator/emulator builds from eas-cli"
     },
     {
       "command": "eas build:submit",
       "description": "submit app binary to App Store and/or Play Store",
-      "usage": "USAGE\n  $ eas build:submit [-p android|ios|all] [-e <value>] [--latest | --id <value> | --path <value> | --url <value>]\n    [--what-to-test <value>] [--verbose] [--wait] [--verbose-fastlane] [-g <value>] [--non-interactive]\n\nFLAGS\n  -e, --profile=<value>             Name of the submit profile from eas.json. Defaults to \"production\" if defined in\n                                    eas.json.\n  -g, --groups=<value>...           Internal TestFlight testing groups to add the build to (iOS only). Learn more:\n                                    https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-\n                                    testers\n  -p, --platform=(android|ios|all)\n  --id=<value>                      ID of the build to submit\n  --latest                          Submit the latest build for specified platform\n  --non-interactive                 Run command in non-interactive mode\n  --path=<value>                    Path to the .apk/.aab/.ipa file\n  --url=<value>                     App archive url\n  --verbose                         Always print logs from EAS Submit\n  --verbose-fastlane                Enable verbose logging for the submission process\n  --[no-]wait                       Wait for submission to complete\n  --what-to-test=<value>            Sets the \"What to test\" information in TestFlight (iOS only).\n\nDESCRIPTION\n  submit app binary to App Store and/or Play Store\n\nALIASES\n  $ eas build:submit",
-      "group": "build",
-      "seeCode": ""
+      "usage": "USAGE\n  $ eas build:submit [-p android|ios|all] [-e <value>] [--latest | --id <value> | --path <value> | --url <value>]\n    [--what-to-test <value>] [--verbose] [--wait] [--verbose-fastlane] [-g <value>] [--non-interactive]\n\nFLAGS\n  -e, --profile=<value>             Name of the submit profile from eas.json. Defaults to \"production\" if defined in\n                                    eas.json.\n  -g, --groups=<value>...           Internal TestFlight testing groups to add the build to (iOS only). Learn more:\n                                    https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-\n                                    testers\n  -p, --platform=(android|ios|all)\n  --id=<value>                      ID of the build to submit\n  --latest                          Submit the latest build for specified platform\n  --non-interactive                 Run command in non-interactive mode\n  --path=<value>                    Path to the .apk/.aab/.ipa file\n  --url=<value>                     App archive url\n  --verbose                         Always print logs from EAS Submit\n  --verbose-fastlane                Enable verbose logging for the submission process\n  --[no-]wait                       Wait for submission to complete\n  --what-to-test=<value>            Sets the \"What to test\" information in TestFlight (iOS only).\n\nDESCRIPTION\n  submit app binary to App Store and/or Play Store\n\nALIASES\n  $ eas build:submit"
     },
     {
       "command": "eas build:version:get",
       "description": "get the latest version from EAS servers",
-      "usage": "USAGE\n  $ eas build:version:get [-p android|ios|all] [-e <value>] [--json --non-interactive]\n\nFLAGS\n  -e, --profile=PROFILE_NAME        Name of the build profile from eas.json. Defaults to \"production\" if defined in\n                                    eas.json.\n  -p, --platform=(android|ios|all)\n  --json                            Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive                 Run the command in non-interactive mode.\n\nDESCRIPTION\n  get the latest version from EAS servers",
-      "group": "build",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/build/version/get.ts"
+      "usage": "USAGE\n  $ eas build:version:get [-p android|ios|all] [-e <value>] [--json --non-interactive]\n\nFLAGS\n  -e, --profile=PROFILE_NAME        Name of the build profile from eas.json. Defaults to \"production\" if defined in\n                                    eas.json.\n  -p, --platform=(android|ios|all)\n  --json                            Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive                 Run the command in non-interactive mode.\n\nDESCRIPTION\n  get the latest version from EAS servers"
     },
     {
       "command": "eas build:version:set",
       "description": "update version of an app",
-      "usage": "USAGE\n  $ eas build:version:set [-p android|ios] [-e <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME    Name of the build profile from eas.json. Defaults to \"production\" if defined in\n                                eas.json.\n  -p, --platform=(android|ios)\n\nDESCRIPTION\n  update version of an app",
-      "group": "build",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/build/version/set.ts"
+      "usage": "USAGE\n  $ eas build:version:set [-p android|ios] [-e <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME    Name of the build profile from eas.json. Defaults to \"production\" if defined in\n                                eas.json.\n  -p, --platform=(android|ios)\n\nDESCRIPTION\n  update version of an app"
     },
     {
       "command": "eas build:version:sync",
       "description": "update a version in native code with a value stored on EAS servers",
-      "usage": "USAGE\n  $ eas build:version:sync [-p android|ios|all] [-e <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME        Name of the build profile from eas.json. Defaults to \"production\" if defined in\n                                    eas.json.\n  -p, --platform=(android|ios|all)\n\nDESCRIPTION\n  update a version in native code with a value stored on EAS servers",
-      "group": "build",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/build/version/sync.ts"
+      "usage": "USAGE\n  $ eas build:version:sync [-p android|ios|all] [-e <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME        Name of the build profile from eas.json. Defaults to \"production\" if defined in\n                                    eas.json.\n  -p, --platform=(android|ios|all)\n\nDESCRIPTION\n  update a version in native code with a value stored on EAS servers"
     },
     {
       "command": "eas build:view [BUILD_ID]",
       "description": "view a build for your project",
-      "usage": "USAGE\n  $ eas build:view [BUILD_ID] [--json]\n\nFLAGS\n  --json  Enable JSON output, non-JSON messages will be printed to stderr.\n\nDESCRIPTION\n  view a build for your project",
-      "group": "build",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/build/view.ts"
+      "usage": "USAGE\n  $ eas build:view [BUILD_ID] [--json]\n\nFLAGS\n  --json  Enable JSON output, non-JSON messages will be printed to stderr.\n\nDESCRIPTION\n  view a build for your project"
     },
     {
       "command": "eas channel:create [NAME]",
       "description": "create a channel",
-      "usage": "USAGE\n  $ eas channel:create [NAME] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the channel to create\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  create a channel",
-      "group": "channel",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/channel/create.ts"
+      "usage": "USAGE\n  $ eas channel:create [NAME] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the channel to create\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  create a channel"
     },
     {
       "command": "eas channel:delete [NAME]",
       "description": "Delete a channel",
-      "usage": "USAGE\n  $ eas channel:delete [NAME] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the channel to delete\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  Delete a channel",
-      "group": "channel",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/channel/delete.ts"
+      "usage": "USAGE\n  $ eas channel:delete [NAME] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the channel to delete\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  Delete a channel"
     },
     {
       "command": "eas channel:edit [NAME]",
       "description": "point a channel at a new branch",
-      "usage": "USAGE\n  $ eas channel:edit [NAME] [--branch <value>] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the channel to edit\n\nFLAGS\n  --branch=<value>   Name of the branch to point to\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  point a channel at a new branch",
-      "group": "channel",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/channel/edit.ts"
+      "usage": "USAGE\n  $ eas channel:edit [NAME] [--branch <value>] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the channel to edit\n\nFLAGS\n  --branch=<value>   Name of the branch to point to\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  point a channel at a new branch"
     },
     {
       "command": "eas channel:list",
       "description": "list all channels",
-      "usage": "USAGE\n  $ eas channel:list [--offset <value>] [--limit <value>] [--json --non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>    The number of items to fetch each query. Defaults to 10 and is capped at 25.\n  --non-interactive  Run the command in non-interactive mode.\n  --offset=<value>   Start queries from specified index. Use for paginating results. Defaults to 0.\n\nDESCRIPTION\n  list all channels",
-      "group": "channel",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/channel/list.ts"
+      "usage": "USAGE\n  $ eas channel:list [--offset <value>] [--limit <value>] [--json --non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>    The number of items to fetch each query. Defaults to 10 and is capped at 25.\n  --non-interactive  Run the command in non-interactive mode.\n  --offset=<value>   Start queries from specified index. Use for paginating results. Defaults to 0.\n\nDESCRIPTION\n  list all channels"
     },
     {
       "command": "eas channel:pause [NAME]",
       "description": "pause a channel to stop it from sending updates",
-      "usage": "USAGE\n  $ eas channel:pause [NAME] [--branch <value>] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the channel to edit\n\nFLAGS\n  --branch=<value>   Name of the branch to point to\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  pause a channel to stop it from sending updates",
-      "group": "channel",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/channel/pause.ts"
+      "usage": "USAGE\n  $ eas channel:pause [NAME] [--branch <value>] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the channel to edit\n\nFLAGS\n  --branch=<value>   Name of the branch to point to\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  pause a channel to stop it from sending updates"
     },
     {
       "command": "eas channel:resume [NAME]",
       "description": "resume a channel to start sending updates",
-      "usage": "USAGE\n  $ eas channel:resume [NAME] [--branch <value>] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the channel to edit\n\nFLAGS\n  --branch=<value>   Name of the branch to point to\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  resume a channel to start sending updates",
-      "group": "channel",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/channel/resume.ts"
+      "usage": "USAGE\n  $ eas channel:resume [NAME] [--branch <value>] [--json --non-interactive]\n\nARGUMENTS\n  NAME  Name of the channel to edit\n\nFLAGS\n  --branch=<value>   Name of the branch to point to\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  resume a channel to start sending updates"
     },
     {
       "command": "eas channel:rollout [CHANNEL]",
       "description": "Roll a new branch out on a channel incrementally.",
-      "usage": "USAGE\n  $ eas channel:rollout [CHANNEL] [--action create|edit|end|view] [--percent <value>] [--outcome\n    republish-and-revert|revert] [--branch <value>] [--runtime-version <value>] [--private-key-path <value>] [--json\n    --non-interactive]\n\nARGUMENTS\n  CHANNEL  channel on which the rollout should be done\n\nFLAGS\n  --action=(create|edit|end|view)          Rollout action to perform\n  --branch=<value>                         Branch to roll out. Use with --action=create\n  --json                                   Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive                        Run the command in non-interactive mode.\n  --outcome=(republish-and-revert|revert)  End outcome of rollout. Use with --action=end\n  --percent=<value>                        Percent of users to send to the new branch. Use with --action=edit or\n                                           --action=create\n  --private-key-path=<value>               File containing the PEM-encoded private key corresponding to the certificate\n                                           in expo-updates' configuration. Defaults to a file named \"private-key.pem\" in\n                                           the certificate's directory. Only relevant if you are using code signing:\n                                           https://docs.expo.dev/eas-update/code-signing/\n  --runtime-version=<value>                Runtime version to target. Use with --action=create\n\nDESCRIPTION\n  Roll a new branch out on a channel incrementally.",
-      "group": "channel",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/channel/rollout.ts"
+      "usage": "USAGE\n  $ eas channel:rollout [CHANNEL] [--action create|edit|end|view] [--percent <value>] [--outcome\n    republish-and-revert|revert] [--branch <value>] [--runtime-version <value>] [--private-key-path <value>] [--json\n    --non-interactive]\n\nARGUMENTS\n  CHANNEL  channel on which the rollout should be done\n\nFLAGS\n  --action=(create|edit|end|view)          Rollout action to perform\n  --branch=<value>                         Branch to roll out. Use with --action=create\n  --json                                   Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive                        Run the command in non-interactive mode.\n  --outcome=(republish-and-revert|revert)  End outcome of rollout. Use with --action=end\n  --percent=<value>                        Percent of users to send to the new branch. Use with --action=edit or\n                                           --action=create\n  --private-key-path=<value>               File containing the PEM-encoded private key corresponding to the certificate\n                                           in expo-updates' configuration. Defaults to a file named \"private-key.pem\" in\n                                           the certificate's directory. Only relevant if you are using code signing:\n                                           https://docs.expo.dev/eas-update/code-signing/\n  --runtime-version=<value>                Runtime version to target. Use with --action=create\n\nDESCRIPTION\n  Roll a new branch out on a channel incrementally."
     },
     {
       "command": "eas channel:view [NAME]",
       "description": "view a channel",
-      "usage": "USAGE\n  $ eas channel:view [NAME] [--json --non-interactive] [--offset <value>] [--limit <value>]\n\nARGUMENTS\n  NAME  Name of the channel to view\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>    The number of items to fetch each query. Defaults to 50 and is capped at 100.\n  --non-interactive  Run the command in non-interactive mode.\n  --offset=<value>   Start queries from specified index. Use for paginating results. Defaults to 0.\n\nDESCRIPTION\n  view a channel",
-      "group": "channel",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/channel/view.ts"
+      "usage": "USAGE\n  $ eas channel:view [NAME] [--json --non-interactive] [--offset <value>] [--limit <value>]\n\nARGUMENTS\n  NAME  Name of the channel to view\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>    The number of items to fetch each query. Defaults to 50 and is capped at 100.\n  --non-interactive  Run the command in non-interactive mode.\n  --offset=<value>   Start queries from specified index. Use for paginating results. Defaults to 0.\n\nDESCRIPTION\n  view a channel"
     },
     {
       "command": "eas config",
       "description": "display project configuration (app.json + eas.json)",
-      "usage": "USAGE\n  $ eas config [-p android|ios] [-e <value>] [--json --non-interactive]\n\nFLAGS\n  -e, --profile=PROFILE_NAME    Name of the build profile from eas.json. Defaults to \"production\" if defined in\n                                eas.json.\n  -p, --platform=(android|ios)\n  --json                        Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive             Run the command in non-interactive mode.\n\nDESCRIPTION\n  display project configuration (app.json + eas.json)",
-      "group": "config",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/config.ts"
+      "usage": "USAGE\n  $ eas config [-p android|ios] [-e <value>] [--json --non-interactive]\n\nFLAGS\n  -e, --profile=PROFILE_NAME    Name of the build profile from eas.json. Defaults to \"production\" if defined in\n                                eas.json.\n  -p, --platform=(android|ios)\n  --json                        Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive             Run the command in non-interactive mode.\n\nDESCRIPTION\n  display project configuration (app.json + eas.json)"
     },
     {
       "command": "eas credentials",
       "description": "manage credentials",
-      "usage": "USAGE\n  $ eas credentials [-p android|ios]\n\nFLAGS\n  -p, --platform=(android|ios)\n\nDESCRIPTION\n  manage credentials",
-      "group": "credentials",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/credentials/index.ts"
+      "usage": "USAGE\n  $ eas credentials [-p android|ios]\n\nFLAGS\n  -p, --platform=(android|ios)\n\nDESCRIPTION\n  manage credentials"
     },
     {
       "command": "eas credentials:configure-build",
       "description": "Set up credentials for building your project.",
-      "usage": "USAGE\n  $ eas credentials:configure-build [-p android|ios] [-e <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME    The name of the build profile in eas.json.\n  -p, --platform=(android|ios)\n\nDESCRIPTION\n  Set up credentials for building your project.",
-      "group": "credentials",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/credentials/configure-build.ts"
+      "usage": "USAGE\n  $ eas credentials:configure-build [-p android|ios] [-e <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME    The name of the build profile in eas.json.\n  -p, --platform=(android|ios)\n\nDESCRIPTION\n  Set up credentials for building your project."
     },
     {
       "command": "eas deploy [options]",
       "description": "deploy your Expo Router web build and API Routes",
-      "usage": "USAGE\n  $ eas deploy [options]\n  $ eas deploy --prod\n\nFLAGS\n  --alias=name           Custom alias to assign to the new deployment.\n  --dry-run              Outputs a tarball of the new deployment instead of uploading it.\n  --environment=<value>  Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --export-dir=dir       [default: dist] Directory where the Expo project was exported.\n  --id=xyz123            Custom unique identifier for the new deployment.\n  --json                 Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive      Run the command in non-interactive mode.\n  --prod                 Create a new production deployment.\n\nDESCRIPTION\n  deploy your Expo Router web build and API Routes\n\nALIASES\n  $ eas worker:deploy",
-      "group": "deploy",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/deploy/index.ts"
+      "usage": "USAGE\n  $ eas deploy [options]\n  $ eas deploy --prod\n\nFLAGS\n  --alias=name           Custom alias to assign to the new deployment.\n  --dry-run              Outputs a tarball of the new deployment instead of uploading it.\n  --environment=<value>  Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --export-dir=dir       [default: dist] Directory where the Expo project was exported.\n  --id=xyz123            Custom unique identifier for the new deployment.\n  --json                 Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive      Run the command in non-interactive mode.\n  --prod                 Create a new production deployment.\n\nDESCRIPTION\n  deploy your Expo Router web build and API Routes\n\nALIASES\n  $ eas worker:deploy"
     },
     {
       "command": "eas deploy:alias",
       "description": "Assign deployment aliases.",
-      "usage": "USAGE\n  $ eas deploy:alias [--prod] [--alias <value>] [--id <value>] [--json --non-interactive]\n\nFLAGS\n  --alias=name       Custom alias to assign to the existing deployment.\n  --id=xyz123        Unique identifier of an existing deployment.\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n  --prod             Promote an existing deployment to production.\n\nDESCRIPTION\n  Assign deployment aliases.\n\nALIASES\n  $ eas worker:alias\n  $ eas deploy:promote",
-      "group": "deploy",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/deploy/alias/index.ts"
+      "usage": "USAGE\n  $ eas deploy:alias [--prod] [--alias <value>] [--id <value>] [--json --non-interactive]\n\nFLAGS\n  --alias=name       Custom alias to assign to the existing deployment.\n  --id=xyz123        Unique identifier of an existing deployment.\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n  --prod             Promote an existing deployment to production.\n\nDESCRIPTION\n  Assign deployment aliases.\n\nALIASES\n  $ eas worker:alias\n  $ eas deploy:promote"
     },
     {
       "command": "eas deploy:alias:delete [ALIAS_NAME]",
       "description": "Delete deployment aliases.",
-      "usage": "USAGE\n  $ eas deploy:alias:delete [ALIAS_NAME] [--json --non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  Delete deployment aliases.\n\nALIASES\n  $ eas worker:alias:delete",
-      "group": "deploy",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/deploy/alias/delete.ts"
+      "usage": "USAGE\n  $ eas deploy:alias:delete [ALIAS_NAME] [--json --non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  Delete deployment aliases.\n\nALIASES\n  $ eas worker:alias:delete"
     },
     {
       "command": "eas deploy:delete [DEPLOYMENT_ID]",
       "description": "Delete a deployment.",
-      "usage": "USAGE\n  $ eas deploy:delete [DEPLOYMENT_ID] [--json --non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  Delete a deployment.\n\nALIASES\n  $ eas worker:delete",
-      "group": "deploy",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/deploy/delete.ts"
+      "usage": "USAGE\n  $ eas deploy:delete [DEPLOYMENT_ID] [--json --non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  Delete a deployment.\n\nALIASES\n  $ eas worker:delete"
     },
     {
       "command": "eas deploy:promote",
       "description": "Assign deployment aliases.",
-      "usage": "USAGE\n  $ eas deploy:promote [--prod] [--alias <value>] [--id <value>] [--json --non-interactive]\n\nFLAGS\n  --alias=name       Custom alias to assign to the existing deployment.\n  --id=xyz123        Unique identifier of an existing deployment.\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n  --prod             Promote an existing deployment to production.\n\nDESCRIPTION\n  Assign deployment aliases.\n\nALIASES\n  $ eas worker:alias\n  $ eas deploy:promote",
-      "group": "deploy",
-      "seeCode": ""
+      "usage": "USAGE\n  $ eas deploy:promote [--prod] [--alias <value>] [--id <value>] [--json --non-interactive]\n\nFLAGS\n  --alias=name       Custom alias to assign to the existing deployment.\n  --id=xyz123        Unique identifier of an existing deployment.\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n  --prod             Promote an existing deployment to production.\n\nDESCRIPTION\n  Assign deployment aliases.\n\nALIASES\n  $ eas worker:alias\n  $ eas deploy:promote"
     },
     {
       "command": "eas device:create",
       "description": "register new Apple Devices to use for internal distribution",
-      "usage": "USAGE\n  $ eas device:create\n\nDESCRIPTION\n  register new Apple Devices to use for internal distribution",
-      "group": "device",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/device/create.ts"
+      "usage": "USAGE\n  $ eas device:create\n\nDESCRIPTION\n  register new Apple Devices to use for internal distribution"
     },
     {
       "command": "eas device:delete",
       "description": "remove a registered device from your account",
-      "usage": "USAGE\n  $ eas device:delete [--apple-team-id <value>] [--udid <value>] [--json --non-interactive]\n\nFLAGS\n  --apple-team-id=<value>  The Apple team ID on which to find the device\n  --json                   Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive        Run the command in non-interactive mode.\n  --udid=<value>           The Apple device ID to disable\n\nDESCRIPTION\n  remove a registered device from your account",
-      "group": "device",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/device/delete.ts"
+      "usage": "USAGE\n  $ eas device:delete [--apple-team-id <value>] [--udid <value>] [--json --non-interactive]\n\nFLAGS\n  --apple-team-id=<value>  The Apple team ID on which to find the device\n  --json                   Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive        Run the command in non-interactive mode.\n  --udid=<value>           The Apple device ID to disable\n\nDESCRIPTION\n  remove a registered device from your account"
     },
     {
       "command": "eas device:list",
       "description": "list all registered devices for your account",
-      "usage": "USAGE\n  $ eas device:list [--apple-team-id <value>] [--offset <value>] [--limit <value>] [--json --non-interactive]\n\nFLAGS\n  --apple-team-id=<value>\n  --json                   Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>          The number of items to fetch each query. Defaults to 50 and is capped at 100.\n  --non-interactive        Run the command in non-interactive mode.\n  --offset=<value>         Start queries from specified index. Use for paginating results. Defaults to 0.\n\nDESCRIPTION\n  list all registered devices for your account",
-      "group": "device",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/device/list.ts"
+      "usage": "USAGE\n  $ eas device:list [--apple-team-id <value>] [--offset <value>] [--limit <value>] [--json --non-interactive]\n\nFLAGS\n  --apple-team-id=<value>\n  --json                   Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>          The number of items to fetch each query. Defaults to 50 and is capped at 100.\n  --non-interactive        Run the command in non-interactive mode.\n  --offset=<value>         Start queries from specified index. Use for paginating results. Defaults to 0.\n\nDESCRIPTION\n  list all registered devices for your account"
     },
     {
       "command": "eas device:rename",
       "description": "rename a registered device",
-      "usage": "USAGE\n  $ eas device:rename [--apple-team-id <value>] [--udid <value>] [--name <value>] [--json --non-interactive]\n\nFLAGS\n  --apple-team-id=<value>  The Apple team ID on which to find the device\n  --json                   Enable JSON output, non-JSON messages will be printed to stderr.\n  --name=<value>           The new name for the device\n  --non-interactive        Run the command in non-interactive mode.\n  --udid=<value>           The Apple device ID to rename\n\nDESCRIPTION\n  rename a registered device",
-      "group": "device",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/device/rename.ts"
+      "usage": "USAGE\n  $ eas device:rename [--apple-team-id <value>] [--udid <value>] [--name <value>] [--json --non-interactive]\n\nFLAGS\n  --apple-team-id=<value>  The Apple team ID on which to find the device\n  --json                   Enable JSON output, non-JSON messages will be printed to stderr.\n  --name=<value>           The new name for the device\n  --non-interactive        Run the command in non-interactive mode.\n  --udid=<value>           The Apple device ID to rename\n\nDESCRIPTION\n  rename a registered device"
     },
     {
       "command": "eas device:view [UDID]",
       "description": "view a device for your project",
-      "usage": "USAGE\n  $ eas device:view [UDID]\n\nDESCRIPTION\n  view a device for your project",
-      "group": "device",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/device/view.ts"
+      "usage": "USAGE\n  $ eas device:view [UDID]\n\nDESCRIPTION\n  view a device for your project"
     },
     {
       "command": "eas diagnostics",
       "description": "display environment info",
-      "usage": "USAGE\n  $ eas diagnostics\n\nDESCRIPTION\n  display environment info",
-      "group": "diagnostics",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/diagnostics.ts"
+      "usage": "USAGE\n  $ eas diagnostics\n\nDESCRIPTION\n  display environment info"
     },
     {
       "command": "eas env:create [ENVIRONMENT]",
       "description": "create an environment variable for the current project or account",
-      "usage": "USAGE\n  $ eas env:create [ENVIRONMENT] [--name <value>] [--value <value>] [--force] [--type string|file] [--visibility\n    plaintext|sensitive|secret] [--scope project|account] [--environment <value>] [--non-interactive]\n\nARGUMENTS\n  ENVIRONMENT  Environment to create the variable in. Default environments are 'production', 'preview', and\n               'development'.\n\nFLAGS\n  --environment=<value>...                   Environment variable's environment, e.g. 'production', 'preview',\n                                             'development'\n  --force                                    Overwrite existing variable\n  --name=<value>                             Name of the variable\n  --non-interactive                          Run the command in non-interactive mode.\n  --scope=(project|account)                  [default: project] Scope for the variable\n  --type=(string|file)                       The type of variable\n  --value=<value>                            Text value or the variable\n  --visibility=(plaintext|sensitive|secret)  Visibility of the variable\n\nDESCRIPTION\n  create an environment variable for the current project or account",
-      "group": "env",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/env/create.ts"
+      "usage": "USAGE\n  $ eas env:create [ENVIRONMENT] [--name <value>] [--value <value>] [--force] [--type string|file] [--visibility\n    plaintext|sensitive|secret] [--scope project|account] [--environment <value>] [--non-interactive]\n\nARGUMENTS\n  ENVIRONMENT  Environment to create the variable in. Default environments are 'production', 'preview', and\n               'development'.\n\nFLAGS\n  --environment=<value>...                   Environment variable's environment, e.g. 'production', 'preview',\n                                             'development'\n  --force                                    Overwrite existing variable\n  --name=<value>                             Name of the variable\n  --non-interactive                          Run the command in non-interactive mode.\n  --scope=(project|account)                  [default: project] Scope for the variable\n  --type=(string|file)                       The type of variable\n  --value=<value>                            Text value or the variable\n  --visibility=(plaintext|sensitive|secret)  Visibility of the variable\n\nDESCRIPTION\n  create an environment variable for the current project or account"
     },
     {
       "command": "eas env:delete [ENVIRONMENT]",
       "description": "delete an environment variable for the current project or account",
-      "usage": "USAGE\n  $ eas env:delete [ENVIRONMENT] [--variable-name <value>] [--variable-environment <value>] [--scope\n    project|account] [--non-interactive]\n\nARGUMENTS\n  ENVIRONMENT  Current environment of the variable to delete. Default environments are 'production', 'preview', and\n               'development'.\n\nFLAGS\n  --non-interactive               Run the command in non-interactive mode.\n  --scope=(project|account)       [default: project] Scope for the variable\n  --variable-environment=<value>  Current environment of the variable to delete\n  --variable-name=<value>         Name of the variable to delete\n\nDESCRIPTION\n  delete an environment variable for the current project or account",
-      "group": "env",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/env/delete.ts"
+      "usage": "USAGE\n  $ eas env:delete [ENVIRONMENT] [--variable-name <value>] [--variable-environment <value>] [--scope\n    project|account] [--non-interactive]\n\nARGUMENTS\n  ENVIRONMENT  Current environment of the variable to delete. Default environments are 'production', 'preview', and\n               'development'.\n\nFLAGS\n  --non-interactive               Run the command in non-interactive mode.\n  --scope=(project|account)       [default: project] Scope for the variable\n  --variable-environment=<value>  Current environment of the variable to delete\n  --variable-name=<value>         Name of the variable to delete\n\nDESCRIPTION\n  delete an environment variable for the current project or account"
     },
     {
       "command": "eas env:exec ENVIRONMENT BASH_COMMAND",
       "description": "execute a command with environment variables from the selected environment",
-      "usage": "USAGE\n  $ eas env:exec ENVIRONMENT BASH_COMMAND [--non-interactive]\n\nARGUMENTS\n  ENVIRONMENT   Environment to execute the command in. Default environments are 'production', 'preview', and\n                'development'.\n  BASH_COMMAND  bash command to execute with the environment variables from the environment\n\nFLAGS\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  execute a command with environment variables from the selected environment",
-      "group": "env",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/env/exec.ts"
+      "usage": "USAGE\n  $ eas env:exec ENVIRONMENT BASH_COMMAND [--non-interactive]\n\nARGUMENTS\n  ENVIRONMENT   Environment to execute the command in. Default environments are 'production', 'preview', and\n                'development'.\n  BASH_COMMAND  bash command to execute with the environment variables from the environment\n\nFLAGS\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  execute a command with environment variables from the selected environment"
     },
     {
       "command": "eas env:get [ENVIRONMENT]",
       "description": "view an environment variable for the current project or account",
-      "usage": "USAGE\n  $ eas env:get [ENVIRONMENT] [--variable-name <value>] [--variable-environment <value>] [--format\n    long|short] [--scope project|account] [--non-interactive]\n\nARGUMENTS\n  ENVIRONMENT  Current environment of the variable. Default environments are 'production', 'preview', and 'development'.\n\nFLAGS\n  --format=(long|short)           [default: short] Output format\n  --non-interactive               Run the command in non-interactive mode.\n  --scope=(project|account)       [default: project] Scope for the variable\n  --variable-environment=<value>  Current environment of the variable\n  --variable-name=<value>         Name of the variable\n\nDESCRIPTION\n  view an environment variable for the current project or account",
-      "group": "env",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/env/get.ts"
+      "usage": "USAGE\n  $ eas env:get [ENVIRONMENT] [--variable-name <value>] [--variable-environment <value>] [--format\n    long|short] [--scope project|account] [--non-interactive]\n\nARGUMENTS\n  ENVIRONMENT  Current environment of the variable. Default environments are 'production', 'preview', and 'development'.\n\nFLAGS\n  --format=(long|short)           [default: short] Output format\n  --non-interactive               Run the command in non-interactive mode.\n  --scope=(project|account)       [default: project] Scope for the variable\n  --variable-environment=<value>  Current environment of the variable\n  --variable-name=<value>         Name of the variable\n\nDESCRIPTION\n  view an environment variable for the current project or account"
     },
     {
       "command": "eas env:list [ENVIRONMENT]",
       "description": "list environment variables for the current project or account",
-      "usage": "USAGE\n  $ eas env:list [ENVIRONMENT] [--include-sensitive] [--include-file-content] [--environment <value>]\n    [--format long|short] [--scope project|account]\n\nARGUMENTS\n  ENVIRONMENT  Environment to list the variables from. Default environments are 'production', 'preview', and\n               'development'.\n\nFLAGS\n  --environment=<value>...   Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --format=(long|short)      [default: short] Output format\n  --include-file-content     Display files content in the output\n  --include-sensitive        Display sensitive values in the output\n  --scope=(project|account)  [default: project] Scope for the variable\n\nDESCRIPTION\n  list environment variables for the current project or account",
-      "group": "env",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/env/list.ts"
+      "usage": "USAGE\n  $ eas env:list [ENVIRONMENT] [--include-sensitive] [--include-file-content] [--environment <value>]\n    [--format long|short] [--scope project|account]\n\nARGUMENTS\n  ENVIRONMENT  Environment to list the variables from. Default environments are 'production', 'preview', and\n               'development'.\n\nFLAGS\n  --environment=<value>...   Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --format=(long|short)      [default: short] Output format\n  --include-file-content     Display files content in the output\n  --include-sensitive        Display sensitive values in the output\n  --scope=(project|account)  [default: project] Scope for the variable\n\nDESCRIPTION\n  list environment variables for the current project or account"
     },
     {
       "command": "eas env:pull [ENVIRONMENT]",
       "description": "pull environment variables for the selected environment to .env file",
-      "usage": "USAGE\n  $ eas env:pull [ENVIRONMENT] [--non-interactive] [--environment <value>] [--path <value>]\n\nARGUMENTS\n  ENVIRONMENT  Environment to pull variables from. Default environments are 'production', 'preview', and 'development'.\n\nFLAGS\n  --environment=<value>  Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --non-interactive      Run the command in non-interactive mode.\n  --path=<value>         [default: .env.local] Path to the result `.env` file\n\nDESCRIPTION\n  pull environment variables for the selected environment to .env file",
-      "group": "env",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/env/pull.ts"
+      "usage": "USAGE\n  $ eas env:pull [ENVIRONMENT] [--non-interactive] [--environment <value>] [--path <value>]\n\nARGUMENTS\n  ENVIRONMENT  Environment to pull variables from. Default environments are 'production', 'preview', and 'development'.\n\nFLAGS\n  --environment=<value>  Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --non-interactive      Run the command in non-interactive mode.\n  --path=<value>         [default: .env.local] Path to the result `.env` file\n\nDESCRIPTION\n  pull environment variables for the selected environment to .env file"
     },
     {
       "command": "eas env:push [ENVIRONMENT]",
       "description": "push environment variables from .env file to the selected environment",
-      "usage": "USAGE\n  $ eas env:push [ENVIRONMENT] [--environment <value>] [--path <value>] [--force]\n\nARGUMENTS\n  ENVIRONMENT  Environment to push variables to. Default environments are 'production', 'preview', and 'development'.\n\nFLAGS\n  --environment=<value>...  Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --force                   Skip confirmation and automatically override existing variables\n  --path=<value>            [default: .env.local] Path to the input `.env` file\n\nDESCRIPTION\n  push environment variables from .env file to the selected environment",
-      "group": "env",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/env/push.ts"
+      "usage": "USAGE\n  $ eas env:push [ENVIRONMENT] [--environment <value>] [--path <value>] [--force]\n\nARGUMENTS\n  ENVIRONMENT  Environment to push variables to. Default environments are 'production', 'preview', and 'development'.\n\nFLAGS\n  --environment=<value>...  Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --force                   Skip confirmation and automatically override existing variables\n  --path=<value>            [default: .env.local] Path to the input `.env` file\n\nDESCRIPTION\n  push environment variables from .env file to the selected environment"
     },
     {
       "command": "eas env:update [ENVIRONMENT]",
       "description": "update an environment variable on the current project or account",
-      "usage": "USAGE\n  $ eas env:update [ENVIRONMENT] [--variable-name <value>] [--variable-environment <value>] [--name <value>]\n    [--value <value>] [--type string|file] [--visibility plaintext|sensitive|secret] [--scope project|account]\n    [--environment <value>] [--non-interactive]\n\nARGUMENTS\n  ENVIRONMENT  Current environment of the variable to update. Default environments are 'production', 'preview', and\n               'development'.\n\nFLAGS\n  --environment=<value>...                   Environment variable's environment, e.g. 'production', 'preview',\n                                             'development'\n  --name=<value>                             New name of the variable\n  --non-interactive                          Run the command in non-interactive mode.\n  --scope=(project|account)                  [default: project] Scope for the variable\n  --type=(string|file)                       The type of variable\n  --value=<value>                            New value or the variable\n  --variable-environment=<value>             Current environment of the variable to update\n  --variable-name=<value>                    Current name of the variable\n  --visibility=(plaintext|sensitive|secret)  Visibility of the variable\n\nDESCRIPTION\n  update an environment variable on the current project or account",
-      "group": "env",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/env/update.ts"
+      "usage": "USAGE\n  $ eas env:update [ENVIRONMENT] [--variable-name <value>] [--variable-environment <value>] [--name <value>]\n    [--value <value>] [--type string|file] [--visibility plaintext|sensitive|secret] [--scope project|account]\n    [--environment <value>] [--non-interactive]\n\nARGUMENTS\n  ENVIRONMENT  Current environment of the variable to update. Default environments are 'production', 'preview', and\n               'development'.\n\nFLAGS\n  --environment=<value>...                   Environment variable's environment, e.g. 'production', 'preview',\n                                             'development'\n  --name=<value>                             New name of the variable\n  --non-interactive                          Run the command in non-interactive mode.\n  --scope=(project|account)                  [default: project] Scope for the variable\n  --type=(string|file)                       The type of variable\n  --value=<value>                            New value or the variable\n  --variable-environment=<value>             Current environment of the variable to update\n  --variable-name=<value>                    Current name of the variable\n  --visibility=(plaintext|sensitive|secret)  Visibility of the variable\n\nDESCRIPTION\n  update an environment variable on the current project or account"
     },
     {
       "command": "eas fingerprint:compare [HASH1] [HASH2]",
       "description": "compare fingerprints of the current project, builds, and updates",
-      "usage": "USAGE\n  $ eas fingerprint:compare [HASH1] [HASH2] [--build-id <value>] [--update-id <value>] [--open] [--environment <value>]\n    [--json --non-interactive]\n\nARGUMENTS\n  HASH1  If provided alone, HASH1 is compared against the current project's fingerprint.\n  HASH2  If two hashes are provided, HASH1 is compared against HASH2.\n\nFLAGS\n  --build-id=<value>...   Compare the fingerprint with the build with the specified ID\n  --environment=<value>   If generating a fingerprint from the local directory, use the specified environment.\n  --json                  Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive       Run the command in non-interactive mode.\n  --open                  Open the fingerprint comparison in the browser\n  --update-id=<value>...  Compare the fingerprint with the update with the specified ID\n\nDESCRIPTION\n  compare fingerprints of the current project, builds, and updates\n\nEXAMPLES\n  $ eas fingerprint:compare \t # Compare fingerprints in interactive mode\n\n  $ eas fingerprint:compare <FINGERPRINT-HASH> \t # Compare fingerprint against local directory\n\n  $ eas fingerprint:compare <FINGERPRINT-HASH-1> <FINGERPRINT-HASH-2> \t # Compare provided fingerprints\n\n  $ eas fingerprint:compare --build-id <BUILD-ID> \t # Compare fingerprint from build against local directory\n\n  $ eas fingerprint:compare --build-id <BUILD-ID> --environment production \t # Compare fingerprint from build against local directory with the \"production\" environment\n\n  $ eas fingerprint:compare --build-id <BUILD-ID-1> --build-id <BUILD-ID-2>\t # Compare fingerprint from a build against another build\n\n  $ eas fingerprint:compare --build-id <BUILD-ID> --update-id <UPDATE-ID>\t # Compare fingerprint from build against fingerprint from update\n\n  $ eas fingerprint:compare <FINGERPRINT-HASH> --update-id <UPDATE-ID> \t # Compare fingerprint from update against provided fingerprint",
-      "group": "fingerprint",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/fingerprint/compare.ts"
+      "usage": "USAGE\n  $ eas fingerprint:compare [HASH1] [HASH2] [--build-id <value>] [--update-id <value>] [--open] [--environment <value>]\n    [--json --non-interactive]\n\nARGUMENTS\n  HASH1  If provided alone, HASH1 is compared against the current project's fingerprint.\n  HASH2  If two hashes are provided, HASH1 is compared against HASH2.\n\nFLAGS\n  --build-id=<value>...   Compare the fingerprint with the build with the specified ID\n  --environment=<value>   If generating a fingerprint from the local directory, use the specified environment.\n  --json                  Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive       Run the command in non-interactive mode.\n  --open                  Open the fingerprint comparison in the browser\n  --update-id=<value>...  Compare the fingerprint with the update with the specified ID\n\nDESCRIPTION\n  compare fingerprints of the current project, builds, and updates\n\nEXAMPLES\n  $ eas fingerprint:compare \t # Compare fingerprints in interactive mode\n\n  $ eas fingerprint:compare <FINGERPRINT-HASH> \t # Compare fingerprint against local directory\n\n  $ eas fingerprint:compare <FINGERPRINT-HASH-1> <FINGERPRINT-HASH-2> \t # Compare provided fingerprints\n\n  $ eas fingerprint:compare --build-id <BUILD-ID> \t # Compare fingerprint from build against local directory\n\n  $ eas fingerprint:compare --build-id <BUILD-ID> --environment production \t # Compare fingerprint from build against local directory with the \"production\" environment\n\n  $ eas fingerprint:compare --build-id <BUILD-ID-1> --build-id <BUILD-ID-2>\t # Compare fingerprint from a build against another build\n\n  $ eas fingerprint:compare --build-id <BUILD-ID> --update-id <UPDATE-ID>\t # Compare fingerprint from build against fingerprint from update\n\n  $ eas fingerprint:compare <FINGERPRINT-HASH> --update-id <UPDATE-ID> \t # Compare fingerprint from update against provided fingerprint"
     },
     {
       "command": "eas fingerprint:generate",
       "description": "generate fingerprints from the current project",
-      "usage": "USAGE\n  $ eas fingerprint:generate [-p android|ios] [--environment <value> | -e <value>] [--json --non-interactive]\n\nFLAGS\n  -e, --build-profile=<value>   Name of the build profile from eas.json.\n  -p, --platform=(android|ios)\n  --environment=<value>         Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --json                        Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive             Run the command in non-interactive mode.\n\nDESCRIPTION\n  generate fingerprints from the current project\n\nEXAMPLES\n  $ eas fingerprint:generate  \t # Generate fingerprint in interactive mode\n\n  $ eas fingerprint:generate --build-profile preview  \t # Generate a fingerprint using the \"preview\" build profile\n\n  $ eas fingerprint:generate --environment preview  \t # Generate a fingerprint using the \"preview\" environment\n\n  $ eas fingerprint:generate --json --non-interactive --platform android  \t # Output fingerprint json to stdout",
-      "group": "fingerprint",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/fingerprint/generate.ts"
+      "usage": "USAGE\n  $ eas fingerprint:generate [-p android|ios] [--environment <value> | -e <value>] [--json --non-interactive]\n\nFLAGS\n  -e, --build-profile=<value>   Name of the build profile from eas.json.\n  -p, --platform=(android|ios)\n  --environment=<value>         Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --json                        Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive             Run the command in non-interactive mode.\n\nDESCRIPTION\n  generate fingerprints from the current project\n\nEXAMPLES\n  $ eas fingerprint:generate  \t # Generate fingerprint in interactive mode\n\n  $ eas fingerprint:generate --build-profile preview  \t # Generate a fingerprint using the \"preview\" build profile\n\n  $ eas fingerprint:generate --environment preview  \t # Generate a fingerprint using the \"preview\" environment\n\n  $ eas fingerprint:generate --json --non-interactive --platform android  \t # Output fingerprint json to stdout"
     },
     {
       "command": "eas help [COMMAND]",
       "description": "Display help for eas.",
-      "usage": "USAGE\n  $ eas help [COMMAND] [-n]\n\nARGUMENTS\n  COMMAND  Command to show help for.\n\nFLAGS\n  -n, --nested-commands  Include all nested commands in the output.\n\nDESCRIPTION\n  Display help for eas.",
-      "group": "help",
-      "seeCode": "https://github.com/expo/oclif-plugin-help/blob/v5.1.23/packages/eas-cli/src/commands/help.ts"
+      "usage": "USAGE\n  $ eas help [COMMAND] [-n]\n\nARGUMENTS\n  COMMAND  Command to show help for.\n\nFLAGS\n  -n, --nested-commands  Include all nested commands in the output.\n\nDESCRIPTION\n  Display help for eas."
     },
     {
       "command": "eas init",
       "description": "create or link an EAS project",
-      "usage": "USAGE\n  $ eas init [--id <value>] [--force] [--non-interactive]\n\nFLAGS\n  --force            Whether to create a new project/link an existing project without additional prompts or overwrite\n                     any existing project ID when running with --id flag\n  --id=<value>       ID of the EAS project to link\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  create or link an EAS project\n\nALIASES\n  $ eas init",
-      "group": "init",
-      "seeCode": ""
+      "usage": "USAGE\n  $ eas init [--id <value>] [--force] [--non-interactive]\n\nFLAGS\n  --force            Whether to create a new project/link an existing project without additional prompts or overwrite\n                     any existing project ID when running with --id flag\n  --id=<value>       ID of the EAS project to link\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  create or link an EAS project\n\nALIASES\n  $ eas init"
     },
     {
       "command": "eas init:onboarding [TARGET_PROJECT_DIRECTORY]",
       "description": "continue onboarding process started on the https://expo.new website.",
-      "usage": "USAGE\n  $ eas init:onboarding [TARGET_PROJECT_DIRECTORY]\n\nDESCRIPTION\n  continue onboarding process started on the https://expo.new website.\n\nALIASES\n  $ eas init:onboarding\n  $ eas onboarding",
-      "group": "init",
-      "seeCode": ""
+      "usage": "USAGE\n  $ eas init:onboarding [TARGET_PROJECT_DIRECTORY]\n\nDESCRIPTION\n  continue onboarding process started on the https://expo.new website.\n\nALIASES\n  $ eas init:onboarding\n  $ eas onboarding"
     },
     {
       "command": "eas login",
       "description": "log in with your Expo account",
-      "usage": "USAGE\n  $ eas login [-s]\n\nFLAGS\n  -s, --sso  Login with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login",
-      "group": "login",
-      "seeCode": ""
+      "usage": "USAGE\n  $ eas login [-s]\n\nFLAGS\n  -s, --sso  Login with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login"
     },
     {
       "command": "eas logout",
       "description": "log out",
-      "usage": "USAGE\n  $ eas logout\n\nDESCRIPTION\n  log out\n\nALIASES\n  $ eas logout",
-      "group": "logout",
-      "seeCode": ""
+      "usage": "USAGE\n  $ eas logout\n\nDESCRIPTION\n  log out\n\nALIASES\n  $ eas logout"
     },
     {
       "command": "eas metadata:lint",
       "description": "validate the local store configuration",
-      "usage": "USAGE\n  $ eas metadata:lint [--json] [--profile <value>]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr\n  --profile=<value>  Name of the submit profile from eas.json. Defaults to \"production\" if defined in eas.json.\n\nDESCRIPTION\n  validate the local store configuration",
-      "group": "metadata",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/metadata/lint.ts"
+      "usage": "USAGE\n  $ eas metadata:lint [--json] [--profile <value>]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr\n  --profile=<value>  Name of the submit profile from eas.json. Defaults to \"production\" if defined in eas.json.\n\nDESCRIPTION\n  validate the local store configuration"
     },
     {
       "command": "eas metadata:pull",
       "description": "generate the local store configuration from the app stores",
-      "usage": "USAGE\n  $ eas metadata:pull [-e <value>]\n\nFLAGS\n  -e, --profile=<value>  Name of the submit profile from eas.json. Defaults to \"production\" if defined in eas.json.\n\nDESCRIPTION\n  generate the local store configuration from the app stores",
-      "group": "metadata",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/metadata/pull.ts"
+      "usage": "USAGE\n  $ eas metadata:pull [-e <value>]\n\nFLAGS\n  -e, --profile=<value>  Name of the submit profile from eas.json. Defaults to \"production\" if defined in eas.json.\n\nDESCRIPTION\n  generate the local store configuration from the app stores"
     },
     {
       "command": "eas metadata:push",
       "description": "sync the local store configuration to the app stores",
-      "usage": "USAGE\n  $ eas metadata:push [-e <value>]\n\nFLAGS\n  -e, --profile=<value>  Name of the submit profile from eas.json. Defaults to \"production\" if defined in eas.json.\n\nDESCRIPTION\n  sync the local store configuration to the app stores",
-      "group": "metadata",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/metadata/push.ts"
+      "usage": "USAGE\n  $ eas metadata:push [-e <value>]\n\nFLAGS\n  -e, --profile=<value>  Name of the submit profile from eas.json. Defaults to \"production\" if defined in eas.json.\n\nDESCRIPTION\n  sync the local store configuration to the app stores"
     },
     {
       "command": "eas new [PATH]",
       "description": "Create a new project configured with Expo Application Services (EAS)",
-      "usage": "USAGE\n  $ eas new [PATH] [-p bun|npm|pnpm|yarn]\n\nARGUMENTS\n  PATH  Path to create the project (defaults to current directory)\n\nFLAGS\n  -p, --package-manager=(bun|npm|pnpm|yarn)  [default: npm] Package manager to use for installing dependencies\n\nDESCRIPTION\n  Create a new project configured with Expo Application Services (EAS)\n\nALIASES\n  $ eas new",
-      "group": "new",
-      "seeCode": ""
+      "usage": "USAGE\n  $ eas new [PATH] [-p bun|npm|pnpm|yarn]\n\nARGUMENTS\n  PATH  Path to create the project (defaults to current directory)\n\nFLAGS\n  -p, --package-manager=(bun|npm|pnpm|yarn)  [default: npm] Package manager to use for installing dependencies\n\nDESCRIPTION\n  Create a new project configured with Expo Application Services (EAS)\n\nALIASES\n  $ eas new"
     },
     {
       "command": "eas onboarding [TARGET_PROJECT_DIRECTORY]",
       "description": "continue onboarding process started on the https://expo.new website.",
-      "usage": "USAGE\n  $ eas onboarding [TARGET_PROJECT_DIRECTORY]\n\nDESCRIPTION\n  continue onboarding process started on the https://expo.new website.\n\nALIASES\n  $ eas init:onboarding\n  $ eas onboarding",
-      "group": "onboarding",
-      "seeCode": ""
+      "usage": "USAGE\n  $ eas onboarding [TARGET_PROJECT_DIRECTORY]\n\nDESCRIPTION\n  continue onboarding process started on the https://expo.new website.\n\nALIASES\n  $ eas init:onboarding\n  $ eas onboarding"
     },
     {
       "command": "eas open",
       "description": "open the project page in a web browser",
-      "usage": "USAGE\n  $ eas open\n\nDESCRIPTION\n  open the project page in a web browser",
-      "group": "open",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/open.ts"
+      "usage": "USAGE\n  $ eas open\n\nDESCRIPTION\n  open the project page in a web browser"
     },
     {
       "command": "eas project:info",
       "description": "information about the current project",
-      "usage": "USAGE\n  $ eas project:info\n\nDESCRIPTION\n  information about the current project",
-      "group": "project",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/project/info.ts"
+      "usage": "USAGE\n  $ eas project:info\n\nDESCRIPTION\n  information about the current project"
     },
     {
       "command": "eas project:init",
       "description": "create or link an EAS project",
-      "usage": "USAGE\n  $ eas project:init [--id <value>] [--force] [--non-interactive]\n\nFLAGS\n  --force            Whether to create a new project/link an existing project without additional prompts or overwrite\n                     any existing project ID when running with --id flag\n  --id=<value>       ID of the EAS project to link\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  create or link an EAS project\n\nALIASES\n  $ eas init",
-      "group": "project",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/project/init.ts"
+      "usage": "USAGE\n  $ eas project:init [--id <value>] [--force] [--non-interactive]\n\nFLAGS\n  --force            Whether to create a new project/link an existing project without additional prompts or overwrite\n                     any existing project ID when running with --id flag\n  --id=<value>       ID of the EAS project to link\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  create or link an EAS project\n\nALIASES\n  $ eas init"
     },
     {
       "command": "eas project:new [PATH]",
       "description": "Create a new project configured with Expo Application Services (EAS)",
-      "usage": "USAGE\n  $ eas project:new [PATH] [-p bun|npm|pnpm|yarn]\n\nARGUMENTS\n  PATH  Path to create the project (defaults to current directory)\n\nFLAGS\n  -p, --package-manager=(bun|npm|pnpm|yarn)  [default: npm] Package manager to use for installing dependencies\n\nDESCRIPTION\n  Create a new project configured with Expo Application Services (EAS)\n\nALIASES\n  $ eas new",
-      "group": "project",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/project/new.ts"
+      "usage": "USAGE\n  $ eas project:new [PATH] [-p bun|npm|pnpm|yarn]\n\nARGUMENTS\n  PATH  Path to create the project (defaults to current directory)\n\nFLAGS\n  -p, --package-manager=(bun|npm|pnpm|yarn)  [default: npm] Package manager to use for installing dependencies\n\nDESCRIPTION\n  Create a new project configured with Expo Application Services (EAS)\n\nALIASES\n  $ eas new"
     },
     {
       "command": "eas project:onboarding [TARGET_PROJECT_DIRECTORY]",
       "description": "continue onboarding process started on the https://expo.new website.",
-      "usage": "USAGE\n  $ eas project:onboarding [TARGET_PROJECT_DIRECTORY]\n\nDESCRIPTION\n  continue onboarding process started on the https://expo.new website.\n\nALIASES\n  $ eas init:onboarding\n  $ eas onboarding",
-      "group": "project",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/project/onboarding.ts"
+      "usage": "USAGE\n  $ eas project:onboarding [TARGET_PROJECT_DIRECTORY]\n\nDESCRIPTION\n  continue onboarding process started on the https://expo.new website.\n\nALIASES\n  $ eas init:onboarding\n  $ eas onboarding"
     },
     {
       "command": "eas submit",
       "description": "submit app binary to App Store and/or Play Store",
-      "usage": "USAGE\n  $ eas submit [-p android|ios|all] [-e <value>] [--latest | --id <value> | --path <value> | --url <value>]\n    [--what-to-test <value>] [--verbose] [--wait] [--verbose-fastlane] [-g <value>] [--non-interactive]\n\nFLAGS\n  -e, --profile=<value>             Name of the submit profile from eas.json. Defaults to \"production\" if defined in\n                                    eas.json.\n  -g, --groups=<value>...           Internal TestFlight testing groups to add the build to (iOS only). Learn more:\n                                    https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-\n                                    testers\n  -p, --platform=(android|ios|all)\n  --id=<value>                      ID of the build to submit\n  --latest                          Submit the latest build for specified platform\n  --non-interactive                 Run command in non-interactive mode\n  --path=<value>                    Path to the .apk/.aab/.ipa file\n  --url=<value>                     App archive url\n  --verbose                         Always print logs from EAS Submit\n  --verbose-fastlane                Enable verbose logging for the submission process\n  --[no-]wait                       Wait for submission to complete\n  --what-to-test=<value>            Sets the \"What to test\" information in TestFlight (iOS only).\n\nDESCRIPTION\n  submit app binary to App Store and/or Play Store\n\nALIASES\n  $ eas build:submit",
-      "group": "submit",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/submit.ts"
+      "usage": "USAGE\n  $ eas submit [-p android|ios|all] [-e <value>] [--latest | --id <value> | --path <value> | --url <value>]\n    [--what-to-test <value>] [--verbose] [--wait] [--verbose-fastlane] [-g <value>] [--non-interactive]\n\nFLAGS\n  -e, --profile=<value>             Name of the submit profile from eas.json. Defaults to \"production\" if defined in\n                                    eas.json.\n  -g, --groups=<value>...           Internal TestFlight testing groups to add the build to (iOS only). Learn more:\n                                    https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-\n                                    testers\n  -p, --platform=(android|ios|all)\n  --id=<value>                      ID of the build to submit\n  --latest                          Submit the latest build for specified platform\n  --non-interactive                 Run command in non-interactive mode\n  --path=<value>                    Path to the .apk/.aab/.ipa file\n  --url=<value>                     App archive url\n  --verbose                         Always print logs from EAS Submit\n  --verbose-fastlane                Enable verbose logging for the submission process\n  --[no-]wait                       Wait for submission to complete\n  --what-to-test=<value>            Sets the \"What to test\" information in TestFlight (iOS only).\n\nDESCRIPTION\n  submit app binary to App Store and/or Play Store\n\nALIASES\n  $ eas build:submit"
     },
     {
       "command": "eas update",
       "description": "publish an update group",
-      "usage": "USAGE\n  $ eas update [--branch <value>] [--channel <value>] [-m <value>] [--input-dir <value>] [--skip-bundler]\n    [--clear-cache] [--emit-metadata] [--rollout-percentage <value>] [-p android|ios|all] [--auto] [--private-key-path\n    <value>] [--environment <value>] [--json --non-interactive]\n\nFLAGS\n  -m, --message=<value>             A short message describing the update\n  -p, --platform=(android|ios|all)  [default: all]\n  --auto                            Use the current git branch and commit message for the EAS branch and update message\n  --branch=<value>                  Branch to publish the update group on\n  --channel=<value>                 Channel that the published update should affect\n  --clear-cache                     Clear the bundler cache before publishing\n  --emit-metadata                   Emit \"eas-update-metadata.json\" in the bundle folder with detailed information about\n                                    the generated updates\n  --environment=<value>             Environment to use for the server-side defined EAS environment variables during\n                                    command execution, e.g. \"production\", \"preview\", \"development\"\n  --input-dir=<value>               [default: dist] Location of the bundle\n  --json                            Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive                 Run the command in non-interactive mode.\n  --private-key-path=<value>        File containing the PEM-encoded private key corresponding to the certificate in\n                                    expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                                    certificate's directory. Only relevant if you are using code signing:\n                                    https://docs.expo.dev/eas-update/code-signing/\n  --rollout-percentage=<value>      Percentage of users this update should be immediately available to. Users not in the\n                                    rollout will be served the previous latest update on the branch, even if that update\n                                    is itself being rolled out. The specified number must be an integer between 1 and\n                                    100. When not specified, this defaults to 100.\n  --skip-bundler                    Skip running Expo CLI to bundle the app before publishing\n\nDESCRIPTION\n  publish an update group",
-      "group": "update",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/update/index.ts"
+      "usage": "USAGE\n  $ eas update [--branch <value>] [--channel <value>] [-m <value>] [--input-dir <value>] [--skip-bundler]\n    [--clear-cache] [--emit-metadata] [--rollout-percentage <value>] [-p android|ios|all] [--auto] [--private-key-path\n    <value>] [--environment <value>] [--json --non-interactive]\n\nFLAGS\n  -m, --message=<value>             A short message describing the update\n  -p, --platform=(android|ios|all)  [default: all]\n  --auto                            Use the current git branch and commit message for the EAS branch and update message\n  --branch=<value>                  Branch to publish the update group on\n  --channel=<value>                 Channel that the published update should affect\n  --clear-cache                     Clear the bundler cache before publishing\n  --emit-metadata                   Emit \"eas-update-metadata.json\" in the bundle folder with detailed information about\n                                    the generated updates\n  --environment=<value>             Environment to use for the server-side defined EAS environment variables during\n                                    command execution, e.g. \"production\", \"preview\", \"development\"\n  --input-dir=<value>               [default: dist] Location of the bundle\n  --json                            Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive                 Run the command in non-interactive mode.\n  --private-key-path=<value>        File containing the PEM-encoded private key corresponding to the certificate in\n                                    expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                                    certificate's directory. Only relevant if you are using code signing:\n                                    https://docs.expo.dev/eas-update/code-signing/\n  --rollout-percentage=<value>      Percentage of users this update should be immediately available to. Users not in the\n                                    rollout will be served the previous latest update on the branch, even if that update\n                                    is itself being rolled out. The specified number must be an integer between 1 and\n                                    100. When not specified, this defaults to 100.\n  --skip-bundler                    Skip running Expo CLI to bundle the app before publishing\n\nDESCRIPTION\n  publish an update group"
     },
     {
       "command": "eas update:configure",
       "description": "configure the project to support EAS Update",
-      "usage": "USAGE\n  $ eas update:configure [-p android|ios|all] [--environment <value>] [--non-interactive]\n\nFLAGS\n  -p, --platform=(android|ios|all)  [default: all] Platform to configure\n  --environment=<value>             Environment to use for the server-side defined EAS environment variables during\n                                    command execution, e.g. \"production\", \"preview\", \"development\"\n  --non-interactive                 Run the command in non-interactive mode.\n\nDESCRIPTION\n  configure the project to support EAS Update",
-      "group": "update",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/update/configure.ts"
+      "usage": "USAGE\n  $ eas update:configure [-p android|ios|all] [--environment <value>] [--non-interactive]\n\nFLAGS\n  -p, --platform=(android|ios|all)  [default: all] Platform to configure\n  --environment=<value>             Environment to use for the server-side defined EAS environment variables during\n                                    command execution, e.g. \"production\", \"preview\", \"development\"\n  --non-interactive                 Run the command in non-interactive mode.\n\nDESCRIPTION\n  configure the project to support EAS Update"
     },
     {
       "command": "eas update:delete GROUPID",
       "description": "delete all the updates in an update group",
-      "usage": "USAGE\n  $ eas update:delete GROUPID [--json --non-interactive]\n\nARGUMENTS\n  GROUPID  The ID of an update group to delete.\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  delete all the updates in an update group",
-      "group": "update",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/update/delete.ts"
+      "usage": "USAGE\n  $ eas update:delete GROUPID [--json --non-interactive]\n\nARGUMENTS\n  GROUPID  The ID of an update group to delete.\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  delete all the updates in an update group"
     },
     {
       "command": "eas update:edit [GROUPID]",
       "description": "edit all the updates in an update group",
-      "usage": "USAGE\n  $ eas update:edit [GROUPID] [--rollout-percentage <value>] [--branch <value>] [--json --non-interactive]\n\nARGUMENTS\n  GROUPID  The ID of an update group to edit.\n\nFLAGS\n  --branch=<value>              Branch for which to list updates to select from\n  --json                        Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive             Run the command in non-interactive mode.\n  --rollout-percentage=<value>  Rollout percentage to set for a rollout update. The specified number must be an integer\n                                between 1 and 100.\n\nDESCRIPTION\n  edit all the updates in an update group",
-      "group": "update",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/update/edit.ts"
+      "usage": "USAGE\n  $ eas update:edit [GROUPID] [--rollout-percentage <value>] [--branch <value>] [--json --non-interactive]\n\nARGUMENTS\n  GROUPID  The ID of an update group to edit.\n\nFLAGS\n  --branch=<value>              Branch for which to list updates to select from\n  --json                        Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive             Run the command in non-interactive mode.\n  --rollout-percentage=<value>  Rollout percentage to set for a rollout update. The specified number must be an integer\n                                between 1 and 100.\n\nDESCRIPTION\n  edit all the updates in an update group"
     },
     {
       "command": "eas update:list",
       "description": "view the recent updates",
-      "usage": "USAGE\n  $ eas update:list [--branch <value> | --all] [--offset <value>] [--limit <value>] [--json --non-interactive]\n\nFLAGS\n  --all              List updates on all branches\n  --branch=<value>   List updates only on this branch\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>    The number of items to fetch each query. Defaults to 25 and is capped at 50.\n  --non-interactive  Run the command in non-interactive mode.\n  --offset=<value>   Start queries from specified index. Use for paginating results. Defaults to 0.\n\nDESCRIPTION\n  view the recent updates",
-      "group": "update",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/update/list.ts"
+      "usage": "USAGE\n  $ eas update:list [--branch <value> | --all] [--offset <value>] [--limit <value>] [--json --non-interactive]\n\nFLAGS\n  --all              List updates on all branches\n  --branch=<value>   List updates only on this branch\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>    The number of items to fetch each query. Defaults to 25 and is capped at 50.\n  --non-interactive  Run the command in non-interactive mode.\n  --offset=<value>   Start queries from specified index. Use for paginating results. Defaults to 0.\n\nDESCRIPTION\n  view the recent updates"
     },
     {
       "command": "eas update:republish",
       "description": "roll back to an existing update",
-      "usage": "USAGE\n  $ eas update:republish [--channel <value> | --branch <value> | --group <value>] [--destination-channel <value> |\n    --destination-branch <value>] [-m <value>] [-p android|ios|all] [--private-key-path <value>] [--rollout-percentage\n    <value>] [--json --non-interactive]\n\nFLAGS\n  -m, --message=<value>             Short message describing the republished update group\n  -p, --platform=(android|ios|all)  [default: all]\n  --branch=<value>                  Branch name to select an update group to republish from\n  --channel=<value>                 Channel name to select an update group to republish from\n  --destination-branch=<value>      Branch name to republish to if republishing to a different branch\n  --destination-channel=<value>     Channel name to select a branch to republish to if republishing to a different\n                                    branch\n  --group=<value>                   Update group ID to republish\n  --json                            Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive                 Run the command in non-interactive mode.\n  --private-key-path=<value>        File containing the PEM-encoded private key corresponding to the certificate in\n                                    expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                                    certificate's directory. Only relevant if you are using code signing:\n                                    https://docs.expo.dev/eas-update/code-signing/\n  --rollout-percentage=<value>      Percentage of users this update should be immediately available to. Users not in the\n                                    rollout will be served the previous latest update on the branch, even if that update\n                                    is itself being rolled out. The specified number must be an integer between 1 and\n                                    100. When not specified, this defaults to 100.\n\nDESCRIPTION\n  roll back to an existing update",
-      "group": "update",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/update/republish.ts"
+      "usage": "USAGE\n  $ eas update:republish [--channel <value> | --branch <value> | --group <value>] [--destination-channel <value> |\n    --destination-branch <value>] [-m <value>] [-p android|ios|all] [--private-key-path <value>] [--rollout-percentage\n    <value>] [--json --non-interactive]\n\nFLAGS\n  -m, --message=<value>             Short message describing the republished update group\n  -p, --platform=(android|ios|all)  [default: all]\n  --branch=<value>                  Branch name to select an update group to republish from\n  --channel=<value>                 Channel name to select an update group to republish from\n  --destination-branch=<value>      Branch name to republish to if republishing to a different branch\n  --destination-channel=<value>     Channel name to select a branch to republish to if republishing to a different\n                                    branch\n  --group=<value>                   Update group ID to republish\n  --json                            Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive                 Run the command in non-interactive mode.\n  --private-key-path=<value>        File containing the PEM-encoded private key corresponding to the certificate in\n                                    expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                                    certificate's directory. Only relevant if you are using code signing:\n                                    https://docs.expo.dev/eas-update/code-signing/\n  --rollout-percentage=<value>      Percentage of users this update should be immediately available to. Users not in the\n                                    rollout will be served the previous latest update on the branch, even if that update\n                                    is itself being rolled out. The specified number must be an integer between 1 and\n                                    100. When not specified, this defaults to 100.\n\nDESCRIPTION\n  roll back to an existing update"
     },
     {
       "command": "eas update:revert-update-rollout",
       "description": "revert a rollout update for a project",
-      "usage": "USAGE\n  $ eas update:revert-update-rollout [--channel <value> | --branch <value> | --group <value>] [-m <value>] [--private-key-path\n    <value>] [--json --non-interactive]\n\nFLAGS\n  -m, --message=<value>       Short message describing the revert\n  --branch=<value>            Branch name to select an update group to revert the rollout update from\n  --channel=<value>           Channel name to select an update group to revert the rollout update from\n  --group=<value>             Rollout update group ID to revert\n  --json                      Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive           Run the command in non-interactive mode.\n  --private-key-path=<value>  File containing the PEM-encoded private key corresponding to the certificate in\n                              expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                              certificate's directory. Only relevant if you are using code signing:\n                              https://docs.expo.dev/eas-update/code-signing/\n\nDESCRIPTION\n  revert a rollout update for a project",
-      "group": "update",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/update/revert-update-rollout.ts"
+      "usage": "USAGE\n  $ eas update:revert-update-rollout [--channel <value> | --branch <value> | --group <value>] [-m <value>] [--private-key-path\n    <value>] [--json --non-interactive]\n\nFLAGS\n  -m, --message=<value>       Short message describing the revert\n  --branch=<value>            Branch name to select an update group to revert the rollout update from\n  --channel=<value>           Channel name to select an update group to revert the rollout update from\n  --group=<value>             Rollout update group ID to revert\n  --json                      Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive           Run the command in non-interactive mode.\n  --private-key-path=<value>  File containing the PEM-encoded private key corresponding to the certificate in\n                              expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                              certificate's directory. Only relevant if you are using code signing:\n                              https://docs.expo.dev/eas-update/code-signing/\n\nDESCRIPTION\n  revert a rollout update for a project"
     },
     {
       "command": "eas update:roll-back-to-embedded",
       "description": "roll back to the embedded update",
-      "usage": "USAGE\n  $ eas update:roll-back-to-embedded [--branch <value>] [--channel <value>] [--runtime-version <value>] [--message <value>] [-p\n    android|ios|all] [--private-key-path <value>] [--json --non-interactive]\n\nFLAGS\n  -p, --platform=(android|ios|all)  [default: all]\n  --branch=<value>                  Branch to publish the rollback to embedded update group on\n  --channel=<value>                 Channel that the published rollback to embedded update should affect\n  --json                            Enable JSON output, non-JSON messages will be printed to stderr.\n  --message=<value>                 A short message describing the rollback to embedded update\n  --non-interactive                 Run the command in non-interactive mode.\n  --private-key-path=<value>        File containing the PEM-encoded private key corresponding to the certificate in\n                                    expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                                    certificate's directory. Only relevant if you are using code signing:\n                                    https://docs.expo.dev/eas-update/code-signing/\n  --runtime-version=<value>         Runtime version that the rollback to embedded update should target\n\nDESCRIPTION\n  roll back to the embedded update",
-      "group": "update",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/update/roll-back-to-embedded.ts"
+      "usage": "USAGE\n  $ eas update:roll-back-to-embedded [--branch <value>] [--channel <value>] [--runtime-version <value>] [--message <value>] [-p\n    android|ios|all] [--private-key-path <value>] [--json --non-interactive]\n\nFLAGS\n  -p, --platform=(android|ios|all)  [default: all]\n  --branch=<value>                  Branch to publish the rollback to embedded update group on\n  --channel=<value>                 Channel that the published rollback to embedded update should affect\n  --json                            Enable JSON output, non-JSON messages will be printed to stderr.\n  --message=<value>                 A short message describing the rollback to embedded update\n  --non-interactive                 Run the command in non-interactive mode.\n  --private-key-path=<value>        File containing the PEM-encoded private key corresponding to the certificate in\n                                    expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                                    certificate's directory. Only relevant if you are using code signing:\n                                    https://docs.expo.dev/eas-update/code-signing/\n  --runtime-version=<value>         Runtime version that the rollback to embedded update should target\n\nDESCRIPTION\n  roll back to the embedded update"
     },
     {
       "command": "eas update:rollback",
       "description": "Roll back to an embedded update or an existing update. Users wishing to run this command non-interactively should instead execute \"eas update:republish\" or \"eas update:roll-back-to-embedded\".",
-      "usage": "USAGE\n  $ eas update:rollback [--private-key-path <value>]\n\nFLAGS\n  --private-key-path=<value>  File containing the PEM-encoded private key corresponding to the certificate in\n                              expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                              certificate's directory. Only relevant if you are using code signing:\n                              https://docs.expo.dev/eas-update/code-signing/\n\nDESCRIPTION\n  Roll back to an embedded update or an existing update. Users wishing to run this command non-interactively should\n  instead execute \"eas update:republish\" or \"eas update:roll-back-to-embedded\".",
-      "group": "update",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/update/rollback.ts"
+      "usage": "USAGE\n  $ eas update:rollback [--private-key-path <value>]\n\nFLAGS\n  --private-key-path=<value>  File containing the PEM-encoded private key corresponding to the certificate in\n                              expo-updates' configuration. Defaults to a file named \"private-key.pem\" in the\n                              certificate's directory. Only relevant if you are using code signing:\n                              https://docs.expo.dev/eas-update/code-signing/\n\nDESCRIPTION\n  Roll back to an embedded update or an existing update. Users wishing to run this command non-interactively should\n  instead execute \"eas update:republish\" or \"eas update:roll-back-to-embedded\"."
     },
     {
       "command": "eas update:view GROUPID",
       "description": "update group details",
-      "usage": "USAGE\n  $ eas update:view GROUPID [--json]\n\nARGUMENTS\n  GROUPID  The ID of an update group.\n\nFLAGS\n  --json  Enable JSON output, non-JSON messages will be printed to stderr.\n\nDESCRIPTION\n  update group details",
-      "group": "update",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/update/view.ts"
+      "usage": "USAGE\n  $ eas update:view GROUPID [--json]\n\nARGUMENTS\n  GROUPID  The ID of an update group.\n\nFLAGS\n  --json  Enable JSON output, non-JSON messages will be printed to stderr.\n\nDESCRIPTION\n  update group details"
     },
     {
       "command": "eas upload",
       "description": "upload a local build and generate a sharable link",
-      "usage": "USAGE\n  $ eas upload [-p ios|android] [--build-path <value>] [--fingerprint <value>] [--json --non-interactive]\n\nFLAGS\n  -p, --platform=(ios|android)\n  --build-path=<value>          Path for the local build\n  --fingerprint=<value>         Fingerprint hash of the local build\n  --json                        Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive             Run the command in non-interactive mode.\n\nDESCRIPTION\n  upload a local build and generate a sharable link",
-      "group": "upload",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/upload.ts"
+      "usage": "USAGE\n  $ eas upload [-p ios|android] [--build-path <value>] [--fingerprint <value>] [--json --non-interactive]\n\nFLAGS\n  -p, --platform=(ios|android)\n  --build-path=<value>          Path for the local build\n  --fingerprint=<value>         Fingerprint hash of the local build\n  --json                        Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive             Run the command in non-interactive mode.\n\nDESCRIPTION\n  upload a local build and generate a sharable link"
     },
     {
       "command": "eas webhook:create",
       "description": "create a webhook",
-      "usage": "USAGE\n  $ eas webhook:create [--event BUILD|SUBMIT] [--url <value>] [--secret <value>] [--non-interactive]\n\nFLAGS\n  --event=(BUILD|SUBMIT)  Event type that triggers the webhook\n  --non-interactive       Run the command in non-interactive mode.\n  --secret=<value>        Secret used to create a hash signature of the request payload, provided in the\n                          'Expo-Signature' header.\n  --url=<value>           Webhook URL\n\nDESCRIPTION\n  create a webhook",
-      "group": "webhook",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/webhook/create.ts"
+      "usage": "USAGE\n  $ eas webhook:create [--event BUILD|SUBMIT] [--url <value>] [--secret <value>] [--non-interactive]\n\nFLAGS\n  --event=(BUILD|SUBMIT)  Event type that triggers the webhook\n  --non-interactive       Run the command in non-interactive mode.\n  --secret=<value>        Secret used to create a hash signature of the request payload, provided in the\n                          'Expo-Signature' header.\n  --url=<value>           Webhook URL\n\nDESCRIPTION\n  create a webhook"
     },
     {
       "command": "eas webhook:delete [ID]",
       "description": "delete a webhook",
-      "usage": "USAGE\n  $ eas webhook:delete [ID] [--non-interactive]\n\nARGUMENTS\n  ID  ID of the webhook to delete\n\nFLAGS\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  delete a webhook",
-      "group": "webhook",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/webhook/delete.ts"
+      "usage": "USAGE\n  $ eas webhook:delete [ID] [--non-interactive]\n\nARGUMENTS\n  ID  ID of the webhook to delete\n\nFLAGS\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  delete a webhook"
     },
     {
       "command": "eas webhook:list",
       "description": "list webhooks",
-      "usage": "USAGE\n  $ eas webhook:list [--event BUILD|SUBMIT] [--json]\n\nFLAGS\n  --event=(BUILD|SUBMIT)  Event type that triggers the webhook\n  --json                  Enable JSON output, non-JSON messages will be printed to stderr.\n\nDESCRIPTION\n  list webhooks",
-      "group": "webhook",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/webhook/list.ts"
+      "usage": "USAGE\n  $ eas webhook:list [--event BUILD|SUBMIT] [--json]\n\nFLAGS\n  --event=(BUILD|SUBMIT)  Event type that triggers the webhook\n  --json                  Enable JSON output, non-JSON messages will be printed to stderr.\n\nDESCRIPTION\n  list webhooks"
     },
     {
       "command": "eas webhook:update",
       "description": "update a webhook",
-      "usage": "USAGE\n  $ eas webhook:update --id <value> [--event BUILD|SUBMIT] [--url <value>] [--secret <value>] [--non-interactive]\n\nFLAGS\n  --event=(BUILD|SUBMIT)  Event type that triggers the webhook\n  --id=<value>            (required) Webhook ID\n  --non-interactive       Run the command in non-interactive mode.\n  --secret=<value>        Secret used to create a hash signature of the request payload, provided in the\n                          'Expo-Signature' header.\n  --url=<value>           Webhook URL\n\nDESCRIPTION\n  update a webhook",
-      "group": "webhook",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/webhook/update.ts"
+      "usage": "USAGE\n  $ eas webhook:update --id <value> [--event BUILD|SUBMIT] [--url <value>] [--secret <value>] [--non-interactive]\n\nFLAGS\n  --event=(BUILD|SUBMIT)  Event type that triggers the webhook\n  --id=<value>            (required) Webhook ID\n  --non-interactive       Run the command in non-interactive mode.\n  --secret=<value>        Secret used to create a hash signature of the request payload, provided in the\n                          'Expo-Signature' header.\n  --url=<value>           Webhook URL\n\nDESCRIPTION\n  update a webhook"
     },
     {
       "command": "eas webhook:view ID",
       "description": "view a webhook",
-      "usage": "USAGE\n  $ eas webhook:view ID\n\nARGUMENTS\n  ID  ID of the webhook to view\n\nDESCRIPTION\n  view a webhook",
-      "group": "webhook",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/webhook/view.ts"
+      "usage": "USAGE\n  $ eas webhook:view ID\n\nARGUMENTS\n  ID  ID of the webhook to view\n\nDESCRIPTION\n  view a webhook"
     },
     {
       "command": "eas whoami",
       "description": "show the username you are logged in as",
-      "usage": "USAGE\n  $ eas whoami\n\nDESCRIPTION\n  show the username you are logged in as\n\nALIASES\n  $ eas whoami",
-      "group": "whoami",
-      "seeCode": ""
+      "usage": "USAGE\n  $ eas whoami\n\nDESCRIPTION\n  show the username you are logged in as\n\nALIASES\n  $ eas whoami"
     },
     {
       "command": "eas worker:alias",
       "description": "Assign deployment aliases.",
-      "usage": "USAGE\n  $ eas worker:alias [--prod] [--alias <value>] [--id <value>] [--json --non-interactive]\n\nFLAGS\n  --alias=name       Custom alias to assign to the existing deployment.\n  --id=xyz123        Unique identifier of an existing deployment.\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n  --prod             Promote an existing deployment to production.\n\nDESCRIPTION\n  Assign deployment aliases.\n\nALIASES\n  $ eas worker:alias\n  $ eas deploy:promote",
-      "group": "worker",
-      "seeCode": ""
+      "usage": "USAGE\n  $ eas worker:alias [--prod] [--alias <value>] [--id <value>] [--json --non-interactive]\n\nFLAGS\n  --alias=name       Custom alias to assign to the existing deployment.\n  --id=xyz123        Unique identifier of an existing deployment.\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n  --prod             Promote an existing deployment to production.\n\nDESCRIPTION\n  Assign deployment aliases.\n\nALIASES\n  $ eas worker:alias\n  $ eas deploy:promote"
     },
     {
       "command": "eas worker:alias:delete [ALIAS_NAME]",
       "description": "Delete deployment aliases.",
-      "usage": "USAGE\n  $ eas worker:alias:delete [ALIAS_NAME] [--json --non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  Delete deployment aliases.\n\nALIASES\n  $ eas worker:alias:delete",
-      "group": "worker",
-      "seeCode": ""
+      "usage": "USAGE\n  $ eas worker:alias:delete [ALIAS_NAME] [--json --non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  Delete deployment aliases.\n\nALIASES\n  $ eas worker:alias:delete"
     },
     {
       "command": "eas worker:delete [DEPLOYMENT_ID]",
       "description": "Delete a deployment.",
-      "usage": "USAGE\n  $ eas worker:delete [DEPLOYMENT_ID] [--json --non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  Delete a deployment.\n\nALIASES\n  $ eas worker:delete",
-      "group": "worker",
-      "seeCode": ""
+      "usage": "USAGE\n  $ eas worker:delete [DEPLOYMENT_ID] [--json --non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  Delete a deployment.\n\nALIASES\n  $ eas worker:delete"
     },
     {
       "command": "eas workflow:cancel",
       "description": "Cancel one or more workflow runs. If no workflow run IDs are provided, you will be prompted to select IN_PROGRESS runs to cancel.",
-      "usage": "USAGE\n  $ eas workflow:cancel [--non-interactive]\n\nFLAGS\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  Cancel one or more workflow runs. If no workflow run IDs are provided, you will be prompted to select IN_PROGRESS runs\n  to cancel.",
-      "group": "workflow",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/workflow/cancel.ts"
+      "usage": "USAGE\n  $ eas workflow:cancel [--non-interactive]\n\nFLAGS\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  Cancel one or more workflow runs. If no workflow run IDs are provided, you will be prompted to select IN_PROGRESS runs\n  to cancel."
     },
     {
       "command": "eas workflow:create [NAME]",
       "description": "create a new workflow configuration YAML file",
-      "usage": "USAGE\n  $ eas workflow:create [NAME] [--skip-validation]\n\nARGUMENTS\n  NAME  Name of the workflow file (must end with .yml or .yaml)\n\nFLAGS\n  --skip-validation  If set, the workflow file will not be validated before being created\n\nDESCRIPTION\n  create a new workflow configuration YAML file",
-      "group": "workflow",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/workflow/create.ts"
+      "usage": "USAGE\n  $ eas workflow:create [NAME] [--skip-validation]\n\nARGUMENTS\n  NAME  Name of the workflow file (must end with .yml or .yaml)\n\nFLAGS\n  --skip-validation  If set, the workflow file will not be validated before being created\n\nDESCRIPTION\n  create a new workflow configuration YAML file"
     },
     {
       "command": "eas workflow:logs [ID]",
       "description": "view logs for a workflow run, selecting a job and step to view. You can pass in either a workflow run ID or a job ID. If no ID is passed in, you will be prompted to select from recent workflow runs for the current project.",
-      "usage": "USAGE\n  $ eas workflow:logs [ID] [--json] [--non-interactive] [--all-steps]\n\nARGUMENTS\n  ID  ID of the workflow run or workflow job to view logs for\n\nFLAGS\n  --all-steps        Print all logs, rather than prompting for a specific step. This will be automatically set when in\n                     non-interactive mode.\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  view logs for a workflow run, selecting a job and step to view. You can pass in either a workflow run ID or a job ID.\n  If no ID is passed in, you will be prompted to select from recent workflow runs for the current project.",
-      "group": "workflow",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/workflow/logs.ts"
+      "usage": "USAGE\n  $ eas workflow:logs [ID] [--json] [--non-interactive] [--all-steps]\n\nARGUMENTS\n  ID  ID of the workflow run or workflow job to view logs for\n\nFLAGS\n  --all-steps        Print all logs, rather than prompting for a specific step. This will be automatically set when in\n                     non-interactive mode.\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  view logs for a workflow run, selecting a job and step to view. You can pass in either a workflow run ID or a job ID.\n  If no ID is passed in, you will be prompted to select from recent workflow runs for the current project."
     },
     {
       "command": "eas workflow:run [FILE]",
       "description": "run an EAS workflow. The entire local project directory will be packaged and uploaded to EAS servers for the workflow run, unless the --ref flag is used.",
-      "usage": "USAGE\n  $ eas workflow:run [FILE] [--non-interactive] [--wait] [-F <value>] [--ref <value>] [--json]\n\nARGUMENTS\n  FILE  Path to the workflow file to run\n\nFLAGS\n  -F, --input=<value>...  Set workflow inputs\n  --json                  Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive       Run the command in non-interactive mode.\n  --ref=<value>           Git reference to run the workflow on\n  --[no-]wait             Wait for workflow run to complete. Defaults to false.\n\nDESCRIPTION\n  run an EAS workflow. The entire local project directory will be packaged and uploaded to EAS servers for the workflow\n  run, unless the --ref flag is used.\n\nFLAG DESCRIPTIONS\n  -F, --input=<value>...  Set workflow inputs\n\n    Add a parameter in key=value format. Use multiple instances of this flag to set multiple inputs.\n\n  --ref=<value>  Git reference to run the workflow on\n\n    The git reference must exist in the project's git repository, and the workflow file must exist at that reference.\n    When this flag is used, the local project is not uploaded; instead, the workflow is run from the exact state of the\n    project at the chosen reference.\n\n  --[no-]wait  Wait for workflow run to complete. Defaults to false.\n\n    Exit codes: 0 = success, 11 = failure, 12 = canceled, 13 = wait aborted.",
-      "group": "workflow",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/workflow/run.ts"
+      "usage": "USAGE\n  $ eas workflow:run [FILE] [--non-interactive] [--wait] [-F <value>] [--ref <value>] [--json]\n\nARGUMENTS\n  FILE  Path to the workflow file to run\n\nFLAGS\n  -F, --input=<value>...  Set workflow inputs\n  --json                  Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive       Run the command in non-interactive mode.\n  --ref=<value>           Git reference to run the workflow on\n  --[no-]wait             Wait for workflow run to complete. Defaults to false.\n\nDESCRIPTION\n  run an EAS workflow. The entire local project directory will be packaged and uploaded to EAS servers for the workflow\n  run, unless the --ref flag is used.\n\nFLAG DESCRIPTIONS\n  -F, --input=<value>...  Set workflow inputs\n\n    Add a parameter in key=value format. Use multiple instances of this flag to set multiple inputs.\n\n  --ref=<value>  Git reference to run the workflow on\n\n    The git reference must exist in the project's git repository, and the workflow file must exist at that reference.\n    When this flag is used, the local project is not uploaded; instead, the workflow is run from the exact state of the\n    project at the chosen reference.\n\n  --[no-]wait  Wait for workflow run to complete. Defaults to false.\n\n    Exit codes: 0 = success, 11 = failure, 12 = canceled, 13 = wait aborted."
     },
     {
       "command": "eas workflow:runs",
       "description": "list recent workflow runs for this project, with their IDs, statuses, and timestamps",
-      "usage": "USAGE\n  $ eas workflow:runs [--workflow <value>] [--status ACTION_REQUIRED|CANCELED|FAILURE|IN_PROGRESS|NEW|SUCCESS]\n    [--json] [--limit <value>]\n\nFLAGS\n  --json                                                               Enable JSON output, non-JSON messages will be\n                                                                       printed to stderr.\n  --limit=<value>                                                      The number of items to fetch each query. Defaults\n                                                                       to 10 and is capped at 100.\n  --status=(ACTION_REQUIRED|CANCELED|FAILURE|IN_PROGRESS|NEW|SUCCESS)  If present, filter the returned runs to select\n                                                                       those with the specified status\n  --workflow=<value>                                                   If present, the query will only return runs for\n                                                                       the specified workflow file name\n\nDESCRIPTION\n  list recent workflow runs for this project, with their IDs, statuses, and timestamps",
-      "group": "workflow",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/workflow/runs.ts"
+      "usage": "USAGE\n  $ eas workflow:runs [--workflow <value>] [--status ACTION_REQUIRED|CANCELED|FAILURE|IN_PROGRESS|NEW|SUCCESS]\n    [--json] [--limit <value>]\n\nFLAGS\n  --json                                                               Enable JSON output, non-JSON messages will be\n                                                                       printed to stderr.\n  --limit=<value>                                                      The number of items to fetch each query. Defaults\n                                                                       to 10 and is capped at 100.\n  --status=(ACTION_REQUIRED|CANCELED|FAILURE|IN_PROGRESS|NEW|SUCCESS)  If present, filter the returned runs to select\n                                                                       those with the specified status\n  --workflow=<value>                                                   If present, the query will only return runs for\n                                                                       the specified workflow file name\n\nDESCRIPTION\n  list recent workflow runs for this project, with their IDs, statuses, and timestamps"
     },
     {
       "command": "eas workflow:status [WORKFLOW_RUN_ID]",
       "description": "show the status of an existing workflow run. If no run ID is provided, you will be prompted to select from recent workflow runs for the current project.",
-      "usage": "USAGE\n  $ eas workflow:status [WORKFLOW_RUN_ID] [--non-interactive] [--wait] [--json]\n\nARGUMENTS\n  WORKFLOW_RUN_ID  A workflow run ID.\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n  --[no-]wait        Wait for workflow run to complete. Defaults to false.\n\nDESCRIPTION\n  show the status of an existing workflow run. If no run ID is provided, you will be prompted to select from recent\n  workflow runs for the current project.\n\nFLAG DESCRIPTIONS\n  --[no-]wait  Wait for workflow run to complete. Defaults to false.\n\n    Exit codes: 0 = success, 11 = failure, 12 = canceled, 13 = wait aborted.",
-      "group": "workflow",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/workflow/status.ts"
+      "usage": "USAGE\n  $ eas workflow:status [WORKFLOW_RUN_ID] [--non-interactive] [--wait] [--json]\n\nARGUMENTS\n  WORKFLOW_RUN_ID  A workflow run ID.\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n  --[no-]wait        Wait for workflow run to complete. Defaults to false.\n\nDESCRIPTION\n  show the status of an existing workflow run. If no run ID is provided, you will be prompted to select from recent\n  workflow runs for the current project.\n\nFLAG DESCRIPTIONS\n  --[no-]wait  Wait for workflow run to complete. Defaults to false.\n\n    Exit codes: 0 = success, 11 = failure, 12 = canceled, 13 = wait aborted."
     },
     {
       "command": "eas workflow:validate PATH",
       "description": "validate a workflow configuration yaml file",
-      "usage": "USAGE\n  $ eas workflow:validate PATH [--non-interactive]\n\nARGUMENTS\n  PATH  Path to the workflow configuration YAML file (must end with .yml or .yaml)\n\nFLAGS\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  validate a workflow configuration yaml file",
-      "group": "workflow",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/workflow/validate.ts"
+      "usage": "USAGE\n  $ eas workflow:validate PATH [--non-interactive]\n\nARGUMENTS\n  PATH  Path to the workflow configuration YAML file (must end with .yml or .yaml)\n\nFLAGS\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  validate a workflow configuration yaml file"
     },
     {
       "command": "eas workflow:view [ID]",
       "description": "view details for a workflow run, including jobs. If no run ID is provided, you will be prompted to select from recent workflow runs for the current project.",
-      "usage": "USAGE\n  $ eas workflow:view [ID] [--json] [--non-interactive]\n\nARGUMENTS\n  ID  ID of the workflow run to view\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  view details for a workflow run, including jobs. If no run ID is provided, you will be prompted to select from recent\n  workflow runs for the current project.",
-      "group": "workflow",
-      "seeCode": "https://github.com/expo/eas-cli/blob/v16.28.0/packages/eas-cli/src/commands/workflow/view.ts"
+      "usage": "USAGE\n  $ eas workflow:view [ID] [--json] [--non-interactive]\n\nARGUMENTS\n  ID  ID of the workflow run to view\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  view details for a workflow run, including jobs. If no run ID is provided, you will be prompted to select from recent\n  workflow runs for the current project."
     }
   ]
 }
