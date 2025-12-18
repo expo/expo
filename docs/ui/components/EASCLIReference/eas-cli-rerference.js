@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_FILE = path.join(__dirname, 'data/eas-cli-commands.json');
+const CLI_REFERENCE_PAGE = path.resolve(__dirname, '../../..', 'pages/eas/cli.mdx');
 const COMMANDS_START = '<!-- commands -->';
 const COMMANDS_END = '<!-- commandsstop -->';
 
@@ -99,6 +100,42 @@ function writeOutput(data) {
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(data, null, 2));
 }
 
+function updateCliReferencePage(cliVersion) {
+  const content = fs.readFileSync(CLI_REFERENCE_PAGE, 'utf8');
+  const match = content.match(/^---\n([\S\s]*?)\n---\n/);
+  const frontmatterLines = match[1].split('\n');
+  const updatedLines = [];
+  const hasCliVersion = frontmatterLines.some(line => line.startsWith('cliVersion:'));
+  let inserted = false;
+
+  for (const line of frontmatterLines) {
+    if (line.startsWith('cliVersion:')) {
+      updatedLines.push(`cliVersion: ${cliVersion}`);
+      continue;
+    }
+
+    updatedLines.push(line);
+    if (!hasCliVersion && !inserted && line.startsWith('description:')) {
+      updatedLines.push(`cliVersion: ${cliVersion}`);
+      inserted = true;
+    }
+  }
+
+  if (!hasCliVersion && !inserted) {
+    updatedLines.push(`cliVersion: ${cliVersion}`);
+  }
+
+  const updatedFrontmatter = updatedLines.join('\n');
+  const updatedContent = `---\n${updatedFrontmatter}\n---\n${content.slice(match[0].length)}`;
+
+  if (updatedContent !== content) {
+    fs.writeFileSync(CLI_REFERENCE_PAGE, updatedContent);
+    return true;
+  }
+
+  return false;
+}
+
 async function main() {
   const url = 'https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md';
 
@@ -106,7 +143,7 @@ async function main() {
     const readme = await fetchReadme(url);
     const cliVersion = extractCliVersion(readme);
     const section = extractCommandsSection(readme);
-    const { commands, duplicates } = parseCommands(section);
+    const { commands } = parseCommands(section);
 
     writeOutput({
       source: {
@@ -121,8 +158,8 @@ async function main() {
     console.log(
       `✅ Saved ${commands.length} commands to ${path.relative(process.cwd(), OUTPUT_FILE)}`
     );
-    if (duplicates.length > 0) {
-      console.warn(`⚠️ Skipped ${duplicates.length} duplicate commands: ${duplicates.join(', ')}`);
+    if (updateCliReferencePage(cliVersion)) {
+      console.log(`✅ Updated CLI version in ${path.relative(process.cwd(), CLI_REFERENCE_PAGE)}`);
     }
   } catch (error) {
     console.error('❌ Error:', error);

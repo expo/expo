@@ -7,6 +7,7 @@ import { hasDynamicData, shouldShowMarkdownActions } from '~/ui/components/Markd
 import { H1, P } from '~/ui/components/Text';
 
 import { AskPageAIConfigTrigger, AskPageAITrigger } from '../AskPageAI';
+import { PageCliVersion } from './PageCliVersion';
 import { PagePackageVersion } from './PagePackageVersion';
 import { PagePlatformTags } from './PagePlatformTags';
 import { PageTitleButtons } from './PageTitleButtons';
@@ -15,6 +16,7 @@ type Props = {
   title?: string;
   description?: string;
   packageName?: string;
+  cliVersion?: string;
   sourceCodeUrl?: string;
   iconUrl?: string;
   platforms?: string[];
@@ -28,6 +30,7 @@ export function PageHeader({
   title,
   description,
   packageName,
+  cliVersion,
   iconUrl,
   sourceCodeUrl,
   platforms,
@@ -99,6 +102,7 @@ export function PageHeader({
             </div>
             <div className="flex items-center gap-1.5">
               <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
+              {cliVersion && <PageCliVersion cliVersion={cliVersion} className="ml-1.5" />}
             </div>
           </div>
           <div
@@ -149,6 +153,7 @@ export function PageHeader({
               )}
             </span>
           )}
+          {cliVersion && <PageCliVersion cliVersion={cliVersion} className="ml-2" />}
         </span>
       </div>
       {description && (
@@ -169,6 +174,7 @@ export function PageHeader({
             )}
           </span>
         )}
+        {cliVersion && <PageCliVersion cliVersion={cliVersion} className="ml-2" />}
       </span>
       <div
         className={mergeClasses(
