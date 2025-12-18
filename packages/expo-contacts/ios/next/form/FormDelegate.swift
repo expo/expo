@@ -87,12 +87,18 @@ class FormDelegate: OnContactPickingResultHandler {
     if contactPickingPromise != nil {
       throw ContactPickingInProgressException()
     }
+    let pickerDelegate = ContactPickerControllerDelegate(onContactPickingResultHandler: self)
+
     let pickerController = CNContactPickerViewController()
-    contactPickerDelegate = ContactPickerControllerDelegate(onContactPickingResultHandler: self)
-    pickerController.delegate = self.contactPickerDelegate
-    let currentController = appContext?.utilities?.currentViewController()
+    pickerController.delegate = pickerDelegate
+
+    guard let currentController = appContext?.utilities?.currentViewController() else {
+      throw MissingViewControllerException()
+    }
+    currentController.present(pickerController, animated: true)
+
+    contactPickerDelegate = pickerDelegate
     contactPickingPromise = promise
-    currentController?.present(pickerController, animated: true)
   }
 
   private func setControllerOptions(controller: inout ContactsViewController, options: FormOptions?) throws {
@@ -135,7 +141,7 @@ class FormDelegate: OnContactPickingResultHandler {
     ContactAccessPicker.present(inViewController: currentViewController, promise: promise)
   }
 
-  func didPickContact(contact: CNContact) throws {
+  internal func didPickContact(contact: CNContact) throws {
     defer {
       contactPickingPromise = nil
     }
@@ -144,7 +150,7 @@ class FormDelegate: OnContactPickingResultHandler {
     )
   }
 
-  func didCancelPickingContact() {
+  internal func didCancelPickingContact() {
     contactPickingPromise?.resolve()
     contactPickingPromise = nil
   }
