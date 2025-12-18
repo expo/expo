@@ -58,6 +58,18 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
       propName: 'ios.buildReactNativeFromSource',
       propValueGetter: (config) => config.ios?.buildReactNativeFromSource?.toString(),
     },
+    {
+      propName: 'expo.useHermesV1',
+      propValueGetter: (config) => {
+        if (config.ios?.useHermesV1 && config.ios?.buildReactNativeFromSource !== true) {
+          WarningAggregator.addWarningIOS(
+            'withIosBuildProperties',
+            'Hermes V1 requires building React Native from source. Set `buildReactNativeFromSource` to `true` to enable it.'
+          );
+        }
+        return config.ios?.useHermesV1?.toString();
+      },
+    },
   ],
   'withIosBuildProperties'
 );

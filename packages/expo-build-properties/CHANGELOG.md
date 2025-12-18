@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for enabling Hermes V1 ([#41715](https://github.com/expo/expo/pull/41715) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

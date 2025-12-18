@@ -216,6 +216,16 @@ export interface PluginConfigTypeAndroid {
    * @default 'stable'
    */
   reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
+
+  /**
+   * Enable the experimental Hermes V1 engine.
+   *
+   * In React Native 0.83, using Hermes V1 requires building React Native from source.
+   * You must set `buildReactNativeFromSource` to `true` when enabling this option.
+   *
+   * @default false
+   */
+  useHermesV1?: boolean;
 }
 
 // @docsMissing
@@ -410,6 +420,16 @@ export interface PluginConfigTypeIos {
    * @default 'stable'
    */
   reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
+
+  /**
+   * Enable the experimental Hermes V1 engine.
+   *
+   * In React Native 0.83, using Hermes V1 requires building React Native from source.
+   * You must set `buildReactNativeFromSource` to `true` when enabling this option.
+   *
+   * @default false
+   */
+  useHermesV1?: boolean;
 }
 
 /**
@@ -727,6 +747,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
           enum: ['stable', 'canary', 'experimental'],
           nullable: true,
         },
+        useHermesV1: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
@@ -770,6 +791,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
           enum: ['stable', 'canary', 'experimental'],
           nullable: true,
         },
+        useHermesV1: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
