@@ -52,6 +52,16 @@ export interface SrcIcon {
         default?: ImageSourcePropType | React.ReactElement;
         selected: ImageSourcePropType | React.ReactElement;
       };
+  /**
+   * Controls how the icon is rendered on iOS.
+   *
+   * - `template` (default): Icon is rendered as a template image, allowing iOS to apply the selected/unselected tint color.
+   * - `original`: Icon is rendered with its original colors preserved, useful for icons with gradients or multiple colors.
+   *
+   * @platform iOS
+   * @default "template"
+   */
+  renderingMode?: "template" | "original";
 }
 
 export interface SFSymbolIcon {
