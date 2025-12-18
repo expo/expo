@@ -8,44 +8,53 @@ platforms: ['ios']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A color picker component that allows users to select colors from a palette.
+Expo UI ColorPicker matches the official SwiftUI [ColorPicker API](https://developer.apple.com/documentation/swiftui/colorpicker) and allows users to select colors from a palette.
 
 ## Installation
 
 <APIInstallSection />
 
-## Usage
+## Basic color picker
 
-<Tabs>
+```tsx ColorPickerExample.tsx
+import { useState } from 'react';
+import { Host, ColorPicker } from '@expo/ui/swift-ui';
 
-<Tab label="Preview">
-  <ContentSpotlight
-    alt="ColorPicker component on iOS."
-    src="/static/images/expo-ui/colorpicker/ios.png"
-    className="max-w-[240px]"
-  />
-</Tab>
+export default function ColorPickerExample() {
+  const [color, setColor] = useState('#FF6347');
 
-  <Tab label="Code">
-    ```tsx
-    import { ColorPicker, Host } from '@expo/ui/swift-ui';
+  return (
+    <Host matchContents>
+      <ColorPicker label="Select a color" selection={color} onSelectionChange={setColor} />
+    </Host>
+  );
+}
+```
 
-    <Host style={{ width: 400, height: 200 }}>
+## Color picker with opacity support
+
+Use the `supportsOpacity` prop to allow users to select colors with alpha transparency.
+
+```tsx ColorPickerOpacityExample.tsx
+import { useState } from 'react';
+import { Host, ColorPicker } from '@expo/ui/swift-ui';
+
+export default function ColorPickerOpacityExample() {
+  const [color, setColor] = useState('#FF634780');
+
+  return (
+    <Host matchContents>
       <ColorPicker
-        label="Select a color"
+        label="Select a color with opacity"
         selection={color}
-        onValueChanged={setColor}
+        onSelectionChange={setColor}
+        supportsOpacity
       />
     </Host>
-    ```
-
-  </Tab>
-</Tabs>
-
-> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/colorpicker) for more information.
+  );
+}
+```
 
 ## API
 
