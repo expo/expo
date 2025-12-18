@@ -637,6 +637,11 @@ export type VideoTrack = {
    * Specifies the frame rate of the video track in frames per second.
    */
   frameRate: number | null;
+
+  /**
+   * Specifies the video range of the video track.
+   */
+  videoRange: VideoRange;
 };
 
 /**
@@ -752,3 +757,11 @@ export type ScrubbingModeOptions = {
    */
   allowSkippingMediaCodecFlush?: boolean;
 };
+
+/**
+ * Specifies the dynamic range of the video content.
+ * - `sdr`: Standard Dynamic Range video.
+ * - `hlg`: Hybrid Log-Gamma - HDR backward-compatible with SDR displays
+ * - `pq`: Perceptual Quantizer - Formats like HDR10 and Dolby Vision
+ */
+export type VideoRange = 'sdr' | 'hlg' | 'pq';
