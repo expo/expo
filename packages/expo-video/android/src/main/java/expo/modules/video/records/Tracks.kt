@@ -62,6 +62,7 @@ class VideoTrack(
   @Field val averageBitrate: Int? = null,
   @Field val peakBitrate: Int? = null,
   @Field val frameRate: Float? = null,
+  @Field val videoRange: VideoRange = VideoRange.SDR,
   var format: Format? = null
 ) : Record, Serializable {
   companion object {
@@ -72,6 +73,7 @@ class VideoTrack(
       val averageBitrate = format.averageBitrate.takeIf { it != Format.NO_VALUE }
       val peakBitrate = format.peakBitrate.takeIf { it != Format.NO_VALUE }
       val frameRate = format.frameRate.takeIf { it != Format.NO_VALUE.toFloat() }
+      val videoRange = VideoRange.fromCColorTransfer(format.colorInfo?.colorTransfer)
 
       return VideoTrack(
         id = id,
@@ -83,6 +85,7 @@ class VideoTrack(
         averageBitrate = averageBitrate,
         peakBitrate = peakBitrate,
         frameRate = frameRate,
+        videoRange = videoRange,
         format = format
       )
     }
