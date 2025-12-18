@@ -3,10 +3,6 @@ import type { ClipboardImage, ContentType, GetImageOptions, GetStringOptions, Se
 import { ClipboardPasteButton } from './ClipboardPasteButton';
 type ClipboardEvent = {
     /**
-     * @deprecated Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
-     */
-    content: string;
-    /**
      * An array of content types that are available on the clipboard.
      */
     contentTypes: ContentType[];
