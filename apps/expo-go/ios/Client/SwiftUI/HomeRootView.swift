@@ -42,12 +42,17 @@ public struct HomeRootView: View {
       AccountSheet()
         .environmentObject(viewModel)
     }
-    .alert("Error", isPresented: $viewModel.showingErrorAlert) {
+    .alert("Error", isPresented: Binding(
+      get: { viewModel.errorToShow != nil },
+      set: { if !$0 { viewModel.clearError() } }
+    )) {
       Button("OK") {
-        viewModel.dismissErrorAlert()
+        viewModel.clearError()
       }
     } message: {
-      Text(viewModel.errorAlertMessage)
+      if let error = viewModel.errorToShow {
+        Text(error.message)
+      }
     }
   }
 }

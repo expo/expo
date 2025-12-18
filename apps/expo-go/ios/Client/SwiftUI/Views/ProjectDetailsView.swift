@@ -46,7 +46,7 @@ struct ProjectDetailsView: View {
                   .frame(maxWidth: .infinity)
                   .padding()
                   .background(Color.expoSecondarySystemGroupedBackground)
-                  .clipShape(RoundedRectangle(cornerRadius: 12))
+                  .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
                 }
               }
             }
@@ -95,12 +95,12 @@ struct ProjectDetailsView: View {
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding()
     .background(Color.expoSecondarySystemBackground)
-    .clipShape(RoundedRectangle(cornerRadius: 12))
+    .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
   }
 
   private func openBranch(_ branch: BranchDetail) {
     guard let update = branch.updates.first else {
-      homeViewModel.showErrorAlert("This branch has no published updates")
+      homeViewModel.showError("This branch has no published updates")
       return
     }
 
@@ -143,10 +143,6 @@ class ProjectDetailsViewModel: ObservableObject {
   }
 
   func loadProject() async {
-    if project != nil && !hasMoreBranches {
-      return
-    }
-
     if project != nil && !hasMoreBranches {
       return
     }

@@ -41,7 +41,7 @@ struct SettingsTabView: View {
             )
           }
           .background(Color.expoSecondarySystemBackground)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
 
           Text("Automatic is only supported on operating systems that allow you to control the system-wide color scheme.")
             .font(.caption)
@@ -69,7 +69,7 @@ struct SettingsTabView: View {
             )
           }
           .background(Color.expoSecondarySystemBackground)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
 
           Text("Selected gestures will toggle the developer menu while inside an experience. The menu allows you to reload or return to home in a published experience, and exposes developer tools in development mode.")
             .font(.caption)
@@ -103,7 +103,7 @@ struct SettingsTabView: View {
             .buttonStyle(PlainButtonStyle())
           }
           .background(Color.expoSecondarySystemBackground)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
 
           if let destination = URL(string: "https://expo.dev/privacy") {
             Link("Learn more about what data Expo collects and why.", destination: destination)
@@ -122,7 +122,7 @@ struct SettingsTabView: View {
             AppInfoRow(label: "Supported SDK", value: getExpoSDKVersion())
           }
           .background(Color.expoSecondarySystemBackground)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
 
           Button("Copy Build Info") {
             copyBuildInfoToClipboard()
@@ -131,7 +131,7 @@ struct SettingsTabView: View {
           .padding()
           .background(Color(.secondarySystemBackground))
           .foregroundColor(.primary)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
         }
 
         if viewModel.isAuthenticated {
@@ -162,7 +162,7 @@ struct SettingsTabView: View {
                   .padding()
                   .frame(maxWidth: .infinity)
                   .background(Color.red)
-                  .clipShape(RoundedRectangle(cornerRadius: 8))
+                  .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
               }
 
               Button {
@@ -175,14 +175,14 @@ struct SettingsTabView: View {
                   .frame(maxWidth: .infinity)
                   .padding()
                   .background(Color.red.opacity(0.1))
-                  .clipShape(RoundedRectangle(cornerRadius: 8))
+                  .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
               }
               .buttonStyle(PlainButtonStyle())
               .disabled(isDeleting)
             }
             .padding()
             .background(Color.expoSecondarySystemBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
           }
         }
       }
@@ -194,11 +194,7 @@ struct SettingsTabView: View {
   }
 
   private func getExpoSDKVersion() -> String {
-    return "54.0.0"
-  }
-
-  private func getExpoRuntimeVersion() -> String {
-    return Bundle.main.infoDictionary?["EXExpoRuntimeVersion"] as? String ?? "1.0.0"
+    return getSupportedSDKVersion()
   }
 
   private func copyBuildInfoToClipboard() {

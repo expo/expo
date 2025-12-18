@@ -4172,6 +4172,7 @@ DEPENDENCIES:
   - RNScreens (from `../../../node_modules/react-native-screens`)
   - RNSVG (from `../../../node_modules/react-native-svg`)
   - RNWorklets (from `../../../node_modules/react-native-worklets`)
+  - SocketRocket
   - SocketRocket (~> 0.7.1)
   - "stripe-react-native (from `../../../node_modules/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
@@ -4779,6 +4780,6 @@ SPEC CHECKSUMS:
   Yoga: 6ca93c8c13f56baeec55eb608577619b17a4d64e
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 742e8f741f69382578860d1bf3542a2909c81f37
+PODFILE CHECKSUM: 4cc10e62a4c97b54a0234169440b8fb43688a74f
 
 COCOAPODS: 1.16.2

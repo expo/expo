@@ -38,7 +38,7 @@ class DataService: ObservableObject {
   func fetchProjectsAndData(accountName: String) async {
     isLoadingData = true
     dataError = nil
-    defer { Task { @MainActor in isLoadingData = false } }
+    defer { isLoadingData = false }
 
     do {
       let response: HomeScreenDataResponse = try await APIClient.shared.request(
@@ -49,19 +49,13 @@ class DataService: ObservableObject {
         ]
       )
 
-      await MainActor.run {
-        self.projects = response.data.account.byName.apps.map { $0.toExpoProject() }
-        self.snacks = response.data.account.byName.snacks
-        self.dataError = nil
-      }
+      self.projects = response.data.account.byName.apps.map { $0.toExpoProject() }
+      self.snacks = response.data.account.byName.snacks
+      self.dataError = nil
     } catch let error as APIError {
-      await MainActor.run {
-        self.dataError = error
-      }
+      self.dataError = error
     } catch {
-      await MainActor.run {
-        self.dataError = .networkError(error)
-      }
+      self.dataError = .networkError(error)
     }
   }
 

@@ -20,15 +20,13 @@ struct RecentlyOpenedAppRow: View {
             Color.clear
           }
           .frame(width: 40, height: 40)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
         }
 
-        VStack(alignment: .leading, spacing: 2) {
-          Text(app.name)
-            .font(.body)
-            .fontWeight(.semibold)
-            .foregroundColor(.primary)
-        }
+        Text(app.name)
+          .font(.body)
+          .fontWeight(.semibold)
+          .foregroundColor(.primary)
 
         Spacer()
 
@@ -38,7 +36,7 @@ struct RecentlyOpenedAppRow: View {
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)
-      .clipShape(RoundedRectangle(cornerRadius: 12))
+      .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
     }
     .buttonStyle(PlainButtonStyle())
   }
