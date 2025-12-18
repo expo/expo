@@ -277,11 +277,11 @@ export type ContactDate = {
      */
     year?: number;
     /**
-     * Month component of the date in string format (1-12).
+     * Month component of the date in format 1-12.
      */
     month: number;
     /**
-     * Day component of the date
+     * Day component of the date in format 1-31.
      */
     day: number;
 };
