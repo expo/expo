@@ -12,6 +12,8 @@ import type { NativeStackNavigationEventMap } from '@react-navigation/native-sta
 import React, { useEffect } from 'react';
 
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
+import { INTERNAL_SLOT_NAME } from './constants';
+import { ResultState } from './fork/getStateFromPath';
 import { useExpoRouterStore } from './global-state/storeContext';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
@@ -226,6 +228,64 @@ function fromLoadedRoute(value: RouteNode, res: LoadedRoute) {
 // Without this store, the process enters a recursive loop.
 const qualifiedStore = new WeakMap<RouteNode, React.ComponentType<any>>();
 
+// Cache for prefetched components - bypasses React.lazy for instant navigation
+const prefetchedComponentCache = new Map<RouteNode, React.ComponentType<any>>();
+
+/**
+ * Prefetch a route's component by loading its module and caching the result.
+ * This allows bypassing React.lazy for prefetched routes.
+ */
+export async function prefetchRouteComponent(node: RouteNode): Promise<void> {
+  if (prefetchedComponentCache.has(node)) return;
+
+  try {
+    const res = node.loadRoute();
+    const module = await fromLoadedRoute(node, res);
+    if (module.default) {
+      prefetchedComponentCache.set(node, module.default);
+    }
+  } catch (error) {
+    if (__DEV__) {
+      console.warn(`Failed to prefetch route ${node.route}:`, error);
+    }
+  }
+}
+
+/**
+ * Find all RouteNodes that match a navigation state path.
+ * Returns nodes for all layouts and the final route.
+ */
+export function findRouteNodesForState(rootNode: RouteNode, state: ResultState): RouteNode[] {
+  const nodes: RouteNode[] = [];
+
+  function traverse(currentState: ResultState | undefined, currentNode: RouteNode) {
+    if (!currentState?.routes?.length) return;
+    const route = currentState.routes[currentState.routes.length - 1];
+
+    // Skip __root wrapper (exists in state, not in RouteNode)
+    if (route.name === INTERNAL_SLOT_NAME) {
+      traverse(route.state as ResultState | undefined, currentNode);
+      return;
+    }
+
+    const matchingChild = currentNode.children.find((child) => child.route === route.name);
+    if (matchingChild) {
+      nodes.push(matchingChild);
+      if (route.state) {
+        traverse(route.state as ResultState | undefined, matchingChild);
+      }
+    }
+  }
+
+  traverse(state, rootNode);
+  return nodes;
+}
+
+/** @internal Exposed for testing */
+export function __testing_getPrefetchedComponentCache() {
+  return prefetchedComponentCache;
+}
+
 /** Wrap the component with various enhancements and add access to child routes. */
 export function getQualifiedRouteComponent(value: RouteNode) {
   if (qualifiedStore.has(value)) {
@@ -238,12 +298,18 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
   if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
-    ScreenComponent = React.lazy(async () => {
-      const res = value.loadRoute();
-      return fromLoadedRoute(value, res) as Promise<{
-        default: React.ComponentType<any>;
-      }>;
-    });
+    // Check if component was prefetched - bypass React.lazy for instant navigation
+    const prefetchedComponent = prefetchedComponentCache.get(value);
+    if (prefetchedComponent) {
+      ScreenComponent = prefetchedComponent;
+    } else {
+      ScreenComponent = React.lazy(async () => {
+        const res = value.loadRoute();
+        return fromLoadedRoute(value, res) as Promise<{
+          default: React.ComponentType<any>;
+        }>;
+      });
+    }
 
     if (__DEV__) {
       ScreenComponent.displayName = `AsyncRoute(${value.route})`;
