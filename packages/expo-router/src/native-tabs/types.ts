@@ -87,6 +87,12 @@ export type SymbolOrImageSource =
        * The image source to use as an icon.
        */
       src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
+      /**
+       * Controls how the icon is rendered on iOS.
+       * @platform iOS
+       * @default 'template'
+       */
+      renderingMode?: 'template' | 'original';
     };
 
 export type NativeTabsLabelStyle = Pick<
