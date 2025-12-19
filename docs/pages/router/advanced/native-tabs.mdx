@@ -9,6 +9,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
+import { DiffBlock } from '~/ui/components/Snippet';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <VideoBoxLink
@@ -462,14 +463,7 @@ Native tabs are not designed to be a drop-in replacement for [JavaScript tabs](/
 
 `NativeTabs` has a React-first API that opts to use components for defining UI in favor of props objects.
 
-```diff
-- options={{
--   tabBarIcon: ({ focused, color, size }) => (
--     <Icon name="home" color={color} size={size} />
--   ),
-- }}
-+ <Icon sf="house" drawable="home_drawable" />
-```
+<DiffBlock source="/static/diffs/router/native-tabs/trigger-icon-component.diff" />
 
 ### Use Stacks inside tabs
 

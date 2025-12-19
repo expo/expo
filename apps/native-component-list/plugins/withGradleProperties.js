@@ -1,6 +1,6 @@
 const { withDangerousMod } = require('@expo/config-plugins');
 const assert = require('assert');
-const fs = require('fs-extra');
+const fs = require('fs/promises');
 const path = require('path');
 
 // Use this improve gradle builds

@@ -1,0 +1,38 @@
+appId: com.expo.routere2e
+name: Header Items hide-show
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://header-items
+- runFlow: ../close-warning.yml
+- assertVisible: "Stack Header Items E2E Test Screen"
+- tapOn:
+    id: "toggle-left-button-1"
+- assertVisible: "Left"
+- tapOn:
+    id: "toggle-left-button-1"
+- assertNotVisible: "Left"
+- tapOn:
+    id: "toggle-left-button-2"
+- assertVisible: "Button 2"
+- assertVisible: "33"
+- tapOn:
+    id: "toggle-left-button-2"
+- assertNotVisible: "Button 2"
+- tapOn:
+    id: "toggle-left-custom-item"
+- assertVisible:
+    id: "custom-header-element"
+- tapOn:
+    id: "toggle-left-custom-item"
+- assertNotVisible:
+    id: "custom-header-element"
+- tapOn:
+    id: "toggle-right-menu-1"
+- assertVisible: "Menu"
+- assertVisible: "99"
+- tapOn:
+    id: "toggle-right-button"
+- assertVisible: "Right"
+- tapOn:
+    id: "toggle-search-button"
+- assertVisible: "Search"

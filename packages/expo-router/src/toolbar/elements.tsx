@@ -1,83 +1,478 @@
-import { nanoid } from 'nanoid/non-secure';
-import { useMemo } from 'react';
-import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { Children, isValidElement, useId, type ReactNode } from 'react';
+import { StyleSheet, type ColorValue, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { RouterToolbarHost, RouterToolbarItem } from './native';
-import type { RouterToolbarHostProps, RouterToolbarItemProps } from './native.types';
 import { InternalLinkPreviewContext } from '../link/InternalLinkPreviewContext';
-import {
-  LinkMenu,
-  LinkMenuAction,
-  type LinkMenuActionProps,
-  type LinkMenuProps,
-} from '../link/elements';
+import { LinkMenuAction, type LinkMenuActionProps } from '../link/elements';
+import { NativeLinkPreviewAction } from '../link/preview/native';
+import { Icon, Label } from '../primitives';
+import { getFirstChildOfType } from '../utils/children';
+import type { BasicTextStyle } from '../utils/font';
 
-export type ToolbarMenuProps = LinkMenuProps;
-export const ToolbarMenu = LinkMenu;
+export interface ToolbarMenuProps {
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+  children?: React.ReactNode;
+  /**
+   * If `true`, the menu item will be displayed as destructive.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/destructive) for more information.
+   */
+  destructive?: boolean;
+  disabled?: boolean;
+  hidden?: boolean;
+  /**
+   * Whether to hide the shared background when `sharesBackground` is enabled.
+   *
+   * Only available for root level menus.
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/hidessharedbackground) for more information.
+   *
+   * @platform iOS 26+
+   */
+  hidesSharedBackground?: boolean;
+  /**
+   * Optional SF Symbol displayed alongside the menu item.
+   */
+  icon?: SFSymbol;
+  /**
+   * If `true`, the menu will be displayed inline.
+   * This means that the menu will not be collapsed
+   *
+   * > **Note*: Inline menus are only supported in submenus.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline) for more information.
+   */
+  inline?: boolean;
+  /**
+   * If `true`, the menu will be displayed as a palette.
+   * This means that the menu will be displayed as one row
+   *
+   * > **Note**: Palette menus are only supported in submenus.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette) for more information.
+   */
+  palette?: boolean;
+  /**
+   * Whether to separate the background of this item from other header items.
+   *
+   * > **Note**: Text buttons cannot share the background.
+   *
+   * This prop reverses the native behavior of `sharesBackground`.
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/sharesbackground) for more information.
+   *
+   * @default false
+   *
+   * @platform iOS 26+
+   */
+  separateBackground?: boolean;
+  /**
+   * Style for the label of the header item.
+   */
+  style?: StyleProp<BasicTextStyle>;
+  /**
+   * The title of the menu item
+   */
+  title?: string;
+
+  /**
+   * Tint color for the menu icon and text.
+   */
+  tintColor?: ColorValue;
+
+  /**
+   * Controls the visual style of the menu when represented as a bar button.
+   *
+   * @default 'plain'
+   */
+  variant?: 'plain' | 'done' | 'prominent';
+}
+
+/**
+ * Adds a context menu for to a toolbar.
+ *
+ * @example
+ * ```tsx
+ * <Toolbar>
+ *   <Toolbar.Menu title="Options">
+ *     <Toolbar.MenuAction title="Action 1" onPress={() => {}} />
+ *     <Toolbar.MenuAction title="Action 2" onPress={() => {}} />
+ *   </Toolbar.Menu>
+ * </Toolbar>
+ * ```
+ *
+ * @platform ios
+ */
+export const ToolbarMenu: React.FC<ToolbarMenuProps> = ({
+  accessibilityHint,
+  accessibilityLabel,
+  separateBackground,
+  hidesSharedBackground,
+  palette,
+  inline,
+  hidden,
+  title,
+  destructive,
+  children,
+  icon,
+  tintColor,
+  variant,
+  style,
+}) => {
+  const identifier = useId();
+  const validChildren = Children.toArray(children).filter(
+    (child) =>
+      isValidElement(child) && (child.type === ToolbarMenuAction || child.type === ToolbarMenu)
+  );
+  const label = getFirstChildOfType(children, Label);
+  const iconComponent = getFirstChildOfType(children, Icon);
+
+  const computedTitle = title ?? label?.props.children ?? '';
+  const computedIcon =
+    icon ??
+    (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
+  const sf = typeof computedIcon === 'string' ? computedIcon : undefined;
+  const titleStyle = StyleSheet.flatten(style);
+  return (
+    <NativeLinkPreviewAction
+      sharesBackground={!separateBackground}
+      hidesSharedBackground={hidesSharedBackground}
+      hidden={hidden}
+      icon={sf}
+      destructive={destructive}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+      displayAsPalette={palette}
+      displayInline={inline}
+      tintColor={tintColor}
+      titleStyle={titleStyle}
+      barButtonItemStyle={variant === 'done' ? 'prominent' : variant}
+      title={computedTitle}
+      onSelected={() => {}}
+      children={validChildren}
+      identifier={identifier}
+    />
+  );
+};
 
 export type ToolbarMenuActionProps = LinkMenuActionProps;
+
+/**
+ * A single action item within a toolbar menu.
+ *
+ * For available props, see [`LinkMenuActionProps`](./router/#linkmenuactionprops).
+ *
+ * @example
+ * ```tsx
+ * <Toolbar>
+ *   <Toolbar.Menu title="Options">
+ *     <Toolbar.MenuAction title="Action 1" onPress={() => {}} />
+ *     <Toolbar.MenuAction title="Action 2" onPress={() => {}} />
+ *   </Toolbar.Menu>
+ * </Toolbar>
+ * ```
+ *
+ * @platform ios
+ */
 export const ToolbarMenuAction = LinkMenuAction;
 
-export interface ToolbarButtonProps
-  extends Pick<
-    RouterToolbarItemProps,
-    | 'barButtonItemStyle'
-    | 'hidden'
-    | 'selected'
-    | 'possibleTitles'
-    | 'tintColor'
-    | 'hidesSharedBackground'
-    | 'sharesBackground'
-  > {
-  children?: string;
-  sf?: SFSymbol;
+export interface ToolbarButtonProps {
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+  /**
+   * The text label for the button.
+   *
+   * > **Note**: When icon is used, the label will not be shown and will be used for accessibility purposes only.
+   *
+   * @example
+   * ```tsx
+   * import { Toolbar } from 'expo-router/unstable-toolbar';
+   *
+   * ...
+   * <Toolbar.Button>This is button label</Toolbar.Button>
+   * ```
+   */
+  children?: ReactNode;
+  disabled?: boolean;
+
+  /**
+   * Whether the button should be hidden.
+   *
+   * @default false
+   */
+  hidden?: boolean;
+
+  /**
+   * Whether to hide the shared background.
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/hidessharedbackground) for more information.
+   *
+   * @platform iOS 26+
+   */
+  hidesSharedBackground?: boolean;
+
+  // TODO: support ImageSourcePropType icons in addition to SFSymbols
+  /**
+   * The name of the SF Symbol to display as the button icon.
+   * For a list of available symbols, see [SF Symbols](https://developer.apple.com/sf-symbols/).
+   */
+  icon?: SFSymbol;
+
+  /**
+   * Callback function when the button is pressed.
+   */
   onPress?: () => void;
+
+  /**
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/possibletitles) for more information.
+   */
+  possibleTitles?: string[];
+
+  /**
+   * Whether the button is in a selected state
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/isselected) for more information.
+   */
+  selected?: boolean;
+
+  /**
+   * Whether to separate the background of this item from other header items.
+   *
+   * > **Note**: Text buttons cannot share the background.
+   *
+   * This prop reverses the native behavior of `sharesBackground`.
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/sharesbackground) for more information.
+   *
+   * @default false
+   *
+   * @platform iOS 26+
+   */
+  separateBackground?: boolean;
+
+  /**
+   * Style for the label of the header item.
+   */
+  style?: StyleProp<BasicTextStyle>;
+
+  /**
+   * Tint color for the button icon and text.
+   */
+  tintColor?: ColorValue;
+
+  /**
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/style-swift.enum) for more information.
+   *
+   * @default 'plain'
+   */
+  variant?: 'plain' | 'done' | 'prominent';
 }
-export const ToolbarButton = ({ children, sf, onPress, ...rest }: ToolbarButtonProps) => {
-  const id = useMemo(() => nanoid(), []);
+
+// As noted in https://sebvidal.com/blog/whats-new-in-uikit-26/?utm_source=chatgpt.com#:~:text=It%27s%20worth%20noting%20that%2C%20at%20the%20time%20of%20writing%2C%20bar%20button%20badges%20are%20only%20supported%20in%20navigation%20bars%20%2D%20not%20tool%20bars.
+// currently badges are not supported in toolbars, and only in navigation bars.
+// Therefore, there is no badge support in ToolbarButton
+/**
+ * A button component for use in the toolbar.
+ * It should only be used as a child of `Toolbar`.
+ *
+ * @example
+ * ```tsx
+ * <Toolbar>
+ *   <Toolbar.Button icon="magnifyingglass" tintColor={Color.ios.placeholderText} />
+ *   <Toolbar.Button>Text Button</Toolbar.Button>
+ *   <Toolbar.Button hidden={!isSearchFocused} icon="xmark" onPress={handleClear} />
+ * </Toolbar>
+ * ```
+ *
+ * @platform ios
+ */
+export const ToolbarButton = (props: ToolbarButtonProps) => {
+  const id = useId();
+  const areChildrenString = typeof props.children === 'string';
+  const label = areChildrenString
+    ? (props.children as string)
+    : getFirstChildOfType(props.children, Label)?.props.children;
+  const iconComponent =
+    !props.icon && !areChildrenString ? getFirstChildOfType(props.children, Icon) : undefined;
+  const icon =
+    props.icon ??
+    (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
+  const sf = typeof icon === 'string' ? icon : undefined;
   return (
     <RouterToolbarItem
-      {...rest}
-      onSelected={onPress}
+      accessibilityHint={props.accessibilityHint}
+      accessibilityLabel={props.accessibilityLabel}
+      barButtonItemStyle={props.variant === 'done' ? 'prominent' : props.variant}
+      disabled={props.disabled}
+      hidden={props.hidden}
+      hidesSharedBackground={props.hidesSharedBackground}
       identifier={id}
-      title={children}
+      onSelected={props.onPress}
+      possibleTitles={props.possibleTitles}
+      selected={props.selected}
+      sharesBackground={!props.separateBackground}
       systemImageName={sf}
+      title={label}
+      tintColor={props.tintColor}
+      titleStyle={StyleSheet.flatten(props.style)}
     />
   );
 };
 
-export type ToolbarSpacerProps = Pick<RouterToolbarItemProps, 'width' | 'hidden'>;
-export const ToolbarSpacer = ({ width, ...rest }: ToolbarSpacerProps) => {
-  const id = useMemo(() => nanoid(), []);
+export type ToolbarSpacerProps = {
+  /**
+   * Whether to hide the shared background when `sharesBackground` is enabled.
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/hidessharedbackground) for more information.
+   *
+   * @platform iOS 26+
+   */
+  hidesSharedBackground?: boolean;
+  /**
+   * Whether the spacer should be hidden.
+   *
+   * @default false
+   */
+  hidden?: boolean;
+  /**
+   * Whether the spacer shares the background with adjacent toolbar items.
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/sharesbackground) for more information.
+   *
+   * @platform iOS 26+
+   * @default false
+   */
+  sharesBackground?: boolean;
+  /**
+   * By default, the spacer is flexible and expands to fill available space.
+   * If a width is provided, it creates a [fixed-width spacer](https://developer.apple.com/documentation/uikit/uibarbuttonitem/fixedspace(_:)).
+   */
+  width?: number;
+};
+
+/**
+ * A spacer component for the toolbar.
+ * Without a width, it creates a flexible spacer that expands to fill available space.
+ * With a width, it creates a fixed-width spacer.
+ * It should only be used as a child of `Toolbar`.
+ *
+ * @example
+ * ```tsx
+ * <Toolbar>
+ *   <Toolbar.Spacer />
+ *   <Toolbar.Button icon="magnifyingglass" />
+ *   <Toolbar.Spacer width={20} />
+ *   <Toolbar.Button icon="mic" />
+ *   <Toolbar.Spacer />
+ * </Toolbar>
+ * ```
+ *
+ * @platform ios
+ */
+export const ToolbarSpacer = (props: ToolbarSpacerProps) => {
+  const id = useId();
   return (
     <RouterToolbarItem
-      {...rest}
+      hidesSharedBackground={props.hidesSharedBackground}
+      hidden={props.hidden}
       identifier={id}
-      type={width ? 'fixedSpacer' : 'fluidSpacer'}
-      width={width}
+      sharesBackground={props.sharesBackground}
+      type={props.width ? 'fixedSpacer' : 'fluidSpacer'}
+      width={props.width}
     />
   );
 };
 
-export interface ToolbarViewProps
-  extends Pick<RouterToolbarItemProps, 'hidesSharedBackground' | 'sharesBackground'> {
+/**
+ * Props for the ToolbarView component.
+ *
+ * @platform ios
+ */
+export interface ToolbarViewProps {
+  /**
+   * React elements to render inside the toolbar view.
+   */
   children: React.ReactNode;
-  style?: StyleProp<
-    Omit<ViewStyle, 'position' | 'inset' | 'top' | 'left' | 'right' | 'bottom' | 'flex'>
-  >;
+  /**
+   * Whether the view should be hidden.
+   *
+   * @default false
+   */
+  hidden?: boolean;
+  /**
+   * Whether to hide the shared background when `sharesBackground` is enabled.
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/hidessharedbackground) for more information.
+   *
+   * @platform iOS 18+
+   */
+  hidesSharedBackground?: boolean;
+  /**
+   * Whether to separate the background of this item from other header items.
+   *
+   * This prop reverses the native behavior of `sharesBackground`.
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/sharesbackground) for more information.
+   *
+   * @default false
+   *
+   * @platform iOS 26+
+   */
+  separateBackground?: boolean;
 }
-export const ToolbarView = ({ children, style, ...rest }: ToolbarViewProps) => {
-  const id = useMemo(() => nanoid(), []);
+
+/**
+ * A custom view component for the toolbar that can contain any React elements.
+ * Useful for embedding custom components.
+ * It should only be used as a child of `Toolbar`.
+ *
+ * The items within the view will be absolutely positioned, so flexbox styles will not work as expected.
+ *
+ * @example
+ * ```tsx
+ * <Toolbar>
+ *   <Toolbar.Spacer />
+ *   <Toolbar.View>
+ *     <TextInput
+ *       placeholder="Search"
+ *       placeholderTextColor={Color.ios.placeholderText}
+ *     />
+ *   </Toolbar.View>
+ *   <Toolbar.View separateBackground style={{ width: 32, height: 32 }}>
+ *     <Pressable onPress={handlePress}>
+ *       <SymbolView name="plus" size={22} />
+ *     </Pressable>
+ *   </Toolbar.View>
+ * </Toolbar>
+ * ```
+ *
+ * @platform ios
+ */
+export const ToolbarView = ({
+  children,
+  hidden,
+  hidesSharedBackground,
+  separateBackground,
+}: ToolbarViewProps) => {
+  const id = useId();
   return (
-    <RouterToolbarItem {...rest} identifier={id}>
-      <View style={[style, { position: 'absolute' }]}>{children}</View>
+    <RouterToolbarItem
+      hidesSharedBackground={hidesSharedBackground}
+      hidden={hidden}
+      identifier={id}
+      sharesBackground={!separateBackground}>
+      {children}
     </RouterToolbarItem>
   );
 };
 
-export type ToolbarHostProps = RouterToolbarHostProps;
-export const ToolbarHost = (props: ToolbarHostProps) => {
+export interface ToolbarProps {
+  children?: React.ReactNode;
+}
+
+export const ToolbarHost = (props: ToolbarProps) => {
   // TODO: Replace InternalLinkPreviewContext with a more generic context
   return (
     <InternalLinkPreviewContext value={{ isVisible: false, href: '' }}>

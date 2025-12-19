@@ -48,7 +48,7 @@ public final class ExpoUIModule: Module {
         view.focus()
       }
       AsyncFunction("setSelection") { (view: TextFieldView, start: Int, end: Int) in
-       view.setSelection(start: start, end: end)
+        view.setSelection(start: start, end: end)
       }
     }
     View(ShareLinkView.self) {
@@ -95,12 +95,12 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ImageView.self)
     ExpoUIView(LabelView.self)
     ExpoUIView(ListView.self)
-    
+
     // Picker
     ExpoUIView(PickerView.self)
     View(PickerContentView.self)
     View(PickerLabelView.self)
-    
+
     ExpoUIView(ExpoUI.ProgressView.self)
     ExpoUIView(SectionView.self)
 
@@ -110,7 +110,7 @@ public final class ExpoUIModule: Module {
 
     ExpoUIView(SpacerView.self)
     ExpoUIView(StepperView.self)
-    ExpoUIView(SwitchView.self)
+    ExpoUIView(ToggleView.self)
     ExpoUIView(TextView.self)
     ExpoUIView(VStackView.self)
     ExpoUIView(ZStackView.self)

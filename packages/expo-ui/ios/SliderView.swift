@@ -12,7 +12,7 @@ struct SliderView: ExpoSwiftUI.View {
   }
 
   var body: some View {
-    #if !os(tvOS)
+#if !os(tvOS)
     sliderContent
       .onChange(of: value) { newValue in
         if props.value != newValue {
@@ -31,12 +31,12 @@ struct SliderView: ExpoSwiftUI.View {
         }
         value = sliderValue
       })
-    #else
+#else
     Text("Slider is not supported on tvOS")
-    #endif
+#endif
   }
 
-  #if !os(tvOS)
+#if !os(tvOS)
   @ViewBuilder
   private var sliderContent: some View {
     let label = props.children?.compactMap({ $0.childView as? SliderLabelView })
@@ -91,7 +91,7 @@ struct SliderView: ExpoSwiftUI.View {
       }
     }
   }
-  #endif
+#endif
 }
 
 final class SliderProps: UIBaseViewProps {

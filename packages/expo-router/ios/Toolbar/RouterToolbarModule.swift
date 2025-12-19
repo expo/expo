@@ -57,6 +57,18 @@ public class RouterToolbarModule: Module {
         (view: RouterToolbarItemView, config: BadgeConfigurationRecord?) in
         view.badgeConfiguration = config?.toBadgeConfiguration()
       }
+      Prop("titleStyle") { (view: RouterToolbarItemView, style: TitleStyleRecord?) in
+        view.titleStyle = style?.toTitleStyle()
+      }
+      Prop("accessibilityLabel") { (view: RouterToolbarItemView, accessibilityLabel: String?) in
+        view.accessibilityLabel = accessibilityLabel
+      }
+      Prop("accessibilityHint") { (view: RouterToolbarItemView, accessibilityHint: String?) in
+        view.accessibilityHint = accessibilityHint
+      }
+      Prop("disabled") { (view: RouterToolbarItemView, disabled: Bool?) in
+        view.disabled = disabled ?? false
+      }
 
       Events("onSelected")
     }
@@ -97,6 +109,22 @@ struct BadgeConfigurationRecord: Record {
       fontFamily: fontFamily,
       fontSize: fontSize,
       fontWeight: fontWeight
+    )
+  }
+}
+
+struct TitleStyleRecord: Record {
+  @Field var fontFamily: String?
+  @Field var fontSize: Double?
+  @Field var fontWeight: String?
+  @Field var color: UIColor?
+
+  func toTitleStyle() -> TitleStyle {
+    return TitleStyle(
+      fontFamily: fontFamily,
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      color: color
     )
   }
 }

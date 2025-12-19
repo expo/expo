@@ -1,9 +1,41 @@
-export declare const Toolbar: ((props: import("./elements").ToolbarHostProps) => import("react").JSX.Element) & {
-    Menu: import("react").FC<import("..").LinkMenuProps>;
+import { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarView } from './elements';
+/**
+ * A component that provides a [bottom toolbar](https://developer.apple.com/design/human-interface-guidelines/toolbars).
+ *
+ * @example
+ * ```tsx
+ * import { Toolbar } from "expo-router";
+ *
+ * export default function MyScreen() {
+ *   return (
+ *     <>
+ *       <YourScreenContent />
+ *       <Toolbar>
+ *         <Toolbar.Spacer />
+ *         <Toolbar.Button icon="magnifyingglass" tintColor={Color.ios.placeholderText} />
+ *         <Toolbar.View style={{ width: 200 }}>
+ *           <TextInput placeholder="Search" />
+ *         </Toolbar.View>
+ *         <Toolbar.Menu icon="ellipsis">
+ *           <Toolbar.MenuAction icon="mail" title="Send email" onPress={() => {}} />
+ *           <Toolbar.MenuAction icon="trash" title="Delete" destructive onPress={() => {}} />
+ *         </Toolbar.Menu>
+ *         <Toolbar.Spacer />
+ *       </Toolbar>
+ *     </>
+ *   );
+ * }
+ * ```
+ *
+ * @platform ios
+ */
+export declare const Toolbar: ((props: import("./elements").ToolbarProps) => import("react").JSX.Element) & {
+    Menu: import("react").FC<import("./elements").ToolbarMenuProps>;
     MenuAction: typeof import("..").LinkMenuAction;
-    Button: ({ children, sf, onPress, ...rest }: import("./elements").ToolbarButtonProps) => import("react").JSX.Element;
-    Spacer: ({ width, ...rest }: import("./elements").ToolbarSpacerProps) => import("react").JSX.Element;
-    View: ({ children, style, ...rest }: import("./elements").ToolbarViewProps) => import("react").JSX.Element;
+    Button: (props: import("./elements").ToolbarButtonProps) => import("react").JSX.Element;
+    Spacer: (props: import("./elements").ToolbarSpacerProps) => import("react").JSX.Element;
+    View: ({ children, hidden, hidesSharedBackground, separateBackground, }: import("./elements").ToolbarViewProps) => import("react").JSX.Element;
 };
-export type { ToolbarHostProps, ToolbarMenuProps, ToolbarMenuActionProps, ToolbarButtonProps, ToolbarSpacerProps, ToolbarViewProps as ToolbarCustomViewProps, } from './elements';
+export { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarView };
+export type { ToolbarProps, ToolbarMenuProps, ToolbarMenuActionProps, ToolbarButtonProps, ToolbarSpacerProps, ToolbarViewProps as ToolbarCustomViewProps, } from './elements';
 //# sourceMappingURL=index.d.ts.map

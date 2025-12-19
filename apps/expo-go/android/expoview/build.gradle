@@ -11,7 +11,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("com.apollographql.apollo:apollo-gradle-plugin:4.3.1")
+    classpath(expoLibs.apollo.gradle)
   }
 }
 
@@ -208,7 +208,8 @@ dependencies {
   api(libs.okio)
   api(libs.javax.inject)
 
-  implementation 'com.apollographql.apollo:apollo-runtime:4.3.1'
+  implementation expoLibs.apollo
+  implementation expoLibs.apollo.cache
 
   // Our dependencies
   compileOnly 'org.glassfish:javax.annotation:3.1.1'

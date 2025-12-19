@@ -7,7 +7,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.NativeMap
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.RuntimeContext
+import expo.modules.kotlin.runtime.RuntimeContext
 import expo.modules.kotlin.classcomponent.ClassDefinitionData
 import expo.modules.kotlin.jni.Destructible
 import expo.modules.kotlin.jni.ExpectedType
@@ -172,8 +172,8 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
     runtimeContext: RuntimeContext
   ) {
     trace("Attaching class $name") {
-      val prototypeDecorator = JSDecoratorsBridgingObject(runtimeContext.jniDeallocator)
-      val constructorDecorator = JSDecoratorsBridgingObject(runtimeContext.jniDeallocator)
+      val prototypeDecorator = JSDecoratorsBridgingObject(runtimeContext.deallocator)
+      val constructorDecorator = JSDecoratorsBridgingObject(runtimeContext.deallocator)
 
       prototypeDecorator.apply {
         objectDefinition.exportConstants()
@@ -224,7 +224,7 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
     }
 
     trace("Attaching view prototypes") {
-      val viewPrototypesDecorator = JSDecoratorsBridgingObject(runtimeContext.jniDeallocator)
+      val viewPrototypesDecorator = JSDecoratorsBridgingObject(runtimeContext.deallocator)
 
       for ((key, definition) in this) {
         viewPrototypesDecorator.apply {
@@ -248,7 +248,7 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
     }
 
     trace("Attaching view prototype for $name") {
-      val prototype = JSDecoratorsBridgingObject(runtimeContext.jniDeallocator)
+      val prototype = JSDecoratorsBridgingObject(runtimeContext.deallocator)
 
       functions.forEach { function ->
         function.attachToJSObject(appContext, prototype, name)

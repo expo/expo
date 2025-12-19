@@ -34,7 +34,7 @@ export default function PopoverScreen() {
         <Section title="Basic Popover">
           <Popover isPresented={showBasicPopover} onIsPresentedChange={setShowBasicPopover}>
             <Popover.Trigger>
-              <Button onPress={() => setShowBasicPopover(true)}>Show Popover</Button>
+              <Button onPress={() => setShowBasicPopover(true)} label="Show Basic Popover" />
             </Popover.Trigger>
             <Popover.Content>
               <VStack modifiers={[padding({ all: 16 }), frame({ minWidth: 200 })]}>
@@ -82,7 +82,7 @@ export default function PopoverScreen() {
             attachmentAnchor={attachmentAnchor}
             arrowEdge={arrowEdge}>
             <Popover.Trigger>
-              <Button onPress={() => setShowConfiguredPopover(true)}>Show Configured</Button>
+              <Button onPress={() => setShowConfiguredPopover(true)} label="Show Configured" />
             </Popover.Trigger>
             <Popover.Content>
               <VStack modifiers={[padding({ all: 16 }), frame({ minWidth: 250 })]}>
@@ -100,7 +100,7 @@ export default function PopoverScreen() {
             attachmentAnchor={attachmentAnchor}
             arrowEdge={arrowEdge}>
             <Popover.Trigger>
-              <Button onPress={() => setShowRNPopover(true)}>Show RN Popover</Button>
+              <Button onPress={() => setShowRNPopover(true)} label="Show RN Popover" />
             </Popover.Trigger>
             <Popover.Content>
               <RNHostView matchContents>

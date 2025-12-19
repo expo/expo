@@ -1,7 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
 import path from 'path';
-import rimraf from 'rimraf';
 
 import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import { createProjectHashAsync } from '../../src/Fingerprint';
@@ -20,7 +19,8 @@ describe('bare project test', () => {
   const projectRoot = path.join(tmpDir, projectName);
 
   beforeAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
+
     await spawnAsync('bunx', ['create-expo-app', '-t', 'bare-minimum', projectName], {
       stdio: 'inherit',
       cwd: tmpDir,
@@ -33,7 +33,7 @@ describe('bare project test', () => {
   });
 
   afterAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
   });
 
   it('should have same hash after adding js only library', async () => {

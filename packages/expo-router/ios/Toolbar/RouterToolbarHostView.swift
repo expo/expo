@@ -65,6 +65,31 @@ class RouterToolbarHostView: ExpoView, LinkPreviewMenuUpdatable {
               )
               // Otherwise, the menu items will be reversed in the toolbar
               item.preferredMenuElementOrder = .fixed
+              if #available(iOS 26.0, *) {
+                if let hidesSharedBackground = menu.hidesSharedBackground {
+                  item.hidesSharedBackground = hidesSharedBackground
+                }
+                if let sharesBackground = menu.sharesBackground {
+                  item.sharesBackground = sharesBackground
+                }
+              }
+              if let titleStyle = menu.titleStyle {
+                RouterFontUtils.setTitleStyle(fromConfig: titleStyle, for: item)
+              }
+              item.isHidden = menu.routerHidden
+              item.isEnabled = !menu.disabled
+              if let accessibilityLabel = menu.accessibilityLabelForMenu {
+                item.accessibilityLabel = accessibilityLabel
+              } else {
+                item.accessibilityLabel = menu.title
+              }
+              if let accessibilityHint = menu.accessibilityHintForMenu {
+                item.accessibilityHint = accessibilityHint
+              }
+              item.tintColor = menu.customTintColor
+              if let style = menu.barButtonItemStyle {
+                item.style = style
+              }
               return item
             }
             print(

@@ -47,23 +47,6 @@ describe(ensureProcessExitsAfterDelay, () => {
     expect(exitSpy).not.toHaveBeenCalled();
   });
 
-  it('detects unexpected active resources and force exits', async () => {
-    const exitSpy = jest.spyOn(process, 'exit').mockImplementation();
-
-    // Test if the process is force-exited after 0.2 seconds
-    ensureProcessExitsAfterDelay(200);
-
-    // Wait longer than the exit timer (0.5s)
-    await timers.setTimeout(500);
-
-    // Ensure `process.exit` was called
-    expect(exitSpy).toHaveBeenCalledWith(0);
-    // Ensure a warning was logged
-    expect(warn).toHaveBeenCalledWith(
-      'Something prevented Expo from exiting, forcefully exiting now.'
-    );
-  });
-
   it('detects and logs unexpected active child processes and force exits', async () => {
     const exitSpy = jest.spyOn(process, 'exit').mockImplementation();
 

@@ -30,6 +30,7 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fix source sets for events for functional view definitions. ([#41685](https://github.com/expo/expo/pull/41685) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix throwing `InvalidArgsNumberException` when declaring `AsyncFunction` with optional arguments and `Promise`. ([#41054](https://github.com/expo/expo/pull/41054) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] fix queue assertion crash ([#41296](https://github.com/expo/expo/pull/41296) by [@vonovak](https://github.com/vonovak))
 - [Android] check if `AppContextActivityResultLauncher` coroutine continuation is active before resuming ([#41319](https://github.com/expo/expo/pull/41319) by [@vonovak](https://github.com/vonovak))
@@ -54,6 +55,7 @@
 - [iOS] Replaced `appContext.fileSystem`, `appContext.utilities`, `appContext.imageLoader` and `appContext.permissions` with the core implementations. ([#41350](https://github.com/expo/expo/pull/41350), [#41370](https://github.com/expo/expo/pull/41370), [#41396](https://github.com/expo/expo/pull/41396) by [@tsapeta](https://github.com/tsapeta))
 - Deprecated `executeOnJavaScriptThread` in favor of `runtime.schedule`. ([#41478](https://github.com/expo/expo/pull/41478) by [@tsapeta](https://github.com/tsapeta) & [#41551](https://github.com/expo/expo/pull/41551) by [@lukmccall](https://github.com/lukmccall))
 - Added `ShadowNodeProxy.setStyleSize()` for Jetpack Compose integration. ([#41553](https://github.com/expo/expo/pull/41553) by [@kudo](https://github.com/kudo))
+- [iOS] Create wrapper for `RCTHost`. ([#41632](https://github.com/expo/expo/pull/41632) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 3.0.28 - 2025-12-05
 
