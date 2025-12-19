@@ -122,12 +122,6 @@ class JSIContext @DoNotStrip internal constructor(
       ?.toJavaScriptObject(native)
   }
 
-  @Suppress("unused")
-  @DoNotStrip
-  fun getCoreModuleObject(): JavaScriptModuleObject? {
-    return runtimeContextHolder.get()?.coreModule?.jsObject
-  }
-
   @Throws(Throwable::class)
   protected fun finalize() {
     deallocate()

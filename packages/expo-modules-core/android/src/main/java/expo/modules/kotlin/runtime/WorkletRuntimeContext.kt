@@ -2,14 +2,11 @@ package expo.modules.kotlin.runtime
 
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.jni.JNIDeallocator
 import expo.modules.kotlin.jni.JSIContext
 import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.jni.WorkletRuntimeInstaller
 import expo.modules.kotlin.logger
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinitionBuilder
 import expo.modules.kotlin.sharedobjects.ClassRegistry
 import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import expo.modules.kotlin.tracing.trace
@@ -23,15 +20,6 @@ class WorkletRuntimeContext(
   override lateinit var jsiContext: JSIContext
 
   private val appContextHolder = appContext.weak()
-
-  override val coreModule: ModuleHolder<*> = run {
-    val name = "WorkletRuntimeCoreModule"
-    val emptyModule = object : Module() {
-      override fun definition() = ModuleDefinitionBuilder(null).apply { Name(name) }.buildModule()
-    }
-    emptyModule._appContextHolder = appContextHolder
-    ModuleHolder(emptyModule, name)
-  }
 
   override val sharedObjectRegistry: SharedObjectRegistry = SharedObjectRegistry(this)
 

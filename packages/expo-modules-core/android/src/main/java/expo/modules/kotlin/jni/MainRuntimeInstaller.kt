@@ -4,13 +4,14 @@ import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.soloader.SoLoader
-import expo.modules.kotlin.runtime.RuntimeContext
+import expo.modules.core.interfaces.DoNotStrip
+import expo.modules.kotlin.runtime.MainRuntimeContext
 import expo.modules.kotlin.weak
 import java.lang.ref.WeakReference
 
 @OptIn(FrameworkAPI::class)
 class MainRuntimeInstaller(
-  val runtimeContext: RuntimeContext
+  val runtimeContext: MainRuntimeContext
 ) {
   // TODO(@lukmccall): Migrate tests to use bridgeless JSI installation and remove this method.
   fun install(
@@ -35,6 +36,12 @@ class MainRuntimeInstaller(
       runtimeContext.deallocator,
       runtimeExecutor
     )
+  }
+
+  @Suppress("unused")
+  @DoNotStrip
+  fun getCoreModuleObject(): JavaScriptModuleObject {
+    return runtimeContext.coreModule.jsObject
   }
 
   private external fun install(

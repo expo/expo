@@ -12,7 +12,6 @@ import com.google.common.truth.Truth
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.ModuleRegistry
-import expo.modules.kotlin.runtime.RuntimeContext
 import expo.modules.kotlin.defaultmodules.CoreModule
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.jni.tests.RuntimeHolder
@@ -30,7 +29,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 
-private fun defaultAppContextMock(): Pair<AppContext, RuntimeContext> {
+private fun defaultAppContextMock(): Pair<AppContext, MainRuntimeContext> {
   val appContextMock = mockk<AppContext>()
   val runtimeContext = mockk<MainRuntimeContext>()
   val classRegistry = ClassRegistry()

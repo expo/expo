@@ -58,7 +58,7 @@ class MainRuntimeContext(
    *
    * Note: in current implementation this module won't receive any events.
    */
-  override val coreModule = run {
+  internal val coreModule = run {
     val module = CoreModule()
     module._appContextHolder = appContextHolder
     ModuleHolder(module, null)
