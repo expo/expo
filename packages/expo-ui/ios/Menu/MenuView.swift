@@ -15,7 +15,6 @@ internal struct MenuView: ExpoSwiftUI.View {
       if props.hasPrimaryAction {
         // With primaryAction, tap triggers callback and long-press shows menu
         if let systemImage = props.systemImage, let label = props.label {
-          // primary action initializers require a LocalizedStringKey
           Menu(LocalizedStringKey(label), systemImage: systemImage) { Children() } primaryAction: { props.onPrimaryAction() }
         } else if let labelContent {
           Menu { Children() } label: { labelContent } primaryAction: { props.onPrimaryAction() }
