@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import <ExpoModulesCore/EXAppLifecycleListener.h>
+#import "EXAppLifecycleListener.h"
 
 @protocol EXAppLifecycleService <NSObject>
 

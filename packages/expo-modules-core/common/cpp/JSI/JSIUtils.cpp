@@ -2,7 +2,13 @@
 
 #include <sstream>
 #include <utility>
-#include "JSIUtils.h"
+
+#ifdef __APPLE__
+  #include <ExpoModulesJSI/JSIUtils.h>  
+#else
+  #include "JSIUtils.h"
+#endif
+
 
 namespace expo::common {
 

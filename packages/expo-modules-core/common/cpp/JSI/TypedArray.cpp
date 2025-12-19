@@ -1,7 +1,12 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 #include <unordered_map>
-#include "TypedArray.h"
+
+#ifdef __APPLE__
+  #include <ExpoModulesJSI/TypedArray.h>
+#else
+  #include "TypedArray.h"
+#endif
 
 namespace expo {
 

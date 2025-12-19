@@ -1,8 +1,6 @@
 @preconcurrency import React
 
-/**
- The app context is an interface to a single Expo app.
- */
+/// The app context is an interface to a single Expo app.
 @objc(EXAppContext)
 public final class AppContext: NSObject, @unchecked Sendable {
   internal static func create() -> AppContext {
@@ -18,7 +16,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
   public let config: AppContextConfig
 
   public lazy var jsLogger: Logger = {
-    let loggerModule = self.moduleRegistry.get(moduleWithName: JSLoggerModule.name) as? JSLoggerModule
+    let loggerModule =
+      self.moduleRegistry.get(moduleWithName: JSLoggerModule.name) as? JSLoggerModule
     guard let logger = loggerModule?.logger else {
       log.error("Failed to get the JSLoggerModule logger. Falling back to OS logger.")
       return log
@@ -54,7 +53,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
    or when the app context is "bridgeless" (for example in native unit tests).
    */
   @objc
-  public weak var reactBridge: RCTBridge?
+  internal weak var reactBridge: RCTBridge?
 
   /**
    Underlying JSI runtime of the running app.
@@ -94,12 +93,12 @@ public final class AppContext: NSObject, @unchecked Sendable {
   @objc
   public var appIdentifier: String? {
     #if RCT_NEW_ARCH_ENABLED
-    guard let moduleRegistry = reactBridge?.moduleRegistry else {
-      return nil
-    }
-    return "\(abs(ObjectIdentifier(moduleRegistry).hashValue))"
+      guard let moduleRegistry = reactBridge?.moduleRegistry else {
+        return nil
+      }
+      return "\(abs(ObjectIdentifier(moduleRegistry).hashValue))"
     #else
-    return nil
+      return nil
     #endif
   }
 
@@ -116,7 +115,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
   /**
    The module holder for the core module.
    */
-  internal private(set) lazy var coreModuleHolder = ModuleHolder(appContext: self, module: coreModule, name: nil)
+  internal private(set) lazy var coreModuleHolder = ModuleHolder(
+    appContext: self, module: coreModule, name: nil)
 
   internal private(set) lazy var converter = MainValueConverter(appContext: self)
 
@@ -124,7 +124,10 @@ public final class AppContext: NSObject, @unchecked Sendable {
    Designated initializer without modules provider.
    */
   public init(config: AppContextConfig? = nil) {
-    self.config = config ?? AppContextConfig(documentDirectory: nil, cacheDirectory: nil, appGroups: appCodeSignEntitlements.appGroups)
+    self.config =
+      config
+      ?? AppContextConfig(
+        documentDirectory: nil, cacheDirectory: nil, appGroups: appCodeSignEntitlements.appGroups)
 
     super.init()
 
@@ -132,7 +135,9 @@ public final class AppContext: NSObject, @unchecked Sendable {
     listenToClientAppNotifications()
   }
 
-  public convenience init(legacyModulesProxy: Any, legacyModuleRegistry: Any, config: AppContextConfig? = nil) {
+  public convenience init(
+    legacyModulesProxy: Any, legacyModuleRegistry: Any, config: AppContextConfig? = nil
+  ) {
     self.init(config: config)
     self.legacyModulesProxy = legacyModulesProxy as? LegacyNativeModulesProxy
     self.legacyModuleRegistry = legacyModuleRegistry as? EXModuleRegistry
@@ -202,7 +207,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
   /**
    Returns a legacy module implementing given protocol/interface.
    */
-  public func legacyModule<ModuleProtocol>(implementing moduleProtocol: Protocol) -> ModuleProtocol? {
+  public func legacyModule<ModuleProtocol>(implementing moduleProtocol: Protocol) -> ModuleProtocol?
+  {
     return legacyModuleRegistry?.getModuleImplementingProtocol(moduleProtocol) as? ModuleProtocol
   }
 
@@ -216,7 +222,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
    For instance, Expo Go uses sandboxed environment per project where the cache and document directories must be scoped.
    It's an optional type for historical reasons, for now let's keep it like this for backwards compatibility.
    */
-  public lazy var fileSystem: FileSystemManager? = FileSystemManager(appGroupSharedDirectories: self.config.appGroupSharedDirectories)
+  public lazy var fileSystem: FileSystemManager? = FileSystemManager(
+    appGroupSharedDirectories: self.config.appGroupSharedDirectories)
 
   /**
    Provides access to the permissions manager.
@@ -252,21 +259,22 @@ public final class AppContext: NSObject, @unchecked Sendable {
    */
   private func listenToClientAppNotifications() {
     #if os(iOS) || os(tvOS)
-    let notifications = [
-      UIApplication.willEnterForegroundNotification,
-      UIApplication.didBecomeActiveNotification,
-      UIApplication.didEnterBackgroundNotification
-    ]
+      let notifications = [
+        UIApplication.willEnterForegroundNotification,
+        UIApplication.didBecomeActiveNotification,
+        UIApplication.didEnterBackgroundNotification,
+      ]
     #elseif os(macOS)
-    let notifications = [
-      NSApplication.willUnhideNotification,
-      NSApplication.didBecomeActiveNotification,
-      NSApplication.didHideNotification
-    ]
+      let notifications = [
+        NSApplication.willUnhideNotification,
+        NSApplication.didBecomeActiveNotification,
+        NSApplication.didHideNotification,
+      ]
     #endif
 
     notifications.forEach { name in
-      NotificationCenter.default.addObserver(self, selector: #selector(handleClientAppNotification(_:)), name: name, object: nil)
+      NotificationCenter.default.addObserver(
+        self, selector: #selector(handleClientAppNotification(_:)), name: name, object: nil)
     }
   }
 
@@ -277,19 +285,19 @@ public final class AppContext: NSObject, @unchecked Sendable {
   private func handleClientAppNotification(_ notification: Notification) {
     switch notification.name {
     #if os(iOS) || os(tvOS)
-    case UIApplication.willEnterForegroundNotification:
-      moduleRegistry.post(event: .appEntersForeground)
-    case UIApplication.didBecomeActiveNotification:
-      moduleRegistry.post(event: .appBecomesActive)
-    case UIApplication.didEnterBackgroundNotification:
-      moduleRegistry.post(event: .appEntersBackground)
+      case UIApplication.willEnterForegroundNotification:
+        moduleRegistry.post(event: .appEntersForeground)
+      case UIApplication.didBecomeActiveNotification:
+        moduleRegistry.post(event: .appBecomesActive)
+      case UIApplication.didEnterBackgroundNotification:
+        moduleRegistry.post(event: .appEntersBackground)
     #elseif os(macOS)
-    case NSApplication.willUnhideNotification:
-      moduleRegistry.post(event: .appEntersForeground)
-    case NSApplication.didBecomeActiveNotification:
-      moduleRegistry.post(event: .appBecomesActive)
-    case NSApplication.didHideNotification:
-      moduleRegistry.post(event: .appEntersBackground)
+      case NSApplication.willUnhideNotification:
+        moduleRegistry.post(event: .appEntersForeground)
+      case NSApplication.didBecomeActiveNotification:
+        moduleRegistry.post(event: .appBecomesActive)
+      case NSApplication.didHideNotification:
+        moduleRegistry.post(event: .appEntersBackground)
     #endif
     default:
       return
@@ -302,7 +310,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
    Returns view modules wrapped by the base `ViewModuleWrapper` class.
    */
   @objc
-  public func getViewManagers() -> [ViewModuleWrapper] {
+  public func getViewManagers() -> [Any] {
     return moduleRegistry.flatMap { holder in
       holder.definition.views.map { key, viewDefinition in
         ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
@@ -379,10 +387,20 @@ public final class AppContext: NSObject, @unchecked Sendable {
       }
   }
 
+  private var _expoModulesConfig: ModulesProxyConfig?
+
   @objc
-  public final lazy var expoModulesConfig = ModulesProxyConfig(constants: self.exportedModulesConstants(),
-                                                               methodNames: self.exportedFunctionNames(),
-                                                               viewManagers: self.viewManagersMetadata())
+  public var expoModulesConfig: ModulesProxyConfig {
+    if let cachedConfig = _expoModulesConfig {
+      return cachedConfig
+    }
+    let newConfig: ModulesProxyConfig = ModulesProxyConfig(
+      constants: self.exportedModulesConstants(),
+      methodNames: self.exportedFunctionNames(),
+      viewManagers: self.viewManagersMetadata())
+    _expoModulesConfig = newConfig
+    return newConfig
+  }
 
   private func exportedFunctionNames() -> [String: [[String: Any]]] {
     var constants = [String: [[String: Any]]]()
@@ -392,7 +410,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
         return [
           "name": functionName,
           "argumentsCount": function.argumentsCount,
-          "key": functionName
+          "key": functionName,
         ]
       })
     }
@@ -400,7 +418,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
   }
 
   private func exportedModulesConstants() -> [String: Any] {
-    return moduleRegistry
+    return
+      moduleRegistry
       // prevent infinite recursion - exclude NativeProxyModule constants
       .filter { $0.name != NativeModulesProxyModule.moduleName }
       .reduce(into: [String: Any]()) { acc, holder in
@@ -455,14 +474,15 @@ public final class AppContext: NSObject, @unchecked Sendable {
    */
   @MainActor
   private func registerNativeViews() {
-#if RCT_NEW_ARCH_ENABLED
-    for holder in moduleRegistry {
-      for (key, viewDefinition) in holder.definition.views {
-        let viewModule = ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
-        ExpoFabricView.registerComponent(viewModule, appContext: self)
+    #if RCT_NEW_ARCH_ENABLED
+      for holder in moduleRegistry {
+        for (key, viewDefinition) in holder.definition.views {
+          let viewModule = ViewModuleWrapper(
+            holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
+          ExpoFabricView.registerComponent(viewModule, appContext: self)
+        }
       }
-    }
-#endif
+    #endif
   }
 
   // MARK: - Runtime
@@ -482,10 +502,11 @@ public final class AppContext: NSObject, @unchecked Sendable {
     EXJavaScriptRuntimeManager.installEventEmitterClass(runtime)
 
     // Install `global.expo.SharedObject`.
-    EXJavaScriptRuntimeManager.installSharedObjectClass(runtime) { [weak sharedObjectRegistry] objectId in
+    EXJavaScriptRuntimeManager.installSharedObjectClass(runtime) {
+      [weak sharedObjectRegistry] objectId in
       sharedObjectRegistry?.delete(objectId)
     }
-    
+
     // Install `global.expo.SharedRef`.
     EXJavaScriptRuntimeManager.installSharedRefClass(runtime)
 
@@ -531,11 +552,15 @@ public final class AppContext: NSObject, @unchecked Sendable {
    The provider is usually generated in application's `ExpoModulesProviders` files group.
    */
   @objc
-  public static func modulesProvider(withName providerName: String = "ExpoModulesProvider") -> ModulesProvider {
+  public static func modulesProvider(withName providerName: String = "ExpoModulesProvider")
+    -> ModulesProvider
+  {
     // [0] When ExpoModulesCore is built as separated framework/module,
     // we should explicitly load main bundle's `ExpoModulesProvider` class.
     if let bundleName = Bundle.main.infoDictionary?["CFBundleName"],
-       let providerClass = NSClassFromString("\(bundleName).\(providerName)") as? ModulesProvider.Type {
+      let providerClass = NSClassFromString("\(bundleName).\(providerName)")
+        as? ModulesProvider.Type
+    {
       return providerClass.init()
     }
 

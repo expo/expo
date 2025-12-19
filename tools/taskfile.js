@@ -16,6 +16,12 @@ export async function build(task, opts) {
       ignore: ['**/__tests__/**', '**/__mocks__/**'],
     })
     .target('build');
+
+  await task
+    .source('src/**/*.+(swift)', {
+      ignore: ['**/__tests__/**', '**/__mocks__/**'],
+    })
+    .target('build');
 }
 
 export default async function (task) {

@@ -1,5 +1,6 @@
 import Foundation
 import ExpoModulesCore
+import React
 
 public protocol ScreenOrientationController: AnyObject {
   func screenOrientationDidChange(_ orientation: UIInterfaceOrientation)

@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+#pragma once
+
 #import <Foundation/Foundation.h>
 
 #ifdef __cplusplus
@@ -90,7 +92,7 @@ NS_SWIFT_NAME(JavaScriptObject)
 
 #pragma mark - Deallocator
 
-- (void)setObjectDeallocator:(void (^ _Nonnull)(void))deallocatorBlock;
+- (void)setObjectDeallocator:(void (^_Nonnull)(void))deallocatorBlock;
 
 #pragma mark - Memory pressure
 

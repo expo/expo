@@ -1,12 +1,19 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#pragma once
+
 #ifdef __cplusplus
 
 #import <Foundation/Foundation.h>
 
 #import <jsi/jsi.h>
 
+#if !__building_module(ExpoModulesJSI)
 #import <React/RCTBridgeModule.h>
+#else
+// Forward declare RCTResponseSenderBlock when building the module to avoid React header dependency
+typedef void (^RCTResponseSenderBlock)(NSArray *response);
+#endif
 #import <ReactCommon/CallInvoker.h>
 
 using namespace facebook;

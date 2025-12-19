@@ -3,7 +3,9 @@
 import Foundation
 
 @objc(EXFileSystemLegacyUtilities)
-public class FileSystemManager: NSObject, EXInternalModule, EXFileSystemInterface, EXFilePermissionModuleInterface {
+public class FileSystemManager: NSObject, EXInternalModule, EXFileSystemInterface,
+  EXFilePermissionModuleInterface
+{
   @objc
   public let documentDirectory: String
 
@@ -18,7 +20,9 @@ public class FileSystemManager: NSObject, EXInternalModule, EXFileSystemInterfac
   var isScoped: Bool = false
 
   @objc
-  public init(documentDirectory: String, cachesDirectory: String, applicationSupportDirectory: String) {
+  public init(
+    documentDirectory: String, cachesDirectory: String, applicationSupportDirectory: String
+  ) {
     self.documentDirectory = documentDirectory
     self.cachesDirectory = cachesDirectory
     self.applicationSupportDirectory = applicationSupportDirectory
@@ -31,14 +35,15 @@ public class FileSystemManager: NSObject, EXInternalModule, EXFileSystemInterfac
   }
 
   required public override init() {
-    let documentPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+    let documentPaths = NSSearchPathForDirectoriesInDomains(
+      .documentDirectory, .userDomainMask, true)
     self.documentDirectory = documentPaths[0]
 
     let cachesPaths = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)
     self.cachesDirectory = cachesPaths[0]
 
     let applicationSupportDirectoryPaths =
-    NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true)
+      NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true)
     self.applicationSupportDirectory = applicationSupportDirectoryPaths[0]
 
     super.init()
@@ -62,7 +67,7 @@ public class FileSystemManager: NSObject, EXInternalModule, EXFileSystemInterfac
       "assets-library",
       "http",
       "https",
-      "ph"
+      "ph",
     ]
 
     if validSchemas.contains(uri.scheme ?? "") {
@@ -103,7 +108,8 @@ public class FileSystemManager: NSObject, EXInternalModule, EXFileSystemInterfac
   @objc
   public func getInternalPathPermissions(_ url: URL) -> EXFileSystemPermissionFlags {
     let appGroupSharedDirectories: [String] = self.appGroupSharedDirectories ?? []
-    let scopedDirs: [String] = [cachesDirectory, documentDirectory, applicationSupportDirectory] + appGroupSharedDirectories
+    let scopedDirs: [String] =
+      [cachesDirectory, documentDirectory, applicationSupportDirectory] + appGroupSharedDirectories
     let standardizedPath = url.standardized.path
     for scopedDirectory in scopedDirs {
       if standardizedPath.hasPrefix(scopedDirectory + "/") || standardizedPath == scopedDirectory {

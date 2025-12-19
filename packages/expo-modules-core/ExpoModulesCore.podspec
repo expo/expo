@@ -57,8 +57,6 @@ Pod::Spec.new do |s|
   }
   s.swift_version  = '6.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
-  s.static_framework = true
-  s.header_dir     = 'ExpoModulesCore'
 
   header_search_paths = []
   if ENV['USE_FRAMEWORKS']
@@ -101,10 +99,14 @@ Pod::Spec.new do |s|
 
   install_modules_dependencies(s)
 
-  s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
-  s.exclude_files = ['ios/JSI', 'ios/Tests', 'common/cpp/JSI']
-  s.compiler_flags = compiler_flags
-  s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
+  if (!Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s))
+    s.static_framework = true
+    s.header_dir     = 'ExpoModulesCore'
+    s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
+    s.exclude_files = ['ios/JSI', 'ios/Tests', 'common/cpp/JSI']
+    s.compiler_flags = compiler_flags
+    s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
+  end
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'

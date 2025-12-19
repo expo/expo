@@ -6,15 +6,18 @@
 @class RCTModuleData;
 
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
-#import <React/RCTUIManager.h>
 
 #import <jsi/jsi.h>
 
-#import <ExpoModulesCore/EXNativeModulesProxy.h>
+#import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
-#import <ExpoModulesCore/EXModuleRegistryProvider.h>
-#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXNativeModulesProxy.h>
+#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
+#import <ExpoModulesCore/ExpoBridgeModule.h>
+// Swift.h is still needed for ViewModuleWrapper, ExpoFabricView
+// These have class inheritance cycles that require Swift.h
 #import <ExpoModulesCore/Swift.h>
 
 static const NSString *exportedMethodsNamesKeyPath = @"exportedMethods";
@@ -27,9 +30,9 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 
 @interface EXModulesProxyConfig ()
 
-@property (readonly) NSMutableDictionary *exportedConstants;
-@property (readonly) NSMutableDictionary *methodNames;
-@property (readonly) NSMutableDictionary *viewManagerMetadata;
+@property(readonly) NSMutableDictionary *exportedConstants;
+@property(readonly) NSMutableDictionary *methodNames;
+@property(readonly) NSMutableDictionary *viewManagerMetadata;
 
 @end
 
@@ -37,8 +40,7 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 
 - (instancetype)initWithConstants:(nonnull NSDictionary *)constants
                       methodNames:(nonnull NSDictionary *)methodNames
-                     viewManagers:(nonnull NSDictionary *)viewManagerMetadata
-{
+                     viewManagers:(nonnull NSDictionary *)viewManagerMetadata {
   if (self = [super init]) {
     _exportedConstants = constants;
     _methodNames = methodNames;
@@ -47,16 +49,15 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
   return self;
 }
 
-- (void)addEntriesFromConfig:(nonnull const EXModulesProxyConfig*)config
-{
+- (void)addEntriesFromConfig:(nonnull const EXModulesProxyConfig *)config {
   [_exportedConstants addEntriesFromDictionary:config.exportedConstants];
   [_methodNames addEntriesFromDictionary:config.methodNames];
   [_viewManagerMetadata addEntriesFromDictionary:config.viewManagerMetadata];
 }
 
-- (nonnull NSDictionary<NSString *, id> *)toDictionary
-{
-  NSMutableDictionary <NSString *, id> *constantsAccumulator = [NSMutableDictionary dictionary];
+- (nonnull NSDictionary<NSString *, id> *)toDictionary {
+  NSMutableDictionary<NSString *, id> *constantsAccumulator =
+      [NSMutableDictionary dictionary];
   constantsAccumulator[viewManagersMetadataKeyPath] = _viewManagerMetadata;
   constantsAccumulator[exportedConstantsKeyPath] = _exportedConstants;
   constantsAccumulator[exportedMethodsNamesKeyPath] = _methodNames;
@@ -67,7 +68,8 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 
 @interface RCTBridge (RegisterAdditionalModuleClasses)
 
-- (NSArray<RCTModuleData *> *)registerModulesForClasses:(NSArray<Class> *)moduleClasses;
+- (NSArray<RCTModuleData *> *)registerModulesForClasses:
+    (NSArray<Class> *)moduleClasses;
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules;
 
 @end
@@ -80,16 +82,22 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 
 @interface EXNativeModulesProxy ()
 
-@property (nonatomic, strong) NSRegularExpression *regexp;
-@property (nonatomic, strong) EXModuleRegistry *exModuleRegistry;
-@property (nonatomic, strong) NSMutableDictionary<const NSString *, NSMutableDictionary<NSString *, NSNumber *> *> *exportedMethodsKeys;
-@property (nonatomic, strong) NSMutableDictionary<const NSString *, NSMutableDictionary<NSNumber *, NSString *> *> *exportedMethodsReverseKeys;
-@property (nonatomic) BOOL ownsModuleRegistry;
+@property(nonatomic, strong) NSRegularExpression *regexp;
+@property(nonatomic, strong) EXModuleRegistry *exModuleRegistry;
+@property(nonatomic, strong)
+    NSMutableDictionary<const NSString *,
+                        NSMutableDictionary<NSString *, NSNumber *> *>
+        *exportedMethodsKeys;
+@property(nonatomic, strong)
+    NSMutableDictionary<const NSString *,
+                        NSMutableDictionary<NSNumber *, NSString *> *>
+        *exportedMethodsReverseKeys;
+@property(nonatomic) BOOL ownsModuleRegistry;
 
 @end
 
 @implementation EXNativeModulesProxy {
-  __weak EXAppContext * _Nullable _appContext;
+  __weak id<EXAppContextProtocol> _appContext;
 }
 
 @synthesize bridge = _bridge;
@@ -98,13 +106,15 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 
 /**
- The designated initializer. It's used in the old setup where the native modules proxy
- is registered in `extraModulesForBridge:` by the bridge delegate.
+ The designated initializer. It's used in the old setup where the native modules
+ proxy is registered in `extraModulesForBridge:` by the bridge delegate.
  */
-- (instancetype)initWithModuleRegistry:(nullable EXModuleRegistry *)moduleRegistry
-{
+- (instancetype)initWithModuleRegistry:
+    (nullable EXModuleRegistry *)moduleRegistry {
   if (self = [super init]) {
-    _exModuleRegistry = moduleRegistry != nil ? moduleRegistry : [[EXModuleRegistryProvider new] moduleRegistry];
+    _exModuleRegistry = moduleRegistry != nil
+                            ? moduleRegistry
+                            : [[EXModuleRegistryProvider new] moduleRegistry];
     _exportedMethodsKeys = [NSMutableDictionary dictionary];
     _exportedMethodsReverseKeys = [NSMutableDictionary dictionary];
     _ownsModuleRegistry = moduleRegistry == nil;
@@ -117,63 +127,80 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
  other than the default one from `EXModuleRegistryProvider`.
  The `EXModuleRegistry` is still owned by this class.
  */
-- (instancetype)initWithCustomModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
-{
+- (instancetype)initWithCustomModuleRegistry:
+    (nonnull EXModuleRegistry *)moduleRegistry {
   self = [self initWithModuleRegistry:moduleRegistry];
   self.ownsModuleRegistry = YES;
   return self;
 }
 
 /**
- Convenience initializer used by React Native in the new setup, where the modules are registered automatically.
+ Convenience initializer used by React Native in the new setup, where the
+ modules are registered automatically.
  */
-- (instancetype)init
-{
+- (instancetype)init {
   return [self initWithModuleRegistry:nil];
 }
 
-# pragma mark - React API
+#pragma mark - React API
 
-+ (BOOL)requiresMainQueueSetup
-{
++ (BOOL)requiresMainQueueSetup {
   return YES;
 }
 
-- (nonnull EXModulesProxyConfig *)nativeModulesConfig
-{
+- (nonnull EXModulesProxyConfig *)nativeModulesConfig {
   if (_nativeModulesConfig) {
     return _nativeModulesConfig;
   }
 
-  NSMutableDictionary <NSString *, id> *exportedModulesConstants = [NSMutableDictionary dictionary];
+  NSMutableDictionary<NSString *, id> *exportedModulesConstants =
+      [NSMutableDictionary dictionary];
   // Grab all the constants exported by modules
-  for (EXExportedModule *exportedModule in [_exModuleRegistry getAllExportedModules]) {
+  for (EXExportedModule *exportedModule in
+       [_exModuleRegistry getAllExportedModules]) {
     @try {
-      exportedModulesConstants[[[exportedModule class] exportedModuleName]] = [exportedModule constantsToExport] ?: [NSNull null];
+      exportedModulesConstants[[[exportedModule class] exportedModuleName]] =
+          [exportedModule constantsToExport] ?: [NSNull null];
     } @catch (NSException *exception) {
       continue;
     }
   }
 
   // Also add `exportedMethodsNames`
-  NSMutableDictionary<const NSString *, NSMutableArray<NSMutableDictionary<const NSString *, id> *> *> *exportedMethodsNamesAccumulator = [NSMutableDictionary dictionary];
-  for (EXExportedModule *exportedModule in [_exModuleRegistry getAllExportedModules]) {
-    const NSString *exportedModuleName = [[exportedModule class] exportedModuleName];
-    exportedMethodsNamesAccumulator[exportedModuleName] = [NSMutableArray array];
-    [[exportedModule getExportedMethods] enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull exportedName, NSString * _Nonnull selectorName, BOOL * _Nonnull stop) {
-      NSMutableDictionary<const NSString *, id> *methodInfo = [NSMutableDictionary dictionaryWithDictionary:@{
-                                                                                                              methodInfoNameKey: exportedName,
-                                                                                                              // - 3 is for resolver and rejecter of the promise and the last, empty component
-                                                                                                              methodInfoArgumentsCountKey: @([[selectorName componentsSeparatedByString:@":"] count] - 3)
-                                                                                                              }];
-      [exportedMethodsNamesAccumulator[exportedModuleName] addObject:methodInfo];
+  NSMutableDictionary<
+      const NSString *,
+      NSMutableArray<NSMutableDictionary<const NSString *, id> *> *>
+      *exportedMethodsNamesAccumulator = [NSMutableDictionary dictionary];
+  for (EXExportedModule *exportedModule in
+       [_exModuleRegistry getAllExportedModules]) {
+    const NSString *exportedModuleName =
+        [[exportedModule class] exportedModuleName];
+    exportedMethodsNamesAccumulator[exportedModuleName] =
+        [NSMutableArray array];
+    [[exportedModule getExportedMethods] enumerateKeysAndObjectsUsingBlock:^(
+                                             NSString *_Nonnull exportedName,
+                                             NSString *_Nonnull selectorName,
+                                             BOOL *_Nonnull stop) {
+      NSMutableDictionary<const NSString *, id> *methodInfo =
+          [NSMutableDictionary dictionaryWithDictionary:@{
+            methodInfoNameKey : exportedName,
+            // - 3 is for resolver and rejecter of the promise and the last,
+            // empty component
+            methodInfoArgumentsCountKey :
+                @([[selectorName componentsSeparatedByString:@":"] count] - 3)
+          }];
+      [exportedMethodsNamesAccumulator[exportedModuleName]
+          addObject:methodInfo];
     }];
-    [self assignExportedMethodsKeys:exportedMethodsNamesAccumulator[exportedModuleName] forModuleName:exportedModuleName];
+    [self assignExportedMethodsKeys:exportedMethodsNamesAccumulator
+                                        [exportedModuleName]
+                      forModuleName:exportedModuleName];
   }
 
-  EXModulesProxyConfig *config = [[EXModulesProxyConfig alloc] initWithConstants:exportedModulesConstants
-                                                                     methodNames:exportedMethodsNamesAccumulator
-                                                                    viewManagers:[NSMutableDictionary new]];
+  EXModulesProxyConfig *config = [[EXModulesProxyConfig alloc]
+      initWithConstants:exportedModulesConstants
+            methodNames:exportedMethodsNamesAccumulator
+           viewManagers:[NSMutableDictionary new]];
   // decorate legacy config with sweet expo-modules config
   [config addEntriesFromConfig:[_appContext expoModulesConfig]];
 
@@ -181,22 +208,25 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   return config;
 }
 
-- (nonnull NSDictionary *)constantsToExport
-{
+- (nonnull NSDictionary *)constantsToExport {
   return [self.nativeModulesConfig toDictionary];
 }
 
-- (void)setBridge:(RCTBridge *)bridge
-{
-  ExpoBridgeModule *expoBridgeModule = [bridge moduleForClass:ExpoBridgeModule.class];
-  [expoBridgeModule legacyProxyDidSetBridge:self legacyModuleRegistry:_exModuleRegistry];
+- (void)setBridge:(RCTBridge *)bridge {
+  ExpoBridgeModule *expoBridgeModule =
+      [bridge moduleForClass:ExpoBridgeModule.class];
+  [expoBridgeModule legacyProxyDidSetBridge:self
+                       legacyModuleRegistry:_exModuleRegistry];
 
-  _appContext = [expoBridgeModule appContext];
+  // Cast is safe - EXAppContext conforms to EXAppContextProtocol but compiler
+  // can't verify forward declaration
+  _appContext = (id<EXAppContextProtocol>)[expoBridgeModule appContext];
 
   if (!_bridge) {
-    // The `setBridge` can be called during module setup or after. Registering more modules
-    // during setup causes a crash due to mutating `_moduleDataByID` while it's being enumerated.
-    // In that case we register them asynchronously.
+    // The `setBridge` can be called during module setup or after. Registering
+    // more modules during setup causes a crash due to mutating
+    // `_moduleDataByID` while it's being enumerated. In that case we register
+    // them asynchronously.
     if ([[bridge valueForKey:@"_moduleSetupComplete"] boolValue]) {
       [self registerExpoModulesInBridge:bridge];
     } else {
@@ -208,17 +238,27 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   _bridge = bridge;
 }
 
-RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNameOrKey arguments:(NSArray *)arguments resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
-{
+RCT_EXPORT_METHOD(callMethod : (NSString *)moduleName methodNameOrKey : (
+    id)methodNameOrKey arguments : (NSArray *)
+                      arguments resolver : (RCTPromiseResolveBlock)
+                          resolve rejecter : (RCTPromiseRejectBlock)reject) {
   // Backwards compatibility for the new architecture
   if ([_appContext hasModule:moduleName]) {
-    [_appContext callFunction:methodNameOrKey onModule:moduleName withArgs:arguments resolve:resolve reject:reject];
+    [_appContext callFunction:methodNameOrKey
+                     onModule:moduleName
+                     withArgs:arguments
+                      resolve:resolve
+                       reject:reject];
     return;
   }
 
-  EXExportedModule *module = [_exModuleRegistry getExportedModuleForName:moduleName];
+  EXExportedModule *module =
+      [_exModuleRegistry getExportedModuleForName:moduleName];
   if (module == nil) {
-    NSString *reason = [NSString stringWithFormat:@"No exported module was found for name '%@'. Are you sure all the packages are linked correctly?", moduleName];
+    NSString *reason = [NSString
+        stringWithFormat:@"No exported module was found for name '%@'. Are you "
+                         @"sure all the packages are linked correctly?",
+                         moduleName];
     reject(@"E_NO_MODULE", reason, nil);
     return;
   }
@@ -232,17 +272,27 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   if ([methodNameOrKey isKindOfClass:[NSString class]]) {
     methodName = (NSString *)methodNameOrKey;
   } else if ([methodNameOrKey isKindOfClass:[NSNumber class]]) {
-    methodName = _exportedMethodsReverseKeys[moduleName][(NSNumber *)methodNameOrKey];
+    methodName =
+        _exportedMethodsReverseKeys[moduleName][(NSNumber *)methodNameOrKey];
   } else {
-    reject(@"E_INV_MKEY", @"Method key is neither a String nor an Integer -- don't know how to map it to method name.", nil);
+    reject(@"E_INV_MKEY",
+           @"Method key is neither a String nor an Integer -- don't know how "
+           @"to map it to method name.",
+           nil);
     return;
   }
 
   dispatch_async([module methodQueue], ^{
     @try {
-      [module callExportedMethod:methodName withArguments:arguments resolver:resolve rejecter:reject];
+      [module callExportedMethod:methodName
+                   withArguments:arguments
+                        resolver:resolve
+                        rejecter:reject];
     } @catch (NSException *e) {
-      NSString *message = [NSString stringWithFormat:@"An exception was thrown while calling `%@.%@` with arguments `%@`: %@", moduleName, methodName, arguments, e];
+      NSString *message =
+          [NSString stringWithFormat:@"An exception was thrown while calling "
+                                     @"`%@.%@` with arguments `%@`: %@",
+                                     moduleName, methodName, arguments, e];
       reject(@"E_EXC", message, nil);
     }
   });
@@ -250,29 +300,38 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 
 #pragma mark - Privates
 
-- (void)registerExpoModulesInBridge:(RCTBridge *)bridge
-{
-  // Registering expo modules (excluding Swifty view managers!) in bridge is needed only when the proxy module owns
-  // the registry (was autoinitialized by React Native). Otherwise they're registered by the registry adapter.
-  BOOL ownsModuleRegistry = _ownsModuleRegistry && ![bridge moduleIsInitialized:[EXReactNativeEventEmitter class]];
+- (void)registerExpoModulesInBridge:(RCTBridge *)bridge {
+  // Registering expo modules (excluding Swifty view managers!) in bridge is
+  // needed only when the proxy module owns the registry (was autoinitialized by
+  // React Native). Otherwise they're registered by the registry adapter.
+  BOOL ownsModuleRegistry =
+      _ownsModuleRegistry &&
+      ![bridge moduleIsInitialized:[EXReactNativeEventEmitter class]];
 
   // An array of `RCTBridgeModule` classes to register.
-  NSMutableArray<Class<RCTBridgeModule>> *additionalModuleClasses = [NSMutableArray new];
+  NSMutableArray<Class<RCTBridgeModule>> *additionalModuleClasses =
+      [NSMutableArray new];
   NSMutableSet *visitedSweetModules = [NSMutableSet new];
 
   // Add dynamic wrappers for view modules written in Sweet API.
-  for (EXViewModuleWrapper *swiftViewModule in [_appContext getViewManagers]) {
-    Class wrappedViewModuleClass = [self registerComponentData:swiftViewModule
-                                                      inBridge:bridge
-                                                      forAppId:_appContext.appIdentifier];
+  // Note: getViewManagers returns [Any] to avoid Swift type exposure, but they
+  // are EXViewModuleWrapper instances
+  for (id swiftViewModule in [_appContext getViewManagers]) {
+    Class wrappedViewModuleClass =
+        [self registerViewModule:swiftViewModule
+                        forAppId:[_appContext appIdentifier]];
     [additionalModuleClasses addObject:wrappedViewModuleClass];
-    [visitedSweetModules addObject:swiftViewModule.name];
+    [visitedSweetModules addObject:[swiftViewModule name]];
   }
 
-  [additionalModuleClasses addObject:[EXViewModuleWrapper class]];
-  [self registerLegacyComponentData:[EXViewModuleWrapper class] inBridge:bridge];
+  // EXViewModuleWrapper is defined in Swift, get class at runtime
+  Class viewModuleWrapperClass = NSClassFromString(@"EXViewModuleWrapper");
+  if (viewModuleWrapperClass) {
+    [additionalModuleClasses addObject:viewModuleWrapperClass];
+  }
 
-  // Add modules from legacy module registry only when the NativeModulesProxy owns the registry.
+  // Add modules from legacy module registry only when the NativeModulesProxy
+  // owns the registry.
   if (ownsModuleRegistry) {
     // Some modules might need access to the bridge.
     for (id module in [_exModuleRegistry getAllInternalModules]) {
@@ -282,16 +341,14 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     }
   }
 
-  // `registerAdditionalModuleClasses:` call below is not thread-safe if RCTUIManager is not initialized.
-  // The case happens especially with reanimated which accesses `bridge.uiManager` and initialize bridge in js thread.
-  // Accessing uiManager here, we try to make sure RCTUIManager is initialized.
-  [bridge uiManager];
-
   // Register the view managers as additional modules.
-  [self registerAdditionalModuleClasses:additionalModuleClasses inBridge:bridge];
+  [self registerAdditionalModuleClasses:additionalModuleClasses
+                               inBridge:bridge];
 
-  // Get the instance of `EXReactEventEmitter` bridge module and give it access to the interop bridge.
-  EXReactNativeEventEmitter *eventEmitter = [bridge moduleForClass:[EXReactNativeEventEmitter class]];
+  // Get the instance of `EXReactEventEmitter` bridge module and give it access
+  // to the interop bridge.
+  EXReactNativeEventEmitter *eventEmitter =
+      [bridge moduleForClass:[EXReactNativeEventEmitter class]];
   [eventEmitter setAppContext:_appContext];
 
   // As the last step, when the registry is owned,
@@ -305,23 +362,32 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   }
 }
 
-- (void)registerAdditionalModuleClasses:(NSArray<Class> *)moduleClasses inBridge:(RCTBridge *)bridge
-{
+- (void)registerAdditionalModuleClasses:(NSArray<Class> *)moduleClasses
+                               inBridge:(RCTBridge *)bridge {
   // In remote debugging mode, i.e. executorClass is `RCTWebSocketExecutor`,
-  // there is a deadlock issue in `registerAdditionalModuleClasses:` and causes app freezed.
-  //   - The JS thread acquired the `RCTCxxBridge._moduleRegistryLock` lock in `RCTCxxBridge._initializeBridgeLocked`
-  //      = it further goes into RCTObjcExecutor and tries to get module config from main thread
-  //   - The main thread is pending in `RCTCxxBridge.registerAdditionalModuleClasses` where trying to acquire the same lock.
-  // To workaround the deadlock, we tend to use the non-locked registration and mutate the bridge internal module data.
-  // Since JS thread in this situation is waiting for main thread, it's safe to mutate module data without lock.
-  // The only risk should be the internal `_moduleRegistryCreated` flag without lock protection.
-  // As we just workaround in `RCTWebSocketExecutor` case, the risk of `_moduleRegistryCreated` race condition should be lower.
+  // there is a deadlock issue in `registerAdditionalModuleClasses:` and causes
+  // app freezed.
+  //   - The JS thread acquired the `RCTCxxBridge._moduleRegistryLock` lock in
+  //   `RCTCxxBridge._initializeBridgeLocked`
+  //      = it further goes into RCTObjcExecutor and tries to get module config
+  //      from main thread
+  //   - The main thread is pending in
+  //   `RCTCxxBridge.registerAdditionalModuleClasses` where trying to acquire
+  //   the same lock.
+  // To workaround the deadlock, we tend to use the non-locked registration and
+  // mutate the bridge internal module data. Since JS thread in this situation
+  // is waiting for main thread, it's safe to mutate module data without lock.
+  // The only risk should be the internal `_moduleRegistryCreated` flag without
+  // lock protection. As we just workaround in `RCTWebSocketExecutor` case, the
+  // risk of `_moduleRegistryCreated` race condition should be lower.
   //
   // Learn more about the non-locked initialization:
   // https://github.com/facebook/react-native/blob/757bb75fbf837714725d7b2af62149e8e2a7ee51/React/CxxBridge/RCTCxxBridge.mm#L922-L935
   // See the `_moduleRegistryCreated` false case
-  if ([NSStringFromClass([bridge executorClass]) isEqualToString:@"RCTWebSocketExecutor"]) {
-    NSNumber *moduleRegistryCreated = [bridge valueForKey:@"_moduleRegistryCreated"];
+  if ([NSStringFromClass([bridge executorClass])
+          isEqualToString:@"RCTWebSocketExecutor"]) {
+    NSNumber *moduleRegistryCreated =
+        [bridge valueForKey:@"_moduleRegistryCreated"];
     if (![moduleRegistryCreated boolValue]) {
       [bridge registerModulesForClasses:moduleClasses];
       return;
@@ -335,50 +401,80 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   }
 }
 
-- (Class)registerComponentData:(EXViewModuleWrapper *)viewModule inBridge:(RCTBridge *)bridge forAppId:(NSString *)appId
-{
-  // Hacky way to get a dictionary with `RCTComponentData` from UIManager.
-  NSMutableDictionary<NSString *, RCTComponentData *> *componentDataByName = [[bridge uiManager] valueForKey:@"_componentDataByName"];
+- (Class)registerViewModule:(id)viewModule
+                   forAppId:(NSString *)appId {
+  // EXViewModuleWrapper is defined in Swift - use runtime method calls
+  Class viewModuleWrapperClass = NSClassFromString(@"EXViewModuleWrapper");
+  Class wrappedViewModuleClass = nil;
 
-  Class wrappedViewModuleClass = [EXViewModuleWrapper createViewModuleWrapperClassWithModule:viewModule appId:appId];
-  NSString *className = NSStringFromClass(wrappedViewModuleClass);
-
-  if (componentDataByName[className]) {
-    // Just in case the component was already registered, let's leave a log that we're overriding it.
-    NSLog(@"Overriding ComponentData for view %@", className);
+  if (viewModuleWrapperClass) {
+    SEL createSelector =
+        NSSelectorFromString(@"createViewModuleWrapperClassWithModule:appId:");
+    if ([viewModuleWrapperClass respondsToSelector:createSelector]) {
+      NSMethodSignature *sig =
+          [viewModuleWrapperClass methodSignatureForSelector:createSelector];
+      NSInvocation *invocation =
+          [NSInvocation invocationWithMethodSignature:sig];
+      [invocation setTarget:viewModuleWrapperClass];
+      [invocation setSelector:createSelector];
+      [invocation setArgument:&viewModule atIndex:2];
+      [invocation setArgument:&appId atIndex:3];
+      [invocation invoke];
+      [invocation getReturnValue:&wrappedViewModuleClass];
+    }
   }
 
-  EXComponentData *componentData = [[EXComponentData alloc] initWithViewModule:viewModule
-                                                                  managerClass:wrappedViewModuleClass
-                                                                        bridge:bridge];
-  componentDataByName[className] = componentData;
+  if (!wrappedViewModuleClass) {
+    return nil;
+  }
 
-#ifdef RCT_NEW_ARCH_ENABLED
-  Class viewClass = [ExpoFabricView makeViewClassForAppContext:_appContext moduleName:[viewModule moduleName] viewName: [viewModule viewName] className:className];
-  [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
-#endif
+  NSString *className = NSStringFromClass(wrappedViewModuleClass);
+
+  // Register with Fabric's RCTComponentViewFactory
+  Class expoFabricViewClass = NSClassFromString(@"ExpoFabricView");
+  if (expoFabricViewClass) {
+    SEL makeViewSelector = NSSelectorFromString(
+        @"makeViewClassForAppContext:moduleName:viewName:className:");
+    if ([expoFabricViewClass respondsToSelector:makeViewSelector]) {
+      // Get moduleName and viewName from viewModule using performSelector
+      NSString *moduleName = nil;
+      NSString *viewName = nil;
+      SEL moduleNameSelector = NSSelectorFromString(@"moduleName");
+      SEL viewNameSelector = NSSelectorFromString(@"viewName");
+      if ([viewModule respondsToSelector:moduleNameSelector]) {
+        moduleName = [viewModule performSelector:moduleNameSelector];
+      }
+      if ([viewModule respondsToSelector:viewNameSelector]) {
+        viewName = [viewModule performSelector:viewNameSelector];
+      }
+      NSMethodSignature *sig =
+          [expoFabricViewClass methodSignatureForSelector:makeViewSelector];
+      NSInvocation *invocation =
+          [NSInvocation invocationWithMethodSignature:sig];
+      [invocation setTarget:expoFabricViewClass];
+      [invocation setSelector:makeViewSelector];
+      id appContextArg = _appContext;
+      [invocation setArgument:&appContextArg atIndex:2];
+      [invocation setArgument:&moduleName atIndex:3];
+      [invocation setArgument:&viewName atIndex:4];
+      [invocation setArgument:&className atIndex:5];
+      [invocation invoke];
+      Class viewClass = nil;
+      [invocation getReturnValue:&viewClass];
+      if (viewClass) {
+        [[RCTComponentViewFactory currentComponentViewFactory]
+            registerComponentViewClass:viewClass];
+      }
+    }
+  }
 
   return wrappedViewModuleClass;
 }
 
-/**
- Bridge's `registerAdditionalModuleClasses:` method doesn't register
- components in UIManager — we need to register them on our own.
- */
-- (void)registerLegacyComponentData:(Class)moduleClass inBridge:(RCTBridge *)bridge
-{
-  // Hacky way to get a dictionary with `RCTComponentData` from UIManager.
-  NSMutableDictionary<NSString *, RCTComponentData *> *componentDataByName = [bridge.uiManager valueForKey:@"_componentDataByName"];
-  NSString *className = [moduleClass moduleName] ?: NSStringFromClass(moduleClass);
-
-  if ([moduleClass isSubclassOfClass:[RCTViewManager class]] && !componentDataByName[className]) {
-    RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
-    componentDataByName[className] = componentData;
-  }
-}
-
-- (void)assignExportedMethodsKeys:(NSMutableArray<NSMutableDictionary<const NSString *, id> *> *)exportedMethods forModuleName:(const NSString *)moduleName
-{
+- (void)assignExportedMethodsKeys:
+            (NSMutableArray<NSMutableDictionary<const NSString *, id> *> *)
+                exportedMethods
+                    forModuleName:(const NSString *)moduleName {
   if (!_exportedMethodsKeys[moduleName]) {
     _exportedMethodsKeys[moduleName] = [NSMutableDictionary dictionary];
   }
@@ -390,9 +486,15 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   for (int i = 0; i < [exportedMethods count]; i++) {
     NSMutableDictionary<const NSString *, id> *methodInfo = exportedMethods[i];
 
-    if (!methodInfo[(NSString *)methodInfoNameKey] || ![methodInfo[methodInfoNameKey] isKindOfClass:[NSString class]]) {
-      NSString *reason = [NSString stringWithFormat:@"Method info of a method of module %@ has no method name.", moduleName];
-      @throw [NSException exceptionWithName:@"Empty method name in method info" reason:reason userInfo:nil];
+    if (!methodInfo[(NSString *)methodInfoNameKey] ||
+        ![methodInfo[methodInfoNameKey] isKindOfClass:[NSString class]]) {
+      NSString *reason = [NSString
+          stringWithFormat:
+              @"Method info of a method of module %@ has no method name.",
+              moduleName];
+      @throw [NSException exceptionWithName:@"Empty method name in method info"
+                                     reason:reason
+                                   userInfo:nil];
     }
 
     NSString *methodName = methodInfo[(NSString *)methodInfoNameKey];
@@ -400,7 +502,8 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     if (previousMethodKey) {
       methodInfo[methodInfoKeyKey] = previousMethodKey;
     } else {
-      NSNumber *newKey = @([[_exportedMethodsKeys[moduleName] allValues] count]);
+      NSNumber *newKey =
+          @([[_exportedMethodsKeys[moduleName] allValues] count]);
       methodInfo[methodInfoKeyKey] = newKey;
       _exportedMethodsKeys[moduleName][methodName] = newKey;
       _exportedMethodsReverseKeys[moduleName][newKey] = methodName;

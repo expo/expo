@@ -1,7 +1,12 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#include "ObjectDeallocator.h"
-#include "JSIUtils.h"
+#ifdef __APPLE__
+  #include <ExpoModulesJSI/ObjectDeallocator.h>
+  #include <ExpoModulesJSI/JSIUtils.h>
+#else
+  #include "ObjectDeallocator.h"
+  #include "JSIUtils.h"
+#endif
 
 namespace expo::common {
 

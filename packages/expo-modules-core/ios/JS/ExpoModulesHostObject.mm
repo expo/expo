@@ -4,7 +4,7 @@
 
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
 #import <ExpoModulesCore/LazyObject.h>
-#import <ExpoModulesCore/Swift.h>
+#import <ExpoModulesCore/EXAppContextProtocol.h>
 
 namespace expo {
 
@@ -12,14 +12,19 @@ ExpoModulesHostObject::ExpoModulesHostObject(EXAppContext *appContext) : appCont
 
 ExpoModulesHostObject::~ExpoModulesHostObject() {
   modulesCache.clear();
-  appContext._runtime = nil;
+  // Cast to protocol to access _runtime property without importing Swift.h
+  id<EXAppContextProtocol> ctx = (id<EXAppContextProtocol>)appContext;
+  ctx._runtime = nil;
 }
 
 jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {
   std::string moduleName = name.utf8(runtime);
   NSString *nsModuleName = [NSString stringWithUTF8String:moduleName.c_str()];
 
-  if (![appContext hasModule:nsModuleName]) {
+  // Cast to protocol to access methods without importing Swift.h
+  id<EXAppContextProtocol> ctx = (id<EXAppContextProtocol>)appContext;
+  
+  if (![ctx hasModule:nsModuleName]) {
     // The module object can already be cached but no longer registered — we remove it from the cache in that case.
     modulesCache.erase(moduleName);
     return jsi::Value::undefined();
@@ -30,7 +35,7 @@ jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropName
 
   // Create a lazy object for the specific module. It defers initialization of the final module object.
   LazyObject::Shared moduleLazyObject = std::make_shared<LazyObject>(^SharedJSIObject(jsi::Runtime &runtime) {
-    return [[appContext getNativeModuleObject:nsModuleName] getShared];
+    return [[ctx getNativeModuleObject:nsModuleName] getShared];
   });
 
   // Save the module's lazy host object for later use.
@@ -47,7 +52,9 @@ void ExpoModulesHostObject::set(jsi::Runtime &runtime, const jsi::PropNameID &na
 }
 
 std::vector<jsi::PropNameID> ExpoModulesHostObject::getPropertyNames(jsi::Runtime &runtime) {
-  NSArray<NSString *> *moduleNames = [appContext getModuleNames];
+  // Cast to protocol to access methods without importing Swift.h
+  id<EXAppContextProtocol> ctx = (id<EXAppContextProtocol>)appContext;
+  NSArray<NSString *> *moduleNames = [ctx getModuleNames];
   std::vector<jsi::PropNameID> propertyNames;
 
   propertyNames.reserve([moduleNames count]);

@@ -1,5 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+#pragma once
+
 #import <ExpoModulesJSI/EXJavaScriptObject.h>
 #import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 

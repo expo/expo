@@ -136,3 +136,11 @@ tsconfig.tsbuildinfo
 # Secrets - contains real secrets fetched from GCP
 /secrets/keys.json
 /secrets/expotools.env
+
+# Swift packages
+/packages/**/.artifacts
+/packages/**/.build
+/packages/**/.swiftpm
+/packages/**/.xcframeworks
+/packages/**/.dependencies
+/packages/**/Package.swift

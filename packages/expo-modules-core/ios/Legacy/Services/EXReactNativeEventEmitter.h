@@ -1,18 +1,24 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <React/RCTEventEmitter.h>
+#if !__building_module(ExpoModulesCore)
+#import <React/RCTBridgeModule.h>
+#else
+@protocol RCTBridgeModule;
+#endif
 
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXEventEmitterService.h>
 #import <ExpoModulesCore/EXModuleRegistryConsumer.h>
-#import <ExpoModulesCore/EXBridgeModule.h>
 
-// Swift compatibility headers (e.g. `ExpoModulesCore-Swift.h`) are not available in headers,
-// so we use class forward declaration here. Swift header must be imported in the `.m` file.
-@class EXAppContext;
+@protocol EXAppContextProtocol;
 
-@interface EXReactNativeEventEmitter : RCTEventEmitter <EXInternalModule, EXBridgeModule, EXModuleRegistryConsumer, EXEventEmitterService>
+/**
+ Event emitter for legacy (EXExportedModule-based) modules.
+ Events are sent via JSI through the AppContext rather than through RCTEventEmitter/bridge.
+ This allows expo-modules-core to avoid inheriting from RCTEventEmitter.
+ */
+@interface EXReactNativeEventEmitter : NSObject <EXInternalModule, RCTBridgeModule, EXModuleRegistryConsumer, EXEventEmitterService>
 
-@property(nonatomic, strong) EXAppContext *appContext;
+@property(nonatomic, strong) id<EXAppContextProtocol> appContext;
 
 @end

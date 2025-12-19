@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+#pragma once
+
 #import <Foundation/Foundation.h>
 #import <ExpoModulesJSI/EXJavaScriptObject.h>
 
@@ -59,8 +61,8 @@ NS_SWIFT_NAME(JavaScriptValue)
 
 #pragma mark - Statics
 
-@property (class, nonatomic, assign, readonly, nonnull) EXJavaScriptValue *undefined;
-@property (class, nonatomic, assign, readonly, nonnull) EXJavaScriptValue *null;
+@property(class, nonatomic, assign, readonly, nonnull) EXJavaScriptValue *undefined;
+@property(class, nonatomic, assign, readonly, nonnull) EXJavaScriptValue *null;
 
 + (nonnull EXJavaScriptValue *)number:(double)value;
 

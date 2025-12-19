@@ -4,13 +4,14 @@
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXExportedModule.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
-#import <ExpoModulesCore/Swift.h>
+#import <ExpoModulesCore/EXAppContextProtocol.h>
 
 @interface EXReactNativeEventEmitter ()
 
 @property (nonatomic, assign) int listenersCount;
 @property (nonatomic, weak) EXModuleRegistry *exModuleRegistry;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *modulesListenersCounts;
+@property (nonatomic, assign) BOOL isObserving;
 
 @end
 
@@ -23,6 +24,7 @@ RCT_EXPORT_MODULE(EXReactNativeEventEmitter)
   if (self = [super init]) {
     _listenersCount = 0;
     _modulesListenersCounts = [NSMutableDictionary dictionary];
+    _isObserving = NO;
   }
   return self;
 }
@@ -52,6 +54,41 @@ RCT_EXPORT_MODULE(EXReactNativeEventEmitter)
     }
   }
   return [eventsAccumulator allObjects];
+}
+
+#pragma mark - EXEventEmitterService
+
+- (void)sendEventWithName:(NSString *)name body:(id)body
+{
+  // Send events through the AppContext's event emitter service (JSI-based)
+  // This replaces RCTEventEmitter's bridge-based sendEventWithName:body:
+  if (_appContext) {
+    [[_appContext eventEmitter] sendEventWithName:name body:body];
+  }
+}
+
+#pragma mark - Listener lifecycle
+
+- (void)startObserving
+{
+  _isObserving = YES;
+}
+
+- (void)stopObserving
+{
+  _isObserving = NO;
+}
+
+- (void)addListener:(NSString *)eventName
+{
+  // Track listener count - no longer calls RCTEventEmitter
+  // Individual module observation is handled in addProxiedListener
+}
+
+- (void)removeListeners:(double)count
+{
+  // Track listener count - no longer calls RCTEventEmitter
+  // Individual module observation is handled in removeProxiedListeners
 }
 
 RCT_EXPORT_METHOD(addProxiedListener:(NSString *)moduleName eventName:(NSString *)eventName)
@@ -143,7 +180,7 @@ RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)co
   }
 }
 
-# pragma mark Utilities
+#pragma mark - Utilities
 
 - (int)moduleListenersCountFor:(NSString *)moduleName
 {
@@ -155,7 +192,7 @@ RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)co
   return moduleListenersCount;
 }
 
-# pragma mark - EXModuleRegistryConsumer
+#pragma mark - EXModuleRegistryConsumer
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {

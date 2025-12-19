@@ -1,11 +1,20 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#pragma once
+
 #ifdef __cplusplus
 
 #import <functional>
 
 #import <jsi/jsi.h>
+
+#if !__building_module(ExpoModulesJSI)
 #import <React/RCTBridgeModule.h>
+#else
+typedef void (^RCTPromiseResolveBlock)(id result);
+typedef void (^RCTPromiseRejectBlock)(NSString *code, NSString *message, NSError *error);
+#endif
+
 #import <ReactCommon/TurboModuleUtils.h>
 #import <ReactCommon/CallInvoker.h>
 #import <react/bridging/CallbackWrapper.h>
@@ -51,7 +60,7 @@ namespace expo
 
 #pragma mark - RuntimeScheduler
 
-std::shared_ptr<react::RuntimeScheduler> runtimeSchedulerFromRuntime(jsi::Runtime &runtime);
+    std::shared_ptr<react::RuntimeScheduler> runtimeSchedulerFromRuntime(jsi::Runtime &runtime);
 
 } // namespace expo
 
