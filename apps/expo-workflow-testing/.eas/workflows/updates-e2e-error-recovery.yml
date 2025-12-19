@@ -28,7 +28,7 @@ concurrency:
 defaults:
   tools:
     node: 22.14.0
-    yarn: 1.22.22
+    pnpm: 10.x.x
 
 jobs:
   ios:
@@ -46,19 +46,19 @@ jobs:
           UPDATES_HOST: localhost
           UPDATES_PORT: '4747'
         run: |
-          yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-error-recovery-eas-project.ts
+          pnpm --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-error-recovery-eas-project.ts
           ls -la ../updates-e2e
       - name: Prepare E2E project
         id: prepare
         working_directory: ../../../updates-e2e
         run: |
-          yarn generate-test-update-bundles ios test-update-crashing
-          yarn ios:pod-install
+          pnpm generate-test-update-bundles ios test-update-crashing
+          pnpm ios:pod-install
       - name: Build E2E test app (release)
         id: buildrelease
         working_directory: ../../../updates-e2e
         run: |
-          yarn maestro:ios:release:build
+          pnpm maestro:ios:release:build
       - uses: eas/start_ios_simulator
         with:
           device_identifier: iPhone 17
@@ -82,13 +82,13 @@ jobs:
           UPDATES_HOST: localhost
           UPDATES_PORT: '4747'
         run: |
-          yarn --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-error-recovery-eas-project.ts
+          pnpm --silent ts-node --transpile-only ./packages/expo-updates/e2e/setup/create-error-recovery-eas-project.ts
           ls -la ../updates-e2e
       - name: Prepare E2E project
         id: prepare
         working_directory: ../../../updates-e2e
         run: |
-          yarn generate-test-update-bundles android test-update-crashing
+          pnpm generate-test-update-bundles android test-update-crashing
       - uses: eas/start_android_emulator
         with:
           device_name: pixel_4
@@ -96,7 +96,7 @@ jobs:
         id: buildrelease
         working_directory: ../../../updates-e2e
         run: |
-          yarn maestro:android:release:build
+          pnpm maestro:android:release:build
       - name: Run Maestro tests (release)
         id: testrelease
         working_directory: ../../../updates-e2e

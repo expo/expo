@@ -9,19 +9,28 @@ jobs:
   validate-npm-owners:
     runs-on: ubuntu-24.04
     steps:
-      - name: 👀 Checkout
+      - name: 👀 Check out repository
         uses: actions/checkout@v4
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          yarn-tools: 'true'
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: 🧶 Install node modules
+        run: pnpm install --ignore-scripts
+
       - name: 🔎 Validate
-        run: expotools validate-npm-owners
+        run: pnpm expotools validate-npm-owners
         env:
           NPM_TOKEN_READ_ONLY: ${{ secrets.NPM_TOKEN_READ_ONLY }}
+
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure()

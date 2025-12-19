@@ -29,11 +29,11 @@ if (process.env.NODE_ENV === 'development') {
     // Should be a string at runtime
     typeof __METRO_GLOBAL_PREFIX__ !== 'undefined' &&
     // Should be set by Metro's require polyfill
-    global[__METRO_GLOBAL_PREFIX__ + '__ReactRefresh']
+    (global as any)[__METRO_GLOBAL_PREFIX__ + '__ReactRefresh']
   ) {
     // source: https://github.com/facebook/metro/blob/main/packages/metro-runtime/src/polyfills/require.js
     // TODO(@kitten): Add type for this and use `globalThis` over `global`
-    const Refresh = global[__METRO_GLOBAL_PREFIX__ + '__ReactRefresh'];
+    const Refresh = (global as any)[__METRO_GLOBAL_PREFIX__ + '__ReactRefresh'];
     // Keep a reference to the original
     const isLikelyComponentType = Refresh.isLikelyComponentType;
     // Modules can be dereferenced at any time

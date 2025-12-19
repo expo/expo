@@ -8,8 +8,7 @@
     "build": "expo-module tsc",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && expo-module tsc",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublishOnly": "expo-module clean && expo-module tsc",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch --preserveWatchOutput"
@@ -38,9 +37,9 @@
     "@babel/core": "^7.20.0",
     "@babel/generator": "^7.20.5",
     "@expo/config": "~12.0.9",
-    "@expo/metro": "~54.2.0",
     "@expo/env": "~2.0.7",
     "@expo/json-file": "~10.0.7",
+    "@expo/metro": "~54.2.0",
     "@expo/spawn-async": "^1.7.2",
     "browserslist": "^4.25.0",
     "chalk": "^4.1.0",
@@ -66,9 +65,12 @@
   },
   "devDependencies": {
     "@jridgewell/trace-mapping": "^0.3.20",
+    "@types/babel__code-frame": "^7.0.1",
     "@types/babel__core": "^7.20.5",
+    "@types/babel__generator": "^7.27.0",
+    "@types/getenv": "^1.0.0",
     "dedent": "^1.5.3",
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "sass": "^1.60.0"
   },
   "publishConfig": {

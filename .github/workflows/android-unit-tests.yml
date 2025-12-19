@@ -10,7 +10,7 @@ on:
       - fastlane/**
       - packages/**/android/**
       - tools/**
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!packages/@expo/cli/**'
   pull_request:
     paths:
@@ -19,7 +19,7 @@ on:
       - fastlane/**
       - packages/**/android/**
       - tools/**
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!packages/@expo/cli/**'
 
 concurrency:
@@ -34,14 +34,22 @@ jobs:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx3072m -XX:MaxMetaspaceSize=1024m
     steps:
-      - name: ⬢ Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
       - name: 👀 Check out repository
         uses: actions/checkout@v4
         with:
           submodules: true
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🔨 Use JDK 17
@@ -49,26 +57,26 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
           react-native-gradle-downloads: 'true'
           gradle: 'true'
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+
       - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
       - name: 💅 Run Spotless lint check
         working-directory: apps/expo-go/android
         run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` from `apps/expo-go/android` to automatically fix formatting.' && exit 1; }
+
       - name: 🎸 Run native Android unit tests
         if: always()
         timeout-minutes: 30
-        run: expotools native-unit-tests --platform android
+        run: pnpm expotools native-unit-tests --platform android
+
       - name: 💾 Save test results
         if: always()
         uses: actions/upload-artifact@v4

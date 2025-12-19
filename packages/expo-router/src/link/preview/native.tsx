@@ -6,6 +6,10 @@ import { Platform, StyleSheet, type ViewProps, type ColorValue } from 'react-nat
 
 import type { BasicTextStyle } from '../../utils/font';
 
+declare namespace global {
+  const RN$Bridgeless: boolean | undefined;
+}
+
 const areNativeViewsAvailable =
   process.env.EXPO_OS === 'ios' && !Platform.isTV && global.RN$Bridgeless === true;
 

@@ -88,7 +88,10 @@ export async function createFromFixtureAsync(
       return projectRoot;
     } else {
       log('Clearing existing fixture project:', projectRoot);
-      await fs.promises.rm(projectRoot, { recursive: true, force: true });
+      // NOTE(@kitten): Rename first to quickly move project out of the way
+      const tempName = getTemporaryPath();
+      await fs.promises.rename(projectRoot, tempName);
+      await fs.promises.rm(tempName, { recursive: true, force: true });
     }
   }
 

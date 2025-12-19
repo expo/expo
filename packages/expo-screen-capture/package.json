@@ -9,7 +9,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -34,8 +34,10 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@types/react": "~19.2.0",
     "@testing-library/react-native": "^13.2.0",
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "workspace:*",
+    "i18n-js": "^3.9.2"
   },
   "peerDependencies": {
     "expo": "*",

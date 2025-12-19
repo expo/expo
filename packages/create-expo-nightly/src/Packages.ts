@@ -4,7 +4,7 @@ import path from 'node:path';
 import { mergeJsonFilesAsync, readJsonFileAsync } from './JsonFile.js';
 import { runAsync } from './Processes.js';
 
-let cachedPackages: Package[] | null = null;
+const cachedPackages: Package[] | null = null;
 
 const EXCLUDE_PACKAGES = [
   '@expo/fingerprint',
@@ -43,19 +43,6 @@ interface Package {
 }
 
 /**
- * Add given workspace packages to the project.
- */
-export async function addWorkspacePackagesToAppAsync(projectRoot: string, packages: Package[]) {
-  const packageJson = await readJsonFileAsync(path.join(projectRoot, 'package.json'));
-  const dependencies: Record<string, string> =
-    (packageJson.dependencies as Record<string, string>) ?? {};
-  for (const pkg of packages) {
-    dependencies[pkg.name] = 'workspace:*';
-  }
-  await mergeJsonFilesAsync(path.join(projectRoot, 'package.json'), { dependencies });
-}
-
-/**
  * Cleanup and reinstall all packages in the given project.
  */
 export async function reinstallPackagesAsync(projectRoot: string) {
@@ -66,42 +53,6 @@ export async function reinstallPackagesAsync(projectRoot: string) {
     fs.promises.rm(path.join(projectRoot, 'yarn.lock'), { force: true }),
   ]);
   await runAsync('bun', ['install', '--ignore-scripts'], { cwd: projectRoot });
-}
-
-/**
- * Get a list of all expo packages in the expo repo.
- */
-export async function getExpoPackagesAsync(expoRepoPath: string): Promise<Package[]> {
-  if (cachedPackages != null) {
-    return cachedPackages;
-  }
-
-  const paths = await Array.fromAsync(
-    fs.promises.glob('**/package.json', {
-      cwd: path.join(expoRepoPath, 'packages'),
-      exclude: [
-        '**/example/**',
-        '**/node_modules/**',
-        '**/__tests__/**',
-        '**/__mocks__/**',
-        '**/__fixtures__/**',
-        '**/e2e/**',
-        '**/build/**',
-        '@expo/cli/local-template/**',
-      ],
-    })
-  );
-  const packages = (
-    await Promise.all(
-      paths.map(async (packageJsonName) => {
-        const packageRoot = path.join(expoRepoPath, 'packages', path.dirname(packageJsonName));
-        return await createPackageAsync(packageRoot);
-      })
-    )
-  ).filter((pkg) => pkg != null) as Package[];
-
-  cachedPackages = packages.sort((a, b) => a.name.localeCompare(b.name));
-  return cachedPackages;
 }
 
 /**

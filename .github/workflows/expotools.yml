@@ -22,21 +22,29 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v4
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          yarn-tools: 'true'
-      - name: 🧶 Install modules in tools dir
-        if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
-        run: yarn install --ignore-scripts --frozen-lockfile
-        working-directory: tools
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: 🧶 Install node modules
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
       - name: 🛠 Compile TypeScript sources
-        run: yarn build
+        run: pnpm run build
         working-directory: tools
+
       - name: 🛠 Typecheck sources
-        run: yarn tsc --noEmit
+        run: pnpm tsc --noEmit
         working-directory: tools
+
       - name: 🚨 Lint TypeScript sources
-        run: yarn lint --max-warnings 0
+        run: pnpm run lint --max-warnings 0
         working-directory: tools

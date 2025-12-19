@@ -9,10 +9,9 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
-    "test:e2e": "yarn run prepare && expo-module test --config e2e/jest.config.js",
+    "test:e2e": "expo-module test --config e2e/jest.config.js",
     "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch"
   },
@@ -55,8 +54,14 @@
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0"
   },
+  "// TODO": "Replace type-only expo imports with internal package imports",
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7",
+    "@types/debug": "^4.1.5",
+    "@types/getenv": "^1.0.0",
+    "@types/semver": "^7.5.8",
+    "@types/node": "^22.14.0",
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*",
     "require-from-string": "^2.0.2",
     "temp-dir": "^2.0.0"
   }

@@ -20,7 +20,7 @@ target 'BareExpo-macOS' do
   use_expo_modules!
 
   use_react_native!(
-    :path => "#{config[:reactNativePath]}-macos",
+    :path => "../node_modules/react-native-macos",
     :hermes_enabled => true,
     :fabric_enabled => ENV['RCT_NEW_ARCH_ENABLED'] == '1',
     :app_path => "#{Pod::Config.instance.installation_root}/.."
@@ -32,7 +32,7 @@ target 'BareExpo-macOS' do
 
       # Set `REACT_NATIVE_PATH` to react-native-macos root node_modules
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "../../../../", 'node_modules/react-native-macos')
+        config.build_settings["REACT_NATIVE_PATH"] = File.dirname(`node --print "require.resolve('react-native-macos/package.json')"`)
       end
     end
 

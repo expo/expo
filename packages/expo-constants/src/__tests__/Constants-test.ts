@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from '@expo/config';
 import { Platform } from 'react-native';
 
 import Constants, { ExecutionEnvironment } from '../Constants';

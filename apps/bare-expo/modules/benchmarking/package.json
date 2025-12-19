@@ -11,8 +11,8 @@
   "dependencies": {},
   "devDependencies": {},
   "peerDependencies": {
-    "expo": "*",
-    "react": "*",
-    "react-native": "*"
+    "expo": "workspace:*",
+    "react": "workspace:*",
+    "react-native": "workspace:*"
   }
 }

@@ -30,7 +30,7 @@ export async function build(task, opts) {
   await task.parallel(['cli', 'bin', 'metroRequire'], opts);
 }
 
-export default async function (task) {
+export async function watch(task) {
   const opts = { dev: true };
   await task.clear('build');
   await task.start('build', opts);
@@ -39,6 +39,12 @@ export default async function (task) {
     await task.watch('bin/*', 'bin', opts);
     await task.watch('src/**/*.+(js|ts)', 'cli', opts);
   }
+}
+
+export default async function (task) {
+  const opts = { dev: true };
+  await task.clear('build');
+  await task.start('build', opts);
 }
 
 export async function release(task) {

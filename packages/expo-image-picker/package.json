@@ -10,7 +10,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -39,8 +39,10 @@
     "expo-image-loader": "~6.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7",
-    "@testing-library/user-event": "^14.6.1"
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"

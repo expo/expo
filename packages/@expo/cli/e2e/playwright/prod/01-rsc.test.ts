@@ -4,6 +4,7 @@ import path from 'node:path';
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { findProjectFiles, getRouterE2ERoot } from '../../__tests__/utils';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
+import { sanitizeRSCPayloadString } from '../../utils/rsc';
 import { pageCollectErrors } from '../page';
 
 // TODO: We'll split this test up in the future when server/single do different things.
@@ -155,7 +156,7 @@ for (const outputMode of outputModes) {
       const response = await serverResponsePromise;
       const rscPayload = new TextDecoder().decode(await response.body()).trim();
 
-      expect(rscPayload)
+      expect(sanitizeRSCPayloadString(rscPayload))
         .toBe(`1:I["node_modules/react-native-safe-area-context/lib/module/index.js",[],"SafeAreaView",1]
 2:I["packages/expo-router/build/rsc/router/host.js",[],"Children",1]
 3:I["node_modules/react-native-web/dist/exports/View/index.js",[],"",1]

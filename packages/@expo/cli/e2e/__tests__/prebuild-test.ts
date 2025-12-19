@@ -76,7 +76,13 @@ it('runs `npx expo prebuild` asserts when expo is not installed', async () => {
   await fs.writeFile(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
 
   await expect(
-    executeExpoAsync(projectRoot, ['prebuild', '--no-install'], { verbose: false })
+    executeExpoAsync(projectRoot, ['prebuild', '--no-install'], {
+      verbose: false,
+      env: {
+        // TODO(@kitten): remove once hoist=false in pnpm; Prevent node_modules/.pnpm/node_modules hoist path from being passed
+        NODE_PATH: '',
+      },
+    })
   ).rejects.toThrow(
     /Cannot determine the project's Expo SDK version because the module `expo` is not installed\. Install it with `npm install expo` and try again./
   );

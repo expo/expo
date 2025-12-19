@@ -11,6 +11,7 @@
 import { transformFromAstSync, parse, types as t, template } from '@babel/core';
 import type { ParseResult, PluginItem, NodePath } from '@babel/core';
 import generate from '@babel/generator';
+import type { TransformResultDependency } from '@expo/metro/metro/DeltaBundler';
 import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
 import generateImportNames from '@expo/metro/metro/ModuleGraph/worker/generateImportNames';
 import {
@@ -41,7 +42,6 @@ import collectDependencies, {
   Dependency,
   DependencyTransformer,
   DynamicRequiresBehavior,
-  CollectedDependencies,
   Options as CollectDependenciesOptions,
   State,
 } from './collect-dependencies';
@@ -88,7 +88,7 @@ interface TransformationContext {
 }
 
 interface TransformResponse {
-  readonly dependencies: CollectedDependencies['dependencies'];
+  readonly dependencies: readonly TransformResultDependency[];
   readonly output: readonly ExpoJsOutput[];
 }
 

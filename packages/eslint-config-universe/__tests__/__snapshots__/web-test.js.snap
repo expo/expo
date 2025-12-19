@@ -865,10 +865,37 @@ exports[`lints with the web config: fixtures/web-native-01.js 1`] = `
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": [],
+  "messages": [
+    {
+      "column": 5,
+      "endColumn": 18,
+      "endLine": 8,
+      "line": 8,
+      "message": "Do not use setState in componentDidMount",
+      "messageId": "noSetState",
+      "nodeType": "MemberExpression",
+      "ruleId": "react/no-did-mount-set-state",
+      "severity": 1,
+    },
+  ],
+  "source": "import React from 'react';
+
+export default class Example extends React.Component {
+  props = { x: 'x' };
+
+  componentDidMount() {
+    alert('uh oh');
+    this.setState({});
+  }
+
+  render() {
+    return <div>{this.props.x}</div>;
+  }
+}
+",
   "suppressedMessages": [],
   "usedDeprecatedRules": [],
-  "warningCount": 0,
+  "warningCount": 1,
 }
 `;
 

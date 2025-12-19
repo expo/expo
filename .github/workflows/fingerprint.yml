@@ -8,13 +8,13 @@ on:
       - .github/workflows/fingerprint.yml
       - packages/@expo/fingerprint/**
       - packages/create-expo/**
-      - yarn.lock
+      - pnpm-lock.yaml
   pull_request:
     paths:
       - .github/workflows/fingerprint.yml
       - packages/@expo/fingerprint/**
       - packages/create-expo/**
-      - yarn.lock
+      - pnpm-lock.yaml
   schedule:
     - cron: 0 14 * * *
 
@@ -33,36 +33,42 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 100
+
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'pnpm'
+
       - name: 🚀 Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      - name: ⬇️ Fetch commits from base branch
-        run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
-        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-workspace: 'true'
-      - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        # NOTE(cedric): yarn v1 on Windows has networking issues, we need to set `--network-timeout` to a higher value
-        run: yarn install --frozen-lockfile --network-timeout 1000000
+
+      - name: 🧶 Install node modules
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
       - name: E2E Test @expo/fingerprint
         run: |
-          bun run tsc
-          bun run tsc --build cli
-          bun run jest --config e2e/jest.config.js --ci --runInBand
+          pnpm tsc
+          pnpm tsc --build cli
+          pnpm jest --config e2e/jest.config.js --ci --runInBand
         working-directory: packages/@expo/fingerprint
+
       - name: ⚙️  Create temp project
         run: |
           cd ..
           bunx create-expo-app -t blank@sdk-52 my-app
+
       - name: 💾 Create fingerprint from the temp project
         if: ${{ startsWith(matrix.os, 'windows') == false }}
         env:
@@ -94,6 +100,7 @@ jobs:
           else
             ../expo/packages/@expo/fingerprint/bin/cli.js fingerprint:generate > ../expo/fingerprint-${{ matrix.os }}.json
           fi
+
       - name: 💾 Create fingerprint from the temp project (Windows)
         if: ${{ startsWith(matrix.os, 'windows') }}
         env:
@@ -126,6 +133,7 @@ jobs:
           } else {
             node ../expo/packages/@expo/fingerprint/bin/cli.js fingerprint:generate > ../expo/fingerprint-${{ matrix.os }}.json
           }
+
       - name: 📤 Upload fingerprint
         uses: actions/upload-artifact@v4
         with:

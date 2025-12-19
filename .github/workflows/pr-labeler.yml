@@ -9,7 +9,7 @@ on:
       - apps/bare-expo/**
       - apps/test-suite/**
       - packages/**
-      - yarn.lock
+      - pnpm-lock.yaml
       # When adding new paths, also update the paths of the "Get the base commit" step below
   pull_request:
     types: [opened, synchronize]
@@ -18,7 +18,7 @@ on:
       - apps/bare-expo/**
       - apps/test-suite/**
       - packages/**
-      - yarn.lock
+      - pnpm-lock.yaml
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -40,26 +40,31 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 100
+
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin main:main --depth 100
         if: github.event_name == 'pull_request'
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-workspace: 'true'
-      - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+          cache: 'pnpm'
+
+      - name: 🧶 Install node modules
+        run: pnpm install --frozen-lockfile
+
       - name: Get the base commit
         id: base-commit
         run: |
           # Since we limit this pr-labeler workflow only triggered from limited paths, we should use custom base commit
-          echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/pr-labeler.yml apps/bare-expo apps/test-suite packages yarn.lock) >> "$GITHUB_OUTPUT"
+          echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/pr-labeler.yml apps/bare-expo apps/test-suite packages pnpm-lock.yaml) >> "$GITHUB_OUTPUT"
+
       - name: 📷 Check fingerprint
         id: fingerprint
         uses: expo/actions/fingerprint@main

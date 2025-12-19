@@ -1,3 +1,7 @@
+declare module 'expo-router/_ctx' {
+  export const ctx: ReturnType<typeof require.context>;
+}
+
 declare module 'expo-router/_ctx-shared' {
   export const EXPO_ROUTER_CTX_IGNORE: RegExp;
 }

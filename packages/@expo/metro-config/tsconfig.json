@@ -4,8 +4,6 @@
   "exclude": ["**/__mocks__/*", "**/__tests__/*"],
   "compilerOptions": {
     "outDir": "./build",
-    "esModuleInterop": true,
-    "sourceMap": true,
-    "typeRoots": ["../cli/ts-declarations"]
+    "sourceMap": true
   }
 }

@@ -19,9 +19,9 @@
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && yarn run build:prod",
+    "prepublishOnly": "expo-module clean && pnpm run build:prod",
     "test": "expo-module test",
-    "watch": "yarn run build -w"
+    "watch": "pnpm run build -w"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,8 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-env-info#readme",
   "devDependencies": {
     "@types/envinfo": "^7.8.1",
-    "expo-module-scripts": "^5.0.7"
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*"
   },
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"

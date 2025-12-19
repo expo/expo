@@ -9,17 +9,25 @@ jobs:
     runs-on: ubuntu-24.04
     if: contains(github.event.issue.labels.*.name, 'Issue accepted')
     steps:
-      - name: 👀 Checkout
+      - name: 👀 Check out repository
         uses: actions/checkout@v4
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          yarn-tools: 'true'
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: 🧶 Install node modules
+        run: pnpm install --ignore-scripts
+
       - name: 🔎 Close Linear issue
-        run: expotools close-linear-issue-from-github --issue "${{ github.event.issue.number }}"
+        run: pnpm expotools close-linear-issue-from-github --issue "${{ github.event.issue.number }}"
         env:
           GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}

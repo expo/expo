@@ -44,15 +44,19 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 26.0
-        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+
+      - name: 🔨 Switch to Xcode 26.0
+        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+
       - name: 💎 Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
           ruby-version: 3.2.2
+
       - name: 🧹 Cleanup unused simulator runtimes
         run: |
           xcrun simctl list devices -j | jq -r '.devices | to_entries[] | select(.key | contains("iOS") | not) | .value[].udid' | xargs -r -n1 xcrun simctl delete
@@ -60,16 +64,27 @@ jobs:
           xcrun simctl erase all
           xcrun simctl shutdown all
           sudo xcodebuild -runFirstLaunch
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: 🧶 Install node modules
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
           native-tests-pods: 'true'
-      - name: 🧶 Yarn install
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+
       - name: 🥥 Install CocoaPods in `apps/native-tests/ios`
         if: steps.expo-caches.outputs.bare-expo-pods-hit != 'true'
         run: pod install
@@ -77,6 +92,7 @@ jobs:
           RCT_USE_PREBUILT_RNCORE: 1
           RCT_USE_RN_DEP: 1
         working-directory: apps/native-tests/ios
+
       - name: 🧪 Run native iOS unit tests
         timeout-minutes: 30
         env:

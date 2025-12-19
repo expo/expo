@@ -56,8 +56,13 @@
     }
   },
   "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
+    "@types/react-dom": "^19.1.7",
+    "@types/jest": "^29.2.1",
     "react-server-dom-webpack": "~19.0.1",
-    "tsd": "^0.28.1"
+    "tsd": "^0.28.1",
+    "tsd-lite": "^0.8.0"
   },
   "dependencies": {
     "debug": "^4.3.4"
