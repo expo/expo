@@ -10,7 +10,9 @@
     "test": "jest --watchAll",
     "lint": "expo lint",
     "prebuild:android": "./scripts/prebuild-android.sh",
-    "prebuild:ios": "./scripts/prebuild-ios.sh"
+    "prebuild:ios": "./scripts/prebuild-ios.sh",
+		"set-debug-app": "adb shell am set-debug-app -w --persistent \"com.brents.microfoam\"",
+		"clear-debug-app": "adb shell am clear-debug-app \"com.brents.microfoam\""
   },
   "jest": {
     "preset": "jest-expo"
