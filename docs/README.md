@@ -137,7 +137,7 @@ Open the doc file (`*.mdx`) that you are working on and you'll may see suggested
 We use two layers of redirects:
 
 - **Server-side redirects** generated during deployment process in `deploy.sh` for simple 1:1 path mappings and SEO-friendly behavior.
-- **Client-side redirects** in `common/error-utilities.ts` that run on the 404 page for more complex rules (for example, stripping `.html`, version fallbacks) and to catch cases where server-side redirects do not apply (local/dev/preview or missed mappings).
+- **Client-side redirects** in `common/client-redirects.ts` that run on the 404 page for more complex rules (for example, stripping `.html`, version fallbacks) and to catch cases where server-side redirects do not apply (local/dev/preview or missed mappings).
 
 We currently do two client-side redirects, using meta tags with `http-equiv="refresh"`:
 
