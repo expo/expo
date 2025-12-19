@@ -16,8 +16,10 @@ jni::local_ref<WorkletRuntimeHolder::jhybriddata> WorkletRuntimeHolder::initHybr
 }
 
 WorkletRuntimeHolder::WorkletRuntimeHolder(jlong runtimePointer) {
+#if WORKLETS_ENABLED
   auto *jsRuntime = reinterpret_cast<jsi::Runtime *>(runtimePointer);
   workletRuntime = worklets::WorkletRuntime::getWeakRuntimeFromJSIRuntime(*jsRuntime);
+#endif
 }
 
 } // namespace expo
