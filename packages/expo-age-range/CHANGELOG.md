@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] fix compilation on sdk-54 projects ([#41768](https://github.com/expo/expo/pull/41768) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 0.2.0 — 2025-12-16
