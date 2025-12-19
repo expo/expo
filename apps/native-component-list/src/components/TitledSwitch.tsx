@@ -8,15 +8,21 @@ type Props = {
   title?: string;
   value: boolean;
   disabled?: boolean;
+  testID?: string;
   setValue: (value: boolean) => void;
 };
 
-const TitleSwitch = ({ style, titleStyle, title, value, setValue, disabled }: Props) => {
+const TitleSwitch = ({ style, titleStyle, title, value, setValue, disabled, testID }: Props) => {
   const outputTitle = disabled ? `${title} (Disabled)` : title;
   return (
     <View style={[styles.container, style]}>
       <B style={[styles.title, titleStyle]}>{outputTitle}</B>
-      <Switch disabled={disabled} value={value} onValueChange={(value) => setValue(value)} />
+      <Switch
+        testID={testID}
+        disabled={disabled}
+        value={value}
+        onValueChange={(value) => setValue(value)}
+      />
     </View>
   );
 };
