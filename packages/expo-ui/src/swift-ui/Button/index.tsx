@@ -33,8 +33,9 @@ export type ButtonProps = {
   label?: string;
   /**
    * Custom content for the button label. Use this for custom label views.
+   * Only nested elements are supported, not plain strings.
    */
-  children?: React.ReactNode;
+  children?: React.ReactElement | React.ReactElement[];
 } & CommonViewModifierProps;
 
 type NativeButtonProps = Omit<ButtonProps, 'onPress'> & ViewEvent<'onButtonPress', void>;
