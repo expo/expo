@@ -37,7 +37,7 @@ public class LinkPreviewNativeModule: Module {
         let height = size["height", default: 0]
 
         guard width >= 0, height >= 0 else {
-          print("Preferred content size cannot be negative (\(width), \(height))")
+          view.logger?.warn("[expo-router] Preferred content size cannot be negative (\(width), \(height))")
           return
         }
 

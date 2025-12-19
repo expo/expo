@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import RNScreens
 
-class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
+class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDelegate,
   RNSDismissibleModalProtocol, LinkPreviewMenuUpdatable {
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
@@ -19,7 +19,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
   private var actions: [LinkPreviewNativeActionView] = []
 
   private lazy var linkPreviewNativeNavigation: LinkPreviewNativeNavigation = {
-    return LinkPreviewNativeNavigation(logger: appContext?.jsLogger)
+    return LinkPreviewNativeNavigation(logger: logger)
   }()
 
   let onPreviewTapped = EventDispatcher()
@@ -62,7 +62,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
         actions.append(actionView)
       } else {
         if directChild != nil {
-          print(
+          logger?.warn(
             "[expo-router] Found a second child of <Link.Trigger>. Only one is allowed. This is most likely a bug in expo-router."
           )
           return
@@ -89,7 +89,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
       } else {
         if let directChild = directChild {
           if directChild != child {
-            print(
+            logger?.warn(
               "[expo-router] Unmounting unexpected child from <Link.Trigger>. This is most likely a bug in expo-router."
             )
             return
@@ -103,7 +103,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
           }
           super.unmountChildComponentView(child, index: index)
         } else {
-          print(
+          logger?.warn(
             "[expo-router] No link child found to unmount. This is most likely a bug in expo-router."
           )
           return

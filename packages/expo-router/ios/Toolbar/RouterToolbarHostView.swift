@@ -2,15 +2,11 @@ import ExpoModulesCore
 import RNScreens
 import UIKit
 
-class RouterToolbarHostView: ExpoView, LinkPreviewMenuUpdatable {
+class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
   // Mutable map of toolbar items
   var toolbarItemsArray: [String] = []
   var toolbarItemsMap: [String: RouterToolbarItemView] = [:]
   var menuItemsMap: [String: LinkPreviewNativeActionView] = [:]
-
-  required init(appContext: AppContext? = nil) {
-    super.init(appContext: appContext)
-  }
 
   private func addRouterToolbarItemAtIndex(
     _ item: RouterToolbarItemView,
@@ -56,6 +52,7 @@ class RouterToolbarHostView: ExpoView, LinkPreviewMenuUpdatable {
             if let item = toolbarItemsMap[$0] {
               return item.barButtonItem
             }
+            // TODO: Extract this logic to separate function
             if let menu = menuItemsMap[$0] {
               let item = UIBarButtonItem(
                 title: menu.title,
@@ -92,8 +89,8 @@ class RouterToolbarHostView: ExpoView, LinkPreviewMenuUpdatable {
               }
               return item
             }
-            print(
-              "[expo-router] Warning: Could not find toolbar item or menu for identifier \($0)"
+            logger?.warn(
+              "[expo-router] Warning: Could not find toolbar item or menu for identifier \($0). This is most likely a bug in expo-router."
             )
             return nil
           }, animated: true)
@@ -101,16 +98,15 @@ class RouterToolbarHostView: ExpoView, LinkPreviewMenuUpdatable {
           false, animated: true)
         return
       }
-    } else {
-      print(
-        "[expo-router] Warning: Could not find owning UIViewController for RouterToolbarHostView")
     }
   }
 
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
     if let toolbarItem = childComponentView as? RouterToolbarItemView {
       if toolbarItem.identifier.isEmpty {
-        print("[expo-router] RouterToolbarItemView identifier is empty")
+        logger?.warn(
+          "[expo-router] RouterToolbarItemView identifier is empty. This is most likely a bug in expo-router."
+        )
         return
       }
       addRouterToolbarItemAtIndex(toolbarItem, index: index)
@@ -118,8 +114,8 @@ class RouterToolbarHostView: ExpoView, LinkPreviewMenuUpdatable {
       menu.parentMenuUpdatable = self
       addMenuToolbarItemAtIndex(menu, index: index)
     } else {
-      print(
-        "ExpoRouter: Unknown child component view (\(childComponentView)) mounted to RouterToolbarHost"
+      logger?.warn(
+        "[expo-router] Unknown child component view (\(childComponentView)) mounted to RouterToolbarHost. This is most likely a bug in expo-router."
       )
     }
     updateToolbarItems()
@@ -128,19 +124,22 @@ class RouterToolbarHostView: ExpoView, LinkPreviewMenuUpdatable {
   override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
     if let toolbarItem = childComponentView as? RouterToolbarItemView {
       if toolbarItem.identifier.isEmpty {
-        print("[expo-router] RouterToolbarItemView identifier is empty")
+        logger?.warn(
+          "[expo-router] RouterToolbarItemView identifier is empty. This is most likely a bug in expo-router."
+        )
         return
       }
       removeToolbarItemWithId(toolbarItem.identifier)
     } else if let menu = childComponentView as? LinkPreviewNativeActionView {
       if menu.identifier.isEmpty {
-        print("[expo-router] Menu identifier is empty")
+        logger?.warn(
+          "[expo-router] Menu identifier is empty. This is most likely a bug in expo-router.")
         return
       }
       removeToolbarItemWithId(menu.identifier)
     } else {
-      print(
-        "ExpoRouter: Unknown child component view (\(childComponentView)) unmounted from RouterToolbarHost"
+      logger?.warn(
+        "[expo-router] Unknown child component view (\(childComponentView)) unmounted from RouterToolbarHost. This is most likely a bug in expo-router."
       )
     }
     updateToolbarItems()

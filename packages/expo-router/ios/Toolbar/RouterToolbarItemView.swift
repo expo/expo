@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import UIKit
 
-class RouterToolbarItemView: ExpoView {
+class RouterToolbarItemView: RouterViewWithLogger {
   var identifier: String = ""
   @ReactiveProp var type: ItemType?
   @ReactiveProp var title: String?
@@ -115,8 +115,8 @@ class RouterToolbarItemView: ExpoView {
 
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
     if customView != nil {
-      print(
-        "[expo-router] Warning: RouterToolbarItemView can only have one child view"
+      logger?.warn(
+        "[expo-router] RouterToolbarItemView can only have one child view. This is most likely a bug in expo-router."
       )
       return
     }
