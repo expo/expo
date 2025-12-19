@@ -1,8 +1,8 @@
 import ExpoModulesCore
-import WebKit
 
-class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
+class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
   var identifier: String = ""
+  // TODO(@ubax): Add @ReactiveProp similar to RouterToolbar to reduce repetition
   // MARK: - Shared props
   var title: String = "" {
     didSet {
@@ -235,8 +235,8 @@ class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
         subActions.insert(childActionView, at: index)
         childActionView.parentMenuUpdatable = self
       } else {
-        print(
-          "ExpoRouter: Unknown child component view (\(childComponentView)) mounted to NativeLinkPreviewActionView"
+        logger?.warn(
+          "[expo-router] Unknown child component view (\(childComponentView)) mounted to NativeLinkPreviewActionView. This is most likely a bug in expo-router."
         )
       }
     }
@@ -245,8 +245,8 @@ class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
       if let childActionView = child as? LinkPreviewNativeActionView {
         subActions.removeAll(where: { $0 == childActionView })
       } else {
-        print(
-          "ExpoRouter: Unknown child component view (\(child)) unmounted from NativeLinkPreviewActionView"
+        logger?.warn(
+          "ExpoRouter: Unknown child component view (\(child)) unmounted from NativeLinkPreviewActionView. This is most likely a bug in expo-router."
         )
       }
     }
