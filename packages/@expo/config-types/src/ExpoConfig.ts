@@ -251,10 +251,6 @@ export interface ExpoConfig {
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
-   * A Boolean value that indicates whether the app should use the new architecture. Defaults to true.
-   */
-  newArchEnabled?: boolean;
-  /**
    * Enable downloading cached builds from remote.
    */
   buildCacheProvider?:
@@ -568,10 +564,6 @@ export interface IOS {
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
-   * A Boolean value that indicates whether the iOS app should use the new architecture.
-   */
-  newArchEnabled?: boolean;
-  /**
    * Property indicating compatibility between an iOS build's native code and an OTA update for the iOS platform. If provided, this will override the value of the top level `runtimeVersion` key on iOS.
    */
   runtimeVersion?:
@@ -823,10 +815,6 @@ export interface Android {
    * @deprecated This field will be removed in a future release. When it is removed, you can continue using JavaScriptCore instead of Hermes by following the instructions in [@react-native-community/javascriptcore](https://github.com/react-native-community/javascriptcore). Specifies the JavaScript engine for Android apps. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
    */
   jsEngine?: 'hermes' | 'jsc';
-  /**
-   * A Boolean value that indicates whether the Android app should use the new architecture.
-   */
-  newArchEnabled?: boolean;
   /**
    * Property indicating compatibility between a Android build's native code and an OTA update for the Android platform. If provided, this will override the value of top level `runtimeVersion` key on Android.
    */

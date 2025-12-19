@@ -20,20 +20,6 @@ const { createBuildGradlePropsConfigPlugin } = AndroidConfig.BuildProperties;
 export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<PluginConfigType>(
   [
     {
-      propName: 'newArchEnabled',
-      propValueGetter: (config) => {
-        if (config.android?.newArchEnabled !== undefined) {
-          WarningAggregator.addWarningAndroid(
-            'withAndroidBuildProperties',
-            'android.newArchEnabled is deprecated, use app config `newArchEnabled` instead.',
-            'https://docs.expo.dev/versions/latest/config/app/#newarchenabled'
-          );
-        }
-
-        return config.android?.newArchEnabled?.toString();
-      },
-    },
-    {
       propName: 'android.minSdkVersion',
       propValueGetter: (config) => config.android?.minSdkVersion?.toString(),
     },

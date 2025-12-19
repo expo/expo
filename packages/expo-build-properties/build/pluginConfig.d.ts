@@ -19,13 +19,6 @@ export interface PluginConfigType {
  */
 export interface PluginConfigTypeAndroid {
     /**
-     * Enable React Native New Architecture for Android platform.
-     *
-     * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
-     * app config file instead.
-     */
-    newArchEnabled?: boolean;
-    /**
      * Override the default `minSdkVersion` version number in **build.gradle**.
      * */
     minSdkVersion?: number;
@@ -269,13 +262,6 @@ export type AndroidMavenRepositoryCredentials = AndroidMavenRepositoryPasswordCr
  * @platform ios
  */
 export interface PluginConfigTypeIos {
-    /**
-     * Enable React Native New Architecture for iOS platform.
-     *
-     * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
-     * app config file instead.
-     */
-    newArchEnabled?: boolean;
     /**
      * Override the default iOS "Deployment Target" version in the following projects:
      *  - in CocoaPods projects,

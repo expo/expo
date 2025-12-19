@@ -5,16 +5,6 @@ const config_plugins_1 = require("expo/config-plugins");
 const { createBuildPodfilePropsConfigPlugin } = config_plugins_1.IOSConfig.BuildProperties;
 exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
     {
-        propName: 'newArchEnabled',
-        propValueGetter: (config) => {
-            if (config.ios?.newArchEnabled !== undefined) {
-                config_plugins_1.WarningAggregator.addWarningIOS('withIosBuildProperties', 'ios.newArchEnabled is deprecated, use app config `newArchEnabled` instead.\n' +
-                    'https://docs.expo.dev/versions/latest/config/app/#newarchenabled');
-            }
-            return config.ios?.newArchEnabled?.toString();
-        },
-    },
-    {
         propName: 'ios.useFrameworks',
         propValueGetter: (config) => config.ios?.useFrameworks,
     },

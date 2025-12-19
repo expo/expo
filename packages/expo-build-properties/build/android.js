@@ -14,15 +14,6 @@ const fileContentsUtils_1 = require("./fileContentsUtils");
 const { createBuildGradlePropsConfigPlugin } = config_plugins_1.AndroidConfig.BuildProperties;
 exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     {
-        propName: 'newArchEnabled',
-        propValueGetter: (config) => {
-            if (config.android?.newArchEnabled !== undefined) {
-                config_plugins_1.WarningAggregator.addWarningAndroid('withAndroidBuildProperties', 'android.newArchEnabled is deprecated, use app config `newArchEnabled` instead.', 'https://docs.expo.dev/versions/latest/config/app/#newarchenabled');
-            }
-            return config.android?.newArchEnabled?.toString();
-        },
-    },
-    {
         propName: 'android.minSdkVersion',
         propValueGetter: (config) => config.android?.minSdkVersion?.toString(),
     },
