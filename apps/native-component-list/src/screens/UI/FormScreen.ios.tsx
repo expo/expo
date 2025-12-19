@@ -72,7 +72,7 @@ export default function FormScreen() {
             label="Select a color"
             selection={color}
             supportsOpacity
-            onValueChanged={setColor}
+            onSelectionChange={setColor}
           />
           <Picker
             label="Menu picker"

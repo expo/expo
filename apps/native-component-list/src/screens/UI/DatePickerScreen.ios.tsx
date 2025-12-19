@@ -102,7 +102,7 @@ export default function DatePickerScreen() {
             ))}
           </Picker>
           <Switch value={useRange} label="Limit to next 30 days" onValueChange={setUseRange} />
-          <ColorPicker label="Tint Color" selection={tintColor} onValueChanged={setTintColor} />
+          <ColorPicker label="Tint Color" selection={tintColor} onSelectionChange={setTintColor} />
         </Section>
         <Section title="Date Picker with custom label">
           <DatePicker
