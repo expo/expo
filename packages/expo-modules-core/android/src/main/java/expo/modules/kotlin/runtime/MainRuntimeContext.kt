@@ -2,14 +2,12 @@ package expo.modules.kotlin.runtime
 
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.annotations.FrameworkAPI
-import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.defaultmodules.CoreModule
 import expo.modules.kotlin.jni.JNIDeallocator
 import expo.modules.kotlin.jni.JSIContext
-import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.jni.MainRuntimeInstaller
 import expo.modules.kotlin.logger

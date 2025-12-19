@@ -6,7 +6,6 @@ import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.runtime.MainRuntimeContext
-import expo.modules.kotlin.runtime.RuntimeContext
 import expo.modules.kotlin.weak
 import java.lang.ref.WeakReference
 
@@ -38,7 +37,6 @@ class MainRuntimeInstaller(
       runtimeExecutor
     )
   }
-
 
   @Suppress("unused")
   @DoNotStrip
