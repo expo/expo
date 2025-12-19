@@ -16,6 +16,7 @@
 - [Android] Fix media controls (e.g. bluetooth) not working when `ExpoVideoPlaybackService` is not registered. ([#40728](https://github.com/expo/expo/pull/40728) by [@behenate](https://github.com/behenate))
 - [Web] Fix crash on older versions of Safari. ([#41101](https://github.com/expo/expo/pull/41101) by [@CamWass](https://github.com/CamWass))
 - [Web] Fix video pausing when entering fullscreen in electron apps. ([#40989](https://github.com/expo/expo/pull/40989) by [@behenate](https://github.com/behenate))
+- [Android] Fix player duration property refreshing too late. ([#41609](https://github.com/expo/expo/pull/41609) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
