@@ -1,6 +1,7 @@
 {
   "name": "minimal-tester",
   "version": "1.0.0",
+  "private": true,
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -24,14 +25,5 @@
     "react-dom": "19.2.0",
     "react-native": "0.83.1",
     "react-native-web": "~0.21.0"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.25.2"
-  },
-  "private": true,
-  "expo": {
-    "autolinking": {
-      "exclude": []
-    }
   }
 }

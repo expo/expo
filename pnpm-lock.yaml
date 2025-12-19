@@ -564,10 +564,6 @@ importers:
       react-native-web:
         specifier: ~0.21.0
         version: 0.21.0(encoding@0.1.13)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-    devDependencies:
-      '@babel/core':
-        specifier: ^7.25.2
-        version: 7.26.0
 
   apps/native-component-list:
     dependencies:
