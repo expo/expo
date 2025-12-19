@@ -22,6 +22,7 @@
 
 - Removing `Record` from `RecordingPresets` type annotation to improve type safety ([#39391](https://github.com/expo/expo/pull/39391) by [@Shoghy](https://github.com/Shoghy))
 - Separate the conditions to enable and disable microphone permissions. ([#40861](https://github.com/expo/expo/pull/40861) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Dedupe events when sending status updates. ([#41700](https://github.com/expo/expo/pull/41700) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 1.0.16 - 2025-12-04
 
