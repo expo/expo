@@ -3,7 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-struct MenuView: ExpoSwiftUI.View {
+internal struct MenuView: ExpoSwiftUI.View {
   @ObservedObject var props: MenuProps
 
   var body: some View {
