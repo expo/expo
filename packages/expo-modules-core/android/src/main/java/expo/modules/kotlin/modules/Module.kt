@@ -2,7 +2,7 @@ package expo.modules.kotlin.modules
 
 import android.os.Bundle
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.RuntimeContext
+import expo.modules.kotlin.runtime.RuntimeContext
 import expo.modules.kotlin.convertToString
 import expo.modules.kotlin.providers.AppContextProvider
 import expo.modules.kotlin.tracing.trace

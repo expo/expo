@@ -15,7 +15,7 @@ class JNIDeallocatorTest {
   ) {
     val moduleObject = evaluateScript("expo.modules.TestModule")
 
-    val deallocator = runtimeContextHolder.get()!!.jniDeallocator
+    val deallocator = runtimeContextHolder.get()!!.deallocator
 
     Truth.assertThat(deallocator.inspectMemory()).contains(moduleObject)
   }
