@@ -34,6 +34,7 @@
 - [iOS] add Link.AppleZoomTarget ([#41352](https://github.com/expo/expo/pull/41352) by [@Ubax](https://github.com/Ubax))
 - add header items components API ([#40842](https://github.com/expo/expo/pull/40842) by [@Ubax](https://github.com/Ubax))
 - allow for standalone usage of Stack.Header and Stack.Header.Left/Right ([#41649](https://github.com/expo/expo/pull/41649) by [@Ubax](https://github.com/Ubax))
+- Unify the API between Toolbar, Header items and Link preview ([#41679](https://github.com/expo/expo/pull/41679) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

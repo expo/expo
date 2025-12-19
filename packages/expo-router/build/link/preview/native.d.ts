@@ -1,5 +1,6 @@
 import { type PropsWithChildren } from 'react';
-import { type ViewProps } from 'react-native';
+import { type ViewProps, type ColorValue } from 'react-native';
+import type { BasicTextStyle } from '../../utils/font';
 export interface NativeLinkPreviewActionProps {
     identifier: string;
     title: string;
@@ -7,11 +8,21 @@ export interface NativeLinkPreviewActionProps {
     children?: React.ReactNode;
     disabled?: boolean;
     destructive?: boolean;
+    discoverabilityLabel?: string;
+    subtitle?: string;
+    accessibilityLabel?: string;
+    accessibilityHint?: string;
     displayAsPalette?: boolean;
     displayInline?: boolean;
     isOn?: boolean;
     keepPresented?: boolean;
+    hidden?: boolean;
+    tintColor?: ColorValue;
+    barButtonItemStyle?: 'plain' | 'prominent';
+    sharesBackground?: boolean;
+    hidesSharedBackground?: boolean;
     onSelected: () => void;
+    titleStyle?: BasicTextStyle;
 }
 export declare function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps): import("react").JSX.Element | null;
 export interface TabPath {

@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import type { ViewProps } from 'react-native';
+import { type ColorValue, type TextStyle, type ViewProps } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { RouterToolbarHostProps, RouterToolbarItemProps } from './native.types';
@@ -25,7 +25,19 @@ export function RouterToolbarHost(props: RouterToolbarHostProps) {
 }
 
 const RouterToolbarItemView: React.ComponentType<
-  ViewProps & { identifier: string; title?: string; systemImageName?: SFSymbol; type?: string }
+  ViewProps & {
+    identifier: string;
+    title?: string;
+    systemImageName?: SFSymbol;
+    type?: string;
+    titleStyle?: {
+      fontFamily?: string;
+      fontSize?: number;
+      fontWeight?: TextStyle['fontWeight'];
+      color?: ColorValue;
+    };
+    tintColor?: ColorValue;
+  }
 > = requireNativeView('ExpoRouterToolbarModule', 'RouterToolbarItemView');
 export function RouterToolbarItem(props: RouterToolbarItemProps) {
   return <RouterToolbarItemView {...props} />;

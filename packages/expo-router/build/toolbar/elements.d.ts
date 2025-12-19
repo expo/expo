@@ -1,12 +1,20 @@
-import { type ColorValue, type StyleProp, type ViewStyle } from 'react-native';
+import { type ReactNode } from 'react';
+import { type ColorValue, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
-import { LinkMenuAction, type LinkMenuActionProps, type LinkMenuProps } from '../link/elements';
-/**
- * For available props, see [`LinkMenuProps`](./router/#linkmenuprops).
- *
- * @platform ios
- */
-export interface ToolbarMenuProps extends LinkMenuProps {
+import { LinkMenuAction, type LinkMenuActionProps } from '../link/elements';
+import type { BasicTextStyle } from '../utils/font';
+export interface ToolbarMenuProps {
+    accessibilityLabel?: string;
+    accessibilityHint?: string;
+    children?: React.ReactNode;
+    /**
+     * If `true`, the menu item will be displayed as destructive.
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/destructive) for more information.
+     */
+    destructive?: boolean;
+    disabled?: boolean;
+    hidden?: boolean;
     /**
      * Whether to hide the shared background when `sharesBackground` is enabled.
      *
@@ -18,24 +26,62 @@ export interface ToolbarMenuProps extends LinkMenuProps {
      */
     hidesSharedBackground?: boolean;
     /**
-     * Whether the button shares the background with adjacent toolbar items.
+     * Optional SF Symbol displayed alongside the menu item.
+     */
+    icon?: SFSymbol;
+    /**
+     * If `true`, the menu will be displayed inline.
+     * This means that the menu will not be collapsed
+     *
+     * > **Note*: Inline menus are only supported in submenus.
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline) for more information.
+     */
+    inline?: boolean;
+    /**
+     * If `true`, the menu will be displayed as a palette.
+     * This means that the menu will be displayed as one row
+     *
+     * > **Note**: Palette menus are only supported in submenus.
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette) for more information.
+     */
+    palette?: boolean;
+    /**
+     * Whether to separate the background of this item from other header items.
      *
      * > **Note**: Text buttons cannot share the background.
      *
-     * Only available for root level menus.
+     * This prop reverses the native behavior of `sharesBackground`.
      *
      * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/sharesbackground) for more information.
      *
-     * @default true
+     * @default false
      *
      * @platform iOS 26+
      */
-    sharesBackground?: boolean;
+    separateBackground?: boolean;
+    /**
+     * Style for the label of the header item.
+     */
+    style?: StyleProp<BasicTextStyle>;
+    /**
+     * The title of the menu item
+     */
+    title?: string;
+    /**
+     * Tint color for the menu icon and text.
+     */
+    tintColor?: ColorValue;
+    /**
+     * Controls the visual style of the menu when represented as a bar button.
+     *
+     * @default 'plain'
+     */
+    variant?: 'plain' | 'done' | 'prominent';
 }
 /**
  * Adds a context menu for to a toolbar.
- *
- * For available props, see [`LinkMenuProps`](./router/#linkmenuprops).
  *
  * @example
  * ```tsx
@@ -49,7 +95,7 @@ export interface ToolbarMenuProps extends LinkMenuProps {
  *
  * @platform ios
  */
-export declare const ToolbarMenu: import("react").FC<LinkMenuProps>;
+export declare const ToolbarMenu: React.FC<ToolbarMenuProps>;
 export type ToolbarMenuActionProps = LinkMenuActionProps;
 /**
  * A single action item within a toolbar menu.
@@ -70,6 +116,8 @@ export type ToolbarMenuActionProps = LinkMenuActionProps;
  */
 export declare const ToolbarMenuAction: typeof LinkMenuAction;
 export interface ToolbarButtonProps {
+    accessibilityLabel?: string;
+    accessibilityHint?: string;
     /**
      * The text label for the button.
      *
@@ -83,7 +131,8 @@ export interface ToolbarButtonProps {
      * <Toolbar.Button>This is button label</Toolbar.Button>
      * ```
      */
-    children?: string;
+    children?: ReactNode;
+    disabled?: boolean;
     /**
      * Whether the button should be hidden.
      *
@@ -134,6 +183,7 @@ export interface ToolbarButtonProps {
     /**
      * Style for the label of the header item.
      */
+    style?: StyleProp<BasicTextStyle>;
     /**
      * Tint color for the button icon and text.
      */
@@ -247,11 +297,6 @@ export interface ToolbarViewProps {
      * @platform iOS 26+
      */
     separateBackground?: boolean;
-    /**
-     * Style properties for the view.
-     * Note: Position-related styles (position, inset, top, left, right, bottom, flex) are not allowed.
-     */
-    style?: StyleProp<Omit<ViewStyle, 'position' | 'inset' | 'top' | 'left' | 'right' | 'bottom' | 'flex'>>;
 }
 /**
  * A custom view component for the toolbar that can contain any React elements.
@@ -264,7 +309,7 @@ export interface ToolbarViewProps {
  * ```tsx
  * <Toolbar>
  *   <Toolbar.Spacer />
- *   <Toolbar.View style={{ width: 200 }}>
+ *   <Toolbar.View>
  *     <TextInput
  *       placeholder="Search"
  *       placeholderTextColor={Color.ios.placeholderText}
@@ -280,7 +325,7 @@ export interface ToolbarViewProps {
  *
  * @platform ios
  */
-export declare const ToolbarView: ({ children, hidden, hidesSharedBackground, separateBackground, style, }: ToolbarViewProps) => import("react").JSX.Element;
+export declare const ToolbarView: ({ children, hidden, hidesSharedBackground, separateBackground, }: ToolbarViewProps) => import("react").JSX.Element;
 export interface ToolbarProps {
     children?: React.ReactNode;
 }

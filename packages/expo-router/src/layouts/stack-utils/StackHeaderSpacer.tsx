@@ -2,11 +2,21 @@ import type { NativeStackHeaderItemSpacing } from '@react-navigation/native-stac
 
 export interface StackHeaderSpacerProps {
   /**
+   * Whether the spacer should be hidden.
+   *
+   * @default false
+   */
+  hidden?: boolean;
+  // TODO: implement fluid spacing in react-native-screens
+  /**
    * The width of the spacing element.
    *
    * This is typically used to create space between header elements.
    */
   width: number;
+  // TODO: implement missing props in react-native-screens
+  // hidesSharedBackground?: boolean;
+  // sharesBackground?: boolean;
 }
 
 /**
@@ -39,11 +49,15 @@ export interface StackHeaderSpacerProps {
  */
 export const StackHeaderSpacer: React.FC<StackHeaderSpacerProps> = () => null;
 
-export function convertStackHeaderSpacerPropsToRNHeaderItem(
-  props: StackHeaderSpacerProps
-): NativeStackHeaderItemSpacing {
+export function convertStackHeaderSpacerPropsToRNHeaderItem({
+  hidden,
+  width,
+}: StackHeaderSpacerProps): NativeStackHeaderItemSpacing | undefined {
+  if (hidden) {
+    return undefined;
+  }
   return {
     type: 'spacing',
-    spacing: props.width,
+    spacing: width,
   };
 }
