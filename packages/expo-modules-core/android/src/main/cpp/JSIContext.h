@@ -91,11 +91,6 @@ public:
   jni::local_ref<JavaScriptObject::javaobject> createObject() noexcept;
 
   /**
-  * Gets a core module.
-  */
-  [[nodiscard]] jni::local_ref<JavaScriptModuleObject::javaobject> getCoreModule() const;
-
-  /**
    * Adds a shared object to the internal registry
    * @param native part of the shared object
    * @param js part of the shared object
@@ -155,8 +150,6 @@ private:
   callGetJavaScriptModuleObjectMethod(const std::string &moduleName) const;
 
   [[nodiscard]] inline jni::local_ref<jni::JArrayClass<jni::JString>> callGetJavaScriptModulesNames() const;
-
-  [[nodiscard]] inline jni::local_ref<JavaScriptModuleObject::javaobject> callGetCoreModuleObject() const;
 
   [[nodiscard]] inline bool callHasModule(const std::string &moduleName) const;
 

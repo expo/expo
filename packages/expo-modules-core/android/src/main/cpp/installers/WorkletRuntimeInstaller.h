@@ -17,6 +17,10 @@ public:
     jlong jsRuntimePointer,
     jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator
   ) noexcept;
+
+  static void prepareRuntime(
+    jni::local_ref<JSIContext::javaobject> jsiContext
+  ) noexcept;
 };
 
 } // namespace expo

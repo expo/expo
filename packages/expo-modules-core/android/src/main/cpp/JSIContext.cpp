@@ -85,19 +85,6 @@ JSIContext::callGetJavaScriptModuleObjectMethod(const std::string &moduleName) c
   return jni::adopt_local(static_cast<JavaScriptModuleObject::javaobject>(result));
 }
 
-jni::local_ref<JavaScriptModuleObject::javaobject>
-JSIContext::callGetCoreModuleObject() const {
-  if (javaPart_ == nullptr) {
-    throw std::runtime_error("getCoreModule: JSIContext was prepared to be deallocated.");
-  }
-
-  const static auto method = expo::JSIContext::javaClassLocal()
-    ->getMethod<jni::local_ref<JavaScriptModuleObject::javaobject>()>(
-      "getCoreModuleObject"
-    );
-  return method(javaPart_);
-}
-
 jni::local_ref<jni::JArrayClass<jni::JString>>
 JSIContext::callGetJavaScriptModulesNames() const {
   if (javaPart_ == nullptr) {
@@ -133,10 +120,6 @@ bool JSIContext::callHasModule(const std::string &moduleName) const {
 jni::local_ref<JavaScriptModuleObject::javaobject>
 JSIContext::getModule(const std::string &moduleName) const {
   return callGetJavaScriptModuleObjectMethod(moduleName);
-}
-
-jni::local_ref<JavaScriptModuleObject::javaobject> JSIContext::getCoreModule() const {
-  return callGetCoreModuleObject();
 }
 
 bool JSIContext::hasModule(const std::string &moduleName) const {

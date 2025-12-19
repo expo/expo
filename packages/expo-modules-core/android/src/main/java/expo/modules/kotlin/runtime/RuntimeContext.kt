@@ -2,7 +2,6 @@ package expo.modules.kotlin.runtime
 
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.jni.JNIDeallocator
 import expo.modules.kotlin.jni.JSIContext
 import expo.modules.kotlin.jni.JavaScriptValue
@@ -16,7 +15,6 @@ abstract class RuntimeContext {
 
   @PublishedApi
   internal abstract val deallocator: JNIDeallocator
-  internal abstract val coreModule: ModuleHolder<*>
   internal abstract val sharedObjectRegistry: SharedObjectRegistry
   internal abstract val classRegistry: ClassRegistry
 

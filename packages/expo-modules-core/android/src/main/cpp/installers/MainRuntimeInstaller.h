@@ -53,14 +53,32 @@ public:
   ) noexcept;
 
   static void prepareRuntime(
+    jni::alias_ref<MainRuntimeInstaller::javaobject> self,
     jni::local_ref<JSIContext::javaobject> jsiContext
   ) noexcept;
 
   static void installClasses(
     jsi::Runtime &runtime,
-    expo::SharedObject::ObjectReleaser releaser
+    JSIContext *jsiContext
   ) noexcept;
 
+  static std::shared_ptr<jsi::Object> installMainObject(
+    jsi::Runtime &runtime,
+    std::vector<std::unique_ptr<JSDecorator>> &decorators
+  ) noexcept;
+
+  static void installModules(
+    jsi::Runtime &runtime,
+    JSIContext *jsiContext,
+    const std::shared_ptr<jsi::Object> &hostObject
+  ) noexcept;
+
+  /**
+  * Gets a core module.
+  */
+  [[nodiscard]] static jni::local_ref<JavaScriptModuleObject::javaobject> getCoreModule(
+    jni::alias_ref<MainRuntimeInstaller::javaobject> self
+  );
 };
 
 } // namespace expo
