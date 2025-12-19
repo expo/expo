@@ -20,12 +20,16 @@ class PushTokenModule : Module(), FirebaseTokenListener {
    * @param token New push token.
    */
   override fun onNewToken(token: String) {
-    sendEvent(
-      NEW_TOKEN_EVENT_NAME,
-      mapOf(
-        NEW_TOKEN_EVENT_TOKEN_KEY to token
+    runCatching {
+      // onNewToken is emitted asynchronously and the module may be destroyed by the time sendEvent is called
+      // that would result in an exception
+      sendEvent(
+        NEW_TOKEN_EVENT_NAME,
+        mapOf(
+          NEW_TOKEN_EVENT_TOKEN_KEY to token
+        )
       )
-    )
+    }
   }
 
   override fun definition() = ModuleDefinition {

@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- [android] avoid crash emitting new token event when module is destroyed ([#41754](https://github.com/expo/expo/pull/41754) by [@vonovak](https://github.com/vonovak))
+
+
 ### 💡 Others
 
 ## 0.32.15 — 2025-12-12
