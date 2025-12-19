@@ -9,7 +9,7 @@ export interface DisclosureGroupProps extends CommonViewModifierProps {
     /**
      * A callback that is called when the expansion state changes.
      */
-    onStateChange?: (isExpanded: boolean) => void;
+    onIsExpandedChange?: (isExpanded: boolean) => void;
 }
 export declare function DisclosureGroup(props: DisclosureGroupProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

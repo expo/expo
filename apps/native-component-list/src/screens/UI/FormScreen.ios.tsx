@@ -111,7 +111,7 @@ export default function FormScreen() {
             label="Clear Image Cache"
           />
           <DisclosureGroup
-            onStateChange={setDisclosureGroupExpanded}
+            onIsExpandedChange={setDisclosureGroupExpanded}
             isExpanded={disclosureGroupExpanded}
             label="Show User Profile Details">
             <Text>Name: John Doe</Text>

@@ -29,6 +29,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/circularprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/colorpicker': ['swift-ui/ColorPicker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/contextmenu': ['swift-ui/ContextMenu/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/disclosuregroup': ['swift-ui/DisclosureGroup/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/contextmenu': ['jetpack-compose/ContextMenu/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/datepicker': ['swift-ui/DatePicker/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/datetimepicker': ['jetpack-compose/DatePicker/index.tsx', 'expo-ui'],
