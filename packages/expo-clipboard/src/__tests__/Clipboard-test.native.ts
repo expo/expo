@@ -1,5 +1,4 @@
 import * as Clipboard from '../Clipboard';
-import ExpoClipboard from '../ExpoClipboard';
 
 describe('Clipboard', () => {
   it('getStringAsync', () => {
