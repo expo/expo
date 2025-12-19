@@ -1,4 +1,5 @@
-import ExpoModulesCore
+// TODO vonovak - @preconcurrency is here to compile with SDK 54, remove when that's not a concern any more
+@preconcurrency import ExpoModulesCore
 import DeclaredAgeRange
 
 public class AgeRangeModule: Module {
