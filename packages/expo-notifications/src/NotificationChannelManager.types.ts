@@ -20,6 +20,9 @@ export enum AndroidAudioContentType {
 // @docsMissing
 export enum AndroidImportance {
   UNKNOWN = 0,
+  /**
+   * Use `DEFAULT` instead. This value is present for compatibility reasons.
+   * */
   UNSPECIFIED = 1,
   NONE = 2,
   MIN = 3,

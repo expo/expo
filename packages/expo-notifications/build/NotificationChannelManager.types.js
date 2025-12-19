@@ -19,6 +19,9 @@ export var AndroidAudioContentType;
 export var AndroidImportance;
 (function (AndroidImportance) {
     AndroidImportance[AndroidImportance["UNKNOWN"] = 0] = "UNKNOWN";
+    /**
+     * Use `DEFAULT` instead. This value is present for compatibility reasons.
+     * */
     AndroidImportance[AndroidImportance["UNSPECIFIED"] = 1] = "UNSPECIFIED";
     AndroidImportance[AndroidImportance["NONE"] = 2] = "NONE";
     AndroidImportance[AndroidImportance["MIN"] = 3] = "MIN";
