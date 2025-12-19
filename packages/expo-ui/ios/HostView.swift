@@ -164,12 +164,12 @@ private struct GeometryChangeModifier: ViewModifier {
   @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
 
   private func dispatchOnLayoutContent(_ size: CGSize) {
-    if (props.matchContentsHorizontal || props.matchContentsVertical) {
+    if props.matchContentsHorizontal || props.matchContentsVertical {
       let styleWidth = props.matchContentsHorizontal ? NSNumber(value: Float(size.width)) : nil
       let styleHeight = props.matchContentsVertical ? NSNumber(value: Float(size.height)) : nil
       shadowNodeProxy.setStyleSize?(styleWidth, styleHeight)
     }
-    
+
     props.onLayoutContent([
       "width": size.width,
       "height": size.height

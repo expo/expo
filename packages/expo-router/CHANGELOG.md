@@ -34,6 +34,7 @@
 - [iOS] add Link.AppleZoomTarget ([#41352](https://github.com/expo/expo/pull/41352) by [@Ubax](https://github.com/Ubax))
 - add header items components API ([#40842](https://github.com/expo/expo/pull/40842) by [@Ubax](https://github.com/Ubax))
 - allow for standalone usage of Stack.Header and Stack.Header.Left/Right ([#41649](https://github.com/expo/expo/pull/41649) by [@Ubax](https://github.com/Ubax))
+- Unify the API between Toolbar, Header items and Link preview ([#41679](https://github.com/expo/expo/pull/41679) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
@@ -81,6 +82,7 @@
 - Update `/_expo/touch` usage in onboarding ([#41541](https://github.com/expo/expo/pull/41541) by [@kitten](https://github.com/kitten))
 - Bump `react-server-dom-webpack` ([#41574](https://github.com/expo/expo/pull/41574) by [@kitten](https://github.com/kitten)) ([#41589](https://github.com/expo/expo/pull/41589) by [@kitten](https://github.com/kitten))
 - [ios] add internal animateAspectRatioChange prop ([#41511](https://github.com/expo/expo/pull/41511) by [@Ubax](https://github.com/Ubax))
+- Add unstable_navigationEvents to expose global navigation events ([#41706](https://github.com/expo/expo/pull/41706) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.17 - 2025-12-05
 

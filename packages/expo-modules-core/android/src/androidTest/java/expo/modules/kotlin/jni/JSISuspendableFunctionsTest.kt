@@ -3,7 +3,7 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
-import expo.modules.kotlin.RuntimeContext
+import expo.modules.kotlin.runtime.RuntimeContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.jni.extensions.addSingleQuotes

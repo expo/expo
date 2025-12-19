@@ -3,10 +3,14 @@
 import SwiftUI
 import ExpoModulesCore
 
-struct Button: ExpoSwiftUI.View {
-  @ObservedObject var props: ButtonProps
+public struct Button: ExpoSwiftUI.View {
+  @ObservedObject public var props: ButtonProps
 
-  var body: some View {
+  public init(props: ButtonProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     if let label = props.label {
       if let systemImage = props.systemImage {
         SwiftUI.Button(label, systemImage: systemImage, role: props.role?.toNativeRole()) {

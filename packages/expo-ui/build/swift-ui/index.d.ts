@@ -25,6 +25,7 @@ export * from './Spacer';
 export * from './Stepper';
 export * from './Switch';
 export * from './Text';
+export * from './Toggle';
 export * from './TextField';
 export * from './SecureField';
 export * from './Namespace';

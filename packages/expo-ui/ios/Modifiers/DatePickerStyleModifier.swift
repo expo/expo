@@ -9,7 +9,7 @@ internal enum DatePickerStyleType: String, Enumerable {
   case graphical
   case wheel
 
-  #if !os(tvOS)
+#if !os(tvOS)
   @ViewBuilder
   func apply<Content: View>(to content: Content) -> some View {
     switch self {
@@ -23,7 +23,7 @@ internal enum DatePickerStyleType: String, Enumerable {
       content.datePickerStyle(.automatic)
     }
   }
-  #endif
+#endif
 }
 
 internal struct DatePickerStyleModifier: ViewModifier, Record {
@@ -31,14 +31,14 @@ internal struct DatePickerStyleModifier: ViewModifier, Record {
 
   @ViewBuilder
   func body(content: Content) -> some View {
-    #if os(tvOS)
+#if os(tvOS)
     content
-    #else
+#else
     if let style {
       style.apply(to: content)
     } else {
       content
     }
-    #endif
+#endif
   }
 }

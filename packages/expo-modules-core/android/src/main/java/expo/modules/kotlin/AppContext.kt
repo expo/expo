@@ -39,6 +39,9 @@ import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
+import expo.modules.kotlin.runtime.MainRuntimeContext
+import expo.modules.kotlin.runtime.RuntimeContext
+import expo.modules.kotlin.runtime.WorkletRuntimeContext
 import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -54,14 +57,17 @@ class AppContext(
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   reactContextHolder: WeakReference<ReactApplicationContext>
 ) : CurrentActivityProvider {
-
   // The main context used in the app.
   // Modules attached to this context will be available on the main js context.
   @Deprecated("Use AppContext.runtimeContext instead", ReplaceWith("runtime"))
-  val hostingRuntimeContext = RuntimeContext(this, reactContextHolder)
+  val hostingRuntimeContext = MainRuntimeContext(this, reactContextHolder)
 
   val runtime: RuntimeContext
     get() = hostingRuntimeContext
+
+  private val uiRuntimeHolder = lazy { WorkletRuntimeContext(this, reactContextHolder) }
+  val uiRuntime
+    get() = uiRuntimeHolder.value
 
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
@@ -135,7 +141,7 @@ class AppContext(
    * It will be a NOOP if the remote debugging was activated.
    */
   fun installJSIInterop() {
-    hostingRuntimeContext.installJSIContext()
+    hostingRuntimeContext.install()
   }
 
   /**
@@ -270,6 +276,9 @@ class AppContext(
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
     hostingRuntimeContext.deallocate()
+    if (uiRuntimeHolder.isInitialized()) {
+      uiRuntime.deallocate()
+    }
     logger.info("✅ AppContext was destroyed")
   }
 

@@ -1,7 +1,6 @@
 import { StackHeaderBackButton, type StackHeaderBackButtonProps } from './StackHeaderBackButton';
 import { StackHeaderButton, type StackHeaderButtonProps } from './StackHeaderButton';
 import { StackHeaderComponent, type StackHeaderProps } from './StackHeaderComponent';
-import { StackHeaderItem, type StackHeaderItemProps } from './StackHeaderItem';
 import {
   StackHeaderLeft,
   type StackHeaderLeftProps,
@@ -17,6 +16,7 @@ import {
 import { StackHeaderSearchBar, type StackHeaderSearchBarProps } from './StackHeaderSearchBar';
 import { StackHeaderSpacer, type StackHeaderSpacerProps } from './StackHeaderSpacer';
 import { StackHeaderTitle, type StackHeaderTitleProps } from './StackHeaderTitle';
+import { StackHeaderView, type StackHeaderViewProps } from './StackHeaderView';
 import {
   StackHeaderBadge,
   StackHeaderIcon,
@@ -39,7 +39,7 @@ export const StackHeader = Object.assign(StackHeaderComponent, {
   Icon: StackHeaderIcon,
   Menu: StackHeaderMenu,
   MenuAction: StackHeaderMenuAction,
-  Item: StackHeaderItem,
+  View: StackHeaderView,
   Spacer: StackHeaderSpacer,
 });
 
@@ -67,8 +67,8 @@ export {
   type StackHeaderMenuProps,
   StackHeaderMenuAction,
   type StackHeaderMenuActionProps,
-  StackHeaderItem,
-  type StackHeaderItemProps,
+  StackHeaderView,
+  type StackHeaderViewProps,
   StackHeaderSpacer,
   type StackHeaderSpacerProps,
   type StackHeaderItemSharedProps,

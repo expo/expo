@@ -287,3 +287,4 @@ exceptions:
   - 'Mode 2: Payload mode'
   - 'Method 1: Use'
   - 'Method 2: Use'
+  - 'Image manipulation without disk I/O'

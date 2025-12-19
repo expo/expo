@@ -32,10 +32,13 @@ exports.convertStackHeaderSpacerPropsToRNHeaderItem = convertStackHeaderSpacerPr
  */
 const StackHeaderSpacer = () => null;
 exports.StackHeaderSpacer = StackHeaderSpacer;
-function convertStackHeaderSpacerPropsToRNHeaderItem(props) {
+function convertStackHeaderSpacerPropsToRNHeaderItem({ hidden, width, }) {
+    if (hidden) {
+        return undefined;
+    }
     return {
         type: 'spacing',
-        spacing: props.width,
+        spacing: width,
     };
 }
 //# sourceMappingURL=StackHeaderSpacer.js.map

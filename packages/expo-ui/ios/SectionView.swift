@@ -51,8 +51,7 @@ internal struct SectionView: ExpoSwiftUI.View {
   private var contentChildren: some View {
     if let content = props.children?
       .compactMap({ $0.childView as? SectionContent })
-      .first
-    {
+      .first {
       content
     }
   }
@@ -61,8 +60,7 @@ internal struct SectionView: ExpoSwiftUI.View {
   private var headerView: some View {
     if let header = props.children?
       .compactMap({ $0.childView as? SectionHeader })
-      .first
-    {
+      .first {
       header
     } else if let title = props.title, !title.isEmpty {
       Text(title).textCase(nil)
@@ -73,8 +71,7 @@ internal struct SectionView: ExpoSwiftUI.View {
   private var footerView: some View {
     if let footer = props.children?
       .compactMap({ $0.childView as? SectionFooter })
-      .first
-    {
+      .first {
       footer
     }
   }

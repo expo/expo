@@ -52,7 +52,7 @@ export default function ToolbarScreen() {
   };
 
   const handleSendEmail = () => {
-    Alert.alert('Send Email', 'Email sent successfully!');
+    Alert.alert('Send Email', 'Email sent succesiconully!');
   };
 
   const handleDeleteEmail = () => {
@@ -220,10 +220,10 @@ export default function ToolbarScreen() {
         {/* Search button */}
         <Toolbar.Button
           hidden={!showSearchButton}
-          sf="magnifyingglass"
+          icon="magnifyingglass"
           tintColor={Color.ios.systemBlue}
           onPress={handleSearch}
-          sharesBackground={sharesBackgroundSearchButton}
+          separateBackground={!sharesBackgroundSearchButton}
           hidesSharedBackground={hidesSharedBackgroundSearchButton}
         />
 
@@ -256,7 +256,7 @@ export default function ToolbarScreen() {
         {!isSearchFocused && (
           <Toolbar.Button
             hidden={!showMicButton}
-            sf="mic"
+            icon="mic"
             tintColor={Color.ios.systemGreen}
             onPress={handleMic}
           />
@@ -264,14 +264,14 @@ export default function ToolbarScreen() {
 
         {isSearchFocused && (
           <Toolbar.Button
-            sf="xmark.circle.fill"
+            icon="xmark.circle.fill"
             tintColor={Color.ios.systemRed}
             onPress={handleClearSearch}
           />
         )}
 
         {/* Custom view with custom component */}
-        <Toolbar.View sharesBackground={false} style={{ width: 32, height: 32 }}>
+        <Toolbar.View separateBackground style={{ width: 32, height: 32 }}>
           <Pressable
             testID="custom-plus-button"
             onPress={() => Alert.alert('Custom Button', 'Plus button pressed!')}
@@ -291,7 +291,7 @@ export default function ToolbarScreen() {
 
         {/* Nested menu with dynamic content */}
         {showMenu && (
-          <Toolbar.Menu icon="ellipsis.circle" title="Actions">
+          <Toolbar.Menu icon="ellipsis.circle" title="Actions" tintColor={Color.ios.systemBrown}>
             {/* Simple actions */}
             <Toolbar.MenuAction icon="paperplane" title="Send email" onPress={handleSendEmail} />
             <Toolbar.MenuAction
