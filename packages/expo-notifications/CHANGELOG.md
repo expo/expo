@@ -13,6 +13,7 @@
 
 ### 🐛 Bug fixes
 
+- avoid crash emitting new token event when module is destroyed ([#41754](https://github.com/expo/expo/pull/41754) by [@vonovak](https://github.com/vonovak))
 - fix completion handler never called for background notifications ([#41300](https://github.com/expo/expo/pull/41300) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
