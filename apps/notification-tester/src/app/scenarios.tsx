@@ -1,3 +1,4 @@
+import * as Notifications from 'expo-notifications';
 import HeadingText from 'native-component-list/src/components/HeadingText';
 import ListButton from 'native-component-list/src/components/ListButton';
 import React from 'react';
@@ -10,9 +11,13 @@ export default function ScenariosPage() {
       <HeadingText>Background Push Notifications</HeadingText>
       <ListButton
         onPress={() => {
-          alert(`send a push notification with this payload:`);
+          Notifications.subscribeToTopicAsync('news')
+            .then(() => {
+              alert('subscribed to topic "news"');
+            })
+            .catch(console.error);
         }}
-        title="Send a push notification with a category, and observe the response value stored"
+        title="Subscribe to Topic, Send Notification manually from firebase console"
       />
     </ScrollView>
   );
