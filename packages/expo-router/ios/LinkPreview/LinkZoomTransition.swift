@@ -274,11 +274,11 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
 class LinkZoomTransitionEnabler: LinkZoomExpoView {
   var zoomTransitionSourceIdentifier: String = ""
   var isPreventingInteractiveDismissal: Bool = false
+  var dismissGestureTopZoneHeight: CGFloat = 0
 
   override func didMoveToSuperview() {
     super.didMoveToSuperview()
     if superview != nil {
-      // Need to run this async. Otherwise the view has no view controller yet
       DispatchQueue.main.async {
         self.setupZoomTransition()
       }
@@ -318,8 +318,14 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
           }
           return rect
         }
-        options.interactiveDismissShouldBegin = { _ in
-          !self.isPreventingInteractiveDismissal
+        options.interactiveDismissShouldBegin = { context in
+          if self.isPreventingInteractiveDismissal {
+            return false
+          }
+          if self.dismissGestureTopZoneHeight > 0 {
+            return context.location.y <= self.dismissGestureTopZoneHeight
+          }
+          return true
         }
         controller.preferredTransition = .zoom(options: options) { _ in
           let sourceInfo = self.sourceRepository?.getSource(

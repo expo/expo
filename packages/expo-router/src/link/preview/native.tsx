@@ -100,13 +100,19 @@ export function NativeLinkPreviewContent(props: NativeLinkPreviewContentProps) {
 
 // #region Zoom transition enabler
 const LinkZoomTransitionEnablerNativeView: React.ComponentType<
-  ViewProps & { zoomTransitionSourceIdentifier: string; disableForceFlatten?: boolean }
+  ViewProps & {
+    zoomTransitionSourceIdentifier: string;
+    disableForceFlatten?: boolean;
+    preventInteractiveDismissal?: boolean;
+    dismissGestureTopZoneHeight?: number;
+  }
 > | null = areNativeViewsAvailable
   ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionEnabler')
   : null;
 export function LinkZoomTransitionEnabler(props: {
   zoomTransitionSourceIdentifier: string;
   preventInteractiveDismissal?: boolean;
+  dismissGestureTopZoneHeight?: number;
 }) {
   if (!LinkZoomTransitionEnablerNativeView) {
     return null;

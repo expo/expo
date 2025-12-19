@@ -50,10 +50,13 @@ export function ZoomTransitionEnabler({ route }: ZoomTransitionEnablerProps) {
       const descriptorsMap = use(DescriptorsContext);
       const currentDescriptor = descriptorsMap[route.key];
       const preventInteractiveDismissal = currentDescriptor?.options?.gestureEnabled === false;
+      // @ts-expect-error
+      const dismissGestureTopZoneHeight = currentDescriptor?.options?.zoomDismissGestureTopZoneHeight ?? 0;
       return (
         <LinkZoomTransitionEnabler
           zoomTransitionSourceIdentifier={zoomTransitionId}
           preventInteractiveDismissal={preventInteractiveDismissal}
+          dismissGestureTopZoneHeight={dismissGestureTopZoneHeight}
         />
       );
     }

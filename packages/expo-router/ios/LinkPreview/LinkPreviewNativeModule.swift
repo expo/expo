@@ -119,6 +119,10 @@ public class LinkPreviewNativeModule: Module {
       Prop("preventInteractiveDismissal") { (view: LinkZoomTransitionEnabler, prevent: Bool) in
         view.isPreventingInteractiveDismissal = prevent
       }
+
+      Prop("dismissGestureTopZoneHeight") { (view: LinkZoomTransitionEnabler, height: Double) in
+        view.dismissGestureTopZoneHeight = CGFloat(height)
+      }
     }
 
     View(LinkZoomTransitionAlignmentRectDetector.self) {
