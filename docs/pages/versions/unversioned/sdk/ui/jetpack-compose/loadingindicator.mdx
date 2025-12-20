@@ -1,0 +1,54 @@
+---
+title: LoadingIndicator
+description: A Jetpack Compose LoadingIndicator component for displaying loading state.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+A loading indicator component based on Material 3 design for displaying loading state.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<Tabs>
+  <Tab label="Preview">
+    <ContentSpotlight
+      alt="LoadingIndicator component on Android."
+      src="/static/images/expo-ui/loadingindicator/android.png"
+      className="max-w-[380px]"
+    />
+  </Tab>
+  <Tab label="Code">
+    ```tsx
+    import { LoadingIndicator } from '@expo/ui/jetpack-compose';
+     {/* Indeterminate (continuous animation) */}
+     <LoadingIndicator />
+
+     {/* Determinate with progress value */}
+     <LoadingIndicator progress={0.5} color="#6200EE" />
+
+     {/* Contained variant with background */}
+     <LoadingIndicator
+       variant="contained"
+       containerColor="#E8DEF8"
+       color="#6200EE"
+     />
+     ```
+
+   </Tab>
+ </Tabs>
+
+ > See [official Jetpack Compose documentation](https://m3.material.io/components/loading-indicator/overview) for more information.
+
+ ## API
+
+ <APISection packageName="expo-ui/jetpack-compose/loadingindicator" apiName="LoadingIndicator" />
