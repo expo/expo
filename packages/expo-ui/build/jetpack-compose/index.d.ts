@@ -3,6 +3,7 @@ export * from './Chip';
 export * from './Button';
 export * from './IconButton';
 export * from './ContextMenu';
+export * from './Divider';
 export * from './Host';
 export * from './DatePicker';
 export * from './Picker';

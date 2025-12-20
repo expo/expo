@@ -78,12 +78,7 @@ const ChipNativeView: React.ComponentType<ChipProps> = requireNativeView('ExpoUI
  * @hidden
  */
 export function transformChipProps(props: ChipProps): ChipProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    ...restProps,
-    // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
-  };
+  return { ...props };
 }
 
 /**

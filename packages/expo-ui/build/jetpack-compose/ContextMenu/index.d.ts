@@ -1,7 +1,7 @@
 import { ReactElement, ReactNode } from 'react';
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
 import { SubmenuProps } from './Submenu';
-import { ExpoModifier } from '../../types';
+import { ModifierConfig } from '../../types';
 import { ButtonProps } from '../Button';
 import { PickerProps } from '../Picker';
 import { SwitchProps } from '../Switch';
@@ -39,7 +39,7 @@ export type ContextMenuProps = {
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 export declare function Items(props: ContextMenuContentProps): import("react").JSX.Element;
 export declare namespace Items {

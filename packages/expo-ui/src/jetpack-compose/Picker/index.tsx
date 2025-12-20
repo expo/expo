@@ -77,10 +77,6 @@ export function transformPickerProps(props: PickerProps): NativePickerProps {
           }
         : undefined,
     color: props.color,
-    // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
-    // @ts-expect-error
-    buttonModifiers: props.buttonModifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 

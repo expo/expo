@@ -1,8 +1,6 @@
 package expo.modules.ui.menu
 
 import android.graphics.Color
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.ui.button.ButtonVariant
@@ -32,10 +30,11 @@ data class ContextMenuElement(
 ) : Record, Serializable
 
 data class ContextMenuProps(
-  val text: MutableState<String> = mutableStateOf(""),
-  val elements: MutableState<Array<ContextMenuElement>> = mutableStateOf(emptyArray()),
-  val activationMethod: MutableState<ActivationMethod> = mutableStateOf(ActivationMethod.SINGLE_PRESS),
-  val color: MutableState<Color?> = mutableStateOf(null)
+  val text: String = "",
+  val elements: Array<ContextMenuElement> = emptyArray(),
+  val activationMethod: ActivationMethod = ActivationMethod.SINGLE_PRESS,
+  val color: Color? = null,
+  val modifiers: List<expo.modules.ui.ModifierConfig> = emptyList()
 ) : ComposeProps
 
 class ContextMenuButtonProps(

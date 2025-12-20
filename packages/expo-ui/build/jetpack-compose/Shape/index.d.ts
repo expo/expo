@@ -1,4 +1,5 @@
 import { ExpoModifier } from '../../types';
+type ShapeType = 'star' | 'pillStar' | 'pill' | 'circle' | 'rectangle' | 'polygon';
 export type ShapeProps = {
     /**
      * Corner rounding percentage. Multiplied by the shorter dimension of the view to produce pixel values.
@@ -32,7 +33,12 @@ export type ShapeProps = {
      */
     modifiers?: ExpoModifier[];
 };
-export type ShapeJSXElement = React.JSX.Element & {
+type NativeShapeProps = Omit<ShapeProps, 'modifiers'> & {
+    type: ShapeType;
+    modifiers?: unknown;
+};
+export type ShapeRecordProps = Pick<NativeShapeProps, 'cornerRounding' | 'smoothing' | 'verticesCount' | 'innerRadius' | 'radius' | 'type'>;
+export type ShapeJSXElement = React.ReactElement<NativeShapeProps> & {
     __expo_shape_jsx_element_marker: true;
 };
 declare function Star(props: ShapeProps): ShapeJSXElement;
@@ -41,7 +47,6 @@ declare function Pill(props: Pick<ShapeProps, 'smoothing' | 'color' | 'modifiers
 declare function Circle(props: Pick<ShapeProps, 'radius' | 'verticesCount' | 'color' | 'modifiers'>): ShapeJSXElement;
 declare function Rectangle(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'color' | 'modifiers'>): ShapeJSXElement;
 declare function Polygon(props: Pick<ShapeProps, 'smoothing' | 'cornerRounding' | 'verticesCount' | 'color' | 'modifiers'>): ShapeJSXElement;
-export declare function parseJSXShape(shape?: ShapeJSXElement): any;
 export declare const Shape: {
     Star: typeof Star;
     PillStar: typeof PillStar;
@@ -50,5 +55,7 @@ export declare const Shape: {
     Rectangle: typeof Rectangle;
     Polygon: typeof Polygon;
 };
+export declare function parseJSXShape(shape: ShapeJSXElement): ShapeRecordProps;
+export declare function parseJSXShape(shape?: ShapeJSXElement): ShapeRecordProps | undefined;
 export {};
 //# sourceMappingURL=index.d.ts.map
