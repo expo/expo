@@ -4,10 +4,10 @@ import WorkletsTesterModule from './WorkletsTesterModule';
 
 export const WorkletsTester = {
   scheduleWorklet: (worklet: () => void) => {
-    WorkletsTesterModule.scheduleWorklet(createSerializable(worklet));
+    WorkletsTesterModule?.scheduleWorklet?.(createSerializable(worklet));
   },
 
   executeWorklet: (worklet: () => void) => {
-    WorkletsTesterModule.executeWorklet(createSerializable(worklet));
+    WorkletsTesterModule?.executeWorklet?.(createSerializable(worklet));
   },
 };
