@@ -11,12 +11,14 @@ type AwaitedIcon = {
     drawable?: string;
 } | {
     src?: ImageSourcePropType;
+    renderingMode?: 'template' | 'original';
 };
 export declare function useAwaitedScreensIcon(icon: NativeTabOptions['icon']): {
     sf?: SFSymbol;
     drawable?: string;
 } | {
     src?: ImageSourcePropType;
+    renderingMode?: "template" | "original";
 } | undefined;
 export declare function convertOptionsIconToRNScreensPropsIcon(icon: AwaitedIcon | undefined): BottomTabsScreenProps['icon'];
 export declare function convertOptionsIconToIOSPropsIcon(icon: AwaitedIcon | undefined): PlatformIconIOS | undefined;

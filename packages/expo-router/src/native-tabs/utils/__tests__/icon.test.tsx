@@ -105,6 +105,35 @@ describe(convertOptionsIconToRNScreensPropsIcon, () => {
       android: { type: 'drawableResource', name: 'ic_launcher' },
     });
   });
+
+  describe('renderingMode', () => {
+    it('returns templateSource for iOS when renderingMode is not specified (default)', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon({ src });
+      expect(result?.ios).toEqual({ type: 'templateSource', templateSource: src });
+    });
+
+    it('returns templateSource for iOS when renderingMode is "template"', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon({ src, renderingMode: 'template' });
+      expect(result?.ios).toEqual({ type: 'templateSource', templateSource: src });
+    });
+
+    it('returns imageSource for iOS when renderingMode is "original"', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const result = convertOptionsIconToRNScreensPropsIcon({ src, renderingMode: 'original' });
+      expect(result?.ios).toEqual({ type: 'imageSource', imageSource: src });
+    });
+
+    it('returns imageSource for Android regardless of renderingMode', () => {
+      const src = { uri: 'https://example.com/icon.png' };
+      const resultTemplate = convertOptionsIconToRNScreensPropsIcon({ src, renderingMode: 'template' });
+      const resultOriginal = convertOptionsIconToRNScreensPropsIcon({ src, renderingMode: 'original' });
+      // Android always uses imageSource
+      expect(resultTemplate?.android).toEqual({ type: 'imageSource', imageSource: src });
+      expect(resultOriginal?.android).toEqual({ type: 'imageSource', imageSource: src });
+    });
+  });
 });
 
 describe('useAwaitedScreensIcon', () => {
