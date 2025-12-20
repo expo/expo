@@ -16,7 +16,7 @@ abstract class Module : AppContextProvider {
   internal var _appContextHolder: WeakReference<AppContext> = WeakReference(null)
 
   val runtime: Runtime
-    get() = requireNotNull(_appContextHolder.get()?.hostingRuntimeContext) { "The module wasn't created! You can't access the hosting runtime context." }
+    get() = requireNotNull(_appContextHolder.get()?.hostingRuntimeContext) { "The module wasn't created! You can't access the hosting runtime." }
 
   @Deprecated(
     message = "Use 'runtime' property instead.",
