@@ -4,7 +4,7 @@ import expo.modules.kotlin.runtime.WorkletRuntime
 
 class Worklet internal constructor(
   private val serializable: Serializable
-){
+) {
   private val WorkletRuntime.enforceHolder
     get() = mWorkletNativeRuntime
       ?: throw IllegalStateException("Worklet runtime is not installed.")

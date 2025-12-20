@@ -9,7 +9,7 @@ class Serializable @DoNotStrip private constructor(
   @DoNotStrip private val mHybridData: HybridData,
   type: Int
 ) : Destructible {
-  enum class ValueType(val value: Int){
+  enum class ValueType(val value: Int) {
     Undefined(1),
     Null(2),
     Boolean(3),
@@ -29,7 +29,7 @@ class Serializable @DoNotStrip private constructor(
     TurboModuleLike(17),
     Import(18),
     Synchronizable(19),
-    Custom(20),
+    Custom(20)
   }
 
   val type: ValueType = ValueType.entries.first { it.value == type }

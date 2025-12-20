@@ -11,7 +11,7 @@ class WorkletTypeConverter(
 ) : NonNullableTypeConverter<Worklet>() {
   override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): Worklet {
     val serializable = serializableTypeConverter.convert(value, context, forceConversion)
-      ?: throw IllegalArgumentException("Cannot convert '${value}' to Serializable.")
+      ?: throw IllegalArgumentException("Cannot convert '$value' to Serializable.")
     if (serializable.type != Serializable.ValueType.Worklet) {
       throw IllegalArgumentException("Expected Serializable of type Worklet but got ${serializable.type}.")
     }
