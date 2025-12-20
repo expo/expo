@@ -52,6 +52,12 @@ export type SymbolOrImageSource = {
      * The image source to use as an icon.
      */
     src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
+    /**
+     * Controls how the icon is rendered on iOS.
+     * @platform iOS
+     * @default 'template'
+     */
+    renderingMode?: 'template' | 'original';
 };
 export type NativeTabsLabelStyle = Pick<TextStyle, 'fontFamily' | 'fontSize' | 'fontStyle' | 'fontWeight' | 'color'>;
 export declare const SUPPORTED_BLUR_EFFECTS: readonly ["none", "systemDefault", "extraLight", "light", "dark", "regular", "prominent", "systemUltraThinMaterial", "systemThinMaterial", "systemMaterial", "systemThickMaterial", "systemChromeMaterial", "systemUltraThinMaterialLight", "systemThinMaterialLight", "systemMaterialLight", "systemThickMaterialLight", "systemChromeMaterialLight", "systemUltraThinMaterialDark", "systemThinMaterialDark", "systemMaterialDark", "systemThickMaterialDark", "systemChromeMaterialDark"];
