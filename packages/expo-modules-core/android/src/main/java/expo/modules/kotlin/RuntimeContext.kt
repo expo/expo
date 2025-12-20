@@ -1,4 +1,6 @@
 package expo.modules.kotlin
 
-@Deprecated("Use expo.modules.kotlin.runtime.RuntimeContext instead", ReplaceWith("expo.modules.kotlin.runtime.RuntimeContext"))
-typealias RuntimeContext = expo.modules.kotlin.runtime.RuntimeContext
+import expo.modules.kotlin.runtime.Runtime
+
+@Deprecated("Use expo.modules.kotlin.runtime.Runtime instead", ReplaceWith("expo.modules.kotlin.runtime.Runtime"))
+typealias RuntimeContext = Runtime

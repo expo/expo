@@ -2,7 +2,7 @@ package expo.modules.kotlin.jni.worklets
 
 import com.facebook.jni.HybridData
 
-class WorkletRuntimeHolder(
+class WorkletNativeRuntime(
   jsRuntimePointer: Long
 ) {
   private val mHybridData = initHybrid(jsRuntimePointer)

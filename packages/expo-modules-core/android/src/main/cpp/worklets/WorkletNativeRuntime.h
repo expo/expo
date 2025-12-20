@@ -12,16 +12,16 @@ namespace jni = facebook::jni;
 
 namespace expo {
 
-class WorkletRuntimeHolder : public jni::HybridClass<WorkletRuntimeHolder> {
+class WorkletNativeRuntime : public jni::HybridClass<WorkletNativeRuntime> {
 public:
-  static auto constexpr kJavaDescriptor = "Lexpo/modules/kotlin/jni/worklets/WorkletRuntimeHolder;";
-  static auto constexpr TAG = "WorkletRuntimeHolder";
+  static auto constexpr kJavaDescriptor = "Lexpo/modules/kotlin/jni/worklets/WorkletNativeRuntime;";
+  static auto constexpr TAG = "WorkletNativeRuntime";
 
   static void registerNatives();
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jobject> jThis, jlong runtimePointer);
 
-  explicit WorkletRuntimeHolder(jlong runtimePointer);
+  explicit WorkletNativeRuntime(jlong runtimePointer);
 
 #if WORKLETS_ENABLED
   std::weak_ptr<worklets::WorkletRuntime> workletRuntime;

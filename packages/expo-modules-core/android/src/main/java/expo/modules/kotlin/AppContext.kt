@@ -39,9 +39,9 @@ import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
-import expo.modules.kotlin.runtime.MainRuntimeContext
-import expo.modules.kotlin.runtime.RuntimeContext
-import expo.modules.kotlin.runtime.WorkletRuntimeContext
+import expo.modules.kotlin.runtime.MainRuntime
+import expo.modules.kotlin.runtime.Runtime
+import expo.modules.kotlin.runtime.WorkletRuntime
 import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -60,12 +60,12 @@ class AppContext(
   // The main context used in the app.
   // Modules attached to this context will be available on the main js context.
   @Deprecated("Use AppContext.runtimeContext instead", ReplaceWith("runtime"))
-  val hostingRuntimeContext = MainRuntimeContext(this, reactContextHolder)
+  val hostingRuntimeContext = MainRuntime(this, reactContextHolder)
 
-  val runtime: RuntimeContext
+  val runtime: Runtime
     get() = hostingRuntimeContext
 
-  private val uiRuntimeHolder = lazy { WorkletRuntimeContext(this, reactContextHolder) }
+  private val uiRuntimeHolder = lazy { WorkletRuntime(this, reactContextHolder) }
   val uiRuntime
     get() = uiRuntimeHolder.value
 

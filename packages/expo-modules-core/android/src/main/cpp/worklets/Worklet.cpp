@@ -25,14 +25,14 @@ Worklet::Worklet(
 ) : worklet_(worklet) {}
 
 void Worklet::schedule(
-  jni::alias_ref<WorkletRuntimeHolder::javaobject> workletRuntimeHolder
+  jni::alias_ref<WorkletNativeRuntime::javaobject> workletRuntimeHolder
 ) {
   auto workletRuntime = workletRuntimeHolder->cthis()->workletRuntime.lock();
   workletRuntime->schedule(worklet_);
 }
 
 void Worklet::execute(
-  jni::alias_ref<WorkletRuntimeHolder::javaobject> workletRuntimeHolder
+  jni::alias_ref<WorkletNativeRuntime::javaobject> workletRuntimeHolder
 ) {
   auto workletRuntime = workletRuntimeHolder->cthis()->workletRuntime.lock();
   workletRuntime->runSync(worklet_);

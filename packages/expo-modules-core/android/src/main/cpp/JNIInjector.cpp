@@ -18,7 +18,7 @@
 #include "installers/MainRuntimeInstaller.h"
 #include "installers/WorkletRuntimeInstaller.h"
 #include "worklets/Worklet.h"
-#include "worklets/WorkletRuntimeHolder.h"
+#include "worklets/WorkletNativeRuntime.h"
 
 #if RN_FABRIC_ENABLED
 #include "FabricComponentsRegistry.h"
@@ -39,7 +39,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     expo::RuntimeHolder::registerNatives();
 #endif
     expo::MainRuntimeInstaller::registerNatives();
-    expo::WorkletRuntimeHolder::registerNatives();
+    expo::WorkletNativeRuntime::registerNatives();
     expo::WorkletRuntimeInstaller::registerNatives();
     expo::JSIContext::registerNatives();
     expo::JavaScriptModuleObject::registerNatives();
