@@ -2,6 +2,10 @@
 
 #include "MainRuntimeInstaller.h"
 
+#include <fbjni/fbjni.h>
+
+namespace jni = facebook::jni;
+
 namespace expo {
 
 class WorkletRuntimeInstaller : public jni::JavaClass<WorkletRuntimeInstaller> {

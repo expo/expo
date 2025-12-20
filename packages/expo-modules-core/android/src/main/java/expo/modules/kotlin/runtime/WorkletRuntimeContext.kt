@@ -6,6 +6,7 @@ import expo.modules.kotlin.jni.JNIDeallocator
 import expo.modules.kotlin.jni.JSIContext
 import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.jni.WorkletRuntimeInstaller
+import expo.modules.kotlin.jni.worklets.WorkletRuntimeHolder
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.sharedobjects.ClassRegistry
 import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
@@ -18,6 +19,8 @@ class WorkletRuntimeContext(
   private val reactContextHolder: WeakReference<ReactApplicationContext>
 ) : RuntimeContext() {
   override lateinit var jsiContext: JSIContext
+
+  internal var workletRuntimeHolder: WorkletRuntimeHolder? = null
 
   private val appContextHolder = appContext.weak()
 
@@ -52,6 +55,8 @@ class WorkletRuntimeContext(
     }
 
     trace("$this.install on runtime $runtimePointer") {
+      // TODO(@lukmccall): Figure out if we can create WorkletRuntimeHolder lazy
+      workletRuntimeHolder = WorkletRuntimeHolder(runtimePointer)
       jsiContext = WorkletRuntimeInstaller(this)
         .install(runtimePointer)
 
