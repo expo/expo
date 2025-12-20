@@ -10,6 +10,7 @@
 
 ### 🎉 New features
 
+- Add support for `renderingMode` prop on native tabs icon ([#41750](https://github.com/expo/expo/pull/41750) by [@your-actual-username](https://github.com/your-actual-username))
 - Add support for server data loaders in development ([#39570](https://github.com/expo/expo/pull/39570) by [@hassankhan](https://github.com/hassankhan))
 - Add environmental variable to enable experimental web modal implementation ([#40231](https://github.com/expo/expo/pull/40231) by [@Ubax](https://github.com/Ubax))
 - Use the new error overlay UI from `@expo/log-box` ([#39958](https://github.com/expo/expo/pull/39958) by [@krystofwoldrich](https://github.com/krystofwoldrich))
