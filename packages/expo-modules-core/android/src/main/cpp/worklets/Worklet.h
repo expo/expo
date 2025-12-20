@@ -5,6 +5,7 @@
 #include "../JSIContext.h"
 #include "../JNIDeallocator.h"
 #include "WorkletNativeRuntime.h"
+#include "Serializable.h"
 
 #include <fbjni/fbjni.h>
 #include <worklets/SharedItems/Serializable.h>
@@ -13,7 +14,7 @@ namespace jni = facebook::jni;
 
 namespace expo {
 
-class Worklet : public jni::HybridClass<Worklet, Destructible> {
+class Worklet : public jni::JavaClass<Worklet> {
 public:
   static auto constexpr
     kJavaDescriptor = "Lexpo/modules/kotlin/jni/worklets/Worklet;";
@@ -21,26 +22,17 @@ public:
 
   static void registerNatives();
 
-  static jni::local_ref<Worklet::javaobject> newInstance(
-    JSIContext *jsiContext,
-    const std::shared_ptr<worklets::SerializableWorklet> &worklet
+  static void schedule(
+    jni::alias_ref<Worklet::javaobject> self,
+    jni::alias_ref<WorkletNativeRuntime::javaobject> workletRuntimeHolder,
+    jni::alias_ref<Serializable::javaobject> synchronizable
   );
 
-  explicit Worklet(
-    const std::shared_ptr<worklets::SerializableWorklet> &worklet
+  static void execute(
+    jni::alias_ref<Worklet::javaobject> self,
+    jni::alias_ref<WorkletNativeRuntime::javaobject> workletRuntimeHolder,
+    jni::alias_ref<Serializable::javaobject> synchronizable
   );
-
-  void schedule(
-    jni::alias_ref<WorkletNativeRuntime::javaobject> workletRuntimeHolder
-  );
-
-  void execute(
-    jni::alias_ref<WorkletNativeRuntime::javaobject> workletRuntimeHolder
-  );
-private:
-  friend HybridBase;
-
-  std::shared_ptr<worklets::SerializableWorklet> worklet_;
 };
 
 } // namespace expo

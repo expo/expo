@@ -489,7 +489,7 @@ private:
 
 #if WORKLETS_ENABLED
 
-class WorkletFrontendConverter : public FrontendConverter {
+class SynchronizableFrontendConverter : public FrontendConverter {
 public:
   jobject convert(
     jsi::Runtime &rt,
