@@ -21,24 +21,6 @@ const TextNativeView: React.ComponentType<NativeTextProps> = requireNativeView(
   'TextView'
 );
 
-function transformChildren(children: React.ReactNode): React.ReactNode[] | null {
-  const childArray = React.Children.toArray(children);
-  if (childArray.length === 0) return null;
-
-  const result: React.ReactNode[] = [];
-  let keyIndex = 0;
-
-  for (const child of childArray) {
-    if (typeof child === 'string' || typeof child === 'number') {
-      result.push(<TextNativeView key={`text-${keyIndex++}`} text={String(child)} />);
-    } else if (React.isValidElement(child) && child.type === Text) {
-      result.push(child);
-    }
-  }
-
-  return result.length > 0 ? result : null;
-}
-
 export function Text(props: TextProps) {
   const { children, modifiers, ...restProps } = props;
 
@@ -47,6 +29,7 @@ export function Text(props: TextProps) {
   }
 
   const childArray = React.Children.toArray(children);
+  if (childArray.length === 0) return null;
 
   const isSimpleText = childArray.every(
     (child) => typeof child === 'string' || typeof child === 'number'
@@ -64,13 +47,24 @@ export function Text(props: TextProps) {
     );
   }
 
-  const transformedChildren = transformChildren(children);
+  const finalChildren: React.ReactNode[] = [];
+
+  let keyIndex = 0;
+
+  for (const child of childArray) {
+    if (typeof child === 'string' || typeof child === 'number') {
+      finalChildren.push(<TextNativeView key={`text-${keyIndex++}`} text={String(child)} />);
+    } else if (React.isValidElement(child) && child.type === Text) {
+      finalChildren.push(child);
+    }
+  }
+
   return (
     <TextNativeView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}>
-      {transformedChildren}
+      {finalChildren}
     </TextNativeView>
   );
 }

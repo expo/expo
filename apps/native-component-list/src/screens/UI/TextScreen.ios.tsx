@@ -1,5 +1,5 @@
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
-import { bold, font, foregroundStyle, italic } from '@expo/ui/swift-ui/modifiers';
+import { bold, font, foregroundStyle, italic, lineLimit } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
 export default function TextScreen() {
@@ -25,6 +25,12 @@ export default function TextScreen() {
           <Text>
             Normal, <Text modifiers={[italic()]}>italic</Text>,{' '}
             <Text modifiers={[bold()]}>bold</Text>
+          </Text>
+        </Section>
+
+        <Section title="Unsupported modifiers show warning in debug mode">
+          <Text>
+            Hello <Text modifiers={[bold(), lineLimit(2)]}>world</Text>!
           </Text>
         </Section>
 

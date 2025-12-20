@@ -285,13 +285,13 @@ export declare const foregroundStyle: (style: string | {
 }) => ModifierConfig;
 /**
  * Makes text bold.
- * When applied to `Text`, it works on all iOS/tvOS versions. When used on regular views, it requires iOS 16.0+/ tvOS 16.0+.
+ * When applied to `Text`, it works on all iOS/tvOS versions. When used on regular views, it requires iOS 16.0+/tvOS 16.0+.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/text/bold()).
  */
 export declare const bold: () => ModifierConfig;
 /**
  * Makes text italic.
- * When applied to `Text`, it works on all iOS/tvOS versions. When used on regular views, it requires iOS 16.0+/ tvOS 16.0+.
+ * When applied to `Text`, it works on all iOS/tvOS versions. When used on regular views, it requires iOS 16.0+/tvOS 16.0+.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/text/italic()).
  */
 export declare const italic: () => ModifierConfig;

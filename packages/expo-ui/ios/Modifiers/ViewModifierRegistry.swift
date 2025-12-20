@@ -1390,7 +1390,11 @@ internal class ViewModifierRegistry {
       }
       return text
     default:
+      #if DEBUG
+      return Text(" ['\(type)' not supported for nested Text]").foregroundColor(.red)
+      #else
       return text
+      #endif
     }
   }
 
