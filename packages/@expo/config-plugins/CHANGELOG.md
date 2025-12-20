@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove `newArchEnabled` option. ([#41684](https://github.com/expo/expo/pull/41684) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 54.0.3 - 2025-12-04
 
 ### 💡 Others

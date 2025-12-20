@@ -11,6 +11,7 @@ import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.runtime.RuntimeContext
 import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.launch
 
@@ -40,16 +41,16 @@ class ModuleHolder<T : Module>(
     trace("$name.jsObject") {
       val appContext = module.appContext
       val runtimeContext = module.runtimeContext
-      val jniDeallocator = runtimeContext.jniDeallocator
+      val deallocator = runtimeContext.deallocator
 
-      val moduleDecorator = JSDecoratorsBridgingObject(jniDeallocator).apply {
+      val moduleDecorator = JSDecoratorsBridgingObject(deallocator).apply {
         export(
           appContext,
           runtimeContext
         )
       }
 
-      JavaScriptModuleObject(jniDeallocator, name).apply {
+      JavaScriptModuleObject(deallocator, name).apply {
         decorate(moduleDecorator)
       }
     }

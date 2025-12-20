@@ -42,7 +42,7 @@ export default function Index() {
         <Link.Trigger>
           <Pressable>
             <Link.AppleZoom>
-              <View style={{ width: 170 }}>
+              <View style={{ width: 170 }} collapsable={false}>
                 <StaticFaces numberOfFaces={9} size={50} />
               </View>
             </Link.AppleZoom>

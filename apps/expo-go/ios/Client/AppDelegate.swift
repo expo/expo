@@ -5,7 +5,6 @@ import React
 import FirebaseCore
 import ReactAppDependencyProvider
 
-
 @UIApplicationMain
 class AppDelegate: ExpoAppDelegate {
   var rootViewController: EXRootViewController?

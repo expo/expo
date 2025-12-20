@@ -57,7 +57,7 @@ USE_HERMES = USE_HERMES && isExpoModulesCoreTests
 
 def shouldTurnWarningsIntoErrors = findProperty("EXPO_TURN_WARNINGS_INTO_ERRORS") == "true"
 
-def enableWorkletsIntegration = findProperty("expo.core.worklets") == "true"
+def enableWorkletsIntegration = !isExpoModulesCoreTests && findProperty("expo.core.worklets") == "true"
 def workletsProject = enableWorkletsIntegration ? findProject(":react-native-worklets") : null
 
 if (enableWorkletsIntegration && workletsProject == null) {
