@@ -1,4 +1,4 @@
-import { requireNativeModule, NativeModule } from 'expo';
+import { requireOptionalNativeModule, NativeModule } from 'expo';
 
 type SerializableRef<TValue = unknown> = {
   __serializableRef: true;
@@ -10,4 +10,4 @@ declare class WorkletsTesterModule extends NativeModule {
   scheduleWorklet(worklet: SerializableRef<() => void>): void;
 }
 
-export default requireNativeModule<WorkletsTesterModule>('WorkletsTesterModule');
+export default requireOptionalNativeModule<WorkletsTesterModule>('WorkletsTesterModule');
