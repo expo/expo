@@ -14,21 +14,16 @@ import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.common.UIManagerType
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
-import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
-import expo.modules.interfaces.filesystem.AppDirectoriesModuleInterface
-import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
 import expo.modules.interfaces.font.FontManagerInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.activityresult.ActivityResultsManager
 import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
-import expo.modules.kotlin.defaultmodules.AppDirectoriesModule
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
-import expo.modules.kotlin.defaultmodules.FilePermissionModule
 import expo.modules.kotlin.defaultmodules.JSLoggerModule
 import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
 import expo.modules.kotlin.events.EventEmitter
@@ -42,6 +37,7 @@ import expo.modules.kotlin.providers.CurrentActivityProvider
 import expo.modules.kotlin.runtime.MainRuntime
 import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.runtime.WorkletRuntime
+import expo.modules.kotlin.services.ServicesProvider
 import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -55,7 +51,8 @@ import java.lang.ref.WeakReference
 class AppContext(
   modulesProvider: ModulesProvider,
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
-  reactContextHolder: WeakReference<ReactApplicationContext>
+  reactContextHolder: WeakReference<ReactApplicationContext>,
+  private val servicesProvider: ServicesProvider
 ) : CurrentActivityProvider {
   // The main context used in the app.
   // Modules attached to this context will be available on the main js context.
@@ -122,10 +119,6 @@ class AppContext(
       registry.register(NativeModulesProxyModule(), null)
       registry.register(JSLoggerModule(), null)
 
-      // Registering modules that were previously provided by legacy FileSystem module.
-      legacyModuleRegistry.registerInternalModule(FilePermissionModule())
-      legacyModuleRegistry.registerInternalModule(AppDirectoriesModule(this))
-
       registry.register(modulesProvider)
 
       logger.info("✅ AppContext was initialized")
@@ -163,30 +156,26 @@ class AppContext(
     get() = legacyModule()
 
   /**
-   * Provides access to the file system manager from the legacy module registry.
+   * Provides access to the file system service
    */
-  val filePermission: FilePermissionModuleInterface?
-    get() = legacyModule()
+  val filePermission by lazy { servicesProvider.filePermission() }
 
   /**
    * Provides access to the scoped directories from the legacy module registry.
    */
-  private val appDirectories: AppDirectoriesModuleInterface?
-    get() = legacyModule()
+  private val appDirectories by lazy { servicesProvider.appDirectories() }
 
   /**
    * A directory for storing user documents and other permanent files.
    */
   val persistentFilesDirectory: File
-    get() = appDirectories?.persistentFilesDirectory
-      ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
+    get() = appDirectories.persistentFilesDirectory
 
   /**
    * A directory for storing temporary files that can be removed at any time by the device's operating system.
    */
   val cacheDirectory: File
-    get() = appDirectories?.cacheDirectory
-      ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
+    get() = appDirectories.cacheDirectory
 
   /**
    * Provides access to the permissions manager from the legacy module registry

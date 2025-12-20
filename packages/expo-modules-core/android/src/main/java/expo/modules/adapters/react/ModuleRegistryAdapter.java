@@ -1,5 +1,7 @@
 package expo.modules.adapters.react;
 
+import android.content.Context;
+
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import expo.modules.BuildConfig;
@@ -22,6 +25,7 @@ import expo.modules.kotlin.CoreLoggerKt;
 import expo.modules.kotlin.ExpoBridgeModule;
 import expo.modules.kotlin.KotlinInteropModuleRegistry;
 import expo.modules.kotlin.ModulesProvider;
+import expo.modules.kotlin.services.ServicesProvider;
 import expo.modules.kotlin.views.ViewWrapperDelegateHolder;
 
 /**
@@ -130,9 +134,9 @@ public class ModuleRegistryAdapter implements ReactPackage {
     if (mModulesProxy == null) {
       ModuleRegistry registry = moduleRegistry != null ? moduleRegistry : mModuleRegistryProvider.get(reactContext);
       if (mModulesProvider != null) {
-        setModulesProxy(new NativeModulesProxy(reactContext, registry, mModulesProvider));
+        setModulesProxy(new NativeModulesProxy(reactContext, registry, mModulesProvider, getServicesProvider(reactContext)));
       } else {
-        setModulesProxy(new NativeModulesProxy(reactContext, registry));
+        setModulesProxy(new NativeModulesProxy(reactContext, registry, getServicesProvider(reactContext)));
       }
     }
 
@@ -141,5 +145,9 @@ public class ModuleRegistryAdapter implements ReactPackage {
     }
 
     return mModulesProxy;
+  }
+
+  public @NonNull ServicesProvider getServicesProvider(Context context) {
+    return new ServicesProvider(context);
   }
 }
