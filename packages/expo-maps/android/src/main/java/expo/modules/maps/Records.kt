@@ -281,7 +281,7 @@ data class Bounds (
 
     @Field
     val longitudeDelta: Double,
-)
+) : Record
 
 data class CameraMoveEvent(
   @Field
