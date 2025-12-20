@@ -45,7 +45,7 @@
 - [iOS] add usePreventZoomTransitionDismissal ([#41893](https://github.com/expo/expo/pull/41893) by [@Ubax](https://github.com/Ubax))
 - [iOS] expose image prop from Link.Menu and Toolbar.Menu ([#41883](https://github.com/expo/expo/pull/41883) by [@Ubax](https://github.com/Ubax))
 - use screen's synchronous layout updates by default in router ([#42154](https://github.com/expo/expo/pull/42154) by [@Ubax](https://github.com/Ubax))
-- Add support for `renderingMode` prop on native tabs icon ([#41750](https://github.com/expo/expo/pull/41750) by [@your-actual-username](https://github.com/your-actual-username))
+- Add support for `renderingMode` prop on native tabs icon ([#41788](https://github.com/expo/expo/pull/41788) by [@b-bot](https://github.com/b-bot))
 
 ### 🐛 Bug fixes
 
