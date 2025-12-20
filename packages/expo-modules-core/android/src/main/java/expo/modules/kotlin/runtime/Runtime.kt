@@ -8,7 +8,7 @@ import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.sharedobjects.ClassRegistry
 import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 
-abstract class RuntimeContext {
+abstract class Runtime {
   abstract val appContext: AppContext?
   abstract val reactContext: ReactApplicationContext?
   abstract val jsiContext: JSIContext

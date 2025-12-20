@@ -1,21 +1,21 @@
-#include "WorkletRuntimeHolder.h"
+#include "WorkletNativeRuntime.h"
 
 namespace expo {
 
-void WorkletRuntimeHolder::registerNatives() {
+void WorkletNativeRuntime::registerNatives() {
   registerHybrid({
-                   makeNativeMethod("initHybrid", WorkletRuntimeHolder::initHybrid),
+                   makeNativeMethod("initHybrid", WorkletNativeRuntime::initHybrid),
                  });
 }
 
-jni::local_ref<WorkletRuntimeHolder::jhybriddata> WorkletRuntimeHolder::initHybrid(
+jni::local_ref<WorkletNativeRuntime::jhybriddata> WorkletNativeRuntime::initHybrid(
   jni::alias_ref<jobject> jThis,
   jlong runtimePointer
 ) {
   return makeCxxInstance(runtimePointer);
 }
 
-WorkletRuntimeHolder::WorkletRuntimeHolder(jlong runtimePointer) {
+WorkletNativeRuntime::WorkletNativeRuntime(jlong runtimePointer) {
 #if WORKLETS_ENABLED
   auto *jsRuntime = reinterpret_cast<jsi::Runtime *>(runtimePointer);
   workletRuntime = worklets::WorkletRuntime::getWeakRuntimeFromJSIRuntime(*jsRuntime);

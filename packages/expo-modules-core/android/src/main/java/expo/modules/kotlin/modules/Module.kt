@@ -2,7 +2,7 @@ package expo.modules.kotlin.modules
 
 import android.os.Bundle
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.runtime.RuntimeContext
+import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.convertToString
 import expo.modules.kotlin.providers.AppContextProvider
 import expo.modules.kotlin.tracing.trace
@@ -15,8 +15,15 @@ abstract class Module : AppContextProvider {
   @Suppress("PropertyName")
   internal var _appContextHolder: WeakReference<AppContext> = WeakReference(null)
 
-  val runtimeContext: RuntimeContext
+  val runtime: Runtime
     get() = requireNotNull(_appContextHolder.get()?.hostingRuntimeContext) { "The module wasn't created! You can't access the hosting runtime context." }
+
+  @Deprecated(
+    message = "Use 'runtime' property instead.",
+    replaceWith = ReplaceWith("runtime")
+  )
+  val runtimeContext: Runtime
+    get() = runtime
 
   // region AppContextProvider
 

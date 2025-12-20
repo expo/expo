@@ -20,10 +20,10 @@ import java.lang.ref.WeakReference
 /**
  * A context that holds the state of modules bounded to the JS runtime.
  */
-class MainRuntimeContext(
+class MainRuntime(
   appContext: AppContext,
   val reactContextHolder: WeakReference<ReactApplicationContext>
-) : RuntimeContext() {
+) : Runtime() {
   private val appContextHolder = appContext.weak()
 
   override val appContext: AppContext?

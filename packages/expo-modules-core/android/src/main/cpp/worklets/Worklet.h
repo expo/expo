@@ -4,7 +4,7 @@
 
 #include "../JSIContext.h"
 #include "../JNIDeallocator.h"
-#include "WorkletRuntimeHolder.h"
+#include "WorkletNativeRuntime.h"
 
 #include <fbjni/fbjni.h>
 #include <worklets/SharedItems/Serializable.h>
@@ -31,11 +31,11 @@ public:
   );
 
   void schedule(
-    jni::alias_ref<WorkletRuntimeHolder::javaobject> workletRuntimeHolder
+    jni::alias_ref<WorkletNativeRuntime::javaobject> workletRuntimeHolder
   );
 
   void execute(
-    jni::alias_ref<WorkletRuntimeHolder::javaobject> workletRuntimeHolder
+    jni::alias_ref<WorkletNativeRuntime::javaobject> workletRuntimeHolder
   );
 private:
   friend HybridBase;

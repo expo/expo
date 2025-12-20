@@ -3,7 +3,7 @@ package expo.modules.kotlin.jni
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
-import expo.modules.kotlin.runtime.RuntimeContext
+import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedObjectId
 import java.lang.ref.WeakReference
@@ -17,7 +17,7 @@ import java.lang.ref.WeakReference
 @DoNotStrip
 class JSIContext @DoNotStrip internal constructor(
   @DoNotStrip private val mHybridData: HybridData,
-  val runtimeContextHolder: WeakReference<RuntimeContext>
+  val runtimeHolder: WeakReference<Runtime>
 ) : Destructible, AutoCloseable {
   /**
    * Evaluates given JavaScript source code.
@@ -60,13 +60,13 @@ class JSIContext @DoNotStrip internal constructor(
   @Suppress("unused")
   @DoNotStrip
   fun getJavaScriptModuleObject(name: String): JavaScriptModuleObject? {
-    return runtimeContextHolder.get()?.appContext?.registry?.getModuleHolder(name)?.jsObject
+    return runtimeHolder.get()?.appContext?.registry?.getModuleHolder(name)?.jsObject
   }
 
   @Suppress("unused")
   @DoNotStrip
   fun hasModule(name: String): Boolean {
-    return runtimeContextHolder.get()?.appContext?.registry?.hasModule(name) ?: false
+    return runtimeHolder.get()?.appContext?.registry?.hasModule(name) ?: false
   }
 
   /**
@@ -75,14 +75,14 @@ class JSIContext @DoNotStrip internal constructor(
   @Suppress("unused")
   @DoNotStrip
   fun getJavaScriptModulesName(): Array<String> {
-    return runtimeContextHolder.get()?.appContext?.registry?.registry?.keys?.toTypedArray()
+    return runtimeHolder.get()?.appContext?.registry?.registry?.keys?.toTypedArray()
       ?: emptyArray()
   }
 
   @Suppress("unused")
   @DoNotStrip
   fun registerSharedObject(native: Any, js: JavaScriptObject) {
-    runtimeContextHolder
+    runtimeHolder
       .get()
       ?.sharedObjectRegistry
       ?.add(native as SharedObject, js)
@@ -91,14 +91,14 @@ class JSIContext @DoNotStrip internal constructor(
   @Suppress("unused")
   @DoNotStrip
   fun getSharedObject(id: Int): JavaScriptObject? {
-    val runtimeContext = runtimeContextHolder.get() ?: return null
+    val runtimeContext = runtimeHolder.get() ?: return null
     return SharedObjectId(id).toJavaScriptObjectNull(runtimeContext)
   }
 
   @Suppress("unused")
   @DoNotStrip
   fun deleteSharedObject(id: Int) {
-    runtimeContextHolder
+    runtimeHolder
       .get()
       ?.sharedObjectRegistry
       ?.delete(SharedObjectId(id))
@@ -107,7 +107,7 @@ class JSIContext @DoNotStrip internal constructor(
   @Suppress("unused")
   @DoNotStrip
   fun registerClass(native: Class<*>, js: JavaScriptObject) {
-    runtimeContextHolder
+    runtimeHolder
       .get()
       ?.classRegistry
       ?.add(native, js)
@@ -116,7 +116,7 @@ class JSIContext @DoNotStrip internal constructor(
   @Suppress("unused")
   @DoNotStrip
   fun getJavascriptClass(native: Class<*>): JavaScriptObject? {
-    return runtimeContextHolder
+    return runtimeHolder
       .get()
       ?.classRegistry
       ?.toJavaScriptObject(native)
