@@ -125,13 +125,11 @@ For existing React Native apps, you must ensure the file is copied to the correc
 
 </ConfigReactNative>
 
-If you are using **Expo Prebuild**, you can use a [Config Plugin](https://docs.expo.dev/config-plugins/introduction/) to automatically move your file to these locations.
-
-**Usage:**
+#### Usage
 
 On iOS, the application bundle is read-only and direct access may be restricted due to sandboxing permissions. The recommended approach is to copy the file to a writable location (like `documentDirectory`) before reading it.
 
-```js
+```js App.js
 import * as FileSystem from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 
@@ -139,7 +137,7 @@ const readBundleFile = async () => {
   try {
     const fileName = 'example.txt';
 
-    // 1. Path inside the native bundle (read-only)
+    // Path inside the native bundle (read-only)
     const bundleFile = FileSystem.bundleDirectory + fileName;
 
     // Check if file exists
@@ -148,10 +146,6 @@ const readBundleFile = async () => {
       console.warn('File not found in native bundle');
       return;
     }
-
-    // --- Platform Differences ---
-    // iOS: must copy (bundle is read-only)
-    // Android: can read directly
 
     let fileToRead = bundleFile;
 
@@ -167,7 +161,7 @@ const readBundleFile = async () => {
       fileToRead = documentFile;
     }
 
-    // 2. Read the file
+    // Read the file
     const content = await FileSystem.readAsStringAsync(fileToRead);
     console.log(content);
   } catch (error) {
