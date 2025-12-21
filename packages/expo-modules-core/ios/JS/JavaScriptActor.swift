@@ -44,11 +44,15 @@ public actor JavaScriptActor: GlobalActor {
 
   /**
    Stops program execution if the current task is not executing on the JavaScript thread.
+   The precondition is also met when running tests and in single threaded environments.
    - Note: Its behavior is the same in both Debug and Release builds.
   */
   nonisolated public func preconditionThread() {
     // We must be careful as it relies on the thread name given by React Native.
-    precondition(Thread.current.name == JavaScriptActor.jsThreadName, "JavaScriptActor operations must be run on the JavaScript thread")
+    precondition(
+      Thread.current.name == JavaScriptActor.jsThreadName || !Thread.isMultiThreaded() || ProcessInfo.processInfo.processName == "xctest",
+      "JavaScriptActor operations must be run on the JavaScript thread"
+    )
   }
 
   /**
