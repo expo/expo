@@ -44,6 +44,7 @@ const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
 const navigationParams_1 = require("../navigationParams");
 const useScreens_1 = require("../useScreens");
 const stack_utils_1 = require("./stack-utils");
+const children_1 = require("../utils/children");
 const Protected_1 = require("../views/Protected");
 const Screen_1 = require("../views/Screen");
 const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
@@ -60,6 +61,17 @@ const isPreviewAction = (action) => !!action.payload &&
     'params' in action.payload &&
     typeof action.payload.params === 'object' &&
     !!(0, navigationParams_1.getInternalExpoRouterParams)(action.payload?.params ?? undefined)[navigationParams_1.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME];
+const getZoomTransitionIdFromAction = (action) => {
+    const allParams = !!action.payload && 'params' in action.payload && typeof action.payload.params === 'object'
+        ? action.payload.params
+        : undefined;
+    const internalParams = (0, navigationParams_1.getInternalExpoRouterParams)(allParams ?? undefined);
+    const val = internalParams[navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME];
+    if (val && typeof val === 'string') {
+        return val;
+    }
+    return undefined;
+};
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
  * When a screen has been uniquely identified, the Stack can only have one instance of that screen.
@@ -125,12 +137,17 @@ const stackRouterOverride = (original) => {
                         }
                     }
                     // START FORK
+                    let isPreloadedRoute = false;
                     if (isPreviewAction(action) && !route) {
                         route = state.preloadedRoutes.find((route) => route.name === action.payload.name && id === route.key);
+                        isPreloadedRoute = !!route;
                     }
                     // END FORK
                     if (!route) {
                         route = state.preloadedRoutes.find((route) => route.name === action.payload.name && id === getId?.({ params: route.params }));
+                        // START FORK
+                        isPreloadedRoute = !!route;
+                        // END FORK
                     }
                     let params;
                     if (action.type === 'NAVIGATE' && action.payload.merge && route) {
@@ -193,7 +210,8 @@ const stackRouterOverride = (original) => {
                             }
                             // If the routes length is the same as the state routes length, then we are navigating to a new route.
                             // Otherwise we are replacing an existing route.
-                            const key = routes.length === state.routes.length && !isPreviewAction(action)
+                            // For preloaded route, we want to use the same key, so that preloaded screen is used.
+                            const key = routes.length === state.routes.length && !isPreloadedRoute
                                 ? `${action.payload.name}-${(0, non_secure_1.nanoid)()}`
                                 : route.key;
                             routes.push({
@@ -237,6 +255,22 @@ const stackRouterOverride = (original) => {
                     };
                     if (actionSingularOptions) {
                         return filterSingular(result, getId);
+                    }
+                    const zoomTransitionId = getZoomTransitionIdFromAction(action);
+                    if (zoomTransitionId) {
+                        const lastRoute = result.routes[result.routes.length - 1];
+                        const key = lastRoute.key;
+                        const modifiedLastRoute = {
+                            ...lastRoute,
+                            params: {
+                                ...lastRoute.params,
+                                [navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: key,
+                            },
+                        };
+                        return {
+                            ...result,
+                            routes: [...result.routes.slice(0, -1), modifiedLastRoute],
+                        };
                     }
                     return result;
                     // return {
@@ -380,15 +414,15 @@ function mapProtectedScreen(props) {
         ...props,
         children: react_1.Children.toArray(props.children)
             .map((child, index) => {
-            if ((0, stack_utils_1.isChildOfType)(child, stack_utils_1.StackScreen)) {
+            if ((0, children_1.isChildOfType)(child, stack_utils_1.StackScreen)) {
                 const options = (0, stack_utils_1.appendScreenStackPropsToOptions)({}, child.props);
                 const { children, ...rest } = child.props;
                 return <Screen_1.Screen key={child.props.name} {...rest} options={options}/>;
             }
-            else if ((0, stack_utils_1.isChildOfType)(child, Protected_1.Protected)) {
+            else if ((0, children_1.isChildOfType)(child, Protected_1.Protected)) {
                 return <Protected_1.Protected key={`${index}-${props.guard}`} {...mapProtectedScreen(child.props)}/>;
             }
-            else if ((0, stack_utils_1.isChildOfType)(child, stack_utils_1.StackHeader)) {
+            else if ((0, children_1.isChildOfType)(child, stack_utils_1.StackHeader)) {
                 // Ignore Stack.Header, because it can be used to set header options for Stack
                 // and we use this function to process children of Stack, as well.
                 return null;
@@ -409,7 +443,7 @@ function mapProtectedScreen(props) {
 const Stack = Object.assign((props) => {
     const { isStackAnimationDisabled } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const screenOptionsWithCompositionAPIOptions = (0, react_1.useMemo)(() => {
-        const stackHeader = react_1.Children.toArray(props.children).find((child) => (0, stack_utils_1.isChildOfType)(child, stack_utils_1.StackHeader));
+        const stackHeader = react_1.Children.toArray(props.children).find((child) => (0, children_1.isChildOfType)(child, stack_utils_1.StackHeader));
         if (stackHeader) {
             const screenStackProps = { children: stackHeader };
             const currentOptions = props.screenOptions;

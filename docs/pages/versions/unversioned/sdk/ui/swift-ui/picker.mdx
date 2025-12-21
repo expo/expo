@@ -8,10 +8,8 @@ platforms: ['ios', 'tvos']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A picker component that allows users to select from a list of options with different display styles.
+Expo UI Picker matches the official SwiftUI [Picker API](https://developer.apple.com/documentation/swiftui/picker) and supports all picker styles via the [`pickerStyle`](modifiers/#pickerstylestyle) modifier.
 
 ## Installation
 
@@ -19,67 +17,101 @@ A picker component that allows users to select from a list of options with diffe
 
 ## Segmented picker
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="Picker component on iOS."
-      src="/static/images/expo-ui/segmentedPicker/ios.png"
-      className="max-w-[480px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { Host, Picker } from '@expo/ui/swift-ui';
+```tsx SegmentedPickerExample.tsx
+import { useState } from 'react';
+import { Host, Picker, Text } from '@expo/ui/swift-ui';
+import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 
+const options = ['Apple', 'Banana', 'Orange'];
+
+export default function SegmentedPickerExample() {
+  const [selectedTag, setSelectedTag] = useState(options[0]);
+
+  return (
     <Host matchContents>
       <Picker
-        options={['$', '$$', '$$$', '$$$$']}
-        selectedIndex={selectedIndex}
-        onOptionSelected={({ nativeEvent: { index } }) => {
-          setSelectedIndex(index);
-        }}
-        variant="segmented"
-      />
+        modifiers={[pickerStyle('segmented')]}
+        label="Select a fruit"
+        selection={selectedTag}
+        onSelectionChange={selection => {
+          setSelectedTag(selection);
+        }}>
+        {options.map(option => (
+          <Text key={option} modifiers={[tag(option)]}>
+            {option}
+          </Text>
+        ))}
+      </Picker>
     </Host>
-    ```
+  );
+}
+```
 
-  </Tab>
-</Tabs>
+## Menu picker
 
-> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/picker#Styling-pickers) for more information.
+```tsx MenuPickerExample.tsx
+import { useState } from 'react';
+import { Host, Picker, Text } from '@expo/ui/swift-ui';
+import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+
+const options = ['Apple', 'Banana', 'Orange'];
+
+export default function MenuPickerExample() {
+  const [selectedTag, setSelectedTag] = useState(options[0]);
+
+  return (
+    <Host matchContents>
+      <Picker
+        modifiers={[pickerStyle('menu')]}
+        label="Select a fruit"
+        selection={selectedTag}
+        onSelectionChange={selection => {
+          setSelectedTag(selection);
+        }}>
+        {options.map(option => (
+          <Text key={option} modifiers={[tag(option)]}>
+            {option}
+          </Text>
+        ))}
+      </Picker>
+    </Host>
+  );
+}
+```
 
 ## Wheel picker
 
 > **Warning** The wheel variant is not available on Apple TV.
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="Picker component on iOS."
-      src="/static/images/expo-ui/menuPicker/ios.png"
-      className="max-w-[480px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { Host, Picker } from '@expo/ui/swift-ui';
+```tsx WheelPickerExample.tsx
+import { useState } from 'react';
+import { Host, Picker, Text } from '@expo/ui/swift-ui';
+import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 
-    <Host style={{ height: 100 }}>
+const options = ['Apple', 'Banana', 'Orange'];
+
+export default function WheelPickerExample() {
+  const [selectedTag, setSelectedTag] = useState(options[0]);
+
+  return (
+    <Host matchContents>
       <Picker
-        options={['$', '$$', '$$$', '$$$$']}
-        selectedIndex={selectedIndex}
-        onOptionSelected={({ nativeEvent: { index } }) => {
-          setSelectedIndex(index);
-        }}
-        variant="wheel"
-      />
+        modifiers={[pickerStyle('wheel')]}
+        label="Select a fruit"
+        selection={selectedTag}
+        onSelectionChange={selection => {
+          setSelectedTag(selection);
+        }}>
+        {options.map(option => (
+          <Text key={option} modifiers={[tag(option)]}>
+            {option}
+          </Text>
+        ))}
+      </Picker>
     </Host>
-    ```
-
-  </Tab>
-</Tabs>
-
-> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/pickerstyle/wheel) for more information.
+  );
+}
+```
 
 ## API
 

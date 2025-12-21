@@ -1,15 +1,21 @@
-import { screen, act, fireEvent } from '@testing-library/react-native';
-import React from 'react';
-import { Button, View } from 'react-native';
+import { screen, act, fireEvent, waitFor } from '@testing-library/react-native';
+import React, { isValidElement, type ComponentProps } from 'react';
+import { Button, Text, View } from 'react-native';
 import {
   BottomTabsScreen as _BottomTabsScreen,
   type BottomTabsScreenProps,
 } from 'react-native-screens';
+import { SafeAreaView } from 'react-native-screens/experimental';
 
 import { HrefPreview } from '../../link/preview/HrefPreview';
 import { renderRouter, within } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
-import { type DrawableIcon, type SFSymbolIcon, type SrcIcon } from '../common/elements';
+import {
+  type DrawableIcon,
+  type MaterialIcon,
+  type SFSymbolIcon,
+  type SrcIcon,
+} from '../common/elements';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -17,6 +23,18 @@ jest.mock('react-native-screens', () => {
     ...(jest.requireActual('react-native-screens') as typeof import('react-native-screens')),
     BottomTabs: jest.fn(({ children }) => <View testID="BottomTabs">{children}</View>),
     BottomTabsScreen: jest.fn(({ children }) => <View testID="BottomTabsScreen">{children}</View>),
+  };
+});
+jest.mock('react-native-screens/experimental', () => {
+  const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  function RNSSafeAreaView({ children }: { children: React.ReactNode }) {
+    return <View testID="SafeAreaView">{children}</View>;
+  }
+  return {
+    ...(jest.requireActual(
+      'react-native-screens/experimental'
+    ) as typeof import('react-native-screens/experimental')),
+    SafeAreaView: RNSSafeAreaView,
   };
 });
 
@@ -99,6 +117,13 @@ it('when no options are passed, default ones are used', () => {
 });
 
 describe('Icons', () => {
+  let initialConsoleWarn: typeof console.warn;
+  let consoleWarnMock: jest.Mock;
+  beforeEach(() => {
+    initialConsoleWarn = console.warn;
+    consoleWarnMock = jest.fn();
+    console.warn = consoleWarnMock;
+  });
   it('when using Icon with drawable prop, it is passed as drawable', () => {
     renderRouter({
       _layout: () => (
@@ -116,6 +141,7 @@ describe('Icons', () => {
     expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
       icon: { android: { type: 'drawableResource', name: 'homepod' } },
     } as BottomTabsScreenProps);
+    expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
   it('when using Icon sf on Android, no value is passed', () => {
@@ -134,6 +160,7 @@ describe('Icons', () => {
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     expect(BottomTabsScreen.mock.calls[0][0].icon).toBeUndefined();
     expect(BottomTabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
+    expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
   it('uses last Icon drawable value when multiple are provided', () => {
@@ -155,6 +182,7 @@ describe('Icons', () => {
       icon: { android: { type: 'drawableResource', name: 'homepod' } },
       selectedIcon: undefined,
     } as BottomTabsScreenProps);
+    expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
   it('when selectedIconColor is provided, it is passed to screen', () => {
@@ -177,6 +205,7 @@ describe('Icons', () => {
         },
       },
     } as Partial<BottomTabsScreenProps>);
+    expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
   it('when selectedIconColor is provided in container and tab, the tab should use the tab color', () => {
@@ -212,6 +241,7 @@ describe('Icons', () => {
         },
       },
     } as Partial<BottomTabsScreenProps>);
+    expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -220,6 +250,10 @@ describe('Icons', () => {
     {
       drawable: '1234',
       src: { uri: 'some-uri' },
+      expectedIcon: { type: 'drawableResource', name: '1234' },
+    },
+    {
+      drawable: '1234',
       expectedIcon: { type: 'drawableResource', name: '1234' },
     },
     {
@@ -258,6 +292,97 @@ describe('Icons', () => {
       expect(screen.getByTestId('index')).toBeVisible();
       expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
       expect(BottomTabsScreen.mock.calls[0][0].icon?.android).toEqual(expectedIcon);
+      expect(consoleWarnMock).not.toHaveBeenCalled();
+    }
+  );
+
+  it.each([
+    { md: '10k' },
+    {
+      md: 'cable',
+      src: { uri: 'some-uri' },
+    },
+    { md: '10k', sf: 'square.fill' },
+    { md: '10k', sf: 'square.fill', src: { uri: 'some-uri' } },
+  ] as (MaterialIcon & SrcIcon & SFSymbolIcon)[])(
+    'For <Icon sf="$sf" src="$src" md="$md">, icon will render a md icon',
+    async ({ sf, src, md }) => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon sf={sf} src={src} md={md} />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      // Wrapping with waitFor to ensure material vector icon async loading is complete
+      // Otherwise testing library will complain "An update to Screen inside a test was not wrapped in act(...)"
+      // because vector icon loading triggers a state update
+      await waitFor(() => {
+        expect(screen.getByTestId('index')).toBeVisible();
+      });
+      expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
+      expect(BottomTabsScreen.mock.calls[0][0].icon?.android).toBeUndefined();
+      expect(BottomTabsScreen.mock.calls[1][0].icon?.android).toEqual({
+        // This is declared in packages/expo-font/mocks/ExpoFontUtils.ts
+        imageSource: { height: 0, uri: '', width: 0, scale: 1 },
+        type: 'imageSource',
+      });
+      expect(consoleWarnMock).not.toHaveBeenCalled();
+    }
+  );
+
+  it.each([
+    { md: '10k', drawable: undefined, expectedIcon: undefined, numberOfRenders: 2 },
+    {
+      md: 'cable',
+      drawable: 'ic_lock',
+      expectedIcon: { type: 'drawableResource', name: 'ic_lock' },
+      numberOfRenders: 1,
+    },
+    {
+      md: undefined,
+      drawable: 'ic_lock',
+      expectedIcon: { type: 'drawableResource', name: 'ic_lock' },
+      numberOfRenders: 1,
+    },
+  ] as (MaterialIcon &
+    DrawableIcon & {
+      expectedIcon: BottomTabsScreenProps['icon']['android'];
+      numberOfRenders: number;
+    })[])(
+    'For <Icon md="$md" drawable="$drawable">, icon will be $expectedIcon during first render and tabs will render $numberOfRenders time(s)',
+    async ({ md, drawable, numberOfRenders, expectedIcon }) => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon md={md} drawable={drawable} />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      // Wrapping with waitFor to ensure md vector icon async loading is complete
+      // Otherwise testing library will complain "An update to Screen inside a test was not wrapped in act(...)"
+      // because vector icon loading triggers a state update
+      await waitFor(() => {
+        expect(screen.getByTestId('index')).toBeVisible();
+      });
+      expect(BottomTabsScreen).toHaveBeenCalledTimes(numberOfRenders);
+      expect(BottomTabsScreen.mock.calls[0][0].icon?.android).toEqual(expectedIcon);
+      if (numberOfRenders > 1) {
+        expect(BottomTabsScreen.mock.calls[1][0].icon?.android).toEqual({
+          // This is declared in packages/expo-font/mocks/ExpoFontUtils.ts
+          imageSource: { height: 0, uri: '', width: 0, scale: 1 },
+          type: 'imageSource',
+        });
+      }
+      expect(consoleWarnMock).toHaveBeenCalledTimes(1);
     }
   );
 });
@@ -648,6 +773,51 @@ describe('Tab options', () => {
         },
       } as BottomTabsScreenProps);
     });
+  });
+
+  it.each([false, undefined])(
+    'When disableAutomaticContentInsets is %p, the content of the screen is wrapped with SafeAreaView',
+    (value) => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" disableAutomaticContentInsets={value} />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+      const children = BottomTabsScreen.mock.calls[0][0].children;
+      expect(isValidElement(children)).toBe(true);
+      // Type assertion to satisfy TypeScript
+      if (!isValidElement(children)) throw new Error();
+      expect(children.type).toBe(SafeAreaView);
+      expect(Object.keys(children.props)).toContain('edges');
+      expect((children.props as ComponentProps<typeof SafeAreaView>).edges).toStrictEqual({
+        bottom: true,
+      });
+    }
+  );
+  it('When disableAutomaticContentInsets is true, the content of the screen is not wrapped with SafeAreaView', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" disableAutomaticContentInsets />
+        </NativeTabs>
+      ),
+      index: () => <Text testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+    const children = BottomTabsScreen.mock.calls[0][0].children;
+    expect(React.Children.count(children)).toBe(1);
+    expect(isValidElement(children)).toBe(true);
+    // Type assertion to satisfy TypeScript
+    if (!isValidElement(children)) throw new Error();
+    expect(children.type).not.toBe(SafeAreaView);
   });
 });
 

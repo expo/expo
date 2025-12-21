@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.expo.modules.backgroundtask.processing</string>
+	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -56,10 +60,6 @@
 			</array>
 		</dict>
 	</array>
-  <key>NSBonjourServices</key>
-  <array>
-    <string>_preflight_check._tcp</string>
-  </array>
 	<key>CFBundleVersion</key>
 	<string>54.0.5</string>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
@@ -91,6 +91,10 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_preflight_check._tcp</string>
+	</array>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>Allow Expo projects to access your calendar</string>
 	<key>NSCalendarsUsageDescription</key>
@@ -154,18 +158,14 @@
 	<string>UIStatusBarStyleLightContent</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>UIUserInterfaceStyle</key>
 	<string>Automatic</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>BGTaskSchedulerPermittedIdentifiers</key>
-    <array>
-      <string>com.expo.modules.backgroundtask.processing</string>
-    </array>
 </dict>
 </plist>

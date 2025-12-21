@@ -39,6 +39,9 @@ import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
+import expo.modules.kotlin.runtime.MainRuntime
+import expo.modules.kotlin.runtime.Runtime
+import expo.modules.kotlin.runtime.WorkletRuntime
 import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -54,10 +57,17 @@ class AppContext(
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   reactContextHolder: WeakReference<ReactApplicationContext>
 ) : CurrentActivityProvider {
-
   // The main context used in the app.
   // Modules attached to this context will be available on the main js context.
-  val hostingRuntimeContext = RuntimeContext(this, reactContextHolder)
+  @Deprecated("Use AppContext.runtimeContext instead", ReplaceWith("runtime"))
+  val hostingRuntimeContext = MainRuntime(this, reactContextHolder)
+
+  val runtime: Runtime
+    get() = hostingRuntimeContext
+
+  private val uiRuntimeHolder = lazy { WorkletRuntime(this, reactContextHolder) }
+  val uiRuntime
+    get() = uiRuntimeHolder.value
 
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
@@ -131,7 +141,7 @@ class AppContext(
    * It will be a NOOP if the remote debugging was activated.
    */
   fun installJSIInterop() {
-    hostingRuntimeContext.installJSIContext()
+    hostingRuntimeContext.install()
   }
 
   /**
@@ -224,7 +234,7 @@ class AppContext(
    * @return true if there is an non-null, alive react native instance
    */
   val hasActiveReactInstance: Boolean
-    get() = hostingRuntimeContext.reactContext?.hasActiveReactInstance() ?: false
+    get() = hostingRuntimeContext.reactContext?.hasActiveReactInstance() == true
 
   /**
    * Provides access to the event emitter
@@ -234,7 +244,8 @@ class AppContext(
       ?: return null
     return KModuleEventEmitterWrapper(
       requireNotNull(registry.getModuleHolder(module)) {
-        "Cannot create an event emitter for the module that isn't present in the module registry."
+        val availableModulesNames = registry.registry.keys.joinToString(", ")
+        "Cannot create an event emitter for module ${module.javaClass} that isn't present in the module registry. Available modules: [$availableModulesNames]."
       },
       legacyEventEmitter,
       hostingRuntimeContext.reactContextHolder
@@ -265,6 +276,9 @@ class AppContext(
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
     hostingRuntimeContext.deallocate()
+    if (uiRuntimeHolder.isInitialized()) {
+      uiRuntime.deallocate()
+    }
     logger.info("✅ AppContext was destroyed")
   }
 
@@ -354,6 +368,7 @@ class AppContext(
   /**
    * Runs a code block on the JavaScript thread.
    */
+  @Deprecated("Use RuntimeContext.schedule instead", ReplaceWith("runtime.schedule(runnable)"))
   fun executeOnJavaScriptThread(runnable: Runnable) {
     hostingRuntimeContext.reactContext?.runOnJSQueueThread(runnable)
   }

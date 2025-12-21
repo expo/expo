@@ -13,17 +13,17 @@ class NotificationsBackgroundTaskConsumer: NSObject, EXTaskConsumerInterface {
   }
 
   func normalizeTaskResult(_ result: Any?) -> UInt {
-    guard let result = result as? Int else {
+    guard let result = result as? UInt else {
       return UIBackgroundFetchResult.noData.rawValue
     }
 
-    switch result {
-    case BackgroundNotificationResult.newData.rawValue:
-      return UIBackgroundFetchResult.newData.rawValue
-    case BackgroundNotificationResult.failed.rawValue:
-      return UIBackgroundFetchResult.failed.rawValue
+    return switch result {
+    case UIBackgroundFetchResult.newData.rawValue:
+      UIBackgroundFetchResult.newData.rawValue
+    case UIBackgroundFetchResult.failed.rawValue:
+      UIBackgroundFetchResult.failed.rawValue
     default:
-      return UIBackgroundFetchResult.noData.rawValue
+      UIBackgroundFetchResult.noData.rawValue
     }
   }
 
@@ -39,10 +39,4 @@ class NotificationsBackgroundTaskConsumer: NSObject, EXTaskConsumerInterface {
   func didUnregister() {
     self.task = nil
   }
-}
-
-enum BackgroundNotificationResult: Int, Enumerable {
-  case noData = 1
-  case newData = 2
-  case failed = 3
 }

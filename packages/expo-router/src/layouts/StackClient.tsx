@@ -26,6 +26,8 @@ import {
   getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import { SingularOptions, getSingularId } from '../useScreens';
@@ -34,8 +36,8 @@ import {
   StackHeader,
   StackScreen,
   appendScreenStackPropsToOptions,
-  isChildOfType,
 } from './stack-utils';
+import { isChildOfType } from '../utils/children';
 import { Protected, type ProtectedProps } from '../views/Protected';
 import { Screen } from '../views/Screen';
 
@@ -123,6 +125,19 @@ const isPreviewAction = (action: NavigationAction): action is ExpoNavigationActi
     INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME
   ];
 
+const getZoomTransitionIdFromAction = (action: NavigationAction): string | undefined => {
+  const allParams =
+    !!action.payload && 'params' in action.payload && typeof action.payload.params === 'object'
+      ? action.payload.params
+      : undefined;
+  const internalParams = getInternalExpoRouterParams(allParams ?? undefined);
+  const val = internalParams[INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME];
+  if (val && typeof val === 'string') {
+    return val;
+  }
+  return undefined;
+};
+
 /**
  * React Navigation matches a screen by its name or a 'getID' function that uniquely identifies a screen.
  * When a screen has been uniquely identified, the Stack can only have one instance of that screen.
@@ -207,10 +222,12 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           }
 
           // START FORK
+          let isPreloadedRoute = false;
           if (isPreviewAction(action) && !route) {
             route = state.preloadedRoutes.find(
               (route) => route.name === action.payload.name && id === route.key
             );
+            isPreloadedRoute = !!route;
           }
           // END FORK
 
@@ -219,6 +236,9 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
+            // START FORK
+            isPreloadedRoute = !!route;
+            // END FORK
           }
 
           let params;
@@ -285,8 +305,9 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
 
               // If the routes length is the same as the state routes length, then we are navigating to a new route.
               // Otherwise we are replacing an existing route.
+              // For preloaded route, we want to use the same key, so that preloaded screen is used.
               const key =
-                routes.length === state.routes.length && !isPreviewAction(action)
+                routes.length === state.routes.length && !isPreloadedRoute
                   ? `${action.payload.name}-${nanoid()}`
                   : route.key;
 
@@ -336,6 +357,23 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
 
           if (actionSingularOptions) {
             return filterSingular(result, getId);
+          }
+
+          const zoomTransitionId = getZoomTransitionIdFromAction(action);
+          if (zoomTransitionId) {
+            const lastRoute = result.routes[result.routes.length - 1];
+            const key = lastRoute.key;
+            const modifiedLastRoute: typeof lastRoute = {
+              ...lastRoute,
+              params: {
+                ...lastRoute.params,
+                [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: key,
+              },
+            };
+            return {
+              ...result,
+              routes: [...result.routes.slice(0, -1), modifiedLastRoute],
+            };
           }
 
           return result;

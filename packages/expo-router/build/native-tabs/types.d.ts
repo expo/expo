@@ -1,6 +1,6 @@
 import type { DefaultRouterOptions } from '@react-navigation/native';
 import type { PropsWithChildren } from 'react';
-import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
+import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import type { BottomTabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 export type NativeScreenProps = Partial<Omit<BottomTabsScreenProps, 'tabKey' | 'isFocused'>>;
@@ -33,6 +33,8 @@ export interface NativeTabOptions extends DefaultRouterOptions {
     hidden?: boolean;
     specialEffects?: BottomTabsScreenProps['specialEffects'];
     nativeProps?: NativeScreenProps;
+    disableAutomaticContentInsets?: boolean;
+    contentStyle?: Pick<ViewStyle, 'backgroundColor' | 'experimental_backgroundImage' | 'padding' | 'paddingTop' | 'paddingBottom' | 'paddingLeft' | 'paddingRight' | 'paddingBlock' | 'paddingBlockEnd' | 'paddingBlockStart' | 'paddingInline' | 'paddingInlineEnd' | 'paddingInlineStart' | 'paddingEnd' | 'paddingHorizontal' | 'paddingVertical' | 'paddingStart' | 'alignContent' | 'alignItems' | 'justifyContent' | 'flexDirection' | 'gap'>;
 }
 export type SymbolOrImageSource = {
     /**
@@ -87,6 +89,12 @@ export interface NativeTabsProps extends PropsWithChildren {
      */
     badgeBackgroundColor?: ColorValue;
     /**
+     * When set to `true`, hides the tab bar.
+     *
+     * @default false
+     */
+    hidden?: boolean;
+    /**
      * Specifies the minimize behavior for the tab bar.
      *
      * Available starting from iOS 26.
@@ -100,7 +108,7 @@ export interface NativeTabsProps extends PropsWithChildren {
      * - `onScrollUp` - the tab bar minimizes when scrolling up and expands
      *   when scrolling back down
      *
-     * @see The supported values correspond to the official [UIKit documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/minimizebehavior).
+     * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/minimizebehavior).
      *
      * @default automatic
      *
@@ -183,7 +191,10 @@ export interface NativeTabsProps extends PropsWithChildren {
      */
     badgeTextColor?: ColorValue;
 }
-export interface NativeTabsViewProps extends Omit<NativeTabsProps, 'labelStyle' | 'iconColor' | 'backgroundColor' | 'badgeBackgroundColor' | 'blurEffect' | 'indicatorColor' | 'badgeTextColor'> {
+export interface InternalNativeTabsProps extends NativeTabsProps {
+    nonTriggerChildren?: React.ReactNode;
+}
+export interface NativeTabsViewProps extends Omit<InternalNativeTabsProps, 'labelStyle' | 'iconColor' | 'backgroundColor' | 'badgeBackgroundColor' | 'blurEffect' | 'indicatorColor' | 'badgeTextColor'> {
     focusedIndex: number;
     tabs: NativeTabsViewTabItem[];
     onTabChange: (tabKey: string) => void;
@@ -263,10 +274,33 @@ export interface NativeTabTriggerProps {
      * properties will override the system icon, but the system-defined title cannot
      * be customized.
      *
-     * @see {@link https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem|UITabBarItem.SystemItem}
+     * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem).
      * @platform ios
      */
     role?: NativeTabsTabBarItemRole;
+    /**
+     * The default behavior differs between iOS and Android.
+     *
+     * On **Android**, the content of a native tabs screen is automatically wrapped in a `SafeAreaView`,
+     * and the **bottom** inset is applied. Other insets must be handled manually.
+     *
+     * On **iOS**, the first scroll view nested inside a native tabs screen has
+     * [automatic content inset adjustment](https://reactnative.dev/docs/scrollview#contentinsetadjustmentbehavior-ios) enabled
+     *
+     * When this property is set to `true`, automatic content inset adjustment is disabled for the screen
+     * and must be managed manually. You can use `SafeAreaView` from `react-native-screens/experimental`
+     * to handle safe area insets.
+     *
+     * @platform android
+     * @platform ios
+     */
+    disableAutomaticContentInsets?: boolean;
+    /**
+     * The style applied to the content of the tab
+     *
+     * Note: Only certain style properties are supported.
+     */
+    contentStyle?: NativeTabOptions['contentStyle'];
 }
 declare const SUPPORTED_TAB_BAR_ITEM_ROLES: readonly ["bookmarks", "contacts", "downloads", "favorites", "featured", "history", "more", "mostRecent", "mostViewed", "recents", "search", "topRated"];
 export type NativeTabsTabBarItemRole = (typeof SUPPORTED_TAB_BAR_ITEM_ROLES)[number];

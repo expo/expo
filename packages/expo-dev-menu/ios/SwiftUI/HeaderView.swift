@@ -1,4 +1,5 @@
 import SwiftUI
+import ExpoModulesCore
 
 struct HeaderView: View {
   @EnvironmentObject var viewModel: DevMenuViewModel

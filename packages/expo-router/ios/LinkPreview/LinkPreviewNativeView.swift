@@ -1,10 +1,11 @@
 import ExpoModulesCore
+import RNScreens
 
-class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
-  LinkPreviewModalDismissible, LinkPreviewMenuUpdatable {
+class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDelegate,
+  RNSDismissibleModalProtocol, LinkPreviewMenuUpdatable {
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
-  private var directChild: UIView?
+  var directChild: UIView?
   var nextScreenId: String? {
     didSet {
       performUpdateOfPreloadedView()
@@ -17,7 +18,9 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
   }
   private var actions: [LinkPreviewNativeActionView] = []
 
-  private let linkPreviewNativeNavigation = LinkPreviewNativeNavigation()
+  private lazy var linkPreviewNativeNavigation: LinkPreviewNativeNavigation = {
+    return LinkPreviewNativeNavigation(logger: logger)
+  }()
 
   let onPreviewTapped = EventDispatcher()
   let onPreviewTappedAnimationCompleted = EventDispatcher()
@@ -59,14 +62,18 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
         actions.append(actionView)
       } else {
         if directChild != nil {
-          print(
+          logger?.warn(
             "[expo-router] Found a second child of <Link.Trigger>. Only one is allowed. This is most likely a bug in expo-router."
           )
           return
         }
         directChild = childComponentView
         if let interaction = self.interaction {
-          childComponentView.addInteraction(interaction)
+          if let indirectTrigger = childComponentView as? LinkPreviewIndirectTriggerProtocol {
+            indirectTrigger.indirectTrigger?.addInteraction(interaction)
+          } else {
+            childComponentView.addInteraction(interaction)
+          }
         }
         super.mountChildComponentView(childComponentView, index: index)
       }
@@ -82,17 +89,21 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
       } else {
         if let directChild = directChild {
           if directChild != child {
-            print(
+            logger?.warn(
               "[expo-router] Unmounting unexpected child from <Link.Trigger>. This is most likely a bug in expo-router."
             )
             return
           }
           if let interaction = self.interaction {
-            directChild.removeInteraction(interaction)
+            if let indirectTrigger = directChild as? LinkPreviewIndirectTriggerProtocol {
+              indirectTrigger.indirectTrigger?.removeInteraction(interaction)
+            } else {
+              directChild.removeInteraction(interaction)
+            }
           }
           super.unmountChildComponentView(child, index: index)
         } else {
-          print(
+          logger?.warn(
             "[expo-router] No link child found to unmount. This is most likely a bug in expo-router."
           )
           return
@@ -123,16 +134,16 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
     configuration: UIContextMenuConfiguration,
     highlightPreviewForItemWithIdentifier identifier: any NSCopying
   ) -> UITargetedPreview? {
-    if let superview = self.superview {
-      if let directChild = self.directChild {
-        let target = UIPreviewTarget(
-          container: superview, center: self.convert(directChild.center, to: superview))
+    if let superview, let directChild {
+      let triggerView: UIView =
+        (directChild as? LinkPreviewIndirectTriggerProtocol)?.indirectTrigger ?? directChild
+      let target = UIPreviewTarget(
+        container: superview, center: self.convert(triggerView.center, to: superview))
 
-        let parameters = UIPreviewParameters()
-        parameters.backgroundColor = .clear
+      let parameters = UIPreviewParameters()
+      parameters.backgroundColor = .clear
 
-        return UITargetedPreview(view: directChild, parameters: parameters, target: target)
-      }
+      return UITargetedPreview(view: triggerView, parameters: parameters, target: target)
     }
     return nil
   }
@@ -167,10 +178,12 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
     willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration,
     animator: UIContextMenuInteractionCommitAnimating
   ) {
-    self.onPreviewTapped()
-    animator.addCompletion { [weak self] in
-      self?.linkPreviewNativeNavigation.pushPreloadedView()
-      self?.onPreviewTappedAnimationCompleted()
+    if preview != nil {
+      self.onPreviewTapped()
+      animator.addCompletion { [weak self] in
+        self?.linkPreviewNativeNavigation.pushPreloadedView()
+        self?.onPreviewTappedAnimationCompleted()
+      }
     }
   }
 
@@ -228,4 +241,8 @@ class PreviewViewController: UIViewController {
     super.viewDidAppear(animated)
     linkPreviewNativePreview.setInitialSize(bounds: self.view.bounds)
   }
+}
+
+protocol LinkPreviewIndirectTriggerProtocol {
+  var indirectTrigger: UIView? { get }
 }

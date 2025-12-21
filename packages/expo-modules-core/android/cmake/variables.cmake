@@ -1,15 +1,15 @@
 macro(createVarAsBoolToInt name value)
   if (${value})
     set(${name} "1")
-  else()
+  else ()
     set(${name} "0")
-  endif()
+  endif ()
 endmacro()
 
 createVarAsBoolToInt(USE_HERMES_INT ${USE_HERMES})
 createVarAsBoolToInt(UNIT_TEST_INT ${UNIT_TEST})
 
-set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+set(ANDROID_SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common/cpp)
 
 include("${REACT_NATIVE_DIR}/ReactAndroid/cmake-utils/folly-flags.cmake")
@@ -24,31 +24,29 @@ get_target_property(
   INTERFACE_INCLUDE_DIRECTORIES
 )
 
-set(ADDITIONAL_CXX_FLAGS "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}")
+set(ADDITIONAL_CXX_FLAGS -DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION})
+# REACT_NATIVE_MINOR_VERSION is used by worklets headers
+set(ADDITIONAL_CXX_FLAGS ${ADDITIONAL_CXX_FLAGS} -DREACT_NATIVE_MINOR_VERSION=${REACT_NATIVE_TARGET_VERSION})
+
 set(OPTIMIZATION_FLAGS "-O2")
 if (${NATIVE_DEBUG})
   set(ADDITIONAL_CXX_FLAGS "${ADDITIONAL_CXX_FLAGS} -g")
   set(OPTIMIZATION_FLAGS "-O0")
-endif()
-
-set(NEW_ARCHITECTURE_COMPILE_OPTIONS "")
-if (IS_NEW_ARCHITECTURE_ENABLED)
-  set(NEW_ARCHITECTURE_COMPILE_OPTIONS -DIS_NEW_ARCHITECTURE_ENABLED=1 -DRN_FABRIC_ENABLED=1 -DRN_SERIALIZABLE_STATE=1)
-endif()
+endif ()
 
 if (${UNIT_TEST})
   if (${USE_HERMES})
     find_package(hermes-engine REQUIRED CONFIG)
     set(JSEXECUTOR_LIB hermes-engine::hermesvm)
-  else()
+  else ()
     set(JSEXECUTOR_LIB ReactAndroid::jscexecutor)
-  endif()
-else()
+  endif ()
+else ()
   set(JSEXECUTOR_LIB "")
-endif()
+endif ()
 
 if (REACT_NATIVE_WORKLETS_DIR)
   set(WORKLETS_INTEGRATION_COMPILE_OPTIONS "-DWORKLETS_ENABLED=1")
-else()
+else ()
   set(WORKLETS_INTEGRATION_COMPILE_OPTIONS "")
-endif()
+endif ()

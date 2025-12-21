@@ -12,6 +12,7 @@
 #import <ExpoModulesCore/ExpoModulesCore.h>
 #import <ExpoModulesCore/ExpoModulesCore.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
+#import <ExpoModulesCore/EXHostWrapper.h>
 #import <ExpoModulesCore/EXCameraInterface.h>
 #import <ExpoModulesCore/EXConstantsInterface.h>
 #import <ExpoModulesCore/EXFaceDetectorManagerInterface.h>

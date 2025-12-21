@@ -11,16 +11,30 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix issue where launch is called twice on the same database instance. ([#41152](https://github.com/expo/expo/pull/41152) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] forward `PROJECT_ROOT` env var to create updates resources script ([#41418](https://github.com/expo/expo/pull/41418) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
 - [Android] Migrated from `kotlinOptions` to `compilerOptions` DSL. ([#39794](https://github.com/expo/expo/pull/39794) by [@huextrat](https://github.com/huextrat))
 - [android] Remove references to reactNativeHost ([#40182](https://github.com/expo/expo/pull/40182) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Reverted "Removed Detox testing workaround code on Android." ([#41204](https://github.com/expo/expo/pull/41204) by [@kudo](https://github.com/kudo))
+- Remove unused `js-yaml` dependency. ([#41202](https://github.com/expo/expo/pull/41202) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 29.0.14 - 2025-12-04
+
+### 💡 Others
+
+- Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
+
+## 29.0.13 - 2025-11-21
+
+### 🐛 Bug fixes
+
+- [Android] Fix issue where launch is called twice on the same database instance. ([#41152](https://github.com/expo/expo/pull/41152) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 29.0.11 - 2025-09-18
 

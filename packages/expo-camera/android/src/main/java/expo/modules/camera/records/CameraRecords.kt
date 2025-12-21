@@ -50,12 +50,14 @@ enum class VideoQuality(val value: String) : Enumerable {
 enum class FlashMode(val value: String) : Enumerable {
   AUTO("auto"),
   ON("on"),
-  OFF("off");
+  OFF("off"),
+  SCREEN("screen");
 
   fun mapToLens() = when (this) {
     AUTO -> ImageCapture.FLASH_MODE_AUTO
     OFF -> ImageCapture.FLASH_MODE_OFF
     ON -> ImageCapture.FLASH_MODE_ON
+    SCREEN -> ImageCapture.FLASH_MODE_SCREEN
   }
 }
 
@@ -67,6 +69,15 @@ enum class CameraMode(val value: String) : Enumerable {
 enum class FocusMode(val value: String) : Enumerable {
   ON("on"),
   OFF("off")
+}
+
+enum class VideoStabilizationMode(val value: String) : Enumerable {
+  OFF("off"),
+  STANDARD("standard"),
+  CINEMATIC("cinematic"),
+  AUTO("auto");
+
+  fun isEnabled() = this != OFF
 }
 
 data class BarcodeSettings(

@@ -6,6 +6,7 @@ on:
     branches: [main, 'sdk-*']
     paths:
       - .github/workflows/test-suite.yml
+      - .github/actions/use-android-emulator/action.yml
       - apps/bare-expo/**
       - apps/test-suite/**
       - packages/**
@@ -14,6 +15,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/test-suite.yml
+      - .github/actions/use-android-emulator/action.yml
       - apps/bare-expo/**
       - apps/test-suite/**
       - packages/**
@@ -299,6 +301,8 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
+      - name: 🧹 Cleanup GitHub Linux runner disk space
+        uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:

@@ -607,6 +607,24 @@ export declare class ImageNativeModule extends NativeModule {
   Image: typeof ImageRef;
 
   loadAsync(source: ImageSource, options?: ImageLoadOptions): Promise<ImageRef>;
+
+  prefetch(
+    urls: string[],
+    cachePolicy: ImagePrefetchOptions['cachePolicy'],
+    headers?: Record<string, string>
+  ): Promise<boolean>;
+
+  clearMemoryCache(): Promise<boolean>;
+  clearDiskCache(): Promise<boolean>;
+
+  configureCache(config: ImageCacheConfig): void;
+  getCachePathAsync(cacheKey: string): Promise<string | null>;
+
+  generateBlurhashAsync(
+    source: string | ImageRef,
+    numberOfComponents: [number, number] | { width: number; height: number }
+  ): Promise<string | null>;
+  generateThumbhashAsync(source: string | ImageRef): Promise<string>;
 }
 
 /**

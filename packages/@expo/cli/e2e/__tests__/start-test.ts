@@ -99,7 +99,12 @@ describeSkipWin('server', () => {
   beforeEach(async () => {
     expo.options.cwd = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank', {
       // TODO(@hassankhan, @krystofwoldrich): remove all linked after publishing
-      linkExpoPackages: ['@expo/router-server', '@expo/log-box', 'expo'],
+      linkExpoPackages: [
+        '@expo/router-server',
+        '@expo/log-box',
+        'expo',
+        '@expo/local-build-cache-provider',
+      ],
     });
     await fs.promises.rm(path.join(projectRoot, '.expo'), { force: true, recursive: true });
     await expo.startAsync();

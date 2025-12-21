@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import SwiftUI
-import Combine
 
 // swiftlint:disable closure_body_length
 
@@ -28,7 +27,6 @@ struct DevServersView: View {
   @Binding var showingInfoDialog: Bool
   @State private var showingURLInput = false
   @State private var urlText = ""
-  @State private var cancellables = Set<AnyCancellable>()
 
   private func connectToURL() {
     if !urlText.isEmpty {
@@ -65,10 +63,10 @@ struct DevServersView: View {
       }
     }
     .onAppear {
-      startServerDiscovery()
+      viewModel.startServerDiscovery()
     }
     .onDisappear {
-      cancellables.removeAll()
+      viewModel.stopServerDiscovery()
     }
   }
 
@@ -94,7 +92,9 @@ struct DevServersView: View {
 
       if showingURLInput {
         TextField("http://10.0.0.25:8081", text: $urlText)
+        #if !os(macOS)
           .autocapitalization(.none)
+        #endif
           .disableAutocorrection(true)
           .padding(.horizontal, 16)
           .padding(.vertical, 12)
@@ -154,16 +154,6 @@ struct DevServersView: View {
     }
     .disabled(urlText.isEmpty)
     .buttonStyle(PlainButtonStyle())
-  }
-
-  private func startServerDiscovery() {
-    Timer.publish(every: 2.0, on: .main, in: .common)
-      .autoconnect()
-      .receive(on: DispatchQueue.global(qos: .background))
-      .sink { [weak viewModel] _ in
-        viewModel?.discoverDevServers()
-      }
-      .store(in: &cancellables)
   }
 }
 

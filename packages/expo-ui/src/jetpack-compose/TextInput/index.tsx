@@ -1,6 +1,5 @@
 import { requireNativeView } from 'expo';
 import { Ref } from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
 
 import { ExpoModifier, ViewEvent } from '../../types';
 
@@ -18,10 +17,6 @@ export type TextInputProps = {
    * Can be used for imperatively setting text on the TextInput component.
    */
   ref?: Ref<TextInputRef>;
-  /**
-   * Additional styles to apply to the TextInput.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * Initial value that the TextInput displays when being mounted. As the TextInput is an uncontrolled component, change the key prop if you need to change the text value.
    */
@@ -119,5 +114,5 @@ function transformTextInputProps(props: TextInputProps): NativeTextInputProps {
  * Renders a `TextInput` component.
  */
 export function TextInput(props: TextInputProps) {
-  return <TextInputNativeView {...transformTextInputProps(props)} style={props.style} />;
+  return <TextInputNativeView {...transformTextInputProps(props)} />;
 }

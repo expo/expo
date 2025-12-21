@@ -41,16 +41,18 @@ const hooks_1 = require("../hooks");
 const BaseExpoRouterLink_1 = require("./BaseExpoRouterLink");
 const InternalLinkPreviewContext_1 = require("./InternalLinkPreviewContext");
 const elements_1 = require("./elements");
+const href_1 = require("./href");
 const LinkPreviewContext_1 = require("./preview/LinkPreviewContext");
 const native_1 = require("./preview/native");
 const useNextScreenId_1 = require("./preview/useNextScreenId");
+const children_1 = require("../utils/children");
 const url_1 = require("../utils/url");
 const isPad = react_native_1.Platform.OS === 'ios' && react_native_1.Platform.isPad;
 function LinkWithPreview({ children, ...rest }) {
     const router = (0, hooks_1.useRouter)();
     const { setOpenPreviewKey } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = (0, react_1.useState)(false);
-    const hrefWithoutQuery = String(rest.href).split('?')[0];
+    const hrefWithoutQuery = (0, href_1.resolveHref)(rest.hrefForPreviewNavigation).split('?')[0];
     const prevHrefWithoutQuery = (0, react_1.useRef)(hrefWithoutQuery);
     (0, react_1.useEffect)(() => {
         if (isCurrentPreviewOpen) {
@@ -73,9 +75,9 @@ function LinkWithPreview({ children, ...rest }) {
             }
         }
     }, [rest.href, rest.replace]);
-    const triggerElement = react_1.default.useMemo(() => getFirstChildOfType(children, elements_1.LinkTrigger), [children]);
-    const menuElement = react_1.default.useMemo(() => getFirstChildOfType(children, elements_1.LinkMenu), [children]);
-    const previewElement = react_1.default.useMemo(() => getFirstChildOfType(children, elements_1.LinkPreview), [children]);
+    const triggerElement = react_1.default.useMemo(() => (0, children_1.getFirstChildOfType)(children, elements_1.LinkTrigger), [children]);
+    const menuElement = react_1.default.useMemo(() => (0, children_1.getFirstChildOfType)(children, elements_1.LinkMenu), [children]);
+    const previewElement = react_1.default.useMemo(() => (0, children_1.getFirstChildOfType)(children, elements_1.LinkPreview), [children]);
     if ((previewElement || menuElement) && !triggerElement) {
         if (process.env.NODE_ENV !== 'production') {
             throw new Error('When you use Link.Preview, you must use Link.Trigger to specify the trigger element.');
@@ -97,7 +99,7 @@ function LinkWithPreview({ children, ...rest }) {
     return (<native_1.NativeLinkPreview nextScreenId={isPad ? undefined : nextScreenId} tabPath={isPad ? undefined : tabPathValue} onWillPreviewOpen={() => {
             if (hasPreview) {
                 isPreviewTapped.current = false;
-                prefetch(rest.href);
+                prefetch(rest.hrefForPreviewNavigation);
                 setIsCurrenPreviewOpen(true);
             }
         }} onPreviewWillClose={() => {
@@ -111,22 +113,19 @@ function LinkWithPreview({ children, ...rest }) {
             }
         }} onPreviewDidClose={() => {
             if (hasPreview && isPreviewTapped.current && isPad) {
-                router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
+                router.navigate(rest.hrefForPreviewNavigation, { __internal__PreviewKey: nextScreenId });
             }
         }} onPreviewTapped={() => {
             isPreviewTapped.current = true;
             if (!isPad) {
-                router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
+                router.navigate(rest.hrefForPreviewNavigation, { __internal__PreviewKey: nextScreenId });
             }
         }} style={{ display: 'contents' }} disableForceFlatten>
-      <InternalLinkPreviewContext_1.InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
+      <InternalLinkPreviewContext_1.InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.hrefForPreviewNavigation }}>
         <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref}/>
         {preview}
         {menuElement}
       </InternalLinkPreviewContext_1.InternalLinkPreviewContext>
     </native_1.NativeLinkPreview>);
-}
-function getFirstChildOfType(children, type) {
-    return react_1.default.Children.toArray(children).find((child) => (0, react_1.isValidElement)(child) && child.type === type);
 }
 //# sourceMappingURL=LinkWithPreview.js.map

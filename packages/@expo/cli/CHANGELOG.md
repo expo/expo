@@ -2,9 +2,12 @@
 
 ## Unpublished
 
+- Clarify Expo Go instructions for scanning QR Code. ([#34811](https://github.com/expo/expo/pull/34811) by [@betomoedano](https://github.com/betomoedano))
+
 ### 🛠 Breaking changes
 
 - Drop `EXPO_USE_FAST_RESOLVER` flag and implementation ([#40673](https://github.com/expo/expo/pull/40673) by [@kitten](https://github.com/kitten))
+- Update to `tar@^7.5.2` ([#40732](https://github.com/expo/expo/pull/40732) by [@kitten](https://github.com/kitten))
 
 ### 🎉 New features
 
@@ -16,9 +19,15 @@
 
 ### 🐛 Bug fixes
 
+- clean up hanging processes at the end of `expo export` better. ([#41692](https://github.com/expo/expo/pull/41692) by [@EvanBacon](https://github.com/EvanBacon))
 - refactor launching Expo Go on Android ([#40020](https://github.com/expo/expo/pull/40020) by [@vonovak](https://github.com/vonovak))
 - only skip dependency validation for `EXPO_NO_DEPENDENCY_VALIDATION=1` ([#40043](https://github.com/expo/expo/pull/40043) by [@kitten](https://github.com/kitten))
-- Fix RSC `[...rsc]+api.ts` template path resolution ([#40760](https://github.com/expo/expo/pull/40760) by [@kitten](https://github.com/kitten))
+- Report stack traces on unexpected `TransformerError`s and `SyntaxError`s from Metro ([#41468](https://github.com/expo/expo/pull/41468) by [@kitten](https://github.com/kitten))
+- resolve "Illegal invocation" errors in `workerd` runtime ([#41502](https://github.com/expo/expo/pull/41502) by [@hassankhan](https://github.com/hassankhan))
+- Fix running iOS builds on device without available simulators ([#41524](https://github.com/expo/expo/pull/41524) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fix `expo install` not auto-adding config plugins for scoped packages ([#41613](https://github.com/expo/expo/pull/41613) by [@kitten](https://github.com/kitten))
+- Fix `metro-runtime/src/modules/empty-module.js` in RSC middleware ([#41687](https://github.com/expo/expo/pull/41687) by [@kitten](https://github.com/kitten))
+- Pass empty `nodeModulesPaths` when applying autolinking and fallback resolution to Metro resolver ([#41703](https://github.com/expo/expo/pull/41703) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
@@ -28,12 +37,54 @@
 - Migrate RSC logic from `expo-router` to `@expo/router-server` ([#40484](https://github.com/expo/expo/pull/40484) by [@hassankhan](https://github.com/hassankhan))
 - Migrate typed routes logic from `expo-router` to `@expo/router-server` ([#40576](https://github.com/expo/expo/pull/40576) by [@hassankhan](https://github.com/hassankhan))
 - Deduplicate shared types across `@expo/cli`, `@expo/router-server`, `expo-server` ([#40614](https://github.com/expo/expo/pull/40614) by [@hassankhan](https://github.com/hassankhan))
-- Alias `transformer.asyncRequireModulePath` via Node resolution, when provided ([#40584](https://github.com/expo/expo/pull/40584) by [@kitten](https://github.com/kitten))
-- Added MCP server handshaking and graceful shutdown. ([#40660](https://github.com/expo/expo/pull/40660) by [@kudo](https://github.com/kudo))
+- [Internal] Use local monorepo template for `expo/expo` development ([#41383](https://github.com/expo/expo/pull/41383) by [@kitten](https://github.com/kitten))
+- Replace type declaration override for `@expo/config-types` with cast ([#41453](https://github.com/expo/expo/pull/41453) by [@kitten](https://github.com/kitten))
+- [Internal] add `Async` suffix to `exportMiddleware` and `exportServerRoute` ([#41443](https://github.com/expo/expo/pull/41443) by [@hassankhan](https://github.com/hassankhan))
+- Skip adding unnecessary CORS response header for `localhost` requests ([#41542](https://github.com/expo/expo/pull/41542) by [@kitten](https://github.com/kitten))
+- Embed `/_expo/touch` templates ([#41541](https://github.com/expo/expo/pull/41541) by [@kitten](https://github.com/kitten))
+- Bump to `@expo/metro@54.2.0` and `metro@0.83.3` ([#41142](https://github.com/expo/expo/pull/41142) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.83.x. ([#41564](https://github.com/expo/expo/pull/41564) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 📚 3rd party library updates
+
+## 54.0.18 - 2025-12-05
+
+### 📚 3rd party library updates
+
+- Bumped `@expo/devcert@1.2.1`. ([#41438](https://github.com/expo/expo/pull/41438) by [@kudo](https://github.com/kudo))
+
+## 54.0.17 - 2025-12-04
+
+### 🐛 Bug fixes
+
+- Fix updated import wrapper to handle absolute paths ([#41349](https://github.com/expo/expo/pull/41349) by [@TheAmphibianX](https://github.com/TheAmphibianX))
+
+### 💡 Others
+
+- Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
+- Use `@expo/mcp-tunnel` from `expo-mcp`. ([#41276](https://github.com/expo/expo/pull/41276) by [@kudo](https://github.com/kudo))
+- Allow MCP tunnel starting in background tasks. ([#41359](https://github.com/expo/expo/pull/41359) by [@kudo](https://github.com/kudo))
+
+## 54.0.16 - 2025-11-07
+
+### 🐛 Bug fixes
+
+- Fix RSC `[...rsc]+api.ts` template path resolution ([#40760](https://github.com/expo/expo/pull/40760) by [@kitten](https://github.com/kitten))
+
+## 54.0.15 - 2025-11-03
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.14 - 2025-10-28
+
+### 💡 Others
+
+- Alias `transformer.asyncRequireModulePath` via Node resolution, when provided ([#40584](https://github.com/expo/expo/pull/40584) by [@kitten](https://github.com/kitten))
+- Added MCP server handshaking and graceful shutdown. ([#40660](https://github.com/expo/expo/pull/40660) by [@kudo](https://github.com/kudo))
 
 ## 54.0.13 - 2025-10-21
 

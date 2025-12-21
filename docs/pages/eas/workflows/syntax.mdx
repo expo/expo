@@ -822,6 +822,19 @@ jobs:
       - run: echo "${{ replaceAll(github.ref_name, '/', '-') }}"
 ```
 
+#### `substring(input, start, end)`
+
+Extracts a substring from `input` starting at `start` and ending at `end`. If `end` is not provided, the substring is extracted from `start` to the end of `input`. Uses [`String#substring`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substring) under the hood.
+
+Example:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - run: echo "${{ substring(github.ref_name, 0, 50) }}"
+```
+
 ## Pre-packaged jobs
 
 ### `jobs.<job_id>.type`
@@ -1015,6 +1028,7 @@ jobs:
       external_groups: string[] # optional
       changelog: string # optional
       submit_beta_review: boolean # optional
+      wait_processing_timeout_seconds: number # optional, default: 1800 (30 minutes)
 ```
 
 This job outputs the following properties:
@@ -1058,7 +1072,7 @@ This job outputs the following properties:
 
 Runs [Maestro](https://maestro.dev/) tests on a build. See [Maestro job documentation](/eas/workflows/pre-packaged-jobs#maestro) for detailed information and examples.
 
-> **important** Maestro tests are experimental and may experience flakiness.
+> **important** Maestro tests are in [alpha](/more/release-statuses/#alpha).
 
 ```yaml
 jobs:

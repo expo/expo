@@ -1,6 +1,6 @@
 import { usePreventRemove } from '@react-navigation/core';
 import { screen } from '@testing-library/react-native';
-import React from 'react';
+import React, { isValidElement } from 'react';
 import { Button, View } from 'react-native';
 import {
   BottomTabsScreen as _BottomTabsScreen,
@@ -14,6 +14,7 @@ import { Redirect } from '../../link/Redirect';
 import { act, fireEvent, renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView } from '../NativeTabsView';
+import { BottomAccessoryPlacementContext } from '../hooks';
 import {
   SUPPORTED_BLUR_EFFECTS,
   SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
@@ -543,5 +544,59 @@ describe('Misc', () => {
 
     router.navigate('/stack');
     expect(screen.getByTestId('stack-index')).toBeVisible();
+  });
+
+  it('passes the bottom accessory to NativeTabsView', () => {
+    const BottomAccessoryContent = jest.fn(() => <View testID="bottom-accessory" />);
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.BottomAccessory>
+            <BottomAccessoryContent />
+          </NativeTabs.BottomAccessory>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabs).toHaveBeenCalledTimes(1);
+    expect(BottomTabs.mock.calls[0][0].bottomAccessory).toBeDefined();
+
+    const bottomAccessoryFn = BottomTabs.mock.calls[0][0].bottomAccessory!;
+    const regularRender = bottomAccessoryFn('regular');
+    const inlineRender = bottomAccessoryFn('inline');
+
+    expect(isValidElement(regularRender)).toBe(true);
+    // To satisfy TypeScript
+    if (!isValidElement(regularRender)) throw new Error();
+    expect(regularRender.type === BottomAccessoryPlacementContext).toBe(true);
+
+    expect(isValidElement(inlineRender)).toBe(true);
+    // To satisfy TypeScript
+    if (!isValidElement(inlineRender)) throw new Error();
+    expect(inlineRender.type === BottomAccessoryPlacementContext).toBe(true);
+  });
+
+  it.each([
+    { hidden: true, expected: true },
+    { hidden: false, expected: false },
+    { hidden: undefined, expected: undefined },
+  ])('passes hidden=$hidden prop to BottomTabs', ({ hidden, expected }) => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs hidden={hidden}>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="second" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen.getByTestId('second')).toBeVisible();
+    expect(BottomTabs).toHaveBeenCalledTimes(1);
+    expect(BottomTabs.mock.calls[0][0].tabBarHidden).toBe(expected);
   });
 });

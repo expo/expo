@@ -9,6 +9,7 @@ export function getConnectionInfo() {
         protocolVersion: PROTOCOL_VERSION,
         sender: 'browser',
         devServer: devServerQuery || host,
+        useWss: window.location.protocol === 'https:',
     };
 }
 //# sourceMappingURL=getConnectionInfo.js.map

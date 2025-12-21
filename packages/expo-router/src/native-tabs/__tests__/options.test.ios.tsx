@@ -143,6 +143,8 @@ it('when no options are passed, default ones are used', () => {
     indicatorColor: undefined,
     badgeTextColor: undefined,
     nativeProps: undefined,
+    disableAutomaticContentInsets: undefined,
+    contentStyle: undefined,
   } as NativeTabOptions);
 });
 
@@ -687,6 +689,27 @@ describe('Tab options', () => {
       } as NativeTabOptions);
     });
   });
+
+  it.each([true, false, undefined])(
+    'When disableAutomaticContentInsets is %p, passes it down',
+    (value) => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" disableAutomaticContentInsets={value} />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      const call = NativeTabsView.mock.calls[0][0];
+      expect(call.tabs[0].options).toMatchObject({
+        disableAutomaticContentInsets: value,
+      } as NativeTabOptions);
+    }
+  );
 });
 
 describe('Dynamic options', () => {

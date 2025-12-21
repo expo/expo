@@ -21,6 +21,7 @@ import {
 } from '@react-navigation/native-stack';
 import * as React from 'react';
 
+import { DescriptorsContext } from './descriptors-context';
 import { useLinkPreviewContext } from '../../link/preview/LinkPreviewContext';
 
 function NativeStackNavigator({
@@ -63,10 +64,19 @@ function NativeStackNavigator({
           if (state.index > 0 && isFocused && !(e as EventArg<'tabPress', true>).defaultPrevented) {
             // When user taps on already focused tab and we're inside the tab,
             // reset the stack to replicate native behaviour
-            navigation.dispatch({
-              ...StackActions.popToTop(),
-              target: state.key,
-            });
+            // START FORK
+            // navigation.dispatch({
+            //   ...StackActions.popToTop(),
+            //   target: state.key,
+            // });
+            // The popToTop will be automatically triggered on native side for native tabs
+            if (e.data?.__internalTabsType !== 'native') {
+              navigation.dispatch({
+                ...StackActions.popToTop(),
+                target: state.key,
+              });
+            }
+            // END FORK
           }
         });
       }),
@@ -159,20 +169,26 @@ function NativeStackNavigator({
   // END FORK
 
   return (
-    <NavigationContent>
-      <NativeStackView
-        {...rest}
-        // START FORK
-        state={computedState}
-        navigation={navigationWrapper}
-        descriptors={computedDescriptors}
-        // state={state}
-        // navigation={navigation}
-        // descriptors={descriptors}
-        // END FORK
-        describe={describe}
-      />
-    </NavigationContent>
+    // START FORK
+    <DescriptorsContext value={descriptors}>
+      {/* END FORK */}
+      <NavigationContent>
+        <NativeStackView
+          {...rest}
+          // START FORK
+          state={computedState}
+          navigation={navigationWrapper}
+          descriptors={computedDescriptors}
+          // state={state}
+          // navigation={navigation}
+          // descriptors={descriptors}
+          // END FORK
+          describe={describe}
+        />
+      </NavigationContent>
+      {/* START FORK */}
+    </DescriptorsContext>
+    // END FORK
   );
 }
 
