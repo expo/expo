@@ -3,7 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class TextViewProps: UIBaseViewProps {
+public final class TextViewProps: UIBaseViewProps {
   @Field var text: String = ""
   @Field var weight: FontWeight?
   @Field var design: FontDesign?
@@ -15,13 +15,16 @@ internal final class TextViewProps: UIBaseViewProps {
   override var defaultFrameAlignment: Alignment { .leading }
 }
 
-internal struct TextView: ExpoSwiftUI.View {
-  @ObservedObject var props: TextViewProps
+public struct TextView: ExpoSwiftUI.View {
+  @ObservedObject public var props: TextViewProps
 
+  public init(props: TextViewProps) {
+    self.props = props
+  }
 
-  var body: some View {
+  public var body: some View {
     let hasDeprecatedFontProps = props.weight != nil || props.design != nil || props.size != nil
-    
+
     Text(props.text)
       .if(hasDeprecatedFontProps) { text in
         // TODO: remove this block of code once we remove the deprecated font props

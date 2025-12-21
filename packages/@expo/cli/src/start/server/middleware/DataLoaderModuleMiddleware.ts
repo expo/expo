@@ -52,7 +52,7 @@ export class DataLoaderModuleMiddleware extends ExpoMiddleware {
       return next();
     }
 
-    const manifest = await fetchManifest<RegExp>(this.projectRoot, {
+    const manifest = await fetchManifest(this.projectRoot, {
       appDir: this.appDir,
     });
 

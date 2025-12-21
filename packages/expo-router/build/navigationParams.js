@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME = exports.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = void 0;
+exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME = exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME = exports.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME = exports.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = void 0;
 exports.appendInternalExpoRouterParams = appendInternalExpoRouterParams;
 exports.getInternalExpoRouterParams = getInternalExpoRouterParams;
 exports.hasParam = hasParam;
@@ -8,9 +8,13 @@ exports.removeParams = removeParams;
 exports.removeInternalExpoRouterParams = removeInternalExpoRouterParams;
 exports.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = '__internal_expo_router_no_animation';
 exports.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME = '__internal__expo_router_is_preview_navigation';
+exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME = '__internal_expo_router_zoom_transition_source_id';
+exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME = '__internal_expo_router_zoom_transition_screen_id';
 const internalExpoRouterParamNames = [
     exports.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
     exports.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
+    exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
+    exports.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
 ];
 function appendInternalExpoRouterParams(params, expoParams) {
     let newParams = {};

@@ -1,7 +1,8 @@
 import ExpoModulesCore
-import WebKit
 
-class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
+class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
+  var identifier: String = ""
+  // TODO(@ubax): Add @ReactiveProp similar to RouterToolbar to reduce repetition
   // MARK: - Shared props
   var title: String = "" {
     didSet {
@@ -27,19 +28,32 @@ class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
       }
     }
   }
-
-  // MARK: - Action only props
-  var disabled: Bool? {
+  var disabled: Bool = false {
     didSet {
       updateUiAction()
+      if isMenuAction {
+        updateMenu()
+      }
     }
   }
+
+  // MARK: - Action only props
   var isOn: Bool? {
     didSet {
       updateUiAction()
     }
   }
   var keepPresented: Bool? {
+    didSet {
+      updateUiAction()
+    }
+  }
+  var discoverabilityLabel: String? {
+    didSet {
+      updateUiAction()
+    }
+  }
+  var subtitle: String? {
     didSet {
       updateUiAction()
     }
@@ -67,9 +81,69 @@ class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
       }
     }
   }
+
+  // MARK: - UIBarButtonItem props
+  var routerHidden: Bool = false {
+    didSet {
+      updateUiAction()
+      if isMenuAction {
+        updateMenu()
+      }
+    }
+  }
+  var titleStyle: TitleStyle? {
+    didSet {
+      if isMenuAction {
+        updateMenu()
+      }
+    }
+  }
+  var sharesBackground: Bool? {
+    didSet {
+      if isMenuAction {
+        updateMenu()
+      }
+    }
+  }
+  var hidesSharedBackground: Bool? {
+    didSet {
+      if isMenuAction {
+        updateMenu()
+      }
+    }
+  }
+  var customTintColor: UIColor? {
+    didSet {
+      updateUiAction()
+      if isMenuAction {
+        updateMenu()
+      }
+    }
+  }
+  var barButtonItemStyle: UIBarButtonItem.Style? {
+    didSet {
+      if isMenuAction {
+        updateMenu()
+      }
+    }
+  }
   var subActions: [LinkPreviewNativeActionView] = [] {
     didSet {
       updateMenu()
+    }
+  }
+  var accessibilityLabelForMenu: String? {
+    didSet {
+      if isMenuAction {
+        updateMenu()
+      }
+    }
+  }
+  var accessibilityHintForMenu: String? {
+    didSet {
+      if isMenuAction {
+        updateMenu()
+      }
     }
   }
 
@@ -132,6 +206,9 @@ class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
     var attributes: UIMenuElement.Attributes = []
     if destructive == true { attributes.insert(.destructive) }
     if disabled == true { attributes.insert(.disabled) }
+    if routerHidden {
+      attributes.insert(.hidden)
+    }
 
     if #available(iOS 16.0, *) {
       if keepPresented == true { attributes.insert(.keepsMenuPresented) }
@@ -142,17 +219,24 @@ class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
     baseUiAction.attributes = attributes
     baseUiAction.state = isOn == true ? .on : .off
 
+    if let subtitle = subtitle {
+      baseUiAction.subtitle = subtitle
+    }
+    if let label = discoverabilityLabel {
+      baseUiAction.discoverabilityTitle = label
+    }
+
     parentMenuUpdatable?.updateMenu()
   }
 
   #if RCT_NEW_ARCH_ENABLED
     override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
       if let childActionView = childComponentView as? LinkPreviewNativeActionView {
-        subActions.append(childActionView)
+        subActions.insert(childActionView, at: index)
         childActionView.parentMenuUpdatable = self
       } else {
-        print(
-          "ExpoRouter: Unknown child component view (\(childComponentView)) mounted to NativeLinkPreviewActionView"
+        logger?.warn(
+          "[expo-router] Unknown child component view (\(childComponentView)) mounted to NativeLinkPreviewActionView. This is most likely a bug in expo-router."
         )
       }
     }
@@ -161,8 +245,8 @@ class LinkPreviewNativeActionView: ExpoView, LinkPreviewMenuUpdatable {
       if let childActionView = child as? LinkPreviewNativeActionView {
         subActions.removeAll(where: { $0 == childActionView })
       } else {
-        print(
-          "ExpoRouter: Unknown child component view (\(child)) unmounted from NativeLinkPreviewActionView"
+        logger?.warn(
+          "ExpoRouter: Unknown child component view (\(child)) unmounted from NativeLinkPreviewActionView. This is most likely a bug in expo-router."
         )
       }
     }

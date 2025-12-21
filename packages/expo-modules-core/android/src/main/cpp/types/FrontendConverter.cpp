@@ -9,9 +9,11 @@
 #include "../JSIContext.h"
 #include "../JavaScriptObject.h"
 #include "../JavaScriptArrayBuffer.h"
+#include "../NativeArrayBuffer.h"
 #include "../JavaScriptValue.h"
 #include "../JavaScriptFunction.h"
 #include "../javaclasses/Collections.h"
+#include "../worklets/Worklet.h"
 
 #include "react/jni/ReadableNativeMap.h"
 #include "react/jni/ReadableNativeArray.h"
@@ -197,6 +199,31 @@ bool TypedArrayFrontendConverter::canConvert(
   const jsi::Value &value
 ) const {
   return value.isObject();
+}
+
+jobject NativeArrayBufferFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  JSIContext *jsiContext = getJSIContext(rt);
+  auto arrayBuffer = value.asObject(rt).getArrayBuffer(rt);
+  return NativeArrayBuffer::newInstance(
+    jsiContext,
+    rt,
+    arrayBuffer
+  ).release();
+}
+
+bool NativeArrayBufferFrontendConverter::canConvert(
+  jsi::Runtime &rt,
+  const jsi::Value &value
+) const {
+  if (value.isObject()) {
+    auto object = value.getObject(rt);
+    return object.isArrayBuffer(rt);
+  }
+  return false;
 }
 
 jobject JavaScriptValueFrontendConverter::convert(
@@ -713,5 +740,33 @@ jobject ValueOrUndefinedFrontendConverter::convert(
 
   return parameterConverter->convert(rt, env, value);
 }
+
+#if WORKLETS_ENABLED
+
+jobject WorkletFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  JSIContext *jsiContext = getJSIContext(rt);
+
+  auto worklet = worklets::extractSerializableOrThrow<worklets::SerializableWorklet>(rt, value);
+  return Worklet::newInstance(
+    jsiContext,
+    worklet
+  ).release();
+}
+
+bool WorkletFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
+  try {
+    // TODO(@lukmccall): find a better way to check this without throwing exception
+    worklets::extractSerializableOrThrow<worklets::SerializableWorklet>(rt, value);
+    return true;
+  } catch (...) {
+    return false;
+  }
+}
+
+#endif
 
 } // namespace expo

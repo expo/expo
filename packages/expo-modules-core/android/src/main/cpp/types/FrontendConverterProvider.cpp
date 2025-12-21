@@ -21,6 +21,7 @@ void FrontendConverterProvider::createConverters() {
   RegisterConverter(CppType::JS_OBJECT, JavaScriptObjectFrontendConverter);
   RegisterConverter(CppType::JS_VALUE, JavaScriptValueFrontendConverter);
   RegisterConverter(CppType::JS_ARRAY_BUFFER, JavaScriptArrayBufferFrontendConverter);
+  RegisterConverter(CppType::NATIVE_ARRAY_BUFFER, NativeArrayBufferFrontendConverter);
   RegisterConverter(CppType::JS_FUNCTION, JavaScriptFunctionFrontendConverter);
   RegisterConverter(CppType::STRING, StringFrontendConverter);
   RegisterConverter(CppType::READABLE_MAP, ReadableNativeMapArrayFrontendConverter);
@@ -28,6 +29,11 @@ void FrontendConverterProvider::createConverters() {
   RegisterConverter(CppType::VIEW_TAG, ViewTagFrontendConverter);
   RegisterConverter(CppType::SHARED_OBJECT_ID, SharedObjectIdConverter);
   RegisterConverter(CppType::ANY, AnyFrontendConvert);
+
+#if WORKLETS_ENABLED
+  RegisterConverter(CppType::WORKLET, WorkletFrontendConverter);
+#endif
+
 #undef RegisterConverter
 
   auto registerPolyConverter = [this](const std::vector<CppType> &types) {

@@ -40,6 +40,8 @@
     "fetch.d.ts",
     "fingerprint.js",
     "fingerprint.d.ts",
+    "local-build-cache-provider.js",
+    "local-build-cache-provider.d.ts",
     "react-native.config.js",
     "requiresExtraSetup.json",
     "tsconfig.base.json",
@@ -80,7 +82,8 @@
     "@expo/config-plugins": "~54.0.1",
     "@expo/devtools": "0.1.7",
     "@expo/fingerprint": "0.15.1",
-    "@expo/metro": "~54.1.0",
+    "@expo/local-build-cache-provider": "0.0.1",
+    "@expo/metro": "~54.2.0",
     "@expo/metro-config": "54.0.3",
     "@expo/vector-icons": "^15.0.2",
     "@expo/log-box": "0.0.13-canary-20251023-4c86f95",
@@ -106,7 +109,7 @@
     "expo-module-scripts": "^5.0.7",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "react-native": "0.83.0-rc.3",
+    "react-native": "0.83.1",
     "web-streams-polyfill": "^3.3.2"
   },
   "peerDependencies": {

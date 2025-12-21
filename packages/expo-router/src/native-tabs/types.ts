@@ -1,6 +1,12 @@
 import type { DefaultRouterOptions } from '@react-navigation/native';
 import type { PropsWithChildren } from 'react';
-import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
+import type {
+  ColorValue,
+  ImageSourcePropType,
+  StyleProp,
+  TextStyle,
+  ViewStyle,
+} from 'react-native';
 import type { BottomTabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -36,6 +42,31 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   specialEffects?: BottomTabsScreenProps['specialEffects'];
   nativeProps?: NativeScreenProps;
   disableAutomaticContentInsets?: boolean;
+  contentStyle?: Pick<
+    ViewStyle,
+    | 'backgroundColor'
+    | 'experimental_backgroundImage'
+    | 'padding'
+    | 'paddingTop'
+    | 'paddingBottom'
+    | 'paddingLeft'
+    | 'paddingRight'
+    | 'paddingBlock'
+    | 'paddingBlockEnd'
+    | 'paddingBlockStart'
+    | 'paddingInline'
+    | 'paddingInlineEnd'
+    | 'paddingInlineStart'
+    | 'paddingEnd'
+    | 'paddingHorizontal'
+    | 'paddingVertical'
+    | 'paddingStart'
+    | 'alignContent'
+    | 'alignItems'
+    | 'justifyContent'
+    | 'flexDirection'
+    | 'gap'
+  >;
 }
 
 export type SymbolOrImageSource =
@@ -122,6 +153,12 @@ export interface NativeTabsProps extends PropsWithChildren {
    * The background color of every badge in the tab bar.
    */
   badgeBackgroundColor?: ColorValue;
+  /**
+   * When set to `true`, hides the tab bar.
+   *
+   * @default false
+   */
+  hidden?: boolean;
   // #endregion common props
   // #region iOS props
   /**
@@ -357,6 +394,12 @@ export interface NativeTabTriggerProps {
    * @platform ios
    */
   disableAutomaticContentInsets?: boolean;
+  /**
+   * The style applied to the content of the tab
+   *
+   * Note: Only certain style properties are supported.
+   */
+  contentStyle?: NativeTabOptions['contentStyle'];
 }
 
 const SUPPORTED_TAB_BAR_ITEM_ROLES = [

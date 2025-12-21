@@ -1,4 +1,4 @@
-import type { DependencyResolution, ResolutionResult } from './types';
+import { type DependencyResolution, type ResolutionResult } from './types';
 export declare function defaultShouldIncludeDependency(dependencyName: string): boolean;
 export declare const fastJoin: (from: string, append: string) => string;
 export declare const maybeRealpath: (target: string) => Promise<string | null>;

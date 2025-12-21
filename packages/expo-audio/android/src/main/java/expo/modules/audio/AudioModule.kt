@@ -116,18 +116,18 @@ class AudioModule : Module() {
   }
 
   private fun requestAudioFocus() {
-    if (focusAcquired || !audioEnabled) {
+    if (focusAcquired || !audioEnabled || interruptionMode == InterruptionMode.MIX_WITH_OTHERS) {
       return
     }
 
     val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val requestType = interruptionMode?.let {
         if (it == InterruptionMode.DO_NOT_MIX) {
-          AudioManager.AUDIOFOCUS_GAIN
+          AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
         } else {
           AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
         }
-      } ?: AudioManager.AUDIOFOCUS_GAIN
+      } ?: AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
       audioFocusRequest = AudioFocusRequest.Builder(requestType).run {
         setAudioAttributes(
           AudioAttributes.Builder()
@@ -143,7 +143,12 @@ class AudioModule : Module() {
       }
     } else {
       @Suppress("DEPRECATION")
-      audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
+      val requestType = if (interruptionMode == InterruptionMode.DO_NOT_MIX) {
+        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+      } else {
+        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
+      }
+      audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, requestType)
     }
 
     if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {

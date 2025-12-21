@@ -70,7 +70,8 @@ internal struct PickerView: ExpoSwiftUI.View {
     guard let either else { return nil }
     if let stringValue: String = either.get() {
       return stringValue
-    } else if let doubleValue: Double = either.get() {
+    }
+    if let doubleValue: Double = either.get() {
       return doubleValue
     }
     return nil

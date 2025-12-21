@@ -11,7 +11,7 @@ import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { Terminal } from '~/ui/components/Snippet';
+import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
 
@@ -73,16 +73,19 @@ If you haven't added Expo to your React Native app yet, you can either [install 
 
 2. Modify the entry file to use [`registerRootComponent`](/versions/latest/sdk/expo/#registerrootcomponentcomponent) instead of `AppRegistry.registerComponent`:
 
-```diff
-+ import {registerRootComponent} from 'expo';
-
+<DiffBlock
+  raw={`diff --git a/index.js b/index.js
+--- a/index.js
++++ b/index.js
+@@ -1,5 +1,4 @@
+-import {AppRegistry} from 'react-native';
+-import {name as appName} from './app.json';
++import {registerRootComponent} from 'expo';
 import App from './App';
-- import {AppRegistry} from 'react-native';
-- import {name as appName} from './app.json';
 
-- AppRegistry.registerComponent(appName, () => App);
-+ registerRootComponent(App);
-```
+-AppRegistry.registerComponent(appName, () => App);
++registerRootComponent(App);`}
+/>
 
 </Collapsible>
 

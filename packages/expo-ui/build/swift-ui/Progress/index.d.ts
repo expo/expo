@@ -1,6 +1,10 @@
 import { ColorValue } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
-export type CircularProgressProps = {
+type ClosedRangeDate = {
+    lower: Date;
+    upper: Date;
+};
+export type ProgressProps = {
     /**
      * The current progress value of the slider. This is a number between `0` and `1`.
      */
@@ -9,23 +13,24 @@ export type CircularProgressProps = {
      * Progress color.
      */
     color?: ColorValue;
-} & CommonViewModifierProps;
-export type LinearProgressProps = {
     /**
-     * The current progress value of the slider. This is a number between `0` and `1`.
+     * The style of the progress indicator.
+     * @default 'circular'
      */
-    progress?: number | null;
+    variant?: 'linear' | 'circular';
     /**
-     * Progress color.
+     * The lower and upper bounds for automatic timer progress.
      */
-    color?: ColorValue;
+    timerInterval?: ClosedRangeDate;
+    /**
+     * Whether the progress counts down instead of up.
+     * @default false
+     */
+    countsDown?: boolean;
 } & CommonViewModifierProps;
 /**
- * Renders a `CircularProgress` component.
+ * Renders a `Progress` component.
  */
-export declare function CircularProgress(props: CircularProgressProps): import("react").JSX.Element;
-/**
- * Renders a `LinearProgress` component.
- */
-export declare function LinearProgress(props: LinearProgressProps): import("react").JSX.Element;
+export declare function Progress(props: ProgressProps): import("react").JSX.Element;
+export {};
 //# sourceMappingURL=index.d.ts.map

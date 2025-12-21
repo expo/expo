@@ -1,6 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#import <sstream>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 
 #import <ExpoModulesJSI/EXJSIConversions.h>
 #import <ExpoModulesJSI/EXJSIUtils.h>
@@ -123,6 +123,15 @@ jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *messa
       jsi::Value(runtime, jsCode),
       jsi::Value(runtime, jsMessage)
     });
+}
+
+#pragma mark - RuntimeScheduler
+
+std::shared_ptr<react::RuntimeScheduler> runtimeSchedulerFromRuntime(jsi::Runtime &runtime) {
+  if (auto binding = react::RuntimeSchedulerBinding::getBinding(runtime)) {
+    return binding->getRuntimeScheduler();
+  }
+  return nullptr;
 }
 
 } // namespace expo

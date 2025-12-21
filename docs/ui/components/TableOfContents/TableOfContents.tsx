@@ -80,13 +80,26 @@ export const TableOfContents = forwardRef<
       setShowScrollTop(showScrollTopValue);
     }
 
-    if (slugScrollingTo.current) {
-      return;
-    }
-
     const viewportMiddle = contentScrollPosition + window.innerHeight / 2;
     const viewportActiveOffset =
       contentScrollPosition + window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR;
+
+    if (slugScrollingTo.current) {
+      const targetHeading = headings.find(h => h.slug === slugScrollingTo.current);
+      const targetTop = targetHeading?.ref?.current?.offsetTop;
+
+      if (targetTop != null) {
+        const targetInView = targetTop >= viewportActiveOffset && targetTop <= viewportMiddle;
+
+        if (!targetInView) {
+          return;
+        }
+      } else {
+        slugScrollingTo.current = null;
+      }
+
+      slugScrollingTo.current = null;
+    }
 
     for (const { ref, slug, level } of headings) {
       if (!ref?.current) {
