@@ -73,8 +73,10 @@ public final class AppContext: NSObject, @unchecked Sendable {
         // Otherwise the JSCRuntime asserts may fail on deallocation.
         releaseRuntimeObjects()
       } else if _runtime != oldValue {
-        // Try to install the core object automatically when the runtime changes.
-        try? prepareRuntime()
+        JavaScriptActor.assumeIsolated {
+          // Try to install the core object automatically when the runtime changes.
+          try? prepareRuntime()
+        }
       }
     }
   }
@@ -472,6 +474,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   // MARK: - Runtime
 
+  @JavaScriptActor
   internal func prepareRuntime() throws {
     let runtime = try runtime
     let coreObject = runtime.createObject()
