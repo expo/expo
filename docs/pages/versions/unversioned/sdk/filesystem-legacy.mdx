@@ -13,6 +13,7 @@ import { AndroidPermissions } from '~/components/plugins/permissions';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
+import { ConfigReactNative } from '~/ui/components/ConfigReactNative';
 
 > **important** The `legacy` version of the FileSystem API is included in the `expo-file-system` library. It can be used alongside the modern API for backward compatibility reasons.
 
@@ -115,10 +116,14 @@ For Expo projects using CNG, add the following to your app config to ensure asse
 
 > **Important:** Without this configuration, iOS will not be able to read files from the bundle, though Android may still work.
 
-For **bare workflow**, you must ensure the file is copied to the correct native location during the build:
+<ConfigReactNative>
 
-- **Android:** `android/app/src/main/assets/`
-- **iOS:** The root of the Main Bundle (added via Xcode "Copy Bundle Resources").
+For existing React Native apps, you must ensure the file is copied to the correct native location during the build:
+
+- **Android:** The location is  **android/app/src/main/assets/**
+- **iOS:** The root of the Main Bundle (added via Xcode > **Copy Bundle Resources**)
+
+</ConfigReactNative>
 
 If you are using **Expo Prebuild**, you can use a [Config Plugin](https://docs.expo.dev/config-plugins/introduction/) to automatically move your file to these locations.
 
