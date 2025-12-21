@@ -98,9 +98,9 @@ try {
 
 ### Reading files from the native bundle
 
-Files bundled with your app can be accessed using `FileSystem.bundleDirectory`.
+> **Note:** The following section requires the file to exist in the native platform bundle. Files sitting in your JavaScript/TypeScript project structure are not automatically available in the native bundle, unless you move them during the build process using a [config plugin](/config-plugins/introduction/) or manually.
 
-> **Note:** This requires the file to exist in the **native platform bundle**. Files sitting in your JavaScript project structure are **not** automatically available here unless you move them during the build process (using a Config Plugin or manually).
+Files bundled with your app can be accessed using [`FileSystem.bundleDirectory`](#filesystem-legacybundledirectory).
 
 #### Prerequisites
 
