@@ -13,6 +13,7 @@ import { AndroidPermissions } from '~/components/plugins/permissions';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
+import { ConfigReactNative } from '~/ui/components/ConfigReactNative';
 
 > **important** The `legacy` version of the FileSystem API is included in the `expo-file-system` library. It can be used alongside the modern API for backward compatibility reasons.
 
@@ -97,13 +98,13 @@ try {
 
 ### Reading files from the native bundle
 
-Files bundled with your app can be accessed using `FileSystem.bundleDirectory`.
+> **Note:** The following section requires the file to exist in the native platform bundle. Files sitting in your JavaScript/TypeScript project structure are not automatically available in the native bundle, unless you move them during the build process using a [config plugin](/config-plugins/introduction/) or manually.
 
-> **Note:** This requires the file to exist in the **native platform bundle**. Files sitting in your JavaScript project structure are **not** automatically available here unless you move them during the build process (using a Config Plugin or manually).
+Files bundled with your app can be accessed using [`FileSystem.bundleDirectory`](#filesystem-legacybundledirectory).
 
-**Prerequisites:**
+#### Prerequisites
 
-For **Expo managed workflow**, add the following to your `app.json` to ensure assets are bundled:
+For Expo projects using CNG, add the following to your app config to ensure assets are bundled:
 
 ```json app.json
 {
@@ -115,18 +116,20 @@ For **Expo managed workflow**, add the following to your `app.json` to ensure as
 
 > **Important:** Without this configuration, iOS will not be able to read files from the bundle, though Android may still work.
 
-For **bare workflow**, you must ensure the file is copied to the correct native location during the build:
+<ConfigReactNative>
 
-- **Android:** `android/app/src/main/assets/`
-- **iOS:** The root of the Main Bundle (added via Xcode "Copy Bundle Resources").
+For existing React Native apps, you must ensure the file is copied to the correct native location during the build:
 
-If you are using **Expo Prebuild**, you can use a [Config Plugin](https://docs.expo.dev/config-plugins/introduction/) to automatically move your file to these locations.
+- **Android:** The location is  **android/app/src/main/assets/**
+- **iOS:** The root of the Main Bundle (added via Xcode > **Copy Bundle Resources**)
 
-**Usage:**
+</ConfigReactNative>
+
+#### Usage
 
 On iOS, the application bundle is read-only and direct access may be restricted due to sandboxing permissions. The recommended approach is to copy the file to a writable location (like `documentDirectory`) before reading it.
 
-```js
+```js App.js
 import * as FileSystem from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 
@@ -134,7 +137,7 @@ const readBundleFile = async () => {
   try {
     const fileName = 'example.txt';
 
-    // 1. Path inside the native bundle (read-only)
+    // Path inside the native bundle (read-only)
     const bundleFile = FileSystem.bundleDirectory + fileName;
 
     // Check if file exists
@@ -143,10 +146,6 @@ const readBundleFile = async () => {
       console.warn('File not found in native bundle');
       return;
     }
-
-    // --- Platform Differences ---
-    // iOS: must copy (bundle is read-only)
-    // Android: can read directly
 
     let fileToRead = bundleFile;
 
@@ -162,7 +161,7 @@ const readBundleFile = async () => {
       fileToRead = documentFile;
     }
 
-    // 2. Read the file
+    // Read the file
     const content = await FileSystem.readAsStringAsync(fileToRead);
     console.log(content);
   } catch (error) {
