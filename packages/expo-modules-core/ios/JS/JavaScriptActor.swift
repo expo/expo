@@ -7,16 +7,11 @@
  */
 @globalActor
 public actor JavaScriptActor: GlobalActor {
-  /**
-   Name of the JavaScript thread created by React Native. Copied from `RCTJSThreadManager.mm`.
-   */
-  private static let jsThreadName = "com.facebook.react.runtime.JavaScript"
-
   public static let shared = JavaScriptActor()
 
   private init() {}
 
-  nonisolated private let executor = Executor()
+  nonisolated private let executor = JavaScriptSerialExecutor()
 
   nonisolated public var unownedExecutor: UnownedSerialExecutor {
     return executor.asUnownedSerialExecutor()
@@ -33,7 +28,8 @@ public actor JavaScriptActor: GlobalActor {
     typealias YesActor = @JavaScriptActor () throws -> T
     typealias NoActor = () throws -> T
 
-    shared.preconditionThread()
+    // This will crash if the current context cannot be isolated.
+    shared.executor.checkIsolated()
 
     // To do the unsafe cast, we have to pretend it's @escaping.
     return try withoutActuallyEscaping(operation) { (_ fn: @escaping YesActor) throws -> T in
@@ -41,31 +37,42 @@ public actor JavaScriptActor: GlobalActor {
       return try rawFn()
     }
   }
+}
 
-  /**
-   Stops program execution if the current task is not executing on the JavaScript thread.
-   The precondition is also met when running tests and in single threaded environments.
-   - Note: Its behavior is the same in both Debug and Release builds.
-  */
-  nonisolated public func preconditionThread() {
-    // We must be careful as it relies on the thread name given by React Native.
-    precondition(
-      Thread.current.name == JavaScriptActor.jsThreadName || !Thread.isMultiThreaded() || ProcessInfo.processInfo.processName == "xctest",
-      "JavaScriptActor operations must be run on the JavaScript thread"
-    )
+/**
+ Name of the JavaScript thread created by React Native. Copied from `RCTJSThreadManager.mm`.
+ */
+private let jsThreadName = "com.facebook.react.runtime.JavaScript"
+
+/**
+ Executor for the `JavaScriptActor` that executes given jobs synchronously and immediately.
+ - Note: It does not ensure that given jobs are executed on the JavaScript thread; it must be done externally.
+ */
+private final class JavaScriptSerialExecutor: SerialExecutor {
+  func enqueue(_ job: UnownedJob) {
+    job.runSynchronously(on: self.asUnownedSerialExecutor())
   }
 
   /**
-   Executor for the `JavaScriptActor` that executes given jobs synchronously and immediately.
-   - Note: It does not ensure that given jobs are executed on the JavaScript thread; it must be done externally.
+   Converts the executor to the optimized form of borrowed executor reference.
    */
-  private final class Executor: SerialExecutor {
-    func enqueue(_ job: UnownedJob) {
-      job.runSynchronously(on: self.asUnownedSerialExecutor())
-    }
+  func asUnownedSerialExecutor() -> UnownedSerialExecutor {
+    return UnownedSerialExecutor(ordinary: self)
+  }
 
-    func asUnownedSerialExecutor() -> UnownedSerialExecutor {
-      return UnownedSerialExecutor(ordinary: self)
-    }
+  /**
+   Stops program execution if the executor is not isolating the current context.
+   */
+  func checkIsolated() {
+    precondition(isIsolatingCurrentContext() == true, "JavaScriptActor operations must be run on the JavaScript thread")
+  }
+
+  /**
+   Checks whether the executor isolates the current context, i.e. the current thread is a JavaScript thread.
+   The condition is also met when running tests and in single threaded environments.
+   */
+  func isIsolatingCurrentContext() -> Bool? {
+    // We must be careful as it relies on the thread name given by React Native.
+    return Thread.current.name == jsThreadName || !Thread.isMultiThreaded() || ProcessInfo.processInfo.processName == "xctest"
   }
 }
