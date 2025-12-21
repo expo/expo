@@ -244,7 +244,7 @@ GEM
       trailblazer-option (>= 0.1.1, < 0.2.0)
       uber (< 0.2.0)
     retriable (3.1.2)
-    rexml (3.3.9)
+    rexml (3.4.2)
     rouge (2.0.7)
     ruby-macho (2.5.1)
     ruby2_keywords (0.0.5)
