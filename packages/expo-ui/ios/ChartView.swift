@@ -19,23 +19,17 @@ struct ChartDataPoint: Record {
   @Field var color: Color?
 
   var xValue: String {
-    switch x?.get() {
-      case .left(let s):
-          return s
-      case .right(let n):
-          return String(n)
-      default:
-          return ""
+    if let s: String = x?.get() {
+      return s
     }
+    if let n: Double = x?.get() {
+      return String(n)
+    }
+    return ""
   }
 
   var xNumericValue: Double? {
-    switch x?.get() {
-      case .right(let n):
-          return n
-      default:
-          return nil
-    }
+    return x?.get()
   }
 }
 
