@@ -6,7 +6,7 @@ import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
 const pkg = require('expo-splash-screen/package.json');
 
-type PluginConfig = {
+export type PluginConfig = {
   backgroundColor: string;
   imageWidth?: number;
   enableFullScreenImage_legacy?: boolean;
