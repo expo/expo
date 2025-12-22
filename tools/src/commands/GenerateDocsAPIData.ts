@@ -5,6 +5,7 @@ import fs from 'fs-extra';
 import os from 'node:os';
 import path from 'node:path';
 import recursiveOmitBy from 'recursive-omit-by';
+import type { TypeDocOptions } from 'typedoc';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
@@ -189,33 +190,35 @@ const executeCommand = async (
     ? entryPoint.map((entry) => path.join(entriesPath, entry))
     : [path.join(entriesPath, entryPoint)];
 
-  const app = await Application.bootstrapWithPlugins(
-    {
-      entryPoints,
-      tsconfig: tsConfigPath,
-      disableSources: true,
-      hideGenerator: true,
-      excludePrivate: true,
-      excludeProtected: true,
-      excludeExternals: true,
-      pretty: !MINIFY_JSON,
-      commentStyle: 'block',
-      jsDocCompatibility: false,
-      preserveLinkText: true,
-      sourceLinkExternal: false,
-      markdownLinkExternal: false,
-      blockTags: [
-        ...Configuration.OptionDefaults.blockTags,
-        '@alias',
-        '@deprecated',
-        '@docsMissing',
-        '@header',
-        '@needsAudit',
-        '@platform',
-      ],
-    },
-    [new TSConfigReader(), new TypeDocReader()]
-  );
+  const typedocOptions = {
+    entryPoints,
+    tsconfig: tsConfigPath,
+    disableSources: true,
+    hideGenerator: true,
+    excludePrivate: true,
+    excludeProtected: true,
+    excludeExternals: true,
+    pretty: !MINIFY_JSON,
+    commentStyle: 'block',
+    jsDocCompatibility: false,
+    preserveLinkText: true,
+    sourceLinkExternal: false,
+    markdownLinkExternal: false,
+    blockTags: [
+      ...Configuration.OptionDefaults.blockTags,
+      '@alias',
+      '@deprecated',
+      '@docsMissing',
+      '@header',
+      '@needsAudit',
+      '@platform',
+    ],
+  } as unknown as TypeDocOptions;
+
+  const app = await Application.bootstrapWithPlugins(typedocOptions, [
+    new TSConfigReader(),
+    new TypeDocReader(),
+  ]);
 
   const project = await app.convert();
 

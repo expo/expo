@@ -330,7 +330,9 @@ const renderType = (
           <span className={STYLES_SECONDARY}>Generic: </span>
           <CODE>
             {resolvedType.checkType.name}
-            {typeParameter && <> extends {resolveTypeName(typeParameter[0].type, sdkVersion)}</>}
+            {typeParameter?.[0]?.type && (
+              <> extends {resolveTypeName(typeParameter[0].type, sdkVersion)}</>
+            )}
           </CODE>
         </CALLOUT>
         <CALLOUT className={mergeClasses(VERTICAL_SPACING, ELEMENT_SPACING)}>
