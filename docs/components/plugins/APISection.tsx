@@ -117,6 +117,7 @@ const interfaceClassNames = new Set([
   'FileHandle',
   'ImageManipulatorContext',
   'ImageRef',
+  'VideoThumbnail',
 ]);
 
 const isComponent = (entry: GeneratedData) => {
