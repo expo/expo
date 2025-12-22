@@ -94,6 +94,7 @@ const interfaceClassNames = new Set([
   'NativeModuleType',
   'SharedObjectType',
   'SharedRefType',
+  'FileHandle',
 ]);
 
 const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
