@@ -3,7 +3,9 @@ import { useEffect } from 'react';
 import { listMissingHashLinkTargets } from '~/common/utilities';
 import {
   ClassDefinitionData,
+  DefaultPropsDefinitionData,
   GeneratedData,
+  PropData,
   TypeDocKind,
 } from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
@@ -33,13 +35,16 @@ type Props = {
   headersMapping?: Record<string, string>;
 } & WithTestRequire;
 
-const filterDataByKind = (
-  entries: GeneratedData[] = [],
+type ApiDataEntry = GeneratedData | PropData;
+
+const filterDataByKind = <T extends { kind?: TypeDocKind }>(
+  entries: T[] = [],
   kind: TypeDocKind | TypeDocKind[],
-  additionalCondition: (entry: GeneratedData) => boolean = () => true
+  additionalCondition: (entry: T) => boolean = () => true
 ) =>
   entries.filter(
-    (entry: GeneratedData) =>
+    (entry: T) =>
+      entry.kind !== undefined &&
       (Array.isArray(kind) ? kind.includes(entry.kind) : entry.kind === kind) &&
       additionalCondition(entry)
   );
@@ -48,6 +53,23 @@ const isHook = ({ name }: { name: string }) => name.startsWith('use');
 
 const isListener = ({ name }: GeneratedData) =>
   name.endsWith('Listener') || name.endsWith('Listeners');
+
+const isFunctionLikeVariable = (entry: ApiDataEntry) =>
+  entry.kind === TypeDocKind.Variable && !!entry.type?.declaration?.signatures?.length;
+
+const isFunctionLikeEntry = (entry: ApiDataEntry) =>
+  entry.kind === TypeDocKind.Function || isFunctionLikeVariable(entry);
+
+const getEntrySignatures = (entry: ApiDataEntry) =>
+  entry.signatures ?? entry.type?.declaration?.signatures ?? [];
+
+const isDefaultPropsDefinitionData = (entry?: PropData): entry is DefaultPropsDefinitionData =>
+  !!entry?.type && entry.kind !== undefined;
+
+const sortByName = <T extends { name?: string }>(entries: T[]): T[] =>
+  entries
+    .slice()
+    .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? '', undefined, { sensitivity: 'base' }));
 
 const PROP_EXCEPTIONS = new Set(['StackHeaderItemSharedProps']);
 
@@ -87,17 +109,23 @@ const isConstant = ({ name, type }: GeneratedData) =>
   !['default', 'Constants', 'EventEmitter', 'SharedObject', 'NativeModule'].includes(name) &&
   !(type?.name && componentTypeNames.has(type?.name));
 
-const hasCategoryHeader = ({ signatures }: GeneratedData): boolean =>
-  (signatures?.[0].comment?.blockTags &&
-    signatures[0].comment.blockTags.length > 0 &&
-    signatures[0].comment.blockTags.some(tag => tag?.tag === '@header')) ??
-  false;
+const hasCategoryHeader = (entry: ApiDataEntry): boolean => {
+  const signature = getEntrySignatures(entry)[0];
+  const comment = signature?.comment ?? entry.comment;
+  return (
+    (comment?.blockTags &&
+      comment.blockTags.length > 0 &&
+      comment.blockTags.some(tag => tag?.tag === '@header')) ??
+    false
+  );
+};
 
-const groupByHeader = (entries: GeneratedData[]) => {
-  return entries.reduce((group: Record<string, GeneratedData[]>, entry) => {
-    const signature = entry.signatures[0];
+const groupByHeader = (entries: ApiDataEntry[]) => {
+  return entries.reduce((group: Record<string, ApiDataEntry[]>, entry) => {
+    const signature = getEntrySignatures(entry)[0];
+    const comment = signature?.comment ?? entry.comment;
     const header = getCommentContent(
-      signature.comment?.blockTags?.filter(tag => tag.tag === '@header')[0].content ?? []
+      comment?.blockTags?.filter(tag => tag.tag === '@header')[0].content ?? []
     );
     if (header) {
       group[header] = group[header] ?? [];
@@ -117,7 +145,7 @@ const renderAPI = (
   }: Omit<Props, 'forceVersion'>
 ) => {
   try {
-    let data;
+    let data: GeneratedData[] = [];
 
     if (Array.isArray(packageName)) {
       data = packageName
@@ -136,25 +164,29 @@ const renderAPI = (
       data = children;
     }
 
-    const methods = filterDataByKind(
-      data,
-      TypeDocKind.Function,
-      entry =>
-        !isListener(entry) && !isHook(entry) && !isComponent(entry) && !hasCategoryHeader(entry)
-    );
-    const eventSubscriptions = filterDataByKind(
-      data,
-      TypeDocKind.Function,
-      entry => isListener(entry) && !hasCategoryHeader(entry)
-    );
-
-    const categorizedMethods = groupByHeader(
-      filterDataByKind(
-        data,
-        TypeDocKind.Function,
-        entry => !isComponent(entry) && hasCategoryHeader(entry)
+    const functionLikeEntries = data.filter(isFunctionLikeEntry);
+    const methods = sortByName<GeneratedData>(
+      functionLikeEntries.filter(
+        (entry: GeneratedData) =>
+          !isListener(entry) && !isHook(entry) && !isComponent(entry) && !hasCategoryHeader(entry)
       )
     );
+    const eventSubscriptions = sortByName<GeneratedData>(
+      functionLikeEntries.filter(
+        (entry: GeneratedData) => isListener(entry) && !hasCategoryHeader(entry)
+      )
+    );
+
+    const categorizedMethods = Object.entries(
+      groupByHeader(
+        functionLikeEntries.filter(
+          (entry: GeneratedData) => !isComponent(entry) && hasCategoryHeader(entry)
+        )
+      )
+    ).reduce((group: Record<string, ApiDataEntry[]>, [key, entries]) => {
+      group[key] = sortByName<ApiDataEntry>(entries);
+      return group;
+    }, {});
     const hasCategorizedMethods = Object.keys(categorizedMethods).length > 0;
     const hasHeadersMapping = Object.keys(headersMapping).length;
 
@@ -182,14 +214,17 @@ const renderAPI = (
           ? !!(entry.type?.types ?? entry.type?.declaration?.children ?? entry.children)
           : true)
     );
-    const defaultProps = filterDataByKind(
-      data
-        .filter((entry: GeneratedData) => entry.kind === TypeDocKind.Class)
-        .map((entry: GeneratedData) => entry.children)
-        .flat(),
+    const classChildren = data
+      .filter(entry => entry.kind === TypeDocKind.Class)
+      .flatMap(entry => (entry as ClassDefinitionData).children ?? []);
+    const defaultPropsCandidate = filterDataByKind<PropData>(
+      classChildren,
       TypeDocKind.Property,
       entry => entry.name === 'defaultProps'
     )[0];
+    const defaultProps = isDefaultPropsDefinitionData(defaultPropsCandidate)
+      ? defaultPropsCandidate
+      : undefined;
 
     const enums = filterDataByKind(data, TypeDocKind.Enum, entry => entry.name !== 'default');
     const interfaces = filterDataByKind(
@@ -199,7 +234,11 @@ const renderAPI = (
         (!entry.name.includes('Props') || PROP_EXCEPTIONS.has(entry.name)) &&
         !interfaceClassNames.has(entry.name)
     );
-    const constants = filterDataByKind(data, TypeDocKind.Variable, entry => isConstant(entry));
+    const constants = filterDataByKind(
+      data,
+      TypeDocKind.Variable,
+      entry => isConstant(entry) && !isFunctionLikeVariable(entry)
+    );
 
     const components = filterDataByKind(
       data,
@@ -260,10 +299,15 @@ const renderAPI = (
       )
       .filter(Boolean);
 
-    const hooks = filterDataByKind(
-      [...data, ...componentsChildren].filter(Boolean),
-      [TypeDocKind.Function, TypeDocKind.Property],
-      entry => isHook(entry) && !hasCategoryHeader(entry)
+    const hooks = sortByName<ApiDataEntry>(
+      filterDataByKind(
+        [...data, ...componentsChildren].filter(Boolean),
+        [TypeDocKind.Function, TypeDocKind.Property, TypeDocKind.Variable],
+        entry =>
+          isHook(entry) &&
+          !hasCategoryHeader(entry) &&
+          (entry.kind !== TypeDocKind.Variable || isFunctionLikeVariable(entry))
+      )
     );
 
     return (
