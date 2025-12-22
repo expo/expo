@@ -229,28 +229,26 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
     parentMenuUpdatable?.updateMenu()
   }
 
-  #if RCT_NEW_ARCH_ENABLED
-    override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
-      if let childActionView = childComponentView as? LinkPreviewNativeActionView {
-        subActions.insert(childActionView, at: index)
-        childActionView.parentMenuUpdatable = self
-      } else {
-        logger?.warn(
-          "[expo-router] Unknown child component view (\(childComponentView)) mounted to NativeLinkPreviewActionView. This is most likely a bug in expo-router."
-        )
-      }
+  override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
+    if let childActionView = childComponentView as? LinkPreviewNativeActionView {
+      subActions.insert(childActionView, at: index)
+      childActionView.parentMenuUpdatable = self
+    } else {
+      logger?.warn(
+        "[expo-router] Unknown child component view (\(childComponentView)) mounted to NativeLinkPreviewActionView. This is most likely a bug in expo-router."
+      )
     }
+  }
 
-    override func unmountChildComponentView(_ child: UIView, index: Int) {
-      if let childActionView = child as? LinkPreviewNativeActionView {
-        subActions.removeAll(where: { $0 == childActionView })
-      } else {
-        logger?.warn(
-          "ExpoRouter: Unknown child component view (\(child)) unmounted from NativeLinkPreviewActionView. This is most likely a bug in expo-router."
-        )
-      }
+  override func unmountChildComponentView(_ child: UIView, index: Int) {
+    if let childActionView = child as? LinkPreviewNativeActionView {
+      subActions.removeAll(where: { $0 == childActionView })
+    } else {
+      logger?.warn(
+        "ExpoRouter: Unknown child component view (\(child)) unmounted from NativeLinkPreviewActionView. This is most likely a bug in expo-router."
+      )
     }
-  #endif
+  }
 }
 
 protocol LinkPreviewMenuUpdatable: AnyObject {
