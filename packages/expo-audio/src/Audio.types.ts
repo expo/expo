@@ -503,20 +503,16 @@ export type AudioMode = {
  *
  * Controls how your app's audio interacts with other apps' audio.
  *
-<<<<<<< HEAD
- * When using `setActiveForLockScreen`, this must be set to `doNotMix`.
- *
- * @platform ios
-||||||| parent of a2d89492e0 ([android][audio] Support mixWithOthers)
- * @platform ios
-=======
  * - `'doNotMix'`: Requests exclusive audio focus. Other apps will pause their audio.
  * - `'duckOthers'`: Requests audio focus with ducking. Other apps lower their volume but continue playing.
  * - `'mixWithOthers'`: Audio plays alongside other apps without interrupting them.
- *   On Android, this means no audio focus is requested - best suited for sound effects,
+ *
+ *   On Android, this means no audio focus is requested. Best suited for sound effects,
  *   UI feedback, or short audio clips. Note that on Android your app won't receive
  *   audio focus loss callbacks (for example, during phone calls) when using this mode.
->>>>>>> a2d89492e0 ([android][audio] Support mixWithOthers)
+ *
+ *  > **Note:** When using `setActiveForLockScreen`, this must be set to `doNotMix`.
+ *
  */
 export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
 
