@@ -70,6 +70,9 @@ const renderInheritedProps = (
 
 const getPropsBaseTypes = (def: PropsDefinitionData) => {
   if (def.kind === TypeDocKind.TypeAlias || def.kind === TypeDocKind.TypeAlias_Legacy) {
+    if (def.children?.length) {
+      return [def.children];
+    }
     const baseTypes = def?.type?.types
       ? def.type.types?.filter((t: TypeDefinitionData) => t.declaration)
       : [def.type];
