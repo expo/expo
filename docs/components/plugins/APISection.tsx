@@ -263,6 +263,13 @@ const renderAPI = (
           ? { ...entry, name: entry.name.replace(/^Location/, '') }
           : entry
     );
+    const isRouterUiPackage =
+      packageName === 'expo-router-ui' ||
+      (Array.isArray(packageName) && packageName.includes('expo-router-ui'));
+    const routerUiComponentOverrides = new Set(['TabContext']);
+    const isRouterUiComponentOverride = (entry: GeneratedData) =>
+      isRouterUiPackage && routerUiComponentOverrides.has(entry.name);
+
     const interfaces = filterDataByKind(
       data,
       TypeDocKind.Interface,
@@ -277,13 +284,14 @@ const renderAPI = (
         isConstant(entry) &&
         !isFunctionLikeVariable(entry) &&
         !isConfigPluginVariable(entry) &&
-        !isComponent(entry)
+        !isComponent(entry) &&
+        !isRouterUiComponentOverride(entry)
     );
 
     const components = filterDataByKind(
       data,
       [TypeDocKind.Variable, TypeDocKind.Class, TypeDocKind.Function],
-      entry => isComponent(entry)
+      entry => isComponent(entry) || isRouterUiComponentOverride(entry)
     );
     const componentsPropNames = new Set(
       components.map(({ name, children }) => getPossibleComponentPropsNames(name, children)).flat()
