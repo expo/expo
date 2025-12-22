@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -30,27 +31,27 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel,
+    viewModel: HomeAppViewModel,
     navigateToProjects: () -> Unit,
     navigateToSnacks: () -> Unit,
+    accountHeader: @Composable () -> Unit = { },
     bottomBar: @Composable () -> Unit = { }
 ) {
     val sessions by viewModel.sessions.collectAsState()
     val recents by viewModel.recents.collectAsState()
-    val apps by viewModel.apps.collectAsState()
     val snacks by viewModel.snacks.collectAsState()
 
-    val account by viewModel.account.collectAsState()
+    val account by viewModel.account.dataFlow.collectAsState()
+    val isRefreshing by viewModel.account.loadingFlow.collectAsState()
+    val apps by viewModel.apps.dataFlow.collectAsState()
+
+
     val state = rememberPullToRefreshState()
-    var isRefreshing by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
     val onRefresh: () -> Unit = {
-        isRefreshing = true
-        coroutineScope.launch {
-            delay(5000)
-            isRefreshing = false
-        }
+        viewModel.account.refresh()
+        viewModel.apps.refresh()
     }
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -67,8 +68,7 @@ fun HomeScreen(
                     }},
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = NewAppTheme.colors.background.default),
                 actions = {
-                    AccountHeaderAction(account = account, onLoginClick = { viewModel.login("sample username") }, onAccountClick = { viewModel.logout()})
-                    Spacer(modifier = Modifier.width(16.dp))
+                    accountHeader()
                 }
             )
         },
@@ -123,8 +123,8 @@ fun HomeScreen(
                 LabeledGroup(
                     label = "Projects",
                 ) {
-                    TruncatedList(apps, showMoreText = "View all projects", onShowMoreClick = navigateToSnacks)  { app ->
-                        SnackRow(app)
+                    TruncatedList(apps, showMoreText = "View all projects", onShowMoreClick = navigateToProjects)  { app ->
+                        AppRow(app)
                     }
                 }
             }

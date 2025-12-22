@@ -1,5 +1,6 @@
 package host.exp.exponent.home
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
@@ -17,9 +18,13 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import host.exp.expoview.R
 
@@ -33,10 +38,10 @@ enum class Destination(
     HOME("home", "Home",  "Home", icon = R.drawable.home),
     SETTINGS("settings", "Settings",  "Settings", icon = R.drawable.settings),
     PROJECTS("projects", "Projects",  "Projects"),
-    SNACKS("snacks", "Snacks", "Snacks");
+    SNACKS("snacks", "Snacks", "Snacks"),
+    ACCOUNT("account", "Account", "Account")
 }
 
-val viewModel = HomeViewModel()
 
 @Composable
 fun RootNavigation() {
@@ -44,14 +49,33 @@ fun RootNavigation() {
     val navController = rememberNavController()
     val startDestination = Destination.HOME
 
-    AppNavHost(navController, startDestination)
+    val viewModel : HomeAppViewModel = viewModel<HomeAppViewModel>()
+
+    AppNavHost(
+        navController = navController,
+        startDestination = startDestination,
+        viewModel = viewModel
+    )
 }
+
+
 
 @Composable
 fun AppNavHost(
     navController: NavHostController,
     startDestination: Destination,
+    viewModel: HomeAppViewModel
 ) {
+    val selectedAccount by viewModel.selectedAccount.collectAsState()
+    val context = LocalContext.current
+
+    @Composable fun NavAccountHeaderAction() {
+        AccountHeaderAction(
+            account = selectedAccount,
+            onLoginClick = { viewModel.login(context) },
+            onAccountClick = { navController.navigate(Destination.ACCOUNT.route) })
+        Spacer(Modifier.padding(8.dp))
+    }
 
     NavHost(
         navController,
@@ -70,7 +94,9 @@ fun AppNavHost(
                                 navigateToDestination = { destination ->
                                     navController.navigate(destination.route)
                                 })
-                        }
+                        },
+                        accountHeader = { NavAccountHeaderAction() }
+
                     )
 //                        Destination.SETTINGS -> HomeScreen(viewModel= viewModel)
                     Destination.SETTINGS -> SettingsScreen(
@@ -81,6 +107,9 @@ fun AppNavHost(
                                 navigateToDestination = { destination ->
                                     navController.navigate(destination.route)
                                 })
+                        },
+                        accountHeader = {
+                            NavAccountHeaderAction()
                         }
                     )
                     Destination.PROJECTS -> ProjectsScreen(
@@ -104,6 +133,10 @@ fun AppNavHost(
                                     navController.navigate(destination.route)
                                 })
                         }
+                    )
+                    Destination.ACCOUNT -> AccountScreen(
+                            viewModel = viewModel,
+                        goBack = { navController.popBackStack() },
                     )
                 }
             }

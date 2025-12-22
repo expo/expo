@@ -22,7 +22,7 @@ fun TopAppBarWithBackIcon(label: String, onGoBack: () -> Unit) {
         }
     },
     title = {
-        Text("Projects", fontWeight = FontWeight.Bold)
+        Text(label, fontWeight = FontWeight.Bold)
     },
     colors = TopAppBarDefaults.topAppBarColors(containerColor = NewAppTheme.colors.background.default),
     )

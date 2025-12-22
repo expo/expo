@@ -27,6 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -34,14 +35,15 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    viewModel: HomeViewModel,
-    bottomBar: @Composable () -> Unit = { }
+    viewModel: HomeAppViewModel,
+    bottomBar: @Composable () -> Unit = { },
+    accountHeader: @Composable () -> Unit = { }
 ) {
 
 
-    val account by viewModel.account.collectAsState()
+    val account by viewModel.account.dataFlow.collectAsState()
     var selectedTheme by remember { mutableStateOf(AppTheme.AUTOMATIC) }
-
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             TopAppBar(
@@ -56,12 +58,7 @@ fun SettingsScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = NewAppTheme.colors.background.default),
-                actions = {
-                    AccountHeaderAction(
-                        account = account,
-                        onLoginClick = { viewModel.login("sample username") },
-                        onAccountClick = { viewModel.logout() })
-                }
+                actions = { accountHeader() }
             )
         },
         bottomBar = bottomBar
@@ -71,7 +68,8 @@ fun SettingsScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()).padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+                .padding(paddingValues)
         ) {
             ThemeSection(
                 selectedTheme = selectedTheme,
