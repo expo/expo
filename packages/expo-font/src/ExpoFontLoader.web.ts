@@ -215,9 +215,12 @@ function getStyleElement(): HTMLStyleElement {
 }
 
 export function _createWebFontTemplate(fontFamily: string, resource: FontResource): string {
-  return `@font-face{font-family:"${fontFamily}";src:url("${resource.uri}");font-display:${
-    resource.display || FontDisplay.AUTO
-  }}`;
+  const src = `src:url("${resource.uri}");`;
+  const family = `font-family:"${resource.family ?? fontFamily}";`;
+  const weight = resource.weight ? `font-weight:${resource.weight};` : '';
+  const style = resource.style ? `font-style:${resource.style};` : '';
+  const display = `font-display:${resource.display || FontDisplay.AUTO};`;
+  return `@font-face{${family}${src}${weight}${style}${display}}`;
 }
 
 function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleElement {
