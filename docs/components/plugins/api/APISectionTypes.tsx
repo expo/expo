@@ -159,12 +159,15 @@ const renderTypePropertyRow = (
 };
 
 const renderType = (
-  { name, comment, type, typeParameter }: TypeGeneralData,
+  { name, comment, type, typeParameter, children }: TypeGeneralData,
   sdkVersion: string
 ) => {
-  if (type.declaration) {
+  const resolvedType = type ?? ({} as TypeDefinitionData);
+  const declaration = resolvedType.declaration ?? (children ? { children } : undefined);
+
+  if (declaration) {
     // Object Types
-    const signature = type?.declaration?.signatures?.[0];
+    const signature = resolvedType.declaration?.signatures?.[0];
     return (
       <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
@@ -173,7 +176,7 @@ const renderType = (
           comment={comment}
         />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
-        {type.declaration.children && renderTypeDeclarationTable(type.declaration, sdkVersion)}
+        {declaration.children && renderTypeDeclarationTable(declaration, sdkVersion)}
         {signature ? (
           <div key={`type-definition-signature-${signature.name}`}>
             <APICommentTextBlock comment={signature.comment} />
@@ -200,22 +203,22 @@ const renderType = (
         )}
       </div>
     );
-  } else if (type.elements) {
+  } else if (resolvedType.elements) {
     return (
       <div key={`type-tuple-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APIBoxHeader name={name} comment={comment} />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING)}>
-          Tuple: <CODE>{resolveTypeName(type, sdkVersion)}</CODE>
+          Tuple: <CODE>{resolveTypeName(resolvedType, sdkVersion)}</CODE>
         </CALLOUT>
       </div>
     );
-  } else if (type.types && ['union', 'intersection'].includes(type.type)) {
-    const literalTypes = type.types.filter((t: TypeDefinitionData) =>
+  } else if (resolvedType.types && ['union', 'intersection'].includes(resolvedType.type)) {
+    const literalTypes = resolvedType.types.filter((t: TypeDefinitionData) =>
       ['literal', 'templateLiteral', 'intrinsic', 'reference', 'tuple'].includes(t.type)
     );
-    const propTypes = type.types.filter((t: TypeDefinitionData) => t.type === 'reflection');
+    const propTypes = resolvedType.types.filter((t: TypeDefinitionData) => t.type === 'reflection');
     const propMethodDefinitions = propTypes.filter(
       (t: TypeDefinitionData) => t.declaration?.signatures?.length
     );
@@ -227,20 +230,20 @@ const renderType = (
           <APISectionDeprecationNote comment={comment} sticky />
           <APIBoxHeader name={name} comment={comment} />
           <APICommentTextBlock comment={comment} includePlatforms={false} />
-          {type.type === 'intersection' || type.type === 'union' ? (
+          {resolvedType.type === 'intersection' || resolvedType.type === 'union' ? (
             <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
               Type:{' '}
-              {type.types
+              {resolvedType.types
                 .filter(type =>
                   ['reference', 'union', 'intersection', 'intrinsic', 'literal'].includes(type.type)
                 )
                 .map(validType => (
                   <Fragment key={`nested-reference-type-${validType.name}`}>
                     <CODE className="text-default">{resolveTypeName(validType, sdkVersion)}</CODE>
-                    {type.type === 'union' ? ' or ' : ' '}
+                    {resolvedType.type === 'union' ? ' or ' : ' '}
                   </Fragment>
                 ))}
-              {type.type === 'union' ? (
+              {resolvedType.type === 'union' ? (
                 propMethodDefinitions.length > 2 ? (
                   'An anonymous method defined as described below'
                 ) : (
@@ -291,8 +294,8 @@ const renderType = (
       );
     }
   } else if (
-    (type.name === 'Record' && type.typeArguments) ||
-    ['array', 'reference'].includes(type.type)
+    (resolvedType.name === 'Record' && resolvedType.typeArguments) ||
+    ['array', 'reference'].includes(resolvedType.type)
   ) {
     return (
       <div key={`record-definition-${name}`} className={mergeClasses(STYLES_APIBOX)}>
@@ -300,12 +303,12 @@ const renderType = (
         <APIBoxHeader name={name} comment={comment} />
         <CALLOUT className={mergeClasses(VERTICAL_SPACING, 'mb-3')}>
           <span className={STYLES_SECONDARY}>Type: </span>
-          <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+          <APIDataType typeDefinition={resolvedType} sdkVersion={sdkVersion} />
         </CALLOUT>
         <APICommentTextBlock comment={comment} includePlatforms={false} />
       </div>
     );
-  } else if (type.type === 'intrinsic') {
+  } else if (resolvedType.type === 'intrinsic') {
     return (
       <div key={`generic-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
@@ -313,40 +316,44 @@ const renderType = (
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT className={mergeClasses(VERTICAL_SPACING, ELEMENT_SPACING)}>
           <span className={STYLES_SECONDARY}>Type: </span>
-          <CODE>{type.name}</CODE>
+          <CODE>{resolvedType.name}</CODE>
         </CALLOUT>
       </div>
     );
-  } else if (type.type === 'conditional' && type.checkType) {
+  } else if (resolvedType.type === 'conditional' && resolvedType.checkType) {
     return (
       <div key={`conditional-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
-        <APIBoxHeader name={`${name}<${type.checkType.name}>`} comment={comment} />
+        <APIBoxHeader name={`${name}<${resolvedType.checkType.name}>`} comment={comment} />
         <APICommentTextBlock comment={comment} includePlatforms={false} />
         <CALLOUT className={mergeClasses(VERTICAL_SPACING, 'mb-1')}>
           <span className={STYLES_SECONDARY}>Generic: </span>
           <CODE>
-            {type.checkType.name}
+            {resolvedType.checkType.name}
             {typeParameter && <> extends {resolveTypeName(typeParameter[0].type, sdkVersion)}</>}
           </CODE>
         </CALLOUT>
         <CALLOUT className={mergeClasses(VERTICAL_SPACING, ELEMENT_SPACING)}>
           <span className={STYLES_SECONDARY}>Type: </span>
           <CODE>
-            {type.checkType.name}
+            {resolvedType.checkType.name}
             {typeParameter && (
-              <> extends {type.extendsType && resolveTypeName(type.extendsType, sdkVersion)}</>
+              <>
+                {' '}
+                extends{' '}
+                {resolvedType.extendsType && resolveTypeName(resolvedType.extendsType, sdkVersion)}
+              </>
             )}
             {' ? '}
-            {type.trueType && resolveTypeName(type.trueType, sdkVersion)}
+            {resolvedType.trueType && resolveTypeName(resolvedType.trueType, sdkVersion)}
             {' : '}
-            {type.falseType && resolveTypeName(type.falseType, sdkVersion)}
+            {resolvedType.falseType && resolveTypeName(resolvedType.falseType, sdkVersion)}
           </CODE>
         </CALLOUT>
       </div>
     );
-  } else if (type.type === 'templateLiteral' && type.tail) {
-    const possibleData = [type.head ?? '', ...type.tail.flat()].filter(
+  } else if (resolvedType.type === 'templateLiteral' && resolvedType.tail) {
+    const possibleData = [resolvedType.head ?? '', ...resolvedType.tail.flat()].filter(
       entry => typeof entry !== 'string'
     );
 

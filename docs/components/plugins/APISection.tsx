@@ -157,12 +157,13 @@ const renderAPI = (
       [TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy],
       entry =>
         !isProp(entry) &&
-        !(entry?.variant === 'reference') &&
+        entry?.variant !== 'reference' &&
         !!(
-          entry.type.declaration ??
-          entry.type.types ??
-          entry.type.type ??
-          entry.type.typeArguments
+          entry.type?.declaration ??
+          entry.type?.types ??
+          entry.type?.type ??
+          entry.type?.typeArguments ??
+          entry.children
         )
     );
 
@@ -172,7 +173,7 @@ const renderAPI = (
       entry =>
         isProp(entry) &&
         ([TypeDocKind.TypeAlias, TypeDocKind.TypeAlias_Legacy].includes(entry.kind)
-          ? !!(entry.type.types ?? entry.type.declaration?.children)
+          ? !!(entry.type?.types ?? entry.type?.declaration?.children ?? entry.children)
           : true)
     );
     const defaultProps = filterDataByKind(
