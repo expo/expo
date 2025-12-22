@@ -1,4 +1,4 @@
-import { RefObject } from 'react';
+import { type RefObject } from 'react';
 import { View, type ViewProps } from 'react-native';
 
 export type GlassStyle = 'clear' | 'regular';
