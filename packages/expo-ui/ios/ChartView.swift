@@ -14,23 +14,28 @@ enum ChartType: String, Enumerable {
 }
 
 struct ChartDataPoint: Record {
-  @Field var xString: String?
-  @Field var xNumber: Double?
+  @Field var x: Either<String, Double>?
   @Field var y: Double
   @Field var color: Color?
 
   var xValue: String {
-    if let s = xString {
-      return s
+    switch x?.get() {
+      case .left(let s):
+          return s
+      case .right(let n):
+          return String(n)
+      default:
+          return ""
     }
-    if let n = xNumber {
-      return String(n)
-    }
-    return ""
   }
 
   var xNumericValue: Double? {
-    return xNumber
+    switch x?.get() {
+      case .right(let n):
+          return n
+      default:
+          return nil
+    }
   }
 }
 
