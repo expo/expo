@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders a liquid glass container view 1`] = `
+<ViewManagerAdapter_ExpoGlassEffect
+  spacing={8}
+  testID="glass-container"
+>
+  <ViewManagerAdapter_ExpoGlassEffect
+    testID="glass-children-1"
+  />
+  <ViewManagerAdapter_ExpoGlassEffect
+    testID="glass-children-2"
+  />
+</ViewManagerAdapter_ExpoGlassEffect>
+`;
