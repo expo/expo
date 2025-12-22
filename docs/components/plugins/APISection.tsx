@@ -103,7 +103,12 @@ const isProp = ({ name }: GeneratedData) =>
   name !== 'ScreenProps' &&
   !PROP_EXCEPTIONS.has(name);
 
-const componentTypeNames = new Set(['React.FC', 'ForwardRefExoticComponent', 'ComponentType']);
+const componentTypeNames = new Set([
+  'React.FC',
+  'ForwardRefExoticComponent',
+  'ComponentType',
+  'NamedExoticComponent',
+]);
 const interfaceClassNames = new Set([
   'EventEmitterType',
   'NativeModuleType',
