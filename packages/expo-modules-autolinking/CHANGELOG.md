@@ -20,6 +20,7 @@
 - [Android] Move generate-package-list to Gradle task ([#39917](https://github.com/expo/expo/pull/39917) by [@jakex7](https://github.com/jakex7))
 - [Android] Use module name from `expo-module.config.json`. ([#39985](https://github.com/expo/expo/pull/39985) by [@jakex7](https://github.com/jakex7))
 - [Android] Align `expo-gradle-plugin`'s CLI command to align with iOS invocation of `expo-modules-autolinking` ([#41264](https://github.com/expo/expo/pull/41264) by [@kitten](https://github.com/kitten))
+- [Android] Removed `AppContext.camera`, `AppContext.font` and `AppContext.taskManager`.
 
 ## 3.0.23 - 2025-12-04
 
