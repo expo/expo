@@ -28,6 +28,7 @@
     "./app.plugin.js": "./app.plugin.js",
     "./tools/hashAssetFiles": "./tools/hashAssetFiles.js",
     "./package.json": "./package.json",
+    "./build/resolveAssetSource": "./build/resolveAssetSource.js",
     ".": {
       "react-server": "./build/index.server.js",
       "default": "./build/index.js"
