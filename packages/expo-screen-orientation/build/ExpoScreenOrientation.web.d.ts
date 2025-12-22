@@ -11,7 +11,6 @@ declare global {
 }
 declare class ExpoScreenOrientation extends NativeModule<ExpoOrientationEvents> {
     orientation: ScreenOrientation | null;
-    listener: (() => void) | undefined;
     emitOrientationEvent(): Promise<void>;
     startObserving(): void;
     stopObserving(): void;
