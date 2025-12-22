@@ -95,6 +95,8 @@ const interfaceClassNames = new Set([
   'SharedObjectType',
   'SharedRefType',
   'FileHandle',
+  'ImageManipulatorContext',
+  'ImageRef',
 ]);
 
 const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
