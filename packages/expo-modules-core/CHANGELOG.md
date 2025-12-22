@@ -56,6 +56,7 @@
 - Deprecated `executeOnJavaScriptThread` in favor of `runtime.schedule`. ([#41478](https://github.com/expo/expo/pull/41478) by [@tsapeta](https://github.com/tsapeta) & [#41551](https://github.com/expo/expo/pull/41551) by [@lukmccall](https://github.com/lukmccall))
 - Added `ShadowNodeProxy.setStyleSize()` for Jetpack Compose integration. ([#41553](https://github.com/expo/expo/pull/41553) by [@kudo](https://github.com/kudo))
 - [iOS] Create wrapper for `RCTHost`. ([#41632](https://github.com/expo/expo/pull/41632) by [@alanjhughes](https://github.com/alanjhughes))
+- Removed unnecessary warning in the legacy `NativeViewManagerAdapter`. ([#41804](https://github.com/expo/expo/pull/41804) by [@tsapeta](https://github.com/tsapeta))
 
 ## 3.0.28 - 2025-12-05
 
