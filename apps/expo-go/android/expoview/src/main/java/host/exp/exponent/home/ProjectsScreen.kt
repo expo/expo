@@ -1,79 +1,99 @@
 package host.exp.exponent.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import expo.modules.devmenu.compose.newtheme.NewAppTheme
-import host.exp.expoview.R
-import androidx.compose.ui.res.painterResource
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlin.collections.emptyList
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun ProjectsScreen(
-    viewModel: HomeViewModel,
+    viewModel: HomeAppViewModel,
     onGoBack: () -> Unit,
     bottomBar: @Composable () -> Unit = { }
 ) {
-    val apps by viewModel.apps.collectAsState()
+    val loading by viewModel.appsPaginator.loadingFlow.collectAsState()
 
-    val state = rememberPullToRefreshState()
-    var isRefreshing by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-    val onRefresh: () -> Unit = {
-        isRefreshing = true
-        coroutineScope.launch {
-            delay(5000)
-            isRefreshing = false
-        }
-    }
+    val apps by viewModel.appsPaginator.dataFlow.flatMapLatest { paginator ->
+        paginator?.data ?: flowOf(emptyList())
+    }.collectAsState(initial = emptyList())
+
+    val paginator by viewModel.appsPaginator.dataFlow.collectAsState()
+    val canLoadMore = !(paginator?.isLastPage ?: true)
+    val isFetching = paginator?.isFetching ?: false
+
+    val pullToRefreshState = rememberPullToRefreshState()
+    val lazyListState = rememberLazyListState()
+
     Scaffold(
         topBar = {
-            TopAppBarWithBackIcon("Snacks", onGoBack = onGoBack)
+            TopAppBarWithBackIcon("Projects", onGoBack = onGoBack)
         },
         bottomBar = bottomBar
     ) {
         PullToRefreshBox(
             modifier = Modifier.padding(it),
-            state = state,
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
+            state = pullToRefreshState,
+            isRefreshing = loading,
+            onRefresh = {
+                viewModel.appsPaginator.refresh()
+            },
         ) {
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize().verticalScroll(rememberScrollState())
-        ) {
-
-
-            if (!apps.isEmpty()) {
-                LabeledGroup() {
-                    for (app in apps) {
-                        DevSessionRow(session = app)
-                        HorizontalDivider()
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = lazyListState
+            ) {
+                items(apps) { app ->
+                    AppRow(app = app)
+                    HorizontalDivider()
+                }
+                if (isFetching) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
                     }
                 }
             }
-        }
+
+            LaunchedEffect(lazyListState, canLoadMore, isFetching) {
+                if (isFetching || !canLoadMore) {
+                    return@LaunchedEffect
+                }
+
+                if(lazyListState.layoutInfo.visibleItemsInfo.isEmpty()) {
+                    paginator?.loadMore()
+                    return@LaunchedEffect
+                }
+
+                val lastVisibleItem = lazyListState.layoutInfo.visibleItemsInfo.last()
+
+                val buffer = 3
+                if (lastVisibleItem.index >= apps.size - 1 - buffer) {
+                    paginator?.loadMore()
+                }
+            }
         }
     }
 }
