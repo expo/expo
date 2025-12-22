@@ -5,37 +5,31 @@
 namespace expo {
 
 void Worklet::registerNatives() {
-  registerHybrid({
-                   makeNativeMethod("schedule", Worklet::schedule),
-                   makeNativeMethod("execute", Worklet::execute),
-                 });
+  javaClassLocal()->registerNatives({
+                                      makeNativeMethod("schedule", Worklet::schedule),
+                                      makeNativeMethod("execute", Worklet::execute),
+                                    });
 }
-
-jni::local_ref<Worklet::javaobject> Worklet::newInstance(
-  JSIContext *jsiContext,
-  const std::shared_ptr<worklets::SerializableWorklet> &worklet
-) {
-  auto expoWorklet = Worklet::newObjectCxxArgs(worklet);
-  jsiContext->jniDeallocator->addReference(expoWorklet);
-  return expoWorklet;
-}
-
-Worklet::Worklet(
-  const std::shared_ptr<worklets::SerializableWorklet> &worklet
-) : worklet_(worklet) {}
 
 void Worklet::schedule(
-  jni::alias_ref<WorkletNativeRuntime::javaobject> workletRuntimeHolder
+  jni::alias_ref<Worklet::javaobject> self,
+  jni::alias_ref<WorkletNativeRuntime::javaobject> workletRuntimeHolder,
+  jni::alias_ref<Serializable::javaobject> synchronizable
 ) {
   auto workletRuntime = workletRuntimeHolder->cthis()->workletRuntime.lock();
-  workletRuntime->schedule(worklet_);
+  auto worklet = std::dynamic_pointer_cast<worklets::SerializableWorklet>(synchronizable->cthis()->getSerializable());
+  workletRuntime->schedule(std::move(worklet));
 }
 
 void Worklet::execute(
-  jni::alias_ref<WorkletNativeRuntime::javaobject> workletRuntimeHolder
+  jni::alias_ref<Worklet::javaobject> self,
+  jni::alias_ref<WorkletNativeRuntime::javaobject> workletRuntimeHolder,
+  jni::alias_ref<Serializable::javaobject> synchronizable
 ) {
   auto workletRuntime = workletRuntimeHolder->cthis()->workletRuntime.lock();
-  workletRuntime->runSync(worklet_);
+  auto worklet = std::dynamic_pointer_cast<worklets::SerializableWorklet>(synchronizable->cthis()->getSerializable());
+
+  workletRuntime->runSync(worklet);
 }
 
 } // namespace expo

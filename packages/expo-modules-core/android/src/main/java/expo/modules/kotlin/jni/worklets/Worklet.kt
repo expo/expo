@@ -1,39 +1,31 @@
 package expo.modules.kotlin.jni.worklets
 
-import com.facebook.jni.HybridData
-import expo.modules.core.interfaces.DoNotStrip
-import expo.modules.kotlin.jni.Destructible
 import expo.modules.kotlin.runtime.WorkletRuntime
 
-class Worklet @DoNotStrip private constructor(@DoNotStrip private val mHybridData: HybridData) : Destructible {
+class Worklet internal constructor(
+  private val serializable: Serializable
+) {
   private val WorkletRuntime.enforceHolder
     get() = mWorkletNativeRuntime
       ?: throw IllegalStateException("Worklet runtime is not installed.")
 
   fun schedule(runtime: WorkletRuntime) {
     val runtimeHolder = runtime.enforceHolder
-    schedule(runtimeHolder)
+    schedule(runtimeHolder, serializable)
   }
 
   fun execute(runtime: WorkletRuntime) {
     val runtimeHolder = runtime.enforceHolder
-    execute(runtimeHolder)
+    execute(runtimeHolder, serializable)
   }
 
   private external fun schedule(
-    workletNativeRuntime: WorkletNativeRuntime
+    workletNativeRuntime: WorkletNativeRuntime,
+    serializable: Serializable
   )
 
   private external fun execute(
-    workletNativeRuntime: WorkletNativeRuntime
+    workletNativeRuntime: WorkletNativeRuntime,
+    serializable: Serializable
   )
-
-  @Throws(Throwable::class)
-  protected fun finalize() {
-    deallocate()
-  }
-
-  override fun deallocate() {
-    mHybridData.resetNative()
-  }
 }
