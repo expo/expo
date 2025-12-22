@@ -59,6 +59,12 @@ const isProp = ({ name }: GeneratedData) =>
   !PROP_EXCEPTIONS.has(name);
 
 const componentTypeNames = new Set(['React.FC', 'ForwardRefExoticComponent', 'ComponentType']);
+const interfaceClassNames = new Set([
+  'EventEmitterType',
+  'NativeModuleType',
+  'SharedObjectType',
+  'SharedRefType',
+]);
 
 const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
   if (type?.name && componentTypeNames.has(type?.name)) {
@@ -189,7 +195,9 @@ const renderAPI = (
     const interfaces = filterDataByKind(
       data,
       TypeDocKind.Interface,
-      entry => !entry.name.includes('Props') || PROP_EXCEPTIONS.has(entry.name)
+      entry =>
+        (!entry.name.includes('Props') || PROP_EXCEPTIONS.has(entry.name)) &&
+        !interfaceClassNames.has(entry.name)
     );
     const constants = filterDataByKind(data, TypeDocKind.Variable, entry => isConstant(entry));
 
@@ -210,11 +218,16 @@ const renderAPI = (
 
     const namespaces = filterDataByKind(data, TypeDocKind.Namespace);
 
-    const classes = filterDataByKind(
-      data,
-      TypeDocKind.Class,
-      entry => !isComponent(entry) && entry.name !== 'default'
-    );
+    const classes = [
+      ...filterDataByKind(
+        data,
+        TypeDocKind.Class,
+        entry => !isComponent(entry) && entry.name !== 'default'
+      ),
+      ...filterDataByKind(data, TypeDocKind.Interface, entry =>
+        interfaceClassNames.has(entry.name)
+      ),
+    ].filter((entry, index, list) => list.findIndex(item => item.name === entry.name) === index);
 
     const componentsChildren = components
       .map((cls: ClassDefinitionData) =>
