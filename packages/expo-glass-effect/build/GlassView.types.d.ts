@@ -1,4 +1,5 @@
-import { ViewProps } from 'react-native';
+import { type RefObject } from 'react';
+import { View, type ViewProps } from 'react-native';
 export type GlassStyle = 'clear' | 'regular';
 export type GlassViewProps = {
     /**
@@ -15,5 +16,6 @@ export type GlassViewProps = {
      * @default false
      */
     isInteractive?: boolean;
+    ref?: RefObject<View | null>;
 } & ViewProps;
 //# sourceMappingURL=GlassView.types.d.ts.map
