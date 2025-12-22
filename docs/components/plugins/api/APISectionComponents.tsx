@@ -7,8 +7,8 @@ import { H2, DEMI, CODE, CALLOUT, A } from '~/ui/components/Text';
 import {
   CommentData,
   GeneratedData,
-  MethodSignatureData,
   PropsDefinitionData,
+  TypeSignaturesData,
   TypeDefinitionData,
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
@@ -28,16 +28,16 @@ export type APISectionComponentsProps = {
   componentsProps: PropsDefinitionData[];
 };
 
-const getComponentComment = (comment: CommentData, signatures: MethodSignatureData[]) =>
-  comment || (signatures?.[0]?.comment ?? undefined);
+const getComponentComment = (comment?: CommentData, signatures: TypeSignaturesData[] = []) =>
+  comment ?? signatures?.[0]?.comment ?? undefined;
 
 const getComponentSignatures = ({
   signatures,
   type,
 }: {
-  signatures?: MethodSignatureData[];
+  signatures?: TypeSignaturesData[];
   type?: TypeDefinitionData;
-}) => {
+}): TypeSignaturesData[] => {
   if (signatures?.length) {
     return signatures;
   }
@@ -54,9 +54,11 @@ const getComponentSignatures = ({
   return [];
 };
 
-const getComponentType = ({ signatures }: Partial<GeneratedData>) => {
-  if (signatures?.length && signatures[0].type.types) {
-    return 'React.' + signatures[0].type.types.filter(t => t.type === 'reference')[0]?.name;
+const getComponentType = ({ signatures }: { signatures?: TypeSignaturesData[] }) => {
+  const signatureType = signatures?.[0]?.type;
+  const referenceName = signatureType?.types?.find(t => t.type === 'reference')?.name;
+  if (referenceName) {
+    return `React.${referenceName}`;
   }
   return (
     <>
@@ -70,11 +72,15 @@ const getComponentTypeParameters = ({
   extendedTypes,
   type,
   signatures,
-}: Partial<GeneratedData>) => {
+}: {
+  extendedTypes?: TypeDefinitionData[];
+  type?: TypeDefinitionData;
+  signatures?: TypeSignaturesData[];
+}) => {
   if (extendedTypes?.length) {
     return extendedTypes[0];
   } else if (signatures?.length && signatures[0]?.parameters?.length) {
-    return signatures?.[0].parameters[0].type;
+    return signatures?.[0].parameters?.[0]?.type;
   }
   return type;
 };
