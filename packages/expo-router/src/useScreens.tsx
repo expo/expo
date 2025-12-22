@@ -18,7 +18,7 @@ import { useExpoRouterStore } from './global-state/storeContext';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
-import { unstable_navigationEvents } from './navigationEvents';
+import { areNavigationEventsEnabled, internal_navigationEventEmitter } from './navigationEvents';
 import {
   hasParam,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
@@ -307,7 +307,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     return (
       <Route node={value} route={route}>
-        {value.type === 'route' && unstable_navigationEvents.hasAnyListener() && (
+        {areNavigationEventsEnabled() && value.type === 'route' && (
           <AnalyticsListeners navigation={navigation} screenId={route.key} />
         )}
         <ZoomTransitionEnabler route={route} />
@@ -351,7 +351,7 @@ function AnalyticsListeners({
   if (isFirstRenderRef.current) {
     isFirstRenderRef.current = false;
     if (pathname) {
-      unstable_navigationEvents.emit('pageWillRender', {
+      internal_navigationEventEmitter.emit('pageWillRender', {
         pathname,
         screenId,
       });
@@ -361,7 +361,7 @@ function AnalyticsListeners({
   useEffect(() => {
     if (pathname) {
       return () => {
-        unstable_navigationEvents.emit('pageRemoved', {
+        internal_navigationEventEmitter.emit('pageRemoved', {
           pathname,
           screenId,
         });
@@ -373,13 +373,13 @@ function AnalyticsListeners({
   useEffect(() => {
     if (pathname) {
       const cleanFocus = navigation.addListener('focus', () => {
-        unstable_navigationEvents.emit('pageFocused', {
+        internal_navigationEventEmitter.emit('pageFocused', {
           pathname,
           screenId,
         });
       });
       const cleanBlur = navigation.addListener('blur', () => {
-        unstable_navigationEvents.emit('pageBlurred', {
+        internal_navigationEventEmitter.emit('pageBlurred', {
           pathname,
           screenId,
         });
