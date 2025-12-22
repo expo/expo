@@ -9,6 +9,7 @@ import {
   GeneratedData,
   MethodSignatureData,
   PropsDefinitionData,
+  TypeDefinitionData,
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import APISectionProps from './APISectionProps';
@@ -29,6 +30,29 @@ export type APISectionComponentsProps = {
 
 const getComponentComment = (comment: CommentData, signatures: MethodSignatureData[]) =>
   comment || (signatures?.[0]?.comment ?? undefined);
+
+const getComponentSignatures = ({
+  signatures,
+  type,
+}: {
+  signatures?: MethodSignatureData[];
+  type?: TypeDefinitionData;
+}) => {
+  if (signatures?.length) {
+    return signatures;
+  }
+  if (type?.declaration?.signatures?.length) {
+    return type.declaration.signatures;
+  }
+  if (type?.type === 'intersection' || type?.type === 'union') {
+    return (
+      type.types?.find(
+        candidate => candidate.type === 'reflection' && candidate.declaration?.signatures?.length
+      )?.declaration?.signatures ?? []
+    );
+  }
+  return [];
+};
 
 const getComponentType = ({ signatures }: Partial<GeneratedData>) => {
   if (signatures?.length && signatures[0].type.types) {
@@ -60,10 +84,15 @@ const renderComponent = (
   sdkVersion: string,
   componentsProps?: PropsDefinitionData[]
 ) => {
-  const resolvedType = getComponentType({ signatures });
-  const resolvedTypeParameters = getComponentTypeParameters({ type, extendedTypes, signatures });
+  const resolvedSignatures = getComponentSignatures({ signatures, type });
+  const resolvedType = getComponentType({ signatures: resolvedSignatures });
+  const resolvedTypeParameters = getComponentTypeParameters({
+    type,
+    extendedTypes,
+    signatures: resolvedSignatures,
+  });
   const resolvedName = getComponentName(name, children);
-  const extractedComment = getComponentComment(comment, signatures);
+  const extractedComment = getComponentComment(comment, resolvedSignatures);
 
   return (
     <div

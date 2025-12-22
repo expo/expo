@@ -6,6 +6,7 @@ import {
   DefaultPropsDefinitionData,
   GeneratedData,
   PropData,
+  TypeDefinitionData,
   TypeDocKind,
 } from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
@@ -68,8 +69,22 @@ const isFunctionLikeEntry = (entry: ApiDataEntry) =>
   isFunctionLikeVariable(entry) ||
   isConfigPluginVariable(entry);
 
+const getTypeSignatures = (type?: TypeDefinitionData) => {
+  if (type?.declaration?.signatures?.length) {
+    return type.declaration.signatures;
+  }
+  if (type?.type === 'intersection' || type?.type === 'union') {
+    return (
+      type.types?.find(
+        candidate => candidate.type === 'reflection' && candidate.declaration?.signatures?.length
+      )?.declaration?.signatures ?? []
+    );
+  }
+  return [];
+};
+
 const getEntrySignatures = (entry: ApiDataEntry) =>
-  entry.signatures ?? entry.type?.declaration?.signatures ?? [];
+  entry.signatures?.length ? entry.signatures : getTypeSignatures(entry.type);
 
 const isDefaultPropsDefinitionData = (entry?: PropData): entry is DefaultPropsDefinitionData =>
   !!entry?.type && entry.kind !== undefined;
@@ -99,7 +114,9 @@ const interfaceClassNames = new Set([
   'ImageRef',
 ]);
 
-const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
+const isComponent = (entry: GeneratedData) => {
+  const { type, extendedTypes } = entry;
+  const signatures = getEntrySignatures(entry);
   if (type?.name && componentTypeNames.has(type?.name)) {
     return true;
   } else if (extendedTypes?.length) {
@@ -248,7 +265,11 @@ const renderAPI = (
     const constants = filterDataByKind(
       data,
       TypeDocKind.Variable,
-      entry => isConstant(entry) && !isFunctionLikeVariable(entry) && !isConfigPluginVariable(entry)
+      entry =>
+        isConstant(entry) &&
+        !isFunctionLikeVariable(entry) &&
+        !isConfigPluginVariable(entry) &&
+        !isComponent(entry)
     );
 
     const components = filterDataByKind(
@@ -279,18 +300,18 @@ const renderAPI = (
       ),
     ].filter((entry, index, list) => list.findIndex(item => item.name === entry.name) === index);
 
-    const componentsChildren = components
-      .map((cls: ClassDefinitionData) =>
-        cls.children?.filter(
-          child =>
-            (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
-            !child.inheritedFrom &&
-            child.name !== 'render' &&
-            // note(simek): hide unannotated "private" methods
-            !child.name.startsWith('_')
-        )
-      )
-      .flat();
+    const filterComponentMembers = (children: PropData[] = []) =>
+      children.filter(
+        child =>
+          (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
+          !child.inheritedFrom &&
+          child.name !== 'render' &&
+          // note(simek): hide unannotated "private" methods
+          !child.name.startsWith('_')
+      );
+    const componentMembers = (cls: ClassDefinitionData) => filterComponentMembers(cls.children);
+
+    const componentsChildren = components.flatMap(componentMembers).filter(Boolean);
 
     const methodsNames = new Set(methods.map(method => method.name));
     const staticMethods = componentsChildren.filter(
