@@ -254,7 +254,15 @@ const renderAPI = (
       ? defaultPropsCandidate
       : undefined;
 
-    const enums = filterDataByKind(data, TypeDocKind.Enum, entry => entry.name !== 'default');
+    const shouldStripLocationEnumPrefix =
+      packageName === 'expo-location' ||
+      (Array.isArray(packageName) && packageName.includes('expo-location'));
+    const enums = filterDataByKind(data, TypeDocKind.Enum, entry => entry.name !== 'default').map(
+      entry =>
+        shouldStripLocationEnumPrefix && entry.name.startsWith('Location')
+          ? { ...entry, name: entry.name.replace(/^Location/, '') }
+          : entry
+    );
     const interfaces = filterDataByKind(
       data,
       TypeDocKind.Interface,
