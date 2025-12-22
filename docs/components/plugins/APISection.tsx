@@ -57,8 +57,16 @@ const isListener = ({ name }: GeneratedData) =>
 const isFunctionLikeVariable = (entry: ApiDataEntry) =>
   entry.kind === TypeDocKind.Variable && !!entry.type?.declaration?.signatures?.length;
 
+const isConfigPluginVariable = (entry: ApiDataEntry) =>
+  entry.kind === TypeDocKind.Variable &&
+  entry.type?.type === 'reference' &&
+  entry.type?.name === 'ConfigPlugin' &&
+  (!entry.type?.target?.qualifiedName || entry.type?.target?.qualifiedName === 'ConfigPlugin');
+
 const isFunctionLikeEntry = (entry: ApiDataEntry) =>
-  entry.kind === TypeDocKind.Function || isFunctionLikeVariable(entry);
+  entry.kind === TypeDocKind.Function ||
+  isFunctionLikeVariable(entry) ||
+  isConfigPluginVariable(entry);
 
 const getEntrySignatures = (entry: ApiDataEntry) =>
   entry.signatures ?? entry.type?.declaration?.signatures ?? [];
@@ -237,7 +245,7 @@ const renderAPI = (
     const constants = filterDataByKind(
       data,
       TypeDocKind.Variable,
-      entry => isConstant(entry) && !isFunctionLikeVariable(entry)
+      entry => isConstant(entry) && !isFunctionLikeVariable(entry) && !isConfigPluginVariable(entry)
     );
 
     const components = filterDataByKind(
