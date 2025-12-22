@@ -13,7 +13,7 @@
   "@react-native-segmented-control/segmented-control": "2.5.7",
   "@stripe/stripe-react-native": "0.50.3",
   "eslint-config-expo": "~10.0.0",
-  "expo-age-range": "~0.2.0",
+  "expo-age-range": "~0.2.1",
   "expo-analytics-amplitude": "~11.3.0",
   "expo-app-auth": "~11.1.0",
   "expo-app-loader-provider": "~8.0.0",
