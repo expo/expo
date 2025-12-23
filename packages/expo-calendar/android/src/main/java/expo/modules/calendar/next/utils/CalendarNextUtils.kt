@@ -21,13 +21,15 @@ val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").apply {
  * [SimpleDateFormat] used in native recurrence rule string.
  * The format corresponds to the 'date-time' type defined by RFC-5455 section 3.3.5.
  */
-val rrFormat = SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'")
+val rrFormat = SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'").apply {
+  timeZone = TimeZone.getTimeZone("GMT")
+}
 
 /**
  * [SimpleDateFormat] used in native recurrence rule string for all-day events.
  * The format corresponds to the 'date' type defined by RFC-5455 section 3.3.4.
  */
-val allDayRRFormat = SimpleDateFormat("yyyyMMdd").apply {
+val allDayRrFormat = SimpleDateFormat("yyyyMMdd").apply {
   timeZone = TimeZone.getTimeZone("GMT")
 }
 
@@ -38,7 +40,7 @@ fun parseRrDate(dateString: String): Date? =
   runCatching {
     rrFormat.parse(dateString)
   }.recover {
-    allDayRRFormat.parse(dateString)
+    allDayRrFormat.parse(dateString)
   }.getOrNull()
 
 suspend fun findEvents(contentResolver: ContentResolver, startDate: Any, endDate: Any, calendars: List<String>): Cursor {
