@@ -13,8 +13,8 @@ export type LoadingIndicatorProps = {
     variant?: LoadingIndicatorVariant;
     /**
      * The progress value of the indicator.
-     * - If provided: Determinate mode - morphs shapes based on progress value.
-     * - If null/undefined: Indeterminate mode - continuous morphing animation.
+     * - If provided: Determinate mode, which morphs shapes according to the progress value.
+     * - If `null` or `undefined`: Indeterminate mode, which uses continuous morphing animation.
      *
      * This is a number between `0` and `1`.
      */
