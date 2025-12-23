@@ -1,7 +1,6 @@
 import { UnavailabilityError, Platform } from 'expo-modules-core';
 import { ClipboardPasteButton } from './ClipboardPasteButton';
-import ExpoClipboard from './ExpoClipboard';
-const onClipboardEventName = 'onClipboardChanged';
+import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
  * the user to grant your app permission to "see text and images copied to the clipboard."
@@ -185,7 +184,7 @@ export async function hasImageAsync() {
  * ```
  */
 export function addClipboardListener(listener) {
-    return ExpoClipboard.addListener(onClipboardEventName, listener);
+    return ExpoClipboard.addListener(clipboardEventName, listener);
 }
 /**
  * Removes the listener added by addClipboardListener. This method is a no-op on Web.

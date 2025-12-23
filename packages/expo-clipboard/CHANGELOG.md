@@ -14,6 +14,7 @@
 
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
 - [iOS] Update documentation regarding the edge case when the user denies paste permission ([#40259](https://github.com/expo/expo/pull/40259) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- Update internal TypeScript types. ([#41740](https://github.com/expo/expo/pull/41740) by [@barthap](https://github.com/barthap))
 
 ## 8.0.8 - 2025-12-05
 
