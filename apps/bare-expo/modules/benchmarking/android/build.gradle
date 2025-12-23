@@ -1,6 +1,7 @@
 plugins {
   id 'com.android.library'
   id 'expo-module-gradle-plugin'
+  id 'expo-module-optimized-gradle-plugin'
 }
 
 group = 'host.exp.exponent'
@@ -21,4 +22,3 @@ android {
 dependencies {
   implementation 'com.facebook.react:react-android'
 }
-

@@ -76,6 +76,9 @@ class ModuleHolder<T : Module>(
       classData
         .exportClasses(appContext, runtime)
     }
+
+    // Register optimized functions if any exist
+    module.registerOptimizedFunctions(this)
   }
 
   /**

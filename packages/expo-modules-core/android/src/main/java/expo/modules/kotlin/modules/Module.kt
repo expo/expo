@@ -1,6 +1,7 @@
 package expo.modules.kotlin.modules
 
 import android.os.Bundle
+import android.util.Log
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.convertToString
@@ -62,6 +63,29 @@ abstract class Module : AppContextProvider {
   open fun converters(): TypeConverterProvider? = null
 
   abstract fun definition(): ModuleDefinitionData
+
+  /**
+   * Internal method called during module registration to register optimized functions.
+   * This method attempts to find a generated registry class for this module and
+   * registers any @OptimizedFunction annotated functions.
+   */
+  internal fun registerOptimizedFunctions(decorator: expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject) {
+    val registryClassName = "${this::class.java.name}_OptimizedRegistry"
+    try {
+      val registryClass = Class.forName(registryClassName)
+      val registerMethod = registryClass.getDeclaredMethod(
+        "registerOptimizedFunctions",
+        expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject::class.java,
+        this::class.java
+      )
+      registerMethod.invoke(null, decorator, this)
+    } catch (e: ClassNotFoundException) {
+      // No optimized functions for this module, continue normally
+    } catch (e: Exception) {
+      // Log error but don't fail module registration
+      Log.w("Module", "Failed to register optimized functions for ${this::class.java.simpleName}: ${e.message}")
+    }
+  }
 }
 
 @Suppress("FunctionName")

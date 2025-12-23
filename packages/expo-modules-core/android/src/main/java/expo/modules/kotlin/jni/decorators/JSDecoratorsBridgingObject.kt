@@ -86,6 +86,12 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
     body: JNIFunctionBody
   )
 
+  external fun registerOptimizedSyncFunction(
+    name: String,
+    moduleInstance: Any,
+    functionPointer: Long
+  )
+
   fun registerModuleName(name: String) {
     registerProperty(
       "__expo_module_name__",

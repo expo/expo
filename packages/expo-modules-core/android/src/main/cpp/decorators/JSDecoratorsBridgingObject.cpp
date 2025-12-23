@@ -27,7 +27,9 @@ void JSDecoratorsBridgingObject::registerNatives() {
                    makeNativeMethod("registerObject",
                                     JSDecoratorsBridgingObject::registerObject),
                    makeNativeMethod("registerClass",
-                                    JSDecoratorsBridgingObject::registerClass)
+                                    JSDecoratorsBridgingObject::registerClass),
+                   makeNativeMethod("registerOptimizedSyncFunction",
+                                    JSDecoratorsBridgingObject::registerOptimizedSyncFunction)
                  });
 }
 
@@ -139,6 +141,24 @@ void JSDecoratorsBridgingObject::registerClass(
   );
 }
 
+void JSDecoratorsBridgingObject::registerOptimizedSyncFunction(
+  jni::alias_ref<jstring> name,
+  jni::alias_ref<jobject> moduleInstance,
+  jlong functionPointer
+) {
+  // Create decorator with the module instance if it doesn't exist
+  if (!optimizedFunctionDecorator) {
+    jni::global_ref<jobject> globalModuleInstance = jni::make_global(moduleInstance);
+    optimizedFunctionDecorator = std::make_unique<JSOptimizedFunctionsDecorator>(globalModuleInstance);
+  }
+
+  std::string functionName = name->toStdString();
+  auto funcPtr = reinterpret_cast<OptimizedFunctionPtr>(functionPointer);
+
+  // Register with default arg count of 0 (will be validated at runtime)
+  optimizedFunctionDecorator->registerOptimizedFunction(functionName, funcPtr, 0, true);
+}
+
 std::vector<std::unique_ptr<JSDecorator>> JSDecoratorsBridgingObject::bridge() {
   std::vector<std::unique_ptr<JSDecorator>> decorators;
 
@@ -160,6 +180,10 @@ std::vector<std::unique_ptr<JSDecorator>> JSDecoratorsBridgingObject::bridge() {
 
   if (classDecorator) {
     decorators.push_back(std::move(classDecorator));
+  }
+
+  if (optimizedFunctionDecorator) {
+    decorators.push_back(std::move(optimizedFunctionDecorator));
   }
 
   return decorators;

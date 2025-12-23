@@ -10,11 +10,23 @@
     ]
   },
   "android": {
+    "projects": [
+      {
+        "name": "expo-modules-annotation-processor",
+        "path": "annotation-processor"
+      }
+    ],
     "gradlePlugins": [
       {
         "id": "expo-module-gradle-plugin",
         "group": "expo.modules",
         "sourceDir": "expo-module-gradle-plugin",
+        "applyToRootProject": false
+      },
+      {
+        "id": "expo-module-optimized-gradle-plugin",
+        "group": "expo.modules",
+        "sourceDir": "expo-module-optimized-gradle-plugin",
         "applyToRootProject": false
       }
     ]

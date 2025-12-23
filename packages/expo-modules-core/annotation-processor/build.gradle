@@ -1,0 +1,18 @@
+apply plugin: 'kotlin'
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation "com.google.devtools.ksp:symbol-processing-api:$kspVersion"
+    implementation "com.squareup:kotlinpoet:1.14.2"
+    implementation "com.squareup:kotlinpoet-ksp:1.14.2"
+}
+
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}

@@ -16,6 +16,7 @@
 #include "JSConstantsDecorator.h"
 #include "JSObjectDecorator.h"
 #include "JSClassesDecorator.h"
+#include "JSOptimizedFunctionsDecorator.h"
 
 namespace jni = facebook::jni;
 
@@ -80,6 +81,12 @@ public:
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
 
+  void registerOptimizedSyncFunction(
+    jni::alias_ref<jstring> name,
+    jni::alias_ref<jobject> moduleInstance,
+    jlong functionPointer
+  );
+
   /**
    * Converts and consume all registered java decorators to C++
    * @return vector of unique pointers to decorators
@@ -94,6 +101,7 @@ private:
   std::unique_ptr<JSPropertiesDecorator> propertiesDecorator;
   std::unique_ptr<JSObjectDecorator> objectDecorator;
   std::unique_ptr<JSClassesDecorator> classDecorator;
+  std::unique_ptr<JSOptimizedFunctionsDecorator> optimizedFunctionDecorator;
 };
 
 } // namespace expo
