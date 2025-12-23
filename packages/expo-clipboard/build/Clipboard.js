@@ -185,18 +185,7 @@ export async function hasImageAsync() {
  * ```
  */
 export function addClipboardListener(listener) {
-    // TODO: Get rid of this wrapper once we remove deprecated `content` property (not before SDK47)
-    const listenerWrapper = (event) => {
-        const wrappedEvent = {
-            ...event,
-            get content() {
-                console.warn("The 'content' property of the clipboard event is deprecated. Use 'getStringAsync()' instead to get clipboard content");
-                return '';
-            },
-        };
-        listener(wrappedEvent);
-    };
-    return ExpoClipboard.addListener(onClipboardEventName, listenerWrapper);
+    return ExpoClipboard.addListener(onClipboardEventName, listener);
 }
 /**
  * Removes the listener added by addClipboardListener. This method is a no-op on Web.
