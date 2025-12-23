@@ -472,7 +472,7 @@ export default function Index() {
       ) : (
         <View style={styles.footerContainer}>
           <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
-          <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
+          <Button label="Use this photo" onPress={() => /* @tutinfo Update nesscary change the modal's visibility.*/ {setShowAppOptions(true), setisModalVisible(true) } /* @end */} />
         </View>
       )}
       /* @tutinfo Render the <CODE>EmojiPicker</CODE> component at the bottom of the <CODE>Index</CODE> component. */
