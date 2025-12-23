@@ -84,12 +84,14 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
 
   // MARK: - JavaScriptObjectBuilder
 
+  @JavaScriptActor
   public func build(appContext: AppContext) throws -> JavaScriptObject {
     let object = try appContext.runtime.createObject()
     try decorate(object: object, appContext: appContext)
     return object
   }
 
+  @JavaScriptActor
   public func decorate(object: JavaScriptObject, appContext: AppContext) throws {
     try decorateWithConstants(object: object, appContext: appContext)
     try decorateWithFunctions(object: object, appContext: appContext)
@@ -99,6 +101,7 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
 
   // MARK: - Internals
 
+  @JavaScriptActor
   internal func decorateWithConstants(object: JavaScriptObject, appContext: AppContext) throws {
     for (key, value) in getLegacyConstants() {
       object.setProperty(key, value: value)
@@ -110,18 +113,21 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
     }
   }
 
+  @JavaScriptActor
   internal func decorateWithFunctions(object: JavaScriptObject, appContext: AppContext) throws {
     for fn in functions.values {
       object.setProperty(fn.name, value: try fn.build(appContext: appContext))
     }
   }
 
+  @JavaScriptActor
   internal func decorateWithStaticFunctions(object: JavaScriptObject, appContext: AppContext) throws {
     for fn in staticFunctions.values {
       object.setProperty(fn.name, value: try fn.build(appContext: appContext))
     }
   }
 
+  @JavaScriptActor
   internal func decorateWithProperties(object: JavaScriptObject, appContext: AppContext) throws {
     for property in properties.values {
       let descriptor = try property.buildDescriptor(appContext: appContext)
@@ -129,6 +135,7 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
     }
   }
 
+  @JavaScriptActor
   internal func decorateWithClasses(object: JavaScriptObject, appContext: AppContext) throws {
     for klass in classes.values {
       object.setProperty(klass.name, value: try klass.build(appContext: appContext))
