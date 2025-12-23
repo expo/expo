@@ -17,6 +17,8 @@ const HomeIndex = () => {
       <CaseLink href="/tabs" text="Native Tabs" />
       <CaseLink href="/toolbar" text="Toolbar" />
       <CaseLink href="/header-items" text="Header Items" />
+      <CaseLink href="/a" text="[param] = a" />
+      <CaseLink href="/b" text="[param] = b" />
     </ScrollView>
   );
 };

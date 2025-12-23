@@ -9,5 +9,9 @@ const appStart = Date.now();
 });
 
 export default function Layout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="[param]" predefinedValues={['a', 'x']} options={{ title: 'Param' }} />
+    </Stack>
+  );
 }

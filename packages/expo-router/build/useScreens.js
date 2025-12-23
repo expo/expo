@@ -64,7 +64,7 @@ function getSortedChildren(children, order = [], initialRouteName) {
     }
     const entries = [...children];
     const ordered = order
-        .map(({ name, redirect, initialParams, listeners, options, getId, dangerouslySingular: singular, }) => {
+        .flatMap(({ name, redirect, initialParams, listeners, options, getId, dangerouslySingular: singular, unstable_predefinedValues, }) => {
         if (!entries.length) {
             console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
             return null;
@@ -103,10 +103,37 @@ function getSortedChildren(children, order = [], initialRouteName) {
                     getId = (options) => getSingularId(name, options);
                 }
             }
-            return {
+            const baseResult = {
                 route: match,
                 props: { initialParams, listeners, options, getId },
             };
+            // Handle predefinedValues: create additional screens for each predefined value
+            if (unstable_predefinedValues && unstable_predefinedValues.length > 0 && name) {
+                // Extract the dynamic parameter name from the route (e.g., "[param]" -> "param")
+                const dynamicMatch = name.match(/^\[(.+)\]$/);
+                if (dynamicMatch) {
+                    const paramName = dynamicMatch[1];
+                    const predefinedScreens = unstable_predefinedValues.map((value) => ({
+                        route: {
+                            ...match,
+                            // Override the route name to be the predefined value
+                            route: value,
+                        },
+                        props: {
+                            initialParams: {
+                                ...initialParams,
+                                [paramName]: value,
+                            },
+                            listeners,
+                            options,
+                            getId,
+                        },
+                    }));
+                    // Return the original dynamic route plus all predefined value screens
+                    return [baseResult, ...predefinedScreens];
+                }
+            }
+            return baseResult;
         }
     })
         .filter(Boolean);

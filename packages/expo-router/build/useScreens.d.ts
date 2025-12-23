@@ -25,6 +25,24 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
         params?: Record<string, any>;
     }) => string | undefined;
     dangerouslySingular?: SingularOptions;
+    /**
+     * Predefined values for a dynamic route parameter.
+     * When specified on a dynamic route like `[param]`, this will create additional
+     * screens for each predefined value that reuse the same component.
+     *
+     * This makes it possible to preload dynamic routes with different parameter values.
+     *
+     * > **Note**: param will be passed as a query parameter to the route component.
+     *
+     * @example
+     * ```tsx
+     * <Stack.Screen name="[param]" unstable_predefinedValues={["a", "b"]} />
+     * // Creates screens: [param], a (with param="a"), b (with param="b")
+     * // Navigation to "/a" will render the screen with param="a" and url "/a?param=a"
+     * // Navigation to "/x" will render the screen with param="x" and url "/x"
+     * ```
+     */
+    unstable_predefinedValues?: string[];
 };
 export type SingularOptions = boolean | ((name: string, params: UnknownOutputParams) => string | undefined);
 /**
