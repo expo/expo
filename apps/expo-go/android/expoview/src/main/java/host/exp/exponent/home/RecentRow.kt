@@ -16,26 +16,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import host.exp.exponent.graphql.BranchesForProjectQuery
 import host.exp.exponent.graphql.Home_AccountAppsQuery
+import host.exp.exponent.graphql.ProjectsQuery
 
 @Composable
-fun AppRow(app: Home_AccountAppsQuery.App, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = {  })
-            .padding(16.dp).clickable { onClick() },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column() {
-            Text(
-                text = app.commonAppData.name,
-            )
-            Text(
-                text = app.commonAppData.fullName,
-            )
-        }
-        Spacer(modifier = Modifier.width(8.dp))
+fun RecentRow(historyItem: HistoryItem) {
+/*
+   const title =
+          (project.manifest && 'extra' in project.manifest
+            ? project.manifest.extra?.expoClient?.name
+            : undefined) ??
+          (project.manifest && 'name' in project.manifest
+            ? String(project.manifest.name)
+            : undefined);
 
-    }
+        const iconUrl =
+          project.manifest && 'extra' in project.manifest
+            ? // @ts-expect-error iconUrl exists only for local development
+              project.manifest?.extra?.expoClient?.iconUrl
+            : undefined;
+ */
+    ClickableItemRow(text = historyItem.url, onClick = {})
 }

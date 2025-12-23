@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -16,6 +17,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import androidx.core.content.edit
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+
+import host.exp.exponent.home.HistoryItem
 
 const val redirectBase = "expauth://auth"
 const val origin = "https://expo.dev"
@@ -69,6 +74,7 @@ class SessionRepository(context: Context) {
     companion object {
         private const val SESSION_SECRET_KEY = "session_secret"
         private const val SELECTED_ACCOUNT_ID_KEY = "selected_account_id"
+        private const val RECENTS_KEY = "recents_history"
     }
 
     fun saveSessionSecret(secret: String?) {
@@ -93,5 +99,21 @@ class SessionRepository(context: Context) {
 
     fun getSelectedAccountId(): String? {
         return sharedPreferences.getString(SELECTED_ACCOUNT_ID_KEY, null)
+    }
+
+    fun saveRecents(recents: List<HistoryItem>) {
+        val json = Gson().toJson(recents)
+        sharedPreferences.edit {
+            putString(RECENTS_KEY, json)
+        }
+    }
+
+    fun getRecents(): List<HistoryItem> {
+        val json = sharedPreferences.getString(RECENTS_KEY, null)
+        if (json.isNullOrBlank()) {
+            return emptyList()
+        }
+        val type = object : TypeToken<List<HistoryItem>>() {}.type
+        return Gson().fromJson(json, type)
     }
 }

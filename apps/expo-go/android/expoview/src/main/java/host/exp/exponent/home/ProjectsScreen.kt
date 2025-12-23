@@ -15,9 +15,12 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlin.collections.emptyList
 
 
@@ -26,20 +29,27 @@ import kotlin.collections.emptyList
 fun ProjectsScreen(
     viewModel: HomeAppViewModel,
     onGoBack: () -> Unit,
+    navigateToProjectDetails: (appId: String) -> Unit,
     bottomBar: @Composable () -> Unit = { }
 ) {
-    val loading by viewModel.appsPaginator.loadingFlow.collectAsState()
+    val isRefreshing by viewModel.appsPaginatorRefreshableFlow.loadingFlow.collectAsState()
 
-    val apps by viewModel.appsPaginator.dataFlow.flatMapLatest { paginator ->
+    val apps by viewModel.appsPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
         paginator?.data ?: flowOf(emptyList())
     }.collectAsState(initial = emptyList())
 
-    val paginator by viewModel.appsPaginator.dataFlow.collectAsState()
-    val canLoadMore = !(paginator?.isLastPage ?: true)
-    val isFetching = paginator?.isFetching ?: false
+    val paginator by viewModel.appsPaginatorRefreshableFlow.dataFlow.collectAsState()
+    val isFetching by viewModel.appsPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
+        paginator?.isFetching ?: flowOf(false)
+    }.collectAsState(initial = false)
+
+    val canLoadMore by viewModel.appsPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
+        paginator?.isLastPage?.map { it.not() } ?: flowOf(true)
+    }.collectAsState(initial = true)
 
     val pullToRefreshState = rememberPullToRefreshState()
     val lazyListState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -50,9 +60,10 @@ fun ProjectsScreen(
         PullToRefreshBox(
             modifier = Modifier.padding(it),
             state = pullToRefreshState,
-            isRefreshing = loading,
+//            TODO: find something better than checking apps.isNotEmpty()
+            isRefreshing = isRefreshing && apps.isNotEmpty(),
             onRefresh = {
-                viewModel.appsPaginator.refresh()
+                viewModel.appsPaginatorRefreshableFlow.refresh()
             },
         ) {
             LazyColumn(
@@ -60,7 +71,7 @@ fun ProjectsScreen(
                 state = lazyListState
             ) {
                 items(apps) { app ->
-                    AppRow(app = app)
+                    AppRow(app = app, onClick = { navigateToProjectDetails(app.commonAppData.id) })
                     HorizontalDivider()
                 }
                 if (isFetching) {
@@ -77,22 +88,8 @@ fun ProjectsScreen(
                 }
             }
 
-            LaunchedEffect(lazyListState, canLoadMore, isFetching) {
-                if (isFetching || !canLoadMore) {
-                    return@LaunchedEffect
-                }
-
-                if(lazyListState.layoutInfo.visibleItemsInfo.isEmpty()) {
-                    paginator?.loadMore()
-                    return@LaunchedEffect
-                }
-
-                val lastVisibleItem = lazyListState.layoutInfo.visibleItemsInfo.last()
-
-                val buffer = 3
-                if (lastVisibleItem.index >= apps.size - 1 - buffer) {
-                    paginator?.loadMore()
-                }
+            InfiniteListHandler(listState = lazyListState, isFetching = isFetching, canLoadMore = canLoadMore) {
+                paginator?.loadMore()
             }
         }
     }

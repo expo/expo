@@ -3,9 +3,7 @@ package host.exp.exponent.home
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
-import androidx.work.await
 import host.exp.exponent.graphql.fragment.CurrentUserActorData
 import host.exp.exponent.services.ApolloClientService
 import host.exp.exponent.services.AuthSessionType
@@ -13,7 +11,6 @@ import host.exp.exponent.services.SessionRepository
 import host.exp.exponent.services.launchAuthSession
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -30,8 +27,11 @@ import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 import host.exp.exponent.graphql.Home_AccountAppsQuery
-import host.exp.exponent.graphql.Home_AccountAppsQuery.App
 import host.exp.exponent.apollo.Paginator
+import host.exp.exponent.graphql.BranchDetailsQuery
+import host.exp.exponent.graphql.BranchesForProjectQuery
+import host.exp.exponent.graphql.Home_AccountSnacksQuery
+import host.exp.exponent.graphql.ProjectsQuery
 
 // Enums to match the TypeScript union types
 enum class DevSessionPlatform {
@@ -51,6 +51,12 @@ data class DevSession(
     // 'object' in TS is best represented as a Map or a generic JSON element in Kotlin
     val config: Map<String, Any>? = null,
     val platform: DevSessionPlatform? = null
+)
+
+data class HistoryItem(
+val manifest: String?,
+val url: String,
+val time: Long
 )
 
 class HomeAppViewModel(application: Application) : AndroidViewModel(application) {
@@ -79,6 +85,28 @@ class HomeAppViewModel(application: Application) : AndroidViewModel(application)
         } }
     )
 
+//    fun branch(branchName: String, appId: String): Flow<BranchDetailsQuery.ById?> {
+//        viewModelScope.launch {
+//            Log.d("HomeAppViewModel", "Fetching branch details for branch: $branchName, appId: $appId, found: ${service.branchDetails(branchName, appId).last()}")
+//
+//        }
+//        return service.branchDetails(branchName, appId)
+//    }
+
+    fun branch(branchName: String, appId: String): RefreshableFlow<BranchDetailsQuery.ById?> {
+        return refreshableFlow(scope = viewModelScope, fetcher = {
+            service.branchDetails(branchName, appId)
+        }, initialValue = null)
+    }
+
+    fun branches(appId: String?, count: Int): Flow<List<BranchesForProjectQuery.UpdateBranch>> {
+        if (appId == null) {
+            return flow { emit(emptyList()) }
+        }
+        return service.branches(appId, count)
+    }
+
+
     val selectedAccount: StateFlow<CurrentUserActorData.Account?> = selectedAccountId.combine(account.dataFlow) { id, currentUserData ->
         if(id == null || currentUserData == null) {
             return@combine null
@@ -90,17 +118,42 @@ class HomeAppViewModel(application: Application) : AndroidViewModel(application)
         initialValue = null
     )
 
-    val apps = refreshableFlow(scope = viewModelScope, trigger = selectedAccount, fetcher = { account -> service.apps(account?.name ?: "", count = 5) }, initialValue = emptyList())
+    val apps = refreshableFlow(scope = viewModelScope, externalTrigger = selectedAccount, fetcher = { account -> service.apps(account?.name ?: "", count = 5) }, initialValue = emptyList())
 
-    val appsPaginator =
-        refreshableFlow(scope = viewModelScope, trigger = selectedAccount, fetcher = { account ->
+    val appsPaginatorRefreshableFlow =
+        refreshableFlow(scope = viewModelScope, externalTrigger = selectedAccount, fetcher = { account ->
             flow<Paginator<Home_AccountAppsQuery.App>> {
-                emit(service.apps(account?.name ?: ""))
+                val paginator = service.apps(account?.name ?: "")
+
+                emit(paginator)
             }
         }, initialValue = null)
 
-    val recents = MutableStateFlow<List<DevSession>>(emptyList())
-    val snacks = MutableStateFlow<List<DevSession>>(emptyList())
+    fun app(appId: String): Flow<ProjectsQuery.ById?> {
+        return service.app(appId)
+    }
+
+    fun branchesPaginatorRefreshableFlow(appId: String): RefreshableFlow<Paginator<BranchesForProjectQuery.UpdateBranch>?> {
+        return refreshableFlow(scope = viewModelScope, externalTrigger = selectedAccount, fetcher = { account ->
+            flow<Paginator<BranchesForProjectQuery.UpdateBranch>> {
+                emit(service.branches(appId = appId))
+            }
+        }, initialValue = null)
+    }
+
+
+    val recents = persistedMutableStateFlow<List<HistoryItem>>(viewModelScope,
+        readValue = { sessionRepository.getRecents() },
+        writeValue = { sessionRepository.saveRecents(it) }
+    )
+    val snacks = refreshableFlow(scope = viewModelScope, externalTrigger = selectedAccount, fetcher = { account -> service.snacks(account?.name ?: "", count = 5) }, initialValue = emptyList())
+
+    val snacksPaginatorRefreshableFlow =
+        refreshableFlow(scope = viewModelScope, externalTrigger = selectedAccount, fetcher = { account ->
+            flow<Paginator<Home_AccountSnacksQuery.Snack>> {
+                emit(service.snacks(account?.name ?: ""))
+            }
+        }, initialValue = null)
 
     init {
         loadSessions()
@@ -143,7 +196,7 @@ class HomeAppViewModel(application: Application) : AndroidViewModel(application)
                 )
             )
             sessions.value = mockSessions
-            recents.value = mockSessions.take(1)
+//            recents.value = mockSessions.take(1)
 //            apps.value = mockSessions// Just an example
         }
     }
@@ -227,7 +280,7 @@ fun <T> refreshableFlow(
 @OptIn(ExperimentalCoroutinesApi::class)
 fun <T, U> refreshableFlow(
     scope: CoroutineScope,
-    trigger: Flow<T>,
+    externalTrigger: Flow<T>,
     initialValue: U,
     fetcher: (T) -> Flow<U>
 ): RefreshableFlow<U> {
@@ -236,7 +289,7 @@ fun <T, U> refreshableFlow(
 
     // This is the key: it combines the external trigger (e.g., selectedAccount)
     // with a manual trigger, so both can cause a refresh.
-    val combinedTrigger = trigger.combine(manualRefreshTrigger.onStart { emit(Unit) }) { triggerValue, _ ->
+    val combinedTrigger = externalTrigger.combine(manualRefreshTrigger.onStart { emit(Unit) }) { triggerValue, _ ->
         triggerValue
     }
 

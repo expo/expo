@@ -34,12 +34,13 @@ fun HomeScreen(
     viewModel: HomeAppViewModel,
     navigateToProjects: () -> Unit,
     navigateToSnacks: () -> Unit,
+    navigateToProjectDetails: (appId: String) -> Unit,
     accountHeader: @Composable () -> Unit = { },
     bottomBar: @Composable () -> Unit = { }
 ) {
     val sessions by viewModel.sessions.collectAsState()
     val recents by viewModel.recents.collectAsState()
-    val snacks by viewModel.snacks.collectAsState()
+    val snacks by viewModel.snacks.dataFlow.collectAsState()
 
     val account by viewModel.account.dataFlow.collectAsState()
     val isRefreshing by viewModel.account.loadingFlow.collectAsState()
@@ -112,8 +113,8 @@ fun HomeScreen(
                             label = "CLEAR",
                             onClick = { viewModel.clearRecents() })
                     }) {
-                    for (session in recents) {
-                        DevSessionRow(session = session)
+                    for (historyItem in recents) {
+                        RecentRow(historyItem = historyItem)
                         HorizontalDivider()
                     }
                 }
@@ -124,7 +125,7 @@ fun HomeScreen(
                     label = "Projects",
                 ) {
                     TruncatedList(apps, showMoreText = "View all projects", onShowMoreClick = navigateToProjects)  { app ->
-                        AppRow(app)
+                        AppRow(app, onClick = { navigateToProjectDetails(app.commonAppData.id) })
                     }
                 }
             }
