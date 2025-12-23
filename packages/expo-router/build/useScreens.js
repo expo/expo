@@ -225,7 +225,7 @@ function getQualifiedRouteComponent(value) {
             });
         }, [navigation]);
         return (<Route_1.Route node={value} route={route}>
-        {value.type === 'route' && navigationEvents_1.unstable_navigationEvents.hasAnyListener() && (<AnalyticsListeners navigation={navigation} screenId={route.key}/>)}
+        {(0, navigationEvents_1.areNavigationEventsEnabled)() && value.type === 'route' && (<AnalyticsListeners navigation={navigation} screenId={route.key}/>)}
         <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
         <zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider route={route}>
           <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
@@ -250,7 +250,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
     if (isFirstRenderRef.current) {
         isFirstRenderRef.current = false;
         if (pathname) {
-            navigationEvents_1.unstable_navigationEvents.emit('pageWillRender', {
+            navigationEvents_1.internal_navigationEventEmitter.emit('pageWillRender', {
                 pathname,
                 screenId,
             });
@@ -259,7 +259,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
     (0, react_1.useEffect)(() => {
         if (pathname) {
             return () => {
-                navigationEvents_1.unstable_navigationEvents.emit('pageRemoved', {
+                navigationEvents_1.internal_navigationEventEmitter.emit('pageRemoved', {
                     pathname,
                     screenId,
                 });
@@ -270,13 +270,13 @@ function AnalyticsListeners({ navigation, screenId, }) {
     (0, react_1.useEffect)(() => {
         if (pathname) {
             const cleanFocus = navigation.addListener('focus', () => {
-                navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
+                navigationEvents_1.internal_navigationEventEmitter.emit('pageFocused', {
                     pathname,
                     screenId,
                 });
             });
             const cleanBlur = navigation.addListener('blur', () => {
-                navigationEvents_1.unstable_navigationEvents.emit('pageBlurred', {
+                navigationEvents_1.internal_navigationEventEmitter.emit('pageBlurred', {
                     pathname,
                     screenId,
                 });
