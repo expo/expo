@@ -1,64 +1,82 @@
 package host.exp.exponent.home
 
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.compose.composable
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import host.exp.expoview.R
+import kotlinx.serialization.Serializable
 
-enum class Destination(
-    val route: String,
+@Serializable
+sealed interface Destination {
+    @Serializable
+    object Home : Destination
+
+    @Serializable
+    object Settings : Destination
+
+    @Serializable
+    object Projects : Destination
+
+    @Serializable
+    class ProjectDetails(val appId: String) : Destination
+
+    @Serializable
+    object Snacks : Destination
+
+    @Serializable
+    object Account : Destination
+
+    @Serializable
+    class Branches(val appId: String) : Destination
+
+    @Serializable
+    class BranchDetails(val branchName: String, val appId: String) : Destination
+}
+
+data class BottomBarDestination(
+    val destination: Destination,
     val label: String,
     val contentDescription: String,
-    val icon: Int? = null,
+    val icon: Int
+)
 
-) {
-    HOME("home", "Home",  "Home", icon = R.drawable.home),
-    SETTINGS("settings", "Settings",  "Settings", icon = R.drawable.settings),
-    PROJECTS("projects", "Projects",  "Projects"),
-    SNACKS("snacks", "Snacks", "Snacks"),
-    ACCOUNT("account", "Account", "Account")
-}
+val bottomBarDestinations = listOf(
+    BottomBarDestination(Destination.Home, "Home", "Home", R.drawable.home),
+    BottomBarDestination(Destination.Settings, "Settings", "Settings", R.drawable.settings)
+)
 
 
 @Composable
 fun RootNavigation() {
-
     val navController = rememberNavController()
-    val startDestination = Destination.HOME
-
-    val viewModel : HomeAppViewModel = viewModel<HomeAppViewModel>()
+    val viewModel: HomeAppViewModel = viewModel<HomeAppViewModel>()
 
     AppNavHost(
         navController = navController,
-        startDestination = startDestination,
+        startDestination = Destination.Home,
         viewModel = viewModel
     )
 }
-
-
 
 @Composable
 fun AppNavHost(
@@ -69,107 +87,179 @@ fun AppNavHost(
     val selectedAccount by viewModel.selectedAccount.collectAsState()
     val context = LocalContext.current
 
-    @Composable fun NavAccountHeaderAction() {
+    @Composable
+    fun NavAccountHeaderAction() {
         AccountHeaderAction(
             account = selectedAccount,
             onLoginClick = { viewModel.login(context) },
-            onAccountClick = { navController.navigate(Destination.ACCOUNT.route) })
+            onAccountClick = { navController.navigate(Destination.Account) })
         Spacer(Modifier.padding(8.dp))
     }
 
     NavHost(
-        navController,
-        startDestination = startDestination.route
+        navController = navController,
+        startDestination = startDestination
     ) {
-        Destination.entries.forEach { destination ->
-            composable(destination.route) {
-                when (destination) {
-                    Destination.HOME -> HomeScreen(
-                        viewModel = viewModel,
-                        navigateToProjects = { navController.navigate("projects") },
-                        navigateToSnacks = { navController.navigate("snacks") },
-                        bottomBar = {
-                            BottomBar(
-                                selectedDestination = Destination.HOME,
-                                navigateToDestination = { destination ->
-                                    navController.navigate(destination.route)
-                                })
-                        },
-                        accountHeader = { NavAccountHeaderAction() }
-
+        composable<Destination.Home> {
+            HomeScreen(
+                viewModel = viewModel,
+                navigateToProjects = { navController.navigate(Destination.Projects) },
+                navigateToSnacks = { navController.navigate(Destination.Snacks) },
+                navigateToProjectDetails = { appId ->
+                    navController.navigate(Destination.ProjectDetails(appId = appId))
+                },
+                bottomBar = {
+                    BottomBar(
+                        navController = navController,
+                        currentDestination = Destination.Home,
                     )
-//                        Destination.SETTINGS -> HomeScreen(viewModel= viewModel)
-                    Destination.SETTINGS -> SettingsScreen(
-                        viewModel = viewModel,
-                        bottomBar = {
-                            BottomBar(
-                                selectedDestination = Destination.SETTINGS,
-                                navigateToDestination = { destination ->
-                                    navController.navigate(destination.route)
-                                })
-                        },
-                        accountHeader = {
-                            NavAccountHeaderAction()
-                        }
-                    )
-                    Destination.PROJECTS -> ProjectsScreen(
-                        viewModel = viewModel,
-                        onGoBack = { navController.popBackStack() },
-                        bottomBar = {
-                            BottomBar(
-                                selectedDestination = Destination.HOME,
-                                navigateToDestination = { destination ->
-                                    navController.navigate(destination.route)
-                                })
-                        }
-                    )
-                    Destination.SNACKS -> SnacksScreen(
-                        viewModel = viewModel,
-                        onGoBack = { navController.popBackStack() },
-                        bottomBar = {
-                            BottomBar(
-                                selectedDestination = Destination.HOME,
-                                navigateToDestination = { destination ->
-                                    navController.navigate(destination.route)
-                                })
-                        }
-                    )
-                    Destination.ACCOUNT -> AccountScreen(
-                            viewModel = viewModel,
-                        goBack = { navController.popBackStack() },
-                    )
-                }
-            }
+                },
+                accountHeader = { NavAccountHeaderAction() }
+            )
         }
 
+        composable<Destination.Settings> {
+            SettingsScreen(
+                viewModel = viewModel,
+                bottomBar = {
+                    BottomBar(
+                        navController = navController,
+                        currentDestination = Destination.Settings,
+                    )
+                },
+                accountHeader = { NavAccountHeaderAction() }
+            )
+        }
+
+        composable<Destination.Projects> {
+            ProjectsScreen(
+                viewModel = viewModel,
+                onGoBack = { navController.popBackStack() },
+                bottomBar = {
+                    BottomBar(
+                        navController = navController,
+                        currentDestination = Destination.Home, // Or another default
+                    )
+                },
+                navigateToProjectDetails = { appId ->
+                    navController.navigate(Destination.ProjectDetails(appId = appId))
+                }
+            )
+        }
+
+        composable<Destination.Snacks> {
+            SnacksScreen(
+                viewModel = viewModel,
+                onGoBack = { navController.popBackStack() },
+                bottomBar = {
+                    BottomBar(
+                        navController = navController,
+                        currentDestination = Destination.Home,
+                    )
+                }
+            )
+        }
+
+        composable<Destination.Account> {
+            AccountScreen(
+                viewModel = viewModel,
+                goBack = { navController.popBackStack() },
+            )
+        }
+
+        composable<Destination.ProjectDetails>(
+        ) { backStackEntry ->
+            val args = backStackEntry.toRoute<Destination.ProjectDetails>()
+            val appFlow = remember { viewModel.app(args.appId) }
+            ProjectDetailsScreen(
+                viewModel = viewModel,
+                onGoBack = { navController.popBackStack() },
+                appFlow = appFlow,
+                onBranchClick = { branchName ->
+                    navController.navigate(
+                        Destination.BranchDetails(
+                            branchName = branchName,
+                            appId = args.appId
+                        )
+                    )
+                },
+                onShowAllBranchesClick = {
+                    navController.navigate(Destination.Branches(appId = args.appId))
+                },
+            )
+        }
+
+        composable<Destination.Branches> { backStackEntry ->
+            val args = backStackEntry.toRoute<Destination.Branches>()
+
+            BranchesScreen(
+                viewModel = viewModel,
+                onGoBack = { navController.popBackStack() },
+                appId = args.appId,
+                navigateToBranchDetails = { appId, branchName ->
+                    navController.navigate(Destination.BranchDetails(branchName, appId))
+                },
+                bottomBar = {
+                    BottomBar(
+                        navController = navController,
+                        currentDestination = Destination.Home, // Or another default
+                    )
+                }
+            )
+        }
+
+        composable<Destination.BranchDetails> { backStackEntry ->
+            val args = backStackEntry.toRoute<Destination.BranchDetails>()
+            val branchRefreshableFlow = remember(args.branchName, args.appId) {
+                viewModel.branch(args.branchName, args.appId)
+            }
+
+            // --- Start of Fix ---
+            BranchDetailsScreen(
+                onGoBack = { navController.popBackStack() },
+                branchRefreshableFlow = branchRefreshableFlow,
+                // Pass the BottomBar composable here
+                bottomBar = {
+                    BottomBar(
+                        navController = navController,
+                        currentDestination = Destination.Home // Or another appropriate default
+                    )
+                }
+            )
+            // --- End of Fix ---
+        }
     }
 }
 
 @Composable
 fun BottomBar(
-    selectedDestination: Destination,
-    navigateToDestination: (destination: Destination) -> Unit
+    navController: NavHostController,
+    currentDestination: Destination,
 ) {
     NavigationBar(
         windowInsets = NavigationBarDefaults.windowInsets,
         containerColor = NewAppTheme.colors.background.default,
         contentColor = NewAppTheme.colors.background.subtle
     ) {
-        Destination.entries.filter { it == Destination.HOME || it == Destination.SETTINGS }.forEach { destination ->
+        bottomBarDestinations.forEach { item ->
             NavigationBarItem(
-                selected = selectedDestination == destination,
+                selected = currentDestination == item.destination,
                 onClick = {
-                    navigateToDestination(destination)
-                },
-                icon = {
-                    if(destination.icon != null) {
-                        Icon(
-                            painter = painterResource(destination.icon),
-                            contentDescription = destination.contentDescription
-                        )
+                    navController.navigate(item.destination) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
                     }
                 },
-                label = { Text(destination.label) }
+                icon = {
+                    Icon(
+                        painter = painterResource(item.icon),
+                        contentDescription = item.contentDescription
+                    )
+                },
+                label = { Text(item.label) }
             )
         }
     }

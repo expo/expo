@@ -1,6 +1,7 @@
 package host.exp.exponent.home
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,26 +16,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import host.exp.exponent.graphql.Home_AccountSnacksQuery
+import host.exp.exponent.graphql.BranchesForProjectQuery
+import host.exp.exponent.graphql.Home_AccountAppsQuery
+import host.exp.exponent.graphql.ProjectsQuery
 
 @Composable
-fun SnackRow(snack: Home_AccountSnacksQuery.Snack) {
-//    TODO: Add missing SDK versions
+fun BranchRow(branch: BranchesForProjectQuery.UpdateBranch, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = {  })
+            .clickable(onClick = { onClick() })
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Icon for Scan QR Code
-        AsyncImage(model = "https://picsum.photos/200", contentDescription = "Session Icon", modifier = Modifier
-            .size(24.dp)
-            .clip(shape = RoundedCornerShape(4.dp)))
-
+        Column() {
+            Text(
+                text = branch.name,
+            )
+//            Text(
+//                text = app.commonAppData.fullName,
+//            )
+        }
         Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = snack.commonSnackData.name,
-        )
+
     }
 }

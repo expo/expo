@@ -1,8 +1,6 @@
 package host.exp.exponent.home
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -12,7 +10,6 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.isEmpty
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
@@ -20,26 +17,32 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
-fun SnacksScreen(
+fun BranchesScreen(
     viewModel: HomeAppViewModel,
+    appId: String,
+
     onGoBack: () -> Unit,
+
+    navigateToBranchDetails: (appId: String, branchName: String) -> Unit,
     bottomBar: @Composable () -> Unit = {}
 ) {
-    // 1. Get the paginator and its state from the ViewModel
-    val paginator by viewModel.snacksPaginatorRefreshableFlow.dataFlow.collectAsState()
+    val paginatorRefreshableFlow = remember { viewModel.branchesPaginatorRefreshableFlow(appId) }
 
-    val snacks = paginator?.data?.collectAsState(initial = emptyList())?.value ?: emptyList()
-    val isFetching by viewModel.snacksPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
+    val branches by paginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
+        paginator?.data ?: flowOf(emptyList())
+    }.collectAsState(initial = emptyList())
+
+    val isFetching by paginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
         paginator?.isFetching ?: flowOf(false)
     }.collectAsState(initial = false)
 
-    val canLoadMore by viewModel.snacksPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
+    val canLoadMore by paginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
         paginator?.isLastPage?.map { it.not() } ?: flowOf(true)
     }.collectAsState(initial = true)
 
+    val paginator by paginatorRefreshableFlow.dataFlow.collectAsState()
 
     val pullToRefreshState = rememberPullToRefreshState()
     val lazyListState = rememberLazyListState()
@@ -47,9 +50,8 @@ fun SnacksScreen(
 
     Scaffold(
         topBar = {
-            // Reusable Header composable with search
             TopAppBarWithBackIcon(
-                label = "Snacks",
+                label = "Branches",
                 onGoBack = onGoBack,
             )
         },
@@ -58,11 +60,11 @@ fun SnacksScreen(
         PullToRefreshBox(
             modifier = Modifier.padding(padding),
             state = pullToRefreshState,
-            isRefreshing = isFetching && snacks.isNotEmpty(),
-            onRefresh = { viewModel.snacksPaginatorRefreshableFlow.refresh() }
+            isRefreshing = isFetching && branches.isNotEmpty(),
+            onRefresh = { paginator }
         ) {
-            // Initial loading spinner
-            if (isFetching && snacks.isEmpty()) {
+            // Initial loading indicator
+            if (isFetching && branches.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -74,14 +76,19 @@ fun SnacksScreen(
                     modifier = Modifier.fillMaxSize(),
                     state = lazyListState
                 ) {
-                    // Render the list of snacks
-                    items(snacks, key = { it.commonSnackData.id }) { snack ->
-                        // Assuming you have a DevSessionRow or similar composable
-                        SnackRow(snack = snack)
+                    items(branches, key = { it.id }) { branch ->
+                        // Make the BranchRow clickable
+                        BranchRow(
+                            branch = branch,
+                            onClick = {
+                                // Use the branch's app ID and name for navigation
+                                navigateToBranchDetails(appId, branch.name)
+                            }
+                        )
                         HorizontalDivider()
                     }
 
-                    // Loading indicator at the bottom for pagination
+                    // Loading indicator for pagination
                     if (canLoadMore) {
                         item {
                             Box(

@@ -20,6 +20,7 @@ import host.exp.exponent.graphql.ProjectsQuery
 import host.exp.exponent.graphql.fragment.CurrentUserActorData
 import host.exp.exponent.graphql.type.AppPlatform
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import okhttp3.OkHttpClient
 
@@ -46,10 +47,10 @@ class ApolloClientService(
       }
   }
 
-  suspend fun branchDetails(
+  fun branchDetails(
     name: String,
     appId: String
-  ): BranchDetailsQuery.ById {
+  ): Flow<BranchDetailsQuery.ById?> {
     return apolloClient.query(
       BranchDetailsQuery(
         name = name,
@@ -57,10 +58,9 @@ class ApolloClientService(
         platform = AppPlatform.ANDROID
       )
     )
-      .execute()
-      .dataOrThrow()
-      .app
-      .byId
+      .toFlow().map {
+        it.data?.app?.byId
+      }
   }
 
   fun branches(
@@ -76,13 +76,30 @@ class ApolloClientService(
             offset = offset
           )
         )
-          .execute()
+          .toFlow().last()
           .dataOrThrow()
           .app
           .byId
           .updateBranches
       }
     )
+  }
+
+  fun branches(
+    appId: String,
+    count: Int
+  ): Flow<List<BranchesForProjectQuery.UpdateBranch>> {
+    return apolloClient.query(
+      BranchesForProjectQuery(
+        appId = appId,
+        platform = AppPlatform.ANDROID,
+        limit = count,
+        offset = 0
+      )
+    )
+      .toFlow().map {
+        it.data?.app?.byId?.updateBranches ?: emptyList()
+      }
   }
 
   fun apps(
@@ -98,7 +115,7 @@ class ApolloClientService(
             offset = offset
           )
         )
-          .execute()
+          .toFlow().last()
           .dataOrThrow()
           .account
           .byName
@@ -120,20 +137,32 @@ class ApolloClientService(
       }
   }
 
-  suspend fun app(
-    appId: String
-  ): ProjectsQuery.ById {
+  fun app(appId: String): Flow<ProjectsQuery.ById?> {
     return apolloClient.query(
       ProjectsQuery(
         appId = appId,
         platform = AppPlatform.ANDROID
       )
-    )
-      .execute()
-      .dataOrThrow()
-      .app
-      .byId
+    ).toFlow()
+      .map { response ->
+        response.data?.app?.byId
+      }
   }
+
+//  suspend fun app(
+//    appId: String
+//  ): ProjectsQuery.ById {
+//    return apolloClient.query(
+//      ProjectsQuery(
+//        appId = appId,
+//        platform = AppPlatform.ANDROID
+//      )
+//    )
+//      .execute()
+//      .dataOrThrow()
+//      .app
+//      .byId
+//  }
 
   fun snacks(
     accountName: String
@@ -147,13 +176,21 @@ class ApolloClientService(
             offset = offset
           )
         )
-          .execute()
-          .dataOrThrow()
-          .account
-          .byName
-          .snacks
+          .toFlow().last().dataOrThrow().account.byName.snacks
       }
     )
+  }
+
+  fun snacks(accountName: String, count: Int = 10): Flow<List<Home_AccountSnacksQuery.Snack>> {
+    return apolloClient.query(
+      Home_AccountSnacksQuery(
+        accountName = accountName,
+        limit = count,
+        offset = 0
+      )).toFlow()
+      .map { response ->
+        response.data?.account?.byName?.snacks ?: emptyList()
+      }
   }
 
   suspend fun primaryAccount(): Home_ViewerPrimaryAccountNameQuery.PrimaryAccount? {
