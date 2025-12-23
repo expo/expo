@@ -1,4 +1,4 @@
-import { type RefObject } from 'react';
+import { type Ref } from 'react';
 import { View, type ViewProps } from 'react-native';
 
 export type GlassStyle = 'clear' | 'regular';
@@ -18,5 +18,5 @@ export type GlassViewProps = {
    * @default false
    */
   isInteractive?: boolean;
-  ref?: RefObject<View | null>;
+  ref?: Ref<View>;
 } & ViewProps;
