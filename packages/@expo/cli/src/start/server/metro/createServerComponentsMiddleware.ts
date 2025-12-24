@@ -366,27 +366,37 @@ export function createServerComponentsMiddleware(
     );
 
     return (file: string, isServer: boolean) => {
-      const filePath = path.join(
-        projectRoot,
-        file.startsWith('file://') ? fileURLToFilePath(file) : file
-      );
+      // Handle stable IDs (e.g., "pkg/client" or "./relative/path.js")
+      // vs legacy file URLs (e.g., "file:///path/to/file.js")
+      const isStableId = !file.startsWith('file://') && !path.isAbsolute(file);
+
+      // For stable IDs, use directly for manifest lookup
+      // For file paths, convert to relative for backward compatibility
+      const filePath = isStableId
+        ? file
+        : path.join(projectRoot, file.startsWith('file://') ? fileURLToFilePath(file) : file);
 
       if (isExporting) {
         assert(context.ssrManifest, 'SSR manifest must exist when exporting');
 
-        const relativeFilePath = toPosixPath(path.relative(serverRoot, filePath));
+        // Use stable ID directly if available, otherwise compute relative path
+        const manifestKey = isStableId ? file : toPosixPath(path.relative(serverRoot, filePath));
 
         assert(
-          context.ssrManifest.has(relativeFilePath),
-          `SSR manifest is missing client boundary "${relativeFilePath}"`
+          context.ssrManifest.has(manifestKey),
+          `SSR manifest is missing client boundary "${manifestKey}"`
         );
 
-        const chunk = context.ssrManifest.get(relativeFilePath);
+        const chunk = context.ssrManifest.get(manifestKey);
+
+        // For stable IDs, we need to get the module ID from the manifest
+        // For legacy paths, compute from file path
+        const moduleId = isStableId
+          ? manifestKey // Stable ID is the module ID
+          : createModuleId(filePath, { platform: context.platform, environment: 'client' });
 
         return {
-          id: String(
-            createModuleId(filePath, { platform: context.platform, environment: 'client' })
-          ),
+          id: String(moduleId),
           chunks: chunk != null ? [chunk] : [],
         };
       }
@@ -422,7 +432,9 @@ export function createServerComponentsMiddleware(
 
       clientReferenceUrl.search = searchParams.toString();
 
-      const relativeFilePath = path.relative(serverRoot, filePath);
+      // For stable IDs (package specifiers), use as-is
+      // For file paths, compute relative path
+      const relativeFilePath = isStableId ? file : path.relative(serverRoot, filePath);
 
       clientReferenceUrl.pathname = relativeFilePath;
 
@@ -434,8 +446,14 @@ export function createServerComponentsMiddleware(
       // Return relative URLs to help Android fetch from wherever it was loaded from since it doesn't support localhost.
       const chunkName = clientReferenceUrl.pathname + clientReferenceUrl.search;
 
+      // For stable IDs, use the stable ID as the module ID
+      // For file paths, compute from file path
+      const moduleId = isStableId
+        ? file
+        : createModuleId(filePath, { platform: context.platform, environment });
+
       return {
-        id: String(createModuleId(filePath, { platform: context.platform, environment })),
+        id: String(moduleId),
         chunks: [chunkName],
       };
     };
@@ -653,6 +671,10 @@ const getFullUrl = (url: string) => {
 };
 
 export const fileURLToFilePath = (fileURL: string) => {
+  // Handle relative paths (e.g., ./path/to/file.js) for portability across build environments
+  if (!fileURL.startsWith('file://')) {
+    return fileURL;
+  }
   try {
     return url.fileURLToPath(fileURL);
   } catch (error) {

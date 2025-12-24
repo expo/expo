@@ -23,6 +23,11 @@ import { FileStore } from './file-store';
 import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
+import {
+  captureSpecifier,
+  clearRegistry as clearRscRegistry,
+  isNodeModulePath,
+} from './rscRegistry';
 import { JSModule } from './serializer/getCssDeps';
 import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
@@ -305,6 +310,15 @@ export function getDefaultConfig(
       },
       resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['ios', 'android'],
+      // RSC: Capture import specifiers for stable ID resolution
+      resolveRequest(context, moduleName, platform) {
+        const result = context.resolveRequest(context, moduleName, platform);
+        // Capture bare specifiers (package imports) for RSC stable IDs
+        if (result.type === 'sourceFile' && isNodeModulePath(result.filePath)) {
+          captureSpecifier(result.filePath, moduleName);
+        }
+        return result;
+      },
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(
           // Add default support for `expo-image` file types.
@@ -438,7 +452,10 @@ export function getDefaultConfig(
     expoMetroConfig
   );
 
-  return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
+  return withExpoSerializers(metroConfig, {
+    projectRoot,
+    unstable_beforeAssetSerializationPlugins,
+  });
 }
 
 /** Use to access the Expo Metro transformer path */

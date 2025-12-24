@@ -12,7 +12,33 @@ import type { ConfigAPI, types as t, NodePath, PluginObj, PluginPass } from '@ba
 import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
 
+import { RSC_DEFERRED_PREFIX } from './client-module-proxy-plugin';
 import { createAddNamedImportOnce, getPossibleProjectRoot, toPosixPath } from './common';
+
+/**
+ * Check if a path is inside node_modules.
+ */
+function isNodeModulePath(filePath: string): boolean {
+  return /(?:^|[\\/])node_modules(?:[\\/]|$)/.test(filePath);
+}
+
+/**
+ * Generate a stable ID for a server action module.
+ *
+ * For node_modules files, returns a deferred marker that the serializer
+ * will replace with the canonical specifier (e.g., "pkg/actions").
+ *
+ * For app-level files, returns a relative path from project root.
+ */
+function generateStableId(filePath: string, projectRoot: string): string {
+  if (isNodeModulePath(filePath)) {
+    // Mark as deferred - serializer will resolve using the capture registry
+    return RSC_DEFERRED_PREFIX + filePath;
+  }
+
+  // App-level files: use relative path (stable across builds)
+  return './' + toPosixPath(getRelativePath(projectRoot, filePath));
+}
 
 const debug = require('debug')('expo:babel:server-actions');
 
@@ -259,8 +285,8 @@ export function reactServerActionsPlugin(
       };
 
       getActionModuleId = once(() => {
-        // Create relative file path hash.
-        return './' + toPosixPath(getRelativePath(projectRoot, file.opts.filename!));
+        // Generate stable ID for the action module
+        return generateStableId(file.opts.filename!, projectRoot);
       });
 
       const defineBoundArgsWrapperHelper = once(() => {
@@ -647,7 +673,10 @@ export function reactServerActionsPlugin(
         throw new Error('[Babel] Expected a filename to be set in the state');
       }
 
-      const outputKey = url.pathToFileURL(filePath).href;
+      const projectRoot = possibleProjectRoot || file.opts.root || '';
+
+      // Use stable ID for server reference (same as getActionModuleId)
+      const outputKey = generateStableId(filePath, projectRoot);
 
       file.metadata.reactServerActions = payload;
       file.metadata.reactServerReference = outputKey;

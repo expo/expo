@@ -919,10 +919,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const serverRoot = getMetroServerRoot(this.projectRoot);
 
-    // HACK: Maybe this should be done in the serializer.
+    // Helper to detect stable IDs vs file paths
+    // Stable IDs: "pkg/client", "@scope/pkg/client", "./relative/path.js"
+    // File paths: "/absolute/path/to/file.js"
+    const isStableId = (boundary: string) =>
+      !path.isAbsolute(boundary) && !boundary.startsWith('file://');
+
+    // Convert boundaries to opaque IDs for manifest
+    // For stable IDs: use as-is
+    // For file paths: convert to relative path (legacy compatibility)
     const clientBoundariesAsOpaqueIds = clientBoundaries.map((boundary) =>
-      // NOTE(cedric): relative module specifiers / IDs should always be POSIX formatted
-      toPosixPath(path.relative(serverRoot, boundary))
+      isStableId(boundary)
+        ? boundary
+        : // NOTE(cedric): relative module specifiers / IDs should always be POSIX formatted
+          toPosixPath(path.relative(serverRoot, boundary))
     );
     const moduleIdToSplitBundle = (
       bundle.artifacts
@@ -971,11 +981,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       contents:
         'module.exports = ' +
         JSON.stringify(
-          // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
+          // Map from stable ID to [moduleId, chunk]
           Object.fromEntries(
             Array.from(ssrManifest.entries()).map(([key, value]) => [
-              // Must match babel plugin.
-              './' + toPosixPath(path.relative(this.projectRoot, path.join(serverRoot, key))),
+              // For stable IDs: use as-is
+              // For relative paths: prefix with "./" to match babel plugin
+              isStableId(key) && !key.startsWith('./')
+                ? key
+                : './' + toPosixPath(path.relative(this.projectRoot, path.join(serverRoot, key))),
               [key, value],
             ])
           )

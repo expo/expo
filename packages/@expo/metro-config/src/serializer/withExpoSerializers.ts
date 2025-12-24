@@ -19,6 +19,7 @@ import {
 } from './environmentVariableSerializerPlugin';
 import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
 import { reconcileTransformSerializerPlugin } from './reconcileTransformSerializerPlugin';
+import { createRscSerializerPlugin } from './rscSerializerPlugin';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
 import { treeShakeSerializer } from './treeShakeSerializerPlugin';
@@ -34,6 +35,8 @@ export type SerializerParameters = [
 ];
 
 export type SerializerConfigOptions = {
+  /** Project root for RSC stable ID resolution */
+  projectRoot?: string;
   unstable_beforeAssetSerializationPlugins?: ((serializationInput: {
     graph: ReadOnlyGraph<MixedOutput>;
     premodules: Module[];
@@ -59,6 +62,17 @@ export function withExpoSerializers<Config extends InputConfigT = InputConfigT>(
 
   // Then tree-shake the modules.
   processors.push(treeShakeSerializer);
+
+  // Resolve RSC deferred stable IDs before AST->JS conversion.
+  // This must run after tree-shaking but before reconcile.
+  if (options.projectRoot) {
+    processors.push(
+      createRscSerializerPlugin({
+        projectRoot: options.projectRoot,
+        debug: env.EXPO_DEBUG,
+      })
+    );
+  }
 
   // Then finish transforming the modules from AST to JS.
   processors.push(reconcileTransformSerializerPlugin);

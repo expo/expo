@@ -1,11 +1,7 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactClientReferencesPlugin = reactClientReferencesPlugin;
 const node_path_1 = require("node:path");
-const node_url_1 = __importDefault(require("node:url"));
 const common_1 = require("./common");
 function reactClientReferencesPlugin(api) {
     const { template, types } = api;
@@ -161,7 +157,8 @@ function reactClientReferencesPlugin(api) {
                     // Store the proxy export names for testing purposes.
                     state.file.metadata.proxyExports = [...proxyExports];
                     // Save the server action reference in the metadata.
-                    state.file.metadata.reactServerReference = node_url_1.default.pathToFileURL(filePath).href;
+                    // Use outputKey (relative path) for portability across different build environments (e.g., EAS builds)
+                    state.file.metadata.reactServerReference = outputKey;
                 }
                 else if (isUseClient) {
                     if (!isReactServer) {
@@ -212,7 +209,8 @@ function reactClientReferencesPlugin(api) {
                     // Store the proxy export names for testing purposes.
                     state.file.metadata.proxyExports = [...proxyExports];
                     // Save the client reference in the metadata.
-                    state.file.metadata.reactClientReference = node_url_1.default.pathToFileURL(filePath).href;
+                    // Use outputKey (relative path) for portability across different build environments (e.g., EAS builds)
+                    state.file.metadata.reactClientReference = outputKey;
                 }
             },
         },
