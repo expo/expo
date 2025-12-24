@@ -105,8 +105,6 @@ function transformTextInputProps(props: TextInputProps): NativeTextInputProps {
     onValueChanged: (event) => {
       props.onChangeText?.(event.nativeEvent.value);
     },
-    // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 

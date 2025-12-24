@@ -45,11 +45,7 @@ const CarouselNativeView: React.ComponentType<NativeCarouselProps> = requireNati
 );
 
 export function transformCarouselProps(props: CarouselProps): NativeCarouselProps {
-  return {
-    ...props,
-    // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
-  } as NativeCarouselProps;
+  return { ...props } as NativeCarouselProps;
 }
 
 export function Carousel(props: CarouselProps) {

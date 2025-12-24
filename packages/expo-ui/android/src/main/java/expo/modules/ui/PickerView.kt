@@ -1,6 +1,5 @@
 package expo.modules.ui
 
-import android.content.Context
 import android.graphics.Color
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,19 +14,14 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.ExpoViewComposableScope
 
 class PickerColors : Record {
   @Field
@@ -68,98 +62,100 @@ class PickerColors : Record {
 }
 
 data class PickerProps(
-  val options: MutableState<Array<String>> = mutableStateOf(emptyArray()),
-  val selectedIndex: MutableState<Int?> = mutableStateOf(null),
-  val elementColors: MutableState<PickerColors> = mutableStateOf(PickerColors()),
-  val variant: MutableState<String> = mutableStateOf("segmented"),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList()),
-  val buttonModifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+  val options: Array<String> = emptyArray(),
+  val selectedIndex: Int? = null,
+  val elementColors: PickerColors = PickerColors(),
+  val variant: String = "segmented",
+  val modifiers: List<ModifierConfig> = emptyList(),
+  val buttonModifiers: List<ModifierConfig> = emptyList()
 ) : ComposeProps
 
-class PickerView(context: Context, appContext: AppContext) :
-  ExpoComposeView<PickerProps>(context, appContext) {
-  override val props = PickerProps()
-  private val onOptionSelected by EventDispatcher()
+data class PickerOptionSelectedEvent(
+  @Field val index: Int,
+  @Field val label: String
+) : Record
+
+@Composable
+fun ExpoViewComposableScope.PickerContent(
+  props: PickerProps,
+  onOptionSelected: (PickerOptionSelectedEvent) -> Unit
+) {
+  val selectedIndex = props.selectedIndex
+  val options = props.options
+  val colors = props.elementColors
+  val variant = props.variant
 
   @Composable
-  override fun ComposableScope.Content() {
-    val (selectedIndex) = props.selectedIndex
-    val (options) = props.options
-    val (colors) = props.elementColors
-    val (variant) = props.variant
+  fun SegmentedComposable() {
+    SingleChoiceSegmentedButtonRow(
+      modifier = ModifierRegistry.applyModifiers(props.modifiers)
+    ) {
+      options.forEachIndexed { index, label ->
+        SegmentedButton(
+          shape = SegmentedButtonDefaults.itemShape(
+            index = index,
+            count = options.size
+          ),
+          onClick = {
+            onOptionSelected(PickerOptionSelectedEvent(index, label))
+          },
+          modifier = ModifierRegistry.applyModifiers(props.buttonModifiers),
+          selected = index == selectedIndex,
+          label = { Text(label) },
+          colors = SegmentedButtonDefaults.colors(
+            activeBorderColor = colors.activeBorderColor.compose,
+            activeContentColor = colors.activeContentColor.compose,
+            inactiveBorderColor = colors.inactiveBorderColor.compose,
+            inactiveContentColor = colors.inactiveContentColor.compose,
+            disabledActiveBorderColor = colors.disabledActiveBorderColor.compose,
+            disabledActiveContentColor = colors.disabledActiveContentColor.compose,
+            disabledInactiveBorderColor = colors.disabledInactiveBorderColor.compose,
+            disabledInactiveContentColor = colors.disabledInactiveContentColor.compose,
+            activeContainerColor = colors.activeContainerColor.compose,
+            inactiveContainerColor = colors.inactiveContainerColor.compose,
+            disabledActiveContainerColor = colors.disabledActiveContainerColor.compose,
+            disabledInactiveContainerColor = colors.disabledInactiveContainerColor.compose
+          )
+        )
+      }
+    }
+  }
 
-    @Composable
-    fun SegmentedComposable() {
-      SingleChoiceSegmentedButtonRow(
-        modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
-      ) {
-        options.forEachIndexed { index, label ->
-          SegmentedButton(
-            shape = SegmentedButtonDefaults.itemShape(
-              index = index,
-              count = options.size
+  @Composable
+  fun RadioComposable() {
+    Column(Modifier.selectableGroup()) {
+      options.forEachIndexed { index, label ->
+        Row(
+          Modifier.fillMaxWidth()
+            .height(28.dp)
+            .selectable(
+              selected = index == selectedIndex,
+              onClick = {
+                onOptionSelected(PickerOptionSelectedEvent(index, label))
+              },
+              role = Role.RadioButton
             ),
-            onClick = {
-              onOptionSelected(mapOf("index" to index, "label" to label))
-            },
-            modifier = Modifier.fromExpoModifiers(props.buttonModifiers.value, this@Content),
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+          RadioButton(
             selected = index == selectedIndex,
-            label = { Text(label) },
-            colors = SegmentedButtonDefaults.colors(
-              activeBorderColor = colors.activeBorderColor.compose,
-              activeContentColor = colors.activeContentColor.compose,
-              inactiveBorderColor = colors.inactiveBorderColor.compose,
-              inactiveContentColor = colors.inactiveContentColor.compose,
-              disabledActiveBorderColor = colors.disabledActiveBorderColor.compose,
-              disabledActiveContentColor = colors.disabledActiveContentColor.compose,
-              disabledInactiveBorderColor = colors.disabledInactiveBorderColor.compose,
-              disabledInactiveContentColor = colors.disabledInactiveContentColor.compose,
-              activeContainerColor = colors.activeContainerColor.compose,
-              inactiveContainerColor = colors.inactiveContainerColor.compose,
-              disabledActiveContainerColor = colors.disabledActiveContainerColor.compose,
-              disabledInactiveContainerColor = colors.disabledInactiveContainerColor.compose
-            )
+            onClick = null
+          )
+          Text(
+            text = label,
+            modifier = Modifier.padding(start = 12.dp)
           )
         }
       }
     }
+  }
 
-    @Composable
-    fun RadioComposable() {
-      Column(Modifier.selectableGroup()) {
-        options.forEachIndexed { index, label ->
-          Row(
-            Modifier.fillMaxWidth()
-              .height(28.dp)
-              .selectable(
-                selected = index == selectedIndex,
-                onClick = {
-                  onOptionSelected(mapOf("index" to index, "label" to label))
-                },
-                role = Role.RadioButton
-              ),
-            verticalAlignment = Alignment.CenterVertically
-          ) {
-            RadioButton(
-              selected = index == selectedIndex,
-              onClick = null
-            )
-            Text(
-              text = label,
-              modifier = Modifier.padding(start = 12.dp)
-            )
-          }
-        }
-      }
-    }
-
-    if (variant == "segmented") {
-      SegmentedComposable()
-    } else if (variant == "radio") {
-      RadioComposable()
-    } else {
-      // Default to segmented picker
-      SegmentedComposable()
-    }
+  if (variant == "segmented") {
+    SegmentedComposable()
+  } else if (variant == "radio") {
+    RadioComposable()
+  } else {
+    // Default to segmented picker
+    SegmentedComposable()
   }
 }
