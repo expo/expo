@@ -307,7 +307,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     return (
       <Route node={value} route={route}>
-        {value.type === 'route' && unstable_navigationEvents.hasAnyListener() && (
+        {value.type === 'route' && route?.key && unstable_navigationEvents.hasAnyListener() && (
           <AnalyticsListeners navigation={navigation} screenId={route.key} />
         )}
         <ZoomTransitionEnabler route={route} />
