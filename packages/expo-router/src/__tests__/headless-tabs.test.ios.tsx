@@ -5,6 +5,7 @@ import { ViewProps, View, Text, Button } from 'react-native';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
+import { Link, Redirect } from '../link/Link';
 import { type RenderRouterOptions, renderRouter, waitFor } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs } from '../ui';
 import { Pressable, PressableProps } from '../views/Pressable';
@@ -607,4 +608,94 @@ it('does not reset when focused tab is pressed again, but the press is prevented
   // https://github.com/react-navigation/react-navigation/blob/6f68ca674b5f36382edae220187db3db55f406bb/packages/native-stack/src/navigators/createNativeStackNavigator.tsx#L60
   await waitFor(() => expect(screen.getByTestId('stack-index')).toBeVisible());
   expect(screen).toHaveSegments(['stack']);
+});
+
+it('redirects to index when rendering a <Redirect/> inside a tab route', async () => {
+  renderRouter(
+    {
+      _layout: () => (
+        <Tabs>
+          <TabList>
+            <TabTrigger name="index" href="/" testID="goto-index">
+              <Text>Index</Text>
+            </TabTrigger>
+            <TabTrigger name="redirect" href="/redirect" testID="goto-redirect">
+              <Text>Redirect</Text>
+            </TabTrigger>
+          </TabList>
+          <TabSlot />
+        </Tabs>
+      ),
+      index: () => <Text testID="index">Index</Text>,
+      redirect: () => <Redirect href="/" />,
+    },
+    { initialUrl: '/redirect' }
+  );
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHaveSegments([]);
+});
+
+it('router.replace works in headless tabs', async () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <TabList>
+          <TabTrigger name="index" href="/" testID="goto-index">
+            <Text>Index</Text>
+          </TabTrigger>
+          <TabTrigger name="second" testID="goto-second" href="/second">
+            <Text>Second</Text>
+          </TabTrigger>
+        </TabList>
+        <TabSlot />
+      </Tabs>
+    ),
+    index: () => <Text testID="index">Index</Text>,
+    second: () => <Text testID="second">Second</Text>,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+
+  act(() => {
+    router.replace('/second');
+  });
+
+  expect(screen.getByTestId('second')).toBeVisible();
+  expect(router.canGoBack()).toBe(false);
+});
+
+it('Link with replace works in headless tabs', async () => {
+  renderRouter(
+    {
+      _layout: () => (
+        <Tabs>
+          <TabList>
+            <TabTrigger name="index" href="/" testID="goto-index">
+              <Text>Index</Text>
+            </TabTrigger>
+            <TabTrigger name="link" href="/link" testID="goto-link">
+              <Text>Link</Text>
+            </TabTrigger>
+          </TabList>
+          <TabSlot />
+        </Tabs>
+      ),
+      index: () => <Text testID="index">Index</Text>,
+      link: () => (
+        <View>
+          <Link testID="replace-link" href="/" replace />
+        </View>
+      ),
+    },
+    { initialUrl: '/link' }
+  );
+
+  expect(screen.queryByTestId('index')).toBeNull();
+
+  await userEvent.press(screen.getByTestId('replace-link'));
+
+  await waitFor(() => expect(screen.getByTestId('index')).toBeVisible());
+  // replace should not leave a back entry
+  expect(router.canGoBack()).toBe(false);
 });
