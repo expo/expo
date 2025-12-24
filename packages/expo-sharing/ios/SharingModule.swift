@@ -6,10 +6,13 @@ public final class SharingModule: Module {
     Name("ExpoSharing")
 
     AsyncFunction("shareAsync") { (url: URL, options: SharingOptions, promise: Promise) in
-      let grantedPermissions = FileSystemUtilities.permissions(appContext, for: url)
+      // Skip file permission checks for remote URLs (http/https)
+      if url.scheme != "http" && url.scheme != "https" {
+        let grantedPermissions = FileSystemUtilities.permissions(appContext, for: url)
 
-      guard grantedPermissions.contains(.read) && FileManager.default.isReadableFile(atPath: url.path) else {
-        throw FilePermissionException()
+        guard grantedPermissions.contains(.read) && FileManager.default.isReadableFile(atPath: url.path) else {
+          throw FilePermissionException()
+        }
       }
 
       let activityController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
