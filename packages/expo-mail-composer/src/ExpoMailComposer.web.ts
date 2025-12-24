@@ -44,13 +44,12 @@ export default {
       body: options.body,
     });
 
-    Object.entries(email).forEach(([key, value]) => {
-      // TODO(@kitten): This was implicitly cast before. Is this what we want?
-      mailtoUrl.searchParams.append(key, '' + value);
-    });
+    const query = Object.entries(email)
+      .map(([key, value]) => `${key}=${encodeURIComponent(String(value))}`)
+      .join('&');
 
-    window.open(mailtoUrl.toString());
-
+    const url = query ? `${mailtoUrl.toString()}?${query}` : mailtoUrl.toString();
+    window.open(url);
     return { status: MailComposerStatus.UNDETERMINED };
   },
   async isAvailableAsync(): Promise<boolean> {
