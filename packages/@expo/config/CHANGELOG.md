@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow `$schema` in `app.json` ([#35770](https://github.com/expo/expo/pull/35770) by [@typeofweb](https://github.com/typeofweb))
+
 ### 💡 Others
 
 - Export sub-types from `@expo/config-types` ([#41453](https://github.com/expo/expo/pull/41453) by [@kitten](https://github.com/kitten))
