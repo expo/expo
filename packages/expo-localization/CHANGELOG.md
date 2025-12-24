@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Default allowDynamicLocaleChangesAndroid to true when supportedLocales is configured ([#41813](https://github.com/expo/expo/pull/41813) by [@Ubax](https://github.com/Ubax))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
