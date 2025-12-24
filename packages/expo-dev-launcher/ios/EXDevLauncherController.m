@@ -9,7 +9,6 @@
 #import <React/RCTKeyCommands.h>
 
 #import <EXDevLauncher/EXDevLauncherController.h>
-#import <EXDevLauncher/EXDevLauncherRCTBridge.h>
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
 #import <EXDevLauncher/EXDevLauncherRCTDevSettings.h>
 #import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
@@ -603,7 +602,7 @@
 - (void)setDevMenuAppBridge
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  [manager updateCurrentBridge:self.appBridge.parentBridge];
+  [manager updateCurrentBridge:self.appBridge];
 
   if (self.manifest != nil) {
     [manager updateCurrentManifest:self.manifest manifestURL:self.manifestURL];
