@@ -128,6 +128,20 @@ class Env {
   }
 
   /**
+   * Selects the tunnel provider. Defaults to `ngrok`. Set to `cloudflare` to use Cloudflare quick tunnels.
+   */
+  get EXPO_TUNNEL_PROVIDER(): string {
+    return string('EXPO_TUNNEL_PROVIDER', 'ngrok');
+  }
+
+  /**
+   * Optional path override for the cloudflared binary.
+   */
+  get EXPO_CLOUDFLARED_PATH(): string {
+    return string('EXPO_CLOUDFLARED_PATH', '');
+  }
+
+  /**
    * Force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project `metro.config.js` for all platforms.
    *
    * By default, Expo CLI will use `['browser', 'module', 'main']` (default for Webpack) for web and the user-defined main fields for other platforms.

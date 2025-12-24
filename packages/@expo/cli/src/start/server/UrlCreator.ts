@@ -90,10 +90,11 @@ export class UrlCreator {
       return null;
     }
     const parsed = new URL(tunnelUrl);
+    const parsedProtocol = parsed.protocol ? parsed.protocol.replace(':', '') : undefined;
     return {
       port: parsed.port,
       hostname: parsed.hostname,
-      protocol: options.scheme ?? 'http',
+      protocol: options.scheme ?? parsedProtocol ?? 'http',
     };
   }
 
