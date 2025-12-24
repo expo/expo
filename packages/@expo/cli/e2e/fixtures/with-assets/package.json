@@ -10,6 +10,7 @@
     "react-native-web": "~0.20.0"
   },
   "devDependencies": {
+    "react-native-css": "3.0.1",
     "@babel/core": "^7.25.2"
   }
 }

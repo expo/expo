@@ -230,6 +230,13 @@ describe('CSS Modules', () => {
               // Required CSS metadata for static export
               css: {
                 code: '._R_BGG_container{background:red}',
+                exports: {
+                  container: {
+                    composes: [],
+                    isReferenced: false,
+                    name: '_R_BGG_container',
+                  },
+                },
                 externalImports: [],
                 functionMap: null,
                 lineCount: 1,
@@ -268,6 +275,13 @@ describe('CSS Modules', () => {
               css: {
                 // Not minified, formatted actually.
                 code: ['._R_BGG_container {', '  background: red;', '}', ''].join('\n'),
+                exports: {
+                  container: {
+                    composes: [],
+                    isReferenced: false,
+                    name: '_R_BGG_container',
+                  },
+                },
                 externalImports: [],
                 functionMap: null,
                 lineCount: 4,

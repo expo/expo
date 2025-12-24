@@ -394,6 +394,7 @@ it(`can create a micro Metro graph fixture`, async () => {
           "customTransformOptions": {
             "baseUrl": undefined,
             "bytecode": undefined,
+            "css": false,
             "engine": undefined,
             "environment": undefined,
             "optimize": undefined,
