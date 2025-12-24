@@ -38,7 +38,8 @@ function ZoomTransitionEnabler({ route }) {
             const descriptorsMap = (0, react_1.use)(descriptors_context_1.DescriptorsContext);
             const currentDescriptor = descriptorsMap[route.key];
             const preventInteractiveDismissal = currentDescriptor?.options?.gestureEnabled === false;
-            return (<native_1.LinkZoomTransitionEnabler zoomTransitionSourceIdentifier={zoomTransitionId} preventInteractiveDismissal={preventInteractiveDismissal}/>);
+            const dismissGestureTopZoneHeight = currentDescriptor?.options?.zoomDismissGestureTopZoneHeight ?? 0;
+            return (<native_1.LinkZoomTransitionEnabler zoomTransitionSourceIdentifier={zoomTransitionId} preventInteractiveDismissal={preventInteractiveDismissal} dismissGestureTopZoneHeight={dismissGestureTopZoneHeight}/>);
         }
     }
     return null;

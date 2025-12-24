@@ -40,6 +40,10 @@ export default function Layout() {
           <NativeTabs.Trigger.Badge>9</NativeTabs.Trigger.Badge>
           <NativeTabs.Trigger.Label>Dynamic</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="zoom-demo">
+          <NativeTabs.Trigger.Icon sf="arrow.down.app" drawable="ic_zoom" />
+          <NativeTabs.Trigger.Label>Zoom Demo</NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
         <NativeTabs.BottomAccessory>
           <MiniPlayer isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
         </NativeTabs.BottomAccessory>
