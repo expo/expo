@@ -25,6 +25,7 @@ import {
   foregroundStyle,
   shapes,
   tag,
+  font,
 } from '@expo/ui/swift-ui/modifiers';
 import { useNavigation } from '@react-navigation/native';
 import type { SFSymbol } from 'expo-symbols';
@@ -115,7 +116,11 @@ export default function ListScreen() {
               <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
                 <HStack modifiers={[padding({ all: 8 })]}>
                   <Image systemName="list.bullet" color="white" size={22} />
-                  <Text color="white" size={16}>
+                  <Text
+                    modifiers={[
+                      foregroundStyle({ type: 'color', color: 'white' }),
+                      font({ size: 16 }),
+                    ]}>
                     Custom header
                   </Text>
                 </HStack>
@@ -126,7 +131,11 @@ export default function ListScreen() {
             <>
               {customHeaderFooter.footer && (
                 <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
-                  <Text size={16} color="white" modifiers={[padding({ all: 8 })]}>
+                  <Text
+                    modifiers={[
+                      foregroundStyle({ type: 'color', color: 'white' }),
+                      font({ size: 16 }),
+                    ]}>
                     Custom Footer
                   </Text>
                 </HStack>
@@ -162,7 +171,8 @@ export default function ListScreen() {
             onValueChange={setRefreshEnabled}
           />
           {lastRefresh && (
-            <Text size={12} color="gray">
+            <Text
+              modifiers={[foregroundStyle({ type: 'color', color: 'gray' }), font({ size: 12 })]}>
               Last refresh: {lastRefresh.toLocaleTimeString()}
             </Text>
           )}
