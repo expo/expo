@@ -51,7 +51,7 @@ export const expoExportEmbed: Command = async (argv) => {
       chalk`npx expo export:embed {dim <dir>}`,
       [
         chalk`<dir>                                  Directory of the Expo project. {dim Default: Current working directory}`,
-        `--entry-file <path>                    Path to the root JS file, either absolute or relative to JS root`,
+        `--entry-file <path>                    Path to the root JS file, either absolute or relative to current working directory`,
         `--platform <string>                    Either "ios" or "android" (default: "ios")`,
         `--transformer <string>                 Specify a custom transformer to be used`,
         `--dev [boolean]                        If false, warnings are disabled and the bundle is minified (default: true)`,
