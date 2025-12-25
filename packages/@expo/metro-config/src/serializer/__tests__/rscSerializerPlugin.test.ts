@@ -675,5 +675,72 @@ describe('rscSerializerPlugin', () => {
       expect(module.output[0].data.code).toContain('"pkg/actions"');
       expect(module.output[0].data.code).not.toContain('__RSC_DEFERRED__');
     });
+
+    it('handles Windows backslash paths in code', async () => {
+      // Capture with forward slashes (registry normalizes)
+      captureSpecifier('C:/project/node_modules/pkg/client.js', 'pkg/client');
+
+      // Code might have Windows backslashes (escaped in JS string literal)
+      const generatedCode = `
+        module.exports = require("react-server-dom-webpack/server").createClientModuleProxy("__RSC_DEFERRED__:C:\\\\project\\\\node_modules\\\\pkg\\\\client.js");
+      `;
+
+      const graph = createMockGraph({
+        'C:/project/node_modules/pkg/client.js': {
+          output: [
+            {
+              data: {
+                code: generatedCode,
+                reactClientReference: '__RSC_DEFERRED__:C:\\project\\node_modules\\pkg\\client.js',
+              },
+            },
+          ],
+        },
+      });
+
+      const plugin = createRscSerializerPlugin({ projectRoot: 'C:/project' });
+      const options = createMockOptions();
+
+      await plugin('entry.js', [], graph as any, options as any);
+
+      const module = graph.dependencies.get('C:/project/node_modules/pkg/client.js')!;
+
+      expect(module.output[0].data.reactClientReference).toBe('pkg/client');
+      expect(module.output[0].data.code).toContain('"pkg/client"');
+      expect(module.output[0].data.code).not.toContain('__RSC_DEFERRED__');
+    });
+
+    it('handles mixed path separators in deferred ID', async () => {
+      captureSpecifier('/project/node_modules/pkg/dist/client.js', 'pkg/client');
+
+      // Mixed separators sometimes occur
+      const generatedCode = `
+        module.exports = require("react-server-dom-webpack/server").createClientModuleProxy("__RSC_DEFERRED__:/project\\node_modules/pkg\\dist/client.js");
+      `;
+
+      const graph = createMockGraph({
+        '/project/node_modules/pkg/dist/client.js': {
+          output: [
+            {
+              data: {
+                code: generatedCode,
+                reactClientReference: '__RSC_DEFERRED__:/project\\node_modules/pkg\\dist/client.js',
+              },
+            },
+          ],
+        },
+      });
+
+      const plugin = createRscSerializerPlugin({ projectRoot });
+      const options = createMockOptions();
+
+      await plugin('entry.js', [], graph as any, options as any);
+
+      const module = graph.dependencies.get('/project/node_modules/pkg/dist/client.js')!;
+
+      expect(module.output[0].data.reactClientReference).toBe('pkg/client');
+      expect(module.output[0].data.code).toContain('"pkg/client"');
+      expect(module.output[0].data.code).not.toContain('__RSC_DEFERRED__');
+    });
   });
 });

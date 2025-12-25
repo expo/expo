@@ -332,6 +332,68 @@ describe('rscRegistry', () => {
   });
 
   // ============================================================================
+  // Windows Path Normalization
+  // ============================================================================
+  describe('Windows path normalization', () => {
+    const projectRoot = 'C:/project';
+
+    it('normalizes Windows backslash paths on capture', () => {
+      // Windows uses backslashes
+      captureSpecifier('C:\\project\\node_modules\\pkg\\client.js', 'pkg/client');
+
+      // Lookup with forward slashes should work
+      expect(getSpecifier('C:/project/node_modules/pkg/client.js')).toBe('pkg/client');
+    });
+
+    it('normalizes Windows paths on lookup', () => {
+      // Capture with forward slashes
+      captureSpecifier('C:/project/node_modules/pkg/client.js', 'pkg/client');
+
+      // Lookup with backslashes should work
+      expect(getSpecifier('C:\\project\\node_modules\\pkg\\client.js')).toBe('pkg/client');
+    });
+
+    it('handles mixed path separators', () => {
+      // Some tools might produce mixed paths
+      captureSpecifier('C:/project\\node_modules/pkg\\client.js', 'pkg/client');
+
+      expect(getSpecifier('C:\\project/node_modules\\pkg/client.js')).toBe('pkg/client');
+    });
+
+    it('getStableId works with Windows backslash paths', () => {
+      captureSpecifier('C:\\project\\node_modules\\pkg\\dist\\client.js', 'pkg/client');
+
+      const result = getStableId('C:/project/node_modules/pkg/dist/client.js', projectRoot);
+      expect(result.stableId).toBe('pkg/client');
+      expect(result.source).toBe('capture');
+    });
+
+    it('handles escaped backslashes in JS string literals', () => {
+      // When paths come from JS string literals, backslashes may be escaped
+      // The serializer's extractPath() handles this, but registry should too
+      captureSpecifier('C:\\\\project\\\\node_modules\\\\pkg\\\\client.js', 'pkg/client');
+
+      // Should be normalized for lookup
+      const result = getStableId('C:/project/node_modules/pkg/client.js', projectRoot);
+      // Note: double backslash is an escaped backslash, becomes single backslash, then normalized to /
+      expect(result.source).toBe('capture');
+    });
+
+    it('Windows pnpm paths work correctly', () => {
+      const pnpmPath =
+        'C:\\project\\node_modules\\.pnpm\\react-dom@18.2.0\\node_modules\\react-dom\\client.js';
+
+      captureSpecifier(pnpmPath, 'react-dom/client');
+
+      const result = getStableId(
+        'C:/project/node_modules/.pnpm/react-dom@18.2.0/node_modules/react-dom/client.js',
+        projectRoot
+      );
+      expect(result.stableId).toBe('react-dom/client');
+    });
+  });
+
+  // ============================================================================
   // Combined Edge Cases
   // ============================================================================
   describe('Combined edge cases', () => {
