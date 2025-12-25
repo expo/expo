@@ -939,17 +939,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       .map((artifact) => artifact.metadata.stableIdToModuleId ?? {})
       .reduce((acc, map) => ({ ...acc, ...map }), {});
 
-    // Convert boundaries to opaque IDs for manifest
-    // For stable IDs: use as-is
-    // For file paths: convert to relative path (legacy compatibility)
-    const clientBoundariesAsOpaqueIds = clientBoundaries.map((boundary) =>
-      isStableId(boundary)
-        ? boundary
-        : // NOTE(cedric): relative module specifiers / IDs should always be POSIX formatted
-          toPosixPath(path.relative(serverRoot, boundary))
-    );
-
-    // moduleIdToSplitBundle maps file paths to chunk filenames
+    // moduleIdToSplitBundle maps absolute file paths to chunk filenames
     const moduleIdToSplitBundle = (
       bundle.artifacts
         .map((artifact) => artifact?.metadata?.paths && Object.values(artifact.metadata.paths))
@@ -960,7 +950,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     debug(
       'SSR Manifest:',
       moduleIdToSplitBundle,
-      clientBoundariesAsOpaqueIds,
+      clientBoundaries,
       stableIdToFilePath,
       stableIdToModuleId
     );
@@ -970,36 +960,71 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const ssrManifest = new Map<string, [string | number, string | null]>();
 
     if (Object.keys(moduleIdToSplitBundle).length) {
-      clientBoundariesAsOpaqueIds.forEach((boundary) => {
-        // For stable IDs, look up the file path first
-        const filePath = isStableId(boundary) ? stableIdToFilePath[boundary] : null;
-        const lookupKey = filePath ?? boundary;
+      // Process each boundary (either stable ID or absolute file path)
+      clientBoundaries.forEach((boundary) => {
+        const boundaryIsStableId = isStableId(boundary);
+
+        // For stable IDs, look up the file path from the mapping
+        // For file paths, use the boundary directly
+        const absoluteFilePath = boundaryIsStableId
+          ? stableIdToFilePath[boundary]
+          : boundary;
+
+        // Convert to manifest key format:
+        // - Stable IDs: use as-is (e.g., "pkg/client")
+        // - File paths: convert to projectRoot-relative with "./" prefix
+        const manifestKey = boundaryIsStableId
+          ? boundary
+          : './' + toPosixPath(path.relative(this.projectRoot, boundary));
 
         // Get the module ID: prefer stableIdToModuleId lookup, fallback to createModuleId
         const moduleId =
-          stableIdToModuleId[boundary] ??
-          (filePath
-            ? this.instanceMetroOptions.createModuleId?.(filePath, {
+          (boundaryIsStableId ? stableIdToModuleId[boundary] : null) ??
+          (absoluteFilePath
+            ? this.instanceMetroOptions.createModuleId?.(absoluteFilePath, {
                 platform: options.platform,
                 environment: 'client',
               })
-            : boundary);
+            : manifestKey);
 
-        if (lookupKey in moduleIdToSplitBundle) {
-          ssrManifest.set(boundary, [moduleId, moduleIdToSplitBundle[lookupKey]]);
+        // Look up chunk using absolute file path (that's how moduleIdToSplitBundle is keyed)
+        if (absoluteFilePath && absoluteFilePath in moduleIdToSplitBundle) {
+          ssrManifest.set(manifestKey, [moduleId, moduleIdToSplitBundle[absoluteFilePath]]);
+        } else if (!absoluteFilePath) {
+          // Stable ID with no file path mapping - this shouldn't happen in normal cases
+          throw new Error(
+            `Could not find file path for stable ID "${boundary}" in the SSR manifest. ` +
+              `This may indicate that the module wasn't included in the bundle.`
+          );
         } else {
           throw new Error(
-            `Could not find boundary "${boundary}" (file: ${filePath ?? 'N/A'}) in the SSR manifest. Available: ${Object.keys(moduleIdToSplitBundle).join(', ')}`
+            `Could not find boundary "${manifestKey}" (file: ${absoluteFilePath}) in the SSR manifest. ` +
+              `Available: ${Object.keys(moduleIdToSplitBundle).join(', ')}`
           );
         }
       });
     } else {
       // Native apps with bundle splitting disabled.
       debug('No split bundles');
-      clientBoundariesAsOpaqueIds.forEach((boundary) => {
-        // Get the module ID: prefer stableIdToModuleId lookup, fallback to stable ID
-        const moduleId = stableIdToModuleId[boundary] ?? boundary;
-        ssrManifest.set(boundary, [moduleId, null]);
+      clientBoundaries.forEach((boundary) => {
+        const boundaryIsStableId = isStableId(boundary);
+
+        // Convert to manifest key format
+        const manifestKey = boundaryIsStableId
+          ? boundary
+          : './' + toPosixPath(path.relative(this.projectRoot, boundary));
+
+        // Get the module ID: prefer stableIdToModuleId lookup, fallback to computed
+        const moduleId =
+          (boundaryIsStableId ? stableIdToModuleId[boundary] : null) ??
+          (boundary
+            ? this.instanceMetroOptions.createModuleId?.(boundary, {
+                platform: options.platform,
+                environment: 'client',
+              })
+            : manifestKey);
+
+        ssrManifest.set(manifestKey, [moduleId, null]);
       });
     }
 
@@ -1017,41 +1042,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
     // Format: { stableId: [moduleId, chunk] }
-    // Keys must match the stable ID format from Babel:
+    // Keys are already in the correct format from the processing above:
     // - Package specifiers: "pkg/client", "@scope/pkg/client"
-    // - App-relative paths: "./src/Button.js"
+    // - App-relative paths: "./src/Button.js" (relative to projectRoot)
     files.set(`_expo/rsc/${options.platform}/ssr-manifest.js`, {
       targetDomain: 'server',
       contents:
-        'module.exports = ' +
-        JSON.stringify(
-          // Map from stable ID to [moduleId, chunk]
-          Object.fromEntries(
-            Array.from(ssrManifest.entries()).map(([key, value]) => {
-              // The key is already in the correct format from clientBoundariesAsOpaqueIds.
-              // - Stable IDs (bare specifiers): used as-is
-              // - Relative paths already have "./" prefix from Babel
-              // - File paths were converted to relative paths from serverRoot
-              //
-              // We need to ensure the key matches Babel's format:
-              // - For relative paths: ensure "./" prefix
-              // - For stable IDs: use as-is
-              let manifestKey = key;
-              if (!isStableId(key) || key.startsWith('./')) {
-                // This is a relative path - ensure it has "./" prefix
-                // and is relative to projectRoot (not serverRoot)
-                if (!key.startsWith('./') && !key.startsWith('../')) {
-                  // Convert serverRoot-relative to projectRoot-relative
-                  const absolutePath = path.join(serverRoot, key);
-                  manifestKey = './' + toPosixPath(path.relative(this.projectRoot, absolutePath));
-                } else {
-                  manifestKey = key;
-                }
-              }
-              return [manifestKey, value];
-            })
-          )
-        ),
+        'module.exports = ' + JSON.stringify(Object.fromEntries(ssrManifest.entries())),
     });
 
     return { ...bundle, files };
