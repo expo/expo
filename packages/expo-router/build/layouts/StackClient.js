@@ -111,6 +111,24 @@ const stackRouterOverride = (original) => {
                     options.routeGetIdList[actionName]);
             }
             const { routeParamList } = options;
+            // START FORK - Handle predefinedValues redirect
+            // Check if we're navigating to a dynamic route that has a predefined value screen
+            if (action.payload && 'name' in action.payload && action.payload.name) {
+                const targetName = action.payload.name;
+                const targetParams = action.payload.params;
+                // Check if the route name is a dynamic segment (e.g., "[param]")
+                const dynamicMatch = targetName.match(/^\[(.+)\]$/);
+                if (dynamicMatch && targetParams) {
+                    const paramName = dynamicMatch[1];
+                    const paramValue = targetParams[paramName];
+                    // If the param value matches a screen name in routeNames, redirect to that screen
+                    if (typeof paramValue === 'string' && state.routeNames.includes(paramValue)) {
+                        action.payload.name = paramValue;
+                        // Keep the params so the component knows the param value
+                    }
+                }
+            }
+            // END FORK
             switch (action.type) {
                 case 'PUSH':
                 case 'NAVIGATE': {
