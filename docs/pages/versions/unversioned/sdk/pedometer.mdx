@@ -11,7 +11,33 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { SnackInline } from '~/ui/components/Snippet';
 
-`Pedometer` from `expo-sensors` uses the system `hardware.Sensor` on Android and Core Motion on iOS to get the user's step count, and also allows you to subscribe to pedometer updates.
+`Pedometer` from `expo-sensors` uses the system step counter sensor for live updates, and the Recording API on Android / Core Motion on iOS for step history.
+
+> **Note:** iOS keeps collecting step history automatically (up to seven days). On Android, step history requires Google Play Services Recording API support and an active `subscribeRecording()` subscription. Unsubscribing makes previously collected history inaccessible, and Android retains up to 10 days since the latest subscription. The subscription helpers (`subscribeRecording` / `unsubscribeRecording`) are no-ops on iOS.
+
+### Pause and resume events
+
+You can listen for pedometer pause/resume events:
+
+> Event delivery is best-effort and generally only while the app is running. On Android, events are derived from walking/running activity transitions.
+
+```ts
+import { Pedometer } from 'expo-sensors';
+
+const subscription = Pedometer.watchEventUpdates((event) => {
+  console.log(`Pedometer ${event.type} at`, new Date(event.date));
+});
+
+const started = await Pedometer.startEventUpdatesAsync();
+if (!started) {
+  subscription.remove();
+  console.log('Pedometer events are not available on this device.');
+}
+
+// Later, to stop listening:
+subscription.remove();
+await Pedometer.stopEventUpdatesAsync();
+```
 
 ## Installation
 
@@ -23,42 +49,50 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 ```jsx
 import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { Pedometer } from 'expo-sensors';
 
 export default function App() {
   const [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
+  const [isPedometerHistoryAvailable, setIsPedometerHistoryAvailable] = useState('checking');
   const [pastStepCount, setPastStepCount] = useState(0);
   const [currentStepCount, setCurrentStepCount] = useState(0);
 
   const subscribe = async () => {
     const isAvailable = await Pedometer.isAvailableAsync();
     setIsPedometerAvailable(String(isAvailable));
+    const isHistoryAvailable = await Pedometer.isRecordingAvailableAsync();
+    setIsPedometerHistoryAvailable(String(isHistoryAvailable));
 
-    if (isAvailable) {
+    if (isHistoryAvailable) {
+      if (Platform.OS === 'android') {
+        await Pedometer.subscribeRecording();
+      }
       const end = new Date();
       const start = new Date();
       start.setDate(end.getDate() - 1);
 
       const pastStepCountResult = await Pedometer.getStepCountAsync(start, end);
-      if (pastStepCountResult) {
-        setPastStepCount(pastStepCountResult.steps);
-      }
+      setPastStepCount(pastStepCountResult.steps);
+    }
 
-      return Pedometer.watchStepCount(result => {
+    if (isAvailable) {
+      return Pedometer.watchStepCount((result) => {
         setCurrentStepCount(result.steps);
       });
     }
   };
 
   useEffect(() => {
-    const subscription = subscribe();
+    let subscription;
+    subscribe().then((result) => (subscription = result));
     return () => subscription && subscription.remove();
   }, []);
 
   return (
     <View style={styles.container}>
       <Text>Pedometer.isAvailableAsync(): {isPedometerAvailable}</Text>
+      <Text>Pedometer.isRecordingAvailableAsync(): {isPedometerHistoryAvailable}</Text>
       <Text>Steps taken in the last 24 hours: {pastStepCount}</Text>
       <Text>Walk! And watch this go up: {currentStepCount}</Text>
     </View>

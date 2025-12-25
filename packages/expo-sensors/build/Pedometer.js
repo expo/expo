@@ -9,12 +9,103 @@ import ExponentPedometer from './ExponentPedometer';
  * @return Returns a [`Subscription`](#subscription) that enables you to call
  * `remove()` when you would like to unsubscribe the listener.
  *
- * > Pedometer updates will not be delivered while the app is in the background. As an alternative, on Android, use another solution based on
- * > [`Health Connect API`](https://developer.android.com/health-and-fitness/guides/health-connect).
- * > On iOS, the `getStepCountAsync` method can be used to get the step count between two dates.
+ * > Pedometer updates will not be delivered while the app is in the background.
+ * The `getStepCountAsync` method can be used to get the step count between two dates.
+ * On Android, historical step counts require Play Services Recording API support and an active
+ * `subscribeRecording()` subscription.
  */
 export function watchStepCount(callback) {
+    if (!ExponentPedometer.addListener) {
+        return {
+            remove() { },
+        };
+    }
     return ExponentPedometer.addListener('Exponent.pedometerUpdate', callback);
+}
+/**
+ * Listen for pedometer pause/resume events emitted by the underlying platform.
+ * Call {@link startEventUpdatesAsync} to begin receiving events.
+ *
+ * > Event delivery is best-effort and generally only while the app is running.
+ * > Do not rely on it while the app is in the background or terminated.
+ * > On Android, events are derived from walking/running activity transitions.
+ * @platform android ios
+ */
+export function watchEventUpdates(callback) {
+    if (!ExponentPedometer.addListener) {
+        return {
+            remove() { },
+        };
+    }
+    return ExponentPedometer.addListener('Exponent.pedometerEvent', callback);
+}
+/**
+ * Check whether step history is supported on this device.
+ * On iOS, historical data is collected automatically (up to seven days).
+ * @return Returns a promise that fulfills with a `boolean`, indicating whether
+ * historical step count data is available on this device.
+ *
+ * > On Android, this checks whether the required Play Services Recording API components are available.
+ * > Step history is only accessible while there is an active `subscribeRecording()` subscription.
+ */
+export function isRecordingAvailableAsync() {
+    if (!ExponentPedometer.isRecordingAvailableAsync) {
+        return Promise.resolve(false);
+    }
+    return ExponentPedometer.isRecordingAvailableAsync();
+}
+/**
+ * Start pedometer pause/resume event tracking.
+ * Resolves to `false` when the platform does not support pedometer events.
+ * @platform android ios
+ */
+export async function startEventUpdatesAsync() {
+    if (!ExponentPedometer.startEventUpdates) {
+        return false;
+    }
+    return await ExponentPedometer.startEventUpdates();
+}
+/**
+ * Stop pedometer pause/resume event tracking.
+ * @platform android ios
+ */
+export async function stopEventUpdatesAsync() {
+    if (!ExponentPedometer.stopEventUpdates) {
+        return;
+    }
+    await ExponentPedometer.stopEventUpdates();
+}
+/**
+ * Subscribe to pedometer tracking. Step count will be tracked by Google Play Services
+ * Recording API, if available, until unsubscribed. Subsequent calls are safe and ignored.
+ * @return Returns a promise that fulfills when the subscription is successful.
+ *
+ * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
+ * > `LocalRecordingClient` stores up to 10 days of data.
+ * > Data is only accessible while there is an active subscription.
+ * @platform android
+ */
+export async function subscribeRecording() {
+    if (!ExponentPedometer.subscribeRecording) {
+        return;
+    }
+    return await ExponentPedometer.subscribeRecording();
+}
+/**
+ * Unsubscribe from pedometer tracking.
+ * @return Returns a promise that fulfills when the unsubscription is successful.
+ *
+ * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
+ * > To free up resources, you should make sure to unsubscribe from
+ * > the collection of sensor data when your app is no longer in need of it.
+ * > Unsubscribing will also reset the historical data that was collected.
+ * @platform android
+ */
+export async function unsubscribeRecording() {
+    if (!ExponentPedometer.unsubscribeRecording) {
+        return;
+    }
+    return await ExponentPedometer.unsubscribeRecording();
 }
 // @needsAudit
 /**
@@ -26,7 +117,13 @@ export function watchStepCount(callback) {
  * As [Apple documentation states](https://developer.apple.com/documentation/coremotion/cmpedometer/1613946-querypedometerdatafromdate?language=objc):
  * > Only the past seven days worth of data is stored and available for you to retrieve. Specifying
  * > a start date that is more than seven days in the past returns only the available data.
- * @platform ios
+ *
+ * As [Google documentation states](https://developer.android.com/health-and-fitness/guides/recording-api):
+ * > `LocalRecordingClient` stores up to 10 days of data.
+ * > Data is only accessible while there is an active subscription.
+ *
+ * On Android, call `subscribeRecording()` before querying step history and keep it active if you want
+ * the previous days to be available.
  */
 export async function getStepCountAsync(start, end) {
     if (!ExponentPedometer.getStepCountAsync) {
