@@ -26,16 +26,20 @@ function withExpoSerializers(config, options = {}) {
     }
     // Then tree-shake the modules.
     processors.push(treeShakeSerializerPlugin_1.treeShakeSerializer);
-    // Resolve RSC deferred stable IDs before AST->JS conversion.
-    // This must run after tree-shaking but before reconcile.
+    // Then finish transforming the modules from AST to JS.
+    // This must run before RSC plugin since reconcile regenerates code from AST
+    // and would overwrite any code changes made by RSC plugin.
+    processors.push(reconcileTransformSerializerPlugin_1.reconcileTransformSerializerPlugin);
+    // Resolve RSC deferred stable IDs AFTER reconcile has generated final code.
+    // The Babel transform sets metadata with deferred IDs, and this plugin:
+    // 1. Resolves deferred IDs to stable IDs in metadata
+    // 2. Rewrites the actual JS code to replace deferred ID strings
     if (options.projectRoot) {
         processors.push((0, rscSerializerPlugin_1.createRscSerializerPlugin)({
             projectRoot: options.projectRoot,
             debug: env_1.env.EXPO_DEBUG,
         }));
     }
-    // Then finish transforming the modules from AST to JS.
-    processors.push(reconcileTransformSerializerPlugin_1.reconcileTransformSerializerPlugin);
     return withSerializerPlugins(config, processors, options);
 }
 // There can only be one custom serializer as the input doesn't match the output.

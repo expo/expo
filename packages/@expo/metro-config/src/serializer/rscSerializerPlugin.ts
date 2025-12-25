@@ -18,12 +18,24 @@ import type { SerializerParameters } from './withExpoSerializers';
 // Must match the prefix in babel-preset-expo/src/client-module-proxy-plugin.ts
 const RSC_DEFERRED_PREFIX = '__RSC_DEFERRED__:';
 
+/**
+ * Normalize path for cross-platform consistency.
+ * - Converts backslashes to forward slashes
+ * - Handles escaped backslashes from JS string literals (\\)
+ */
+function normalizePath(filePath: string): string {
+  // Handle escaped backslashes in JS strings (e.g., "C:\\Users\\...")
+  // and regular backslashes (e.g., "C:\Users\...")
+  return filePath.replace(/\\+/g, '/');
+}
+
 function isDeferredId(id: string): boolean {
   return id.startsWith(RSC_DEFERRED_PREFIX);
 }
 
 function extractPath(deferredId: string): string {
-  return deferredId.slice(RSC_DEFERRED_PREFIX.length);
+  const rawPath = deferredId.slice(RSC_DEFERRED_PREFIX.length);
+  return normalizePath(rawPath);
 }
 
 /**
@@ -61,7 +73,33 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
     const stableIdToFilePath = new Map<string, string>();
     // Maps deferred ID → stable ID (for code rewriting)
     const deferredToStableId = new Map<string, string>();
+    // Track collisions: stable ID → list of file paths that resolve to it
+    const stableIdCollisions = new Map<string, string[]>();
     let resolvedCount = 0;
+
+    // Helper to track stable ID usage and detect collisions
+    function trackStableId(stableId: string, modulePath: string, moduleId: string | number) {
+      const existingPath = stableIdToFilePath.get(stableId);
+      if (existingPath && existingPath !== modulePath) {
+        // Collision detected: same stable ID maps to different files
+        const collisions = stableIdCollisions.get(stableId) ?? [existingPath];
+        if (!collisions.includes(modulePath)) {
+          collisions.push(modulePath);
+        }
+        stableIdCollisions.set(stableId, collisions);
+
+        if (debug) {
+          console.warn(
+            `[RSC] Warning: Stable ID collision detected for "${stableId}":\n` +
+              `  Previous: ${existingPath}\n` +
+              `  Current:  ${modulePath}\n` +
+              `  The last occurrence will be used. This may cause issues with pnpm or aliased packages.`
+          );
+        }
+      }
+      stableIdToModuleId.set(stableId, moduleId);
+      stableIdToFilePath.set(stableId, modulePath);
+    }
 
     // First pass: build mappings from metadata
     for (const [modulePath, module] of graph.dependencies) {
@@ -78,8 +116,7 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
           const { stableId, source } = getStableId(resolvedPath, projectRoot);
 
           data.reactClientReference = stableId;
-          stableIdToModuleId.set(stableId, serializerOptions.createModuleId(modulePath));
-          stableIdToFilePath.set(stableId, modulePath);
+          trackStableId(stableId, modulePath, serializerOptions.createModuleId(modulePath));
           deferredToStableId.set(deferredId, stableId);
           resolvedCount++;
 
@@ -95,8 +132,7 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
           const { stableId, source } = getStableId(resolvedPath, projectRoot);
 
           data.reactServerReference = stableId;
-          stableIdToModuleId.set(stableId, serializerOptions.createModuleId(modulePath));
-          stableIdToFilePath.set(stableId, modulePath);
+          trackStableId(stableId, modulePath, serializerOptions.createModuleId(modulePath));
           deferredToStableId.set(deferredId, stableId);
           resolvedCount++;
 
@@ -107,18 +143,18 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
 
         // Also capture non-deferred IDs (app-level files)
         if (data.reactClientReference && !isDeferredId(data.reactClientReference)) {
-          stableIdToModuleId.set(
+          trackStableId(
             data.reactClientReference,
+            modulePath,
             serializerOptions.createModuleId(modulePath)
           );
-          stableIdToFilePath.set(data.reactClientReference, modulePath);
         }
         if (data.reactServerReference && !isDeferredId(data.reactServerReference)) {
-          stableIdToModuleId.set(
+          trackStableId(
             data.reactServerReference,
+            modulePath,
             serializerOptions.createModuleId(modulePath)
           );
-          stableIdToFilePath.set(data.reactServerReference, modulePath);
         }
       }
     }
@@ -131,14 +167,16 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
         for (const output of module.output) {
           const data = output.data as { code?: string };
           if (data.code && data.code.includes(RSC_DEFERRED_PREFIX)) {
-            data.code = data.code.replace(deferredIdRegex, (match, quote, path) => {
-              const deferredId = RSC_DEFERRED_PREFIX + path;
+            data.code = data.code.replace(deferredIdRegex, (match, quote, rawPath) => {
+              // Normalize path for Windows compatibility (handles escaped backslashes)
+              const normalizedPath = normalizePath(rawPath);
+              const deferredId = RSC_DEFERRED_PREFIX + normalizedPath;
               const stableId = deferredToStableId.get(deferredId);
               if (stableId) {
                 return `${quote}${stableId}${quote}`;
               }
               // Fallback: resolve directly if not in map
-              const { stableId: fallbackId } = getStableId(path, projectRoot);
+              const { stableId: fallbackId } = getStableId(normalizedPath, projectRoot);
               return `${quote}${fallbackId}${quote}`;
             });
           }
@@ -160,6 +198,19 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
 
     if (debug && resolvedCount > 0) {
       console.log(`[RSC] Resolved ${resolvedCount} deferred stable IDs`);
+    }
+
+    // Warn about stable ID collisions (even without debug flag)
+    if (stableIdCollisions.size > 0) {
+      const collisionSummary = Array.from(stableIdCollisions.entries())
+        .map(([stableId, paths]) => `  "${stableId}":\n${paths.map((p) => `    - ${p}`).join('\n')}`)
+        .join('\n');
+      console.warn(
+        `[RSC] Warning: ${stableIdCollisions.size} stable ID collision(s) detected.\n` +
+          `This can happen with pnpm, multiple package versions, or aliased imports.\n` +
+          `The last occurrence of each will be used, which may cause incorrect module resolution:\n` +
+          collisionSummary
+      );
     }
 
     // Clear registry after serialization to prevent stale entries in watch mode

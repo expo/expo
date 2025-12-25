@@ -190,11 +190,8 @@ export function createServerComponentsMiddleware(
         );
       }
 
-      const relativeName = createModuleId(entryPoint, {
-        platform,
-        environment: 'react-server',
-      });
-      const safeName = path.basename(contents.artifacts.find((a) => a.type === 'js')!.filename!);
+      const jsArtifact = contents.artifacts.find((a) => a.type === 'js')!;
+      const safeName = path.basename(jsArtifact.filename!);
 
       const outputName = `_expo/rsc/${platform}/${safeName}`;
       // While we're here, export the router for the server to dynamically render RSC.
@@ -211,8 +208,16 @@ export function createServerComponentsMiddleware(
         ? entryPoint
         : './' + toPosixPath(path.relative(projectRoot, entryPoint));
 
+      // For server action manifests, the module ID must match what the server bundle uses.
+      // - For stable IDs: use stableIdToModuleId mapping from serializer
+      // - For file paths: use createModuleId as before
+      const stableIdToModuleId = jsArtifact.metadata.stableIdToModuleId ?? {};
+      const moduleId = isStableId
+        ? stableIdToModuleId[entryPoint] ?? entryPoint
+        : createModuleId(entryPoint, { platform, environment: 'react-server' });
+
       // Import relative to `dist/server/_expo/rsc/web/router.js`
-      manifest[publicModuleId] = [String(relativeName), outputName];
+      manifest[publicModuleId] = [String(moduleId), outputName];
     }
 
     async function processEntryPoints(entryPoints: string[], recursions = 0) {

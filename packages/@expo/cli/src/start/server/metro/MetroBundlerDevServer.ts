@@ -1017,6 +1017,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
     // Format: { stableId: [moduleId, chunk] }
+    // Keys must match the stable ID format from Babel:
+    // - Package specifiers: "pkg/client", "@scope/pkg/client"
+    // - App-relative paths: "./src/Button.js"
     files.set(`_expo/rsc/${options.platform}/ssr-manifest.js`, {
       targetDomain: 'server',
       contents:
@@ -1024,14 +1027,29 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         JSON.stringify(
           // Map from stable ID to [moduleId, chunk]
           Object.fromEntries(
-            Array.from(ssrManifest.entries()).map(([key, value]) => [
-              // For stable IDs: use as-is
-              // For relative paths: prefix with "./" to match babel plugin
-              isStableId(key) && !key.startsWith('./')
-                ? key
-                : './' + toPosixPath(path.relative(this.projectRoot, path.join(serverRoot, key))),
-              value, // [moduleId, chunk]
-            ])
+            Array.from(ssrManifest.entries()).map(([key, value]) => {
+              // The key is already in the correct format from clientBoundariesAsOpaqueIds.
+              // - Stable IDs (bare specifiers): used as-is
+              // - Relative paths already have "./" prefix from Babel
+              // - File paths were converted to relative paths from serverRoot
+              //
+              // We need to ensure the key matches Babel's format:
+              // - For relative paths: ensure "./" prefix
+              // - For stable IDs: use as-is
+              let manifestKey = key;
+              if (!isStableId(key) || key.startsWith('./')) {
+                // This is a relative path - ensure it has "./" prefix
+                // and is relative to projectRoot (not serverRoot)
+                if (!key.startsWith('./') && !key.startsWith('../')) {
+                  // Convert serverRoot-relative to projectRoot-relative
+                  const absolutePath = path.join(serverRoot, key);
+                  manifestKey = './' + toPosixPath(path.relative(this.projectRoot, absolutePath));
+                } else {
+                  manifestKey = key;
+                }
+              }
+              return [manifestKey, value];
+            })
           )
         ),
     });
