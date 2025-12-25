@@ -49,9 +49,7 @@ describe('RSC stable ID helpers', () => {
       const path = extractResolvedPathFromDeferred(
         '__RSC_DEFERRED__:/project/node_modules/.pnpm/pkg@1.0.0/node_modules/pkg/client.js'
       );
-      expect(path).toBe(
-        '/project/node_modules/.pnpm/pkg@1.0.0/node_modules/pkg/client.js'
-      );
+      expect(path).toBe('/project/node_modules/.pnpm/pkg@1.0.0/node_modules/pkg/client.js');
     });
 
     it('throws for non-deferred IDs', () => {
@@ -139,11 +137,7 @@ describe('stable ID generation scenarios', () => {
     });
 
     it('relative paths are stable IDs', () => {
-      const paths = [
-        './src/Button.js',
-        './components/Header.tsx',
-        './app/(tabs)/index.tsx',
-      ];
+      const paths = ['./src/Button.js', './components/Header.tsx', './app/(tabs)/index.tsx'];
 
       for (const p of paths) {
         expect(isDeferredStableId(p)).toBe(false);

@@ -778,6 +778,7 @@ describe('serializes', () => {
                 "/app/foo.js": "/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
               },
             },
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
@@ -798,6 +799,7 @@ describe('serializes', () => {
               "/app/foo.js",
             ],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
@@ -831,6 +833,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
     });
   });
@@ -868,6 +871,7 @@ describe('serializes', () => {
                 "/app/foo.js": "/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
               },
             },
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
@@ -891,6 +895,7 @@ describe('serializes', () => {
               "/app/foo.js",
             ],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
@@ -924,6 +929,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
     });
   });
@@ -961,6 +967,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
     });
   });
@@ -1029,6 +1036,7 @@ describe('serializes', () => {
                 "/app/foo.js": "/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
               },
             },
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
@@ -1057,6 +1065,7 @@ describe('serializes', () => {
               "/app/foo.js",
             ],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
@@ -1090,6 +1099,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
     });
   });
@@ -1161,6 +1171,7 @@ describe('serializes', () => {
                 "/app/c.js": "/_expo/static/js/web/c-c1ea5faaf03846340d18f64eb7fd10a5.js",
               },
             },
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
@@ -1189,6 +1200,7 @@ describe('serializes', () => {
               "/app/a.js",
             ],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
@@ -1223,6 +1235,7 @@ describe('serializes', () => {
               "/app/b.js",
             ],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
@@ -1256,6 +1269,7 @@ describe('serializes', () => {
               "/app/c.js",
             ],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
@@ -1290,6 +1304,7 @@ describe('serializes', () => {
               "/app/e.js",
             ],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
@@ -1334,6 +1349,7 @@ describe('serializes', () => {
             "isAsync": false,
             "modulePaths": [],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
@@ -1357,6 +1373,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
     });
     expect(artifacts[2].metadata).toEqual({
@@ -1366,6 +1383,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
     });
 
@@ -1379,6 +1397,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
     });
     // Ensure the common chunk isn't run, just loaded.
@@ -1395,6 +1414,7 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
     });
     expect(artifacts[5].source).toMatch(/PRE_MODULE_TEST/);
@@ -1492,7 +1512,8 @@ describe('serializes', () => {
         modulePaths: ['/app/index.js', '/app/other.js', '/app/react-server-dom-webpack/server'],
         paths: {},
         expoDomComponentReferences: [],
-        reactClientReferences: ['file:///app/other.js'],
+        reactClientReferences: ['./other.js'],
+        reactClientReferenceMap: { './other.js': '/app/other.js' },
         reactServerReferences: [],
         requires: [],
       });
@@ -1553,7 +1574,8 @@ describe('serializes', () => {
         ],
         paths: {},
         expoDomComponentReferences: [],
-        reactClientReferences: ['file:///app/other.js', 'file:///app/second.js'],
+        reactClientReferences: ['./other.js', './second.js'],
+        reactClientReferenceMap: { './other.js': '/app/other.js', './second.js': '/app/second.js' },
         reactServerReferences: [],
         requires: [],
       });
@@ -1585,7 +1607,9 @@ describe('serializes', () => {
         paths: {},
         expoDomComponentReferences: [],
         reactClientReferences: [],
-        reactServerReferences: ['file:///app/server-actions.js'],
+      reactClientReferenceMap: {},
+        reactClientReferenceMap: {},
+        reactServerReferences: ['./server-actions.js'],
         requires: [],
       });
     });
@@ -1618,11 +1642,13 @@ describe('serializes', () => {
         paths: {},
         expoDomComponentReferences: [],
         reactClientReferences: [],
+      reactClientReferenceMap: {},
+        reactClientReferenceMap: {},
         reactServerReferences: [
           // This appears because we include a server action in the file.
-          'file:///app/index.js',
+          './index.js',
           // This is here because the module is marked with "use server".
-          'file:///app/server-actions.js',
+          './server-actions.js',
         ],
         requires: [],
       });
