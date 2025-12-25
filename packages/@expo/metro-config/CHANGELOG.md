@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- Use specifier-based stable IDs for RSC client boundaries to fix pnpm, package.json exports, and Metro-specific resolution issues ([#41823](https://github.com/expo/expo/pull/41823) by [@kimchi-developer](https://github.com/kimchi-developer))
 - Fix output typings to remove unreachable transitive dependencies from them ([#41676](https://github.com/expo/expo/pull/41676) by [@kitten](https://github.com/kitten))
 - Fix `minifierPath` resolution for cache key generation for strict isolated installations ([#41686](https://github.com/expo/expo/pull/41686) by [@kitten](https://github.com/kitten))
 
