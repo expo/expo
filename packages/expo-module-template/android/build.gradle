@@ -1,3 +1,4 @@
+<% if (!features.android) { %>// __SKIP_FILE__<% } %>
 apply plugin: 'com.android.library'
 
 group = '<%- project.package %>'

@@ -1,3 +1,4 @@
+<% if (!features.ios) { %>// __SKIP_FILE__<% } %>
 import ExpoModulesCore
 
 public class <%- project.moduleName %>: Module {
@@ -32,6 +33,7 @@ public class <%- project.moduleName %>: Module {
       ])
     }
 
+<% if (features.view) { %>
     // Enables the module to be used as a native view. Definition components that are accepted as part of the
     // view definition: Prop, Events.
     View(<%- project.viewName %>.self) {
@@ -44,5 +46,6 @@ public class <%- project.moduleName %>: Module {
 
       Events("onLoad")
     }
+<% } %>
   }
 }
