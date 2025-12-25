@@ -49,6 +49,7 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
         };
         resolverMainFields: string[];
         platforms: string[];
+        resolveRequest(context: import("@expo/metro/metro-resolver/types").CustomResolutionContext, moduleName: string, platform: string | null): import("@expo/metro/metro-resolver/types").Resolution;
         assetExts: string[];
         sourceExts: string[];
         nodeModulesPaths: string[];

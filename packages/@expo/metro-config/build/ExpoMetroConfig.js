@@ -22,6 +22,7 @@ const file_store_1 = require("./file-store");
 const getModulesPaths_1 = require("./getModulesPaths");
 const getWatchFolders_1 = require("./getWatchFolders");
 const rewriteRequestUrl_1 = require("./rewriteRequestUrl");
+const rscRegistry_1 = require("./rscRegistry");
 const sideEffects_1 = require("./serializer/sideEffects");
 const withExpoSerializers_1 = require("./serializer/withExpoSerializers");
 const postcss_1 = require("./transform-worker/postcss");
@@ -210,6 +211,15 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             },
             resolverMainFields: ['react-native', 'browser', 'main'],
             platforms: ['ios', 'android'],
+            // RSC: Capture import specifiers for stable ID resolution
+            resolveRequest(context, moduleName, platform) {
+                const result = context.resolveRequest(context, moduleName, platform);
+                // Capture bare specifiers (package imports) for RSC stable IDs
+                if (result.type === 'sourceFile' && (0, rscRegistry_1.isNodeModulePath)(result.filePath)) {
+                    (0, rscRegistry_1.captureSpecifier)(result.filePath, moduleName);
+                }
+                return result;
+            },
             assetExts: metroDefaultValues.resolver.assetExts
                 .concat(
             // Add default support for `expo-image` file types.
@@ -333,7 +343,10 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     // nor InputConfigT which is inexact and partial. Instead, we want an exact type combination of
     // the default config and Expo's config
     metroDefaultValues, expoMetroConfig);
-    return (0, withExpoSerializers_1.withExpoSerializers)(metroConfig, { unstable_beforeAssetSerializationPlugins });
+    return (0, withExpoSerializers_1.withExpoSerializers)(metroConfig, {
+        projectRoot,
+        unstable_beforeAssetSerializationPlugins,
+    });
 }
 /** Use to access the Expo Metro transformer path */
 exports.unstable_transformerPath = require.resolve('./transform-worker/transform-worker');

@@ -14,6 +14,7 @@ const debugId_1 = require("./debugId");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const baseJSBundle_1 = require("./fork/baseJSBundle");
 const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
+const rscSerializerPlugin_1 = require("./rscSerializerPlugin");
 const serializeChunks_1 = require("./serializeChunks");
 const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 const env_1 = require("../env");
@@ -25,6 +26,14 @@ function withExpoSerializers(config, options = {}) {
     }
     // Then tree-shake the modules.
     processors.push(treeShakeSerializerPlugin_1.treeShakeSerializer);
+    // Resolve RSC deferred stable IDs before AST->JS conversion.
+    // This must run after tree-shaking but before reconcile.
+    if (options.projectRoot) {
+        processors.push((0, rscSerializerPlugin_1.createRscSerializerPlugin)({
+            projectRoot: options.projectRoot,
+            debug: env_1.env.EXPO_DEBUG,
+        }));
+    }
     // Then finish transforming the modules from AST to JS.
     processors.push(reconcileTransformSerializerPlugin_1.reconcileTransformSerializerPlugin);
     return withSerializerPlugins(config, processors, options);

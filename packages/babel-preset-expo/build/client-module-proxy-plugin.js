@@ -1,8 +1,51 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.RSC_DEFERRED_PREFIX = void 0;
+exports.isDeferredStableId = isDeferredStableId;
+exports.extractResolvedPathFromDeferred = extractResolvedPathFromDeferred;
 exports.reactClientReferencesPlugin = reactClientReferencesPlugin;
 const node_path_1 = require("node:path");
 const common_1 = require("./common");
+// Marker prefix for deferred stable ID resolution (handled by serializer)
+exports.RSC_DEFERRED_PREFIX = '__RSC_DEFERRED__:';
+/**
+ * Check if a stable ID is deferred (needs serializer resolution).
+ */
+function isDeferredStableId(stableId) {
+    return stableId.startsWith(exports.RSC_DEFERRED_PREFIX);
+}
+/**
+ * Extract the resolved path from a deferred stable ID marker.
+ */
+function extractResolvedPathFromDeferred(deferredId) {
+    if (!isDeferredStableId(deferredId)) {
+        throw new Error(`Not a deferred stable ID: ${deferredId}`);
+    }
+    return deferredId.slice(exports.RSC_DEFERRED_PREFIX.length);
+}
+/**
+ * Check if a path is inside node_modules.
+ */
+function isNodeModulePath(filePath) {
+    return /(?:^|[\\/])node_modules(?:[\\/]|$)/.test(filePath);
+}
+/**
+ * Generate a stable ID for a client/server boundary module.
+ *
+ * For node_modules files, returns a deferred marker that the serializer
+ * will replace with the canonical specifier (e.g., "pkg/client").
+ *
+ * For app-level files, returns a relative path from project root.
+ */
+function generateStableId(filePath, projectRoot) {
+    if (isNodeModulePath(filePath)) {
+        // Mark as deferred - serializer will resolve using the capture registry
+        // Format: __RSC_DEFERRED__:/absolute/path/to/file.js
+        return exports.RSC_DEFERRED_PREFIX + filePath;
+    }
+    // App-level files: use relative path (stable across builds)
+    return './' + (0, common_1.toPosixPath)((0, node_path_1.relative)(projectRoot, filePath));
+}
 function reactClientReferencesPlugin(api) {
     const { template, types } = api;
     const isReactServer = api.caller(common_1.getIsReactServer);
@@ -28,11 +71,10 @@ function reactClientReferencesPlugin(api) {
                     throw new Error('[Babel] Expected a filename to be set in the state');
                 }
                 const projectRoot = possibleProjectRoot || state.file.opts.root || '';
-                // TODO: Replace with opaque paths in production.
-                const outputKey = './' + (0, common_1.toPosixPath)((0, node_path_1.relative)(projectRoot, filePath));
-                // const outputKey = isProd
-                //   ? './' + getRelativePath(projectRoot, filePath)
-                //   : url.pathToFileURL(filePath).href;
+                // Generate stable ID for the boundary module.
+                // For node_modules: deferred marker for serializer resolution
+                // For app-level: relative path from project root
+                const outputKey = generateStableId(filePath, projectRoot);
                 function iterateExports(callback, type) {
                     const exportNames = new Set();
                     // Collect all of the exports
