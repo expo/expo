@@ -782,6 +782,7 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "stableIdToModuleId": {},
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -803,6 +804,7 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "stableIdToModuleId": {},
           },
           "originFilename": "foo.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -835,6 +837,7 @@ describe('serializes', () => {
       reactClientReferences: [],
       reactClientReferenceMap: {},
       reactServerReferences: [],
+      stableIdToModuleId: {},
     });
   });
 
@@ -875,6 +878,7 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "stableIdToModuleId": {},
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -899,6 +903,7 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "stableIdToModuleId": {},
           },
           "originFilename": "foo.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -931,6 +936,7 @@ describe('serializes', () => {
       reactClientReferences: [],
       reactClientReferenceMap: {},
       reactServerReferences: [],
+      stableIdToModuleId: {},
     });
   });
 
@@ -969,6 +975,7 @@ describe('serializes', () => {
       reactClientReferences: [],
       reactClientReferenceMap: {},
       reactServerReferences: [],
+      stableIdToModuleId: {},
     });
   });
 
@@ -1040,6 +1047,7 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "stableIdToModuleId": {},
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1069,6 +1077,7 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "stableIdToModuleId": {},
           },
           "originFilename": "foo.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1101,6 +1110,7 @@ describe('serializes', () => {
       reactClientReferences: [],
       reactClientReferenceMap: {},
       reactServerReferences: [],
+      stableIdToModuleId: {},
     });
   });
 
@@ -1178,6 +1188,7 @@ describe('serializes', () => {
               "_expo/static/js/web/__common-e8c8ebf41a34c79ec57f339049e2ea36.js",
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
+            "stableIdToModuleId": {},
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1206,6 +1217,7 @@ describe('serializes', () => {
             "requires": [
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
+            "stableIdToModuleId": {},
           },
           "originFilename": "a.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1241,6 +1253,7 @@ describe('serializes', () => {
             "requires": [
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
+            "stableIdToModuleId": {},
           },
           "originFilename": "b.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1275,6 +1288,7 @@ describe('serializes', () => {
             "requires": [
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
+            "stableIdToModuleId": {},
           },
           "originFilename": "c.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1310,6 +1324,7 @@ describe('serializes', () => {
             "requires": [
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
+            "stableIdToModuleId": {},
           },
           "originFilename": "../__common.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1353,6 +1368,7 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "stableIdToModuleId": {},
           },
           "originFilename": "../__expo-metro-runtime.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1375,6 +1391,7 @@ describe('serializes', () => {
       reactClientReferences: [],
       reactClientReferenceMap: {},
       reactServerReferences: [],
+      stableIdToModuleId: {},
     });
     expect(artifacts[2].metadata).toEqual({
       isAsync: true,
@@ -1385,6 +1402,7 @@ describe('serializes', () => {
       reactClientReferences: [],
       reactClientReferenceMap: {},
       reactServerReferences: [],
+      stableIdToModuleId: {},
     });
 
     expect(artifacts[4].filename).toEqual(
@@ -1399,6 +1417,7 @@ describe('serializes', () => {
       reactClientReferences: [],
       reactClientReferenceMap: {},
       reactServerReferences: [],
+      stableIdToModuleId: {},
     });
     // Ensure the common chunk isn't run, just loaded.
     expect(artifacts[4].source).not.toMatch(/TEST_RUN_MODULE/);
@@ -1416,6 +1435,7 @@ describe('serializes', () => {
       reactClientReferences: [],
       reactClientReferenceMap: {},
       reactServerReferences: [],
+      stableIdToModuleId: {},
     });
     expect(artifacts[5].source).toMatch(/PRE_MODULE_TEST/);
   });
@@ -1516,6 +1536,7 @@ describe('serializes', () => {
         reactClientReferenceMap: { './other.js': '/app/other.js' },
         reactServerReferences: [],
         requires: [],
+        stableIdToModuleId: {},
       });
 
       expect(artifacts[0].source).toMatchInlineSnapshot(`
@@ -1578,6 +1599,7 @@ describe('serializes', () => {
         reactClientReferenceMap: { './other.js': '/app/other.js', './second.js': '/app/second.js' },
         reactServerReferences: [],
         requires: [],
+        stableIdToModuleId: {},
       });
     });
   });
@@ -1607,10 +1629,10 @@ describe('serializes', () => {
         paths: {},
         expoDomComponentReferences: [],
         reactClientReferences: [],
-      reactClientReferenceMap: {},
         reactClientReferenceMap: {},
         reactServerReferences: ['./server-actions.js'],
         requires: [],
+        stableIdToModuleId: {},
       });
     });
     it(`collects server references from server action functions when bundling in react-server mode`, async () => {
@@ -1642,7 +1664,6 @@ describe('serializes', () => {
         paths: {},
         expoDomComponentReferences: [],
         reactClientReferences: [],
-      reactClientReferenceMap: {},
         reactClientReferenceMap: {},
         reactServerReferences: [
           // This appears because we include a server action in the file.
@@ -1651,6 +1672,7 @@ describe('serializes', () => {
           './server-actions.js',
         ],
         requires: [],
+        stableIdToModuleId: {},
       });
     });
   });

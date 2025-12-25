@@ -4,6 +4,10 @@
  * Resolves deferred stable IDs for React Server Components.
  * Deferred IDs are marked by Babel with __RSC_DEFERRED__:/path/to/file.js
  * and resolved here using the captured specifier registry.
+ *
+ * This plugin does TWO things:
+ * 1. Updates metadata (reactClientReference/reactServerReference)
+ * 2. Rewrites the actual JS code to replace deferred IDs with stable IDs
  */
 import type { MixedOutput, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 import type { SerializerParameters } from './withExpoSerializers';

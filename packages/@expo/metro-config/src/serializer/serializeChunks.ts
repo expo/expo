@@ -498,6 +498,11 @@ export class Chunk {
                 .map((output) => [output.data.reactClientReference as string, module.path])
             )
         ),
+        // Maps stable ID -> numeric module ID for SSR manifest module resolution
+        // This is populated by rscSerializerPlugin and stored in graph.transformOptions
+        stableIdToModuleId:
+          (this.graph.transformOptions?.customTransformOptions as any)?.__rscStableIdToModuleId ??
+          {},
         reactServerReferences: [
           ...new Set(
             [...this.deps]

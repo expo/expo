@@ -5,6 +5,10 @@
  * Resolves deferred stable IDs for React Server Components.
  * Deferred IDs are marked by Babel with __RSC_DEFERRED__:/path/to/file.js
  * and resolved here using the captured specifier registry.
+ *
+ * This plugin does TWO things:
+ * 1. Updates metadata (reactClientReference/reactServerReference)
+ * 2. Rewrites the actual JS code to replace deferred IDs with stable IDs
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRscSerializerPlugin = createRscSerializerPlugin;
@@ -20,6 +24,15 @@ function extractPath(deferredId) {
     return deferredId.slice(RSC_DEFERRED_PREFIX.length);
 }
 /**
+ * Create a regex to match deferred IDs in code.
+ * Matches: "__RSC_DEFERRED__:/path/to/file.js" (with quotes)
+ */
+function createDeferredIdRegex() {
+    // Match the deferred prefix followed by any path, inside quotes
+    // Handles both single and double quotes
+    return new RegExp(`(["'])${RSC_DEFERRED_PREFIX.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^"']+)\\1`, 'g');
+}
+/**
  * Serializer plugin that resolves deferred RSC stable IDs.
  */
 function createRscSerializerPlugin(options) {
@@ -30,18 +43,22 @@ function createRscSerializerPlugin(options) {
         const stableIdToModuleId = new Map();
         // Maps stable ID → file path (for chunk lookup in SSR manifest)
         const stableIdToFilePath = new Map();
+        // Maps deferred ID → stable ID (for code rewriting)
+        const deferredToStableId = new Map();
         let resolvedCount = 0;
-        // Process all modules
+        // First pass: build mappings from metadata
         for (const [modulePath, module] of graph.dependencies) {
             for (const output of module.output) {
                 const data = output.data;
                 // Resolve deferred client references
                 if (data.reactClientReference && isDeferredId(data.reactClientReference)) {
-                    const resolvedPath = extractPath(data.reactClientReference);
+                    const deferredId = data.reactClientReference;
+                    const resolvedPath = extractPath(deferredId);
                     const { stableId, source } = (0, rscRegistry_1.getStableId)(resolvedPath, projectRoot);
                     data.reactClientReference = stableId;
                     stableIdToModuleId.set(stableId, serializerOptions.createModuleId(modulePath));
                     stableIdToFilePath.set(stableId, modulePath);
+                    deferredToStableId.set(deferredId, stableId);
                     resolvedCount++;
                     if (debug) {
                         console.log(`[RSC] Resolved client: ${stableId} -> ${modulePath} (${source})`);
@@ -49,11 +66,13 @@ function createRscSerializerPlugin(options) {
                 }
                 // Resolve deferred server references
                 if (data.reactServerReference && isDeferredId(data.reactServerReference)) {
-                    const resolvedPath = extractPath(data.reactServerReference);
+                    const deferredId = data.reactServerReference;
+                    const resolvedPath = extractPath(deferredId);
                     const { stableId, source } = (0, rscRegistry_1.getStableId)(resolvedPath, projectRoot);
                     data.reactServerReference = stableId;
                     stableIdToModuleId.set(stableId, serializerOptions.createModuleId(modulePath));
                     stableIdToFilePath.set(stableId, modulePath);
+                    deferredToStableId.set(deferredId, stableId);
                     resolvedCount++;
                     if (debug) {
                         console.log(`[RSC] Resolved server: ${stableId} -> ${modulePath} (${source})`);
@@ -67,6 +86,27 @@ function createRscSerializerPlugin(options) {
                 if (data.reactServerReference && !isDeferredId(data.reactServerReference)) {
                     stableIdToModuleId.set(data.reactServerReference, serializerOptions.createModuleId(modulePath));
                     stableIdToFilePath.set(data.reactServerReference, modulePath);
+                }
+            }
+        }
+        // Second pass: rewrite code to replace deferred IDs with stable IDs
+        if (deferredToStableId.size > 0) {
+            const deferredIdRegex = createDeferredIdRegex();
+            for (const [, module] of graph.dependencies) {
+                for (const output of module.output) {
+                    const data = output.data;
+                    if (data.code && data.code.includes(RSC_DEFERRED_PREFIX)) {
+                        data.code = data.code.replace(deferredIdRegex, (match, quote, path) => {
+                            const deferredId = RSC_DEFERRED_PREFIX + path;
+                            const stableId = deferredToStableId.get(deferredId);
+                            if (stableId) {
+                                return `${quote}${stableId}${quote}`;
+                            }
+                            // Fallback: resolve directly if not in map
+                            const { stableId: fallbackId } = (0, rscRegistry_1.getStableId)(path, projectRoot);
+                            return `${quote}${fallbackId}${quote}`;
+                        });
+                    }
                 }
             }
         }

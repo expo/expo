@@ -11,6 +11,7 @@ export type SerialAsset = {
         reactServerReferences?: string[];
         reactClientReferences?: string[];
         reactClientReferenceMap?: Record<string, string>;
+        stableIdToModuleId?: Record<string, string | number>;
         expoDomComponentReferences?: string[];
         requires?: string[];
     };

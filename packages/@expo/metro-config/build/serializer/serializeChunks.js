@@ -351,6 +351,10 @@ class Chunk {
                     .filter((output) => 'reactClientReference' in output.data &&
                     typeof output.data.reactClientReference === 'string')
                     .map((output) => [output.data.reactClientReference, module.path]))),
+                // Maps stable ID -> numeric module ID for SSR manifest module resolution
+                // This is populated by rscSerializerPlugin and stored in graph.transformOptions
+                stableIdToModuleId: this.graph.transformOptions?.customTransformOptions?.__rscStableIdToModuleId ??
+                    {},
                 reactServerReferences: [
                     ...new Set([...this.deps]
                         .map((module) => {

@@ -339,7 +339,8 @@ export function createServerComponentsMiddleware(
   function getResolveClientEntry(context: {
     platform: string;
     engine?: 'hermes' | null;
-    ssrManifest?: Map<string, string | null>;
+    // SSR manifest maps stable ID -> [moduleId, chunk]
+    ssrManifest?: Map<string, [string | number, string | null]>;
   }): (
     file: string,
     isServer: boolean
@@ -392,13 +393,9 @@ export function createServerComponentsMiddleware(
           `SSR manifest is missing client boundary "${manifestKey}"`
         );
 
-        const chunk = context.ssrManifest.get(manifestKey);
-
-        // For stable IDs, we need to get the module ID from the manifest
-        // For legacy paths, compute from file path
-        const moduleId = isStableId
-          ? manifestKey // Stable ID is the module ID
-          : createModuleId(filePath, { platform: context.platform, environment: 'client' });
+        // SSR manifest entry is [moduleId, chunk]
+        const entry = context.ssrManifest.get(manifestKey)!;
+        const [moduleId, chunk] = entry;
 
         return {
           id: String(moduleId),
@@ -535,7 +532,8 @@ export function createServerComponentsMiddleware(
       body?: ReadableStream<Uint8Array>;
       engine?: 'hermes' | null;
       contentType?: string;
-      ssrManifest?: Map<string, string | null>;
+      // SSR manifest maps stable ID -> [moduleId, chunk]
+      ssrManifest?: Map<string, [string | number, string | null]>;
       decodedBody?: unknown;
       routerOptions: Record<string, any>;
     },
@@ -601,7 +599,8 @@ export function createServerComponentsMiddleware(
         routerOptions,
       }: {
         platform: string;
-        ssrManifest: Map<string, string | null>;
+        // SSR manifest maps stable ID -> [moduleId, chunk]
+        ssrManifest: Map<string, [string | number, string | null]>;
         routerOptions: Record<string, any>;
       },
       files: ExportAssetMap
