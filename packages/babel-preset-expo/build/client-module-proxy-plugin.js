@@ -38,13 +38,17 @@ function isNodeModulePath(filePath) {
  * For app-level files, returns a relative path from project root.
  */
 function generateStableId(filePath, projectRoot) {
-    if (isNodeModulePath(filePath)) {
+    const relativePath = (0, node_path_1.relative)(projectRoot, filePath);
+    // Use deferred resolution for:
+    // 1. node_modules files
+    // 2. Files outside project root (e.g., symlinked packages in monorepos)
+    if (isNodeModulePath(filePath) || relativePath.startsWith('..')) {
         // Mark as deferred - serializer will resolve using the capture registry
         // Format: __RSC_DEFERRED__:/absolute/path/to/file.js
         return exports.RSC_DEFERRED_PREFIX + filePath;
     }
-    // App-level files: use relative path (stable across builds)
-    return './' + (0, common_1.toPosixPath)((0, node_path_1.relative)(projectRoot, filePath));
+    // App-level files within project: use relative path (stable across builds)
+    return './' + (0, common_1.toPosixPath)(relativePath);
 }
 function reactClientReferencesPlugin(api) {
     const { template, types } = api;
