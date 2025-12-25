@@ -22,7 +22,6 @@ import type {
   Client as MetroHmrClient,
 } from '@expo/metro/metro/HmrServer';
 import type { GraphRevision } from '@expo/metro/metro/IncrementalBundler';
-import type MetroServer from '@expo/metro/metro/Server';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import getGraphId from '@expo/metro/metro/lib/getGraphId';
 import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
@@ -41,7 +40,7 @@ import {
 } from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { fetchManifest, inflateManifest } from './fetchRouterManifest';
-import { instantiateMetroAsync } from './instantiateMetro';
+import { instantiateMetroAsync, type MetroServerWithModuleIdMod } from './instantiateMetro';
 import {
   attachImportStackToRootMessage,
   dropStackIfContainsCodeFrame,
@@ -150,7 +149,7 @@ const EXPO_GO_METRO_PORT = 8081;
 const DEV_CLIENT_METRO_PORT = 8081;
 
 export class MetroBundlerDevServer extends BundlerDevServer {
-  private metro: MetroServer | null = null;
+  private metro: MetroServerWithModuleIdMod | null = null;
   private hmrServer: MetroHmrServer<MetroHmrClient> | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
   isReactServerComponentsEnabled?: boolean;
@@ -981,8 +980,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // Get the module ID: prefer stableIdToModuleId lookup, fallback to createModuleId
         const moduleId =
           (boundaryIsStableId ? stableIdToModuleId[boundary] : null) ??
-          (absoluteFilePath
-            ? this.instanceMetroOptions.createModuleId?.(absoluteFilePath, {
+          (absoluteFilePath && this.metro
+            ? this.metro._createModuleId(absoluteFilePath, {
                 platform: options.platform,
                 environment: 'client',
               })
@@ -1018,8 +1017,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // Get the module ID: prefer stableIdToModuleId lookup, fallback to createModuleId
         const moduleId =
           (boundaryIsStableId ? stableIdToModuleId[boundary] : null) ??
-          (absoluteFilePath
-            ? this.instanceMetroOptions.createModuleId?.(absoluteFilePath, {
+          (absoluteFilePath && this.metro
+            ? this.metro._createModuleId(absoluteFilePath, {
                 platform: options.platform,
                 environment: 'client',
               })
