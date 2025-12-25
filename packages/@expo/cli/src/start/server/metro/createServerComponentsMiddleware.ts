@@ -212,9 +212,26 @@ export function createServerComponentsMiddleware(
       // - For stable IDs: use stableIdToModuleId mapping from serializer
       // - For file paths: use createModuleId as before
       const stableIdToModuleId = jsArtifact.metadata.stableIdToModuleId ?? {};
-      const moduleId = isStableId
-        ? stableIdToModuleId[entryPoint] ?? entryPoint
-        : createModuleId(entryPoint, { platform, environment: 'react-server' });
+      const stableIdToFilePath = jsArtifact.metadata.reactClientReferenceMap ?? {};
+      let moduleId: string | number;
+      if (isStableId) {
+        // Prefer direct lookup, fallback to file path + createModuleId
+        if (entryPoint in stableIdToModuleId) {
+          moduleId = stableIdToModuleId[entryPoint];
+        } else if (entryPoint in stableIdToFilePath) {
+          moduleId = createModuleId(stableIdToFilePath[entryPoint], {
+            platform,
+            environment: 'react-server',
+          });
+        } else {
+          throw new Error(
+            `Cannot find module ID for stable ID "${entryPoint}". ` +
+              `Available mappings: ${Object.keys(stableIdToModuleId).join(', ') || '(none)'}`
+          );
+        }
+      } else {
+        moduleId = createModuleId(entryPoint, { platform, environment: 'react-server' });
+      }
 
       // Import relative to `dist/server/_expo/rsc/web/router.js`
       manifest[publicModuleId] = [String(moduleId), outputName];
@@ -391,7 +408,10 @@ export function createServerComponentsMiddleware(
         assert(context.ssrManifest, 'SSR manifest must exist when exporting');
 
         // Use stable ID directly if available, otherwise compute relative path
-        const manifestKey = isStableId ? file : toPosixPath(path.relative(serverRoot, filePath));
+        // MUST use projectRoot (not serverRoot) to match how manifest keys are created in MetroBundlerDevServer
+        const manifestKey = isStableId
+          ? file
+          : './' + toPosixPath(path.relative(projectRoot, filePath));
 
         assert(
           context.ssrManifest.has(manifestKey),

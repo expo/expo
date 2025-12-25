@@ -926,7 +926,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       !path.isAbsolute(boundary) && !boundary.startsWith('file://');
 
     // Build stable ID -> file path mapping from artifacts
-    // This is needed because moduleIdToSplitBundle uses file paths as keys
+    // This is used to compute manifest keys for stable IDs (relative path format)
     const stableIdToFilePath: Record<string, string> = bundle.artifacts
       .filter((a) => a.type === 'js')
       .map((artifact) => artifact.metadata.reactClientReferenceMap ?? {})
