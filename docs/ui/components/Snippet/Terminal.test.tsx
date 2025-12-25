@@ -79,12 +79,25 @@ describe(Terminal, () => {
     const user = userEvent.setup();
 
     expect(screen.getByRole('tab', { name: /^npm$/i })).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByText(/npm install expo/)).toBeVisible();
+    const npmLine = screen.getAllByText((_, node) => {
+      const text = node?.textContent ?? '';
+      return text.includes('npm install expo') && node.tagName.toLowerCase() === 'code';
+    })[0];
+    expect(npmLine).toBeVisible();
 
     await user.click(screen.getByRole('tab', { name: /^yarn$/i }));
     expect(screen.getByRole('tab', { name: /^yarn$/i })).toHaveAttribute('aria-selected', 'true');
-    expect(screen.queryByText(/npm install expo/)).toBeNull();
-    expect(screen.getByText(/yarn add expo/)).toBeVisible();
+    expect(
+      screen.queryByText((_, node) => {
+        const text = node?.textContent ?? '';
+        return text.includes('npm install expo') && node.tagName.toLowerCase() === 'code';
+      })
+    ).toBeNull();
+    const yarnLine = screen.getAllByText((_, node) => {
+      const text = node?.textContent ?? '';
+      return text.includes('yarn add expo') && node.tagName.toLowerCase() === 'code';
+    })[0];
+    expect(yarnLine).toBeVisible();
 
     await user.click(screen.getByText('Copy'));
     await user.click(screen.getByRole('textbox'));
