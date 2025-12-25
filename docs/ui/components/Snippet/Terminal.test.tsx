@@ -81,7 +81,7 @@ describe(Terminal, () => {
     expect(screen.getByRole('tab', { name: /^npm$/i })).toHaveAttribute('aria-selected', 'true');
     const npmLine = screen.getAllByText((_, node) => {
       const text = node?.textContent ?? '';
-      return text.includes('npm install expo') && node.tagName.toLowerCase() === 'code';
+      return !!(text.includes('npm install expo') && node?.tagName.toLowerCase() === 'code');
     })[0];
     expect(npmLine).toBeVisible();
 
@@ -90,12 +90,12 @@ describe(Terminal, () => {
     expect(
       screen.queryByText((_, node) => {
         const text = node?.textContent ?? '';
-        return text.includes('npm install expo') && node.tagName.toLowerCase() === 'code';
+        return !!(text.includes('npm install expo') && node?.tagName.toLowerCase() === 'code');
       })
     ).toBeNull();
     const yarnLine = screen.getAllByText((_, node) => {
       const text = node?.textContent ?? '';
-      return text.includes('yarn add expo') && node.tagName.toLowerCase() === 'code';
+      return !!(text.includes('yarn add expo') && node?.tagName.toLowerCase() === 'code');
     })[0];
     expect(yarnLine).toBeVisible();
 
