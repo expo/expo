@@ -23,14 +23,6 @@ export declare function getStringAsync(options?: GetStringOptions): Promise<stri
  */
 export declare function setStringAsync(text: string, options?: SetStringOptions): Promise<boolean>;
 /**
- * Sets the content of the user's clipboard.
- * @deprecated Use [`setStringAsync()`](#setstringasynctext-options) instead.
- *
- * @returns On web, this returns a boolean value indicating whether or not the string was saved to
- * the user's clipboard. On iOS and Android, nothing is returned.
- */
-export declare function setString(text: string): void;
-/**
  * Returns whether the clipboard has text content. Returns true for both plain text and rich text (e.g. HTML).
  *
  * On web, this requires the user to grant your app permission to _"see text and images copied to the clipboard"_.
