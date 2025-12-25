@@ -53,6 +53,9 @@ export function AskPageAIChatHeader({
     []
   );
 
+  const isUpvoted = feedbackTarget?.reaction === 'upvote';
+  const isDownvoted = feedbackTarget?.reaction === 'downvote';
+
   return (
     <div className="flex flex-col gap-3 border-b border-default bg-palette-black px-4 py-2.5 text-palette-white">
       <div className="flex items-center justify-between">
@@ -77,14 +80,19 @@ export function AskPageAIChatHeader({
             className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
             style={{
               ...closeButtonThemeOverrides,
-              ...(feedbackTarget?.reaction === 'upvote' ? activeFeedbackBackground : {}),
+              ...(isUpvoted ? activeFeedbackBackground : {}),
             }}
-            aria-pressed={feedbackTarget?.reaction === 'upvote'}
+            aria-pressed={isUpvoted}
             disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
             onClick={() => {
               onFeedback('upvote');
             }}>
-            <ThumbsUpIcon className="icon-xs text-palette-white" />
+            <ThumbsUpIcon
+              className={mergeClasses(
+                'icon-xs',
+                isUpvoted ? 'text-icon-success' : 'text-palette-white'
+              )}
+            />
           </Button>
           <Button
             type="button"
@@ -94,14 +102,19 @@ export function AskPageAIChatHeader({
             className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
             style={{
               ...closeButtonThemeOverrides,
-              ...(feedbackTarget?.reaction === 'downvote' ? activeFeedbackBackground : {}),
+              ...(isDownvoted ? activeFeedbackBackground : {}),
             }}
-            aria-pressed={feedbackTarget?.reaction === 'downvote'}
+            aria-pressed={isDownvoted}
             disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
             onClick={() => {
               onFeedback('downvote');
             }}>
-            <ThumbsDownIcon className="icon-xs text-palette-white" />
+            <ThumbsDownIcon
+              className={mergeClasses(
+                'icon-xs',
+                isDownvoted ? 'text-icon-danger' : 'text-palette-white'
+              )}
+            />
           </Button>
           {onToggleExpand ? (
             <Button
