@@ -10,6 +10,7 @@ export type SerialAsset = {
         paths?: Record<string, Record<string, string>>;
         reactServerReferences?: string[];
         reactClientReferences?: string[];
+        reactClientReferenceMap?: Record<string, string>;
         expoDomComponentReferences?: string[];
         requires?: string[];
     };

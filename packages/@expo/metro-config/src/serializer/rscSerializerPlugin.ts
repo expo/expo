@@ -6,11 +6,9 @@
  * and resolved here using the captured specifier registry.
  */
 
-import path from 'path';
-
 import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 
-import { getStableId, isNodeModulePath } from '../rscRegistry';
+import { clearRegistry, getStableId } from '../rscRegistry';
 import type { SerializerParameters } from './withExpoSerializers';
 
 // Must match the prefix in babel-preset-expo/src/client-module-proxy-plugin.ts
@@ -40,7 +38,10 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
   ): Promise<SerializerParameters> {
     const [entryPoint, preModules, graph, serializerOptions] = props;
 
+    // Maps stable ID → module ID (for runtime require())
     const stableIdToModuleId = new Map<string, string | number>();
+    // Maps stable ID → file path (for chunk lookup in SSR manifest)
+    const stableIdToFilePath = new Map<string, string>();
     let resolvedCount = 0;
 
     // Process all modules
@@ -58,10 +59,11 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
 
           data.reactClientReference = stableId;
           stableIdToModuleId.set(stableId, serializerOptions.createModuleId(modulePath));
+          stableIdToFilePath.set(stableId, modulePath);
           resolvedCount++;
 
           if (debug) {
-            console.log(`[RSC] Resolved client: ${stableId} (${source})`);
+            console.log(`[RSC] Resolved client: ${stableId} -> ${modulePath} (${source})`);
           }
         }
 
@@ -72,10 +74,11 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
 
           data.reactServerReference = stableId;
           stableIdToModuleId.set(stableId, serializerOptions.createModuleId(modulePath));
+          stableIdToFilePath.set(stableId, modulePath);
           resolvedCount++;
 
           if (debug) {
-            console.log(`[RSC] Resolved server: ${stableId} (${source})`);
+            console.log(`[RSC] Resolved server: ${stableId} -> ${modulePath} (${source})`);
           }
         }
 
@@ -85,17 +88,19 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
             data.reactClientReference,
             serializerOptions.createModuleId(modulePath)
           );
+          stableIdToFilePath.set(data.reactClientReference, modulePath);
         }
         if (data.reactServerReference && !isDeferredId(data.reactServerReference)) {
           stableIdToModuleId.set(
             data.reactServerReference,
             serializerOptions.createModuleId(modulePath)
           );
+          stableIdToFilePath.set(data.reactServerReference, modulePath);
         }
       }
     }
 
-    // Store mapping for SSR manifest
+    // Store mappings for SSR manifest
     if (!graph.transformOptions) {
       (graph as any).transformOptions = {};
     }
@@ -104,20 +109,35 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
     }
     (graph.transformOptions.customTransformOptions as any).__rscStableIdToModuleId =
       Object.fromEntries(stableIdToModuleId);
+    (graph.transformOptions.customTransformOptions as any).__rscStableIdToFilePath =
+      Object.fromEntries(stableIdToFilePath);
 
     if (debug && resolvedCount > 0) {
       console.log(`[RSC] Resolved ${resolvedCount} deferred stable IDs`);
     }
+
+    // Clear registry after serialization to prevent stale entries in watch mode
+    clearRegistry();
 
     return [entryPoint, preModules, graph, serializerOptions];
   };
 }
 
 /**
- * Get RSC stable ID mapping from graph (for SSR manifest).
+ * Get RSC stable ID → module ID mapping from graph.
  */
 export function getRscStableIdToModuleId(
   graph: ReadOnlyGraph<MixedOutput>
 ): Record<string, string | number> {
   return (graph.transformOptions?.customTransformOptions as any)?.__rscStableIdToModuleId ?? {};
+}
+
+/**
+ * Get RSC stable ID → file path mapping from graph.
+ * Used for SSR manifest chunk lookup.
+ */
+export function getRscStableIdToFilePath(
+  graph: ReadOnlyGraph<MixedOutput>
+): Record<string, string> {
+  return (graph.transformOptions?.customTransformOptions as any)?.__rscStableIdToFilePath ?? {};
 }

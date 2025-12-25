@@ -203,8 +203,13 @@ export function createServerComponentsMiddleware(
         contents: wrapBundle(contents.src),
       });
 
-      // Match babel plugin.
-      const publicModuleId = './' + toPosixPath(path.relative(projectRoot, entryPoint));
+      // Match babel plugin stable ID format.
+      // If entryPoint is already a stable ID (not absolute path), use as-is.
+      // Otherwise, compute relative path.
+      const isStableId = !path.isAbsolute(entryPoint) && !entryPoint.startsWith('file://');
+      const publicModuleId = isStableId
+        ? entryPoint
+        : './' + toPosixPath(path.relative(projectRoot, entryPoint));
 
       // Import relative to `dist/server/_expo/rsc/web/router.js`
       manifest[publicModuleId] = [String(relativeName), outputName];

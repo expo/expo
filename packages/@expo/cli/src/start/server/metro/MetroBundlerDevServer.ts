@@ -925,6 +925,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const isStableId = (boundary: string) =>
       !path.isAbsolute(boundary) && !boundary.startsWith('file://');
 
+    // Build stable ID -> file path mapping from artifacts
+    // This is needed because moduleIdToSplitBundle uses file paths as keys
+    const stableIdToFilePath: Record<string, string> = bundle.artifacts
+      .filter((a) => a.type === 'js')
+      .map((artifact) => artifact.metadata.reactClientReferenceMap ?? {})
+      .reduce((acc, map) => ({ ...acc, ...map }), {});
+
     // Convert boundaries to opaque IDs for manifest
     // For stable IDs: use as-is
     // For file paths: convert to relative path (legacy compatibility)
@@ -934,6 +941,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         : // NOTE(cedric): relative module specifiers / IDs should always be POSIX formatted
           toPosixPath(path.relative(serverRoot, boundary))
     );
+
+    // moduleIdToSplitBundle maps file paths to chunk filenames
     const moduleIdToSplitBundle = (
       bundle.artifacts
         .map((artifact) => artifact?.metadata?.paths && Object.values(artifact.metadata.paths))
@@ -941,17 +950,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         .flat() as Record<string, string>[]
     ).reduce((acc, paths) => ({ ...acc, ...paths }), {});
 
-    debug('SSR Manifest:', moduleIdToSplitBundle, clientBoundariesAsOpaqueIds);
+    debug('SSR Manifest:', moduleIdToSplitBundle, clientBoundariesAsOpaqueIds, stableIdToFilePath);
 
     const ssrManifest = new Map<string, string | null>();
 
     if (Object.keys(moduleIdToSplitBundle).length) {
       clientBoundariesAsOpaqueIds.forEach((boundary) => {
-        if (boundary in moduleIdToSplitBundle) {
-          ssrManifest.set(boundary, moduleIdToSplitBundle[boundary]);
+        // For stable IDs, look up the file path first
+        const filePath = isStableId(boundary) ? stableIdToFilePath[boundary] : null;
+        const lookupKey = filePath ?? boundary;
+
+        if (lookupKey in moduleIdToSplitBundle) {
+          ssrManifest.set(boundary, moduleIdToSplitBundle[lookupKey]);
         } else {
           throw new Error(
-            `Could not find boundary "${boundary}" in the SSR manifest. Available: ${Object.keys(moduleIdToSplitBundle).join(', ')}`
+            `Could not find boundary "${boundary}" (file: ${filePath ?? 'N/A'}) in the SSR manifest. Available: ${Object.keys(moduleIdToSplitBundle).join(', ')}`
           );
         }
       });

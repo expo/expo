@@ -215,7 +215,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             resolveRequest(context, moduleName, platform) {
                 const result = context.resolveRequest(context, moduleName, platform);
                 // Capture bare specifiers (package imports) for RSC stable IDs
-                if (result.type === 'sourceFile' && (0, rscRegistry_1.isNodeModulePath)(result.filePath)) {
+                // This includes: node_modules, workspace packages, aliased modules
+                // We capture any non-relative, non-absolute specifier that resolves to a file
+                if (result.type === 'sourceFile') {
                     (0, rscRegistry_1.captureSpecifier)(result.filePath, moduleName);
                 }
                 return result;

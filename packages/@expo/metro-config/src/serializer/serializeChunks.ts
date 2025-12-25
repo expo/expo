@@ -485,6 +485,19 @@ export class Chunk {
               .flat()
           ),
         ].filter((value) => typeof value === 'string') as string[],
+        // Maps stable ID -> file path for SSR manifest chunk lookup
+        reactClientReferenceMap: Object.fromEntries(
+          [...this.deps]
+            .flatMap((module) =>
+              module.output
+                .filter(
+                  (output) =>
+                    'reactClientReference' in output.data &&
+                    typeof output.data.reactClientReference === 'string'
+                )
+                .map((output) => [output.data.reactClientReference as string, module.path])
+            )
+        ),
         reactServerReferences: [
           ...new Set(
             [...this.deps]

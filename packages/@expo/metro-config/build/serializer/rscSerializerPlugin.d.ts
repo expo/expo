@@ -16,6 +16,11 @@ export interface RscSerializerPluginOptions {
  */
 export declare function createRscSerializerPlugin(options: RscSerializerPluginOptions): (...props: SerializerParameters) => Promise<SerializerParameters>;
 /**
- * Get RSC stable ID mapping from graph (for SSR manifest).
+ * Get RSC stable ID → module ID mapping from graph.
  */
 export declare function getRscStableIdToModuleId(graph: ReadOnlyGraph<MixedOutput>): Record<string, string | number>;
+/**
+ * Get RSC stable ID → file path mapping from graph.
+ * Used for SSR manifest chunk lookup.
+ */
+export declare function getRscStableIdToFilePath(graph: ReadOnlyGraph<MixedOutput>): Record<string, string>;

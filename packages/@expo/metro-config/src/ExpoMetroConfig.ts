@@ -23,11 +23,7 @@ import { FileStore } from './file-store';
 import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
-import {
-  captureSpecifier,
-  clearRegistry as clearRscRegistry,
-  isNodeModulePath,
-} from './rscRegistry';
+import { captureSpecifier, clearRegistry as clearRscRegistry } from './rscRegistry';
 import { JSModule } from './serializer/getCssDeps';
 import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
@@ -314,7 +310,9 @@ export function getDefaultConfig(
       resolveRequest(context, moduleName, platform) {
         const result = context.resolveRequest(context, moduleName, platform);
         // Capture bare specifiers (package imports) for RSC stable IDs
-        if (result.type === 'sourceFile' && isNodeModulePath(result.filePath)) {
+        // This includes: node_modules, workspace packages, aliased modules
+        // We capture any non-relative, non-absolute specifier that resolves to a file
+        if (result.type === 'sourceFile') {
           captureSpecifier(result.filePath, moduleName);
         }
         return result;

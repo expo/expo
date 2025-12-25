@@ -16,6 +16,9 @@ export type SerialAsset = {
     reactServerReferences?: string[];
     // React client reference from the static babel pass.
     reactClientReferences?: string[];
+    // Maps stable ID to file path for SSR manifest chunk lookup.
+    // Stable IDs are package specifiers (e.g., "pkg/client") or relative paths (e.g., "./src/Button.js").
+    reactClientReferenceMap?: Record<string, string>;
     // DOM Component references from the static babel pass.
     expoDomComponentReferences?: string[];
     requires?: string[];
