@@ -11,13 +11,13 @@ import { createRscSerializerPlugin, getRscStableIdToModuleId } from '../rscSeria
 
 // Mock module types
 type MockModule = {
-  output: Array<{
+  output: {
     data: {
       code?: string;
       reactClientReference?: string;
       reactServerReference?: string;
     };
-  }>;
+  }[];
 };
 
 type MockGraph = {
@@ -123,9 +123,7 @@ describe('rscSerializerPlugin', () => {
 
       const module = graph.dependencies.get('/project/node_modules/unknown/client.js')!;
       // Falls back to relative path
-      expect(module.output[0].data.reactClientReference).toBe(
-        './node_modules/unknown/client.js'
-      );
+      expect(module.output[0].data.reactClientReference).toBe('./node_modules/unknown/client.js');
     });
   });
 
@@ -173,8 +171,7 @@ describe('rscSerializerPlugin', () => {
           output: [
             {
               data: {
-                reactClientReference:
-                  '__RSC_DEFERRED__:/project/node_modules/@scope/lib/Button.js',
+                reactClientReference: '__RSC_DEFERRED__:/project/node_modules/@scope/lib/Button.js',
               },
             },
           ],
@@ -262,15 +259,9 @@ describe('rscSerializerPlugin', () => {
 
       await plugin('entry.js', [], graph as any, options as any);
 
-      expect(graph.dependencies.get(paths.a)!.output[0].data.reactClientReference).toBe(
-        'a/client'
-      );
-      expect(graph.dependencies.get(paths.b)!.output[0].data.reactClientReference).toBe(
-        'b/client'
-      );
-      expect(graph.dependencies.get(paths.c)!.output[0].data.reactClientReference).toBe(
-        'c/client'
-      );
+      expect(graph.dependencies.get(paths.a)!.output[0].data.reactClientReference).toBe('a/client');
+      expect(graph.dependencies.get(paths.b)!.output[0].data.reactClientReference).toBe('b/client');
+      expect(graph.dependencies.get(paths.c)!.output[0].data.reactClientReference).toBe('c/client');
     });
   });
 
@@ -401,8 +392,7 @@ describe('rscSerializerPlugin', () => {
           output: [
             {
               data: {
-                reactClientReference:
-                  '__RSC_DEFERRED__:/project/node_modules/ui-lib/Button.js',
+                reactClientReference: '__RSC_DEFERRED__:/project/node_modules/ui-lib/Button.js',
               },
             },
           ],
@@ -449,10 +439,8 @@ describe('rscSerializerPlugin', () => {
           output: [
             {
               data: {
-                reactClientReference:
-                  '__RSC_DEFERRED__:/project/node_modules/pkg/boundary.js',
-                reactServerReference:
-                  '__RSC_DEFERRED__:/project/node_modules/pkg/boundary.js',
+                reactClientReference: '__RSC_DEFERRED__:/project/node_modules/pkg/boundary.js',
+                reactServerReference: '__RSC_DEFERRED__:/project/node_modules/pkg/boundary.js',
               },
             },
           ],

@@ -207,7 +207,9 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
     // Warn about stable ID collisions (even without debug flag)
     if (stableIdCollisions.size > 0) {
       const collisionSummary = Array.from(stableIdCollisions.entries())
-        .map(([stableId, paths]) => `  "${stableId}":\n${paths.map((p) => `    - ${p}`).join('\n')}`)
+        .map(
+          ([stableId, paths]) => `  "${stableId}":\n${paths.map((p) => `    - ${p}`).join('\n')}`
+        )
         .join('\n');
       console.warn(
         `[RSC] Warning: ${stableIdCollisions.size} stable ID collision(s) detected.\n` +

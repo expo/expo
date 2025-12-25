@@ -154,8 +154,7 @@ describe('rscRegistry', () => {
 
     it('handles pnpm symlinked packages', () => {
       // pnpm uses symlinks, but Metro resolves to real paths
-      const realPath =
-        '/project/node_modules/.pnpm/pkg@1.0.0/node_modules/pkg/dist/client.js';
+      const realPath = '/project/node_modules/.pnpm/pkg@1.0.0/node_modules/pkg/dist/client.js';
 
       captureSpecifier(realPath, 'pkg/client');
 
