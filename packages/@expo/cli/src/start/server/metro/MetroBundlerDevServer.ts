@@ -966,9 +966,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
         // For stable IDs, look up the file path from the mapping
         // For file paths, use the boundary directly
-        const absoluteFilePath = boundaryIsStableId
-          ? stableIdToFilePath[boundary]
-          : boundary;
+        const absoluteFilePath = boundaryIsStableId ? stableIdToFilePath[boundary] : boundary;
 
         // Convert to manifest key format:
         // - Stable IDs: use as-is (e.g., "pkg/client")
@@ -1005,9 +1003,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         const boundaryIsStableId = isStableId(boundary);
 
         // For stable IDs, look up the file path from the mapping
-        const absoluteFilePath = boundaryIsStableId
-          ? stableIdToFilePath[boundary]
-          : boundary;
+        const absoluteFilePath = boundaryIsStableId ? stableIdToFilePath[boundary] : boundary;
 
         // Convert to manifest key format
         const manifestKey = boundaryIsStableId
@@ -1047,8 +1043,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // - App-relative paths: "./src/Button.js" (relative to projectRoot)
     files.set(`_expo/rsc/${options.platform}/ssr-manifest.js`, {
       targetDomain: 'server',
-      contents:
-        'module.exports = ' + JSON.stringify(Object.fromEntries(ssrManifest.entries())),
+      contents: 'module.exports = ' + JSON.stringify(Object.fromEntries(ssrManifest.entries())),
     });
 
     return { ...bundle, files };

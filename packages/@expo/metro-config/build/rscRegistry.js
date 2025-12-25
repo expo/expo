@@ -16,9 +16,18 @@ exports.isNodeModulePath = isNodeModulePath;
 exports.getStableId = getStableId;
 exports.debugRegistry = debugRegistry;
 // Global registry: resolvedPath -> specifier
-// Key: absolute file path (e.g., "/path/to/node_modules/pkg/client.js")
+// Key: absolute file path, normalized to forward slashes (e.g., "/path/to/node_modules/pkg/client.js")
 // Value: import specifier (e.g., "pkg/client")
 const specifierRegistry = new Map();
+/**
+ * Normalize path for cross-platform consistency.
+ * Converts backslashes to forward slashes for Windows compatibility.
+ * Handles escaped backslashes (\\) from JS string literals.
+ */
+function normalizePath(filePath) {
+    // Replace one or more consecutive backslashes with a single forward slash
+    return filePath.replace(/\\+/g, '/');
+}
 /**
  * Record a resolution: maps resolved file path to its import specifier.
  */
@@ -26,14 +35,15 @@ function captureSpecifier(resolvedPath, specifier) {
     // Only capture bare specifiers (not relative imports)
     // Relative imports like "./foo" are already stable IDs
     if (!specifier.startsWith('.') && !specifier.startsWith('/')) {
-        specifierRegistry.set(resolvedPath, specifier);
+        // Normalize path for consistent lookup across platforms
+        specifierRegistry.set(normalizePath(resolvedPath), specifier);
     }
 }
 /**
  * Get the captured specifier for a resolved path.
  */
 function getSpecifier(resolvedPath) {
-    return specifierRegistry.get(resolvedPath);
+    return specifierRegistry.get(normalizePath(resolvedPath));
 }
 /**
  * Clear the registry (for watch mode rebuilds).
@@ -54,8 +64,10 @@ function isNodeModulePath(filePath) {
  * For app-level: use relative path from project root
  */
 function getStableId(resolvedPath, projectRoot) {
+    // Normalize path for consistent lookup
+    const normalizedPath = normalizePath(resolvedPath);
     // Try captured specifier first
-    const specifier = specifierRegistry.get(resolvedPath);
+    const specifier = specifierRegistry.get(normalizedPath);
     if (specifier) {
         return { stableId: specifier, source: 'capture' };
     }

@@ -119,6 +119,10 @@ function createRscSerializerPlugin(options) {
             }
         }
         // Second pass: rewrite code to replace deferred IDs with stable IDs
+        // Note: We don't recalculate source maps here because:
+        // 1. RSC boundary modules are entirely replaced with proxies (original source not meaningful)
+        // 2. The string length change is minimal (deferred ID → specifier)
+        // 3. Debugging proxy modules is rare
         if (deferredToStableId.size > 0) {
             const deferredIdRegex = createDeferredIdRegex();
             for (const [, module] of graph.dependencies) {
