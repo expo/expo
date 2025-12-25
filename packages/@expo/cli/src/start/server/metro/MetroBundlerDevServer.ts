@@ -939,8 +939,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       .map((artifact) => artifact.metadata.stableIdToModuleId ?? {})
       .reduce((acc, map) => ({ ...acc, ...map }), {});
 
-    // moduleIdToSplitBundle maps absolute file paths to chunk filenames
-    const moduleIdToSplitBundle = (
+    // moduleIdToSplitBundle maps moduleId -> chunk filename
+    // Keys are createModuleId() results (see js.ts line 88, 116)
+    const moduleIdToSplitBundle: Record<string, string> = (
       bundle.artifacts
         .map((artifact) => artifact?.metadata?.paths && Object.values(artifact.metadata.paths))
         .filter(Boolean)
@@ -987,18 +988,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               })
             : manifestKey);
 
-        // Look up chunk using absolute file path (that's how moduleIdToSplitBundle is keyed)
-        if (absoluteFilePath && absoluteFilePath in moduleIdToSplitBundle) {
-          ssrManifest.set(manifestKey, [moduleId, moduleIdToSplitBundle[absoluteFilePath]]);
-        } else if (!absoluteFilePath) {
-          // Stable ID with no file path mapping - this shouldn't happen in normal cases
-          throw new Error(
-            `Could not find file path for stable ID "${boundary}" in the SSR manifest. ` +
-              `This may indicate that the module wasn't included in the bundle.`
-          );
+        // Look up chunk using moduleId (that's how moduleIdToSplitBundle is keyed)
+        const moduleIdKey = String(moduleId);
+        if (moduleIdKey in moduleIdToSplitBundle) {
+          ssrManifest.set(manifestKey, [moduleId, moduleIdToSplitBundle[moduleIdKey]]);
         } else {
           throw new Error(
-            `Could not find boundary "${manifestKey}" (file: ${absoluteFilePath}) in the SSR manifest. ` +
+            `Could not find module ID "${moduleIdKey}" for boundary "${manifestKey}" in the SSR manifest. ` +
               `Available: ${Object.keys(moduleIdToSplitBundle).join(', ')}`
           );
         }
@@ -1009,16 +1005,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       clientBoundaries.forEach((boundary) => {
         const boundaryIsStableId = isStableId(boundary);
 
+        // For stable IDs, look up the file path from the mapping
+        const absoluteFilePath = boundaryIsStableId
+          ? stableIdToFilePath[boundary]
+          : boundary;
+
         // Convert to manifest key format
         const manifestKey = boundaryIsStableId
           ? boundary
           : './' + toPosixPath(path.relative(this.projectRoot, boundary));
 
-        // Get the module ID: prefer stableIdToModuleId lookup, fallback to computed
+        // Get the module ID: prefer stableIdToModuleId lookup, fallback to createModuleId
         const moduleId =
           (boundaryIsStableId ? stableIdToModuleId[boundary] : null) ??
-          (boundary
-            ? this.instanceMetroOptions.createModuleId?.(boundary, {
+          (absoluteFilePath
+            ? this.instanceMetroOptions.createModuleId?.(absoluteFilePath, {
                 platform: options.platform,
                 environment: 'client',
               })
