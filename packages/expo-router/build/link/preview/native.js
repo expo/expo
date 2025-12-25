@@ -47,7 +47,7 @@ function NativeLinkPreviewContent(props) {
     return <NativeLinkPreviewContentView {...props} style={style}/>;
 }
 // #endregion
-// #region Zoom transition
+// #region Zoom transition enabler
 const LinkZoomTransitionEnablerNativeView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionEnabler')
     : null;
@@ -64,8 +64,10 @@ function LinkZoomTransitionSource(props) {
     if (!LinkZoomTransitionSourceNativeView) {
         return null;
     }
-    return (<LinkZoomTransitionSourceNativeView {...props} disableForceFlatten style={{ display: 'contents' }}/>);
+    return (<LinkZoomTransitionSourceNativeView {...props} disableForceFlatten collapsable={false} collapsableChildren={false} style={{ display: 'contents' }}/>);
 }
+// #endregion
+// #region Zoom transition rect detector
 const LinkZoomTransitionAlignmentRectDetectorNative = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionAlignmentRectDetector')
     : react_1.Fragment;
@@ -73,7 +75,7 @@ function LinkZoomTransitionAlignmentRectDetector(props) {
     if (!LinkZoomTransitionAlignmentRectDetectorNative) {
         return null;
     }
-    return (<LinkZoomTransitionAlignmentRectDetectorNative {...props} disableForceFlatten style={{ display: 'contents' }}/>);
+    return (<LinkZoomTransitionAlignmentRectDetectorNative {...props} disableForceFlatten collapsable={false} collapsableChildren={false} style={{ display: 'contents' }}/>);
 }
 // #endregion
 //# sourceMappingURL=native.js.map

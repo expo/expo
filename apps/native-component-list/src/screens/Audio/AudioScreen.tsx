@@ -35,6 +35,14 @@ export const AudioScreens = [
       return optionalRequire(() => require('./AudioControlsScreen'));
     },
   },
+  {
+    name: 'Expo Audio Events',
+    route: 'audio/expo-audio-events',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AudioEventsScreen'));
+    },
+  },
 ];
 
 export default function AudioScreen() {

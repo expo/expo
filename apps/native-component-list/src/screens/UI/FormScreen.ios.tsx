@@ -12,7 +12,7 @@ import {
   ContentUnavailableView,
   LabeledContent,
 } from '@expo/ui/swift-ui';
-import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+import { buttonStyle, font, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 
 export default function FormScreen() {
@@ -30,14 +30,16 @@ export default function FormScreen() {
     <Host style={{ flex: 1 }}>
       <Form>
         <Section title="My form Section">
-          <Text size={17} testID="test-id-from-expo-ui!">
+          <Text modifiers={[font({ size: 17 })]} testID="test-id-from-expo-ui!">
             Some text!
           </Text>
-          <Button onPress={() => alert('Clicked!')}>I'm a button</Button>
+          <Button onPress={() => alert('Clicked!')} label="I'm a button" />
           <LabeledContent label="Labeled Content">
-            <Button variant="borderless" onPress={() => alert('Clicked!')}>
-              Labeled Content Button
-            </Button>
+            <Button
+              label="Labeled Content Button"
+              modifiers={[buttonStyle('borderless')]}
+              onPress={() => alert('Clicked!')}
+            />
           </LabeledContent>
           <LabeledContent label="Name">
             <Text>Beto</Text>
@@ -76,8 +78,8 @@ export default function FormScreen() {
             label="Menu picker"
             modifiers={[pickerStyle('menu')]}
             selection={selectedIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setSelectedIndex(selection as number);
+            onSelectionChange={(selection) => {
+              setSelectedIndex(selection);
             }}>
             {options.map((option, index) => (
               <Text key={index} modifiers={[tag(index)]}>
@@ -93,8 +95,8 @@ export default function FormScreen() {
             label="Profile Image Size"
             modifiers={[pickerStyle('menu')]}
             selection={selectedProfileImageSizeIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setSelectedProfileImageSizeIndex(selection as number);
+            onSelectionChange={(selection) => {
+              setSelectedProfileImageSizeIndex(selection);
             }}>
             {profileImageSizes.map((size, index) => (
               <Text key={index} modifiers={[tag(index)]}>
@@ -105,9 +107,9 @@ export default function FormScreen() {
           <Button
             onPress={() => {
               alert('Fake cache cleared');
-            }}>
-            Clear Image Cache
-          </Button>
+            }}
+            label="Clear Image Cache"
+          />
           <DisclosureGroup
             onStateChange={setDisclosureGroupExpanded}
             isExpanded={disclosureGroupExpanded}

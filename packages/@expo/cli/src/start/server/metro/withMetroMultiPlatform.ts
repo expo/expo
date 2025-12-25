@@ -83,7 +83,10 @@ function withWebPolyfills(
       virtualModuleId,
       (() => {
         if (ctx.platform === 'web') {
-          return `global.$$require_external = typeof require !== "undefined" ? require : () => null;`;
+          // NOTE(@hassankhan): We need to wrap require in an arrow function rather than assigning
+          // it directly because `workerd` loses its `this` context when `require` is dereferenced
+          // and called later.
+          return `global.$$require_external = typeof require !== "undefined" ? (m) => require(m) : () => null;`;
         } else {
           // Wrap in try/catch to support Android.
           return 'try { global.$$require_external = typeof expo === "undefined" ? require : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
@@ -920,10 +923,6 @@ export async function withMetroMultiPlatformAsync(
   // NOTE(@kitten): This is now always active and EXPO_USE_METRO_REQUIRE / isNamedRequiresEnabled is disregarded
   const metroDefaults: typeof import('@expo/metro/metro-config/defaults/defaults') = require('@expo/metro/metro-config/defaults/defaults');
   asWritable(metroDefaults).moduleSystem = require.resolve('@expo/cli/build/metro-require/require');
-
-  if (!config.projectRoot) {
-    asWritable(config).projectRoot = projectRoot;
-  }
 
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;

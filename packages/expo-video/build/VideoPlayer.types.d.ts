@@ -292,7 +292,8 @@ export type VideoThumbnailOptions = {
  * - `error`: The player has encountered an error while loading or playing the video.
  */
 export type VideoPlayerStatus = 'idle' | 'loading' | 'readyToPlay' | 'error';
-export type VideoSource = string | number | null | {
+export type VideoSource = string | number | null | VideoSourceObject;
+export type VideoSourceObject = {
     /**
      * The URI of the video.
      *
@@ -497,7 +498,7 @@ export type SubtitleTrack = {
      *
      * @platform android
      */
-    id: string;
+    id?: string;
     /**
      * Language of the subtitle track. For example, `en`, `pl`, `de`.
      */
@@ -533,8 +534,19 @@ export type VideoTrack = {
     isSupported: boolean;
     /**
      * Specifies the bitrate in bits per second. This is the peak bitrate if known, or else the average bitrate if known, or else null.
+     *
+     * @deprecated Use `peakBitrate` or `averageBitrate` instead.
      */
     bitrate: number | null;
+    /**
+     * Specifies the average bitrate in bits per second or null if the value is unknown.
+     *
+     */
+    averageBitrate: number | null;
+    /**
+     * Specifies the average bitrate in bits per second or null if the value is unknown.
+     */
+    peakBitrate: number | null;
     /**
      * Specifies the frame rate of the video track in frames per second.
      */
@@ -558,7 +570,7 @@ export type AudioTrack = {
      * A string used by expo-video to identify the audio track.
      * @platform android
      */
-    id: string;
+    id?: string;
     /**
      * Language of the audio track. For example, 'en', 'pl', 'de'.
      */

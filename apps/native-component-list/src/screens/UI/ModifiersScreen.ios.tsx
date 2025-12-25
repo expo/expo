@@ -126,9 +126,7 @@ export default function ModifiersScreen() {
               label="Select dabge type"
               modifiers={[pickerStyle('menu')]}
               selection={badgeIndex}
-              onSelectionChange={({ nativeEvent: { selection } }) => {
-                setBadgeIndex(selection as number);
-              }}>
+              onSelectionChange={setBadgeIndex}>
               {badgeType.map((type, index) => (
                 <Text key={index} modifiers={[tag(index)]}>
                   {type}
@@ -222,9 +220,7 @@ export default function ModifiersScreen() {
               label="Select mode"
               modifiers={[pickerStyle('menu')]}
               selection={truncationModeIndex}
-              onSelectionChange={({ nativeEvent: { selection } }) => {
-                setTruncationMode(selection as number);
-              }}>
+              onSelectionChange={setTruncationMode}>
               {truncationModeOptions.map((option, index) => (
                 <Text key={index} modifiers={[tag(index)]}>
                   {option}
@@ -328,9 +324,7 @@ export default function ModifiersScreen() {
                 label="Select alignment"
                 modifiers={[pickerStyle('menu')]}
                 selection={multilineTextAlignmentIndex}
-                onSelectionChange={({ nativeEvent: { selection } }) => {
-                  setMultilineTextAlignment(selection as number);
-                }}>
+                onSelectionChange={setMultilineTextAlignment}>
                 {multilineTextAlignmentOptions.map((option, index) => (
                   <Text key={index} modifiers={[tag(index)]}>
                     {option}
@@ -609,7 +603,7 @@ export default function ModifiersScreen() {
               />
               <Picker
                 selection={1}
-                onSelectionChange={({ nativeEvent: { selection } }) => {
+                onSelectionChange={(selection) => {
                   console.log('Picker option selected:', selection);
                 }}
                 modifiers={[

@@ -23,6 +23,7 @@ exports.cleanPath = cleanPath;
 exports.routePatternToRegex = routePatternToRegex;
 const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
 const matchers_1 = require("../matchers");
+const url_1 = require("../utils/url");
 /**
  * In Expo Router, the params are available at all levels of the routing config
  * @param routes
@@ -49,12 +50,7 @@ function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_B
     let pathname = '';
     let hash = '';
     try {
-        // NOTE(@kitten): This used to use a dummy base URL for parsing (phony [.] example)
-        // However, this seems to get flagged since it's preserved 1:1 in the output bytecode by certain scanners
-        // Instead, we use an empty `file:` URL. This will still perform `pathname` normalization, search parameter parsing
-        // encoding, and all other logic, except the logic that applies to hostnames and protocols, and also not leave a
-        // dummy URL in the output bytecode
-        const parsed = new URL(path, 'file:');
+        const parsed = (0, url_1.parseUrlUsingCustomBase)(path);
         pathname = parsed.pathname;
         hash = parsed.hash;
     }
@@ -369,7 +365,7 @@ function getRouteConfigSorter(previousSegments = []) {
     };
 }
 function parseQueryParams(path, route, parseConfig, hash) {
-    const searchParams = new URL(path, 'https://phony.example').searchParams;
+    const searchParams = (0, url_1.parseUrlUsingCustomBase)(path).searchParams;
     const params = Object.create(null);
     if (hash) {
         params['#'] = hash.slice(1);

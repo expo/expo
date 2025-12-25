@@ -3,11 +3,9 @@
 #import "EXAppState.h"
 #import "EXDevSettings.h"
 #import "EXDisabledDevLoadingView.h"
-#import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
 #import "EXVersionManagerObjC.h"
 #import "EXStatusBarManager.h"
-#import "EXUnversioned.h"
 #import "EXTest.h"
 
 #import <React/RCTAssert.h>
@@ -58,7 +56,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 @interface EXVersionManagerObjC ()
 
-// is this the first time this ABI has been touched at runtime?
 @property (nonatomic, strong) NSDictionary *params;
 @property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong, nullable) EXVersionedNetworkInterceptor *networkInterceptor;
@@ -83,7 +80,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
  *
  * Kernel-only:
  *    EXKernel *kernel
- *    NSArray *supportedSdkVersions
  *    id exceptionsManagerDelegate
  */
 - (nonnull instancetype)initWithParams:(nonnull NSDictionary *)params
@@ -128,7 +124,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   // Keep in mind that it is possible this will return a EXDisabledRedBox
   RCTRedBox *redBox = (RCTRedBox *)[[host moduleRegistry] moduleForName:"RedBox"];
   [redBox setOverrideReloadAction:^{
-    [[NSNotificationCenter defaultCenter] postNotificationName:EX_UNVERSIONED(@"EXReloadActiveAppRequest") object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"EXReloadActiveAppRequest" object:nil];
   }];
 }
 
@@ -228,8 +224,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 {
   RCTAssertMainQueue();
   id devMenu = [self _moduleInstanceForHost:host named:@"DevMenu"];
-  // respondsToSelector: check is required because it's possible this bridge
-  // was instantiated with a `disabledDevMenu` instance and the gesture preference was recently updated.
   if ([devMenu respondsToSelector:@selector(show)]) {
     [((RCTDevMenu *)devMenu) show];
   }
@@ -303,22 +297,11 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     }
   }
 
-  if (params[@"browserModuleClass"]) {
-    Class browserModuleClass = params[@"browserModuleClass"];
-    id homeModule = [[browserModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                                        scopeKey:self.manifest.scopeKey
-                                                                    easProjectId:self.manifest.easProjectId
-                                                           kernelServiceDelegate:services[EX_UNVERSIONED(@"EXHomeModuleManager")]
-                                                                          params:params];
-    [extraModules addObject:homeModule];
-  }
-
   [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]]];
   id exceptionsManager = [self getModuleInstanceFromClass:RCTExceptionsManagerCls()];
   if (exceptionsManager) {
     [extraModules addObject:exceptionsManager];
   }
-  [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevMenu"]]];
   [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"RedBox"]]];
   
   return extraModules;
@@ -420,7 +403,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
       NSArray<NSString *> *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
       documentDirectory = [documentPaths objectAtIndex:0];
     }
-    NSString *localStorageDirectory = [documentDirectory stringByAppendingPathComponent:EX_UNVERSIONED(@"RCTAsyncLocalStorage")];
+    NSString *localStorageDirectory = [documentDirectory stringByAppendingPathComponent:@"RCTAsyncLocalStorage"];
     return [[moduleClass alloc] initWithStorageDirectory:localStorageDirectory];
   }
 

@@ -55,7 +55,7 @@
   "peerDependencies": {
     "expo": "*",
     "react-native": "*",
-    "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1"
+    "react-server-dom-webpack": "~19.0.3 || ~19.1.4 || ~19.2.3"
   },
   "peerDependenciesMeta": {
     "react-server-dom-webpack": {
@@ -63,6 +63,6 @@
     }
   },
   "devDependencies": {
-    "react-server-dom-webpack": "~19.0.1"
+    "react-server-dom-webpack": "~19.0.3"
   }
 }

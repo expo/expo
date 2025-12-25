@@ -107,7 +107,7 @@ export type ExpoRouterRuntimeManifest = Awaited<
 >;
 
 type SSRLoadModuleFunc = <T extends Record<string, any>>(
-  filePath: string,
+  filePath: string | null,
   specificOptions?: Partial<ExpoMetroOptions>,
   extras?: { hot?: boolean }
 ) => Promise<T>;
@@ -174,7 +174,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return port;
   }
 
-  private async exportServerRoute({
+  private async exportServerRouteAsync({
     contents,
     artifactFilename,
     files,
@@ -225,7 +225,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     files.set(artifactFilename, fileData);
   }
 
-  private async exportMiddleware({
+  private async exportMiddlewareAsync({
     manifest,
     appDir,
     outputDir,
@@ -250,7 +250,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       path.join(outputDir, path.relative(appDir, middlewareFilePath.replace(/\.[tj]sx?$/, '.js')))
     );
 
-    await this.exportServerRoute({
+    await this.exportServerRouteAsync({
       contents,
       artifactFilename,
       files,
@@ -308,7 +308,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     }
 
-    await this.exportMiddleware({
+    await this.exportMiddlewareAsync({
       manifest,
       appDir,
       outputDir,
@@ -329,7 +329,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               path.join(outputDir, path.relative(appDir, filepath.replace(/\.[tj]sx?$/, '.js')))
             );
 
-      await this.exportServerRoute({
+      await this.exportServerRouteAsync({
         contents,
         artifactFilename,
         files,
@@ -587,7 +587,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     specificOptions = {},
     extras = {}
   ) => {
-    const res = await this.ssrLoadModuleContents(filePath, specificOptions);
+    // NOTE(@kitten): We don't properly initialize the server-side modules
+    // Instead, we first load an entrypoint with an empty bundle to initialize the runtime instead
+    // See: ./createServerComponentsMiddleware.ts
+    const getEmptyModulePath = () => {
+      assert(this.metro, 'Metro server must be running to load SSR modules.');
+      return this.metro._config.resolver.emptyModulePath;
+    };
+
+    const res = await this.ssrLoadModuleContents(filePath ?? getEmptyModulePath(), specificOptions);
 
     if (
       // TODO: hot should be a callback function for invalidating the related SSR module.
@@ -1172,8 +1180,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // TODO: Maybe put behind a flag for now?
       middleware.use(domComponentRenderer);
 
-      // TODO: Disable both of these when tunneling to prevent security issues
-      middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
+      middleware.use(
+        new CreateFileMiddleware({
+          metroRoot: serverRoot,
+          projectRoot: this.projectRoot,
+          appDir,
+        }).getHandler()
+      );
 
       // For providing info to the error overlay.
       middleware.use((req: ServerRequest, res: ServerResponse, next: ServerNext) => {

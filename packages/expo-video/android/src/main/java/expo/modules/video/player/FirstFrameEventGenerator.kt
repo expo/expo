@@ -7,6 +7,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import expo.modules.video.VideoView
 import expo.modules.video.enums.ContentFit
+import expo.modules.video.listeners.VideoPlayerListener
 import expo.modules.video.utils.MutableWeakReference
 import java.lang.ref.WeakReference
 import kotlin.math.abs

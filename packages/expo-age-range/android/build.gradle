@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'expo.modules.agerange'
-version = '0.1.0'
+version = '0.2.0'
 
 android {
   namespace 'expo.modules.agerange'
   defaultConfig {
     versionCode 1
-    versionName "0.1.0"
+    versionName "0.2.0"
   }
 }
 
@@ -19,7 +19,8 @@ repositories {
 }
 
 dependencies {
-  implementation 'com.google.android.play:age-signals:0.0.1-beta02'
+	// when bumping, check if the ignored test is passing with the new version
+  implementation 'com.google.android.play:age-signals:0.0.2'
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.robolectric:robolectric:4.16'

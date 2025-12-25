@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Clarify Expo Go instructions for scanning QR Code. ([#34811](https://github.com/expo/expo/pull/34811) by [@betomoedano](https://github.com/betomoedano))
+
 ### 🛠 Breaking changes
 
 - Drop `EXPO_USE_FAST_RESOLVER` flag and implementation ([#40673](https://github.com/expo/expo/pull/40673) by [@kitten](https://github.com/kitten))
@@ -17,9 +19,15 @@
 
 ### 🐛 Bug fixes
 
+- clean up hanging processes at the end of `expo export` better. ([#41692](https://github.com/expo/expo/pull/41692) by [@EvanBacon](https://github.com/EvanBacon))
 - refactor launching Expo Go on Android ([#40020](https://github.com/expo/expo/pull/40020) by [@vonovak](https://github.com/vonovak))
 - only skip dependency validation for `EXPO_NO_DEPENDENCY_VALIDATION=1` ([#40043](https://github.com/expo/expo/pull/40043) by [@kitten](https://github.com/kitten))
 - Report stack traces on unexpected `TransformerError`s and `SyntaxError`s from Metro ([#41468](https://github.com/expo/expo/pull/41468) by [@kitten](https://github.com/kitten))
+- resolve "Illegal invocation" errors in `workerd` runtime ([#41502](https://github.com/expo/expo/pull/41502) by [@hassankhan](https://github.com/hassankhan))
+- Fix running iOS builds on device without available simulators ([#41524](https://github.com/expo/expo/pull/41524) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fix `expo install` not auto-adding config plugins for scoped packages ([#41613](https://github.com/expo/expo/pull/41613) by [@kitten](https://github.com/kitten))
+- Fix `metro-runtime/src/modules/empty-module.js` in RSC middleware ([#41687](https://github.com/expo/expo/pull/41687) by [@kitten](https://github.com/kitten))
+- Pass empty `nodeModulesPaths` when applying autolinking and fallback resolution to Metro resolver ([#41703](https://github.com/expo/expo/pull/41703) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
@@ -31,10 +39,15 @@
 - Deduplicate shared types across `@expo/cli`, `@expo/router-server`, `expo-server` ([#40614](https://github.com/expo/expo/pull/40614) by [@hassankhan](https://github.com/hassankhan))
 - [Internal] Use local monorepo template for `expo/expo` development ([#41383](https://github.com/expo/expo/pull/41383) by [@kitten](https://github.com/kitten))
 - Replace type declaration override for `@expo/config-types` with cast ([#41453](https://github.com/expo/expo/pull/41453) by [@kitten](https://github.com/kitten))
+- [Internal] add `Async` suffix to `exportMiddleware` and `exportServerRoute` ([#41443](https://github.com/expo/expo/pull/41443) by [@hassankhan](https://github.com/hassankhan))
+- Skip adding unnecessary CORS response header for `localhost` requests ([#41542](https://github.com/expo/expo/pull/41542) by [@kitten](https://github.com/kitten))
+- Embed `/_expo/touch` templates ([#41541](https://github.com/expo/expo/pull/41541) by [@kitten](https://github.com/kitten))
+- Bump to `@expo/metro@54.2.0` and `metro@0.83.3` ([#41142](https://github.com/expo/expo/pull/41142) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.83.x. ([#41564](https://github.com/expo/expo/pull/41564) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 📚 3rd party library updates
 
