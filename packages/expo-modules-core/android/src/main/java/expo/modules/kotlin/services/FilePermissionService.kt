@@ -7,7 +7,7 @@ import java.io.IOException
 import java.util.EnumSet
 
 // The class needs to be 'open', because it's inherited in expoview
-open class FilePermissionService {
+open class FilePermissionService : Service {
   open fun getPathPermissions(context: Context, path: String): EnumSet<Permission> =
     getInternalPathPermissions(path, context) ?: getExternalPathPermissions(path)
 

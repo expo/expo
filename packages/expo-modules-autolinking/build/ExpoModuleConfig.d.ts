@@ -8,6 +8,7 @@ export declare class ExpoAndroidProjectConfig {
     name: string;
     path: string;
     modules?: ExpoAndroidModuleConfig[] | undefined;
+    services?: string[] | undefined;
     publication?: AndroidPublication | undefined;
     gradleAarProjects?: AndroidGradleAarProjectDescriptor[] | undefined;
     shouldUsePublicationScriptPath?: string | undefined;
@@ -15,7 +16,7 @@ export declare class ExpoAndroidProjectConfig {
      * Whether this project is the root one.
      */
     isDefault: boolean;
-    constructor(name: string, path: string, modules?: ExpoAndroidModuleConfig[] | undefined, publication?: AndroidPublication | undefined, gradleAarProjects?: AndroidGradleAarProjectDescriptor[] | undefined, shouldUsePublicationScriptPath?: string | undefined, 
+    constructor(name: string, path: string, modules?: ExpoAndroidModuleConfig[] | undefined, services?: string[] | undefined, publication?: AndroidPublication | undefined, gradleAarProjects?: AndroidGradleAarProjectDescriptor[] | undefined, shouldUsePublicationScriptPath?: string | undefined, 
     /**
      * Whether this project is the root one.
      */

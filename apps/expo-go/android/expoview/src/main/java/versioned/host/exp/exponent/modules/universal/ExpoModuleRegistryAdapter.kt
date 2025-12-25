@@ -1,13 +1,12 @@
 package versioned.host.exp.exponent.modules.universal
 
-import android.content.Context
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.RegistryLifecycleListener
 import expo.modules.kotlin.ModulesProvider
-import expo.modules.kotlin.services.ServicesProvider
+import expo.modules.kotlin.services.AppDirectoriesService
 import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.kernel.ExperienceKey
@@ -29,7 +28,6 @@ open class ExpoModuleRegistryAdapter(
   modulesProvider: ModulesProvider? = null
 ) :
   ModuleRegistryAdapter(moduleRegistryProvider, modulesProvider), ScopedModuleRegistryAdapter {
-  private var servicesProvider: ServicesProvider? = null
 
   override fun createNativeModules(
     scopedContext: ScopedContext,
@@ -38,12 +36,6 @@ open class ExpoModuleRegistryAdapter(
     manifest: Manifest,
     otherModules: List<NativeModule>
   ): List<NativeModule> {
-    servicesProvider = object : ServicesProvider(scopedContext) {
-      override fun filePermission(): FilePermissionService {
-        return ScopedFilePermissionService(scopedContext)
-      }
-    }
-
     val moduleRegistry = mModuleRegistryProvider[scopedContext]
 
     moduleRegistry.registerInternalModule(SharedCookiesDataSourceFactoryProvider())
@@ -86,6 +78,11 @@ open class ExpoModuleRegistryAdapter(
       reactContext,
       moduleRegistry
     ) { appContext ->
+      with(appContext.services) {
+        register(FilePermissionService::class.java, ScopedFilePermissionService(scopedContext))
+        register(AppDirectoriesService::class.java, AppDirectoriesService(scopedContext))
+      }
+
       with(appContext.registry) {
         register(
           ExpoGoModule(manifest),
@@ -113,9 +110,5 @@ open class ExpoModuleRegistryAdapter(
 
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
     throw RuntimeException("Use other implementation of createNativeModules to get a list of native modules.")
-  }
-
-  override fun getServicesProvider(context: Context): ServicesProvider {
-    return requireNotNull(servicesProvider)
   }
 }
