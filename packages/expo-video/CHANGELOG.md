@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Implement `exitFullscreen` to fix `MethodUnsupportedException`. ([#41833](https://github.com/expo/expo/issues/41833) by [@mensonones](https://github.com/mensonones))
 - [Android] Emit `onFirstFrameRender` when player is moved to a new `VideoView` and renders a frame. ([#40854](https://github.com/expo/expo/pull/40854) by [@behenate](https://github.com/behenate))
 - [Android] Fix media controls (e.g. bluetooth) not working when `ExpoVideoPlaybackService` is not registered. ([#40728](https://github.com/expo/expo/pull/40728) by [@behenate](https://github.com/behenate))
 - [Web] Fix crash on older versions of Safari. ([#41101](https://github.com/expo/expo/pull/41101) by [@CamWass](https://github.com/CamWass))

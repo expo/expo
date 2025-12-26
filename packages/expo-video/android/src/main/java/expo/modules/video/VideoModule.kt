@@ -423,9 +423,9 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
   AsyncFunction("enterFullscreen") { view: T ->
     view.enterFullscreen()
   }.runOnQueue(Queues.MAIN)
-  AsyncFunction("exitFullscreen") {
-    throw MethodUnsupportedException("exitFullscreen")
-  }
+  AsyncFunction("exitFullscreen") { view: T ->
+    VideoManager.finishFullscreenPlayer(view.videoViewId)
+  }.runOnQueue(Queues.MAIN)
   AsyncFunction("startPictureInPicture") { view: T ->
     runWithPiPMisconfigurationSoftHandling(true) {
       view.enterPictureInPicture()
