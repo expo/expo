@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add `bounds` to `onCameraMove` event payload. ([#41785](https://github.com/expo/expo/pull/41785) by [@matinzd](https://github.com/matinzd))
+
 - [iOS] Add `latitudeDelta` and `longitudeDelta` to `onCameraMove` event payload. ([#41655](https://github.com/expo/expo/pull/41655) by [@matinzd](https://github.com/matinzd))
 
 ### 🐛 Bug fixes
