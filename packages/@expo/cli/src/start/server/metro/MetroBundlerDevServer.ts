@@ -1340,9 +1340,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
         // Scan for client boundaries at startup to include modules only imported from server components
-        const { scanForClientBoundaries } = await import(
+        // Using require to avoid type-check issues with dynamic imports in monorepo
+        const { scanForClientBoundaries } = require(
           '@expo/metro-config/build/rsc/scanClientBoundaries'
-        );
+        ) as { scanForClientBoundaries: (projectRoot: string) => Set<string> };
         const clientBoundaries: string[] = Array.from(scanForClientBoundaries(this.projectRoot));
         debug(`[RSC] Discovered ${clientBoundaries.length} client boundaries at startup`);
 
@@ -1398,9 +1399,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
         // Scan for client boundaries at startup to include modules only imported from server components
-        const { scanForClientBoundaries } = await import(
+        // Using require to avoid type-check issues with dynamic imports in monorepo
+        const { scanForClientBoundaries } = require(
           '@expo/metro-config/build/rsc/scanClientBoundaries'
-        );
+        ) as { scanForClientBoundaries: (projectRoot: string) => Set<string> };
         const clientBoundaries: string[] = Array.from(scanForClientBoundaries(this.projectRoot));
         debug(`[RSC] Discovered ${clientBoundaries.length} client boundaries at startup`);
 
