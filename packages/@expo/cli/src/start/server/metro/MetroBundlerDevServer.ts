@@ -1288,7 +1288,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           require('@expo/metro-config/build/rsc/scanClientBoundaries') as {
             scanForClientBoundaries: (projectRoot: string) => Set<string>;
           };
-        const clientBoundaries: string[] = Array.from(scanForClientBoundaries(this.projectRoot));
+        const { getStableId } = require('@expo/metro-config/build/rscRegistry') as {
+          getStableId: (
+            resolvedPath: string,
+            projectRoot: string
+          ) => { stableId: string; type: string };
+        };
+
+        // Convert absolute paths to stable IDs for cross-environment compatibility
+        // Stable IDs are either package specifiers (e.g., "pkg/client") or
+        // relative paths from project root (e.g., "./src/Button.tsx")
+        const absolutePaths = scanForClientBoundaries(this.projectRoot);
+        const clientBoundaries: string[] = Array.from(absolutePaths).map(
+          (absPath) => getStableId(absPath, this.projectRoot).stableId
+        );
         debug(`[RSC] Discovered ${clientBoundaries.length} client boundaries at startup`);
 
         this.bindRSCDevModuleInjectionHandler();
@@ -1347,7 +1360,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           require('@expo/metro-config/build/rsc/scanClientBoundaries') as {
             scanForClientBoundaries: (projectRoot: string) => Set<string>;
           };
-        const clientBoundaries: string[] = Array.from(scanForClientBoundaries(this.projectRoot));
+        const { getStableId } = require('@expo/metro-config/build/rscRegistry') as {
+          getStableId: (
+            resolvedPath: string,
+            projectRoot: string
+          ) => { stableId: string; type: string };
+        };
+
+        // Convert absolute paths to stable IDs for cross-environment compatibility
+        // Stable IDs are either package specifiers (e.g., "pkg/client") or
+        // relative paths from project root (e.g., "./src/Button.tsx")
+        const absolutePaths = scanForClientBoundaries(this.projectRoot);
+        const clientBoundaries: string[] = Array.from(absolutePaths).map(
+          (absPath) => getStableId(absPath, this.projectRoot).stableId
+        );
         debug(`[RSC] Discovered ${clientBoundaries.length} client boundaries at startup`);
 
         this.bindRSCDevModuleInjectionHandler();
