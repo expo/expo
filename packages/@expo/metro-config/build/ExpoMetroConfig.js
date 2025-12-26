@@ -214,11 +214,12 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             // RSC: Capture import specifiers for stable ID resolution
             resolveRequest(context, moduleName, platform) {
                 const result = context.resolveRequest(context, moduleName, platform);
-                // Capture bare specifiers (package imports) for RSC stable IDs
-                // This includes: node_modules, workspace packages, aliased modules
-                // We capture any non-relative, non-absolute specifier that resolves to a file
+                // Capture specifiers for RSC stable IDs:
+                // - Bare specifiers (pkg, @scope/pkg): captured directly
+                // - Relative imports within node_modules: canonical specifier computed
+                // - Collision detection: auto-adds version if same ID maps to different files
                 if (result.type === 'sourceFile') {
-                    (0, rscRegistry_1.captureSpecifier)(result.filePath, moduleName);
+                    (0, rscRegistry_1.captureSpecifier)(result.filePath, moduleName, context.originModulePath);
                 }
                 return result;
             },

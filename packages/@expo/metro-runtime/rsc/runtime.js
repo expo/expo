@@ -15,7 +15,9 @@ globalThis.__webpack_chunk_load__ = (id) => {
 };
 
 // RSC module map: maps stable IDs (package specifiers) to Metro module getters.
-// This is populated by the virtual/rsc.js module which is generated at build time.
+// This is populated by:
+// 1. The virtual/rsc.js module which is generated at build time (for static boundaries)
+// 2. Dynamically via __expo_rsc_register__ when chunks are loaded (for dynamic boundaries)
 // Format: { "react-native-safe-area-context": function() { return __r("node_modules/..."); } }
 let rscModuleMap = null;
 
@@ -32,6 +34,18 @@ function getRscModuleMap() {
   }
   return rscModuleMap;
 }
+
+// Dynamic RSC module registration.
+// Called by module-only bundles (chunks) to register loaded modules in the RSC map.
+// This allows modules that were loaded dynamically to be resolved by __webpack_require__.
+globalThis.__expo_rsc_register__ = function (stableId, moduleId) {
+  const map = getRscModuleMap();
+  if (!map[stableId]) {
+    map[stableId] = function () {
+      return global[`${__METRO_GLOBAL_PREFIX__}__r`](moduleId);
+    };
+  }
+};
 
 globalThis.__webpack_require__ = (id) => {
   // This logic can be tested by running a production iOS build without virtual client boundaries. This will result in all split chunks being missing and

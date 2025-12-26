@@ -1,9 +1,14 @@
 /**
  * RSC Serializer Plugin
  *
- * Resolves deferred stable IDs for React Server Components.
- * Deferred IDs are marked by Babel with __RSC_DEFERRED__:/path/to/file.js
- * and resolved here using the captured specifier registry.
+ * Resolves ALL stable IDs for React Server Components.
+ * Babel marks ALL boundaries with __RSC_DEFERRED__:/path/to/file.js
+ * and this plugin resolves them to final stable IDs:
+ * - node_modules: package specifier (e.g., "pkg/client")
+ * - app-level: relative path from project root (e.g., "./src/Button.tsx")
+ *
+ * This centralizes all stable ID logic in one place, making it easier to
+ * debug and maintain.
  *
  * This plugin does TWO things:
  * 1. Updates metadata (reactClientReference/reactServerReference)

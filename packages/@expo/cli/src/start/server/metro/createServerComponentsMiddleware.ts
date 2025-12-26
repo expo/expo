@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getMetroServerRoot } from '@expo/config/paths';
+import { getFilePathByStableId } from '@expo/metro-config/build/rscRegistry';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import type { EntriesDev } from '@expo/router-server/build/rsc/server';
 import assert from 'assert';
@@ -52,6 +53,7 @@ export function createServerComponentsMiddleware(
     useClientRouter,
     createModuleId,
     routerOptions,
+    clientBoundaries,
   }: {
     rscPath: string;
     instanceMetroOptions: Partial<ExpoMetroOptions>;
@@ -63,6 +65,8 @@ export function createServerComponentsMiddleware(
       context: { platform: string; environment: string }
     ) => string | number;
     routerOptions: Record<string, any>;
+    /** Pre-scanned client boundaries for dev mode (files with "use client" directive) */
+    clientBoundaries?: string[];
   }
 ) {
   const routerModule = useClientRouter
@@ -322,6 +326,9 @@ export function createServerComponentsMiddleware(
 
   const routerCache = new Map<string, EntriesDev>();
 
+  // Cache for prefetched client boundaries per platform
+  const prefetchedClientBoundaries = new Map<string, string[]>();
+
   async function getExpoRouterRscEntriesGetterAsync({
     platform,
     routerOptions,
@@ -419,11 +426,12 @@ export function createServerComponentsMiddleware(
         );
 
         // SSR manifest entry is [moduleId, chunk]
+        // The moduleId is for runtime require(), but the RSC payload needs stable IDs
         const entry = context.ssrManifest.get(manifestKey)!;
-        const [moduleId, chunk] = entry;
+        const [, chunk] = entry;
 
         return {
-          id: String(moduleId),
+          id: manifestKey, // Use stable ID for RSC payload, not file path
           chunks: chunk != null ? [chunk] : [],
         };
       }
@@ -443,7 +451,7 @@ export function createServerComponentsMiddleware(
         reactCompiler: !!reactCompiler,
         engine: context.engine ?? undefined,
         bytecode: false,
-        clientBoundaries: [],
+        clientBoundaries: clientBoundaries || [],
         inlineSourceMap: false,
         environment,
         modulesOnly: true,
@@ -457,12 +465,28 @@ export function createServerComponentsMiddleware(
       // TICKLE: Handshake 1
       searchParams.set('xRSC', '1');
 
+      // For stable IDs (package specifiers), lookup file path from registry
+      // For file paths, use directly
+      let bundleFilePath: string;
+      if (isStableId) {
+        // Lookup file path from registry (reverse: stableId → filePath)
+        const registryFilePath = getFilePathByStableId(file);
+        if (registryFilePath) {
+          bundleFilePath = registryFilePath;
+        } else {
+          // Fallback: if not in registry, try to use as-is (shouldn't happen normally)
+          console.warn(`[RSC] No file path found for stable ID: ${file}`);
+          bundleFilePath = file;
+        }
+        // Add stable ID to URL so the serializer can register it dynamically
+        searchParams.set('rscStableId', file);
+      } else {
+        bundleFilePath = filePath;
+      }
+
       clientReferenceUrl.search = searchParams.toString();
 
-      // For stable IDs (package specifiers), use as-is
-      // For file paths, compute relative path
-      const relativeFilePath = isStableId ? file : path.relative(serverRoot, filePath);
-
+      const relativeFilePath = path.relative(serverRoot, bundleFilePath);
       clientReferenceUrl.pathname = relativeFilePath;
 
       // Ensure url.pathname ends with '.bundle'
@@ -687,6 +711,41 @@ export function createServerComponentsMiddleware(
 
       rscRendererCache.delete(platform);
       routerCache.delete(platform);
+      // Clear cached client boundaries so they're re-fetched on next request
+      prefetchedClientBoundaries.delete(platform);
+    },
+    /**
+     * Pre-fetch client boundaries from the server graph.
+     * This builds the server bundle and extracts reactClientReferences metadata.
+     * Call this early to ensure client bundles include all necessary modules.
+     */
+    async prefetchClientBoundaries(platform: string): Promise<string[]> {
+      // Return cached boundaries if available
+      if (prefetchedClientBoundaries.has(platform)) {
+        return prefetchedClientBoundaries.get(platform)!;
+      }
+
+      await ensureMemo();
+
+      try {
+        const contents = await ssrLoadModuleArtifacts(routerModule, {
+          environment: 'react-server',
+          platform,
+          modulesOnly: true,
+        });
+
+        const reactClientReferences =
+          contents.artifacts
+            .filter((a) => a.type === 'js')[0]
+            ?.metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref)) || [];
+
+        debug('[RSC] Prefetched client boundaries from server graph:', reactClientReferences.length);
+        prefetchedClientBoundaries.set(platform, reactClientReferences);
+        return reactClientReferences;
+      } catch (error) {
+        debug('[RSC] Failed to prefetch client boundaries:', error);
+        return [];
+      }
     },
   };
 }

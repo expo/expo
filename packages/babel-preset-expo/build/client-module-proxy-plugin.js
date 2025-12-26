@@ -4,7 +4,6 @@ exports.RSC_DEFERRED_PREFIX = void 0;
 exports.isDeferredStableId = isDeferredStableId;
 exports.extractResolvedPathFromDeferred = extractResolvedPathFromDeferred;
 exports.reactClientReferencesPlugin = reactClientReferencesPlugin;
-const node_path_1 = require("node:path");
 const common_1 = require("./common");
 // Marker prefix for deferred stable ID resolution (handled by serializer)
 exports.RSC_DEFERRED_PREFIX = '__RSC_DEFERRED__:';
@@ -24,45 +23,64 @@ function extractResolvedPathFromDeferred(deferredId) {
     return deferredId.slice(exports.RSC_DEFERRED_PREFIX.length);
 }
 /**
- * Check if a path is inside node_modules.
- */
-function isNodeModulePath(filePath) {
-    return /(?:^|[\\/])node_modules(?:[\\/]|$)/.test(filePath);
-}
-/**
- * Generate a stable ID for a client/server boundary module.
+ * Generate a deferred stable ID for a client/server boundary module.
  *
- * For node_modules files, returns a deferred marker that the serializer
- * will replace with the canonical specifier (e.g., "pkg/client").
+ * ALL stable ID resolution is deferred to the serializer. This simplifies
+ * the Babel plugin and centralizes all ID resolution logic in one place.
  *
- * For app-level files, returns a relative path from project root.
+ * The serializer will resolve the deferred ID to:
+ * - node_modules: package specifier (e.g., "pkg/client")
+ * - app-level: relative path from project root (e.g., "./src/Button.tsx")
+ *
+ * Format: __RSC_DEFERRED__:/absolute/path/to/file.js
  */
-function generateStableId(filePath, projectRoot) {
-    const relativePath = (0, node_path_1.relative)(projectRoot, filePath);
-    // Use deferred resolution for:
-    // 1. node_modules files
-    // 2. Files outside project root (e.g., symlinked packages in monorepos)
-    if (isNodeModulePath(filePath) || relativePath.startsWith('..')) {
-        // Mark as deferred - serializer will resolve using the capture registry
-        // Format: __RSC_DEFERRED__:/absolute/path/to/file.js
-        return exports.RSC_DEFERRED_PREFIX + filePath;
+function generateDeferredId(filePath) {
+    const deferredId = exports.RSC_DEFERRED_PREFIX + (0, common_1.toPosixPath)(filePath);
+    // Debug: log when generating deferred IDs for client boundaries
+    if (process.env.EXPO_DEBUG) {
+        console.log('[RSC-BABEL] generateDeferredId:', filePath, '->', deferredId);
     }
-    // App-level files within project: use relative path (stable across builds)
-    return './' + (0, common_1.toPosixPath)(relativePath);
+    return deferredId;
 }
 function reactClientReferencesPlugin(api) {
     const { template, types } = api;
     const isReactServer = api.caller(common_1.getIsReactServer);
-    const possibleProjectRoot = api.caller(common_1.getPossibleProjectRoot);
     return {
         name: 'expo-client-references',
         visitor: {
             Program(path, state) {
-                const isUseClient = path.node.directives.some((directive) => directive.value.value === 'use client' ||
+                // Check directives array (standard location for directives)
+                let isUseClient = path.node.directives.some((directive) => directive.value.value === 'use client' ||
                     // Convert DOM Components to client proxies in React Server environments.
                     directive.value.value === 'use dom');
-                // TODO: use server can be added to scopes inside of the file. https://github.com/facebook/react/blob/29fbf6f62625c4262035f931681c7b7822ca9843/packages/react-server-dom-webpack/src/ReactFlightWebpackNodeRegister.js#L55
-                const isUseServer = path.node.directives.some((directive) => directive.value.value === 'use server');
+                let isUseServer = path.node.directives.some((directive) => directive.value.value === 'use server');
+                // Also check body for string literal statements (handles pre-built files where
+                // "use strict" and comments may come before "use client"/"use server")
+                // This matches React's acorn-based detection and Next.js's approach
+                if (!isUseClient && !isUseServer) {
+                    for (const node of path.node.body) {
+                        // Stop at non-expression statements
+                        if (node.type !== 'ExpressionStatement')
+                            break;
+                        // Check for string literal
+                        const expr = node.expression;
+                        if (expr?.type === 'StringLiteral' || expr?.type === 'Literal') {
+                            const value = expr.value;
+                            if (value === 'use client' || value === 'use dom') {
+                                isUseClient = true;
+                                break;
+                            }
+                            if (value === 'use server') {
+                                isUseServer = true;
+                                break;
+                            }
+                        }
+                        else {
+                            // Non-string-literal expression, stop looking for directives
+                            break;
+                        }
+                    }
+                }
                 if (isUseClient && isUseServer) {
                     throw path.buildCodeFrameError('It\'s not possible to have both "use client" and "use server" directives in the same file.');
                 }
@@ -74,11 +92,9 @@ function reactClientReferencesPlugin(api) {
                     // This can happen in tests or systems that use Babel standalone.
                     throw new Error('[Babel] Expected a filename to be set in the state');
                 }
-                const projectRoot = possibleProjectRoot || state.file.opts.root || '';
-                // Generate stable ID for the boundary module.
-                // For node_modules: deferred marker for serializer resolution
-                // For app-level: relative path from project root
-                const outputKey = generateStableId(filePath, projectRoot);
+                // Generate deferred ID - serializer will resolve to final stable ID
+                // This centralizes all stable ID logic in the serializer
+                const outputKey = generateDeferredId(filePath);
                 function iterateExports(callback, type) {
                     const exportNames = new Set();
                     // Collect all of the exports
@@ -203,12 +219,15 @@ function reactClientReferencesPlugin(api) {
                     // Store the proxy export names for testing purposes.
                     state.file.metadata.proxyExports = [...proxyExports];
                     // Save the server action reference in the metadata.
-                    // Use outputKey (relative path) for portability across different build environments (e.g., EAS builds)
+                    // Deferred ID will be resolved by serializer to final stable ID.
                     state.file.metadata.reactServerReference = outputKey;
                 }
                 else if (isUseClient) {
+                    // Always set metadata for client boundaries (needed by serializer for module map)
+                    assertExpoMetadata(state.file.metadata);
+                    state.file.metadata.reactClientReference = outputKey;
                     if (!isReactServer) {
-                        // Do nothing for "use client" on the client.
+                        // Don't transform the code on the client - just set metadata above
                         return;
                     }
                     // HACK: Mock out the polyfill that doesn't run through the normal bundler pipeline.
@@ -255,7 +274,7 @@ function reactClientReferencesPlugin(api) {
                     // Store the proxy export names for testing purposes.
                     state.file.metadata.proxyExports = [...proxyExports];
                     // Save the client reference in the metadata.
-                    // Use outputKey (relative path) for portability across different build environments (e.g., EAS builds)
+                    // Deferred ID will be resolved by serializer to final stable ID.
                     state.file.metadata.reactClientReference = outputKey;
                 }
             },

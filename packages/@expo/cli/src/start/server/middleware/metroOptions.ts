@@ -443,7 +443,7 @@ export function getMetroOptionsFromUrl(urlFragment: string) {
     reactCompiler: isTruthy(getStringParam('transform.reactCompiler') ?? 'false'),
     asyncRoutes: isTruthy(getStringParam('transform.asyncRoutes') ?? 'false'),
     baseUrl: getStringParam('transform.baseUrl') ?? undefined,
-    // clientBoundaries: JSON.parse(getStringParam('transform.clientBoundaries') ?? '[]'),
+    clientBoundaries: JSON.parse(getStringParam('transform.clientBoundaries') ?? '[]'),
     engine: assertEngine(getStringParam('transform.engine')),
     runModule: isTruthy(getStringParam('runModule') ?? 'true'),
     modulesOnly: isTruthy(getStringParam('modulesOnly') ?? 'false'),

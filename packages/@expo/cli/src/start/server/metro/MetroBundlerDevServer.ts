@@ -1339,6 +1339,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
+        // Scan for client boundaries at startup to include modules only imported from server components
+        const { scanForClientBoundaries } = await import(
+          '@expo/metro-config/build/rsc/scanClientBoundaries'
+        );
+        const clientBoundaries = Array.from(scanForClientBoundaries(this.projectRoot));
+        debug(`[RSC] Discovered ${clientBoundaries.length} client boundaries at startup`);
+
         this.bindRSCDevModuleInjectionHandler();
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
           instanceMetroOptions: this.instanceMetroOptions,
@@ -1348,6 +1355,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           useClientRouter: isReactServerActionsOnlyEnabled,
           createModuleId: metro._createModuleId.bind(metro),
           routerOptions,
+          clientBoundaries,
         });
         this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
@@ -1389,6 +1397,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     } else {
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
+        // Scan for client boundaries at startup to include modules only imported from server components
+        const { scanForClientBoundaries } = await import(
+          '@expo/metro-config/build/rsc/scanClientBoundaries'
+        );
+        const clientBoundaries = Array.from(scanForClientBoundaries(this.projectRoot));
+        debug(`[RSC] Discovered ${clientBoundaries.length} client boundaries at startup`);
+
         this.bindRSCDevModuleInjectionHandler();
         const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
           instanceMetroOptions: this.instanceMetroOptions,
@@ -1398,6 +1413,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           useClientRouter: isReactServerActionsOnlyEnabled,
           createModuleId: metro._createModuleId.bind(metro),
           routerOptions,
+          clientBoundaries,
         });
         this.rscRenderer = rscMiddleware;
       }

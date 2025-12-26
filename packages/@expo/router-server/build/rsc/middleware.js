@@ -80,9 +80,11 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
             if (!(file in ssrManifest)) {
                 throw new Error(`Could not find file in SSR manifest: ${file}`);
             }
-            const [id, chunk] = ssrManifest[file];
+            // SSR manifest maps stable ID -> [moduleId, chunk]
+            // The moduleId is for runtime require(), but RSC payload needs stable IDs
+            const [, chunk] = ssrManifest[file];
             return {
-                id,
+                id: file, // Use stable ID (the manifest key), not the stored moduleId
                 chunks: chunk ? [chunk] : [],
             };
         },

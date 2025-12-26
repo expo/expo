@@ -118,6 +118,23 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
                 debugId,
             })).code;
         }
+        // For RSC client boundary chunks: append registration code so the module
+        // can be resolved by stable ID after the chunk is loaded.
+        // This enables dynamic loading of client boundaries without requiring
+        // them to be known at build time.
+        if (options.sourceUrl) {
+            const sourceUrl = (0, jsc_safe_url_1.isJscSafeUrl)(options.sourceUrl)
+                ? (0, jsc_safe_url_1.toNormalUrl)(options.sourceUrl)
+                : options.sourceUrl;
+            const parsed = new URL(sourceUrl, 'http://expo.dev');
+            const rscStableId = parsed.searchParams.get('rscStableId');
+            if (rscStableId && bundleCode) {
+                // Get the module ID for the entry point module
+                const entryModuleId = options.createModuleId(entryPoint);
+                // Append registration code to allow __webpack_require__(stableId) to work
+                bundleCode += `\n;typeof __expo_rsc_register__==="function"&&__expo_rsc_register__(${JSON.stringify(rscStableId)},${JSON.stringify(entryModuleId)});`;
+            }
+        }
         const getEnsuredMaps = () => {
             bundleMap ??= (0, sourceMapString_1.sourceMapString)([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
                 // TODO: Surface this somehow.
