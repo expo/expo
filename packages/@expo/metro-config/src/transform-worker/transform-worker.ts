@@ -78,22 +78,23 @@ export async function transform(
     if (!isServer) {
       const clientBoundaries = getStringArray(options.customTransformOptions?.clientBoundaries);
 
+      // clientBoundaries contains stable IDs from MetroBundlerDevServer:
+      // - Package specifiers: "pkg/client", "@scope/pkg", "react-native-safe-area-context"
+      // - Project-relative paths: "./src/Button.tsx", "./app/components/Header.tsx"
+      //
       // The serializer will replace __RSC_BOUNDARIES_PLACEHOLDER__ with the actual module map
       // built from all modules with reactClientReference metadata in the dependency graph.
       //
       // To include client boundaries that are only imported from server components,
-      // we add dynamic imports at the top level. Metro analyzes these statically
-      // and adds them to the dependency graph. The imports are NOT awaited,
-      // so they don't block module initialization.
-      //
-      // For relative paths from project root (e.g., "./../../packages/..."), we convert
-      // to absolute paths since the virtual module is at expo/virtual/rsc.js.
+      // we add dynamic imports. Metro analyzes these statically and adds modules to
+      // the dependency graph. The imports are NOT awaited, so they don't block initialization.
       const resolvedBoundaries = clientBoundaries?.map((boundary) => {
-        // Package specifiers can be used directly
-        if (!boundary.startsWith('./') && !boundary.startsWith('../')) {
+        // Package specifiers (e.g., "pkg/client") can be used directly - Metro resolves them
+        if (!boundary.startsWith('./')) {
           return boundary;
         }
-        // Relative paths need to be resolved from project root to absolute paths
+        // Project-relative paths (e.g., "./src/Button.tsx") need to be converted to
+        // absolute paths since this virtual module is at expo/virtual/rsc.js, not projectRoot
         const path = require('path');
         return path.resolve(projectRoot, boundary);
       });
