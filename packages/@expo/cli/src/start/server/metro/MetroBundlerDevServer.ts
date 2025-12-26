@@ -1343,7 +1343,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         const { scanForClientBoundaries } = await import(
           '@expo/metro-config/build/rsc/scanClientBoundaries'
         );
-        const clientBoundaries = Array.from(scanForClientBoundaries(this.projectRoot));
+        const clientBoundaries: string[] = Array.from(scanForClientBoundaries(this.projectRoot));
         debug(`[RSC] Discovered ${clientBoundaries.length} client boundaries at startup`);
 
         this.bindRSCDevModuleInjectionHandler();
@@ -1401,7 +1401,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         const { scanForClientBoundaries } = await import(
           '@expo/metro-config/build/rsc/scanClientBoundaries'
         );
-        const clientBoundaries = Array.from(scanForClientBoundaries(this.projectRoot));
+        const clientBoundaries: string[] = Array.from(scanForClientBoundaries(this.projectRoot));
         debug(`[RSC] Discovered ${clientBoundaries.length} client boundaries at startup`);
 
         this.bindRSCDevModuleInjectionHandler();
