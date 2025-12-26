@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [Android] Implement `exitFullscreen` to fix `MethodUnsupportedException`. ([#41833](https://github.com/expo/expo/issues/41833) by [@mensonones](https://github.com/mensonones))
 - [Android][iOS] Add `seek tolerance` and `scrubbingModeOptions` properties to the player. ([#40203](https://github.com/expo/expo/pull/40203) by [@behenate](https://github.com/behenate))
 - Allow assigning `null` value to the `player` prop of the `VideoView` ([#40860](https://github.com/expo/expo/pull/40860) by [@behenate](https://github.com/behenate))
 - [Android][iOS] Add `averageBitrate` and `peakBitrate` for video tracks. ([#41532](https://github.com/expo/expo/pull/41532) by [@behenate](https://github.com/behenate))
