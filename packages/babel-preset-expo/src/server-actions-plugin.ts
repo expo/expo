@@ -9,35 +9,26 @@
  */
 
 import type { ConfigAPI, types as t, NodePath, PluginObj, PluginPass } from '@babel/core';
-import { relative as getRelativePath } from 'node:path';
+// Note: 'node:path' import removed - stable ID resolution now deferred to serializer
 import url from 'node:url';
 
 import { RSC_DEFERRED_PREFIX } from './client-module-proxy-plugin';
 import { createAddNamedImportOnce, getPossibleProjectRoot, toPosixPath } from './common';
 
 /**
- * Check if a path is inside node_modules.
- */
-function isNodeModulePath(filePath: string): boolean {
-  return /(?:^|[\\/])node_modules(?:[\\/]|$)/.test(filePath);
-}
-
-/**
- * Generate a stable ID for a server action module.
+ * Generate a deferred stable ID for a server action module.
  *
- * For node_modules files, returns a deferred marker that the serializer
- * will replace with the canonical specifier (e.g., "pkg/actions").
+ * ALL stable ID resolution is deferred to the serializer. This simplifies
+ * the Babel plugin and centralizes all ID resolution logic in one place.
+ * No path heuristics like "/node_modules/" are used here.
  *
- * For app-level files, returns a relative path from project root.
+ * The serializer will resolve the deferred ID to:
+ * - Package modules: package specifier (e.g., "pkg/actions")
+ * - App-level files: relative path from project root (e.g., "./src/actions.ts")
  */
-function generateStableId(filePath: string, projectRoot: string): string {
-  if (isNodeModulePath(filePath)) {
-    // Mark as deferred - serializer will resolve using the capture registry
-    return RSC_DEFERRED_PREFIX + filePath;
-  }
-
-  // App-level files: use relative path (stable across builds)
-  return './' + toPosixPath(getRelativePath(projectRoot, filePath));
+function generateStableId(filePath: string, _projectRoot: string): string {
+  // Always use deferred ID - serializer handles all stable ID resolution
+  return RSC_DEFERRED_PREFIX + toPosixPath(filePath);
 }
 
 const debug = require('debug')('expo:babel:server-actions');
