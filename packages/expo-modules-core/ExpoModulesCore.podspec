@@ -42,6 +42,8 @@ if defined?(Expo::PackagesConfig)
   coreFeatures = Expo::PackagesConfig.instance.coreFeatures
 end
 
+macro_flags = '-Xfrontend -load-plugin-executable -Xfrontend ${PODS_TARGET_SRCROOT}/ios/Macros/ExpoModulesOptimizedMacros-tool#ExpoModulesOptimizedMacros'
+
 Pod::Spec.new do |s|
   s.name           = 'ExpoModulesCore'
   s.version        = package['version']
@@ -74,7 +76,7 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
-    'OTHER_SWIFT_FLAGS' => "$(inherited) #{new_arch_enabled ? new_arch_compiler_flags : ''}",
+    'OTHER_SWIFT_FLAGS' => "$(inherited) #{new_arch_enabled ? new_arch_compiler_flags : ''} #{macro_flags}",
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
     'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) EXPO_MODULES_CORE_VERSION=' + package['version'],
   }

@@ -18,4 +18,9 @@ public final class BenchmarkingExpoModule: Module {
       return array.reduce(0.0, +)
     }
   }
+
+  @OptimizedFunction
+  private func getValue() -> String {
+    return "test"
+  }
 }
