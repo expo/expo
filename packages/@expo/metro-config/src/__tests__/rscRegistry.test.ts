@@ -370,7 +370,8 @@ describe('rscRegistry', () => {
       // Exports: { ".": { "default": "./lib/module/index.js" } }
       // Specifier: "react-native-safe-area-context"
 
-      const resolvedPath = '/project/node_modules/react-native-safe-area-context/lib/module/index.js';
+      const resolvedPath =
+        '/project/node_modules/react-native-safe-area-context/lib/module/index.js';
 
       captureSpecifier(resolvedPath, 'react-native-safe-area-context');
 

@@ -18,8 +18,8 @@
  * 3. Computed from package boundary (fallback)
  */
 
-import * as path from 'path';
 import * as fs from 'fs';
+import * as path from 'path';
 
 // resolvedPath → stableId
 const specifierRegistry = new Map<string, string>();
@@ -291,10 +291,7 @@ function findPackageInfo(filePath: string): PackageInfo | null {
  *
  * Returns the package info if it's a package module, null otherwise.
  */
-function getPackageModuleInfo(
-  filePath: string,
-  projectRoot?: string
-): PackageInfo | null {
+function getPackageModuleInfo(filePath: string, projectRoot?: string): PackageInfo | null {
   const pkgInfo = findPackageInfo(filePath);
   if (!pkgInfo) {
     return null;
@@ -302,9 +299,7 @@ function getPackageModuleInfo(
 
   // Check if this package is the project root itself
   const normalizedPkgRoot = normalizePath(pkgInfo.root);
-  const normalizedProjectRoot = projectRoot
-    ? normalizePath(projectRoot)
-    : cachedProjectRoot;
+  const normalizedProjectRoot = projectRoot ? normalizePath(projectRoot) : cachedProjectRoot;
 
   // If the package root IS the project root, it's an app-level file, not a package module
   if (normalizedProjectRoot && normalizedPkgRoot === normalizedProjectRoot) {
@@ -376,7 +371,11 @@ function handleCollision(
   const newRelPath = computeRelativePath(newPath, newPkgInfo.root);
 
   return {
-    existingNewId: createVersionedId(existingPkgInfo.name, existingPkgInfo.version, existingRelPath),
+    existingNewId: createVersionedId(
+      existingPkgInfo.name,
+      existingPkgInfo.version,
+      existingRelPath
+    ),
     newNewId: createVersionedId(newPkgInfo.name, newPkgInfo.version, newRelPath),
   };
 }
@@ -510,7 +509,6 @@ export function captureSpecifier(
       } else {
         registerStableId(resolvedPath, simpleId);
       }
-      return;
     }
   }
 

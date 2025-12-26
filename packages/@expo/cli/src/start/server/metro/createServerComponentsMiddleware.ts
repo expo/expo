@@ -727,7 +727,10 @@ export function createServerComponentsMiddleware(
             .filter((a) => a.type === 'js')[0]
             ?.metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref)) || [];
 
-        debug('[RSC] Prefetched client boundaries from server graph:', reactClientReferences.length);
+        debug(
+          '[RSC] Prefetched client boundaries from server graph:',
+          reactClientReferences.length
+        );
         prefetchedClientBoundaries.set(platform, reactClientReferences);
         return reactClientReferences;
       } catch (error) {

@@ -393,7 +393,9 @@ describe('rscSerializerPlugin', () => {
         // App-level (now also uses deferred IDs)
         '/project/src/components/Header.js': {
           output: [
-            { data: { reactClientReference: '__RSC_DEFERRED__:/project/src/components/Header.js' } },
+            {
+              data: { reactClientReference: '__RSC_DEFERRED__:/project/src/components/Header.js' },
+            },
           ],
         },
         // Node module (deferred)
@@ -409,7 +411,9 @@ describe('rscSerializerPlugin', () => {
         // Another app-level (now also uses deferred IDs)
         '/project/src/components/Footer.js': {
           output: [
-            { data: { reactClientReference: '__RSC_DEFERRED__:/project/src/components/Footer.js' } },
+            {
+              data: { reactClientReference: '__RSC_DEFERRED__:/project/src/components/Footer.js' },
+            },
           ],
         },
       });

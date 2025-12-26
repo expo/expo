@@ -102,11 +102,7 @@ function scanDirectory(
  * Scan node_modules for client boundary modules.
  * Only scans packages that are likely to have "use client" (React-related).
  */
-function scanNodeModules(
-  nodeModulesPath: string,
-  projectRoot: string,
-  results: Set<string>
-): void {
+function scanNodeModules(nodeModulesPath: string, projectRoot: string, results: Set<string>): void {
   let entries: fs.Dirent[];
   try {
     entries = fs.readdirSync(nodeModulesPath, { withFileTypes: true });
@@ -143,11 +139,7 @@ function scanNodeModules(
  * Scan a single package for client boundary modules.
  * Uses heuristics to skip packages unlikely to have "use client".
  */
-function scanPackage(
-  packagePath: string,
-  projectRoot: string,
-  results: Set<string>
-): void {
+function scanPackage(packagePath: string, projectRoot: string, results: Set<string>): void {
   // Read package.json to check if it's likely to have client components
   const pkgJsonPath = path.join(packagePath, 'package.json');
   try {

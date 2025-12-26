@@ -125,7 +125,12 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
             deferredToStableId.set(deferredId, stableId);
           } else {
             // Not a deferred ID - this shouldn't happen with the new Babel plugin
-            console.warn('[RSC-SERIALIZER] Non-deferred client reference found:', data.reactClientReference, 'at', modulePath);
+            console.warn(
+              '[RSC-SERIALIZER] Non-deferred client reference found:',
+              data.reactClientReference,
+              'at',
+              modulePath
+            );
           }
         }
 
@@ -219,9 +224,15 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
               for (const [graphModulePath] of graph.dependencies) {
                 const normalizedGraphPath = normalizePath(graphModulePath);
                 // Try exact match first, then suffix matching for different root paths
-                if (normalizedGraphPath === normalizedBoundary ||
-                    normalizedGraphPath.endsWith(normalizedBoundary.replace(/^.*node_modules\//, 'node_modules/')) ||
-                    normalizedBoundary.endsWith(normalizedGraphPath.replace(/^.*node_modules\//, 'node_modules/'))) {
+                if (
+                  normalizedGraphPath === normalizedBoundary ||
+                  normalizedGraphPath.endsWith(
+                    normalizedBoundary.replace(/^.*node_modules\//, 'node_modules/')
+                  ) ||
+                  normalizedBoundary.endsWith(
+                    normalizedGraphPath.replace(/^.*node_modules\//, 'node_modules/')
+                  )
+                ) {
                   foundModulePath = graphModulePath;
                   break;
                 }
@@ -234,12 +245,20 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
                   const moduleId = serializerOptions.createModuleId(foundModulePath);
                   trackStableId(stableId, foundModulePath, moduleId);
                   if (process.env.EXPO_DEBUG) {
-                    console.log('[RSC-SERIALIZER] Added boundary from graph:', stableId, '->', moduleId);
+                    console.log(
+                      '[RSC-SERIALIZER] Added boundary from graph:',
+                      stableId,
+                      '->',
+                      moduleId
+                    );
                   }
                 }
               } else if (process.env.EXPO_DEBUG) {
                 // Not in graph - will be handled by runtime chunk loading
-                console.log('[RSC-SERIALIZER] Boundary not in graph (will use chunk loading):', boundaryPath);
+                console.log(
+                  '[RSC-SERIALIZER] Boundary not in graph (will use chunk loading):',
+                  boundaryPath
+                );
               }
             }
           } catch (e) {
