@@ -51,7 +51,6 @@ export function createServerComponentsMiddleware(
     ssrLoadModule,
     ssrLoadModuleArtifacts,
     useClientRouter,
-    createModuleId,
     routerOptions,
     clientBoundaries,
   }: {
@@ -60,10 +59,6 @@ export function createServerComponentsMiddleware(
     ssrLoadModule: SSRLoadModuleFunc;
     ssrLoadModuleArtifacts: SSRLoadModuleArtifactsFunc;
     useClientRouter: boolean;
-    createModuleId: (
-      filePath: string,
-      context: { platform: string; environment: string }
-    ) => string | number;
     routerOptions: Record<string, any>;
     /** Pre-scanned client boundaries for dev mode (files with "use client" directive) */
     clientBoundaries?: string[];
@@ -213,22 +208,21 @@ export function createServerComponentsMiddleware(
         : './' + toPosixPath(path.relative(projectRoot, entryPoint));
 
       // For server action manifests, the module ID must match what the server bundle uses.
-      // - For stable IDs: use stableIdToModuleId mapping from serializer
-      // - For file paths: use createModuleId
+      // All RSC references now use stable IDs (resolved by the serializer).
       const stableIdToModuleId = jsArtifact.metadata.stableIdToModuleId ?? {};
-      let moduleId: string | number;
-      if (isStableId) {
-        if (entryPoint in stableIdToModuleId) {
-          moduleId = stableIdToModuleId[entryPoint];
-        } else {
-          throw new Error(
-            `Cannot find module ID for stable ID "${entryPoint}". ` +
-              `Available mappings: ${Object.keys(stableIdToModuleId).join(', ') || '(none)'}`
-          );
-        }
-      } else {
-        moduleId = createModuleId(entryPoint, { platform, environment: 'react-server' });
+      if (!isStableId) {
+        throw new Error(
+          `Expected stable ID but got file path "${entryPoint}". ` +
+            `All RSC references should be stable IDs after serialization.`
+        );
       }
+      if (!(entryPoint in stableIdToModuleId)) {
+        throw new Error(
+          `Cannot find module ID for stable ID "${entryPoint}". ` +
+            `Available mappings: ${Object.keys(stableIdToModuleId).join(', ') || '(none)'}`
+        );
+      }
+      const moduleId = stableIdToModuleId[entryPoint];
 
       // Import relative to `dist/server/_expo/rsc/web/router.js`
       manifest[publicModuleId] = [String(moduleId), outputName];
@@ -488,11 +482,14 @@ export function createServerComponentsMiddleware(
       // Return relative URLs to help Android fetch from wherever it was loaded from since it doesn't support localhost.
       const chunkName = clientReferenceUrl.pathname + clientReferenceUrl.search;
 
-      // For stable IDs, use the stable ID as the module ID
-      // For file paths, compute from file path
-      const moduleId = isStableId
-        ? file
-        : createModuleId(filePath, { platform: context.platform, environment });
+      // All RSC references now use stable IDs (resolved by the serializer)
+      if (!isStableId) {
+        throw new Error(
+          `Expected stable ID but got file path "${file}". ` +
+            `All RSC references should be stable IDs.`
+        );
+      }
+      const moduleId = file;
 
       return {
         id: String(moduleId),

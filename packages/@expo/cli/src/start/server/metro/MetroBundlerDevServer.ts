@@ -1297,7 +1297,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           ssrLoadModule: this.ssrLoadModule.bind(this),
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
           useClientRouter: isReactServerActionsOnlyEnabled,
-          createModuleId: metro._createModuleId.bind(metro),
           routerOptions,
           clientBoundaries,
         });
@@ -1356,7 +1355,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           ssrLoadModule: this.ssrLoadModule.bind(this),
           ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
           useClientRouter: isReactServerActionsOnlyEnabled,
-          createModuleId: metro._createModuleId.bind(metro),
           routerOptions,
           clientBoundaries,
         });
