@@ -88,16 +88,29 @@ async function transform(config, projectRoot, filename, data, options) {
             // Inject client boundaries into the root client bundle for production bundling.
             if (clientBoundaries) {
                 debug('Parsed client boundaries:', clientBoundaries);
-                // Inject source
-                const src = 'module.exports = {\n' +
-                    clientBoundaries
-                        .map((boundary) => {
-                        const serializedBoundary = JSON.stringify(boundary);
-                        return `[\`$\{require.resolveWeak(${serializedBoundary})}\`]: /* ${boundary} */ () => import(${serializedBoundary}),`;
-                    })
-                        .join('\n') +
-                    '\n};';
-                return worker.transform(config, projectRoot, filename, Buffer.from('/* RSC client boundaries */\n' + src), options);
+                // Generate require() calls to ensure boundaries are in the Metro dependency graph.
+                // Without these, boundary modules discovered via metadata won't be bundled.
+                // Convert relative stable IDs (./path or ./../../path) to absolute paths for Metro resolution.
+                const { resolve } = require('path');
+                const requireStatements = clientBoundaries
+                    .map((boundary, i) => {
+                    // Stable IDs starting with ./ are relative to project root - resolve to absolute path
+                    const requirePath = boundary.startsWith('./')
+                        ? resolve(projectRoot, boundary)
+                        : boundary;
+                    return `var _b${i} = require(${JSON.stringify(requirePath)});`;
+                })
+                    .join('\n');
+                // Generate a placeholder that the serializer will replace with actual module references.
+                // This avoids path resolution issues since the serializer has access to the module ID mapping.
+                // The serializer will replace __RSC_BOUNDARIES_PLACEHOLDER__ with the actual module map.
+                const src = `/* RSC client boundaries - placeholder for serializer */
+${requireStatements}
+module.exports = {
+  __RSC_BOUNDARIES_PLACEHOLDER__: true,
+  __BOUNDARY_IDS__: ${JSON.stringify(clientBoundaries)}
+};`;
+                return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
             }
         }
     }

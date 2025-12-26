@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Add RSC module map lookup in runtime for stable ID resolution ([#41823](https://github.com/expo/expo/pull/41823) by [@kimchi-developer](https://github.com/kimchi-developer))
+
 ### 💡 Others
 
 ### ⚠️ Notices
