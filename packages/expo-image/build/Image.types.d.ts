@@ -153,6 +153,17 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
      */
     priority?: 'low' | 'normal' | 'high' | null;
     /**
+     * Sets the HTML [`loading`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img#loading) attribute on the `<img>` element.
+     * Has no effect on native platforms.
+     *
+     * - `'lazy'` - Defers loading until the image is near the viewport.
+     * - `'eager'` - Loads the image immediately.
+     *
+     * @default 'eager'
+     * @platform web
+     */
+    loading?: 'lazy' | 'eager';
+    /**
      * Determines whether to cache the image and where: on the disk, in the memory or both.
      *
      * - `'none'` - Image is not cached at all.
