@@ -214,19 +214,12 @@ export function createServerComponentsMiddleware(
 
       // For server action manifests, the module ID must match what the server bundle uses.
       // - For stable IDs: use stableIdToModuleId mapping from serializer
-      // - For file paths: use createModuleId as before
+      // - For file paths: use createModuleId
       const stableIdToModuleId = jsArtifact.metadata.stableIdToModuleId ?? {};
-      const stableIdToFilePath = jsArtifact.metadata.reactClientReferenceMap ?? {};
       let moduleId: string | number;
       if (isStableId) {
-        // Prefer direct lookup, fallback to file path + createModuleId
         if (entryPoint in stableIdToModuleId) {
           moduleId = stableIdToModuleId[entryPoint];
-        } else if (entryPoint in stableIdToFilePath) {
-          moduleId = createModuleId(stableIdToFilePath[entryPoint], {
-            platform,
-            environment: 'react-server',
-          });
         } else {
           throw new Error(
             `Cannot find module ID for stable ID "${entryPoint}". ` +
@@ -368,8 +361,8 @@ export function createServerComponentsMiddleware(
   function getResolveClientEntry(context: {
     platform: string;
     engine?: 'hermes' | null;
-    // SSR manifest maps stable ID -> [moduleId, chunk]
-    ssrManifest?: Map<string, [string | number, string | null]>;
+    // SSR manifest maps stable ID -> chunk
+    ssrManifest?: Map<string, string | null>;
   }): (
     file: string,
     isServer: boolean
@@ -425,13 +418,11 @@ export function createServerComponentsMiddleware(
           `SSR manifest is missing client boundary "${manifestKey}"`
         );
 
-        // SSR manifest entry is [moduleId, chunk]
-        // The moduleId is for runtime require(), but the RSC payload needs stable IDs
-        const entry = context.ssrManifest.get(manifestKey)!;
-        const [, chunk] = entry;
+        // SSR manifest entry is just the chunk (or null)
+        const chunk = context.ssrManifest.get(manifestKey)!;
 
         return {
-          id: manifestKey, // Use stable ID for RSC payload, not file path
+          id: manifestKey,
           chunks: chunk != null ? [chunk] : [],
         };
       }
@@ -581,8 +572,8 @@ export function createServerComponentsMiddleware(
       body?: ReadableStream<Uint8Array>;
       engine?: 'hermes' | null;
       contentType?: string;
-      // SSR manifest maps stable ID -> [moduleId, chunk]
-      ssrManifest?: Map<string, [string | number, string | null]>;
+      // SSR manifest maps stable ID -> chunk
+      ssrManifest?: Map<string, string | null>;
       decodedBody?: unknown;
       routerOptions: Record<string, any>;
     },
@@ -648,8 +639,8 @@ export function createServerComponentsMiddleware(
         routerOptions,
       }: {
         platform: string;
-        // SSR manifest maps stable ID -> [moduleId, chunk]
-        ssrManifest: Map<string, [string | number, string | null]>;
+        // SSR manifest maps stable ID -> chunk
+        ssrManifest: Map<string, string | null>;
         routerOptions: Record<string, any>;
       },
       files: ExportAssetMap

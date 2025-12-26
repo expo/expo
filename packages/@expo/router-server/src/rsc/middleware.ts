@@ -59,14 +59,10 @@ function getSSRManifest(
   _distFolder: string,
   platform: string
 ): Record<
-  // Input ID
+  // Stable ID (e.g., "pkg/client", "./src/Button.js")
   string,
-  [
-    // Metro ID
-    string,
-    // Chunk location.
-    string,
-  ]
+  // Chunk filename or null
+  string | null
 > {
   const filePath = `../../rsc/${platform}/ssr-manifest.js`;
   return serverRequire(filePath);
@@ -131,11 +127,10 @@ export async function renderRscWithImportsAsync(
           throw new Error(`Could not find file in SSR manifest: ${file}`);
         }
 
-        // SSR manifest maps stable ID -> [moduleId, chunk]
-        // The moduleId is for runtime require(), but RSC payload needs stable IDs
-        const [, chunk] = ssrManifest[file];
+        // SSR manifest maps stable ID -> chunk (simple format)
+        const chunk = ssrManifest[file];
         return {
-          id: file, // Use stable ID (the manifest key), not the stored moduleId
+          id: file,
           chunks: chunk ? [chunk] : [],
         };
       },

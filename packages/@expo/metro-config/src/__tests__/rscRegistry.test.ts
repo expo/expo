@@ -13,6 +13,8 @@
  * @see https://github.com/expo/expo/pull/41823#issuecomment-3689889651
  */
 
+import * as path from 'path';
+
 import {
   captureSpecifier,
   clearRegistry,
@@ -391,6 +393,106 @@ describe('rscRegistry', () => {
 
       const result = getStableId(resolvedPath, projectRoot);
       expect(result.stableId).toBe('@expo/vector-icons/build/Ionicons');
+    });
+  });
+
+  // ============================================================================
+  // Exports Field Reverse Lookup (NEW)
+  // ============================================================================
+  describe('Exports field reverse lookup', () => {
+    // Note: These tests document expected behavior.
+    // Actual file system tests require integration test setup.
+
+    it('uses captured specifier over exports lookup', () => {
+      // When a specifier is captured during resolution, it should take priority
+      const projectRoot = '/project';
+      const resolvedPath = '/project/node_modules/my-pkg/dist/client/index.js';
+
+      // Captured specifier from actual import
+      captureSpecifier(resolvedPath, 'my-pkg/client');
+
+      const result = getStableId(resolvedPath, projectRoot);
+      expect(result.stableId).toBe('my-pkg/client');
+      expect(result.source).toBe('capture');
+    });
+
+    it('documents exports lookup priority', () => {
+      // Expected behavior when exports field is present:
+      //
+      // 1. Captured specifier (highest priority)
+      // 2. Exports field reverse lookup
+      // 3. Computed from package boundary (fallback)
+      //
+      // Example with package.json:
+      // {
+      //   "name": "my-pkg",
+      //   "exports": {
+      //     ".": "./dist/index.js",
+      //     "./client": "./dist/client/index.js"
+      //   }
+      // }
+      //
+      // Given file: /node_modules/my-pkg/dist/client/index.js
+      // Expected ID: "my-pkg/client" (from exports reverse lookup)
+      // NOT: "my-pkg/dist/client/index" (computed fallback)
+    });
+
+    it('documents conditional exports handling', () => {
+      // Expected behavior with conditional exports:
+      //
+      // {
+      //   "exports": {
+      //     ".": {
+      //       "import": "./esm/index.mjs",
+      //       "require": "./cjs/index.cjs"
+      //     }
+      //   }
+      // }
+      //
+      // Both ./esm/index.mjs and ./cjs/index.cjs should resolve to "my-pkg"
+      // The exports reverse lookup processes all conditions
+    });
+
+    it('documents fallback for files not in exports', () => {
+      // When a file is NOT in the exports field:
+      //
+      // Package with exports: { ".": "./dist/index.js" }
+      // File: /node_modules/my-pkg/dist/internal/helper.js (not exported)
+      //
+      // Expected ID: "my-pkg/dist/internal/helper" (computed fallback)
+      // Source: "computed"
+    });
+  });
+
+  // ============================================================================
+  // Real-World Exports Scenarios (Documentation)
+  // ============================================================================
+  describe('Real-world exports scenarios', () => {
+    it('documents expo-router style resolution', () => {
+      // expo-router exports:
+      // {
+      //   ".": "./build/index.js",
+      //   "./build/rsc/router/host": "./build/rsc/router/host.js"
+      // }
+      //
+      // File: /node_modules/expo-router/build/rsc/router/host.js
+      // Expected ID: "expo-router/build/rsc/router/host" (from exports)
+      //
+      // This is what we expect after the exports lookup improvement
+    });
+
+    it('documents react-native-safe-area-context style resolution', () => {
+      // react-native-safe-area-context exports:
+      // {
+      //   ".": {
+      //     "import": "./lib/module/index.js",
+      //     "require": "./lib/commonjs/index.js"
+      //   }
+      // }
+      //
+      // File: /node_modules/react-native-safe-area-context/lib/module/index.js
+      // Expected ID: "react-native-safe-area-context" (from exports)
+      // NOT: "react-native-safe-area-context/lib/module/index" (computed)
     });
   });
 });

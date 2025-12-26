@@ -7,9 +7,15 @@
  * 1. Bare specifiers (pkg, @scope/pkg) - captured directly
  * 2. Relative imports within packages - canonical specifier computed from context
  * 3. Collision detection - auto-adds version suffix when same ID maps to different files
+ * 4. **Exports reverse lookup** - maps resolved file paths back to export specifiers
  *
  * **Package detection uses package.json boundaries, NOT path heuristics.**
  * This works correctly with pnpm, yarn, npm, and monorepo workspace packages.
+ *
+ * **Specifier resolution priority:**
+ * 1. Captured import specifier (from Metro resolution)
+ * 2. Exports field reverse lookup (file path → export specifier)
+ * 3. Computed from package boundary (fallback)
  */
 interface PackageInfo {
     name: string;
@@ -48,13 +54,14 @@ export declare function clearRegistry(): void;
  * NO path heuristics like "/node_modules/" are used.
  *
  * Priority:
- * 1. Captured specifier from registry (highest priority)
- * 2. Computed from package.json boundary (for package modules)
- * 3. Relative path from project root (for app-level files)
+ * 1. Captured specifier from registry (highest priority - actual import specifier)
+ * 2. Exports field reverse lookup (file path → export specifier)
+ * 3. Computed from package.json boundary (fallback for packages without exports)
+ * 4. Relative path from project root (for app-level files)
  */
 export declare function getStableId(resolvedPath: string, projectRoot: string): {
     stableId: string;
-    source: 'capture' | 'computed' | 'relative';
+    source: 'capture' | 'exports' | 'computed' | 'relative';
 };
 /**
  * Debug: dump registry contents.

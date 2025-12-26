@@ -1536,7 +1536,7 @@ describe('serializes', () => {
         reactClientReferenceMap: { './other.js': '/app/other.js' },
         reactServerReferences: [],
         requires: [],
-        stableIdToModuleId: {},
+        stableIdToModuleId: { './other.js': '/app/other.js' },
       });
 
       expect(artifacts[0].source).toMatchInlineSnapshot(`
@@ -1599,7 +1599,10 @@ describe('serializes', () => {
         reactClientReferenceMap: { './other.js': '/app/other.js', './second.js': '/app/second.js' },
         reactServerReferences: [],
         requires: [],
-        stableIdToModuleId: {},
+        stableIdToModuleId: {
+          './other.js': '/app/other.js',
+          './second.js': '/app/second.js',
+        },
       });
     });
   });
@@ -1632,7 +1635,9 @@ describe('serializes', () => {
         reactClientReferenceMap: {},
         reactServerReferences: ['./server-actions.js'],
         requires: [],
-        stableIdToModuleId: {},
+        stableIdToModuleId: {
+          './server-actions.js': '/app/server-actions.js',
+        },
       });
     });
     it(`collects server references from server action functions when bundling in react-server mode`, async () => {
@@ -1672,7 +1677,10 @@ describe('serializes', () => {
           './server-actions.js',
         ],
         requires: [],
-        stableIdToModuleId: {},
+        stableIdToModuleId: {
+          './index.js': '/app/index.js',
+          './server-actions.js': '/app/server-actions.js',
+        },
       });
     });
   });

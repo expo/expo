@@ -106,8 +106,8 @@ describe('use server', () => {
     expect(res.code).toMatchInlineSnapshot(`
       "import { createServerReference } from 'react-server-dom-webpack/client';
       import { callServerRSC } from 'expo-router/rsc/internal';
-      export var greet = createServerReference("./unknown#greet", callServerRSC);
-      export default createServerReference("./unknown#default", callServerRSC);"
+      export var greet = createServerReference("__RSC_DEFERRED__:/unknown#greet", callServerRSC);
+      export default createServerReference("__RSC_DEFERRED__:/unknown#default", callServerRSC);"
     `);
   });
   it(`asserts when using re-export for server function references`, () => {
@@ -189,14 +189,14 @@ describe('use client', () => {
     const res = transformReactServer(sourceCode);
     expect(res.metadata.proxyExports).toEqual(['foo', 'default']);
     expect(res.code).toMatchInlineSnapshot(`
-      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("__RSC_DEFERRED__:/unknown");
       module.exports = proxy;
       export const foo = require("react-server-dom-webpack/server").registerClientReference(function () {
         throw new Error("Attempted to call foo() of /unknown from the server but foo is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
-      }, "./unknown", "foo");
+      }, "__RSC_DEFERRED__:/unknown", "foo");
       export default require("react-server-dom-webpack/server").registerClientReference(function () {
         throw new Error("Attempted to call the default export of /unknown from the server but it's on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
-      }, "./unknown", "default");"
+      }, "__RSC_DEFERRED__:/unknown", "default");"
     `);
   });
 
@@ -207,11 +207,11 @@ describe('use client', () => {
     `);
     expect(res.metadata.proxyExports).toEqual(['default']);
     expect(res.code).toMatchInlineSnapshot(`
-      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("__RSC_DEFERRED__:/unknown");
       module.exports = proxy;
       export default require("react-server-dom-webpack/server").registerClientReference(function () {
         throw new Error("Attempted to call the default export of /unknown from the server but it's on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
-      }, "./unknown", "default");"
+      }, "__RSC_DEFERRED__:/unknown", "default");"
     `);
   });
 
@@ -222,11 +222,11 @@ describe('use client', () => {
     `);
     expect(res.metadata.proxyExports).toEqual(['Pattern']);
     expect(res.code).toMatchInlineSnapshot(`
-      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("__RSC_DEFERRED__:/unknown");
       module.exports = proxy;
       export const Pattern = require("react-server-dom-webpack/server").registerClientReference(function () {
         throw new Error("Attempted to call Pattern() of /unknown from the server but Pattern is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
-      }, "./unknown", "Pattern");"
+      }, "__RSC_DEFERRED__:/unknown", "Pattern");"
     `);
   });
 
@@ -264,14 +264,14 @@ export default Svg;
     `);
     expect(res.metadata.proxyExports).toEqual(['Pattern', 'default']);
     expect(res.code).toMatchInlineSnapshot(`
-      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("__RSC_DEFERRED__:/unknown");
       module.exports = proxy;
       export const Pattern = require("react-server-dom-webpack/server").registerClientReference(function () {
         throw new Error("Attempted to call Pattern() of /unknown from the server but Pattern is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
-      }, "./unknown", "Pattern");
+      }, "__RSC_DEFERRED__:/unknown", "Pattern");
       export default require("react-server-dom-webpack/server").registerClientReference(function () {
         throw new Error("Attempted to call the default export of /unknown from the server but it's on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
-      }, "./unknown", "default");"
+      }, "__RSC_DEFERRED__:/unknown", "default");"
     `);
   });
 
@@ -282,7 +282,7 @@ export default Svg;
     `);
     expect(res.metadata.proxyExports).toEqual([]);
     expect(res.code).toMatchInlineSnapshot(`
-      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("__RSC_DEFERRED__:/unknown");
       module.exports = proxy;"
     `);
   });
@@ -294,11 +294,11 @@ export default Svg;
     `);
     expect(res.metadata.proxyExports).toEqual(['Namespace']);
     expect(res.code).toMatchInlineSnapshot(`
-      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("__RSC_DEFERRED__:/unknown");
       module.exports = proxy;
       export const Namespace = require("react-server-dom-webpack/server").registerClientReference(function () {
         throw new Error("Attempted to call Namespace() of /unknown from the server but Namespace is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
-      }, "./unknown", "Namespace");"
+      }, "__RSC_DEFERRED__:/unknown", "Namespace");"
     `);
   });
 
@@ -315,11 +315,11 @@ export default Svg;
     `);
     expect(res.metadata.proxyExports).toEqual(['foo']);
     expect(res.code).toMatchInlineSnapshot(`
-      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("__RSC_DEFERRED__:/unknown");
       module.exports = proxy;
       export const foo = require("react-server-dom-webpack/server").registerClientReference(function () {
         throw new Error("Attempted to call foo() of /unknown from the server but foo is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
-      }, "./unknown", "foo");"
+      }, "__RSC_DEFERRED__:/unknown", "foo");"
     `);
   });
 
@@ -342,7 +342,13 @@ export default Svg;
     `;
 
     const contents = babel.transform(sourceCode, options);
-    expect(contents?.metadata).toEqual({ hasCjsExports: false, publicEnvVars: [] });
+    // Metadata now includes reactClientReference even for client bundling
+    // (needed by serializer to build module map), but code is NOT transformed
+    expect(contents?.metadata).toEqual({
+      hasCjsExports: false,
+      publicEnvVars: [],
+      reactClientReference: '__RSC_DEFERRED__:/unknown',
+    });
 
     expect(contents?.code).not.toMatch('react-server-dom-webpack');
   });
@@ -360,11 +366,11 @@ export default Svg;
     `);
     expect(res.metadata.proxyExports).toEqual(['foo']);
     expect(res.code).toMatchInlineSnapshot(`
-      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("./unknown");
+      "const proxy = require("react-server-dom-webpack/server").createClientModuleProxy("__RSC_DEFERRED__:/unknown");
       module.exports = proxy;
       export const foo = require("react-server-dom-webpack/server").registerClientReference(function () {
         throw new Error("Attempted to call foo() of /unknown from the server but foo is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
-      }, "./unknown", "foo");"
+      }, "__RSC_DEFERRED__:/unknown", "foo");"
     `);
   });
 });
