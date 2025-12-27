@@ -35,6 +35,7 @@ export default function DocumentationPage({
   title,
   description,
   packageName,
+  cliVersion,
   sourceCodeUrl,
   iconUrl,
   children,
@@ -349,6 +350,7 @@ export default function DocumentationPage({
             <PageHeader
               title={title}
               description={description}
+              cliVersion={cliVersion}
               sourceCodeUrl={sourceCodeUrl}
               packageName={packageName}
               iconUrl={iconUrl}
