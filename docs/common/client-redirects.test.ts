@@ -1,4 +1,4 @@
-import { getRedirectPath } from './error-utilities';
+import { getRedirectPath } from './client-redirects';
 
 test('redirects old building-standalone-apps paths versioned path', () => {
   const redirectPath = '/versions/latest/distribution/building-standalone-apps/';
@@ -11,7 +11,7 @@ test('redirects old building-standalone-apps paths versioned path', () => {
 });
 
 test('redirects version vX.0.0 renamed path', () => {
-  const redirectPath = '/versions/v32.0.0/guides/push-notifications/';
+  const redirectPath = '/versions/v50.0.0/guides/push-notifications/';
   const newPath = getRedirectPath(redirectPath);
 
   expect(newPath).toEqual('/push-notifications/overview/');
@@ -53,7 +53,7 @@ test('adds forward slash to end of path', () => {
 });
 
 test('redirects old versions to latest', () => {
-  const redirectPath = '/versions/v32.0.0/sdk/camera/';
+  const redirectPath = '/versions/v50.0.0/sdk/camera/';
   const newPath = getRedirectPath(redirectPath);
 
   expect(newPath).toEqual('/versions/latest/sdk/camera/');
