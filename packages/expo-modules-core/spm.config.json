@@ -1,0 +1,111 @@
+{
+    "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "products": [
+        {
+            "name": "ExpoModulesCore",
+            "platforms": [
+                "iOS(.v15)"
+            ],
+            "externalDependencies": [
+                "ReactNativeDependencies",
+                "React",
+                "Hermes"
+            ],
+            "swiftLanguageVersions": [ "6.0" ],
+            "targets": [
+                {
+                    "type": "cpp",
+                    "name": "ExpoModulesJSI_common_cpp",
+                    "moduleName": "ExpoModulesJSI",
+                    "path": "common/cpp/JSI",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "includeDirectories": [ "." ]
+                },
+                {
+                    "type": "objc",
+                    "name": "ExpoModulesJSI_ios_objc",
+                    "moduleName": "ExpoModulesJSI",
+                    "path": "ios/JSI",
+                    "pattern": "**/*.{m,mm,cpp}",
+                    "headerPattern": "**/*.h",
+                    "exclude": [ "Tests/**", "swift/**" ],
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "ExpoModulesJSI_common_cpp"
+                    ],
+                    "linkedFrameworks": [ "Foundation" ],
+                    "includeDirectories": [ "." ]
+                },
+                {
+                    "type": "cpp",
+                    "name": "ExpoModulesCore_common_cpp",
+                    "path": "common/cpp",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "exclude": [ "JSI/**" ],
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "ExpoModulesJSI_common_cpp"
+                    ],
+                    "includeDirectories": [ "." ]
+                },
+                {
+                    "type": "objc",
+                    "name": "ExpoModulesCore_ios_objc",
+                    "path": "ios",
+                    "pattern": "**/*.{m,mm}",
+                    "headerPattern": "**/*.h",
+                    "exclude": [ "JSI/**", "Tests/**", "BridgeModule/**", "Views/**" ],
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "ExpoModulesCore_common_cpp",
+                        "ExpoModulesJSI_ios_objc"
+                    ],
+                    "linkedFrameworks": [
+                        "Foundation",
+                        "UserNotifications",
+                        "AVKit",
+                        "AVFoundation",
+                        "UIKit"
+                    ],
+                    "includeDirectories": [ "." ]
+                },
+                {
+                    "type": "swift",
+                    "name": "ExpoModulesCore",
+                    "path": "ios",
+                    "pattern": "**/*.swift",
+                    "exclude": [ "JSI/**", "Tests/**", "BridgeModule/**", "Views/**" ],
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "ExpoModulesJSI_common_cpp",
+                        "ExpoModulesJSI_ios_objc",
+                        "ExpoModulesCore_common_cpp",
+                        "ExpoModulesCore_ios_objc"
+                    ],
+                    "linkedFrameworks": [
+                        "Foundation",
+                        "UIKit",
+                        "Combine",
+                        "CoreGraphics",
+                        "CoreMedia",
+                        "SwiftUI"
+                    ]
+                }
+            ]
+        }
+    ]
+}

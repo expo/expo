@@ -1,16 +1,10 @@
 import { Command } from '@expo/commander';
 import chalk from 'chalk';
-import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import os from 'os';
 import path from 'path';
 
-import { Podspec, readPodspecAsync } from '../CocoaPods';
-import {
-  buildFrameworksForProjectAsync,
-  cleanTemporaryFilesAsync,
-  generateXcodeProjectSpecFromPodspecAsync,
-} from '../prebuilds/Prebuilder';
+import { readPodspecAsync } from '../CocoaPods';
 import {
   Append,
   Clone,
@@ -458,26 +452,36 @@ async function action({ configuration, platform, onlyPrebuild }: ActionOptions) 
   const tmpdir = os.tmpdir();
   for (const { name, config } of configurations) {
     console.log(`Run configuration: ${chalk.green(name)}`);
-    const { transformations, prebuild } = config;
+    const { transformations } = config;
     if (!onlyPrebuild) {
       transformations.setWorkingDirectory(path.join(tmpdir, name));
       await transformations.start(platform);
       console.log();
     }
-
-    if (prebuild) {
-      const { podspecPath, output } = prebuild;
-      console.log('🏗 Prebuilding ...');
-
-      const podspec = JSON.parse(await fs.readFile(toRepoPath(podspecPath), 'utf8')) as Podspec;
-      const xcodeProject = await generateXcodeProjectSpecFromPodspecAsync(
-        podspec,
-        toRepoPath(output)
+    if (onlyPrebuild && !config.prebuild) {
+      console.log(
+        chalk.yellow(
+          `⚠️  Skipping prebuild for ${name} configuration as it does not define prebuild step.`
+        )
       );
-      await buildFrameworksForProjectAsync(xcodeProject);
-      await cleanTemporaryFilesAsync(xcodeProject);
       console.log();
+      continue;
     }
+    // We don't support prebuilding when vendoring modules.
+
+    // if (prebuild) {
+    //   const { podspecPath, output } = prebuild;
+    //   console.log('🏗 Prebuilding ...');
+
+    //   const podspec = JSON.parse(await fs.readFile(toRepoPath(podspecPath), 'utf8')) as Podspec;
+    //   const xcodeProject = await generateXcodeProjectSpecFromPodspecAsync(
+    //     podspec,
+    //     toRepoPath(output)
+    //   );
+    //   await buildFrameworksForProjectAsync(xcodeProject);
+    //   await cleanTemporaryFilesAsync(xcodeProject);
+    //   console.log();
+    // }
   }
 }
 
