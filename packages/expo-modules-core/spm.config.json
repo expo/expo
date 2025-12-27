@@ -64,7 +64,7 @@
                     "path": "ios",
                     "pattern": "**/*.{m,mm}",
                     "headerPattern": "**/*.h",
-                    "exclude": [ "JSI/**", "Tests/**", "BridgeModule/**", "Views/**" ],
+                    "exclude": [ "JSI/**", "Tests/**" ],
                     "dependencies": [
                         "Hermes",
                         "React",
