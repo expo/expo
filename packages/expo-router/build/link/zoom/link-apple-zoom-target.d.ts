@@ -1,3 +1,3 @@
 import { type PropsWithChildren } from 'react';
-export declare function LinkAppleZoomTarget({ children }: PropsWithChildren): string | number | bigint | boolean | Iterable<import("react").ReactNode> | Promise<string | number | bigint | boolean | import("react").ReactPortal | import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>> | Iterable<import("react").ReactNode> | null | undefined> | import("react").JSX.Element | null | undefined;
+export declare function LinkAppleZoomTarget({ children }: PropsWithChildren): string | number | bigint | boolean | import("react").JSX.Element | Iterable<import("react").ReactNode> | Promise<string | number | bigint | boolean | import("react").ReactPortal | import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>> | Iterable<import("react").ReactNode> | null | undefined> | null | undefined;
 //# sourceMappingURL=link-apple-zoom-target.d.ts.map

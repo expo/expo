@@ -40,7 +40,7 @@ export interface LinkMenuActionProps {
     isOn?: boolean;
     onPress?: () => void;
     /**
-     * An optional subtitle for the menu item.
+     * An optional subtitle for the menu item. Does not appear on `inline` menus.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/subtitle) for more information.
      */
@@ -74,6 +74,12 @@ export interface LinkMenuProps {
      * The title of the menu item
      */
     title?: string;
+    /**
+     * An optional subtitle for the submenu.
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/subtitle) for more information.
+     */
+    subtitle?: string;
     /**
      * Optional SF Symbol displayed alongside the menu item.
      */
@@ -213,5 +219,5 @@ export interface LinkTriggerProps extends PropsWithChildren {
  *
  * @platform ios
  */
-export declare function LinkTrigger({ withAppleZoom, ...props }: LinkTriggerProps): string | number | bigint | boolean | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | React.JSX.Element | null | undefined;
+export declare function LinkTrigger({ withAppleZoom, ...props }: LinkTriggerProps): string | number | bigint | boolean | React.JSX.Element | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined;
 //# sourceMappingURL=elements.d.ts.map

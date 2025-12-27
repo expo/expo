@@ -1,4 +1,4 @@
-export declare const BottomAccessoryPlacementContext: import("react").Context<"regular" | "inline" | undefined>;
+export declare const BottomAccessoryPlacementContext: import("react").Context<"inline" | "regular" | undefined>;
 /**
  * A hook which returns the bottom accessory environment for given component.
  *
