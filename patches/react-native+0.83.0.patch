@@ -1,0 +1,4618 @@
+diff --git a/node_modules/react-native/Package.swift b/node_modules/react-native/Package.swift
+new file mode 100644
+index 0000000..8653c05
+--- /dev/null
++++ b/node_modules/react-native/Package.swift
+@@ -0,0 +1,939 @@
++// swift-tools-version: 6.0
++/*
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ */
++
++import Foundation
++import PackageDescription
++
++let BUILD_FROM_SOURCE = false
++
++/**
++ This is the `Package.swift` file that allows to build React Native core using Swift PM.
++ To build React Native, you need to follow these steps:
++ 1. inside the `react-native` root folder, run `yarn install`
++ 2. `cd packages/react-native`
++ 3. `RN_DEP_VERSION=nightly HERMES_VERSION=nightly node scripts/ios-prebuild`
++ 4. `open Package.swift`
++ 5. Build in Xcode.
++
++ The Package.swift is structured as it follow:
++ - Constants declaration
++ - Prebuilt dependencies: we define the prebuilt React Native depends upon - Hermes and ReactNativeDependencies
++ - Target definition: we define all the sub targets that compose React Native
++     - For each target, we added the equivalent podspec they represents. This should help you porting changes from podspec to SwiftPM
++ - The list of all the target: so we can iterate over them.
++ - The package definition: this is the actual definition of React
++ - A set of utility classes that help us to abstract common details.
++ */
++
++// MARK: Constants declaration
++let react = "React"
++let RuntimeExecutorPath = "ReactCommon/runtimeexecutor" // header only target
++let CallInvokerPath = "ReactCommon/callinvoker" // header only target
++let ReactFBReactNativeSpecPath = "React/FBReactNativeSpec" // generated
++let FBLazyVectorPath = "Libraries/FBLazyVector" // header only
++let virtualViewPath = "ReactCommon/react/renderer/components/virtualview" // header only
++let virtualViewExperimentalPath = "ReactCommon/react/renderer/components/virtualviewexperimental" // header only
++
++// MARK: Prebuilt Dependencies declaration
++let reactNativeDependencies = BinaryTarget(
++  name: .reactNativeDependencies,
++  path: "third-party/ReactNativeDependencies.xcframework",
++  searchPaths: ["third-party/ReactNativeDependencies.xcframework/Headers"]
++)
++
++let hermesPrebuilt = BinaryTarget(
++  name: .hermesPrebuilt,
++  path: ".build/artifacts/hermes/destroot/Library/Frameworks/universal/hermesvm.xcframework",
++  searchPaths: [".build/artifacts/hermes/destroot/include"]
++)
++
++// MARK: React Native targets declaration
++/// RCTDeprecation.podspec
++let rctDeprecation = RNTarget(
++  name: .rctDeprecation,
++  path: "ReactApple/Libraries/RCTFoundation/RCTDeprecation"
++)
++
++// To avoid having to delete the cmake folder at the same level we provide a "wrong" public header path and instead include it using header search paths.
++/// Yoga.podspec
++let yoga = RNTarget(
++  name: .yoga,
++  path: "ReactCommon/yoga",
++  publicHeadersPath: "yoga"
++)
++
++// React-oscompat.podspec
++let reactOSCompat = RNTarget(
++  name: .reactOSCompat,
++  path: "ReactCommon/oscompat"
++)
++
++let rctSwiftUI = RNTarget(
++  name: .rctSwiftUI,
++  path: "ReactApple/RCTSwiftUI"
++)
++
++let rctSwiftUIWrapper = RNTarget(
++  name: .rctSwiftUIWrapper,
++  path: "ReactApple/RCTSwiftUIWrapper",
++  dependencies: [.rctSwiftUI]
++)
++
++// React-rendererconsistency.podspec
++let reactRendererConsistency = RNTarget(
++  name: .reactRendererConsistency,
++  path: "ReactCommon/react/renderer/consistency"
++)
++
++// React-debug.podspec
++let reactDebug = RNTarget(
++  name: .reactDebug,
++  path: "ReactCommon/react/debug",
++  dependencies: [.reactNativeDependencies]
++)
++/// React-jsi.podspec
++let jsi = RNTarget(
++  name: .jsi,
++  path: "ReactCommon/jsi",
++  // JSI is a part of hermes-engine. Including them also in react-native will violate the One Definition Rule.
++  // Precompiled binaries are only supported with hermes - so we can safely exclude the jsi.cpp file.
++  // https://github.com/facebook/react-native/issues/53257
++  excludedPaths: ["jsi/test", "jsi/jsi.cpp", "CMakeLists.txt", "jsi/CMakeLists.txt"],
++  dependencies: [.reactNativeDependencies]
++)
++
++/// React-utils.podspec
++let reactUtils = RNTarget(
++  name: .reactUtils,
++  path: "ReactCommon/react/utils",
++  searchPaths: ["ReactCommon/react/utils/platform/ios"],
++  linkedFrameworks: ["CoreFoundation"],
++  excludedPaths: ["tests", "platform/android", "platform/cxx", "platform/windows"],
++  dependencies: [.reactDebug, .jsi, .reactNativeDependencies]
++)
++
++/// React-featureflags.podspec
++let reactFeatureFlags = RNTarget(
++  name: .reactFeatureFlags,
++  path: "ReactCommon/react/featureflags",
++  excludedPaths: ["tests"]
++)
++
++/// React-perflogger.podspec
++let reactPerfLogger = RNTarget(
++  name: .reactPerfLogger,
++  path: "ReactCommon/reactperflogger",
++  excludedPaths: ["fusebox"]
++)
++
++/// React-logger.podspec
++let logger = RNTarget(
++  name: .logger,
++  path: "ReactCommon/logger",
++  dependencies: [.jsi, .reactNativeDependencies]
++)
++
++/// React-Mapbuffer.podspec
++let mapbuffer = RNTarget(
++  name: .mapbuffer,
++  path: "ReactCommon/react/renderer/mapbuffer",
++  excludedPaths: ["tests"],
++  dependencies: [.reactDebug, .reactNativeDependencies]
++)
++
++/// React-rendererdebug.podspec
++let reactRendererDebug = RNTarget(
++  name: .reactRendererDebug,
++  path: "ReactCommon/react/renderer/debug",
++  excludedPaths: ["tests"],
++  dependencies: [.reactDebug, .reactNativeDependencies]
++)
++
++let reactRuntimeExecutor = RNTarget(
++  name: .reactRuntimeExecutor,
++  path: "ReactCommon/runtimeexecutor/platform/ios",
++  searchPaths: [RuntimeExecutorPath],
++  dependencies: [.jsi]
++)
++
++/// React-jsinspectortracing.podspec
++let reactJsInspectorTracing = RNTarget(
++  name: .reactJsInspectorTracing,
++  path: "ReactCommon/jsinspector-modern/tracing",
++  excludedPaths: ["tests"],
++  dependencies: [.reactNativeDependencies, .reactFeatureFlags, .reactJsInspectorNetwork, .jsi, .reactOSCompat]
++)
++
++/// React-jsinspectornetwork.podspec
++let reactJsInspectorNetwork = RNTarget(
++  name: .reactJsInspectorNetwork,
++  path: "ReactCommon/jsinspector-modern/network",
++  dependencies: [.reactNativeDependencies],
++  defines: [
++    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED", to: "1", .when(configuration: BuildConfiguration.debug)),
++    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY", to: "1", .when(configuration: BuildConfiguration.debug)),
++  ]
++)
++
++/// React-jsinspector.podspec
++let reactJsInspector = RNTarget(
++  name: .reactJsInspector,
++  path: "ReactCommon/jsinspector-modern",
++  excludedPaths: ["tracing", "network", "tests"],
++  dependencies: [.reactNativeDependencies, .reactFeatureFlags, .jsi, .reactJsInspectorTracing, .reactJsInspectorNetwork, .reactRuntimeExecutor, .reactPerfLogger],
++  defines: [
++    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED", to: "1", .when(configuration: BuildConfiguration.debug)),
++    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY", to: "1", .when(configuration: BuildConfiguration.debug)),
++  ]
++)
++
++/// React-cxxreact.podspec
++let reactCxxReact = RNTarget(
++  name: .reactCxxReact,
++  path: "ReactCommon/cxxreact",
++  searchPaths: [CallInvokerPath],
++  excludedPaths: ["tests"],
++  dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .logger, .reactDebug, .reactJsInspector]
++)
++
++/// React-jsitooling.podspec
++let reactJsiTooling = RNTarget(
++  name: .reactJsiTooling,
++  path: "ReactCommon/jsitooling",
++  dependencies: [.reactNativeDependencies, .jsi, .reactJsInspector, .reactJsInspectorTracing, .reactCxxReact]
++)
++
++/// React-jsiexecutor.podspec
++let reactJsiExecutor = RNTarget(
++  name: .reactJsiExecutor,
++  path: "ReactCommon/jsiexecutor",
++  dependencies: [.reactNativeDependencies, .jsi, .reactCxxReact, .reactJsiTooling]
++)
++
++/// React-hermes.podspec
++let reactHermes = RNTarget(
++  name: .reactHermes,
++  path: "ReactCommon/hermes",
++  excludedPaths: ["inspector-modern/chrome/tests"],
++  dependencies: [.reactNativeDependencies, .reactCxxReact, .reactJsiExecutor, .reactJsInspector, .reactJsInspectorTracing, .reactPerfLogger, .hermesPrebuilt, .jsi],
++  defines: [
++    CXXSetting.define("HERMES_ENABLE_DEBUGGER", to: "1", .when(configuration: BuildConfiguration.debug))
++  ]
++)
++
++/// React-networking.podspec
++let reactNetworking = RNTarget(
++  name: .reactNetworking,
++  path: "ReactCommon/react/networking",
++  excludedPaths: ["tests"],
++  dependencies: [.reactNativeDependencies, .reactJsInspectorNetwork, .reactPerformanceTimeline],
++  defines: [
++    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED", to: "1", .when(configuration: BuildConfiguration.debug)),
++    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY", to: "1", .when(configuration: BuildConfiguration.debug)),
++  ]
++)
++
++/// React-performancecdpmetrics.podspec
++let reactPerformanceCdpMetrics = RNTarget(
++  name: .reactPerformanceCdpMetrics,
++  path: "ReactCommon/react/performance/cdpmetrics",
++  excludedPaths: ["tests"],
++  dependencies: [.reactNativeDependencies, .reactCxxReact, .jsi, .reactPerformanceTimeline, .reactRuntimeExecutor]
++)
++
++/// React-performancetimeline.podspec
++let reactPerformanceTimeline = RNTarget(
++  name: .reactPerformanceTimeline,
++  path: "ReactCommon/react/performance/timeline",
++  excludedPaths: ["tests"],
++  dependencies: [.reactNativeDependencies, .reactFeatureFlags, .reactJsInspectorTracing, .reactCxxReact, .reactPerfLogger]
++)
++
++/// React-runtimescheduler.podspec
++let reactRuntimeScheduler = RNTarget(
++  name: .reactRuntimeScheduler,
++  path: "ReactCommon/react/renderer/runtimescheduler",
++  excludedPaths: ["tests"],
++  dependencies: [.reactNativeDependencies, .reactFeatureFlags, .reactCxxReact, .reactPerfLogger, .reactPerformanceTimeline, .reactRendererConsistency, .reactUtils, .reactRuntimeExecutor]
++)
++
++/// ReactCommon.podspec
++/// This target represent the ReactCommon/turbomodule/bridging subspec
++let reactTurboModuleBridging = RNTarget(
++  name: .reactTurboModuleBridging,
++  path: "ReactCommon/react/bridging",
++  excludedPaths: ["tests"],
++  dependencies: [.reactNativeDependencies, .reactPerfLogger, .reactCxxReact, .jsi, .logger]
++)
++
++/// React-jserrorhandler.podspec
++let reactJsErrorHandler = RNTarget(
++  name: .reactJsErrorHandler,
++  path: "ReactCommon/jserrorhandler",
++  excludedPaths: ["tests"],
++  dependencies: [.reactNativeDependencies, .jsi, .reactCxxReact, .reactFeatureFlags, .reactDebug, .reactTurboModuleBridging]
++)
++
++/// React-graphicsApple
++/// This represents the React-graphicsApple BUCK module
++let reactGraphicsApple = RNTarget(
++  name: .reactGraphicsApple,
++  path: "ReactCommon/react/renderer/graphics/platform/ios",
++  linkedFrameworks: ["UIKit", "CoreGraphics"],
++  dependencies: [.reactDebug, .jsi, .reactUtils, .reactNativeDependencies]
++)
++
++/// React-graphics.podspec
++let reactGraphics = RNTarget(
++  name: .reactGraphics,
++  path: "ReactCommon/react/renderer/graphics",
++  excludedPaths: ["platform", "tests"],
++  dependencies: [.reactNativeDependencies, .jsi, .reactJsiExecutor, .reactRendererDebug, .reactUtils, .reactGraphicsApple]
++)
++
++/// ReactCommon.podspec
++/// This target represent the ReactCommon/turbomodule/core subspec
++let reactTurboModuleCore = RNTarget(
++  name: .reactTurboModuleCore,
++  path: "ReactCommon/react/nativemodule/core",
++  searchPaths: [
++    ReactFBReactNativeSpecPath,
++    FBLazyVectorPath,
++    "ReactCommon/react/nativemodule/core/platform/ios",
++  ],
++  excludedPaths: ["platform/android", "iostests"],
++  dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCxxReact, .reactTurboModuleBridging, .yoga, .reactRuntimeExecutor]
++)
++
++/// React-defaultsnativemodule.podspec
++let reactTurboModuleCoreDefaults = RNTarget(
++  name: .reactTurboModuleCoreDefaults,
++  path: "ReactCommon/react/nativemodule/defaults",
++  dependencies: [.reactNativeDependencies, .jsi, .reactJsiExecutor, .reactTurboModuleCore, .reactFabric]
++)
++
++/// React-microtasknativemodule.podspec
++let reactTurboModuleCoreMicrotasks = RNTarget(
++  name: .reactTurboModuleCoreMicrotasks,
++  path: "ReactCommon/react/nativemodule/microtasks",
++  dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCxxReact, .reactTurboModuleCore]
++)
++
++/// React-idlecallback.podspec
++let reactIdleCallbacksNativeModule = RNTarget(
++  name: .reactIdleCallbacksNativeModule,
++  path: "ReactCommon/react/nativemodule/idlecallbacks",
++  dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCxxReact, .reactTurboModuleCore]
++)
++
++/// React-webperformance.podspec
++let reactWebPerformanceNativeModule = RNTarget(
++  name: .reactWebPerformanceNativeModule,
++  path: "ReactCommon/react/nativemodule/webperformance",
++  dependencies: [.reactNativeDependencies, .reactCxxReact, .reactTurboModuleCore, .reactPerformanceTimeline]
++)
++
++/// React-intersectionobservernativemodule.podspec
++let reactIntersectionObserverNativeModule = RNTarget(
++  name: .reactIntersectionObserverNativeModule,
++  path: "ReactCommon/react/nativemodule/intersectionobserver",
++  dependencies: [.reactNativeDependencies, .reactCxxReact, .reactFabric, .reactTurboModuleBridging, .reactTurboModuleCore, .reactGraphics, .reactGraphicsApple, .reactRuntimeScheduler, .yoga]
++)
++
++/// React-featureflagnativemodule.podspec
++let reactFeatureflagsNativemodule = RNTarget(
++  name: .reactFeatureflagsNativemodule,
++  path: "ReactCommon/react/nativemodule/featureflags",
++  dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCxxReact, .reactTurboModuleCore]
++)
++
++/// React-domnativemodule.podspec
++let reactNativeModuleDom = RNTarget(
++  name: .reactNativeModuleDom,
++  path: "ReactCommon/react/nativemodule/dom",
++  dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCxxReact, .reactTurboModuleCore, .yoga, .reactGraphicsApple, .reactFabric]
++)
++
++/// RCTTypeSafety.podspec
++let rctTypesafety = RNTarget(
++  name: .rctTypesafety,
++  path: "Libraries/Typesafety",
++  searchPaths: [FBLazyVectorPath],
++  dependencies: [.reactNativeDependencies, .yoga]
++)
++
++/// New target to map Libraries/WebSocket
++let reactCoreRCTWebsocket = RNTarget(
++  name: .reactCoreRCTWebsocket,
++  path: "Libraries/WebSocket",
++  dependencies: [.yoga, .reactNativeDependencies]
++)
++
++/// React-CoreModules.podspec
++let reactCoreModules = RNTarget(
++  name: .reactCoreModules,
++  path: "React/CoreModules",
++  excludedPaths: ["PlatformStubs/RCTStatusBarManager.mm"],
++  dependencies: [.reactNativeDependencies, .jsi, .yoga, .reactTurboModuleCore]
++)
++
++/// React-runtimeCore.podspec
++/// React-runtimeHermes.podspec
++let reactRuntime = RNTarget(
++  name: .reactRuntime,
++  path: "ReactCommon/react/runtime",
++  excludedPaths: ["tests", "iostests", "platform"],
++  dependencies: [.reactNativeDependencies, .jsi, .reactJsiExecutor, .reactCxxReact, .reactJsErrorHandler, .reactPerformanceTimeline, .reactUtils, .reactFeatureFlags, .reactJsInspector, .reactJsiTooling, .reactHermes, .reactRuntimeScheduler, .hermesPrebuilt],
++  defines: [
++    CXXSetting.define("HERMES_ENABLE_DEBUGGER", to: "1", .when(configuration: BuildConfiguration.debug))
++  ]
++)
++
++/// React-runtimeApple.podspec
++let reactRuntimeApple = RNTarget(
++  name: .reactRuntimeApple,
++  path: "ReactCommon/react/runtime/platform/ios",
++  excludedPaths: ["ReactCommon/RCTJscInstance.mm", "ReactCommon/metainternal"],
++  dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .reactCxxReact, .rctDeprecation, .yoga, .reactRuntime, .reactRCTFabric, .reactCoreModules, .reactTurboModuleCore, .hermesPrebuilt, .reactUtils]
++)
++
++let publicHeadersPathForReactCore: String = BUILD_FROM_SOURCE ? "includes" : "."
++
++/// React-Core.podspec
++let reactCore = RNTarget(
++  name: .reactCore,
++  path: "React",
++  searchPaths: [
++    "React/I18n",
++    "React/Profiler",
++    "ReactCommon/react/runtime/platform/ios", // explicit header search path to break circular dependency. RCTHost imports `RCTDefines.h` in ReactCore, ReacCore needs to import RCTHost
++  ],
++  linkedFrameworks: ["CoreServices"],
++  excludedPaths: ["Fabric", "Tests", "Resources", "Runtime/RCTJscInstanceFactory.mm", "I18n/strings", "CxxBridge/JSCExecutorFactory.mm", "CoreModules"],
++  dependencies: [.reactNativeDependencies, .reactCxxReact, .reactPerfLogger, .jsi, .reactJsiExecutor, .reactUtils, .reactFeatureFlags, .reactRuntimeScheduler, .yoga, .reactJsInspector, .reactJsiTooling, .rctDeprecation, .reactCoreRCTWebsocket, .reactRCTImage, .reactTurboModuleCore, .reactRCTText, .reactRCTBlob, .reactRCTAnimation, .reactRCTNetwork, .reactFabric, .hermesPrebuilt],
++  sources: [".", "Runtime/RCTHermesInstanceFactory.mm"],
++  publicHeadersPath: publicHeadersPathForReactCore
++)
++
++/// React-Fabric.podspec
++let reactFabric = RNTarget(
++  name: .reactFabric,
++  path: "ReactCommon/react/renderer",
++  excludedPaths: [
++    "animations/tests",
++    "attributedstring/tests",
++    "core/tests",
++    "components/view/tests",
++    "components/view/platform/android",
++    "components/view/platform/windows",
++    "components/view/platform/macos",
++    "components/scrollview/tests",
++    "components/scrollview/platform/android",
++    "mounting/tests",
++    "uimanager/tests",
++    "telemetry/tests",
++    "css",
++    "debug",
++    "graphics",
++    "imagemanager",
++    "mapbuffer",
++    "consistency",
++    "uimanager/consistency/tests",
++    "components/inputaccessory",
++    "components/modal",
++    "components/rncore",
++    "components/safeareaview",
++    "components/switch",
++    "components/text",
++    "components/textinput",
++    "components/textinput/platform/ios/",
++    "components/unimplementedview",
++    "components/virtualview",
++    "components/virtualviewexperimental",
++    "components/root/tests",
++  ],
++  dependencies: [.reactNativeDependencies, .reactJsiExecutor, .rctTypesafety, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .reactRendererDebug, .reactGraphics, .yoga],
++  sources: ["animations", "attributedstring", "core", "componentregistry", "componentregistry/native", "components/root", "components/view", "components/view/platform/cxx", "components/scrollview", "components/scrollview/platform/cxx", "components/legacyviewmanagerinterop", "dom", "scheduler", "mounting", "observers/events", "observers/intersection", "telemetry", "consistency", "leakchecker", "uimanager", "uimanager/consistency"]
++)
++
++let reactFabricInputAccessory = RNTarget(
++  name: .reactFabricInputAccessory,
++  path: "ReactCommon/react/renderer/components/inputaccessory",
++  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging]
++)
++
++let reactFabricModal = RNTarget(
++  name: .reactFabricModal,
++  path: "ReactCommon/react/renderer/components/modal",
++  excludedPaths: [
++    "platform/android",
++    "platform/cxx",
++  ],
++  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging]
++)
++
++let reactFabricSwitch = RNTarget(
++  name: .reactFabricSwitch,
++  path: "ReactCommon/react/renderer/components/switch/iosswitch",
++  excludedPaths: ["react/renderer/components/switch/MacOSSwitchShadowNode.mm"],
++  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging]
++)
++
++let reactFabricSafeAreaView = RNTarget(
++  name: .reactFabricSafeAreaView,
++  path: "ReactCommon/react/renderer/components/safeareaview",
++  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging]
++)
++
++let reactFabricTextLayoutManager = RNTarget(
++  name: .reactFabricTextLayoutManager,
++  path: "ReactCommon/react/renderer/textlayoutmanager",
++  excludedPaths: [
++    "platform/android",
++    "platform/cxx",
++    "platform/windows",
++    "platform/macos",
++    "tests",
++  ],
++  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging],
++  sources: [".", "platform/ios"]
++)
++
++let reactFabricText = RNTarget(
++  name: .reactFabricText,
++  path: "ReactCommon/react/renderer/components/text",
++  excludedPaths: [
++    "platform/android",
++    "tests",
++  ],
++  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging, .reactFabricTextLayoutManager],
++  sources: [".", "platform/cxx"]
++)
++
++let reactFabricTextInput = RNTarget(
++  name: .reactFabricTextInput,
++  path: "ReactCommon/react/renderer/components/textinput",
++  excludedPaths: ["platform/android", "platform/macos"],
++  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging, .reactFabricTextLayoutManager],
++  sources: [".", "platform/ios"]
++)
++
++/// React-FabricImage.podspec
++let reactFabricImage = RNTarget(
++  name: .reactFabricImage,
++  path: "ReactCommon/react/renderer/components/image",
++  excludedPaths: ["tests"],
++  dependencies: [.reactNativeDependencies, .reactFabric, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactTurboModuleBridging, .reactImageManagerApple]
++)
++
++let reactFabricUnimplementedView = RNTarget(
++  name: .reactFabricUnimplementedView,
++  path: "ReactCommon/react/renderer/components/unimplementedview",
++  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging]
++)
++
++/// React-RCTFabric.podspec
++let reactRCTFabric = RNTarget(
++  name: .reactRCTFabric,
++  path: "React/Fabric",
++  searchPaths: [virtualViewPath, virtualViewExperimentalPath],
++  dependencies: [.reactNativeDependencies, .reactCore, .reactRCTImage, .yoga, .reactRCTText, .jsi, .reactFabricInputAccessory, .reactFabricModal, .reactFabricSafeAreaView, .reactFabricSwitch, .reactFabricText, .reactFabricTextInput, .reactFabricUnimplementedView, .reactFabricTextLayoutManager, .reactGraphics, .reactImageManager, .reactDebug, .reactUtils, .reactPerformanceTimeline, .reactRendererDebug, .reactRendererConsistency, .reactRuntimeScheduler, .reactRCTAnimation, .reactJsInspector, .reactJsInspectorNetwork, .reactJsInspectorTracing, .reactFabric, .reactFabricImage, .rctSwiftUIWrapper]
++)
++
++/// React-ImageManagerApple.podspec
++let reactImageManagerApple = RNTarget(
++  name: .reactImageManagerApple,
++  path: "ReactCommon/react/renderer/imagemanager/platform/ios",
++  dependencies: [.reactNativeDependencies, .reactGraphics, .reactDebug, .reactUtils, .reactRendererDebug, .reactImageManager, .reactRCTImage, .reactCore, .yoga]
++)
++
++/// React-ImageManager.podspec
++let reactImageManager = RNTarget(
++  name: .reactImageManager,
++  path: "ReactCommon/react/renderer/imagemanager",
++  excludedPaths: ["platform", "tests"],
++  dependencies: [.reactNativeDependencies, .reactGraphics, .reactDebug, .reactUtils, .reactRendererDebug, .yoga]
++)
++
++/// React-RCTAnimation.podspec
++let reactRCTAnimation = RNTarget(
++  name: .reactRCTAnimation,
++  path: "Libraries/NativeAnimation",
++  dependencies: [.reactNativeDependencies, .rctTypesafety, .jsi, .reactFeatureFlags, .yoga, .reactTurboModuleCore, .reactUtils]
++)
++
++/// React-RCTImage.podspec
++let reactRCTImage = RNTarget(
++  name: .reactRCTImage,
++  path: "Libraries/Image",
++  linkedFrameworks: ["Accelerate"],
++  dependencies: [.rctTypesafety, .jsi, .yoga, .reactTurboModuleBridging, .reactTurboModuleCore]
++)
++
++/// React-RCTText.podspec
++let reactRCTText = RNTarget(
++  name: .reactRCTText,
++  path: "Libraries/Text",
++  dependencies: [.yoga, .reactTurboModuleCore]
++)
++
++/// React-RCTBlocl.podspec
++let reactRCTBlob = RNTarget(
++  name: .reactRCTBlob,
++  path: "Libraries/Blob",
++  dependencies: [.yoga, .jsi, .reactTurboModuleCore]
++)
++
++/// React-RCTNetwork.podspec
++let reactRCTNetwork = RNTarget(
++  name: .reactRCTNetwork,
++  path: "Libraries/Network",
++  dependencies: [.yoga, .jsi, .reactTurboModuleCore],
++  defines: [
++    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED", to: "1", .when(configuration: BuildConfiguration.debug)),
++    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY", to: "1", .when(configuration: BuildConfiguration.debug)),
++  ]
++)
++
++/// React-RCTVibration.podspec
++let reactRCTVibration = RNTarget(
++  name: .reactRCTVibration,
++  path: "Libraries/Vibration",
++  linkedFrameworks: ["AudioToolbox"],
++  dependencies: [.yoga, .jsi, .reactTurboModuleCore]
++)
++
++/// React-RCTAppDelegate.podspec
++let reactAppDelegate = RNTarget(
++  name: .reactAppDelegate,
++  path: "Libraries/AppDelegate",
++  dependencies: [.reactNativeDependencies, .jsi, .reactJsiExecutor, .reactRuntime, .reactRCTImage, .reactHermes, .reactCore, .reactFabric, .reactTurboModuleCore, .hermesPrebuilt, .yoga]
++)
++
++/// React-RCTLinking.podspec
++let reactRCTLinking = RNTarget(
++  name: .reactRCTLinking,
++  path: "Libraries/LinkingIOS",
++  dependencies: [.jsi, .reactTurboModuleCore]
++)
++
++/// React-RCTSettings.podspec
++let reactSettings = RNTarget(
++  name: .reactSettings,
++  path: "Libraries/Settings",
++  dependencies: [.reactTurboModuleCore, .yoga]
++)
++
++// MARK: Target list
++let targets = [
++  reactDebug,
++  jsi,
++  logger,
++  mapbuffer,
++  rctDeprecation,
++  yoga,
++  reactUtils,
++  reactFeatureFlags,
++  reactPerfLogger,
++  reactJsInspectorNetwork,
++  reactOSCompat,
++  reactRendererDebug,
++  reactRendererConsistency,
++  reactHermes,
++  reactJsiExecutor,
++  reactJsInspector,
++  reactJsInspectorTracing,
++  reactCxxReact,
++  reactCore,
++  reactCoreRCTWebsocket,
++  reactFabric,
++  rctSwiftUI,
++  rctSwiftUIWrapper,
++  reactRCTFabric,
++  reactFabricImage,
++  reactFabricInputAccessory,
++  reactFabricModal,
++  reactFabricSafeAreaView,
++  reactFabricSwitch,
++  reactFabricTextLayoutManager,
++  reactFabricText,
++  reactFabricTextInput,
++  reactFabricUnimplementedView,
++  reactNativeDependencies,
++  hermesPrebuilt,
++  reactJsiTooling,
++  reactNetworking,
++  reactPerformanceCdpMetrics,
++  reactPerformanceTimeline,
++  reactRuntimeScheduler,
++  rctTypesafety,
++  reactGraphics,
++  reactGraphicsApple,
++  reactImageManager,
++  reactImageManagerApple,
++  reactJsErrorHandler,
++  reactRuntime,
++  reactRuntimeApple,
++  reactRCTAnimation,
++  reactRCTImage,
++  reactRCTText,
++  reactRCTBlob,
++  reactRCTNetwork,
++  reactRCTVibration,
++  reactRCTLinking,
++  reactCoreModules,
++  reactTurboModuleBridging,
++  reactTurboModuleCore,
++  reactTurboModuleCoreDefaults,
++  reactTurboModuleCoreMicrotasks,
++  reactIdleCallbacksNativeModule,
++  reactWebPerformanceNativeModule,
++  reactIntersectionObserverNativeModule,
++  reactFeatureflagsNativemodule,
++  reactNativeModuleDom,
++  reactAppDelegate,
++  reactSettings,
++  reactRuntimeExecutor,
++]
++
++// MARK: Package object
++
++let package = Package(
++  name: react,
++  platforms: [.iOS(.v15), .macCatalyst(SupportedPlatform.MacCatalystVersion.v13)],
++  products: [
++    .library(
++      name: react,
++      type: .dynamic,
++      targets: targets.map { $0.name }
++    )
++  ],
++  targets: targets.map { $0.target(targets: targets) }
++)
++
++// MARK: Support & Utility Classes
++
++class BaseTarget {
++  let name: String
++  let path: String
++  let searchPaths: [String]
++
++  init(name: String, path: String, searchPaths: [String] = []) {
++    self.name = name
++    self.path = path
++    self.searchPaths = searchPaths
++  }
++
++  func headerSearchPaths(targets: [BaseTarget]) -> [String] {
++    return [path] + searchPaths
++  }
++
++  func target(targets: [BaseTarget]) -> Target {
++    fatalError("Must override in subclass")
++  }
++}
++
++class BinaryTarget: BaseTarget {
++  override func target(targets: [BaseTarget]) -> Target {
++    return .binaryTarget(name: self.name, path: self.path)
++  }
++}
++
++class RNTarget: BaseTarget {
++  let linkedFrameworks: [String]
++  let excludedPaths: [String]
++  let dependencies: [String]
++  let sources: [String]?
++  let publicHeadersPath: String?
++  let defines: [CXXSetting]
++
++  init(name: String, path: String, searchPaths: [String] = [], linkedFrameworks: [String] = [], excludedPaths: [String] = [], dependencies: [String] = [], sources: [String]? = nil, publicHeadersPath: String? = ".", defines: [CXXSetting] = []) {
++    self.linkedFrameworks = linkedFrameworks
++    self.excludedPaths = excludedPaths
++    self.dependencies = dependencies
++    self.sources = sources
++    self.publicHeadersPath = publicHeadersPath
++    self.defines = defines
++
++    super.init(name: name, path: path, searchPaths: searchPaths)
++  }
++
++  override func headerSearchPaths(targets: [BaseTarget]) -> [String] {
++    let dependencies = self.dependencies.compactMap { depName in
++      targets.first(where: { $0.name == depName })
++    }
++
++    let dependenciesSearchPath: [String] =
++      dependencies
++      .compactMap { $0.headerSearchPaths(targets: targets) }
++      .flatMap { $0 }
++    let multipleSourcesSearchPath: [String] =
++      self.sources?
++      .compactMap { self.path + "/" + $0 } ?? []
++    let pathSearchPath: [String] =
++      [self.path] // the source path should be part of the header search path
++      + [String(self.path.split(separator: "/").first ?? "")] // ReactCommon and ReactApple requires the first segment of the path to be in the search path
++
++    let searchPaths: [String] =
++      self.searchPaths + dependenciesSearchPath // transitively, add the dependencies search path
++      + pathSearchPath + multipleSourcesSearchPath // complex target such as reactFabric
++
++    return Array(Set(searchPaths))
++  }
++
++  override func target(targets: [BaseTarget]) -> Target {
++    let searchPaths: [String] = self.headerSearchPaths(targets: targets)
++
++    let linkerSettings = self.linkedFrameworks.reduce([]) { $0 + [LinkerSetting.linkedFramework($1)] }
++
++    return Target.reactNativeTarget(
++      name: self.name,
++      path: self.path,
++      searchPaths: searchPaths,
++      excludedPaths: self.excludedPaths,
++      dependencies: self.dependencies,
++      sources: self.sources,
++      publicHeadersPath: self.publicHeadersPath,
++      linkerSettings: linkerSettings,
++      defines: self.defines
++    )
++  }
++}
++
++extension String {
++  static let reactDebug = "React-debug"
++  static let jsi = "React-jsi"
++  static let logger = "React-logger"
++  static let mapbuffer = "React-Mapbuffer"
++
++  static let rctSwiftUI = "RCTSwiftUI"
++  static let rctSwiftUIWrapper = "RCTSwiftUIWrapper"
++
++  static let rctDeprecation = "RCT-Deprecation"
++  static let yoga = "Yoga"
++  static let reactUtils = "React-utils"
++  static let reactFeatureFlags = "React-featureflags"
++  static let reactPerfLogger = "React-perflogger"
++  static let reactJsInspectorNetwork = "React-jsinspectornetwork"
++  static let reactRuntimeExecutor = "React-runtimeexecutor"
++  static let reactOSCompat = "React-oscompat"
++  static let reactCallInvoker = "React-callinvoker"
++  static let reactRendererDebug = "React-rendererdebug"
++  static let reactRendererConsistency = "React-rendererconsistency"
++
++  static let reactHermes = "React-hermes"
++  static let reactJsiTracing = "React-jsitracing"
++  static let reactJsiExecutor = "React-jsiexecutor"
++  static let reactJsInspector = "React-jsinspector"
++  static let reactJsInspectorTracing = "React-jsinspectortracing"
++  static let reactCxxReact = "React-cxxreact"
++  static let reactCore = "React"
++  static let reactCoreRCTWebsocket = "React/RCTWebSocket"
++  static let reactFabric = "React-Fabric"
++  static let reactRCTFabric = "React-RCTFabric"
++
++  static let reactFabricImage = "React-FabricImage"
++  static let reactFabricInputAccessory = "React-FabricInputAccessory"
++  static let reactFabricModal = "React-FabricModal"
++  static let reactFabricSafeAreaView = "React-FabricSafeAreaView"
++  static let reactFabricSwitch = "React-FabricSwitch"
++  static let reactFabricTextLayoutManager = "React-FabricTextLayoutManager"
++  static let reactFabricText = "React-FabricText"
++  static let reactFabricTextInput = "React-FabricTextInput"
++  static let reactFabricUnimplementedView = "React-FabricUnimplementedView"
++
++  static let reactNativeDependencies = "ReactNativeDependencies"
++
++  static let hermesPrebuilt = "hermes-prebuilt"
++
++  static let reactJsiTooling = "React-jsitooling"
++  static let reactNetworking = "React-networking"
++  static let reactPerformanceCdpMetrics = "React-performancecdpmetrics"
++  static let reactPerformanceTimeline = "React-performancetimeline"
++  static let reactRuntimeScheduler = "React-runtimescheduler"
++  static let rctTypesafety = "RCTTypesafety"
++  static let reactGraphics = "React-graphics"
++  static let reactGraphicsApple = "React-graphics-Apple"
++  static let reactRendererCss = "React-renderercss"
++  static let reactImageManager = "React-ImageManager"
++  static let reactImageManagerApple = "React-ImageManagerApple"
++  static let reactJsErrorHandler = "React-jserrorhandler"
++
++  static let reactRuntime = "React-Runtime"
++  static let reactRuntimeApple = "React-RuntimeApple"
++  static let reactRCTAnimation = "React-RCTAnimation"
++  static let reactRCTImage = "React-RCTImage"
++  static let reactRCTText = "React-RCTText"
++  static let reactRCTBlob = "React-RCTBlob"
++  static let reactRCTNetwork = "React-RCTNetwork"
++  static let reactRCTVibration = "React-RCTVibration"
++  static let reactRCTActionSheet = "React-RCTActionSheet" // Empty target
++  static let reactRCTLinking = "React-RCTLinking"
++  static let reactCoreModules = "React-CoreModules"
++  static let reactTurboModuleBridging = "ReactCommon/turbomodule/bridging"
++  static let reactTurboModuleCore = "ReactCommon/turbomodule/core"
++  static let reactTurboModuleCoreDefaults = "ReactCommon/turbomodule/core/defaults"
++  static let reactTurboModuleCoreMicrotasks = "ReactCommon/turbomodule/core/microtasks"
++  static let reactIdleCallbacksNativeModule = "React-idlecallbacksnativemodule"
++  static let reactWebPerformanceNativeModule = "React-webperformancenativemodule"
++  static let reactIntersectionObserverNativeModule = "React-intersectionobservernativemodule"
++  static let reactFeatureflagsNativemodule = "React-featureflagsnativemodule"
++  static let reactNativeModuleDom = "React-domnativemodule"
++  static let reactAppDelegate = "React-RCTAppDelegate"
++  static let reactSettings = "React-RCTSettings"
++}
++
++func relativeSearchPath(_ depth: Int, _ path: String) -> String {
++  let slashes = (0..<depth).map { _ in "../" }.joined(separator: "")
++  return "\(slashes)\(path)"
++}
++
++extension Target {
++  static func reactNativeTarget(
++    name: String,
++    path: String,
++    searchPaths: [String] = [],
++    excludedPaths: [String] = [],
++    dependencies: [String] = [],
++    sources: [String]? = nil,
++    publicHeadersPath: String? = ".",
++    linkerSettings: [LinkerSetting] = [],
++    defines: [CXXSetting] = []
++  ) -> Target {
++    let dependencies = dependencies.map { Dependency.byNameItem(name: $0, condition: nil) }
++    let excludes = excludedPaths
++    let numOfSlash = path.count { $0 == "/" }
++
++    let cxxCommonHeaderPaths: [CXXSetting] =
++      Set(searchPaths).map {
++        CXXSetting.headerSearchPath(relativeSearchPath(numOfSlash + 1, $0))
++      } + [
++        CXXSetting.headerSearchPath(relativeSearchPath(numOfSlash + 1, ".build/headers")),
++        CXXSetting.headerSearchPath(relativeSearchPath(numOfSlash + 1, ".build/headers/React")),
++      ]
++
++    let cxxSettings =
++      [
++        .unsafeFlags(["-std=c++20"]),
++        .define("DEBUG", .when(configuration: .debug)),
++        .define("NDEBUG", .when(configuration: .release)),
++        .define("USE_HERMES", to: "1"),
++      ] + defines + cxxCommonHeaderPaths
++
++    return .target(
++      name: name,
++      dependencies: dependencies,
++      path: path,
++      exclude: excludes,
++      sources: sources,
++      publicHeadersPath: publicHeadersPath,
++      cxxSettings: cxxSettings,
++      linkerSettings: linkerSettings
++    )
++  }
++}
+diff --git a/node_modules/react-native/scripts/cocoapods/rncore.rb b/node_modules/react-native/scripts/cocoapods/rncore.rb
+index 597c4b4..61d535b 100644
+--- a/node_modules/react-native/scripts/cocoapods/rncore.rb
++++ b/node_modules/react-native/scripts/cocoapods/rncore.rb
+@@ -13,10 +13,26 @@ require_relative './utils.rb'
+ ### building ReactNativeCore from source (then this function does nothing).
+ def add_rncore_dependency(s)
+     if !ReactNativeCoreUtils.build_rncore_from_source()
++        # Add the dependency
++        s.dependency "React-Core-prebuilt"
++
+         current_pod_target_xcconfig = s.to_hash["pod_target_xcconfig"] || {}
+         current_pod_target_xcconfig = current_pod_target_xcconfig.to_h unless current_pod_target_xcconfig.is_a?(Hash)
+-        s.dependency "React-Core-prebuilt"
+-        current_pod_target_xcconfig["HEADER_SEARCH_PATHS"] ||= [] << "$(PODS_ROOT)/React-Core-prebuilt/React.xcframework/Headers"
++
++        # Add VFS overlay flags for both Objective-C and Swift
++        # The VFS overlay file is pre-resolved at pod install time for each platform slice.
++        # We reference it directly in the xcframework using the React-VFS.yaml file that
++        # is written to the React-Core-prebuilt folder during setup_vfs_overlay.
++        vfs_overlay_flag = "-ivfsoverlay $(PODS_ROOT)/React-Core-prebuilt/React-VFS.yaml"
++        current_pod_target_xcconfig["OTHER_CFLAGS"] ||= "$(inherited)"
++        current_pod_target_xcconfig["OTHER_CFLAGS"] += " #{vfs_overlay_flag}"
++        current_pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"] ||= "$(inherited)"
++        current_pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"] += " #{vfs_overlay_flag}"
++        # For Swift, we need to use -Xcc to pass flags to the underlying Clang compiler
++        # Both the flag and its argument need separate -Xcc prefixes
++        current_pod_target_xcconfig["OTHER_SWIFT_FLAGS"] ||= "$(inherited)"
++        current_pod_target_xcconfig["OTHER_SWIFT_FLAGS"] += " -Xcc -ivfsoverlay -Xcc $(PODS_ROOT)/React-Core-prebuilt/React-VFS.yaml"
++
+         s.pod_target_xcconfig = current_pod_target_xcconfig
+     end
+ end
+@@ -450,4 +466,101 @@ class ReactNativeCoreUtils
+         return latest_nightly
+     end
+ 
++    # Processes the VFS overlay file from the React.xcframework to resolve the ${ROOT_PATH} placeholder.
++    # This method should be called from react_native_post_install after pod install completes.
++    #
++    # The VFS overlay file maps header import paths to their actual locations within the xcframework.
++    # Since the xcframework contains platform-specific slices, we generate a resolved VFS file for each
++    # slice and also create a default VFS file that can be used immediately (before script phases run).
++    def self.process_vfs_overlay()
++        return if @@build_from_source
++
++        prebuilt_path = File.join(Pod::Config.instance.project_pods_root, "React-Core-prebuilt")
++        xcframework_path = File.join(prebuilt_path, "React.xcframework")
++        vfs_template_path = File.join(xcframework_path, "React-VFS-template.yaml")
++
++        unless File.exist?(vfs_template_path)
++            rncore_log("VFS overlay template not found at #{vfs_template_path}", :error)
++            exit 1
++        end
++
++        rncore_log("Processing VFS overlay file...")
++
++        # Read the template content
++        vfs_template_content = File.read(vfs_template_path)
++
++        # Write the VFS file - use the top-level xcframework path
++        # so that ${ROOT_PATH}/Headers points to the xcframework's Headers folder
++        resolved_vfs_content = vfs_template_content.gsub('${ROOT_PATH}', xcframework_path)
++        resolved_vfs_path = File.join(prebuilt_path, "React-VFS.yaml")
++        File.write(resolved_vfs_path, resolved_vfs_content)
++        rncore_log("  Created VFS overlay at #{resolved_vfs_path}")
++
++        rncore_log("VFS overlay setup complete")
++    end
++
++    # Configures the xcconfig files for aggregate (main app) targets to enable VFS overlay for React Native Core.
++    # This is needed because the main app target does not go through podspec processing,
++    # so it won't get the VFS overlay flags from add_rncore_dependency.
++    #
++    # Parameters:
++    # - installer: The CocoaPods installer object
++    def self.configure_aggregate_xcconfig(installer)
++        return if @@build_from_source
++
++        prebuilt_path = File.join(Pod::Config.instance.project_pods_root, "React-Core-prebuilt")
++        vfs_overlay_path = File.join(prebuilt_path, "React-VFS.yaml")
++
++        unless File.exist?(vfs_overlay_path)
++            rncore_log("VFS overlay not found at #{vfs_overlay_path}, skipping prebuilt xcconfig configuration", :error)
++            exit 1
++        end
++
++        rncore_log("Configuring xcconfig for prebuilt React Native Core...")
++
++        vfs_overlay_flag = " -ivfsoverlay \"#{vfs_overlay_path}\""
++        swift_vfs_overlay_flag = " -Xcc -ivfsoverlay -Xcc \"#{vfs_overlay_path}\""
++
++        # Add flags to aggregate target xcconfigs (these are used by the main app target)
++        installer.aggregate_targets.each do |aggregate_target|
++            aggregate_target.xcconfigs.each do |config_name, config_file|
++                # Add VFS overlay to compiler flags (C/C++ and Swift)
++                ReactNativePodsUtils.add_flag_to_map_with_inheritance(config_file.attributes, "OTHER_CFLAGS", vfs_overlay_flag)
++                ReactNativePodsUtils.add_flag_to_map_with_inheritance(config_file.attributes, "OTHER_CPLUSPLUSFLAGS", vfs_overlay_flag)
++
++                # For Swift, we need to use -Xcc to pass the flag to the underlying Clang compiler
++                ReactNativePodsUtils.add_flag_to_map_with_inheritance(config_file.attributes, "OTHER_SWIFT_FLAGS", swift_vfs_overlay_flag)
++
++                # Suppress incomplete umbrella warnings for the prebuilt frameworks (it is expected, as our umbrella headers do not include all headers)
++                ReactNativePodsUtils.add_flag_to_map_with_inheritance(config_file.attributes, "OTHER_SWIFT_FLAGS",  " -Xcc -Wno-incomplete-umbrella")
++
++                xcconfig_path = aggregate_target.xcconfig_path(config_name)
++                config_file.save_as(xcconfig_path)
++            end
++        end
++
++        # Add flags to ALL pod targets (for third-party pods that don't call add_rncore_dependency)
++        installer.pod_targets.each do |pod_target|
++            pod_target.build_settings.each do |config_name, build_settings|
++                xcconfig_path = pod_target.xcconfig_path(config_name)
++                next unless File.exist?(xcconfig_path)
++
++                xcconfig = Xcodeproj::Config.new(xcconfig_path)
++
++                # Check if VFS overlay is already present
++                other_cflags = xcconfig.attributes["OTHER_CFLAGS"] || ""
++                next if other_cflags.include?("ivfsoverlay")
++
++                # Add VFS overlay flags
++                ReactNativePodsUtils.add_flag_to_map_with_inheritance(xcconfig.attributes, "OTHER_CFLAGS", vfs_overlay_flag)
++                ReactNativePodsUtils.add_flag_to_map_with_inheritance(xcconfig.attributes, "OTHER_CPLUSPLUSFLAGS", vfs_overlay_flag)
++                ReactNativePodsUtils.add_flag_to_map_with_inheritance(xcconfig.attributes, "OTHER_SWIFT_FLAGS", swift_vfs_overlay_flag)
++                ReactNativePodsUtils.add_flag_to_map_with_inheritance(xcconfig.attributes, "OTHER_SWIFT_FLAGS", " -Xcc -Wno-incomplete-umbrella")
++
++                xcconfig.save_as(xcconfig_path)
++            end
++        end
++
++        rncore_log("Prebuilt xcconfig configuration complete")
++    end
+ end
+diff --git a/node_modules/react-native/scripts/ios-prebuild.js b/node_modules/react-native/scripts/ios-prebuild.js
+new file mode 100644
+index 0000000..1109b99
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild.js
+@@ -0,0 +1,93 @@
++/**
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @flow
++ * @format
++ */
++
++const {
++  buildSwiftPackage,
++  computeFrameworkPaths,
++  computeProductsFolder,
++} = require('./ios-prebuild/build');
++const {getCLIConfiguration} = require('./ios-prebuild/cli');
++const {setup} = require('./ios-prebuild/setup');
++const {createLogger, throwIfOnEden} = require('./ios-prebuild/utils');
++const {buildXCFrameworks} = require('./ios-prebuild/xcframework');
++const path = require('path');
++
++const REACT_NATIVE_PACKAGE_ROOT_FOLDER = path.join(__dirname, '..');
++const packageJsonPath = path.join(
++  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
++  'package.json',
++);
++
++const prebuildLog = createLogger('Prebuild');
++
++// $FlowFixMe[unsupported-syntax]
++const {version: currentVersion} = require(packageJsonPath);
++
++async function main() {
++  const cli = await getCLIConfiguration();
++  if (cli == null) {
++    return 0;
++  }
++
++  const buildType = cli.flavor;
++
++  prebuildLog(`Prebuilding React Native iOS for ${buildType}...`);
++
++  throwIfOnEden();
++
++  try {
++    // Root
++    const root = process.cwd();
++
++    // Create build folder
++    const buildFolder = path.resolve(root, '.build');
++
++    if (cli.tasks.setup) {
++      await setup(root, buildFolder, currentVersion, buildType);
++    }
++
++    const outputFolder = path.join(buildFolder, 'output', 'spm', buildType);
++    // BUILD SWIFT PACKAGE
++    if (cli.tasks.build) {
++      cli.destinations.forEach(destination => {
++        buildSwiftPackage(
++          root,
++          buildFolder,
++          buildType,
++          destination,
++          outputFolder,
++        );
++      });
++    }
++
++    // GENERATE XCFrameworks
++    if (cli.tasks.compose) {
++      const productsFolder = computeProductsFolder(outputFolder);
++      const frameworkPaths = computeFrameworkPaths(productsFolder);
++      buildXCFrameworks(
++        root,
++        buildFolder,
++        frameworkPaths,
++        buildType,
++        cli.identity,
++      );
++    }
++
++    // Done!
++    prebuildLog('🏁 Done!');
++  } catch (err) {
++    console.error(err);
++    process.exitCode = 1;
++  }
++}
++
++if (require.main === module) {
++  void main();
++}
+diff --git a/node_modules/react-native/scripts/ios-prebuild/__docs__/README.md b/node_modules/react-native/scripts/ios-prebuild/__docs__/README.md
+new file mode 100644
+index 0000000..6933a47
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild/__docs__/README.md
+@@ -0,0 +1,136 @@
++# iOS Prebuild Scripts
++
++This directory contains scripts for prebuilding React Native itself into
++XCFrameworks for iOS and related platforms.
++
++## Overview
++
++These scripts automate the process of building React Native as a Swift Package
++and packaging it into XCFrameworks that can be distributed and consumed by iOS
++applications. The build process creates optimized frameworks for multiple
++architectures and platforms.
++
++## Purpose
++
++The prebuild scripts are used to:
++
++- Build React Native itself (not its dependencies) as XCFrameworks
++- Create distributable binaries for iOS, iOS Simulator, Catalyst.
++- Support both Debug and Release build configurations
++- Generate Debug Symbol (dSYM) files for debugging
++
++## Usage
++
++Run the prebuild script from the command line:
++
++```bash
++cd packages/react-native
++node scripts/ios-prebuild
++```
++
++If no options are passed, the script executes all the steps in this order:
++
++- setup the codebase for all platforms and flavors
++- build for all platforms and flavors
++- compose xcframeworks
++- sign (if an identity is passed)
++
++### Options
++
++| Option        | Alias | Type    | Default                                    | Description                                                         |
++| ------------- | ----- | ------- | ------------------------------------------ | ------------------------------------------------------------------- |
++| `--setup`     | `-s`  | boolean | -                                          | Download and setup dependencies                                     |
++| `--build`     | `-b`  | boolean | -                                          | Build dependencies/platforms                                        |
++| `--compose`   | `-c`  | boolean | -                                          | Compose XCFramework from built dependencies                         |
++| `--platforms` | `-p`  | array   | `['ios', 'ios-simulator', 'mac-catalyst']` | Specify one or more platforms to build for                          |
++| `--flavor`    | `-f`  | string  | `Debug`                                    | Specify the flavor to build: `Debug` or `Release`                   |
++| `--identity`  | `-i`  | string  | -                                          | Specify the code signing identity to use for signing the frameworks |
++| `--help`      | -     | boolean | -                                          | Show help information                                               |
++
++### Output Structure
++
++The build produces:
++
++- XCFrameworks in the specified output directory
++- Debug symbols (dSYM files) for debugging
++- Build products organized by platform and configuration
++
++## Architecture
++
++The build system consists of several components:
++
++### `cli.js`
++
++The main entry point that orchestrates the build process. It:
++
++- Parses command-line arguments
++- Validates build parameters
++- Coordinates the build, archiving, and XCFramework creation steps
++
++### `build.js`
++
++Handles the Swift Package build process. It:
++
++- Executes `xcodebuild` commands with appropriate flags
++- Builds for specific platforms and build types (Debug/Release)
++- Locates and validates the generated framework artifacts
++- Uses build settings like `BUILD_LIBRARY_FOR_DISTRIBUTION=YES` for binary
++  compatibility
++
++### `types.js`
++
++Defines TypeScript/Flow type definitions for:
++
++- `BuildFlavor`: Debug or Release configurations
++- `Destination`: Target platforms (iOS, iOS Simulator, Catalyst, Vision,
++  visionOS)
++- `ArchiveOptions`: Configuration options for the build process
++
++### `utils.js`
++
++Provides utility functions including:
++
++- Logging functionality with prefixed output
++- Common helper functions used across scripts
++
++## Build Flags
++
++The build process uses specific `xcodebuild` flags:
++
++- `BUILD_LIBRARY_FOR_DISTRIBUTION=YES`: Enables module stability
++- `SKIP_INSTALL=NO`: Ensures frameworks are properly installed
++- `DEBUG_INFORMATION_FORMAT="dwarf-with-dsym"`: Generates debug symbols
++- `OTHER_SWIFT_FLAGS="-no-verify-emitted-module-interface"`: Skips interface
++  verification (useful for React Native modules due to the header structure not
++  beeing modular)
++
++## Notes
++
++- These scripts build React Native itself, not third-party dependencies
++- The build process requires significant disk space for derived data
++- Build times vary depending on the target platform and configuration
++- XCFrameworks support multiple architectures in a single bundle
++
++## Known Issues
++
++The generated XCFrameworks currently use CocoaPods-style header structures
++rather than standard framework header conventions. This may cause modularity
++issues when:
++
++- Consuming the XCFrameworks in projects that expect standard framework headers
++- Building dependent frameworks that rely on proper module boundaries
++- Integrating with Swift Package Manager projects expecting modular headers
++
++## Integrating in your project with Cocoapods
++
++For consuming, debugging or troubleshooting when using Cocoapods scripts, you
++can use the following environment variables:
++
++- `RCT_USE_PREBUILT_RNCORE`: If set to 1, it will use the release tarball from
++  Maven instead of building from source.
++- `RCT_TESTONLY_RNCORE_TARBALL_PATH`: **TEST ONLY** If set, it will use a local
++  tarball of RNCore if it exists.
++- `RCT_TESTONLY_RNCORE_VERSION`: **TEST ONLY** If set, it will override the
++  version of RNCore to be used.
++- `RCT_SYMBOLICATE_PREBUILT_FRAMEWORKS`: If set to 1, it will download the dSYMs
++  for the prebuilt RNCore frameworks and install these in the framework folders
+diff --git a/node_modules/react-native/scripts/ios-prebuild/build.js b/node_modules/react-native/scripts/ios-prebuild/build.js
+new file mode 100644
+index 0000000..2fd33ff
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild/build.js
+@@ -0,0 +1,97 @@
++/**
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @flow
++ * @format
++ */
++
++/*::
++import type {BuildFlavor, Destination} from './types';
++*/
++
++const {createLogger} = require('./utils');
++const {execSync} = require('child_process');
++const fs = require('fs');
++const path = require('path');
++const {globSync} = require('tinyglobby');
++
++const buildLog = createLogger('SPM');
++
++function computeProductsFolder(outputFolder /*: string */) /*: string */ {
++  return path.join(outputFolder, 'Build', 'Products');
++}
++
++function computeFrameworkPaths(
++  productsFolder /*: string */,
++) /*: Array<string> */ {
++  // The frameworks are in the products folder under a platform/buildType folder and are directories ending with .framework
++  const frameworks = globSync('**/*.framework', {
++    cwd: productsFolder,
++    expandDirectories: false,
++    onlyDirectories: true,
++    absolute: true,
++  }).map(framework => {
++    // NOTE: tinyglobby outputs a trailing slash for directories
++    return framework[framework.length - 1] === '/'
++      ? framework.slice(0, -1)
++      : framework;
++  });
++
++  if (frameworks.length === 0) {
++    throw new Error(
++      `No frameworks found in the output folder: ${productsFolder}`,
++    );
++  }
++
++  const frameworkPaths = frameworks.filter(p => p.endsWith('React.framework'));
++  if (frameworkPaths.length === 0) {
++    throw new Error(
++      `No React.framework found in the output folder: ${productsFolder}`,
++    );
++  }
++
++  return frameworkPaths;
++}
++
++function buildSwiftPackage(
++  rootFolder /*: string */,
++  buildFolder /*: string */,
++  buildType /*: BuildFlavor */,
++  platform /*: Destination */,
++  outputFolder /*: string */,
++) {
++  const buildCommand =
++    `xcodebuild -scheme React -destination "generic/platform=${platform}" -derivedDataPath "${outputFolder}" ` +
++    `-configuration "${buildType}" SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES OTHER_SWIFT_FLAGS="-no-verify-emitted-module-interface" ` +
++    `DEBUG_INFORMATION_FORMAT="dwarf-with-dsym"`;
++  buildLog(`Building Swift package for ${buildType}`);
++  buildLog(buildCommand);
++
++  execSync(buildCommand, {
++    cwd: rootFolder,
++    stdio: 'inherit',
++  });
++
++  // Use glob to find all the frameworks in the output folder
++  const productsFolder = computeProductsFolder(outputFolder);
++  if (!fs.existsSync(productsFolder)) {
++    throw new Error(
++      `Output folder does not exist: ${productsFolder}. Did the build fail?`,
++    );
++  }
++
++  const frameworkPaths = computeFrameworkPaths(productsFolder);
++  buildLog('React.frameworks:');
++  frameworkPaths.forEach(p => {
++    buildLog('  ' + p);
++  });
++}
++
++module.exports = {
++  buildSwiftPackage,
++  computeFrameworkPaths,
++  computeProductsFolder,
++};
+diff --git a/node_modules/react-native/scripts/ios-prebuild/cli.js b/node_modules/react-native/scripts/ios-prebuild/cli.js
+new file mode 100644
+index 0000000..01301c8
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild/cli.js
+@@ -0,0 +1,130 @@
++/**
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @flow
++ * @format
++ */
++
++const yargs = require('yargs');
++
++/*::
++import type {BuildFlavor, Destination, Platform} from './types';
++*/
++
++const platforms /*: $ReadOnlyArray<Platform> */ = [
++  'ios',
++  'ios-simulator',
++  'mac-catalyst',
++];
++
++// CI can't use commas in cache keys, so 'macOS,variant=Mac Catalyst' was creating troubles
++// This map that converts from platforms to valid Xcodebuild destinations.
++const platformToDestination /*: $ReadOnly<{|[Platform]: Destination|}> */ = {
++  ios: 'iOS',
++  'ios-simulator': 'iOS Simulator',
++  'mac-catalyst': 'macOS,variant=Mac Catalyst',
++};
++
++const cli = yargs
++  .usage(
++    'This script prepares iOS prebuilds for React Native. It downloads the dependencies, prepare them, builds them and creates the XCFrameworks.' +
++      'Calling the script with no options will build all the dependencies for all the slices and configurations.',
++  )
++  .option('setup', {
++    alias: 's',
++    type: 'boolean',
++    describe: 'Download and setup dependencies',
++  })
++  .option('build', {
++    alias: 'b',
++    type: 'boolean',
++    describe: 'Build dependencies/platforms',
++  })
++  .option('compose', {
++    alias: 'c',
++    type: 'boolean',
++    describe: 'Compose xcframework from built dependencies',
++  })
++  .option('platforms', {
++    alias: 'p',
++    type: 'array',
++    default: platforms,
++    describe: 'Specify one or more platforms to build for',
++  })
++  .option('flavor', {
++    alias: 'f',
++    type: 'string',
++    describe: 'Specify the flavor to build, Debug (default) or Release.',
++    default: 'Debug',
++  })
++  .option('identity', {
++    alias: 'i',
++    type: 'string',
++    describe:
++      'Specify the code signing identity to use for signing the frameworks.',
++  })
++  .help();
++
++/**
++ * Returns the tasks that need to be run based on the command line arguments
++ */
++async function getCLIConfiguration() /*: Promise<?{|
++  tasks: {|
++    setup: boolean,
++    build: boolean,
++    compose: boolean,
++  |},
++  flavor: BuildFlavor,
++  destinations: $ReadOnlyArray<Destination>,
++  identity: ?string,
++|}> */ {
++  // Run input parsing
++  const argv = await cli.argv;
++
++  // Verify that the platforms argument is valid
++  const platformArray = Array.isArray(argv.platforms)
++    ? argv.platforms
++    : [argv.platforms];
++  const invalidPlatforms = platformArray.filter(rs => !platforms.includes(rs));
++
++  if (invalidPlatforms.length > 0) {
++    console.error(
++      `Invalid platform specified: ${invalidPlatforms.join(', ')}\nValid platforms are: ${platforms.join(', ')}`,
++    );
++    return undefined;
++  }
++
++  // Prepare platforms and dependencies
++  const resolvedPlatforms = platforms
++    .filter(p => argv.platforms.includes(p))
++    .map(p => platformToDestination[p]);
++
++  // Validate flavor
++  const flavor = argv.flavor;
++  if (flavor !== 'Debug' && flavor !== 'Release') {
++    console.error(
++      `Invalid flavor specified: ${flavor}\nValid flavors are: Debug, Release`,
++    );
++    return undefined;
++  }
++
++  // Are we running all commands?
++  const runAllCommands =
++    argv.setup == null && argv.build == null && argv.compose == null;
++
++  return {
++    tasks: {
++      setup: runAllCommands || argv.setup != null,
++      build: runAllCommands || argv.build != null,
++      compose: runAllCommands || argv.compose != null,
++    },
++    flavor: flavor,
++    destinations: resolvedPlatforms,
++    identity: argv.identity,
++  };
++}
++
++module.exports = {getCLIConfiguration};
+diff --git a/node_modules/react-native/scripts/ios-prebuild/headers-config.js b/node_modules/react-native/scripts/ios-prebuild/headers-config.js
+new file mode 100644
+index 0000000..f5e8b1d
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild/headers-config.js
+@@ -0,0 +1,498 @@
++/**
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @flow
++ * @format
++ */
++
++/*::
++export type PodSpecConfiguration = $ReadOnly<{
++  name: string,
++  headerPatterns: Array<string>,
++  headerDir?: string,
++  excludePatterns?: Array<string>,
++  subSpecs?: $ReadOnlyArray<PodSpecConfiguration>,
++  preservePaths?: Array<string>,
++} | {disabled: true}>;
++*/
++
++const PodspecExceptions /*: {[key: string]: PodSpecConfiguration} */ = {
++  'ReactCommon/jsi/React-jsi.podspec': {
++    name: 'React-jsi',
++    headerPatterns: ['**/*.h'],
++    headerDir: 'jsi',
++    excludePatterns: ['**/test/*'],
++  },
++  'ReactCommon/hermes/React-hermes.podspec': {
++    name: 'React-hermes',
++    headerPatterns: [
++      'executor/*.h',
++      'inspector-modern/chrome/*.h',
++      'executor/HermesExecutorFactory.h',
++    ],
++    headerDir: 'reacthermes',
++  },
++  'ReactCommon/React-Fabric.podspec': {
++    name: 'React-Fabric',
++    headerPatterns: [],
++    headerDir: '',
++    subSpecs: [
++      {
++        name: 'animated',
++        headerPatterns: ['react/renderer/animated/**/*.h'],
++        excludePatterns: ['react/renderer/animated/tests'],
++        headerDir: 'react/renderer/animated',
++      },
++
++      {
++        name: 'animations',
++        headerPatterns: ['react/renderer/animations/**/*.h'],
++        excludePatterns: ['react/renderer/animations/tests'],
++        headerDir: 'react/renderer/animations',
++      },
++
++      {
++        name: 'animationbackend',
++        headerPatterns: ['react/renderer/animationbackend/**/*.h'],
++        headerDir: 'react/renderer/animationbackend',
++      },
++
++      {
++        name: 'attributedstring',
++        headerPatterns: ['react/renderer/attributedstring/**/*.h'],
++        excludePatterns: ['react/renderer/attributedstring/tests'],
++        headerDir: 'react/renderer/attributedstring',
++      },
++
++      {
++        name: 'bridging',
++        headerPatterns: ['react/renderer/bridging/**/*.h'],
++        excludePatterns: ['react/renderer/bridging/tests'],
++        headerDir: 'react/renderer/bridging',
++      },
++
++      {
++        name: 'core',
++        headerPatterns: ['react/renderer/core/**/*.h'],
++        excludePatterns: ['react/renderer/core/tests'],
++        headerDir: 'react/renderer/core',
++      },
++
++      {
++        name: 'componentregistry',
++        headerPatterns: ['react/renderer/componentregistry/*.h'],
++        headerDir: 'react/renderer/componentregistry',
++      },
++
++      {
++        name: 'componentregistrynative',
++        headerPatterns: ['react/renderer/componentregistry/native/**/*.h'],
++        headerDir: 'react/renderer/componentregistry/native',
++      },
++
++      {
++        name: 'components',
++        headerPatterns: [],
++        headerDir: '',
++        subSpecs: [
++          {
++            name: 'root',
++            headerPatterns: ['react/renderer/components/root/**/*.h'],
++            excludePatterns: ['react/renderer/components/root/tests'],
++            headerDir: 'react/renderer/components/root',
++          },
++          {
++            name: 'view',
++            headerPatterns: [
++              'react/renderer/components/view/*.h',
++              'react/renderer/components/view/platform/cxx/**/*.h',
++            ],
++            headerDir: 'react/renderer/components/view',
++          },
++
++          {
++            name: 'scrollview',
++            headerPatterns: ['react/renderer/components/scrollview/**/*.h'],
++            headerDir: 'react/renderer/components/scrollview',
++            excludePatterns: [
++              'react/renderer/components/scrollview/tests',
++              'react/renderer/components/scrollview/platform/android',
++            ],
++          },
++
++          {
++            name: 'legacyviewmanagerinterop',
++            headerPatterns: [
++              'react/renderer/components/legacyviewmanagerinterop/**/*.h',
++            ],
++            excludePatterns: [
++              'react/renderer/components/legacyviewmanagerinterop/tests',
++            ],
++            headerDir: 'react/renderer/components/legacyviewmanagerinterop',
++          },
++        ],
++      },
++
++      {
++        name: 'dom',
++        headerPatterns: ['react/renderer/dom/**/*.h'],
++        excludePatterns: ['react/renderer/dom/tests'],
++        headerDir: 'react/renderer/dom',
++      },
++
++      {
++        name: 'scheduler',
++        headerPatterns: ['react/renderer/scheduler/**/*.h'],
++        headerDir: 'react/renderer/scheduler',
++      },
++
++      {
++        name: 'imagemanager',
++        headerPatterns: ['react/renderer/imagemanager/*.h'],
++        headerDir: 'react/renderer/imagemanager',
++      },
++
++      {
++        name: 'mounting',
++        headerPatterns: ['react/renderer/mounting/**/*.h'],
++        excludePatterns: ['react/renderer/mounting/tests'],
++        headerDir: 'react/renderer/mounting',
++      },
++
++      {
++        name: 'observers',
++        headerPatterns: [],
++        subSpecs: [
++          {
++            name: 'events',
++            headerPatterns: ['react/renderer/observers/events/**/*.h'],
++            excludePatterns: ['react/renderer/observers/events/tests'],
++            headerDir: 'react/renderer/observers/events',
++          },
++        ],
++      },
++
++      {
++        name: 'templateprocessor',
++        headerPatterns: ['react/renderer/templateprocessor/**/*.h'],
++        excludePatterns: ['react/renderer/templateprocessor/tests'],
++        headerDir: 'react/renderer/templateprocessor',
++      },
++
++      {
++        name: 'telemetry',
++        headerPatterns: ['react/renderer/telemetry/**/*.h'],
++        excludePatterns: ['react/renderer/telemetry/tests'],
++        headerDir: 'react/renderer/telemetry',
++      },
++
++      {
++        name: 'consistency',
++        headerPatterns: ['react/renderer/consistency/**/*.h'],
++        headerDir: 'react/renderer/consistency',
++      },
++
++      {
++        name: 'uimanager',
++        subSpecs: [
++          {
++            name: 'consistency',
++            headerPatterns: ['react/renderer/uimanager/consistency/*.h'],
++            headerDir: 'react/renderer/uimanager/consistency',
++          },
++        ],
++
++        headerPatterns: ['react/renderer/uimanager/*.h'],
++        headerDir: 'react/renderer/uimanager',
++      },
++
++      {
++        name: 'leakchecker',
++        headerPatterns: ['react/renderer/leakchecker/**/*.h'],
++        excludePatterns: ['react/renderer/leakchecker/tests'],
++        headerDir: 'react/renderer/leakchecker',
++      },
++    ],
++  },
++  // Yoga should preserve its directory structure
++  'ReactCommon/yoga/Yoga.podspec': {
++    name: 'Yoga',
++    headerPatterns: ['yoga/**/*.h'],
++    headerDir: 'yoga',
++    preservePaths: ['yoga/**/*.h'],
++  },
++
++  // ReactCommon.podspec has multiple subspecs with different header_dir values
++  // that the generic parser cannot handle (it only extracts the first header_dir).
++  'ReactCommon/ReactCommon.podspec': {
++    name: 'ReactCommon',
++    headerPatterns: [],
++    headerDir: 'ReactCommon',
++    subSpecs: [
++      {
++        name: 'bridging',
++        headerPatterns: ['react/bridging/**/*.h'],
++        excludePatterns: ['react/bridging/tests/**'],
++        headerDir: 'react/bridging',
++      },
++      {
++        name: 'core',
++        headerPatterns: ['react/nativemodule/core/ReactCommon/**/*.h'],
++        headerDir: 'ReactCommon',
++      },
++    ],
++  },
++
++  // these podspecs set `header_dir` via Ruby variables, which the generic
++  // podspec parser cannot infer. Add explicit exceptions so headers are emitted under
++  // the expected `jsinspector-modern/...` include paths.
++  'React/Runtime/React-RCTRuntime.podspec': {
++    name: 'React-RCTRuntime',
++    headerPatterns: ['*.h'],
++    headerDir: 'React',
++  },
++
++  'ReactCommon/jsinspector-modern/React-jsinspector.podspec': {
++    name: 'React-jsinspector',
++    headerPatterns: ['*.h'],
++    headerDir: 'jsinspector-modern',
++  },
++  'ReactCommon/jsinspector-modern/cdp/React-jsinspectorcdp.podspec': {
++    name: 'React-jsinspectorcdp',
++    headerPatterns: ['*.h'],
++    headerDir: 'jsinspector-modern/cdp',
++  },
++  'ReactCommon/jsinspector-modern/network/React-jsinspectornetwork.podspec': {
++    name: 'React-jsinspectornetwork',
++    headerPatterns: ['*.h'],
++    headerDir: 'jsinspector-modern/network',
++  },
++  'ReactCommon/jsinspector-modern/tracing/React-jsinspectortracing.podspec': {
++    name: 'React-jsinspectortracing',
++    headerPatterns: ['*.h'],
++    headerDir: 'jsinspector-modern/tracing',
++  },
++  'React/React-RCTFabric.podspec': {
++    name: 'React-RCTFabric',
++    headerPatterns: ['Fabric/**/*.h'],
++    headerDir: 'React',
++  },
++
++  'React/React-RCTFBReactNativeSpec.podspec': {
++    name: 'React-RCTFBReactNativeSpec',
++    headerPatterns: ['FBReactNativeSpec/**/*.h'],
++    headerDir: 'FBReactNativeSpec',
++    excludePatterns: ['FBReactNativeSpec/react/renderer/components/**'],
++    subSpecs: [
++      {
++        name: 'components',
++        headerPatterns: [
++          'FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/**/*.h',
++        ],
++        headerDir: 'react/renderer/components/FBReactNativeSpec',
++      },
++    ],
++  },
++  'ReactCommon/React-FabricComponents.podspec': {
++    name: 'React-FabricComponents',
++    headerPatterns: [],
++    headerDir: '',
++    subSpecs: [
++      {
++        name: 'components',
++        headerPatterns: [],
++        headerDir: '',
++        subSpecs: [
++          {
++            name: 'inputaccessory',
++            headerPatterns: ['react/renderer/components/inputaccessory/**/*.h'],
++            excludePatterns: ['react/renderer/components/inputaccessory/tests'],
++            headerDir: 'react/renderer/components/inputaccessory',
++          },
++
++          {
++            name: 'modal',
++            headerPatterns: ['react/renderer/components/modal/*.h'],
++            excludePatterns: ['react/renderer/components/modal/tests'],
++            headerDir: 'react/renderer/components/modal',
++          },
++
++          {
++            name: 'safeareaview',
++            headerPatterns: ['react/renderer/components/safeareaview/**/*.h'],
++            excludePatterns: ['react/renderer/components/safeareaview/tests'],
++            headerDir: 'react/renderer/components/safeareaview',
++          },
++
++          {
++            name: 'scrollview',
++            headerPatterns: [
++              'react/renderer/components/scrollview/*.h',
++              'react/renderer/components/scrollview/platform/cxx/**/*.h',
++            ],
++            excludePatterns: ['react/renderer/components/scrollview/tests'],
++            headerDir: 'react/renderer/components/scrollview',
++          },
++
++          {
++            name: 'text',
++            headerPatterns: [
++              'react/renderer/components/text/*.h',
++              'react/renderer/components/text/platform/cxx/**/*.h',
++            ],
++            headerDir: 'react/renderer/components/text',
++          },
++
++          {
++            name: 'iostextinput',
++            headerPatterns: [
++              'react/renderer/components/textinput/*.h',
++              'react/renderer/components/textinput/platform/ios/**/*.h',
++            ],
++            headerDir: 'react/renderer/components/iostextinput',
++          },
++
++          {
++            name: 'switch',
++            headerPatterns: [
++              'react/renderer/components/switch/iosswitch/**/*.h',
++            ],
++            excludePatterns: [
++              'react/renderer/components/switch/iosswitch/**/MacOS*.{m,mm,cpp,h}',
++            ],
++            headerDir: 'react/renderer/components/switch/',
++          },
++
++          {
++            name: 'textinput',
++            headerPatterns: ['react/renderer/components/textinput/**/*.h'],
++            headerDir: 'react/renderer/components/textinput',
++          },
++
++          {
++            name: 'unimplementedview',
++            headerPatterns: [
++              'react/renderer/components/unimplementedview/**/*.h',
++            ],
++            excludePatterns: [
++              'react/renderer/components/unimplementedview/tests',
++            ],
++            headerDir: 'react/renderer/components/unimplementedview',
++          },
++
++          {
++            name: 'virtualview',
++            headerPatterns: [
++              'react/renderer/components/virtualview/**/*.{m,mm,cpp,h}',
++            ],
++            excludePatterns: ['react/renderer/components/virtualview/tests'],
++            headerDir: 'react/renderer/components/virtualview',
++          },
++
++          {
++            name: 'virtualviewexperimental',
++            headerPatterns: [
++              'react/renderer/components/virtualviewexperimental/**/*.h',
++            ],
++            excludePatterns: [
++              'react/renderer/components/virtualviewexperimental/tests',
++            ],
++            headerDir: 'react/renderer/components/virtualviewexperimental',
++          },
++
++          {
++            name: 'rncore',
++            headerPatterns: ['react/renderer/components/rncore/**/*.h'],
++            headerDir: 'react/renderer/components/rncore',
++          },
++        ],
++      },
++      {
++        name: 'textlayoutmanager',
++
++        headerPatterns: [
++          'react/renderer/textlayoutmanager/platform/ios/**/*.h',
++          'react/renderer/textlayoutmanager/*.h',
++        ],
++        excludePatterns: [
++          'react/renderer/textlayoutmanager/tests',
++          'react/renderer/textlayoutmanager/platform/android',
++          'react/renderer/textlayoutmanager/platform/cxx',
++        ],
++        headerDir: 'react/renderer/textlayoutmanager',
++      },
++    ],
++  },
++  'React-Core.podspec': {
++    name: 'React-Core',
++    headerPatterns: [],
++    headerDir: 'React',
++    subSpecs: [
++      {
++        name: 'Default',
++        headerPatterns: ['React/**/*.h'],
++        excludePatterns: [
++          'React/CoreModules/**/*',
++          'React/DevSupport/**/*',
++          'React/Fabric/**/*',
++          'React/FBReactNativeSpec/**/*',
++          'React/Tests/**/*',
++          'React/Inspector/**/*',
++          'React/Runtime/**/*',
++          'React/CxxBridge/JSCExecutorFactory.h',
++        ],
++      },
++      {
++        name: 'DevSupport',
++        headerPatterns: ['React/DevSupport/*.h', 'React/Inspector/*.h'],
++      },
++      {name: 'RCTWebSocket', headerPatterns: ['Libraries/WebSocket/*.h']},
++      {
++        name: 'CoreModulesHeaders',
++        headerPatterns: ['React/CoreModules/**/*.h'],
++      },
++      {
++        name: 'RCTActionSheetHeaders',
++        headerPatterns: ['Libraries/ActionSheetIOS/*.h'],
++      },
++      {
++        name: 'RCTAnimationHeaders',
++        headerPatterns: ['Libraries/NativeAnimation/{Drivers/*,Nodes/*,*}.h'],
++      },
++      {
++        name: 'RCTBlobHeaders',
++        headerPatterns: [
++          'Libraries/Blob/{RCTBlobManager,RCTFileReaderModule}.h',
++        ],
++      },
++      {name: 'RCTImageHeaders', headerPatterns: ['Libraries/Image/*.h']},
++      {
++        name: 'RCTLinkingHeaders',
++        headerPatterns: ['Libraries/LinkingIOS/*.h'],
++      },
++      {name: 'RCTNetworkHeaders', headerPatterns: ['Libraries/Network/*.h']},
++      {
++        name: 'RCTPushNotificationHeaders',
++        headerPatterns: ['Libraries/PushNotificationIOS/*.h'],
++      },
++      {
++        name: 'RCTSettingsHeaders',
++        headerPatterns: ['Libraries/Settings/*.h'],
++      },
++      {name: 'RCTTextHeaders', headerPatterns: ['Libraries/Text/**/*.h']},
++      {
++        name: 'RCTVibrationHeaders',
++        headerPatterns: ['Libraries/Vibration/*.h'],
++      },
++    ],
++  },
++  'React.podspec': {disabled: true},
++  'Libraries/PushNotificationIOS/React-RCTPushNotification.podspec': {
++    disabled: true,
++  },
++};
++
++module.exports = {PodspecExceptions};
+diff --git a/node_modules/react-native/scripts/ios-prebuild/headers.js b/node_modules/react-native/scripts/ios-prebuild/headers.js
+new file mode 100644
+index 0000000..26c17cc
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild/headers.js
+@@ -0,0 +1,295 @@
++/**
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @flow
++ * @format
++ */
++
++const {PodspecExceptions} = require('./headers-config');
++const utils = require('./utils');
++const path = require('path');
++const {globSync} = require('tinyglobby');
++
++const {createLogger} = utils;
++const headersLog = createLogger('headers');
++
++/*::
++import type {PodSpecConfiguration} from './headers-config';
++type HeaderMap = { headerDir: string, specName: string, headers: {source: string, target: string}[]};
++*/
++
++function getHeaderFilesFromPodspecs(
++  rootFolder /*:string*/,
++) /*: { [key: string]: HeaderMap[] }*/ {
++  const result /*: { [key: string]: HeaderMap[] }*/ = {};
++
++  // 1. Find all podspec files in the rootFolder
++  const podspecFiles = globSync('**/*.podspec', {
++    cwd: rootFolder,
++    absolute: true,
++    ignore: ['**/node_modules/**', '**/Pods/**'],
++  });
++
++  headersLog(
++    '🔍 Collecting header files from all podspec files in the project...',
++  );
++
++  // 2. For each podspec file, we would need to parse it and extract header information. We should
++  // do this by checking if the file contains the text 'podspec_sources'.
++  podspecFiles.forEach(podspecPath => {
++    // Check if this podspec has an exception registered
++    const relativeKey = path.relative(rootFolder, podspecPath);
++    const exception = PodspecExceptions[relativeKey];
++
++    if (exception) {
++      // Check if the exception is disabled
++      if ('disabled' in exception && exception.disabled === true) {
++        return;
++      }
++
++      // Use getHeaderFilesFromPodspec for podspecs with exceptions
++      const headerMaps = getHeaderFilesFromPodspec(
++        exception,
++        path.dirname(podspecPath),
++      );
++      if (headerMaps !== null) {
++        result[podspecPath] = headerMaps;
++      }
++      return;
++    }
++
++    // Open file and read content
++    const fileContent = require('fs').readFileSync(podspecPath, 'utf8');
++
++    // Try to infer header_dir when it's a string literal.
++    // We intentionally keep this simple and do not attempt to resolve Ruby variables.
++    // Examples supported:
++    //   s.header_dir = "ReactCommon"
++    //   ss.header_dir = 'jsinspector-modern/cdp'
++    const headerDirMatch = fileContent.match(
++      /\.header_dir\s*=\s*(['"])([^'"\n]+)\1/,
++    );
++    const inferredHeaderDir = headerDirMatch ? headerDirMatch[2].trim() : '';
++
++    // Check if it contains 'podspec_sources'
++    if (fileContent.includes('podspec_sources')) {
++      // Parse podspec_sources(source_files, header_patterns) - we want the SECOND argument.
++      // Examples:
++      //   podspec_sources("*.{cpp,h}", "**/*.h")
++      //   podspec_sources(["a.m", "b.h"], "*.h")
++      //   podspec_sources(["a.m", "b.h"], ["c.h", "d.h"])
++      //   podspec_sources(source_files, ["*.h", "platform/ios/**/*.h"])  # first arg is a variable
++      //
++      // Regex explanation:
++      //   podspec_sources\(              - match "podspec_sources("
++      //   (?:\[[^\]]*\]|"[^"]*"|[\w]+)   - first arg: either [...] or "..." or a variable name
++      //   \s*,\s*                        - comma separator with optional whitespace
++      //   (\[[^\]]*\]|"[^"]*")           - second arg (captured): either [...] or "..."
++      //   \)                             - closing paren
++      const headerPatternRegex =
++        /podspec_sources\((?:\[[^\]]*\]|"[^"]*"|\w+)\s*,\s*(\[[^\]]*\]|"[^"]*")\)/gm;
++      const matches = [...fileContent.matchAll(headerPatternRegex)];
++
++      // Also extract exclude_files patterns from the podspec
++      // Examples:
++      //   s.exclude_files = "tests/**/*.h"
++      //   s.exclude_files = ["tests/**/*.h", "internal/**/*.h"]
++      //   ss.exclude_files = "..."
++      const excludeFilesRegex = /\.exclude_files\s*=\s*(\[[^\]]*\]|"[^"]*")/gm;
++      const excludeMatches = [...fileContent.matchAll(excludeFilesRegex)];
++
++      // Parse exclude patterns
++      const excludePatterns = excludeMatches.flatMap(match => {
++        const arg = match[1].trim();
++        if (arg.startsWith('[')) {
++          const arrayContent = arg.slice(1, arg.lastIndexOf(']'));
++          return arrayContent
++            .split(',')
++            .map(s => s.trim().replace(/['"]/g, ''))
++            .filter(s => s.length > 0);
++        } else {
++          return [arg.replace(/['"]/g, '').trim()].filter(s => s.length > 0);
++        }
++      });
++
++      // Add default excludes
++      const allExcludes = [...excludePatterns];
++
++      if (matches.length > 0) {
++        // Extract header patterns (second argument) from all matches
++        const patterns = matches.flatMap(match => {
++          const secondArg = match[1].trim();
++
++          // Parse the second argument - it can be a string or an array
++          if (secondArg.startsWith('[')) {
++            // It's an array, extract the contents and split by comma
++            const arrayContent = secondArg.slice(1, secondArg.lastIndexOf(']'));
++            return arrayContent
++              .split(',')
++              .map(s => s.trim().replace(/['"]/g, ''))
++              .filter(s => s.length > 0);
++          } else {
++            // It's a single string
++            return [secondArg.replace(/['"]/g, '').trim()].filter(
++              s => s.length > 0,
++            );
++          }
++        });
++
++        // Now we can find header files based on these patterns
++        const foundHeaderFiles = patterns
++          .map(pattern => {
++            // our GLOB library doesn't like {h} in its patterns, so we use **/*.h instead of **/*.{h}
++            if (pattern.includes('{h}')) {
++              pattern = pattern.replaceAll('{h}', 'h');
++            }
++            return globSync(pattern, {
++              cwd: path.dirname(podspecPath),
++              ignore: allExcludes,
++              absolute: true,
++            });
++          })
++          .flat();
++
++        result[podspecPath] = [
++          {
++            headerDir: inferredHeaderDir,
++            specName: path.basename(podspecPath, '.podspec'),
++            headers: foundHeaderFiles.map(headerFile => ({
++              source: headerFile,
++              target: inferredHeaderDir
++                ? path.join(inferredHeaderDir, path.basename(headerFile))
++                : path.basename(headerFile),
++            })),
++          },
++        ];
++      }
++    }
++  });
++
++  return result;
++}
++
++/**
++ * Extracts header files from a single podspec based on its configuration.
++ * @param {PodSpecConfiguration} podSpecConfig The podspec configuration object
++ * @param {string} podSpecDirectory Directory where the podspec is located
++ * @returns {HeaderMap[] | null} Array of header maps or null if configuration is invalid
++ */
++function getHeaderFilesFromPodspec(
++  podSpecConfig /*: PodSpecConfiguration*/,
++  podSpecDirectory /*:string*/,
++) /*: HeaderMap[] | null*/ {
++  if (
++    !podSpecConfig ||
++    'name' in podSpecConfig === false ||
++    podSpecConfig.name === ''
++  ) {
++    headersLog(`⚠️ Skipping podspec due to missing or invalid configuration.`);
++    return null;
++  }
++
++  const headerMaps /*: HeaderMap[] */ = [];
++
++  // Now we can start collecting header files
++  const processConfig = (
++    config /*: PodSpecConfiguration */,
++    parents /*: Array<PodSpecConfiguration>*/,
++  ) => {
++    if (config.disabled === true) {
++      return;
++    }
++
++    const {headerDir, headerPatterns, excludePatterns, subSpecs} = config;
++
++    // Find header files for configuration
++    const foundHeaderFiles = headerPatterns
++      .map(pattern =>
++        globSync(pattern, {
++          cwd: podSpecDirectory,
++          absolute: true,
++          ignore: excludePatterns || [],
++        }),
++      )
++      .flat();
++
++    let resolvedHeaderDir /*:string */ = headerDir || '';
++
++    // If headerDir is not set, we need to resolve it against parent specs
++    if (parents.length > 0 && !headerDir) {
++      for (let i = parents.length - 1; i >= 0; i--) {
++        const parentHeaderDir = parents[i].headerDir;
++        if (parentHeaderDir) {
++          resolvedHeaderDir = parentHeaderDir;
++          break;
++        }
++      }
++    }
++
++    // If still not resolved, default to spec name
++    if (!resolvedHeaderDir) {
++      resolvedHeaderDir = '';
++    }
++
++    // Resolve preservePaths from parent specs too
++    let resolvedPreservePaths = config.preservePaths || [];
++    if (resolvedPreservePaths.length === 0 && parents.length > 0) {
++      for (let i = parents.length - 1; i >= 0; i--) {
++        const parentPreservePaths = parents[i].preservePaths;
++        if (parentPreservePaths && parentPreservePaths.length > 0) {
++          resolvedPreservePaths = parentPreservePaths;
++          break;
++        }
++      }
++    }
++
++    headerMaps.push({
++      headerDir: resolvedHeaderDir,
++      specName: config.name,
++      headers: foundHeaderFiles.map(headerFile => {
++        // Check if we have preservePath set for this file - then we need to get the subfolder structure too
++        // and not just copy to the root of headerDir - we should also ignore the headerDir part of the path
++        const isPreserved = resolvedPreservePaths.some(preservePattern => {
++          return globSync(preservePattern, {
++            cwd: podSpecDirectory,
++            absolute: true,
++            ignore: excludePatterns || [],
++          }).includes(headerFile);
++        });
++
++        if (isPreserved) {
++          // Get the subfolder for the header file
++          const relativePath = path.dirname(
++            path.relative(podSpecDirectory, headerFile),
++          );
++          return {
++            source: headerFile,
++            target: path.join(relativePath, path.basename(headerFile)),
++          };
++        }
++        return {
++          source: headerFile,
++          target: path.join(resolvedHeaderDir, path.basename(headerFile)),
++        };
++      }),
++    });
++
++    // Process subSpecs recursively
++    if (subSpecs && subSpecs.length > 0) {
++      subSpecs.forEach(subSpecConfig => {
++        processConfig(subSpecConfig, [config, ...parents]);
++      });
++    }
++  };
++
++  processConfig(podSpecConfig, []);
++
++  return headerMaps;
++}
++
++module.exports = {
++  getHeaderFilesFromPodspecs,
++};
+diff --git a/node_modules/react-native/scripts/ios-prebuild/hermes.js b/node_modules/react-native/scripts/ios-prebuild/hermes.js
+new file mode 100644
+index 0000000..fef7e0f
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild/hermes.js
+@@ -0,0 +1,387 @@
++/**
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @flow
++ * @format
++ */
++
++const {computeNightlyTarballURL, createLogger} = require('./utils');
++const {execSync} = require('child_process');
++const fs = require('fs');
++const path = require('path');
++const stream = require('stream');
++const {promisify} = require('util');
++
++const pipeline = promisify(stream.pipeline);
++const hermesLog = createLogger('Hermes');
++
++/*::
++import type {BuildFlavor, Destination, Platform} from './types';
++*/
++
++/**
++ * Downloads hermes artifacts from the specified version and build type. If you want to specify a specific
++ * version of hermes, use the HERMES_VERSION environment variable. The path to the artifacts will be inside
++ * the .build/artifacts/hermes folder, but this can be overridden by setting the HERMES_ENGINE_TARBALL_PATH
++ * environment variable. If this varuable is set, the script will use the local tarball instead of downloading it.
++ */
++async function prepareHermesArtifactsAsync(
++  reactNativeVersion /*:string*/,
++  buildType /*: BuildFlavor */,
++) /*: Promise<string> */ {
++  hermesLog(`Preparing Hermes...`);
++
++  // See if the user has set the HERMES_ENGINE_TARBALL_PATH environment variable
++  let localPath = process.env.HERMES_ENGINE_TARBALL_PATH ?? '';
++
++  // Create artifacts folder
++  const artifactsPath /*: string*/ = path.resolve(
++    process.cwd(),
++    '.build',
++    'artifacts',
++    'hermes',
++  );
++
++  // Ensure that the artifacts folder exists
++  fs.mkdirSync(artifactsPath, {recursive: true});
++
++  // Path for keeping track of the current version in the artifacts folder
++  const versionFilePath = path.join(artifactsPath, 'version.txt');
++
++  // Only check if the artifacts folder exists if we are not using a local tarball
++  if (!localPath) {
++    // Resolve the version from the environment variable or use the default version
++    let resolvedVersion = process.env.HERMES_VERSION ?? 'nightly';
++
++    if (resolvedVersion === 'nightly') {
++      hermesLog('Using latest nightly tarball');
++      const hermesVersion = await getNightlyVersionFromNPM();
++      resolvedVersion = hermesVersion;
++    }
++
++    // Check if the Hermes artifacts are already downloaded
++    if (
++      checkExistingVersion(
++        versionFilePath,
++        resolvedVersion,
++        buildType,
++        artifactsPath,
++      )
++    ) {
++      return artifactsPath;
++    }
++
++    const sourceType = await hermesSourceType(resolvedVersion, buildType);
++    localPath = await resolveSourceFromSourceType(
++      sourceType,
++      resolvedVersion,
++      buildType,
++      artifactsPath,
++    );
++  } else {
++    hermesLog('Using local tarball, skipping artifacts folder check');
++    // Delete version.txt if it exists
++    if (fs.existsSync(versionFilePath)) {
++      fs.unlinkSync(versionFilePath);
++    }
++  }
++
++  // Extract the tar.gz
++  execSync(`tar -xzf "${localPath}" -C "${artifactsPath}"`, {
++    stdio: 'inherit',
++  });
++
++  // Delete the tarball after extraction
++  if (!process.env.HERMES_ENGINE_TARBALL_PATH) {
++    fs.unlinkSync(localPath);
++  }
++
++  return artifactsPath;
++}
++
++async function getNightlyVersionFromNPM() /*: Promise<string> */ {
++  const npmResponse /*: Response */ = await fetch(
++    'https://registry.npmjs.org/hermes-compiler/nightly',
++  );
++
++  if (!npmResponse.ok) {
++    throw new Error(
++      `Couldn't get an answer from NPM: ${npmResponse.status} ${npmResponse.statusText}`,
++    );
++  }
++
++  const json = await npmResponse.json();
++  const latestNightly = json.version;
++  hermesLog(`Using version ${latestNightly}`);
++  return latestNightly;
++}
++
++/*::
++type HermesEngineSourceType =
++  | 'local_prebuilt_tarball'
++  | 'download_prebuild_tarball'
++  | 'download_prebuilt_nightly_tarball'
++*/
++
++const HermesEngineSourceTypes /*:{
++  +DOWNLOAD_PREBUILD_TARBALL: "download_prebuild_tarball",
++  +DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: "download_prebuilt_nightly_tarball",
++  +LOCAL_PREBUILT_TARBALL: "local_prebuilt_tarball"
++} */ = {
++  LOCAL_PREBUILT_TARBALL: 'local_prebuilt_tarball',
++  DOWNLOAD_PREBUILD_TARBALL: 'download_prebuild_tarball',
++  DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: 'download_prebuilt_nightly_tarball',
++};
++
++/**
++ * Checks if the Hermes artifacts are already downloaded and up to date with the specified version.
++ * Returns true if the artifacts are up to date, false otherwise.
++ */
++function checkExistingVersion(
++  versionFilePath /*: string */,
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++  artifactsPath /*: string */,
++) {
++  const resolvedVersion = `${version}-${buildType}`;
++  const hermesXCFramework = path.join(
++    artifactsPath,
++    'destroot',
++    'Library',
++    'Frameworks',
++    'universal',
++    'hermesvm.xcframework',
++  );
++
++  if (fs.existsSync(versionFilePath) && fs.existsSync(hermesXCFramework)) {
++    const versionFileContent = fs.readFileSync(versionFilePath, 'utf8');
++    if (versionFileContent.trim() === resolvedVersion) {
++      hermesLog(
++        `Hermes artifacts already downloaded and up to date: ${artifactsPath}`,
++      );
++      return true;
++    }
++  }
++  // If the version file does not exist or the version does not match, delete the artifacts folder
++  fs.rmSync(artifactsPath, {recursive: true, force: true});
++  hermesLog(
++    `Hermes artifacts folder already exists, but version does not match. Deleting: ${artifactsPath}`,
++  );
++  // Lets create the version.txt file
++  fs.mkdirSync(artifactsPath, {recursive: true});
++  fs.writeFileSync(versionFilePath, resolvedVersion, 'utf8');
++  hermesLog(
++    `Hermes artifacts folder created: ${artifactsPath} with version: ${resolvedVersion}`,
++  );
++  return false;
++}
++
++function hermesEngineTarballEnvvarDefined() /*: boolean */ {
++  return !!process.env.HERMES_ENGINE_TARBALL_PATH;
++}
++
++function getTarballUrl(
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++) /*: string */ {
++  // You can use the `ENTERPRISE_REPOSITORY` ariable to customise the base url from which artifacts will be downloaded.
++  // The mirror's structure must be the same of the Maven repo the react-native core team publishes on Maven Central.
++  const mavenRepoUrl =
++    process.env.ENTERPRISE_REPOSITORY ?? 'https://repo1.maven.org/maven2';
++  const namespace = 'com/facebook/hermes';
++  return `${mavenRepoUrl}/${namespace}/hermes-ios/${version}/hermes-ios-${version}-hermes-ios-${buildType.toLowerCase()}.tar.gz`;
++}
++
++async function getNightlyTarballUrl(
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++) /*: Promise<string> */ {
++  const artifactCoordinate = 'hermes-ios';
++  const artifactName = `hermes-ios-${buildType.toLowerCase()}.tar.gz`;
++  return await computeNightlyTarballURL(
++    version,
++    buildType,
++    'hermes',
++    artifactCoordinate,
++    artifactName,
++  );
++}
++
++/**
++ * Checks if a Hermes artifact exists at the given URL using fetch instead of curl
++ */
++async function hermesArtifactExists(
++  tarballUrl /*: string */,
++) /*: Promise<boolean> */ {
++  try {
++    const response /*: Response */ = await fetch(tarballUrl, {
++      method: 'HEAD',
++    });
++
++    return response.status === 200;
++  } catch (e) {
++    return false;
++  }
++}
++
++/**
++ * Determines the source type for Hermes based on availability
++ */
++async function hermesSourceType(
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++) /*: Promise<HermesEngineSourceType> */ {
++  if (hermesEngineTarballEnvvarDefined()) {
++    hermesLog('Using local prebuild tarball');
++    return HermesEngineSourceTypes.LOCAL_PREBUILT_TARBALL;
++  }
++
++  const tarballUrl = getTarballUrl(version, buildType);
++  if (await hermesArtifactExists(tarballUrl)) {
++    hermesLog(`Using download prebuild ${buildType} tarball`);
++    return HermesEngineSourceTypes.DOWNLOAD_PREBUILD_TARBALL;
++  }
++
++  // For nightly tarball, we need to resolve redirects first
++  const nightlyUrl = await getNightlyTarballUrl(version, buildType);
++  if (await hermesArtifactExists(nightlyUrl)) {
++    hermesLog('Using download prebuild nightly tarball');
++    return HermesEngineSourceTypes.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL;
++  }
++
++  hermesLog(
++    'Using download prebuild nightly tarball - this is a fallback and might not work.',
++  );
++  return HermesEngineSourceTypes.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL;
++}
++
++async function resolveSourceFromSourceType(
++  sourceType /*: HermesEngineSourceType */,
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++  artifactsPath /*: string*/,
++) /*: Promise<string> */ {
++  switch (sourceType) {
++    case HermesEngineSourceTypes.LOCAL_PREBUILT_TARBALL:
++      return localPrebuiltTarball();
++    case HermesEngineSourceTypes.DOWNLOAD_PREBUILD_TARBALL:
++      return downloadPrebuildTarball(version, buildType, artifactsPath);
++    case HermesEngineSourceTypes.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL:
++      return downloadPrebuiltNightlyTarball(version, buildType, artifactsPath);
++    default:
++      abort(
++        `[Hermes] Unsupported or invalid source type provided: ${sourceType}`,
++      );
++      return '';
++  }
++}
++
++function localPrebuiltTarball() /*: string */ {
++  const tarballPath = process.env.HERMES_ENGINE_TARBALL_PATH;
++  if (tarballPath && fs.existsSync(tarballPath)) {
++    hermesLog(
++      `Using pre-built binary from local path defined by HERMES_ENGINE_TARBALL_PATH envvar: ${tarballPath}`,
++    );
++    return tarballPath;
++  }
++  abort(
++    `[Hermes] HERMES_ENGINE_TARBALL_PATH is set, but points to a non-existing file: "${tarballPath ?? 'unknown'}"\nIf you don't want to use tarball, run 'unset HERMES_ENGINE_TARBALL_PATH'`,
++  );
++  return '';
++}
++
++async function downloadPrebuildTarball(
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++  artifactsPath /*: string*/,
++) /*: Promise<string> */ {
++  const url = getTarballUrl(version, buildType);
++  hermesLog(`Using release tarball from URL: ${url}`);
++  return downloadStableHermes(version, buildType, artifactsPath);
++}
++
++async function downloadPrebuiltNightlyTarball(
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++  artifactsPath /*: string*/,
++) /*: Promise<string> */ {
++  const url = await getNightlyTarballUrl(version, buildType);
++  hermesLog(`Using nightly tarball from URL: ${url}`);
++  return downloadHermesTarball(url, version, buildType, artifactsPath);
++}
++
++async function downloadStableHermes(
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++  artifactsPath /*: string */,
++) /*: Promise<string> */ {
++  const tarballUrl = getTarballUrl(version, buildType);
++  return downloadHermesTarball(tarballUrl, version, buildType, artifactsPath);
++}
++
++/**
++ * Downloads a Hermes tarball using fetch instead of curl
++ */
++async function downloadHermesTarball(
++  tarballUrl /*: string */,
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++  artifactsPath /*: string */,
++) /*: Promise<string> */ {
++  const destPath = buildType
++    ? `${artifactsPath}/hermes-ios-${version}-${buildType}.tar.gz`
++    : `${artifactsPath}/hermes-ios-${version}.tar.gz`;
++
++  if (!fs.existsSync(destPath)) {
++    const tmpFile = `${artifactsPath}/hermes-ios.download`;
++    try {
++      fs.mkdirSync(artifactsPath, {recursive: true});
++      hermesLog(`Downloading Hermes tarball from ${tarballUrl}`);
++
++      const response /*: Response */ = await fetch(tarballUrl);
++
++      if (!response.ok) {
++        throw new Error(
++          `Failed to download: ${response.status} ${response.statusText}`,
++        );
++      }
++
++      // Create a write stream to the temporary file
++      const fileStream = fs.createWriteStream(tmpFile);
++
++      // Use Node.js stream pipeline to safely pipe the response body to the file
++      if (response.body) {
++        await pipeline(response.body, fileStream);
++      } else {
++        // For older fetch implementations that don't support response.body as a stream
++        const buffer = await response.arrayBuffer();
++
++        fs.writeFileSync(tmpFile, Buffer.from(buffer));
++      }
++
++      // Move the temporary file to the destination path
++      fs.renameSync(tmpFile, destPath);
++    } catch (e) {
++      // Clean up the temporary file if it exists
++      if (fs.existsSync(tmpFile)) {
++        fs.unlinkSync(tmpFile);
++      }
++      abort(
++        `Failed to download Hermes tarball from ${tarballUrl}: ${e.message}`,
++      );
++    }
++  }
++  return destPath;
++}
++
++function abort(message /*: string */) {
++  hermesLog(message, 'error');
++  throw new Error(message);
++}
++
++module.exports = {
++  prepareHermesArtifactsAsync,
++};
+diff --git a/node_modules/react-native/scripts/ios-prebuild/reactNativeDependencies.js b/node_modules/react-native/scripts/ios-prebuild/reactNativeDependencies.js
+new file mode 100644
+index 0000000..7bd799d
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild/reactNativeDependencies.js
+@@ -0,0 +1,378 @@
++/**
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @flow
++ * @format
++ */
++
++/*:: import type {BuildFlavor} from './types'; */
++
++const {computeNightlyTarballURL, createLogger} = require('./utils');
++const {execSync} = require('child_process');
++const fs = require('fs');
++const path = require('path');
++const stream = require('stream');
++const {promisify} = require('util');
++
++const pipeline = promisify(stream.pipeline);
++
++const dependencyLog = createLogger('ReactNativeDependencies');
++
++/**
++ * Downloads ReactNativeDependencies artifacts from the specified version and build type. If you want to specify a specific
++ * version of ReactNativeDependencies, use the RN_DEP_VERSION environment variable. The path to the artifacts will be inside
++ * the packages/react-native/third-party folder.
++ */
++async function prepareReactNativeDependenciesArtifactsAsync(
++  version /*:string*/,
++  buildType /*: BuildFlavor */,
++) /*: Promise<string> */ {
++  dependencyLog(`Preparing ReactNativeDependencies...`);
++
++  // Create artifacts folder
++  const artifactsPath /*: string*/ = path.resolve(process.cwd(), 'third-party');
++
++  // Ensure that the artifacts folder exists
++  fs.mkdirSync(artifactsPath, {recursive: true});
++
++  // Path for keeping track of the current version in the artifacts folder
++  const versionFilePath = path.join(artifactsPath, 'version.txt');
++
++  // Resolve the version from the environment variable or use the default version
++  let resolvedVersion = process.env.RN_DEP_VERSION ?? version;
++
++  if (resolvedVersion === 'nightly') {
++    dependencyLog('Using latest nightly tarball');
++    const rnVersion = await getNightlyVersionFromNPM();
++    resolvedVersion = rnVersion;
++  }
++
++  // Check if the ReactNativeDependencies artifacts are already downloaded
++  if (
++    checkExistingVersion(
++      versionFilePath,
++      resolvedVersion,
++      buildType,
++      artifactsPath,
++    )
++  ) {
++    return artifactsPath;
++  }
++
++  const sourceType = await reactNativeDependenciesSourceType(
++    resolvedVersion,
++    buildType,
++  );
++  const localPath = await resolveSourceFromSourceType(
++    sourceType,
++    resolvedVersion,
++    buildType,
++    artifactsPath,
++  );
++
++  // Extract the tar.gz
++  const tmpPath = '/tmp/react-native-dependencies';
++  fs.mkdirSync(tmpPath, {recursive: true});
++  execSync(`tar -xzf "${localPath}" -C "${tmpPath}"`, {
++    stdio: 'inherit',
++  });
++
++  const xcframeworkSource = path.join(
++    tmpPath,
++    'packages',
++    'react-native',
++    'third-party',
++    'ReactNativeDependencies.xcframework',
++  );
++  // Copy the extracted files to the artifacts folder
++  execSync(`cp -R "${xcframeworkSource}" "${artifactsPath}"`, {
++    stdio: 'inherit',
++  });
++
++  // Delete the tarball after extraction
++  if (!process.env.HERMES_ENGINE_TARBALL_PATH) {
++    fs.unlinkSync(localPath);
++  }
++
++  return artifactsPath;
++}
++
++async function getNightlyVersionFromNPM() /*: Promise<string> */ {
++  const npmResponse /*: Response */ = await fetch(
++    'https://registry.npmjs.org/react-native/nightly',
++  );
++
++  if (!npmResponse.ok) {
++    throw new Error(
++      `Couldn't get an answer from NPM: ${npmResponse.status} ${npmResponse.statusText}`,
++    );
++  }
++
++  const json = await npmResponse.json();
++  const latestNightly = json.version;
++  dependencyLog(`Using version ${latestNightly}`);
++  return latestNightly;
++}
++
++/*::
++type ReactNativeDependenciesEngineSourceType =
++  | 'download_prebuild_tarball'
++  | 'download_prebuilt_nightly_tarball'
++*/
++
++const ReactNativeDependenciesEngineSourceTypes /*: {
++  +DOWNLOAD_PREBUILD_TARBALL: "download_prebuild_tarball",
++  +DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: "download_prebuilt_nightly_tarball"
++} */ = {
++  DOWNLOAD_PREBUILD_TARBALL: 'download_prebuild_tarball',
++  DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: 'download_prebuilt_nightly_tarball',
++};
++
++/**
++ * Checks if the ReactNativeDependencies artifacts are already downloaded and up to date with the specified version.
++ * Returns true if the artifacts are up to date, false otherwise.
++ */
++function checkExistingVersion(
++  versionFilePath /*: string */,
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++  artifactsPath /*: string */,
++) {
++  const resolvedVersion = `${version}-${buildType}`;
++  const rndepXCFramework = path.join(
++    artifactsPath,
++    'ReactNativeDependencies.xcframework',
++  );
++
++  if (fs.existsSync(rndepXCFramework)) {
++    if (fs.existsSync(versionFilePath)) {
++      const versionFileContent = fs.readFileSync(versionFilePath, 'utf8');
++      dependencyLog(`Version found on disk: ${versionFileContent}`);
++      if (versionFileContent.trim() === resolvedVersion) {
++        dependencyLog(
++          `ReactNativeDependencies artifacts already downloaded and up to date: ${artifactsPath}`,
++        );
++        return true;
++      }
++    } else {
++      dependencyLog(
++        `React Native Dependencies found on disk at: ${artifactsPath}.\nNo version file has been found. We are going to use it anyway, but there might be some unexpected behaviors.`,
++      );
++    }
++  } else {
++    dependencyLog('React Native Dependencies not found on disk');
++  }
++
++  // If the version file does not exist or the version does not match, delete the artifacts folder
++  fs.rmSync(artifactsPath, {recursive: true, force: true});
++
++  // Lets create the version.txt file
++  fs.mkdirSync(artifactsPath, {recursive: true});
++  fs.writeFileSync(versionFilePath, resolvedVersion, 'utf8');
++  dependencyLog(
++    `ReactNativeDependencies artifacts folder created: ${artifactsPath} with version: ${resolvedVersion}`,
++  );
++  return false;
++}
++
++function getTarballUrl(
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++) /*: string */ {
++  // You can use the `ENTERPRISE_REPOSITORY` ariable to customise the base url from which artifacts will be downloaded.
++  // The mirror's structure must be the same of the Maven repo the react-native core team publishes on Maven Central.
++  const mavenRepoUrl =
++    process.env.ENTERPRISE_REPOSITORY ?? 'https://repo1.maven.org/maven2';
++  const namespace = 'com/facebook/react';
++  return `${mavenRepoUrl}/${namespace}/react-native-artifacts/${version}/react-native-artifacts-${version}-reactnative-dependencies-${buildType.toLowerCase()}.tar.gz`;
++}
++
++async function getNightlyTarballUrl(
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++) /*: Promise<string> */ {
++  const coordinate = 'react-native-artifacts';
++  const artifactName = `reactnative-dependencies-${buildType.toLowerCase()}.tar.gz`;
++
++  return await computeNightlyTarballURL(
++    version,
++    buildType,
++    'react',
++    coordinate,
++    artifactName,
++  );
++}
++
++/**
++ * Checks if a ReactNativeDependencies artifact exists at the given URL using fetch instead of curl
++ */
++async function reactNativeDependenciesArtifactExists(
++  tarballUrl /*: string */,
++) /*: Promise<boolean> */ {
++  try {
++    const response /*: Response */ = await fetch(tarballUrl, {
++      method: 'HEAD',
++    });
++
++    return response.status === 200;
++  } catch (e) {
++    return false;
++  }
++}
++
++/**
++ * Determines the source type for ReactNativeDependencies based on availability
++ */
++async function reactNativeDependenciesSourceType(
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++) /*: Promise<ReactNativeDependenciesEngineSourceType> */ {
++  const tarballUrl = getTarballUrl(version, buildType);
++  if (await reactNativeDependenciesArtifactExists(tarballUrl)) {
++    dependencyLog(`Using download prebuild ${buildType} tarball`);
++    return ReactNativeDependenciesEngineSourceTypes.DOWNLOAD_PREBUILD_TARBALL;
++  }
++
++  // For nightly tarball, we need to resolve redirects first
++  const nightlyUrl = await getNightlyTarballUrl(version, buildType);
++  if (await reactNativeDependenciesArtifactExists(nightlyUrl)) {
++    dependencyLog('Using download prebuild nightly tarball');
++    return ReactNativeDependenciesEngineSourceTypes.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL;
++  }
++
++  dependencyLog(
++    'Using download prebuild nightly tarball - this is a fallback and might not work.',
++  );
++  return ReactNativeDependenciesEngineSourceTypes.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL;
++}
++
++async function resolveSourceFromSourceType(
++  sourceType /*: ReactNativeDependenciesEngineSourceType */,
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++  artifactsPath /*: string*/,
++) /*: Promise<string> */ {
++  switch (sourceType) {
++    case ReactNativeDependenciesEngineSourceTypes.DOWNLOAD_PREBUILD_TARBALL:
++      return downloadPrebuildTarball(version, buildType, artifactsPath);
++    case ReactNativeDependenciesEngineSourceTypes.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL:
++      return downloadPrebuiltNightlyTarball(version, buildType, artifactsPath);
++    default:
++      abort(
++        `[ReactNativeDependencies] Unsupported or invalid source type provided: ${sourceType}`,
++      );
++      return '';
++  }
++}
++
++async function downloadPrebuildTarball(
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++  artifactsPath /*: string*/,
++) /*: Promise<string> */ {
++  const url = getTarballUrl(version, buildType);
++  dependencyLog(`Using release tarball from URL: ${url}`);
++  return downloadStableReactNativeDependencies(
++    version,
++    buildType,
++    artifactsPath,
++  );
++}
++
++async function downloadPrebuiltNightlyTarball(
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++  artifactsPath /*: string*/,
++) /*: Promise<string> */ {
++  const url = await getNightlyTarballUrl(version, buildType);
++  dependencyLog(`Using nightly tarball from URL: ${url}`);
++  return downloadReactNativeDependenciesTarball(
++    url,
++    version,
++    buildType,
++    artifactsPath,
++  );
++}
++
++async function downloadStableReactNativeDependencies(
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++  artifactsPath /*: string */,
++) /*: Promise<string> */ {
++  const tarballUrl = getTarballUrl(version, buildType);
++  return downloadReactNativeDependenciesTarball(
++    tarballUrl,
++    version,
++    buildType,
++    artifactsPath,
++  );
++}
++
++/**
++ * Downloads a ReactNativeDependencies tarball using fetch instead of curl
++ */
++async function downloadReactNativeDependenciesTarball(
++  tarballUrl /*: string */,
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++  artifactsPath /*: string */,
++) /*: Promise<string> */ {
++  const destPath = buildType
++    ? `${artifactsPath}/reactnative-dependencies-${version}-${buildType}.tar.gz`
++    : `${artifactsPath}/reactnative-dependencies-${version}.tar.gz`;
++
++  if (!fs.existsSync(destPath)) {
++    const tmpFile = `${artifactsPath}/reactnative-dependencies.download`;
++    try {
++      fs.mkdirSync(artifactsPath, {recursive: true});
++      dependencyLog(
++        `Downloading ReactNativeDependencies tarball from ${tarballUrl}`,
++      );
++
++      const response /*: Response */ = await fetch(tarballUrl);
++
++      if (!response.ok) {
++        throw new Error(
++          `Failed to download: ${response.status} ${response.statusText}`,
++        );
++      }
++
++      // Create a write stream to the temporary file
++      const fileStream = fs.createWriteStream(tmpFile);
++
++      // Use Node.js stream pipeline to safely pipe the response body to the file
++      if (response.body) {
++        await pipeline(response.body, fileStream);
++      } else {
++        // For older fetch implementations that don't support response.body as a stream
++        const buffer = await response.arrayBuffer();
++
++        fs.writeFileSync(tmpFile, Buffer.from(buffer));
++      }
++
++      // Move the temporary file to the destination path
++      fs.renameSync(tmpFile, destPath);
++    } catch (e) {
++      // Clean up the temporary file if it exists
++      if (fs.existsSync(tmpFile)) {
++        fs.unlinkSync(tmpFile);
++      }
++      abort(
++        `Failed to download ReactNativeDependencies tarball from ${tarballUrl}: ${e.message}`,
++      );
++    }
++  }
++  return destPath;
++}
++
++function abort(message /*: string */) {
++  dependencyLog(message, 'error');
++  throw new Error(message);
++}
++
++module.exports = {
++  prepareReactNativeDependenciesArtifactsAsync,
++};
+diff --git a/node_modules/react-native/scripts/ios-prebuild/setup.js b/node_modules/react-native/scripts/ios-prebuild/setup.js
+new file mode 100644
+index 0000000..65e34bb
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild/setup.js
+@@ -0,0 +1,204 @@
++/**
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @flow
++ * @format
++ */
++
++/*:: import type {BuildFlavor} from './types'; */
++
++const {
++  generateFBReactNativeSpecIOS,
++} = require('../codegen/generate-artifacts-executor/generateFBReactNativeSpecIOS');
++const {prepareHermesArtifactsAsync} = require('./hermes');
++const {
++  prepareReactNativeDependenciesArtifactsAsync,
++} = require('./reactNativeDependencies');
++const {createFolderIfNotExists, createLogger} = require('./utils');
++const {execSync} = require('child_process');
++const fs = require('fs');
++const path = require('path');
++
++async function setup(
++  root /*:string*/,
++  buildFolder /*: string */,
++  currentVersion /*: string */,
++  buildType /*: BuildFlavor */,
++) {
++  // First of all, let's run codegen to make sure that we have the FBreactNativeSpec files in the prebuilds
++  generateFBReactNativeSpecIOS('.');
++
++  const prebuildLog = createLogger('prebuild');
++  createFolderIfNotExists(buildFolder);
++
++  // Create the hard links folder
++  const linksFolder = path.resolve(buildFolder, 'headers');
++  createFolderIfNotExists(linksFolder);
++
++  /**
++   * Creates a hard link from one path to another. For each subfolder
++   * in the source path, it creates a link in the target path with an
++   * underscore prefix.
++   */
++  const link = (fromPath /*:string*/, includePath /*:?string*/) => {
++    const source = path.resolve(root, fromPath);
++    const target = path.resolve(linksFolder, includePath ?? fromPath);
++
++    createFolderIfNotExists(target);
++
++    let linkedFiles = 0;
++
++    // get subfolders in source - make sure we only copy folders with header files
++    const entries = fs.readdirSync(source, {withFileTypes: true});
++    if (
++      entries.some(
++        dirent =>
++          dirent.isFile() &&
++          (String(dirent.name).endsWith('.h') ||
++            String(dirent.name).endsWith('.hpp')),
++      )
++    ) {
++      // Create link for all header files (*.h, *.hpp) in the source directory
++      entries.forEach(entry => {
++        const entryName = String(entry.name);
++        if (entry.isFile() && /\.(h|hpp)$/.test(entryName)) {
++          const sourceFile = path.join(source, entryName);
++          const targetFile = path.join(target, entryName);
++          // Skip if the file already exists
++          if (fs.existsSync(targetFile)) {
++            return;
++          }
++          try {
++            fs.linkSync(sourceFile, targetFile);
++            linkedFiles++;
++          } catch (e) {
++            console.error(
++              `Failed to create link for ${sourceFile} to ${targetFile}: ${e}`,
++            );
++          }
++        }
++      });
++    }
++
++    if (linkedFiles > 0) {
++      prebuildLog(
++        `Linked ${path.relative(root, source)} → ${path.relative(root, target)}`,
++      );
++    }
++
++    const subfolders = entries
++      .filter(dirent => dirent.isDirectory())
++      .filter(dirent => dirent.name !== '__tests__')
++      .filter(dirent => dirent.name !== 'tests')
++      .filter(dirent => dirent.name !== 'platform')
++      .map(dirent => dirent.name);
++
++    // Create links for subfolders
++    subfolders.forEach(folder => {
++      link(path.join(fromPath, String(folder)), includePath);
++    });
++  };
++
++  // HERMES ARTIFACTS
++  await prepareHermesArtifactsAsync(currentVersion, buildType);
++
++  await prepareReactNativeDependenciesArtifactsAsync(currentVersion, buildType);
++
++  // CODEGEN
++  const codegenPath = path.join(root, '.build/codegen');
++  createFolderIfNotExists(codegenPath);
++
++  const command = `node scripts/generate-codegen-artifacts -p "${root}" -o "${codegenPath}"  -t ios`;
++  execSync(command, {stdio: 'inherit'});
++
++  // LINKING
++  prebuildLog('Linking header files...');
++  link('Libraries/WebSocket/', 'React');
++  link('React/Base', 'React');
++  link('React/Base/Surface', 'React');
++  link('React/CxxBridge', 'React');
++  link('React/CxxModule', 'React');
++  link('React/CxxUtils', 'React');
++  link('React/DevSupport', 'React');
++  link('React/Inspector', 'React');
++  link('React/I18n', 'React');
++  link('React/Views', 'React');
++  link('React/CoreModules', 'React');
++  link('React/Modules', 'React');
++  link('React/Fabric', 'React');
++  link('React/Profiler', 'React');
++  link('React/CoreModules', 'React');
++  link('React/Runtime', 'React');
++  link('React/Views/ScrollView', 'React');
++  link('React/Views/RefreshControl', 'React');
++  link('Libraries/Text', 'React');
++  link('Libraries/AppDelegate');
++  link('ReactApple/Libraries/RCTFoundation/RCTDeprecation/Exported', 'React');
++  link(
++    'ReactApple/Libraries/RCTFoundation/RCTDeprecation/Exported',
++    'RCTDeprecation',
++  );
++  link('Libraries/Required', 'RCTRequired');
++  link('Libraries/TypeSafety', 'RCTTypeSafety');
++  link('Libraries/Text', 'React');
++  link('Libraries/Image', 'React');
++  link('Libraries/Network', 'React');
++  link('Libraries/Blob', 'React');
++  link('Libraries/NativeAnimation', 'React');
++  link('Libraries/LinkingIOS', 'React');
++  link('Libraries/Settings', 'React');
++
++  link('Libraries/PushNotificationIOS', 'React');
++  link('Libraries/Settings', 'React');
++  link('Libraries/Vibration', 'React');
++
++  link('ReactCommon/hermes', 'reacthermes');
++  link('ReactCommon/hermes', 'jsireact');
++
++  link(
++    'ReactCommon/react/renderer/imagemanager',
++    'react/renderer/imagemanager',
++  );
++  link('ReactCommon/yoga/Yoga', 'ReactCommon/yoga/Yoga');
++  link('ReactCommon/callinvoker', 'ReactCommon');
++  link('ReactCommon/react/renderer/componentregistry');
++  link('ReactCommon/react/renderer/core');
++  link('ReactCommon/react/bridging');
++  link('ReactCommon/react/timing');
++  link('ReactCommon/react/utils');
++  link('ReactCommon/react/debug');
++  link('ReactCommon/react/renderer/debug');
++  link('ReactCommon/react/featureflags');
++  link('ReactCommon/react/renderer/graphics');
++  link(
++    'ReactCommon/react/renderer/graphics/platform/ios',
++    'ReactCommon/react/renderer/graphics',
++  );
++  link('ReactCommon/react/nativemodule/core', 'ReactCommon');
++  link('ReactCommon/react/nativemodule/core/platform/ios', 'ReactCommon');
++
++  link('ReactCommon/react/utils/platform/ios', 'ReactCommon/react/utils');
++  link('ReactCommon/react/runtime');
++  link('ReactCommon/react/runtime/platform/ios', 'ReactCommon/react/runtime');
++  link('ReactCommon/jsitooling/react/runtime', 'ReactCommon/react/runtime');
++  link('ReactCommon/react/renderer/components/legacyviewmanagerinterop');
++  link('ReactCommon/react/renderer/components/view');
++  link(
++    'ReactCommon/react/renderer/components/view/platform/cxx',
++    'ReactCommon/react/renderer/components/view',
++  );
++  link('ReactCommon/react/renderer/mounting');
++  link('ReactCommon/react/renderer/attributedstring');
++  link('ReactCommon/runtimeexecutor/ReactCommon', 'ReactCommon');
++  link('ReactCommon/jsinspector-modern');
++  link('ReactCommon/cxxreact');
++
++  link('.build/codegen/build/generated/ios', 'ReactCodegen');
++}
++
++module.exports = {
++  setup,
++};
+diff --git a/node_modules/react-native/scripts/ios-prebuild/templates/React-umbrella.h b/node_modules/react-native/scripts/ios-prebuild/templates/React-umbrella.h
+new file mode 100644
+index 0000000..2c174c9
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild/templates/React-umbrella.h
+@@ -0,0 +1,287 @@
++/*
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ */
++
++#ifdef __OBJC__
++#import <UIKit/UIKit.h>
++#else
++#ifndef FOUNDATION_EXPORT
++#if defined(__cplusplus)
++#define FOUNDATION_EXPORT extern "C"
++#else
++#define FOUNDATION_EXPORT extern
++#endif
++#endif
++#endif
++
++#import <React/CoreModulesPlugins.h>
++#import <React/FBXXHashUtils.h>
++#import <React/NSTextStorage+FontScaling.h>
++#import <React/RCTAccessibilityManager+Internal.h>
++#import <React/RCTAccessibilityManager.h>
++#import <React/RCTActionSheetManager.h>
++#import <React/RCTActivityIndicatorView.h>
++#import <React/RCTActivityIndicatorViewManager.h>
++#import <React/RCTAdditionAnimatedNode.h>
++#import <React/RCTAlertController.h>
++#import <React/RCTAlertManager.h>
++#import <React/RCTAnimatedImage.h>
++#import <React/RCTAnimatedNode.h>
++#import <React/RCTAnimationDriver.h>
++#import <React/RCTAnimationPlugins.h>
++#import <React/RCTAnimationType.h>
++#import <React/RCTAnimationUtils.h>
++#import <React/RCTAppState.h>
++#import <React/RCTAppearance.h>
++#import <React/RCTAssert.h>
++#import <React/RCTAutoInsetsProtocol.h>
++#import <React/RCTBackedTextInputDelegate.h>
++#import <React/RCTBackedTextInputDelegateAdapter.h>
++#import <React/RCTBackedTextInputViewProtocol.h>
++#import <React/RCTBaseTextInputShadowView.h>
++#import <React/RCTBaseTextInputView.h>
++#import <React/RCTBaseTextInputViewManager.h>
++#import <React/RCTBaseTextShadowView.h>
++#import <React/RCTBaseTextViewManager.h>
++#import <React/RCTBlobManager.h>
++#import <React/RCTBorderCurve.h>
++#import <React/RCTBorderDrawing.h>
++#import <React/RCTBorderStyle.h>
++#import <React/RCTBridge+Inspector.h>
++#import <React/RCTBridge+Private.h>
++#import <React/RCTBridge.h>
++#import <React/RCTBridgeConstants.h>
++#import <React/RCTBridgeDelegate.h>
++#import <React/RCTBridgeMethod.h>
++#import <React/RCTBridgeModule.h>
++#import <React/RCTBridgeModuleDecorator.h>
++#import <React/RCTBridgeProxy+Cxx.h>
++#import <React/RCTBridgeProxy.h>
++#import <React/RCTBundleAssetImageLoader.h>
++#import <React/RCTBundleManager.h>
++#import <React/RCTBundleURLProvider.h>
++#import <React/RCTCallInvoker.h>
++#import <React/RCTCallInvokerModule.h>
++#import <React/RCTClipboard.h>
++#import <React/RCTColorAnimatedNode.h>
++#import <React/RCTComponent.h>
++#import <React/RCTComponentData.h>
++#import <React/RCTComponentEvent.h>
++#import <React/RCTConstants.h>
++#import <React/RCTConvert+CoreLocation.h>
++#import <React/RCTConvert+Text.h>
++#import <React/RCTConvert+Transform.h>
++#import <React/RCTConvert.h>
++#import <React/RCTCursor.h>
++#import <React/RCTCxxConvert.h>
++#import <React/RCTDataRequestHandler.h>
++#import <React/RCTDebuggingOverlay.h>
++#import <React/RCTDebuggingOverlayManager.h>
++#import <React/RCTDecayAnimation.h>
++#import <React/RCTDefines.h>
++#import <React/RCTDevLoadingView.h>
++#import <React/RCTDevLoadingViewProtocol.h>
++#import <React/RCTDevLoadingViewSetEnabled.h>
++#import <React/RCTDevMenu.h>
++#import <React/RCTDevSettings.h>
++#import <React/RCTDevToolsRuntimeSettingsModule.h>
++#import <React/RCTDeviceInfo.h>
++#import <React/RCTDiffClampAnimatedNode.h>
++#import <React/RCTDisplayLink.h>
++#import <React/RCTDisplayWeakRefreshable.h>
++#import <React/RCTDivisionAnimatedNode.h>
++#import <React/RCTDynamicTypeRamp.h>
++#import <React/RCTErrorCustomizer.h>
++#import <React/RCTErrorInfo.h>
++#import <React/RCTEventAnimation.h>
++#import <React/RCTEventDispatcher.h>
++#import <React/RCTEventDispatcherProtocol.h>
++#import <React/RCTEventEmitter.h>
++#import <React/RCTExceptionsManager.h>
++#import <React/RCTFPSGraph.h>
++#import <React/RCTFileReaderModule.h>
++#import <React/RCTFileRequestHandler.h>
++#import <React/RCTFont.h>
++#import <React/RCTFrameAnimation.h>
++#import <React/RCTFrameUpdate.h>
++#import <React/RCTGIFImageDecoder.h>
++#import <React/RCTHTTPRequestHandler.h>
++#import <React/RCTI18nManager.h>
++#import <React/RCTI18nUtil.h>
++#import <React/RCTImageBlurUtils.h>
++#import <React/RCTImageCache.h>
++#import <React/RCTImageDataDecoder.h>
++#import <React/RCTImageEditingManager.h>
++#import <React/RCTImageLoader.h>
++#import <React/RCTImageLoaderLoggable.h>
++#import <React/RCTImageLoaderProtocol.h>
++#import <React/RCTImageLoaderWithAttributionProtocol.h>
++#import <React/RCTImagePlugins.h>
++#import <React/RCTImageShadowView.h>
++#import <React/RCTImageSource.h>
++#import <React/RCTImageStoreManager.h>
++#import <React/RCTImageURLLoader.h>
++#import <React/RCTImageURLLoaderWithAttribution.h>
++#import <React/RCTImageUtils.h>
++#import <React/RCTImageView.h>
++#import <React/RCTImageViewManager.h>
++#import <React/RCTInitializing.h>
++#import <React/RCTInputAccessoryShadowView.h>
++#import <React/RCTInputAccessoryView.h>
++#import <React/RCTInputAccessoryViewContent.h>
++#import <React/RCTInputAccessoryViewManager.h>
++#import <React/RCTInspector.h>
++#import <React/RCTInspectorDevServerHelper.h>
++#import <React/RCTInspectorNetworkHelper.h>
++#import <React/RCTInspectorNetworkReporter.h>
++#import <React/RCTInspectorPackagerConnection.h>
++#import <React/RCTInspectorUtils.h>
++#import <React/RCTInterpolationAnimatedNode.h>
++#import <React/RCTInvalidating.h>
++#import <React/RCTJSStackFrame.h>
++#import <React/RCTJSThread.h>
++#import <React/RCTJavaScriptExecutor.h>
++#import <React/RCTJavaScriptLoader.h>
++#import <React/RCTKeyCommands.h>
++#import <React/RCTKeyboardObserver.h>
++#import <React/RCTLayout.h>
++#import <React/RCTLayoutAnimation.h>
++#import <React/RCTLayoutAnimationGroup.h>
++#import <React/RCTLinkingManager.h>
++#import <React/RCTLinkingPlugins.h>
++#import <React/RCTLocalAssetImageLoader.h>
++#import <React/RCTLocalizedString.h>
++#import <React/RCTLog.h>
++#import <React/RCTLogBox.h>
++#import <React/RCTLogBoxView.h>
++#import <React/RCTMacros.h>
++#import <React/RCTManagedPointer.h>
++#import <React/RCTMockDef.h>
++#import <React/RCTModalHostView.h>
++#import <React/RCTModalHostViewController.h>
++#import <React/RCTModalHostViewManager.h>
++#import <React/RCTModalManager.h>
++#import <React/RCTModuleData.h>
++#import <React/RCTModuleMethod.h>
++#import <React/RCTModuloAnimatedNode.h>
++#import <React/RCTMultilineTextInputView.h>
++#import <React/RCTMultilineTextInputViewManager.h>
++#import <React/RCTMultipartDataTask.h>
++#import <React/RCTMultipartStreamReader.h>
++#import <React/RCTMultiplicationAnimatedNode.h>
++#import <React/RCTNativeAnimatedModule.h>
++#import <React/RCTNativeAnimatedNodesManager.h>
++#import <React/RCTNativeAnimatedTurboModule.h>
++#import <React/RCTNetworkPlugins.h>
++#import <React/RCTNetworkTask.h>
++#import <React/RCTNetworking.h>
++#import <React/RCTNullability.h>
++#import <React/RCTObjectAnimatedNode.h>
++#import <React/RCTPLTag.h>
++#import <React/RCTPackagerClient.h>
++#import <React/RCTPackagerConnection.h>
++#import <React/RCTParserUtils.h>
++#import <React/RCTPausedInDebuggerOverlayController.h>
++#import <React/RCTPerformanceLogger.h>
++#import <React/RCTPerformanceLoggerLabels.h>
++#import <React/RCTPlatform.h>
++#import <React/RCTPointerEvents.h>
++#import <React/RCTProfile.h>
++#import <React/RCTPropsAnimatedNode.h>
++#import <React/RCTRawTextShadowView.h>
++#import <React/RCTRawTextViewManager.h>
++#import <React/RCTReconnectingWebSocket.h>
++#import <React/RCTRedBox.h>
++#import <React/RCTRedBoxExtraDataViewController.h>
++#import <React/RCTRedBoxSetEnabled.h>
++#import <React/RCTRefreshControl.h>
++#import <React/RCTRefreshControlManager.h>
++#import <React/RCTRefreshableProtocol.h>
++#import <React/RCTReloadCommand.h>
++#import <React/RCTResizeMode.h>
++#import <React/RCTRootContentView.h>
++#import <React/RCTRootShadowView.h>
++#import <React/RCTRootView.h>
++#import <React/RCTRootViewDelegate.h>
++#import <React/RCTRootViewInternal.h>
++#import <React/RCTSafeAreaShadowView.h>
++#import <React/RCTSafeAreaView.h>
++#import <React/RCTSafeAreaViewLocalData.h>
++#import <React/RCTSafeAreaViewManager.h>
++#import <React/RCTScrollContentShadowView.h>
++#import <React/RCTScrollContentView.h>
++#import <React/RCTScrollContentViewManager.h>
++#import <React/RCTScrollEvent.h>
++#import <React/RCTScrollView.h>
++#import <React/RCTScrollViewManager.h>
++#import <React/RCTScrollableProtocol.h>
++#import <React/RCTSettingsManager.h>
++#import <React/RCTSettingsPlugins.h>
++#import <React/RCTShadowView+Internal.h>
++#import <React/RCTShadowView+Layout.h>
++#import <React/RCTShadowView.h>
++#import <React/RCTSinglelineTextInputView.h>
++#import <React/RCTSinglelineTextInputViewManager.h>
++#import <React/RCTSourceCode.h>
++#import <React/RCTSpringAnimation.h>
++#import <React/RCTStatusBarManager.h>
++#import <React/RCTStyleAnimatedNode.h>
++#import <React/RCTSubtractionAnimatedNode.h>
++#import <React/RCTSurface.h>
++#import <React/RCTSurfaceDelegate.h>
++#import <React/RCTSurfaceHostingProxyRootView.h>
++#import <React/RCTSurfaceHostingView.h>
++#import <React/RCTSurfacePresenterStub.h>
++#import <React/RCTSurfaceProtocol.h>
++#import <React/RCTSurfaceRootShadowView.h>
++#import <React/RCTSurfaceRootShadowViewDelegate.h>
++#import <React/RCTSurfaceRootView.h>
++#import <React/RCTSurfaceSizeMeasureMode.h>
++#import <React/RCTSurfaceStage.h>
++#import <React/RCTSurfaceView+Internal.h>
++#import <React/RCTSurfaceView.h>
++#import <React/RCTSwitch.h>
++#import <React/RCTSwitchManager.h>
++#import <React/RCTTextAttributes.h>
++#import <React/RCTTextDecorationLineType.h>
++#import <React/RCTTextSelection.h>
++#import <React/RCTTextShadowView.h>
++#import <React/RCTTextTransform.h>
++#import <React/RCTTextView.h>
++#import <React/RCTTextViewManager.h>
++#import <React/RCTTiming.h>
++#import <React/RCTTouchEvent.h>
++#import <React/RCTTouchHandler.h>
++#import <React/RCTTrackingAnimatedNode.h>
++#import <React/RCTTransformAnimatedNode.h>
++#import <React/RCTTurboModuleRegistry.h>
++#import <React/RCTUIImageViewAnimated.h>
++#import <React/RCTUIManager.h>
++#import <React/RCTUIManagerObserverCoordinator.h>
++#import <React/RCTUIManagerUtils.h>
++#import <React/RCTUITextField.h>
++#import <React/RCTUITextView.h>
++#import <React/RCTURLRequestDelegate.h>
++#import <React/RCTURLRequestHandler.h>
++#import <React/RCTUtils.h>
++#import <React/RCTUtilsUIOverride.h>
++#import <React/RCTValueAnimatedNode.h>
++#import <React/RCTVersion.h>
++#import <React/RCTVibration.h>
++#import <React/RCTVibrationPlugins.h>
++#import <React/RCTView.h>
++#import <React/RCTViewManager.h>
++#import <React/RCTViewUtils.h>
++#import <React/RCTVirtualTextShadowView.h>
++#import <React/RCTVirtualTextView.h>
++#import <React/RCTVirtualTextViewManager.h>
++#import <React/RCTWebSocketModule.h>
++#import <React/RCTWrapperViewController.h>
++#import <React/UIView+Private.h>
++#import <React/UIView+React.h>
++
++FOUNDATION_EXPORT double ReactVersionNumber;
++FOUNDATION_EXPORT const unsigned char ReactVersionString[];
+diff --git a/node_modules/react-native/scripts/ios-prebuild/templates/React_RCTAppDelegate-umbrella.h b/node_modules/react-native/scripts/ios-prebuild/templates/React_RCTAppDelegate-umbrella.h
+new file mode 100644
+index 0000000..1451e48
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild/templates/React_RCTAppDelegate-umbrella.h
+@@ -0,0 +1,31 @@
++/*
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ */
++
++#ifdef __OBJC__
++#import <UIKit/UIKit.h>
++#else
++#ifndef FOUNDATION_EXPORT
++#if defined(__cplusplus)
++#define FOUNDATION_EXPORT extern "C"
++#else
++#define FOUNDATION_EXPORT extern
++#endif
++#endif
++#endif
++
++#import "RCTAppDelegate.h"
++#import "RCTAppSetupUtils.h"
++#import "RCTArchConfiguratorProtocol.h"
++#import "RCTDefaultReactNativeFactoryDelegate.h"
++#import "RCTDependencyProvider.h"
++#import "RCTJSRuntimeConfiguratorProtocol.h"
++#import "RCTReactNativeFactory.h"
++#import "RCTRootViewFactory.h"
++#import "RCTUIConfiguratorProtocol.h"
++
++FOUNDATION_EXPORT double React_RCTAppDelegateVersionNumber;
++FOUNDATION_EXPORT const unsigned char React_RCTAppDelegateVersionString[];
+diff --git a/node_modules/react-native/scripts/ios-prebuild/templates/module.modulemap b/node_modules/react-native/scripts/ios-prebuild/templates/module.modulemap
+new file mode 100644
+index 0000000..d08e0c5
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild/templates/module.modulemap
+@@ -0,0 +1,12 @@
++framework module React {
++  umbrella header "React_Core/React_Core-umbrella.h"
++  export *
++  module * { export * }
++}
++
++
++framework module React_RCTAppDelegate {
++    umbrella header "React_RCTAppDelegate/React_RCTAppDelegate-umbrella.h"
++    export *
++    module * { export * }
++}
+diff --git a/node_modules/react-native/scripts/ios-prebuild/types.js b/node_modules/react-native/scripts/ios-prebuild/types.js
+new file mode 100644
+index 0000000..56cad1f
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild/types.js
+@@ -0,0 +1,45 @@
++/**
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @flow
++ * @format
++ */
++
++/*::
++export type Platform =
++  'ios' |
++  'ios-simulator' |
++  'mac-catalyst';
++
++export type Destination =
++  'iOS' |
++  'iOS Simulator' |
++  'macOS,variant=Mac Catalyst';
++
++export type BuildFlavor = 'Debug' | 'Release';
++
++export type MavenSubGroup = 'hermes' | 'react';
++
++export type VFSEntry = {
++  name: string,
++  type: 'file' | 'directory',
++  'external-contents'?: string,
++  contents?: Array<VFSEntry>,
++};
++
++export type VFSOverlay = {
++  version: number,
++  'case-sensitive': boolean,
++  roots: Array<VFSEntry>,
++};
++
++export type HeaderMapping = {
++  key: string,
++  path: string,
++};
++*/
++
++module.exports = {};
+diff --git a/node_modules/react-native/scripts/ios-prebuild/utils.js b/node_modules/react-native/scripts/ios-prebuild/utils.js
+new file mode 100644
+index 0000000..d1c60f8
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild/utils.js
+@@ -0,0 +1,110 @@
++/**
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @flow
++ * @format
++ */
++
++/*:: import type {BuildFlavor, MavenSubGroup} from './types'; */
++
++const {execSync} = require('child_process');
++const fs = require('fs');
++
++/**
++ * Creates a folder if it does not exist
++ * @param {string} folderPath - The path to the folder
++ * @returns {string} The path to the created or existing folder
++ */
++function createFolderIfNotExists(folderPath /*:string*/) /*: string */ {
++  if (!fs.existsSync(folderPath)) {
++    fs.mkdirSync(folderPath, {recursive: true});
++    if (!fs.existsSync(folderPath)) {
++      throw new Error(`Failed to create folder: ${folderPath}`);
++    }
++  }
++  return folderPath;
++}
++
++function throwIfOnEden() {
++  try {
++    execSync('eden info', {stdio: 'ignore'});
++  } catch (error) {
++    // eden info failed, we are not on Eden, do nothing
++    return;
++  }
++
++  throw new Error('Cannot prepare the iOS prebuilds on an Eden checkout');
++}
++
++function createLogger(
++  prefix /*: string */,
++) /*: (message: string, level?: 'info' | 'warning' | 'error') => void */ {
++  return function (
++    message /*: string */,
++    level /*: 'info' | 'warning' | 'error' */ = 'info',
++  ) {
++    // Simple log coloring for terminal output
++    const resolvedPrefix = `[${prefix}] `;
++    let colorFn = (x /*:string*/) => x;
++    if (process.stdout.isTTY) {
++      if (level === 'info') colorFn = x => `\x1b[32m${x}\x1b[0m`;
++      else if (level === 'error') colorFn = x => `\x1b[31m${x}\x1b[0m`;
++      else colorFn = x => `\x1b[33m${x}\x1b[0m`;
++    }
++
++    console.log(colorFn(resolvedPrefix) + message);
++  };
++}
++
++async function computeNightlyTarballURL(
++  version /*: string */,
++  buildType /*: BuildFlavor */,
++  subGroup /*: MavenSubGroup */,
++  artifactCoordinate /*: string */,
++  artifactName /*: string */,
++) /*: Promise<string> */ {
++  const xmlUrl = `https://central.sonatype.com/repository/maven-snapshots/com/facebook/${subGroup}/${artifactCoordinate}/${version}-SNAPSHOT/maven-metadata.xml`;
++
++  const response = await fetch(xmlUrl);
++  if (!response.ok) {
++    return '';
++  }
++  const xmlText = await response.text();
++
++  // Extract the <snapshot> block
++  const snapshotMatch = xmlText.match(/<snapshot>([\s\S]*?)<\/snapshot>/);
++  if (!snapshotMatch) {
++    return '';
++  }
++  const snapshotContent = snapshotMatch[1];
++
++  // Extract <timestamp> from the snapshot block
++  const timestampMatch = snapshotContent.match(/<timestamp>(.*?)<\/timestamp>/);
++  if (!timestampMatch) {
++    return '';
++  }
++  const timestamp = timestampMatch[1];
++
++  // Extract <buildNumber> from the snapshot block
++  const buildNumberMatch = snapshotContent.match(
++    /<buildNumber>(.*?)<\/buildNumber>/,
++  );
++  if (!buildNumberMatch) {
++    return '';
++  }
++  const buildNumber = buildNumberMatch[1];
++
++  const fullVersion = `${version}-${timestamp}-${buildNumber}`;
++  const finalUrl = `https://central.sonatype.com/repository/maven-snapshots/com/facebook/${subGroup}/${artifactCoordinate}/${version}-SNAPSHOT/${artifactCoordinate}-${fullVersion}-${artifactName}`;
++  return finalUrl;
++}
++
++module.exports = {
++  createFolderIfNotExists,
++  throwIfOnEden,
++  createLogger,
++  computeNightlyTarballURL,
++};
+diff --git a/node_modules/react-native/scripts/ios-prebuild/vfs.js b/node_modules/react-native/scripts/ios-prebuild/vfs.js
+new file mode 100644
+index 0000000..64f4c1e
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild/vfs.js
+@@ -0,0 +1,289 @@
++/**
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @flow
++ * @format
++ */
++
++/*:: import type {HeaderMapping, VFSEntry, VFSOverlay} from './types'; */
++
++const headers = require('./headers');
++
++const {getHeaderFilesFromPodspecs} = headers;
++
++const ROOT_PATH_PLACEHOLDER = '${ROOT_PATH}';
++
++/**
++ * Converts a path to use POSIX-style separators (forward slashes)
++ */
++function toPosix(value /*: string */) /*: string */ {
++  return value.split(/[\\/]/).join('/');
++}
++
++/**
++ * Builds a hierarchical VFS directory structure from a list of header mappings.
++ * Clang's VFS overlay requires a tree structure where directories contain their children.
++ */
++function buildVFSStructure(
++  mappings /*: Array<HeaderMapping> */,
++) /*: Array<VFSEntry> */ {
++  // Group files by their directory structure
++  const dirTree /*: Map<string, Map<string, string>> */ = new Map();
++
++  for (const mapping of mappings) {
++    const parts = mapping.key.split('/');
++    const fileName = parts[parts.length - 1];
++    const dirPath = parts.slice(0, -1).join('/');
++
++    if (!dirTree.has(dirPath)) {
++      dirTree.set(dirPath, new Map());
++    }
++    const filesMap = dirTree.get(dirPath);
++    if (filesMap) {
++      filesMap.set(fileName, mapping.path);
++    }
++  }
++
++  // Build the root-level entries (files at root + top-level directories)
++  const rootDirs /*: Set<string> */ = new Set();
++  for (const dirPath of dirTree.keys()) {
++    const topLevel = dirPath.split('/')[0];
++    if (topLevel) {
++      rootDirs.add(topLevel);
++    }
++  }
++
++  const roots /*: Array<VFSEntry> */ = [];
++
++  // Add files that live at the root (e.g. key === 'RCTAppDelegate.h')
++  const rootFiles = dirTree.get('');
++  if (rootFiles) {
++    for (const [fileName, sourcePath] of Array.from(
++      rootFiles.entries(),
++    ).sort()) {
++      roots.push({
++        name: fileName,
++        type: 'file',
++        'external-contents': toPosix(sourcePath),
++      });
++    }
++  }
++
++  for (const rootDir of Array.from(rootDirs).sort()) {
++    const dirEntry = buildDirectoryEntry(rootDir, '', dirTree);
++    roots.push(dirEntry);
++  }
++
++  return roots;
++}
++
++/**
++ * Recursively builds a directory entry for the VFS
++ */
++function buildDirectoryEntry(
++  dirName /*: string */,
++  parentPath /*: string */,
++  dirTree /*: Map<string, Map<string, string>> */,
++) /*: VFSEntry */ {
++  const currentPath = parentPath ? `${parentPath}/${dirName}` : dirName;
++  const contents /*: Array<VFSEntry> */ = [];
++
++  // Add files in this directory
++  const filesInDir = dirTree.get(currentPath);
++  if (filesInDir) {
++    for (const [fileName, sourcePath] of Array.from(
++      filesInDir.entries(),
++    ).sort()) {
++      contents.push({
++        name: fileName,
++        type: 'file',
++        'external-contents': toPosix(sourcePath),
++      });
++    }
++  }
++
++  // Add subdirectories
++  const subdirs /*: Set<string> */ = new Set();
++  for (const dirPath of dirTree.keys()) {
++    if (dirPath.startsWith(currentPath + '/')) {
++      const remainder = dirPath.slice(currentPath.length + 1);
++      const nextDir = remainder.split('/')[0];
++      if (nextDir) {
++        subdirs.add(nextDir);
++      }
++    }
++  }
++
++  for (const subdir of Array.from(subdirs).sort()) {
++    contents.push(buildDirectoryEntry(subdir, currentPath, dirTree));
++  }
++
++  return {
++    name: dirName,
++    type: 'directory',
++    contents,
++  };
++}
++
++/**
++ * Simple YAML generator for VFS overlay structure (hierarchical format)
++ */
++function generateVFSOverlayYAML(overlay /*: VFSOverlay */) /*: string */ {
++  let yaml = '';
++
++  yaml += `version: ${String(overlay.version)}\n`;
++  yaml += `case-sensitive: ${String(overlay['case-sensitive'])}\n`;
++  yaml += `roots:\n`;
++
++  for (const root of overlay.roots) {
++    yaml += generateEntryYAML(root, 1);
++  }
++
++  return yaml;
++}
++
++/**
++ * Recursively generates YAML for a VFS entry
++ */
++function generateEntryYAML(
++  entry /*: VFSEntry */,
++  indent /*: number */,
++) /*: string */ {
++  const spaces = '  '.repeat(indent);
++  let yaml = '';
++
++  yaml += `${spaces}- name: '${entry.name}'\n`;
++  yaml += `${spaces}  type: '${entry.type}'\n`;
++
++  if (entry['external-contents']) {
++    yaml += `${spaces}  external-contents: '${entry['external-contents']}'\n`;
++  }
++
++  if (entry.contents && entry.contents.length > 0) {
++    yaml += `${spaces}  contents:\n`;
++    for (const child of entry.contents) {
++      yaml += generateEntryYAML(child, indent + 2);
++    }
++  }
++
++  return yaml;
++}
++
++/**
++ * Creates a VFS overlay object from the header files in podspecs.
++ * The source paths use ${ROOT_PATH} as a placeholder for later replacement
++ * with the actual root path on the end user's machine.
++ *
++ * The VFS overlay wraps all header mappings under a single root at
++ * ${ROOT_PATH}/Headers, which matches the HEADER_SEARCH_PATHS configured
++ * in rncore.rb. This allows the compiler to find headers like
++ * <yoga/style/Style.h> by looking up ${ROOT_PATH}/Headers/yoga/style/Style.h
++ * which the VFS redirects to the flat location in the xcframework.
++ *
++ * @param rootFolder The root folder of the React Native package
++ * @returns A VFS overlay object that can be serialized to YAML
++ */
++function createVFSOverlayContents(rootFolder /*: string */) /*: VFSOverlay */ {
++  // Get header files from podspecs (disable testing since we just need the mappings)
++  const podSpecsWithHeaderFiles = getHeaderFilesFromPodspecs(rootFolder);
++
++  const mappings /*: Array<HeaderMapping> */ = [];
++
++  // Process each podspec and its header files
++  Object.keys(podSpecsWithHeaderFiles).forEach(podspecPath => {
++    const headerMaps = podSpecsWithHeaderFiles[podspecPath];
++
++    // Use the first podspec spec name as the podspec name (this is the root spec)
++    const podSpecName = headerMaps[0].specName.replace('-', '_');
++
++    headerMaps.forEach(headerMap => {
++      headerMap.headers.forEach(header => {
++        // The key is just the target path (the import path)
++        // e.g., 'react/renderer/graphics/Size.h' for #import <react/renderer/graphics/Size.h>
++        let key = toPosix(header.target);
++
++        // If the podspec doesn't specify a header_dir, CocoaPods exposes public headers under
++        // <PodName/Header.h> (and umbrella headers typically use quoted imports resolved relative
++        // to the pod's public headers directory). To mirror that layout and avoid collisions
++        // between pods, prefix root-level header targets with the pod spec name.
++        if (
++          !key.includes('/') &&
++          (!headerMap.headerDir || headerMap.headerDir === '')
++        ) {
++          key = `${podSpecName}/${key}`;
++        }
++
++        // The external-contents path is always podSpecName + header.target because
++        // xcframework.js copies headers to: outputHeadersPath/podSpecName/headerFile.target
++        // So the VFS must point to that same location.
++        const sourcePath = `${ROOT_PATH_PLACEHOLDER}/Headers/${podSpecName}/${toPosix(header.target)}`;
++
++        mappings.push({
++          key,
++          path: sourcePath,
++        });
++      });
++    });
++  });
++
++  // Build the hierarchical VFS structure from mappings
++  const innerRoots = buildVFSStructure(mappings);
++
++  // Wrap all roots under a single ${ROOT_PATH}/Headers root.
++  // This is required because Clang's VFS overlay needs absolute paths for root entries.
++  // The compiler will have -I${ROOT_PATH}/Headers in its include paths, so when it
++  // searches for <yoga/style/Style.h>, it looks for ${ROOT_PATH}/Headers/yoga/style/Style.h.
++  // The VFS overlay intercepts this and maps it to the actual flat location.
++  const wrappedRoot /*: VFSEntry */ = {
++    name: `${ROOT_PATH_PLACEHOLDER}/Headers`,
++    type: 'directory',
++    contents: innerRoots,
++  };
++
++  return {
++    version: 0,
++    'case-sensitive': false,
++    roots: [wrappedRoot],
++  };
++}
++
++/**
++ * Creates a VFS overlay YAML file from the header files in podspecs.
++ * This is a convenience function that combines createVFSOverlayContents and
++ * generateVFSOverlayYAML into a single call.
++ *
++ * @param rootFolder The root folder of the React Native package
++ * @returns The VFS overlay as a YAML string ready to be written to a file
++ */
++function createVFSOverlay(rootFolder /*: string */) /*: string */ {
++  const overlay = createVFSOverlayContents(rootFolder);
++  return generateVFSOverlayYAML(overlay);
++}
++
++/**
++ * Resolves a VFS overlay template by replacing the ${ROOT_PATH} placeholder
++ * with the actual root path. This is the equivalent of the Ruby create_vfs_overlay
++ * function in rncore.rb.
++ *
++ * The VFS overlay template contains ${ROOT_PATH} placeholders that need to be
++ * replaced with the actual path to the xcframework on the end user's machine
++ * (e.g., the path to React.xcframework in the Pods folder).
++ *
++ * @param vfsTemplate The VFS overlay template content (YAML string with ${ROOT_PATH} placeholders)
++ * @param rootPath The actual root path to substitute for ${ROOT_PATH}
++ * @returns The resolved VFS overlay YAML string with absolute paths
++ */
++function resolveVFSOverlay(
++  vfsTemplate /*: string */,
++  rootPath /*: string */,
++) /*: string */ {
++  return vfsTemplate.split(ROOT_PATH_PLACEHOLDER).join(rootPath);
++}
++
++module.exports = {
++  createVFSOverlay,
++  resolveVFSOverlay,
++};
+diff --git a/node_modules/react-native/scripts/ios-prebuild/xcframework.js b/node_modules/react-native/scripts/ios-prebuild/xcframework.js
+new file mode 100644
+index 0000000..5801452
+--- /dev/null
++++ b/node_modules/react-native/scripts/ios-prebuild/xcframework.js
+@@ -0,0 +1,432 @@
++/**
++ * Copyright (c) Meta Platforms, Inc. and affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @flow
++ * @format
++ */
++
++/*:: import type {BuildFlavor} from './types'; */
++
++const {
++  generateFBReactNativeSpecIOS,
++} = require('../codegen/generate-artifacts-executor/generateFBReactNativeSpecIOS');
++const headers = require('./headers');
++const utils = require('./utils');
++const vfs = require('./vfs');
++const childProcess = require('child_process');
++const fs = require('fs');
++const path = require('path');
++
++const {execSync} = childProcess;
++const {getHeaderFilesFromPodspecs} = headers;
++const {createFolderIfNotExists, createLogger} = utils;
++const {createVFSOverlay} = vfs;
++
++const frameworkLog = createLogger('XCFramework');
++
++/**
++ * Path to the React umbrella header file.
++ * This umbrella header contains ONLY the list of headers that are accessible by Swift, so no C++ construct are allowed in the headers.
++ */
++const REACT_CORE_UMBRELLA_HEADER_PATH /*: string*/ = path.join(
++  __dirname,
++  'Templates',
++  'React-umbrella.h',
++);
++
++/**
++ * Path to the React umbrella header file.
++ * This umbrella header contains ONLY the list of headers that are accessible by Swift, so no C++ construct are allowed in the headers.
++ */
++const RCT_APP_DELEGATE_UMBRELLA_HEADER_PATH /*: string*/ = path.join(
++  __dirname,
++  'Templates',
++  'React_RCTAppDelegate-umbrella.h',
++);
++
++const RN_MODULEMAP_PATH /*: string*/ = path.join(
++  __dirname,
++  'Templates',
++  'module.modulemap',
++);
++
++function buildXCFrameworks(
++  rootFolder /*: string */,
++  buildFolder /*: string */,
++  frameworkFolders /*: Array<string> */,
++  buildType /*: BuildFlavor */,
++  identity /*: ?string */,
++) {
++  // Let's run codegen for FBReactNativeSpec otherwise some headers will be missing
++  generateFBReactNativeSpecIOS('.');
++
++  const outputPath = path.join(
++    buildFolder,
++    'output',
++    'xcframeworks',
++    buildType,
++    'React.xcframework',
++  );
++  // Delete all target platform folders (everything but the Headers and Modules folders)
++  try {
++    fs.rmSync(outputPath, {recursive: true, force: true});
++  } catch (error) {
++    frameworkLog(
++      `Error deleting folder: ${outputPath}. Check if the folder exists.`,
++      'error',
++    );
++    return;
++  }
++
++  // Build the XCFrameworks by using each framework folder as input
++  const frameworks = frameworkFolders
++    .map(frameworkFolder => {
++      return `-framework "${frameworkFolder}"`;
++    })
++    .join(' ');
++
++  const buildCommand = `xcodebuild -create-xcframework ${frameworks} -output ${outputPath} -allow-internal-distribution`;
++
++  frameworkLog(buildCommand);
++  try {
++    execSync(buildCommand, {
++      cwd: rootFolder,
++      stdio: 'inherit',
++    });
++  } catch (error) {
++    frameworkLog(
++      `Error building XCFramework: ${error.message}. Check if the build was successful.`,
++      'error',
++    );
++    return;
++  }
++
++  // Use the header files from podspecs
++  const podSpecsWithHeaderFiles = getHeaderFilesFromPodspecs(rootFolder);
++
++  // Delete header files to the output path
++  const outputHeadersPath = path.join(outputPath, 'Headers');
++
++  // Store umbrella headers keyed on podspec names
++  const umbrellaHeaders /*: {[key: string]: string} */ = {};
++  const copiedHeaderFilesWithPodspecNames /*: {[key: string]: string[]} */ = {};
++
++  // Enumerate podspecs and copy headers, create umbrella headers and module map file
++  Object.keys(podSpecsWithHeaderFiles).forEach(podspec => {
++    const headerFiles = podSpecsWithHeaderFiles[podspec]
++      .map(h => h.headers)
++      .flat();
++
++    // Use the first podspec spec name as the podspec name (this is the root spec in the podspec file)
++    const podSpecName = podSpecsWithHeaderFiles[podspec][0].specName.replace(
++      '-',
++      '_',
++    );
++
++    if (headerFiles.length > 0) {
++      // Create a folder for the podspec in the output headers path
++      const podSpecTargetFolder = path.join(outputHeadersPath, podSpecName);
++
++      // Copy each header file to the podspec folder
++      copiedHeaderFilesWithPodspecNames[podSpecName] = headerFiles.map(
++        headerFile => {
++          const headerFileTargetPath = path.join(
++            podSpecTargetFolder,
++            headerFile.target,
++          );
++          createFolderIfNotExists(path.dirname(headerFileTargetPath));
++          fs.copyFileSync(headerFile.source, headerFileTargetPath);
++          return headerFileTargetPath;
++        },
++      );
++
++      // Create umbrella header file for the podspec
++      const umbrellaHeaderFilename = path.join(
++        podSpecTargetFolder,
++        podSpecName + '-umbrella.h',
++      );
++
++      if (
++        podSpecName === 'React_Core' ||
++        podSpecName === 'React_RCTAppDelegate'
++      ) {
++        if (podSpecName === 'React_Core') {
++          // Copy the React-umbrella.h file to the umbrella header filename
++          fs.copyFileSync(
++            REACT_CORE_UMBRELLA_HEADER_PATH,
++            umbrellaHeaderFilename,
++          );
++        } else {
++          fs.copyFileSync(
++            RCT_APP_DELEGATE_UMBRELLA_HEADER_PATH,
++            umbrellaHeaderFilename,
++          );
++        }
++
++        // Store the umbrella header filename in the umbrellaHeaders object
++        umbrellaHeaders[podSpecName] = umbrellaHeaderFilename;
++      }
++    }
++  });
++
++  // Create the module map file using the header files in podSpecsWithHeaderFiles
++  const moduleMapFile = createModuleMapFile(outputPath);
++  if (!moduleMapFile) {
++    frameworkLog(
++      'Failed to create module map file. The XCFramework may not work correctly. Stopping.',
++      'error',
++    );
++    return;
++  }
++
++  // Copy header files and module map file to each platform slice in the XCFramework
++  copyHeaderFilesToSlices(
++    rootFolder,
++    outputPath,
++    moduleMapFile,
++    umbrellaHeaders,
++    copiedHeaderFilesWithPodspecNames,
++  );
++
++  // Copy Symbols to symbols folder
++  copySymbols(outputPath, frameworkFolders);
++
++  if (identity) {
++    signXCFramework(identity, outputPath);
++  }
++
++  // Tar the output folder to a .tar.gz file
++  const tarFilePath = path.join(
++    buildFolder,
++    'output',
++    'xcframeworks',
++    buildType,
++    'React.xcframework.tar.gz',
++  );
++  frameworkLog('Creating tar file: ' + tarFilePath);
++  try {
++    execSync(
++      `tar -czf ${tarFilePath} -C ${path.dirname(outputPath)} React.xcframework`,
++      {
++        stdio: 'inherit',
++      },
++    );
++  } catch (error) {
++    frameworkLog(
++      `Error creating tar file: ${error.message}. Check if the tar command is available.`,
++      'warning',
++    );
++  }
++}
++
++function copySymbols(
++  outputPath /*:string*/,
++  frameworkFolders /*:Array<string>*/,
++) {
++  frameworkLog('Copying symbols to symbols folder...');
++  const targetArchFolders = fs
++    .readdirSync(outputPath)
++    .map(p => path.join(outputPath, p))
++    .filter(folder => {
++      return (
++        fs.statSync(folder).isDirectory() &&
++        !folder.endsWith('Headers') &&
++        !folder.endsWith('Modules')
++      );
++    });
++
++  const symbolOutput = path.join(outputPath, '..', 'Symbols');
++  frameworkFolders.forEach(frameworkFolder => {
++    // Get archs for current symbol slice
++    const frameworkPlatforms = getArchsFromFramework(
++      path.join(frameworkFolder, 'React'),
++    );
++    if (frameworkPlatforms) {
++      const targetFolder = targetArchFolders.find(
++        targetArchFolder =>
++          getArchsFromFramework(
++            path.join(targetArchFolder, 'React.framework', 'React'),
++          ) === frameworkPlatforms,
++      );
++      if (!targetFolder) {
++        frameworkLog(
++          `No target folder found for symbol slice: ${frameworkFolder}`,
++          'error',
++        );
++        return;
++      }
++      const targetSymbolPath = path.join(
++        symbolOutput,
++        path.basename(targetFolder),
++      );
++      const sourceSymbolPath = path.join(
++        frameworkFolder,
++        '..',
++        '..',
++        'React.framework.dSYM',
++      );
++      console.log(
++        `  ${path.relative(outputPath, sourceSymbolPath)} → ${path.basename(targetFolder)}`,
++      );
++      fs.mkdirSync(targetSymbolPath, {recursive: true});
++      execSync(`cp -r ${sourceSymbolPath} ${targetSymbolPath}`);
++    }
++  });
++}
++
++// Copy header files and module map file to each platform slice in the XCFramework.
++function copyHeaderFilesToSlices(
++  rootFolder /*:string*/,
++  outputPath /*:string*/,
++  moduleMapFile /*:string*/,
++  umbrellaHeaderFiles /*:{[key: string]: string}*/,
++  outputHeaderFiles /*: {[key: string]: string[]} */,
++) {
++  frameworkLog('Linking modules and headers to platform folders for slice...');
++
++  // Enumerate all platform folders in the output path
++  const platformFolders = fs
++    .readdirSync(outputPath)
++    .map(folder => path.join(outputPath, folder))
++    .filter(folder => {
++      return (
++        fs.statSync(folder).isDirectory() &&
++        !folder.endsWith('Headers') &&
++        !folder.endsWith('Modules')
++      );
++    });
++
++  platformFolders.forEach(platformFolder => {
++    // Link the Modules folder into the platform folder
++    const targetModulesFolder = path.join(
++      platformFolder,
++      'React.Framework',
++      'Modules',
++    );
++    createFolderIfNotExists(targetModulesFolder);
++
++    try {
++      fs.linkSync(
++        moduleMapFile,
++        path.join(targetModulesFolder, path.basename(moduleMapFile)),
++      );
++    } catch (error) {
++      frameworkLog(
++        `Error copying module map file: ${error.message}. Check if the file exists at ${moduleMapFile}.`,
++        'error',
++      );
++    }
++    // Copy headers folder into the platform folder
++    const targetHeadersFolder = path.join(
++      platformFolder,
++      'React.Framework',
++      'Headers',
++    );
++
++    // Link umbrella / header files into the platform folder
++    Object.keys(umbrellaHeaderFiles).forEach(podSpecName => {
++      const umbrellaHeaderFile = umbrellaHeaderFiles[podSpecName];
++
++      // Create the target folder for the umbrella header file
++      const targetPodSpecFolder = path.join(targetHeadersFolder, podSpecName);
++      createFolderIfNotExists(targetPodSpecFolder);
++      // Link the umbrella header file to the target folder
++      try {
++        fs.copyFileSync(
++          umbrellaHeaderFile,
++          path.join(targetPodSpecFolder, path.basename(umbrellaHeaderFile)),
++        );
++      } catch (error) {
++        frameworkLog(
++          `Error linking umbrella header file: ${error.message}. Check if the file exists.`,
++          'error',
++        );
++      }
++    });
++
++    Object.keys(outputHeaderFiles).forEach(podSpecName => {
++      outputHeaderFiles[podSpecName].forEach(headerFile => {
++        // Get the relative path from the root Headers folder to preserve directory structure
++        // headerFile is like /path/to/Headers/Yoga/yoga/style/Style.h
++        // We need to extract Yoga/yoga/style/Style.h and copy to the same structure in the slice
++        const rootHeadersFolder = path.join(outputPath, 'Headers');
++        const relativeHeaderPath = path.relative(rootHeadersFolder, headerFile);
++        const targetHeaderFile = path.join(
++          targetHeadersFolder,
++          relativeHeaderPath,
++        );
++        createFolderIfNotExists(path.dirname(targetHeaderFile));
++        if (!fs.existsSync(targetHeaderFile)) {
++          try {
++            fs.copyFileSync(headerFile, targetHeaderFile);
++          } catch (error) {
++            frameworkLog(
++              `Error copying header file: ${error.message}. Check if the file exists.`,
++              'error',
++            );
++          }
++        }
++      });
++    });
++  });
++
++  // Create VFS overlay file at the XCFramework root (same for all platforms)
++  const vfsFilePath = path.join(outputPath, 'React-VFS-template.yaml');
++  try {
++    fs.writeFileSync(vfsFilePath, createVFSOverlay(rootFolder), 'utf8');
++    frameworkLog(`Created VFS overlay: ${path.basename(vfsFilePath)}`);
++  } catch (error) {
++    frameworkLog(`Error creating VFS overlay file: ${error.message}.`, 'error');
++  }
++}
++
++function createModuleMapFile(outputPath /*: string */) {
++  // Create/get the module map folder
++  const moduleMapFolder = path.join(outputPath, 'Modules');
++  createFolderIfNotExists(moduleMapFolder);
++
++  // Create the module map file
++  const moduleMapFile = path.join(moduleMapFolder, 'module.modulemap');
++
++  frameworkLog('Creating module map file: ' + moduleMapFile);
++
++  try {
++    fs.copyFileSync(RN_MODULEMAP_PATH, moduleMapFile);
++    return moduleMapFile;
++  } catch (error) {
++    frameworkLog(
++      `Error creating module map file: ${error.message}. Check if the file exists.`,
++      'error',
++    );
++    return null;
++  }
++}
++
++function getArchsFromFramework(frameworkPath /*:string*/) {
++  try {
++    return execSync(`vtool -show-build ${frameworkPath}|grep platform`)
++      .toString()
++      .split('\n')
++      .map(p => p.trim().split(' ')[1])
++      .sort((a, b) => a.localeCompare(b))
++      .join(' ');
++  } catch (error) {
++    return '';
++  }
++}
++
++function signXCFramework(
++  identity /*: string */,
++  xcframeworkPath /*: string */,
++) {
++  frameworkLog('Signing XCFramework...');
++  const command = `codesign --timestamp --sign "${identity}" ${xcframeworkPath}`;
++  execSync(command, {stdio: 'inherit'});
++}
++
++module.exports = {
++  buildXCFrameworks,
++};
+diff --git a/node_modules/react-native/scripts/react_native_pods.rb b/node_modules/react-native/scripts/react_native_pods.rb
+index 75b21b4..3ff56c0 100644
+--- a/node_modules/react-native/scripts/react_native_pods.rb
++++ b/node_modules/react-native/scripts/react_native_pods.rb
+@@ -534,6 +534,13 @@ def react_native_post_install(
+     # In XCode 26 we need to revert the new setting SWIFT_ENABLE_EXPLICIT_MODULES when building
+     # with precompiled binaries.
+     ReactNativePodsUtils.set_build_setting(installer, build_setting: "SWIFT_ENABLE_EXPLICIT_MODULES", value: "NO")
++
++    # Process the VFS overlay for prebuilt React Native Core - this is done as part of the post install so
++    # that we can update paths based on the final location of the Pods installation.
++    ReactNativeCoreUtils.process_vfs_overlay()
++
++    # Configure xcconfig for prebuilt usage (VFS overlay, header paths, cleanup redundant paths)
++    ReactNativeCoreUtils.configure_aggregate_xcconfig(installer)
+   end
+ 
+   SPM.apply_on_post_install(installer)
