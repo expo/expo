@@ -838,6 +838,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     let {
       reactClientReferences: clientBoundaries,
       reactServerReferences: serverActionReferencesInServer,
+      reactClientReferenceMap: serverBundleReferenceMap,
       cssModules,
     } = await this.rscRenderer!.getExpoRouterClientReferencesAsync(
       {
@@ -925,10 +926,17 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // stableIdToChunk maps stable ID -> chunk filename
     // Built from artifact metadata.paths which maps file path -> chunk
     // We need to convert this to stable ID -> chunk using reactClientReferenceMap
-    const stableIdToFilePath: Record<string, string> = bundle.artifacts
-      .filter((a) => a.type === 'js')
-      .map((artifact) => artifact.metadata.reactClientReferenceMap ?? {})
-      .reduce((acc, map) => ({ ...acc, ...map }), {});
+    // Merge client bundle's mapping with server bundle's mapping.
+    // The server bundle includes assets which only have reactClientReference in server environment.
+    const stableIdToFilePath: Record<string, string> = {
+      // Server bundle mapping first (includes assets)
+      ...serverBundleReferenceMap,
+      // Client bundle mappings override (most modules are here)
+      ...bundle.artifacts
+        .filter((a) => a.type === 'js')
+        .map((artifact) => artifact.metadata.reactClientReferenceMap ?? {})
+        .reduce((acc, map) => ({ ...acc, ...map }), {}),
+    };
 
     // filePathToChunk maps absolute file path -> chunk filename
     const filePathToChunk: Record<string, string> = (
@@ -941,6 +949,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // SSR manifest maps stable ID -> chunk (simple format)
     const ssrManifest = new Map<string, string | null>();
 
+    // Find the entry bundle filename - client boundaries that are not in async chunks
+    // are in the main entry bundle
+    const entryBundle = bundle.artifacts.find(
+      (a) => a.type === 'js' && a.filename.includes('entry-')
+    );
+    const entryBundleFilename = entryBundle?.filename;
+    debug('Entry bundle filename:', entryBundleFilename);
+
     if (Object.keys(filePathToChunk).length) {
       // Web with bundle splitting enabled
       clientBoundaries.forEach((stableId) => {
@@ -951,11 +967,28 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               `Available: ${Object.keys(stableIdToFilePath).join(', ') || '(none)'}`
           );
         }
-        const chunk = filePathToChunk[filePath];
+        // filePathToChunk uses paths relative to serverRoot, but stableIdToFilePath may have absolute paths
+        // Try both the original path and the relative version
+        let chunk = filePathToChunk[filePath];
+        if (!chunk && path.isAbsolute(filePath)) {
+          const relativePath = path.relative(serverRoot, filePath);
+          chunk = filePathToChunk[relativePath];
+          // Also try with leading slash (some serializers use that format)
+          if (!chunk) {
+            chunk = filePathToChunk['/' + relativePath];
+          }
+        }
+        // If no chunk found, the client boundary is in the main entry bundle
+        if (!chunk && entryBundleFilename) {
+          debug(
+            `Client boundary "${stableId}" not in async chunk, using entry bundle: ${entryBundleFilename}`
+          );
+          chunk = '/' + entryBundleFilename;
+        }
         if (!chunk) {
           throw new Error(
             `Could not find chunk for "${stableId}" (file: ${filePath}). ` +
-              `Available: ${Object.keys(filePathToChunk).join(', ') || '(none)'}`
+              `No entry bundle found to use as fallback.`
           );
         }
         ssrManifest.set(stableId, chunk);

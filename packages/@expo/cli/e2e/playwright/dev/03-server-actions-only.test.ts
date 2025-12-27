@@ -83,9 +83,10 @@ test.describe(inputDir, () => {
 
     const rscPayload = new TextDecoder().decode(await response.body());
 
-    expect(rscPayload).toMatch(
-      '2:I["node_modules/react-native-web/dist/exports/Text/index.js",["/node_modules/react-native-web/dist/exports/Text/index.js.bundle?platform=web&dev=true&hot=false&transform.asyncRoutes=true&transform.routerRoot=__e2e__%2F03-server-actions-only%2Fapp&modulesOnly=true&runModule=false&resolver.clientboundary=true&xRSC=1"]'
-    );
+    // Verify the RSC payload includes client references with stable IDs
+    // The format is: I["stableId",["/bundle-path..."]]
+    // Package specifiers use their npm package path, e.g., "react-native-web/dist/exports/Text"
+    expect(rscPayload).toMatch(/I\["react-native-web\/dist\/exports\/Text",\["\//);
 
     expect(pageErrors.all).toEqual([]);
   });

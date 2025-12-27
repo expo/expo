@@ -61,7 +61,7 @@ export declare function clearRegistry(): void;
  */
 export declare function getStableId(resolvedPath: string, projectRoot: string): {
     stableId: string;
-    source: 'capture' | 'exports' | 'computed' | 'relative';
+    source: 'capture' | 'exports' | 'computed' | 'app';
 };
 /**
  * Debug: dump registry contents.

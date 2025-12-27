@@ -152,10 +152,27 @@ export function createServerComponentsMiddleware(
     const nestedClientBoundaries: string[] = [];
     const nestedServerBoundaries: string[] = [];
     const processedEntryPoints = new Set<string>();
+
+    // Helper to convert stable ID to file path for bundling
+    // Stable IDs use @app/ prefix for app-level files, but Metro needs absolute paths
+    function stableIdToFilePath(stableId: string): string {
+      if (stableId.startsWith('@app/')) {
+        // @app/ prefix indicates app-level file - convert to absolute path
+        const relativePath = stableId.slice(5); // Remove '@app/' prefix
+        return path.join(projectRoot, relativePath);
+      }
+      // For package specifiers (e.g., "pkg/actions"), they should already work with Metro
+      // as it can resolve them from node_modules
+      return stableId;
+    }
+
     async function processEntryPoint(entryPoint: string) {
       processedEntryPoints.add(entryPoint);
 
-      const contents = await ssrLoadModuleArtifacts(entryPoint, {
+      // Convert stable ID to file path for Metro bundling
+      const filePath = stableIdToFilePath(entryPoint);
+
+      const contents = await ssrLoadModuleArtifacts(filePath, {
         environment: 'react-server',
         platform,
         // Ignore the metro runtime to avoid overwriting the original in the API route.
@@ -192,11 +209,16 @@ export function createServerComponentsMiddleware(
       const jsArtifact = contents.artifacts.find((a) => a.type === 'js')!;
       const safeName = path.basename(jsArtifact.filename!);
 
+      // For server action manifests, the module ID must match what the server bundle uses.
+      // All RSC references now use stable IDs (resolved by the serializer).
+      const stableIdToModuleId = jsArtifact.metadata.stableIdToModuleId ?? {};
+
       const outputName = `_expo/rsc/${platform}/${safeName}`;
       // While we're here, export the router for the server to dynamically render RSC.
+      // Pass stableIdToModuleId and platform so the bundle registers mappings for __webpack_require__
       files.set(outputName, {
         targetDomain: 'server',
-        contents: wrapBundle(contents.src),
+        contents: wrapBundle(contents.src, stableIdToModuleId, platform),
       });
 
       // Match babel plugin stable ID format.
@@ -206,10 +228,6 @@ export function createServerComponentsMiddleware(
       const publicModuleId = isStableId
         ? entryPoint
         : './' + toPosixPath(path.relative(projectRoot, entryPoint));
-
-      // For server action manifests, the module ID must match what the server bundle uses.
-      // All RSC references now use stable IDs (resolved by the serializer).
-      const stableIdToModuleId = jsArtifact.metadata.stableIdToModuleId ?? {};
       if (!isStableId) {
         throw new Error(
           `Expected stable ID but got file path "${entryPoint}". ` +
@@ -267,6 +285,7 @@ export function createServerComponentsMiddleware(
   ): Promise<{
     reactClientReferences: string[];
     reactServerReferences: string[];
+    reactClientReferenceMap: Record<string, string>;
     cssModules: SerialAsset[];
   }> {
     const contents = await ssrLoadModuleArtifacts(routerModule, {
@@ -280,9 +299,11 @@ export function createServerComponentsMiddleware(
     // These will be injected in the head of the HTML document for the website.
     const cssModules = contents.artifacts.filter((a) => a.type.startsWith('css'));
 
-    const reactServerReferences = contents.artifacts
-      .filter((a) => a.type === 'js')[0]
-      .metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
+    const jsArtifact = contents.artifacts.filter((a) => a.type === 'js')[0];
+
+    const reactServerReferences = jsArtifact.metadata.reactServerReferences?.map((ref) =>
+      fileURLToFilePath(ref)
+    );
 
     if (!reactServerReferences) {
       throw new Error(
@@ -291,9 +312,9 @@ export function createServerComponentsMiddleware(
     }
     debug('React client boundaries:', reactServerReferences);
 
-    const reactClientReferences = contents.artifacts
-      .filter((a) => a.type === 'js')[0]
-      .metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
+    const reactClientReferences = jsArtifact.metadata.reactClientReferences?.map((ref) =>
+      fileURLToFilePath(ref)
+    );
 
     if (!reactClientReferences) {
       throw new Error(
@@ -302,13 +323,17 @@ export function createServerComponentsMiddleware(
     }
     debug('React client boundaries:', reactClientReferences);
 
+    // Extract the stable ID → file path mapping from the server bundle.
+    // This is needed for assets which have reactClientReference in server bundle but not client bundle.
+    const reactClientReferenceMap = jsArtifact.metadata.reactClientReferenceMap ?? {};
+
     // While we're here, export the router for the server to dynamically render RSC.
     files.set(`_expo/rsc/${platform}/router.js`, {
       targetDomain: 'server',
       contents: wrapBundle(contents.src),
     });
 
-    return { reactClientReferences, reactServerReferences, cssModules };
+    return { reactClientReferences, reactServerReferences, reactClientReferenceMap, cssModules };
   }
 
   const routerCache = new Map<string, EntriesDev>();
@@ -458,10 +483,16 @@ export function createServerComponentsMiddleware(
         const registryFilePath = getFilePathByStableId(file);
         if (registryFilePath) {
           bundleFilePath = registryFilePath;
+        } else if (file.startsWith('@app/')) {
+          // App-level stable ID - resolve from project root
+          // @app/ prefix indicates a file relative to projectRoot
+          bundleFilePath = path.join(projectRoot, file.slice(5)); // Remove '@app/' prefix
         } else {
-          // Fallback: if not in registry, try to use as-is (shouldn't happen normally)
-          console.warn(`[RSC] No file path found for stable ID: ${file}`);
-          bundleFilePath = file;
+          // No fallback - if the stable ID is not in registry, it's a build error
+          throw new Error(
+            `[RSC] Stable ID not found in registry: "${file}". ` +
+              `This is a build error - ensure the module is properly bundled with RSC support.`
+          );
         }
         // Add stable ID to URL so the serializer can register it dynamically
         searchParams.set('rscStableId', file);
@@ -611,14 +642,23 @@ export function createServerComponentsMiddleware(
 
           const options = getMetroOptionsFromUrl(urlFragment);
 
-          return ssrLoadModule(
-            path.join(serverRoot, options.mainModuleName),
+          // Resolve module path from URL pathname
+          // URL pathname is relative to serverRoot (with leading /)
+          // Examples:
+          // - "/apps/router-e2e/app/index.tsx" -> serverRoot/apps/router-e2e/app/index.tsx
+          // - "/node_modules/pkg/client.js" -> serverRoot/node_modules/pkg/client.js
+          let modulePath: string;
+          if (options.mainModuleName.startsWith('/')) {
+            // URL pathname - remove leading / and join with serverRoot
+            modulePath = path.join(serverRoot, options.mainModuleName.slice(1));
+          } else {
+            // Package specifier without leading / - join with serverRoot
+            modulePath = path.join(serverRoot, options.mainModuleName);
+          }
 
-            options,
-            {
-              hot: true,
-            }
-          );
+          return ssrLoadModule(modulePath, options, {
+            hot: true,
+          });
         },
       }
     );
@@ -780,9 +820,31 @@ const encodeInput = (input: string) => {
   return input + '.txt';
 };
 
-function wrapBundle(str: string) {
+function wrapBundle(
+  str: string,
+  stableIdToModuleId?: Record<string, string | number>,
+  platform?: string
+) {
   // Skip the metro runtime so debugging is a bit easier.
   // Replace the __r() call with an export statement.
   // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
-  return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
+  let result = str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
+
+  // Add stable ID registrations for __webpack_require__ to use
+  // This registers the mapping from stable IDs to Metro module IDs
+  // Note: The module IDs in the bundle have query params (e.g., ?platform=web&env=react-server)
+  // so we need to append them to match what __d() uses
+  if (stableIdToModuleId && Object.keys(stableIdToModuleId).length > 0) {
+    const querySuffix = platform ? `?platform=${platform}&env=react-server` : '';
+    const registrations = Object.entries(stableIdToModuleId)
+      .map(([stableId, moduleId]) => {
+        // Append query params to match the module ID format used by __d()
+        const fullModuleId = String(moduleId) + querySuffix;
+        return `if(typeof __expo_rsc_register__==='function')__expo_rsc_register__(${JSON.stringify(stableId)},${JSON.stringify(fullModuleId)});`;
+      })
+      .join('\n');
+    result = registrations + '\n' + result;
+  }
+
+  return result;
 }

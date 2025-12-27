@@ -101,10 +101,15 @@ test.describe(inputDir, () => {
 
     const rscPayload = new TextDecoder().decode(await response.body());
 
-    expect(rscPayload)
-      .toBe(`1:I["node_modules/react-native-web/dist/exports/Text/index.js",["/node_modules/react-native-web/dist/exports/Text/index.js.bundle?platform=web&dev=true&hot=false&transform.asyncRoutes=true&transform.routerRoot=__e2e__%2F02-server-actions%2Fapp&modulesOnly=true&runModule=false&resolver.clientboundary=true&xRSC=1"],"",1]
-0:{"_value":[["$","$L1",null,{"style":{"color":"darkcyan"},"testID":"server-action-props","children":"c=0"},null],["$","$L1",null,{"testID":"server-action-platform","children":"web"},null]]}
-`);
+    // Check RSC payload structure:
+    // - Line 1: Client reference for react-native-web Text component (stable ID format)
+    // - Line 0: JSX data with server action props
+    expect(rscPayload).toContain('1:I["react-native-web/dist/exports/Text"');
+    expect(rscPayload).toContain('/node_modules/react-native-web/dist/exports/Text/index.js.bundle?');
+    expect(rscPayload).toContain('rscStableId=react-native-web%2Fdist%2Fexports%2FText');
+    expect(rscPayload).toContain(
+      '0:{"_value":[["$","$L1",null,{"style":{"color":"darkcyan"},"testID":"server-action-props","children":"c=0"},null],["$","$L1",null,{"testID":"server-action-platform","children":"web"},null]]}'
+    );
 
     // Ensure the server date didn't change...
     await expect(page.locator('[data-testid="index-server-date-rendered"]')).toHaveText(

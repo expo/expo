@@ -41,40 +41,27 @@ function getRscModuleMap() {
 globalThis.__expo_rsc_register__ = function (stableId, moduleId) {
   const map = getRscModuleMap();
   if (!map[stableId]) {
+    // Capture __r at registration time, not at call time.
+    // This ensures we use the correct module registry even if global.__r
+    // is replaced by a later bundle load.
+    const require = global[`${__METRO_GLOBAL_PREFIX__}__r`];
     map[stableId] = function () {
-      return global[`${__METRO_GLOBAL_PREFIX__}__r`](moduleId);
+      return require(moduleId);
     };
   }
 };
 
 globalThis.__webpack_require__ = (id) => {
-  // This logic can be tested by running a production iOS build without virtual client boundaries. This will result in all split chunks being missing and
-  // errors being thrown on RSC load.
-
-  const original = ErrorUtils.reportFatalError;
-  if (disableReactNativeMissingModuleHandling) {
-    ErrorUtils.reportFatalError = (err) => {
-      // Throw the error so the __r function exits as expected. The error will then be caught by the nearest error boundary.
-      throw err;
-    };
+  // RSC module map lookup - ALL stable IDs must be registered at build time
+  const moduleMap = getRscModuleMap();
+  if (moduleMap && typeof moduleMap[id] === 'function') {
+    return moduleMap[id]();
   }
-  try {
-    // First, check if the id is a stable ID that needs translation via the RSC module map.
-    // Package specifiers like "react-native-safe-area-context" need to be looked up in the map
-    // which provides a getter that calls __r() with the correct path-based Metro module ID.
-    const moduleMap = getRscModuleMap();
-    if (moduleMap && typeof moduleMap[id] === 'function') {
-      return moduleMap[id]();
-    }
 
-    // Fall back to direct __r() call for:
-    // 1. App-level modules with relative path IDs (e.g., "./../../packages/...")
-    // 2. Modules not in the RSC boundary map
-    return global[`${__METRO_GLOBAL_PREFIX__}__r`](id);
-  } finally {
-    // Restore the original error handling.
-    if (disableReactNativeMissingModuleHandling) {
-      ErrorUtils.reportFatalError = original;
-    }
-  }
+  // No fallback - if the stable ID is not in the module map, it's a build error
+  throw new Error(
+    `[RSC] Module not found in RSC boundary map: "${id}". ` +
+      `This is a build error - the stable ID was not registered during serialization. ` +
+      `Check that the module has "use client" or "use server" directive and is properly bundled.`
+  );
 };

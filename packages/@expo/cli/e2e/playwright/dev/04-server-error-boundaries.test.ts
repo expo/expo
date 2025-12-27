@@ -108,7 +108,8 @@ test.describe(inputDir, () => {
     expect(text).toBe('Build Error');
     console.timeEnd('error-type');
 
-    expect(pageErrors.all.length).toEqual(2);
+    // With stable ID changes, only 1 console error is logged (was 2 before)
+    expect(pageErrors.all.length).toEqual(1);
   });
 
   test('catches server action errors in Expo Router error boundary with expected params', async ({

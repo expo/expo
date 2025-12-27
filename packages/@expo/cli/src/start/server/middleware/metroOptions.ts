@@ -49,6 +49,8 @@ export type ExpoMetroOptions = {
   hosted?: boolean;
   /** Disable live bindings (enabled by default, required for circular deps) in experimental import export support. */
   liveBindings?: boolean;
+  /** RSC stable ID for registering client boundaries in modulesOnly bundles. */
+  rscStableId?: string;
 };
 
 // See: @expo/metro-config/src/serializer/fork/baseJSBundle.ts `ExpoSerializerOptions`
@@ -178,7 +180,10 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
   let fakeSourceMapUrl: string | undefined;
 
   // TODO: Upstream support to Metro for passing custom serializer options.
-  if (serializerIncludeMaps != null || serializerOutput != null) {
+  // Generate fakeSourceUrl when we need to pass serializer-specific info:
+  // - serializerOutput/serializerIncludeMaps for static output
+  // - rscStableId for RSC client boundary registration
+  if (serializerIncludeMaps != null || serializerOutput != null || options.rscStableId) {
     fakeSourceUrl = new URL(
       createBundleUrlPath(options).replace(/^\//, ''),
       'http://localhost:8081'
@@ -192,7 +197,9 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     __proto__: null,
     optimize: optimize || undefined,
     engine,
-    clientBoundaries,
+    // Stringify clientBoundaries to match URL query param parsing behavior.
+    // Metro's HMR URL parser reads this as a string, so the graph ID must use the same format.
+    clientBoundaries: clientBoundaries?.length ? JSON.stringify(clientBoundaries) : undefined,
     preserveEnvVars: preserveEnvVars || undefined,
     // Use string to match the query param behavior.
     asyncRoutes: asyncRoutes ? String(asyncRoutes) : undefined,
@@ -303,14 +310,16 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     runModule,
     hosted,
     liveBindings,
+    rscStableId,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
+  const isBundleDev = mode !== 'production';
   const queryParams = new URLSearchParams({
     platform: encodeURIComponent(platform),
     dev,
-    // TODO: Is this still needed?
-    hot: String(false),
+    // Enable hot reloading in development mode for HMR support
+    hot: String(isBundleDev),
   });
 
   // Lazy bundling must be disabled for bundle splitting to work.
@@ -399,6 +408,11 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     queryParams.append('transform.liveBindings', String(false));
   }
 
+  // RSC stable ID for registering client boundaries in modulesOnly bundles
+  if (rscStableId) {
+    queryParams.append('rscStableId', rscStableId);
+  }
+
   return queryParams;
 }
 
@@ -448,6 +462,7 @@ export function getMetroOptionsFromUrl(urlFragment: string) {
     runModule: isTruthy(getStringParam('runModule') ?? 'true'),
     modulesOnly: isTruthy(getStringParam('modulesOnly') ?? 'false'),
     liveBindings: isTruthy(getStringParam('transform.liveBindings') ?? 'true'),
+    rscStableId: getStringParam('rscStableId') ?? undefined,
   };
 
   return options;

@@ -38,6 +38,17 @@ function isDeferredId(id: string): boolean {
   return id.startsWith(RSC_DEFERRED_PREFIX);
 }
 
+function isFileUrl(id: string): boolean {
+  return id.startsWith('file://');
+}
+
+function extractPathFromFileUrl(fileUrl: string): string {
+  // Convert file:///path/to/file.png to /path/to/file.png
+  // Handle both Unix (file:///path) and Windows (file:///C:/path)
+  const url = new URL(fileUrl);
+  return normalizePath(url.pathname);
+}
+
 function extractPath(deferredId: string): string {
   const rawPath = deferredId.slice(RSC_DEFERRED_PREFIX.length);
   return normalizePath(rawPath);
@@ -103,6 +114,19 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
 
     // First pass: build mappings from metadata
     for (const [modulePath, module] of graph.dependencies) {
+      // Debug: log any asset files (png/jpg/etc) in the graph
+      if (process.env.EXPO_DEBUG && /\.(png|jpg|jpeg|gif|webp)$/i.test(modulePath)) {
+        console.log('[RSC-SERIALIZER] Asset module in graph:', modulePath);
+        // Log reactClientReference for this asset
+        for (const output of module.output) {
+          const data = output.data as { reactClientReference?: string };
+          console.log(
+            '[RSC-SERIALIZER]   - reactClientReference:',
+            data.reactClientReference || '(none)'
+          );
+        }
+      }
+
       for (const output of module.output) {
         const data = output.data as {
           reactClientReference?: string;
@@ -123,10 +147,23 @@ export function createRscSerializerPlugin(options: RscSerializerPluginOptions) {
             data.reactClientReference = stableId;
             trackStableId(stableId, modulePath, serializerOptions.createModuleId(modulePath));
             deferredToStableId.set(deferredId, stableId);
+          } else if (isFileUrl(data.reactClientReference)) {
+            // Asset files use file:// URLs as client references
+            // Convert them to stable IDs for consistent manifest generation
+            const fileUrl = data.reactClientReference;
+            const resolvedPath = extractPathFromFileUrl(fileUrl);
+            const { stableId } = getStableId(resolvedPath, projectRoot);
+
+            if (process.env.EXPO_DEBUG) {
+              console.log('[RSC-SERIALIZER] Resolved asset client ref:', fileUrl, '->', stableId);
+            }
+
+            data.reactClientReference = stableId;
+            trackStableId(stableId, modulePath, serializerOptions.createModuleId(modulePath));
           } else {
-            // Not a deferred ID - this shouldn't happen with the new Babel plugin
+            // Not a deferred ID or file URL - this shouldn't happen
             console.warn(
-              '[RSC-SERIALIZER] Non-deferred client reference found:',
+              '[RSC-SERIALIZER] Unknown client reference format:',
               data.reactClientReference,
               'at',
               modulePath

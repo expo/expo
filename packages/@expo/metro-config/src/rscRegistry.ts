@@ -306,6 +306,13 @@ function getPackageModuleInfo(filePath: string, projectRoot?: string): PackageIn
     return null;
   }
 
+  // In monorepos, apps have their own package.json but are still "app-level"
+  // Check if the package root is WITHIN the project root (e.g., apps/my-app within monorepo)
+  if (normalizedProjectRoot && normalizedPkgRoot.startsWith(normalizedProjectRoot + '/')) {
+    // This is a workspace package within the project - treat as app-level
+    return null;
+  }
+
   // It's a package module (has package.json with name AND is not the project root)
   return pkgInfo;
 }
@@ -549,7 +556,7 @@ export function clearRegistry(): void {
 export function getStableId(
   resolvedPath: string,
   projectRoot: string
-): { stableId: string; source: 'capture' | 'exports' | 'computed' | 'relative' } {
+): { stableId: string; source: 'capture' | 'exports' | 'computed' | 'app' } {
   const normalizedPath = normalizePath(resolvedPath);
 
   // 1. Try captured specifier first (highest priority)
@@ -587,13 +594,13 @@ export function getStableId(
     return { stableId, source: 'computed' };
   }
 
-  // 3. App-level file - use relative path from project root
+  // 3. App-level file - use @app/ prefix with relative path from project root
   const relative = path.relative(projectRoot, resolvedPath);
   const posixPath = normalizePath(relative);
 
   return {
-    stableId: './' + posixPath,
-    source: 'relative',
+    stableId: '@app/' + posixPath,
+    source: 'app',
   };
 }
 

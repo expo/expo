@@ -128,6 +128,9 @@ function createStableModuleIdFactory(root) {
     };
 }
 function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins } = {}) {
+    // Set the project root for RSC registry so it can distinguish app-level files
+    // from external packages in monorepo setups
+    (0, rscRegistry_1.setProjectRoot)(projectRoot);
     const { getDefaultConfig: getDefaultMetroConfig, mergeConfig, } = require('@expo/metro/metro-config');
     if (isCSSEnabled) {
         patchMetroGraphToSupportUncachedModules();

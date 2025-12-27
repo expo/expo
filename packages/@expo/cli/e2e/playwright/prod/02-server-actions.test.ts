@@ -137,9 +137,12 @@ test.describe(inputDir, () => {
 
     const rscPayload = new TextDecoder().decode(await response.body());
 
-    expect(rscPayload).toBe(`1:I["node_modules/react-native-web/dist/exports/Text/index.js",[],"",1]
-0:{"_value":[["$","$L1",null,{"style":{"color":"darkcyan"},"testID":"server-action-props","children":"c=0"}],["$","$L1",null,{"testID":"server-action-platform","children":"web"}]]}
-`);
+    // Verify the RSC payload includes client references with stable IDs
+    // The format is: I["stableId",["/chunk-path..."]]
+    // Package specifiers use their npm package path, e.g., "react-native-web/dist/exports/Text"
+    // In production, client boundaries reference their entry chunk
+    expect(rscPayload).toMatch(/I\["react-native-web\/dist\/exports\/Text",\["\//);
+    expect(rscPayload).toContain('0:{"_value":[["$","$L1",null,{"style":{"color":"darkcyan"},"testID":"server-action-props","children":"c=0"}],["$","$L1",null,{"testID":"server-action-platform","children":"web"}]]}');
 
     // Ensure the server date didn't change...
     await expect(page.locator('[data-testid="index-server-date-rendered"]')).toHaveText(

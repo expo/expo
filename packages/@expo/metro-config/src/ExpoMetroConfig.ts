@@ -23,7 +23,7 @@ import { FileStore } from './file-store';
 import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
-import { captureSpecifier, clearRegistry as clearRscRegistry } from './rscRegistry';
+import { captureSpecifier, clearRegistry as clearRscRegistry, setProjectRoot } from './rscRegistry';
 import { JSModule } from './serializer/getCssDeps';
 import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
@@ -196,6 +196,10 @@ export function getDefaultConfig(
   projectRoot: string,
   { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
 ) {
+  // Set the project root for RSC registry so it can distinguish app-level files
+  // from external packages in monorepo setups
+  setProjectRoot(projectRoot);
+
   const {
     getDefaultConfig: getDefaultMetroConfig,
     mergeConfig,
