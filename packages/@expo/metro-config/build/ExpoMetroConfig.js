@@ -193,6 +193,10 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     });
     const serverRoot = (0, paths_1.getMetroServerRoot)(projectRoot);
     const routerPackageRoot = resolve_from_1.default.silent(projectRoot, 'expo-router');
+    // Set project root for RSC stable ID resolution.
+    // This must be called before any resolution happens so that captureSpecifier()
+    // can correctly distinguish app-level files from package modules.
+    (0, rscRegistry_1.setProjectRoot)(projectRoot);
     const expoMetroConfig = asMetroConfigInput({
         reporter: {
             // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.

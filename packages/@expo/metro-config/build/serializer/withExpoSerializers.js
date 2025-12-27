@@ -122,12 +122,19 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
         // can be resolved by stable ID after the chunk is loaded.
         // This enables dynamic loading of client boundaries without requiring
         // them to be known at build time.
+        if (process.env.EXPO_DEBUG) {
+            console.log('[RSC_REGISTER] options.sourceUrl:', options.sourceUrl);
+        }
         if (options.sourceUrl) {
             const sourceUrl = (0, jsc_safe_url_1.isJscSafeUrl)(options.sourceUrl)
                 ? (0, jsc_safe_url_1.toNormalUrl)(options.sourceUrl)
                 : options.sourceUrl;
             const parsed = new URL(sourceUrl, 'http://expo.dev');
             const rscStableId = parsed.searchParams.get('rscStableId');
+            if (process.env.EXPO_DEBUG) {
+                console.log('[RSC_REGISTER] sourceUrl:', sourceUrl);
+                console.log('[RSC_REGISTER] rscStableId:', rscStableId);
+            }
             if (rscStableId && bundleCode) {
                 // Get the module ID for the entry point module
                 const entryModuleId = options.createModuleId(entryPoint);
@@ -259,6 +266,9 @@ function getDefaultSerializer(config, fallbackSerializer, configOptions = {}) {
 function createSerializerFromSerialProcessors(config, processors, originalSerializer, options = {}) {
     const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
     return wrapSerializerWithOriginal(originalSerializer, async (...props) => {
+        if (process.env.EXPO_DEBUG) {
+            console.log('[RSC_REGISTER] Serializer entry - props[3].sourceUrl:', props[3].sourceUrl);
+        }
         for (const processor of processors) {
             if (processor) {
                 props = await processor(...props);

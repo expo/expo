@@ -10,6 +10,7 @@ const sourceMapString_1 = require("@expo/metro/metro/DeltaBundler/Serializers/so
 const bundleToString_1 = __importDefault(require("@expo/metro/metro/lib/bundleToString"));
 const isResolvedDependency_1 = require("@expo/metro/metro/lib/isResolvedDependency");
 const assert_1 = __importDefault(require("assert"));
+const jsc_safe_url_1 = require("jsc-safe-url");
 const path_1 = __importDefault(require("path"));
 const debugId_1 = require("./debugId");
 const exportHermes_1 = require("./exportHermes");
@@ -307,6 +308,26 @@ class Chunk {
             debugId,
             preModules: new Set(finalPreModules),
         });
+        // For RSC server action chunks: append registration code so the module
+        // can be resolved by stable ID after the chunk is loaded.
+        // This enables dynamic loading of server actions without requiring
+        // them to be known at build time.
+        let finalCode = jsCode.code;
+        if (this.options.sourceUrl) {
+            const sourceUrl = (0, jsc_safe_url_1.isJscSafeUrl)(this.options.sourceUrl)
+                ? (0, jsc_safe_url_1.toNormalUrl)(this.options.sourceUrl)
+                : this.options.sourceUrl;
+            const parsed = new URL(sourceUrl, 'http://expo.dev');
+            const rscStableId = parsed.searchParams.get('rscStableId');
+            if (rscStableId && this.entries.length > 0) {
+                // Get the module ID for the entry point module using the module's actual path
+                // (which includes query params like ?platform=web&env=react-server)
+                const entryModule = this.entries[0];
+                const entryModuleId = this.options.createModuleId(entryModule.path);
+                // Append registration code to allow __webpack_require__(stableId) to work
+                finalCode += `\n;typeof __expo_rsc_register__==="function"&&__expo_rsc_register__(${JSON.stringify(rscStableId)},${JSON.stringify(entryModuleId)});`;
+            }
+        }
         const relativeEntry = path_1.default.relative(this.options.projectRoot, this.name);
         const jsAsset = {
             filename: outputFile,
@@ -368,7 +389,7 @@ class Chunk {
                         .flat()),
                 ].filter((value) => typeof value === 'string'),
             },
-            source: jsCode.code,
+            source: finalCode,
         };
         const assets = [jsAsset];
         const mutateSourceMapWithDebugId = (sourceMap) => {

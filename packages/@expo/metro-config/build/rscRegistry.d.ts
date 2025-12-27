@@ -47,6 +47,7 @@ export declare function getSpecifier(resolvedPath: string): string | undefined;
  * Clear the registry (for watch mode rebuilds).
  */
 export declare function clearRegistry(): void;
+declare const APP_NAMESPACE = "@app";
 /**
  * Get stable ID for a module.
  *
@@ -57,12 +58,14 @@ export declare function clearRegistry(): void;
  * 1. Captured specifier from registry (highest priority - actual import specifier)
  * 2. Exports field reverse lookup (file path → export specifier)
  * 3. Computed from package.json boundary (fallback for packages without exports)
- * 4. Relative path from project root (for app-level files)
+ * 4. App namespace (@app/path) for app-level files - treated like a virtual package
  */
 export declare function getStableId(resolvedPath: string, projectRoot: string): {
     stableId: string;
-    source: 'capture' | 'exports' | 'computed' | 'relative';
+    source: 'capture' | 'exports' | 'computed' | 'app';
 };
+/** Export APP_NAMESPACE for use in other modules */
+export { APP_NAMESPACE };
 /**
  * Debug: dump registry contents.
  */
@@ -70,6 +73,8 @@ export declare function debugRegistry(): void;
 /**
  * Get file path by stable ID (reverse lookup).
  * Used to convert stable IDs back to file paths for bundle URLs in dev mode.
+ *
+ * For stable IDs with @app/ prefix, we resolve them against the cached project root.
  */
 export declare function getFilePathByStableId(stableId: string): string | undefined;
 export declare function recordClientBoundary(stableId: string, filePath: string): void;
