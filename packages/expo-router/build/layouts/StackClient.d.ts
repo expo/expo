@@ -46,7 +46,7 @@ export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
         shadow?: string;
     };
 };
-declare const RNStack: React.ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "children" | "id" | "layout" | "initialRouteName" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+declare const RNStack: React.ForwardRefExoticComponent<Omit<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "children" | "layout" | "initialRouteName" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
@@ -91,7 +91,7 @@ declare const RNStack: React.ForwardRefExoticComponent<Omit<Omit<import("@react-
     UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled";
 } & {
     id?: undefined;
-}, "children"> & Partial<Pick<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "children" | "id" | "layout" | "initialRouteName" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
+}, "children"> & Partial<Pick<Omit<import("@react-navigation/native-stack").NativeStackNavigatorProps, "children" | "layout" | "initialRouteName" | "id" | "screenOptions" | "screenListeners" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior"> & import("@react-navigation/native").DefaultRouterOptions<string> & {
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;

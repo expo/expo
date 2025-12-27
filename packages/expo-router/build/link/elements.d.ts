@@ -219,5 +219,5 @@ export interface LinkTriggerProps extends PropsWithChildren {
  *
  * @platform ios
  */
-export declare function LinkTrigger({ withAppleZoom, ...props }: LinkTriggerProps): string | number | bigint | boolean | React.JSX.Element | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined;
+export declare function LinkTrigger({ withAppleZoom, ...props }: LinkTriggerProps): string | number | bigint | boolean | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | React.JSX.Element | null | undefined;
 //# sourceMappingURL=elements.d.ts.map
