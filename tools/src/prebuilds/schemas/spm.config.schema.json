@@ -1,0 +1,293 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://expo.dev/schemas/spm.config.json",
+    "title": "SPM Config",
+    "description": "Configuration for Swift Package Manager packages and targets in Expo modules",
+    "type": "object",
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "description": "JSON Schema reference"
+        },
+        "products": {
+            "type": "array",
+            "description": "List of SPM products to generate with their targets",
+            "items": {
+                "$ref": "#/definitions/product"
+            }
+        }
+    },
+    "required": [ "products" ],
+    "definitions": {
+        "productPlatform": {
+            "type": "string",
+            "description": "Supported platform versions",
+            "enum": [
+                "iOS(.v15)",
+                "macOS(.v11)",
+                "tvOS(.v15)",
+                "macCatalyst(.v15)",
+                "iOS(.v15_1)",
+                "tvOS(.v15_1)" ]
+        },
+        "product": {
+            "type": "object",
+            "description": "A Swift Package product definition with its targets",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "The name of the product"
+                },
+                "platforms": {
+                    "type": "array",
+                    "description": "Supported platforms for this product",
+                    "items": {
+                        "$ref": "#/definitions/productPlatform"
+                    },
+                    "default": [ ]
+                },
+                "externalDependencies": {
+                    "type": "array",
+                    "description": "List of external Swift Package dependencies for this product (e.g., 'Hermes', 'ReactNativeDependencies', 'React', or expo packages)",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [ ]
+                },
+                "swiftLanguageVersions": {
+                    "type": "array",
+                    "description": "Optional list of Swift language versions supported by this product",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [ ]
+                },
+                "targets": {
+                    "type": "array",
+                    "description": "List of targets included in this product",
+                    "items": {
+                        "$ref": "#/definitions/target"
+                    }
+                }
+            },
+            "required": [ "name", "targets" ],
+            "additionalProperties": false
+        },
+        "target": {
+            "oneOf": [
+                { "$ref": "#/definitions/frameworkTarget" },
+                { "$ref": "#/definitions/objcTarget" },
+                { "$ref": "#/definitions/swiftTarget" },
+                { "$ref": "#/definitions/cppTarget" }
+            ]
+        },
+        "frameworkTarget": {
+            "type": "object",
+            "description": "A binary xcframework target",
+            "properties": {
+                "type": {
+                    "const": "framework",
+                    "description": "Target type identifier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the target"
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Path to the xcframework relative to package root"
+                },
+                "includeDirectories": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Header locations within the framework bundle",
+                    "default": [ ]
+                },
+                "headerMapPath": {
+                    "type": "string",
+                    "description": "Path to a header map file (.hmap) for header resolution"
+                },
+                "vfsOverlayPath": {
+                    "type": "string",
+                    "description": "Path to a VFS overlay file (.yaml) for virtual filesystem mapping"
+                },
+                "linkedFrameworks": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "System frameworks to link",
+                    "default": [ ]
+                }
+            },
+            "required": [ "type", "name", "path" ],
+            "additionalProperties": false
+        },
+        "objcTarget": {
+            "type": "object",
+            "description": "An Objective-C source target",
+            "properties": {
+                "type": {
+                    "const": "objc",
+                    "description": "Target type identifier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the target"
+                },
+                "moduleName": {
+                    "type": "string",
+                    "description": "The module name to use when organizing headers in include directory (defaults to product name)"
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Path to source files relative to package root"
+                },
+                "pattern": {
+                    "type": "string",
+                    "description": "Glob pattern to filter source files within the path"
+                },
+                "headerPattern": {
+                    "type": "string",
+                    "description": "Glob pattern to filter header files within the path"
+                },
+                "dependencies": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Names of other targets this target depends on",
+                    "default": [ ]
+                },
+                "exclude": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Paths to exclude from compilation",
+                    "default": [ ]
+                },
+                "includeDirectories": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Header search paths relative to the target path",
+                    "default": [ "include" ]
+                },
+                "linkedFrameworks": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "System frameworks to link (e.g., 'Foundation', 'UIKit')",
+                    "default": [ ]
+                }
+            },
+            "required": [ "type", "name", "path" ],
+            "additionalProperties": false
+        },
+        "swiftTarget": {
+            "type": "object",
+            "description": "A Swift source target",
+            "properties": {
+                "type": {
+                    "const": "swift",
+                    "description": "Target type identifier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the target"
+                },
+                "moduleName": {
+                    "type": "string",
+                    "description": "The module name to use when organizing headers in include directory (defaults to product name)"
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Path to source files relative to package root"
+                },
+                "pattern": {
+                    "type": "string",
+                    "description": "Glob pattern to filter source files within the path"
+                },
+                "headerPattern": {
+                    "type": "string",
+                    "description": "Glob pattern to filter header files within the path"
+                },
+                "dependencies": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Names of other targets this target depends on",
+                    "default": [ ]
+                },
+                "exclude": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Paths to exclude from compilation",
+                    "default": [ ]
+                },
+                "includeDirectories": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Header search paths relative to the target path",
+                    "default": [ ]
+                },
+                "linkedFrameworks": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "System frameworks to link",
+                    "default": [ ]
+                }
+            },
+            "required": [ "type", "name", "path" ],
+            "additionalProperties": false
+        },
+        "cppTarget": {
+            "type": "object",
+            "description": "A C++ source target (extends ObjCTarget)",
+            "properties": {
+                "type": {
+                    "const": "cpp",
+                    "description": "Target type identifier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the target"
+                },
+                "moduleName": {
+                    "type": "string",
+                    "description": "The module name to use when organizing headers in include directory (defaults to product name)"
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Path to source files relative to package root"
+                },
+                "pattern": {
+                    "type": "string",
+                    "description": "Glob pattern to filter source files within the path"
+                },
+                "headerPattern": {
+                    "type": "string",
+                    "description": "Glob pattern to filter header files within the path"
+                },
+                "dependencies": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Names of other targets this target depends on",
+                    "default": [ ]
+                },
+                "exclude": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Paths to exclude from compilation",
+                    "default": [ ]
+                },
+                "includeDirectories": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Header search paths relative to the target path",
+                    "default": [ "include" ]
+                },
+                "linkedFrameworks": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "System frameworks to link",
+                    "default": [ ]
+                }
+            },
+            "required": [ "type", "name", "path" ],
+            "additionalProperties": false
+        }
+    }
+}
