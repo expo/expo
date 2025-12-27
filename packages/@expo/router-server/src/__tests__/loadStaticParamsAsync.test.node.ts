@@ -119,6 +119,7 @@ describe(loadStaticParamsAsync, () => {
           dynamic: null,
           route: 'red',
           entryPoints: ['expo-router/build/views/Navigator.js', './[color].tsx'],
+          generated: true,
         },
         {
           type: 'route',
@@ -128,6 +129,7 @@ describe(loadStaticParamsAsync, () => {
           dynamic: null,
           route: 'blue',
           entryPoints: ['expo-router/build/views/Navigator.js', './[color].tsx'],
+          generated: true,
         },
       ],
       type: 'layout',
@@ -229,6 +231,7 @@ describe(loadStaticParamsAsync, () => {
               dynamic: null,
               route: 'square',
               entryPoints: ['./_layout.tsx', './[color]/_layout.tsx', './[color]/[shape].tsx'],
+              generated: true,
             },
             {
               type: 'route',
@@ -238,6 +241,7 @@ describe(loadStaticParamsAsync, () => {
               dynamic: null,
               route: 'triangle',
               entryPoints: ['./_layout.tsx', './[color]/_layout.tsx', './[color]/[shape].tsx'],
+              generated: true,
             },
           ],
           type: 'layout',
@@ -245,6 +249,7 @@ describe(loadStaticParamsAsync, () => {
           dynamic: null,
           initialRouteName: undefined,
           route: 'red',
+          generated: true,
         },
         {
           children: [
@@ -264,6 +269,7 @@ describe(loadStaticParamsAsync, () => {
               dynamic: null,
               route: 'square',
               entryPoints: ['./_layout.tsx', './[color]/_layout.tsx', './[color]/[shape].tsx'],
+              generated: true,
             },
             {
               type: 'route',
@@ -273,6 +279,7 @@ describe(loadStaticParamsAsync, () => {
               dynamic: null,
               route: 'triangle',
               entryPoints: ['./_layout.tsx', './[color]/_layout.tsx', './[color]/[shape].tsx'],
+              generated: true,
             },
           ],
           type: 'layout',
@@ -280,6 +287,7 @@ describe(loadStaticParamsAsync, () => {
           dynamic: null,
           initialRouteName: undefined,
           route: 'blue',
+          generated: true,
         },
       ],
       type: 'layout',
@@ -445,6 +453,7 @@ describe(loadStaticParamsAsync, () => {
           dynamic: null,
           route: 'post/123/456',
           entryPoints: ['expo-router/build/views/Navigator.js', './post/[...post].tsx'],
+          generated: true,
         },
       ],
       type: 'layout',
@@ -541,6 +550,7 @@ describe(loadStaticParamsAsync, () => {
                 './(app)/(index,about)/blog/[post].tsx',
               ],
               route: '(index)/blog/123',
+              generated: true,
             },
             {
               type: 'route',
@@ -554,6 +564,7 @@ describe(loadStaticParamsAsync, () => {
                 './(app)/(index,about)/blog/[post].tsx',
               ],
               route: '(index)/blog/abc',
+              generated: true,
             },
             {
               type: 'route',
@@ -580,6 +591,7 @@ describe(loadStaticParamsAsync, () => {
               ],
 
               route: '(about)/blog/123',
+              generated: true,
             },
             {
               type: 'route',
@@ -593,6 +605,7 @@ describe(loadStaticParamsAsync, () => {
                 './(app)/(index,about)/blog/[post].tsx',
               ],
               route: '(about)/blog/abc',
+              generated: true,
             },
           ],
           type: 'layout',
@@ -685,6 +698,7 @@ describe(loadStaticParamsAsync, () => {
           dynamic: null,
           route: 'post/123',
           entryPoints: ['expo-router/build/views/Navigator.js', './post/[post].tsx'],
+          generated: true,
         },
         {
           type: 'route',
@@ -715,6 +729,7 @@ describe(loadStaticParamsAsync, () => {
           dynamic: null,
           route: 'a/b/c/d/e',
           entryPoints: ['expo-router/build/views/Navigator.js', './a/[b]/c/[d]/[e].tsx'],
+          generated: true,
         },
       ],
       type: 'layout',

@@ -55,14 +55,16 @@ describe('exports static', () => {
       expect(html.querySelector('[data-testid="styled-text"]')?.textContent).toEqual('Hello World');
     });
 
-    ['other', 'welcome-to-the-universe'].forEach((post) => {
-      it(`can serve up statically generated html for post: ${post}`, async () => {
+    ['other', 'welcome-to-the-universe'].forEach((post) => {});
+    it.each([{ post: 'other' }, { post: 'welcome-to-the-universe' }])(
+      `can serve up statically generated html for post: $post`,
+      async ({ post }) => {
         const html = getHtml(await server.fetchAsync(`/${post}`).then((res) => res.text()));
         expect(html.querySelector('[data-testid="post-text"]')?.textContent).toEqual(
           `Post: ${post}`
         );
-      });
-    });
+      }
+    );
 
     it(`gets a 404`, async () => {
       expect(await server.fetchAsync('/missing-route').then((res) => res.status)).toBe(404);

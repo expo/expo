@@ -131,12 +131,6 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
-      "file": "./blog-ssg/abc.tsx",
-      "namedRegex": "^/blog\\-ssg/abc(?:/)?$",
-      "page": "/blog-ssg/abc",
-      "routeKeys": {},
-    },
-    {
       "file": "./matching-route/alpha.tsx",
       "namedRegex": "^/matching\\-route/alpha(?:/)?$",
       "page": "/matching-route/alpha",
@@ -302,12 +296,6 @@ exports[`server-output workerd requests exported files has expected routes manif
       "generated": true,
       "namedRegex": "^/_sitemap(?:/)?$",
       "page": "/_sitemap",
-      "routeKeys": {},
-    },
-    {
-      "file": "./blog-ssg/abc.tsx",
-      "namedRegex": "^/blog\\-ssg/abc(?:/)?$",
-      "page": "/blog-ssg/abc",
       "routeKeys": {},
     },
     {

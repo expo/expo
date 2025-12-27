@@ -152,7 +152,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
   const other: [string, ExportAssetDescriptor][] = [];
 
   remainingEntries.forEach(([filepath, asset]) => {
-    if (!filepath.match(/_expo\/static\//)) {
+    if (!filepath.match(/_expo\/(server|static)\//)) {
       other.push([filepath, asset]);
     } else {
       const platform = filepath.match(/_expo\/static\/js\/([^/]+)\//)?.[1] ?? 'web';

@@ -351,6 +351,37 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
+  /**
+   * Bundle render module for use in SSR
+   */
+  async exportExpoRouterRenderModuleAsync({
+    files,
+    includeSourceMaps,
+    platform = 'web',
+  }: {
+    files: ExportAssetMap;
+    includeSourceMaps?: boolean;
+    platform?: string;
+  }) {
+    const renderModule = await this.ssrLoadModuleContents('@expo/router-server/node/render.js', {
+      environment: 'node',
+      platform,
+    });
+
+    await this.exportServerRouteAsync({
+      contents: renderModule,
+      artifactFilename: '_expo/server/render.js',
+      files,
+      includeSourceMaps,
+      descriptor: {
+        // ssrRenderModule: true,
+        targetDomain: 'server',
+      },
+    });
+
+    return files;
+  }
+
   async getExpoRouterRoutesManifestAsync({ appDir }: { appDir: string }) {
     // getBuiltTimeServerManifest
     const { exp } = getConfig(this.projectRoot);
@@ -422,9 +453,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
 
     const { exp } = getConfig(this.projectRoot);
+    const isExportingWithSSR = exp.web?.output === 'server' && !this.isReactServerComponentsEnabled;
 
     const serverManifest = await getBuildTimeServerManifestAsync({
       ...exp.extra?.router,
+      // Skip static params expansion in SSR mode, routes are matched at runtime instead
+      skipStaticParams: isExportingWithSSR,
     });
 
     return {
