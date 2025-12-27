@@ -121,6 +121,17 @@
   return [self createHostFunction:name argsCount:argsCount block:hostFunctionBlock];
 }
 
+- (nonnull EXJavaScriptObject *)createSyncFunction:(nonnull NSString *)name
+                                      typeEncoding:(nonnull NSString *)typeEncoding
+                                         argsCount:(NSInteger)argsCount
+                                              body:(nonnull id)swiftBody
+{
+  // The swiftBody is a Swift closure that we need to wrap in a properly typed ObjC block
+  // based on the type encoding. We'll create the typed block here and delegate to the
+  // existing createHostFunction:typeEncoding: method.
+  return [self createHostFunction:name typeEncoding:typeEncoding argsCount:argsCount block:swiftBody];
+}
+
 - (nonnull EXJavaScriptObject *)createAsyncFunction:(nonnull NSString *)name
                                           argsCount:(NSInteger)argsCount
                                               block:(nonnull JSAsyncFunctionBlock)block
@@ -215,6 +226,127 @@
 
     return block(runtime, callInvoker, thisValue, arguments);
   };
+  std::shared_ptr<jsi::Object> fnPtr = std::make_shared<jsi::Object>(jsi::Function::createFromHostFunction(*_runtime, propNameId, (unsigned int)argsCount, function));
+  return [[EXJavaScriptObject alloc] initWith:fnPtr runtime:self];
+}
+
+namespace {
+  // Helper to convert JSI value to double
+  inline double jsiToDouble(jsi::Runtime &runtime, const jsi::Value &value) {
+    return value.getNumber();
+  }
+
+  // Helper to convert JSI value to long long
+  inline long long jsiToLongLong(jsi::Runtime &runtime, const jsi::Value &value) {
+    return (long long)value.getNumber();
+  }
+
+  // Helper to convert JSI value to NSString
+  inline NSString* jsiToString(jsi::Runtime &runtime, const jsi::Value &value) {
+    return [NSString stringWithUTF8String:value.asString(runtime).utf8(runtime).c_str()];
+  }
+
+  // Helper to convert JSI value to bool
+  inline bool jsiToBool(jsi::Runtime &runtime, const jsi::Value &value) {
+    return value.getBool();
+  }
+
+  // Helper to convert double to JSI value
+  inline jsi::Value doubleToJSI(jsi::Runtime &runtime, double value) {
+    return jsi::Value(value);
+  }
+
+  // Helper to convert long long to JSI value
+  inline jsi::Value longLongToJSI(jsi::Runtime &runtime, long long value) {
+    return jsi::Value((double)value);
+  }
+
+  // Helper to convert NSString to JSI value
+  inline jsi::Value stringToJSI(jsi::Runtime &runtime, NSString *value) {
+    return jsi::String::createFromUtf8(runtime, [value UTF8String]);
+  }
+
+  // Helper to convert bool to JSI value
+  inline jsi::Value boolToJSI(jsi::Runtime &runtime, bool value) {
+    return jsi::Value(value);
+  }
+}
+
+- (nonnull EXJavaScriptObject *)createHostFunction:(nonnull NSString *)name
+                                      typeEncoding:(nonnull NSString*)typeEncoding
+                                         argsCount:(NSInteger)argsCount
+                                             block:(nonnull id)block
+{
+  jsi::PropNameID propNameId = jsi::PropNameID::forAscii(*_runtime, [name UTF8String], [name length]);
+  std::weak_ptr<react::CallInvoker> weakCallInvoker = _jsCallInvoker;
+
+  jsi::HostFunctionType function = [weakCallInvoker, block, typeEncoding](
+    jsi::Runtime &runtime, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+    auto callInvoker = weakCallInvoker.lock();
+
+    @try {
+      // Cast the block to the appropriate type and call it based on the type encoding
+      // Swift closures are bridged to ObjC blocks via @convention(block)
+      if ([typeEncoding isEqualToString:@"d@?"]) {
+        double (^typedBlock)(void) = (double (^)(void))block;
+        return doubleToJSI(runtime, typedBlock());
+      } else if ([typeEncoding isEqualToString:@"d@?d"]) {
+        double (^typedBlock)(double) = (double (^)(double))block;
+        return doubleToJSI(runtime, typedBlock(jsiToDouble(runtime, args[0])));
+      } else if ([typeEncoding isEqualToString:@"d@?dd"]) {
+        double (^typedBlock)(double, double) = (double (^)(double, double))block;
+        return doubleToJSI(runtime, typedBlock(jsiToDouble(runtime, args[0]), jsiToDouble(runtime, args[1])));
+      } else if ([typeEncoding isEqualToString:@"q@?"]) {
+        long long (^typedBlock)(void) = (long long (^)(void))block;
+        return longLongToJSI(runtime, typedBlock());
+      } else if ([typeEncoding isEqualToString:@"q@?q"]) {
+        long long (^typedBlock)(long long) = (long long (^)(long long))block;
+        return longLongToJSI(runtime, typedBlock(jsiToLongLong(runtime, args[0])));
+      } else if ([typeEncoding isEqualToString:@"q@?qq"]) {
+        long long (^typedBlock)(long long, long long) = (long long (^)(long long, long long))block;
+        return longLongToJSI(runtime, typedBlock(jsiToLongLong(runtime, args[0]), jsiToLongLong(runtime, args[1])));
+      } else if ([typeEncoding isEqualToString:@"@@?"]) {
+        NSString* (^typedBlock)(void) = (NSString* (^)(void))block;
+        return stringToJSI(runtime, typedBlock());
+      } else if ([typeEncoding isEqualToString:@"@@?@"]) {
+        NSString* (^typedBlock)(NSString*) = (NSString* (^)(NSString*))block;
+        return stringToJSI(runtime, typedBlock(jsiToString(runtime, args[0])));
+      } else if ([typeEncoding isEqualToString:@"@@?@@"]) {
+        NSString* (^typedBlock)(NSString*, NSString*) = (NSString* (^)(NSString*, NSString*))block;
+        return stringToJSI(runtime, typedBlock(jsiToString(runtime, args[0]), jsiToString(runtime, args[1])));
+      } else if ([typeEncoding isEqualToString:@"B@?"]) {
+        bool (^typedBlock)(void) = (bool (^)(void))block;
+        return boolToJSI(runtime, typedBlock());
+      } else if ([typeEncoding isEqualToString:@"B@?B"]) {
+        bool (^typedBlock)(bool) = (bool (^)(bool))block;
+        return boolToJSI(runtime, typedBlock(jsiToBool(runtime, args[0])));
+      } else if ([typeEncoding isEqualToString:@"B@?BB"]) {
+        bool (^typedBlock)(bool, bool) = (bool (^)(bool, bool))block;
+        return boolToJSI(runtime, typedBlock(jsiToBool(runtime, args[0]), jsiToBool(runtime, args[1])));
+      } else {
+        throw std::runtime_error(std::string("Unsupported type encoding: ") + [typeEncoding UTF8String]);
+      }
+    } @catch (NSException *exception) {
+      // Convert NSException from Swift to JSError
+      // Swift errors are wrapped in NSExceptions with code and message in userInfo
+      NSString *code = exception.userInfo[@"code"] ?: @"ERR_UNKNOWN";
+      NSString *message = exception.userInfo[@"message"] ?: exception.reason;
+
+      jsi::String jsCode = expo::convertNSStringToJSIString(runtime, code);
+      jsi::String jsMessage = expo::convertNSStringToJSIString(runtime, message);
+      jsi::Value error = runtime
+        .global()
+        .getProperty(runtime, "Error")
+        .asObject(runtime)
+        .asFunction(runtime)
+        .callAsConstructor(runtime, {
+          jsi::Value(runtime, jsMessage)
+        });
+      error.asObject(runtime).setProperty(runtime, "code", jsi::Value(runtime, jsCode));
+      throw jsi::JSError(runtime, jsi::Value(runtime, error));
+    }
+  };
+
   std::shared_ptr<jsi::Object> fnPtr = std::make_shared<jsi::Object>(jsi::Function::createFromHostFunction(*_runtime, propNameId, (unsigned int)argsCount, function));
   return [[EXJavaScriptObject alloc] initWith:fnPtr runtime:self];
 }
