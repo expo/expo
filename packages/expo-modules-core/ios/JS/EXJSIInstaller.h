@@ -6,9 +6,10 @@
 @class RCTBridge;
 #endif
 
-// Swift classes need forward-declaration in the headers.
+// Forward declarations for types - use protocol for AppContext to avoid Swift.h import
 @class EXAppContext;
 @class EXRuntime;
+@protocol EXAppContextProtocol;
 
 #if __has_include(<ReactCommon/RCTRuntimeExecutor.h>)
 @class RCTRuntimeExecutor;
@@ -35,7 +36,7 @@ extern NSString *_Nonnull const EXGlobalCoreObjectPropertyName;
  Installs ExpoModules host object in the runtime of the given app context.
  Returns a bool value whether the installation succeeded.
  */
-+ (BOOL)installExpoModulesHostObject:(nonnull EXAppContext *)appContext;
++ (BOOL)installExpoModulesHostObject:(nonnull id<EXAppContextProtocol>)appContext;
 
 /**
  Installs the base class for shared objects, i.e. `global.expo.SharedObject`.
