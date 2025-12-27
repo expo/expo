@@ -102,9 +102,9 @@ test.describe(inputDir, () => {
     const rscPayload = new TextDecoder().decode(await response.body());
 
     // Check RSC payload structure:
-    // - Line 1: Client reference for react-native-web Text component (relative path stable ID)
+    // - Line 1: Client reference for react-native-web Text component (output key)
     // - Line 0: JSX data with server action props
-    // Stable IDs now use relative paths from project root (e.g., ./../../node_modules/react-native-web/...)
+    // Output keys use relative paths from project root (e.g., ./node_modules/react-native-web/...)
     expect(rscPayload).toContain('1:I["./');
     expect(rscPayload).toContain('node_modules/react-native-web/dist/exports/Text/index.js');
     expect(rscPayload).toContain('/node_modules/react-native-web/dist/exports/Text/index.js.bundle?');

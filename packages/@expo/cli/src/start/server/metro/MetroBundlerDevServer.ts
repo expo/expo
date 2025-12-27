@@ -988,7 +988,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         .flat() as Record<string, string>[]
     ).reduce((acc, paths) => ({ ...acc, ...paths }), {});
 
-    // SSR manifest maps stable ID -> chunk (simple format)
+    // SSR manifest maps output key -> chunk (simple format)
     const ssrManifest = new Map<string, string | null>();
 
     // Find the entry bundle filename - client boundaries that are not in async chunks

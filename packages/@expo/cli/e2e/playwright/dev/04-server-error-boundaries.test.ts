@@ -108,7 +108,7 @@ test.describe(inputDir, () => {
     expect(text).toBe('Build Error');
     console.timeEnd('error-type');
 
-    // With stable ID changes, only 1 console error is logged (was 2 before)
+    // With output key changes, only 1 console error is logged (was 2 before)
     expect(pageErrors.all.length).toEqual(1);
   });
 

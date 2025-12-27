@@ -155,7 +155,7 @@ for (const outputMode of outputModes) {
       const response = await serverResponsePromise;
       const rscPayload = new TextDecoder().decode(await response.body()).trim();
 
-      // Stable IDs use relative paths from project root
+      // Output keys use relative paths from project root
       // The exact path depends on project structure (may include ../ for monorepo setups)
       expect(rscPayload).toContain('react-native-safe-area-context/');
       expect(rscPayload).toContain('expo-router/build/rsc/router/host');

@@ -15,7 +15,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-// Cache of discovered client boundaries: filePath -> stable ID
+// Cache of discovered client boundaries: filePath -> output key
 const clientBoundaryCache = new Map<string, string>();
 
 // Directories to skip during scanning

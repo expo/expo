@@ -17,7 +17,7 @@ export type SerializerParameters = [
     ExpoSerializerOptions
 ];
 export type SerializerConfigOptions = {
-    /** Project root for RSC stable ID resolution */
+    /** Project root for RSC output key resolution */
     projectRoot?: string;
     unstable_beforeAssetSerializationPlugins?: ((serializationInput: {
         graph: ReadOnlyGraph<MixedOutput>;

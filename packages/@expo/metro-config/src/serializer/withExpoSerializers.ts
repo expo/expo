@@ -35,7 +35,7 @@ export type SerializerParameters = [
 ];
 
 export type SerializerConfigOptions = {
-  /** Project root for RSC stable ID resolution */
+  /** Project root for RSC output key resolution */
   projectRoot?: string;
   unstable_beforeAssetSerializationPlugins?: ((serializationInput: {
     graph: ReadOnlyGraph<MixedOutput>;
@@ -68,9 +68,9 @@ export function withExpoSerializers<Config extends InputConfigT = InputConfigT>(
   // and would overwrite any code changes made by RSC plugin.
   processors.push(reconcileTransformSerializerPlugin);
 
-  // Resolve RSC deferred stable IDs AFTER reconcile has generated final code.
+  // Resolve RSC deferred output keys AFTER reconcile has generated final code.
   // The Babel transform sets metadata with deferred IDs, and this plugin:
-  // 1. Resolves deferred IDs to stable IDs in metadata
+  // 1. Resolves deferred IDs to output keys in metadata
   // 2. Rewrites the actual JS code to replace deferred ID strings
   if (options.projectRoot) {
     processors.push(

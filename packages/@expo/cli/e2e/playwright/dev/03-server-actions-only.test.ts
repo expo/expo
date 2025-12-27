@@ -83,9 +83,9 @@ test.describe(inputDir, () => {
 
     const rscPayload = new TextDecoder().decode(await response.body());
 
-    // Verify the RSC payload includes client references with stable IDs (relative path format)
+    // Verify the RSC payload includes client references with output keys (relative path format)
     // The format is: I["./relative/path/to/file.js",["/bundle-path..."]]
-    // Stable IDs use relative paths from project root, e.g., "./../../node_modules/react-native-web/dist/exports/Text/index.js"
+    // Output keys use relative paths from project root, e.g., "./node_modules/react-native-web/dist/exports/Text/index.js"
     expect(rscPayload).toMatch(/I\["\.\//);
     expect(rscPayload).toContain('node_modules/react-native-web/dist/exports/Text');
 

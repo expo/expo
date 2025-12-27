@@ -321,7 +321,7 @@ export function createServerComponentsMiddleware(
     }
     debug('React client boundaries:', reactClientReferences);
 
-    // Extract the stable ID → file path mapping from the server bundle.
+    // Extract the output key → file path mapping from the server bundle.
     // This is needed for assets which have reactClientReference in server bundle but not client bundle.
     const reactClientReferenceMap = jsArtifact.metadata.reactClientReferenceMap ?? {};
 
@@ -378,7 +378,7 @@ export function createServerComponentsMiddleware(
   function getResolveClientEntry(context: {
     platform: string;
     engine?: 'hermes' | null;
-    // SSR manifest maps stable ID -> chunk
+    // SSR manifest maps output key -> chunk
     ssrManifest?: Map<string, string | null>;
   }): (
     file: string,
@@ -597,7 +597,7 @@ export function createServerComponentsMiddleware(
       body?: ReadableStream<Uint8Array>;
       engine?: 'hermes' | null;
       contentType?: string;
-      // SSR manifest maps stable ID -> chunk
+      // SSR manifest maps output key -> chunk
       ssrManifest?: Map<string, string | null>;
       decodedBody?: unknown;
       routerOptions: Record<string, any>;
@@ -673,7 +673,7 @@ export function createServerComponentsMiddleware(
         routerOptions,
       }: {
         platform: string;
-        // SSR manifest maps stable ID -> chunk
+        // SSR manifest maps output key -> chunk
         ssrManifest: Map<string, string | null>;
         routerOptions: Record<string, any>;
       },

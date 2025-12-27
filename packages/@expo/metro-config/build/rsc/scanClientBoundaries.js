@@ -54,7 +54,7 @@ exports.isKnownClientBoundary = isKnownClientBoundary;
 exports.debugClientBoundaries = debugClientBoundaries;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
-// Cache of discovered client boundaries: filePath -> stable ID
+// Cache of discovered client boundaries: filePath -> output key
 const clientBoundaryCache = new Map();
 // Directories to skip during scanning
 const SKIP_DIRS = new Set([

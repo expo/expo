@@ -78,7 +78,7 @@ export async function transform(
     if (!isServer) {
       const clientBoundaries = getStringArray(options.customTransformOptions?.clientBoundaries);
 
-      // clientBoundaries contains stable IDs from MetroBundlerDevServer:
+      // clientBoundaries contains output keys from MetroBundlerDevServer:
       // - Relative paths from project root: "./src/Button.tsx", "./node_modules/pkg/file.js"
       //
       // The serializer will replace __RSC_BOUNDARIES_PLACEHOLDER__ with the actual module map
@@ -88,7 +88,7 @@ export async function transform(
       // we add dynamic imports. Metro analyzes these statically and adds modules to
       // the dependency graph. The imports are NOT awaited, so they don't block initialization.
       const resolvedBoundaries = clientBoundaries?.map((boundary) => {
-        // Stable IDs are relative paths from project root (e.g., "./src/Button.tsx")
+        // Output keys are relative paths from project root (e.g., "./src/Button.tsx")
         // Convert to absolute paths for Metro resolution
         if (boundary.startsWith('./')) {
           const path = require('path');

@@ -30,9 +30,9 @@ function withExpoSerializers(config, options = {}) {
     // This must run before RSC plugin since reconcile regenerates code from AST
     // and would overwrite any code changes made by RSC plugin.
     processors.push(reconcileTransformSerializerPlugin_1.reconcileTransformSerializerPlugin);
-    // Resolve RSC deferred stable IDs AFTER reconcile has generated final code.
+    // Resolve RSC deferred output keys AFTER reconcile has generated final code.
     // The Babel transform sets metadata with deferred IDs, and this plugin:
-    // 1. Resolves deferred IDs to stable IDs in metadata
+    // 1. Resolves deferred IDs to output keys in metadata
     // 2. Rewrites the actual JS code to replace deferred ID strings
     if (options.projectRoot) {
         processors.push((0, rscSerializerPlugin_1.createRscSerializerPlugin)({
