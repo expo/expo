@@ -2,8 +2,12 @@
 
 @preconcurrency import ExpoModulesCore
 
+/// Typealias matching React Native's NSURLSessionConfigurationProvider block type
+public typealias URLSessionConfigurationProvider = @convention(block) () -> URLSessionConfiguration?
+
+
 private let fetchRequestQueue = DispatchQueue(label: "expo.modules.fetch.RequestQueue")
-nonisolated(unsafe) internal var urlSessionConfigurationProvider: NSURLSessionConfigurationProvider?
+nonisolated(unsafe) internal var urlSessionConfigurationProvider: URLSessionConfigurationProvider?
 
 public final class ExpoFetchModule: Module {
   private lazy var urlSession = createURLSession()
