@@ -2,7 +2,15 @@
 
 #import <Expo/ExpoReactNativeFactory.h>
 
-#import <ExpoModulesCore/ExpoModulesCore.h>
+// When using xcframeworks, the generated Swift
+// header is inside ExpoModulesCore module. Otherwise, it's available only
+// locally with double-quoted imports.
+#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
+#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
+#elif __has_include("ExpoModulesCore-Swift.h")
+#import "ExpoModulesCore-Swift.h"
+#endif
+
 #import <ExpoModulesCore/EXRuntime.h>
 #if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
 #import <ExpoModulesCore/ExpoModulesCore-Swift.h>
@@ -37,8 +45,7 @@
 
   // Inject and decorate the `global.expo` object
   _appContext._runtime = [[EXRuntime alloc] initWithRuntime:runtime];
-  [_appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
-
+  
   [_appContext registerNativeModules];
 }
 
