@@ -60,6 +60,11 @@ jobs:
           xcrun simctl erase all
           xcrun simctl shutdown all
           sudo xcodebuild -runFirstLaunch
+      - name: 📱 Pre-boot simulator
+        timeout-minutes: 8
+        run: |
+          # NOTE: Keep simulator name in sync with fastlane/Fastfile unit_tests lane
+          xcrun simctl boot "iPhone 17 Pro"
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
