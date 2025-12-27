@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="he">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>אפליקציית פוסטים</title>
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; padding: 20px; direction: rtl; }
+    input, button { padding: 8px; font-size: 16px; }
+    #posts { margin-top: 20px; }
+    .post { border-bottom: 1px solid #eee; padding: 8px 0; }
+    .meta { font-size: 12px; color: #666; }
+  </style>
+</head>
+<body>
+  <h1>מסך הבית</h1>
+
+  <div>
+    <input id="text" placeholder="כתוב פוסט" style="width:70%" />
+    <button id="send">פרסם</button>
+  </div>
+
+  <div id="status" style="margin-top:10px;color:#666">ממתין להתחברות אנונימית...</div>
+
+  <div id="posts"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      onSnapshot,
+      query,
+      orderBy
+    } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+
+    // --- החלף כאן את ערכי הפרויקט שלך ---
+    const firebaseConfig = {
+      apiKey: "API_KEY",
+      authDomain: "PROJECT.firebaseapp.com",
+      projectId: "PROJECT_ID"
+    };
+    // ---------------------------------------
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const status = document.getElementById('status');
+    const textEl = document.getElementById('text');
+    const sendBtn = document.getElementById('send');
+    const postsEl = document.getElementById('posts');
+
+    let currentUid = null;
+
+    // Anonymous sign-in
+    signInAnonymously(auth).catch(e => {
+      console.error('signInAnonymously error', e);
+      status.textContent = 'שגיאה בהתחברות אנונימית: ' + e.message;
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUid = user.uid;
+        status.textContent = 'מחובר אנונימית: ' + currentUid;
+      } else {
+        currentUid = null;
+        status.textContent = 'לא מחובר';
+      }
+    });
+
+    // Subscribe to posts collection (most recent first)
+    const q = query(collection(db, 'posts'), orderBy('created', 'desc'));
+    onSnapshot(q, (snap) => {
+      postsEl.innerHTML = '';
+      snap.forEach(doc => {
+        const data = doc.data();
+        const div = document.createElement('div');
+        div.className = 'post';
+        const p = document.createElement('div');
+        p.textContent = data.text || '';
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        const time = data.created ? new Date(data.created).toLocaleString() : '';
+        meta.textContent = `ערוץ: ${data.userId || '---'} • ${time}`;
+        div.appendChild(p);
+        div.appendChild(meta);
+        postsEl.appendChild(div);
+      });
+    }, err => {
+      console.error('onSnapshot error', err);
+      status.textContent = 'שגיאה בטעינת פוסטים: ' + err.message;
+    });
+
+    sendBtn.addEventListener('click', async () => {
+      const text = textEl.value.trim();
+      if (!text) return alert('אנא הזן טקסט');
+      if (!currentUid) return alert('ממתין לאימות...');
+      try {
+        await addDoc(collection(db, 'posts'), {
+          userId: currentUid,
+          text,
+          created: Date.now(),
+          type: 'post'
+        });
+        textEl.value = '';
+      } catch (e) {
+        console.error('addDoc failed', e);
+        alert('שגיאה בשליחת הפוסט: ' + e.message);
+      }
+    });
+  </script>
+</body>
+</html>
