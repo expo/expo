@@ -2,48 +2,34 @@
  * Copyright © 2024 650 Industries.
  */
 import type { ConfigAPI, PluginObj } from '@babel/core';
+import { relative as getRelativePath } from 'node:path';
+import url from 'node:url';
 
-import { getIsReactServer, toPosixPath } from './common';
-
-// Marker prefix for deferred stable ID resolution (handled by serializer)
-export const RSC_DEFERRED_PREFIX = '__RSC_DEFERRED__:';
-
-/**
- * Check if a stable ID is deferred (needs serializer resolution).
- */
-export function isDeferredStableId(stableId: string): boolean {
-  return stableId.startsWith(RSC_DEFERRED_PREFIX);
-}
+import { getIsReactServer, getPossibleProjectRoot, toPosixPath } from './common';
 
 /**
- * Extract the resolved path from a deferred stable ID marker.
+ * Generate a stable ID for RSC client/server boundary modules.
+ *
+ * Uses relative paths from project root, with pnpm symlink normalization.
+ * Format: ./path/to/file.js or ./node_modules/pkg/file.js
  */
-export function extractResolvedPathFromDeferred(deferredId: string): string {
-  if (!isDeferredStableId(deferredId)) {
-    throw new Error(`Not a deferred stable ID: ${deferredId}`);
-  }
-  return deferredId.slice(RSC_DEFERRED_PREFIX.length);
-}
+function generateStableId(filePath: string, projectRoot: string): string {
+  let relativePath = getRelativePath(projectRoot, filePath);
 
-/**
- * Generate a deferred stable ID for a client/server boundary module.
- *
- * ALL stable ID resolution is deferred to the serializer. This simplifies
- * the Babel plugin and centralizes all ID resolution logic in one place.
- *
- * The serializer will resolve the deferred ID to:
- * - node_modules: package specifier (e.g., "pkg/client")
- * - app-level: relative path from project root (e.g., "./src/Button.tsx")
- *
- * Format: __RSC_DEFERRED__:/absolute/path/to/file.js
- */
-function generateDeferredId(filePath: string): string {
-  const deferredId = RSC_DEFERRED_PREFIX + toPosixPath(filePath);
-  // Debug: log when generating deferred IDs for client boundaries
+  // pnpm normalization: .pnpm/pkg@1.0.0/node_modules/pkg/... → pkg/...
+  // This handles pnpm's symlinked node_modules structure
+  relativePath = relativePath.replace(
+    /node_modules\/\.pnpm\/[^/]+\/node_modules\//g,
+    'node_modules/'
+  );
+
+  const stableId = './' + toPosixPath(relativePath);
+
   if (process.env.EXPO_DEBUG) {
-    console.log('[RSC-BABEL] generateDeferredId:', filePath, '->', deferredId);
+    console.log('[RSC-BABEL] generateStableId:', filePath, '->', stableId);
   }
-  return deferredId;
+
+  return stableId;
 }
 
 export function reactClientReferencesPlugin(
@@ -51,6 +37,7 @@ export function reactClientReferencesPlugin(
 ): PluginObj {
   const { template, types } = api;
   const isReactServer = api.caller(getIsReactServer);
+  const possibleProjectRoot = api.caller(getPossibleProjectRoot);
 
   return {
     name: 'expo-client-references',
@@ -110,9 +97,10 @@ export function reactClientReferencesPlugin(
           throw new Error('[Babel] Expected a filename to be set in the state');
         }
 
-        // Generate deferred ID - serializer will resolve to final stable ID
-        // This centralizes all stable ID logic in the serializer
-        const outputKey = generateDeferredId(filePath);
+        const projectRoot = possibleProjectRoot || state.file.opts.root || '';
+
+        // Generate stable ID directly using relative path from project root
+        const outputKey = generateStableId(filePath, projectRoot);
 
         function iterateExports(callback: (exportName: string, path: any) => void, type: string) {
           const exportNames = new Set<string>();
@@ -262,12 +250,13 @@ export function reactClientReferencesPlugin(
           state.file.metadata.proxyExports = [...proxyExports];
 
           // Save the server action reference in the metadata.
-          // Deferred ID will be resolved by serializer to final stable ID.
-          state.file.metadata.reactServerReference = outputKey;
+          // Use file:// URL for bundling purposes (converted to stable ID by serializer)
+          state.file.metadata.reactServerReference = url.pathToFileURL(filePath).href;
         } else if (isUseClient) {
           // Always set metadata for client boundaries (needed by serializer for module map)
+          // Use file:// URL for metadata (converted to stable ID by serializer)
           assertExpoMetadata(state.file.metadata);
-          state.file.metadata.reactClientReference = outputKey;
+          state.file.metadata.reactClientReference = url.pathToFileURL(filePath).href;
 
           if (!isReactServer) {
             // Don't transform the code on the client - just set metadata above
@@ -330,9 +319,7 @@ export function reactClientReferencesPlugin(
           // Store the proxy export names for testing purposes.
           state.file.metadata.proxyExports = [...proxyExports];
 
-          // Save the client reference in the metadata.
-          // Deferred ID will be resolved by serializer to final stable ID.
-          state.file.metadata.reactClientReference = outputKey;
+          // Save the client reference in the metadata (already set above via file:// URL).
         }
       },
     },

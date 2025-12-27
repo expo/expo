@@ -159,6 +159,48 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return 'metro';
   }
 
+  /**
+   * Scan for client boundaries and create RSC middleware.
+   * Extracted to avoid code duplication between web and native startup paths.
+   */
+  private createRscMiddlewareWithBoundaries(
+    isReactServerActionsOnlyEnabled: boolean,
+    routerOptions: Record<string, any>
+  ) {
+    // Scan for client boundaries at startup to include modules only imported from server components
+    // Using require to avoid type-check issues with dynamic imports in monorepo
+    const { scanForClientBoundaries } =
+      require('@expo/metro-config/build/rsc/scanClientBoundaries') as {
+        scanForClientBoundaries: (projectRoot: string) => Set<string>;
+      };
+    const { getStableId } = require('@expo/metro-config/build/rscRegistry') as {
+      getStableId: (
+        resolvedPath: string,
+        projectRoot: string
+      ) => { stableId: string; type: string };
+    };
+
+    // Convert absolute paths to stable IDs for cross-environment compatibility
+    // Stable IDs are either package specifiers (e.g., "pkg/client") or
+    // relative paths from project root (e.g., "./src/Button.tsx")
+    const absolutePaths = scanForClientBoundaries(this.projectRoot);
+    const clientBoundaries: string[] = Array.from(absolutePaths).map(
+      (absPath) => getStableId(absPath, this.projectRoot).stableId
+    );
+    debug(`[RSC] Discovered ${clientBoundaries.length} client boundaries at startup`);
+
+    this.bindRSCDevModuleInjectionHandler();
+    return createServerComponentsMiddleware(this.projectRoot, {
+      instanceMetroOptions: this.instanceMetroOptions,
+      rscPath: '/_flight',
+      ssrLoadModule: this.ssrLoadModule.bind(this),
+      ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
+      useClientRouter: isReactServerActionsOnlyEnabled,
+      routerOptions,
+      clientBoundaries,
+    });
+  }
+
   async resolvePortAsync(options: Partial<BundlerStartOptions> = {}): Promise<number> {
     const port =
       // If the manually defined port is busy then an error should be thrown...
@@ -1315,38 +1357,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
-        // Scan for client boundaries at startup to include modules only imported from server components
-        // Using require to avoid type-check issues with dynamic imports in monorepo
-        const { scanForClientBoundaries } =
-          require('@expo/metro-config/build/rsc/scanClientBoundaries') as {
-            scanForClientBoundaries: (projectRoot: string) => Set<string>;
-          };
-        const { getStableId } = require('@expo/metro-config/build/rscRegistry') as {
-          getStableId: (
-            resolvedPath: string,
-            projectRoot: string
-          ) => { stableId: string; type: string };
-        };
-
-        // Convert absolute paths to stable IDs for cross-environment compatibility
-        // Stable IDs are either package specifiers (e.g., "pkg/client") or
-        // relative paths from project root (e.g., "./src/Button.tsx")
-        const absolutePaths = scanForClientBoundaries(this.projectRoot);
-        const clientBoundaries: string[] = Array.from(absolutePaths).map(
-          (absPath) => getStableId(absPath, this.projectRoot).stableId
+        const rscMiddleware = this.createRscMiddlewareWithBoundaries(
+          isReactServerActionsOnlyEnabled,
+          routerOptions
         );
-        debug(`[RSC] Discovered ${clientBoundaries.length} client boundaries at startup`);
-
-        this.bindRSCDevModuleInjectionHandler();
-        const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
-          instanceMetroOptions: this.instanceMetroOptions,
-          rscPath: '/_flight',
-          ssrLoadModule: this.ssrLoadModule.bind(this),
-          ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
-          useClientRouter: isReactServerActionsOnlyEnabled,
-          routerOptions,
-          clientBoundaries,
-        });
         this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
         this.onReloadRscEvent = rscMiddleware.onReloadRscEvent;
@@ -1387,39 +1401,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     } else {
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
-        // Scan for client boundaries at startup to include modules only imported from server components
-        // Using require to avoid type-check issues with dynamic imports in monorepo
-        const { scanForClientBoundaries } =
-          require('@expo/metro-config/build/rsc/scanClientBoundaries') as {
-            scanForClientBoundaries: (projectRoot: string) => Set<string>;
-          };
-        const { getStableId } = require('@expo/metro-config/build/rscRegistry') as {
-          getStableId: (
-            resolvedPath: string,
-            projectRoot: string
-          ) => { stableId: string; type: string };
-        };
-
-        // Convert absolute paths to stable IDs for cross-environment compatibility
-        // Stable IDs are either package specifiers (e.g., "pkg/client") or
-        // relative paths from project root (e.g., "./src/Button.tsx")
-        const absolutePaths = scanForClientBoundaries(this.projectRoot);
-        const clientBoundaries: string[] = Array.from(absolutePaths).map(
-          (absPath) => getStableId(absPath, this.projectRoot).stableId
+        this.rscRenderer = this.createRscMiddlewareWithBoundaries(
+          isReactServerActionsOnlyEnabled,
+          routerOptions
         );
-        debug(`[RSC] Discovered ${clientBoundaries.length} client boundaries at startup`);
-
-        this.bindRSCDevModuleInjectionHandler();
-        const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
-          instanceMetroOptions: this.instanceMetroOptions,
-          rscPath: '/_flight',
-          ssrLoadModule: this.ssrLoadModule.bind(this),
-          ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
-          useClientRouter: isReactServerActionsOnlyEnabled,
-          routerOptions,
-          clientBoundaries,
-        });
-        this.rscRenderer = rscMiddleware;
       }
     }
     // Extend the close method to ensure that we clean up the local info.

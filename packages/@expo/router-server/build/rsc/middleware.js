@@ -93,12 +93,12 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
         async loadServerModuleRsc(file) {
             debug('loadServerModuleRsc', file);
             // NOTE(@kitten): [WORKAROUND] Assumes __dirname is at `dist/server/_expo/functions/_flight`
-            // For @app/ prefixed stable IDs, look up the chunk path from the action manifest
+            // For relative path stable IDs (./path/to/file), look up the chunk path from the action manifest
             // The action manifest maps: stableId -> [metroId, chunkPath]
             // We need the chunkPath to load the actual bundled module
-            if (file.startsWith('@app/') && file in actionManifest) {
+            if (file.startsWith('./') && file in actionManifest) {
                 const [_metroId, chunkPath] = actionManifest[file];
-                debug('loadServerModuleRsc loading chunk for @app/ path:', file, '->', chunkPath);
+                debug('loadServerModuleRsc loading chunk for relative path:', file, '->', chunkPath);
                 return serverRequire('../../../', chunkPath);
             }
             return serverRequire('../../../', file);

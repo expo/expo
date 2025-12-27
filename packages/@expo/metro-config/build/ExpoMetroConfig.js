@@ -22,7 +22,6 @@ const file_store_1 = require("./file-store");
 const getModulesPaths_1 = require("./getModulesPaths");
 const getWatchFolders_1 = require("./getWatchFolders");
 const rewriteRequestUrl_1 = require("./rewriteRequestUrl");
-const rscRegistry_1 = require("./rscRegistry");
 const sideEffects_1 = require("./serializer/sideEffects");
 const withExpoSerializers_1 = require("./serializer/withExpoSerializers");
 const postcss_1 = require("./transform-worker/postcss");
@@ -128,9 +127,6 @@ function createStableModuleIdFactory(root) {
     };
 }
 function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins } = {}) {
-    // Set the project root for RSC registry so it can distinguish app-level files
-    // from external packages in monorepo setups
-    (0, rscRegistry_1.setProjectRoot)(projectRoot);
     const { getDefaultConfig: getDefaultMetroConfig, mergeConfig, } = require('@expo/metro/metro-config');
     if (isCSSEnabled) {
         patchMetroGraphToSupportUncachedModules();
@@ -214,17 +210,8 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             },
             resolverMainFields: ['react-native', 'browser', 'main'],
             platforms: ['ios', 'android'],
-            // RSC: Capture import specifiers for stable ID resolution
             resolveRequest(context, moduleName, platform) {
-                const result = context.resolveRequest(context, moduleName, platform);
-                // Capture specifiers for RSC stable IDs:
-                // - Bare specifiers (pkg, @scope/pkg): captured directly
-                // - Relative imports within node_modules: canonical specifier computed
-                // - Collision detection: auto-adds version if same ID maps to different files
-                if (result.type === 'sourceFile') {
-                    (0, rscRegistry_1.captureSpecifier)(result.filePath, moduleName, context.originModulePath);
-                }
-                return result;
+                return context.resolveRequest(context, moduleName, platform);
             },
             assetExts: metroDefaultValues.resolver.assetExts
                 .concat(

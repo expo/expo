@@ -9,26 +9,27 @@
  */
 
 import type { ConfigAPI, types as t, NodePath, PluginObj, PluginPass } from '@babel/core';
-// Note: 'node:path' import removed - stable ID resolution now deferred to serializer
+import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
 
-import { RSC_DEFERRED_PREFIX } from './client-module-proxy-plugin';
 import { createAddNamedImportOnce, getPossibleProjectRoot, toPosixPath } from './common';
 
 /**
- * Generate a deferred stable ID for a server action module.
+ * Generate a stable ID for a server action module.
  *
- * ALL stable ID resolution is deferred to the serializer. This simplifies
- * the Babel plugin and centralizes all ID resolution logic in one place.
- * No path heuristics like "/node_modules/" are used here.
- *
- * The serializer will resolve the deferred ID to:
- * - Package modules: package specifier (e.g., "pkg/actions")
- * - App-level files: relative path from project root (e.g., "./src/actions.ts")
+ * Uses relative paths from project root, with pnpm symlink normalization.
+ * Format: ./path/to/file.js or ./node_modules/pkg/file.js
  */
-function generateStableId(filePath: string, _projectRoot: string): string {
-  // Always use deferred ID - serializer handles all stable ID resolution
-  return RSC_DEFERRED_PREFIX + toPosixPath(filePath);
+function generateStableId(filePath: string, projectRoot: string): string {
+  let relativePath = getRelativePath(projectRoot, filePath);
+
+  // pnpm normalization: .pnpm/pkg@1.0.0/node_modules/pkg/... → pkg/...
+  relativePath = relativePath.replace(
+    /node_modules\/\.pnpm\/[^/]+\/node_modules\//g,
+    'node_modules/'
+  );
+
+  return './' + toPosixPath(relativePath);
 }
 
 const debug = require('debug')('expo:babel:server-actions');
@@ -664,13 +665,9 @@ export function reactServerActionsPlugin(
         throw new Error('[Babel] Expected a filename to be set in the state');
       }
 
-      const projectRoot = possibleProjectRoot || file.opts.root || '';
-
-      // Use stable ID for server reference (same as getActionModuleId)
-      const outputKey = generateStableId(filePath, projectRoot);
-
       file.metadata.reactServerActions = payload;
-      file.metadata.reactServerReference = outputKey;
+      // Use file:// URL for reactServerReference (used for bundling, converted to path later)
+      file.metadata.reactServerReference = url.pathToFileURL(filePath).href;
     },
   };
 }

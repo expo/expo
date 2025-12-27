@@ -155,14 +155,13 @@ for (const outputMode of outputModes) {
       const response = await serverResponsePromise;
       const rscPayload = new TextDecoder().decode(await response.body()).trim();
 
-      // Stable IDs use package specifiers for ALL packages (including workspace packages)
-      // This format is more portable across different package managers (npm, pnpm, yarn)
-      // Note: Chunk references include hashes, so we verify stable IDs and structure separately
-      expect(rscPayload).toContain('I["react-native-safe-area-context"');
-      expect(rscPayload).toContain('I["expo-router/build/rsc/router/host"');
-      expect(rscPayload).toContain('I["react-native-web/dist/exports/View"');
-      expect(rscPayload).toContain('I["expo-router/build/rsc/router/client"');
-      expect(rscPayload).toContain('I["react-native-web/dist/exports/Text"');
+      // Stable IDs use relative paths from project root
+      // The exact path depends on project structure (may include ../ for monorepo setups)
+      expect(rscPayload).toContain('react-native-safe-area-context/');
+      expect(rscPayload).toContain('expo-router/build/rsc/router/host');
+      expect(rscPayload).toContain('react-native-web/dist/exports/View');
+      expect(rscPayload).toContain('expo-router/build/rsc/router/client');
+      expect(rscPayload).toContain('react-native-web/dist/exports/Text');
       expect(rscPayload).toContain('"testID":"layout-child-wrapper"');
       expect(rscPayload).toContain('"testID":"color"');
       expect(rscPayload).toContain('"blue"');

@@ -23,7 +23,7 @@ import { FileStore } from './file-store';
 import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
-import { captureSpecifier, clearRegistry as clearRscRegistry, setProjectRoot } from './rscRegistry';
+import { clearRegistry as clearRscRegistry } from './rscRegistry';
 import { JSModule } from './serializer/getCssDeps';
 import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
@@ -196,10 +196,6 @@ export function getDefaultConfig(
   projectRoot: string,
   { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
 ) {
-  // Set the project root for RSC registry so it can distinguish app-level files
-  // from external packages in monorepo setups
-  setProjectRoot(projectRoot);
-
   const {
     getDefaultConfig: getDefaultMetroConfig,
     mergeConfig,
@@ -310,17 +306,8 @@ export function getDefaultConfig(
       },
       resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['ios', 'android'],
-      // RSC: Capture import specifiers for stable ID resolution
       resolveRequest(context, moduleName, platform) {
-        const result = context.resolveRequest(context, moduleName, platform);
-        // Capture specifiers for RSC stable IDs:
-        // - Bare specifiers (pkg, @scope/pkg): captured directly
-        // - Relative imports within node_modules: canonical specifier computed
-        // - Collision detection: auto-adds version if same ID maps to different files
-        if (result.type === 'sourceFile') {
-          captureSpecifier(result.filePath, moduleName, context.originModulePath);
-        }
-        return result;
+        return context.resolveRequest(context, moduleName, platform);
       },
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(

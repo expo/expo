@@ -83,10 +83,11 @@ test.describe(inputDir, () => {
 
     const rscPayload = new TextDecoder().decode(await response.body());
 
-    // Verify the RSC payload includes client references with stable IDs
-    // The format is: I["stableId",["/bundle-path..."]]
-    // Package specifiers use their npm package path, e.g., "react-native-web/dist/exports/Text"
-    expect(rscPayload).toMatch(/I\["react-native-web\/dist\/exports\/Text",\["\//);
+    // Verify the RSC payload includes client references with stable IDs (relative path format)
+    // The format is: I["./relative/path/to/file.js",["/bundle-path..."]]
+    // Stable IDs use relative paths from project root, e.g., "./../../node_modules/react-native-web/dist/exports/Text/index.js"
+    expect(rscPayload).toMatch(/I\["\.\//);
+    expect(rscPayload).toContain('node_modules/react-native-web/dist/exports/Text');
 
     expect(pageErrors.all).toEqual([]);
   });

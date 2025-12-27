@@ -10,22 +10,19 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactServerActionsPlugin = reactServerActionsPlugin;
-const client_module_proxy_plugin_1 = require("./client-module-proxy-plugin");
+const node_path_1 = require("node:path");
 const common_1 = require("./common");
 /**
- * Generate a deferred stable ID for a server action module.
+ * Generate a stable ID for a server action module.
  *
- * ALL stable ID resolution is deferred to the serializer. This simplifies
- * the Babel plugin and centralizes all ID resolution logic in one place.
- * No path heuristics like "/node_modules/" are used here.
- *
- * The serializer will resolve the deferred ID to:
- * - Package modules: package specifier (e.g., "pkg/actions")
- * - App-level files: relative path from project root (e.g., "./src/actions.ts")
+ * Uses relative paths from project root, with pnpm symlink normalization.
+ * Format: ./path/to/file.js or ./node_modules/pkg/file.js
  */
-function generateStableId(filePath, _projectRoot) {
-    // Always use deferred ID - serializer handles all stable ID resolution
-    return client_module_proxy_plugin_1.RSC_DEFERRED_PREFIX + (0, common_1.toPosixPath)(filePath);
+function generateStableId(filePath, projectRoot) {
+    let relativePath = (0, node_path_1.relative)(projectRoot, filePath);
+    // pnpm normalization: .pnpm/pkg@1.0.0/node_modules/pkg/... → pkg/...
+    relativePath = relativePath.replace(/node_modules\/\.pnpm\/[^/]+\/node_modules\//g, 'node_modules/');
+    return './' + (0, common_1.toPosixPath)(relativePath);
 }
 const debug = require('debug')('expo:babel:server-actions');
 const LAZY_WRAPPER_VALUE_KEY = 'value';

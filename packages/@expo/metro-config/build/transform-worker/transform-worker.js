@@ -86,8 +86,7 @@ async function transform(config, projectRoot, filename, data, options) {
         if (!isServer) {
             const clientBoundaries = getStringArray(options.customTransformOptions?.clientBoundaries);
             // clientBoundaries contains stable IDs from MetroBundlerDevServer:
-            // - Package specifiers: "pkg/client", "@scope/pkg", "react-native-safe-area-context"
-            // - App-level paths: "@app/src/Button.tsx", "@app/components/Header.tsx"
+            // - Relative paths from project root: "./src/Button.tsx", "./node_modules/pkg/file.js"
             //
             // The serializer will replace __RSC_BOUNDARIES_PLACEHOLDER__ with the actual module map
             // built from all modules with reactClientReference metadata in the dependency graph.
@@ -96,17 +95,13 @@ async function transform(config, projectRoot, filename, data, options) {
             // we add dynamic imports. Metro analyzes these statically and adds modules to
             // the dependency graph. The imports are NOT awaited, so they don't block initialization.
             const resolvedBoundaries = clientBoundaries?.map((boundary) => {
-                // App-level paths (e.g., "@app/src/Button.tsx") need to be converted to
-                // absolute paths since this virtual module is at expo/virtual/rsc.js, not projectRoot
-                if (boundary.startsWith('@app/')) {
+                // Stable IDs are relative paths from project root (e.g., "./src/Button.tsx")
+                // Convert to absolute paths for Metro resolution
+                if (boundary.startsWith('./')) {
                     const path = require('path');
-                    const resolved = path.resolve(projectRoot, boundary.slice(5)); // Remove '@app/' prefix
-                    if (process.env.EXPO_DEBUG_RSC) {
-                        console.log('[RSC-TRANSFORM] @app/ boundary:', boundary, '-> resolved:', resolved, 'projectRoot:', projectRoot);
-                    }
-                    return resolved;
+                    return path.resolve(projectRoot, boundary);
                 }
-                // Package specifiers (e.g., "pkg/client") can be used directly - Metro resolves them
+                // Other formats can be used directly
                 return boundary;
             });
             // Use dynamic imports inside a never-true condition.

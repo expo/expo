@@ -154,15 +154,13 @@ export function createServerComponentsMiddleware(
     const processedEntryPoints = new Set<string>();
 
     // Helper to convert stable ID to file path for bundling
-    // Stable IDs use @app/ prefix for app-level files, but Metro needs absolute paths
+    // Stable IDs are relative paths from project root (e.g., "./src/file.ts" or "./node_modules/pkg/file.js")
     function stableIdToFilePath(stableId: string): string {
-      if (stableId.startsWith('@app/')) {
-        // @app/ prefix indicates app-level file - convert to absolute path
-        const relativePath = stableId.slice(5); // Remove '@app/' prefix
-        return path.join(projectRoot, relativePath);
+      if (stableId.startsWith('./')) {
+        // Relative path from project root - convert to absolute path
+        return path.join(projectRoot, stableId);
       }
-      // For package specifiers (e.g., "pkg/actions"), they should already work with Metro
-      // as it can resolve them from node_modules
+      // Shouldn't happen with new format, but fallback to direct use
       return stableId;
     }
 
@@ -185,14 +183,14 @@ export function createServerComponentsMiddleware(
 
       const reactClientReferences = contents.artifacts
         .filter((a) => a.type === 'js')[0]
-        .metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
+        .metadata.reactClientReferences?.map((ref) => toStableId(ref, projectRoot));
 
       if (reactClientReferences) {
         nestedClientBoundaries.push(...reactClientReferences!);
       }
       const reactServerReferences = contents.artifacts
         .filter((a) => a.type === 'js')[0]
-        .metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
+        .metadata.reactServerReferences?.map((ref) => toStableId(ref, projectRoot));
 
       if (reactServerReferences) {
         nestedServerBoundaries.push(...reactServerReferences!);
@@ -302,7 +300,7 @@ export function createServerComponentsMiddleware(
     const jsArtifact = contents.artifacts.filter((a) => a.type === 'js')[0];
 
     const reactServerReferences = jsArtifact.metadata.reactServerReferences?.map((ref) =>
-      fileURLToFilePath(ref)
+      toStableId(ref, projectRoot)
     );
 
     if (!reactServerReferences) {
@@ -310,10 +308,10 @@ export function createServerComponentsMiddleware(
         'Static server action references were not returned from the Metro SSR bundle for definedRouter'
       );
     }
-    debug('React client boundaries:', reactServerReferences);
+    debug('React server boundaries:', reactServerReferences);
 
     const reactClientReferences = jsArtifact.metadata.reactClientReferences?.map((ref) =>
-      fileURLToFilePath(ref)
+      toStableId(ref, projectRoot)
     );
 
     if (!reactClientReferences) {
@@ -483,10 +481,9 @@ export function createServerComponentsMiddleware(
         const registryFilePath = getFilePathByStableId(file);
         if (registryFilePath) {
           bundleFilePath = registryFilePath;
-        } else if (file.startsWith('@app/')) {
-          // App-level stable ID - resolve from project root
-          // @app/ prefix indicates a file relative to projectRoot
-          bundleFilePath = path.join(projectRoot, file.slice(5)); // Remove '@app/' prefix
+        } else if (file.startsWith('./')) {
+          // Relative path stable ID - resolve from project root
+          bundleFilePath = path.join(projectRoot, file);
         } else {
           // No fallback - if the stable ID is not in registry, it's a build error
           throw new Error(
@@ -765,7 +762,7 @@ export function createServerComponentsMiddleware(
         const reactClientReferences =
           contents.artifacts
             .filter((a) => a.type === 'js')[0]
-            ?.metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref)) || [];
+            ?.metadata.reactClientReferences?.map((ref) => toStableId(ref, projectRoot)) || [];
 
         debug(
           '[RSC] Prefetched client boundaries from server graph:',
@@ -803,6 +800,36 @@ export const fileURLToFilePath = (fileURL: string) => {
     throw error;
   }
 };
+
+/**
+ * Convert file:// URL or file path to stable ID (relative path from project root).
+ * Used for RSC boundary references which need stable IDs for the module maps.
+ */
+export function toStableId(ref: string, projectRoot: string): string {
+  // Already a stable ID (relative path)
+  if (ref.startsWith('./')) {
+    return ref;
+  }
+
+  // Convert file:// URL to file path first
+  let filePath: string;
+  if (ref.startsWith('file://')) {
+    filePath = url.fileURLToPath(ref);
+  } else {
+    filePath = ref;
+  }
+
+  // Convert to relative path and normalize for pnpm
+  let relativePath = path.relative(projectRoot, filePath);
+
+  // pnpm normalization: .pnpm/pkg@1.0.0/node_modules/pkg/... → node_modules/pkg/...
+  relativePath = relativePath.replace(
+    /node_modules\/\.pnpm\/[^/]+\/node_modules\//g,
+    'node_modules/'
+  );
+
+  return './' + toPosixPath(relativePath);
+}
 
 const encodeInput = (input: string) => {
   if (input === '') {
