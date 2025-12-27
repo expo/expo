@@ -105,6 +105,8 @@ async function loadStaticParamsRecursive(
         dynamic: null,
         route: parsedRoute,
         children: dynamicChildren,
+        // Mark as generated so it can be filtered from SSR manifests
+        generated: true,
       };
 
       if (route.type === 'route') {

@@ -26,7 +26,11 @@ export function fromRuntimeManifestRoute(
   route: RouteNode,
   options: FromRuntimeManifestRouteOptions
 ): ResolvedLoaderRoute | null {
-  if (route.generated) {
+  // Skip generated routes (like `_sitemap` or `+not-found`) that don't have real loaders. These
+  // routes have `generated: true` but no `parentContextKey`.
+  // Routes created by `generateStaticParams()` have `generated: true` and a `parentContextKey`, and
+  // should use the parent route's loader.
+  if (route.generated && !route.parentContextKey) {
     return null;
   }
 
