@@ -22,9 +22,10 @@ import { SnackInline } from '~/ui/components/Snippet';
 <SnackInline label="Basic Accelerometer usage" dependencies={['expo-sensors']}>
 
 ```jsx
-import { useState, useEffect } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
+import { Subscription } from 'expo-sensors/src/DeviceSensor';
+import { useEffect, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function App() {
   const [{ x, y, z }, setData] = useState({
@@ -32,7 +33,7 @@ export default function App() {
     y: 0,
     z: 0,
   });
-  const [subscription, setSubscription] = useState(null);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
 
   const _slow = () => Accelerometer.setUpdateInterval(1000);
   const _fast = () => Accelerometer.setUpdateInterval(16);
@@ -76,7 +77,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
+    backgroundColor: '#eee',
   },
   text: {
     textAlign: 'center',
@@ -90,13 +92,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#eee',
+    backgroundColor: '#ccc',
     padding: 10,
   },
   middleButton: {
     borderLeftWidth: 1,
     borderRightWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#999',
   },
 });
 ```
