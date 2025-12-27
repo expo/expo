@@ -52,7 +52,6 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.APP_NAMESPACE = void 0;
 exports.setProjectRoot = setProjectRoot;
 exports.captureSpecifier = captureSpecifier;
 exports.getSpecifier = getSpecifier;
@@ -290,16 +289,11 @@ function getPackageModuleInfo(filePath, projectRoot) {
     if (!pkgInfo) {
         return null;
     }
-    // Check if this package is the project root itself or contains the project root
+    // Check if this package is the project root itself
     const normalizedPkgRoot = normalizePath(pkgInfo.root);
     const normalizedProjectRoot = projectRoot ? normalizePath(projectRoot) : cachedProjectRoot;
-    // If the package root IS or CONTAINS the project root, it's an app-level file
-    // This handles monorepo setups where e2e test apps are nested inside a package:
-    // - pkgRoot: /monorepo/apps/router-e2e/ (has package.json with name)
-    // - projectRoot: /monorepo/apps/router-e2e/__e2e__/02-server-actions/
-    if (normalizedProjectRoot &&
-        (normalizedPkgRoot === normalizedProjectRoot ||
-            normalizedProjectRoot.startsWith(normalizedPkgRoot + '/'))) {
+    // If the package root IS the project root, it's an app-level file, not a package module
+    if (normalizedProjectRoot && normalizedPkgRoot === normalizedProjectRoot) {
         return null;
     }
     // It's a package module (has package.json with name AND is not the project root)
@@ -481,10 +475,6 @@ function clearRegistry() {
     packageJsonCache.clear();
     exportsReverseCache.clear();
 }
-// App namespace for stable IDs - uses @ prefix which cannot be published to npm
-// without organization, ensuring no collision with real packages
-const APP_NAMESPACE = '@app';
-exports.APP_NAMESPACE = APP_NAMESPACE;
 /**
  * Get stable ID for a module.
  *
@@ -495,7 +485,7 @@ exports.APP_NAMESPACE = APP_NAMESPACE;
  * 1. Captured specifier from registry (highest priority - actual import specifier)
  * 2. Exports field reverse lookup (file path → export specifier)
  * 3. Computed from package.json boundary (fallback for packages without exports)
- * 4. App namespace (@app/path) for app-level files - treated like a virtual package
+ * 4. Relative path from project root (for app-level files)
  */
 function getStableId(resolvedPath, projectRoot) {
     const normalizedPath = normalizePath(resolvedPath);
@@ -529,14 +519,12 @@ function getStableId(resolvedPath, projectRoot) {
         }
         return { stableId, source: 'computed' };
     }
-    // 3. App-level file - use @app/ namespace (virtual package)
-    // This treats app files like a package, ensuring consistent stable ID format
-    // across server and client bundles
+    // 3. App-level file - use relative path from project root
     const relative = path.relative(projectRoot, resolvedPath);
     const posixPath = normalizePath(relative);
     return {
-        stableId: `${APP_NAMESPACE}/${posixPath}`,
-        source: 'app',
+        stableId: './' + posixPath,
+        source: 'relative',
     };
 }
 /**
@@ -556,27 +544,13 @@ function debugRegistry() {
 /**
  * Get file path by stable ID (reverse lookup).
  * Used to convert stable IDs back to file paths for bundle URLs in dev mode.
- *
- * For stable IDs with @app/ prefix, we resolve them against the cached project root.
  */
 function getFilePathByStableId(stableId) {
     const fromResolution = stableIdToPath.get(stableId);
     if (fromResolution) {
         return fromResolution;
     }
-    const fromDiscovered = discoveredClientBoundaries.get(stableId);
-    if (fromDiscovered) {
-        return fromDiscovered;
-    }
-    // For @app/ namespace stable IDs, resolve against project root
-    // @app/path/to/file.tsx → /projectRoot/path/to/file.tsx
-    const appPrefix = APP_NAMESPACE + '/';
-    if (stableId.startsWith(appPrefix) && cachedProjectRoot) {
-        const relativePath = stableId.slice(appPrefix.length);
-        const absolutePath = path.join(cachedProjectRoot, relativePath);
-        return absolutePath;
-    }
-    return undefined;
+    return discoveredClientBoundaries.get(stableId);
 }
 // ============================================================================
 // Client Boundary Discovery Cache
