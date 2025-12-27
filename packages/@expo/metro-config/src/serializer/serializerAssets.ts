@@ -16,6 +16,12 @@ export type SerialAsset = {
     reactServerReferences?: string[];
     // React client reference from the static babel pass.
     reactClientReferences?: string[];
+    // Maps output key to file path for SSR manifest chunk lookup.
+    // Output keys are package specifiers (e.g., "pkg/client") or relative paths (e.g., "./src/Button.js").
+    reactClientReferenceMap?: Record<string, string>;
+    // Maps output key to numeric module ID for SSR manifest module resolution.
+    // This enables the runtime to require() modules by their output key.
+    outputKeyToModuleId?: Record<string, string | number>;
     // DOM Component references from the static babel pass.
     expoDomComponentReferences?: string[];
     requires?: string[];

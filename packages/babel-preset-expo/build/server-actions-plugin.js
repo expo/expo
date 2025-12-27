@@ -8,14 +8,22 @@
  *
  * https://github.com/lubieowoce/tangle/blob/5229666fb317d0da9363363fc46dc542ba51e4f7/packages/babel-rsc/src/babel-rsc-actions.ts#L1C1-L909C25
  */
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactServerActionsPlugin = reactServerActionsPlugin;
 const node_path_1 = require("node:path");
-const node_url_1 = __importDefault(require("node:url"));
 const common_1 = require("./common");
+/**
+ * Generate a stable ID for a server action module.
+ *
+ * Uses relative paths from project root, with pnpm symlink normalization.
+ * Format: ./path/to/file.js or ./node_modules/pkg/file.js
+ */
+function generateStableId(filePath, projectRoot) {
+    let relativePath = (0, node_path_1.relative)(projectRoot, filePath);
+    // pnpm normalization: .pnpm/pkg@1.0.0/node_modules/pkg/... → pkg/...
+    relativePath = relativePath.replace(/node_modules\/\.pnpm\/[^/]+\/node_modules\//g, 'node_modules/');
+    return './' + (0, common_1.toPosixPath)(relativePath);
+}
 const debug = require('debug')('expo:babel:server-actions');
 const LAZY_WRAPPER_VALUE_KEY = 'value';
 function reactServerActionsPlugin(api) {
@@ -167,8 +175,8 @@ function reactServerActionsPlugin(api) {
                 return addNamedImportOnce(file.path, 'registerServerReference', 'react-server-dom-webpack/server');
             };
             getActionModuleId = once(() => {
-                // Create relative file path hash.
-                return './' + (0, common_1.toPosixPath)((0, node_path_1.relative)(projectRoot, file.opts.filename));
+                // Generate stable ID for the action module
+                return generateStableId(file.opts.filename, projectRoot);
             });
             const defineBoundArgsWrapperHelper = once(() => {
                 const id = this.file.path.scope.generateUidIdentifier('wrapBoundArgs');
@@ -485,7 +493,9 @@ function reactServerActionsPlugin(api) {
                 // This can happen in tests or systems that use Babel standalone.
                 throw new Error('[Babel] Expected a filename to be set in the state');
             }
-            const outputKey = node_url_1.default.pathToFileURL(filePath).href;
+            const projectRoot = possibleProjectRoot || file.opts.root || '';
+            // Use stable ID for server reference (same as getActionModuleId)
+            const outputKey = generateStableId(filePath, projectRoot);
             file.metadata.reactServerActions = payload;
             file.metadata.reactServerReference = outputKey;
         },

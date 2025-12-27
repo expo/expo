@@ -39,6 +39,16 @@ for (const outputMode of outputModes) {
       await expoStart.startAsync();
       console.timeEnd('expo start');
 
+      // First trigger RSC bundle build to discover client boundaries
+      // This populates the Babel registry before client bundle is built
+      console.time('Trigger RSC bundle');
+      try {
+        await fetch(new URL('/_flight/web/index.txt', expoStart.url.href).href);
+      } catch {
+        // Ignore errors - we just need to trigger the build
+      }
+      console.timeEnd('Trigger RSC bundle');
+
       console.time('Eagerly bundled JS');
       await expoStart.fetchBundleAsync('/');
       console.timeEnd('Eagerly bundled JS');

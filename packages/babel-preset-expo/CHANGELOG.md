@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Use specifier-based stable IDs for RSC client boundaries to fix pnpm, package.json exports, and Metro-specific resolution issues ([#41823](https://github.com/expo/expo/pull/41823) by [@kimchi-developer](https://github.com/kimchi-developer))
+
 ### 💡 Others
 
 - Bump to `@expo/metro@54.2.0` and `metro@0.83.3` ([#41142](https://github.com/expo/expo/pull/41142) by [@kitten](https://github.com/kitten))

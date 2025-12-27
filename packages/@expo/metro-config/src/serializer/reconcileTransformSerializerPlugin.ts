@@ -148,6 +148,15 @@ export async function reconcileTransformSerializerPlugin(
   options: SerializerOptions
 ): Promise<SerializerParameters> {
   if (!isOptimizeEnabled(graph)) {
+    // Even when optimize is disabled, delete AST to ensure no code can regenerate from it later.
+    // This prevents issues where RSC plugin rewrites data.code but something later reads from AST.
+    for (const value of graph.dependencies.values()) {
+      for (const output of value.output) {
+        if ('ast' in output.data) {
+          delete (output.data as any).ast;
+        }
+      }
+    }
     return [entryPoint, preModules, graph, options];
   }
 

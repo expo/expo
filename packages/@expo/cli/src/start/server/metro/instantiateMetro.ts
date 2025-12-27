@@ -40,11 +40,11 @@ import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
 
 // NOTE(@kitten): We pass a custom createStableModuleIdFactory function into the Metro module ID factory sometimes
-interface MetroServerWithModuleIdMod extends MetroServer {
-  _createModuleId: ReturnType<typeof createStableModuleIdFactory> & ((path: string) => number);
+export interface MetroServerWithModuleIdMod extends MetroServer {
+  _createModuleId: ReturnType<typeof createStableModuleIdFactory>;
 }
 interface MetroHmrServerWithModuleIdMod extends MetroHmrServer<MetroHmrClient> {
-  _createModuleId: ReturnType<typeof createStableModuleIdFactory> & ((path: string) => number);
+  _createModuleId: ReturnType<typeof createStableModuleIdFactory>;
 }
 
 // From expo/dev-server but with ability to use custom logger.

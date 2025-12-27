@@ -1173,9 +1173,11 @@ it(`removes unused exports`, async () => {
             "/app/math.js",
           ],
           "paths": {},
+          "reactClientReferenceMap": {},
           "reactClientReferences": [],
           "reactServerReferences": [],
           "requires": [],
+          "outputKeyToModuleId": {},
         },
         "originFilename": "index.js",
         "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {

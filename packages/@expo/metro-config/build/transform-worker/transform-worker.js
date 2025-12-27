@@ -85,20 +85,36 @@ async function transform(config, projectRoot, filename, data, options) {
         const isServer = environment === 'node' || environment === 'react-server';
         if (!isServer) {
             const clientBoundaries = getStringArray(options.customTransformOptions?.clientBoundaries);
-            // Inject client boundaries into the root client bundle for production bundling.
-            if (clientBoundaries) {
-                debug('Parsed client boundaries:', clientBoundaries);
-                // Inject source
-                const src = 'module.exports = {\n' +
-                    clientBoundaries
-                        .map((boundary) => {
-                        const serializedBoundary = JSON.stringify(boundary);
-                        return `[\`$\{require.resolveWeak(${serializedBoundary})}\`]: /* ${boundary} */ () => import(${serializedBoundary}),`;
-                    })
-                        .join('\n') +
-                    '\n};';
-                return worker.transform(config, projectRoot, filename, Buffer.from('/* RSC client boundaries */\n' + src), options);
-            }
+            // clientBoundaries contains output keys from MetroBundlerDevServer:
+            // - Relative paths from project root: "./src/Button.tsx", "./node_modules/pkg/file.js"
+            //
+            // The serializer will replace __RSC_BOUNDARIES_PLACEHOLDER__ with the actual module map
+            // built from all modules with reactClientReference metadata in the dependency graph.
+            //
+            // To include client boundaries that are only imported from server components,
+            // we add dynamic imports. Metro analyzes these statically and adds modules to
+            // the dependency graph. The imports are NOT awaited, so they don't block initialization.
+            const resolvedBoundaries = clientBoundaries?.map((boundary) => {
+                // Output keys are relative paths from project root (e.g., "./src/Button.tsx")
+                // Convert to absolute paths for Metro resolution
+                if (boundary.startsWith('./')) {
+                    const path = require('path');
+                    return path.resolve(projectRoot, boundary);
+                }
+                // Other formats can be used directly
+                return boundary;
+            });
+            // Use dynamic imports inside a never-true condition.
+            // Metro's static analysis sees the imports and adds modules to the graph,
+            // but at runtime the condition is false so they never execute.
+            // This avoids initialization order issues while still bundling the modules.
+            const boundaryImports = (resolvedBoundaries || [])
+                .map((boundary) => `import(${JSON.stringify(boundary)})`)
+                .join(',');
+            const src = resolvedBoundaries?.length
+                ? `if(typeof __EXPO_RSC_NEVER_TRUE__!=="undefined"){${boundaryImports}}module.exports={__RSC_BOUNDARIES_PLACEHOLDER__:true};`
+                : `module.exports={__RSC_BOUNDARIES_PLACEHOLDER__:true};`;
+            return worker.transform(config, projectRoot, filename, Buffer.from(src), options);
         }
     }
     if (options.type !== 'asset' && /\.(s?css|sass)$/.test(filename)) {

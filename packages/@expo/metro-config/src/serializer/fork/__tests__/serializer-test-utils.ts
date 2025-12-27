@@ -5,6 +5,7 @@ import assert from 'assert';
 
 import { microBundle, projectRoot } from './mini-metro';
 import { reconcileTransformSerializerPlugin } from '../../reconcileTransformSerializerPlugin';
+import { createRscSerializerPlugin } from '../../rscSerializerPlugin';
 import { treeShakeSerializer } from '../../treeShakeSerializerPlugin';
 import {
   SerialAsset,
@@ -13,10 +14,22 @@ import {
   createSerializerFromSerialProcessors,
 } from '../../withExpoSerializers';
 
+// Default RSC serializer plugin for tests
+const rscSerializerPlugin = createRscSerializerPlugin({ projectRoot });
+
+// Default processors that match the production pipeline order:
+// 1. Tree shake
+// 2. Reconcile transform (AST to JS)
+// 3. RSC serializer (resolve deferred IDs)
+const defaultProcessors: SerializerPlugin[] = [
+  reconcileTransformSerializerPlugin,
+  rscSerializerPlugin,
+];
+
 // General helper to reduce boilerplate
 export async function serializeToWithGraph(
   options: Partial<Parameters<typeof microBundle>[0]>,
-  processors: SerializerPlugin[] = [],
+  processors: SerializerPlugin[] = defaultProcessors,
   configOptions: SerializerConfigOptions = {}
 ) {
   const serializer = createSerializerFromSerialProcessors(
@@ -51,7 +64,7 @@ export async function serializeToWithGraph(
 // General helper to reduce boilerplate
 export async function serializeTo(
   options: Partial<Parameters<typeof microBundle>[0]>,
-  processors: SerializerPlugin[] = [],
+  processors: SerializerPlugin[] = defaultProcessors,
   configOptions: SerializerConfigOptions = {}
 ) {
   const [, output] = await serializeToWithGraph(options, processors, configOptions);
@@ -62,7 +75,7 @@ export async function serializeTo(
 export async function serializeSplitAsync(
   fs: Record<string, string>,
   options: Partial<Parameters<typeof microBundle>[0]['options']> = {},
-  processors: SerializerPlugin[] = [],
+  processors: SerializerPlugin[] = defaultProcessors,
   configOptions: SerializerConfigOptions = {},
   preModulesFs: Record<string, string> = {}
 ) {
@@ -124,7 +137,7 @@ export async function serializeOptimizeAsync(
           }
         : undefined,
     },
-    [treeShakeSerializer, reconcileTransformSerializerPlugin]
+    [treeShakeSerializer, reconcileTransformSerializerPlugin, rscSerializerPlugin]
   );
 }
 

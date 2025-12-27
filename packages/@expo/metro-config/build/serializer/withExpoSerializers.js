@@ -14,6 +14,7 @@ const debugId_1 = require("./debugId");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const baseJSBundle_1 = require("./fork/baseJSBundle");
 const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
+const rscSerializerPlugin_1 = require("./rscSerializerPlugin");
 const serializeChunks_1 = require("./serializeChunks");
 const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 const env_1 = require("../env");
@@ -26,7 +27,19 @@ function withExpoSerializers(config, options = {}) {
     // Then tree-shake the modules.
     processors.push(treeShakeSerializerPlugin_1.treeShakeSerializer);
     // Then finish transforming the modules from AST to JS.
+    // This must run before RSC plugin since reconcile regenerates code from AST
+    // and would overwrite any code changes made by RSC plugin.
     processors.push(reconcileTransformSerializerPlugin_1.reconcileTransformSerializerPlugin);
+    // Resolve RSC deferred output keys AFTER reconcile has generated final code.
+    // The Babel transform sets metadata with deferred IDs, and this plugin:
+    // 1. Resolves deferred IDs to output keys in metadata
+    // 2. Rewrites the actual JS code to replace deferred ID strings
+    if (options.projectRoot) {
+        processors.push((0, rscSerializerPlugin_1.createRscSerializerPlugin)({
+            projectRoot: options.projectRoot,
+            debug: env_1.env.EXPO_DEBUG,
+        }));
+    }
     return withSerializerPlugins(config, processors, options);
 }
 // There can only be one custom serializer as the input doesn't match the output.
@@ -104,6 +117,23 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
                 ...options,
                 debugId,
             })).code;
+        }
+        // For RSC client boundary chunks: append registration code so the module
+        // can be resolved by output key after the chunk is loaded.
+        // This enables dynamic loading of client boundaries without requiring
+        // them to be known at build time.
+        if (options.sourceUrl) {
+            const sourceUrl = (0, jsc_safe_url_1.isJscSafeUrl)(options.sourceUrl)
+                ? (0, jsc_safe_url_1.toNormalUrl)(options.sourceUrl)
+                : options.sourceUrl;
+            const parsed = new URL(sourceUrl, 'http://expo.dev');
+            const rscOutputKey = parsed.searchParams.get('rscOutputKey');
+            if (rscOutputKey && bundleCode) {
+                // Get the module ID for the entry point module
+                const entryModuleId = options.createModuleId(entryPoint);
+                // Append registration code to allow __webpack_require__(outputKey) to work
+                bundleCode += `\n;typeof __expo_rsc_register__==="function"&&__expo_rsc_register__(${JSON.stringify(rscOutputKey)},${JSON.stringify(entryModuleId)});`;
+            }
         }
         const getEnsuredMaps = () => {
             bundleMap ??= (0, sourceMapString_1.sourceMapString)([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {

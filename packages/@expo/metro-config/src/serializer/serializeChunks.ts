@@ -485,6 +485,23 @@ export class Chunk {
               .flat()
           ),
         ].filter((value) => typeof value === 'string') as string[],
+        // Maps output key -> file path for SSR manifest chunk lookup
+        reactClientReferenceMap: Object.fromEntries(
+          [...this.deps].flatMap((module) =>
+            module.output
+              .filter(
+                (output) =>
+                  'reactClientReference' in output.data &&
+                  typeof output.data.reactClientReference === 'string'
+              )
+              .map((output) => [output.data.reactClientReference as string, module.path])
+          )
+        ),
+        // Maps output key -> numeric module ID for SSR manifest module resolution
+        // This is populated by rscSerializerPlugin and stored in graph.transformOptions
+        outputKeyToModuleId:
+          (this.graph.transformOptions?.customTransformOptions as any)?.__rscOutputKeyToModuleId ??
+          {},
         reactServerReferences: [
           ...new Set(
             [...this.deps]

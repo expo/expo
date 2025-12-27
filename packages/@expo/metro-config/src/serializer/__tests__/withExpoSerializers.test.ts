@@ -778,9 +778,11 @@ describe('serializes', () => {
                 "/app/foo.js": "/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
               },
             },
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "outputKeyToModuleId": {},
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -798,9 +800,11 @@ describe('serializes', () => {
               "/app/foo.js",
             ],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "outputKeyToModuleId": {},
           },
           "originFilename": "foo.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -831,7 +835,9 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
+      outputKeyToModuleId: {},
     });
   });
 
@@ -868,9 +874,11 @@ describe('serializes', () => {
                 "/app/foo.js": "/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
               },
             },
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "outputKeyToModuleId": {},
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -891,9 +899,11 @@ describe('serializes', () => {
               "/app/foo.js",
             ],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "outputKeyToModuleId": {},
           },
           "originFilename": "foo.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -924,7 +934,9 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
+      outputKeyToModuleId: {},
     });
   });
 
@@ -961,7 +973,9 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
+      outputKeyToModuleId: {},
     });
   });
 
@@ -1029,9 +1043,11 @@ describe('serializes', () => {
                 "/app/foo.js": "/_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
               },
             },
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "outputKeyToModuleId": {},
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1057,9 +1073,11 @@ describe('serializes', () => {
               "/app/foo.js",
             ],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "outputKeyToModuleId": {},
           },
           "originFilename": "foo.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1090,7 +1108,9 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
+      outputKeyToModuleId: {},
     });
   });
 
@@ -1161,12 +1181,14 @@ describe('serializes', () => {
                 "/app/c.js": "/_expo/static/js/web/c-c1ea5faaf03846340d18f64eb7fd10a5.js",
               },
             },
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
               "_expo/static/js/web/__common-e8c8ebf41a34c79ec57f339049e2ea36.js",
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
+            "outputKeyToModuleId": {},
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1189,11 +1211,13 @@ describe('serializes', () => {
               "/app/a.js",
             ],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
+            "outputKeyToModuleId": {},
           },
           "originFilename": "a.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1223,11 +1247,13 @@ describe('serializes', () => {
               "/app/b.js",
             ],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
+            "outputKeyToModuleId": {},
           },
           "originFilename": "b.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1256,11 +1282,13 @@ describe('serializes', () => {
               "/app/c.js",
             ],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
+            "outputKeyToModuleId": {},
           },
           "originFilename": "c.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1290,11 +1318,13 @@ describe('serializes', () => {
               "/app/e.js",
             ],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
+            "outputKeyToModuleId": {},
           },
           "originFilename": "../__common.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1334,9 +1364,11 @@ describe('serializes', () => {
             "isAsync": false,
             "modulePaths": [],
             "paths": {},
+            "reactClientReferenceMap": {},
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "outputKeyToModuleId": {},
           },
           "originFilename": "../__expo-metro-runtime.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1357,7 +1389,9 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
+      outputKeyToModuleId: {},
     });
     expect(artifacts[2].metadata).toEqual({
       isAsync: true,
@@ -1366,7 +1400,9 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
+      outputKeyToModuleId: {},
     });
 
     expect(artifacts[4].filename).toEqual(
@@ -1379,7 +1415,9 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
+      outputKeyToModuleId: {},
     });
     // Ensure the common chunk isn't run, just loaded.
     expect(artifacts[4].source).not.toMatch(/TEST_RUN_MODULE/);
@@ -1395,7 +1433,9 @@ describe('serializes', () => {
       paths: {},
       expoDomComponentReferences: [],
       reactClientReferences: [],
+      reactClientReferenceMap: {},
       reactServerReferences: [],
+      outputKeyToModuleId: {},
     });
     expect(artifacts[5].source).toMatch(/PRE_MODULE_TEST/);
   });
@@ -1492,9 +1532,11 @@ describe('serializes', () => {
         modulePaths: ['/app/index.js', '/app/other.js', '/app/react-server-dom-webpack/server'],
         paths: {},
         expoDomComponentReferences: [],
-        reactClientReferences: ['file:///app/other.js'],
+        reactClientReferences: ['./other.js'],
+        reactClientReferenceMap: { './other.js': '/app/other.js' },
         reactServerReferences: [],
         requires: [],
+        outputKeyToModuleId: { './other.js': '/app/other.js' },
       });
 
       expect(artifacts[0].source).toMatchInlineSnapshot(`
@@ -1553,9 +1595,14 @@ describe('serializes', () => {
         ],
         paths: {},
         expoDomComponentReferences: [],
-        reactClientReferences: ['file:///app/other.js', 'file:///app/second.js'],
+        reactClientReferences: ['./other.js', './second.js'],
+        reactClientReferenceMap: { './other.js': '/app/other.js', './second.js': '/app/second.js' },
         reactServerReferences: [],
         requires: [],
+        outputKeyToModuleId: {
+          './other.js': '/app/other.js',
+          './second.js': '/app/second.js',
+        },
       });
     });
   });
@@ -1585,8 +1632,12 @@ describe('serializes', () => {
         paths: {},
         expoDomComponentReferences: [],
         reactClientReferences: [],
-        reactServerReferences: ['file:///app/server-actions.js'],
+        reactClientReferenceMap: {},
+        reactServerReferences: ['./server-actions.js'],
         requires: [],
+        outputKeyToModuleId: {
+          './server-actions.js': '/app/server-actions.js',
+        },
       });
     });
     it(`collects server references from server action functions when bundling in react-server mode`, async () => {
@@ -1618,13 +1669,18 @@ describe('serializes', () => {
         paths: {},
         expoDomComponentReferences: [],
         reactClientReferences: [],
+        reactClientReferenceMap: {},
         reactServerReferences: [
           // This appears because we include a server action in the file.
-          'file:///app/index.js',
+          './index.js',
           // This is here because the module is marked with "use server".
-          'file:///app/server-actions.js',
+          './server-actions.js',
         ],
         requires: [],
+        outputKeyToModuleId: {
+          './index.js': '/app/index.js',
+          './server-actions.js': '/app/server-actions.js',
+        },
       });
     });
   });

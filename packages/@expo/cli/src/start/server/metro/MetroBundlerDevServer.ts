@@ -22,7 +22,6 @@ import type {
   Client as MetroHmrClient,
 } from '@expo/metro/metro/HmrServer';
 import type { GraphRevision } from '@expo/metro/metro/IncrementalBundler';
-import type MetroServer from '@expo/metro/metro/Server';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import getGraphId from '@expo/metro/metro/lib/getGraphId';
 import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
@@ -41,7 +40,7 @@ import {
 } from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { fetchManifest, inflateManifest } from './fetchRouterManifest';
-import { instantiateMetroAsync } from './instantiateMetro';
+import { instantiateMetroAsync, type MetroServerWithModuleIdMod } from './instantiateMetro';
 import {
   attachImportStackToRootMessage,
   dropStackIfContainsCodeFrame,
@@ -150,7 +149,7 @@ const EXPO_GO_METRO_PORT = 8081;
 const DEV_CLIENT_METRO_PORT = 8081;
 
 export class MetroBundlerDevServer extends BundlerDevServer {
-  private metro: MetroServer | null = null;
+  private metro: MetroServerWithModuleIdMod | null = null;
   private hmrServer: MetroHmrServer<MetroHmrClient> | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
   isReactServerComponentsEnabled?: boolean;
@@ -158,6 +157,48 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   get name(): string {
     return 'metro';
+  }
+
+  /**
+   * Scan for client boundaries and create RSC middleware.
+   * Extracted to avoid code duplication between web and native startup paths.
+   */
+  private createRscMiddlewareWithBoundaries(
+    isReactServerActionsOnlyEnabled: boolean,
+    routerOptions: Record<string, any>
+  ) {
+    // Scan for client boundaries at startup to include modules only imported from server components
+    // Using require to avoid type-check issues with dynamic imports in monorepo
+    const { scanForClientBoundaries } =
+      require('@expo/metro-config/build/rsc/scanClientBoundaries') as {
+        scanForClientBoundaries: (projectRoot: string) => Set<string>;
+      };
+    const { getOutputKey } = require('@expo/metro-config/build/rscRegistry') as {
+      getOutputKey: (
+        resolvedPath: string,
+        projectRoot: string
+      ) => { outputKey: string; type: string };
+    };
+
+    // Convert absolute paths to output keys for cross-environment compatibility
+    // Output keys are either package specifiers (e.g., "pkg/client") or
+    // relative paths from project root (e.g., "./src/Button.tsx")
+    const absolutePaths = scanForClientBoundaries(this.projectRoot);
+    const clientBoundaries: string[] = Array.from(absolutePaths).map(
+      (absPath) => getOutputKey(absPath, this.projectRoot).outputKey
+    );
+    debug(`[RSC] Discovered ${clientBoundaries.length} client boundaries at startup`);
+
+    this.bindRSCDevModuleInjectionHandler();
+    return createServerComponentsMiddleware(this.projectRoot, {
+      instanceMetroOptions: this.instanceMetroOptions,
+      rscPath: '/_flight',
+      ssrLoadModule: this.ssrLoadModule.bind(this),
+      ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
+      useClientRouter: isReactServerActionsOnlyEnabled,
+      routerOptions,
+      clientBoundaries,
+    });
   }
 
   async resolvePortAsync(options: Partial<BundlerStartOptions> = {}): Promise<number> {
@@ -839,6 +880,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     let {
       reactClientReferences: clientBoundaries,
       reactServerReferences: serverActionReferencesInServer,
+      reactClientReferenceMap: serverBundleReferenceMap,
       cssModules,
     } = await this.rscRenderer!.getExpoRouterClientReferencesAsync(
       {
@@ -919,37 +961,85 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const serverRoot = getMetroServerRoot(this.projectRoot);
 
-    // HACK: Maybe this should be done in the serializer.
-    const clientBoundariesAsOpaqueIds = clientBoundaries.map((boundary) =>
-      // NOTE(cedric): relative module specifiers / IDs should always be POSIX formatted
-      toPosixPath(path.relative(serverRoot, boundary))
-    );
-    const moduleIdToSplitBundle = (
+    // clientBoundaries are now output keys (e.g., "pkg/client", "./src/Button.js")
+    // from the serializer's metadata.reactClientReferences
+    debug('SSR Manifest: clientBoundaries', clientBoundaries);
+
+    // outputKeyToChunk maps output key -> chunk filename
+    // Built from artifact metadata.paths which maps file path -> chunk
+    // We need to convert this to output key -> chunk using reactClientReferenceMap
+    // Merge client bundle's mapping with server bundle's mapping.
+    // The server bundle includes assets which only have reactClientReference in server environment.
+    const outputKeyToFilePath: Record<string, string> = {
+      // Server bundle mapping first (includes assets)
+      ...serverBundleReferenceMap,
+      // Client bundle mappings override (most modules are here)
+      ...bundle.artifacts
+        .filter((a) => a.type === 'js')
+        .map((artifact) => artifact.metadata.reactClientReferenceMap ?? {})
+        .reduce((acc, map) => ({ ...acc, ...map }), {}),
+    };
+
+    // filePathToChunk maps absolute file path -> chunk filename
+    const filePathToChunk: Record<string, string> = (
       bundle.artifacts
         .map((artifact) => artifact?.metadata?.paths && Object.values(artifact.metadata.paths))
         .filter(Boolean)
         .flat() as Record<string, string>[]
     ).reduce((acc, paths) => ({ ...acc, ...paths }), {});
 
-    debug('SSR Manifest:', moduleIdToSplitBundle, clientBoundariesAsOpaqueIds);
-
+    // SSR manifest maps output key -> chunk (simple format)
     const ssrManifest = new Map<string, string | null>();
 
-    if (Object.keys(moduleIdToSplitBundle).length) {
-      clientBoundariesAsOpaqueIds.forEach((boundary) => {
-        if (boundary in moduleIdToSplitBundle) {
-          ssrManifest.set(boundary, moduleIdToSplitBundle[boundary]);
-        } else {
+    // Find the entry bundle filename - client boundaries that are not in async chunks
+    // are in the main entry bundle
+    const entryBundle = bundle.artifacts.find(
+      (a) => a.type === 'js' && a.filename.includes('entry-')
+    );
+    const entryBundleFilename = entryBundle?.filename;
+    debug('Entry bundle filename:', entryBundleFilename);
+
+    if (Object.keys(filePathToChunk).length) {
+      // Web with bundle splitting enabled
+      clientBoundaries.forEach((outputKey) => {
+        const filePath = outputKeyToFilePath[outputKey];
+        if (!filePath) {
           throw new Error(
-            `Could not find boundary "${boundary}" in the SSR manifest. Available: ${Object.keys(moduleIdToSplitBundle).join(', ')}`
+            `Could not find file path for output key "${outputKey}". ` +
+              `Available: ${Object.keys(outputKeyToFilePath).join(', ') || '(none)'}`
           );
         }
+        // filePathToChunk uses paths relative to serverRoot, but outputKeyToFilePath may have absolute paths
+        // Try both the original path and the relative version
+        let chunk = filePathToChunk[filePath];
+        if (!chunk && path.isAbsolute(filePath)) {
+          const relativePath = path.relative(serverRoot, filePath);
+          chunk = filePathToChunk[relativePath];
+          // Also try with leading slash (some serializers use that format)
+          if (!chunk) {
+            chunk = filePathToChunk['/' + relativePath];
+          }
+        }
+        // If no chunk found, the client boundary is in the main entry bundle
+        if (!chunk && entryBundleFilename) {
+          debug(
+            `Client boundary "${outputKey}" not in async chunk, using entry bundle: ${entryBundleFilename}`
+          );
+          chunk = '/' + entryBundleFilename;
+        }
+        if (!chunk) {
+          throw new Error(
+            `Could not find chunk for "${outputKey}" (file: ${filePath}). ` +
+              `No entry bundle found to use as fallback.`
+          );
+        }
+        ssrManifest.set(outputKey, chunk);
       });
     } else {
-      // Native apps with bundle splitting disabled.
+      // Native apps with bundle splitting disabled
       debug('No split bundles');
-      clientBoundariesAsOpaqueIds.forEach((boundary) => {
-        ssrManifest.set(boundary, null);
+      clientBoundaries.forEach((outputKey) => {
+        ssrManifest.set(outputKey, null);
       });
     }
 
@@ -965,21 +1055,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       files
     );
 
-    // Save the SSR manifest so we can perform more replacements in the server renderer and with server actions.
+    // Save the SSR manifest for server-side rendering.
+    // Format: { outputKey: chunk } where:
+    // - outputKey: "pkg/client", "@scope/pkg", "./src/Button.js"
+    // - chunk: chunk filename or null (for native without splitting)
     files.set(`_expo/rsc/${options.platform}/ssr-manifest.js`, {
       targetDomain: 'server',
-      contents:
-        'module.exports = ' +
-        JSON.stringify(
-          // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
-          Object.fromEntries(
-            Array.from(ssrManifest.entries()).map(([key, value]) => [
-              // Must match babel plugin.
-              './' + toPosixPath(path.relative(this.projectRoot, path.join(serverRoot, key))),
-              [key, value],
-            ])
-          )
-        ),
+      contents: 'module.exports = ' + JSON.stringify(Object.fromEntries(ssrManifest.entries())),
     });
 
     return { ...bundle, files };
@@ -1275,16 +1357,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
-        this.bindRSCDevModuleInjectionHandler();
-        const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
-          instanceMetroOptions: this.instanceMetroOptions,
-          rscPath: '/_flight',
-          ssrLoadModule: this.ssrLoadModule.bind(this),
-          ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
-          useClientRouter: isReactServerActionsOnlyEnabled,
-          createModuleId: metro._createModuleId.bind(metro),
-          routerOptions,
-        });
+        const rscMiddleware = this.createRscMiddlewareWithBoundaries(
+          isReactServerActionsOnlyEnabled,
+          routerOptions
+        );
         this.rscRenderer = rscMiddleware;
         middleware.use(rscMiddleware.middleware);
         this.onReloadRscEvent = rscMiddleware.onReloadRscEvent;
@@ -1325,17 +1401,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     } else {
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
-        this.bindRSCDevModuleInjectionHandler();
-        const rscMiddleware = createServerComponentsMiddleware(this.projectRoot, {
-          instanceMetroOptions: this.instanceMetroOptions,
-          rscPath: '/_flight',
-          ssrLoadModule: this.ssrLoadModule.bind(this),
-          ssrLoadModuleArtifacts: this.metroImportAsArtifactsAsync.bind(this),
-          useClientRouter: isReactServerActionsOnlyEnabled,
-          createModuleId: metro._createModuleId.bind(metro),
-          routerOptions,
-        });
-        this.rscRenderer = rscMiddleware;
+        this.rscRenderer = this.createRscMiddlewareWithBoundaries(
+          isReactServerActionsOnlyEnabled,
+          routerOptions
+        );
       }
     }
     // Extend the close method to ensure that we clean up the local info.

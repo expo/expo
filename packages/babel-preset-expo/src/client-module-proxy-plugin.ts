@@ -5,7 +5,32 @@ import type { ConfigAPI, PluginObj } from '@babel/core';
 import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
 
-import { getPossibleProjectRoot, getIsReactServer, toPosixPath } from './common';
+import { getIsReactServer, getPossibleProjectRoot, toPosixPath } from './common';
+
+/**
+ * Generate a stable ID for RSC client/server boundary modules.
+ *
+ * Uses relative paths from project root, with pnpm symlink normalization.
+ * Format: ./path/to/file.js or ./node_modules/pkg/file.js
+ */
+function generateStableId(filePath: string, projectRoot: string): string {
+  let relativePath = getRelativePath(projectRoot, filePath);
+
+  // pnpm normalization: .pnpm/pkg@1.0.0/node_modules/pkg/... → pkg/...
+  // This handles pnpm's symlinked node_modules structure
+  relativePath = relativePath.replace(
+    /node_modules\/\.pnpm\/[^/]+\/node_modules\//g,
+    'node_modules/'
+  );
+
+  const stableId = './' + toPosixPath(relativePath);
+
+  if (process.env.EXPO_DEBUG) {
+    console.log('[RSC-BABEL] generateStableId:', filePath, '->', stableId);
+  }
+
+  return stableId;
+}
 
 export function reactClientReferencesPlugin(
   api: ConfigAPI & typeof import('@babel/core')
@@ -18,16 +43,42 @@ export function reactClientReferencesPlugin(
     name: 'expo-client-references',
     visitor: {
       Program(path, state) {
-        const isUseClient = path.node.directives.some(
+        // Check directives array (standard location for directives)
+        let isUseClient = path.node.directives.some(
           (directive: any) =>
             directive.value.value === 'use client' ||
             // Convert DOM Components to client proxies in React Server environments.
             directive.value.value === 'use dom'
         );
-        // TODO: use server can be added to scopes inside of the file. https://github.com/facebook/react/blob/29fbf6f62625c4262035f931681c7b7822ca9843/packages/react-server-dom-webpack/src/ReactFlightWebpackNodeRegister.js#L55
-        const isUseServer = path.node.directives.some(
+        let isUseServer = path.node.directives.some(
           (directive: any) => directive.value.value === 'use server'
         );
+
+        // Also check body for string literal statements (handles pre-built files where
+        // "use strict" and comments may come before "use client"/"use server")
+        // This matches React's acorn-based detection and Next.js's approach
+        if (!isUseClient && !isUseServer) {
+          for (const node of path.node.body) {
+            // Stop at non-expression statements
+            if (node.type !== 'ExpressionStatement') break;
+            // Check for string literal
+            const expr = (node as any).expression;
+            if (expr?.type === 'StringLiteral' || expr?.type === 'Literal') {
+              const value = expr.value;
+              if (value === 'use client' || value === 'use dom') {
+                isUseClient = true;
+                break;
+              }
+              if (value === 'use server') {
+                isUseServer = true;
+                break;
+              }
+            } else {
+              // Non-string-literal expression, stop looking for directives
+              break;
+            }
+          }
+        }
 
         if (isUseClient && isUseServer) {
           throw path.buildCodeFrameError(
@@ -48,11 +99,8 @@ export function reactClientReferencesPlugin(
 
         const projectRoot = possibleProjectRoot || state.file.opts.root || '';
 
-        // TODO: Replace with opaque paths in production.
-        const outputKey = './' + toPosixPath(getRelativePath(projectRoot, filePath));
-        // const outputKey = isProd
-        //   ? './' + getRelativePath(projectRoot, filePath)
-        //   : url.pathToFileURL(filePath).href;
+        // Generate stable ID directly using relative path from project root
+        const outputKey = generateStableId(filePath, projectRoot);
 
         function iterateExports(callback: (exportName: string, path: any) => void, type: string) {
           const exportNames = new Set<string>();
@@ -202,10 +250,16 @@ export function reactClientReferencesPlugin(
           state.file.metadata.proxyExports = [...proxyExports];
 
           // Save the server action reference in the metadata.
+          // Use file:// URL for bundling purposes (converted to stable ID by serializer)
           state.file.metadata.reactServerReference = url.pathToFileURL(filePath).href;
         } else if (isUseClient) {
+          // Always set metadata for client boundaries (needed by serializer for module map)
+          // Use file:// URL for metadata (converted to stable ID by serializer)
+          assertExpoMetadata(state.file.metadata);
+          state.file.metadata.reactClientReference = url.pathToFileURL(filePath).href;
+
           if (!isReactServer) {
-            // Do nothing for "use client" on the client.
+            // Don't transform the code on the client - just set metadata above
             return;
           }
 
@@ -265,8 +319,7 @@ export function reactClientReferencesPlugin(
           // Store the proxy export names for testing purposes.
           state.file.metadata.proxyExports = [...proxyExports];
 
-          // Save the client reference in the metadata.
-          state.file.metadata.reactClientReference = url.pathToFileURL(filePath).href;
+          // Save the client reference in the metadata (already set above via file:// URL).
         }
       },
     },

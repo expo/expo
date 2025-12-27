@@ -210,6 +210,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             },
             resolverMainFields: ['react-native', 'browser', 'main'],
             platforms: ['ios', 'android'],
+            resolveRequest(context, moduleName, platform) {
+                return context.resolveRequest(context, moduleName, platform);
+            },
             assetExts: metroDefaultValues.resolver.assetExts
                 .concat(
             // Add default support for `expo-image` file types.
@@ -333,7 +336,10 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     // nor InputConfigT which is inexact and partial. Instead, we want an exact type combination of
     // the default config and Expo's config
     metroDefaultValues, expoMetroConfig);
-    return (0, withExpoSerializers_1.withExpoSerializers)(metroConfig, { unstable_beforeAssetSerializationPlugins });
+    return (0, withExpoSerializers_1.withExpoSerializers)(metroConfig, {
+        projectRoot,
+        unstable_beforeAssetSerializationPlugins,
+    });
 }
 /** Use to access the Expo Metro transformer path */
 exports.unstable_transformerPath = require.resolve('./transform-worker/transform-worker');

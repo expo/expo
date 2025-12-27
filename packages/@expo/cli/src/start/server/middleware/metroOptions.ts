@@ -49,6 +49,8 @@ export type ExpoMetroOptions = {
   hosted?: boolean;
   /** Disable live bindings (enabled by default, required for circular deps) in experimental import export support. */
   liveBindings?: boolean;
+  /** RSC output key for registering client boundaries in modulesOnly bundles. */
+  rscOutputKey?: string;
 };
 
 // See: @expo/metro-config/src/serializer/fork/baseJSBundle.ts `ExpoSerializerOptions`
@@ -178,7 +180,10 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
   let fakeSourceMapUrl: string | undefined;
 
   // TODO: Upstream support to Metro for passing custom serializer options.
-  if (serializerIncludeMaps != null || serializerOutput != null) {
+  // Generate fakeSourceUrl when we need to pass serializer-specific info:
+  // - serializerOutput/serializerIncludeMaps for static output
+  // - rscOutputKey for RSC client boundary registration
+  if (serializerIncludeMaps != null || serializerOutput != null || options.rscOutputKey) {
     fakeSourceUrl = new URL(
       createBundleUrlPath(options).replace(/^\//, ''),
       'http://localhost:8081'
@@ -192,7 +197,9 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     __proto__: null,
     optimize: optimize || undefined,
     engine,
-    clientBoundaries,
+    // Stringify clientBoundaries to match URL query param parsing behavior.
+    // Metro's HMR URL parser reads this as a string, so the graph ID must use the same format.
+    clientBoundaries: clientBoundaries?.length ? JSON.stringify(clientBoundaries) : undefined,
     preserveEnvVars: preserveEnvVars || undefined,
     // Use string to match the query param behavior.
     asyncRoutes: asyncRoutes ? String(asyncRoutes) : undefined,
@@ -303,14 +310,16 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     runModule,
     hosted,
     liveBindings,
+    rscOutputKey,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
+  const isBundleDev = mode !== 'production';
   const queryParams = new URLSearchParams({
     platform: encodeURIComponent(platform),
     dev,
-    // TODO: Is this still needed?
-    hot: String(false),
+    // Enable hot reloading in development mode for HMR support
+    hot: String(isBundleDev),
   });
 
   // Lazy bundling must be disabled for bundle splitting to work.
@@ -399,6 +408,11 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     queryParams.append('transform.liveBindings', String(false));
   }
 
+  // RSC output key for registering client boundaries in modulesOnly bundles
+  if (rscOutputKey) {
+    queryParams.append('rscOutputKey', rscOutputKey);
+  }
+
   return queryParams;
 }
 
@@ -443,11 +457,12 @@ export function getMetroOptionsFromUrl(urlFragment: string) {
     reactCompiler: isTruthy(getStringParam('transform.reactCompiler') ?? 'false'),
     asyncRoutes: isTruthy(getStringParam('transform.asyncRoutes') ?? 'false'),
     baseUrl: getStringParam('transform.baseUrl') ?? undefined,
-    // clientBoundaries: JSON.parse(getStringParam('transform.clientBoundaries') ?? '[]'),
+    clientBoundaries: JSON.parse(getStringParam('transform.clientBoundaries') ?? '[]'),
     engine: assertEngine(getStringParam('transform.engine')),
     runModule: isTruthy(getStringParam('runModule') ?? 'true'),
     modulesOnly: isTruthy(getStringParam('modulesOnly') ?? 'false'),
     liveBindings: isTruthy(getStringParam('transform.liveBindings') ?? 'true'),
+    rscOutputKey: getStringParam('rscOutputKey') ?? undefined,
   };
 
   return options;

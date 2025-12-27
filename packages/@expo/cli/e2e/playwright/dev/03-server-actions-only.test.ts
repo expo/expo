@@ -83,9 +83,11 @@ test.describe(inputDir, () => {
 
     const rscPayload = new TextDecoder().decode(await response.body());
 
-    expect(rscPayload).toMatch(
-      '2:I["node_modules/react-native-web/dist/exports/Text/index.js",["/node_modules/react-native-web/dist/exports/Text/index.js.bundle?platform=web&dev=true&hot=false&transform.asyncRoutes=true&transform.routerRoot=__e2e__%2F03-server-actions-only%2Fapp&modulesOnly=true&runModule=false&resolver.clientboundary=true&xRSC=1"]'
-    );
+    // Verify the RSC payload includes client references with output keys (relative path format)
+    // The format is: I["./relative/path/to/file.js",["/bundle-path..."]]
+    // Output keys use relative paths from project root, e.g., "./node_modules/react-native-web/dist/exports/Text/index.js"
+    expect(rscPayload).toMatch(/I\["\.\//);
+    expect(rscPayload).toContain('node_modules/react-native-web/dist/exports/Text');
 
     expect(pageErrors.all).toEqual([]);
   });

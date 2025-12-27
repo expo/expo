@@ -71,24 +71,36 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
                 if (!(file in actionManifest)) {
                     throw new Error(`Could not find file in server action manifest: ${file}. ${JSON.stringify(actionManifest)}`);
                 }
-                const [id, chunk] = actionManifest[file];
+                // The action manifest maps: stableId -> [metroId, chunkPath]
+                // We use the stable ID (file) as the id, since that's what's registered
+                // in the RSC boundary map via registerServerReference()
+                const [_metroId, chunk] = actionManifest[file];
                 return {
-                    id,
+                    id: file,
                     chunks: chunk ? [chunk] : [],
                 };
             }
             if (!(file in ssrManifest)) {
                 throw new Error(`Could not find file in SSR manifest: ${file}`);
             }
-            const [id, chunk] = ssrManifest[file];
+            // SSR manifest maps stable ID -> chunk (simple format)
+            const chunk = ssrManifest[file];
             return {
-                id,
+                id: file,
                 chunks: chunk ? [chunk] : [],
             };
         },
         async loadServerModuleRsc(file) {
             debug('loadServerModuleRsc', file);
             // NOTE(@kitten): [WORKAROUND] Assumes __dirname is at `dist/server/_expo/functions/_flight`
+            // For relative path stable IDs (./path/to/file), look up the chunk path from the action manifest
+            // The action manifest maps: stableId -> [metroId, chunkPath]
+            // We need the chunkPath to load the actual bundled module
+            if (file.startsWith('./') && file in actionManifest) {
+                const [_metroId, chunkPath] = actionManifest[file];
+                debug('loadServerModuleRsc loading chunk for relative path:', file, '->', chunkPath);
+                return serverRequire('../../../', chunkPath);
+            }
             return serverRequire('../../../', file);
         },
         entries: entries,

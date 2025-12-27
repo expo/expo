@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getMetroServerRoot } from '@expo/config/paths';
+import { getFilePathByOutputKey } from '@expo/metro-config/build/rscRegistry';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import type { EntriesDev } from '@expo/router-server/build/rsc/server';
 import assert from 'assert';
@@ -50,19 +51,17 @@ export function createServerComponentsMiddleware(
     ssrLoadModule,
     ssrLoadModuleArtifacts,
     useClientRouter,
-    createModuleId,
     routerOptions,
+    clientBoundaries,
   }: {
     rscPath: string;
     instanceMetroOptions: Partial<ExpoMetroOptions>;
     ssrLoadModule: SSRLoadModuleFunc;
     ssrLoadModuleArtifacts: SSRLoadModuleArtifactsFunc;
     useClientRouter: boolean;
-    createModuleId: (
-      filePath: string,
-      context: { platform: string; environment: string }
-    ) => string | number;
     routerOptions: Record<string, any>;
+    /** Pre-scanned client boundaries for dev mode (files with "use client" directive) */
+    clientBoundaries?: string[];
   }
 ) {
   const routerModule = useClientRouter
@@ -153,10 +152,25 @@ export function createServerComponentsMiddleware(
     const nestedClientBoundaries: string[] = [];
     const nestedServerBoundaries: string[] = [];
     const processedEntryPoints = new Set<string>();
+
+    // Helper to convert output key to file path for bundling
+    // Output keys are relative paths from project root (e.g., "./src/file.ts" or "./node_modules/pkg/file.js")
+    function outputKeyToFilePath(outputKey: string): string {
+      if (outputKey.startsWith('./')) {
+        // Relative path from project root - convert to absolute path
+        return path.join(projectRoot, outputKey);
+      }
+      // Shouldn't happen with new format, but fallback to direct use
+      return outputKey;
+    }
+
     async function processEntryPoint(entryPoint: string) {
       processedEntryPoints.add(entryPoint);
 
-      const contents = await ssrLoadModuleArtifacts(entryPoint, {
+      // Convert output key to file path for Metro bundling
+      const filePath = outputKeyToFilePath(entryPoint);
+
+      const contents = await ssrLoadModuleArtifacts(filePath, {
         environment: 'react-server',
         platform,
         // Ignore the metro runtime to avoid overwriting the original in the API route.
@@ -169,14 +183,14 @@ export function createServerComponentsMiddleware(
 
       const reactClientReferences = contents.artifacts
         .filter((a) => a.type === 'js')[0]
-        .metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
+        .metadata.reactClientReferences?.map((ref) => toOutputKey(ref, projectRoot));
 
       if (reactClientReferences) {
         nestedClientBoundaries.push(...reactClientReferences!);
       }
       const reactServerReferences = contents.artifacts
         .filter((a) => a.type === 'js')[0]
-        .metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
+        .metadata.reactServerReferences?.map((ref) => toOutputKey(ref, projectRoot));
 
       if (reactServerReferences) {
         nestedServerBoundaries.push(...reactServerReferences!);
@@ -190,24 +204,44 @@ export function createServerComponentsMiddleware(
         );
       }
 
-      const relativeName = createModuleId(entryPoint, {
-        platform,
-        environment: 'react-server',
-      });
-      const safeName = path.basename(contents.artifacts.find((a) => a.type === 'js')!.filename!);
+      const jsArtifact = contents.artifacts.find((a) => a.type === 'js')!;
+      const safeName = path.basename(jsArtifact.filename!);
+
+      // For server action manifests, the module ID must match what the server bundle uses.
+      // All RSC references now use output keys (resolved by the serializer).
+      const outputKeyToModuleId = jsArtifact.metadata.outputKeyToModuleId ?? {};
 
       const outputName = `_expo/rsc/${platform}/${safeName}`;
       // While we're here, export the router for the server to dynamically render RSC.
+      // Pass outputKeyToModuleId and platform so the bundle registers mappings for __webpack_require__
       files.set(outputName, {
         targetDomain: 'server',
-        contents: wrapBundle(contents.src),
+        contents: wrapBundle(contents.src, outputKeyToModuleId, platform),
       });
 
-      // Match babel plugin.
-      const publicModuleId = './' + toPosixPath(path.relative(projectRoot, entryPoint));
+      // Match babel plugin output key format.
+      // If entryPoint is already an output key (not absolute path), use as-is.
+      // Otherwise, compute relative path.
+      const isOutputKey = !path.isAbsolute(entryPoint) && !entryPoint.startsWith('file://');
+      const publicModuleId = isOutputKey
+        ? entryPoint
+        : './' + toPosixPath(path.relative(projectRoot, entryPoint));
+      if (!isOutputKey) {
+        throw new Error(
+          `Expected output key but got file path "${entryPoint}". ` +
+            `All RSC references should be output keys after serialization.`
+        );
+      }
+      if (!(entryPoint in outputKeyToModuleId)) {
+        throw new Error(
+          `Cannot find module ID for output key "${entryPoint}". ` +
+            `Available mappings: ${Object.keys(outputKeyToModuleId).join(', ') || '(none)'}`
+        );
+      }
+      const moduleId = outputKeyToModuleId[entryPoint];
 
       // Import relative to `dist/server/_expo/rsc/web/router.js`
-      manifest[publicModuleId] = [String(relativeName), outputName];
+      manifest[publicModuleId] = [String(moduleId), outputName];
     }
 
     async function processEntryPoints(entryPoints: string[], recursions = 0) {
@@ -249,6 +283,7 @@ export function createServerComponentsMiddleware(
   ): Promise<{
     reactClientReferences: string[];
     reactServerReferences: string[];
+    reactClientReferenceMap: Record<string, string>;
     cssModules: SerialAsset[];
   }> {
     const contents = await ssrLoadModuleArtifacts(routerModule, {
@@ -262,20 +297,22 @@ export function createServerComponentsMiddleware(
     // These will be injected in the head of the HTML document for the website.
     const cssModules = contents.artifacts.filter((a) => a.type.startsWith('css'));
 
-    const reactServerReferences = contents.artifacts
-      .filter((a) => a.type === 'js')[0]
-      .metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
+    const jsArtifact = contents.artifacts.filter((a) => a.type === 'js')[0];
+
+    const reactServerReferences = jsArtifact.metadata.reactServerReferences?.map((ref) =>
+      toOutputKey(ref, projectRoot)
+    );
 
     if (!reactServerReferences) {
       throw new Error(
         'Static server action references were not returned from the Metro SSR bundle for definedRouter'
       );
     }
-    debug('React client boundaries:', reactServerReferences);
+    debug('React server boundaries:', reactServerReferences);
 
-    const reactClientReferences = contents.artifacts
-      .filter((a) => a.type === 'js')[0]
-      .metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
+    const reactClientReferences = jsArtifact.metadata.reactClientReferences?.map((ref) =>
+      toOutputKey(ref, projectRoot)
+    );
 
     if (!reactClientReferences) {
       throw new Error(
@@ -284,16 +321,23 @@ export function createServerComponentsMiddleware(
     }
     debug('React client boundaries:', reactClientReferences);
 
+    // Extract the output key → file path mapping from the server bundle.
+    // This is needed for assets which have reactClientReference in server bundle but not client bundle.
+    const reactClientReferenceMap = jsArtifact.metadata.reactClientReferenceMap ?? {};
+
     // While we're here, export the router for the server to dynamically render RSC.
     files.set(`_expo/rsc/${platform}/router.js`, {
       targetDomain: 'server',
       contents: wrapBundle(contents.src),
     });
 
-    return { reactClientReferences, reactServerReferences, cssModules };
+    return { reactClientReferences, reactServerReferences, reactClientReferenceMap, cssModules };
   }
 
   const routerCache = new Map<string, EntriesDev>();
+
+  // Cache for prefetched client boundaries per platform
+  const prefetchedClientBoundaries = new Map<string, string[]>();
 
   async function getExpoRouterRscEntriesGetterAsync({
     platform,
@@ -334,6 +378,7 @@ export function createServerComponentsMiddleware(
   function getResolveClientEntry(context: {
     platform: string;
     engine?: 'hermes' | null;
+    // SSR manifest maps output key -> chunk
     ssrManifest?: Map<string, string | null>;
   }): (
     file: string,
@@ -366,27 +411,35 @@ export function createServerComponentsMiddleware(
     );
 
     return (file: string, isServer: boolean) => {
-      const filePath = path.join(
-        projectRoot,
-        file.startsWith('file://') ? fileURLToFilePath(file) : file
-      );
+      // Handle output keys (e.g., "pkg/client" or "./relative/path.js")
+      // vs legacy file URLs (e.g., "file:///path/to/file.js")
+      const isOutputKey = !file.startsWith('file://') && !path.isAbsolute(file);
+
+      // For output keys, use directly for manifest lookup
+      // For file paths, convert to relative for backward compatibility
+      const filePath = isOutputKey
+        ? file
+        : path.join(projectRoot, file.startsWith('file://') ? fileURLToFilePath(file) : file);
 
       if (isExporting) {
         assert(context.ssrManifest, 'SSR manifest must exist when exporting');
 
-        const relativeFilePath = toPosixPath(path.relative(serverRoot, filePath));
+        // Use output key directly if available, otherwise compute relative path
+        // MUST use projectRoot (not serverRoot) to match how manifest keys are created in MetroBundlerDevServer
+        const manifestKey = isOutputKey
+          ? file
+          : './' + toPosixPath(path.relative(projectRoot, filePath));
 
         assert(
-          context.ssrManifest.has(relativeFilePath),
-          `SSR manifest is missing client boundary "${relativeFilePath}"`
+          context.ssrManifest.has(manifestKey),
+          `SSR manifest is missing client boundary "${manifestKey}"`
         );
 
-        const chunk = context.ssrManifest.get(relativeFilePath);
+        // SSR manifest entry is just the chunk (or null)
+        const chunk = context.ssrManifest.get(manifestKey)!;
 
         return {
-          id: String(
-            createModuleId(filePath, { platform: context.platform, environment: 'client' })
-          ),
+          id: manifestKey,
           chunks: chunk != null ? [chunk] : [],
         };
       }
@@ -406,7 +459,7 @@ export function createServerComponentsMiddleware(
         reactCompiler: !!reactCompiler,
         engine: context.engine ?? undefined,
         bytecode: false,
-        clientBoundaries: [],
+        clientBoundaries: clientBoundaries || [],
         inlineSourceMap: false,
         environment,
         modulesOnly: true,
@@ -420,10 +473,33 @@ export function createServerComponentsMiddleware(
       // TICKLE: Handshake 1
       searchParams.set('xRSC', '1');
 
+      // For output keys (package specifiers), lookup file path from registry
+      // For file paths, use directly
+      let bundleFilePath: string;
+      if (isOutputKey) {
+        // Lookup file path from registry (reverse: outputKey → filePath)
+        const registryFilePath = getFilePathByOutputKey(file);
+        if (registryFilePath) {
+          bundleFilePath = registryFilePath;
+        } else if (file.startsWith('./')) {
+          // Relative path output key - resolve from project root
+          bundleFilePath = path.join(projectRoot, file);
+        } else {
+          // No fallback - if the output key is not in registry, it's a build error
+          throw new Error(
+            `[RSC] Output key not found in registry: "${file}". ` +
+              `This is a build error - ensure the module is properly bundled with RSC support.`
+          );
+        }
+        // Add output key to URL so the serializer can register it dynamically
+        searchParams.set('rscOutputKey', file);
+      } else {
+        bundleFilePath = filePath;
+      }
+
       clientReferenceUrl.search = searchParams.toString();
 
-      const relativeFilePath = path.relative(serverRoot, filePath);
-
+      const relativeFilePath = path.relative(serverRoot, bundleFilePath);
       clientReferenceUrl.pathname = relativeFilePath;
 
       // Ensure url.pathname ends with '.bundle'
@@ -434,8 +510,17 @@ export function createServerComponentsMiddleware(
       // Return relative URLs to help Android fetch from wherever it was loaded from since it doesn't support localhost.
       const chunkName = clientReferenceUrl.pathname + clientReferenceUrl.search;
 
+      // All RSC references now use output keys (resolved by the serializer)
+      if (!isOutputKey) {
+        throw new Error(
+          `Expected output key but got file path "${file}". ` +
+            `All RSC references should be output keys.`
+        );
+      }
+      const moduleId = file;
+
       return {
-        id: String(createModuleId(filePath, { platform: context.platform, environment })),
+        id: String(moduleId),
         chunks: [chunkName],
       };
     };
@@ -512,6 +597,7 @@ export function createServerComponentsMiddleware(
       body?: ReadableStream<Uint8Array>;
       engine?: 'hermes' | null;
       contentType?: string;
+      // SSR manifest maps output key -> chunk
       ssrManifest?: Map<string, string | null>;
       decodedBody?: unknown;
       routerOptions: Record<string, any>;
@@ -553,14 +639,23 @@ export function createServerComponentsMiddleware(
 
           const options = getMetroOptionsFromUrl(urlFragment);
 
-          return ssrLoadModule(
-            path.join(serverRoot, options.mainModuleName),
+          // Resolve module path from URL pathname
+          // URL pathname is relative to serverRoot (with leading /)
+          // Examples:
+          // - "/apps/router-e2e/app/index.tsx" -> serverRoot/apps/router-e2e/app/index.tsx
+          // - "/node_modules/pkg/client.js" -> serverRoot/node_modules/pkg/client.js
+          let modulePath: string;
+          if (options.mainModuleName.startsWith('/')) {
+            // URL pathname - remove leading / and join with serverRoot
+            modulePath = path.join(serverRoot, options.mainModuleName.slice(1));
+          } else {
+            // Package specifier without leading / - join with serverRoot
+            modulePath = path.join(serverRoot, options.mainModuleName);
+          }
 
-            options,
-            {
-              hot: true,
-            }
-          );
+          return ssrLoadModule(modulePath, options, {
+            hot: true,
+          });
         },
       }
     );
@@ -578,6 +673,7 @@ export function createServerComponentsMiddleware(
         routerOptions,
       }: {
         platform: string;
+        // SSR manifest maps output key -> chunk
         ssrManifest: Map<string, string | null>;
         routerOptions: Record<string, any>;
       },
@@ -640,6 +736,44 @@ export function createServerComponentsMiddleware(
 
       rscRendererCache.delete(platform);
       routerCache.delete(platform);
+      // Clear cached client boundaries so they're re-fetched on next request
+      prefetchedClientBoundaries.delete(platform);
+    },
+    /**
+     * Pre-fetch client boundaries from the server graph.
+     * This builds the server bundle and extracts reactClientReferences metadata.
+     * Call this early to ensure client bundles include all necessary modules.
+     */
+    async prefetchClientBoundaries(platform: string): Promise<string[]> {
+      // Return cached boundaries if available
+      if (prefetchedClientBoundaries.has(platform)) {
+        return prefetchedClientBoundaries.get(platform)!;
+      }
+
+      await ensureMemo();
+
+      try {
+        const contents = await ssrLoadModuleArtifacts(routerModule, {
+          environment: 'react-server',
+          platform,
+          modulesOnly: true,
+        });
+
+        const reactClientReferences =
+          contents.artifacts
+            .filter((a) => a.type === 'js')[0]
+            ?.metadata.reactClientReferences?.map((ref) => toOutputKey(ref, projectRoot)) || [];
+
+        debug(
+          '[RSC] Prefetched client boundaries from server graph:',
+          reactClientReferences.length
+        );
+        prefetchedClientBoundaries.set(platform, reactClientReferences);
+        return reactClientReferences;
+      } catch (error) {
+        debug('[RSC] Failed to prefetch client boundaries:', error);
+        return [];
+      }
     },
   };
 }
@@ -653,6 +787,10 @@ const getFullUrl = (url: string) => {
 };
 
 export const fileURLToFilePath = (fileURL: string) => {
+  // Handle relative paths (e.g., ./path/to/file.js) for portability across build environments
+  if (!fileURL.startsWith('file://')) {
+    return fileURL;
+  }
   try {
     return url.fileURLToPath(fileURL);
   } catch (error) {
@@ -662,6 +800,36 @@ export const fileURLToFilePath = (fileURL: string) => {
     throw error;
   }
 };
+
+/**
+ * Convert file:// URL or file path to output key (relative path from project root).
+ * Used for RSC boundary references which need output keys for the module maps.
+ */
+export function toOutputKey(ref: string, projectRoot: string): string {
+  // Already an output key (relative path)
+  if (ref.startsWith('./')) {
+    return ref;
+  }
+
+  // Convert file:// URL to file path first
+  let filePath: string;
+  if (ref.startsWith('file://')) {
+    filePath = url.fileURLToPath(ref);
+  } else {
+    filePath = ref;
+  }
+
+  // Convert to relative path and normalize for pnpm
+  let relativePath = path.relative(projectRoot, filePath);
+
+  // pnpm normalization: .pnpm/pkg@1.0.0/node_modules/pkg/... → node_modules/pkg/...
+  relativePath = relativePath.replace(
+    /node_modules\/\.pnpm\/[^/]+\/node_modules\//g,
+    'node_modules/'
+  );
+
+  return './' + toPosixPath(relativePath);
+}
 
 const encodeInput = (input: string) => {
   if (input === '') {
@@ -679,9 +847,31 @@ const encodeInput = (input: string) => {
   return input + '.txt';
 };
 
-function wrapBundle(str: string) {
+function wrapBundle(
+  str: string,
+  outputKeyToModuleId?: Record<string, string | number>,
+  platform?: string
+) {
   // Skip the metro runtime so debugging is a bit easier.
   // Replace the __r() call with an export statement.
   // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
-  return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
+  let result = str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
+
+  // Add output key registrations for __webpack_require__ to use
+  // This registers the mapping from output keys to Metro module IDs
+  // Note: The module IDs in the bundle have query params (e.g., ?platform=web&env=react-server)
+  // so we need to append them to match what __d() uses
+  if (outputKeyToModuleId && Object.keys(outputKeyToModuleId).length > 0) {
+    const querySuffix = platform ? `?platform=${platform}&env=react-server` : '';
+    const registrations = Object.entries(outputKeyToModuleId)
+      .map(([outputKey, moduleId]) => {
+        // Append query params to match the module ID format used by __d()
+        const fullModuleId = String(moduleId) + querySuffix;
+        return `if(typeof __expo_rsc_register__==='function')__expo_rsc_register__(${JSON.stringify(outputKey)},${JSON.stringify(fullModuleId)});`;
+      })
+      .join('\n');
+    result = registrations + '\n' + result;
+  }
+
+  return result;
 }

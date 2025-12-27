@@ -14,6 +14,24 @@ import url from 'node:url';
 
 import { createAddNamedImportOnce, getPossibleProjectRoot, toPosixPath } from './common';
 
+/**
+ * Generate a stable ID for a server action module.
+ *
+ * Uses relative paths from project root, with pnpm symlink normalization.
+ * Format: ./path/to/file.js or ./node_modules/pkg/file.js
+ */
+function generateStableId(filePath: string, projectRoot: string): string {
+  let relativePath = getRelativePath(projectRoot, filePath);
+
+  // pnpm normalization: .pnpm/pkg@1.0.0/node_modules/pkg/... → pkg/...
+  relativePath = relativePath.replace(
+    /node_modules\/\.pnpm\/[^/]+\/node_modules\//g,
+    'node_modules/'
+  );
+
+  return './' + toPosixPath(relativePath);
+}
+
 const debug = require('debug')('expo:babel:server-actions');
 
 type FnPath =
@@ -259,8 +277,8 @@ export function reactServerActionsPlugin(
       };
 
       getActionModuleId = once(() => {
-        // Create relative file path hash.
-        return './' + toPosixPath(getRelativePath(projectRoot, file.opts.filename!));
+        // Generate stable ID for the action module
+        return generateStableId(file.opts.filename!, projectRoot);
       });
 
       const defineBoundArgsWrapperHelper = once(() => {
@@ -647,10 +665,9 @@ export function reactServerActionsPlugin(
         throw new Error('[Babel] Expected a filename to be set in the state');
       }
 
-      const outputKey = url.pathToFileURL(filePath).href;
-
       file.metadata.reactServerActions = payload;
-      file.metadata.reactServerReference = outputKey;
+      // Use file:// URL for reactServerReference (used for bundling, converted to path later)
+      file.metadata.reactServerReference = url.pathToFileURL(filePath).href;
     },
   };
 }
