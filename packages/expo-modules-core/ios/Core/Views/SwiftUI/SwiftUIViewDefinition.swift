@@ -14,12 +14,12 @@ public protocol ExpoSwiftUIView<Props>: SwiftUI.View, AnyArgument, ExpoSwiftUI.A
   init(props: Props)
 }
 
-public extension ExpoSwiftUIView {
+extension ExpoSwiftUIView {
   /**
    Returns React's children as SwiftUI views.
    */
   // swiftlint:disable:next identifier_name
-  func Children() -> ForEach<[any ExpoSwiftUI.AnyChild], ObjectIdentifier, AnyView> {
+  public func Children() -> ForEach<[any ExpoSwiftUI.AnyChild], ObjectIdentifier, AnyView> {
     ForEach(props.children ?? [], id: \.id) { child in
       let view: any View = child.childView
       AnyView(view)
@@ -29,7 +29,7 @@ public extension ExpoSwiftUIView {
   /**
    Returns React's children as SwiftUI views, with any nested HostingViews stripped out.
    */
-  func UnwrappedChildren<T: View>( // swiftlint:disable:this identifier_name
+  public func UnwrappedChildren<T: View>( // swiftlint:disable:this identifier_name
     children: [(any ExpoSwiftUI.AnyChild)?]? = nil,
     @ViewBuilder transform: @escaping (_ child: AnyView, _ isHostingView: Bool)
     -> T = { child, _ in  child }
@@ -61,11 +61,11 @@ public extension ExpoSwiftUIView {
     }
   }
 
-  nonisolated static func getDynamicType() -> AnyDynamicType {
+  public nonisolated static func getDynamicType() -> AnyDynamicType {
     return DynamicSwiftUIViewType(innerType: Self.self)
   }
 
-  var appContext: AppContext? {
+  public var appContext: AppContext? {
     return props.appContext
   }
 }
@@ -73,10 +73,13 @@ public extension ExpoSwiftUIView {
 extension ExpoSwiftUI {
   public typealias View = ExpoSwiftUIView
 
-  /**
-   A definition representing the native SwiftUI view to export to React.
-   */
-  public final class ViewDefinition<Props: ViewProps, ViewType: View<Props>>: ExpoModulesCore.ViewDefinition<ViewType>, @unchecked Sendable {
+  /// Typealias for backward compatibility - ViewDefinition inside ExpoSwiftUI namespace
+  public typealias ViewDefinition = SwiftUIViewDefinition
+}
+
+/// A definition representing the native SwiftUI view to export to React.
+/// Renamed from ExpoSwiftUI.ViewDefinition to avoid collision with the base ViewDefinition class.
+  public final class SwiftUIViewDefinition<Props: ExpoSwiftUI.ViewProps, ViewType: ExpoSwiftUI.View<Props>>: ViewDefinition<ViewType>, @unchecked Sendable {
     // To obtain prop and event names from the props object we need to create a dummy instance first.
     // This is not ideal, but RN requires us to provide all names before the view is created
     // and there doesn't seem to be a better way to do this right now.
@@ -97,15 +100,15 @@ extension ExpoSwiftUI {
         let props = Props()
         props.appContext = appContext
         
-        if ViewType.self is WithHostingView.Type {
-          let view = HostingView(viewType: ViewType.self, props: props, appContext: appContext)
+        if ViewType.self is ExpoSwiftUI.WithHostingView.Type {
+          let view = ExpoSwiftUI.HostingView(viewType: ViewType.self, props: props, appContext: appContext)
           // Set up events to call view's `dispatchEvent` method.
           // This is supported only on the new architecture, `dispatchEvent` exists only there.
           props.setUpEvents(view.dispatchEvent(_:payload:))
           return AppleView.from(view)
         }
         
-        let view = SwiftUIVirtualView(viewType: ViewType.self, props: props, viewDefinition: self, appContext: appContext)
+        let view = ExpoSwiftUI.SwiftUIVirtualView(viewType: ViewType.self, props: props, viewDefinition: self, appContext: appContext)
         // Set up events to call view's `dispatchEvent` method.
         // This is supported only on the new architecture, `dispatchEvent` exists only there.
         props.setUpEvents(view.dispatchEvent(_:payload:))
@@ -135,4 +138,4 @@ extension ExpoSwiftUI {
       return propEventNames
     }
   }
-}
+
