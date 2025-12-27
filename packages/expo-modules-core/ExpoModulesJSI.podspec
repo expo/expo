@@ -17,16 +17,9 @@ Pod::Spec.new do |s|
     :osx => '11.0',
     :tvos => '15.1'
   }
-  s.swift_version  = '6.0'
-  s.source         = { git: 'https://github.com/expo/expo.git' }
+  s.swift_version    = '6.0'
+  s.source           = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
-  s.header_dir     = 'ExpoModulesJSI'
-
-  # Swift/Objective-C compatibility
-  s.pod_target_xcconfig = {
-    'USE_HEADERMAP' => 'YES',
-    'DEFINES_MODULE' => 'YES',
-  }
 
   if use_hermes
     s.dependency 'hermes-engine'
@@ -37,9 +30,21 @@ Pod::Spec.new do |s|
   s.dependency 'React-Core'
   s.dependency 'ReactCommon'
 
-  s.source_files = ['ios/JSI/**/*.{h,m,mm,swift,cpp}', 'common/cpp/JSI/**/*.{h,cpp}']
-  s.exclude_files = ['ios/JSI/Tests']
-  s.private_header_files = ['ios/JSI/**/*+Private.h', 'ios/JSI/**/Swift.h']
+  should_use_prebuilt = ENV['EXPO_USE_PRECOMPILED_MODULES'] == '1'
+  if (should_use_prebuilt)
+    s.source_files = "dummy.c"
+  else
+    # Build from sources
+    s.header_dir = 'ExpoModulesJSI'
+    s.source_files = ['ios/JSI/**/*.{h,m,mm,swift,cpp}', 'common/cpp/JSI/**/*.{h,cpp}']
+    s.exclude_files = ['ios/JSI/Tests']
+    s.private_header_files = ['ios/JSI/**/*+Private.h', 'ios/JSI/**/Swift.h']
+    # Swift/Objective-C compatibility
+    s.pod_target_xcconfig = {
+      'USE_HEADERMAP' => 'YES',
+      'DEFINES_MODULE' => 'YES',
+    }
+  end
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'ios/JSI/Tests/**/*.{m,swift}'
