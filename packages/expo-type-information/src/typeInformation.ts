@@ -1,0 +1,219 @@
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
+
+import {
+  getSwiftFileTypeInformation,
+  preprocessSwiftFile,
+} from './swift/sourcekittenTypeInformation';
+
+export enum IdentifierKind {
+  BASIC,
+  ENUM,
+  RECORD,
+  CLASS,
+}
+
+export type ParametrizedType = {
+  name: TypeIdentifier;
+  types: Type[];
+};
+
+export type Argument = { name: string | undefined; type: Type };
+export type Field = Argument;
+
+export type RecordType = {
+  name: string;
+  fields: Field[];
+};
+
+export type EnumCase = string;
+
+export type EnumType = {
+  name: string;
+  cases: EnumCase[];
+};
+
+export type SumType = {
+  types: Type[];
+};
+
+export type DictionaryType = {
+  key: Type;
+  value: Type;
+};
+
+export type OptionalType = Type;
+export type ArrayType = Type;
+export type TypeIdentifier = string;
+export type AnonymousType = ParametrizedType | SumType | OptionalType | DictionaryType | ArrayType;
+
+export enum TypeKind {
+  BASIC,
+  IDENTIFIER,
+  SUM,
+  PARAMETRIZED,
+  OPTIONAL,
+  ARRAY,
+  DICTIONARY,
+}
+
+export enum BasicType {
+  ANY,
+  STRING,
+  NUMBER,
+  BOOLEAN,
+  VOID,
+  UNDEFINED,
+  UNRESOLVED,
+}
+
+export type Type = {
+  kind: TypeKind;
+  type: BasicType | TypeIdentifier | AnonymousType;
+};
+
+export type PropertyDeclaration = ConstantDeclaration;
+export type ViewDeclaration = ModuleClassDeclaration;
+export type EventDeclaration = string;
+
+export type ConstantDeclaration = {
+  name: string;
+  type: Type;
+};
+
+export type FunctionDeclaration = {
+  name: string;
+  returnType: Type;
+  arguments: Argument[];
+  parameters: Type[];
+};
+
+export type PropDeclaration = {
+  name: string;
+  arguments: Argument[];
+};
+
+export type ConstructorDeclaration = {
+  arguments: Argument[];
+};
+
+export type ClassDeclaration = {
+  name: string;
+  constructor: ConstructorDeclaration | null;
+  methods: FunctionDeclaration[];
+  asyncMethods: FunctionDeclaration[];
+  properties: PropertyDeclaration[];
+};
+
+export type ModuleClassDeclaration = {
+  name: string;
+  constructor: ConstructorDeclaration | null;
+  constants: ConstantDeclaration[];
+  classes: ClassDeclaration[];
+  functions: FunctionDeclaration[];
+  asyncFunctions: FunctionDeclaration[];
+  properties: PropertyDeclaration[];
+  props: PropDeclaration[];
+  views: ViewDeclaration[];
+  events: EventDeclaration[];
+};
+
+export type TypeIdentifierDefinitionMap = Map<
+  string,
+  { kind: IdentifierKind; definition: string | RecordType | EnumType | ClassDeclaration }
+>;
+
+export type TypeIdentifierDefinitionList = [
+  string,
+  { kind: IdentifierKind; definition: string | RecordType | EnumType | ClassDeclaration },
+][];
+
+export type FileTypeInformationSerialized = {
+  usedTypeIdentifiersList: string[];
+  declaredTypeIdentifiersList: string[];
+  typeParametersCountList: [string, number][];
+  typeIdentifierDefinitionList: TypeIdentifierDefinitionList;
+  moduleClasses: ModuleClassDeclaration[];
+  records: RecordType[];
+  enums: EnumType[];
+};
+
+export type FileTypeInformation = {
+  usedTypeIdentifiers: Set<string>;
+  declaredTypeIdentifiers: Set<string>;
+  typeParametersCount: Map<string, number>;
+  typeIdentifierDefinitionMap: TypeIdentifierDefinitionMap;
+  moduleClasses: ModuleClassDeclaration[];
+  records: RecordType[];
+  enums: EnumType[];
+};
+
+export function serializeTypeInformation({
+  usedTypeIdentifiers,
+  declaredTypeIdentifiers,
+  typeParametersCount,
+  typeIdentifierDefinitionMap,
+  moduleClasses,
+  records,
+  enums,
+}: FileTypeInformation): FileTypeInformationSerialized {
+  return {
+    usedTypeIdentifiersList: [...usedTypeIdentifiers.keys()].sort(),
+    declaredTypeIdentifiersList: [...declaredTypeIdentifiers.keys()].sort(),
+    typeParametersCountList: [...typeParametersCount.entries()].sort(),
+    typeIdentifierDefinitionList: [...typeIdentifierDefinitionMap.entries()].sort(),
+    moduleClasses,
+    records,
+    enums,
+  };
+}
+
+export function deserializeTypeInformation({
+  usedTypeIdentifiersList,
+  declaredTypeIdentifiersList,
+  typeParametersCountList,
+  typeIdentifierDefinitionList,
+  moduleClasses,
+  records,
+  enums,
+}: FileTypeInformationSerialized): FileTypeInformation {
+  return {
+    usedTypeIdentifiers: new Set<string>(usedTypeIdentifiersList),
+    declaredTypeIdentifiers: new Set<string>(declaredTypeIdentifiersList),
+    typeParametersCount: new Map<string, number>(typeParametersCountList),
+    typeIdentifierDefinitionMap: new Map(typeIdentifierDefinitionList),
+    moduleClasses,
+    records,
+    enums,
+  };
+}
+
+export function getFileTypeInformation(
+  absoluteFilePath: string,
+  preprocessFile: boolean = false
+): FileTypeInformation | null {
+  if (absoluteFilePath.endsWith('.swift')) {
+    if (preprocessFile) {
+      return getFileTypeInformationForString(fs.readFileSync(absoluteFilePath, 'utf-8'), 'swift');
+    }
+    return getSwiftFileTypeInformation(absoluteFilePath);
+  }
+  return null;
+}
+
+export function getFileTypeInformationForString(
+  content: string,
+  language: 'swift'
+): FileTypeInformation | null {
+  if (language === 'swift') {
+    const tmp = os.tmpdir();
+    const filePath = path.resolve(tmp, 'TypeInformationTemporaryFile.swift');
+    const preprocessedContent = preprocessSwiftFile(content);
+    fs.writeFileSync(filePath, preprocessedContent, 'utf8');
+    const fileTypeInfo = getFileTypeInformation(filePath);
+    fs.rmSync(filePath);
+    return fileTypeInfo;
+  }
+  return null;
+}
