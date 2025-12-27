@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getMetroServerRoot } from '@expo/config/paths';
-import { getFilePathByStableId } from '@expo/metro-config/build/rscRegistry';
+import { getFilePathByOutputKey } from '@expo/metro-config/build/rscRegistry';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import type { EntriesDev } from '@expo/router-server/build/rsc/server';
 import assert from 'assert';
@@ -153,22 +153,22 @@ export function createServerComponentsMiddleware(
     const nestedServerBoundaries: string[] = [];
     const processedEntryPoints = new Set<string>();
 
-    // Helper to convert stable ID to file path for bundling
-    // Stable IDs are relative paths from project root (e.g., "./src/file.ts" or "./node_modules/pkg/file.js")
-    function stableIdToFilePath(stableId: string): string {
-      if (stableId.startsWith('./')) {
+    // Helper to convert output key to file path for bundling
+    // Output keys are relative paths from project root (e.g., "./src/file.ts" or "./node_modules/pkg/file.js")
+    function outputKeyToFilePath(outputKey: string): string {
+      if (outputKey.startsWith('./')) {
         // Relative path from project root - convert to absolute path
-        return path.join(projectRoot, stableId);
+        return path.join(projectRoot, outputKey);
       }
       // Shouldn't happen with new format, but fallback to direct use
-      return stableId;
+      return outputKey;
     }
 
     async function processEntryPoint(entryPoint: string) {
       processedEntryPoints.add(entryPoint);
 
-      // Convert stable ID to file path for Metro bundling
-      const filePath = stableIdToFilePath(entryPoint);
+      // Convert output key to file path for Metro bundling
+      const filePath = outputKeyToFilePath(entryPoint);
 
       const contents = await ssrLoadModuleArtifacts(filePath, {
         environment: 'react-server',
@@ -183,14 +183,14 @@ export function createServerComponentsMiddleware(
 
       const reactClientReferences = contents.artifacts
         .filter((a) => a.type === 'js')[0]
-        .metadata.reactClientReferences?.map((ref) => toStableId(ref, projectRoot));
+        .metadata.reactClientReferences?.map((ref) => toOutputKey(ref, projectRoot));
 
       if (reactClientReferences) {
         nestedClientBoundaries.push(...reactClientReferences!);
       }
       const reactServerReferences = contents.artifacts
         .filter((a) => a.type === 'js')[0]
-        .metadata.reactServerReferences?.map((ref) => toStableId(ref, projectRoot));
+        .metadata.reactServerReferences?.map((ref) => toOutputKey(ref, projectRoot));
 
       if (reactServerReferences) {
         nestedServerBoundaries.push(...reactServerReferences!);
@@ -208,37 +208,37 @@ export function createServerComponentsMiddleware(
       const safeName = path.basename(jsArtifact.filename!);
 
       // For server action manifests, the module ID must match what the server bundle uses.
-      // All RSC references now use stable IDs (resolved by the serializer).
-      const stableIdToModuleId = jsArtifact.metadata.stableIdToModuleId ?? {};
+      // All RSC references now use output keys (resolved by the serializer).
+      const outputKeyToModuleId = jsArtifact.metadata.outputKeyToModuleId ?? {};
 
       const outputName = `_expo/rsc/${platform}/${safeName}`;
       // While we're here, export the router for the server to dynamically render RSC.
-      // Pass stableIdToModuleId and platform so the bundle registers mappings for __webpack_require__
+      // Pass outputKeyToModuleId and platform so the bundle registers mappings for __webpack_require__
       files.set(outputName, {
         targetDomain: 'server',
-        contents: wrapBundle(contents.src, stableIdToModuleId, platform),
+        contents: wrapBundle(contents.src, outputKeyToModuleId, platform),
       });
 
-      // Match babel plugin stable ID format.
-      // If entryPoint is already a stable ID (not absolute path), use as-is.
+      // Match babel plugin output key format.
+      // If entryPoint is already an output key (not absolute path), use as-is.
       // Otherwise, compute relative path.
-      const isStableId = !path.isAbsolute(entryPoint) && !entryPoint.startsWith('file://');
-      const publicModuleId = isStableId
+      const isOutputKey = !path.isAbsolute(entryPoint) && !entryPoint.startsWith('file://');
+      const publicModuleId = isOutputKey
         ? entryPoint
         : './' + toPosixPath(path.relative(projectRoot, entryPoint));
-      if (!isStableId) {
+      if (!isOutputKey) {
         throw new Error(
-          `Expected stable ID but got file path "${entryPoint}". ` +
-            `All RSC references should be stable IDs after serialization.`
+          `Expected output key but got file path "${entryPoint}". ` +
+            `All RSC references should be output keys after serialization.`
         );
       }
-      if (!(entryPoint in stableIdToModuleId)) {
+      if (!(entryPoint in outputKeyToModuleId)) {
         throw new Error(
-          `Cannot find module ID for stable ID "${entryPoint}". ` +
-            `Available mappings: ${Object.keys(stableIdToModuleId).join(', ') || '(none)'}`
+          `Cannot find module ID for output key "${entryPoint}". ` +
+            `Available mappings: ${Object.keys(outputKeyToModuleId).join(', ') || '(none)'}`
         );
       }
-      const moduleId = stableIdToModuleId[entryPoint];
+      const moduleId = outputKeyToModuleId[entryPoint];
 
       // Import relative to `dist/server/_expo/rsc/web/router.js`
       manifest[publicModuleId] = [String(moduleId), outputName];
@@ -300,7 +300,7 @@ export function createServerComponentsMiddleware(
     const jsArtifact = contents.artifacts.filter((a) => a.type === 'js')[0];
 
     const reactServerReferences = jsArtifact.metadata.reactServerReferences?.map((ref) =>
-      toStableId(ref, projectRoot)
+      toOutputKey(ref, projectRoot)
     );
 
     if (!reactServerReferences) {
@@ -311,7 +311,7 @@ export function createServerComponentsMiddleware(
     debug('React server boundaries:', reactServerReferences);
 
     const reactClientReferences = jsArtifact.metadata.reactClientReferences?.map((ref) =>
-      toStableId(ref, projectRoot)
+      toOutputKey(ref, projectRoot)
     );
 
     if (!reactClientReferences) {
@@ -411,22 +411,22 @@ export function createServerComponentsMiddleware(
     );
 
     return (file: string, isServer: boolean) => {
-      // Handle stable IDs (e.g., "pkg/client" or "./relative/path.js")
+      // Handle output keys (e.g., "pkg/client" or "./relative/path.js")
       // vs legacy file URLs (e.g., "file:///path/to/file.js")
-      const isStableId = !file.startsWith('file://') && !path.isAbsolute(file);
+      const isOutputKey = !file.startsWith('file://') && !path.isAbsolute(file);
 
-      // For stable IDs, use directly for manifest lookup
+      // For output keys, use directly for manifest lookup
       // For file paths, convert to relative for backward compatibility
-      const filePath = isStableId
+      const filePath = isOutputKey
         ? file
         : path.join(projectRoot, file.startsWith('file://') ? fileURLToFilePath(file) : file);
 
       if (isExporting) {
         assert(context.ssrManifest, 'SSR manifest must exist when exporting');
 
-        // Use stable ID directly if available, otherwise compute relative path
+        // Use output key directly if available, otherwise compute relative path
         // MUST use projectRoot (not serverRoot) to match how manifest keys are created in MetroBundlerDevServer
-        const manifestKey = isStableId
+        const manifestKey = isOutputKey
           ? file
           : './' + toPosixPath(path.relative(projectRoot, filePath));
 
@@ -473,26 +473,26 @@ export function createServerComponentsMiddleware(
       // TICKLE: Handshake 1
       searchParams.set('xRSC', '1');
 
-      // For stable IDs (package specifiers), lookup file path from registry
+      // For output keys (package specifiers), lookup file path from registry
       // For file paths, use directly
       let bundleFilePath: string;
-      if (isStableId) {
-        // Lookup file path from registry (reverse: stableId → filePath)
-        const registryFilePath = getFilePathByStableId(file);
+      if (isOutputKey) {
+        // Lookup file path from registry (reverse: outputKey → filePath)
+        const registryFilePath = getFilePathByOutputKey(file);
         if (registryFilePath) {
           bundleFilePath = registryFilePath;
         } else if (file.startsWith('./')) {
-          // Relative path stable ID - resolve from project root
+          // Relative path output key - resolve from project root
           bundleFilePath = path.join(projectRoot, file);
         } else {
-          // No fallback - if the stable ID is not in registry, it's a build error
+          // No fallback - if the output key is not in registry, it's a build error
           throw new Error(
-            `[RSC] Stable ID not found in registry: "${file}". ` +
+            `[RSC] Output key not found in registry: "${file}". ` +
               `This is a build error - ensure the module is properly bundled with RSC support.`
           );
         }
-        // Add stable ID to URL so the serializer can register it dynamically
-        searchParams.set('rscStableId', file);
+        // Add output key to URL so the serializer can register it dynamically
+        searchParams.set('rscOutputKey', file);
       } else {
         bundleFilePath = filePath;
       }
@@ -510,11 +510,11 @@ export function createServerComponentsMiddleware(
       // Return relative URLs to help Android fetch from wherever it was loaded from since it doesn't support localhost.
       const chunkName = clientReferenceUrl.pathname + clientReferenceUrl.search;
 
-      // All RSC references now use stable IDs (resolved by the serializer)
-      if (!isStableId) {
+      // All RSC references now use output keys (resolved by the serializer)
+      if (!isOutputKey) {
         throw new Error(
-          `Expected stable ID but got file path "${file}". ` +
-            `All RSC references should be stable IDs.`
+          `Expected output key but got file path "${file}". ` +
+            `All RSC references should be output keys.`
         );
       }
       const moduleId = file;
@@ -762,7 +762,7 @@ export function createServerComponentsMiddleware(
         const reactClientReferences =
           contents.artifacts
             .filter((a) => a.type === 'js')[0]
-            ?.metadata.reactClientReferences?.map((ref) => toStableId(ref, projectRoot)) || [];
+            ?.metadata.reactClientReferences?.map((ref) => toOutputKey(ref, projectRoot)) || [];
 
         debug(
           '[RSC] Prefetched client boundaries from server graph:',
@@ -802,11 +802,11 @@ export const fileURLToFilePath = (fileURL: string) => {
 };
 
 /**
- * Convert file:// URL or file path to stable ID (relative path from project root).
- * Used for RSC boundary references which need stable IDs for the module maps.
+ * Convert file:// URL or file path to output key (relative path from project root).
+ * Used for RSC boundary references which need output keys for the module maps.
  */
-export function toStableId(ref: string, projectRoot: string): string {
-  // Already a stable ID (relative path)
+export function toOutputKey(ref: string, projectRoot: string): string {
+  // Already an output key (relative path)
   if (ref.startsWith('./')) {
     return ref;
   }
@@ -849,7 +849,7 @@ const encodeInput = (input: string) => {
 
 function wrapBundle(
   str: string,
-  stableIdToModuleId?: Record<string, string | number>,
+  outputKeyToModuleId?: Record<string, string | number>,
   platform?: string
 ) {
   // Skip the metro runtime so debugging is a bit easier.
@@ -857,17 +857,17 @@ function wrapBundle(
   // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
   let result = str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
 
-  // Add stable ID registrations for __webpack_require__ to use
-  // This registers the mapping from stable IDs to Metro module IDs
+  // Add output key registrations for __webpack_require__ to use
+  // This registers the mapping from output keys to Metro module IDs
   // Note: The module IDs in the bundle have query params (e.g., ?platform=web&env=react-server)
   // so we need to append them to match what __d() uses
-  if (stableIdToModuleId && Object.keys(stableIdToModuleId).length > 0) {
+  if (outputKeyToModuleId && Object.keys(outputKeyToModuleId).length > 0) {
     const querySuffix = platform ? `?platform=${platform}&env=react-server` : '';
-    const registrations = Object.entries(stableIdToModuleId)
-      .map(([stableId, moduleId]) => {
+    const registrations = Object.entries(outputKeyToModuleId)
+      .map(([outputKey, moduleId]) => {
         // Append query params to match the module ID format used by __d()
         const fullModuleId = String(moduleId) + querySuffix;
-        return `if(typeof __expo_rsc_register__==='function')__expo_rsc_register__(${JSON.stringify(stableId)},${JSON.stringify(fullModuleId)});`;
+        return `if(typeof __expo_rsc_register__==='function')__expo_rsc_register__(${JSON.stringify(outputKey)},${JSON.stringify(fullModuleId)});`;
       })
       .join('\n');
     result = registrations + '\n' + result;

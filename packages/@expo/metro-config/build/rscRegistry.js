@@ -3,9 +3,9 @@
  * RSC Registry
  *
  * Simple registry for RSC client boundaries in dev mode.
- * Maps stable IDs to file paths for module resolution.
+ * Maps output keys to file paths for module resolution.
  *
- * Stable IDs are relative paths from project root with pnpm normalization:
+ * Output keys are relative paths from project root with pnpm normalization:
  * - App files: ./src/Button.tsx
  * - Packages: ./node_modules/pkg/file.js
  */
@@ -43,14 +43,14 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStableId = getStableId;
+exports.getOutputKey = getOutputKey;
 exports.recordClientBoundary = recordClientBoundary;
-exports.getFilePathByStableId = getFilePathByStableId;
+exports.getFilePathByOutputKey = getFilePathByOutputKey;
 exports.clearRegistry = clearRegistry;
 exports.getDiscoveredClientBoundaries = getDiscoveredClientBoundaries;
 exports.clearDiscoveredBoundaries = clearDiscoveredBoundaries;
 const path = __importStar(require("path"));
-// stableId → filePath (for dev mode module resolution)
+// outputKey → filePath (for dev mode module resolution)
 const clientBoundaries = new Map();
 /**
  * Normalize path for cross-platform consistency.
@@ -59,31 +59,31 @@ function toPosixPath(filePath) {
     return filePath.replace(/\\/g, '/');
 }
 /**
- * Generate a stable ID for RSC client/server boundary modules.
+ * Generate an output key for RSC client/server boundary modules.
  *
  * Uses relative paths from project root, with pnpm symlink normalization.
  * This matches the logic in babel-preset-expo's client-module-proxy-plugin.
  */
-function getStableId(filePath, projectRoot) {
+function getOutputKey(filePath, projectRoot) {
     let relativePath = path.relative(projectRoot, filePath);
     // pnpm normalization: .pnpm/pkg@1.0.0/node_modules/pkg/... → pkg/...
     relativePath = relativePath.replace(/node_modules\/\.pnpm\/[^/]+\/node_modules\//g, 'node_modules/');
     return {
-        stableId: './' + toPosixPath(relativePath),
+        outputKey: './' + toPosixPath(relativePath),
         source: 'relative',
     };
 }
 /**
  * Record a client boundary for dev mode module resolution.
  */
-function recordClientBoundary(stableId, filePath) {
-    clientBoundaries.set(stableId, filePath);
+function recordClientBoundary(outputKey, filePath) {
+    clientBoundaries.set(outputKey, filePath);
 }
 /**
- * Get file path by stable ID (for dev mode module resolution).
+ * Get file path by output key (for dev mode module resolution).
  */
-function getFilePathByStableId(stableId) {
-    return clientBoundaries.get(stableId);
+function getFilePathByOutputKey(outputKey) {
+    return clientBoundaries.get(outputKey);
 }
 /**
  * Clear the registry (for watch mode rebuilds).

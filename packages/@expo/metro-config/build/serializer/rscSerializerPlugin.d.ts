@@ -5,7 +5,7 @@
  *
  * This plugin does:
  * 1. Collects reactClientReference/reactServerReference from module metadata
- * 2. Builds stable ID → module ID mapping for runtime require()
+ * 2. Builds output key → module ID mapping for runtime require()
  * 3. Replaces __RSC_BOUNDARIES_PLACEHOLDER__ in virtual rsc.js module
  */
 import type { MixedOutput, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
@@ -19,10 +19,10 @@ export interface RscSerializerPluginOptions {
  */
 export declare function createRscSerializerPlugin(options: RscSerializerPluginOptions): (...props: SerializerParameters) => Promise<SerializerParameters>;
 /**
- * Get RSC stable ID → module ID mapping from graph.
+ * Get RSC output key → module ID mapping from graph.
  */
-export declare function getRscStableIdToModuleId(graph: ReadOnlyGraph<MixedOutput>): Record<string, string | number>;
+export declare function getRscOutputKeyToModuleId(graph: ReadOnlyGraph<MixedOutput>): Record<string, string | number>;
 /**
- * Get RSC stable ID → file path mapping from graph.
+ * Get RSC output key → file path mapping from graph.
  */
-export declare function getRscStableIdToFilePath(graph: ReadOnlyGraph<MixedOutput>): Record<string, string>;
+export declare function getRscOutputKeyToFilePath(graph: ReadOnlyGraph<MixedOutput>): Record<string, string>;

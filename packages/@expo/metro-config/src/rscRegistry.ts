@@ -2,16 +2,16 @@
  * RSC Registry
  *
  * Simple registry for RSC client boundaries in dev mode.
- * Maps stable IDs to file paths for module resolution.
+ * Maps output keys to file paths for module resolution.
  *
- * Stable IDs are relative paths from project root with pnpm normalization:
+ * Output keys are relative paths from project root with pnpm normalization:
  * - App files: ./src/Button.tsx
  * - Packages: ./node_modules/pkg/file.js
  */
 
 import * as path from 'path';
 
-// stableId → filePath (for dev mode module resolution)
+// outputKey → filePath (for dev mode module resolution)
 const clientBoundaries = new Map<string, string>();
 
 /**
@@ -22,15 +22,15 @@ function toPosixPath(filePath: string): string {
 }
 
 /**
- * Generate a stable ID for RSC client/server boundary modules.
+ * Generate an output key for RSC client/server boundary modules.
  *
  * Uses relative paths from project root, with pnpm symlink normalization.
  * This matches the logic in babel-preset-expo's client-module-proxy-plugin.
  */
-export function getStableId(
+export function getOutputKey(
   filePath: string,
   projectRoot: string
-): { stableId: string; source: 'relative' } {
+): { outputKey: string; source: 'relative' } {
   let relativePath = path.relative(projectRoot, filePath);
 
   // pnpm normalization: .pnpm/pkg@1.0.0/node_modules/pkg/... → pkg/...
@@ -40,7 +40,7 @@ export function getStableId(
   );
 
   return {
-    stableId: './' + toPosixPath(relativePath),
+    outputKey: './' + toPosixPath(relativePath),
     source: 'relative',
   };
 }
@@ -48,15 +48,15 @@ export function getStableId(
 /**
  * Record a client boundary for dev mode module resolution.
  */
-export function recordClientBoundary(stableId: string, filePath: string): void {
-  clientBoundaries.set(stableId, filePath);
+export function recordClientBoundary(outputKey: string, filePath: string): void {
+  clientBoundaries.set(outputKey, filePath);
 }
 
 /**
- * Get file path by stable ID (for dev mode module resolution).
+ * Get file path by output key (for dev mode module resolution).
  */
-export function getFilePathByStableId(stableId: string): string | undefined {
-  return clientBoundaries.get(stableId);
+export function getFilePathByOutputKey(outputKey: string): string | undefined {
+  return clientBoundaries.get(outputKey);
 }
 
 /**

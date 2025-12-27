@@ -6,13 +6,13 @@
  *
  * This plugin does:
  * 1. Collects reactClientReference/reactServerReference from module metadata
- * 2. Builds stable ID → module ID mapping for runtime require()
+ * 2. Builds output key → module ID mapping for runtime require()
  * 3. Replaces __RSC_BOUNDARIES_PLACEHOLDER__ in virtual rsc.js module
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRscSerializerPlugin = createRscSerializerPlugin;
-exports.getRscStableIdToModuleId = getRscStableIdToModuleId;
-exports.getRscStableIdToFilePath = getRscStableIdToFilePath;
+exports.getRscOutputKeyToModuleId = getRscOutputKeyToModuleId;
+exports.getRscOutputKeyToFilePath = getRscOutputKeyToFilePath;
 const rscRegistry_1 = require("../rscRegistry");
 /**
  * Normalize path for cross-platform consistency.
@@ -40,49 +40,49 @@ function createRscSerializerPlugin(options) {
     const { projectRoot } = options;
     return async function rscSerializerPlugin(...props) {
         const [entryPoint, preModules, graph, serializerOptions] = props;
-        // Maps stable ID → module ID (for runtime require())
-        const stableIdToModuleId = new Map();
-        // Maps stable ID → file path (for chunk lookup in SSR manifest)
-        const stableIdToFilePath = new Map();
-        // Helper to track stable ID usage
-        function trackStableId(stableId, modulePath, moduleId) {
-            stableIdToModuleId.set(stableId, moduleId);
-            stableIdToFilePath.set(stableId, modulePath);
+        // Maps output key → module ID (for runtime require())
+        const outputKeyToModuleId = new Map();
+        // Maps output key → file path (for chunk lookup in SSR manifest)
+        const outputKeyToFilePath = new Map();
+        // Helper to track output key usage
+        function trackOutputKey(outputKey, modulePath, moduleId) {
+            outputKeyToModuleId.set(outputKey, moduleId);
+            outputKeyToFilePath.set(outputKey, modulePath);
             // Record in global cache for client bundle to use (dev mode)
-            (0, rscRegistry_1.recordClientBoundary)(stableId, modulePath);
+            (0, rscRegistry_1.recordClientBoundary)(outputKey, modulePath);
         }
-        // First pass: collect stable IDs from metadata and convert file:// URLs to stable IDs
+        // First pass: collect output keys from metadata and convert file:// URLs to output keys
         for (const [modulePath, module] of graph.dependencies) {
             for (const output of module.output) {
                 const data = output.data;
                 // Handle client references
                 if (data.reactClientReference) {
-                    let stableId = data.reactClientReference;
-                    // Convert file:// URLs to stable IDs (modifies metadata in place)
+                    let outputKey = data.reactClientReference;
+                    // Convert file:// URLs to output keys (modifies metadata in place)
                     // This is needed for serializeChunks.ts which reads reactClientReference directly
-                    if (isFileUrl(stableId)) {
-                        const resolvedPath = extractPathFromFileUrl(stableId);
-                        stableId = (0, rscRegistry_1.getStableId)(resolvedPath, projectRoot).stableId;
-                        data.reactClientReference = stableId;
+                    if (isFileUrl(outputKey)) {
+                        const resolvedPath = extractPathFromFileUrl(outputKey);
+                        outputKey = (0, rscRegistry_1.getOutputKey)(resolvedPath, projectRoot).outputKey;
+                        data.reactClientReference = outputKey;
                     }
-                    trackStableId(stableId, modulePath, serializerOptions.createModuleId(modulePath));
+                    trackOutputKey(outputKey, modulePath, serializerOptions.createModuleId(modulePath));
                     if (process.env.EXPO_DEBUG) {
-                        console.log('[RSC-SERIALIZER] Client ref:', stableId, 'at', modulePath);
+                        console.log('[RSC-SERIALIZER] Client ref:', outputKey, 'at', modulePath);
                     }
                 }
                 // Handle server references
                 if (data.reactServerReference) {
-                    let stableId = data.reactServerReference;
-                    // Convert file:// URLs to stable IDs (modifies metadata in place)
+                    let outputKey = data.reactServerReference;
+                    // Convert file:// URLs to output keys (modifies metadata in place)
                     // This is needed for serializeChunks.ts which reads reactServerReference directly
-                    if (isFileUrl(stableId)) {
-                        const resolvedPath = extractPathFromFileUrl(stableId);
-                        stableId = (0, rscRegistry_1.getStableId)(resolvedPath, projectRoot).stableId;
-                        data.reactServerReference = stableId;
+                    if (isFileUrl(outputKey)) {
+                        const resolvedPath = extractPathFromFileUrl(outputKey);
+                        outputKey = (0, rscRegistry_1.getOutputKey)(resolvedPath, projectRoot).outputKey;
+                        data.reactServerReference = outputKey;
                     }
-                    trackStableId(stableId, modulePath, serializerOptions.createModuleId(modulePath));
+                    trackOutputKey(outputKey, modulePath, serializerOptions.createModuleId(modulePath));
                     if (process.env.EXPO_DEBUG) {
-                        console.log('[RSC-SERIALIZER] Server ref:', stableId, 'at', modulePath);
+                        console.log('[RSC-SERIALIZER] Server ref:', outputKey, 'at', modulePath);
                     }
                 }
             }
@@ -103,7 +103,7 @@ function createRscSerializerPlugin(options) {
                 if (boundaryPathsMatch) {
                     try {
                         const boundaryPaths = JSON.parse(boundaryPathsMatch[1]);
-                        // Add boundaries to stableIdToModuleId if they exist in the graph
+                        // Add boundaries to outputKeyToModuleId if they exist in the graph
                         for (const boundaryPath of boundaryPaths) {
                             const normalizedBoundary = normalizePath(boundaryPath);
                             // Find this module in the graph
@@ -118,10 +118,10 @@ function createRscSerializerPlugin(options) {
                                 }
                             }
                             if (foundModulePath) {
-                                const { stableId } = (0, rscRegistry_1.getStableId)(foundModulePath, projectRoot);
-                                if (!stableIdToModuleId.has(stableId)) {
+                                const { outputKey } = (0, rscRegistry_1.getOutputKey)(foundModulePath, projectRoot);
+                                if (!outputKeyToModuleId.has(outputKey)) {
                                     const moduleId = serializerOptions.createModuleId(foundModulePath);
-                                    trackStableId(stableId, foundModulePath, moduleId);
+                                    trackOutputKey(outputKey, foundModulePath, moduleId);
                                 }
                             }
                         }
@@ -132,8 +132,8 @@ function createRscSerializerPlugin(options) {
                 }
                 // Build the module map
                 const moduleMapEntries = [];
-                for (const [stableId, moduleId] of stableIdToModuleId) {
-                    moduleMapEntries.push(`  ${JSON.stringify(stableId)}: function() { return __r(${JSON.stringify(moduleId)}); }`);
+                for (const [outputKey, moduleId] of outputKeyToModuleId) {
+                    moduleMapEntries.push(`  ${JSON.stringify(outputKey)}: function() { return __r(${JSON.stringify(moduleId)}); }`);
                 }
                 const moduleMapCode = `{\n${moduleMapEntries.join(',\n')}\n}`;
                 // Replace placeholder with actual module map
@@ -156,23 +156,23 @@ function createRscSerializerPlugin(options) {
         if (!graph.transformOptions.customTransformOptions) {
             graph.transformOptions.customTransformOptions = {};
         }
-        graph.transformOptions.customTransformOptions.__rscStableIdToModuleId =
-            Object.fromEntries(stableIdToModuleId);
-        graph.transformOptions.customTransformOptions.__rscStableIdToFilePath =
-            Object.fromEntries(stableIdToFilePath);
+        graph.transformOptions.customTransformOptions.__rscOutputKeyToModuleId =
+            Object.fromEntries(outputKeyToModuleId);
+        graph.transformOptions.customTransformOptions.__rscOutputKeyToFilePath =
+            Object.fromEntries(outputKeyToFilePath);
         return [entryPoint, preModules, graph, serializerOptions];
     };
 }
 /**
- * Get RSC stable ID → module ID mapping from graph.
+ * Get RSC output key → module ID mapping from graph.
  */
-function getRscStableIdToModuleId(graph) {
-    return graph.transformOptions?.customTransformOptions?.__rscStableIdToModuleId ?? {};
+function getRscOutputKeyToModuleId(graph) {
+    return graph.transformOptions?.customTransformOptions?.__rscOutputKeyToModuleId ?? {};
 }
 /**
- * Get RSC stable ID → file path mapping from graph.
+ * Get RSC output key → file path mapping from graph.
  */
-function getRscStableIdToFilePath(graph) {
-    return graph.transformOptions?.customTransformOptions?.__rscStableIdToFilePath ?? {};
+function getRscOutputKeyToFilePath(graph) {
+    return graph.transformOptions?.customTransformOptions?.__rscOutputKeyToFilePath ?? {};
 }
 //# sourceMappingURL=rscSerializerPlugin.js.map

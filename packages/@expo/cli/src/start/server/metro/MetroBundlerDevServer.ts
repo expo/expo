@@ -173,19 +173,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       require('@expo/metro-config/build/rsc/scanClientBoundaries') as {
         scanForClientBoundaries: (projectRoot: string) => Set<string>;
       };
-    const { getStableId } = require('@expo/metro-config/build/rscRegistry') as {
-      getStableId: (
+    const { getOutputKey } = require('@expo/metro-config/build/rscRegistry') as {
+      getOutputKey: (
         resolvedPath: string,
         projectRoot: string
-      ) => { stableId: string; type: string };
+      ) => { outputKey: string; type: string };
     };
 
-    // Convert absolute paths to stable IDs for cross-environment compatibility
-    // Stable IDs are either package specifiers (e.g., "pkg/client") or
+    // Convert absolute paths to output keys for cross-environment compatibility
+    // Output keys are either package specifiers (e.g., "pkg/client") or
     // relative paths from project root (e.g., "./src/Button.tsx")
     const absolutePaths = scanForClientBoundaries(this.projectRoot);
     const clientBoundaries: string[] = Array.from(absolutePaths).map(
-      (absPath) => getStableId(absPath, this.projectRoot).stableId
+      (absPath) => getOutputKey(absPath, this.projectRoot).outputKey
     );
     debug(`[RSC] Discovered ${clientBoundaries.length} client boundaries at startup`);
 
@@ -961,16 +961,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const serverRoot = getMetroServerRoot(this.projectRoot);
 
-    // clientBoundaries are now stable IDs (e.g., "pkg/client", "./src/Button.js")
+    // clientBoundaries are now output keys (e.g., "pkg/client", "./src/Button.js")
     // from the serializer's metadata.reactClientReferences
     debug('SSR Manifest: clientBoundaries', clientBoundaries);
 
-    // stableIdToChunk maps stable ID -> chunk filename
+    // outputKeyToChunk maps output key -> chunk filename
     // Built from artifact metadata.paths which maps file path -> chunk
-    // We need to convert this to stable ID -> chunk using reactClientReferenceMap
+    // We need to convert this to output key -> chunk using reactClientReferenceMap
     // Merge client bundle's mapping with server bundle's mapping.
     // The server bundle includes assets which only have reactClientReference in server environment.
-    const stableIdToFilePath: Record<string, string> = {
+    const outputKeyToFilePath: Record<string, string> = {
       // Server bundle mapping first (includes assets)
       ...serverBundleReferenceMap,
       // Client bundle mappings override (most modules are here)
@@ -1001,15 +1001,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     if (Object.keys(filePathToChunk).length) {
       // Web with bundle splitting enabled
-      clientBoundaries.forEach((stableId) => {
-        const filePath = stableIdToFilePath[stableId];
+      clientBoundaries.forEach((outputKey) => {
+        const filePath = outputKeyToFilePath[outputKey];
         if (!filePath) {
           throw new Error(
-            `Could not find file path for stable ID "${stableId}". ` +
-              `Available: ${Object.keys(stableIdToFilePath).join(', ') || '(none)'}`
+            `Could not find file path for output key "${outputKey}". ` +
+              `Available: ${Object.keys(outputKeyToFilePath).join(', ') || '(none)'}`
           );
         }
-        // filePathToChunk uses paths relative to serverRoot, but stableIdToFilePath may have absolute paths
+        // filePathToChunk uses paths relative to serverRoot, but outputKeyToFilePath may have absolute paths
         // Try both the original path and the relative version
         let chunk = filePathToChunk[filePath];
         if (!chunk && path.isAbsolute(filePath)) {
@@ -1023,23 +1023,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // If no chunk found, the client boundary is in the main entry bundle
         if (!chunk && entryBundleFilename) {
           debug(
-            `Client boundary "${stableId}" not in async chunk, using entry bundle: ${entryBundleFilename}`
+            `Client boundary "${outputKey}" not in async chunk, using entry bundle: ${entryBundleFilename}`
           );
           chunk = '/' + entryBundleFilename;
         }
         if (!chunk) {
           throw new Error(
-            `Could not find chunk for "${stableId}" (file: ${filePath}). ` +
+            `Could not find chunk for "${outputKey}" (file: ${filePath}). ` +
               `No entry bundle found to use as fallback.`
           );
         }
-        ssrManifest.set(stableId, chunk);
+        ssrManifest.set(outputKey, chunk);
       });
     } else {
       // Native apps with bundle splitting disabled
       debug('No split bundles');
-      clientBoundaries.forEach((stableId) => {
-        ssrManifest.set(stableId, null);
+      clientBoundaries.forEach((outputKey) => {
+        ssrManifest.set(outputKey, null);
       });
     }
 
@@ -1056,8 +1056,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
 
     // Save the SSR manifest for server-side rendering.
-    // Format: { stableId: chunk } where:
-    // - stableId: "pkg/client", "@scope/pkg", "./src/Button.js"
+    // Format: { outputKey: chunk } where:
+    // - outputKey: "pkg/client", "@scope/pkg", "./src/Button.js"
     // - chunk: chunk filename or null (for native without splitting)
     files.set(`_expo/rsc/${options.platform}/ssr-manifest.js`, {
       targetDomain: 'server',
