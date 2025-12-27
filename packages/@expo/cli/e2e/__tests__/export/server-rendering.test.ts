@@ -1,4 +1,5 @@
 /* eslint-env jest */
+import type { RoutesManifest } from 'expo-server/private';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -67,6 +68,26 @@ describe('exports server', () => {
       expect(files).toContain('_expo/server/render.js');
       expect(files).toContain('_expo/assets.json');
       expect(files).toContain('_expo/routes.json');
+    });
+
+    it('routes manifest excludes routes created by `generateStaticParams()`', async () => {
+      const routesJson = JSON.parse(
+        fs.readFileSync(path.join(server.outputDir, 'server/_expo/routes.json'), 'utf8')
+      ) as RoutesManifest<string>;
+
+      // Should have the dynamic route pattern
+      const postRoute = routesJson.htmlRoutes.find(
+        (route: { page: string }) => route.page === '/[post]'
+      );
+      expect(postRoute).toBeDefined();
+      expect(postRoute?.file).toBe('./[post].tsx');
+
+      // Should NOT have the generated static routes from `generateStaticParams()`
+      // `[post].tsx` exports `generateStaticParams()` returning ['welcome-to-the-universe', 'other']
+      const generatedRoutes = routesJson.htmlRoutes.filter((route) =>
+        ['/welcome-to-the-universe', '/other'].includes(route.page)
+      );
+      expect(generatedRoutes).toHaveLength(0);
     });
 
     it('has source maps', async () => {
