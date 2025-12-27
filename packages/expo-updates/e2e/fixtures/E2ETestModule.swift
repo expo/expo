@@ -1,9 +1,21 @@
 // Copyright 2019 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import EXUpdatesInterface
 
-public final class E2ETestModule: Module {
+let e2eEventName = "Expo.updatesE2EStateChangeEvent"
+
+public final class E2ETestModule: Module, UpdatesStateChangeListener {
   private let methodQueue = DispatchQueue(label: "expo.modules.EXUpdatesQueue")
+  private var updatesController: (any UpdatesInterface)?
+  private var hasListener: Bool = false
+  private var subscriptionId: String? = nil
+
+  public func updatesStateDidChange(_ event: [String : Any]) {
+    if (hasListener) {
+      sendEvent(e2eEventName, event)
+    }
+  }
 
   public required init(appContext: AppContext) {
     super.init(appContext: appContext)
@@ -11,6 +23,43 @@ public final class E2ETestModule: Module {
 
   public func definition() -> ModuleDefinition {
     Name("ExpoUpdatesE2ETest")
+
+    Events([e2eEventName])
+
+    OnCreate {
+      if let controller = UpdatesControllerRegistry.sharedInstance.controller {
+        updatesController = controller
+        subscriptionId = controller.subscribeToUpdatesStateChanges(self)
+      }
+    }
+
+    OnStartObserving {
+      hasListener = true
+    }
+
+    OnStopObserving {
+      hasListener = false
+    }
+
+    OnDestroy {
+      if let subscriptionId,
+         let updatesController {
+        updatesController.unsubscribeFromUpdatesStateChanges(subscriptionId)
+      }
+      updatesController = nil
+    }
+
+    Function("getLaunchedUpdateId") {
+      return updatesController?.launchedUpdateId
+    }
+
+    Function("getEmbeddedUpdateId") {
+      return updatesController?.embeddedUpdateId
+    }
+
+    Function("getRuntimeVersion") {
+      return updatesController?.runtimeVersion
+    }
 
     AsyncFunction("readInternalAssetsFolderAsync") { (promise: Promise) in
       guard let assetsFolder = AppController.sharedInstance.updatesDirectory else {
