@@ -12,7 +12,7 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
   @NativeActionProp(updateAction: true) var isOn: Bool?
   @NativeActionProp(updateAction: true) var keepPresented: Bool?
   @NativeActionProp(updateAction: true) var discoverabilityLabel: String?
-  @NativeActionProp(updateAction: true) var subtitle: String?
+  @NativeActionProp(updateAction: true, updateMenu: true) var subtitle: String?
 
   // MARK: - Menu only props
   @NativeActionProp(updateMenu: true) var singleSelection: Bool = false
@@ -81,6 +81,10 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
       options: options,
       children: subActions
     )
+
+    if let subtitle = subtitle {
+      menuAction.subtitle = subtitle
+    }
 
     parentMenuUpdatable?.updateMenu()
   }
