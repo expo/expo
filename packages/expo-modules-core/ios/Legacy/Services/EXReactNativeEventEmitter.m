@@ -1,16 +1,17 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
+#import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXExportedModule.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
-#import <ExpoModulesCore/Swift.h>
+#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
 
 @interface EXReactNativeEventEmitter ()
 
 @property (nonatomic, assign) int listenersCount;
 @property (nonatomic, weak) EXModuleRegistry *exModuleRegistry;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *modulesListenersCounts;
+@property (nonatomic, assign) BOOL isObserving;
 
 @end
 
@@ -52,6 +53,36 @@ RCT_EXPORT_MODULE(EXReactNativeEventEmitter)
     }
   }
   return [eventsAccumulator allObjects];
+}
+
+#pragma mark - EXEventEmitterService
+
+- (void)sendEventWithName:(NSString *)name body:(id)body {
+  // Send events through the AppContext's event emitter service (JSI-based)
+  // This replaces RCTEventEmitter's bridge-based sendEventWithName:body:
+  if (_appContext) {
+    [[_appContext eventEmitter] sendEventWithName:name body:body];
+  }
+}
+
+#pragma mark - Listener lifecycle
+
+- (void)startObserving {
+  _isObserving = YES;
+}
+
+- (void)stopObserving {
+  _isObserving = NO;
+}
+
+- (void)addListener:(NSString *)eventName {
+  // Track listener count - no longer calls RCTEventEmitter
+  // Individual module observation is handled in addProxiedListener
+}
+
+- (void)removeListeners:(double)count {
+  // Track listener count - no longer calls RCTEventEmitter
+  // Individual module observation is handled in removeProxiedListeners
 }
 
 RCT_EXPORT_METHOD(addProxiedListener:(NSString *)moduleName eventName:(NSString *)eventName)
