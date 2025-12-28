@@ -205,7 +205,7 @@ export type RawAndroidProjectConfig = {
      */
     modules?: (string | RawAndroidModuleConfig)[];
     /**
-     * Full qualified names of Android services provided by the package.
+     * Full qualified names of Android services (`expo.modules.kotlin.services.Service`) provided by the package.
      */
     services?: string[];
     /**
