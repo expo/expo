@@ -29,7 +29,7 @@ function initManifestRegExp(manifest) {
 function createEnvironment(input) {
     // Cached manifest and SSR renderer, initialized on first request
     let cachedManifest = null;
-    let ssrRenderer;
+    let ssrRenderer = null;
     async function getCachedRoutesManifest() {
         if (!cachedManifest) {
             const json = await input.readJson('_expo/routes.json');
@@ -38,37 +38,29 @@ function createEnvironment(input) {
         return cachedManifest;
     }
     async function getServerRenderer() {
-        if (ssrRenderer === undefined) {
-            try {
-                const manifest = await getCachedRoutesManifest();
-                // Check if SSR rendering mode is declared in manifest
-                if (manifest.rendering?.mode === 'ssr') {
-                    const serverRenderingModule = (await input.loadModule(manifest.rendering.file));
-                    if (serverRenderingModule) {
-                        const assets = manifest.assets;
-                        // Create renderer that passes assets to `getStaticContent()`
-                        ssrRenderer = async (request, options) => {
-                            const url = new URL(request.url);
-                            const location = new URL(url.pathname + url.search, url.origin);
-                            return serverRenderingModule.getStaticContent(location, {
-                                loader: options?.loader,
-                                request,
-                                assets,
-                            });
-                        };
-                    }
-                    else {
-                        ssrRenderer = null;
-                    }
-                }
-                else {
-                    ssrRenderer = null;
-                }
-            }
-            catch {
-                ssrRenderer = null; // Module doesn't exist, use SSG fallback
-            }
+        if (ssrRenderer) {
+            return ssrRenderer;
         }
+        const manifest = await getCachedRoutesManifest();
+        if (manifest.rendering?.mode !== 'ssr') {
+            return null;
+        }
+        // If `manifest.rendering.mode === 'ssr'`, we always expect the SSR rendering module to be
+        // available
+        const ssrModule = (await input.loadModule(manifest.rendering.file));
+        if (!ssrModule) {
+            throw new Error(`SSR module not found at: ${manifest.rendering.file}`);
+        }
+        const assets = manifest.assets;
+        ssrRenderer = async (request, options) => {
+            const url = new URL(request.url);
+            const location = new URL(url.pathname + url.search, url.origin);
+            return ssrModule.getStaticContent(location, {
+                loader: options?.loader,
+                request,
+                assets,
+            });
+        };
         return ssrRenderer;
     }
     return {

@@ -1,10 +1,5 @@
-import type {
-  Manifest,
-  MiddlewareInfo,
-  RawManifest,
-  Route,
-  ServerRenderModule,
-} from '../../manifest';
+import type { Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
+import type { ServerRenderModule, SsrRenderFn } from '../../rendering';
 
 function initManifestRegExp(manifest: RawManifest): Manifest {
   return {
@@ -32,10 +27,6 @@ function initManifestRegExp(manifest: RawManifest): Manifest {
   };
 }
 
-export interface RenderOptions {
-  loader?: { data: unknown };
-}
-
 interface EnvironmentInput {
   readText(request: string): Promise<string | null>;
   readJson(request: string): Promise<unknown>;
@@ -45,10 +36,7 @@ interface EnvironmentInput {
 export function createEnvironment(input: EnvironmentInput) {
   // Cached manifest and SSR renderer, initialized on first request
   let cachedManifest: Manifest | null = null;
-  let ssrRenderer:
-    | ((request: Request, options?: RenderOptions) => Promise<string>)
-    | null
-    | undefined;
+  let ssrRenderer: SsrRenderFn | null = null;
 
   async function getCachedRoutesManifest(): Promise<Manifest> {
     if (!cachedManifest) {
@@ -58,39 +46,36 @@ export function createEnvironment(input: EnvironmentInput) {
     return cachedManifest;
   }
 
-  async function getServerRenderer() {
-    if (ssrRenderer === undefined) {
-      try {
-        const manifest = await getCachedRoutesManifest();
-
-        // Check if SSR rendering mode is declared in manifest
-        if (manifest.rendering?.mode === 'ssr') {
-          const serverRenderingModule = (await input.loadModule(
-            manifest.rendering.file
-          )) as ServerRenderModule | null;
-
-          if (serverRenderingModule) {
-            const assets = manifest.assets;
-            // Create renderer that passes assets to `getStaticContent()`
-            ssrRenderer = async (request: Request, options?: RenderOptions) => {
-              const url = new URL(request.url);
-              const location = new URL(url.pathname + url.search, url.origin);
-              return serverRenderingModule.getStaticContent(location, {
-                loader: options?.loader,
-                request,
-                assets,
-              });
-            };
-          } else {
-            ssrRenderer = null;
-          }
-        } else {
-          ssrRenderer = null;
-        }
-      } catch {
-        ssrRenderer = null; // Module doesn't exist, use SSG fallback
-      }
+  async function getServerRenderer(): Promise<SsrRenderFn | null> {
+    if (ssrRenderer) {
+      return ssrRenderer;
     }
+
+    const manifest = await getCachedRoutesManifest();
+    if (manifest.rendering?.mode !== 'ssr') {
+      return null;
+    }
+
+    // If `manifest.rendering.mode === 'ssr'`, we always expect the SSR rendering module to be
+    // available
+    const ssrModule = (await input.loadModule(
+      manifest.rendering.file
+    )) as ServerRenderModule | null;
+
+    if (!ssrModule) {
+      throw new Error(`SSR module not found at: ${manifest.rendering.file}`);
+    }
+
+    const assets = manifest.assets;
+    ssrRenderer = async (request, options) => {
+      const url = new URL(request.url);
+      const location = new URL(url.pathname + url.search, url.origin);
+      return ssrModule.getStaticContent(location, {
+        loader: options?.loader,
+        request,
+        assets,
+      });
+    };
     return ssrRenderer;
   }
 

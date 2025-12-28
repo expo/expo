@@ -1,9 +1,4 @@
 import type { Manifest, MiddlewareInfo, Route } from '../../manifest';
-export interface RenderOptions {
-    loader?: {
-        data: unknown;
-    };
-}
 interface EnvironmentInput {
     readText(request: string): Promise<string | null>;
     readJson(request: string): Promise<unknown>;
