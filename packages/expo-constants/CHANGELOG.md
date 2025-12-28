@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - [Android] Removed unused native dependencies. ([#39763](https://github.com/expo/expo/pull/39763) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Removed references to legacy native modules API.
 
 ## 18.0.11 - 2025-12-05
 

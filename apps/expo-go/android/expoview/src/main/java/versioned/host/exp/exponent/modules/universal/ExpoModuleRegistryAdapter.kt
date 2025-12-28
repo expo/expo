@@ -5,6 +5,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.RegistryLifecycleListener
+import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.services.AppDirectoriesService
 import expo.modules.kotlin.services.FilePermissionService
@@ -40,15 +41,6 @@ open class ExpoModuleRegistryAdapter(
 
     moduleRegistry.registerInternalModule(SharedCookiesDataSourceFactoryProvider())
 
-    // Overriding expo-constants/ConstantsService -- binding provides manifest and other expo-related constants
-    moduleRegistry.registerInternalModule(
-      ConstantsBinding(
-        scopedContext,
-        experienceProperties,
-        manifest
-      )
-    )
-
     // Overriding expo-notifications classes
     moduleRegistry.registerInternalModule(
       ScopedNotificationsChannelsProvider(
@@ -81,6 +73,14 @@ open class ExpoModuleRegistryAdapter(
       with(appContext.services) {
         register(FilePermissionService::class.java, ScopedFilePermissionService(scopedContext))
         register(AppDirectoriesService::class.java, AppDirectoriesService(scopedContext))
+        register(
+          ConstantsInterface::class.java,
+          ConstantsBinding(
+            scopedContext,
+            experienceProperties,
+            manifest
+          )
+        )
       }
 
       with(appContext.registry) {
