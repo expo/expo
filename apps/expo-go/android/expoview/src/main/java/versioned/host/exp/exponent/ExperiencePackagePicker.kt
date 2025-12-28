@@ -31,7 +31,7 @@ import expo.modules.font.FontUtilsModule
 import expo.modules.gl.GLModule
 import expo.modules.haptics.HapticsModule
 import expo.modules.image.ExpoImageModule
-import expo.modules.imageloader.ImageLoaderPackage
+import expo.modules.imageloader.ImageLoaderService
 import expo.modules.imagemanipulator.ImageManipulatorModule
 import expo.modules.imagepicker.ImagePickerModule
 import expo.modules.intentlauncher.IntentLauncherModule
@@ -90,7 +90,6 @@ object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
     ExpoLinkingPackage(),
-    ImageLoaderPackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
     SplashScreenPackage(),
@@ -196,4 +195,10 @@ object ExperiencePackagePicker : ModulesProvider {
     WebBrowserModule::class.java to null,
     BrightnessModule::class.java to null
   )
+
+  override fun getServices(): List<Class<out Service>> {
+    return listOf(
+      ImageLoaderService::class.java
+    )
+  }
 }

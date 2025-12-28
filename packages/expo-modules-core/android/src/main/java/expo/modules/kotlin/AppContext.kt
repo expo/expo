@@ -15,7 +15,6 @@ import com.facebook.react.uimanager.common.UIManagerType
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.activityresult.ActivityResultsManager
 import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
@@ -202,12 +201,6 @@ class AppContext(
    * Provides access to the permissions manager from the legacy module registry
    */
   val permissions: Permissions?
-    get() = legacyModule()
-
-  /**
-   * Provides access to the image loader from the legacy module registry
-   */
-  val imageLoader: ImageLoaderInterface?
     get() = legacyModule()
 
   /**
