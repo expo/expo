@@ -12,7 +12,6 @@ const server :Workerd.Worker = (
     (name = "worker", esModule = embed "workerd.js"),
     (name = "_expo/server/render.js", commonJsModule = embed "_expo/server/render.js"),
     (name = "_expo/routes.json", text = embed "_expo/routes.json"),
-    (name = "_expo/assets.json", text = embed "_expo/assets.json"),
   ],
   bindings = [
     (name = "EXPO_PUBLIC_TEST_VALUE", text = "foobar"),

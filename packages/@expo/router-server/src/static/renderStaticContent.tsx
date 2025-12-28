@@ -34,6 +34,7 @@ export type GetStaticContentOptions = {
   loader?: {
     data?: any;
   };
+  request?: Request;
   /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
   assets?: {
     css: string[];

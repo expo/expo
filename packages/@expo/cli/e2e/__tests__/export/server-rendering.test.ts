@@ -60,14 +60,31 @@ describe('exports server', () => {
     it('has expected files', async () => {
       const files = findProjectFiles(path.join(server.outputDir, 'server'));
 
-      // In SSR mode, no HTML files are pre-rendered - they're rendered at request time
+      // In SSR mode, no HTML files are pre-rendered, they're rendered at request time
       const serverHtmlFiles = files.filter((f) => f.endsWith('.html'));
       expect(serverHtmlFiles.length).toEqual(0);
 
       // SSR-specific files SHOULD exist
       expect(files).toContain('_expo/server/render.js');
-      expect(files).toContain('_expo/assets.json');
       expect(files).toContain('_expo/routes.json');
+
+      // Rendering and assets config should be embedded in the routes manifest
+      const manifest = JSON.parse(
+        fs.readFileSync(path.join(server.outputDir, 'server/_expo/routes.json'), 'utf8')
+      ) as RoutesManifest<string>;
+
+      // Assets should be included
+      expect(manifest.assets).toHaveProperty('js');
+      expect(manifest.assets).toHaveProperty('css');
+      expect(manifest.assets?.js).toEqual(
+        expect.arrayContaining([expect.stringMatching(/_expo\/static\/js\/web\/entry-.*\.js/)])
+      );
+
+      // Rendering configuration
+      expect(manifest.rendering).toEqual({
+        mode: 'ssr',
+        file: '_expo/server/render.js',
+      });
     });
 
     it('routes manifest excludes routes created by `generateStaticParams()`', async () => {

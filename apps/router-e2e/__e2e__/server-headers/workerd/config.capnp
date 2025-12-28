@@ -14,7 +14,6 @@ const server :Workerd.Worker = (
     (name = "_expo/server/render.js", commonJsModule = embed "_expo/server/render.js"),
     (name = "_expo/functions/api+api.js", commonJsModule = embed "_expo/functions/api+api.js"),
     (name = "_expo/routes.json", text = embed "_expo/routes.json"),
-    (name = "_expo/assets.json", text = embed "_expo/assets.json"),
   ],
   compatibilityDate = "2025-05-05",
   compatibilityFlags = [

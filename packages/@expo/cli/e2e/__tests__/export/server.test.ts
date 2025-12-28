@@ -1,5 +1,6 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
+import type { RoutesManifest } from 'expo-server/private';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -382,16 +383,23 @@ describe('server-output', () => {
 
         // SSR-specific files
         expect(files).toContain('_expo/server/render.js');
-        expect(files).toContain('_expo/assets.json');
         expect(files).toContain('_expo/routes.json');
       });
 
       // Ensure the `/server/_expo/routes.json` contains the right file paths and named regexes.
       // This test is created to avoid and detect regressions on Windows
       it('has expected routes manifest entries', async () => {
-        expect(
-          await JsonFile.readAsync(path.join(server.outputDir, 'server/_expo/routes.json'))
-        ).toMatchSnapshot();
+        const manifest = (await JsonFile.readAsync(
+          path.join(server.outputDir, 'server/_expo/routes.json')
+        )) as unknown as RoutesManifest<string>;
+
+        // HACK(@hassankhan): Bundle hashes differ locally vs on CI, so we're replacing them with
+        // a constant. Ideally this test would do proper assertions instead of a snapshot though.
+        manifest.assets!.js = manifest.assets!.js.map((asset) =>
+          asset.replace(/entry-(.*)\.js$/, 'entry-[HASH].js')
+        );
+
+        expect(manifest).toMatchSnapshot();
       });
     });
   });
