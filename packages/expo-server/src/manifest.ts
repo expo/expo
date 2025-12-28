@@ -106,13 +106,3 @@ export interface GetStaticContentOptions {
   request?: Request;
   assets?: AssetInfo;
 }
-
-/**
- * The SSR render module exported from `_expo/server/render.js`.
- *
- * {@link import('@expo/router-server/src/static/renderStaticContent')}
- */
-export interface ServerRenderModule {
-  /** {@link import('@expo/router-server/src/static/renderStaticContent').getStaticContent} */
-  getStaticContent(location: URL, options?: GetStaticContentOptions): Promise<string>;
-}
