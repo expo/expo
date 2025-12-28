@@ -26,6 +26,14 @@ export const BlurScreens = [
       return optionalRequire(() => require('./BlurViewCompatScreen'));
     },
   },
+  {
+    name: 'BlurView Radius',
+    route: 'blur/radius',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BlurViewRadiusScreen'));
+    },
+  },
 ];
 
 export default function BlurViewScreen() {
