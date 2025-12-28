@@ -118,12 +118,22 @@ class AppContext(
 
       registry.register(modulesProvider)
 
+      registerInlineModulesList()
+
       logger.info("✅ AppContext was initialized")
     }
   }
 
   fun onCreate() = trace("AppContext.onCreate") {
     registry.postOnCreate()
+  }
+
+  private fun registerInlineModulesList() {
+    try {
+      val inlineModulesList = Class.forName("inline.modules.ExpoInlineModulesList").getConstructor()
+        .newInstance() as ModulesProvider
+      registry.register(inlineModulesList)
+    } catch (_: ClassNotFoundException) {}
   }
 
   /**
