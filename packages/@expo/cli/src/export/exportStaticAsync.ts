@@ -319,7 +319,7 @@ export async function exportFromServerAsync(
       files.set(route, contents);
     }
 
-    // Export SSR render module and asset manifest (only for SSR mode)
+    // Export SSR render module and add SSR configuration to routes manifest
     if (isExportingWithSSR) {
       await devServer.exportExpoRouterRenderModuleAsync({
         files,
@@ -334,10 +334,22 @@ export async function exportFromServerAsync(
         .filter((asset) => asset.type === 'js')
         .map((asset) => (baseUrl ? `${baseUrl}/${asset.filename}` : `/${asset.filename}`));
 
-      files.set('_expo/assets.json', {
-        contents: JSON.stringify({ css: cssAssets, js: jsAssets }),
-        targetDomain: 'server',
-      });
+      // Add assets and rendering config to the routes manifest
+      const routesJsonEntry = files.get('_expo/routes.json');
+      if (routesJsonEntry) {
+        // NOTE(@hassankhan): We should ideally persist the manifest to `files` only once instead of
+        // modifying it afterwards. We'll need to refactor how `exportApiRoutesAsync()` works.
+        const manifest = JSON.parse(routesJsonEntry.contents as string);
+        manifest.assets = { css: cssAssets, js: jsAssets };
+        manifest.rendering = {
+          mode: 'ssr',
+          file: '_expo/server/render.js',
+        };
+        files.set('_expo/routes.json', {
+          ...routesJsonEntry,
+          contents: JSON.stringify(manifest, null, 2),
+        });
+      }
     }
   } else {
     warnPossibleInvalidExportType(appDir);

@@ -4,10 +4,6 @@ export interface RenderOptions {
         data: unknown;
     };
 }
-export interface AssetManifest {
-    js: string[];
-    css: string[];
-}
 interface EnvironmentInput {
     readText(request: string): Promise<string | null>;
     readJson(request: string): Promise<unknown>;

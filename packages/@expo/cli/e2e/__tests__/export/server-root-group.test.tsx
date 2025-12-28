@@ -74,8 +74,6 @@ describe('server-root-group', () => {
 
     // Has routes.json
     expect(files).toContain('_expo/server/render.js');
-    expect(files).toContain('_expo/assets.json');
     expect(files).toContain('_expo/routes.json');
-
   });
 });

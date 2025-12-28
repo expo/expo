@@ -1,4 +1,10 @@
-import type { Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
+import type {
+  Manifest,
+  MiddlewareInfo,
+  RawManifest,
+  Route,
+  ServerRenderModule,
+} from '../../manifest';
 
 function initManifestRegExp(manifest: RawManifest): Manifest {
   return {
@@ -30,11 +36,6 @@ export interface RenderOptions {
   loader?: { data: unknown };
 }
 
-export interface AssetManifest {
-  js: string[];
-  css: string[];
-}
-
 interface EnvironmentInput {
   readText(request: string): Promise<string | null>;
   readJson(request: string): Promise<unknown>;
@@ -42,31 +43,47 @@ interface EnvironmentInput {
 }
 
 export function createEnvironment(input: EnvironmentInput) {
-  // Lazy SSR renderer detection, determined on first request
-  // NOTE(@hassankhan): Maybe we could declare this in `routes.json` so we know ahead of time if a
-  // server should be in SSG/SSR mode
+  // Cached manifest and SSR renderer, initialized on first request
+  let cachedManifest: Manifest | null = null;
   let ssrRenderer:
     | ((request: Request, options?: RenderOptions) => Promise<string>)
     | null
     | undefined;
 
+  async function getCachedRoutesManifest(): Promise<Manifest> {
+    if (!cachedManifest) {
+      const json = await input.readJson('_expo/routes.json');
+      cachedManifest = initManifestRegExp(json as RawManifest);
+    }
+    return cachedManifest;
+  }
+
   async function getServerRenderer() {
     if (ssrRenderer === undefined) {
       try {
-        const mod = await input.loadModule('_expo/server/render.js');
-        const assets = (await input.readJson('_expo/assets.json')) as AssetManifest | null;
+        const manifest = await getCachedRoutesManifest();
 
-        if (mod && typeof (mod as any).getStaticContent === 'function' && assets) {
-          // Create renderer that passes assets to getStaticContent
-          ssrRenderer = async (request: Request, options?: RenderOptions) => {
-            const url = new URL(request.url);
-            const location = new URL(url.pathname + url.search, url.origin);
-            return (mod as any).getStaticContent(location, {
-              loader: options?.loader,
-              request,
-              assets,
-            });
-          };
+        // Check if SSR rendering mode is declared in manifest
+        if (manifest.rendering?.mode === 'ssr') {
+          const serverRenderingModule = (await input.loadModule(
+            manifest.rendering.file
+          )) as ServerRenderModule | null;
+
+          if (serverRenderingModule) {
+            const assets = manifest.assets;
+            // Create renderer that passes assets to `getStaticContent()`
+            ssrRenderer = async (request: Request, options?: RenderOptions) => {
+              const url = new URL(request.url);
+              const location = new URL(url.pathname + url.search, url.origin);
+              return serverRenderingModule.getStaticContent(location, {
+                loader: options?.loader,
+                request,
+                assets,
+              });
+            };
+          } else {
+            ssrRenderer = null;
+          }
         } else {
           ssrRenderer = null;
         }
@@ -79,8 +96,7 @@ export function createEnvironment(input: EnvironmentInput) {
 
   return {
     async getRoutesManifest(): Promise<Manifest> {
-      const json = await input.readJson('_expo/routes.json');
-      return initManifestRegExp(json as RawManifest);
+      return getCachedRoutesManifest();
     },
 
     async getHtml(request: Request, route: Route): Promise<string | Response | null> {

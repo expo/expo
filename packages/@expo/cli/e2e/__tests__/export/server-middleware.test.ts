@@ -126,7 +126,6 @@ describe('exports middleware', () => {
 
       // SSR-specific files should exist
       expect(files).toContain('_expo/server/render.js');
-      expect(files).toContain('_expo/assets.json');
       expect(files).toContain('_expo/routes.json');
 
       // Middleware should be bundled and referenced in routes.json

@@ -92,6 +92,12 @@ exports[`server-output express requests exported files has expected routes manif
       },
     },
   ],
+  "assets": {
+    "css": [],
+    "js": [
+      "/_expo/static/js/web/entry-[HASH].js",
+    ],
+  },
   "htmlRoutes": [
     {
       "file": "./index.tsx",
@@ -164,6 +170,10 @@ exports[`server-output express requests exported files has expected routes manif
     },
   ],
   "redirects": [],
+  "rendering": {
+    "file": "_expo/server/render.js",
+    "mode": "ssr",
+  },
   "rewrites": [],
 }
 `;
@@ -260,6 +270,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       },
     },
   ],
+  "assets": {
+    "css": [],
+    "js": [
+      "/_expo/static/js/web/entry-[HASH].js",
+    ],
+  },
   "htmlRoutes": [
     {
       "file": "./index.tsx",
@@ -332,6 +348,10 @@ exports[`server-output workerd requests exported files has expected routes manif
     },
   ],
   "redirects": [],
+  "rendering": {
+    "file": "_expo/server/render.js",
+    "mode": "ssr",
+  },
   "rewrites": [],
 }
 `;

@@ -75,7 +75,6 @@ describe('server rewrites', () => {
 
     // SSR-specific files SHOULD exist
     expect(files).toContain('_expo/server/render.js');
-    expect(files).toContain('_expo/assets.json');
     expect(files).toContain('_expo/routes.json');
   });
 });
