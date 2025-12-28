@@ -130,6 +130,8 @@ export async function loadMetroConfigAsync(
   // Force-override the reporter
   config = {
     ...config,
+    resetCache: !!options.resetCache,
+    maxWorkers: options.maxWorkers ?? config.maxWorkers,
     watchFolders: !config.watchFolders.includes(config.projectRoot)
       ? [config.projectRoot, ...config.watchFolders]
       : config.watchFolders,
