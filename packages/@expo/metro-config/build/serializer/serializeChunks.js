@@ -358,6 +358,8 @@ class Chunk {
                     })
                         .flat()),
                 ].filter((value) => typeof value === 'string'),
+                // RSC package manifest from the serializer plugin (specifier -> absolutePath)
+                rscPackageManifest: this.options.rscPackageManifest,
             },
             source: jsCode.code,
         };

@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix RSC output keys to use `lastIndexOf('/node_modules/')` for pnpm compatibility. ([#41823](https://github.com/expo/expo/pull/41823) by [@ceo](https://github.com/ceo))
 - Fix output typings to remove unreachable transitive dependencies from them ([#41676](https://github.com/expo/expo/pull/41676) by [@kitten](https://github.com/kitten))
 - Fix `minifierPath` resolution for cache key generation for strict isolated installations ([#41686](https://github.com/expo/expo/pull/41686) by [@kitten](https://github.com/kitten))
 

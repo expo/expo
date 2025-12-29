@@ -9,10 +9,9 @@
  */
 
 import type { ConfigAPI, types as t, NodePath, PluginObj, PluginPass } from '@babel/core';
-import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
 
-import { createAddNamedImportOnce, getPossibleProjectRoot, toPosixPath } from './common';
+import { createAddNamedImportOnce } from './common';
 
 const debug = require('debug')('expo:babel:server-actions');
 
@@ -45,7 +44,6 @@ export function reactServerActionsPlugin(
     return (_buildLazyWrapperHelper() as t.ExpressionStatement).expression;
   };
 
-  const possibleProjectRoot = api.caller(getPossibleProjectRoot);
   let addReactImport: () => t.Identifier;
   let wrapBoundArgs: (expr: t.Expression) => t.Expression;
   let getActionModuleId: () => string;
@@ -237,8 +235,6 @@ export function reactServerActionsPlugin(
   return {
     name: 'expo-server-actions',
     pre(file) {
-      const projectRoot = possibleProjectRoot || file.opts.root || '';
-
       if (!file.code.includes('use server')) {
         file.path.skip();
         return;
@@ -259,8 +255,8 @@ export function reactServerActionsPlugin(
       };
 
       getActionModuleId = once(() => {
-        // Create relative file path hash.
-        return './' + toPosixPath(getRelativePath(projectRoot, file.opts.filename!));
+        // Use file:// URL as outputKey placeholder - serializer will replace with specifier from dependency graph
+        return url.pathToFileURL(file.opts.filename!).href;
       });
 
       const defineBoundArgsWrapperHelper = once(() => {

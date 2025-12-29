@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactServerActionsPlugin = reactServerActionsPlugin;
-const node_path_1 = require("node:path");
 const node_url_1 = __importDefault(require("node:url"));
 const common_1 = require("./common");
 const debug = require('debug')('expo:babel:server-actions');
@@ -33,7 +32,6 @@ function reactServerActionsPlugin(api) {
     const buildLazyWrapperHelper = () => {
         return _buildLazyWrapperHelper().expression;
     };
-    const possibleProjectRoot = api.caller(common_1.getPossibleProjectRoot);
     let addReactImport;
     let wrapBoundArgs;
     let getActionModuleId;
@@ -154,7 +152,6 @@ function reactServerActionsPlugin(api) {
     return {
         name: 'expo-server-actions',
         pre(file) {
-            const projectRoot = possibleProjectRoot || file.opts.root || '';
             if (!file.code.includes('use server')) {
                 file.path.skip();
                 return;
@@ -167,8 +164,8 @@ function reactServerActionsPlugin(api) {
                 return addNamedImportOnce(file.path, 'registerServerReference', 'react-server-dom-webpack/server');
             };
             getActionModuleId = once(() => {
-                // Create relative file path hash.
-                return './' + (0, common_1.toPosixPath)((0, node_path_1.relative)(projectRoot, file.opts.filename));
+                // Use file:// URL as outputKey placeholder - serializer will replace with specifier from dependency graph
+                return node_url_1.default.pathToFileURL(file.opts.filename).href;
             });
             const defineBoundArgsWrapperHelper = once(() => {
                 const id = this.file.path.scope.generateUidIdentifier('wrapBoundArgs');

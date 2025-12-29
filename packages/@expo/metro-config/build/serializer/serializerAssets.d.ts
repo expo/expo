@@ -12,5 +12,6 @@ export type SerialAsset = {
         reactClientReferences?: string[];
         expoDomComponentReferences?: string[];
         requires?: string[];
+        rscPackageManifest?: Record<string, string>;
     };
 };
