@@ -143,7 +143,33 @@ export const TableOfContents = forwardRef<
         : false;
 
     if (isNearBottom && headings.length > 0) {
-      nextActive = headings.at(-1) ?? nextActive;
+      const viewportTop = contentScrollPosition;
+      const viewportBottom = contentScrollPosition + viewportHeight;
+
+      let bestHeading: Heading | null = null;
+      let bestVisibleArea = 0;
+
+      for (let i = 0; i < headings.length; i++) {
+        const heading = headings[i];
+        if (!heading.ref?.current) continue;
+
+        const sectionStart = heading.ref.current.offsetTop;
+        const nextHeading = headings[i + 1];
+        const sectionEnd = nextHeading?.ref?.current?.offsetTop ?? scrollHeight;
+
+        const visibleStart = Math.max(sectionStart, viewportTop);
+        const visibleEnd = Math.min(sectionEnd, viewportBottom);
+        const visibleArea = Math.max(0, visibleEnd - visibleStart);
+
+        if (visibleArea >= bestVisibleArea) {
+          bestVisibleArea = visibleArea;
+          bestHeading = heading;
+        }
+      }
+
+      if (bestHeading && bestVisibleArea > 0) {
+        nextActive = bestHeading;
+      }
     }
 
     const activeHeading = nextActive ?? headings[0] ?? null;
