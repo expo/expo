@@ -63,10 +63,10 @@ export default function TabLayout() {
     <NativeTabs>
       <NativeTabs.Trigger name="index">
         <Label>Home</Label>
-        <Icon sf="house.fill" drawable="custom_android_drawable" />
+        <Icon sf="house.fill" drawable="android" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
-        <Icon sf="gear" drawable="custom_settings_drawable" />
+        <Icon sf="gear" drawable="settings" />
         <Label>Settings</Label>
       </NativeTabs.Trigger>
     </NativeTabs>
@@ -123,7 +123,7 @@ export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <Icon sf={{ default: 'house', selected: 'house.fill' }} drawable="custom_home_drawable" />
+        <Icon sf={{ default: 'house', selected: 'house.fill' }} drawable="home" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <Icon src={require('../../../assets/setting_icon.png')} />
@@ -155,7 +155,7 @@ export default function TabLayout() {
         light: 'black',
       })}>
       <NativeTabs.Trigger name="index">
-        <Icon sf={{ default: 'house', selected: 'house.fill' }} drawable="custom_home_drawable" />
+        <Icon sf={{ default: 'house', selected: 'house.fill' }} drawable="home" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <Icon
