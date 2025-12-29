@@ -1,5 +1,4 @@
 import ExpoModulesCore
-import RNScreens
 import UIKit
 
 class RouterToolbarItemView: RouterViewWithLogger {
@@ -27,7 +26,6 @@ class RouterToolbarItemView: RouterViewWithLogger {
   @ReactiveProp var routerAccessibilityLabel: String?
   @ReactiveProp var routerAccessibilityHint: String?
   @ReactiveProp var disabled: Bool = false
-  @ReactiveProp var searchBar: RNSSearchBar?
 
   var host: RouterToolbarHostView?
 
@@ -54,27 +52,22 @@ class RouterToolbarItemView: RouterViewWithLogger {
         // Hide the item if no search bar is provided
         item.isHidden = true
       }
-      guard let searchBar = searchBar, let searchController = searchBar.controller else {
-        logger?.warn(
-          "[expo-router] Toolbar.SearchBar requires a child SearchBar component. This is most likely a bug in expo-router."
-        )
-        return item
-      }
-      guard #available(iOS 26.0, *), let controller = self.host?.findViewController() else {
+      guard #available(iOS 26.0, *), let controller = self.host?.findViewController(),
+        let navController = controller.navigationController
+      else {
         // Check for iOS 26, should already be guarded by the JS side, so this warning will only fire if controller is nil
         logger?.warn(
           "[expo-router] navigationItem.searchBarPlacementBarButtonItem not available. This is most likely a bug in expo-router."
         )
         return item
       }
-      guard controller.navigationItem.searchController == nil else {
+      guard navController.isNavigationBarHidden == false else {
         logger?.warn(
-          "[expo-router] Only one SearchBar can be used. When using Toolbar.SearchBar remove searchBarOptions from header options and make sure only single Toolbar.SearchBar is used."
+          "[expo-router] Toolbar.SearchBar can only be used when stack header is shown."
         )
         return item
       }
 
-      controller.navigationItem.searchController = searchController
       item = controller.navigationItem.searchBarPlacementBarButtonItem
     } else {
       if let title {
@@ -152,15 +145,7 @@ class RouterToolbarItemView: RouterViewWithLogger {
   }
 
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
-    if let rnsSearchBar = childComponentView as? RNSSearchBar {
-      guard self.searchBar == nil else {
-        logger?.warn(
-          "[expo-router] RouterToolbarItemView can only have one search bar. This is most likely a bug in expo-router."
-        )
-        return
-      }
-      searchBar = rnsSearchBar
-    } else if customView != nil {
+    guard customView == nil else {
       logger?.warn(
         "[expo-router] RouterToolbarItemView can only have one child view. This is most likely a bug in expo-router."
       )
@@ -170,14 +155,7 @@ class RouterToolbarItemView: RouterViewWithLogger {
   }
 
   override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
-    if let rnsSearchBar = childComponentView as? RNSSearchBar, searchBar == rnsSearchBar {
-      rnsSearchBar.removeFromSuperview()
-      searchBar = nil
-      if let controller = self.host?.findViewController(),
-        controller.navigationItem.searchController == rnsSearchBar.controller {
-        controller.navigationItem.searchController = nil
-      }
-    } else if customView == childComponentView {
+    if customView == childComponentView {
       childComponentView.removeFromSuperview()
       customView = nil
     }

@@ -41,6 +41,7 @@
 - [iOS] enable zoom transition by default ([#41891](https://github.com/expo/expo/pull/41891) by [@Ubax](https://github.com/Ubax))
 - Improve SSR support ([#41477](https://github.com/expo/expo/pull/41477) by [@hassankhan](https://github.com/hassankhan))
 - [iOS] expose image prop from Toolbar.Button ([#41882](https://github.com/expo/expo/pull/41882) by [@Ubax](https://github.com/Ubax))
+- [iOS] add Toolbar.SearchBar ([#41863](https://github.com/expo/expo/pull/41863) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

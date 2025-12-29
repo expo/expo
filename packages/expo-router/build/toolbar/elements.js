@@ -1,10 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToolbarHost = exports.ToolbarView = exports.ToolbarSearchBar = exports.ToolbarSpacer = exports.ToolbarButton = exports.ToolbarMenuAction = exports.ToolbarMenu = void 0;
 const react_1 = require("react");
 const react_native_1 = require("react-native");
-const react_native_screens_1 = require("react-native-screens");
 const native_1 = require("./native");
+const StackClient_1 = __importDefault(require("../layouts/StackClient"));
 const InternalLinkPreviewContext_1 = require("../link/InternalLinkPreviewContext");
 const elements_1 = require("../link/elements");
 const native_2 = require("../link/preview/native");
@@ -115,7 +118,9 @@ exports.ToolbarSpacer = ToolbarSpacer;
  * A search bar component for the toolbar.
  * It should only be used as a child of `Toolbar`.
  *
- * > **Note**: Once Toolbar.SearchBar is used, the header search bar cannot be used for that screen.
+ * > **Note**: The stack header must be visible in order to add a search bar.
+ * > Once `Toolbar.SearchBar` is used, the search bar will no longer be available
+ * > in this screen’s header.
  *
  * @example
  * ```tsx
@@ -126,7 +131,7 @@ exports.ToolbarSpacer = ToolbarSpacer;
  * </Toolbar>
  * ```
  *
- * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uinavigationitem/searchbarplacementbarbuttonitem) for more information.
+ * @see [React Native Screens SearchBarProps](https://github.com/software-mansion/react-native-screens/blob/main/src/types.tsx#L822) for more information about available props.
  *
  * @platform ios 26+
  */
@@ -142,7 +147,7 @@ const ToolbarSearchBar = ({ hidesSharedBackground, hidden, sharesBackground, ...
         ? 'integrated'
         : searchBarProps.placement;
     return (<native_1.RouterToolbarItem hidesSharedBackground={hidesSharedBackground} identifier={id} sharesBackground={sharesBackground} type="searchBar">
-      <react_native_screens_1.SearchBar {...searchBarProps} placement={placement}/>
+      <StackClient_1.default.Screen options={{ headerSearchBarOptions: { ...searchBarProps, placement } }}/>
     </native_1.RouterToolbarItem>);
 };
 exports.ToolbarSearchBar = ToolbarSearchBar;
