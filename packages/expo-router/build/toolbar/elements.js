@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ToolbarHost = exports.ToolbarView = exports.ToolbarSpacer = exports.ToolbarButton = exports.ToolbarMenuAction = exports.ToolbarMenu = void 0;
+exports.ToolbarHost = exports.ToolbarView = exports.ToolbarSearchBar = exports.ToolbarSpacer = exports.ToolbarButton = exports.ToolbarMenuAction = exports.ToolbarMenu = void 0;
 const react_1 = require("react");
 const react_native_1 = require("react-native");
+const react_native_screens_1 = require("react-native-screens");
 const native_1 = require("./native");
 const InternalLinkPreviewContext_1 = require("../link/InternalLinkPreviewContext");
 const elements_1 = require("../link/elements");
@@ -110,6 +111,41 @@ const ToolbarSpacer = (props) => {
     return (<native_1.RouterToolbarItem hidesSharedBackground={props.hidesSharedBackground} hidden={props.hidden} identifier={id} sharesBackground={props.sharesBackground} type={props.width ? 'fixedSpacer' : 'fluidSpacer'} width={props.width}/>);
 };
 exports.ToolbarSpacer = ToolbarSpacer;
+/**
+ * A search bar component for the toolbar.
+ * It should only be used as a child of `Toolbar`.
+ *
+ * > **Note**: Once Toolbar.SearchBar is used, the header search bar cannot be used for that screen.
+ *
+ * @example
+ * ```tsx
+ * <Toolbar>
+ *   <Toolbar.SearchBar />
+ *   <Toolbar.Spacer />
+ *   <Toolbar.Button icon="mic" />
+ * </Toolbar>
+ * ```
+ *
+ * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uinavigationitem/searchbarplacementbarbuttonitem) for more information.
+ *
+ * @platform ios 26+
+ */
+const ToolbarSearchBar = ({ hidesSharedBackground, hidden, sharesBackground, ...searchBarProps }) => {
+    const id = (0, react_1.useId)();
+    if (process.env.EXPO_OS !== 'ios' || parseInt(String(react_native_1.Platform.Version).split('.')[0], 10) < 26) {
+        return null;
+    }
+    if (hidden) {
+        return null;
+    }
+    const placement = searchBarProps.placement !== 'integrated' && searchBarProps.placement !== 'integratedButton'
+        ? 'integrated'
+        : searchBarProps.placement;
+    return (<native_1.RouterToolbarItem hidesSharedBackground={hidesSharedBackground} identifier={id} sharesBackground={sharesBackground} type="searchBar">
+      <react_native_screens_1.SearchBar {...searchBarProps} placement={placement}/>
+    </native_1.RouterToolbarItem>);
+};
+exports.ToolbarSearchBar = ToolbarSearchBar;
 /**
  * A custom view component for the toolbar that can contain any React elements.
  * Useful for embedding custom components.

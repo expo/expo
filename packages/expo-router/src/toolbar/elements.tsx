@@ -1,6 +1,7 @@
 import type { ImageRef } from 'expo-image';
 import { Children, isValidElement, useId, type ReactNode } from 'react';
-import { StyleSheet, type ColorValue, type StyleProp } from 'react-native';
+import { Platform, StyleSheet, type ColorValue, type StyleProp } from 'react-native';
+import { SearchBar, type SearchBarProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { RouterToolbarHost, RouterToolbarItem } from './native';
@@ -423,6 +424,79 @@ export const ToolbarSpacer = (props: ToolbarSpacerProps) => {
       type={props.width ? 'fixedSpacer' : 'fluidSpacer'}
       width={props.width}
     />
+  );
+};
+
+export interface ToolbarSearchBarProps extends SearchBarProps {
+  /**
+   * Whether to hide the shared background when `sharesBackground` is enabled.
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/hidessharedbackground) for more information.
+   *
+   * @platform iOS 26+
+   */
+  hidesSharedBackground?: boolean;
+  /**
+   * Whether the search bar should be hidden.
+   *
+   * @default false
+   */
+  hidden?: boolean;
+  /**
+   * Whether the search bar shares the background with adjacent toolbar items.
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/sharesbackground) for more information.
+   *
+   * @platform iOS 26+
+   * @default false
+   */
+  sharesBackground?: boolean;
+}
+
+/**
+ * A search bar component for the toolbar.
+ * It should only be used as a child of `Toolbar`.
+ *
+ * > **Note**: Once Toolbar.SearchBar is used, the header search bar cannot be used for that screen.
+ *
+ * @example
+ * ```tsx
+ * <Toolbar>
+ *   <Toolbar.SearchBar />
+ *   <Toolbar.Spacer />
+ *   <Toolbar.Button icon="mic" />
+ * </Toolbar>
+ * ```
+ *
+ * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uinavigationitem/searchbarplacementbarbuttonitem) for more information.
+ *
+ * @platform ios 26+
+ */
+export const ToolbarSearchBar = ({
+  hidesSharedBackground,
+  hidden,
+  sharesBackground,
+  ...searchBarProps
+}: ToolbarSearchBarProps) => {
+  const id = useId();
+  if (process.env.EXPO_OS !== 'ios' || parseInt(String(Platform.Version).split('.')[0], 10) < 26) {
+    return null;
+  }
+  if (hidden) {
+    return null;
+  }
+  const placement =
+    searchBarProps.placement !== 'integrated' && searchBarProps.placement !== 'integratedButton'
+      ? 'integrated'
+      : searchBarProps.placement;
+  return (
+    <RouterToolbarItem
+      hidesSharedBackground={hidesSharedBackground}
+      identifier={id}
+      sharesBackground={sharesBackground}
+      type="searchBar">
+      <SearchBar {...searchBarProps} placement={placement} />
+    </RouterToolbarItem>
   );
 };
 

@@ -25,7 +25,7 @@ export interface RouterToolbarItemProps {
      * ```
      */
     image?: ImageRef | null;
-    type?: 'normal' | 'fixedSpacer' | 'fluidSpacer';
+    type?: 'normal' | 'fixedSpacer' | 'fluidSpacer' | 'searchBar';
     tintColor?: ColorValue;
     hidesSharedBackground?: boolean;
     sharesBackground?: boolean;
