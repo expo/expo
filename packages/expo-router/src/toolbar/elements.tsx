@@ -15,6 +15,12 @@ export interface ToolbarMenuProps {
   accessibilityHint?: string;
   children?: React.ReactNode;
   /**
+   * An optional subtitle for the menu. Does not appear on `inline` menus.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/subtitle) for more information.
+   */
+  subtitle?: string;
+  /**
    * If `true`, the menu item will be displayed as destructive.
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/destructive) for more information.
@@ -113,6 +119,7 @@ export const ToolbarMenu: React.FC<ToolbarMenuProps> = ({
   palette,
   inline,
   hidden,
+  subtitle,
   title,
   destructive,
   children,
@@ -142,6 +149,7 @@ export const ToolbarMenu: React.FC<ToolbarMenuProps> = ({
       hidden={hidden}
       icon={sf}
       destructive={destructive}
+      subtitle={subtitle}
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
       displayAsPalette={palette}

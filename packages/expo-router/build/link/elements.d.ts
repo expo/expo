@@ -75,6 +75,12 @@ export interface LinkMenuProps {
      */
     title?: string;
     /**
+     * An optional subtitle for the submenu. Does not appear on `inline` menus.
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/subtitle) for more information.
+     */
+    subtitle?: string;
+    /**
      * Optional SF Symbol displayed alongside the menu item.
      */
     icon?: SFSymbol;
