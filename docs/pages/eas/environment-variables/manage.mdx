@@ -13,7 +13,7 @@ The following sections cover how to create, scope, and consume environment varia
 ## Create environment variables
 
 - [**Choose an environment or multiple environments**](/eas/environment-variables/#available-environments): `development`, `preview`, and `production` are available by default. A variable can be reused across them or customized per environment.
-- [**Choose scope**](/eas/environment-variables/#scope): Project-wide variables apply to one project. Account-wide variables can be reused across projects and are merged with project variables at runtime.
+- [**Choose scope**](/eas/environment-variables/#scope): Project-wide variables apply to one project. Account-wide variables can be reused across projects and are merged with project variables at build time.
 - [**Choose visibility**](/eas/environment-variables/#visibility-settings-for-environment-variables): Use **secret** for values that should never leave EAS servers, **sensitive** for values that may be revealed locally, and **plain text** for non-sensitive values.
 
 ### Create variables in the dashboard
@@ -91,7 +91,7 @@ In above example, `EXPO_PUBLIC_API_URL` is used to dynamically set the API URL f
 
 ### Build-time and app config
 
-Other variables that are without `EXPO_PUBLIC` prefix, can be used during [app config](/workflow/configuration) resolution to configure your app's behavior. For example, the `APP_VARIANT` variable is used to determine the app name, package name, and bundle identifier for the selected [app variant](/build-reference/variants/):
+Other variables that are without `EXPO_PUBLIC_` prefix, can be used during [app config](/workflow/configuration) resolution to configure your app's behavior. For example, the `APP_VARIANT` variable is used to determine the app name, package name, and bundle identifier for the selected [app variant](/build-reference/variants/):
 
 Use non-prefixed variables in dynamic app config. Keep visibility at least **sensitive** if you need to resolve config locally (plain text and sensitive are readable in EAS CLI; secrets stay on the server).
 
@@ -213,16 +213,16 @@ You can also use the **Export** option in the EAS dashboard to download the file
 
 ## Custom environments
 
-> **important** Creating custom environments is available for [Enterprise and production](/billing/plans/#plans) plans only.
+> **important** Creating custom environments is available for [Enterprise and production](/billing/plans/#plans) plans.
 
-If you project relies on complex workflows and requires the flexibility to create more environments, you can use custom environments.
+The three default environments are sufficient for most use-cases, but if you project relies on complex workflows and requires the flexibility to create more environments, using custom environments may come in handy.
 
 ### Create a custom environment in EAS dashboard
 
 To create a custom environment in EAS dashboard:
 
 - In your project, navigate to the **Project settings** > [**Environment variables**](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) and then click on the **Add Variables** button.
-- Under **Environments**, click the **plus (+) icon** to create a new environment.
+- Under **Environments**, click the **plus (+) icon** to enter a name for a custom environment.
 
 <ContentSpotlight
   alt="Create a custom environment in an EAS project dashboard"
@@ -230,16 +230,18 @@ To create a custom environment in EAS dashboard:
   className="max-w-[600px]"
 />
 
-- After creating the environment, it will be selected under the **Custom environments** section.
-- You can now proceed to create environment variables for this new environment.
+- After creating the environment, it will be pre-selected under the **Custom environments** section.
+- As long as there is at least one environment variable linked to this environment, it will show up as a selectable option for all environment variables for that account or project.
 
 ### Create a custom environment with EAS CLI
 
-Custom environments can be created with EAS CLI using the `eas env:create` command. For example, the command below creates a new custom environment called `staging`:
+To assign an environment variable to a custom environments, use your custom environment name in place of the environment. For example, the command below creates a new variable `EXPO_PUBLIC_API_URL` and assigns it to the custom `staging` environment:
 
-<Terminal cmd={['$ eas env:create --environment staging']} />
-
-The above command creates a new custom environment called `staging` and then prompts you to enter the environment variables for this new environment. The `--environment` flag is used to specify the environment to create.
+<Terminal
+  cmd={[
+    '$ eas env:create --name EXPO_PUBLIC_API_URL --value https://example.app/staging --environment staging --visibility plaintext',
+  ]}
+/>
 
 ### Use a custom environment
 
