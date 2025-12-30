@@ -403,6 +403,7 @@ export const eas = [
     [
       makePage('eas/index.mdx'),
       makePage('eas/json.mdx'),
+      makePage('eas/cli.mdx'),
       makePage('eas/environment-variables.mdx'),
     ],
     {
@@ -564,7 +565,6 @@ export const eas = [
     makePage('distribution/app-size.mdx'),
   ]),
   makeSection('Reference', [
-    makePage('eas/cli.mdx'),
     makePage('eas/webhooks.mdx'),
     makeSection('Expo accounts', [
       makePage('accounts/account-types.mdx'),
