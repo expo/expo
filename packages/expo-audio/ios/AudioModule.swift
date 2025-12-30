@@ -308,6 +308,13 @@ public class AudioModule: Module {
       AsyncFunction("stop") { recorder in
         try checkPermissions()
         recorder.stopRecording()
+
+        // Enables external audio to restart when recording is stopped.
+        do {
+            try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
+        } catch {
+            print("Failed to deactivate audio session from recorder: \(error)")
+        }
       }
 
       Function("getStatus") { recorder -> [String: Any] in
