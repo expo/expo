@@ -76,9 +76,15 @@ The `--environment` flag is used to specify the environment to use for the updat
 
 <Step label="5">
 
-To use the environment variable with EAS Hosting, run the `eas deploy` command with the `--environment` flag specified:
+To use the environment variable with EAS Hosting, run the `eas deploy` command with the `--environment` flag specified. If you need both client and server side environment variables, run the full flow below (client-side variables must be plain text or sensitive, not secret) and see [client-side environment variables](/eas/environment-variables/usage/#client-side-environment-variables) for details information.
 
-<Terminal cmd={['$ eas deploy --environment production']} />
+<Terminal
+  cmd={[
+    '$ eas env:pull --environment production',
+    '$ npx expo export --platform web',
+    '$ eas deploy --environment production',
+  ]}
+/>
 
 The `--environment` flag is used to specify the environment to use for the deploy job. Only the environment variables from the specified environment will be used during the deploy process.
 
@@ -100,6 +106,11 @@ Environment variables can be assigned to multiple environments and have the same
 
 - **Project-wide**: Specific to a single EAS project. You can create, view, and manage them by navigating to the [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) page in your project's dashboard. These environment variables are available in any jobs that run on EAS servers and updates for this project. They can also be pulled locally for development if their visibility setting allows it.
 - **Account-wide**: Available across all projects in your EAS account. You can create, view, and manage them by navigating to the [Environment variables](https://expo.dev/accounts/[account]/settings/environment-variables) page in your account's dashboard. These environment variables are available in jobs that run on EAS servers and updates, together with project-wide variables for a project. You can pull them locally or read outside of EAS servers if their [visibility setting](#visibility-settings-for-environment-variables) allows it.
+
+### Variable types
+
+- **Strings**: Standard key/value pairs that can be used across builds, updates, workflows, and hosting.
+- **Files**: Values uploaded as files (for example, `google-services.json` or a certificate) that are made available to jobs as file paths on the build runner.
 
 ## Visibility settings for environment variables
 
