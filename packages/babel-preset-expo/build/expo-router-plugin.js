@@ -66,23 +66,25 @@ function expoRouterBabelPlugin(api) {
                     return;
                 const keyValue = key.value;
                 // Check each possible env var
-                if (keyValue.startsWith('EXPO_PROJECT_ROOT')) {
-                    path.replaceWith(t.stringLiteral(state.projectRoot));
-                    return;
-                }
-                if (keyValue.startsWith('EXPO_ROUTER_IMPORT_MODE')) {
-                    path.replaceWith(t.stringLiteral(importMode));
-                    return;
+                switch (keyValue) {
+                    case 'EXPO_PROJECT_ROOT':
+                        path.replaceWith(t.stringLiteral(state.projectRoot));
+                        return;
+                    case 'EXPO_ROUTER_IMPORT_MODE':
+                        path.replaceWith(t.stringLiteral(importMode));
+                        return;
+                    default:
+                        break;
                 }
                 // Skip app root transforms in tests (handled by testing-library utils)
                 if (state.isTestEnv)
                     return;
-                if (keyValue.startsWith('EXPO_ROUTER_ABS_APP_ROOT')) {
-                    path.replaceWith(t.stringLiteral(routerAbsoluteRoot));
-                    return;
-                }
-                if (keyValue.startsWith('EXPO_ROUTER_APP_ROOT')) {
-                    path.replaceWith(t.stringLiteral(getExpoRouterAppRoot(state.projectRoot, routerAbsoluteRoot)));
+                switch (keyValue) {
+                    case 'EXPO_ROUTER_ABS_APP_ROOT':
+                        path.replaceWith(t.stringLiteral(routerAbsoluteRoot));
+                        return;
+                    case 'EXPO_ROUTER_APP_ROOT':
+                        path.replaceWith(t.stringLiteral(getExpoRouterAppRoot(state.projectRoot, routerAbsoluteRoot)));
                 }
             },
         },

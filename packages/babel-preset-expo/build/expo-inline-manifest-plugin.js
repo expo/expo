@@ -4,7 +4,7 @@ exports.expoInlineManifestPlugin = expoInlineManifestPlugin;
 const common_1 = require("./common");
 const debug = require('debug')('expo:babel:inline-manifest');
 // Convert expo value to PWA value
-function ensurePWAorientation(orientation) {
+function ensurePWAOrientation(orientation) {
     if (orientation) {
         const webOrientation = orientation.toLowerCase();
         if (webOrientation !== 'default') {
@@ -52,7 +52,7 @@ function applyWebDefaults({ config, appName, webName }) {
     const startUrl = webManifest.startUrl;
     const { scope, crossorigin } = webManifest;
     const barStyle = webManifest.barStyle;
-    const orientation = ensurePWAorientation(webManifest.orientation || appJSON.orientation);
+    const orientation = ensurePWAOrientation(webManifest.orientation || appJSON.orientation);
     /**
      * **Splash screen background color**
      * `https://developers.google.com/web/fundamentals/web-app-manifest/#splash-screen`

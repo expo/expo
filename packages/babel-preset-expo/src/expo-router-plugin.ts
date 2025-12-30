@@ -104,9 +104,6 @@ export function expoRouterBabelPlugin(api: ConfigAPI & typeof import('@babel/cor
             path.replaceWith(
               t.stringLiteral(getExpoRouterAppRoot(state.projectRoot!, routerAbsoluteRoot))
             );
-            return;
-          default:
-            break;
         }
       },
     },

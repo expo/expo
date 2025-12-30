@@ -8,7 +8,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 const TYPEOF_PREFIX = 'typeof ';
-function definePlugin({ types: t }) {
+function definePlugin({ types: t, }) {
     /**
      * Replace a node with a given value. If the replacement results in a BinaryExpression, it will be
      * evaluated. For example, if the result of the replacement is `var x = "production" === "production"`
@@ -34,17 +34,13 @@ function definePlugin({ types: t }) {
     return {
         name: 'expo-define-globals',
         pre() {
-            const opts = this.opts;
-            if (opts == null || typeof opts !== 'object') {
-                throw new Error('define plugin expects an object as options');
-            }
             // Pre-process replacements once per file
             const identifiers = new Map();
             const memberPatterns = [];
             const typeofValues = new Map();
             const memberRoots = new Set();
-            for (const key of Object.keys(opts)) {
-                const value = opts[key];
+            for (const key of Object.keys(this.opts)) {
+                const value = this.opts[key];
                 if (key.startsWith(TYPEOF_PREFIX)) {
                     // "typeof window" -> typeofValues["window"]
                     typeofValues.set(key.slice(TYPEOF_PREFIX.length), value);
