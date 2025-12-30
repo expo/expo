@@ -53,7 +53,7 @@ export interface LinkMenuActionProps {
   isOn?: boolean;
   onPress?: () => void;
   /**
-   * An optional subtitle for the menu item. Does not appear on `inline` menus.
+   * An optional subtitle for the menu item.
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/subtitle) for more information.
    */
@@ -116,7 +116,7 @@ export interface LinkMenuProps {
    */
   title?: string;
   /**
-   * An optional subtitle for the submenu.
+   * An optional subtitle for the submenu. Does not appear on `inline` menus.
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/subtitle) for more information.
    */
