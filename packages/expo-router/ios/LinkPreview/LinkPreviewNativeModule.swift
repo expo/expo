@@ -106,7 +106,9 @@ public class LinkPreviewNativeModule: Module {
       Prop("barButtonItemStyle") { (view: LinkPreviewNativeActionView, style: BarItemStyle?) in
         view.barButtonItemStyle = style?.toUIBarButtonItemStyle()
       }
-
+      Prop("preferredElementSize") { (view: LinkPreviewNativeActionView, preferredElementSize: String?) in
+        view.preferredElementSize = preferredElementSize
+      }
       Events("onSelected")
     }
 

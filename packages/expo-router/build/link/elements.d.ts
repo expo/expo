@@ -112,6 +112,14 @@ export interface LinkMenuProps {
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/destructive) for more information.
      */
     destructive?: boolean;
+    /**
+     * The preferred size of the menu elements. Use `large` to display titles in palette menus.
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/elementsize) for more information.
+     *
+     * @platform iOS 16.0+
+     */
+    elementSize?: 'small' | 'medium' | 'large' | 'auto';
     children?: React.ReactNode;
 }
 /**
