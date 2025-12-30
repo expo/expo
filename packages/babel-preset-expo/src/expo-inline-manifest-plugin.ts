@@ -6,7 +6,7 @@ import { getIsReactServer, getPlatform, getPossibleProjectRoot } from './common'
 const debug = require('debug')('expo:babel:inline-manifest');
 
 // Convert expo value to PWA value
-function ensurePWAorientation(orientation?: string) {
+function ensurePWAOrientation(orientation?: string) {
   if (orientation) {
     const webOrientation = orientation.toLowerCase();
     if (webOrientation !== 'default') {
@@ -55,7 +55,7 @@ function applyWebDefaults({ config, appName, webName }: ConfigMemo) {
   const startUrl = webManifest.startUrl;
   const { scope, crossorigin } = webManifest;
   const barStyle = webManifest.barStyle;
-  const orientation = ensurePWAorientation(webManifest.orientation || appJSON.orientation);
+  const orientation = ensurePWAOrientation(webManifest.orientation || appJSON.orientation);
   /**
    * **Splash screen background color**
    * `https://developers.google.com/web/fundamentals/web-app-manifest/#splash-screen`
@@ -150,11 +150,13 @@ function getConfigMemo(projectRoot: string): ConfigMemo | null {
 }
 
 interface InlineManifestState extends PluginPass {
-  projectRoot?: string;
+  projectRoot: string;
 }
 
 // Convert `process.env.APP_MANIFEST` to a modified web-specific variation of the app.json public manifest.
-export function expoInlineManifestPlugin(api: ConfigAPI & typeof import('@babel/core')): PluginObj {
+export function expoInlineManifestPlugin(
+  api: ConfigAPI & typeof import('@babel/core')
+): PluginObj<InlineManifestState> {
   const { types: t } = api;
 
   const isReactServer = api.caller(getIsReactServer);
@@ -174,7 +176,7 @@ export function expoInlineManifestPlugin(api: ConfigAPI & typeof import('@babel/
     name: 'expo-inline-manifest-plugin',
 
     pre() {
-      (this as InlineManifestState).projectRoot = possibleProjectRoot || this.file.opts.root || '';
+      this.projectRoot = possibleProjectRoot || this.file.opts.root || '';
     },
 
     visitor: {
@@ -202,7 +204,7 @@ export function expoInlineManifestPlugin(api: ConfigAPI & typeof import('@babel/
 
         // Surfaces the `app.json` (config) as an environment variable which is then parsed by
         // `expo-constants` https://docs.expo.dev/versions/latest/sdk/constants/
-        const manifest = getExpoAppManifest(state.projectRoot!);
+        const manifest = getExpoAppManifest(state.projectRoot);
         if (manifest !== null) {
           parent.replaceWith(t.stringLiteral(manifest));
         }
