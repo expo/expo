@@ -82,6 +82,7 @@ export function PageHeader({
               {description}
             </P>
           )}
+          {cliVersion && <PageCliVersion cliVersion={cliVersion} className="mt-3" />}
           {platforms && <PagePlatformTags platforms={platforms} className="mt-4" />}
         </div>
         <div
@@ -102,7 +103,6 @@ export function PageHeader({
             </div>
             <div className="flex items-center gap-1.5">
               <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
-              {cliVersion && <PageCliVersion cliVersion={cliVersion} className="ml-1.5" />}
             </div>
           </div>
           <div
@@ -153,7 +153,6 @@ export function PageHeader({
               )}
             </span>
           )}
-          {cliVersion && <PageCliVersion cliVersion={cliVersion} className="ml-2" />}
         </span>
       </div>
       {description && (
@@ -161,6 +160,7 @@ export function PageHeader({
           {description}
         </P>
       )}
+      {cliVersion && <PageCliVersion cliVersion={cliVersion} className="mt-3 max-xl-gutters:mt-2" />}
       <span className="mb-1 mt-3 hidden items-center gap-1 max-xl-gutters:flex">
         <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
         {(showMarkdownActions || hasAskAIButton) && (
@@ -174,7 +174,6 @@ export function PageHeader({
             )}
           </span>
         )}
-        {cliVersion && <PageCliVersion cliVersion={cliVersion} className="ml-2" />}
       </span>
       <div
         className={mergeClasses(
