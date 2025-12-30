@@ -355,11 +355,40 @@ export default function ToolbarScreen() {
               </Toolbar.Menu>
             </Toolbar.Menu>
 
-            {/* Palette menu example */}
+            {/* Palette menu example (small icons only) */}
             <Toolbar.Menu palette title="Quick Actions">
               <Toolbar.MenuAction icon="star" title="Star" onPress={() => Alert.alert('Star')} />
               <Toolbar.MenuAction icon="flag" title="Flag" onPress={() => Alert.alert('Flag')} />
               <Toolbar.MenuAction icon="pin" title="Pin" onPress={() => Alert.alert('Pin')} />
+            </Toolbar.Menu>
+
+            {/* elementSize="medium" displays actions horizontally with titles (iOS 16+) */}
+            <Toolbar.Menu inline elementSize="medium" title="Medium Size">
+              <Toolbar.MenuAction
+                icon="arrow.clockwise"
+                title="Refresh"
+                onPress={() => Alert.alert('Refresh')}
+              />
+              <Toolbar.MenuAction
+                icon="arrow.2.circlepath"
+                title="Resume"
+                onPress={() => Alert.alert('Resume')}
+              />
+              <Toolbar.MenuAction icon="pin" title="Pin" onPress={() => Alert.alert('Pin')} />
+            </Toolbar.Menu>
+
+            {/* elementSize="large" displays actions with larger icons and titles */}
+            <Toolbar.Menu inline elementSize="large" title="Large Size">
+              <Toolbar.MenuAction
+                icon="square.and.arrow.up"
+                title="Share"
+                onPress={() => Alert.alert('Share')}
+              />
+              <Toolbar.MenuAction
+                icon="doc.on.doc"
+                title="Copy"
+                onPress={() => Alert.alert('Copy')}
+              />
             </Toolbar.Menu>
 
             {/* Disabled action */}
