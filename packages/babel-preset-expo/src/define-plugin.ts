@@ -25,7 +25,11 @@ interface DefinePluginState extends PluginPass {
   processed?: ProcessedReplacements;
 }
 
-function definePlugin({ types: t }: ConfigAPI & typeof import('@babel/core')): PluginObj {
+function definePlugin({
+  types: t,
+}: ConfigAPI & typeof import('@babel/core')): PluginObj<
+  PluginPass & { opts: Record<string, null | boolean | string> }
+> {
   /**
    * Replace a node with a given value. If the replacement results in a BinaryExpression, it will be
    * evaluated. For example, if the result of the replacement is `var x = "production" === "production"`
@@ -56,19 +60,14 @@ function definePlugin({ types: t }: ConfigAPI & typeof import('@babel/core')): P
     name: 'expo-define-globals',
 
     pre() {
-      const opts = this.opts;
-      if (opts == null || typeof opts !== 'object') {
-        throw new Error('define plugin expects an object as options');
-      }
-
       // Pre-process replacements once per file
       const identifiers = new Map<string, unknown>();
       const memberPatterns: [string, unknown][] = [];
       const typeofValues = new Map<string, unknown>();
       const memberRoots = new Set<string>();
 
-      for (const key of Object.keys(opts)) {
-        const value = (opts as Record<string, unknown>)[key];
+      for (const key of Object.keys(this.opts)) {
+        const value = (this.opts as Record<string, unknown>)[key];
 
         if (key.startsWith(TYPEOF_PREFIX)) {
           // "typeof window" -> typeofValues["window"]
