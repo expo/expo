@@ -306,12 +306,12 @@ export async function exportFromServerAsync(
   }
 
   if (exportServer) {
-    const apiRoutes = await exportApiRoutesAsync({
-      platform: 'web',
+    const { files: apiRoutes, manifest: exportManifest } = await exportApiRoutesAsync({
       server: devServer,
       manifest: serverManifest,
       // NOTE(kitten): For now, we always output source maps for API route exports
       includeSourceMaps: true,
+      platform,
     });
 
     // Add the api routes to the files to export.
@@ -335,22 +335,18 @@ export async function exportFromServerAsync(
         .map((asset) => (baseUrl ? `${baseUrl}/${asset.filename}` : `/${asset.filename}`));
 
       // Add assets and rendering config to the routes manifest
-      const routesJsonEntry = files.get('_expo/routes.json');
-      if (routesJsonEntry) {
-        // NOTE(@hassankhan): We should ideally persist the manifest to `files` only once instead of
-        // modifying it afterwards. We'll need to refactor how `exportApiRoutesAsync()` works.
-        const manifest = JSON.parse(routesJsonEntry.contents as string);
-        manifest.assets = { css: cssAssets, js: jsAssets };
-        manifest.rendering = {
-          mode: 'ssr',
-          file: '_expo/server/render.js',
-        };
-        files.set('_expo/routes.json', {
-          ...routesJsonEntry,
-          contents: JSON.stringify(manifest, null, 2),
-        });
-      }
+      exportManifest.assets = { css: cssAssets, js: jsAssets };
+      exportManifest.rendering = {
+        mode: 'ssr',
+        file: '_expo/server/render.js',
+      };
     }
+
+    // Add the manifest to the files to export
+    files.set('_expo/routes.json', {
+      contents: JSON.stringify(exportManifest, null, 2),
+      targetDomain: 'server',
+    });
   } else {
     warnPossibleInvalidExportType(appDir);
   }
@@ -531,13 +527,19 @@ export async function exportApiRoutesStandaloneAsync(
 ) {
   const { serverManifest, htmlManifest } = await devServer.getServerManifestAsync();
 
-  const apiRoutes = await exportApiRoutesAsync({
+  const { files: apiRoutes, manifest: exportManifest } = await exportApiRoutesAsync({
     server: devServer,
     manifest: serverManifest,
     // NOTE(kitten): For now, we always output source maps for API route exports
     includeSourceMaps: true,
-    platform,
     apiRoutesOnly,
+    platform,
+  });
+
+  // Add the manifest to the files to export
+  files.set('_expo/routes.json', {
+    contents: JSON.stringify(exportManifest, null, 2),
+    targetDomain: 'server',
   });
 
   // Add the api routes to the files to export.
@@ -577,7 +579,7 @@ async function exportApiRoutesAsync({
   manifest: RoutesManifest<string>;
   platform: string;
   apiRoutesOnly?: boolean;
-}): Promise<ExportAssetMap> {
+}): Promise<{ files: ExportAssetMap; manifest: RoutesManifest<string> }> {
   const { manifest, files } = await server.exportExpoRouterApiRoutesAsync({
     outputDir: '_expo/functions',
     prerenderManifest: props.manifest,
@@ -591,12 +593,7 @@ async function exportApiRoutesAsync({
     manifest.notFoundRoutes = [];
   }
 
-  files.set('_expo/routes.json', {
-    contents: JSON.stringify(manifest, null, 2),
-    targetDomain: 'server',
-  });
-
-  return files;
+  return { files, manifest };
 }
 
 function warnPossibleInvalidExportType(appDir: string) {
