@@ -11,6 +11,9 @@
 #import <ReactCommon/SchedulerPriority.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 
+#include <unordered_map>
+#include <string>
+
 @implementation EXJavaScriptRuntime {
   std::shared_ptr<jsi::Runtime> _runtime;
   std::shared_ptr<react::CallInvoker> _jsCallInvoker;
@@ -231,6 +234,117 @@
 }
 
 namespace {
+  // MARK: - Template Specializations for Fast Path
+
+  /// Fast-path template specialization for (Int, Int) -> Int signature
+  /// Type encoding: q@?qq
+  struct IntIntToIntTrampoline {
+    static jsi::Value invoke(id block, jsi::Runtime &runtime, const jsi::Value *args, size_t count) {
+      typedef long long(^BlockType)(long long, long long);
+      BlockType typedBlock = (BlockType)block;
+
+      long long arg0 = (long long)args[0].getNumber();
+      long long arg1 = (long long)args[1].getNumber();
+      long long result = typedBlock(arg0, arg1);
+
+      return jsi::Value((double)result);
+    }
+  };
+
+  /// Fast-path template specialization for (String, String) -> String signature
+  /// Type encoding: @@?@@
+  struct StringStringToStringTrampoline {
+    static jsi::Value invoke(id block, jsi::Runtime &runtime, const jsi::Value *args, size_t count) {
+      typedef NSString*(^BlockType)(NSString*, NSString*);
+      BlockType typedBlock = (BlockType)block;
+
+      NSString *arg0 = [NSString stringWithUTF8String:args[0].asString(runtime).utf8(runtime).c_str()];
+      NSString *arg1 = [NSString stringWithUTF8String:args[1].asString(runtime).utf8(runtime).c_str()];
+      NSString *result = typedBlock(arg0, arg1);
+
+      if (result) {
+        return jsi::String::createFromUtf8(runtime, [result UTF8String]);
+      }
+      return jsi::Value::null();
+    }
+  };
+
+  /// Fast-path template specialization for () -> Void signature
+  /// Type encoding: v@?
+  struct VoidToVoidTrampoline {
+    static jsi::Value invoke(id block, jsi::Runtime &runtime, const jsi::Value *args, size_t count) {
+      typedef void(^BlockType)(void);
+      BlockType typedBlock = (BlockType)block;
+
+      typedBlock();
+
+      return jsi::Value::undefined();
+    }
+  };
+
+  /// Fast-path template specialization for (Double, Double) -> Double signature
+  /// Type encoding: d@?dd
+  struct DoubleDoubleToDoubleTrampoline {
+    static jsi::Value invoke(id block, jsi::Runtime &runtime, const jsi::Value *args, size_t count) {
+      typedef double(^BlockType)(double, double);
+      BlockType typedBlock = (BlockType)block;
+
+      double arg0 = args[0].getNumber();
+      double arg1 = args[1].getNumber();
+      double result = typedBlock(arg0, arg1);
+
+      return jsi::Value(result);
+    }
+  };
+
+  // MARK: - Fast Path Detection
+
+  enum class SignatureType {
+    IntIntToInt,           // q@?qq
+    StringStringToString,  // @@?@@
+    VoidToVoid,            // v@?
+    DoubleDoubleToDouble,  // d@?dd
+    Unknown
+  };
+
+  // Static registry mapping type encodings to signature types for O(1) lookup
+  static const std::unordered_map<std::string, SignatureType> signatureRegistry = {
+    {"q@?qq", SignatureType::IntIntToInt},
+    {"@@?@@", SignatureType::StringStringToString},
+    {"v@?", SignatureType::VoidToVoid},
+    {"d@?dd", SignatureType::DoubleDoubleToDouble},
+  };
+
+  SignatureType detectSignatureType(NSString *typeEncoding) {
+    std::string encoding([typeEncoding UTF8String]);
+
+    auto it = signatureRegistry.find(encoding);
+    if (it != signatureRegistry.end()) {
+      return it->second;
+    }
+
+    return SignatureType::Unknown;
+  }
+
+  jsi::Value invokeFastPath(id block, SignatureType sigType, jsi::Runtime &runtime,
+                            const jsi::Value *args, size_t count) {
+    switch (sigType) {
+      case SignatureType::IntIntToInt:
+        return IntIntToIntTrampoline::invoke(block, runtime, args, count);
+      case SignatureType::StringStringToString:
+        return StringStringToStringTrampoline::invoke(block, runtime, args, count);
+      case SignatureType::VoidToVoid:
+        return VoidToVoidTrampoline::invoke(block, runtime, args, count);
+      case SignatureType::DoubleDoubleToDouble:
+        return DoubleDoubleToDoubleTrampoline::invoke(block, runtime, args, count);
+      default:
+        // Should never reach here
+        throw std::runtime_error("Invalid fast path signature");
+    }
+  }
+
+  // MARK: - NSInvocation Fallback Helpers
+
   // Helper to set an argument in NSInvocation from a JSI value
   void setInvocationArgument(NSInvocation *invocation, NSUInteger index, const char *typeEncoding, jsi::Runtime &runtime, const jsi::Value &value) {
     switch (typeEncoding[0]) {
@@ -311,11 +425,20 @@ namespace {
   jsi::PropNameID propNameId = jsi::PropNameID::forAscii(*_runtime, [name UTF8String], [name length]);
   std::weak_ptr<react::CallInvoker> weakCallInvoker = _jsCallInvoker;
 
-  jsi::HostFunctionType function = [weakCallInvoker, block, typeEncoding](
+  // Detect if this is a known fast-path signature
+  SignatureType sigType = detectSignatureType(typeEncoding);
+
+  jsi::HostFunctionType function = [weakCallInvoker, block, typeEncoding, sigType](
     jsi::Runtime &runtime, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
     auto callInvoker = weakCallInvoker.lock();
 
     @try {
+      // Fast path: Use template specialization for known signatures
+      if (sigType != SignatureType::Unknown) {
+        return invokeFastPath(block, sigType, runtime, args, count);
+      }
+
+      // Slow path: Fall back to NSInvocation for dynamic signatures
       // Create method signature from type encoding
       NSMethodSignature *signature = [NSMethodSignature signatureWithObjCTypes:[typeEncoding UTF8String]];
       if (!signature) {
