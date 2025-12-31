@@ -453,7 +453,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
 
     const { exp } = getConfig(this.projectRoot);
-    const isExportingWithSSR = exp.web?.output === 'server' && !this.isReactServerComponentsEnabled;
+    const useServerRendering = exp.extra?.router?.unstable_useServerRendering ?? false;
+    const isExportingWithSSR =
+      exp.web?.output === 'server' && useServerRendering && !this.isReactServerComponentsEnabled;
 
     const serverManifest = await getBuildTimeServerManifestAsync({
       ...exp.extra?.router,

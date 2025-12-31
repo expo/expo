@@ -213,7 +213,9 @@ export async function exportFromServerAsync(
 
   const platform = 'web';
   const isExporting = true;
-  const isExportingWithSSR = exportServer && !devServer.isReactServerComponentsEnabled;
+  const useServerRendering = exp?.extra?.router?.unstable_useServerRendering ?? false;
+  const isExportingWithSSR =
+    exportServer && useServerRendering && !devServer.isReactServerComponentsEnabled;
   const appDir = path.join(projectRoot, routerRoot);
   const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, {
     outputDir,

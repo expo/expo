@@ -21,6 +21,7 @@ describe('exports server', () => {
       export: {
         env: {
           E2E_ROUTER_ASYNC: '',
+          E2E_ROUTER_SERVER_RENDERING: 'true',
         },
         cliFlags: ['--source-maps'],
       },
