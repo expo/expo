@@ -13,8 +13,8 @@ import { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarVi
  *       <Toolbar>
  *         <Toolbar.Spacer />
  *         <Toolbar.Button icon="magnifyingglass" tintColor={Color.ios.placeholderText} />
- *         <Toolbar.View style={{ width: 200 }}>
- *           <TextInput placeholder="Search" />
+ *         <Toolbar.View>
+ *           <TextInput style={{ width: 200 }} placeholder="Search" />
  *         </Toolbar.View>
  *         <Toolbar.Menu icon="ellipsis">
  *           <Toolbar.MenuAction icon="mail" title="Send email" onPress={() => {}} />

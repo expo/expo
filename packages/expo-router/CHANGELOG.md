@@ -87,6 +87,7 @@
 - Add unstable_navigationEvents to expose global navigation events ([#41706](https://github.com/expo/expo/pull/41706) by [@Ubax](https://github.com/Ubax))
 - [ios] replace print with jsLog in native components ([#41757](https://github.com/expo/expo/pull/41757) by [@Ubax](https://github.com/Ubax))
 - [ios] add NativeActionProp to reduce repetition in LinkPreviewNativeActionView ([#41763](https://github.com/expo/expo/pull/41763) by [@Ubax](https://github.com/Ubax))
+- [docs] update Toolbar.View to reflect up to date props ([#41888](https://github.com/expo/expo/pull/41888) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.17 - 2025-12-05
 
