@@ -1,13 +1,4 @@
 /**
- Helper function to fix type inference for optimized function definitions.
- This allows macro-generated classes to be properly typed as AnyDefinition.
- */
-@inline(__always)
-public func makeOptimized<T: AnyDefinition>(_ factory: () -> T) -> AnyDefinition {
-  return factory()
-}
-
-/**
  Synchronous function without arguments.
  */
 public func Function<R>(

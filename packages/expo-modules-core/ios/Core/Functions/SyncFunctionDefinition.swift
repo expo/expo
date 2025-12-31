@@ -140,21 +140,6 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
     }
   }
 
-  func callNumbers(_ appContext: AppContext, withThis this: JavaScriptValue?, arguments: [Double]) throws -> Double {
-    do {
-      guard let argumentsTuple = try Conversions.toTuple(arguments) as? Args else {
-        throw ArgumentConversionException()
-      }
-      let result = try body(argumentsTuple)
-
-      return result as! Double
-    } catch let error as Exception {
-      throw FunctionCallException(name).causedBy(error)
-    } catch {
-      throw UnexpectedException(error)
-    }
-  }
-
   // MARK: - JavaScriptObjectBuilder
 
   @JavaScriptActor
@@ -163,155 +148,11 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
     // immediately lose the reference to the definition and thus the underlying native function.
     // It may potentially cause memory leaks, but at the time of writing this comment,
     // the native definition instance deallocates correctly when the JS VM triggers the garbage collector.
-
-    // Try to use the optimized path if this function signature is supported
-//    if let typeEncoding = generateTypeEncoding(), canUseOptimizedPath(typeEncoding), name == "addNumbers" {
-//      return try buildOptimized(appContext: appContext, typeEncoding: typeEncoding)
-//    }
-
-    // Fall back to standard path
     return try appContext.runtime.createSyncFunction(name, argsCount: argumentsCount) { [weak appContext, self] this, arguments in
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
       return try self.call(appContext, withThis: this, arguments: arguments)
     }
-  }
-
-  // MARK: - Optimized Path
-
-  /// Generates Objective-C type encoding string for this function signature
-  /// Returns nil if the signature cannot be represented in the optimized format
-  private func generateTypeEncoding() -> String? {
-    // Only support functions with 0-2 arguments for now
-    guard argumentsCount >= 0 && argumentsCount <= 2 else {
-      return nil
-    }
-
-    // Don't support functions that take owner (this) parameter
-    guard !takesOwner else {
-      return nil
-    }
-
-    var encoding = ""
-
-    // Encode return type
-    guard let returnEncoding = typeToEncoding(ReturnType.self) else {
-      return nil
-    }
-    encoding += returnEncoding
-
-    // Add block marker
-    encoding += "@?"
-
-    // Encode arguments
-    for dynamicType in dynamicArgumentTypes {
-      guard let argEncoding = dynamicTypeToEncoding(dynamicType) else {
-        return nil
-      }
-      encoding += argEncoding
-    }
-
-    return encoding
-  }
-
-  /// Converts a Swift type to Objective-C type encoding character
-  private func typeToEncoding(_ type: Any.Type) -> String? {
-    switch type {
-    case is Double.Type:
-      return "d"
-    case is Int.Type, is Int64.Type:
-      return "q"
-    case is String.Type:
-      return "@"
-    case is Bool.Type:
-      return "B"
-    default:
-      return nil
-    }
-  }
-
-  /// Converts a dynamic type to Objective-C type encoding character
-  private func dynamicTypeToEncoding(_ dynamicType: AnyDynamicType) -> String? {
-    // Use the inner type's description to determine encoding
-    let typeDescription = String(describing: dynamicType)
-
-    if typeDescription.contains("Double") {
-      return "d"
-    } else if typeDescription.contains("Int") {
-      return "q"
-    } else if typeDescription.contains("String") {
-      return "@"
-    } else if typeDescription.contains("Bool") {
-      return "B"
-    }
-
-    return nil
-  }
-
-  /// Checks if the given type encoding is supported by the optimized runtime
-  private func canUseOptimizedPath(_ typeEncoding: String) -> Bool {
-    let supportedSignatures: Set<String> = [
-      // Double variants
-      "d@?", "d@?d", "d@?dd",
-      // Int variants
-      "q@?", "q@?q", "q@?qq",
-      // String variants
-      "@@?", "@@?@", "@@?@@",
-      // Bool variants
-      "B@?", "B@?B", "B@?BB"
-    ]
-    return supportedSignatures.contains(typeEncoding)
-  }
-
-  /// Builds the function using the optimized createSyncFunction:typeEncoding: path
-  @JavaScriptActor
-  private func buildOptimized(appContext: AppContext, typeEncoding: String) throws -> JavaScriptObject {
-    // We need to create a non-throwing wrapper block because Swift throwing closures
-    // are not compatible with ObjC blocks. We handle errors by catching them and
-    // throwing NSExceptions which the ObjC side can catch and convert to JSErrors.
-
-    // For now, we need to create typed wrappers for each signature.
-    // The body is (Args) throws -> ReturnType, but we need a non-throwing block.
-    let wrappedBody: AnyObject
-
-    switch typeEncoding {
-    case "d@?dd":
-      // (Double, Double) -> Double
-      let typedBody = body as! ((Double, Double)) throws -> Double
-      let block: @convention(block) (Double, Double) -> Double = { arg0, arg1 in
-        do {
-          return try typedBody((arg0, arg1))
-        } catch let error as Exception {
-          // Throw an NSException so the ObjC side can catch it
-          let nsException = NSException(
-            name: NSExceptionName("SwiftFunctionException"),
-            reason: error.description,
-            userInfo: ["code": error.code, "message": error.description]
-          )
-          nsException.raise()
-          return 0.0 // Never reached
-        } catch {
-          let nsException = NSException(
-            name: NSExceptionName("SwiftFunctionException"),
-            reason: error.localizedDescription,
-            userInfo: ["message": error.localizedDescription]
-          )
-          nsException.raise()
-          return 0.0 // Never reached
-        }
-      }
-      wrappedBody = block as AnyObject
-
-    default:
-      throw GenericException("Unsupported type encoding for optimized path: \(typeEncoding)")
-    }
-
-    return try appContext.runtime.createSyncFunction(
-      name,
-      typeEncoding: typeEncoding,
-      argsCount: argumentsCount,
-      body: wrappedBody
-    )
   }
 }
