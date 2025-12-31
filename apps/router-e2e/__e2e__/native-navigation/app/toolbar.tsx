@@ -356,10 +356,34 @@ export default function ToolbarScreen() {
             </Toolbar.Menu>
 
             {/* Palette menu example (small icons only) */}
-            <Toolbar.Menu palette title="Quick Actions">
-              <Toolbar.MenuAction icon="star" title="Star" onPress={() => Alert.alert('Star')} />
-              <Toolbar.MenuAction icon="flag" title="Flag" onPress={() => Alert.alert('Flag')} />
-              <Toolbar.MenuAction icon="pin" title="Pin" onPress={() => Alert.alert('Pin')} />
+            <Toolbar.Menu palette inline title="Palette Actions">
+              <Toolbar.MenuAction
+                icon="star"
+                title="Star-palette"
+                onPress={() => Alert.alert('Star')}
+              />
+              <Toolbar.MenuAction
+                icon="flag"
+                title="Flag-palette"
+                onPress={() => Alert.alert('Flag')}
+              />
+              <Toolbar.MenuAction
+                icon="pin"
+                title="Pin-palette"
+                onPress={() => Alert.alert('Pin')}
+              />
+            </Toolbar.Menu>
+
+            <Toolbar.Menu inline elementSize="small" title="Small Actions">
+              <Toolbar.MenuAction icon="star.fill" onPress={() => Alert.alert('Star')}>
+                Star
+              </Toolbar.MenuAction>
+              <Toolbar.MenuAction icon="flag.fill" onPress={() => Alert.alert('Flag')}>
+                Flag
+              </Toolbar.MenuAction>
+              <Toolbar.MenuAction icon="pin.fill" onPress={() => Alert.alert('Pin')}>
+                Pin
+              </Toolbar.MenuAction>
             </Toolbar.Menu>
 
             {/* elementSize="medium" displays actions horizontally with titles (iOS 16+) */}
@@ -367,12 +391,12 @@ export default function ToolbarScreen() {
               <Toolbar.MenuAction
                 icon="arrow.clockwise"
                 title="Refresh"
-                onPress={() => Alert.alert('Refresh')}
+                onPress={() => Alert.alert('Refreshing')}
               />
               <Toolbar.MenuAction
                 icon="arrow.2.circlepath"
                 title="Resume"
-                onPress={() => Alert.alert('Resume')}
+                onPress={() => Alert.alert('Resuming')}
               />
               <Toolbar.MenuAction icon="pin" title="Pin" onPress={() => Alert.alert('Pin')} />
             </Toolbar.Menu>
@@ -382,12 +406,12 @@ export default function ToolbarScreen() {
               <Toolbar.MenuAction
                 icon="square.and.arrow.up"
                 title="Share"
-                onPress={() => Alert.alert('Share')}
+                onPress={() => Alert.alert('Sharing')}
               />
               <Toolbar.MenuAction
                 icon="doc.on.doc"
                 title="Copy"
-                onPress={() => Alert.alert('Copy')}
+                onPress={() => Alert.alert('Copying')}
               />
             </Toolbar.Menu>
 
