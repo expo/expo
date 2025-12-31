@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Restore `resetCache`, `maxWorkers`, and `port` override args when instantiating Metro ([#41854](https://github.com/expo/expo/pull/41854) by [@shottah](https://github.com/shottah))
+
 ### 💡 Others
 
 ## 54.0.20 — 2025-12-18
