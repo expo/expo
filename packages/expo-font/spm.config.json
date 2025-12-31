@@ -1,0 +1,32 @@
+{
+    "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "products": [
+        {
+            "name": "ExpoFont",
+            "platforms": [
+                "iOS(.v15)"
+            ],
+            "externalDependencies": [
+                "ReactNativeDependencies",
+                "React",
+                "Hermes",
+                "expo-modules-core/ExpoModulesCore"
+            ],
+            "targets": [
+                {
+                    "type": "swift",
+                    "name": "ExpoFont",
+                    "path": "ios",
+                    "pattern": "*.swift",
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "expo-modules-core/ExpoModulesCore"
+                    ],
+                    "linkedFrameworks": [ "Foundation", "UIKit" ]
+                }
+            ]
+        }
+    ]
+}
