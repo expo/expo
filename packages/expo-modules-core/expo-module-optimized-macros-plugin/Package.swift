@@ -30,5 +30,14 @@ let package = Package(
 
         // A client of the library, which is able to use the macro in its own code.
         .executableTarget(name: "ExpoModulesOptimized", dependencies: ["ExpoModulesOptimizedMacros"]),
+
+        // A test target used to develop the macro implementation.
+        .testTarget(
+            name: "ExpoModulesOptimizedTests",
+            dependencies: [
+                "ExpoModulesOptimizedMacros",
+                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+            ]
+        ),
     ]
 )

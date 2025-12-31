@@ -2,99 +2,151 @@ import SwiftCompilerPlugin
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
+import Foundation
 
-/// Implementation of the `@OptimizedFunction` macro, which generates an optimized
-/// version of a function as a peer declaration. The generated function has the
-/// prefix `_optimized_` and calls the original function, wrapping the result.
+// MARK: - Helper Functions
+
+/// Generates Objective-C type encoding string for the given signature
+internal func generateTypeEncoding(returnType: String, paramTypes: [String]) throws -> String {
+    var encoding = ""
+
+    // Encode return type
+    guard let returnEncoding = typeToEncoding(returnType) else {
+        throw MacroExpansionErrorMessage("Unsupported return type: \(returnType)")
+    }
+    encoding += returnEncoding
+
+    // Add block marker
+    encoding += "@?"
+
+    // Encode parameters
+    for paramType in paramTypes {
+        guard let paramEncoding = typeToEncoding(paramType) else {
+            throw MacroExpansionErrorMessage("Unsupported parameter type: \(paramType)")
+        }
+        encoding += paramEncoding
+    }
+
+    return encoding
+}
+
+/// Maps Swift type to Objective-C type encoding character
+internal func typeToEncoding(_ type: String) -> String? {
+    switch type {
+    case "Double":
+        return "d"
+    case "Int", "Int64":
+        return "q"
+    case "String":
+        return "@"
+    case "Bool":
+        return "B"
+    case "Void", "()":
+        return "v"
+    default:
+        return nil
+    }
+}
+
+// MARK: - Macro Implementation
+
+/// Implementation of the `@OptimizedFunction` attached macro (Solution 3).
+/// Generates a peer function that returns AnyDefinition for use in result builders.
 ///
 /// For example:
 ///
-///     @OptimizedFunction
-///     func getValue() -> String {
-///         return "test"
+///     @OptimizedFunction("addNumbers")
+///     private func addNumbersImpl(a: Double, b: Double) -> Double {
+///         return a + b
 ///     }
 ///
-/// will generate:
+/// generates a peer function:
 ///
-///     func _optimized_getValue() -> String {
-///         let result = getValue()
-///         return result
+///     private func addNumbers() -> AnyDefinition {
+///         return _createOptimizedFunction(
+///             name: "addNumbers",
+///             typeEncoding: "d@?dd",
+///             argsCount: 2,
+///             block: (addNumbersImpl as @convention(block) (Double, Double) -> Double) as AnyObject
+///         )
 ///     }
-public struct OptimizedFunctionMacro: PeerMacro {
+public struct OptimizedFunctionAttachedMacro: PeerMacro {
     public static func expansion(
         of node: AttributeSyntax,
         providingPeersOf declaration: some DeclSyntaxProtocol,
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
+        // Ensure this is attached to a function
         guard let funcDecl = declaration.as(FunctionDeclSyntax.self) else {
-            throw MacroExpansionErrorMessage("@OptimizedFunction can only be applied to functions")
+            throw MacroExpansionErrorMessage("@OptimizedFunction can only be attached to function declarations")
         }
 
-        let funcName = funcDecl.name.text
-        let optimizedName = "_optimized_\(funcName)"
+        // Extract the function name from the macro argument
+        guard case let .argumentList(arguments) = node.arguments,
+              let firstArg = arguments.first,
+              let nameExpr = firstArg.expression.as(StringLiteralExprSyntax.self),
+              let nameSegment = nameExpr.segments.first?.as(StringSegmentSyntax.self) else {
+            throw MacroExpansionErrorMessage("@OptimizedFunction requires a string literal name argument")
+        }
+        let functionName = nameSegment.content.text
 
-        let genericParams = funcDecl.genericParameterClause
-        let parameters = funcDecl.signature.parameterClause
-        let returnClause = funcDecl.signature.returnClause
+        // Extract parameter types and names from the function signature
+        var paramTypes: [String] = []
 
-        // Build the argument list for calling the original function
-        let argumentList = parameters.parameters.map { param in
-            let firstName = param.firstName.text
-            let secondName = param.secondName?.text
+        for param in funcDecl.signature.parameterClause.parameters {
+            let type = param.type
+            paramTypes.append(type.trimmedDescription)
+        }
 
-            if firstName == "_" {
-                // No external label, use internal name only
-                return secondName ?? ""
-            } else if let secondName = secondName {
-                // Has both external and internal names
-                return "\(firstName): \(secondName)"
-            } else {
-                // Only one name, use it as both label and value
-                return "\(firstName): \(firstName)"
-            }
-        }.joined(separator: ", ")
-
-        let optimizedFunc: DeclSyntax
-
-        if let returnClause = returnClause {
-            // Function has a return value
-            if let genericParams = genericParams {
-                optimizedFunc =
-                    """
-                    func \(raw: optimizedName)\(genericParams)\(parameters)\(returnClause.trimmed) {
-                        let result = \(raw: funcName)(\(raw: argumentList))
-                        return result
-                    }
-                    """
-            } else {
-                optimizedFunc =
-                    """
-                    func \(raw: optimizedName)\(parameters)\(returnClause.trimmed) {
-                        let result = \(raw: funcName)(\(raw: argumentList))
-                        return result
-                    }
-                    """
-            }
+        // Extract return type
+        let returnType: String
+        if let returnClause = funcDecl.signature.returnClause {
+            returnType = returnClause.type.trimmedDescription
         } else {
-            // Function returns Void
-            if let genericParams = genericParams {
-                optimizedFunc =
-                    """
-                    func \(raw: optimizedName)\(genericParams)\(parameters.trimmed) {
-                        \(raw: funcName)(\(raw: argumentList))
-                    }
-                    """
-            } else {
-                optimizedFunc =
-                    """
-                    func \(raw: optimizedName)\(parameters.trimmed) {
-                        \(raw: funcName)(\(raw: argumentList))
-                    }
-                    """
-            }
+            // No return type means Void
+            returnType = "Void"
         }
 
-        return [optimizedFunc]
+        // Generate type encoding
+        let typeEncoding = try generateTypeEncoding(returnType: returnType, paramTypes: paramTypes)
+
+        // Generate parameter list for block signature (type-only, no labels)
+        let blockParamTypes = paramTypes.joined(separator: ", ")
+
+        // Get the implementation function name
+        let implFuncName = funcDecl.name.text
+
+        // Generate the peer function name (same as the exported name)
+        let peerFuncName = functionName
+
+        // Generate the peer function
+        let peerFunc: DeclSyntax
+
+        if returnType == "Void" || returnType == "()" {
+            peerFunc = """
+            private func \(raw: peerFuncName)() -> AnyDefinition {
+                return _createOptimizedFunction(
+                    name: "\(raw: functionName)",
+                    typeEncoding: "\(raw: typeEncoding)",
+                    argsCount: \(raw: String(paramTypes.count)),
+                    block: (\(raw: implFuncName) as @convention(block) (\(raw: blockParamTypes)) -> \(raw: returnType)) as AnyObject
+                )
+            }
+            """
+        } else {
+            peerFunc = """
+            private func \(raw: peerFuncName)() -> AnyDefinition {
+                return _createOptimizedFunction(
+                    name: "\(raw: functionName)",
+                    typeEncoding: "\(raw: typeEncoding)",
+                    argsCount: \(raw: String(paramTypes.count)),
+                    block: (\(raw: implFuncName) as @convention(block) (\(raw: blockParamTypes)) -> \(raw: returnType)) as AnyObject
+                )
+            }
+            """
+        }
+
+        return [peerFunc]
     }
 }
 
@@ -113,6 +165,6 @@ struct MacroExpansionErrorMessage: Error, CustomStringConvertible {
 @main
 struct ExpoModulesOptimizedPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        OptimizedFunctionMacro.self,
+        OptimizedFunctionAttachedMacro.self,
     ]
 }

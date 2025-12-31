@@ -1,12 +1,20 @@
-/// A macro that generates an optimized version of a function or closure.
-/// Attach this macro to any function or closure to generate an optimized peer implementation.
-/// For example:
+/// An attached macro that generates an optimized synchronous function definition factory.
+/// Creates a peer function that returns AnyDefinition, suitable for use in result builders.
 ///
-///     @OptimizedFunction
-///     func calculateSum(_ a: Int, _ b: Int) -> Int {
+/// Usage:
+///
+///     @OptimizedFunction("addNumbers")
+///     private func addNumbersImpl(a: Double, b: Double) -> Double {
 ///         return a + b
 ///     }
 ///
-/// generates an optimized version of the function.
-@attached(peer, names: prefixed(_optimized_))
-public macro OptimizedFunction() = #externalMacro(module: "ExpoModulesOptimizedMacros", type: "OptimizedFunctionMacro")
+/// Generates a peer function:
+///
+///     private func addNumbers() -> AnyDefinition {
+///         return _createOptimizedFunction(...)
+///     }
+///
+/// The generated peer function can be called directly in ModuleDefinition result builders.
+/// It uses the optimized JSI bridge path with @convention(block) closures for maximum performance.
+@attached(peer, names: arbitrary)
+public macro OptimizedFunction(_ name: String) = #externalMacro(module: "ExpoModulesOptimizedMacros", type: "OptimizedFunctionAttachedMacro")
