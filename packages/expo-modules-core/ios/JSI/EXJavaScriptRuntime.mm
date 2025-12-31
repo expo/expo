@@ -231,44 +231,75 @@
 }
 
 namespace {
-  // Helper to convert JSI value to double
-  inline double jsiToDouble(jsi::Runtime &runtime, const jsi::Value &value) {
-    return value.getNumber();
+  // Helper to set an argument in NSInvocation from a JSI value
+  void setInvocationArgument(NSInvocation *invocation, NSUInteger index, const char *typeEncoding, jsi::Runtime &runtime, const jsi::Value &value) {
+    switch (typeEncoding[0]) {
+      case 'd': // double
+      case 'f': { // float
+        double doubleValue = value.getNumber();
+        [invocation setArgument:&doubleValue atIndex:index];
+        break;
+      }
+      case 'q': // long long
+      case 'l': // long
+      case 'i': // int
+      case 's': // short
+      case 'c': { // char
+        long long intValue = (long long)value.getNumber();
+        [invocation setArgument:&intValue atIndex:index];
+        break;
+      }
+      case 'B': { // bool (C++ style)
+        bool boolValue = value.getBool();
+        [invocation setArgument:&boolValue atIndex:index];
+        break;
+      }
+      case '@': { // object (NSString*, etc.)
+        NSString *stringValue = [NSString stringWithUTF8String:value.asString(runtime).utf8(runtime).c_str()];
+        [invocation setArgument:&stringValue atIndex:index];
+        break;
+      }
+      default:
+        throw std::runtime_error(std::string("Unsupported argument type: ") + typeEncoding);
+    }
   }
 
-  // Helper to convert JSI value to long long
-  inline long long jsiToLongLong(jsi::Runtime &runtime, const jsi::Value &value) {
-    return (long long)value.getNumber();
-  }
-
-  // Helper to convert JSI value to NSString
-  inline NSString* jsiToString(jsi::Runtime &runtime, const jsi::Value &value) {
-    return [NSString stringWithUTF8String:value.asString(runtime).utf8(runtime).c_str()];
-  }
-
-  // Helper to convert JSI value to bool
-  inline bool jsiToBool(jsi::Runtime &runtime, const jsi::Value &value) {
-    return value.getBool();
-  }
-
-  // Helper to convert double to JSI value
-  inline jsi::Value doubleToJSI(jsi::Runtime &runtime, double value) {
-    return jsi::Value(value);
-  }
-
-  // Helper to convert long long to JSI value
-  inline jsi::Value longLongToJSI(jsi::Runtime &runtime, long long value) {
-    return jsi::Value((double)value);
-  }
-
-  // Helper to convert NSString to JSI value
-  inline jsi::Value stringToJSI(jsi::Runtime &runtime, NSString *value) {
-    return jsi::String::createFromUtf8(runtime, [value UTF8String]);
-  }
-
-  // Helper to convert bool to JSI value
-  inline jsi::Value boolToJSI(jsi::Runtime &runtime, bool value) {
-    return jsi::Value(value);
+  // Helper to get the return value from NSInvocation and convert to JSI
+  jsi::Value getInvocationReturnValue(NSInvocation *invocation, const char *returnType, jsi::Runtime &runtime) {
+    switch (returnType[0]) {
+      case 'v': // void
+        return jsi::Value::undefined();
+      case 'd': // double
+      case 'f': { // float
+        double returnValue;
+        [invocation getReturnValue:&returnValue];
+        return jsi::Value(returnValue);
+      }
+      case 'q': // long long
+      case 'l': // long
+      case 'i': // int
+      case 's': // short
+      case 'c': { // char
+        long long returnValue;
+        [invocation getReturnValue:&returnValue];
+        return jsi::Value((double)returnValue);
+      }
+      case 'B': { // bool (C++ style)
+        bool returnValue;
+        [invocation getReturnValue:&returnValue];
+        return jsi::Value(returnValue);
+      }
+      case '@': { // object (NSString*, etc.)
+        __unsafe_unretained NSString *returnValue = nil;
+        [invocation getReturnValue:&returnValue];
+        if (returnValue) {
+          return jsi::String::createFromUtf8(runtime, [returnValue UTF8String]);
+        }
+        return jsi::Value::null();
+      }
+      default:
+        throw std::runtime_error(std::string("Unsupported return type: ") + returnType);
+    }
   }
 }
 
@@ -285,50 +316,31 @@ namespace {
     auto callInvoker = weakCallInvoker.lock();
 
     @try {
-      // Cast the block to the appropriate type and call it based on the type encoding
-      // Swift closures are bridged to ObjC blocks via @convention(block)
-      if ([typeEncoding isEqualToString:@"d@?"]) {
-        double (^typedBlock)(void) = (double (^)(void))block;
-        return doubleToJSI(runtime, typedBlock());
-      } else if ([typeEncoding isEqualToString:@"d@?d"]) {
-        double (^typedBlock)(double) = (double (^)(double))block;
-        return doubleToJSI(runtime, typedBlock(jsiToDouble(runtime, args[0])));
-      } else if ([typeEncoding isEqualToString:@"d@?dd"]) {
-        double (^typedBlock)(double, double) = (double (^)(double, double))block;
-        return doubleToJSI(runtime, typedBlock(jsiToDouble(runtime, args[0]), jsiToDouble(runtime, args[1])));
-      } else if ([typeEncoding isEqualToString:@"q@?"]) {
-        long long (^typedBlock)(void) = (long long (^)(void))block;
-        return longLongToJSI(runtime, typedBlock());
-      } else if ([typeEncoding isEqualToString:@"q@?q"]) {
-        long long (^typedBlock)(long long) = (long long (^)(long long))block;
-        return longLongToJSI(runtime, typedBlock(jsiToLongLong(runtime, args[0])));
-      } else if ([typeEncoding isEqualToString:@"q@?qq"]) {
-        long long (^typedBlock)(long long, long long) = (long long (^)(long long, long long))block;
-        return longLongToJSI(runtime, typedBlock(jsiToLongLong(runtime, args[0]), jsiToLongLong(runtime, args[1])));
-      } else if ([typeEncoding isEqualToString:@"@@?"]) {
-        NSString* (^typedBlock)(void) = (NSString* (^)(void))block;
-        return stringToJSI(runtime, typedBlock());
-      } else if ([typeEncoding isEqualToString:@"@@?@"]) {
-        NSString* (^typedBlock)(NSString*) = (NSString* (^)(NSString*))block;
-        return stringToJSI(runtime, typedBlock(jsiToString(runtime, args[0])));
-      } else if ([typeEncoding isEqualToString:@"@@?@@"]) {
-        NSString* (^typedBlock)(NSString*, NSString*) = (NSString* (^)(NSString*, NSString*))block;
-        return stringToJSI(runtime, typedBlock(jsiToString(runtime, args[0]), jsiToString(runtime, args[1])));
-      } else if ([typeEncoding isEqualToString:@"B@?"]) {
-        bool (^typedBlock)(void) = (bool (^)(void))block;
-        return boolToJSI(runtime, typedBlock());
-      } else if ([typeEncoding isEqualToString:@"B@?B"]) {
-        bool (^typedBlock)(bool) = (bool (^)(bool))block;
-        return boolToJSI(runtime, typedBlock(jsiToBool(runtime, args[0])));
-      } else if ([typeEncoding isEqualToString:@"B@?BB"]) {
-        bool (^typedBlock)(bool, bool) = (bool (^)(bool, bool))block;
-        return boolToJSI(runtime, typedBlock(jsiToBool(runtime, args[0]), jsiToBool(runtime, args[1])));
-      } else {
-        throw std::runtime_error(std::string("Unsupported type encoding: ") + [typeEncoding UTF8String]);
+      // Create method signature from type encoding
+      NSMethodSignature *signature = [NSMethodSignature signatureWithObjCTypes:[typeEncoding UTF8String]];
+      if (!signature) {
+        throw std::runtime_error(std::string("Invalid type encoding: ") + [typeEncoding UTF8String]);
       }
+
+      // Create invocation
+      NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+      [invocation setTarget:block];
+
+      // Set arguments (index 0 is the block itself, actual arguments start at index 1)
+      for (NSUInteger i = 0; i < count; i++) {
+        const char *argType = [signature getArgumentTypeAtIndex:i + 1];
+        setInvocationArgument(invocation, i + 1, argType, runtime, args[i]);
+      }
+
+      // Invoke the block
+      [invocation invoke];
+
+      // Get and convert return value
+      const char *returnType = [signature methodReturnType];
+      return getInvocationReturnValue(invocation, returnType, runtime);
+
     } @catch (NSException *exception) {
       // Convert NSException from Swift to JSError
-      // Swift errors are wrapped in NSExceptions with code and message in userInfo
       NSString *code = exception.userInfo[@"code"] ?: @"ERR_UNKNOWN";
       NSString *message = exception.userInfo[@"message"] ?: exception.reason;
 
