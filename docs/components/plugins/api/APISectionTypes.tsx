@@ -26,6 +26,7 @@ import {
   getCommentContent,
   listParams,
   defineLiteralType,
+  LITERAL_UNION_COLLAPSE_THRESHOLD,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
@@ -266,6 +267,7 @@ const renderType = (
         </div>
       );
     } else if (literalTypes.length > 0) {
+      const shouldCollapseLiteralTypes = literalTypes.length > LITERAL_UNION_COLLAPSE_THRESHOLD;
       const acceptedLiteralTypes = defineLiteralType(literalTypes);
       return (
         <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
@@ -276,17 +278,25 @@ const renderType = (
             {acceptedLiteralTypes ?? 'multiple types'}
           </CALLOUT>
           <APICommentTextBlock comment={comment} includePlatforms={false} />
-          <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
-            Acceptable values are:{' '}
-            {literalTypes.map((lt, index) => (
-              <Fragment key={`${name}-literal-type-${index}`}>
-                <CODE className="mb-px">{resolveTypeName(lt, sdkVersion)}</CODE>
-                {index + 1 !== literalTypes.length ? (
-                  <span className="text-quaternary"> | </span>
-                ) : null}
-              </Fragment>
-            ))}
-          </CALLOUT>
+          {shouldCollapseLiteralTypes ? (
+            <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
+              Acceptable values include {literalTypes.length} documented literals. For large unions
+              (like Material icons), see the source type definitions or IntelliSense for the full
+              list.
+            </CALLOUT>
+          ) : (
+            <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
+              Acceptable values are{' '}
+              {literalTypes.map((lt, index) => (
+                <Fragment key={`${name}-literal-type-${index}`}>
+                  <CODE className="mb-px">{resolveTypeName(lt, sdkVersion)}</CODE>
+                  {index + 1 !== literalTypes.length ? (
+                    <span className="text-quaternary"> | </span>
+                  ) : null}
+                </Fragment>
+              ))}
+            </CALLOUT>
+          )}
         </div>
       );
     }

@@ -46,6 +46,7 @@ import { ELEMENT_SPACING, STYLES_OPTIONAL, STYLES_SECONDARY } from './styles';
 const isDev = process.env.NODE_ENV === 'development';
 
 export const DEFAULT_BASE_NESTING_LEVEL = 2;
+export const LITERAL_UNION_COLLAPSE_THRESHOLD = 50;
 
 const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
@@ -258,6 +259,14 @@ export const resolveTypeName = (
       }
       return elementType.name + type;
     } else if (type === 'union' && types?.length) {
+      const isLargeLiteralUnion =
+        types.length > LITERAL_UNION_COLLAPSE_THRESHOLD &&
+        types.every((t: TypeDefinitionData) =>
+          ['literal', 'templateLiteral', 'intrinsic', 'reference', 'tuple'].includes(t.type)
+        );
+      if (isLargeLiteralUnion) {
+        return 'See description for available icons.';
+      }
       return renderUnion(types, { sdkVersion });
     } else if (elementType && elementType.type === 'union' && elementType?.types?.length) {
       const unionTypes = elementType?.types ?? [];
