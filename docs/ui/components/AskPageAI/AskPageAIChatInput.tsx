@@ -26,8 +26,8 @@ export function AskPageAIChatInput({
         <textarea
           aria-label="Ask AI about this page"
           placeholder="Ask about this page (Shift+Enter for newline)"
-          className="max-h-[160px] min-h-[44px] flex-1 resize-none overflow-y-auto rounded-md border border-transparent bg-subtle px-3 py-2 text-sm leading-relaxed outline-none placeholder:text-tertiary focus:!shadow-none focus:!outline-none focus:ring-0 focus-visible:!shadow-none focus-visible:!outline-none focus-visible:ring-0"
-          rows={1}
+          className="max-h-[160px] min-h-[64px] flex-1 resize-none overflow-y-auto rounded-md border border-transparent bg-subtle px-3 py-2 text-sm leading-relaxed outline-none placeholder:text-tertiary focus:!shadow-none focus:!outline-none focus:ring-0 focus-visible:!shadow-none focus-visible:!outline-none focus-visible:ring-0"
+          rows={2}
           value={question}
           onChange={event => {
             onQuestionChange(event.target.value);
