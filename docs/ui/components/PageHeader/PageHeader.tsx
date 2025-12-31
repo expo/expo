@@ -160,7 +160,9 @@ export function PageHeader({
           {description}
         </P>
       )}
-      {cliVersion && <PageCliVersion cliVersion={cliVersion} className="mt-3 max-xl-gutters:mt-2" />}
+      {cliVersion && (
+        <PageCliVersion cliVersion={cliVersion} className="mt-3 max-xl-gutters:mt-2" />
+      )}
       <span className="mb-1 mt-3 hidden items-center gap-1 max-xl-gutters:flex">
         <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
         {(showMarkdownActions || hasAskAIButton) && (
