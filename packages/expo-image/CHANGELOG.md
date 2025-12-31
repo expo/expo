@@ -11,6 +11,7 @@
 - [iOS] Adopted Swift 6 ([#40369](https://github.com/expo/expo/pull/40369) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Provide plugin to disable `libdav1d`. ([#40691](https://github.com/expo/expo/pull/40691) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] feat: add `configureCache` option ([#40647](https://github.com/expo/expo/pull/40647) by [@kosmydel](https://github.com/kosmydel))
+- [Web] Add `loading` prop for lazy loading images. ([#41442](https://github.com/expo/expo/pull/41442) by [@mozzius](https://github.com/mozzius))
 
 ### 🐛 Bug fixes
 
