@@ -45,6 +45,7 @@ module Pod
             Expo::ProjectIntegrator::integrate_targets_in_project(project_targets, project)
             Expo::ProjectIntegrator::remove_nils_from_source_files(project)
             Expo::ProjectIntegrator::set_autolinking_configuration(project)
+            Expo::ProjectIntegrator::integrate_core_macro_plugins(project_targets)
 
             # CocoaPods saves the projects to integrate at the next step,
             # but in some cases we're modifying other projects as well.

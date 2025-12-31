@@ -3737,7 +3737,7 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  BenchmarkingModule: 2b57a2e5c6d2124917d3d740ec2b90267279ac2f
+  BenchmarkingModule: 69aa39c6f6d42bf6fc47caeacb070d24de22d54f
   EASClient: de38c20c1dd9af7ff435afdc8b2c9b7c20d46767
   EXApplication: a9d1c46d473d36f61302a9a81db2379441f3f094
   EXConstants: 59d46d25b89f88cc38291a56dbce4d550758f72d
