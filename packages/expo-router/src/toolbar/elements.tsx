@@ -53,7 +53,8 @@ export interface ToolbarMenuProps {
   inline?: boolean;
   /**
    * If `true`, the menu will be displayed as a palette.
-   * This means that the menu will be displayed as one row
+   * This means that the menu will be displayed as one row.
+   * The `elementSize` property is ignored when palette is used, all items will be `elementSize="small"`. Use `elementSize="medium"` instead of `palette` to display actions with titles horizontally.
    *
    * > **Note**: Palette menus are only supported in submenus.
    *
@@ -94,6 +95,15 @@ export interface ToolbarMenuProps {
    * @default 'plain'
    */
   variant?: 'plain' | 'done' | 'prominent';
+  /**
+   * The preferred size of the menu elements.
+   * `elementSize` property is ignored when `palette` is used.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/preferredelementsize) for more information.
+   *
+   * @platform iOS 16.0+
+   */
+  elementSize?: 'auto' | 'small' | 'medium' | 'large';
 }
 
 /**
@@ -127,6 +137,7 @@ export const ToolbarMenu: React.FC<ToolbarMenuProps> = ({
   tintColor,
   variant,
   style,
+  elementSize,
 }) => {
   const identifier = useId();
   const validChildren = Children.toArray(children).filter(
@@ -154,6 +165,7 @@ export const ToolbarMenu: React.FC<ToolbarMenuProps> = ({
       accessibilityHint={accessibilityHint}
       displayAsPalette={palette}
       displayInline={inline}
+      preferredElementSize={elementSize}
       tintColor={tintColor}
       titleStyle={titleStyle}
       barButtonItemStyle={variant === 'done' ? 'prominent' : variant}

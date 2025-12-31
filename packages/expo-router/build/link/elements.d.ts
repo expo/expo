@@ -86,7 +86,10 @@ export interface LinkMenuProps {
     icon?: SFSymbol;
     /**
      * If `true`, the menu will be displayed as a palette.
-     * This means that the menu will be displayed as one row
+     * This means that the menu will be displayed as one row.
+     * The `elementSize` property is ignored when palette is used, all items will be `elementSize="small"`. Use `elementSize="medium"` instead of `palette` to display actions with titles horizontally.
+     *
+     * > **Note**: Palette menus are only supported in submenus.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette) for more information.
      */
@@ -112,6 +115,15 @@ export interface LinkMenuProps {
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/destructive) for more information.
      */
     destructive?: boolean;
+    /**
+     * The preferred size of the menu elements.
+     * `elementSize` property is ignored when `palette` is used.
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/preferredelementsize) for more information.
+     *
+     * @platform iOS 16.0+
+     */
+    elementSize?: 'small' | 'medium' | 'large' | 'auto';
     children?: React.ReactNode;
 }
 /**
