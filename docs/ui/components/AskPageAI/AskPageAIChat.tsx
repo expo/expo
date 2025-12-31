@@ -13,11 +13,7 @@ import {
 import { usePageMetadata } from '~/providers/page-metadata';
 
 import { FOOTNOTE } from '../Text';
-import type {
-  ContextMarker,
-  ContextScope,
-  GlobalSwitchStatus,
-} from './AskPageAIChat.types';
+import type { ContextMarker, ContextScope, GlobalSwitchStatus } from './AskPageAIChat.types';
 import { createMarkerMap, normalizeQuestion } from './AskPageAIChat.utils';
 import { AskPageAIChatHeader } from './AskPageAIChatHeader';
 import { AskPageAIChatInput } from './AskPageAIChatInput';

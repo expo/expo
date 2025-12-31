@@ -1,5 +1,3 @@
-import type { Reaction } from '@kapaai/react-sdk';
-
 export type ContextScope = 'page' | 'global';
 
 export type GlobalSwitchStatus = 'pending' | 'done';
