@@ -106,7 +106,7 @@ public class LinkPreviewNativeModule: Module {
       Prop("barButtonItemStyle") { (view: LinkPreviewNativeActionView, style: BarItemStyle?) in
         view.barButtonItemStyle = style?.toUIBarButtonItemStyle()
       }
-      Prop("preferredElementSize") { (view: LinkPreviewNativeActionView, preferredElementSize: String?) in
+      Prop("preferredElementSize") { (view: LinkPreviewNativeActionView, preferredElementSize: MenuElementSize?) in
         view.preferredElementSize = preferredElementSize
       }
       Events("onSelected")
@@ -176,4 +176,29 @@ struct LinkSourceAlignmentRect: Record {
   @Field var y: Double
   @Field var width: Double
   @Field var height: Double
+}
+
+enum MenuElementSize: String, Enumerable {
+  case small
+  case medium
+  case large
+  case auto
+
+  @available(iOS 16.0, *)
+  func toUIMenuElementSize() -> UIMenu.ElementSize {
+    switch self {
+    case .small:
+      return .small
+    case .medium:
+      return .medium
+    case .large:
+      return .large
+    case .auto:
+      if #available(iOS 17.0, *) {
+        return .automatic
+      } else {
+        return .medium
+      }
+    }
+  }
 }

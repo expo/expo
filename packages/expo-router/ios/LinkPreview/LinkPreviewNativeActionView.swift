@@ -18,7 +18,7 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
   @NativeActionProp(updateMenu: true) var singleSelection: Bool = false
   @NativeActionProp(updateMenu: true) var displayAsPalette: Bool = false
   @NativeActionProp(updateMenu: true) var displayInline: Bool = false
-  @NativeActionProp(updateMenu: true) var preferredElementSize: String?
+  @NativeActionProp(updateMenu: true) var preferredElementSize: MenuElementSize?
 
   // MARK: - UIBarButtonItem props
   @NativeActionProp(updateAction: true, updateMenu: true) var routerHidden: Bool = false
@@ -89,20 +89,7 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
 
     if #available(iOS 16.0, *) {
       if let preferredElementSize = preferredElementSize {
-        switch preferredElementSize {
-        case "small":
-          menuAction.preferredElementSize = .small
-        case "medium":
-          menuAction.preferredElementSize = .medium
-        case "large":
-          menuAction.preferredElementSize = .large
-        case "auto":
-          if #available(iOS 17.0, *) {
-            menuAction.preferredElementSize = .automatic
-          }
-        default:
-          break
-        }
+        menuAction.preferredElementSize = preferredElementSize.toUIMenuElementSize()
       }
     }
 
