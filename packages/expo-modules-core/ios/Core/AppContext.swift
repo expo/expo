@@ -54,12 +54,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
    or when the app context is "bridgeless" (for example in native unit tests).
    */
   @objc
-  public weak var reactBridge: RCTBridge?
-
-  /**
-   RCTHost wrapper. This is set by ``ExpoReactNativeFactory`` in `didInitializeRuntime`.
-   */
-  private var hostWrapper: ExpoHostWrapper?
+  internal weak var reactBridge: RCTBridge?
 
   /**
    Underlying JSI runtime of the running app.
@@ -167,7 +162,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
   // MARK: - UI
 
   public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {    
-    return hostWrapper?.findView(withTag: viewTag) as? ViewType
+    return reactBridge?.uiManager.view(forReactTag: NSNumber(value: viewTag)) as? ViewType
   }
 
   // MARK: - Running on specific queues
@@ -311,7 +306,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
    Returns view modules wrapped by the base `ViewModuleWrapper` class.
    */
   @objc
-  public func getViewManagers() -> [ViewModuleWrapper] {
+  public func getViewManagers() -> [Any] {
     return moduleRegistry.flatMap { holder in
       holder.definition.views.map { key, viewDefinition in
         ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
@@ -389,10 +384,20 @@ public final class AppContext: NSObject, @unchecked Sendable {
       }
   }
 
+  private var _expoModulesConfig: ModulesProxyConfig?
+
   @objc
-  public final lazy var expoModulesConfig = ModulesProxyConfig(constants: self.exportedModulesConstants(),
-                                                               methodNames: self.exportedFunctionNames(),
-                                                               viewManagers: self.viewManagersMetadata())
+  public var expoModulesConfig: ModulesProxyConfig {
+    if let cachedConfig = _expoModulesConfig {
+      return cachedConfig
+    }
+    let newConfig: ModulesProxyConfig = ModulesProxyConfig(
+      constants: self.exportedModulesConstants(),
+      methodNames: self.exportedFunctionNames(),
+      viewManagers: self.viewManagersMetadata())
+    _expoModulesConfig = newConfig
+    return newConfig
+  }
 
   private func exportedFunctionNames() -> [String: [[String: Any]]] {
     var constants = [String: [[String: Any]]]()
@@ -534,11 +539,6 @@ public final class AppContext: NSObject, @unchecked Sendable {
     if isModuleRegistryInitialized {
       moduleRegistry.post(event: .appContextDestroys)
     }
-  }
-  
-  @objc
-  public func setHostWrapper(_ wrapper: ExpoHostWrapper) {
-    self.hostWrapper = wrapper
   }
 
   // MARK: - Statics
