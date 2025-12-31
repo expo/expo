@@ -26,6 +26,7 @@ import {
   getCommentContent,
   listParams,
   defineLiteralType,
+  isIconType,
   LITERAL_UNION_COLLAPSE_THRESHOLD,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
@@ -39,6 +40,8 @@ export type APISectionTypesProps = {
   data: TypeGeneralData[];
   sdkVersion: string;
 };
+
+const COLLAPSED_LITERAL_MESSAGE = 'Acceptable values are: See description for available values.';
 
 const renderTypeDeclarationTable = (
   { children, indexSignature, comment }: TypeDeclarationContentData,
@@ -280,7 +283,7 @@ const renderType = (
           <APICommentTextBlock comment={comment} includePlatforms={false} />
           <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
             {shouldCollapseLiteralTypes ? (
-              <>Acceptable values are: See description for available icons.</>
+              <>{COLLAPSED_LITERAL_MESSAGE}</>
             ) : (
               <>
                 Acceptable values are:{' '}
