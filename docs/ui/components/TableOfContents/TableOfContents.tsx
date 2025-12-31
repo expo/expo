@@ -151,7 +151,9 @@ export const TableOfContents = forwardRef<
 
       for (let i = 0; i < headings.length; i++) {
         const heading = headings[i];
-        if (!heading.ref?.current) continue;
+        if (!heading.ref?.current) {
+          continue;
+        }
 
         const sectionStart = heading.ref.current.offsetTop;
         const nextHeading = headings[i + 1];
