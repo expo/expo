@@ -291,7 +291,7 @@ it('should set options correctly, using composition without separate components'
             <Stack.Header.Left asChild>
               <CustomHeaderLeft />
             </Stack.Header.Left>
-            <Stack.Header.SearchBar
+            <Stack.SearchBar
               placeholder="Search"
               textColor="red"
               tintColor="orange"
@@ -483,7 +483,7 @@ it('should set options correctly, when used inside page', () => {
               <Stack.Header.Left asChild>
                 <CustomHeaderLeft />
               </Stack.Header.Left>
-              <Stack.Header.SearchBar
+              <Stack.SearchBar
                 placeholder="Search"
                 textColor="red"
                 tintColor="orange"

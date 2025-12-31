@@ -1,11 +1,9 @@
 import type { ImageRef } from 'expo-image';
 import { Children, isValidElement, useId, type ReactNode } from 'react';
 import { Platform, StyleSheet, type ColorValue, type StyleProp } from 'react-native';
-import { type SearchBarProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { RouterToolbarHost, RouterToolbarItem } from './native';
-import Stack from '../layouts/StackClient';
 import { InternalLinkPreviewContext } from '../link/InternalLinkPreviewContext';
 import { LinkMenuAction, type LinkMenuActionProps } from '../link/elements';
 import { NativeLinkPreviewAction } from '../link/preview/native';
@@ -428,7 +426,7 @@ export const ToolbarSpacer = (props: ToolbarSpacerProps) => {
   );
 };
 
-export interface ToolbarSearchBarProps extends SearchBarProps {
+export interface ToolbarSearchBarPlacementProps {
   /**
    * Whether to hide the shared background when `sharesBackground` is enabled.
    *
@@ -438,7 +436,7 @@ export interface ToolbarSearchBarProps extends SearchBarProps {
    */
   hidesSharedBackground?: boolean;
   /**
-   * Whether the search bar should be hidden.
+   * Whether the search bar placed in the toolbar should be hidden.
    *
    * @default false
    */
@@ -455,32 +453,33 @@ export interface ToolbarSearchBarProps extends SearchBarProps {
 }
 
 /**
- * A search bar component for the toolbar.
+ * Declares the position of a search bar within the toolbar.
  * It should only be used as a child of `Toolbar`.
  *
- * > **Note**: The stack header must be visible in order to add a search bar.
- * > Once `Toolbar.SearchBar` is used, the search bar will no longer be available
- * > in this screen’s header.
+ * > **Note**: On iOS 26+, this component specifies where in the toolbar the search bar
+ * > (configured via `Stack.SearchBar`) should appear. On iOS 18 and earlier, the search bar
+ * > will be shown in the header instead.
+ *
+ * > **Important**: You must use `Stack.SearchBar` to configure and display the actual
+ * > search bar. This component only declares its position in the toolbar.
  *
  * @example
  * ```tsx
+ * <Stack.SearchBar placeholder="Search..." />
  * <Toolbar>
- *   <Toolbar.SearchBar />
+ *   <Toolbar.SearchBarPlacement />
  *   <Toolbar.Spacer />
  *   <Toolbar.Button icon="mic" />
  * </Toolbar>
  * ```
  *
- * @see [React Native Screens SearchBarProps](https://github.com/software-mansion/react-native-screens/blob/main/src/types.tsx#L822) for more information about available props.
- *
  * @platform ios 26+
  */
-export const ToolbarSearchBar = ({
+export const ToolbarSearchBarPlacement = ({
   hidesSharedBackground,
   hidden,
   sharesBackground,
-  ...searchBarProps
-}: ToolbarSearchBarProps) => {
+}: ToolbarSearchBarPlacementProps) => {
   const id = useId();
   if (process.env.EXPO_OS !== 'ios' || parseInt(String(Platform.Version).split('.')[0], 10) < 26) {
     return null;
@@ -488,18 +487,13 @@ export const ToolbarSearchBar = ({
   if (hidden) {
     return null;
   }
-  const placement =
-    searchBarProps.placement !== 'integrated' && searchBarProps.placement !== 'integratedButton'
-      ? 'integrated'
-      : searchBarProps.placement;
   return (
     <RouterToolbarItem
       hidesSharedBackground={hidesSharedBackground}
       identifier={id}
       sharesBackground={sharesBackground}
-      type="searchBar">
-      <Stack.Screen options={{ headerSearchBarOptions: { ...searchBarProps, placement } }} />
-    </RouterToolbarItem>
+      type="searchBar"
+    />
   );
 };
 

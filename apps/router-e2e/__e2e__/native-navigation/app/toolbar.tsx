@@ -95,6 +95,13 @@ export default function ToolbarScreen() {
         contentInsetAdjustmentBehavior="automatic">
         <Text style={styles.title}>Toolbar E2E Test Screen</Text>
         <Stack.Header />
+        <Stack.SearchBar
+          onFocus={() => setIsSearchFocused(true)}
+          onBlur={() => setIsSearchFocused(false)}
+          onChangeText={(e) => setSearchText(e.nativeEvent.text)}
+          placement="integratedButton"
+          placeholder="This is toolbar searchbar"
+        />
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Toolbar Items Visibility</Text>
@@ -262,15 +269,10 @@ export default function ToolbarScreen() {
         <Toolbar.Spacer />
 
         {/* Search bar */}
-        <Toolbar.SearchBar
+        <Toolbar.SearchBarPlacement
           hidden={!showSearchBar}
           sharesBackground={sharesBackgroundSearchBar}
           hidesSharedBackground={hidesSharedBackgroundSearchBar}
-          onFocus={() => setIsSearchFocused(true)}
-          onBlur={() => setIsSearchFocused(false)}
-          onChangeText={(e) => setSearchText(e.nativeEvent.text)}
-          placement="integratedButton"
-          placeholder="This is toolbar searchbar"
         />
 
         {/* Search button */}

@@ -52,18 +52,20 @@ class RouterToolbarItemView: RouterViewWithLogger {
         // Hide the item if no search bar is provided
         item.isHidden = true
       }
-      guard #available(iOS 26.0, *), let controller = self.host?.findViewController(),
-        let navController = controller.navigationController
-      else {
+      guard #available(iOS 26.0, *), let controller = self.host?.findViewController() else {
         // Check for iOS 26, should already be guarded by the JS side, so this warning will only fire if controller is nil
         logger?.warn(
           "[expo-router] navigationItem.searchBarPlacementBarButtonItem not available. This is most likely a bug in expo-router."
         )
         return item
       }
+      guard let navController = controller.navigationController else {
+        currentBarButtonItem = nil
+        return
+      }
       guard navController.isNavigationBarHidden == false else {
         logger?.warn(
-          "[expo-router] Toolbar.SearchBar can only be used when stack header is shown."
+          "[expo-router] Toolbar.SearchBarPlacement should only be used when stack header is shown."
         )
         return item
       }
