@@ -35,7 +35,7 @@ jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropName
 
   // Create a lazy object for the specific module. It defers initialization of the final module object.
   LazyObject::Shared moduleLazyObject = std::make_shared<LazyObject>(^SharedJSIObject(jsi::Runtime &runtime) {
-    return [[appContext getNativeModuleObject:nsModuleName] getShared];
+    return [[appContext getNativeModuleObjectUnsafe:nsModuleName] getShared];
   });
 
   // Save the module's lazy host object for later use.
