@@ -278,25 +278,23 @@ const renderType = (
             {acceptedLiteralTypes ?? 'multiple types'}
           </CALLOUT>
           <APICommentTextBlock comment={comment} includePlatforms={false} />
-          {shouldCollapseLiteralTypes ? (
-            <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
-              Acceptable values include {literalTypes.length} documented literals. For large unions
-              (like Material icons), see the source type definitions or IntelliSense for the full
-              list.
-            </CALLOUT>
-          ) : (
-            <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
-              Acceptable values are{' '}
-              {literalTypes.map((lt, index) => (
-                <Fragment key={`${name}-literal-type-${index}`}>
-                  <CODE className="mb-px">{resolveTypeName(lt, sdkVersion)}</CODE>
-                  {index + 1 !== literalTypes.length ? (
-                    <span className="text-quaternary"> | </span>
-                  ) : null}
-                </Fragment>
-              ))}
-            </CALLOUT>
-          )}
+          <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
+            {shouldCollapseLiteralTypes ? (
+              <>Acceptable values are: See description for available icons.</>
+            ) : (
+              <>
+                Acceptable values are:{' '}
+                {literalTypes.map((lt, index) => (
+                  <Fragment key={`${name}-literal-type-${index}`}>
+                    <CODE className="mb-px">{resolveTypeName(lt, sdkVersion)}</CODE>
+                    {index + 1 !== literalTypes.length ? (
+                      <span className="text-quaternary"> | </span>
+                    ) : null}
+                  </Fragment>
+                ))}
+              </>
+            )}
+          </CALLOUT>
         </div>
       );
     }
