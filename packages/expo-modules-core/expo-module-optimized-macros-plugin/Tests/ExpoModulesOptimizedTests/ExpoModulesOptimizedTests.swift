@@ -364,4 +364,114 @@ final class ExpoModulesOptimizedTests: XCTestCase {
         throw XCTSkip("macros are only supported when running tests for the host platform")
         #endif
     }
+
+    func testErrorWithUnsupportedParameterType() throws {
+        #if canImport(ExpoModulesOptimizedMacros)
+        assertMacroExpansion(
+            """
+            struct MyStruct {
+                let value: Int
+            }
+
+            @OptimizedFunction("processStruct")
+            private func processStructImpl(data: MyStruct) -> String {
+                return "processed"
+            }
+            """,
+            expandedSource: """
+            struct MyStruct {
+                let value: Int
+            }
+            private func processStructImpl(data: MyStruct) -> String {
+                return "processed"
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(message: "Unsupported parameter type: MyStruct", line: 5, column: 1)
+            ],
+            macros: testMacros
+        )
+        #else
+        throw XCTSkip("macros are only supported when running tests for the host platform")
+        #endif
+    }
+
+    func testErrorWithUnsupportedReturnType() throws {
+        #if canImport(ExpoModulesOptimizedMacros)
+        assertMacroExpansion(
+            """
+            struct MyStruct {
+                let value: Int
+            }
+
+            @OptimizedFunction("createStruct")
+            private func createStructImpl(value: Int) -> MyStruct {
+                return MyStruct(value: value)
+            }
+            """,
+            expandedSource: """
+            struct MyStruct {
+                let value: Int
+            }
+            private func createStructImpl(value: Int) -> MyStruct {
+                return MyStruct(value: value)
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(message: "Unsupported return type: MyStruct", line: 5, column: 1)
+            ],
+            macros: testMacros
+        )
+        #else
+        throw XCTSkip("macros are only supported when running tests for the host platform")
+        #endif
+    }
+
+    func testErrorWithUnsupportedArrayType() throws {
+        #if canImport(ExpoModulesOptimizedMacros)
+        assertMacroExpansion(
+            """
+            @OptimizedFunction("processArray")
+            private func processArrayImpl(items: [Int]) -> Int {
+                return items.count
+            }
+            """,
+            expandedSource: """
+            private func processArrayImpl(items: [Int]) -> Int {
+                return items.count
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(message: "Unsupported parameter type: [Int]", line: 1, column: 1)
+            ],
+            macros: testMacros
+        )
+        #else
+        throw XCTSkip("macros are only supported when running tests for the host platform")
+        #endif
+    }
+
+    func testErrorWithUnsupportedOptionalType() throws {
+        #if canImport(ExpoModulesOptimizedMacros)
+        assertMacroExpansion(
+            """
+            @OptimizedFunction("processOptional")
+            private func processOptionalImpl(value: Int?) -> Bool {
+                return value != nil
+            }
+            """,
+            expandedSource: """
+            private func processOptionalImpl(value: Int?) -> Bool {
+                return value != nil
+            }
+            """,
+            diagnostics: [
+                DiagnosticSpec(message: "Unsupported parameter type: Int?", line: 1, column: 1)
+            ],
+            macros: testMacros
+        )
+        #else
+        throw XCTSkip("macros are only supported when running tests for the host platform")
+        #endif
+    }
 }
