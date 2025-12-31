@@ -26,7 +26,6 @@ import {
   getCommentContent,
   listParams,
   defineLiteralType,
-  isIconType,
   LITERAL_UNION_COLLAPSE_THRESHOLD,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';

@@ -268,7 +268,7 @@ export const resolveTypeName = (
       if (isLargeLiteralUnion) {
         if (isIconType(name) && isDev) {
           console.warn(
-            `Literal union for type \"${name ?? 'unknown'}\" is large. Consider adding a custom description.`
+            `Literal union for type "${name ?? 'unknown'}" is large. Consider adding a custom description.`
           );
         }
         return 'See description for available values.';
