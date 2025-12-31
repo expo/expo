@@ -7,6 +7,7 @@ import { hasDynamicData, shouldShowMarkdownActions } from '~/ui/components/Markd
 import { H1, P } from '~/ui/components/Text';
 
 import { AskPageAIConfigTrigger, AskPageAITrigger } from '../AskPageAI';
+import { PageCliVersion } from './PageCliVersion';
 import { PagePackageVersion } from './PagePackageVersion';
 import { PagePlatformTags } from './PagePlatformTags';
 import { PageTitleButtons } from './PageTitleButtons';
@@ -15,6 +16,7 @@ type Props = {
   title?: string;
   description?: string;
   packageName?: string;
+  cliVersion?: string;
   sourceCodeUrl?: string;
   iconUrl?: string;
   platforms?: string[];
@@ -28,6 +30,7 @@ export function PageHeader({
   title,
   description,
   packageName,
+  cliVersion,
   iconUrl,
   sourceCodeUrl,
   platforms,
@@ -79,6 +82,7 @@ export function PageHeader({
               {description}
             </P>
           )}
+          {cliVersion && <PageCliVersion cliVersion={cliVersion} className="mt-3" />}
           {platforms && <PagePlatformTags platforms={platforms} className="mt-4" />}
         </div>
         <div
@@ -155,6 +159,9 @@ export function PageHeader({
         <P theme="secondary" data-description="true">
           {description}
         </P>
+      )}
+      {cliVersion && (
+        <PageCliVersion cliVersion={cliVersion} className="mt-3 max-xl-gutters:mt-2" />
       )}
       <span className="mb-1 mt-3 hidden items-center gap-1 max-xl-gutters:flex">
         <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
