@@ -307,11 +307,13 @@ public final class AppContext: NSObject, @unchecked Sendable {
    */
   @objc
   public func getViewManagers() -> [Any] {
-    return moduleRegistry.flatMap { holder in
-      holder.definition.views.map { key, viewDefinition in
-        ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
+    var result: [Any] = []
+    for holder in moduleRegistry {
+      for (key, viewDefinition) in holder.definition.views {
+        result.append(ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW))        
       }
     }
+    return result
   }
 
   /**
@@ -335,9 +337,22 @@ public final class AppContext: NSObject, @unchecked Sendable {
    When remote debugging is enabled, this will always return `nil`.
    */
   @JavaScriptActor
-  @objc
   public func getNativeModuleObject(_ moduleName: String) -> JavaScriptObject? {
     return moduleRegistry.get(moduleHolderForName: moduleName)?.javaScriptObject
+  }
+
+  /**
+   Returns a JavaScript object that represents a module with given name.
+   This is a non-actor-isolated wrapper for ObjC interop that uses `assumeIsolated` internally.
+  
+   - Warning: This method must only be called from the JavaScript thread.
+   It will crash if called from other threads.
+   */
+  @objc
+  public func getNativeModuleObjectUnsafe(_ moduleName: String) -> JavaScriptObject? {
+    return JavaScriptActor.assumeIsolated {
+      return moduleRegistry.get(moduleHolderForName: moduleName)?.javaScriptObject
+    }
   }
 
   /**
