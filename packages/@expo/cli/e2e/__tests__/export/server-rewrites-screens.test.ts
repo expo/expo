@@ -69,12 +69,25 @@ describe('server rewrites', () => {
   it('has expected files', async () => {
     const files = findProjectFiles(path.join(projectRoot, outputName, 'server'));
 
-    // In SSR mode, no HTML files are pre-rendered - they're rendered at request time
-    const serverHtmlFiles = files.filter((f) => f.endsWith('.html'));
-    expect(serverHtmlFiles.length).toEqual(0);
+    // The wrapper should not be included as a route.
+    expect(files).not.toContain('+html.html');
+    expect(files).not.toContain('_layout.html');
 
-    // SSR-specific files SHOULD exist
-    expect(files).toContain('_expo/server/render.js');
-    expect(files).toContain('_expo/routes.json');
+    // Injected by framework
+    expect(files).toContain('_sitemap.html');
+    expect(files).toContain('+not-found.html');
+
+    // Normal routes
+    expect(files).toContain('about.html');
+    expect(files).toContain('index.html');
+    expect(files).toContain('styled.html');
+
+    // Rewrite routes should not be written to disk
+    expect(files).not.toContain('rewrite.html');
+
+    // generateStaticParams values
+    expect(files).toContain('[post].html');
+    expect(files).toContain('welcome-to-the-universe.html');
+    expect(files).toContain('other.html');
   });
 });

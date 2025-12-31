@@ -66,14 +66,17 @@ describe('server-root-group', () => {
 
   it('has expected files', async () => {
     // Request HTML
-    const files = findProjectFiles(path.join(outputDir, 'server'));
+    const files = findProjectFiles(outputDir);
 
-    // In SSR mode, no HTML files are pre-rendered - they're rendered at request time
-    const serverHtmlFiles = files.filter((f) => f.endsWith('.html'));
-    expect(serverHtmlFiles.length).toEqual(0);
+    // The wrapper should not be included as a route.
+    expect(files).not.toContain('server/+html.html');
+    expect(files).not.toContain('server/_layout.html');
 
     // Has routes.json
-    expect(files).toContain('_expo/server/render.js');
-    expect(files).toContain('_expo/routes.json');
+    expect(files).toContain('server/_expo/routes.json');
+
+    // HTML
+    expect(files).toContain('server/(root)/index.html');
+    expect(files).not.toContain('server/index.html');
   });
 });

@@ -1,6 +1,5 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
-import type { RoutesManifest } from 'expo-server/private';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -42,13 +41,18 @@ describe('server-output', () => {
       });
     });
 
-    it.each([
-      { path: '/blog-ssg/abc', value: 'abc' },
-      { path: '/blog-ssg/123', value: '123' },
-    ])(`can serve dynamic route at $path`, async ({ path, value }) => {
-      const res = await server.fetchAsync(path);
+    it(`can serve build-time static dynamic route`, async () => {
+      const res = await server.fetchAsync('/blog-ssg/abc');
       expect(res.status).toEqual(200);
-      expect(await res.text()).toMatch(new RegExp(`Post: <!-- -->${value}`));
+      expect(await res.text()).toMatch(/Post: <!-- -->abc/);
+
+      if (!server.isExpoStart) {
+        // Behaves like a dynamic route in development, but is pre-rendered in production.
+        // This route is not pre-rendered and should show the default value for the dynamic parameter.
+        const res2 = await server.fetchAsync('/blog-ssg/123');
+        expect(res2.status).toEqual(200);
+        expect(await res2.text()).toMatch(/Post: <!-- -->\[post\]/);
+      }
     });
 
     it(`can serve up custom not-found`, async () => {
@@ -84,6 +88,14 @@ describe('server-output', () => {
         /<div data-testid="alpha-beta-text">/
       );
     });
+
+    // Behaves like a dynamic route in development, but is pre-rendered in production.
+    (server.isExpoStart ? it.skip : it)(
+      `can serve up built time generated dynamic html routes`,
+      async () => {
+        expect(await server.fetchAsync('/blog/123').then((res) => res.text())).toMatch(/\[post\]/);
+      }
+    );
 
     it(`can hit the 404 route`, async () => {
       expect(await server.fetchAsync('/clearly-missing').then((res) => res.text())).toMatch(
@@ -344,12 +356,20 @@ describe('server-output', () => {
 
     // Tests that require exported files (not available for dev server)
     (server.isExpoStart ? describe.skip : describe)('exported files', () => {
+      it(`has expected static html from array group`, async () => {
+        const files = findProjectFiles(server.outputDir);
+        expect(files).not.toContain('server/multi-group.html');
+        expect(files).not.toContain('server/(a,b)/multi-group.html');
+        expect(files).toContain('server/(a)/multi-group.html');
+        expect(files).toContain('server/(b)/multi-group.html');
+      });
+
       it(`has expected API route from array group`, async () => {
-        const files = findProjectFiles(path.join(server.outputDir, 'server'));
-        expect(files).toContain('_expo/functions/(a,b)/multi-group-api+api.js');
-        expect(files).toContain('_expo/functions/(a,b)/multi-group-api+api.js.map');
-        expect(files).not.toContain('_expo/functions/(a)/multi-group-api+api.js');
-        expect(files).not.toContain('_expo/functions/(b)/multi-group-api+api.js');
+        const files = findProjectFiles(server.outputDir);
+        expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js');
+        expect(files).toContain('server/_expo/functions/(a,b)/multi-group-api+api.js.map');
+        expect(files).not.toContain('server/_expo/functions/(a)/multi-group-api+api.js');
+        expect(files).not.toContain('server/_expo/functions/(b)/multi-group-api+api.js');
 
         // Load the sourcemap and check that the paths are relative
         const map = JSON.parse(
@@ -363,43 +383,47 @@ describe('server-output', () => {
       });
 
       it('has expected files', async () => {
-        const files = findProjectFiles(path.join(server.outputDir, 'server'));
+        const files = findProjectFiles(server.outputDir);
+
+        // The wrapper should not be included as a route.
+        expect(files).not.toContain('server/+html.html');
+        expect(files).not.toContain('server/_layout.html');
+
+        // Has routes.json
+        expect(files).toContain('server/_expo/routes.json');
 
         // Has functions
-        expect(files).toContain('_expo/functions/methods+api.js');
-        expect(files).toContain('_expo/functions/methods+api.js.map');
-        expect(files).toContain('_expo/functions/api/[dynamic]+api.js');
-        expect(files).toContain('_expo/functions/api/[dynamic]+api.js.map');
-        expect(files).toContain('_expo/functions/api/externals+api.js');
-        expect(files).toContain('_expo/functions/api/externals+api.js.map');
+        expect(files).toContain('server/_expo/functions/methods+api.js');
+        expect(files).toContain('server/_expo/functions/methods+api.js.map');
+        expect(files).toContain('server/_expo/functions/api/[dynamic]+api.js');
+        expect(files).toContain('server/_expo/functions/api/[dynamic]+api.js.map');
+        expect(files).toContain('server/_expo/functions/api/externals+api.js');
+        expect(files).toContain('server/_expo/functions/api/externals+api.js.map');
 
         // TODO: We shouldn't export this
-        expect(files).toContain('_expo/functions/api/empty+api.js');
-        expect(files).toContain('_expo/functions/api/empty+api.js.map');
+        expect(files).toContain('server/_expo/functions/api/empty+api.js');
+        expect(files).toContain('server/_expo/functions/api/empty+api.js.map');
 
-        // In SSR mode, no HTML files are pre-rendered - they're rendered at request time
-        const serverHtmlFiles = files.filter((f) => f.endsWith('.html'));
-        expect(serverHtmlFiles.length).toEqual(0);
+        // Has single variation of group file
+        expect(files).toContain('server/(alpha)/index.html');
+        expect(files).toContain('server/(alpha)/beta.html');
+        expect(files).not.toContain('server/beta.html');
 
-        // SSR-specific files
-        expect(files).toContain('_expo/server/render.js');
-        expect(files).toContain('_expo/routes.json');
+        // Injected by framework
+        expect(files).toContain('server/_sitemap.html');
+        expect(files).toContain('server/+not-found.html');
+
+        // Normal routes
+        expect(files).toContain('server/index.html');
+        expect(files).toContain('server/blog/[post].html');
       });
 
       // Ensure the `/server/_expo/routes.json` contains the right file paths and named regexes.
       // This test is created to avoid and detect regressions on Windows
       it('has expected routes manifest entries', async () => {
-        const manifest = (await JsonFile.readAsync(
-          path.join(server.outputDir, 'server/_expo/routes.json')
-        )) as unknown as RoutesManifest<string>;
-
-        // HACK(@hassankhan): Bundle hashes differ locally vs on CI, so we're replacing them with
-        // a constant. Ideally this test would do proper assertions instead of a snapshot though.
-        manifest.assets!.js = manifest.assets!.js.map((asset) =>
-          asset.replace(/entry-(.*)\.js$/, 'entry-[HASH].js')
-        );
-
-        expect(manifest).toMatchSnapshot();
+        expect(
+          await JsonFile.readAsync(path.join(server.outputDir, 'server/_expo/routes.json'))
+        ).toMatchSnapshot();
       });
     });
   });
