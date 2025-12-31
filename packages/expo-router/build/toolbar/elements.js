@@ -127,8 +127,8 @@ exports.ToolbarSpacer = ToolbarSpacer;
  *       placeholderTextColor={Color.ios.placeholderText}
  *     />
  *   </Toolbar.View>
- *   <Toolbar.View separateBackground style={{ width: 32, height: 32 }}>
- *     <Pressable onPress={handlePress}>
+ *   <Toolbar.View separateBackground>
+ *     <Pressable style={{ width: 32, height: 32 }} onPress={handlePress}>
  *       <SymbolView name="plus" size={22} />
  *     </Pressable>
  *   </Toolbar.View>
