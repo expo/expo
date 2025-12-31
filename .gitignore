@@ -40,6 +40,7 @@ yarn-error.log
 *.xccheckout
 *.xcscmblueprint
 xcuserdata
+packages/expo-modules-core/expo-module-optimized-macros-plugin/.build
 
 # IDEA / Android Studio
 *.iml
