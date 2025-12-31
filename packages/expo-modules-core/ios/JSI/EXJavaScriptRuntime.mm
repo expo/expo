@@ -428,7 +428,26 @@ namespace {
   // Detect if this is a known fast-path signature
   SignatureType sigType = detectSignatureType(typeEncoding);
 
-  jsi::HostFunctionType function = [weakCallInvoker, block, typeEncoding, sigType](
+  // Pre-create and cache NSInvocation for slow path (single-threaded JS execution)
+  NSInvocation *cachedInvocation = nil;
+  NSMethodSignature *cachedSignature = nil;
+
+  if (sigType == SignatureType::Unknown) {
+    // Create method signature from type encoding
+    cachedSignature = [NSMethodSignature signatureWithObjCTypes:[typeEncoding UTF8String]];
+    if (!cachedSignature) {
+      @throw [NSException exceptionWithName:@"InvalidTypeEncoding"
+                                     reason:[NSString stringWithFormat:@"Invalid type encoding: %@", typeEncoding]
+                                   userInfo:nil];
+    }
+
+    // Pre-create invocation and set the target block
+    cachedInvocation = [NSInvocation invocationWithMethodSignature:cachedSignature];
+    [cachedInvocation setTarget:block];
+//    [cachedInvocation retainArguments]; // Retain to safely reuse across calls
+  }
+
+  jsi::HostFunctionType function = [weakCallInvoker, block, typeEncoding, sigType, cachedInvocation, cachedSignature](
     jsi::Runtime &runtime, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
     auto callInvoker = weakCallInvoker.lock();
 
@@ -438,29 +457,19 @@ namespace {
         return invokeFastPath(block, sigType, runtime, args, count);
       }
 
-      // Slow path: Fall back to NSInvocation for dynamic signatures
-      // Create method signature from type encoding
-      NSMethodSignature *signature = [NSMethodSignature signatureWithObjCTypes:[typeEncoding UTF8String]];
-      if (!signature) {
-        throw std::runtime_error(std::string("Invalid type encoding: ") + [typeEncoding UTF8String]);
-      }
-
-      // Create invocation
-      NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-      [invocation setTarget:block];
-
+      // Slow path: Reuse cached NSInvocation
       // Set arguments (index 0 is the block itself, actual arguments start at index 1)
       for (NSUInteger i = 0; i < count; i++) {
-        const char *argType = [signature getArgumentTypeAtIndex:i + 1];
-        setInvocationArgument(invocation, i + 1, argType, runtime, args[i]);
+        const char *argType = [cachedSignature getArgumentTypeAtIndex:i + 1];
+        setInvocationArgument(cachedInvocation, i + 1, argType, runtime, args[i]);
       }
 
       // Invoke the block
-      [invocation invoke];
+      [cachedInvocation invoke];
 
       // Get and convert return value
-      const char *returnType = [signature methodReturnType];
-      return getInvocationReturnValue(invocation, returnType, runtime);
+      const char *returnType = [cachedSignature methodReturnType];
+      return getInvocationReturnValue(cachedInvocation, returnType, runtime);
 
     } @catch (NSException *exception) {
       // Convert NSException from Swift to JSError
