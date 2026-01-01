@@ -1,5 +1,4 @@
 # Imports the base schema for workerd configuration files.
-
 # Refer to the comments in /src/workerd/server/workerd.capnp for more details.
 using Workerd = import "/workerd/workerd.capnp";
 
@@ -12,9 +11,11 @@ const server :Workerd.Worker = (
   modules = [
     (name = "worker", esModule = embed "workerd.js"),
     (name = "_expo/server/render.js", commonJsModule = embed "_expo/server/render.js"),
-    (name = "_expo/functions/api+api.js", commonJsModule = embed "_expo/functions/api+api.js"),
-    (name = "_expo/functions/+middleware.js", commonJsModule = embed "_expo/functions/+middleware.js"),
     (name = "_expo/routes.json", text = embed "_expo/routes.json"),
+  ],
+  bindings = [
+    (name = "EXPO_PUBLIC_TEST_VALUE", text = "foobar"),
+    (name = "EXPO_NOT_PUBLIC_TEST_VALUE", text = "not-public-value"),
   ],
   compatibilityDate = "2025-05-05",
   compatibilityFlags = [

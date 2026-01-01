@@ -92,6 +92,12 @@ exports[`server-output express requests exported files has expected routes manif
       },
     },
   ],
+  "assets": {
+    "css": [],
+    "js": [
+      "/_expo/static/js/web/entry-[HASH].js",
+    ],
+  },
   "htmlRoutes": [
     {
       "file": "./index.tsx",
@@ -131,12 +137,6 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
-      "file": "./blog-ssg/abc.tsx",
-      "namedRegex": "^/blog\\-ssg/abc(?:/)?$",
-      "page": "/blog-ssg/abc",
-      "routeKeys": {},
-    },
-    {
       "file": "./matching-route/alpha.tsx",
       "namedRegex": "^/matching\\-route/alpha(?:/)?$",
       "page": "/matching-route/alpha",
@@ -170,6 +170,10 @@ exports[`server-output express requests exported files has expected routes manif
     },
   ],
   "redirects": [],
+  "rendering": {
+    "file": "_expo/server/render.js",
+    "mode": "ssr",
+  },
   "rewrites": [],
 }
 `;
@@ -266,6 +270,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       },
     },
   ],
+  "assets": {
+    "css": [],
+    "js": [
+      "/_expo/static/js/web/entry-[HASH].js",
+    ],
+  },
   "htmlRoutes": [
     {
       "file": "./index.tsx",
@@ -305,12 +315,6 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
-      "file": "./blog-ssg/abc.tsx",
-      "namedRegex": "^/blog\\-ssg/abc(?:/)?$",
-      "page": "/blog-ssg/abc",
-      "routeKeys": {},
-    },
-    {
       "file": "./matching-route/alpha.tsx",
       "namedRegex": "^/matching\\-route/alpha(?:/)?$",
       "page": "/matching-route/alpha",
@@ -344,6 +348,10 @@ exports[`server-output workerd requests exported files has expected routes manif
     },
   ],
   "redirects": [],
+  "rendering": {
+    "file": "_expo/server/render.js",
+    "mode": "ssr",
+  },
   "rewrites": [],
 }
 `;
