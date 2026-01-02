@@ -23,7 +23,9 @@ import { resolveSource, resolveSources } from './utils/resolveSources';
  * Normalizes the sfEffect prop to always be an array of SFSymbolEffectObject.
  * Supports: string, object, or array of strings/objects.
  */
-function resolveSfEffect(sfEffect: SFSymbolEffect | null | undefined): SFSymbolEffectObject[] | null {
+function resolveSfEffect(
+  sfEffect: SFSymbolEffect | null | undefined
+): SFSymbolEffectObject[] | null {
   if (sfEffect == null) {
     return null;
   }
