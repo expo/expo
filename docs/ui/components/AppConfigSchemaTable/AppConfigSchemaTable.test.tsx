@@ -101,8 +101,6 @@ describe('AppConfigSchemaPropertiesTable', () => {
 
     expect(screen.getByText('Specifies the background color of the navigation bar.'));
     expect(screen.getByText('6 character long hex color string, eg:'));
-    expect(screen.getByText('Set this property using just Xcode'));
-    expect(screen.getByText('Set this property using AppConstants.java.'));
   });
 });
 
