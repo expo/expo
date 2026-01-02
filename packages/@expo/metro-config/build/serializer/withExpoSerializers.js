@@ -14,6 +14,7 @@ const debugId_1 = require("./debugId");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const baseJSBundle_1 = require("./fork/baseJSBundle");
 const reconcileTransformSerializerPlugin_1 = require("./reconcileTransformSerializerPlugin");
+const rscOutputKeySerializerPlugin_1 = require("./rscOutputKeySerializerPlugin");
 const serializeChunks_1 = require("./serializeChunks");
 const treeShakeSerializerPlugin_1 = require("./treeShakeSerializerPlugin");
 const env_1 = require("../env");
@@ -27,6 +28,8 @@ function withExpoSerializers(config, options = {}) {
     processors.push(treeShakeSerializerPlugin_1.treeShakeSerializer);
     // Then finish transforming the modules from AST to JS.
     processors.push(reconcileTransformSerializerPlugin_1.reconcileTransformSerializerPlugin);
+    // Replace file:// URL placeholders with stable output keys for RSC.
+    processors.push(rscOutputKeySerializerPlugin_1.rscOutputKeySerializerPlugin);
     return withSerializerPlugins(config, processors, options);
 }
 // There can only be one custom serializer as the input doesn't match the output.

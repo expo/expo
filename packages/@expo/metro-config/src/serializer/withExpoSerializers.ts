@@ -19,6 +19,7 @@ import {
 } from './environmentVariableSerializerPlugin';
 import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
 import { reconcileTransformSerializerPlugin } from './reconcileTransformSerializerPlugin';
+import { rscOutputKeySerializerPlugin } from './rscOutputKeySerializerPlugin';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { SerialAsset } from './serializerAssets';
 import { treeShakeSerializer } from './treeShakeSerializerPlugin';
@@ -62,6 +63,9 @@ export function withExpoSerializers<Config extends InputConfigT = InputConfigT>(
 
   // Then finish transforming the modules from AST to JS.
   processors.push(reconcileTransformSerializerPlugin);
+
+  // Replace file:// URL placeholders with stable output keys for RSC.
+  processors.push(rscOutputKeySerializerPlugin);
 
   return withSerializerPlugins(config, processors, options);
 }

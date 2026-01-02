@@ -1176,6 +1176,7 @@ it(`removes unused exports`, async () => {
           "reactClientReferences": [],
           "reactServerReferences": [],
           "requires": [],
+          "rscPackageManifest": undefined,
         },
         "originFilename": "index.js",
         "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {

@@ -42,6 +42,7 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
     };
     watchFolders: string[];
     resolver: {
+        unstable_enablePackageExports: true;
         unstable_conditionsByPlatform: {
             ios: string[];
             android: string[];

@@ -13,6 +13,11 @@ import path from 'node:path';
 import { renderRsc } from './rsc-renderer';
 import { createDebug } from '../utils/debug';
 
+/** Convert Windows paths to POSIX format for consistent path operations. */
+function toPosixPath(filePath: string): string {
+  return filePath.replace(/\\/g, '/');
+}
+
 declare const $$require_external: typeof require;
 
 const debug = createDebug('expo:router:server:rsc-renderer');
@@ -55,21 +60,70 @@ function getServerActionManifest(
   return serverRequire(filePath);
 }
 
-function getSSRManifest(
-  _distFolder: string,
-  platform: string
-): Record<
+type ManifestType = Record<
   // Input ID
   string,
   [
     // Metro ID
     string,
     // Chunk location.
-    string,
+    string | null,
   ]
-> {
+>;
+
+function getSSRManifest(_distFolder: string, platform: string): ManifestType {
   const filePath = `../../rsc/${platform}/ssr-manifest.js`;
   return serverRequire(filePath);
+}
+
+/**
+ * Convert an absolute file path to a manifest key.
+ *
+ * Manifest keys can be:
+ * - node_modules paths: "react-native-web/dist/exports/View/index.js"
+ * - relative paths: "./__e2e__/01-rsc/components/counter.tsx"
+ * - package paths: "./../../packages/expo-router/build/rsc/router/client.js"
+ *
+ * Bundle paths are relative to projectRoot (app directory), while manifest paths
+ * are relative to serverRoot (monorepo root). This function handles the mapping.
+ */
+function resolveManifestKey(filePath: string, manifest: ManifestType): string | null {
+  // Normalize to POSIX for consistent path operations across platforms (Windows uses backslashes)
+  const posixFilePath = toPosixPath(filePath);
+
+  // Fast path: already a manifest key
+  if (posixFilePath in manifest) {
+    return posixFilePath;
+  }
+
+  // node_modules files: extract path after last /node_modules/
+  if (posixFilePath.includes('/node_modules/')) {
+    const idx = posixFilePath.lastIndexOf('/node_modules/');
+    const nodeModulesPath = posixFilePath.slice(idx + '/node_modules/'.length);
+    if (nodeModulesPath in manifest) {
+      return nodeModulesPath;
+    }
+  }
+
+  // Fallback: search manifest values for matching path suffix
+  for (const [key, [actualPath]] of Object.entries(manifest)) {
+    if (posixFilePath.endsWith(actualPath) || posixFilePath.endsWith('/' + actualPath)) {
+      return key;
+    }
+  }
+
+  // For app-local files: the bundle path is relative to projectRoot (e.g., "./__e2e__/...")
+  // but the manifest key is relative to serverRoot (e.g., "./apps/router-e2e/__e2e__/...")
+  // Try to match by checking if the manifest key ends with the input path (minus ./ prefix)
+  const pathWithoutDotSlash = posixFilePath.replace(/^\.\//, '');
+  for (const key of Object.keys(manifest)) {
+    const keyWithoutDotSlash = key.replace(/^\.\//, '');
+    if (keyWithoutDotSlash.endsWith('/' + pathWithoutDotSlash) || keyWithoutDotSlash.endsWith(pathWithoutDotSlash)) {
+      return key;
+    }
+  }
+
+  return null;
 }
 
 // The import map allows us to use external modules from different bundling contexts.
@@ -114,24 +168,26 @@ export async function renderRscWithImportsAsync(
         debug('resolveClientEntry', file, { isServer });
 
         if (isServer) {
-          if (!(file in actionManifest)) {
+          const actionKey = resolveManifestKey(file, actionManifest);
+          if (!actionKey) {
             throw new Error(
               `Could not find file in server action manifest: ${file}. ${JSON.stringify(actionManifest)}`
             );
           }
 
-          const [id, chunk] = actionManifest[file];
+          const [id, chunk] = actionManifest[actionKey];
           return {
             id,
             chunks: chunk ? [chunk] : [],
           };
         }
 
-        if (!(file in ssrManifest)) {
+        const ssrKey = resolveManifestKey(file, ssrManifest);
+        if (!ssrKey) {
           throw new Error(`Could not find file in SSR manifest: ${file}`);
         }
 
-        const [id, chunk] = ssrManifest[file];
+        const [id, chunk] = ssrManifest[ssrKey];
         return {
           id,
           chunks: chunk ? [chunk] : [],

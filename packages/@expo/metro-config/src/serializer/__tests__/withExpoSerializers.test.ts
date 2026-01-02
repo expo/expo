@@ -781,6 +781,7 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "rscPackageManifest": undefined,
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -801,6 +802,7 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "rscPackageManifest": undefined,
           },
           "originFilename": "foo.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -871,6 +873,7 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "rscPackageManifest": undefined,
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -894,6 +897,7 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "rscPackageManifest": undefined,
           },
           "originFilename": "foo.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1032,6 +1036,7 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "rscPackageManifest": undefined,
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1060,6 +1065,7 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "rscPackageManifest": undefined,
           },
           "originFilename": "foo.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1167,6 +1173,7 @@ describe('serializes', () => {
               "_expo/static/js/web/__common-e8c8ebf41a34c79ec57f339049e2ea36.js",
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
+            "rscPackageManifest": undefined,
           },
           "originFilename": "index.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1194,6 +1201,7 @@ describe('serializes', () => {
             "requires": [
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
+            "rscPackageManifest": undefined,
           },
           "originFilename": "a.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1228,6 +1236,7 @@ describe('serializes', () => {
             "requires": [
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
+            "rscPackageManifest": undefined,
           },
           "originFilename": "b.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1261,6 +1270,7 @@ describe('serializes', () => {
             "requires": [
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
+            "rscPackageManifest": undefined,
           },
           "originFilename": "c.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1295,6 +1305,7 @@ describe('serializes', () => {
             "requires": [
               "_expo/static/js/web/__expo-metro-runtime-9766bff2257e805459e3ab4532b77d32.js",
             ],
+            "rscPackageManifest": undefined,
           },
           "originFilename": "../__common.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1337,6 +1348,7 @@ describe('serializes', () => {
             "reactClientReferences": [],
             "reactServerReferences": [],
             "requires": [],
+            "rscPackageManifest": undefined,
           },
           "originFilename": "../__expo-metro-runtime.js",
           "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -1515,11 +1527,11 @@ describe('serializes', () => {
               return foo;
             }
           });
-          const proxy = _$$_REQUIRE(_dependencyMap[0]).createClientModuleProxy("./other.js");
+          const proxy = _$$_REQUIRE(_dependencyMap[0]).createClientModuleProxy("file:///app/other.js");
           module.exports = proxy;
           const foo = _$$_REQUIRE(_dependencyMap[0]).registerClientReference(function () {
             throw new Error("Attempted to call foo() of /app/other.js from the server but foo is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.");
-          }, "./other.js", "foo");
+          }, "file:///app/other.js", "foo");
         },"/app/other.js",["/app/react-server-dom-webpack/server"]);
         __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {},"/app/react-server-dom-webpack/server",[]);
         TEST_RUN_MODULE("/app/index.js");"

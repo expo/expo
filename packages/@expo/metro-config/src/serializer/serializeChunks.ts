@@ -502,6 +502,8 @@ export class Chunk {
               .flat()
           ),
         ].filter((value) => typeof value === 'string') as string[],
+        // RSC package manifest from the serializer plugin (specifier -> absolutePath)
+        rscPackageManifest: (this.options as any).rscPackageManifest,
       },
       source: jsCode.code,
     };

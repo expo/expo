@@ -18,6 +18,10 @@ const decodeInput = (encodedInput) => {
     if (encodedInput?.endsWith('.txt')) {
         return encodedInput.slice(0, -'.txt'.length);
     }
+    // Server actions start with ACTION_ and don't use .txt extension
+    if (encodedInput?.startsWith('ACTION_')) {
+        return encodedInput;
+    }
     const err = new Error('Invalid encoded input');
     err.statusCode = 400;
     throw err;

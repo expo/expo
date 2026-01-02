@@ -32,6 +32,10 @@ export const decodeInput = (encodedInput: string) => {
   if (encodedInput?.endsWith('.txt')) {
     return encodedInput.slice(0, -'.txt'.length);
   }
+  // Server actions start with ACTION_ and don't use .txt extension
+  if (encodedInput?.startsWith('ACTION_')) {
+    return encodedInput;
+  }
   const err = new Error('Invalid encoded input');
   (err as any).statusCode = 400;
   throw err;
