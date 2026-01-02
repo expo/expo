@@ -586,19 +586,22 @@ public final class ImageView: ExpoView {
       return
     }
 
+    let repeatCount = transition?.repeatCount ?? 0
+    let options: SymbolEffectOptions = repeatCount < 0 ? .repeating : .repeat(max(1, repeatCount))
+
     switch effect {
     case .sfBounce:
-      sdImageView.addSymbolEffect(.bounce, options: .repeating)
+      sdImageView.addSymbolEffect(.bounce, options: options)
     case .sfPulse:
-      sdImageView.addSymbolEffect(.pulse, options: .repeating)
+      sdImageView.addSymbolEffect(.pulse, options: options)
     case .sfVariableColor:
-      sdImageView.addSymbolEffect(.variableColor, options: .repeating)
+      sdImageView.addSymbolEffect(.variableColor, options: options)
     case .sfScale:
-      sdImageView.addSymbolEffect(.scale)
+      sdImageView.addSymbolEffect(.scale, options: options)
     case .sfAppear:
-      sdImageView.addSymbolEffect(.appear)
+      sdImageView.addSymbolEffect(.appear, options: options)
     case .sfDisappear:
-      sdImageView.addSymbolEffect(.disappear)
+      sdImageView.addSymbolEffect(.disappear, options: options)
     default:
       break
     }

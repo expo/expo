@@ -528,6 +528,17 @@ export type ImageTransition = {
   timing?: 'ease-in-out' | 'ease-in' | 'ease-out' | 'linear';
 
   /**
+   * The number of times to repeat the SF Symbol animation effect.
+   * - `-1` - Repeat indefinitely
+   * - `0` - No repeat, play once (default)
+   * - `1+` - Repeat the specified number of times
+   *
+   * @default 0
+   * @platform ios 17.0+
+   */
+  repeat?: number;
+
+  /**
    * An animation effect used for transition.
    * @default 'cross-dissolve'
    *

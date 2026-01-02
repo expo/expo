@@ -22,6 +22,19 @@ export default function Page() {
           // fontWeight: '100',
         }}
       />
+      <Image
+        // autoplay
+        source={current}
+        contentFit="contain"
+        transition={{
+          effect: 'sf:pulse',
+          repeat: 1,
+        }}
+        style={{
+          width: 128,
+          aspectRatio: 1,
+        }}
+      />
       <Pressable
         onPress={() => {
           setCurrent(current === 'sf:checkmark.circle' ? 'sf:faceid' : 'sf:checkmark.circle');
@@ -32,7 +45,8 @@ export default function Page() {
           contentFit="contain"
           transition={{
             effect: 'sf:replace',
-            duration: 2000,
+            repeat: 2,
+            // duration: 2000,
           }}
           // tintColor="darkcyan"
           style={{

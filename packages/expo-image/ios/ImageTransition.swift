@@ -76,6 +76,9 @@ struct ImageTransition: Record {
   @Field
   var effect: ImageTransitionEffect = .crossDissolve
 
+  @Field(.keyed("repeat"))
+  var repeatCount: Int = 0
+
   func toAnimationOptions() -> UIView.AnimationOptions {
     return [timing.toAnimationOption(), effect.toAnimationOption()]
   }
