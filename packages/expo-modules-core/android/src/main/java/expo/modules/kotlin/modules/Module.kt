@@ -63,32 +63,6 @@ abstract class Module : AppContextProvider {
   open fun converters(): TypeConverterProvider? = null
 
   abstract fun definition(): ModuleDefinitionData
-
-  /**
-   * Internal method called during module registration to register optimized functions.
-   * This method attempts to find a generated registry class for this module and
-   * registers any @OptimizedFunction annotated functions using JNI reflection.
-   *
-   * NOTE: The generated registry no longer needs native libraries - it uses
-   * JNI reflection with the shared C++ dispatcher in expo-modules-core!
-   */
-  internal fun registerOptimizedFunctions(decorator: expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject) {
-    val registryClassName = "${this::class.java.name}_OptimizedRegistry"
-    try {
-      val registryClass = Class.forName(registryClassName)
-      val registerMethod = registryClass.getDeclaredMethod(
-        "registerOptimizedFunctions",
-        expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject::class.java,
-        this::class.java
-      )
-      registerMethod.invoke(null, decorator, this)
-    } catch (e: ClassNotFoundException) {
-      // No optimized functions for this module, continue normally
-    } catch (e: Exception) {
-      // Log error but don't fail module registration
-      Log.w("Module", "Failed to register optimized functions for ${this::class.java.simpleName}: ${e.message}")
-    }
-  }
 }
 
 @Suppress("FunctionName")

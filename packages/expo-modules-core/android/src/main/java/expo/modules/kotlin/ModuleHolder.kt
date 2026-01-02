@@ -77,8 +77,17 @@ class ModuleHolder<T : Module>(
         .exportClasses(appContext, runtime)
     }
 
-    // Register optimized functions if any exist
-    module.registerOptimizedFunctions(this)
+    // Register optimized functions from the module definition (iOS-style DSL)
+    definition.optimizedFunctions.forEach { metadata ->
+      this.registerOptimizedSyncFunction(
+        name = metadata.jsName,
+        methodName = metadata.kotlinMethodName,
+        moduleInstance = module,
+        jniSignature = metadata.jniSignature,
+        paramTypes = metadata.paramTypes,
+        returnType = metadata.returnType
+      )
+    }
   }
 
   /**

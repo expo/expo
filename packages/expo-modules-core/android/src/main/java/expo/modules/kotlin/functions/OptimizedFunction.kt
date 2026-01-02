@@ -3,33 +3,35 @@ package expo.modules.kotlin.functions
 /**
  * Marks a function for optimized code generation using KSP.
  *
- * Functions annotated with @OptimizedFunction will have specialized C++ JNI adapters generated
- * at compile time, bypassing the runtime boxing/unboxing overhead of the standard DSL approach.
+ * Functions annotated with @OptimizedFunction use JNI reflection with a shared C++ dispatcher,
+ * bypassing the runtime boxing/unboxing overhead of the standard DSL approach.
  *
  * This is particularly beneficial for functions with primitive parameter types (Double, Int, Boolean)
  * that are called frequently (e.g., in animations, game loops, or data processing).
  *
- * Usage:
+ * Usage (iOS-style API):
  * ```kotlin
  * class MyModule : Module() {
  *   override fun definition() = ModuleDefinition {
  *     Name("MyModule")
- *     Function("addNumbers", ::addNumbers)
+ *
+ *     // Just call the function - generated extension handles registration!
+ *     addNumbers()
  *   }
  *
- *   @OptimizedFunction
+ *   @OptimizedFunction("addNumbers")
  *   fun addNumbers(a: Double, b: Double): Double {
  *     return a + b
  *   }
  * }
  * ```
  *
- * @property name Override the function name exposed to JavaScript (default: use Kotlin function name)
- * @property async Whether this is an async function (default: false, not yet supported in POC)
+ * @property name The function name exposed to JavaScript (REQUIRED)
+ * @property async Whether this is an async function (default: false, not yet supported)
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.BINARY)
 annotation class OptimizedFunction(
-    val name: String = "",
+    val name: String,
     val async: Boolean = false
 )

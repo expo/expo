@@ -35,10 +35,20 @@ class OptimizedFunctionProcessor(
         val moduleName = function.parentDeclaration?.simpleName?.asString()
             ?: throw IllegalStateException("Function must be in a class")
 
-        val functionName = function.simpleName.asString()
+        val kotlinFunctionName = function.simpleName.asString()
         val packageName = function.packageName.asString()
 
-        logger.info("Processing @OptimizedFunction: $moduleName.$functionName")
+        // Extract the JS function name from the annotation
+        val annotation = function.annotations.first {
+            it.shortName.asString() == "OptimizedFunction"
+        }
+        val jsFunctionName = annotation.arguments.firstOrNull {
+            it.name?.asString() == "name"
+        }?.value as? String ?: throw IllegalStateException(
+            "@OptimizedFunction requires 'name' parameter for $moduleName.$kotlinFunctionName"
+        )
+
+        logger.info("Processing @OptimizedFunction: $moduleName.$kotlinFunctionName (JS: $jsFunctionName)")
 
         // Extract parameter metadata
         val parameters = function.parameters.map { param ->
@@ -56,7 +66,8 @@ class OptimizedFunctionProcessor(
         val metadata = FunctionMetadata(
             moduleName = moduleName,
             modulePackage = packageName,
-            functionName = functionName,
+            jsFunctionName = jsFunctionName,
+            kotlinFunctionName = kotlinFunctionName,
             parameters = parameters,
             returnType = returnTypeName
         )
@@ -101,7 +112,8 @@ class OptimizedFunctionProcessor(
     data class FunctionMetadata(
         val moduleName: String,
         val modulePackage: String,
-        val functionName: String,
+        val jsFunctionName: String,      // Name exposed to JavaScript
+        val kotlinFunctionName: String,   // Kotlin method name
         val parameters: List<ParameterMetadata>,
         val returnType: String
     )

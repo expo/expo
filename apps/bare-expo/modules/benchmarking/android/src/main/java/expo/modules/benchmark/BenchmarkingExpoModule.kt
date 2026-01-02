@@ -17,8 +17,9 @@ class BenchmarkingExpoModule : Module() {
       a + b
     }
 
-    // NEW: Optimized version using annotation-based codegen
-    Function("addNumbersOptimized", ::addNumbersOptimized)
+    // NEW: iOS-style DSL for optimized functions!
+    // Just call the function - generated extension handles everything
+    addNumbersOptimized()
 
     Function("addStrings") { a: String, b: String ->
       a + b
@@ -29,7 +30,7 @@ class BenchmarkingExpoModule : Module() {
     }
   }
 
-  @OptimizedFunction
+  @OptimizedFunction("addNumbersOptimized")
   fun addNumbersOptimized(a: Double, b: Double): Double {
     return a + b
   }

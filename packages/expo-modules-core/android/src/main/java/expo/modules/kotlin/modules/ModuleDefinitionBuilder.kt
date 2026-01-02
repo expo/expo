@@ -55,6 +55,9 @@ open class InternalModuleDefinitionBuilder(
   @PublishedApi
   internal var classData = mutableListOf<ClassDefinitionData>()
 
+  @PublishedApi
+  internal var optimizedFunctions = mutableListOf<OptimizedFunctionMetadata>()
+
   fun buildModule(): ModuleDefinitionData {
     val moduleName = name ?: module?.javaClass?.simpleName
 
@@ -64,7 +67,32 @@ open class InternalModuleDefinitionBuilder(
       viewManagerDefinitions,
       eventListeners,
       registerContracts,
-      classData
+      classData,
+      optimizedFunctions
+    )
+  }
+
+  /**
+   * Registers an optimized function (iOS-style DSL).
+   * This is called by generated extension functions.
+   *
+   * @suppress This is a public API only for generated code to call.
+   */
+  fun registerOptimizedFunction(
+    jsName: String,
+    kotlinMethodName: String,
+    jniSignature: String,
+    paramTypes: Array<String>,
+    returnType: String
+  ) {
+    optimizedFunctions.add(
+      OptimizedFunctionMetadata(
+        jsName = jsName,
+        kotlinMethodName = kotlinMethodName,
+        jniSignature = jniSignature,
+        paramTypes = paramTypes,
+        returnType = returnType
+      )
     )
   }
 
