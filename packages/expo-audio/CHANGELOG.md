@@ -18,6 +18,7 @@
 - [Android] Use correct method to start foreground service on android 14+. ([#41145](https://github.com/expo/expo/pull/41145) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix incorrect notify others on deactivation ([#41196](https://github.com/expo/expo/pull/41196) by [@dylancom](https://github.com/dylancom))
 - [iOS/Android] Disable audio sampling when `useAudioSampleListener` unmounts.
+- [Android] Handle recorder stop failures and clean up after max file size events.
 
 ### 💡 Others
 
