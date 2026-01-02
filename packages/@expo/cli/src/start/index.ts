@@ -64,7 +64,7 @@ export const expoStart: Command = async (argv) => {
         ``,
         chalk`-m, --host <string>             Dev server hosting type. {dim Default: lan}`,
         chalk`                                {bold lan}: Use the local network`,
-        chalk`                                {bold tunnel}: Use any network by tunnel through ngrok`,
+        chalk`                                {bold tunnel}: Use any network by tunnel (ngrok by default, or Cloudflare when EXPO_TUNNEL_PROVIDER=cloudflare)`,
         chalk`                                {bold localhost}: Connect to the dev server over localhost`,
         `--tunnel                        Same as --host tunnel`,
         `--lan                           Same as --host lan`,

@@ -113,7 +113,7 @@ Will open apps to: `exp://expo.dev:80` (the `:80` is a temporary workaround for 
 
 Restrictive network conditions (common for public Wi-Fi), firewalls (common for Windows users), or Emulator misconfiguration can make it difficult to connect a remote device to your dev server over lan/localhost.
 
-Sometimes it's easier to connect to a dev server over a proxy URL that's accessible from any device with internet access, this is referred to as **tunneling**. `npx expo start` provides built-in support for **tunneling** via [ngrok][ngrok].
+Sometimes it's easier to connect to a dev server over a proxy URL that's accessible from any device with internet access, this is referred to as **tunneling**. `npx expo start` provides built-in support for **tunneling** via [ngrok][ngrok] (default) or Cloudflare quick tunnels.
 
 To enable tunneling, first install `@expo/ngrok`:
 
@@ -125,7 +125,9 @@ Then run the following to start your dev server from a _tunnel_ URL:
 
 This will serve your app from a public URL like: `https://xxxxxxx.bacon.19000.exp.direct:80`.
 
-Use the `EXPO_TUNNEL_SUBDOMAIN` environment variable to experimentally set the subdomain for the tunnel URL. This is useful for testing universal links on iOS. This may cause unexpected issues with `expo-linking` and Expo Go. Select the exact subdomain to use by passing a `string` value that is not one of: `true`, `false`, `1`, `0`.
+Use the `EXPO_TUNNEL_SUBDOMAIN` environment variable to experimentally set the subdomain for the tunnel URL. This is useful for testing universal links on iOS. This may cause unexpected issues with `expo-linking` and Expo Go. Select the exact subdomain to use by passing a `string` value that is not one of: `true`, `false`, `1`, `0`. This setting is only used for ngrok tunnels.
+
+To use Cloudflare instead of ngrok, set `EXPO_TUNNEL_PROVIDER=cloudflare` before running `npx expo start --tunnel` and install the [`cloudflared`](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/) CLI so it is available on your `PATH`. Cloudflare quick tunnels return a host like `https://...trycloudflare.com` and don't require a Cloudflare account.
 
 **Drawbacks**
 
