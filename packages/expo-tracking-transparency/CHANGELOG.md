@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix web stub to prevent import error. ([#40383](https://github.com/expo/expo/pull/40383) by [@reichhartd](https://github.com/reichhartd))
+
 ### 💡 Others
 
 - Updated library descriptions to focus on tracking functionality and removed outdated iOS version references. ([#39652](https://github.com/expo/expo/pull/39652) by [@reichhartd](https://github.com/reichhartd))
