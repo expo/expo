@@ -587,21 +587,87 @@ public final class ImageView: ExpoView {
     }
 
     let repeatCount = transition?.repeatCount ?? 0
-    let options: SymbolEffectOptions = repeatCount < 0 ? .repeating : .repeat(max(1, repeatCount))
+    // -1 = infinite, 0 = play once, 1 = repeat once (play twice), etc.
+    let options: SymbolEffectOptions = repeatCount < 0 ? .repeating : .repeat(repeatCount + 1)
 
     switch effect {
     case .sfBounce:
       sdImageView.addSymbolEffect(.bounce, options: options)
+    case .sfBounceUp:
+      sdImageView.addSymbolEffect(.bounce.up, options: options)
+    case .sfBounceDown:
+      sdImageView.addSymbolEffect(.bounce.down, options: options)
+    case .sfBounceByLayer:
+      sdImageView.addSymbolEffect(.bounce.byLayer, options: options)
+    case .sfBounceWholeSymbol:
+      sdImageView.addSymbolEffect(.bounce.wholeSymbol, options: options)
     case .sfPulse:
       sdImageView.addSymbolEffect(.pulse, options: options)
+    case .sfPulseByLayer:
+      sdImageView.addSymbolEffect(.pulse.byLayer, options: options)
+    case .sfPulseWholeSymbol:
+      sdImageView.addSymbolEffect(.pulse.wholeSymbol, options: options)
     case .sfVariableColor:
       sdImageView.addSymbolEffect(.variableColor, options: options)
+    case .sfVariableColorIterative:
+      sdImageView.addSymbolEffect(.variableColor.iterative, options: options)
+    case .sfVariableColorCumulative:
+      sdImageView.addSymbolEffect(.variableColor.cumulative, options: options)
     case .sfScale:
       sdImageView.addSymbolEffect(.scale, options: options)
+    case .sfScaleUp:
+      sdImageView.addSymbolEffect(.scale.up, options: options)
+    case .sfScaleDown:
+      sdImageView.addSymbolEffect(.scale.down, options: options)
+    case .sfScaleByLayer:
+      sdImageView.addSymbolEffect(.scale.byLayer, options: options)
+    case .sfScaleWholeSymbol:
+      sdImageView.addSymbolEffect(.scale.wholeSymbol, options: options)
     case .sfAppear:
       sdImageView.addSymbolEffect(.appear, options: options)
+    case .sfAppearByLayer:
+      sdImageView.addSymbolEffect(.appear.byLayer, options: options)
+    case .sfAppearWholeSymbol:
+      sdImageView.addSymbolEffect(.appear.wholeSymbol, options: options)
     case .sfDisappear:
       sdImageView.addSymbolEffect(.disappear, options: options)
+    case .sfDisappearByLayer:
+      sdImageView.addSymbolEffect(.disappear.byLayer, options: options)
+    case .sfDisappearWholeSymbol:
+      sdImageView.addSymbolEffect(.disappear.wholeSymbol, options: options)
+    default:
+      // iOS 18+ effects handled below
+      if #available(iOS 18.0, tvOS 18.0, *) {
+        applySymbolEffectiOS18(effect: effect, options: options)
+      }
+    }
+  }
+
+  @available(iOS 18.0, tvOS 18.0, *)
+  private func applySymbolEffectiOS18(effect: ImageTransitionEffect, options: SymbolEffectOptions) {
+    switch effect {
+    case .sfWiggle:
+      sdImageView.addSymbolEffect(.wiggle, options: options)
+    case .sfWiggleByLayer:
+      sdImageView.addSymbolEffect(.wiggle.byLayer, options: options)
+    case .sfWiggleWholeSymbol:
+      sdImageView.addSymbolEffect(.wiggle.wholeSymbol, options: options)
+    case .sfRotate:
+      sdImageView.addSymbolEffect(.rotate, options: options)
+    case .sfRotateByLayer:
+      sdImageView.addSymbolEffect(.rotate.byLayer, options: options)
+    case .sfRotateWholeSymbol:
+      sdImageView.addSymbolEffect(.rotate.wholeSymbol, options: options)
+    case .sfBreathe:
+      sdImageView.addSymbolEffect(.breathe, options: options)
+    case .sfBreatheByLayer:
+      sdImageView.addSymbolEffect(.breathe.byLayer, options: options)
+    case .sfBreatheWholeSymbol:
+      sdImageView.addSymbolEffect(.breathe.wholeSymbol, options: options)
+    case .sfDrawOn:
+      if #available(iOS 26.0, *) {
+        sdImageView.addSymbolEffect(.drawOn, options: options)
+      }
     default:
       break
     }

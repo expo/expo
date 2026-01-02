@@ -1,6 +1,7 @@
 import { Pressable, Text } from 'react-native';
 import { Image } from 'expo-image';
 import { useState } from 'react';
+import { Color } from 'expo-router';
 
 export default function Page() {
   const [current, setCurrent] = useState('sf:checkmark.circle');
@@ -22,19 +23,7 @@ export default function Page() {
           // fontWeight: '100',
         }}
       />
-      <Image
-        // autoplay
-        source={current}
-        contentFit="contain"
-        transition={{
-          effect: 'sf:pulse',
-          repeat: 1,
-        }}
-        style={{
-          width: 128,
-          aspectRatio: 1,
-        }}
-      />
+
       <Pressable
         onPress={() => {
           setCurrent(current === 'sf:checkmark.circle' ? 'sf:faceid' : 'sf:checkmark.circle');
@@ -58,6 +47,36 @@ export default function Page() {
           }}
         />
       </Pressable>
+
+      <Image
+        source={'sf:wifi'}
+        contentFit="contain"
+        transition={{
+          effect: 'sf:rotate/by-layer',
+          repeat: -1,
+        }}
+        style={{
+          tintColor: Color.ios.systemCyan,
+          width: 64,
+          aspectRatio: 1,
+        }}
+      />
+
+      {current === 'sf:checkmark.circle' && (
+        <Image
+          autoplay
+          source={'sf:signature'}
+          contentFit="contain"
+          transition={{
+            effect: 'sf:draw-on',
+            // repeat: 1,
+          }}
+          style={{
+            width: 128,
+            aspectRatio: 1,
+          }}
+        />
+      )}
     </>
   );
 }
