@@ -3,8 +3,10 @@ import { Image } from 'expo-image';
 import { useState } from 'react';
 import { Color } from 'expo-router';
 
+const INITIAL = 'sf:bell';
+
 export default function Page() {
-  const [current, setCurrent] = useState('sf:checkmark.circle');
+  const [current, setCurrent] = useState(INITIAL);
   const [on, setOn] = useState(true);
   return (
     <>
@@ -27,14 +29,14 @@ export default function Page() {
 
       <Pressable
         onPress={() => {
-          setCurrent(current === 'sf:checkmark.circle' ? 'sf:faceid' : 'sf:checkmark.circle');
+          setCurrent(current === INITIAL ? 'sf:bell.slash' : INITIAL);
         }}>
         <Image
           source={current}
           // autoplay
           contentFit="contain"
           transition={{
-            effect: 'sf:draw/on',
+            effect: 'sf:replace',
             // repeat: 2,
             // duration: 2000,
           }}
