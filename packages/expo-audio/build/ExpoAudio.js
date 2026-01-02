@@ -187,8 +187,11 @@ export function useAudioSampleListener(player, listener) {
         }
         player.setAudioSamplingEnabled(true);
         const subscription = player.addListener(AUDIO_SAMPLE_UPDATE, listener);
-        return () => subscription.remove();
-    }, [player.id]);
+        return () => {
+            subscription.remove();
+            player.setAudioSamplingEnabled(false);
+        };
+    }, [player, listener]);
 }
 /**
  * Hook that creates an `AudioRecorder` instance for recording audio.

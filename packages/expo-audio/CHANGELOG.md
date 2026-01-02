@@ -17,6 +17,7 @@
 - [iOS/Android] Aligned Android and iOS pitch correction by changing the default quality on iOS to match Android. `shouldCorrectPitch` now defaults to `true`. ([#40176](https://github.com/expo/expo/pull/40176) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Use correct method to start foreground service on android 14+. ([#41145](https://github.com/expo/expo/pull/41145) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix incorrect notify others on deactivation ([#41196](https://github.com/expo/expo/pull/41196) by [@dylancom](https://github.com/dylancom))
+- [iOS/Android] Disable audio sampling when `useAudioSampleListener` unmounts.
 
 ### 💡 Others
 
