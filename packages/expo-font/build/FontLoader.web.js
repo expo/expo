@@ -17,21 +17,23 @@ function uriFromFontSource(asset) {
     }
     return null;
 }
-function displayFromFontSource(asset) {
-    if (typeof asset === 'object' && 'display' in asset) {
-        return asset.display || FontDisplay.AUTO;
-    }
-    return FontDisplay.AUTO;
+function isFontResource(asset) {
+    return typeof asset === 'object' && !(asset instanceof Asset);
+}
+function propFromFontResource(asset, prop) {
+    return isFontResource(asset) && prop in asset ? asset[prop] : undefined;
 }
 export function getAssetForSource(source) {
     const uri = uriFromFontSource(source);
-    const display = displayFromFontSource(source);
     if (!uri || typeof uri !== 'string') {
         throwInvalidSourceError(uri);
     }
     return {
         uri,
-        display,
+        display: propFromFontResource(source, 'display') || FontDisplay.AUTO,
+        family: propFromFontResource(source, 'family'),
+        weight: propFromFontResource(source, 'weight'),
+        style: propFromFontResource(source, 'style'),
     };
 }
 function throwInvalidSourceError(source) {
