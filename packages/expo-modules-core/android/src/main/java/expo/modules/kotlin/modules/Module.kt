@@ -67,7 +67,10 @@ abstract class Module : AppContextProvider {
   /**
    * Internal method called during module registration to register optimized functions.
    * This method attempts to find a generated registry class for this module and
-   * registers any @OptimizedFunction annotated functions.
+   * registers any @OptimizedFunction annotated functions using JNI reflection.
+   *
+   * NOTE: The generated registry no longer needs native libraries - it uses
+   * JNI reflection with the shared C++ dispatcher in expo-modules-core!
    */
   internal fun registerOptimizedFunctions(decorator: expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject) {
     val registryClassName = "${this::class.java.name}_OptimizedRegistry"

@@ -86,10 +86,22 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
     body: JNIFunctionBody
   )
 
+  /**
+   * Register an optimized function using JNI reflection (no generated C++ code needed).
+   * @param name The JavaScript function name
+   * @param methodName The Kotlin method name
+   * @param moduleInstance The module instance to call the method on
+   * @param jniSignature The JNI method signature (e.g., "(DD)D")
+   * @param paramTypes Array of parameter type codes ("D", "I", "Z", etc.)
+   * @param returnType Return type code ("D", "I", "Z", "V", etc.)
+   */
   external fun registerOptimizedSyncFunction(
     name: String,
+    methodName: String,
     moduleInstance: Any,
-    functionPointer: Long
+    jniSignature: String,
+    paramTypes: Array<String>,
+    returnType: String
   )
 
   fun registerModuleName(name: String) {

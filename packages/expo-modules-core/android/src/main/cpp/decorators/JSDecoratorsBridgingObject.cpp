@@ -143,8 +143,11 @@ void JSDecoratorsBridgingObject::registerClass(
 
 void JSDecoratorsBridgingObject::registerOptimizedSyncFunction(
   jni::alias_ref<jstring> name,
+  jni::alias_ref<jstring> methodName,
   jni::alias_ref<jobject> moduleInstance,
-  jlong functionPointer
+  jni::alias_ref<jstring> jniSignature,
+  jni::alias_ref<jni::JArrayClass<jstring>::javaobject> paramTypes,
+  jni::alias_ref<jstring> returnType
 ) {
   // Create decorator with the module instance if it doesn't exist
   if (!optimizedFunctionDecorator) {
@@ -153,10 +156,43 @@ void JSDecoratorsBridgingObject::registerOptimizedSyncFunction(
   }
 
   std::string functionName = name->toStdString();
-  auto funcPtr = reinterpret_cast<OptimizedFunctionPtr>(functionPointer);
+  std::string methodNameStr = methodName->toStdString();
+  std::string jniSignatureStr = jniSignature->toStdString();
+  std::string returnTypeStr = returnType->toStdString();
 
-  // Register with default arg count of 0 (will be validated at runtime)
-  optimizedFunctionDecorator->registerOptimizedFunction(functionName, funcPtr, 0, true);
+  // Convert parameter types from String array to JNIType vector
+  std::vector<JNIType> paramTypeVec;
+  size_t paramCount = paramTypes->size();
+  for (size_t i = 0; i < paramCount; i++) {
+    auto paramTypeStr = paramTypes->getElement(i)->toStdString();
+    paramTypeVec.push_back(stringToJNIType(paramTypeStr));
+  }
+
+  // Convert return type
+  JNIType returnJNIType = stringToJNIType(returnTypeStr);
+
+  // Register the function with metadata
+  optimizedFunctionDecorator->registerOptimizedFunction(
+    functionName,
+    methodNameStr,
+    jniSignatureStr,
+    paramTypeVec,
+    returnJNIType,
+    paramCount,
+    true
+  );
+}
+
+// Helper function to convert type string to JNIType enum
+JNIType JSDecoratorsBridgingObject::stringToJNIType(const std::string& typeStr) {
+  if (typeStr == "D") return JNIType::Double;
+  if (typeStr == "I") return JNIType::Int;
+  if (typeStr == "Z") return JNIType::Boolean;
+  if (typeStr == "J") return JNIType::Long;
+  if (typeStr == "F") return JNIType::Float;
+  if (typeStr == "Ljava/lang/String;") return JNIType::String;
+  if (typeStr == "V") return JNIType::Void;
+  return JNIType::Object;
 }
 
 std::vector<std::unique_ptr<JSDecorator>> JSDecoratorsBridgingObject::bridge() {

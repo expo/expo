@@ -81,10 +81,22 @@ public:
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
 
+  /**
+   * Register an optimized function using JNI reflection (no generated C++ code needed).
+   * @param name The JavaScript function name
+   * @param methodName The Kotlin method name
+   * @param moduleInstance The module instance to call the method on
+   * @param jniSignature The JNI method signature (e.g., "(DD)D")
+   * @param paramTypes Array of parameter type codes ("D", "I", "Z", etc.)
+   * @param returnType Return type code ("D", "I", "Z", "V", etc.)
+   */
   void registerOptimizedSyncFunction(
     jni::alias_ref<jstring> name,
+    jni::alias_ref<jstring> methodName,
     jni::alias_ref<jobject> moduleInstance,
-    jlong functionPointer
+    jni::alias_ref<jstring> jniSignature,
+    jni::alias_ref<jni::JArrayClass<jstring>::javaobject> paramTypes,
+    jni::alias_ref<jstring> returnType
   );
 
   /**
@@ -95,6 +107,8 @@ public:
 
 private:
   friend HybridBase;
+
+  static JNIType stringToJNIType(const std::string& typeStr);
 
   std::unique_ptr<JSFunctionsDecorator> functionDecorator;
   std::unique_ptr<JSConstantsDecorator> constantsDecorator;

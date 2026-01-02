@@ -73,45 +73,15 @@ class OptimizedFunctionProcessor(
         val functionsByModule = generatedFunctions.groupBy { it.moduleName }
 
         functionsByModule.forEach { (moduleName, functions) ->
-            functions.forEach { metadata ->
-                try {
-                    generateCppAdapter(metadata)
-                    generateCppJniBinding(metadata)
-                } catch (e: Exception) {
-                    logger.error("Error generating code for ${metadata.functionName}: ${e.message}")
-                }
-            }
-
             try {
+                // Only generate Kotlin registry with metadata - no C++ code!
                 generateKotlinRegistry(moduleName, functions)
             } catch (e: Exception) {
                 logger.error("Error generating Kotlin registry for $moduleName: ${e.message}")
             }
         }
 
-        logger.info("OptimizedFunctionProcessor generated code for ${generatedFunctions.size} functions")
-    }
-
-    private fun generateCppAdapter(metadata: FunctionMetadata) {
-        val cppDir = options["expo.generated.cpp.dir"] ?: "build/generated/cpp/expo"
-        val outputFile = File("$cppDir/${metadata.moduleName}_${metadata.functionName}.cpp")
-        outputFile.parentFile.mkdirs()
-
-        val code = CppAdapterGenerator.generate(metadata)
-        outputFile.writeText(code)
-
-        logger.info("Generated C++ adapter: ${outputFile.absolutePath}")
-    }
-
-    private fun generateCppJniBinding(metadata: FunctionMetadata) {
-        val cppDir = options["expo.generated.cpp.dir"] ?: "build/generated/cpp/expo"
-        val outputFile = File("$cppDir/${metadata.moduleName}_${metadata.functionName}_jni.cpp")
-        outputFile.parentFile.mkdirs()
-
-        val code = CppJniBindingGenerator.generate(metadata)
-        outputFile.writeText(code)
-
-        logger.info("Generated C++ JNI binding: ${outputFile.absolutePath}")
+        logger.info("OptimizedFunctionProcessor generated Kotlin registries for ${generatedFunctions.size} functions (no C++ code needed!)")
     }
 
     private fun generateKotlinRegistry(moduleName: String, functions: List<FunctionMetadata>) {
