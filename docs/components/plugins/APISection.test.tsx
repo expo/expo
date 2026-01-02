@@ -54,8 +54,8 @@ describe('APISection', () => {
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(12);
-    expect(screen.getAllByRole('table')).toHaveLength(5);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(20);
+    expect(screen.getAllByRole('table')).toHaveLength(8);
 
     expect(screen.queryByText('Methods'));
     expect(screen.queryByText('Enums'));

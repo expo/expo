@@ -1,7 +1,7 @@
 import { type EventSubscription } from 'expo-modules-core';
 import * as Sensors from 'expo-sensors';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const FAST_INTERVAL = 16;
 const SLOW_INTERVAL = 1000;
@@ -204,6 +204,7 @@ class LightSensor extends SensorBlock<Sensors.LightSensorMeasurement> {
 
 const PedometerSensor = () => {
   const [isPedometerAvailable, setIsPedometerAvailable] = useState('checking');
+  const [isPedometerHistoryAvailable, setIsPedometerHistoryAvailable] = useState('checking');
   const [pastStepCount, setPastStepCount] = useState(0);
   const [currentStepCount, setCurrentStepCount] = useState(0);
 
@@ -212,8 +213,13 @@ const PedometerSensor = () => {
     const subscribe = async () => {
       const isAvailable = await Sensors.Pedometer.isAvailableAsync();
       setIsPedometerAvailable(String(isAvailable));
+      const isHistoryAvailable = isAvailable && (await Sensors.Pedometer.isRecordingAvailableAsync());
+      setIsPedometerHistoryAvailable(String(isHistoryAvailable));
 
-      if (isAvailable) {
+      if (isHistoryAvailable) {
+        if (Platform.OS === 'android') {
+          await Sensors.Pedometer.subscribeRecording();
+        }
         const end = new Date();
         const start = new Date();
         start.setDate(end.getDate() - 1);
@@ -222,7 +228,9 @@ const PedometerSensor = () => {
         if (pastStepCountResult) {
           setPastStepCount(pastStepCountResult.steps);
         }
+      }
 
+      if (isAvailable) {
         listener = Sensors.Pedometer.watchStepCount((result) => {
           setCurrentStepCount(result.steps);
         });
@@ -237,6 +245,7 @@ const PedometerSensor = () => {
     <View style={styles.sensor}>
       <Text>Pedometer:</Text>
       <Text>Is available: {isPedometerAvailable}</Text>
+      <Text>History available: {isPedometerHistoryAvailable}</Text>
       <Text>Steps taken in the last 24 hours: {pastStepCount}</Text>
       <Text>Watch step count: {currentStepCount}</Text>
     </View>
