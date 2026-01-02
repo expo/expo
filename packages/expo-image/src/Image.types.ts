@@ -566,7 +566,10 @@ export type ImageTransition = {
    * - `'sf:scale/up'` / `'sf:scale/down'` - Directional scale.
    * - `'sf:appear'` - The symbol animates into view.
    * - `'sf:disappear'` - The symbol animates out of view.
-   * - `'sf:replace'` - The symbol animates when replaced with another symbol.
+   * - `'sf:replace'` - The symbol animates when replaced with another symbol (automatic transition).
+   * - `'sf:replace/down-up'` - New symbol slides in from bottom.
+   * - `'sf:replace/up-up'` - New symbol slides in from top.
+   * - `'sf:replace/off-up'` - Cross-dissolve transition between symbols.
    *
    * For SF Symbols (iOS 18+):
    * - `'sf:wiggle'` - The symbol wiggles.
@@ -600,6 +603,9 @@ export type ImageTransition = {
     | 'sf:appear'
     | 'sf:disappear'
     | 'sf:replace'
+    | 'sf:replace/down-up'
+    | 'sf:replace/up-up'
+    | 'sf:replace/off-up'
     | 'sf:wiggle'
     | 'sf:rotate'
     | 'sf:breathe'

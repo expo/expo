@@ -476,7 +476,10 @@ export type ImageTransition = {
      * - `'sf:scale/up'` / `'sf:scale/down'` - Directional scale.
      * - `'sf:appear'` - The symbol animates into view.
      * - `'sf:disappear'` - The symbol animates out of view.
-     * - `'sf:replace'` - The symbol animates when replaced with another symbol.
+     * - `'sf:replace'` - The symbol animates when replaced with another symbol (automatic transition).
+     * - `'sf:replace/down-up'` - New symbol slides in from bottom.
+     * - `'sf:replace/up-up'` - New symbol slides in from top.
+     * - `'sf:replace/off-up'` - Cross-dissolve transition between symbols.
      *
      * For SF Symbols (iOS 18+):
      * - `'sf:wiggle'` - The symbol wiggles.
@@ -489,7 +492,7 @@ export type ImageTransition = {
      *
      * Use the `scope` property to control layer animation behavior.
      */
-    effect?: 'cross-dissolve' | 'flip-from-top' | 'flip-from-right' | 'flip-from-bottom' | 'flip-from-left' | 'curl-up' | 'curl-down' | 'sf:bounce' | 'sf:bounce/up' | 'sf:bounce/down' | 'sf:pulse' | 'sf:variable-color' | 'sf:variable-color/iterative' | 'sf:variable-color/cumulative' | 'sf:scale' | 'sf:scale/up' | 'sf:scale/down' | 'sf:appear' | 'sf:disappear' | 'sf:replace' | 'sf:wiggle' | 'sf:rotate' | 'sf:breathe' | 'sf:draw/on' | 'sf:draw/off' | null;
+    effect?: 'cross-dissolve' | 'flip-from-top' | 'flip-from-right' | 'flip-from-bottom' | 'flip-from-left' | 'curl-up' | 'curl-down' | 'sf:bounce' | 'sf:bounce/up' | 'sf:bounce/down' | 'sf:pulse' | 'sf:variable-color' | 'sf:variable-color/iterative' | 'sf:variable-color/cumulative' | 'sf:scale' | 'sf:scale/up' | 'sf:scale/down' | 'sf:appear' | 'sf:disappear' | 'sf:replace' | 'sf:replace/down-up' | 'sf:replace/up-up' | 'sf:replace/off-up' | 'sf:wiggle' | 'sf:rotate' | 'sf:breathe' | 'sf:draw/on' | 'sf:draw/off' | null;
     /**
      * Controls how the SF Symbol effect animates across layers.
      * - `'by-layer'` - Animates each layer of the symbol individually.

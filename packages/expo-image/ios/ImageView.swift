@@ -341,9 +341,9 @@ public final class ImageView: ExpoView {
       sdImageView.tintColor = imageTintColor
     }
 
-    // Use replace content transition for sf:replace effect
-    if #available(iOS 17.0, tvOS 17.0, *), transition?.effect == .sfReplace {
-      sdImageView.setSymbolImage(templateImage, contentTransition: .replace)
+    // Use replace content transition for sf:replace effects
+    if #available(iOS 17.0, tvOS 17.0, *), let effect = transition?.effect, effect.isSFReplaceEffect {
+      applyReplaceTransition(image: templateImage, effect: effect)
     } else {
       sdImageView.image = templateImage
     }
@@ -507,7 +507,7 @@ public final class ImageView: ExpoView {
     sourceImage = image
 
     // For SF Symbol replace effect, skip the UIView transition and let the native symbol animation handle it
-    let isSFReplaceEffect = transition?.effect == .sfReplace && isSFSymbolSource
+    let isSFReplaceEffect = transition?.effect.isSFReplaceEffect == true && isSFSymbolSource
 
     if let transition = transition, transition.duration > 0, !isSFReplaceEffect {
       let options = transition.toAnimationOptions()
@@ -541,20 +541,18 @@ public final class ImageView: ExpoView {
       sdImageView.tintColor = imageTintColor
       let templateImage = image?.withRenderingMode(.alwaysTemplate)
       // Use replace content transition for SF Symbols when sf:replace effect is set
-      if #available(iOS 17.0, tvOS 17.0, *), isSFSymbolSource, transition?.effect == .sfReplace, let templateImage {
-        UIView.animate(withDuration: (transition?.duration ?? 300) / 1000) {
-          self.sdImageView.setSymbolImage(templateImage, contentTransition: .replace)
-        }
+      if #available(iOS 17.0, tvOS 17.0, *), isSFSymbolSource, let effect = transition?.effect, effect.isSFReplaceEffect, let templateImage {
+        let duration = (transition?.duration ?? 300) / 1000
+        applyReplaceTransition(image: templateImage, effect: effect, duration: duration)
       } else {
         sdImageView.image = templateImage
       }
     } else {
       sdImageView.tintColor = nil
       // Use replace content transition for SF Symbols when sf:replace effect is set
-      if #available(iOS 17.0, tvOS 17.0, *), isSFSymbolSource, transition?.effect == .sfReplace, let image {
-        UIView.animate(withDuration: (transition?.duration ?? 300) / 1000) {
-          self.sdImageView.setSymbolImage(image, contentTransition: .replace)
-        }
+      if #available(iOS 17.0, tvOS 17.0, *), isSFSymbolSource, let effect = transition?.effect, effect.isSFReplaceEffect, let image {
+        let duration = (transition?.duration ?? 300) / 1000
+        applyReplaceTransition(image: image, effect: effect, duration: duration)
       } else {
         sdImageView.image = image
       }
@@ -695,6 +693,28 @@ public final class ImageView: ExpoView {
   func stopSymbolAnimation() {
     if #available(iOS 17.0, tvOS 17.0, *) {
       sdImageView.removeAllSymbolEffects()
+    }
+  }
+
+  @available(iOS 17.0, tvOS 17.0, *)
+  func applyReplaceTransition(image: UIImage, effect: ImageTransitionEffect, duration: Double = 0) {
+    let animate: (@escaping () -> Void) -> Void = { block in
+      if duration > 0 {
+        UIView.animate(withDuration: duration, animations: block)
+      } else {
+        block()
+      }
+    }
+
+    switch effect {
+    case .sfReplaceDownUp:
+      animate { self.sdImageView.setSymbolImage(image, contentTransition: .replace.downUp) }
+    case .sfReplaceUpUp:
+      animate { self.sdImageView.setSymbolImage(image, contentTransition: .replace.upUp) }
+    case .sfReplaceOffUp:
+      animate { self.sdImageView.setSymbolImage(image, contentTransition: .replace.offUp) }
+    default:
+      animate { self.sdImageView.setSymbolImage(image, contentTransition: .replace) }
     }
   }
 

@@ -45,6 +45,9 @@ enum ImageTransitionEffect: String, Enumerable {
   case sfAppear = "sf:appear"
   case sfDisappear = "sf:disappear"
   case sfReplace = "sf:replace"
+  case sfReplaceDownUp = "sf:replace/down-up"
+  case sfReplaceUpUp = "sf:replace/up-up"
+  case sfReplaceOffUp = "sf:replace/off-up"
   // SF Symbol effects (iOS 18+)
   case sfWiggle = "sf:wiggle"
   case sfRotate = "sf:rotate"
@@ -55,6 +58,15 @@ enum ImageTransitionEffect: String, Enumerable {
 
   var isSFSymbolEffect: Bool {
     return rawValue.hasPrefix("sf:")
+  }
+
+  var isSFReplaceEffect: Bool {
+    switch self {
+    case .sfReplace, .sfReplaceDownUp, .sfReplaceUpUp, .sfReplaceOffUp:
+      return true
+    default:
+      return false
+    }
   }
 
   func toAnimationOption() -> UIView.AnimationOptions {

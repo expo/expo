@@ -34,8 +34,8 @@ export default function Page() {
           // autoplay
           contentFit="contain"
           transition={{
-            effect: 'sf:replace',
-            repeat: 2,
+            effect: 'sf:draw/on',
+            // repeat: 2,
             // duration: 2000,
           }}
           // tintColor="darkcyan"
