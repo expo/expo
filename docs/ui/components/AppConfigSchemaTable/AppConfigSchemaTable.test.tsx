@@ -28,9 +28,6 @@ const TEST_SCHEMA: Record<string, Property> = {
             type: 'boolean',
           },
         },
-        meta: {
-          expoKit: 'Set this property using Xcode.',
-        },
         enum: ['leanback', 'immersive', 'sticky-immersive'],
       },
       backgroundColor: {
@@ -43,7 +40,6 @@ const TEST_SCHEMA: Record<string, Property> = {
       },
     },
     meta: {
-      expoKit: 'Set this property using AppConstants.java.',
       bareWorkflow: 'Set this property using just Xcode',
     },
   },
