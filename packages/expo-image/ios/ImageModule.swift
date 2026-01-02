@@ -270,6 +270,7 @@ public final class ImageModule: Module {
     SDImageLoadersManager.shared.addLoader(BlurhashLoader())
     SDImageLoadersManager.shared.addLoader(ThumbhashLoader())
     SDImageLoadersManager.shared.addLoader(PhotoLibraryAssetLoader())
+    SDImageLoadersManager.shared.addLoader(SFSymbolLoader())
   }
 
   static func configureCache(config: ImageCacheConfig) {
