@@ -3,13 +3,14 @@ package expo.modules.kotlin.views
 import android.view.View
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.SimpleViewManager
+import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.getBackingMap
 
 class SimpleViewManagerWrapper(
   override val viewWrapperDelegate: ViewManagerWrapperDelegate
 ) : SimpleViewManager<View>(), ViewWrapperDelegateHolder {
-  override fun getName(): String = "ViewManagerAdapter_${viewWrapperDelegate.name}"
+  override fun getName(): String = viewWrapperDelegate.viewManagerName
 
   override fun createViewInstance(reactContext: ThemedReactContext): View =
     viewWrapperDelegate.createView(reactContext)
@@ -18,12 +19,23 @@ class SimpleViewManagerWrapper(
     val propsMap = props.getBackingMap()
     // Updates expo related properties.
     val handledProps = viewWrapperDelegate.updateProperties(viewToUpdate, propsMap)
+    viewWrapperDelegate.updateStateProps(viewToUpdate)
     // Updates remaining props using RN implementation.
     // To not triggered undefined setters we filtrated already handled properties.
     super.updateProperties(
       viewToUpdate,
       ReactStylesDiffMap(FilteredReadableMap(propsMap, handledProps))
     )
+  }
+
+  override fun updateState(
+    view: View,
+    props: ReactStylesDiffMap?,
+    stateWrapper: StateWrapper?
+  ): Any? {
+    (view as? ExpoView)?.stateWrapper = stateWrapper
+    viewWrapperDelegate.updateStateProps(view)
+    return null
   }
 
   override fun onAfterUpdateTransaction(view: View) {
@@ -44,8 +56,8 @@ class SimpleViewManagerWrapper(
     viewWrapperDelegate.onDestroy(view)
   }
 
-  override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
-    val expoEvent = viewWrapperDelegate.getExportedCustomDirectEventTypeConstants() ?: emptyMap()
+  override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any> {
+    val expoEvent = viewWrapperDelegate.getExportedCustomDirectEventTypeConstants()
     return super.getExportedCustomDirectEventTypeConstants()?.plus(expoEvent) ?: expoEvent
   }
 }

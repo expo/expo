@@ -17,9 +17,19 @@ class ComposeViewProp(
   anyType: AnyType,
   val property: KProperty1<*, *>
 ) : AnyViewProp(name, anyType) {
+  private var _isStateProp = false
 
   @Suppress("UNCHECKED_CAST")
   override fun set(prop: Dynamic, onView: View, appContext: AppContext?) {
+    setPropDirectly(prop, onView, appContext)
+  }
+
+  override fun set(prop: Any?, onView: View, appContext: AppContext?) {
+    setPropDirectly(prop, onView, appContext)
+  }
+
+  @Suppress("UNCHECKED_CAST")
+  private fun setPropDirectly(prop: Any?, onView: View, appContext: AppContext?) {
     exceptionDecorator({
       PropSetException(name, onView::class, it)
     }) {
@@ -48,5 +58,13 @@ class ComposeViewProp(
     }
   }
 
+  fun asStateProp(): ComposeViewProp {
+    _isStateProp = true
+    return this
+  }
+
   override val isNullable: Boolean = anyType.kType.isMarkedNullable
+
+  override val isStateProp: Boolean
+    get() = _isStateProp
 }
