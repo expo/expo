@@ -285,6 +285,9 @@ export class Image extends React.PureComponent<ImageProps> {
     }
     // Resolve sources and append weight to SF Symbol URLs for proper cache busting
     let resolvedSource = resolveSources(source);
+    const isSFSymbol =
+      Array.isArray(resolvedSource) && resolvedSource.some((s) => s?.uri?.startsWith('sf:/'));
+
     if (fontWeightStyle && Array.isArray(resolvedSource)) {
       resolvedSource = resolvedSource.map((s) => {
         if (s?.uri?.startsWith('sf:/')) {
@@ -300,7 +303,7 @@ export class Image extends React.PureComponent<ImageProps> {
         style={restStyle}
         source={resolvedSource}
         placeholder={resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource)}
-        contentFit={resolveContentFit(contentFit, resizeMode)}
+        contentFit={resolveContentFit(contentFit, resizeMode, isSFSymbol)}
         contentPosition={resolveContentPosition(contentPosition)}
         transition={resolveTransition(transition, fadeDuration)}
         sfEffect={resolveSfEffect(sfEffect)}

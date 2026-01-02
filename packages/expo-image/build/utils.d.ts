@@ -4,8 +4,9 @@ import { ImageContentFit, ImageContentPosition, ImageContentPositionObject, Imag
 /**
  * If the `contentFit` is not provided, it's resolved from the equivalent `resizeMode` prop
  * that we support to provide compatibility with React Native Image.
+ * For SF Symbols, the default is 'contain' instead of 'cover'.
  */
-export declare function resolveContentFit(contentFit?: ImageContentFit, resizeMode?: ImageResizeMode): ImageContentFit;
+export declare function resolveContentFit(contentFit?: ImageContentFit, resizeMode?: ImageResizeMode, isSFSymbol?: boolean): ImageContentFit;
 /**
  * It resolves a stringified form of the `contentPosition` prop to an object,
  * which is the only form supported in the native code.
