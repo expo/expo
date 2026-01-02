@@ -47,7 +47,6 @@ const isDev = process.env.NODE_ENV === 'development';
 
 export const DEFAULT_BASE_NESTING_LEVEL = 2;
 export const LITERAL_UNION_COLLAPSE_THRESHOLD = 50;
-export const isIconType = (typeName?: string) => typeName?.toLowerCase().includes('icon');
 
 const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
@@ -266,11 +265,6 @@ export const resolveTypeName = (
           ['literal', 'templateLiteral', 'intrinsic', 'reference', 'tuple'].includes(t.type)
         );
       if (isLargeLiteralUnion) {
-        if (isIconType(name) && isDev) {
-          console.warn(
-            `Literal union for type "${name ?? 'unknown'}" is large. Consider adding a custom description.`
-          );
-        }
         return 'See description for available values.';
       }
       return renderUnion(types, { sdkVersion });
