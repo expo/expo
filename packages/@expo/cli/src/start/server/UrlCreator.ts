@@ -1,8 +1,11 @@
 import assert from 'assert';
 import { URL } from 'url';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 import * as Log from '../../log';
 import { getIpAddress } from '../../utils/ip';
+import { env } from '../../utils/env';
 
 const debug = require('debug')('expo:start:server:urlCreator') as typeof console.log;
 
@@ -103,6 +106,14 @@ export class UrlCreator {
     if (proxyURL) {
       return getUrlComponentsFromProxyUrl(options, proxyURL);
     }
+    
+    // E2B Sandbox.
+    if (shouldUseE2BTunnel()) {
+      const e2bTunnelUrl = getE2BTunnelUrl(this.bundlerInfo.port);
+      if (e2bTunnelUrl) {
+        return getUrlComponentsFromProxyUrl(options, e2bTunnelUrl);
+      }
+    }
 
     // Ngrok.
     if (options.hostType === 'tunnel') {
@@ -173,6 +184,30 @@ function joinUrlComponents({ protocol, hostname, port }: Partial<UrlComponents>)
 /** @deprecated */
 function getProxyUrl(): string | undefined {
   return process.env.EXPO_PACKAGER_PROXY_URL;
+}
+
+function shouldUseE2BTunnel(): boolean {
+  return env.EXPO_E2B_TUNNEL
+}
+
+const E2B_SANDBOX_ID_PATH = '/run/e2b/.E2B_SANDBOX_ID';
+
+function getE2BTunnelUrl(port: number): string | null {
+  let sandboxId: string | null = null;
+  try {
+    // Note: This is sync at the moment, as it's used at many places in the codebase
+    // and most of them are sync now.
+    sandboxId = fs.readFileSync(E2B_SANDBOX_ID_PATH, { encoding: 'utf8' }).trim();
+  } catch (error) {
+    debug('Failed to read E2B Sandbox ID file.', E2B_SANDBOX_ID_PATH, error);
+    return null;
+  }
+
+  if (!sandboxId) {
+    return null;
+  }
+
+  return `https://${port}-${sandboxId}.e2b.app`;
 }
 
 // TODO: Drop the undocumented env variables:
