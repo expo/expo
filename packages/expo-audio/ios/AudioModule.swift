@@ -204,6 +204,7 @@ public class AudioModule: Module {
       }
 
       Function("remove") { player in
+        player.sharedObjectWillRelease()
         self.registry.remove(player)
       }
 

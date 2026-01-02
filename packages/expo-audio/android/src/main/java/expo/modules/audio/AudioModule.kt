@@ -459,6 +459,7 @@ class AudioModule : Module() {
       }
 
       Function("remove") { player: AudioPlayer ->
+        player.sharedObjectDidRelease()
         players.remove(player.id)
       }
     }
