@@ -1,5 +1,12 @@
 import type { NativeModule, SharedRef, SharedRefType } from 'expo';
-import { ImageStyle as RNImageStyle, StyleProp, View, ViewProps, ViewStyle } from 'react-native';
+import {
+  ImageStyle as RNImageStyle,
+  TextStyle,
+  StyleProp,
+  View,
+  ViewProps,
+  ViewStyle,
+} from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import ExpoImage from './ExpoImage';
@@ -91,7 +98,15 @@ export type ImageDecodeFormat = 'argb' | 'rgb';
  */
 export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   /** @hidden */
-  style?: StyleProp<RNImageStyle>;
+  style?: StyleProp<
+    RNImageStyle & {
+      /**
+       * Specifies stroke weight for SF symbols.
+       * @platform ios
+       */
+      fontWeight?: TextStyle['fontWeight'];
+    }
+  >;
 
   /**
    * The image source, either a remote URL, a local file resource or a number that is the result of the `require()` function.
