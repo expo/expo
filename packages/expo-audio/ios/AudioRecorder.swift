@@ -73,7 +73,9 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     let session = AVAudioSession.sharedInstance()
     do {
       try session.setCategory(.playAndRecord, mode: .default, options: sessionOptions)
-      try session.setActive(true)
+      // Commenting out setActive(true) to avoid 3+ second blocking delay when switching modes.
+      // The audio session is managed by AudioModule and should remain active.
+      // try session.setActive(true)
     } catch {
       currentState = .error
       throw AudioRecordingException("Failed to configure audio session: \(error.localizedDescription)")
