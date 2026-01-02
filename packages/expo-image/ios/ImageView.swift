@@ -2,6 +2,7 @@
 
 import SDWebImage
 import ExpoModulesCore
+import Symbols
 #if !os(tvOS)
 import VisionKit
 #endif
@@ -75,6 +76,11 @@ public final class ImageView: ExpoView {
   var useAppleWebpCodec: Bool = true
 
   /**
+   Tracks whether the current image is an SF Symbol for animation control.
+   */
+  var isSFSymbolSource: Bool = false
+
+  /**
    The ideal image size that fills in the container size while maintaining the source aspect ratio.
    */
   var imageIdealSize: CGSize = .zero
@@ -144,6 +150,10 @@ public final class ImageView: ExpoView {
       displayPlaceholderIfNecessary()
       return
     }
+
+    // Track if this is an SF Symbol source for animation handling
+    isSFSymbolSource = source.isSFSymbol
+
     if sdImageView.image == nil {
       sdImageView.contentMode = contentFit.toContentMode()
     }
@@ -432,12 +442,24 @@ public final class ImageView: ExpoView {
       sdImageView.autoPlayAnimatedImage = autoplay
     }
 
+    // Remove any existing symbol effects before setting new image
+    if #available(iOS 17.0, tvOS 17.0, *) {
+      sdImageView.removeAllSymbolEffects()
+    }
+
     if let imageTintColor, !isPlaceholder {
       sdImageView.tintColor = imageTintColor
       sdImageView.image = image?.withRenderingMode(.alwaysTemplate)
     } else {
       sdImageView.tintColor = nil
       sdImageView.image = image
+    }
+
+    // Apply symbol effect if this is an SF Symbol and autoplay is enabled
+    if #available(iOS 17.0, tvOS 17.0, *) {
+      if !isPlaceholder && isSFSymbolSource && autoplay {
+        applySymbolEffect()
+      }
     }
 
     if !isPlaceholder {
@@ -449,6 +471,44 @@ public final class ImageView: ExpoView {
       analyzeImage()
     }
 #endif
+  }
+
+  // MARK: - Symbol Effects
+
+  @available(iOS 17.0, tvOS 17.0, *)
+  func applySymbolEffect() {
+    guard let effect = transition?.effect, effect.isSFSymbolEffect else {
+      return
+    }
+
+    switch effect {
+    case .sfBounce:
+      sdImageView.addSymbolEffect(.bounce, options: .repeating)
+    case .sfPulse:
+      sdImageView.addSymbolEffect(.pulse, options: .repeating)
+    case .sfVariableColor:
+      sdImageView.addSymbolEffect(.variableColor, options: .repeating)
+    case .sfScale:
+      sdImageView.addSymbolEffect(.scale)
+    case .sfAppear:
+      sdImageView.addSymbolEffect(.appear)
+    case .sfDisappear:
+      sdImageView.addSymbolEffect(.disappear)
+    default:
+      break
+    }
+  }
+
+  func startSymbolAnimation() {
+    if #available(iOS 17.0, tvOS 17.0, *) {
+      applySymbolEffect()
+    }
+  }
+
+  func stopSymbolAnimation() {
+    if #available(iOS 17.0, tvOS 17.0, *) {
+      sdImageView.removeAllSymbolEffects()
+    }
   }
 
   // MARK: - Helpers

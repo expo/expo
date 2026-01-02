@@ -122,11 +122,19 @@ public final class ImageModule: Module {
       }
 
       AsyncFunction("startAnimating") { (view: ImageView) in
-        view.sdImageView.startAnimating()
+        if view.isSFSymbolSource {
+          view.startSymbolAnimation()
+        } else {
+          view.sdImageView.startAnimating()
+        }
       }
 
       AsyncFunction("stopAnimating") { (view: ImageView) in
-        view.sdImageView.stopAnimating()
+        if view.isSFSymbolSource {
+          view.stopSymbolAnimation()
+        } else {
+          view.sdImageView.stopAnimating()
+        }
       }
 
       AsyncFunction("lockResourceAsync") { (view: ImageView) in

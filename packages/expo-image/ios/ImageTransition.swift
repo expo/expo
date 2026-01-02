@@ -1,6 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import Symbols
 
 enum ImageTransitionTiming: String, Enumerable {
   case easeInOut = "ease-in-out"
@@ -30,6 +31,18 @@ enum ImageTransitionEffect: String, Enumerable {
   case flipFromLeft = "flip-from-left"
   case curlUp = "curl-up"
   case curlDown = "curl-down"
+  // SF Symbol effects (iOS 17+)
+  case sfBounce = "sf:bounce"
+  case sfPulse = "sf:pulse"
+  case sfVariableColor = "sf:variable-color"
+  case sfScale = "sf:scale"
+  case sfAppear = "sf:appear"
+  case sfDisappear = "sf:disappear"
+  case sfReplace = "sf:replace"
+
+  var isSFSymbolEffect: Bool {
+    return rawValue.hasPrefix("sf:")
+  }
 
   func toAnimationOption() -> UIView.AnimationOptions {
     switch self {
@@ -47,6 +60,8 @@ enum ImageTransitionEffect: String, Enumerable {
       return .transitionCurlUp
     case .curlDown:
       return .transitionCurlDown
+    default:
+      return .transitionCrossDissolve
     }
   }
 }
