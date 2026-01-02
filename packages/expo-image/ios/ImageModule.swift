@@ -107,6 +107,10 @@ public final class ImageModule: Module {
         view.autoplay = autoplay ?? true
       }
 
+      Prop("sfEffect") { (view, sfEffect: [SFSymbolEffect]?) in
+        view.sfEffect = sfEffect
+      }
+
       Prop("useAppleWebpCodec", true) { (view, useAppleWebpCodec: Bool) in
         view.useAppleWebpCodec = useAppleWebpCodec
       }

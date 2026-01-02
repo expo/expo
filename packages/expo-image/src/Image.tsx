@@ -12,10 +12,33 @@ import {
   ImageProps,
   ImageRef,
   ImageSource,
+  SFSymbolEffect,
+  SFSymbolEffectObject,
 } from './Image.types';
 import ImageModule from './ImageModule';
 import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
 import { resolveSource, resolveSources } from './utils/resolveSources';
+
+/**
+ * Normalizes the sfEffect prop to always be an array of SFSymbolEffectObject.
+ * Supports: string, object, or array of strings/objects.
+ */
+function resolveSfEffect(sfEffect: SFSymbolEffect | null | undefined): SFSymbolEffectObject[] | null {
+  if (sfEffect == null) {
+    return null;
+  }
+
+  // Convert to array if not already
+  const effectsArray = Array.isArray(sfEffect) ? sfEffect : [sfEffect];
+
+  // Normalize each item to SFSymbolEffectObject
+  return effectsArray.map((item): SFSymbolEffectObject => {
+    if (typeof item === 'string') {
+      return { effect: item };
+    }
+    return item;
+  });
+}
 
 let loggedDefaultSourceDeprecationWarning = false;
 let loggedRenderingChildrenWarning = false;
@@ -236,6 +259,7 @@ export class Image extends React.PureComponent<ImageProps> {
       resizeMode: resizeModeProp,
       defaultSource,
       loadingIndicatorSource,
+      sfEffect,
       ...restProps
     } = this.props;
 
@@ -279,6 +303,7 @@ export class Image extends React.PureComponent<ImageProps> {
         contentFit={resolveContentFit(contentFit, resizeMode)}
         contentPosition={resolveContentPosition(contentPosition)}
         transition={resolveTransition(transition, fadeDuration)}
+        sfEffect={resolveSfEffect(sfEffect)}
         nativeViewRef={this.nativeViewRef}
         containerViewRef={this.containerViewRef}
       />

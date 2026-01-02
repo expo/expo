@@ -56,9 +56,7 @@ export default function Page() {
         contentFit="contain"
         key="ce"
         transition={{
-          effect: 'sf:bounce',
-          scope: 'by-layer',
-          // repeat: -1,
+          effect: 'sf:replace',
         }}
         style={{
           tintColor: Color.ios.systemCyan,
@@ -75,11 +73,7 @@ export default function Page() {
           autoplay
           source="sf:signature"
           contentFit="contain"
-          transition={{
-            effect: on ? 'sf:draw/on' : 'sf:draw/off',
-            scope: 'by-layer',
-            // repeat: 1,
-          }}
+          sfEffect={{ effect: on ? 'draw/on' : 'draw/off', scope: 'by-layer' }}
           style={{
             width: 128,
             aspectRatio: 1,

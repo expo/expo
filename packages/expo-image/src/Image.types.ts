@@ -254,6 +254,26 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   autoplay?: boolean;
 
   /**
+   * SF Symbol effect animations. Can be a single effect string, an effect object,
+   * or an array of effect strings and/or objects.
+   *
+   * @example
+   * ```tsx
+   * // Single effect as string
+   * sfEffect="bounce"
+   *
+   * // Single effect as object with options
+   * sfEffect={{ effect: "bounce", repeat: -1, scope: "by-layer" }}
+   *
+   * // Array of mixed strings and objects
+   * sfEffect={["bounce", { effect: "pulse", repeat: -1 }]}
+   * ```
+   *
+   * @platform ios 17.0+
+   */
+  sfEffect?: SFSymbolEffect | null;
+
+  /**
    * Called when the image starts to load.
    */
   onLoadStart?: () => void;
@@ -425,6 +445,7 @@ export interface ImageNativeProps extends ImageProps {
   contentPosition?: ImageContentPositionObject;
   transition?: ImageTransition | null;
   autoplay?: boolean;
+  sfEffect?: SFSymbolEffectObject[] | null;
   nativeViewRef?: React.RefObject<ExpoImage | null>;
   containerViewRef?: React.RefObject<View | null>;
   symbolWeight?: string | null;
@@ -523,6 +544,103 @@ type OnlyObject<T> = T extends object ? T : never;
 export type ImageContentPositionObject = OnlyObject<ImageContentPosition>;
 
 /**
+ * The type of SF Symbol effect animation.
+ * @platform ios 17.0+
+ */
+export type SFSymbolEffectType =
+  | 'bounce'
+  | 'bounce/up'
+  | 'bounce/down'
+  | 'pulse'
+  | 'variable-color'
+  | 'variable-color/iterative'
+  | 'variable-color/cumulative'
+  | 'scale'
+  | 'scale/up'
+  | 'scale/down'
+  | 'appear'
+  | 'disappear'
+  // iOS 18+
+  | 'wiggle'
+  | 'rotate'
+  | 'breathe'
+  // iOS 26+
+  | 'draw/on'
+  | 'draw/off';
+
+/**
+ * An object that describes an SF Symbol effect animation.
+ * @platform ios 17.0+
+ */
+export type SFSymbolEffectObject = {
+  /**
+   * The type of SF Symbol effect animation.
+   *
+   * - `'bounce'` - The symbol bounces.
+   * - `'bounce/up'` / `'bounce/down'` - Directional bounce.
+   * - `'pulse'` - The symbol fades in and out.
+   * - `'variable-color'` - The symbol's color layers animate sequentially.
+   * - `'variable-color/iterative'` / `'variable-color/cumulative'` - Variable color modes.
+   * - `'scale'` - The symbol scales up and down.
+   * - `'scale/up'` / `'scale/down'` - Directional scale.
+   * - `'appear'` - The symbol animates into view.
+   * - `'disappear'` - The symbol animates out of view.
+   *
+   * For iOS 18+:
+   * - `'wiggle'` - The symbol wiggles.
+   * - `'rotate'` - The symbol rotates.
+   * - `'breathe'` - The symbol breathes (pulsing scale effect).
+   *
+   * For iOS 26+:
+   * - `'draw/on'` - The symbol layers animate like being drawn.
+   * - `'draw/off'` - The symbol layers animate like being erased.
+   */
+  effect: SFSymbolEffectType;
+
+  /**
+   * The number of times to repeat the effect.
+   * - `-1` - Repeat indefinitely
+   * - `0` - No repeat, play once (default)
+   * - `1+` - Repeat the specified number of times
+   *
+   * @default 0
+   */
+  repeat?: number;
+
+  /**
+   * Controls how the effect animates across symbol layers.
+   * - `'by-layer'` - Animates each layer of the symbol individually.
+   * - `'whole-symbol'` - Animates the entire symbol as one unit.
+   *
+   * @default undefined (uses system default)
+   */
+  scope?: 'by-layer' | 'whole-symbol' | null;
+};
+
+/**
+ * SF Symbol effect configuration. Can be a single effect string, an effect object,
+ * or an array of effect strings and/or objects.
+ *
+ * @example
+ * ```tsx
+ * // Single effect as string
+ * sfEffect="bounce"
+ *
+ * // Single effect as object with options
+ * sfEffect={{ effect: "bounce", repeat: -1, scope: "by-layer" }}
+ *
+ * // Array of mixed strings and objects
+ * sfEffect={["bounce", { effect: "pulse", repeat: -1 }]}
+ * ```
+ *
+ * @platform ios 17.0+
+ */
+export type SFSymbolEffect =
+  | SFSymbolEffectType
+  | SFSymbolEffectObject
+  | (SFSymbolEffectType | SFSymbolEffectObject)[];
+
+/**
  * An object that describes the smooth transition when switching the image source.
  */
 export type ImageTransition = {
@@ -539,48 +657,20 @@ export type ImageTransition = {
   timing?: 'ease-in-out' | 'ease-in' | 'ease-out' | 'linear';
 
   /**
-   * The number of times to repeat the SF Symbol animation effect.
-   * - `-1` - Repeat indefinitely
-   * - `0` - No repeat, play once (default)
-   * - `1+` - Repeat the specified number of times
-   *
-   * @default 0
-   * @platform ios 17.0+
-   */
-  repeat?: number;
-
-  /**
    * An animation effect used for transition.
    * @default 'cross-dissolve'
    *
    * On Android, only `'cross-dissolve'` is supported.
    * On Web, `'curl-up'` and `'curl-down'` effects are not supported.
    *
-   * For SF Symbols (iOS 17+), use `sf:` prefixed effects:
-   * - `'sf:bounce'` - The symbol bounces.
-   * - `'sf:bounce/up'` / `'sf:bounce/down'` - Directional bounce.
-   * - `'sf:pulse'` - The symbol fades in and out.
-   * - `'sf:variable-color'` - The symbol's color layers animate sequentially.
-   * - `'sf:variable-color/iterative'` / `'sf:variable-color/cumulative'` - Variable color modes.
-   * - `'sf:scale'` - The symbol scales up and down.
-   * - `'sf:scale/up'` / `'sf:scale/down'` - Directional scale.
-   * - `'sf:appear'` - The symbol animates into view.
-   * - `'sf:disappear'` - The symbol animates out of view.
-   * - `'sf:replace'` - The symbol animates when replaced with another symbol (automatic transition).
+   * For SF Symbols (iOS 17+), use the `sf:replace` effects to animate
+   * when the symbol source changes:
+   * - `'sf:replace'` - The symbol animates when replaced with another symbol.
    * - `'sf:replace/down-up'` - New symbol slides in from bottom.
    * - `'sf:replace/up-up'` - New symbol slides in from top.
    * - `'sf:replace/off-up'` - Cross-dissolve transition between symbols.
    *
-   * For SF Symbols (iOS 18+):
-   * - `'sf:wiggle'` - The symbol wiggles.
-   * - `'sf:rotate'` - The symbol rotates.
-   * - `'sf:breathe'` - The symbol breathes (pulsing scale effect).
-   *
-   * For SF Symbols (iOS 26+):
-   * - `'sf:draw/on'` - The symbol layers animate like being drawn.
-   * - `'sf:draw/off'` - The symbol layers animate like being erased.
-   *
-   * Use the `scope` property to control layer animation behavior.
+   * For other SF Symbol animations (bounce, pulse, scale, etc.), use the `sfEffect` prop instead.
    */
   effect?:
     | 'cross-dissolve'
@@ -590,38 +680,11 @@ export type ImageTransition = {
     | 'flip-from-left'
     | 'curl-up'
     | 'curl-down'
-    | 'sf:bounce'
-    | 'sf:bounce/up'
-    | 'sf:bounce/down'
-    | 'sf:pulse'
-    | 'sf:variable-color'
-    | 'sf:variable-color/iterative'
-    | 'sf:variable-color/cumulative'
-    | 'sf:scale'
-    | 'sf:scale/up'
-    | 'sf:scale/down'
-    | 'sf:appear'
-    | 'sf:disappear'
     | 'sf:replace'
     | 'sf:replace/down-up'
     | 'sf:replace/up-up'
     | 'sf:replace/off-up'
-    | 'sf:wiggle'
-    | 'sf:rotate'
-    | 'sf:breathe'
-    | 'sf:draw/on'
-    | 'sf:draw/off'
     | null;
-
-  /**
-   * Controls how the SF Symbol effect animates across layers.
-   * - `'by-layer'` - Animates each layer of the symbol individually.
-   * - `'whole-symbol'` - Animates the entire symbol as one unit.
-   *
-   * @default undefined (uses system default)
-   * @platform ios 17.0+
-   */
-  scope?: 'by-layer' | 'whole-symbol' | null;
 };
 
 export type ImageLoadEventData = {

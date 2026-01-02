@@ -31,34 +31,11 @@ enum ImageTransitionEffect: String, Enumerable {
   case flipFromLeft = "flip-from-left"
   case curlUp = "curl-up"
   case curlDown = "curl-down"
-  // SF Symbol effects (iOS 17+)
-  case sfBounce = "sf:bounce"
-  case sfBounceUp = "sf:bounce/up"
-  case sfBounceDown = "sf:bounce/down"
-  case sfPulse = "sf:pulse"
-  case sfVariableColor = "sf:variable-color"
-  case sfVariableColorIterative = "sf:variable-color/iterative"
-  case sfVariableColorCumulative = "sf:variable-color/cumulative"
-  case sfScale = "sf:scale"
-  case sfScaleUp = "sf:scale/up"
-  case sfScaleDown = "sf:scale/down"
-  case sfAppear = "sf:appear"
-  case sfDisappear = "sf:disappear"
+  // SF Symbol replace effects (iOS 17+)
   case sfReplace = "sf:replace"
   case sfReplaceDownUp = "sf:replace/down-up"
   case sfReplaceUpUp = "sf:replace/up-up"
   case sfReplaceOffUp = "sf:replace/off-up"
-  // SF Symbol effects (iOS 18+)
-  case sfWiggle = "sf:wiggle"
-  case sfRotate = "sf:rotate"
-  case sfBreathe = "sf:breathe"
-  // SF Symbol effects (iOS 26+)
-  case sfDrawOn = "sf:draw/on"
-  case sfDrawOff = "sf:draw/off"
-
-  var isSFSymbolEffect: Bool {
-    return rawValue.hasPrefix("sf:")
-  }
 
   var isSFReplaceEffect: Bool {
     switch self {
@@ -91,11 +68,6 @@ enum ImageTransitionEffect: String, Enumerable {
   }
 }
 
-enum ImageTransitionScope: String, Enumerable {
-  case byLayer = "by-layer"
-  case wholeSymbol = "whole-symbol"
-}
-
 struct ImageTransition: Record {
   @Field
   var duration: Double = 100
@@ -105,12 +77,6 @@ struct ImageTransition: Record {
 
   @Field
   var effect: ImageTransitionEffect = .crossDissolve
-
-  @Field(.keyed("repeat"))
-  var repeatCount: Int = 0
-
-  @Field
-  var scope: ImageTransitionScope?
 
   func toAnimationOptions() -> UIView.AnimationOptions {
     return [timing.toAnimationOption(), effect.toAnimationOption()]
