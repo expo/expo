@@ -98,7 +98,7 @@ function FontWeightComparisonExample() {
       <View style={styles.row}>
         {weights.map((weight) => (
           <View key={weight} style={styles.effectContainer}>
-            <Image source="sf:circle.fill" style={[styles.symbol, { fontWeight: weight }]} />
+            <Image source="sf:star" style={[styles.symbol, { fontWeight: weight }]} />
             <Text style={styles.label}>{weight}</Text>
           </View>
         ))}

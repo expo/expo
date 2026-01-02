@@ -75,6 +75,8 @@ public final class ImageView: ExpoView {
 
   var sfEffect: [SFSymbolEffect]?
 
+  var symbolWeight: String?
+
   var useAppleWebpCodec: Bool = true
 
   /**
@@ -282,28 +284,11 @@ public final class ImageView: ExpoView {
       return
     }
 
-    // Parse symbol name and weight from URL (e.g., sf:/star.fill?weight=bold)
-    let components = URLComponents(url: uri, resolvingAgainstBaseURL: false)
+    // Extract symbol name from URL path (e.g., sf:/star.fill)
     let symbolName = uri.pathComponents.count > 1 ? uri.pathComponents[1] : ""
-    let weightParam = components?.queryItems?.first(where: { $0.name == "weight" })?.value
 
-    // Parse weight
-    let weight: UIImage.SymbolWeight = {
-      switch weightParam {
-      case "100": return .ultraLight
-      case "200": return .thin
-      case "300": return .light
-      case "400", "normal": return .regular
-      case "500": return .medium
-      case "600": return .semibold
-      case "700", "bold": return .bold
-      case "800": return .heavy
-      case "900": return .black
-      default: return .regular
-      }
-    }()
-
-    // Create symbol with configuration
+    // Create symbol with configuration using the symbolWeight prop
+    let weight = parseSymbolWeight(symbolWeight)
     let configuration = UIImage.SymbolConfiguration(pointSize: 100, weight: weight)
     guard let image = UIImage(systemName: symbolName, withConfiguration: configuration) else {
       onError(["error": "Unable to create SF Symbol image for '\(symbolName)'"])
@@ -729,6 +714,21 @@ public final class ImageView: ExpoView {
   }
 
   // MARK: - Helpers
+
+  private func parseSymbolWeight(_ fontWeight: String?) -> UIImage.SymbolWeight {
+    switch fontWeight {
+    case "100": return .ultraLight
+    case "200": return .thin
+    case "300": return .light
+    case "400", "normal": return .regular
+    case "500": return .medium
+    case "600": return .semibold
+    case "700", "bold": return .bold
+    case "800": return .heavy
+    case "900": return .black
+    default: return .regular
+    }
+  }
 
   func cancelPendingOperation() {
     pendingOperation?.cancel()

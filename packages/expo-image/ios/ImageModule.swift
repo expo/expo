@@ -111,6 +111,10 @@ public final class ImageModule: Module {
         view.sfEffect = sfEffect
       }
 
+      Prop("symbolWeight") { (view, symbolWeight: String?) in
+        view.symbolWeight = symbolWeight
+      }
+
       Prop("useAppleWebpCodec", true) { (view, useAppleWebpCodec: Bool) in
         view.useAppleWebpCodec = useAppleWebpCodec
       }

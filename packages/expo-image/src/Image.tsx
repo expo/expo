@@ -283,19 +283,10 @@ export class Image extends React.PureComponent<ImageProps> {
       );
       loggedRenderingChildrenWarning = true;
     }
-    // Resolve sources and append weight to SF Symbol URLs for proper cache busting
-    let resolvedSource = resolveSources(source);
+    // Resolve sources
+    const resolvedSource = resolveSources(source);
     const isSFSymbol =
       Array.isArray(resolvedSource) && resolvedSource.some((s) => s?.uri?.startsWith('sf:/'));
-
-    if (fontWeightStyle && Array.isArray(resolvedSource)) {
-      resolvedSource = resolvedSource.map((s) => {
-        if (s?.uri?.startsWith('sf:/')) {
-          return { ...s, uri: `${s.uri}?weight=${fontWeightStyle}` };
-        }
-        return s;
-      });
-    }
 
     return (
       <ExpoImage
@@ -307,6 +298,7 @@ export class Image extends React.PureComponent<ImageProps> {
         contentPosition={resolveContentPosition(contentPosition)}
         transition={resolveTransition(transition, fadeDuration)}
         sfEffect={resolveSfEffect(sfEffect)}
+        symbolWeight={isSFSymbol ? fontWeightStyle : null}
         nativeViewRef={this.nativeViewRef}
         containerViewRef={this.containerViewRef}
       />
