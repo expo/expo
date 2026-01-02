@@ -1,5 +1,6 @@
 import type { NativeModule, SharedRef, SharedRefType } from 'expo';
 import { ImageStyle as RNImageStyle, StyleProp, View, ViewProps, ViewStyle } from 'react-native';
+import type { SFSymbol } from 'sf-symbols-typescript';
 import ExpoImage from './ExpoImage';
 export type ImageSource = {
     /**
@@ -86,8 +87,10 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
      * The image source, either a remote URL, a local file resource or a number that is the result of the `require()` function.
      * When provided as an array of sources, the source that fits best into the container size and is closest to the screen scale
      * will be chosen. In this case it is important to provide `width`, `height` and `scale` properties.
+     *
+     * For SF Symbols (iOS), use the `sf:` prefix followed by the symbol name, e.g. `sf:star.fill`.
      */
-    source?: ImageSource | string | number | ImageSource[] | string[] | SharedRefType<'image'> | null;
+    source?: ImageSource | `sf:${SFSymbol}` | (string & {}) | number | ImageSource[] | string[] | SharedRefType<'image'> | null;
     /**
      * An image to display while loading the proper image and no image has been displayed yet or the source is unset.
      *

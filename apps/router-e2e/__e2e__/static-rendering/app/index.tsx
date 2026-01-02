@@ -50,12 +50,13 @@ export default function Page() {
       </Pressable>
 
       <Image
-        source="sf:checkmark.circle"
+        source="sf:heart.slash.circle"
         contentFit="contain"
+        key="ce"
         transition={{
-          effect: 'sf:breathe',
-          scope: 'whole-symbol',
-          repeat: -1,
+          effect: 'sf:bounce',
+          scope: 'by-layer',
+          // repeat: -1,
         }}
         style={{
           tintColor: Color.ios.systemCyan,
