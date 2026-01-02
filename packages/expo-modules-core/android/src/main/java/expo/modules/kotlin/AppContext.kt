@@ -15,7 +15,6 @@ import com.facebook.react.uimanager.common.UIManagerType
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.activityresult.ActivityResultsManager
@@ -113,6 +112,8 @@ class AppContext(
     requireNotNull(reactContextHolder.get()) {
       "The app context should be created with valid react context."
     }.apply {
+      legacyModuleRegistry.appContext = this@AppContext
+
       addLifecycleEventListener(reactLifecycleDelegate)
       addActivityEventListener(reactLifecycleDelegate)
 
@@ -163,10 +164,11 @@ class AppContext(
   inline fun <reified T : Service> service(): T? = services.service<T>()
 
   /**
-   * Provides access to app's constants from the legacy module registry.
+   * Returns a service implementing given interface.
+   * It's compatible with Java callers.
    */
-  val constants: ConstantsInterface?
-    get() = legacyModule()
+  @Suppress("UNCHECKED_CAST")
+  fun <T : Service> service(serviceClass: Class<T>): T? = services.registry[serviceClass] as? T
 
   /**
    * Provides access to the file system service

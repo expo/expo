@@ -10,7 +10,7 @@ class ConstantsModule : Module() {
     Name("ExponentConstants")
 
     Constants {
-      return@Constants appContext.constants?.constants ?: emptyMap()
+      return@Constants appContext.service<ConstantsService>()?.constants ?: emptyMap()
     }
 
     AsyncFunction<String?>("getWebViewUserAgentAsync") {
