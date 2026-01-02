@@ -24,7 +24,7 @@ export declare function getAnimatorFromTransition(transition: ImageTransition | 
     animateOutClass: string;
     containerClass: string;
     timingFunction: "linear" | "ease-in-out" | "ease-in" | "ease-out" | null;
-    animationClass: "cross-dissolve" | "flip-from-top" | "flip-from-right" | "flip-from-bottom" | "flip-from-left" | "curl-up" | "curl-down" | "sf:bounce" | "sf:bounce/up" | "sf:bounce/down" | "sf:bounce/by-layer" | "sf:bounce/whole-symbol" | "sf:pulse" | "sf:pulse/by-layer" | "sf:pulse/whole-symbol" | "sf:variable-color" | "sf:variable-color/iterative" | "sf:variable-color/cumulative" | "sf:scale" | "sf:scale/up" | "sf:scale/down" | "sf:scale/by-layer" | "sf:scale/whole-symbol" | "sf:appear" | "sf:appear/by-layer" | "sf:appear/whole-symbol" | "sf:disappear" | "sf:disappear/by-layer" | "sf:disappear/whole-symbol" | "sf:replace" | "sf:wiggle" | "sf:wiggle/by-layer" | "sf:wiggle/whole-symbol" | "sf:rotate" | "sf:rotate/by-layer" | "sf:rotate/whole-symbol" | "sf:breathe" | "sf:breathe/by-layer" | "sf:breathe/whole-symbol" | "sf:draw-on";
+    animationClass: "cross-dissolve" | "flip-from-top" | "flip-from-right" | "flip-from-bottom" | "flip-from-left" | "curl-up" | "curl-down" | "sf:bounce" | "sf:bounce/up" | "sf:bounce/down" | "sf:pulse" | "sf:variable-color" | "sf:variable-color/iterative" | "sf:variable-color/cumulative" | "sf:scale" | "sf:scale/up" | "sf:scale/down" | "sf:appear" | "sf:disappear" | "sf:replace" | "sf:wiggle" | "sf:rotate" | "sf:breathe" | "sf:draw/on" | "sf:draw/off";
     duration: number;
 } | null;
 export default function AnimationManager({ children: renderFunction, initial, transition, recyclingKey, }: {

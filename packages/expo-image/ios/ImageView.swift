@@ -582,6 +582,9 @@ public final class ImageView: ExpoView {
 
   @available(iOS 17.0, tvOS 17.0, *)
   func applySymbolEffect() {
+    // Remove any existing effects before applying new ones
+    sdImageView.removeAllSymbolEffects()
+
     guard let effect = transition?.effect, effect.isSFSymbolEffect else {
       return
     }
@@ -589,84 +592,94 @@ public final class ImageView: ExpoView {
     let repeatCount = transition?.repeatCount ?? 0
     // -1 = infinite, 0 = play once, 1 = repeat once (play twice), etc.
     let options: SymbolEffectOptions = repeatCount < 0 ? .repeating : .repeat(repeatCount + 1)
+    let scope = transition?.scope
 
     switch effect {
-    case .sfBounce:
-      sdImageView.addSymbolEffect(.bounce, options: options)
-    case .sfBounceUp:
-      sdImageView.addSymbolEffect(.bounce.up, options: options)
-    case .sfBounceDown:
-      sdImageView.addSymbolEffect(.bounce.down, options: options)
-    case .sfBounceByLayer:
-      sdImageView.addSymbolEffect(.bounce.byLayer, options: options)
-    case .sfBounceWholeSymbol:
-      sdImageView.addSymbolEffect(.bounce.wholeSymbol, options: options)
+    case .sfBounce, .sfBounceUp, .sfBounceDown:
+      let base: BounceSymbolEffect = effect == .sfBounceUp ? .bounce.up : effect == .sfBounceDown ? .bounce.down : .bounce
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(base.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(base.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(base, options: options)
+      }
     case .sfPulse:
-      sdImageView.addSymbolEffect(.pulse, options: options)
-    case .sfPulseByLayer:
-      sdImageView.addSymbolEffect(.pulse.byLayer, options: options)
-    case .sfPulseWholeSymbol:
-      sdImageView.addSymbolEffect(.pulse.wholeSymbol, options: options)
-    case .sfVariableColor:
-      sdImageView.addSymbolEffect(.variableColor, options: options)
-    case .sfVariableColorIterative:
-      sdImageView.addSymbolEffect(.variableColor.iterative, options: options)
-    case .sfVariableColorCumulative:
-      sdImageView.addSymbolEffect(.variableColor.cumulative, options: options)
-    case .sfScale:
-      sdImageView.addSymbolEffect(.scale, options: options)
-    case .sfScaleUp:
-      sdImageView.addSymbolEffect(.scale.up, options: options)
-    case .sfScaleDown:
-      sdImageView.addSymbolEffect(.scale.down, options: options)
-    case .sfScaleByLayer:
-      sdImageView.addSymbolEffect(.scale.byLayer, options: options)
-    case .sfScaleWholeSymbol:
-      sdImageView.addSymbolEffect(.scale.wholeSymbol, options: options)
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.pulse.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.pulse.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.pulse, options: options)
+      }
+    case .sfVariableColor, .sfVariableColorIterative, .sfVariableColorCumulative:
+      let base: VariableColorSymbolEffect = effect == .sfVariableColorIterative ? .variableColor.iterative :
+        effect == .sfVariableColorCumulative ? .variableColor.cumulative : .variableColor
+      sdImageView.addSymbolEffect(base, options: options)
+    case .sfScale, .sfScaleUp, .sfScaleDown:
+      let base: ScaleSymbolEffect = effect == .sfScaleUp ? .scale.up : effect == .sfScaleDown ? .scale.down : .scale
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(base.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(base.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(base, options: options)
+      }
     case .sfAppear:
-      sdImageView.addSymbolEffect(.appear, options: options)
-    case .sfAppearByLayer:
-      sdImageView.addSymbolEffect(.appear.byLayer, options: options)
-    case .sfAppearWholeSymbol:
-      sdImageView.addSymbolEffect(.appear.wholeSymbol, options: options)
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.appear.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.appear.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.appear, options: options)
+      }
     case .sfDisappear:
-      sdImageView.addSymbolEffect(.disappear, options: options)
-    case .sfDisappearByLayer:
-      sdImageView.addSymbolEffect(.disappear.byLayer, options: options)
-    case .sfDisappearWholeSymbol:
-      sdImageView.addSymbolEffect(.disappear.wholeSymbol, options: options)
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.disappear.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.disappear.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.disappear, options: options)
+      }
     default:
-      // iOS 18+ effects handled below
       if #available(iOS 18.0, tvOS 18.0, *) {
-        applySymbolEffectiOS18(effect: effect, options: options)
+        applySymbolEffectiOS18(effect: effect, scope: scope, options: options)
       }
     }
   }
 
   @available(iOS 18.0, tvOS 18.0, *)
-  private func applySymbolEffectiOS18(effect: ImageTransitionEffect, options: SymbolEffectOptions) {
+  private func applySymbolEffectiOS18(effect: ImageTransitionEffect, scope: ImageTransitionScope?, options: SymbolEffectOptions) {
     switch effect {
     case .sfWiggle:
-      sdImageView.addSymbolEffect(.wiggle, options: options)
-    case .sfWiggleByLayer:
-      sdImageView.addSymbolEffect(.wiggle.byLayer, options: options)
-    case .sfWiggleWholeSymbol:
-      sdImageView.addSymbolEffect(.wiggle.wholeSymbol, options: options)
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.wiggle.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.wiggle.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.wiggle, options: options)
+      }
     case .sfRotate:
-      sdImageView.addSymbolEffect(.rotate, options: options)
-    case .sfRotateByLayer:
-      sdImageView.addSymbolEffect(.rotate.byLayer, options: options)
-    case .sfRotateWholeSymbol:
-      sdImageView.addSymbolEffect(.rotate.wholeSymbol, options: options)
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.rotate.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.rotate.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.rotate, options: options)
+      }
     case .sfBreathe:
-      sdImageView.addSymbolEffect(.breathe, options: options)
-    case .sfBreatheByLayer:
-      sdImageView.addSymbolEffect(.breathe.byLayer, options: options)
-    case .sfBreatheWholeSymbol:
-      sdImageView.addSymbolEffect(.breathe.wholeSymbol, options: options)
-    case .sfDrawOn:
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.breathe.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.breathe.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.breathe, options: options)
+      }
+    default:
       if #available(iOS 26.0, *) {
-        sdImageView.addSymbolEffect(.drawOn, options: options)
+        applySymbolEffectiOS26(effect: effect, scope: scope, options: options)
+      }
+    }
+  }
+
+  @available(iOS 26.0, *)
+  private func applySymbolEffectiOS26(effect: ImageTransitionEffect, scope: ImageTransitionScope?, options: SymbolEffectOptions) {
+    switch effect {
+    case .sfDrawOn:
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.drawOn.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.drawOn.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.drawOn, options: options)
+      }
+    case .sfDrawOff:
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.drawOff.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.drawOff.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.drawOff, options: options)
       }
     default:
       break

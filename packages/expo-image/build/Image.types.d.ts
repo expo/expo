@@ -466,30 +466,36 @@ export type ImageTransition = {
      * For SF Symbols (iOS 17+), use `sf:` prefixed effects:
      * - `'sf:bounce'` - The symbol bounces.
      * - `'sf:bounce/up'` / `'sf:bounce/down'` - Directional bounce.
-     * - `'sf:bounce/by-layer'` / `'sf:bounce/whole-symbol'` - Bounce with layer scope.
      * - `'sf:pulse'` - The symbol fades in and out.
-     * - `'sf:pulse/by-layer'` / `'sf:pulse/whole-symbol'` - Pulse with layer scope.
      * - `'sf:variable-color'` - The symbol's color layers animate sequentially.
      * - `'sf:variable-color/iterative'` / `'sf:variable-color/cumulative'` - Variable color modes.
      * - `'sf:scale'` - The symbol scales up and down.
      * - `'sf:scale/up'` / `'sf:scale/down'` - Directional scale.
-     * - `'sf:scale/by-layer'` / `'sf:scale/whole-symbol'` - Scale with layer scope.
      * - `'sf:appear'` - The symbol animates into view.
-     * - `'sf:appear/by-layer'` / `'sf:appear/whole-symbol'` - Appear with layer scope.
      * - `'sf:disappear'` - The symbol animates out of view.
-     * - `'sf:disappear/by-layer'` / `'sf:disappear/whole-symbol'` - Disappear with layer scope.
      * - `'sf:replace'` - The symbol animates when replaced with another symbol.
      *
      * For SF Symbols (iOS 18+):
      * - `'sf:wiggle'` - The symbol wiggles.
-     * - `'sf:wiggle/by-layer'` / `'sf:wiggle/whole-symbol'` - Wiggle with layer scope.
      * - `'sf:rotate'` - The symbol rotates.
-     * - `'sf:rotate/by-layer'` / `'sf:rotate/whole-symbol'` - Rotate with layer scope.
      * - `'sf:breathe'` - The symbol breathes (pulsing scale effect).
-     * - `'sf:breathe/by-layer'` / `'sf:breathe/whole-symbol'` - Breathe with layer scope.
-     * - `'sf:draw-on'` - The symbol layers animate like being drawn (ignores repeat).
+     *
+     * For SF Symbols (iOS 26+):
+     * - `'sf:draw/on'` - The symbol layers animate like being drawn.
+     * - `'sf:draw/off'` - The symbol layers animate like being erased.
+     *
+     * Use the `scope` property to control layer animation behavior.
      */
-    effect?: 'cross-dissolve' | 'flip-from-top' | 'flip-from-right' | 'flip-from-bottom' | 'flip-from-left' | 'curl-up' | 'curl-down' | 'sf:bounce' | 'sf:bounce/up' | 'sf:bounce/down' | 'sf:bounce/by-layer' | 'sf:bounce/whole-symbol' | 'sf:pulse' | 'sf:pulse/by-layer' | 'sf:pulse/whole-symbol' | 'sf:variable-color' | 'sf:variable-color/iterative' | 'sf:variable-color/cumulative' | 'sf:scale' | 'sf:scale/up' | 'sf:scale/down' | 'sf:scale/by-layer' | 'sf:scale/whole-symbol' | 'sf:appear' | 'sf:appear/by-layer' | 'sf:appear/whole-symbol' | 'sf:disappear' | 'sf:disappear/by-layer' | 'sf:disappear/whole-symbol' | 'sf:replace' | 'sf:wiggle' | 'sf:wiggle/by-layer' | 'sf:wiggle/whole-symbol' | 'sf:rotate' | 'sf:rotate/by-layer' | 'sf:rotate/whole-symbol' | 'sf:breathe' | 'sf:breathe/by-layer' | 'sf:breathe/whole-symbol' | 'sf:draw-on' | null;
+    effect?: 'cross-dissolve' | 'flip-from-top' | 'flip-from-right' | 'flip-from-bottom' | 'flip-from-left' | 'curl-up' | 'curl-down' | 'sf:bounce' | 'sf:bounce/up' | 'sf:bounce/down' | 'sf:pulse' | 'sf:variable-color' | 'sf:variable-color/iterative' | 'sf:variable-color/cumulative' | 'sf:scale' | 'sf:scale/up' | 'sf:scale/down' | 'sf:appear' | 'sf:disappear' | 'sf:replace' | 'sf:wiggle' | 'sf:rotate' | 'sf:breathe' | 'sf:draw/on' | 'sf:draw/off' | null;
+    /**
+     * Controls how the SF Symbol effect animates across layers.
+     * - `'by-layer'` - Animates each layer of the symbol individually.
+     * - `'whole-symbol'` - Animates the entire symbol as one unit.
+     *
+     * @default undefined (uses system default)
+     * @platform ios 17.0+
+     */
+    scope?: 'by-layer' | 'whole-symbol' | null;
 };
 export type ImageLoadEventData = {
     cacheType: 'none' | 'disk' | 'memory';

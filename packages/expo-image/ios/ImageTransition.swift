@@ -35,37 +35,23 @@ enum ImageTransitionEffect: String, Enumerable {
   case sfBounce = "sf:bounce"
   case sfBounceUp = "sf:bounce/up"
   case sfBounceDown = "sf:bounce/down"
-  case sfBounceByLayer = "sf:bounce/by-layer"
-  case sfBounceWholeSymbol = "sf:bounce/whole-symbol"
   case sfPulse = "sf:pulse"
-  case sfPulseByLayer = "sf:pulse/by-layer"
-  case sfPulseWholeSymbol = "sf:pulse/whole-symbol"
   case sfVariableColor = "sf:variable-color"
   case sfVariableColorIterative = "sf:variable-color/iterative"
   case sfVariableColorCumulative = "sf:variable-color/cumulative"
   case sfScale = "sf:scale"
   case sfScaleUp = "sf:scale/up"
   case sfScaleDown = "sf:scale/down"
-  case sfScaleByLayer = "sf:scale/by-layer"
-  case sfScaleWholeSymbol = "sf:scale/whole-symbol"
   case sfAppear = "sf:appear"
-  case sfAppearByLayer = "sf:appear/by-layer"
-  case sfAppearWholeSymbol = "sf:appear/whole-symbol"
   case sfDisappear = "sf:disappear"
-  case sfDisappearByLayer = "sf:disappear/by-layer"
-  case sfDisappearWholeSymbol = "sf:disappear/whole-symbol"
   case sfReplace = "sf:replace"
   // SF Symbol effects (iOS 18+)
   case sfWiggle = "sf:wiggle"
-  case sfWiggleByLayer = "sf:wiggle/by-layer"
-  case sfWiggleWholeSymbol = "sf:wiggle/whole-symbol"
   case sfRotate = "sf:rotate"
-  case sfRotateByLayer = "sf:rotate/by-layer"
-  case sfRotateWholeSymbol = "sf:rotate/whole-symbol"
   case sfBreathe = "sf:breathe"
-  case sfBreatheByLayer = "sf:breathe/by-layer"
-  case sfBreatheWholeSymbol = "sf:breathe/whole-symbol"
-  case sfDrawOn = "sf:draw-on"
+  // SF Symbol effects (iOS 26+)
+  case sfDrawOn = "sf:draw/on"
+  case sfDrawOff = "sf:draw/off"
 
   var isSFSymbolEffect: Bool {
     return rawValue.hasPrefix("sf:")
@@ -93,6 +79,11 @@ enum ImageTransitionEffect: String, Enumerable {
   }
 }
 
+enum ImageTransitionScope: String, Enumerable {
+  case byLayer = "by-layer"
+  case wholeSymbol = "whole-symbol"
+}
+
 struct ImageTransition: Record {
   @Field
   var duration: Double = 100
@@ -105,6 +96,9 @@ struct ImageTransition: Record {
 
   @Field(.keyed("repeat"))
   var repeatCount: Int = 0
+
+  @Field
+  var scope: ImageTransitionScope?
 
   func toAnimationOptions() -> UIView.AnimationOptions {
     return [timing.toAnimationOption(), effect.toAnimationOption()]

@@ -5,6 +5,7 @@ import { Color } from 'expo-router';
 
 export default function Page() {
   const [current, setCurrent] = useState('sf:checkmark.circle');
+  const [on, setOn] = useState(true);
   return (
     <>
       <Text testID="index-text" style={{ fontFamily: 'sweet' }}>
@@ -49,10 +50,11 @@ export default function Page() {
       </Pressable>
 
       <Image
-        source={'sf:wifi'}
+        source="sf:checkmark.circle"
         contentFit="contain"
         transition={{
-          effect: 'sf:rotate/by-layer',
+          effect: 'sf:breathe',
+          scope: 'whole-symbol',
           repeat: -1,
         }}
         style={{
@@ -62,21 +64,26 @@ export default function Page() {
         }}
       />
 
-      {current === 'sf:checkmark.circle' && (
+      <Pressable
+        onPress={() => {
+          setOn(!on);
+        }}>
         <Image
           autoplay
-          source={'sf:signature'}
+          source="sf:signature"
           contentFit="contain"
           transition={{
-            effect: 'sf:draw-on',
+            effect: on ? 'sf:draw/on' : 'sf:draw/off',
+            scope: 'by-layer',
             // repeat: 1,
           }}
           style={{
             width: 128,
             aspectRatio: 1,
+            // fontWeight: '200',
           }}
         />
-      )}
+      </Pressable>
     </>
   );
 }
