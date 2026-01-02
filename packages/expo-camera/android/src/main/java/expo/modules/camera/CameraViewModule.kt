@@ -116,7 +116,7 @@ class CameraViewModule : Module() {
         return@AsyncFunction
       }
 
-      appContext.imageLoader?.loadImageForManipulationFromURL(
+      appContext.service<ImageLoaderInterface>()?.loadImageForManipulationFromURL(
         url,
         object : ImageLoaderInterface.ResultListener {
           override fun onSuccess(bitmap: Bitmap) {

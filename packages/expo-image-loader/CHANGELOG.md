@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Removed references to legacy native modules API.
+
 ## 6.0.0 — 2025-08-13
 
 ### 🎉 New features

@@ -31,13 +31,14 @@ import expo.modules.font.FontUtilsModule
 import expo.modules.gl.GLModule
 import expo.modules.haptics.HapticsModule
 import expo.modules.image.ExpoImageModule
-import expo.modules.imageloader.ImageLoaderPackage
+import expo.modules.imageloader.ImageLoaderService
 import expo.modules.imagemanipulator.ImageManipulatorModule
 import expo.modules.imagepicker.ImagePickerModule
 import expo.modules.intentlauncher.IntentLauncherModule
 import expo.modules.keepawake.KeepAwakeModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.services.Service
 import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.linking.ExpoLinkingModule
 import expo.modules.linking.ExpoLinkingPackage
@@ -90,7 +91,6 @@ object ExperiencePackagePicker : ModulesProvider {
     AVPackage(),
     ConstantsPackage(),
     ExpoLinkingPackage(),
-    ImageLoaderPackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
     SplashScreenPackage(),
@@ -192,4 +192,10 @@ object ExperiencePackagePicker : ModulesProvider {
     WebBrowserModule::class.java to null,
     BrightnessModule::class.java to null
   )
+
+  override fun getServices(): List<Class<out Service>> {
+    return listOf(
+      ImageLoaderService::class.java
+    )
+  }
 }
