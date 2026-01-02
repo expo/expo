@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fix `<BR />` to render as `<br>` ([#38354](https://github.com/expo/expo/pull/38354) by [@bradleyayers](https://github.com/bradleyayers))
+
 ### 💡 Others
 
 - Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
