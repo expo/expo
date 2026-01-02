@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoTrackingTransparency.web.js","sourceRoot":"","sources":["../src/ExpoTrackingTransparency.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,WAAW;QACT,OAAO,KAAK,CAAC;IACf,CAAC;CACF,CAAC","sourcesContent":["export default {\n  isAvailable(): boolean {\n    return false;\n  },\n};\n"]}

@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Add native `isAvailable()` implementation. ([#40380](https://github.com/expo/expo/pull/40380) by [@reichhartd](https://github.com/reichhartd))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
