@@ -23,6 +23,7 @@ This command will start the expo server and run the maestro tests located in the
 - Run `yarn prebuild` to create the ios and android directories using the latest `expo-template-bare-minimum` template.
 - Run `npx expo run:ios` and `npx expo run:android` to build the native projects.
 - For production, use `npx expo run:ios --configuration Release` and `npx expo run:android --variant release`.
+- Optional: Create a `.env.local` file with your Apple Team ID. `touch .env.local && echo "APPLE_TEAM_ID=YOUR_TEAM_ID" >> .env.local`.
 
 ### Web
 
