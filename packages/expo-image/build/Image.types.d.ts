@@ -546,16 +546,16 @@ export type ImageTransition = {
      * On Android, only `'cross-dissolve'` is supported.
      * On Web, `'curl-up'` and `'curl-down'` effects are not supported.
      *
-     * For SF Symbols (iOS 17+), use the `sf:replace` effects to animate
+     * For SF Symbols (iOS 17+), use the `sf:` effects to animate
      * when the symbol source changes:
      * - `'sf:replace'` - The symbol animates when replaced with another symbol.
-     * - `'sf:replace/down-up'` - New symbol slides in from bottom.
-     * - `'sf:replace/up-up'` - New symbol slides in from top.
-     * - `'sf:replace/off-up'` - Cross-dissolve transition between symbols.
+     * - `'sf:down-up'` - New symbol slides in from bottom.
+     * - `'sf:up-up'` - New symbol slides in from top.
+     * - `'sf:off-up'` - Cross-dissolve transition between symbols.
      *
      * For other SF Symbol animations (bounce, pulse, scale, etc.), use the `sfEffect` prop instead.
      */
-    effect?: 'cross-dissolve' | 'flip-from-top' | 'flip-from-right' | 'flip-from-bottom' | 'flip-from-left' | 'curl-up' | 'curl-down' | 'sf:replace' | 'sf:replace/down-up' | 'sf:replace/up-up' | 'sf:replace/off-up' | null;
+    effect?: 'cross-dissolve' | 'flip-from-top' | 'flip-from-right' | 'flip-from-bottom' | 'flip-from-left' | 'curl-up' | 'curl-down' | 'sf:replace' | 'sf:down-up' | 'sf:up-up' | 'sf:off-up' | null;
 };
 export type ImageLoadEventData = {
     cacheType: 'none' | 'disk' | 'memory';

@@ -52,7 +52,7 @@ function ReplaceTransitionExample() {
       <Pressable onPress={() => setIndex((i) => (i + 1) % symbols.length)}>
         <Image
           source={symbols[index]}
-          transition={{ effect: 'sf:replace/down-up', duration: 300 }}
+          transition={{ effect: 'sf:replace', duration: 300 }}
           style={styles.largeSymbol}
         />
       </Pressable>

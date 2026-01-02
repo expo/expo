@@ -33,13 +33,13 @@ enum ImageTransitionEffect: String, Enumerable {
   case curlDown = "curl-down"
   // SF Symbol replace effects (iOS 17+)
   case sfReplace = "sf:replace"
-  case sfReplaceDownUp = "sf:replace/down-up"
-  case sfReplaceUpUp = "sf:replace/up-up"
-  case sfReplaceOffUp = "sf:replace/off-up"
+  case sfDownUp = "sf:down-up"
+  case sfUpUp = "sf:up-up"
+  case sfOffUp = "sf:off-up"
 
   var isSFReplaceEffect: Bool {
     switch self {
-    case .sfReplace, .sfReplaceDownUp, .sfReplaceUpUp, .sfReplaceOffUp:
+    case .sfReplace, .sfDownUp, .sfUpUp, .sfOffUp:
       return true
     default:
       return false

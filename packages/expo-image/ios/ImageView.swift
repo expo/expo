@@ -702,11 +702,11 @@ public final class ImageView: ExpoView {
     }
 
     switch effect {
-    case .sfReplaceDownUp:
+    case .sfDownUp:
       animate { self.sdImageView.setSymbolImage(image, contentTransition: .replace.downUp) }
-    case .sfReplaceUpUp:
+    case .sfUpUp:
       animate { self.sdImageView.setSymbolImage(image, contentTransition: .replace.upUp) }
-    case .sfReplaceOffUp:
+    case .sfOffUp:
       animate { self.sdImageView.setSymbolImage(image, contentTransition: .replace.offUp) }
     default:
       animate { self.sdImageView.setSymbolImage(image, contentTransition: .replace) }
