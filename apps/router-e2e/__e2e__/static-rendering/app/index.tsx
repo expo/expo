@@ -8,7 +8,7 @@ export default function Page() {
         Index
       </Text>
       <Image
-        source="sf:figure.fencing"
+        source="sf:star"
         contentFit="contain"
         style={{
           width: 36,
@@ -16,7 +16,7 @@ export default function Page() {
           height: 36 * 2,
           backgroundColor: 'blue',
           tintColor: 'orange',
-          fontWeight: 'bold',
+          fontWeight: '600',
         }}
       />
     </>

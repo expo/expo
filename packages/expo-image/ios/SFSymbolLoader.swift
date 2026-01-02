@@ -33,15 +33,16 @@ class SFSymbolLoader: NSObject, SDImageLoader {
 
     let symbolName = url.pathComponents[1]
 
-    // Get the frame size from context for proper sizing
-    let frameSize = context?[ImageView.frameSizeKey] as? CGSize ?? CGSize(width: 24, height: 24)
-    let screenScale = context?[ImageView.screenScaleKey] as? Double ?? UIScreen.main.scale
+    // Get the symbol weight from URL query params (e.g., sf:/star?weight=bold)
+    let weightParam = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+      .queryItems?
+      .first(where: { $0.name == "weight" })?
+      .value
+    let weight = parseSymbolWeight(weightParam)
 
-    // Calculate point size based on the smaller dimension to ensure the symbol fits
-    let pointSize = min(frameSize.width, frameSize.height) * screenScale
-
-    // Create symbol configuration with appropriate size
-    let configuration = UIImage.SymbolConfiguration(pointSize: pointSize, weight: .regular)
+    // Use a large fixed point size for high quality, the image view will scale it down.
+    // This ensures consistent sizing across different weights.
+    let configuration = UIImage.SymbolConfiguration(pointSize: 100, weight: weight)
 
     guard let image = UIImage(systemName: symbolName, withConfiguration: configuration) else {
       let error = makeNSError(description: "Unable to create SF Symbol image for '\(symbolName)'")
@@ -58,5 +59,37 @@ class SFSymbolLoader: NSObject, SDImageLoader {
   func shouldBlockFailedURL(with url: URL, error: Error) -> Bool {
     // If the symbol doesn't exist, it won't exist on subsequent attempts
     return true
+  }
+
+  // MARK: - Private
+
+  private func parseSymbolWeight(_ fontWeight: String?) -> UIImage.SymbolWeight {
+    guard let fontWeight = fontWeight else {
+      return .regular
+    }
+
+    // Handle numeric font weights (CSS standard)
+    switch fontWeight {
+    case "100":
+      return .ultraLight
+    case "200":
+      return .thin
+    case "300":
+      return .light
+    case "400", "normal":
+      return .regular
+    case "500":
+      return .medium
+    case "600":
+      return .semibold
+    case "700", "bold":
+      return .bold
+    case "800":
+      return .heavy
+    case "900":
+      return .black
+    default:
+      return .regular
+    }
   }
 }

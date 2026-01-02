@@ -416,6 +416,7 @@ export interface ImageNativeProps extends ImageProps {
   autoplay?: boolean;
   nativeViewRef?: React.RefObject<ExpoImage | null>;
   containerViewRef?: React.RefObject<View | null>;
+  symbolWeight?: string | null;
 }
 
 /**

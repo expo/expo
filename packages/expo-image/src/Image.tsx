@@ -239,7 +239,11 @@ export class Image extends React.PureComponent<ImageProps> {
       ...restProps
     } = this.props;
 
-    const { resizeMode: resizeModeStyle, ...restStyle } = StyleSheet.flatten(style) || {};
+    const {
+      resizeMode: resizeModeStyle,
+      fontWeight: fontWeightStyle,
+      ...restStyle
+    } = (StyleSheet.flatten(style) as any) || {};
     const resizeMode = resizeModeProp ?? resizeModeStyle;
 
     if ((defaultSource || loadingIndicatorSource) && !loggedDefaultSourceDeprecationWarning) {
@@ -255,11 +259,22 @@ export class Image extends React.PureComponent<ImageProps> {
       );
       loggedRenderingChildrenWarning = true;
     }
+    // Resolve sources and append weight to SF Symbol URLs for proper cache busting
+    let resolvedSource = resolveSources(source);
+    if (fontWeightStyle && Array.isArray(resolvedSource)) {
+      resolvedSource = resolvedSource.map((s) => {
+        if (s?.uri?.startsWith('sf:/')) {
+          return { ...s, uri: `${s.uri}?weight=${fontWeightStyle}` };
+        }
+        return s;
+      });
+    }
+
     return (
       <ExpoImage
         {...restProps}
         style={restStyle}
-        source={resolveSources(source)}
+        source={resolvedSource}
         placeholder={resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource)}
         contentFit={resolveContentFit(contentFit, resizeMode)}
         contentPosition={resolveContentPosition(contentPosition)}
