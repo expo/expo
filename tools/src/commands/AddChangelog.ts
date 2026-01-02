@@ -26,17 +26,25 @@ async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptio
     filter: (s: string) => s.trim(),
     validate: lengthValidator,
   };
+  const listOfStringsValidator = {
+    filter: (s: string) =>
+      s
+        .trim()
+        .split(/\s+/g)
+        // avoid a case where the input string is empty
+        .filter((it) => it.length > 0),
+    validate: (list) => list.length > 0,
+    // inquirer calls this both before and after `filter` is applied
+    transformer: (listOrStr) => (typeof listOrStr === 'string' ? listOrStr : listOrStr.join(', ')),
+  };
 
   const questions: QuestionCollection[] = [];
   if (options.packageNames.length === 0) {
     questions.push({
       type: 'input',
-      name: 'package',
+      name: 'packageNames',
       message: 'What are the packages that you want to add a changelog entry?',
-      ...stringValidator,
-      transformer(input) {
-        return input.split(/\s+/g);
-      },
+      ...listOfStringsValidator,
     });
   }
 
