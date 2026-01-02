@@ -24,17 +24,17 @@ export default function Page() {
       />
       <Pressable
         onPress={() => {
-          setCurrent(current === 'sf:checkmark.circle' ? 'sf:heart.fill' : 'sf:checkmark.circle');
+          setCurrent(current === 'sf:checkmark.circle' ? 'sf:faceid' : 'sf:checkmark.circle');
         }}>
         <Image
           source={current}
-          autoplay={false}
+          // autoplay
           contentFit="contain"
           transition={{
             effect: 'sf:replace',
             duration: 2000,
           }}
-          tintColor="darkcyan"
+          // tintColor="darkcyan"
           style={{
             width: 128,
             aspectRatio: 1,

@@ -362,6 +362,7 @@ export interface ImageNativeProps extends ImageProps {
     autoplay?: boolean;
     nativeViewRef?: React.RefObject<ExpoImage | null>;
     containerViewRef?: React.RefObject<View | null>;
+    symbolWeight?: string | null;
 }
 /**
  * A value that represents the relative position of a single axis.
@@ -451,8 +452,17 @@ export type ImageTransition = {
      *
      * On Android, only `'cross-dissolve'` is supported.
      * On Web, `'curl-up'` and `'curl-down'` effects are not supported.
+     *
+     * For SF Symbols (iOS 17+), use `sf:` prefixed effects:
+     * - `'sf:bounce'` - The symbol bounces up and down.
+     * - `'sf:pulse'` - The symbol fades in and out.
+     * - `'sf:variable-color'` - The symbol's color layers animate sequentially.
+     * - `'sf:scale'` - The symbol scales up and down.
+     * - `'sf:appear'` - The symbol animates into view.
+     * - `'sf:disappear'` - The symbol animates out of view.
+     * - `'sf:replace'` - The symbol animates when replaced with another symbol.
      */
-    effect?: 'cross-dissolve' | 'flip-from-top' | 'flip-from-right' | 'flip-from-bottom' | 'flip-from-left' | 'curl-up' | 'curl-down' | null;
+    effect?: 'cross-dissolve' | 'flip-from-top' | 'flip-from-right' | 'flip-from-bottom' | 'flip-from-left' | 'curl-up' | 'curl-down' | 'sf:bounce' | 'sf:pulse' | 'sf:variable-color' | 'sf:scale' | 'sf:appear' | 'sf:disappear' | 'sf:replace' | null;
 };
 export type ImageLoadEventData = {
     cacheType: 'none' | 'disk' | 'memory';

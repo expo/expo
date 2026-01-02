@@ -187,6 +187,12 @@ public final class ImageView: ExpoView {
       return
     }
 
+    // Render SF Symbols directly without going through SDWebImage to preserve symbol properties
+    if source.isSFSymbol {
+      renderSFSymbol(from: source)
+      return
+    }
+
     onLoadStart([:])
 
     pendingOperation = imageManager.loadImage(
@@ -267,6 +273,87 @@ public final class ImageView: ExpoView {
     } else {
       displayPlaceholderIfNecessary()
     }
+  }
+
+  private func renderSFSymbol(from source: ImageSource) {
+    guard let uri = source.uri else {
+      return
+    }
+
+    // Parse symbol name and weight from URL (e.g., sf:/star.fill?weight=bold)
+    let components = URLComponents(url: uri, resolvingAgainstBaseURL: false)
+    let symbolName = uri.pathComponents.count > 1 ? uri.pathComponents[1] : ""
+    let weightParam = components?.queryItems?.first(where: { $0.name == "weight" })?.value
+
+    // Parse weight
+    let weight: UIImage.SymbolWeight = {
+      switch weightParam {
+      case "100": return .ultraLight
+      case "200": return .thin
+      case "300": return .light
+      case "400", "normal": return .regular
+      case "500": return .medium
+      case "600": return .semibold
+      case "700", "bold": return .bold
+      case "800": return .heavy
+      case "900": return .black
+      default: return .regular
+      }
+    }()
+
+    // Create symbol with configuration
+    let configuration = UIImage.SymbolConfiguration(pointSize: 100, weight: weight)
+    guard let image = UIImage(systemName: symbolName, withConfiguration: configuration) else {
+      onError(["error": "Unable to create SF Symbol image for '\(symbolName)'"])
+      return
+    }
+
+    onLoad([
+      "cacheType": "none",
+      "source": [
+        "url": uri.absoluteString,
+        "width": image.size.width,
+        "height": image.size.height,
+        "mediaType": nil,
+        "isAnimated": false
+      ]
+    ])
+
+    let scale = window?.screen.scale ?? UIScreen.main.scale
+    imageIdealSize = idealSize(
+      contentPixelSize: image.size * image.scale,
+      containerSize: frame.size,
+      scale: scale,
+      contentFit: contentFit
+    ).rounded(.up)
+
+    applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
+    renderSFSymbolImage(image)
+  }
+
+  private func renderSFSymbolImage(_ image: UIImage) {
+    sourceImage = image
+
+    sdImageView.contentMode = contentFit.toContentMode()
+
+    let templateImage = image.withRenderingMode(.alwaysTemplate)
+    if let imageTintColor {
+      sdImageView.tintColor = imageTintColor
+    }
+
+    // Use replace content transition for sf:replace effect
+    if #available(iOS 17.0, tvOS 17.0, *), transition?.effect == .sfReplace {
+      sdImageView.setSymbolImage(templateImage, contentTransition: .replace)
+    } else {
+      sdImageView.image = templateImage
+    }
+
+    // Apply symbol effect if autoplay is enabled
+    if #available(iOS 17.0, tvOS 17.0, *), autoplay {
+      applySymbolEffect()
+    }
+
+    onDisplay()
   }
 
   private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
@@ -419,7 +506,10 @@ public final class ImageView: ExpoView {
     // Update the source image before it gets rendered or transitioned to.
     sourceImage = image
 
-    if let transition = transition, transition.duration > 0 {
+    // For SF Symbol replace effect, skip the UIView transition and let the native symbol animation handle it
+    let isSFReplaceEffect = transition?.effect == .sfReplace && isSFSymbolSource
+
+    if let transition = transition, transition.duration > 0, !isSFReplaceEffect {
       let options = transition.toAnimationOptions()
       let seconds = transition.duration / 1000
 
@@ -449,10 +539,25 @@ public final class ImageView: ExpoView {
 
     if let imageTintColor, !isPlaceholder {
       sdImageView.tintColor = imageTintColor
-      sdImageView.image = image?.withRenderingMode(.alwaysTemplate)
+      let templateImage = image?.withRenderingMode(.alwaysTemplate)
+      // Use replace content transition for SF Symbols when sf:replace effect is set
+      if #available(iOS 17.0, tvOS 17.0, *), isSFSymbolSource, transition?.effect == .sfReplace, let templateImage {
+        UIView.animate(withDuration: (transition?.duration ?? 300) / 1000) {
+          self.sdImageView.setSymbolImage(templateImage, contentTransition: .replace)
+        }
+      } else {
+        sdImageView.image = templateImage
+      }
     } else {
       sdImageView.tintColor = nil
-      sdImageView.image = image
+      // Use replace content transition for SF Symbols when sf:replace effect is set
+      if #available(iOS 17.0, tvOS 17.0, *), isSFSymbolSource, transition?.effect == .sfReplace, let image {
+        UIView.animate(withDuration: (transition?.duration ?? 300) / 1000) {
+          self.sdImageView.setSymbolImage(image, contentTransition: .replace)
+        }
+      } else {
+        sdImageView.image = image
+      }
     }
 
     // Apply symbol effect if this is an SF Symbol and autoplay is enabled

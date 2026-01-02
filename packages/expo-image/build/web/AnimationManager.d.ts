@@ -24,7 +24,7 @@ export declare function getAnimatorFromTransition(transition: ImageTransition | 
     animateOutClass: string;
     containerClass: string;
     timingFunction: "ease-in-out" | "ease-in" | "ease-out" | "linear" | null;
-    animationClass: "cross-dissolve" | "flip-from-top" | "flip-from-right" | "flip-from-bottom" | "flip-from-left" | "curl-up" | "curl-down";
+    animationClass: "cross-dissolve" | "flip-from-top" | "flip-from-right" | "flip-from-bottom" | "flip-from-left" | "curl-up" | "curl-down" | "sf:bounce" | "sf:pulse" | "sf:variable-color" | "sf:scale" | "sf:appear" | "sf:disappear" | "sf:replace";
     duration: number;
 } | null;
 export default function AnimationManager({ children: renderFunction, initial, transition, recyclingKey, }: {
