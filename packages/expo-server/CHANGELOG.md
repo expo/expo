@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Improve SSR support ([#41477](https://github.com/expo/expo/pull/41477) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

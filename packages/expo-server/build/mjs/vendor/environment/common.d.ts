@@ -6,7 +6,7 @@ interface EnvironmentInput {
 }
 export declare function createEnvironment(input: EnvironmentInput): {
     getRoutesManifest(): Promise<Manifest>;
-    getHtml(_request: Request, route: Route): Promise<string | Response | null>;
+    getHtml(request: Request, route: Route): Promise<string | Response | null>;
     getApiRoute(route: Route): Promise<unknown>;
     getMiddleware(middleware: MiddlewareInfo): Promise<any>;
 };

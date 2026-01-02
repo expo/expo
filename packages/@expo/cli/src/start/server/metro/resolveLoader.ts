@@ -26,7 +26,8 @@ export function fromRuntimeManifestRoute(
   route: RouteNode,
   options: FromRuntimeManifestRouteOptions
 ): ResolvedLoaderRoute | null {
-  if (route.generated) {
+  // Skip internal routes (like `_sitemap` or `+not-found`)
+  if (route.internal) {
     return null;
   }
 
