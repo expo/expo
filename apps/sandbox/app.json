@@ -36,6 +36,12 @@
         }
       ],
       [
+        "expo-asset",
+        {
+          "assets": ["./assets/icon.png", "./comic.ttf", "./dist/metadata.json"]
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/splash.png",

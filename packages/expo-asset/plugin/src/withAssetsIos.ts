@@ -25,7 +25,6 @@ function addAssetsToTarget(config: ExpoConfig, assets: string[]) {
     const validAssets = validateAssets(resolvedAssets, 'ios');
     const project = config.modResults;
     const platformProjectRoot = config.modRequest.platformProjectRoot;
-    IOSConfig.XcodeUtils.ensureGroupRecursively(project, 'Resources');
 
     const images = validAssets.filter((asset) => IMAGE_TYPES.includes(path.extname(asset)));
     const assetsForResourcesDir = validAssets.filter(
@@ -33,22 +32,47 @@ function addAssetsToTarget(config: ExpoConfig, assets: string[]) {
     );
 
     await addImageAssets(images, config.modRequest.projectRoot);
-    addResourceFiles(project, platformProjectRoot, assetsForResourcesDir);
+    await addResourceFiles(
+      project,
+      platformProjectRoot,
+      path.join(platformProjectRoot, config.modRequest.projectName!),
+      assetsForResourcesDir
+    );
 
     return config;
   });
 }
 
-function addResourceFiles(project: XcodeProject, platformRoot: string, assets: string[]) {
-  for (const asset of assets) {
-    const assetPath = path.relative(platformRoot, asset);
-    IOSConfig.XcodeUtils.addResourceFileToGroup({
-      filepath: assetPath,
-      groupName: 'Resources',
-      project,
-      isBuildFile: true,
-      verbose: true,
-    });
+async function addResourceFiles(
+  project: XcodeProject,
+  platformRoot: string,
+  syncGroup: string,
+  assets: string[]
+) {
+  if (!IOSConfig.XcodeUtils.isAppTargetUsingFileSystemSynchronizedGroups(project)) {
+    IOSConfig.XcodeUtils.ensureGroupRecursively(project, 'Resources');
+    // TODO: Deprecate support for non-synchronized groups after SDK 55.
+    for (const asset of assets) {
+      const assetPath = path.relative(platformRoot, asset);
+      IOSConfig.XcodeUtils.addResourceFileToGroup({
+        filepath: assetPath,
+        groupName: 'Resources',
+        project,
+        isBuildFile: true,
+        verbose: true,
+      });
+    }
+  } else {
+    // Copy assets to app group
+    const assetsDirectory = path.join(syncGroup, 'assets');
+    await fs.mkdir(assetsDirectory, { recursive: true });
+    const projectRoot = path.join(platformRoot, '..');
+    for (const asset of assets) {
+      const relativeToProjectRoot = path.relative(projectRoot, asset);
+      const destPath = path.join(assetsDirectory, relativeToProjectRoot);
+      await fs.mkdir(path.dirname(destPath), { recursive: true });
+      await fs.copyFile(asset, destPath);
+    }
   }
 }
 
