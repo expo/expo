@@ -13,7 +13,6 @@
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
-#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/Swift.h>
 
@@ -254,7 +253,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 {
   // Registering expo modules (excluding Swifty view managers!) in bridge is needed only when the proxy module owns
   // the registry (was autoinitialized by React Native). Otherwise they're registered by the registry adapter.
-  BOOL ownsModuleRegistry = _ownsModuleRegistry && ![bridge moduleIsInitialized:[EXReactNativeEventEmitter class]];
+  BOOL ownsModuleRegistry = _ownsModuleRegistry;
 
   // An array of `RCTBridgeModule` classes to register.
   NSMutableArray<Class<RCTBridgeModule>> *additionalModuleClasses = [NSMutableArray new];
@@ -290,15 +289,9 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   // Register the view managers as additional modules.
   [self registerAdditionalModuleClasses:additionalModuleClasses inBridge:bridge];
 
-  // Get the instance of `EXReactEventEmitter` bridge module and give it access to the interop bridge.
-  EXReactNativeEventEmitter *eventEmitter = [bridge moduleForClass:[EXReactNativeEventEmitter class]];
-  [eventEmitter setAppContext:_appContext];
-
   // As the last step, when the registry is owned,
   // register the event emitter and initialize the registry.
   if (ownsModuleRegistry) {
-    [_exModuleRegistry registerInternalModule:eventEmitter];
-
     // Let the modules consume the registry :)
     // It calls `setModuleRegistry:` on all `EXModuleRegistryConsumer`s.
     [_exModuleRegistry initialize];

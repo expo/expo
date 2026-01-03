@@ -61,7 +61,6 @@
 #import <ExpoModulesCore/EXLogManager.h>
 #import <ExpoModulesCore/EXReactLogHandler.h>
 #import <ExpoModulesCore/EXReactNativeAdapter.h>
-#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
 #import <ExpoModulesCore/EXPermissionsService.h>
 #import <ExpoModulesCore/EXReactNativeUserNotificationCenterProxy.h>
 #import <ExpoModulesCore/Platform.h>
