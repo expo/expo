@@ -1,9 +1,11 @@
 'use client';
 
+import type { BottomTabNavigationEventMap } from '@react-navigation/bottom-tabs';
 import {
   useStateForPath,
   type EventConsumer,
   type EventMapBase,
+  type NavigationProp,
   type NavigationState,
   type ParamListBase,
   type RouteProp,
@@ -237,7 +239,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
   let ScreenComponent:
     | React.ForwardRefExoticComponent<React.RefAttributes<unknown>>
-    | React.ComponentType<any>;
+    | React.ComponentType<{ segment?: string }>;
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
   if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
@@ -263,14 +265,29 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     // Pass all other props to the component
     ...props
-  }: any) {
+  }: {
+    route?: RouteProp<ParamListBase, string>;
+    navigation: Omit<
+      NavigationProp<
+        ParamListBase,
+        string,
+        undefined,
+        NavigationState,
+        object,
+        NativeStackNavigationEventMap | BottomTabNavigationEventMap
+      >,
+      'getState'
+    > & {
+      getState(): NavigationState | undefined;
+    };
+  }) {
     const stateForPath = useStateForPath();
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
 
     if (isFocused) {
       const state = navigation.getState();
-      const isLeaf = !('state' in state.routes[state.index]);
+      const isLeaf = !(state && 'state' in state.routes[state.index]);
       if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
     }
 
@@ -278,7 +295,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       () =>
         navigation.addListener('focus', () => {
           const state = navigation.getState();
-          const isLeaf = !('state' in state.routes[state.index]);
+          const isLeaf = !(state && 'state' in state.routes[state.index]);
           // Because setFocusedState caches the route info, this call will only trigger rerenders
           // if the component itself didn’t rerender and the route info changed.
           // Otherwise, the update from the `if` above will handle it,
@@ -289,24 +306,21 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     );
 
     useEffect(() => {
-      return navigation.addListener(
-        'transitionEnd',
-        (e?: NativeStackNavigationEventMap['transitionEnd']) => {
-          if (!e?.data?.closing) {
-            // When navigating to a screen, remove the no animation param to re-enable animations
-            // Otherwise the navigation back would also have no animation
-            if (hasParam(route?.params, INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
-              navigation.replaceParams(
-                removeParams(route?.params, [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME])
-              );
-            }
+      return navigation.addListener('transitionEnd', (e) => {
+        if (!e?.data?.closing) {
+          // When navigating to a screen, remove the no animation param to re-enable animations
+          // Otherwise the navigation back would also have no animation
+          if (hasParam(route?.params, INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
+            navigation.replaceParams(
+              removeParams(route?.params, [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME])
+            );
           }
         }
-      );
+      });
     }, [navigation]);
 
     return (
-      <Route node={value} route={route}>
+      <Route node={value} params={route?.params}>
         {value.type === 'route' && route?.key && unstable_navigationEvents.hasAnyListener() && (
           <AnalyticsListeners navigation={navigation} screenId={route.key} />
         )}

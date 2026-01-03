@@ -91,6 +91,8 @@
 - [ios] replace print with jsLog in native components ([#41757](https://github.com/expo/expo/pull/41757) by [@Ubax](https://github.com/Ubax))
 - [ios] add NativeActionProp to reduce repetition in LinkPreviewNativeActionView ([#41763](https://github.com/expo/expo/pull/41763) by [@Ubax](https://github.com/Ubax))
 - [docs] update Toolbar.View to reflect up to date props ([#41888](https://github.com/expo/expo/pull/41888) by [@Ubax](https://github.com/Ubax))
+- remove new arch checks ([#41766](https://github.com/expo/expo/pull/41766) by [@Ubax](https://github.com/Ubax))
+- add types to BaseRoute props ([#41765](https://github.com/expo/expo/pull/41765) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.17 - 2025-12-05
 
