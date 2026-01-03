@@ -91,6 +91,7 @@
 - [ios] replace print with jsLog in native components ([#41757](https://github.com/expo/expo/pull/41757) by [@Ubax](https://github.com/Ubax))
 - [ios] add NativeActionProp to reduce repetition in LinkPreviewNativeActionView ([#41763](https://github.com/expo/expo/pull/41763) by [@Ubax](https://github.com/Ubax))
 - [docs] update Toolbar.View to reflect up to date props ([#41888](https://github.com/expo/expo/pull/41888) by [@Ubax](https://github.com/Ubax))
+- [iOS] reduce number of times UIBarButtonItem is recreated ([#41900](https://github.com/expo/expo/pull/41900) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.17 - 2025-12-05
 
