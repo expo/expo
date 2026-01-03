@@ -90,4 +90,11 @@ export declare function isBuildConfig([, sectionItem]: ConfigurationSectionEntry
 export declare function isNotTestHost([, sectionItem]: ConfigurationSectionEntry): boolean;
 export declare function isNotComment([key]: ConfigurationSectionEntry | ProjectSectionEntry | ConfigurationListEntry | NativeTargetSectionEntry): boolean;
 export declare function unquote(value: string): string;
+/**
+ * Check if the main application target uses file system synchronized groups (modern Xcode 16+ template).
+ *
+ * @param project The Xcode project
+ * @returns `true` if the main app target has `fileSystemSynchronizedGroups`, indicating a modern template
+ */
+export declare function isAppTargetUsingFileSystemSynchronizedGroups(project: XcodeProject): boolean;
 export declare function resolveXcodeBuildSetting(value: string, lookup: (buildSetting: string) => string | undefined): string;

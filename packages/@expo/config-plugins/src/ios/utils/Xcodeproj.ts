@@ -432,6 +432,24 @@ export function unquote(value: string): string {
   return value.match(/^"(.*)"$/)?.[1] ?? value;
 }
 
+/**
+ * Check if the main application target uses file system synchronized groups (modern Xcode 16+ template).
+ *
+ * @param project The Xcode project
+ * @returns `true` if the main app target has `fileSystemSynchronizedGroups`, indicating a modern template
+ */
+export function isAppTargetUsingFileSystemSynchronizedGroups(project: XcodeProject): boolean {
+  const applicationNativeTarget = project.getTarget('com.apple.product-type.application');
+  if (!applicationNativeTarget) {
+    return false;
+  }
+
+  const target = applicationNativeTarget.target;
+  const fileSystemSynchronizedGroups = (target as any).fileSystemSynchronizedGroups;
+
+  return Array.isArray(fileSystemSynchronizedGroups) && fileSystemSynchronizedGroups.length > 0;
+}
+
 export function resolveXcodeBuildSetting(
   value: string,
   lookup: (buildSetting: string) => string | undefined

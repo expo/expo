@@ -17,6 +17,7 @@ exports.getProductName = getProductName;
 exports.getProjectName = getProjectName;
 exports.getProjectSection = getProjectSection;
 exports.getXCConfigurationListEntries = getXCConfigurationListEntries;
+exports.isAppTargetUsingFileSystemSynchronizedGroups = isAppTargetUsingFileSystemSynchronizedGroups;
 exports.isBuildConfig = isBuildConfig;
 exports.isNotComment = isNotComment;
 exports.isNotTestHost = isNotTestHost;
@@ -401,6 +402,22 @@ function unquote(value) {
     value = String(value);
   }
   return value.match(/^"(.*)"$/)?.[1] ?? value;
+}
+
+/**
+ * Check if the main application target uses file system synchronized groups (modern Xcode 16+ template).
+ *
+ * @param project The Xcode project
+ * @returns `true` if the main app target has `fileSystemSynchronizedGroups`, indicating a modern template
+ */
+function isAppTargetUsingFileSystemSynchronizedGroups(project) {
+  const applicationNativeTarget = project.getTarget('com.apple.product-type.application');
+  if (!applicationNativeTarget) {
+    return false;
+  }
+  const target = applicationNativeTarget.target;
+  const fileSystemSynchronizedGroups = target.fileSystemSynchronizedGroups;
+  return Array.isArray(fileSystemSynchronizedGroups) && fileSystemSynchronizedGroups.length > 0;
 }
 function resolveXcodeBuildSetting(value, lookup) {
   const parsedValue = value?.replace(/\$\(([^()]*|\([^)]*\))\)/g, match => {
