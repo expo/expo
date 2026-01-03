@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Migrated the native module to Swift.
+
 ## 14.0.9 - 2025-12-05
 
 _This version does not introduce any user-facing changes._

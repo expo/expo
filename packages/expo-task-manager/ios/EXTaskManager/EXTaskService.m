@@ -1,10 +1,9 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXTaskConsumerInterface.h>
 
-#import <EXTaskManager/EXTask.h>
-#import <EXTaskManager/EXTaskService.h>
+#import <ExpoTaskManager/EXTask.h>
+#import <ExpoTaskManager/EXTaskService.h>
 
 #import <UMAppLoader/UMAppLoaderProvider.h>
 #import <UMAppLoader/UMAppRecordInterface.h>
@@ -37,7 +36,16 @@
 
 @implementation EXTaskService
 
-EX_REGISTER_SINGLETON_MODULE(TaskService)
++ (nonnull EXTaskService *)shared
+{
+  static EXTaskService *sharedInstance = nil;
+  static dispatch_once_t onceToken;
+
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [[EXTaskService alloc] init];
+  });
+  return sharedInstance;
+}
 
 - (instancetype)init
 {
