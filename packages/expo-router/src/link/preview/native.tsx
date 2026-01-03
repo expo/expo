@@ -1,6 +1,7 @@
 'use client';
 
 import { requireNativeView } from 'expo';
+import type { ImageRef } from 'expo-image';
 import { Fragment, type PropsWithChildren } from 'react';
 import { Platform, StyleSheet, type ViewProps, type ColorValue } from 'react-native';
 
@@ -14,6 +15,7 @@ export interface NativeLinkPreviewActionProps {
   identifier: string;
   title: string;
   icon?: string;
+  image?: ImageRef | null;
   children?: React.ReactNode;
   disabled?: boolean;
   destructive?: boolean;
@@ -44,15 +46,24 @@ export interface NativeLinkPreviewActionProps {
   onSelected: () => void;
   titleStyle?: BasicTextStyle;
 }
-const LinkPreviewNativeActionView: React.ComponentType<NativeLinkPreviewActionProps> | null =
-  areNativeViewsAvailable
-    ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeActionView')
-    : null;
+const LinkPreviewNativeActionView: React.ComponentType<
+  Omit<NativeLinkPreviewActionProps, 'image'> & { image?: number }
+> | null = areNativeViewsAvailable
+  ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeActionView')
+  : null;
 export function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps) {
   if (!LinkPreviewNativeActionView) {
     return null;
   }
-  return <LinkPreviewNativeActionView {...props} />;
+  // Needed to pass shared object ID to native side
+  const imageObjectId = (
+    props.image as
+      | {
+          __expo_shared_object_id__: number;
+        }
+      | undefined
+  )?.__expo_shared_object_id__;
+  return <LinkPreviewNativeActionView {...props} image={imageObjectId} />;
 }
 // #endregion
 

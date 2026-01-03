@@ -18,7 +18,9 @@ function NativeLinkPreviewAction(props) {
     if (!LinkPreviewNativeActionView) {
         return null;
     }
-    return <LinkPreviewNativeActionView {...props}/>;
+    // Needed to pass shared object ID to native side
+    const imageObjectId = props.image?.__expo_shared_object_id__;
+    return <LinkPreviewNativeActionView {...props} image={imageObjectId}/>;
 }
 const NativeLinkPreviewView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewView')

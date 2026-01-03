@@ -83,6 +83,13 @@ export default function ToolbarScreen() {
       console.error(error);
     },
   });
+  const image2 = useImage(require('../../../assets/sad-expo.svg'), {
+    maxWidth: 24,
+    maxHeight: 24,
+    onError(error) {
+      console.error(error);
+    },
+  });
 
   return (
     <>
@@ -335,7 +342,7 @@ export default function ToolbarScreen() {
             </Toolbar.Menu>
 
             {/* Nested menu with state-based selections */}
-            <Toolbar.Menu title="Preferences">
+            <Toolbar.Menu title="Preferences" image={image2}>
               <Toolbar.MenuAction
                 icon="bell"
                 title={notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}

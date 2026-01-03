@@ -37,6 +37,26 @@ export interface ToolbarMenuProps {
      */
     icon?: SFSymbol;
     /**
+     * Custom image loaded using `useImage()` hook from `expo-image`.
+     * Takes priority over `icon` (SF Symbol) when both are provided.
+     *
+     * @example
+     * ```tsx
+     * import { useImage } from 'expo-image';
+     * import { Toolbar } from 'expo-router/unstable-toolbar';
+     *
+     * const customIcon = useImage('https://simpleicons.org/icons/expo.svg', {
+     *   maxWidth: 24,
+     *   maxHeight: 24,
+     * });
+     *
+     * <Toolbar.Menu image={customIcon} title="Menu">
+     *   <Toolbar.MenuAction title="Action" onPress={() => {}} />
+     * </Toolbar.Menu>
+     * ```
+     */
+    image?: ImageRef | null;
+    /**
      * If `true`, the menu will be displayed inline.
      * This means that the menu will not be collapsed
      *
@@ -170,7 +190,7 @@ export interface ToolbarButtonProps {
      */
     icon?: SFSymbol;
     /**
-     * Custom image loaded using expo-image's `useImage` hook.
+     * Custom image loaded using `useImage()` hook from `expo-image`.
      * Takes priority over `icon` (SF Symbol) when both are provided.
      *
      * @example
@@ -178,9 +198,9 @@ export interface ToolbarButtonProps {
      * import { useImage } from 'expo-image';
      * import { Toolbar } from 'expo-router/unstable-toolbar';
      *
-     * const customIcon = useImage('https://example.com/icon.png', {
-     *   maxWidth: 44,
-     *   maxHeight: 44,
+     * const customIcon = useImage('https://simpleicons.org/icons/expo.svg', {
+     *   maxWidth: 24,
+     *   maxHeight: 24,
      * });
      *
      * <Toolbar.Button image={customIcon} onPress={() => {}} />
