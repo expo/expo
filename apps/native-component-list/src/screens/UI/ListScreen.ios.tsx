@@ -9,8 +9,8 @@ import {
   type ListStyle,
   Picker,
   Section,
-  Switch,
   Text,
+  Toggle,
 } from '@expo/ui/swift-ui';
 import {
   background,
@@ -85,7 +85,7 @@ export default function ListScreen() {
     <Host style={{ flex: 1 }}>
       <List
         editModeEnabled={editModeEnabled}
-        onSelectionChange={(items) => alert(`indexes of selected items: ${items.join(', ')}`)}
+        onSelectionChange={(items) => alert(`Tag of selected items: ${items.join(', ')}`)}
         moveEnabled={moveEnabled}
         onMoveItem={(from, to) => alert(`moved item at index ${from} to index ${to}`)}
         onDeleteItem={(item) => alert(`deleted item at index: ${item}`)}
@@ -133,33 +133,56 @@ export default function ListScreen() {
               )}
             </>
           }>
-          <Switch
+          <Toggle
+            modifiers={[tag('increasedHeader')]}
             label="Use increased section header"
-            value={increasedHeader}
-            onValueChange={setIncreasedHeader}
+            isOn={increasedHeader}
+            onIsOnChange={setIncreasedHeader}
           />
-          <Switch label="Collapsible" value={collapsible} onValueChange={setCollapsible} />
-          <Switch
+          <Toggle
+            modifiers={[tag('collapsible')]}
+            label="Collapsible"
+            isOn={collapsible}
+            onIsOnChange={setCollapsible}
+          />
+          <Toggle
+            modifiers={[tag('customHeaderFooter')]}
             label="Custom header"
-            value={customHeaderFooter.header}
-            onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, header: v }))}
+            isOn={customHeaderFooter.header}
+            onIsOnChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, header: v }))}
           />
-          <Switch
+          <Toggle
             label="Custom footer"
-            value={customHeaderFooter.footer}
-            onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, footer: v }))}
-            modifiers={[disabled(collapsible)]}
+            isOn={customHeaderFooter.footer}
+            onIsOnChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, footer: v }))}
+            modifiers={[disabled(collapsible), tag('customFooter')]}
           />
         </Section>
         <Section title="Controls" collapsible>
           <Button onPress={() => setEditModeEnabled(!editModeEnabled)} label="Toggle Edit" />
-          <Switch value={selectEnabled} label="Select enabled" onValueChange={setSelectEnabled} />
-          <Switch value={deleteEnabled} label="Delete enabled" onValueChange={setDeleteEnabled} />
-          <Switch value={moveEnabled} label="Move enabled" onValueChange={setMoveEnabled} />
-          <Switch
-            value={refreshEnabled}
+          <Toggle
+            modifiers={[tag('selectEnabled')]}
+            isOn={selectEnabled}
+            label="Select enabled"
+            onIsOnChange={setSelectEnabled}
+          />
+          <Toggle
+            modifiers={[tag('deleteEnabled')]}
+            isOn={deleteEnabled}
+            label="Delete enabled"
+            onIsOnChange={setDeleteEnabled}
+          />
+          <Toggle
+            modifiers={[tag('moveEnabled')]}
+            isOn={moveEnabled}
+            label="Move enabled"
+            onIsOnChange={setMoveEnabled}
+          />
+          <Toggle
+            modifiers={[tag('refreshEnabled')]}
+            isOn={refreshEnabled}
             label="Refreshable enabled"
-            onValueChange={setRefreshEnabled}
+            onIsOnChange={setRefreshEnabled}
           />
           {lastRefresh && (
             <Text size={12} color="gray">
@@ -167,6 +190,7 @@ export default function ListScreen() {
             </Text>
           )}
           <ColorPicker
+            modifiers={[tag('itemIconColor')]}
             label="Item icon color"
             selection={color}
             supportsOpacity
@@ -174,7 +198,7 @@ export default function ListScreen() {
           />
           <Picker
             label="Scroll dismisses keyboard"
-            modifiers={[pickerStyle('menu')]}
+            modifiers={[pickerStyle('menu'), tag('scrollDismissesKeyboard')]}
             selection={scrollDismissesKeyboardIndex}
             onSelectionChange={setScrollDismissesKeyboardIndex}>
             {scrollDismissesKeyboardOptions.map((option, index) => (
@@ -185,7 +209,7 @@ export default function ListScreen() {
           </Picker>
           <Picker
             label="List style"
-            modifiers={[pickerStyle('menu')]}
+            modifiers={[pickerStyle('menu'), tag('listStyle')]}
             selection={selectedIndex}
             onSelectionChange={setSelectedIndex}>
             {listStyleOptions.map((option, index) => (
@@ -197,6 +221,7 @@ export default function ListScreen() {
         </Section>
         <Section title="Data">
           <Label
+            modifiers={[tag('labelWithCustomIcon')]}
             icon={
               <Image
                 systemName="sun.max.fill"
@@ -216,7 +241,7 @@ export default function ListScreen() {
           {data.map((item, index) => (
             <Label
               key={index}
-              modifiers={[frame({ height: 24 }), foregroundStyle(color)]}
+              modifiers={[frame({ height: 24 }), foregroundStyle(color), tag(item.text)]}
               title={item.text}
               systemImage={item.systemImage}
             />
