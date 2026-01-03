@@ -1,6 +1,13 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#if !__building_module(ExpoModulesCore)
 #import <React/RCTBridgeModule.h>
+#else
+@class RCTBridge;
+@protocol RCTBridgeModule;
+typedef void (^RCTPromiseResolveBlock)(id result);
+typedef void (^RCTPromiseRejectBlock)(NSString *code, NSString *message, NSError *error);
+#endif
 
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
