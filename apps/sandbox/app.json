@@ -18,8 +18,7 @@
     "assetBundlePatterns": ["**/*"],
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.bacon.sandbox"
+      "supportsTablet": true
     },
     "plugins": [
       [
@@ -27,18 +26,6 @@
         {
           "origin": "https://naviloop.netlify.app/",
           "asyncRoutes": true
-        }
-      ],
-      [
-        "expo-font",
-        {
-          "fonts": ["./comic.ttf"]
-        }
-      ],
-      [
-        "expo-asset",
-        {
-          "assets": ["./assets/icon.png", "./comic.ttf", "./dist/metadata.json"]
         }
       ],
       [

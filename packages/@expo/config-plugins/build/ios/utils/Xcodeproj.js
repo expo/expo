@@ -147,6 +147,8 @@ function createProjectFileForGroup({
 /**
  * Add a resource file (ex: `SplashScreen.storyboard`, `Images.xcassets`) to an Xcode project.
  * This is akin to creating a new code file in Xcode with `⌘+n`.
+ *
+ * @deprecated Use PBXFileSystemSynchronizedRootGroup instead for SDK 55+
  */
 function addResourceFileToGroup({
   filepath,

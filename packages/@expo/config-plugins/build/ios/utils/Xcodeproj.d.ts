@@ -19,6 +19,8 @@ export declare function getHackyProjectName(projectRoot: string, config: ExpoCon
 /**
  * Add a resource file (ex: `SplashScreen.storyboard`, `Images.xcassets`) to an Xcode project.
  * This is akin to creating a new code file in Xcode with `⌘+n`.
+ *
+ * @deprecated Use PBXFileSystemSynchronizedRootGroup instead for SDK 55+
  */
 export declare function addResourceFileToGroup({ filepath, groupName, isBuildFile, project, verbose, targetUuid, }: {
     filepath: string;
