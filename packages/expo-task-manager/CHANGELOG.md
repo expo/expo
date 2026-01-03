@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [iOS] Migrated the native module to Swift.
+- [iOS] Migrated the native module to Swift. ([#41911](https://github.com/expo/expo/pull/41911) by [@tsapeta](https://github.com/tsapeta))
 
 ## 14.0.9 - 2025-12-05
 
