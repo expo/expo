@@ -5,7 +5,11 @@ import path from 'path';
 import type { XcodeProject } from 'xcode';
 
 import { ExportedConfigWithProps } from '../Plugin.types';
-import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
+import {
+  addResourceFileToGroup,
+  getProjectName,
+  isAppTargetUsingFileSystemSynchronizedGroups,
+} from './utils/Xcodeproj';
 import { withXcodeProject } from '../plugins/ios-plugins';
 
 export type PrivacyInfo = {
@@ -52,7 +56,11 @@ export function setPrivacyInfo(
 
   ensureFileExists(privacyFilePath, contents);
 
-  if (!projectConfig.modResults.hasFile(privacyFilePath)) {
+  if (
+    // TODO: Deprecate support for non-synchronized groups after SDK 55.
+    !isAppTargetUsingFileSystemSynchronizedGroups(projectConfig.modResults) &&
+    !projectConfig.modResults.hasFile(privacyFilePath)
+  ) {
     projectConfig.modResults = addResourceFileToGroup({
       filepath: path.join(projectName, 'PrivacyInfo.xcprivacy'),
       groupName: projectName,
@@ -61,7 +69,6 @@ export function setPrivacyInfo(
       verbose: true,
     });
   }
-
   return projectConfig;
 }
 

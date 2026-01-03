@@ -34,7 +34,9 @@ export const withIosIcons: ConfigPlugin = (config) => {
     if (icon && typeof icon === 'string' && path.extname(icon) === '.icon' && projectName) {
       const iconName = path.basename(icon, '.icon');
       setIconName(config.modResults, projectName, iconName);
-      addIconFileToProject(config.modResults, projectName, iconName);
+      if (!IOSConfig.XcodeUtils.isAppTargetUsingFileSystemSynchronizedGroups(config.modResults)) {
+        addIconFileToProject(config.modResults, projectName, iconName);
+      }
     }
     return config;
   });
@@ -275,6 +277,7 @@ function setIconName(project: any, projectName: string, iconName: string): void 
 
 /**
  * Adds the .icon file to the project
+ * @deprecated new projects should use PBXFileSystemSynchronizedRootGroup which automatically includes .icon files as resources
  */
 function addIconFileToProject(project: any, projectName: string, iconName: string): void {
   const iconPath = `${iconName}.icon`;

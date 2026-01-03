@@ -15,9 +15,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
@@ -29,6 +27,12 @@
         {
           "origin": "https://naviloop.netlify.app/",
           "asyncRoutes": true
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": ["./comic.ttf"]
         }
       ],
       [
