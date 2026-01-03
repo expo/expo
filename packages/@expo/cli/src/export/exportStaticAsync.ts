@@ -329,6 +329,24 @@ export async function exportFromServerAsync(
         platform: 'web',
       });
 
+      // Export loader bundles for routes that have loader exports
+      const useServerLoaders = exp?.extra?.router?.unstable_useServerDataLoaders;
+      if (useServerLoaders) {
+        // Get `loaderReferences` from client bundle metadata to determine which routes have loaders
+        const loaderReferences = resources.artifacts?.flatMap(
+          (artifact) => artifact.metadata?.loaderReferences ?? []
+        );
+
+        await exportLoadersAsync({
+          devServer,
+          serverManifest,
+          appDir,
+          files,
+          platform: 'web',
+          loaderReferences,
+        });
+      }
+
       const cssAssets = resources.artifacts
         .filter((asset) => asset.type === 'css')
         .map((asset) => (baseUrl ? `${baseUrl}/${asset.filename}` : `/${asset.filename}`));
@@ -618,4 +636,78 @@ function warnPossibleInvalidExportType(appDir: string) {
       chalk.yellow`Skipping export for middleware because \`web.output\` is not "server". You may want to remove ${path.relative(appDir, middlewareFile)}`
     );
   }
+}
+
+/**
+ * Export loader bundles for routes that have loader exports and updates routes in the manifest
+ * with a `loader` property.
+ */
+async function exportLoadersAsync({
+  devServer,
+  serverManifest,
+  appDir,
+  files,
+  platform,
+  loaderReferences,
+}: {
+  devServer: MetroBundlerDevServer;
+  serverManifest: RoutesManifest<string>;
+  appDir: string;
+  files: ExportAssetMap;
+  platform: string;
+  /** File paths of modules with loader exports from client bundle metadata */
+  loaderReferences: string[];
+}): Promise<void> {
+  const entryPoints: { file: string; page: string }[] = [];
+
+  for (const route of serverManifest.htmlRoutes) {
+    // Skip generated routes
+    if (route.generated) {
+      continue;
+    }
+
+    const filePath = path.isAbsolute(route.file) ? route.file : path.join(appDir, route.file);
+
+    if (loaderReferences.includes(filePath)) {
+      entryPoints.push({
+        file: filePath,
+        page: route.page,
+      });
+    }
+  }
+
+  if (entryPoints.length === 0) {
+    debug('No routes with loaders to bundle');
+    return;
+  }
+
+  const entryPointModules = entryPoints.map((e) => e.page);
+  debug('Bundling loaders for routes:', entryPointModules);
+
+  await devServer.exportExpoRouterLoadersAsync({
+    platform,
+    entryPoints,
+    files,
+    outputDir: '_expo/loaders',
+    includeSourceMaps: true,
+  });
+
+  const routesWithLoaders = new Set(entryPointModules);
+  // NOTE(@hassankhan): We should ideally persist the manifest to `files` only once instead of
+  // modifying it afterwards.
+  const routesJsonEntry = files.get('_expo/routes.json');
+  if (routesJsonEntry) {
+    const manifest = JSON.parse(routesJsonEntry.contents as string);
+    for (const route of manifest.htmlRoutes) {
+      if (routesWithLoaders.has(route.page)) {
+        route.loader = `_expo/loaders${route.page}.js`;
+      }
+    }
+    files.set('_expo/routes.json', {
+      ...routesJsonEntry,
+      contents: JSON.stringify(manifest, null, 2),
+    });
+  }
+
+  debug('Exported loaders for routes:', entryPointModules);
 }
