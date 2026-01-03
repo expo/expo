@@ -1,5 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXTaskConsumerInterface.h>
 
 #import <ExpoTaskManager/EXTask.h>
