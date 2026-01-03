@@ -287,7 +287,7 @@ export default function ToolbarScreen() {
         )}
 
         {/* Custom view with TextInput */}
-        <Toolbar.View style={{ width: 200 }} hidden={!showCustomView}>
+        <Toolbar.View hidden={!showCustomView}>
           <TextInput
             ref={searchInputRef}
             testID="toolbar-search-input"
@@ -320,7 +320,7 @@ export default function ToolbarScreen() {
         )}
 
         {/* Custom view with custom component */}
-        <Toolbar.View separateBackground style={{ width: 32, height: 32 }}>
+        <Toolbar.View separateBackground>
           <Pressable
             testID="custom-plus-button"
             onPress={() => Alert.alert('Custom Button', 'Plus button pressed!')}
@@ -523,11 +523,14 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     fontSize: 16,
+    width: 200,
+    height: 32,
+    paddingLeft: 8,
     color: Color.ios.label,
   },
   customButton: {
-    width: '100%',
-    height: '100%',
+    width: 32,
+    height: 32,
     justifyContent: 'center',
     alignItems: 'center',
   },
