@@ -23,7 +23,7 @@ exports.ExpoError = ExpoError;
 function noopBeforeResponse(responseInit, _route) {
     return responseInit;
 }
-function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMiddleware, beforeErrorResponse = noopBeforeResponse, beforeResponse = noopBeforeResponse, beforeHTMLResponse = noopBeforeResponse, beforeAPIResponse = noopBeforeResponse, }) {
+function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMiddleware, getLoaderData, beforeErrorResponse = noopBeforeResponse, beforeResponse = noopBeforeResponse, beforeHTMLResponse = noopBeforeResponse, beforeAPIResponse = noopBeforeResponse, }) {
     let manifest = null;
     return async function handler(request) {
         if (!manifest) {
@@ -79,11 +79,42 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
                 request = new Request(url, request);
             }
         }
-        // First, test static routes
+        // First, test static routes and loader data requests
         if (request.method === 'GET' || request.method === 'HEAD') {
+            const isLoaderRequest = url.pathname.startsWith('/_expo/loaders/');
+            const matchedPath = isLoaderRequest
+                ? url.pathname.replace('/_expo/loaders', '')
+                : url.pathname;
             for (const route of manifest.htmlRoutes) {
-                if (!route.namedRegex.test(url.pathname)) {
+                if (!route.namedRegex.test(matchedPath)) {
                     continue;
+                }
+                // Handle loader data requests for client-side navigation
+                if (isLoaderRequest) {
+                    if (!route.loader) {
+                        continue; // Route matched but has no loader
+                    }
+                    try {
+                        // Create a request with the actual route path so `parseParams()` works correctly
+                        const loaderUrl = new URL(matchedPath + url.search, url.origin);
+                        const loaderRequest = new Request(loaderUrl, request);
+                        const data = await getLoaderData(loaderRequest, route);
+                        return createResponse('api', route, JSON.stringify(data), {
+                            status: 200,
+                            headers: new Headers({
+                                'Content-Type': 'application/json',
+                            }),
+                        });
+                    }
+                    catch (error) {
+                        console.error('Loader error:', error);
+                        return createResponse('api', route, JSON.stringify({ error: 'Loader failed' }), {
+                            status: 500,
+                            headers: new Headers({
+                                'Content-Type': 'application/json',
+                            }),
+                        });
+                    }
                 }
                 const html = await getHtml(request, route);
                 return respondHTML(html, route);
