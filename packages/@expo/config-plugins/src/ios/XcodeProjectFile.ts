@@ -13,6 +13,8 @@ import { withXcodeProject } from '../plugins/ios-plugins';
  * @param props.contents file contents to write.
  * @param props.overwrite should the contents overwrite any existing file in the same location on disk.
  * @returns
+ *
+ * @deprecated Copy files to the source directory instead of using this plugin.
  */
 export const withBuildSourceFile: ConfigPlugin<{
   filePath: string;
