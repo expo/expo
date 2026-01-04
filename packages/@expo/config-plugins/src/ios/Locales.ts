@@ -61,6 +61,7 @@ export async function setLocalesAsync(
     // Ensure the file doesn't already exist
     if (!group?.children.some(({ comment }) => comment === stringName)) {
       // Only write the file if it doesn't already exist.
+      // TODO: this may not be needed with synchronized groups?
       project = addResourceFileToGroup({
         filepath: path.relative(supportingDirectory, strings),
         groupName,
