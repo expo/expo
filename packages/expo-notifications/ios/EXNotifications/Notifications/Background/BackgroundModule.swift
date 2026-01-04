@@ -5,14 +5,10 @@ import UIKit
 import MachO
 
 public class BackgroundModule: Module {
-  var taskManager: EXTaskManagerInterface?
+  lazy var taskManager: EXTaskManagerInterface? = appContext?.legacyModule(implementing: EXTaskManagerInterface.self)
 
   public func definition() -> ModuleDefinition {
     Name("ExpoBackgroundNotificationTasksModule")
-
-    OnCreate {
-      taskManager = appContext?.legacyModule(implementing: EXTaskManagerInterface.self)
-    }
 
     AsyncFunction("registerTaskAsync") {(name: String, promise: Promise) in
       guard let taskManager else {
