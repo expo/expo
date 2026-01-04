@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add downloadFileAsync to SAF. ([#40487](https://github.com/expo/expo/pull/40487) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 - [file-system] Fix package exports for Typescript projects ([#39543](https://github.com/expo/expo/pull/39543) by [@smoores-dev](https://github.com/smoores-dev))
