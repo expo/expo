@@ -4,6 +4,7 @@ import CoreMotion
 import ExpoModulesCore
 
 private let EVENT_PEDOMETER_UPDATE = "Exponent.pedometerUpdate"
+private let EVENT_PEDOMETER_EVENT = "Exponent.pedometerEvent"
 
 // This class should always be kept in sync with PedometerModuleDisabled
 public final class PedometerModule: Module {
@@ -11,14 +12,76 @@ public final class PedometerModule: Module {
 
   private var watchStartDate: Date?
   private var watchHandler: CMPedometerHandler?
+  private var eventHandler: CMPedometerEventHandler?
 
   public func definition() -> ModuleDefinition {
     Name("ExponentPedometer")
 
-    Events(EVENT_PEDOMETER_UPDATE)
+    Events(EVENT_PEDOMETER_UPDATE, EVENT_PEDOMETER_EVENT)
 
     AsyncFunction("isAvailableAsync") {
       return CMPedometer.isStepCountingAvailable()
+    }
+
+    AsyncFunction("isRecordingAvailableAsync") {
+      // iOS keeps collecting history automatically (up to seven days), so recording is
+      // effectively "available" whenever step counting is available.
+      return CMPedometer.isStepCountingAvailable()
+    }
+
+    AsyncFunction("startEventUpdates") { (promise: Promise) in
+      if eventHandler != nil {
+        promise.resolve(true)
+        return
+      }
+
+      guard CMPedometer.isPedometerEventTrackingAvailable() else {
+        promise.resolve(false)
+        return
+      }
+
+      let handler: CMPedometerEventHandler = { [weak self] event, _ in
+        guard let self, let event else {
+          return
+        }
+
+        let type: String
+        switch event.type {
+        case .pause:
+          type = "pause"
+        case .resume:
+          type = "resume"
+        @unknown default:
+          return
+        }
+
+        self.sendEvent(
+          EVENT_PEDOMETER_EVENT,
+          [
+            "type": type,
+            "date": event.date.timeIntervalSince1970 * 1000
+          ]
+        )
+      }
+
+      pedometer.startEventUpdates(withHandler: handler)
+      eventHandler = handler
+      promise.resolve(true)
+    }
+
+    AsyncFunction("stopEventUpdates") {
+      pedometer.stopEventUpdates()
+      eventHandler = nil
+    }
+
+    // iOS does not expose a way to start recording history
+    AsyncFunction("subscribeRecording") { (promise: Promise) in
+      promise.resolve(nil)
+    }
+
+    // iOS does not expose a way to stop recording history
+    AsyncFunction("unsubscribeRecording") { (promise: Promise) in
+      promise.resolve(nil)
     }
 
     AsyncFunction("getStepCountAsync") { (startTime: Double, endTime: Double, promise: Promise) in
@@ -71,9 +134,11 @@ public final class PedometerModule: Module {
         guard let data else {
           return
         }
-        self?.sendEvent(EVENT_PEDOMETER_UPDATE, [
-          "steps": data.numberOfSteps
-        ])
+        self?.sendEvent(
+          EVENT_PEDOMETER_UPDATE,
+          [
+            "steps": data.numberOfSteps
+          ])
       }
 
       pedometer.startUpdates(from: startDate, withHandler: handler)
@@ -100,13 +165,16 @@ public final class PedometerModule: Module {
 
     OnDestroy {
       stopUpdates()
+      pedometer.stopEventUpdates()
+      eventHandler = nil
     }
   }
 
   private func stopUpdates() {
     guard watchHandler != nil,
       let permissions = appContext?.permissions,
-      permissions.hasGrantedPermission(usingRequesterClass: EXMotionPermissionRequester.self) else {
+      permissions.hasGrantedPermission(usingRequesterClass: EXMotionPermissionRequester.self)
+    else {
       return
     }
 
