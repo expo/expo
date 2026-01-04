@@ -144,6 +144,7 @@
     "client-only": "^0.0.1",
     "debug": "^4.3.4",
     "escape-string-regexp": "^4.0.0",
+    "expo-image": "*",
     "expo-server": "^1.0.0",
     "expo-symbols": "^1.0.7",
     "fast-deep-equal": "^3.1.3",

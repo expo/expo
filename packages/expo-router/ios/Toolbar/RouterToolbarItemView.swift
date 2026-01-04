@@ -6,6 +6,11 @@ class RouterToolbarItemView: RouterViewWithLogger {
   @ReactiveProp var type: ItemType?
   @ReactiveProp var title: String?
   @ReactiveProp var systemImageName: String?
+  var customImage: SharedRef<UIImage>? {
+    didSet {
+      performUpdate()
+    }
+  }
   @ReactiveProp var customView: UIView?
   @ReactiveProp var customTintColor: UIColor?
   @ReactiveProp var hidesSharedBackground: Bool = false
@@ -47,7 +52,11 @@ class RouterToolbarItemView: RouterViewWithLogger {
         item.title = title
       }
       item.possibleTitles = possibleTitles
-      if let systemImageName {
+      if let customImage {
+        // Use the UIImage from the SharedRef
+        item.image = customImage.ref.withRenderingMode(.alwaysOriginal)
+      } else if let systemImageName {
+        // Fallback to SF Symbol
         item.image = UIImage(systemName: systemImageName)
       }
       if let tintColor = customTintColor {
