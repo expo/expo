@@ -111,6 +111,24 @@ const stackRouterOverride = (original) => {
                     options.routeGetIdList[actionName]);
             }
             const { routeParamList } = options;
+            // START FORK - Handle predefinedValues redirect
+            // Check if we're navigating to a dynamic route that has a predefined value screen
+            if (action.payload && 'name' in action.payload && action.payload.name) {
+                const targetName = action.payload.name;
+                const targetParams = action.payload.params;
+                // Check if the route name is a dynamic segment (e.g., "[param]")
+                const dynamicMatch = targetName.match(/^\[(.+)\]$/);
+                if (dynamicMatch && targetParams) {
+                    const paramName = dynamicMatch[1];
+                    const paramValue = targetParams[paramName];
+                    // If the param value matches a screen name in routeNames, redirect to that screen
+                    if (typeof paramValue === 'string' && state.routeNames.includes(paramValue)) {
+                        action.payload.name = paramValue;
+                        // Keep the params so the component knows the param value
+                    }
+                }
+            }
+            // END FORK
             switch (action.type) {
                 case 'PUSH':
                 case 'NAVIGATE': {
@@ -362,6 +380,64 @@ const stackRouterOverride = (original) => {
                     return original.getStateForAction(state, action, options);
                 }
             }
+        },
+        getRehydratedState(partialState, config) {
+            const state = original.getRehydratedState(partialState, config);
+            const { routeNames, routeParamList } = config;
+            // Handle predefinedValues redirect during rehydration
+            const processRouteWithPredefinedValues = (route) => {
+                let finalRouteName = route.name;
+                // Check if the route name is a dynamic segment (e.g., "[param]")
+                const dynamicMatch = route.name.match(/^\[(.+)\]$/);
+                if (dynamicMatch && route.params) {
+                    const paramName = dynamicMatch[1];
+                    const paramValue = route.params[paramName];
+                    // If the param value matches a screen name in routeNames, redirect to that screen
+                    if (typeof paramValue === 'string' && routeNames.includes(paramValue)) {
+                        finalRouteName = paramValue;
+                    }
+                }
+                return finalRouteName;
+            };
+            const routes = state.routes
+                .map((route) => {
+                // Apply predefinedValues redirect
+                const finalRouteName = processRouteWithPredefinedValues(route);
+                return { ...route, name: finalRouteName };
+            })
+                .filter((route) => routeNames.includes(route.name))
+                .map((route) => ({
+                ...route,
+                key: route.key || `${route.name}-${(0, non_secure_1.nanoid)()}`,
+                params: routeParamList[route.name] !== undefined
+                    ? {
+                        ...routeParamList[route.name],
+                        ...route.params,
+                    }
+                    : route.params,
+            }));
+            const preloadedRoutes = state.preloadedRoutes
+                // Apply predefinedValues redirect to preloaded routes
+                ?.map((route) => {
+                const finalRouteName = processRouteWithPredefinedValues(route);
+                return { ...route, name: finalRouteName };
+            })
+                .filter((route) => routeNames.includes(route.name))
+                .map((route) => ({
+                ...route,
+                key: route.key || `${route.name}-${(0, non_secure_1.nanoid)()}`,
+                params: routeParamList[route.name] !== undefined
+                    ? {
+                        ...routeParamList[route.name],
+                        ...route.params,
+                    }
+                    : route.params,
+            })) ?? [];
+            return {
+                ...state,
+                routes,
+                preloadedRoutes,
+            };
         },
     };
 };
