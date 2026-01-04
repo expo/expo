@@ -1,7 +1,5 @@
 package expo.modules.ui
 
-import android.annotation.SuppressLint
-import android.content.Context
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerState
@@ -13,19 +11,14 @@ import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.ExpoViewComposableScope
 import java.util.Calendar
 import java.util.Date
 import android.graphics.Color as AndroidColor
@@ -50,39 +43,31 @@ enum class Variant(val value: String) : Enumerable {
     return when (this) {
       PICKER -> DisplayMode.Picker
       INPUT -> DisplayMode.Input
-      else -> DisplayMode.Picker
     }
   }
 }
 
 data class DateTimePickerProps(
-  val title: MutableState<String> = mutableStateOf(""),
-  val initialDate: MutableState<Long?> = mutableStateOf(null),
-  val variant: MutableState<Variant> = mutableStateOf(Variant.PICKER),
-  val displayedComponents: MutableState<DisplayedComponents> = mutableStateOf(DisplayedComponents.DATE),
-  val showVariantToggle: MutableState<Boolean> = mutableStateOf(true),
-  val is24Hour: MutableState<Boolean> = mutableStateOf(true),
-  val color: MutableState<AndroidColor?> = mutableStateOf(null),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+  val title: String = "",
+  val initialDate: Long? = null,
+  val variant: Variant = Variant.PICKER,
+  val displayedComponents: DisplayedComponents = DisplayedComponents.DATE,
+  val showVariantToggle: Boolean = true,
+  val is24Hour: Boolean = true,
+  val color: AndroidColor? = null,
+  val modifiers: List<ModifierConfig> = emptyList()
 ) : ComposeProps
 
-@SuppressLint("ViewConstructor")
 @OptIn(ExperimentalMaterial3Api::class)
-class DateTimePickerView(context: Context, appContext: AppContext) :
-  ExpoComposeView<DateTimePickerProps>(context, appContext) {
-  override val props = DateTimePickerProps()
-  private val onDateSelected by EventDispatcher<DatePickerResult>()
-
-  @Composable
-  override fun ComposableScope.Content() {
-    if (props.displayedComponents.value == DisplayedComponents.HOUR_AND_MINUTE) {
-      ExpoTimePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)) {
-        onDateSelected(it)
-      }
-    } else {
-      ExpoDatePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)) {
-        onDateSelected(it)
-      }
+@Composable
+fun ExpoViewComposableScope.DateTimePickerContent(props: DateTimePickerProps, onDateSelected: (DatePickerResult) -> Unit) {
+  if (props.displayedComponents == DisplayedComponents.HOUR_AND_MINUTE) {
+    ExpoTimePicker(props = props, modifier = ModifierRegistry.applyModifiers(props.modifiers)) {
+      onDateSelected(it)
+    }
+  } else {
+    ExpoDatePicker(props = props, modifier = ModifierRegistry.applyModifiers(props.modifiers)) {
+      onDateSelected(it)
     }
   }
 }
@@ -91,8 +76,8 @@ class DateTimePickerView(context: Context, appContext: AppContext) :
 @Composable
 fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, onDateSelected: (DatePickerResult) -> Unit) {
   val locale = LocalConfiguration.current.locales[0]
-  val variant = props.variant.value.toDisplayMode()
-  val initialDate = props.initialDate.value
+  val variant = props.variant.toDisplayMode()
+  val initialDate = props.initialDate
 
   val state = remember(variant, initialDate) {
     DatePickerState(
@@ -112,12 +97,12 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
   DatePicker(
     modifier = modifier,
     state = state,
-    showModeToggle = props.showVariantToggle.value,
+    showModeToggle = props.showVariantToggle,
     colors = DatePickerDefaults.colors().copy(
-      titleContentColor = colorToComposeColor(props.color.value),
-      selectedDayContainerColor = colorToComposeColor(props.color.value),
-      todayDateBorderColor = colorToComposeColor(props.color.value),
-      headlineContentColor = colorToComposeColor(props.color.value)
+      titleContentColor = colorToComposeColor(props.color),
+      selectedDayContainerColor = colorToComposeColor(props.color),
+      todayDateBorderColor = colorToComposeColor(props.color),
+      headlineContentColor = colorToComposeColor(props.color)
     )
   )
 }
@@ -127,8 +112,8 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
 fun ExpoTimePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, onDateSelected: (DatePickerResult) -> Unit) {
   val cal = Calendar.getInstance()
 
-  val state = remember(props.initialDate.value, props.is24Hour.value) {
-    val initialDate = props.initialDate.value
+  val state = remember(props.initialDate, props.is24Hour) {
+    val initialDate = props.initialDate
     if (initialDate != null) {
       cal.timeInMillis = initialDate
     } else {
@@ -140,7 +125,7 @@ fun ExpoTimePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
     TimePickerState(
       initialHour = hour,
       initialMinute = minute,
-      is24Hour = props.is24Hour.value
+      is24Hour = props.is24Hour
     )
   }
 
@@ -157,9 +142,9 @@ fun ExpoTimePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
     state = state,
     layoutType = TimePickerLayoutType.Vertical,
     colors = TimePickerDefaults.colors().copy(
-      selectorColor = colorToComposeColor(props.color.value),
-      timeSelectorSelectedContainerColor = colorToComposeColor(props.color.value),
-      clockDialColor = colorToComposeColor(props.color.value).copy(alpha = 0.3f)
+      selectorColor = colorToComposeColor(props.color),
+      timeSelectorSelectedContainerColor = colorToComposeColor(props.color),
+      clockDialColor = colorToComposeColor(props.color).copy(alpha = 0.3f)
     )
   )
 }

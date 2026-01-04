@@ -1,22 +1,17 @@
 package expo.modules.ui
 
-import android.content.Context
 import android.graphics.Color
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.viewevent.getValue
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.ExpoViewComposableScope
 
 class SliderColors : Record {
   @Field
@@ -36,42 +31,36 @@ class SliderColors : Record {
 }
 
 data class SliderProps(
-  val value: MutableState<Float> = mutableFloatStateOf(0.0f),
-  val min: MutableState<Float> = mutableFloatStateOf(0.0f),
-  val max: MutableState<Float> = mutableFloatStateOf(1.0f),
-  val steps: MutableState<Int> = mutableIntStateOf(0),
-  val elementColors: MutableState<SliderColors> = mutableStateOf(SliderColors()),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+  val value: Float = 0.0f,
+  val min: Float = 0.0f,
+  val max: Float = 1.0f,
+  val steps: Int = 0,
+  val elementColors: SliderColors = SliderColors(),
+  val modifiers: List<ModifierConfig> = emptyList()
 ) : ComposeProps
 
-class SliderView(context: Context, appContext: AppContext) :
-  ExpoComposeView<SliderProps>(context, appContext) {
-  override val props = SliderProps()
-  private val onValueChanged by EventDispatcher()
+data class SliderValueChangedEvent(
+  @Field val value: Float
+) : Record
 
-  @Composable
-  override fun ComposableScope.Content() {
-    val (value) = props.value
-    val (min) = props.min
-    val (max) = props.max
-    val (steps) = props.steps
-    val (colors) = props.elementColors
-
-    Slider(
-      value = value.coerceAtLeast(min).coerceAtMost(max),
-      valueRange = min..max,
-      steps = steps,
-      onValueChange = {
-        onValueChanged(mapOf("value" to it))
-      },
-      colors = SliderDefaults.colors(
-        thumbColor = colors.thumbColor.compose,
-        activeTrackColor = colors.activeTrackColor.compose,
-        inactiveTrackColor = colors.inactiveTrackColor.compose,
-        activeTickColor = colors.activeTickColor.compose,
-        inactiveTickColor = colors.inactiveTickColor.compose
-      ),
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
-    )
-  }
+@Composable
+fun ExpoViewComposableScope.SliderContent(props: SliderProps) {
+  val onValueChanged by remember { this@SliderContent.EventDispatcher<SliderValueChangedEvent>() }
+  val colors = props.elementColors
+  Slider(
+    value = props.value.coerceAtLeast(props.min).coerceAtMost(props.max),
+    valueRange = props.min..props.max,
+    steps = props.steps,
+    onValueChange = {
+      onValueChanged(SliderValueChangedEvent(it))
+    },
+    colors = SliderDefaults.colors(
+      thumbColor = colors.thumbColor.compose,
+      activeTrackColor = colors.activeTrackColor.compose,
+      inactiveTrackColor = colors.inactiveTrackColor.compose,
+      activeTickColor = colors.activeTickColor.compose,
+      inactiveTickColor = colors.inactiveTickColor.compose
+    ),
+    modifier = ModifierRegistry.applyModifiers(props.modifiers)
+  )
 }
