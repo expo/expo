@@ -45,6 +45,7 @@ const href_1 = require("./href");
 const LinkPreviewContext_1 = require("./preview/LinkPreviewContext");
 const native_1 = require("./preview/native");
 const useNextScreenId_1 = require("./preview/useNextScreenId");
+const router_store_1 = require("../global-state/router-store");
 const children_1 = require("../utils/children");
 const url_1 = require("../utils/url");
 const isPad = react_native_1.Platform.OS === 'ios' && react_native_1.Platform.isPad;
@@ -96,6 +97,14 @@ function LinkWithPreview({ children, ...rest }) {
     if (rest.replace) {
         return <BaseExpoRouterLink_1.BaseExpoRouterLink children={children} {...rest}/>;
     }
+    const navigateUsingPreview = () => {
+        const info = router_store_1.store.getRouteInfo();
+        // If the href is the same and nextScreenId is not set, then we don't need to navigate
+        // The screen is already on top of the stack
+        if (hrefWithoutQuery !== info.pathname || nextScreenId) {
+            router.push(rest.href, { __internal__PreviewKey: nextScreenId });
+        }
+    };
     return (<native_1.NativeLinkPreview nextScreenId={isPad ? undefined : nextScreenId} tabPath={isPad ? undefined : tabPathValue} onWillPreviewOpen={() => {
             if (hasPreview) {
                 isPreviewTapped.current = false;
@@ -113,12 +122,12 @@ function LinkWithPreview({ children, ...rest }) {
             }
         }} onPreviewDidClose={() => {
             if (hasPreview && isPreviewTapped.current && isPad) {
-                router.navigate(rest.hrefForPreviewNavigation, { __internal__PreviewKey: nextScreenId });
+                navigateUsingPreview();
             }
         }} onPreviewTapped={() => {
             isPreviewTapped.current = true;
             if (!isPad) {
-                router.navigate(rest.hrefForPreviewNavigation, { __internal__PreviewKey: nextScreenId });
+                navigateUsingPreview();
             }
         }} style={{ display: 'contents' }} disableForceFlatten>
       <InternalLinkPreviewContext_1.InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.hrefForPreviewNavigation }}>
