@@ -60,3 +60,5 @@ export async function publishProjectWithEasCliAsync(
   const publishedUpdates = JSON.parse(publishedUpdatesJSONString);
   return { createdUpdateGroupId: publishedUpdates[0].group };
 }
+const eas update
+eas start run
