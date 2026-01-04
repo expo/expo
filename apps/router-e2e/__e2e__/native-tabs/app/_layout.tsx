@@ -1,10 +1,9 @@
-import MIcons from '@expo/vector-icons/MaterialIcons';
-import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { VectorIcon } from 'expo-router';
+import { ThemeProvider } from '@react-navigation/native';
+import { usePlatformTheme } from 'expo-router';
 import { enableZoomTransition } from 'expo-router/internal/utils';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
-import { Appearance, Platform, useColorScheme } from 'react-native';
+import { Appearance, Platform } from 'react-native';
 
 import { MiniPlayer } from '../components/mini-player';
 
@@ -15,10 +14,10 @@ if (process.env.EXPO_OS !== 'web') {
 enableZoomTransition();
 
 export default function Layout() {
+  const theme = usePlatformTheme();
   const [isPlaying, setIsPlaying] = useState(false);
-  const scheme = useColorScheme();
   return (
-    <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={theme}>
       <NativeTabs>
         <NativeTabs.Trigger name="index">
           <NativeTabs.Trigger.Label>Index label</NativeTabs.Trigger.Label>
