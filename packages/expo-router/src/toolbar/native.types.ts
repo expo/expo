@@ -12,7 +12,7 @@ export interface RouterToolbarItemProps {
   identifier: string;
   title?: string;
   systemImageName?: SFSymbol;
-  type?: 'normal' | 'fixedSpacer' | 'fluidSpacer';
+  type?: 'normal' | 'fixedSpacer' | 'fluidSpacer' | 'searchBar';
   tintColor?: ColorValue;
   hidesSharedBackground?: boolean;
   sharesBackground?: boolean;

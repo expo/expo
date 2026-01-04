@@ -18,14 +18,7 @@ export default function Modal() {
         backgroundColor: '#fff',
         gap: 8,
       }}>
-      <Stack.Screen>
-        <Stack.Header>
-          <Stack.Header.SearchBar
-            ref={searchBarRef}
-            onChangeText={(e) => setSearchText(e.nativeEvent.text)}
-          />
-        </Stack.Header>
-      </Stack.Screen>
+      <Stack.SearchBar ref={searchBarRef} onChangeText={(e) => setSearchText(e.nativeEvent.text)} />
       <Text>Modal Search Text: {searchText}</Text>
       <Button title="Clear Search" onPress={() => searchBarRef.current?.setText('')} />
       <Button title="Cancel Search" onPress={() => searchBarRef.current?.cancelSearch()} />

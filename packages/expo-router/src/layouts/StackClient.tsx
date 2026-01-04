@@ -35,6 +35,7 @@ import {
   type StackScreenProps,
   StackHeader,
   StackScreen,
+  StackSearchBar,
   appendScreenStackPropsToOptions,
 } from './stack-utils';
 import { isChildOfType } from '../utils/children';
@@ -620,6 +621,7 @@ const Stack = Object.assign(
     Screen: StackScreen,
     Protected,
     Header: StackHeader,
+    SearchBar: StackSearchBar,
   }
 );
 

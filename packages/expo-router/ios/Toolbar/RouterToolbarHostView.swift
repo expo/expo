@@ -155,7 +155,7 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
     updateToolbarItems()
   }
 
-  private func findViewController() -> RNSScreen? {
+  func findViewController() -> RNSScreen? {
     var responder: UIResponder? = self
     while let r = responder {
       if let r = r as? RNSScreen {

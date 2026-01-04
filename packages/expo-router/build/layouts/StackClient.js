@@ -474,6 +474,7 @@ const Stack = Object.assign((props) => {
     Screen: stack_utils_1.StackScreen,
     Protected: Protected_1.Protected,
     Header: stack_utils_1.StackHeader,
+    SearchBar: stack_utils_1.StackSearchBar,
 });
 function disableAnimationInScreenOptions(options, condition) {
     if (options && typeof options === 'function') {
