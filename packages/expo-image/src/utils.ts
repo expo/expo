@@ -18,10 +18,12 @@ let loggedFadeDurationDeprecationWarning = false;
 /**
  * If the `contentFit` is not provided, it's resolved from the equivalent `resizeMode` prop
  * that we support to provide compatibility with React Native Image.
+ * For SF Symbols, the default is 'contain' instead of 'cover'.
  */
 export function resolveContentFit(
   contentFit?: ImageContentFit,
-  resizeMode?: ImageResizeMode
+  resizeMode?: ImageResizeMode,
+  isSFSymbol?: boolean
 ): ImageContentFit {
   if (contentFit) {
     return contentFit;
@@ -53,7 +55,8 @@ export function resolveContentFit(
       }
     }
   }
-  return 'cover';
+  // SF Symbols default to 'contain' to preserve aspect ratio
+  return isSFSymbol ? 'contain' : 'cover';
 }
 
 /**
