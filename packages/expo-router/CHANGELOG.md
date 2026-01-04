@@ -56,6 +56,7 @@
 - [ios] fix zoom transition with custom params in href ([#41508](https://github.com/expo/expo/pull/41508) by [@Ubax](https://github.com/Ubax))
 - [ios] fix zoom transition issues with external links and preview ([#41507](https://github.com/expo/expo/pull/41507) by [@Ubax](https://github.com/Ubax))
 - fix PlatformColor not available when using Color on web ([#41801](https://github.com/expo/expo/pull/41801) by [@Ubax](https://github.com/Ubax))
+- add replace action handling to headless tabs ([#41815](https://github.com/expo/expo/pull/41815) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
