@@ -47,6 +47,7 @@ type Options = {
   clear: boolean;
   routerRoot: string;
   reactCompiler: boolean;
+  css?: boolean;
   maxWorkers?: number;
   isExporting: boolean;
   exp?: ExpoConfig;
