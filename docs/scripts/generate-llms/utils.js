@@ -141,10 +141,8 @@ export function cleanContent(content) {
     }
 
     let processed = part
-      .replace(
-        /<EasJsonPropertiesTable\s+schema={(\w+)}\s*\/>/g,
-        (_match, schemaName) =>
-          replaceEasJsonPropertiesTable(schemaName, easSchemaImports, easSchemaTableCache)
+      .replace(/<EasJsonPropertiesTable\s+schema={(\w+)}\s*\/>/g, (_match, schemaName) =>
+        replaceEasJsonPropertiesTable(schemaName, easSchemaImports, easSchemaTableCache)
       )
       .replace(/<RedirectNotification[^>]*>[\S\s]*?<\/RedirectNotification>/g, '')
       .replace(/\/\*\s*@(?:info|hide)\s*\*\/(?:(?!\/\*\s*@end)[\S\s])*\/\*\s*@end\s*\*\//g, '')
@@ -347,7 +345,7 @@ function formatEasJsonPropertyDescription(property) {
 
   const description = Array.isArray(property.description)
     ? property.description.filter(Boolean).join(' ')
-    : property.description ?? '';
+    : (property.description ?? '');
 
   if (description) {
     parts.push(description);
