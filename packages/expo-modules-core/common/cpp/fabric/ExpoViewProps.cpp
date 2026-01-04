@@ -11,13 +11,16 @@ namespace expo {
 /**
  Borrows the props map from the source props and applies the update given in the raw props.
  */
-std::unordered_map<std::string, folly::dynamic> propsMapFromProps(const ExpoViewProps &sourceProps, const react::RawProps &rawProps) {
+std::unordered_map<std::string, folly::dynamic> propsMapFromProps(
+  const ExpoViewProps &sourceProps,
+  const react::RawProps &rawProps
+) {
   std::unordered_map<std::string, folly::dynamic> propsMap = sourceProps.propsMap;
 
   // Iterate over values in the raw props object.
   // Note that it contains only updated props.
-  const auto& dynamicRawProps = static_cast<folly::dynamic>(rawProps);
-  for (const auto& propsPair : dynamicRawProps.items()) {
+  const auto &dynamicRawProps = static_cast<folly::dynamic>(rawProps);
+  for (const auto &propsPair: dynamicRawProps.items()) {
     const auto &propName = propsPair.first.getString();
     propsMap[propName] = static_cast<folly::dynamic>(propsPair.second);
   }
@@ -25,10 +28,12 @@ std::unordered_map<std::string, folly::dynamic> propsMapFromProps(const ExpoView
   return propsMap;
 }
 
-ExpoViewProps::ExpoViewProps(const react::PropsParserContext &context,
-                             const ExpoViewProps &sourceProps,
-                             const react::RawProps &rawProps)
-                             : react::ViewProps(context, sourceProps, rawProps),
-                               propsMap(propsMapFromProps(sourceProps, rawProps)) {}
+ExpoViewProps::ExpoViewProps(
+  const react::PropsParserContext &context,
+  const ExpoViewProps &sourceProps,
+  const react::RawProps &rawProps,
+  const std::function<bool(const std::string &)> &filterObjectKeys
+) : react::ViewProps(context, sourceProps, rawProps, filterObjectKeys),
+    propsMap(propsMapFromProps(sourceProps, rawProps)) {}
 
 } // namespace expo

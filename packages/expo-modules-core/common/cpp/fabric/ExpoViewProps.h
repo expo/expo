@@ -13,9 +13,13 @@ namespace expo {
 class ExpoViewProps : public facebook::react::ViewProps {
 public:
   ExpoViewProps() = default;
-  ExpoViewProps(const facebook::react::PropsParserContext &context,
-                const ExpoViewProps &sourceProps,
-                const facebook::react::RawProps &rawProps);
+
+  ExpoViewProps(
+    const facebook::react::PropsParserContext &context,
+    const ExpoViewProps &sourceProps,
+    const facebook::react::RawProps &rawProps,
+    const std::function<bool(const std::string &)> &filterObjectKeys = nullptr
+  );
 
 #pragma mark - Props
 
