@@ -252,7 +252,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
   /**
    Provides an event emitter that is compatible with the legacy interface.
    */
-  public var eventEmitter: EXEventEmitterService? {
+  public var eventEmitter: LegacyEventEmitterCompat? {
     return LegacyEventEmitterCompat(appContext: self)
   }
 

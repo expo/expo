@@ -50,8 +50,6 @@
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXAppLifecycleListener.h>
 #import <ExpoModulesCore/EXAppLifecycleService.h>
-#import <ExpoModulesCore/EXEventEmitter.h>
-#import <ExpoModulesCore/EXEventEmitterService.h>
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXJavaScriptContextProvider.h>
 #import <ExpoModulesCore/EXLogHandler.h>
@@ -61,7 +59,6 @@
 #import <ExpoModulesCore/EXLogManager.h>
 #import <ExpoModulesCore/EXReactLogHandler.h>
 #import <ExpoModulesCore/EXReactNativeAdapter.h>
-#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
 #import <ExpoModulesCore/EXPermissionsService.h>
 #import <ExpoModulesCore/EXReactNativeUserNotificationCenterProxy.h>
 #import <ExpoModulesCore/Platform.h>
