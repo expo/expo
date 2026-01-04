@@ -106,9 +106,14 @@ function withExpoLocalizationAndroid(config, data) {
 function withExpoLocalization(config, data = {
     allowDynamicLocaleChangesAndroid: true,
 }) {
+    // Ensure allowDynamicLocaleChangesAndroid defaults to true even when other options are passed
+    const normalizedData = {
+        allowDynamicLocaleChangesAndroid: true,
+        ...data,
+    };
     return (0, config_plugins_1.withPlugins)(config, [
-        [withExpoLocalizationIos, data],
-        [withExpoLocalizationAndroid, data],
+        [withExpoLocalizationIos, normalizedData],
+        [withExpoLocalizationAndroid, normalizedData],
     ]);
 }
 exports.default = withExpoLocalization;
