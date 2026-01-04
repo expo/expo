@@ -10,7 +10,7 @@ import ReactAppDependencyProvider
 import GoogleMaps
 #endif
 // @generated end react-native-maps-import
-@UIApplicationMain
+@main
 public class AppDelegate: ExpoAppDelegate {
   var window: UIWindow?
 
@@ -83,7 +83,7 @@ exports[`addGoogleMapsAppDelegateInit adds maps import to AppDelegate 1`] = `
 import React
 import ReactAppDependencyProvider
 
-@UIApplicationMain
+@main
 public class AppDelegate: ExpoAppDelegate {
   var window: UIWindow?
 
@@ -161,7 +161,7 @@ exports[`addGoogleMapsAppDelegateInit adds maps import to AppDelegate 2`] = `
 import React
 import ReactAppDependencyProvider
 
-@UIApplicationMain
+@main
 public class AppDelegate: ExpoAppDelegate {
   var window: UIWindow?
 
