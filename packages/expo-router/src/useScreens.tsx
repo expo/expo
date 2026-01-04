@@ -310,8 +310,8 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         {value.type === 'route' && unstable_navigationEvents.hasAnyListener() && (
           <AnalyticsListeners navigation={navigation} screenId={route.key} />
         )}
-        <ZoomTransitionEnabler route={route} />
         <ZoomTransitionTargetContextProvider route={route}>
+          <ZoomTransitionEnabler route={route} />
           <React.Suspense fallback={<SuspenseFallback route={value} />}>
             <ScreenComponent
               {...props}

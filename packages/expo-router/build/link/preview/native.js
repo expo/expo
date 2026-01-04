@@ -46,8 +46,6 @@ function NativeLinkPreviewContent(props) {
     ]);
     return <NativeLinkPreviewContentView {...props} style={style}/>;
 }
-// #endregion
-// #region Zoom transition enabler
 const LinkZoomTransitionEnablerNativeView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionEnabler')
     : null;

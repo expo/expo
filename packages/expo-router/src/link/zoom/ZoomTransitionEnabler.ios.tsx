@@ -1,7 +1,7 @@
 import { use } from 'react';
 
 import type { ZoomTransitionEnablerProps } from './ZoomTransitionEnabler.types';
-import { DescriptorsContext } from '../../fork/native-stack/descriptors-context';
+import { ZoomTransitionTargetContext } from './zoom-transition-context';
 import {
   getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
@@ -47,13 +47,14 @@ export function ZoomTransitionEnabler({ route }: ZoomTransitionEnablerProps) {
     const hasZoomTransition =
       !!zoomTransitionId && zoomTransitionScreenId === route.key && !isLinkPreviewNavigation;
     if (hasZoomTransition && typeof zoomTransitionId === 'string') {
-      const descriptorsMap = use(DescriptorsContext);
-      const currentDescriptor = descriptorsMap[route.key];
-      const preventInteractiveDismissal = currentDescriptor?.options?.gestureEnabled === false;
+      // Read dismissalBoundsRect from context
+      const targetContext = use(ZoomTransitionTargetContext);
+      const dismissalBoundsRect = targetContext.dismissalBoundsRect;
+
       return (
         <LinkZoomTransitionEnabler
           zoomTransitionSourceIdentifier={zoomTransitionId}
-          preventInteractiveDismissal={preventInteractiveDismissal}
+          dismissalBoundsRect={dismissalBoundsRect}
         />
       );
     }

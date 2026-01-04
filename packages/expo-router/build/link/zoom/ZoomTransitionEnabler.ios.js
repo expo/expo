@@ -4,7 +4,7 @@ exports.enableZoomTransition = enableZoomTransition;
 exports.isZoomTransitionEnabled = isZoomTransitionEnabled;
 exports.ZoomTransitionEnabler = ZoomTransitionEnabler;
 const react_1 = require("react");
-const descriptors_context_1 = require("../../fork/native-stack/descriptors-context");
+const zoom_transition_context_1 = require("./zoom-transition-context");
 const navigationParams_1 = require("../../navigationParams");
 const PreviewRouteContext_1 = require("../preview/PreviewRouteContext");
 const native_1 = require("../preview/native");
@@ -35,10 +35,10 @@ function ZoomTransitionEnabler({ route }) {
         const isLinkPreviewNavigation = !!internalParams[navigationParams_1.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME];
         const hasZoomTransition = !!zoomTransitionId && zoomTransitionScreenId === route.key && !isLinkPreviewNavigation;
         if (hasZoomTransition && typeof zoomTransitionId === 'string') {
-            const descriptorsMap = (0, react_1.use)(descriptors_context_1.DescriptorsContext);
-            const currentDescriptor = descriptorsMap[route.key];
-            const preventInteractiveDismissal = currentDescriptor?.options?.gestureEnabled === false;
-            return (<native_1.LinkZoomTransitionEnabler zoomTransitionSourceIdentifier={zoomTransitionId} preventInteractiveDismissal={preventInteractiveDismissal}/>);
+            // Read dismissalBoundsRect from context
+            const targetContext = (0, react_1.use)(zoom_transition_context_1.ZoomTransitionTargetContext);
+            const dismissalBoundsRect = targetContext.dismissalBoundsRect;
+            return (<native_1.LinkZoomTransitionEnabler zoomTransitionSourceIdentifier={zoomTransitionId} dismissalBoundsRect={dismissalBoundsRect}/>);
         }
     }
     return null;
