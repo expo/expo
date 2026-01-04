@@ -317,6 +317,15 @@ export type GoogleMapsMapOptions = {
     mapId?: string;
 };
 /**
+ * A bounding box defined by a center coordinate and latitude/longitude deltas.
+ * @platform android
+ */
+export type GoogleMapsBounds = {
+    center: Coordinates;
+    latitudeDelta: number;
+    longitudeDelta: number;
+};
+/**
  * @platform android
  */
 export type GoogleMapsViewProps = {
@@ -412,6 +421,7 @@ export type GoogleMapsViewProps = {
      */
     onCameraMove?: (event: {
         coordinates: Coordinates;
+        bounds: GoogleMapsBounds;
         zoom: number;
         tilt: number;
         bearing: number;
