@@ -225,14 +225,23 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
       }
 
       val position = cameraState.position
-      onCameraMove(
-        CameraMoveEvent(
-          Coordinates(position.target.latitude, position.target.longitude),
-          position.zoom,
-          position.tilt,
-          position.bearing
-        )
-      )
+      val bounds = cameraState.projection?.visibleRegion?.latLngBounds
+
+      if(bounds != null) {
+          onCameraMove(
+              CameraMoveEvent(
+                  Coordinates(position.target.latitude, position.target.longitude),
+                  Bounds(
+                      Coordinates(bounds.center.latitude, bounds.center.longitude),
+                      bounds.northeast.latitude - bounds.southwest.latitude,
+                      bounds.northeast.longitude - bounds.southwest.longitude
+                  ),
+                  position.zoom,
+                  position.tilt,
+                  position.bearing
+              )
+          )
+      }
     }
     return cameraState
   }

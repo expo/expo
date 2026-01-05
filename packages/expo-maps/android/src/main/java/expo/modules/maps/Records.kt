@@ -272,9 +272,23 @@ enum class MapColorSchemeEnum : Enumerable {
   }
 }
 
+data class Bounds (
+    @Field
+    val center: Coordinates,
+
+    @Field
+    val latitudeDelta: Double,
+
+    @Field
+    val longitudeDelta: Double,
+) : Record
+
 data class CameraMoveEvent(
   @Field
   val coordinates: Coordinates,
+
+  @Field
+  val bounds: Bounds,
 
   @Field
   val zoom: Float,
