@@ -73,25 +73,32 @@ export const Terminal = ({
   const { availableManagers, activeManager, activeCmd, shouldShowPackageTabs, setActiveManager } =
     usePackageManagerState(packageManagers, fallbackCmd);
   const isMobileView = useIsMobileView();
+  const packageManagerSlot = shouldShowPackageTabs ? (
+    isMobileView ? (
+      <PackageSelect
+        managers={availableManagers}
+        activeManager={activeManager}
+        onSelect={setActiveManager}
+        className="ml-4"
+      />
+    ) : (
+      <PackageTabs
+        managers={availableManagers}
+        activeManager={activeManager}
+        onSelect={setActiveManager}
+        className="ml-6"
+      />
+    )
+  ) : null;
 
   return (
     <Snippet className={mergeClasses('terminal-snippet [li_&]:mt-4', className)}>
-      <SnippetHeader alwaysDark title={title} Icon={TerminalSquareIcon}>
+      <SnippetHeader
+        alwaysDark
+        title={title}
+        titleSlot={packageManagerSlot}
+        Icon={TerminalSquareIcon}>
         <div className="flex items-center gap-2">
-          {shouldShowPackageTabs &&
-            (isMobileView ? (
-              <PackageSelect
-                managers={availableManagers}
-                activeManager={activeManager}
-                onSelect={setActiveManager}
-              />
-            ) : (
-              <PackageTabs
-                managers={availableManagers}
-                activeManager={activeManager}
-                onSelect={setActiveManager}
-              />
-            ))}
           {browserAction && <BrowserAction {...browserAction} />}
           <CopyButton cmd={activeCmd} cmdCopy={cmdCopy} />
         </div>
@@ -183,10 +190,10 @@ function usePackageManagerState(
  * @returns
  */
 const PackageTabs = ({ managers, activeManager, onSelect, className }: PackageTabsProps) => (
-  <div
+  <span
     role="tablist"
     aria-label="Package managers"
-    className={mergeClasses('flex items-center gap-1 whitespace-nowrap', className)}>
+    className={mergeClasses('inline-flex items-center gap-1 whitespace-nowrap', className)}>
     {managers.map(manager => {
       const isActive = manager === activeManager;
       return (
@@ -208,7 +215,7 @@ const PackageTabs = ({ managers, activeManager, onSelect, className }: PackageTa
         </button>
       );
     })}
-  </div>
+  </span>
 );
 
 const PackageSelect = ({ managers, activeManager, onSelect, className }: PackageTabsProps) => (
