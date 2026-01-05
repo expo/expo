@@ -6,7 +6,7 @@ exports.usePreventZoomTransitionDismissal = usePreventZoomTransitionDismissal;
  * Limits the screen area where interactive dismissal gestures are allowed for zoom transitions.
  *
  * This hook must be called from the destination screen of a zoom transition (the screen you navigate to, not the source).
- * It restricts where users can start swipe gestures to dismiss the screen and return to the previous screen.
+ * It restricts where app users can start swipe gestures to dismiss the screen and return to the previous screen.
  *
  * When a dismissal gesture starts inside the bounds, the screen can be dismissed. When a dismissal gesture starts outside
  * the bounds, dismissal is blocked completely. Undefined coordinates place no restriction on that dimension.
@@ -17,7 +17,8 @@ exports.usePreventZoomTransitionDismissal = usePreventZoomTransitionDismissal;
  * ```tsx
  * // In your destination screen (e.g., app/image.tsx)
  * import { usePreventZoomTransitionDismissal } from 'expo-router';
- * import { useWindowDimensions, Image } from 'react-native';
+ * import { useWindowDimensions } from 'react-native';
+ * import { Image } from 'expo-image';
  *
  * export default function ImageScreen() {
  *   const dimensions = useWindowDimensions();

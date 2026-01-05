@@ -12,8 +12,8 @@ export declare const INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME =
  */
 export declare const INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME = "internal_gestureEnabled";
 /**
- * Internal navigation options that Expo Router uses to control React Navigation behavior
- * without exposing these options to end users or affecting user-defined options.
+ * Internal navigation options that Expo Router uses to control React Navigation behavior,
+ * which are not available to developers directly and do not change user-defined options.
  */
 export interface InternalNavigationOptions {
     /**
