@@ -9,7 +9,7 @@ private let EXECUTE_TASK_EVENT_NAME = "TaskManager.executeTask"
 
 public final class TaskManagerModule: Module, EXTaskManagerInterface {
   let appId: AppId = "mainApplication"
-  var eventsQueue = [[String: Any]]()
+  var eventsQueue: [[String: Any]]? = []
 
   public func definition() -> ModuleDefinition {
     Name("ExpoTaskManager")
@@ -27,10 +27,13 @@ public final class TaskManagerModule: Module, EXTaskManagerInterface {
     OnStartObserving(EXECUTE_TASK_EVENT_NAME) {
       // When `OnStartObserving` is called, the app is ready to execute new tasks.
       // It sends all events that were queued before this call.
-      for eventBody in eventsQueue {
-        self.sendEvent(EXECUTE_TASK_EVENT_NAME, eventBody)
+      if let eventsQueue {
+        for eventBody in eventsQueue {
+          sendEvent(EXECUTE_TASK_EVENT_NAME, eventBody)
+        }
       }
-      eventsQueue.removeAll()
+      // We will not need the queue anymore.
+      eventsQueue = nil
     }
 
     AsyncFunction("isAvailableAsync") {
@@ -88,10 +91,13 @@ public final class TaskManagerModule: Module, EXTaskManagerInterface {
   }
 
   public func execute(withBody body: [String: Any]) {
-    if eventsQueue.isEmpty {
-      sendEvent(EXECUTE_TASK_EVENT_NAME, body)
-    } else {
+    if var eventsQueue {
+      // The module was created, but JS is not listening for events yet.
+      // In that case we need to queue them up.
       eventsQueue.append(body)
+    } else {
+      // JS is already listening to the event, we can emit it straight away.
+      sendEvent(EXECUTE_TASK_EVENT_NAME, body)
     }
   }
 
