@@ -91,10 +91,10 @@ public final class TaskManagerModule: Module, EXTaskManagerInterface {
   }
 
   public func execute(withBody body: [String: Any]) {
-    if var eventsQueue {
+    if eventsQueue != nil {
       // The module was created, but JS is not listening for events yet.
       // In that case we need to queue them up.
-      eventsQueue.append(body)
+      eventsQueue?.append(body)
     } else {
       // JS is already listening to the event, we can emit it straight away.
       sendEvent(EXECUTE_TASK_EVENT_NAME, body)
