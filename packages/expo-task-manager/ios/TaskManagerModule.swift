@@ -5,26 +5,35 @@ import ExpoModulesCore
 public typealias AppId = String
 public typealias TaskName = String
 
+private let EXECUTE_TASK_EVENT_NAME = "TaskManager.executeTask"
+
 public final class TaskManagerModule: Module, EXTaskManagerInterface {
-  let appId: AppId = "main"
-  var eventsQueue = [[AnyHashable: Any]]()
+  let appId: AppId = "mainApplication"
+  var eventsQueue = [[String: Any]]()
 
   public func definition() -> ModuleDefinition {
     Name("ExpoTaskManager")
 
-    Events("TaskManager.executeTask")
+    Events(EXECUTE_TASK_EVENT_NAME)
 
     OnCreate {
       EXTaskService.shared.setTaskManager(self, forAppId: appId, withUrl: findAppUrl())
     }
 
     Constant("EVENT_NAME") {
-      return "TaskManager.executeTask"
+      return EXECUTE_TASK_EVENT_NAME
+    }
+
+    OnStartObserving(EXECUTE_TASK_EVENT_NAME) {
+      // When `OnStartObserving` is called, the app is ready to execute new tasks.
+      // It sends all events that were queued before this call.
+      for eventBody in eventsQueue {
+        self.sendEvent(EXECUTE_TASK_EVENT_NAME, eventBody)
+      }
+      eventsQueue.removeAll()
     }
 
     AsyncFunction("isAvailableAsync") {
-      // In the past it's been possible that the task service is not available.
-      // Should we deprecate it?
       return true
     }
 
@@ -78,25 +87,19 @@ public final class TaskManagerModule: Module, EXTaskManagerInterface {
     return EXTaskService.hasBackgroundModeEnabled(backgroundMode)
   }
 
-  public func execute(withBody body: [AnyHashable: Any]) {
+  public func execute(withBody body: [String: Any]) {
     if eventsQueue.isEmpty {
-      appContext?.eventEmitter?.sendEvent(withName: "TaskManager.executeTask", body: body)
+      sendEvent(EXECUTE_TASK_EVENT_NAME, body)
     } else {
       eventsQueue.append(body)
     }
   }
 
   public func isRunningInHeadlessMode() -> Bool {
-    guard let isHeadless = appContext?.constants?.constants()["isHeadless"] as? Bool else {
-      return false
-    }
-    return isHeadless
+    return appContext?.constants?.constants()["isHeadless"] as? Bool ?? false
   }
 
   private func findAppUrl() -> String? {
-    guard let experienceUrl = appContext?.constants?.constants()["experienceUrl"] as? String else {
-      return nil
-    }
-    return experienceUrl
+    return appContext?.constants?.constants()["experienceUrl"] as? String
   }
 }
