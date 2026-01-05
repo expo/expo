@@ -18,7 +18,7 @@ type PackageManagerKey = 'npm' | 'yarn' | 'pnpm' | 'bun';
 type PackageManagerCommandSet = Partial<Record<PackageManagerKey, string[]>>;
 
 type TerminalProps = {
-  cmd: string[];
+  cmd: string[] | PackageManagerCommandSet;
   cmdCopy?: string;
   hideOverflow?: boolean;
   title?: string;
@@ -27,10 +27,12 @@ type TerminalProps = {
     href: string;
     label: string;
   };
-  packageManagers?: PackageManagerCommandSet;
 };
 
-type CopyButtonProps = Pick<TerminalProps, 'cmd' | 'cmdCopy'>;
+type CopyButtonProps = {
+  cmd: string[];
+  cmdCopy?: string;
+};
 
 type BrowserActionProps = NonNullable<TerminalProps['browserAction']>;
 
@@ -54,9 +56,9 @@ const STORAGE_KEY = 'expo-docs-terminal-package-manager';
 const PACKAGE_MANAGER_ORDER: PackageManagerKey[] = ['npm', 'yarn', 'pnpm', 'bun'];
 const PACKAGE_MANAGER_LABELS: Record<PackageManagerKey, string> = {
   npm: 'npm',
-  yarn: 'Yarn',
+  yarn: 'yarn',
   pnpm: 'pnpm',
-  bun: 'Bun',
+  bun: 'bun',
 };
 
 export const Terminal = ({
@@ -66,10 +68,10 @@ export const Terminal = ({
   className,
   title = 'Terminal',
   browserAction,
-  packageManagers,
 }: TerminalProps) => {
+  const [fallbackCmd, packageManagers] = Array.isArray(cmd) ? [cmd, undefined] : [[], cmd];
   const { availableManagers, activeManager, activeCmd, shouldShowPackageTabs, setActiveManager } =
-    usePackageManagerState(packageManagers, cmd);
+    usePackageManagerState(packageManagers, fallbackCmd);
   const isMobileView = useIsMobileView();
 
   return (
@@ -105,7 +107,7 @@ export const Terminal = ({
  * This method attempts to naively generate the basic cmdCopy from the given cmd list.
  * Currently, the implementation is simple, but we can add multiline support in the future.
  */
-function getDefaultCmdCopy(cmd: TerminalProps['cmd']) {
+function getDefaultCmdCopy(cmd: string[]) {
   const validLines = cmd.filter(line => !line.startsWith('#') && line !== '');
   if (validLines.length === 1) {
     return validLines[0].startsWith('$') ? validLines[0].slice(2) : validLines[0];
@@ -197,7 +199,7 @@ const PackageTabs = ({ managers, activeManager, onSelect, className }: PackageTa
             'rounded-md px-2 py-1 text-xs font-semibold transition-colors',
             isActive
               ? 'bg-palette-gray6 text-palette-white'
-              : 'text-palette-gray9 hover:text-palette-white focus-visible:text-palette-white'
+              : 'text-palette-gray9 hocus:bg-palette-gray5'
           )}
           onClick={() => {
             onSelect(manager);
