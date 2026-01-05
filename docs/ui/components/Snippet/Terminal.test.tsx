@@ -64,13 +64,12 @@ describe(Terminal, () => {
     render(
       <>
         <Terminal
-          packageManagers={{
+          cmd={{
             npm: ['$ npm install expo'],
             yarn: ['$ yarn add expo'],
             pnpm: ['$ pnpm add expo'],
             bun: ['$ bun add expo'],
           }}
-          cmd={['$ npm install fallback']}
         />
         <textarea />
       </>
