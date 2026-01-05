@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Add ref prop type to `GlassContainer` and `GlassView` components ([#41799](https://github.com/expo/expo/pull/41799) by [@pchalupa](https://github.com/pchalupa))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features

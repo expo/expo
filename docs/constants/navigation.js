@@ -403,6 +403,7 @@ export const eas = [
     [
       makePage('eas/index.mdx'),
       makePage('eas/json.mdx'),
+      makePage('eas/cli.mdx'),
       makePage('eas/environment-variables.mdx'),
     ],
     {

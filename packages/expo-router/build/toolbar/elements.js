@@ -24,7 +24,7 @@ const children_1 = require("../utils/children");
  *
  * @platform ios
  */
-const ToolbarMenu = ({ accessibilityHint, accessibilityLabel, separateBackground, hidesSharedBackground, palette, inline, hidden, title, destructive, children, icon, tintColor, variant, style, }) => {
+const ToolbarMenu = ({ accessibilityHint, accessibilityLabel, separateBackground, hidesSharedBackground, palette, inline, hidden, subtitle, title, destructive, children, icon, tintColor, variant, style, elementSize, }) => {
     const identifier = (0, react_1.useId)();
     const validChildren = react_1.Children.toArray(children).filter((child) => (0, react_1.isValidElement)(child) && (child.type === exports.ToolbarMenuAction || child.type === exports.ToolbarMenu));
     const label = (0, children_1.getFirstChildOfType)(children, primitives_1.Label);
@@ -34,7 +34,7 @@ const ToolbarMenu = ({ accessibilityHint, accessibilityLabel, separateBackground
         (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
     const sf = typeof computedIcon === 'string' ? computedIcon : undefined;
     const titleStyle = react_native_1.StyleSheet.flatten(style);
-    return (<native_2.NativeLinkPreviewAction sharesBackground={!separateBackground} hidesSharedBackground={hidesSharedBackground} hidden={hidden} icon={sf} destructive={destructive} accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint} displayAsPalette={palette} displayInline={inline} tintColor={tintColor} titleStyle={titleStyle} barButtonItemStyle={variant === 'done' ? 'prominent' : variant} title={computedTitle} onSelected={() => { }} children={validChildren} identifier={identifier}/>);
+    return (<native_2.NativeLinkPreviewAction sharesBackground={!separateBackground} hidesSharedBackground={hidesSharedBackground} hidden={hidden} icon={sf} destructive={destructive} subtitle={subtitle} accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint} displayAsPalette={palette} displayInline={inline} preferredElementSize={elementSize} tintColor={tintColor} titleStyle={titleStyle} barButtonItemStyle={variant === 'done' ? 'prominent' : variant} title={computedTitle} onSelected={() => { }} children={validChildren} identifier={identifier}/>);
 };
 exports.ToolbarMenu = ToolbarMenu;
 /**
@@ -127,8 +127,8 @@ exports.ToolbarSpacer = ToolbarSpacer;
  *       placeholderTextColor={Color.ios.placeholderText}
  *     />
  *   </Toolbar.View>
- *   <Toolbar.View separateBackground style={{ width: 32, height: 32 }}>
- *     <Pressable onPress={handlePress}>
+ *   <Toolbar.View separateBackground>
+ *     <Pressable style={{ width: 32, height: 32 }} onPress={handlePress}>
  *       <SymbolView name="plus" size={22} />
  *     </Pressable>
  *   </Toolbar.View>

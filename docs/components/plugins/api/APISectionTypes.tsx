@@ -26,6 +26,7 @@ import {
   getCommentContent,
   listParams,
   defineLiteralType,
+  LITERAL_UNION_COLLAPSE_THRESHOLD,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { APIDataType } from './components/APIDataType';
@@ -38,6 +39,8 @@ export type APISectionTypesProps = {
   data: TypeGeneralData[];
   sdkVersion: string;
 };
+
+const COLLAPSED_LITERAL_MESSAGE = 'Acceptable values are: See description for available values.';
 
 const renderTypeDeclarationTable = (
   { children, indexSignature, comment }: TypeDeclarationContentData,
@@ -269,6 +272,7 @@ const renderType = (
         </div>
       );
     } else if (literalTypes.length > 0) {
+      const shouldCollapseLiteralTypes = literalTypes.length > LITERAL_UNION_COLLAPSE_THRESHOLD;
       const acceptedLiteralTypes = defineLiteralType(literalTypes);
       return (
         <div key={`type-definition-${name}`} className={STYLES_APIBOX}>
@@ -280,15 +284,21 @@ const renderType = (
           </CALLOUT>
           <APICommentTextBlock comment={comment} includePlatforms={false} />
           <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
-            Acceptable values are:{' '}
-            {literalTypes.map((lt, index) => (
-              <Fragment key={`${name}-literal-type-${index}`}>
-                <CODE className="mb-px">{resolveTypeName(lt, sdkVersion)}</CODE>
-                {index + 1 !== literalTypes.length ? (
-                  <span className="text-quaternary"> | </span>
-                ) : null}
-              </Fragment>
-            ))}
+            {shouldCollapseLiteralTypes ? (
+              <>{COLLAPSED_LITERAL_MESSAGE}</>
+            ) : (
+              <>
+                Acceptable values are:{' '}
+                {literalTypes.map((lt, index) => (
+                  <Fragment key={`${name}-literal-type-${index}`}>
+                    <CODE className="mb-px">{resolveTypeName(lt, sdkVersion)}</CODE>
+                    {index + 1 !== literalTypes.length ? (
+                      <span className="text-quaternary"> | </span>
+                    ) : null}
+                  </Fragment>
+                ))}
+              </>
+            )}
           </CALLOUT>
         </div>
       );

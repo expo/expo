@@ -2,150 +2,34 @@ import ExpoModulesCore
 
 class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
   var identifier: String = ""
-  // TODO(@ubax): Add @ReactiveProp similar to RouterToolbar to reduce repetition
   // MARK: - Shared props
-  var title: String = "" {
-    didSet {
-      updateUiAction()
-      if isMenuAction {
-        updateMenu()
-      }
-    }
-  }
-  var icon: String? {
-    didSet {
-      updateUiAction()
-      if isMenuAction {
-        updateMenu()
-      }
-    }
-  }
-  var destructive: Bool? {
-    didSet {
-      updateUiAction()
-      if isMenuAction {
-        updateMenu()
-      }
-    }
-  }
-  var disabled: Bool = false {
-    didSet {
-      updateUiAction()
-      if isMenuAction {
-        updateMenu()
-      }
-    }
-  }
+  @NativeActionProp(updateAction: true, updateMenu: true) var title: String = ""
+  @NativeActionProp(updateAction: true, updateMenu: true) var icon: String?
+  @NativeActionProp(updateAction: true, updateMenu: true) var destructive: Bool?
+  @NativeActionProp(updateAction: true, updateMenu: true) var disabled: Bool = false
 
   // MARK: - Action only props
-  var isOn: Bool? {
-    didSet {
-      updateUiAction()
-    }
-  }
-  var keepPresented: Bool? {
-    didSet {
-      updateUiAction()
-    }
-  }
-  var discoverabilityLabel: String? {
-    didSet {
-      updateUiAction()
-    }
-  }
-  var subtitle: String? {
-    didSet {
-      updateUiAction()
-    }
-  }
+  @NativeActionProp(updateAction: true) var isOn: Bool?
+  @NativeActionProp(updateAction: true) var keepPresented: Bool?
+  @NativeActionProp(updateAction: true) var discoverabilityLabel: String?
+  @NativeActionProp(updateAction: true, updateMenu: true) var subtitle: String?
 
   // MARK: - Menu only props
-  var singleSelection: Bool = false {
-    didSet {
-      if isMenuAction {
-        updateMenu()
-      }
-    }
-  }
-  var displayAsPalette: Bool = false {
-    didSet {
-      if isMenuAction {
-        updateMenu()
-      }
-    }
-  }
-  var displayInline: Bool = false {
-    didSet {
-      if isMenuAction {
-        updateMenu()
-      }
-    }
-  }
+  @NativeActionProp(updateMenu: true) var singleSelection: Bool = false
+  @NativeActionProp(updateMenu: true) var displayAsPalette: Bool = false
+  @NativeActionProp(updateMenu: true) var displayInline: Bool = false
+  @NativeActionProp(updateMenu: true) var preferredElementSize: MenuElementSize?
 
   // MARK: - UIBarButtonItem props
-  var routerHidden: Bool = false {
-    didSet {
-      updateUiAction()
-      if isMenuAction {
-        updateMenu()
-      }
-    }
-  }
-  var titleStyle: TitleStyle? {
-    didSet {
-      if isMenuAction {
-        updateMenu()
-      }
-    }
-  }
-  var sharesBackground: Bool? {
-    didSet {
-      if isMenuAction {
-        updateMenu()
-      }
-    }
-  }
-  var hidesSharedBackground: Bool? {
-    didSet {
-      if isMenuAction {
-        updateMenu()
-      }
-    }
-  }
-  var customTintColor: UIColor? {
-    didSet {
-      updateUiAction()
-      if isMenuAction {
-        updateMenu()
-      }
-    }
-  }
-  var barButtonItemStyle: UIBarButtonItem.Style? {
-    didSet {
-      if isMenuAction {
-        updateMenu()
-      }
-    }
-  }
-  var subActions: [LinkPreviewNativeActionView] = [] {
-    didSet {
-      updateMenu()
-    }
-  }
-  var accessibilityLabelForMenu: String? {
-    didSet {
-      if isMenuAction {
-        updateMenu()
-      }
-    }
-  }
-  var accessibilityHintForMenu: String? {
-    didSet {
-      if isMenuAction {
-        updateMenu()
-      }
-    }
-  }
+  @NativeActionProp(updateAction: true, updateMenu: true) var routerHidden: Bool = false
+  @NativeActionProp(updateMenu: true) var titleStyle: TitleStyle?
+  @NativeActionProp(updateMenu: true) var sharesBackground: Bool?
+  @NativeActionProp(updateMenu: true) var hidesSharedBackground: Bool?
+  @NativeActionProp(updateAction: true, updateMenu: true) var customTintColor: UIColor?
+  @NativeActionProp(updateMenu: true) var barButtonItemStyle: UIBarButtonItem.Style?
+  @NativeActionProp(updateMenu: true) var subActions: [LinkPreviewNativeActionView] = []
+  @NativeActionProp(updateMenu: true) var accessibilityLabelForMenu: String?
+  @NativeActionProp(updateMenu: true) var accessibilityHintForMenu: String?
 
   // MARK: - Events
   let onSelected = EventDispatcher()
@@ -199,10 +83,20 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
       children: subActions
     )
 
+    if let subtitle = subtitle {
+      menuAction.subtitle = subtitle
+    }
+
+    if #available(iOS 16.0, *) {
+      if let preferredElementSize = preferredElementSize {
+        menuAction.preferredElementSize = preferredElementSize.toUIMenuElementSize()
+      }
+    }
+
     parentMenuUpdatable?.updateMenu()
   }
 
-  private func updateUiAction() {
+  func updateUiAction() {
     var attributes: UIMenuElement.Attributes = []
     if destructive == true { attributes.insert(.destructive) }
     if disabled == true { attributes.insert(.disabled) }
@@ -248,6 +142,55 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
         "ExpoRouter: Unknown child component view (\(child)) unmounted from NativeLinkPreviewActionView. This is most likely a bug in expo-router."
       )
     }
+  }
+
+  @propertyWrapper
+  struct NativeActionProp<Value: Equatable> {
+    var value: Value
+    let updateAction: Bool
+    let updateMenu: Bool
+
+    init(wrappedValue: Value, updateAction: Bool = false, updateMenu: Bool = false) {
+      self.value = wrappedValue
+      self.updateAction = updateAction
+      self.updateMenu = updateMenu
+    }
+
+    static subscript<EnclosingSelf: LinkPreviewNativeActionView>(
+      _enclosingInstance instance: EnclosingSelf,
+      wrapped wrappedKeyPath: ReferenceWritableKeyPath<EnclosingSelf, Value>,
+      storage storageKeyPath: ReferenceWritableKeyPath<EnclosingSelf, NativeActionProp<Value>>
+    ) -> Value {
+      get {
+        instance[keyPath: storageKeyPath].value
+      }
+      set {
+        let oldValue = instance[keyPath: storageKeyPath].value
+        if oldValue != newValue {
+          instance[keyPath: storageKeyPath].value = newValue
+          if instance[keyPath: storageKeyPath].updateAction {
+            instance.updateUiAction()
+          }
+          if instance[keyPath: storageKeyPath].updateMenu {
+            instance.updateMenu()
+          }
+        }
+      }
+    }
+
+    var wrappedValue: Value {
+      get { value }
+      set { value = newValue }
+    }
+  }
+}
+
+// Needed to allow optional properties without default `= nil` to avoid repetition
+extension LinkPreviewNativeActionView.NativeActionProp where Value: ExpressibleByNilLiteral {
+  init(updateAction: Bool = false, updateMenu: Bool = false) {
+    self.value = nil
+    self.updateAction = updateAction
+    self.updateMenu = updateMenu
   }
 }
 
