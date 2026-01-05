@@ -1,0 +1,4 @@
+import type { ZoomTransitionSourceContextProviderProps, ZoomTransitionTargetContextProviderProps } from './zoom-transition-context-providers.types';
+export declare function ZoomTransitionSourceContextProvider({ children, linkProps, }: ZoomTransitionSourceContextProviderProps): import("react").JSX.Element;
+export declare function ZoomTransitionTargetContextProvider({ route, children, }: ZoomTransitionTargetContextProviderProps): string | number | bigint | boolean | Iterable<import("react").ReactNode> | Promise<string | number | bigint | boolean | import("react").ReactPortal | import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>> | Iterable<import("react").ReactNode> | null | undefined> | import("react").JSX.Element | null | undefined;
+//# sourceMappingURL=zoom-transition-context-providers.ios.d.ts.map

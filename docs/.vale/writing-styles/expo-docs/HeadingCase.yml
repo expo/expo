@@ -171,6 +171,7 @@ exceptions:
   - '.*SASS.*'
   - '.*SDK.*'
   - '.*SecureStore.*'
+  - '.*SF Symbol.*'
   - '.*Sentry.*'
   - '.*Server-side.*'
   - '.*Sierra.*'
@@ -216,7 +217,7 @@ exceptions:
   # Standalone Expo UI component names
   - '^(?:BottomSheet|CircularProgress|LinearProgress|DateTimePicker|ContextMenu|ColorPicker|TextField)(?:\s*\([^)]+\))?$'
   # Component, service and product names that are proper nouns
-  - '^(?:TinyBase|LiveStore|LaunchDarkly|OneSignal|CleverTap|LogRocket|Vexo|BugSnag|Meta|Vercel|TabTrigger|TabList|Tabs|Drawer|TextEncoder|TextDecoder|AudioPlayer|VideoPlayer)(?:\s*\([^)]+\))?$'
+  - '^(?:TinyBase|LiveStore|LaunchDarkly|CleverTap|LogRocket|Vexo|BugSnag|Meta|Vercel|TabTrigger|TabList|Tabs|Drawer|TextEncoder|TextDecoder|AudioPlayer|VideoPlayer)(?:\s*\([^)]+\))?$'
   # Specific edge cases
   - two-factor
   - (deprecated)
@@ -286,3 +287,4 @@ exceptions:
   - 'Mode 2: Payload mode'
   - 'Method 1: Use'
   - 'Method 2: Use'
+  - 'Image manipulation without disk I/O'

@@ -45,8 +45,12 @@ exports.getSingularId = getSingularId;
 const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
+const getPathFromState_1 = require("./fork/getPathFromState");
 const storeContext_1 = require("./global-state/storeContext");
 const import_mode_1 = __importDefault(require("./import-mode"));
+const ZoomTransitionEnabler_1 = require("./link/zoom/ZoomTransitionEnabler");
+const zoom_transition_context_providers_1 = require("./link/zoom/zoom-transition-context-providers");
+const navigationEvents_1 = require("./navigationEvents");
 const navigationParams_1 = require("./navigationParams");
 const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
@@ -201,11 +205,6 @@ function getQualifiedRouteComponent(value) {
         }
         (0, react_1.useEffect)(() => navigation.addListener('focus', () => {
             const state = navigation.getState();
-            // When navigating to a screen, remove the no animation param to re-enable animations
-            // Otherwise the navigation back would also have no animation
-            if ((0, navigationParams_1.hasParam)(route?.params, navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
-                navigation.replaceParams((0, navigationParams_1.removeParams)(route?.params, [navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]));
-            }
             const isLeaf = !('state' in state.routes[state.index]);
             // Because setFocusedState caches the route info, this call will only trigger rerenders
             // if the component itself didn’t rerender and the route info changed.
@@ -214,13 +213,28 @@ function getQualifiedRouteComponent(value) {
             if (isLeaf && stateForPath)
                 store.setFocusedState(stateForPath);
         }), [navigation]);
+        (0, react_1.useEffect)(() => {
+            return navigation.addListener('transitionEnd', (e) => {
+                if (!e?.data?.closing) {
+                    // When navigating to a screen, remove the no animation param to re-enable animations
+                    // Otherwise the navigation back would also have no animation
+                    if ((0, navigationParams_1.hasParam)(route?.params, navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
+                        navigation.replaceParams((0, navigationParams_1.removeParams)(route?.params, [navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]));
+                    }
+                }
+            });
+        }, [navigation]);
         return (<Route_1.Route node={value} route={route}>
-        <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
-          <ScreenComponent {...props} 
+        {value.type === 'route' && navigationEvents_1.unstable_navigationEvents.hasAnyListener() && (<AnalyticsListeners navigation={navigation} screenId={route.key}/>)}
+        <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
+        <zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider route={route}>
+          <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
+            <ScreenComponent {...props} 
         // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
         // the intention is to make it possible to deduce shared routes.
         segment={value.route}/>
-        </react_1.default.Suspense>
+          </react_1.default.Suspense>
+        </zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider>
       </Route_1.Route>);
     }
     if (__DEV__) {
@@ -228,6 +242,53 @@ function getQualifiedRouteComponent(value) {
     }
     qualifiedStore.set(value, BaseRoute);
     return BaseRoute;
+}
+function AnalyticsListeners({ navigation, screenId, }) {
+    const stateForPath = (0, native_1.useStateForPath)();
+    const isFirstRenderRef = react_1.default.useRef(true);
+    const pathname = (0, react_1.useMemo)(() => (stateForPath ? decodeURIComponent((0, getPathFromState_1.getPathFromState)(stateForPath)) : undefined), [stateForPath]);
+    if (isFirstRenderRef.current) {
+        isFirstRenderRef.current = false;
+        if (pathname) {
+            navigationEvents_1.unstable_navigationEvents.emit('pageWillRender', {
+                pathname,
+                screenId,
+            });
+        }
+    }
+    (0, react_1.useEffect)(() => {
+        if (pathname) {
+            return () => {
+                navigationEvents_1.unstable_navigationEvents.emit('pageRemoved', {
+                    pathname,
+                    screenId,
+                });
+            };
+        }
+        return () => { };
+    }, [pathname]);
+    (0, react_1.useEffect)(() => {
+        if (pathname) {
+            const cleanFocus = navigation.addListener('focus', () => {
+                navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
+                    pathname,
+                    screenId,
+                });
+            });
+            const cleanBlur = navigation.addListener('blur', () => {
+                navigationEvents_1.unstable_navigationEvents.emit('pageBlurred', {
+                    pathname,
+                    screenId,
+                });
+            });
+            return () => {
+                cleanFocus();
+                cleanBlur();
+            };
+        }
+        return () => { };
+    }, [navigation, pathname]);
+    return null;
 }
 function screenOptionsFactory(route, options) {
     return (args) => {

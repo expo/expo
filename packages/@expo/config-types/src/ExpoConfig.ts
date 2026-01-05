@@ -251,10 +251,6 @@ export interface ExpoConfig {
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
-   * A Boolean value that indicates whether the app should use the new architecture. Defaults to true.
-   */
-  newArchEnabled?: boolean;
-  /**
    * Enable downloading cached builds from remote.
    */
   buildCacheProvider?:
@@ -568,10 +564,6 @@ export interface IOS {
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
-   * A Boolean value that indicates whether the iOS app should use the new architecture.
-   */
-  newArchEnabled?: boolean;
-  /**
    * Property indicating compatibility between an iOS build's native code and an OTA update for the iOS platform. If provided, this will override the value of the top level `runtimeVersion` key on iOS.
    */
   runtimeVersion?:
@@ -824,10 +816,6 @@ export interface Android {
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
-   * A Boolean value that indicates whether the Android app should use the new architecture.
-   */
-  newArchEnabled?: boolean;
-  /**
    * Property indicating compatibility between a Android build's native code and an OTA update for the Android platform. If provided, this will override the value of top level `runtimeVersion` key on Android.
    */
   runtimeVersion?:
@@ -838,9 +826,10 @@ export interface Android {
    */
   version?: string;
   /**
-   * Enable your app to run in [edge-to-edge](https://developer.android.com/develop/ui/views/layout/edge-to-edge) mode. Default to false.
+   * Enable your app to run in [edge-to-edge](https://developer.android.com/develop/ui/views/layout/edge-to-edge) mode. Default to true.
+   * @deprecated Android 16+ (API level 36) requires edge-to-edge to be enabled. This feature can't be disabled anymore. [learn more](https://developer.android.com/about/versions/16/behavior-changes-16#edge-to-edge)
    */
-  edgeToEdgeEnabled?: boolean;
+  edgeToEdgeEnabled?: true;
   /**
    * Enable your app to use the [predictive back gesture](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture) on Android 13 (API level 33) and later. Default to false.
    */

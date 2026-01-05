@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getLoaderModulePath = getLoaderModulePath;
 exports.fetchLoaderModule = fetchLoaderModule;
+const url_1 = require("../utils/url");
 /**
  * Convert a route's pathname to a loader module path.
  *
@@ -11,7 +12,7 @@ exports.fetchLoaderModule = fetchLoaderModule;
  * getLoaderModulePath(`/posts/1`) // `/_expo/loaders/posts/1`
  */
 function getLoaderModulePath(pathname) {
-    const urlPath = new URL(pathname, 'http://localhost').pathname;
+    const urlPath = (0, url_1.parseUrlUsingCustomBase)(pathname).pathname;
     const normalizedPath = urlPath === '/' ? '/' : urlPath.replace(/\/$/, '');
     const pathSegment = normalizedPath === '/' ? '/index' : normalizedPath;
     return `/_expo/loaders${pathSegment}`;

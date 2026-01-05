@@ -60,3 +60,7 @@ export {
   VectorIcon,
   VectorIconProps,
 } from './primitives';
+
+export * from './layouts/stack-utils';
+
+export { unstable_navigationEvents } from './navigationEvents';

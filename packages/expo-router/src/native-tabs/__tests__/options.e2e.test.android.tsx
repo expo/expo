@@ -1,12 +1,15 @@
 import { screen, act, fireEvent, waitFor } from '@testing-library/react-native';
-import React, { isValidElement, type ComponentProps } from 'react';
-import { Button, View } from 'react-native';
+import { Children, isValidElement, useState, type ComponentProps, type ReactNode } from 'react';
+import { Button, Text, View } from 'react-native';
 import {
+  BottomTabs as _BottomTabs,
   BottomTabsScreen as _BottomTabsScreen,
+  type BottomTabsProps,
   type BottomTabsScreenProps,
 } from 'react-native-screens';
 import { SafeAreaView } from 'react-native-screens/experimental';
 
+import type { ColorType } from '../../color';
 import { HrefPreview } from '../../link/preview/HrefPreview';
 import { renderRouter, within } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
@@ -16,6 +19,22 @@ import {
   type SFSymbolIcon,
   type SrcIcon,
 } from '../common/elements';
+
+// Mock Color API with known test values
+jest.mock('../../color', (): typeof import('../../color') => ({
+  Color: {
+    android: {
+      dynamic: {
+        onSurfaceVariant: 'mock-onSurfaceVariant',
+        onSecondaryContainer: 'mock-onSecondaryContainer',
+        onSurface: 'mock-onSurface',
+        surfaceContainer: 'mock-surfaceContainer',
+        primary: 'mock-primary',
+        secondaryContainer: 'mock-secondaryContainer',
+      } as ColorType['android']['dynamic'],
+    } as ColorType['android'],
+  } as ColorType,
+}));
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -27,7 +46,7 @@ jest.mock('react-native-screens', () => {
 });
 jest.mock('react-native-screens/experimental', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
-  function RNSSafeAreaView({ children }: { children: React.ReactNode }) {
+  function RNSSafeAreaView({ children }: { children: ReactNode }) {
     return <View testID="SafeAreaView">{children}</View>;
   }
   return {
@@ -38,6 +57,7 @@ jest.mock('react-native-screens/experimental', () => {
   };
 });
 
+const BottomTabs = _BottomTabs as jest.MockedFunction<typeof _BottomTabs>;
 const BottomTabsScreen = _BottomTabsScreen as jest.MockedFunction<typeof _BottomTabsScreen>;
 
 it('can pass props via unstable_nativeProps', () => {
@@ -807,17 +827,17 @@ describe('Tab options', () => {
           <NativeTabs.Trigger name="index" disableAutomaticContentInsets />
         </NativeTabs>
       ),
-      index: () => <View testID="index" />,
+      index: () => <Text testID="index" />,
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
     const children = BottomTabsScreen.mock.calls[0][0].children;
-    expect(React.Children.count(children)).toBe(1);
+    expect(Children.count(children)).toBe(1);
     expect(isValidElement(children)).toBe(true);
     // Type assertion to satisfy TypeScript
     if (!isValidElement(children)) throw new Error();
-    expect(children.type).not.toBe(View);
+    expect(children.type).not.toBe(SafeAreaView);
   });
 });
 
@@ -1029,7 +1049,7 @@ describe('Dynamic options', () => {
         </NativeTabs>
       ),
       index: function Index() {
-        const [value, setValue] = React.useState(0);
+        const [value, setValue] = useState(0);
         const label = `Updated Title ${value}`;
         return (
           <View testID="index">
@@ -1105,5 +1125,112 @@ describe('Dynamic options', () => {
       selectedIcon: undefined,
       freezeContents: false,
     } as BottomTabsScreenProps);
+  });
+});
+
+describe('Material Design 3 dynamic color defaults', () => {
+  it('applies Material Design 3 dynamic color defaults when no custom colors are provided', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabs).toHaveBeenCalledTimes(1);
+    expect(BottomTabs.mock.calls[0][0]).toMatchObject({
+      tabBarItemIconColor: 'mock-onSurfaceVariant',
+      tabBarItemTitleFontColor: 'mock-onSurfaceVariant',
+      tabBarItemIconColorActive: 'mock-onSecondaryContainer',
+      tabBarItemTitleFontColorActive: 'mock-onSurface',
+      tabBarBackgroundColor: 'mock-surfaceContainer',
+      tabBarItemRippleColor: 'mock-primary',
+      tabBarItemActiveIndicatorColor: 'mock-secondaryContainer',
+    } as Partial<BottomTabsProps>);
+  });
+
+  it('uses custom tintColor when provided, overriding Material defaults for active states', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs tintColor="red">
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabs).toHaveBeenCalledTimes(1);
+    expect(BottomTabs.mock.calls[0][0]).toMatchObject({
+      tabBarItemIconColor: 'mock-onSurfaceVariant',
+      tabBarItemTitleFontColor: 'mock-onSurfaceVariant',
+      tabBarItemIconColorActive: 'red',
+      tabBarItemTitleFontColorActive: 'red',
+      tabBarBackgroundColor: 'mock-surfaceContainer',
+      tabBarItemRippleColor: 'mock-primary',
+    } as Partial<BottomTabsProps>);
+  });
+
+  it('uses custom rippleColor when provided, overriding Material default', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs rippleColor="blue">
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabs).toHaveBeenCalledTimes(1);
+    expect(BottomTabs.mock.calls[0][0]).toMatchObject({
+      tabBarItemRippleColor: 'blue',
+      tabBarBackgroundColor: 'mock-surfaceContainer',
+    } as Partial<BottomTabsProps>);
+  });
+
+  it('uses appearance options when provided, overriding Material defaults', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs
+          iconColor={{ default: 'green', selected: 'yellow' }}
+          labelStyle={{ default: { color: 'purple' }, selected: { color: 'orange' } }}
+          backgroundColor="pink">
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabs).toHaveBeenCalledTimes(1);
+    expect(BottomTabs.mock.calls[0][0]).toMatchObject({
+      tabBarItemIconColor: 'green',
+      tabBarItemIconColorActive: 'yellow',
+      tabBarItemTitleFontColor: 'purple',
+      tabBarItemTitleFontColorActive: 'orange',
+      tabBarBackgroundColor: 'pink',
+    } as Partial<BottomTabsProps>);
+  });
+
+  it('uses container indicatorColor when provided, overriding Material default', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs indicatorColor="cyan">
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(BottomTabs).toHaveBeenCalledTimes(1);
+    expect(BottomTabs.mock.calls[0][0]).toMatchObject({
+      tabBarItemActiveIndicatorColor: 'cyan',
+      tabBarBackgroundColor: 'mock-surfaceContainer',
+    } as Partial<BottomTabsProps>);
   });
 });

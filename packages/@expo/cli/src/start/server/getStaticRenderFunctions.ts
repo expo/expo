@@ -25,9 +25,16 @@ export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 export const cachedSourceMaps: Map<string, { url: string; map: string }> = new Map();
 
 // Support unhandled rejections
-// Detect if running in Bun
 
-// @ts-expect-error: This is a global variable that is set by Bun.
+declare global {
+  namespace NodeJS {
+    interface Process {
+      isBun?: boolean;
+    }
+  }
+}
+
+// Detect if running in Bun
 if (!process.isBun) {
   require('source-map-support').install({
     retrieveSourceMap(source: string) {

@@ -1,4 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
+import { BracketsEllipsesDuotoneIcon } from '@expo/styleguide-icons/duotone/BracketsEllipsesDuotoneIcon';
 import { CornerDownRightIcon } from '@expo/styleguide-icons/outline/CornerDownRightIcon';
 
 import { APIBoxHeader } from '~/components/plugins/api/components/APIBoxHeader';
@@ -69,8 +70,9 @@ export const renderMethod = (
 ) => {
   const signatures = getMethodRootSignatures(method);
   const baseNestingLevel = options.baseNestingLevel ?? (exposeInSidebar ? 3 : 4);
+  const hasOverloads = signatures.length > 1;
 
-  return signatures.map(({ name, parameters, comment, type, typeParameter }) => {
+  return signatures.map(({ name, parameters, comment, type, typeParameter }, overloadIndex) => {
     const returnComment = getTagData('returns', comment);
     const platforms = getAllTagData('platform', comment);
     return (
@@ -92,7 +94,16 @@ export const renderMethod = (
           )}
           platforms={platforms.length > 0 ? platforms : parentPlatforms}
           baseNestingLevel={baseNestingLevel}
+          // only show first overload in sidebar to avoid duplicates
+          hideInSidebar={overloadIndex > 0}
+          tags={hasOverloads ? ['overload'] : undefined}
         />
+        {hasOverloads && (
+          <div className="px-4 pb-2 text-tertiary">
+            <BracketsEllipsesDuotoneIcon className="icon-xs mr-1 inline shrink-0" />
+            <span className="text-3xs">Overload #{overloadIndex + 1}</span>
+          </div>
+        )}
         {parameters && parameters.length > 0 && (
           <>
             <APIMethodParamRows parameters={parameters} sdkVersion={sdkVersion} />
@@ -128,7 +139,6 @@ export const renderMethod = (
             ) : undefined
           }
         />
-        {}
       </div>
     );
   });

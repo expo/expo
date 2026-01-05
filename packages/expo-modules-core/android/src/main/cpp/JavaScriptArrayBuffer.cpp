@@ -14,6 +14,7 @@ void JavaScriptArrayBuffer::registerNatives() {
                    makeNativeMethod("read8Byte", JavaScriptArrayBuffer::read<int64_t>),
                    makeNativeMethod("readFloat", JavaScriptArrayBuffer::read<float>),
                    makeNativeMethod("readDouble", JavaScriptArrayBuffer::read<double>),
+                   makeNativeMethod("toDirectBuffer", JavaScriptArrayBuffer::toDirectBuffer),
                  });
 }
 
@@ -47,6 +48,21 @@ jni::local_ref<JavaScriptArrayBuffer::javaobject> JavaScriptArrayBuffer::newInst
 int JavaScriptArrayBuffer::size() {
   jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
   return (int) arrayBuffer->size(jsRuntime);
+}
+
+uint8_t *JavaScriptArrayBuffer::data() {
+  jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
+  return arrayBuffer->data(jsRuntime);
+}
+
+jni::local_ref<jni::JByteBuffer> JavaScriptArrayBuffer::toDirectBuffer() {
+  auto buffer = jni::JByteBuffer::wrapBytes(data(), size());
+  buffer->order(jni::JByteOrder::nativeOrder());
+  return buffer;
+}
+
+std::shared_ptr<jsi::ArrayBuffer> JavaScriptArrayBuffer::jsiArrayBuffer() {
+  return this->arrayBuffer;
 }
 
 }

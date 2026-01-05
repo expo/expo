@@ -5,7 +5,7 @@ import ExpoModulesCore
 import EXManifests
 
 /**
- Manages the React Native app opened in Expo Go. As opposed to ``EXReactAppManager`` and ``EXHomeAppManager``,
+ Manages the React Native app opened in Expo Go. As opposed to ``EXReactAppManager``,
  this manager is versioned and used by them under the hood like an adapter.
  */
 @objc(EXVersionManager)

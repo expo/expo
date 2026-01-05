@@ -27,7 +27,7 @@ void ExpoViewComponentDescriptor::adopt(facebook::react::ShadowNode &shadowNode)
   auto width = state._width;
   auto height = state._height;
 
-  if (!isnan(width) or !isnan(height)) {
+  if (!isnan(width) || !isnan(height)) {
     auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(snode->getProps());
 
     // The node has width and/or height set as style props, so we should not override it

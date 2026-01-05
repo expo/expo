@@ -10,6 +10,9 @@ on:
       - packages/expo-asset/**
       - packages/expo-constants/**
       - packages/expo-crypto/**
+      - packages/expo-dev-client/**
+      - packages/expo-dev-launcher/**
+      - packages/expo-dev-menu/**
       - packages/expo-eas-client/**
       - packages/expo-file-system/**
       - packages/expo-font/**

@@ -20,6 +20,8 @@ target 'Expo Go' do
   pod 'CocoaLumberjack', '~> 3.5.3'
   pod 'MBProgressHUD', '~> 1.2.0'
 
+  pod 'SocketRocket'
+
   # Required by react-native-maps
   # See https://github.com/react-native-maps/react-native-maps/blob/master/docs/installation.md
   pod 'react-native-google-maps', :path => '../../../node_modules/react-native-maps'
@@ -64,7 +66,10 @@ target 'Expo Go' do
   pod 'expo-dev-menu', :path => '../../../packages/expo-dev-menu', :configurations => ['Debug', 'Release']
 
   config_command = [
-    'npx',
+    'node',
+    '--no-warnings',
+    '--eval',
+    'require(\'expo/bin/autolinking\')',
     'expo-modules-autolinking',
     'react-native-config',
     '--json',

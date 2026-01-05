@@ -8,7 +8,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,6 +29,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.viewevent.getValue
 import expo.modules.ui.button.Button
+import expo.modules.ui.button.IconButton
 import expo.modules.ui.menu.ContextMenu
 import kotlin.reflect.KProperty
 
@@ -66,6 +69,10 @@ class ExpoUIModule : Module() {
       Events("onButtonPressed")
     }
 
+    View(IconButton::class) {
+      Events("onButtonPressed")
+    }
+
     View(SliderView::class) {
       Events("onValueChanged")
     }
@@ -102,7 +109,13 @@ class ExpoUIModule : Module() {
     View(BoxView::class)
     View(RowView::class)
     View(ColumnView::class)
-    View(HostView::class)
+    View(HostView::class) {
+      Events("onLayoutContent")
+
+      OnViewDidUpdateProps { view ->
+        view.onViewDidUpdateProps()
+      }
+    }
     View(TextView::class)
     View(CarouselView::class)
 
@@ -132,8 +145,16 @@ class ExpoUIModule : Module() {
       return@Function ExpoModifier(Modifier.size(width.dp, height.dp))
     }
 
-    Function("fillMaxSize") {
-      return@Function ExpoModifier(Modifier.fillMaxSize())
+    Function("fillMaxSize") { fraction: Float? ->
+      return@Function ExpoModifier(Modifier.fillMaxSize(fraction = fraction ?: 1.0f))
+    }
+
+    Function("fillMaxWidth") { fraction: Float? ->
+      return@Function ExpoModifier(Modifier.fillMaxWidth(fraction = fraction ?: 1.0f))
+    }
+
+    Function("fillMaxHeight") { fraction: Float? ->
+      return@Function ExpoModifier(Modifier.fillMaxHeight(fraction = fraction ?: 1.0f))
     }
 
     Function("offset") { x: Int, y: Int ->

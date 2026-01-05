@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Removed deprecated `content` property of the clipboard event listener. Use `getStringAsync()` instead. ([#41739](https://github.com/expo/expo/pull/41739) by [@barthap](https://github.com/barthap))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -12,6 +14,11 @@
 
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
 - [iOS] Update documentation regarding the edge case when the user denies paste permission ([#40259](https://github.com/expo/expo/pull/40259) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- Update internal TypeScript types. ([#41740](https://github.com/expo/expo/pull/41740) by [@barthap](https://github.com/barthap))
+
+## 8.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 8.0.7 — 2025-09-11
 

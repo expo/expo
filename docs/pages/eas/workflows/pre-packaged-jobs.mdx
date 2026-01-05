@@ -599,20 +599,22 @@ jobs:
       external_groups: string[] # optional
       changelog: string # optional
       submit_beta_review: boolean # optional
+      wait_processing_timeout_seconds: number # optional - default: 1800 (30 minutes)
 ```
 
 #### Parameters
 
 You can pass the following parameters into the `params` list:
 
-| Parameter          | Type     | Description                                                                                                                                 |
-| ------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| build_id           | string   | Required. The ID of the iOS build to distribute.                                                                                            |
-| profile            | string   | Optional. The submit profile to use. Defaults to `production`.                                                                              |
-| internal_groups    | string[] | Optional. An array of TestFlight internal group names to add the build to. Only include groups without automatic distribution enabled.      |
-| external_groups    | string[] | Optional. An array of TestFlight external group names to add the build to.                                                                  |
-| changelog          | string   | Optional. Test notes ("What to Test") for TestFlight testers.                                                                               |
-| submit_beta_review | boolean  | Optional. Whether to submit for Beta App Review. If not specified, defaults to `true` when external_groups are provided, `false` otherwise. |
+| Parameter                       | Type     | Description                                                                                                                                 |
+| ------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| build_id                        | string   | Required. The ID of the iOS build to distribute.                                                                                            |
+| profile                         | string   | Optional. The submit profile to use. Defaults to `production`.                                                                              |
+| internal_groups                 | string[] | Optional. An array of TestFlight internal group names to add the build to. Only include groups without automatic distribution enabled.      |
+| external_groups                 | string[] | Optional. An array of TestFlight external group names to add the build to.                                                                  |
+| changelog                       | string   | Optional. Test notes ("What to Test") for TestFlight testers.                                                                               |
+| submit_beta_review              | boolean  | Optional. Whether to submit for Beta App Review. If not specified, defaults to `true` when external_groups are provided, `false` otherwise. |
+| wait_processing_timeout_seconds | number   | Optional. Timeout in seconds to wait for App Store Connect build processing. Defaults to `1800` (30 minutes).                               |
 
 #### Outputs
 
@@ -810,7 +812,7 @@ jobs:
 
 Run Maestro tests on a Android emulator or iOS Simulator build.
 
-> **important** Maestro tests are experimental and may experience flakiness.
+> **important** Maestro tests are in [alpha](/more/release-statuses/#alpha).
 
 ### Syntax
 

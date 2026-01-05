@@ -2,32 +2,16 @@ package expo.modules.keepawake
 
 import android.app.Activity
 import android.view.WindowManager
-import expo.modules.core.ModuleRegistry
 import expo.modules.core.errors.CurrentActivityNotFoundException
-import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.InternalModule
 import expo.modules.core.interfaces.services.KeepAwakeManager
+import expo.modules.kotlin.AppContext
 
-class ExpoKeepAwakeManager : KeepAwakeManager, InternalModule {
+class ExpoKeepAwakeManager(private val appContext: AppContext?) : KeepAwakeManager {
   private val tags: MutableSet<String> = HashSet()
-
-  private lateinit var moduleRegistry: ModuleRegistry
-
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    this.moduleRegistry = moduleRegistry
-  }
 
   @get:Throws(CurrentActivityNotFoundException::class)
   private val currentActivity: Activity
-    get() {
-      val activityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
-        ?: throw CurrentActivityNotFoundException()
-      return if (activityProvider.currentActivity != null) {
-        activityProvider.currentActivity
-      } else {
-        throw CurrentActivityNotFoundException()
-      }
-    }
+    get() = appContext?.currentActivity ?: throw CurrentActivityNotFoundException()
 
   @Throws(CurrentActivityNotFoundException::class)
   override fun activate(tag: String, done: Runnable) {
@@ -51,9 +35,5 @@ class ExpoKeepAwakeManager : KeepAwakeManager, InternalModule {
 
   override fun isActivated(): Boolean {
     return tags.isNotEmpty()
-  }
-
-  override fun getExportedInterfaces(): List<Class<*>?> {
-    return listOf(KeepAwakeManager::class.java)
   }
 }

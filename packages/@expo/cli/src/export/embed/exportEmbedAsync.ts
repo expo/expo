@@ -342,22 +342,29 @@ export async function createMetroServerAndBundleRequestAsync(
     sourceMapUrl = path.basename(sourceMapUrl);
   }
 
+  const directBundleOptions = getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
+    splitChunks: false,
+    mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
+    platform: options.platform,
+    minify: options.minify,
+    mode: options.dev ? 'development' : 'production',
+    engine: isHermes ? 'hermes' : undefined,
+    isExporting: true,
+    // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
+    bytecode: false,
+    hosted: false,
+  });
+
   // TODO(cedric): check if we can use the proper `bundleType=bundle` and `entryPoint=mainModuleName` properties
-  // @ts-expect-error: see above
   const bundleRequest: BundleOptions = {
     ...Server.DEFAULT_BUNDLE_OPTIONS,
-    ...getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
-      splitChunks: false,
-      mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
-      platform: options.platform,
-      minify: options.minify,
-      mode: options.dev ? 'development' : 'production',
-      engine: isHermes ? 'hermes' : undefined,
-      isExporting: true,
-      // Never output bytecode in the exported bundle since that is hardcoded in the native run script.
-      bytecode: false,
-      hosted: false,
-    }),
+    ...directBundleOptions,
+
+    // NOTE(@kitten): Cast non-optional defaults
+    lazy: directBundleOptions.lazy ?? Server.DEFAULT_BUNDLE_OPTIONS.lazy,
+    modulesOnly: directBundleOptions.modulesOnly ?? Server.DEFAULT_BUNDLE_OPTIONS.modulesOnly,
+    runModule: directBundleOptions.runModule ?? Server.DEFAULT_BUNDLE_OPTIONS.runModule,
+
     sourceMapUrl,
     unstable_transformProfile: (options.unstableTransformProfile ||
       (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],

@@ -23,6 +23,7 @@ import {
   refreshable,
   scrollDismissesKeyboard,
   foregroundStyle,
+  shapes,
   tag,
 } from '@expo/ui/swift-ui/modifiers';
 import { useNavigation } from '@react-navigation/native';
@@ -151,7 +152,7 @@ export default function ListScreen() {
           />
         </Section>
         <Section title="Controls" collapsible>
-          <Button onPress={() => setEditModeEnabled(!editModeEnabled)}>Toggle Edit</Button>
+          <Button onPress={() => setEditModeEnabled(!editModeEnabled)} label="Toggle Edit" />
           <Switch value={selectEnabled} label="Select enabled" onValueChange={setSelectEnabled} />
           <Switch value={deleteEnabled} label="Delete enabled" onValueChange={setDeleteEnabled} />
           <Switch value={moveEnabled} label="Move enabled" onValueChange={setMoveEnabled} />
@@ -175,9 +176,7 @@ export default function ListScreen() {
             label="Scroll dismisses keyboard"
             modifiers={[pickerStyle('menu')]}
             selection={scrollDismissesKeyboardIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setScrollDismissesKeyboardIndex(selection as number);
-            }}>
+            onSelectionChange={setScrollDismissesKeyboardIndex}>
             {scrollDismissesKeyboardOptions.map((option, index) => (
               <Text key={index} modifiers={[tag(index)]}>
                 {option}
@@ -188,9 +187,7 @@ export default function ListScreen() {
             label="List style"
             modifiers={[pickerStyle('menu')]}
             selection={selectedIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setSelectedIndex(selection as number);
-            }}>
+            onSelectionChange={setSelectedIndex}>
             {listStyleOptions.map((option, index) => (
               <Text key={index} modifiers={[tag(index)]}>
                 {option}
@@ -199,6 +196,23 @@ export default function ListScreen() {
           </Picker>
         </Section>
         <Section title="Data">
+          <Label
+            icon={
+              <Image
+                systemName="sun.max.fill"
+                color="white"
+                size={15}
+                modifiers={[
+                  padding({ all: 4 }),
+                  background(
+                    'blue',
+                    shapes.roundedRectangle({ cornerRadius: 12, roundedCornerStyle: 'continuous' })
+                  ),
+                ]}
+              />
+            }
+            title="Label with custom icon"
+          />
           {data.map((item, index) => (
             <Label
               key={index}

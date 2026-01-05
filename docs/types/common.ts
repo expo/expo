@@ -3,6 +3,7 @@ export type PageMetadata = {
   description?: string;
   sourceCodeUrl?: string;
   packageName?: string;
+  cliVersion?: string;
   maxHeadingDepth?: number;
   iconUrl?: string;
   /* If the page should not show up in the Algolia Docsearch results */

@@ -4,7 +4,10 @@ import { ColorValue } from 'react-native';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type CircularProgressProps = {
+type ClosedRangeDate = { lower: Date; upper: Date };
+type ClosedRangeInternal = { lower: number; upper: number };
+
+export type ProgressProps = {
   /**
    * The current progress value of the slider. This is a number between `0` and `1`.
    */
@@ -13,24 +16,25 @@ export type CircularProgressProps = {
    * Progress color.
    */
   color?: ColorValue;
+  /**
+   * The style of the progress indicator.
+   * @default 'circular'
+   */
+  variant?: 'linear' | 'circular';
+  /**
+   * The lower and upper bounds for automatic timer progress.
+   */
+  timerInterval?: ClosedRangeDate;
+  /**
+   * Whether the progress counts down instead of up.
+   * @default false
+   */
+  countsDown?: boolean;
 } & CommonViewModifierProps;
 
-export type LinearProgressProps = {
-  /**
-   * The current progress value of the slider. This is a number between `0` and `1`.
-   */
-  progress?: number | null;
-  /**
-   * Progress color.
-   */
-  color?: ColorValue;
-} & CommonViewModifierProps;
-
-type NativeProgressProps =
-  | CircularProgressProps
-  | (LinearProgressProps & {
-      variant: 'linear' | 'circular';
-    });
+type NativeProgressProps = Omit<ProgressProps, 'timerInterval'> & {
+  timerInterval?: ClosedRangeInternal;
+};
 
 const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNativeView(
   'ExpoUI',
@@ -38,31 +42,23 @@ const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNati
 );
 
 /**
- * Renders a `CircularProgress` component.
+ * Renders a `Progress` component.
  */
-export function CircularProgress(props: CircularProgressProps) {
-  const { modifiers, ...restProps } = props;
+export function Progress(props: ProgressProps) {
+  const { modifiers, timerInterval, ...restProps } = props;
   return (
     <NativeProgressView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}
-      variant="circular"
-    />
-  );
-}
-
-/**
- * Renders a `LinearProgress` component.
- */
-export function LinearProgress(props: LinearProgressProps) {
-  const { modifiers, ...restProps } = props;
-  return (
-    <NativeProgressView
-      modifiers={modifiers}
-      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      {...restProps}
-      variant="linear"
+      timerInterval={
+        timerInterval
+          ? {
+              lower: timerInterval.lower.getTime(),
+              upper: timerInterval.upper.getTime(),
+            }
+          : undefined
+      }
     />
   );
 }

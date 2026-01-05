@@ -10,6 +10,7 @@ declare const _default: {
         off: string;
         auto: string;
         torch: string;
+        screen: string;
     };
     readonly AutoFocus: {
         on: string;

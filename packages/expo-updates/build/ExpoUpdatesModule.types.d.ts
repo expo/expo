@@ -99,5 +99,12 @@ export declare class ExpoUpdatesModule extends NativeModule<UpdatesEvents> imple
     } | {
         manifest: Manifest;
     })) | UpdateFetchResultFailure | UpdateFetchResultRollBackToEmbedded>;
+    setUpdateURLAndRequestHeadersOverride: (configOverride: {
+        updateUrl: string;
+        requestHeaders: Record<string, string> | null;
+    } | null) => void;
+    setUpdateRequestHeadersOverride: (requestHeaders: Record<string, string> | null) => void;
+    showReloadScreen: (options?: ReloadScreenOptions | null) => Promise<void>;
+    hideReloadScreen: () => Promise<void>;
 }
 //# sourceMappingURL=ExpoUpdatesModule.types.d.ts.map
