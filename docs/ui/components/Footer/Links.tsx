@@ -1,6 +1,7 @@
 import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { Edit05Icon } from '@expo/styleguide-icons/outline/Edit05Icon';
+import { File02Icon } from '@expo/styleguide-icons/outline/File02Icon';
 import { MessageTextSquare02Icon } from '@expo/styleguide-icons/outline/MessageTextSquare02Icon';
 import * as Dialog from '@radix-ui/react-dialog';
 
@@ -53,6 +54,15 @@ export const EditPageLink = ({ pathname }: { pathname: string }) => (
     <A isStyled openInNewTab href={githubUrl(pathname)} className={LINK_CLASSES}>
       <Edit05Icon className={ICON_CLASSES} />
       <CALLOUT theme="secondary">Edit this page</CALLOUT>
+    </A>
+  </LI>
+);
+
+export const LlmsTxtLink = () => (
+  <LI>
+    <A isStyled openInNewTab href="/llms.txt" className={LINK_CLASSES}>
+      <File02Icon className={ICON_CLASSES} />
+      <CALLOUT theme="secondary">View llms.txt</CALLOUT>
     </A>
   </LI>
 );

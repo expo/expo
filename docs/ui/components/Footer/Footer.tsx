@@ -6,7 +6,7 @@ import { useRouter } from 'next/compat/router';
 import { NavigationRouteWithSection } from '~/types/common';
 import { P, FOOTNOTE, UL, LI } from '~/ui/components/Text';
 
-import { ForumsLink, EditPageLink, IssuesLink, ShareFeedbackLink } from './Links';
+import { ForumsLink, EditPageLink, IssuesLink, LlmsTxtLink, ShareFeedbackLink } from './Links';
 import { NewsletterSignUp } from './NewsletterSignUp';
 import { PageVote } from './PageVote';
 
@@ -101,6 +101,7 @@ export const Footer = ({
               <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
             )}
             {title && router?.pathname && <EditPageLink pathname={router.pathname} />}
+            <LlmsTxtLink />
             {!isDev && shouldShowModifiedDate && modificationDate && (
               <LI className="!mt-4 !text-2xs !text-quaternary">
                 Last updated on <time dateTime={modificationDate}>{modificationDate}</time>
