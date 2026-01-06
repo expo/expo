@@ -25,6 +25,49 @@ export const Notifier = () => {
   const [response, setResponse] = useState<NotificationResponse | undefined>(undefined);
 
   const [backgroundTaskString, setBackgroundTaskString] = useState<string | null>('');
+  const [displayPersisted, setDisplayPersisted] = useState<(Record<string, string> | undefined)[]>(
+    []
+  );
+
+  useEffect(() => {
+    const updateDisplay = () => {
+      if (!backgroundTaskString) {
+        setDisplayPersisted([]);
+        return;
+      }
+      try {
+        const parsed: Record<string, string>[] = JSON.parse(backgroundTaskString);
+        const parsedProcessed = parsed.map((item) => {
+          if (item && typeof item === 'object' && 'time' in item && typeof item.time === 'string') {
+            const t = new Date(item.time);
+            const now = new Date();
+            const diffMs = now.getTime() - t.getTime();
+            const diffMin = diffMs / 1000 / 60;
+            if (diffMin > 15) {
+              return item;
+            } else {
+              const diffSec = Math.max(0, Math.floor(diffMs / 1000));
+              const minutes = Math.floor(diffSec / 60);
+              const seconds = diffSec % 60;
+              return {
+                ...item,
+                time: `(${minutes}m ${seconds}s ago)`,
+              };
+            }
+          }
+        });
+        setDisplayPersisted(parsedProcessed);
+      } catch (e) {
+        setDisplayPersisted([{ error: `Failed to parse JSON: ${(e as Error).message}` }]);
+      }
+    };
+
+    updateDisplay();
+    const interval = setInterval(updateDisplay, 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [backgroundTaskString]);
 
   const loadAsyncStorage = () => {
     AsyncStorage.getItem(STORAGE_KEY)
@@ -143,7 +186,7 @@ export const Notifier = () => {
       />
       <Text>
         Persisted data:
-        {backgroundTaskString && JSON.stringify(JSON.parse(backgroundTaskString), null, 2)}
+        {displayPersisted && JSON.stringify(displayPersisted, null, 2)}
       </Text>
     </View>
   );
