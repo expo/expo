@@ -233,29 +233,22 @@ const HMRClient = {
 
     client.on('error', (data) => this._onMetroError(data));
 
-    client.on('close', (closeEvent: { code: number; reason: string }) => {
+    client.on('close', (closeEvent?: { code: number; reason: string }) => {
       hideLoading();
-
+      const reason = closeEvent?.reason;
+      const code = closeEvent?.code || 1000;
       // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1
       // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.5
-      const isNormalOrUnsetCloseReason =
-        closeEvent == null ||
-        closeEvent.code === 1000 ||
-        closeEvent.code === 1005 ||
-        closeEvent.code === 1006 ||
-        closeEvent.code == null;
-
-      setHMRUnavailableReason(
-        `${
-          isNormalOrUnsetCloseReason
-            ? 'Disconnected from Expo CLI.'
-            : `Disconnected from Expo CLI (${closeEvent.code}: "${closeEvent.reason}").`
-        }
-
-To reconnect:
-- Start the dev server with: npx expo
-- Reload the ${process.env.EXPO_OS === 'web' ? 'page' : 'app'}`
-      );
+      const title =
+        reason && code !== 1000 && code !== 1001 && code !== 1005
+          ? `Disconnected from Metro (${code}: "${reason}")`
+          : `Disconnected from Metro (${code})`;
+      const message =
+        title +
+        '\nTo reconnect:' +
+        '\n- Ensure that Metro is running and available on the same network' +
+        '\n- Reload this app (will trigger further help if Metro cannot be connected to)';
+      setHMRUnavailableReason(message);
     });
 
     if (isEnabled) {
@@ -312,8 +305,11 @@ function setHMRUnavailableReason(reason: string) {
   // previously managed to connect successfully. We don't want to show
   // the warning to native engineers who use cached bundles without Metro.
   if (hmrClient.isEnabled() && didConnect) {
-    console.warn(reason);
-    // (Not using the `warning` module to prevent a Buck cycle.)
+    // NOTE(@kitten): The timeout works around a Firefox quirk. In Chrome, the `close` event doesn't fire when the client reloads
+    // However, in Firefox, the event fires as a page refreshes or navigates which is a case for which we don't want to show any message
+    setTimeout(() => {
+      console.warn(reason);
+    }, 500);
   }
 }
 
