@@ -33,38 +33,44 @@ jobs:
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
-      - name: 🚀 Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
+
       - name: 💎 Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.2.2
       - name: 💎 Install Ruby gems
         run: gem install cocoapods xcpretty
-      - name: ♻️ Restore workspace node modules
-        # Use restore only cache here because we don't want to nightly react-native version saving back to the cache
-        uses: actions/cache/restore@v4
-        id: workspace-modules-cache
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          path: |
-            node_modules
-            packages/*/node_modules
-            packages/@expo/*/node_modules
-          key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
-      - name: 🧶 Install node modules in root dir
-        if: steps.workspace-modules-cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: 🚀 Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 🧶 Install node modules
+        run: pnpm install --ignore-scripts
+
       - name: ⭐️ Create test-nightlies Project
         run: bun src/index.ts --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }}
         working-directory: packages/create-expo-nightly
+
       - name: 🍏 Query available simulator device ID
         run: |
           echo "Available simulators"
           xcrun simctl list devices available -j | jq -r '.devices | to_entries[] | select(.value | length > 0)'
           DEVICE_ID=$(defaults read com.apple.iphonesimulator CurrentDeviceUDID || xcrun simctl list devices available -j | jq -r '.devices | to_entries[] | select(.value | length > 0) | select(.key | startswith("com.apple.CoreSimulator.SimRuntime.iOS")) | .value[] | select(.isAvailable == true) | .udid' | head -n 1)
           echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
+
       - name: 🍏 Build iOS Project
         run: |
           pod install --project-directory=ios
@@ -74,12 +80,14 @@ jobs:
         env:
           NODE_ENV: production
           CONFIGURATION: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
+
       - name: 📸 Upload builds
         uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: ios-builds-arch-${{ matrix.build-type }}
           path: ${{ runner.temp }}/test-nightlies/ios/build/**/testnightlies.app/
+
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
@@ -100,33 +108,39 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
+
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
-      - name: 🚀 Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
+
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: ♻️ Restore workspace node modules
-        # Use restore only cache here because we don't want to nightly react-native version saving back to the cache
-        uses: actions/cache/restore@v4
-        id: workspace-modules-cache
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          path: |
-            node_modules
-            packages/*/node_modules
-            packages/@expo/*/node_modules
-          key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
-      - name: 🧶 Install node modules in root dir
-        if: steps.workspace-modules-cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: 🚀 Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 🧶 Install node modules
+        run: pnpm install --ignore-scripts --frozen-lockfile
+
       - name: ⭐️ Create test-nightlies Project
         run: bun src/index.ts --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }}
         working-directory: packages/create-expo-nightly
+
       - name: 🤖 Build Android project
         run: |
           cd android && ./gradlew ":app:assemble$VARIANT"
@@ -135,12 +149,14 @@ jobs:
         env:
           NODE_ENV: production
           VARIANT: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
+
       - name: 📸 Upload builds
         uses: actions/upload-artifact@v4
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: android-builds-${{ matrix.build-type }}
           path: ${{ runner.temp }}/test-nightlies/android/app/build/outputs/apk/
+
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')

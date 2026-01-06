@@ -10,7 +10,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -42,8 +42,12 @@
     "rtl-detect": "^1.0.2"
   },
   "devDependencies": {
+    "@types/react": "~19.2.0",
+    "@types/node": "^22.14.0",
+    "@types/i18n-js": "^3.0.1",
     "@types/rtl-detect": "^1.0.3",
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "workspace:*",
+    "i18n-js": "^3.9.2"
   },
   "peerDependencies": {
     "expo": "*",

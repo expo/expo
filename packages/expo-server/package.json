@@ -37,7 +37,7 @@
     "build:cjs": "tsc -p tsconfig.json",
     "build:mjs": "tsc -p tsconfig.mjs.json",
     "clean": "rimraf build",
-    "prepare": "run-s clean build",
+    "prepublishOnly": "run-s clean build",
     "lint": "eslint .",
     "test": "jest"
   },
@@ -60,7 +60,7 @@
   ],
   "devDependencies": {
     "@types/express": "^5.0.3",
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "workspace:*",
     "npm-run-all2": "^8.0.4",
     "rimraf": "^6.1.2"
   },

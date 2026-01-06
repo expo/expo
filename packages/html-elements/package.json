@@ -9,10 +9,10 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "yarn test:babel && yarn test:src",
+    "test": "pnpm run test:babel && pnpm run test:src",
     "test:src": "expo-module test",
     "test:babel": "jest --config babel/jest.config.js",
-    "prepare": "expo-module prepare",
+
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -74,6 +74,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^13.2.0",
-    "expo-module-scripts": "^5.0.7"
+    "@types/react": "~19.2.2",
+    "expo-module-scripts": "workspace:*"
   }
 }

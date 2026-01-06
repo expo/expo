@@ -7,10 +7,9 @@
     "build": "expo-module tsc",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && yarn run build",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublishOnly": "expo-module clean && pnpm run build",
     "test": "expo-module test",
-    "test:e2e": "yarn run prepare && expo-module test --config e2e/jest.config.js",
+    "test:e2e": "expo-module test --config e2e/jest.config.js",
     "typecheck": "expo-module typecheck",
     "watch": "expo-module tsc --watch --preserveWatchOutput"
   },
@@ -45,8 +44,9 @@
   "devDependencies": {
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.0.0",
-    "expo-module-scripts": "^5.0.7",
-    "sharp-cli": "^5.2.0"
+    "expo-module-scripts": "workspace:*",
+    "sharp-cli": "^5.2.0",
+    "sharp": "^0.34.2"
   },
   "publishConfig": {
     "access": "public"

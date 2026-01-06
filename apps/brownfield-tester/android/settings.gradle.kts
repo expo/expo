@@ -50,7 +50,7 @@ extensions.configure<com.facebook.react.ReactSettingsExtension> {
     autolinkLibrariesFromCommand(
         expoAutolinking.rnConfigCommand,
         rootDir,
-        files("../../../yarn.lock")
+        files("../../../pnpm-lock.yaml")
     )
 }
 

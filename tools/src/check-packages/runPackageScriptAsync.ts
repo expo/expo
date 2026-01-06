@@ -21,10 +21,10 @@ export default async function runPackageScriptAsync(
   }
   const spawnArgs = [scriptName, ...args];
 
-  logger.log(`🏃‍♀️ Running ${cyan.italic(`yarn ${spawnArgs.join(' ')}`)}`);
+  logger.log(`🏃‍♀️ Running ${cyan.italic(`pnpm ${spawnArgs.join(' ')}`)}`);
 
   try {
-    await spawnAsync('yarn', spawnArgs, {
+    await spawnAsync('pnpm', spawnArgs, {
       stdio: 'pipe',
       cwd: pkg.path,
     });

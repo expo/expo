@@ -7,7 +7,7 @@ on:
       - .github/workflows/native-component-list.yml
       - apps/native-component-list/**
       - packages/**
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!packages/@expo/cli/**'
   push:
     branches: [main]
@@ -15,7 +15,7 @@ on:
       - .github/workflows/native-component-list.yml
       - apps/native-component-list/**
       - packages/**
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!packages/@expo/cli/**'
 
 concurrency:
@@ -30,25 +30,29 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: ⬢ Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
-      - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+          cache: 'pnpm'
+
+      - name: 🧶 Install node modules
+        run: pnpm install --frozen-lockfile
+
       - name: 🛠 Compile NCL sources
-        run: yarn tsc
+        run: pnpm tsc
         working-directory: apps/native-component-list
+
       - name: 🚨 Lint NCL app
-        run: yarn lint --max-warnings 0
+        run: pnpm lint --max-warnings 0
         working-directory: apps/native-component-list
+
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main')

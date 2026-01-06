@@ -10,18 +10,19 @@ const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 function requireContext(base = '.', scanSubDirectories = true, regularExpression = /\.[tj]sx?$/, files = {}) {
     function readDirectory(directory) {
-        node_fs_1.default.readdirSync(directory).forEach((file) => {
-            const fullPath = node_path_1.default.resolve(directory, file);
+        const entries = node_fs_1.default.readdirSync(directory, { withFileTypes: true });
+        for (const entry of entries) {
+            const fullPath = node_path_1.default.resolve(directory, entry.name);
             const relativePath = `./${node_path_1.default.relative(base, fullPath).split(node_path_1.default.sep).join('/')}`;
-            if (node_fs_1.default.statSync(fullPath).isDirectory()) {
+            if (entry.isDirectory()) {
                 if (scanSubDirectories)
                     readDirectory(fullPath);
-                return;
+                continue;
             }
             if (!regularExpression.test(relativePath))
-                return;
+                continue;
             files[relativePath] = true;
-        });
+        }
     }
     if (node_fs_1.default.existsSync(base)) {
         readDirectory(base);

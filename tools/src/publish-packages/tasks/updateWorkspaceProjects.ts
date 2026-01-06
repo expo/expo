@@ -18,7 +18,7 @@ const { green, yellow, cyan } = chalk;
 export const updateWorkspaceProjects = new Task<TaskArgs>(
   {
     name: 'updateWorkspaceProjects',
-    filesToStage: ['**/package.json', 'yarn.lock'],
+    filesToStage: ['**/package.json', 'pnpm-lock.yaml'],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
     logger.info('\n📤 Updating workspace projects...');

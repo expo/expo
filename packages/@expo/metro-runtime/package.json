@@ -23,7 +23,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -50,7 +49,9 @@
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7",
+    "@types/react": "~19.2.0",
+    "expo-constants": "workspace:*",
+    "expo-module-scripts": "workspace:*",
     "react-dom": "19.2.0"
   }
 }

@@ -16,7 +16,7 @@ on:
       - packages/expo-updates/android/**
       - packages/expo-modules-core/**
       - tools/src/commands/AndroidNativeUnitTests.ts
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!packages/@expo/cli/**'
   pull_request:
     paths:
@@ -31,7 +31,7 @@ on:
       - packages/expo-updates/android/**
       - packages/expo-modules-core/**
       - tools/src/commands/AndroidNativeUnitTests.ts
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!packages/@expo/cli/**'
 
 concurrency:
@@ -49,14 +49,25 @@ jobs:
       matrix:
         api-level: [36]
     steps:
-      - name: ⬢ Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
       - name: 👀 Check out repository
         uses: actions/checkout@v4
         with:
           submodules: true
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: 🧶 Install node modules
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🔨 Use JDK 17
@@ -64,26 +75,22 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
           gradle: 'true'
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
           react-native-gradle-downloads: 'true'
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+
       - name: 📱 Run instrumented unit tests
         timeout-minutes: 80
         uses: ./.github/actions/use-android-emulator
         with:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
-          script: expotools android-native-unit-tests --type instrumented
+          script: pnpm expotools android-native-unit-tests --type instrumented
+
       - name: 💾 Save test results
         if: always()
         uses: actions/upload-artifact@v4

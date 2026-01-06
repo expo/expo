@@ -66,7 +66,7 @@ react {
     enableBundleCompression = false
 
     // Use Expo CLI to bundle the app, this ensures the Metro config works correctly with Expo projects.
-    cliFile = file(listOf("node", "--print", "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() })
+    cliFile = file(listOf("node", "--print", "require.resolve('expo/bin/cli')").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() })
     bundleCommand = "export:embed"
 
     /* Autolinking */

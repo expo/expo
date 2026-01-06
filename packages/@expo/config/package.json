@@ -7,7 +7,6 @@
     "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && yarn run build",
     "prepublishOnly": "expo-module prepublishOnly",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck"
@@ -48,8 +47,11 @@
     "sucrase": "~3.35.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.23.4",
+    "@types/getenv": "^1.0.0",
+    "@types/semver": "^7.5.8",
     "@types/require-from-string": "^1.2.1",
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

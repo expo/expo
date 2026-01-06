@@ -98,6 +98,7 @@ jobs:
               This comment acknowledges we believe this may be a bug and there’s enough information to investigate it.
               However, we can’t promise any sort of timeline for resolution. We prioritize issues based on severity, breadth of impact, and alignment with our roadmap. If you’d like to help move it more quickly, you can continue to investigate it more deeply and/or you can open a pull request that fixes the cause.
             `})
+
       - name: Remove "Needs Review" label
         uses: actions/github-script@v7
         with:
@@ -114,17 +115,26 @@ jobs:
                 throw e;
               }
             }
-      - name: 👀 Checkout
+
+      - name: 👀 Check out repository
         uses: actions/checkout@v4
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          yarn-tools: 'true'
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: 🧶 Install node modules
+        run: pnpm install --ignore-scripts
+
       - name: 🔎 Import issue to Linear
-        run: expotools import-github-issue-to-linear --issue "${{ github.event.issue.number }}" --importer "${{ github.triggering_actor }}"
+        run: pnpm expotools import-github-issue-to-linear --issue "${{ github.event.issue.number }}" --importer "${{ github.triggering_actor }}"
         env:
           GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
@@ -230,6 +240,7 @@ jobs:
               repo: context.repo.repo,
               state: 'closed'
             })
+
   comments-on-closed:
     runs-on: ubuntu-24.04
     if: "${{ github.event.label.name == 'Comments on closed issue' }}"
@@ -252,6 +263,7 @@ jobs:
               repo: context.repo.repo,
               lock_reason: 'resolved'
             })
+
   eas-build-troubleshooting:
     runs-on: ubuntu-24.04
     if: "${{ github.event.label.name == 'invalid issue: EAS Build troubleshooting' }}"
@@ -274,6 +286,7 @@ jobs:
               repo: context.repo.repo,
               state: 'closed'
             })
+
   version-bump:
     runs-on: ubuntu-24.04
     if: "${{ github.event.label.name == 'Version bump PR' }}"

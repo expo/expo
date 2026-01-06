@@ -8,7 +8,6 @@
     "build": "expo-module tsc",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "yarn run clean && yarn run build",
     "prepublishOnly": "expo-module prepublishOnly",
     "test": "expo-module test",
     "test:e2e": "expo-module clean && expo-module tsc && expo-module test --config e2e/jest.config.js",
@@ -42,8 +41,9 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/patch-project#readme",
   "devDependencies": {
-    "@expo/cli": "*",
-    "expo-module-scripts": "^5.0.7",
+    "@expo/cli": "workspace:*",
+    "@types/getenv": "^1.0.0",
+    "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
   },
   "dependencies": {

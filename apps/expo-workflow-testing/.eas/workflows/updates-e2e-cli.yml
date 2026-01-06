@@ -18,7 +18,7 @@ on:
 defaults:
   tools:
     node: 22.14.0
-    yarn: 1.22.22
+    pnpm: 10.x.x
 
 concurrency:
   group: ${{ workflow.filename }}-${{ github.ref }}
@@ -36,4 +36,4 @@ jobs:
         id: cli
         working_directory: ../../packages/expo-updates
         run: |
-          yarn test:e2e-cli --ci --runInBand
+          pnpm test:e2e-cli --ci --runInBand

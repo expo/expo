@@ -23,7 +23,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -48,8 +48,9 @@
     "preset": "expo-module-scripts"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7",
-    "jest-expo": "~54.0.11"
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*",
+    "jest-expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

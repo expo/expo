@@ -17,22 +17,22 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - name: 👀 Checkout
+      - name: 👀 Check out repository
         uses: actions/checkout@v4
-      - name: ⬢ Setup Node
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        with:
-          yarn-tools: 'true'
-      - name: 🧶 Yarn install
-        working-directory: tools
-        if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
-        run: yarn install --immutable
+          cache: 'pnpm'
+
+      - name: 🧶 Install node modules
+        run: pnpm install --ignore-scripts
 
       ### This job is run on Ubuntu which doesn't have SwiftLint installed, so we need to build it from sources.
       ### Building it on each run may take too much time, so we bundle the binary in `@expo/swiftlint` package.
@@ -51,6 +51,6 @@ jobs:
       #     include-hidden-files: true
 
       - name: 🔬 Reviewing a pull request
-        run: expotools code-review --pr ${{ github.event.inputs.pullNumber || github.event.number }}
+        run: pnpm expotools code-review --pr ${{ github.event.inputs.pullNumber || github.event.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}

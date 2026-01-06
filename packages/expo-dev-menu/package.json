@@ -10,7 +10,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -38,9 +38,10 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.7.4",
     "@testing-library/react-native": "^13.2.0",
+    "@types/node": "^22.14.0",
     "babel-plugin-module-resolver": "^5.0.0",
-    "babel-preset-expo": "~54.0.1",
-    "expo-module-scripts": "^5.0.7",
+    "babel-preset-expo": "workspace:*",
+    "expo-module-scripts": "workspace:*",
     "react": "19.2.0",
     "react-native": "0.83.1"
   },

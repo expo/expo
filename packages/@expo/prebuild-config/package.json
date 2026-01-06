@@ -7,8 +7,7 @@
     "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "prepare": "expo-module clean && yarn run build",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepublishOnly": "expo-module clean && pnpm run build",
     "test": "expo-module test",
     "typecheck": "expo-module typecheck"
   },
@@ -35,9 +34,10 @@
     "expo": "*"
   },
   "devDependencies": {
+    "@babel/cli": "^7.23.4",
     "@types/debug": "^4.1.5",
     "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "workspace:*"
   },
   "dependencies": {
     "@expo/config": "~12.0.9",
@@ -46,6 +46,7 @@
     "@expo/image-utils": "^0.8.7",
     "@expo/json-file": "^10.0.7",
     "@react-native/normalize-colors": "0.83.1",
+    "@types/semver": "^7.5.8",
     "debug": "^4.3.1",
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0",

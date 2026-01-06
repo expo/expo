@@ -19,7 +19,7 @@ exports[`renders Icon sf 1`] = `
 `;
 
 exports[`renders Icon src 1`] = `
-"1:{"name":"Icon","env":"Server","key":null,"owner":null,"props":{"src":{"testUri":"../../../packages/expo-router/assets/sitemap.png"}}}
+"1:{"name":"Icon","env":"Server","key":null,"owner":null,"props":{"src":{"testUri":"../../../../../../packages/expo-router/assets/sitemap.png"}}}
 0:D"$1"
 0:null"
 `;

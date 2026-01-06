@@ -36,49 +36,67 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+
       - name: 🔨 Switch to Xcode 26.0
         run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
+
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+
       - name: 💎 Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
           ruby-version: 3.2.2
+
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
           bare-expo-pods: 'true'
-      - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: 🚀 Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 🧶 Install node modules
+        run: pnpm install --frozen-lockfile
+
       - name: 🕵️ Debug CocoaPods lockfiles
         run: git diff Podfile.lock Pods/Manifest.lock
         working-directory: apps/bare-expo/ios
         continue-on-error: true
+
       - name: ⚛️ Display React Native config
-        run: yarn expo-modules-autolinking react-native-config --platform ios
+        run: pnpm expo-modules-autolinking react-native-config --platform ios
         working-directory: apps/bare-expo
+
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin main:main --depth 100 --no-recurse-submodules
         if: github.event_name == 'pull_request'
+
       - name: 🔎 Get the base commit
         id: base-commit
         run: |
           # Since we limit this workflow only triggered from limited paths, we should use custom base commit
           echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/test-suite.yml apps/bare-expo apps/test-suite packages yarn.lock) >> "$GITHUB_OUTPUT"
+
       - name: 📹 Check fingerprint
         id: fingerprint
         uses: expo/actions/fingerprint@main
@@ -87,6 +105,7 @@ jobs:
           previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
           fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
           fingerprint-db-cache-path: .fingerprint.db
+
       - name: 🏗️ Build/Repack iOS project (bare-expo)
         uses: expo/actions/repack-app-artifact@main
         timeout-minutes: 55
@@ -108,6 +127,7 @@ jobs:
             ./scripts/start-ios-e2e-test.ts --build
           build-output: apps/bare-expo/ios/build/BareExpo.app
           artifact-name: bare-expo-ios-builds
+
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
@@ -124,21 +144,19 @@ jobs:
         uses: actions/checkout@v5
         with:
           submodules: true
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+
       - name: 🔨 Switch to Xcode 26.0
         run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+
       - name: 🌠 Download builds
         uses: actions/download-artifact@v4
         with:
           name: bare-expo-ios-builds
           path: apps/bare-expo/ios/build/BareExpo.app
+
       - name: 🧹 Cleanup unused simulator runtimes
         run: |
           xcrun simctl list devices -j | jq -r '.devices | to_entries[] | select(.key | contains("iOS") | not) | .value[].udid' | xargs -r -n1 xcrun simctl delete
@@ -146,21 +164,35 @@ jobs:
           xcrun simctl erase all
           xcrun simctl shutdown all
           sudo xcodebuild -runFirstLaunch
+
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          yarn-workspace: 'true'
-      - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: 🚀 Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 🧶 Install node modules
+        run: pnpm install --frozen-lockfile
+
       - name: 🧶 Install image comparison server node modules
         run: yarn install --frozen-lockfile
         working-directory: apps/bare-expo/e2e/image-comparison
+
       - name: Build Screen Inspector
         run: ./scripts/build.sh
         working-directory: apps/bare-expo/e2e/image-comparison/inspector
@@ -170,12 +202,14 @@ jobs:
           ./image-comparison/src/server.ts > ~/.maestro/tests/screenshot-server-logs 2>&1 &
           echo $! > /tmp/image-server.pid
         working-directory: apps/bare-expo/e2e
+
       - name: 🧪 Run e2e tests (bare-expo)
         run: ./scripts/start-ios-e2e-test.ts --test
         working-directory: apps/bare-expo
         env:
           MAESTRO_CLI_NO_ANALYTICS: 1
         timeout-minutes: 40
+
       - name: 📸 Store testing artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -187,10 +221,12 @@ jobs:
             ~/Library/Logs/maestro/**/*
           overwrite: true
           include-hidden-files: true # .maestro is skipped otherwise
+
       - name: 🔗 Artifacts download URL
         if: always()
         run: |
           echo "Artifacts URL: ${{ steps.upload-artifacts.outputs.artifact-url }}"
+
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
@@ -199,6 +235,7 @@ jobs:
           channel: '#expo-ios'
           author_name: Test Suite e2e (iOS)
           artifact_url: ${{ steps.upload-artifacts.outputs.artifact-url }}
+
       - name: 🛑 Stop image comparison server
         if: always()
         run: |
@@ -218,49 +255,67 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
+
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
+
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
           gradle: 'true'
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
           react-native-gradle-downloads: 'true'
-      - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: 🚀 Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 🧶 Install node modules
+        run: pnpm install --frozen-lockfile
+
       - name: 🧶 Install image comparison server node modules
         run: yarn install --frozen-lockfile
         working-directory: apps/bare-expo/e2e/image-comparison
+
       - name: 🧪 Test image comparison utilities
         run: bun test
         working-directory: apps/bare-expo/e2e/image-comparison
+
       - name: ⚛️ Display React Native config
-        run: yarn expo-modules-autolinking react-native-config --platform android
+        run: pnpm expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
+
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin main:main --depth 100 --no-recurse-submodules
         if: github.event_name == 'pull_request'
+
       - name: 🔎 Get the base commit
         id: base-commit
         run: |
           # Since we limit this workflow only triggered from limited paths, we should use custom base commit
           echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/test-suite.yml apps/bare-expo apps/test-suite packages yarn.lock) >> "$GITHUB_OUTPUT"
+
       - name: 📹 Check fingerprint
         id: fingerprint
         uses: expo/actions/fingerprint@main
@@ -269,6 +324,7 @@ jobs:
           previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
           fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
           fingerprint-db-cache-path: .fingerprint.db
+
       - name: 🏗️ Build/Repack Android project (bare-expo)
         uses: expo/actions/repack-app-artifact@main
         timeout-minutes: 35
@@ -284,6 +340,7 @@ jobs:
             ./scripts/start-android-e2e-test.ts --build
           build-output: apps/bare-expo/android/app/build/outputs/apk/release
           artifact-name: bare-expo-android-builds
+
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
@@ -301,34 +358,44 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
+
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+
       - name: 🌠 Download builds
         uses: actions/download-artifact@v4
         with:
           name: bare-expo-android-builds
           path: apps/bare-expo/android/app/build/outputs/apk/release
+
       - name: 🍺 Install Maestro
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
+
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          yarn-workspace: 'true'
-      - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: 🚀 Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 🧶 Install node modules
+        run: pnpm install --frozen-lockfile
+
       - name: 🧶 Install image comparison server node modules
         run: yarn install --frozen-lockfile
         working-directory: apps/bare-expo/e2e/image-comparison
+
       - name: 🧪 Run e2e tests (bare-expo)
         uses: ./.github/actions/use-android-emulator
         with:
@@ -342,6 +409,7 @@ jobs:
             # Run the actual tests
             ./scripts/start-android-e2e-test.ts --test
           working-directory: ./apps/bare-expo
+
       - name: 📸 Store testing artifacts
         if: always()
         id: upload-artifacts
@@ -351,10 +419,12 @@ jobs:
           path: |
             ~/.maestro/tests/**/*
           overwrite: true
+
       - name: 🔗 Artifacts download URL
         if: always()
         run: |
           echo "Artifacts URL: ${{ steps.upload-artifacts.outputs.artifact-url }}"
+
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
@@ -363,6 +433,7 @@ jobs:
           channel: '#expo-android'
           author_name: Test Suite e2e (Android)
           artifact_url: ${{ steps.upload-artifacts.outputs.artifact-url }}
+
       - name: 🛑 Stop image comparison server
         if: always()
         run: |

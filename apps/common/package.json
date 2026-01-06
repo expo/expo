@@ -1,0 +1,13 @@
+{
+  "name": "expo-apps-common",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@expo/styleguide-base": "^1.0.1",
+    "react-native": "0.83.1",
+    "react": "19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.0"
+  }
+}

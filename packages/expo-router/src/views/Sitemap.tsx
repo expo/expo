@@ -22,6 +22,10 @@ import { useSitemap, SitemapType } from './useSitemap';
 import { Link } from '../link/Link';
 import { canOverrideStatusBarBehavior } from '../utils/statusbar';
 
+declare namespace global {
+  const HermesInternal: any;
+}
+
 const INDENT = 20;
 
 export function getNavOptions(): NativeStackNavigationOptions {

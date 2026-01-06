@@ -7,17 +7,9 @@
   "scripts": {
     "setup:docs": "./scripts/download-dependencies.sh",
     "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
-    "postinstall": "yarn-deduplicate && yarn workspace @expo/cli prepare && patch-package && node ./tools/bin/expotools.js validate-workspace-dependencies",
     "install:react-native-lab": "(([ \"$(ls -A react-native-lab/react-native)\" ] && (yarn --cwd react-native-lab/react-native install --frozen-lockfile || true)) || echo \"Skipping installing Node modules in react-native-lab/react-native (directory empty)\")",
     "lint": "eslint .",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
-  },
-  "workspaces": {
-    "packages": [
-      "apps/*",
-      "packages/*",
-      "packages/@expo/*"
-    ]
   },
   "resolutions": {
     "react": "19.2.0",
@@ -34,19 +26,33 @@
     "@react-navigation/native-stack": "7.8.0",
     "@react-navigation/routers": "7.5.1",
     "@react-navigation/stack": "7.6.7",
-    "**/util": "~0.12.4"
+    "@types/babel__core": "^7.20.5",
+    "@types/babel__generator": "^7.27.0",
+    "@types/babel__template": "^7.4.4",
+    "@types/babel__traverse": "^7.20.7",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "util": "~0.12.4"
   },
+  "// TODO": "This should be empty, remove remaining deps",
   "dependencies": {
     "eslint": "^8.57.1",
     "jsc-android": "^250231.0.0",
-    "patch-package": "^8.0.1",
+    "jest-expo": "workspace:*",
     "prettier": "^3.4.2",
-    "yarn-deduplicate": "^6.0.2"
+    "expo-asset": "workspace:*",
+    "expo-modules-core": "workspace:*"
   },
   "volta": {
     "node": "22.14.0"
   },
   "devDependencies": {
-    "ts-node": "^10.9.2"
+    "@types/jest": "^29.5.12",
+    "@vercel/ncc": "^0.38.4",
+    "expo-module-scripts": "workspace:*",
+    "expotools": "workspace:*",
+    "jest": "^29.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
   }
 }

@@ -6,11 +6,7 @@ import { chalk } from 'zx';
 
 import { packExpoBareTemplateTarballAsync } from './ExpoRepo.js';
 import { getNpmVersionAsync } from './Npm.js';
-import {
-  addWorkspacePackagesToAppAsync,
-  getExpoPackagesAsync,
-  reinstallPackagesAsync,
-} from './Packages.js';
+import { reinstallPackagesAsync } from './Packages.js';
 import { setDefaultVerbose } from './Processes.js';
 import {
   type ProjectProperties,
@@ -64,9 +60,8 @@ async function runAsync(programName: string) {
   );
   const expoRepoPath = await createExpoApp(projectRoot, projectProps);
 
-  const packages = await getExpoPackagesAsync(expoRepoPath);
-
-  await addWorkspacePackagesToAppAsync(projectRoot, packages);
+  // NOTE(@kitten): We used to set dependencies to `workspace:*` specifiers here manually for all packages
+  // However, this isn't needed as long as `preferWorkspacePackages: true` is set in `pnpm-workspace.yaml`
 
   console.log(chalk.cyan(`Reinstalling packages`));
   await reinstallPackagesAsync(projectRoot);
