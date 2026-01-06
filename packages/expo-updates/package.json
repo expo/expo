@@ -38,7 +38,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/code-signing-certificates": "0.0.5",
+    "@expo/code-signing-certificates": "^0.0.6",
     "@expo/config": "~11.0.13",
     "@expo/config-plugins": "~10.1.2",
     "@expo/spawn-async": "^1.7.2",
