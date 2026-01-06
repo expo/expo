@@ -200,11 +200,24 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   }
 
   private JobInfo createJobInfo(int jobId, ComponentName jobService, PersistableBundle extras) {
-    return new JobInfo.Builder(jobId, jobService)
-      .setExtras(extras)
-      .setMinimumLatency(0)
-      .setOverrideDeadline(DEFAULT_OVERRIDE_DEADLINE)
-      .build();
+    JobInfo.Builder jobBuilder = new JobInfo.Builder(jobId, jobService)
+        .setExtras(extras)
+        .setPersisted(true)
+        .setRequiresDeviceIdle(false);
+
+    if (Build.VERSION.SDK_INT < 28) {
+      // For Android versions below 28 (Android 9 and below)
+      jobBuilder.setMinimumLatency(0)
+          .setOverrideDeadline(DEFAULT_OVERRIDE_DEADLINE);
+    } else if (Build.VERSION.SDK_INT < 31) {
+      // For Android 9 (API 28) to Android 11 (API 30)
+      jobBuilder.setImportantWhileForeground(true);
+    } else {
+      // For Android 12 (API 31) and above
+      jobBuilder.setExpedited(true);
+    }
+
+    return jobBuilder.build();
   }
 
   private JobInfo createJobInfo(Context context, TaskInterface task, int jobId, List<PersistableBundle> data) {
