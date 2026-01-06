@@ -35,9 +35,10 @@ struct ProjectDetailsView: View {
             } else {
               VStack(spacing: 6) {
                 ForEach(project.updateBranches.prefix(3)) { branch in
-                  BranchRow(branch: branch) {
-                    openBranch(branch)
+                  NavigationLink(destination: BranchDetailsView(projectId: projectId, branchName: branch.name)) {
+                    BranchRowContent(branch: branch)
                   }
+                  .buttonStyle(PlainButtonStyle())
                 }
 
                 if project.updateBranches.count > 3 {
@@ -118,20 +119,6 @@ struct ProjectDetailsView: View {
     .padding()
     .background(Color.expoSecondarySystemBackground)
     .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
-  }
-
-  private func openBranch(_ branch: BranchDetail) {
-    guard let update = branch.updates.first else {
-      homeViewModel.showError("This branch has no published updates")
-      return
-    }
-
-    homeViewModel.openApp(url: update.manifestPermalink)
-    homeViewModel.addToRecentlyOpened(
-      url: update.manifestPermalink,
-      name: "\(viewModel.project?.name ?? "Project") - \(branch.name)",
-      iconUrl: nil
-    )
   }
 
   private func showShareSheet(for project: ProjectDetail) {

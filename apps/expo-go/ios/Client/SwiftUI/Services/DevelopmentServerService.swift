@@ -237,9 +237,39 @@ class DevelopmentServerService: ObservableObject {
   private func updateDevelopmentServers() {
     var merged: [String: DevelopmentServer] = [:]
     for server in localServers + remoteServers {
-      merged[server.url] = server
+      let key = dedupeKey(for: server)
+      if let existing = merged[key] {
+        merged[key] = preferredServer(existing: existing, candidate: server)
+      } else {
+        merged[key] = server
+      }
     }
     developmentServers = merged.values.sorted { $0.url < $1.url }
+  }
+
+  private func dedupeKey(for server: DevelopmentServer) -> String {
+    if !server.description.isEmpty && server.description != server.url {
+      return server.description.lowercased()
+    }
+    return normalizeUrl(server.url).lowercased()
+  }
+  
+  private func preferredServer(existing: DevelopmentServer, candidate: DevelopmentServer) -> DevelopmentServer {
+    if isLocalhostURL(existing.url) && !isLocalhostURL(candidate.url) {
+      return candidate
+    }
+    if isLocalhostURL(candidate.url) && !isLocalhostURL(existing.url) {
+      return existing
+    }
+    return existing
+  }
+  
+  private func isLocalhostURL(_ url: String) -> Bool {
+    guard let components = URLComponents(string: url),
+          let host = components.host?.lowercased() else {
+      return false
+    }
+    return host == "localhost" || host == "127.0.0.1"
   }
 
   private func absoluteIconUrl(_ iconUrl: String, baseUrl: String) -> String? {

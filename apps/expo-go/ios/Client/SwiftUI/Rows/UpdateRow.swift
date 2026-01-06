@@ -2,62 +2,58 @@
 
 import SwiftUI
 
-struct BranchRow: View {
-  let branch: BranchDetail
-  let onTap: () -> Void
+struct UpdateRow: View {
+  let update: AppUpdate
+  let isCompatible: Bool
+  let onOpen: () -> Void
 
   var body: some View {
     Button {
-      onTap()
+      if isCompatible {
+        onOpen()
+      }
     } label: {
-      BranchRowContent(branch: branch)
-    }
-    .buttonStyle(PlainButtonStyle())
-  }
-}
+      HStack(alignment: .top, spacing: 8) {
+        Image("update-icon")
+          .foregroundColor(.secondary)
+          .padding(.top, 2)
 
-struct BranchRowContent: View {
-  let branch: BranchDetail
-
-  var body: some View {
-    HStack(spacing: 12) {
-      VStack(alignment: .leading, spacing: 4) {
-        HStack {
-          Image("branch-icon")
-          Text("Branch: \(branch.name)")
+        VStack(alignment: .leading, spacing: 6) {
+          Text(updateTitle(update))
             .font(.body)
             .fontWeight(.semibold)
             .foregroundColor(.primary)
+            .lineLimit(1)
+
+          Text("Published \(formattedDate(update.createdAt))")
+            .font(.caption)
+            .foregroundColor(.secondary)
+            .lineLimit(1)
+
+          if !isCompatible {
+            Text("Not compatible with this version of Expo Go")
+              .font(.caption)
+              .foregroundColor(.secondary)
+              .lineLimit(1)
+          }
         }
 
-        if let update = branch.updates.first {
-          if let message = update.message, !message.isEmpty {
-            HStack {
-              Image("update-icon")
-              Text("\"\(message)\"")
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .lineLimit(1)
-            }
-          }
-          
-          Text("Published \(formattedDate(update.createdAt))")
+        Spacer()
+
+        if isCompatible {
+          Image(systemName: "chevron.right")
             .font(.caption)
             .foregroundColor(.secondary)
         }
       }
-
-      Spacer()
-
-      Image(systemName: "chevron.right")
-        .font(.caption)
-        .foregroundColor(.secondary)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding()
+      .background(Color.expoSecondarySystemBackground)
+      .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
     }
-    .padding()
-    .background(Color.expoSecondarySystemBackground)
-    .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
+    .buttonStyle(PlainButtonStyle())
   }
-  
+
   private func formattedDate(_ value: String) -> String {
     let formatters = [
       isoFormatter(withFractionalSeconds: true),
@@ -72,6 +68,13 @@ struct BranchRowContent: View {
       }
     }
     return value
+  }
+
+  private func updateTitle(_ update: AppUpdate) -> String {
+    if let message = update.message, !message.isEmpty {
+      return "\"\(message)\""
+    }
+    return update.id
   }
 
   private func isoFormatter(withFractionalSeconds: Bool) -> ISO8601DateFormatter {
