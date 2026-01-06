@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump to `@expo/code-signing-certificates@^0.0.6` ([#41965](https://github.com/expo/expo/pull/41965) by [@kitten](https://github.com/kitten))
+
 ## 29.0.15 — 2025-12-08
 
 _This version does not introduce any user-facing changes._
