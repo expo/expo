@@ -83,31 +83,34 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
     mTask ?: return
     val result = LocationResult.extractResult(intent)
     if (result != null) {
-      val locations = result.locations
-      // Foreground: report immediately for responsive UI (matches iOS behavior)
-      // Background: use deferred buffer for battery optimization
-      if (!mIsHostPaused) {
-        reportLocationsImmediately(locations)
-      } else {
-        deferLocations(locations)
-        maybeReportDeferredLocations()
-      }
+      handleLocationUpdate(result.locations)
     } else {
       try {
         mLocationClient.lastLocation.addOnCompleteListener { task ->
-          task.result?.let {
-            if (!mIsHostPaused) {
-              reportLocationsImmediately(listOf(it))
-            } else {
-              deferLocations(listOf(it))
-              maybeReportDeferredLocations()
-            }
-          }
+          task.result?.let { handleLocationUpdate(listOf(it)) }
         }
       } catch (e: SecurityException) {
         Log.e(TAG, "Cannot get last location: " + e.message)
       }
     }
+  }
+
+  /**
+   * Handles incoming location updates by either reporting immediately (foreground)
+   * or deferring for battery optimization (background).
+   */
+  private fun handleLocationUpdate(locations: List<Location>) {
+    if (locations.isEmpty()) return
+    
+    // Foreground: report immediately for responsive UI (matches iOS behavior)
+    if (!mIsHostPaused) {
+      reportLocationsImmediately(locations)
+      return
+    }
+    
+    // Background: use deferred buffer for battery optimization
+    deferLocations(locations)
+    maybeReportDeferredLocations()
   }
 
   override fun didExecuteJob(jobService: JobService, params: JobParameters): Boolean {
