@@ -13,6 +13,7 @@ class HomeViewModel: ObservableObject {
   @Published var recentlyOpenedApps: [RecentlyOpenedApp] = []
 
   @Published var showingAccountSheet = false
+  @Published var showingFeedbackForm = false
   @Published var errorToShow: ErrorInfo?
   @Published var isNetworkAvailable = true
 
@@ -208,6 +209,10 @@ class HomeViewModel: ObservableObject {
 
   func showAccountSheet() {
     showingAccountSheet = true
+  }
+
+  func showFeedbackForm() {
+    showingFeedbackForm = true
   }
 
   func showError(_ message: String, apiError: APIError? = nil) {
