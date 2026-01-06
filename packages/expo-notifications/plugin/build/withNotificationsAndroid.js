@@ -76,10 +76,10 @@ const withNotificationSounds = (config, { sounds }) => {
 };
 exports.withNotificationSounds = withNotificationSounds;
 function getNotificationIcon(config) {
-    return config.notification?.icon || null;
+    return null;
 }
 function getNotificationColor(config) {
-    return config.notification?.color || null;
+    return null;
 }
 function setNotificationIconColor(color, colors) {
     return Colors.assignColorValue(colors, {

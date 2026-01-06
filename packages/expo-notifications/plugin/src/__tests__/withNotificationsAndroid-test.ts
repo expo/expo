@@ -79,15 +79,6 @@ describe('Android notifications configuration', () => {
     expect(getNotificationColor({} as ExpoConfig)).toBeNull();
   });
 
-  it(`returns config if provided`, () => {
-    expect(getNotificationIcon({ notification: { icon: './myIcon.png' } } as ExpoConfig)).toMatch(
-      './myIcon.png'
-    );
-    expect(getNotificationColor({ notification: { color: '#123456' } } as ExpoConfig)).toMatch(
-      '#123456'
-    );
-  });
-
   it('writes all the asset files (sounds and images) as expected', async () => {
     await setNotificationIconAsync(projectRoot, '/app/assets/notificationIcon.png');
     setNotificationSounds(projectRoot, ['/app/assets/notification_sound.wav']);

@@ -104,11 +104,11 @@ export const withNotificationSounds: ConfigPlugin<{ sounds: string[] }> = (confi
 };
 
 export function getNotificationIcon(config: ExpoConfig) {
-  return config.notification?.icon || null;
+  return null;
 }
 
 export function getNotificationColor(config: ExpoConfig) {
-  return config.notification?.color || null;
+  return null;
 }
 
 export function setNotificationIconColor(
