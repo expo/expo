@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.0.24 — 2026-01-06
+
+### 💡 Others
+
 - [Android] Align `expo-gradle-plugin`'s CLI command to align with iOS invocation of `expo-modules-autolinking` ([#41264](https://github.com/expo/expo/pull/41264) by [@kitten](https://github.com/kitten))
 
 ## 3.0.23 — 2025-12-04

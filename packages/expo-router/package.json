@@ -81,7 +81,7 @@
     "@react-navigation/drawer": "^7.5.0",
     "@testing-library/react-native": ">= 12.0.0",
     "expo": "*",
-    "expo-constants": "^18.0.12",
+    "expo-constants": "^18.0.13",
     "expo-linking": "^8.0.11",
     "react": "*",
     "react-dom": "*",

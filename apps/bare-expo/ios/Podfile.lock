@@ -32,7 +32,7 @@ PODS:
   - EXAV (16.0.8):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
-  - EXConstants (18.0.12):
+  - EXConstants (18.0.13):
     - ExpoModulesCore
   - EXImageLoader (6.0.0):
     - ExpoModulesCore
@@ -44,12 +44,12 @@ PODS:
   - EXManifests/Tests (1.0.10):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - EXNotifications (0.32.15):
+  - EXNotifications (0.32.16):
     - ExpoModulesCore
-  - EXNotifications/Tests (0.32.15):
+  - EXNotifications/Tests (0.32.16):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.30):
+  - Expo (54.0.31):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -331,7 +331,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (54.0.30):
+  - Expo/Tests (54.0.31):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -600,7 +600,7 @@ PODS:
   - EXTaskManager (14.0.9):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (29.0.15):
+  - EXUpdates (29.0.16):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -628,7 +628,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - EXUpdates/Tests (29.0.15):
+  - EXUpdates/Tests (29.0.16):
     - EASClient
     - EXManifests
     - ExpoModulesCore
@@ -3585,12 +3585,12 @@ SPEC CHECKSUMS:
   EASClient: ed58524bf0bb6375fbf106e1877ab9ac4ce24623
   EXApplication: 13420f8139864183f8a04fd6099077bdf8cfb186
   EXAV: c2de1057f4d9b0bcbdd908c6f2dcff48ece36f2b
-  EXConstants: 6c818a84354d194cb4d5d78990108a7c0f590e30
+  EXConstants: 3feb66fd1d94202fc1f0946d74e029d8b224b60e
   EXImageLoader: e501c001bc40b8326605e82e6e80363c80fe06b5
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 83ef0844fcf06d6099b12a7bdbd7d36fc0e1dd16
-  EXNotifications: 66e91bc2cde4123b371773fd479bacd3cd699e79
-  Expo: 2cf54b756f8988bb3a4e6f7e78a2442c715b272a
+  EXNotifications: 2a3feb7af6194828d9aafda72f63a9a03866230a
+  Expo: 507febaad9779d813255fb7e18c1a658205c468d
   expo-dev-client: 12ef7d5b14d93e309922acea78dcd851db583a87
   expo-dev-launcher: 47994056008ffdc30a6a5e328a375b3e30a8db05
   expo-dev-menu: ea4fb803ace52e60d7cd8060c7cd379612a140b2
@@ -3658,7 +3658,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: 88b116cd378d9609c776c0903fe4070fca461588
   EXStructuredHeaders: c951e77f2d936f88637421e9588c976da5827368
   EXTaskManager: cdd7aa16ffc6b4b68e065ffb3795f26ad4fa6695
-  EXUpdates: 2cf71deb2a9c69a4e95f2e891cd105bca955c1c8
+  EXUpdates: b6e093bbead0d600f10a96c6cf131706e5861209
   EXUpdatesInterface: 1436757deb0d574b84bba063bd024c315e0ec08b
   FBLazyVector: e95a291ad2dadb88e42b06e0c5fb8262de53ec12
   hermes-engine: 9f4dfe93326146a1c99eb535b1cb0b857a3cd172
