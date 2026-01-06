@@ -4,7 +4,7 @@ import { warnOfExpoGoPushUsage } from './warnOfExpoGoPushUsage';
 /**
  * Subscribes the device to a push notification topic. This allows the device to receive notifications sent to that topic.
  * @param topic The topic name to subscribe to.
- * @return A Promise which resolves to `null` once the device is subscribed to the topic.
+ * @return a Promise which resolves to `null` once the device is subscribed to the topic.
  * @platform android
  */
 export async function subscribeToTopicAsync(topic) {
@@ -17,7 +17,7 @@ export async function subscribeToTopicAsync(topic) {
 /**
  * Unsubscribes the device from a push notification topic. The device will no longer receive notifications sent to that topic.
  * @param topic The topic name to unsubscribe from.
- * @return A Promise which resolves to `null` once the device is unsubscribed from the topic.
+ * @return a Promise which resolves to `null` once the device is unsubscribed from the topic.
  * @platform android
  */
 export async function unsubscribeFromTopicAsync(topic) {
