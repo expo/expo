@@ -139,7 +139,11 @@ export async function startAsync(
       Log.log(chalk`Waiting on {underline ${defaultServerUrl}}`);
     }
   }
-  mcpServer?.start();
+
+  if (mcpServer) {
+    addMcpCapabilities(mcpServer, devServerManager);
+    mcpServer.start();
+  }
 
   // Final note about closing the server.
   const logLocation = settings.webOnly ? 'in the browser console' : 'below';
