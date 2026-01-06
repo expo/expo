@@ -66,7 +66,10 @@ target 'Expo Go' do
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
   config_command = [
-    'npx',
+    'node',
+    '--no-warnings',
+    '--eval',
+    'require(\'expo/bin/autolinking\')',
     'expo-modules-autolinking',
     'react-native-config',
     '--json',
