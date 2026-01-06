@@ -54,13 +54,6 @@ type PackageManagerState = {
 const STORAGE_KEY = 'expo-docs-terminal-package-manager';
 
 const PACKAGE_MANAGER_ORDER: PackageManagerKey[] = ['npm', 'yarn', 'pnpm', 'bun'];
-const PACKAGE_MANAGER_LABELS: Record<PackageManagerKey, string> = {
-  npm: 'npm',
-  yarn: 'yarn',
-  pnpm: 'pnpm',
-  bun: 'bun',
-};
-
 export const Terminal = ({
   cmd,
   cmdCopy,
@@ -211,7 +204,7 @@ const PackageTabs = ({ managers, activeManager, onSelect, className }: PackageTa
           onClick={() => {
             onSelect(manager);
           }}>
-          {PACKAGE_MANAGER_LABELS[manager]}
+          {manager}
         </button>
       );
     })}
@@ -229,7 +222,7 @@ const PackageSelect = ({ managers, activeManager, onSelect, className }: Package
     onValueChange={onSelect as (value: string) => void}
     options={managers.map(manager => ({
       id: manager,
-      label: PACKAGE_MANAGER_LABELS[manager],
+      label: manager,
     }))}
     size="md"
   />
