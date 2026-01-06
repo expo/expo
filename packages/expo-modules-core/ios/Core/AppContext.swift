@@ -251,7 +251,9 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   /**
    Provides an event emitter that is compatible with the legacy interface.
+   - Deprecated as of Expo SDK 55. May be removed in the future releases.
    */
+  @available(*, deprecated, message: "Use `sendEvent` directly on the module instance instead")
   public var eventEmitter: LegacyEventEmitterCompat? {
     return LegacyEventEmitterCompat(appContext: self)
   }
