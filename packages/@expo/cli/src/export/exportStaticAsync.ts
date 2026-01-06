@@ -355,21 +355,16 @@ export async function exportFromServerAsync(
         .map((asset) => (baseUrl ? `${baseUrl}/${asset.filename}` : `/${asset.filename}`));
 
       // Add assets and rendering config to the routes manifest
-      const routesJsonEntry = files.get('_expo/routes.json');
-      if (routesJsonEntry) {
-        // NOTE(@hassankhan): We should ideally persist the manifest to `files` only once instead of
-        // modifying it afterwards. We'll need to refactor how `exportApiRoutesAsync()` works.
-        const manifest = JSON.parse(routesJsonEntry.contents as string);
-        manifest.assets = { css: cssAssets, js: jsAssets };
-        manifest.rendering = {
-          mode: 'ssr',
-          file: '_expo/server/render.js',
-        };
-        files.set('_expo/routes.json', {
-          ...routesJsonEntry,
-          contents: JSON.stringify(manifest, null, 2),
-        });
-      }
+      updateExportManifestInFiles({
+        files,
+        callback: (manifest) => {
+          manifest.assets = { css: cssAssets, js: jsAssets };
+          manifest.rendering = {
+            mode: 'ssr',
+            file: '_expo/server/render.js',
+          };
+        },
+      });
     }
   } else {
     warnPossibleInvalidExportType(appDir);
@@ -692,22 +687,39 @@ async function exportLoadersAsync({
     includeSourceMaps: true,
   });
 
-  const routesWithLoaders = new Set(entryPointModules);
-  // NOTE(@hassankhan): We should ideally persist the manifest to `files` only once instead of
-  // modifying it afterwards.
+  // Update `htmlRoutes` in routes manifest for routes that have loaders
+  updateExportManifestInFiles({
+    files,
+    callback: (manifest) => {
+      const routesWithLoaders = new Set(entryPointModules);
+      for (const route of manifest.htmlRoutes) {
+        if (routesWithLoaders.has(route.page)) {
+          route.loader = `_expo/loaders${route.page}.js`;
+        }
+      }
+    },
+  });
+
+  debug('Exported loaders for routes:', entryPointModules);
+}
+
+// NOTE(@hassankhan): We should ideally persist the manifest to `files` only once instead of
+// modifying it afterwards.
+function updateExportManifestInFiles({
+  files,
+  callback,
+}: {
+  files: ExportAssetMap;
+  callback: (manifest: RoutesManifest<string>) => void;
+}) {
   const routesJsonEntry = files.get('_expo/routes.json');
   if (routesJsonEntry) {
     const manifest = JSON.parse(routesJsonEntry.contents as string);
-    for (const route of manifest.htmlRoutes) {
-      if (routesWithLoaders.has(route.page)) {
-        route.loader = `_expo/loaders${route.page}.js`;
-      }
-    }
+    callback(manifest);
+
     files.set('_expo/routes.json', {
       ...routesJsonEntry,
       contents: JSON.stringify(manifest, null, 2),
     });
   }
-
-  debug('Exported loaders for routes:', entryPointModules);
 }
