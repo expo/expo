@@ -7,7 +7,6 @@ cliVersion: 16.28.0
 
 import { EASCLIReference } from '~/ui/components/EASCLIReference';
 import { Terminal } from '~/ui/components/Snippet';
-import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
 
 You can use EAS Command-Line Interface (CLI) to build, update, submit, deploy or use workflows in your Expo and React Native project from a terminal window.
 
@@ -15,51 +14,25 @@ You can use EAS Command-Line Interface (CLI) to build, update, submit, deploy or
 
 You need to install the EAS CLI globally on your machine. You do this by running the following command:
 
-<TabsGroup>
-
-<Tabs>
-
-<Tab label="npm">
-  <Terminal cmd={['$ npm install --global eas-cli']} />
-</Tab>
-
-<Tab label="yarn">
-  <Terminal cmd={['$ yarn global add eas-cli']} />
-</Tab>
-
-<Tab label="pnpm">
-  <Terminal cmd={['$ pnpm add -g eas-cli']} />
-</Tab>
-
-<Tab label="bun">
-  <Terminal cmd={['$ bun add -g eas-cli']} />
-</Tab>
-
-</Tabs>
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global eas-cli'],
+    yarn: ['$ yarn global add eas-cli'],
+    pnpm: ['$ pnpm add -g eas-cli'],
+    bun: ['$ bun add -g eas-cli'],
+  }}
+/>
 
 Alternatively, you can use CLI tools provided by your package manager to run EAS CLI commands:
 
-<Tabs>
-
-<Tab label="npm">
-  <Terminal cmd={['$ npx eas-cli@latest']} />
-</Tab>
-
-<Tab label="yarn">
-  <Terminal cmd={['$ yarn dlx eas-cli@latest']} />
-</Tab>
-
-<Tab label="pnpm">
-  <Terminal cmd={['$ pnpm dlx eas-cli@latest']} />
-</Tab>
-
-<Tab label="bun">
-  <Terminal cmd={['$ bunx eas-cli@latest']} />
-</Tab>
-
-</Tabs>
-
-</TabsGroup>
+<Terminal
+  cmd={{
+    npm: ['$ npx eas-cli@latest'],
+    yarn: ['$ yarn dlx eas-cli@latest'],
+    pnpm: ['$ pnpm dlx eas-cli@latest'],
+    bun: ['$ bunx eas-cli@latest'],
+  }}
+/>
 
 ## Commands
 
