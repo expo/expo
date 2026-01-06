@@ -1200,7 +1200,7 @@
         "additionalProperties": false
       },
       "locales": {
-        "description": "Provide overrides by locale for System Dialog prompts like Permissions Boxes",
+        "description": "Provide overrides by locale for System Dialog prompts like Permissions Boxes. Platform-specific locale strings should be nested under `ios` and `android` keys.",
         "type": "object",
         "properties": {},
         "meta": {

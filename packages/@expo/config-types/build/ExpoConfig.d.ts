@@ -226,7 +226,7 @@ export interface ExpoConfig {
         enableBsdiffPatchSupport?: boolean;
     };
     /**
-     * Provide overrides by locale for application name and System Dialog prompts like Permissions Boxes. [Learn more](https://docs.expo.dev/guides/localization/#translating-app-metadata).
+     * Provide overrides by locale for application name and System Dialog prompts like Permissions Boxes. Platform-specific locale strings should be nested under `ios` and `android` keys. [Learn more](https://docs.expo.dev/guides/localization/#translating-app-metadata).
      */
     locales?: {
         [k: string]: string | {
