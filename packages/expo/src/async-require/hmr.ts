@@ -305,8 +305,10 @@ function setHMRUnavailableReason(reason: string) {
   // previously managed to connect successfully. We don't want to show
   // the warning to native engineers who use cached bundles without Metro.
   if (hmrClient.isEnabled() && didConnect) {
-    // NOTE(@kitten): The timeout works around a Firefox quirk. In Chrome, the `close` event doesn't fire when the client reloads
-    // However, in Firefox, the event fires as a page refreshes or navigates which is a case for which we don't want to show any message
+    // NOTE(@kitten): The timeout works around a Firefox quirk
+    // In Firefox, unlike in Chrome, WebSockets fire a `close` event when a tab refreshes/navigates/closes, since this closes the WebSocket
+    // However, there's no good way to detect that this is happening or that the client initiated the `close` event
+    // To work around this, we schedule a timeout for our warning for 500ms which is long enough for this timer to never trigger
     setTimeout(() => {
       console.warn(reason);
     }, 500);
