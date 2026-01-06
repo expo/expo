@@ -3537,7 +3537,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNGestureHandler (2.28.0):
+  - RNGestureHandler (2.30.0):
     - boost
     - DoubleConversion
     - fast_float
