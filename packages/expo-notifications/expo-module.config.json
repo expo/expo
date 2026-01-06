@@ -29,6 +29,7 @@
       "expo.modules.notifications.notifications.scheduling.NotificationScheduler",
       "expo.modules.notifications.serverregistration.ServerRegistrationModule",
       "expo.modules.notifications.tokens.PushTokenModule",
+      "expo.modules.notifications.topics.TopicSubscriptionModule"
       "expo.modules.notifications.notifications.channels.AndroidXNotificationsChannelsProvider"
     ]
   }
