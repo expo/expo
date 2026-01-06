@@ -52,6 +52,7 @@ type PackageManagerState = {
 };
 
 const STORAGE_KEY = 'expo-docs-terminal-package-manager';
+const CHANGE_EVENT = 'expo-docs-terminal-package-manager-change';
 
 const PACKAGE_MANAGER_ORDER: PackageManagerKey[] = ['npm', 'yarn', 'pnpm', 'bun'];
 export const Terminal = ({
@@ -161,8 +162,41 @@ function usePackageManagerState(
     }
     if (activeManager) {
       window.localStorage.setItem(STORAGE_KEY, activeManager);
+      window.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: activeManager }));
     }
   }, [activeManager]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== STORAGE_KEY || !event.newValue) {
+        return;
+      }
+      const manager = event.newValue as PackageManagerKey;
+      if (!availableManagers.includes(manager) || manager === activeManager) {
+        return;
+      }
+      setActiveManager(manager);
+    };
+
+    const handleChange = (event: Event) => {
+      const manager = (event as CustomEvent<PackageManagerKey>).detail;
+      if (!manager || !availableManagers.includes(manager) || manager === activeManager) {
+        return;
+      }
+      setActiveManager(manager);
+    };
+
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener(CHANGE_EVENT, handleChange);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener(CHANGE_EVENT, handleChange);
+    };
+  }, [activeManager, availableManagers]);
 
   const shouldShowPackageTabs = availableManagers.length > 0;
   const activeCmd = useMemo(() => {
