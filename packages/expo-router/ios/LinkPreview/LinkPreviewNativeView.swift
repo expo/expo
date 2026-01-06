@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import RNScreens
 
-class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
+class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDelegate,
   RNSDismissibleModalProtocol, LinkPreviewMenuUpdatable {
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
@@ -19,7 +19,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
   private var actions: [LinkPreviewNativeActionView] = []
 
   private lazy var linkPreviewNativeNavigation: LinkPreviewNativeNavigation = {
-    return LinkPreviewNativeNavigation(logger: appContext?.jsLogger)
+    return LinkPreviewNativeNavigation(logger: logger)
   }()
 
   let onPreviewTapped = EventDispatcher()
@@ -53,64 +53,62 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
   }
 
   // MARK: - Children
-  #if RCT_NEW_ARCH_ENABLED
-    override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
-      if let previewView = childComponentView as? NativeLinkPreviewContentView {
-        preview = previewView
-      } else if let actionView = childComponentView as? LinkPreviewNativeActionView {
-        actionView.parentMenuUpdatable = self
-        actions.append(actionView)
-      } else {
-        if directChild != nil {
-          print(
-            "[expo-router] Found a second child of <Link.Trigger>. Only one is allowed. This is most likely a bug in expo-router."
-          )
-          return
-        }
-        directChild = childComponentView
-        if let interaction = self.interaction {
-          if let indirectTrigger = childComponentView as? LinkPreviewIndirectTriggerProtocol {
-            indirectTrigger.indirectTrigger?.addInteraction(interaction)
-          } else {
-            childComponentView.addInteraction(interaction)
-          }
-        }
-        super.mountChildComponentView(childComponentView, index: index)
+  override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
+    if let previewView = childComponentView as? NativeLinkPreviewContentView {
+      preview = previewView
+    } else if let actionView = childComponentView as? LinkPreviewNativeActionView {
+      actionView.parentMenuUpdatable = self
+      actions.append(actionView)
+    } else {
+      if directChild != nil {
+        logger?.warn(
+          "[expo-router] Found a second child of <Link.Trigger>. Only one is allowed. This is most likely a bug in expo-router."
+        )
+        return
       }
-    }
-
-    override func unmountChildComponentView(_ child: UIView, index: Int) {
-      if child is NativeLinkPreviewContentView {
-        preview = nil
-      } else if let actionView = child as? LinkPreviewNativeActionView {
-        actions.removeAll(where: {
-          $0 == actionView
-        })
-      } else {
-        if let directChild = directChild {
-          if directChild != child {
-            print(
-              "[expo-router] Unmounting unexpected child from <Link.Trigger>. This is most likely a bug in expo-router."
-            )
-            return
-          }
-          if let interaction = self.interaction {
-            if let indirectTrigger = directChild as? LinkPreviewIndirectTriggerProtocol {
-              indirectTrigger.indirectTrigger?.removeInteraction(interaction)
-            } else {
-              directChild.removeInteraction(interaction)
-            }
-          }
-          super.unmountChildComponentView(child, index: index)
+      directChild = childComponentView
+      if let interaction = self.interaction {
+        if let indirectTrigger = childComponentView as? LinkPreviewIndirectTriggerProtocol {
+          indirectTrigger.indirectTrigger?.addInteraction(interaction)
         } else {
-          print(
-            "[expo-router] No link child found to unmount. This is most likely a bug in expo-router."
+          childComponentView.addInteraction(interaction)
+        }
+      }
+      super.mountChildComponentView(childComponentView, index: index)
+    }
+  }
+
+  override func unmountChildComponentView(_ child: UIView, index: Int) {
+    if child is NativeLinkPreviewContentView {
+      preview = nil
+    } else if let actionView = child as? LinkPreviewNativeActionView {
+      actions.removeAll(where: {
+        $0 == actionView
+      })
+    } else {
+      if let directChild = directChild {
+        if directChild != child {
+          logger?.warn(
+            "[expo-router] Unmounting unexpected child from <Link.Trigger>. This is most likely a bug in expo-router."
           )
           return
         }
+        if let interaction = self.interaction {
+          if let indirectTrigger = directChild as? LinkPreviewIndirectTriggerProtocol {
+            indirectTrigger.indirectTrigger?.removeInteraction(interaction)
+          } else {
+            directChild.removeInteraction(interaction)
+          }
+        }
+        super.unmountChildComponentView(child, index: index)
+      } else {
+        logger?.warn(
+          "[expo-router] No link child found to unmount. This is most likely a bug in expo-router."
+        )
+        return
       }
     }
-  #endif
+  }
 
   // MARK: - UIContextMenuInteractionDelegate
 

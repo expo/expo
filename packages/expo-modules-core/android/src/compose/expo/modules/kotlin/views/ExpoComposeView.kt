@@ -60,6 +60,22 @@ abstract class ExpoComposeView<T : ComposeProps>(
     super.onMeasure(widthMeasureSpec, heightMeasureSpec)
   }
 
+  override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+    super.onLayout(changed, left, top, right, bottom)
+
+    // Makes sure the child ComposeView is sticky with the current hosting view
+    if (withHostingView) {
+      for (i in 0 until childCount) {
+        val child = getChildAt(i)
+        if (child is ComposeView) {
+          val offsetX = paddingLeft
+          val offsetY = paddingRight
+          child.layout(offsetX, offsetY, offsetX + width, offsetY + height)
+        }
+      }
+    }
+  }
+
   @Composable
   fun Children(composableScope: ComposableScope?) {
     for (index in 0..<this.size) {
@@ -150,9 +166,10 @@ class ExpoViewComposableScope(val view: ComposeFunctionHolder<*>) {
 class ComposeFunctionHolder<Props : ComposeProps>(
   context: Context,
   appContext: AppContext,
+  override val name: String,
   private val composableContent: @Composable ExpoViewComposableScope.(props: Props) -> Unit,
   override val props: Props
-) : ExpoComposeView<Props>(context, appContext) {
+) : ExpoComposeView<Props>(context, appContext), ViewFunctionHolder {
   val propsMutableState = mutableStateOf(props)
   val scope = ExpoViewComposableScope(this)
 

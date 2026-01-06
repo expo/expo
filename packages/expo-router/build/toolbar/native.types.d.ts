@@ -1,5 +1,6 @@
 import type { ColorValue } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
+import type { BasicTextStyle } from '../utils/font';
 export interface RouterToolbarHostProps {
     children?: React.ReactNode;
 }
@@ -20,11 +21,11 @@ export interface RouterToolbarItemProps {
     badgeConfiguration?: {
         value?: string;
         backgroundColor?: ColorValue;
-        color?: ColorValue;
-        fontFamily?: string;
-        fontSize?: number;
-        fontWeight?: string;
-    };
+    } & BasicTextStyle;
+    titleStyle?: BasicTextStyle;
+    accessibilityLabel?: string;
+    accessibilityHint?: string;
+    disabled?: boolean;
     onSelected?: () => void;
 }
 //# sourceMappingURL=native.types.d.ts.map

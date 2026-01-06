@@ -1,16 +1,18 @@
-import { getRouterE2ERoot } from "../__tests__/utils";
-import path from "node:path";
-import { createExpoServe, createExpoStart, executeExpoAsync } from "./expo";
-import { executeAsync, processFindPrefixedValue } from "./process";
-import fs from "node:fs";
-import { BackgroundServer, createBackgroundServer } from "./server";
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { createExpoServe, createExpoStart, executeExpoAsync } from './expo';
+import { executeAsync, processFindPrefixedValue } from './process';
+import { BackgroundServer, createBackgroundServer } from './server';
+import { getRouterE2ERoot } from '../__tests__/utils';
 
 export const RUNTIME_EXPO_SERVE = 'expo serve';
 export const RUNTIME_EXPO_START = 'expo start';
 export const RUNTIME_EXPRESS_SERVER = 'express';
 export const RUNTIME_WORKERD = 'workerd';
 
-type RuntimeType = typeof RUNTIME_EXPO_SERVE
+type RuntimeType =
+  | typeof RUNTIME_EXPO_SERVE
   | typeof RUNTIME_EXPO_START
   | typeof RUNTIME_EXPRESS_SERVER
   | typeof RUNTIME_WORKERD;
@@ -60,11 +62,14 @@ export type ServerTestOptions = {
  * });
  * ```
  */
-export function prepareServers(runtimes: RuntimeType[], options: ServerTestOptions): ServerTestConfiguration[] {
+export function prepareServers(
+  runtimes: RuntimeType[],
+  options: ServerTestOptions
+): ServerTestConfiguration[] {
   const { fixtureName } = options;
   const projectRoot = getRouterE2ERoot();
 
-  const exportEnv = options.export?.env ?? {}
+  const exportEnv = options.export?.env ?? {};
   const exportCliFlags = options.export?.cliFlags ?? [];
   const serveEnv = options.serve?.env ?? {};
 
@@ -117,7 +122,9 @@ export function prepareServers(runtimes: RuntimeType[], options: ServerTestOptio
         const outputName = `dist-${fixtureName}-express`;
         const outputDir = path.join(projectRoot, outputName);
 
-        await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputName, ...exportCliFlags],
+        await executeExpoAsync(
+          projectRoot,
+          ['export', '-p', 'web', '--output-dir', outputName, ...exportCliFlags],
           { env: defaultExportEnv }
         );
 
@@ -142,7 +149,7 @@ export function prepareServers(runtimes: RuntimeType[], options: ServerTestOptio
         await executeExpoAsync(
           projectRoot,
           ['export', '-p', 'web', '--output-dir', outputName, ...exportCliFlags],
-          {env: defaultExportEnv}
+          { env: defaultExportEnv }
         );
 
         await executeAsync(projectRoot, [
@@ -171,16 +178,14 @@ export function prepareServers(runtimes: RuntimeType[], options: ServerTestOptio
           port: 8787,
           cwd: projectRoot,
         }),
-    }
+    },
   };
 
   const knownRuntimes = Object.keys(knownRuntimeConfigs);
 
   return runtimes.map((runtime) => {
     if (!knownRuntimes.includes(runtime)) {
-      throw new Error(
-        `Unknown runtime "${runtime}". Known runtimes: ${knownRuntimes.join(', ')}`
-      );
+      throw new Error(`Unknown runtime "${runtime}". Known runtimes: ${knownRuntimes.join(', ')}`);
     }
 
     return {
@@ -217,7 +222,7 @@ export function setupServer(config: ServerTestConfiguration) {
   });
 
   return {
-    fetchAsync: (url: string, init?: RequestInit) => server.fetchAsync(url, init, {attempts: 7}),
+    fetchAsync: (url: string, init?: RequestInit) => server.fetchAsync(url, init, { attempts: 7 }),
     get outputDir() {
       if (!outputDir) {
         throw new Error('`outputDir` not available, `beforeAll()` has not run yet');

@@ -41,31 +41,22 @@ public:
   static auto constexpr kJavaDescriptor = "Lexpo/modules/kotlin/jni/JSIContext;";
   static auto constexpr TAG = "JSIContext";
 
-  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
-
   static void registerNatives();
 
-  /**
-   * Initializes the `ExpoModulesHostObject` and adds it to the global object.
-   */
-  void installJSI(
+  static jni::local_ref<JSIContext::javaobject> newJavaInstance(
+    jni::local_ref<jni::detail::HybridData> hybridData,
+    jni::alias_ref<jni::JWeakReference<jobject>::javaobject> runtimeContextHolder
+  );
+
+  JSIContext(
     jlong jsRuntimePointer,
     jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
-    jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder
-  ) noexcept;
+    std::shared_ptr<react::CallInvoker> callInvoker
+  );
 
-#if IS_NEW_ARCHITECTURE_ENABLED
-
-  /**
-     * Initializes the `ExpoModulesHostObject` and adds it to the global object.
-     */
-    void installJSIForBridgeless(
-      jlong jsRuntimePointer,
-      jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
-      jni::alias_ref<react::JRuntimeExecutor::javaobject> runtimeExecutor
-    );
-
-#endif
+  void bindToJavaPart(
+    jni::local_ref<JSIContext::javaobject> jThis
+  );
 
   /**
    * Gets a module for a given name. It will throw an exception if the module doesn't exist.
@@ -98,11 +89,6 @@ public:
    * Exposes a `JavaScriptRuntime::createObject` function to Kotlin
    */
   jni::local_ref<JavaScriptObject::javaobject> createObject() noexcept;
-
-  /**
-  * Gets a core module.
-  */
-  [[nodiscard]] jni::local_ref<JavaScriptModuleObject::javaobject> getCoreModule() const;
 
   /**
    * Adds a shared object to the internal registry
@@ -146,9 +132,6 @@ public:
 
   [[nodiscard]] bool wasDeallocated() const noexcept;
 
-private:
-  friend HybridBase;
-
   /*
    * We store two global references to the Java part of the JSIContext.registerClass
    * However, one is wrapped in additional abstraction to make it thread-safe,
@@ -158,18 +141,15 @@ private:
    */
   jni::global_ref<JSIContext::javaobject> javaPart_;
   std::shared_ptr<ThreadSafeJNIGlobalRef<JSIContext::javaobject>> threadSafeJThis;
+private:
+  friend HybridBase;
 
   bool wasDeallocated_ = false;
-
-
-  explicit JSIContext(jni::alias_ref<jhybridobject> jThis);
 
   [[nodiscard]] inline jni::local_ref<JavaScriptModuleObject::javaobject>
   callGetJavaScriptModuleObjectMethod(const std::string &moduleName) const;
 
   [[nodiscard]] inline jni::local_ref<jni::JArrayClass<jni::JString>> callGetJavaScriptModulesNames() const;
-
-  [[nodiscard]] inline jni::local_ref<JavaScriptModuleObject::javaobject> callGetCoreModuleObject() const;
 
   [[nodiscard]] inline bool callHasModule(const std::string &moduleName) const;
 

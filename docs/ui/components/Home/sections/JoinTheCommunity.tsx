@@ -5,9 +5,9 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { LinkedinIcon } from '@expo/styleguide-icons/custom/LinkedinIcon';
 import { RedditIcon } from '@expo/styleguide-icons/custom/RedditIcon';
 import { XLogoIcon } from '@expo/styleguide-icons/custom/XLogoIcon';
-import { YoutubeIcon } from '@expo/styleguide-icons/custom/YoutubeIcon';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { Lightbulb02Icon } from '@expo/styleguide-icons/outline/Lightbulb02Icon';
+import { YoutubeIcon } from '@expo/styleguide-icons/outline/YoutubeIcon';
 import { type ReactNode } from 'react';
 
 import { Header } from '~/ui/components/Home/components';

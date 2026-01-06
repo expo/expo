@@ -48,7 +48,7 @@ public final class ExpoUIModule: Module {
         view.focus()
       }
       AsyncFunction("setSelection") { (view: TextFieldView, start: Int, end: Int) in
-       view.setSelection(start: start, end: end)
+        view.setSelection(start: start, end: end)
       }
     }
     View(ShareLinkView.self) {
@@ -75,8 +75,7 @@ public final class ExpoUIModule: Module {
     View(GridRowView.self)
     View(LabeledContentLabel.self)
     View(LabeledContentContent.self)
-    View(LabelIcon.self)
-
+    View(LabelIcon.self)    
     View(HostView.self)
 
     // MARK: - Expo UI Views
@@ -85,10 +84,15 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ExpoUI.Button.self)
     ExpoUIView(ChartView.self)
     ExpoUIView(ColorPickerView.self)
-    ExpoUIView(DateTimePickerView.self)
+    ExpoUIView(DatePickerView.self)
     ExpoUIView(DisclosureGroupView.self)
     ExpoUIView(ExpoUI.ContentUnavailableView.self)
     ExpoUIView(ExpoUI.ContextMenu.self)
+    
+    // Menu component
+    ExpoUIView(MenuView.self)
+    View(MenuLabel.self)
+
     ExpoUIView(FormView.self)
     ExpoUIView(GaugeView.self)
     ExpoUIView(GroupView.self)
@@ -96,18 +100,22 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ImageView.self)
     ExpoUIView(LabelView.self)
     ExpoUIView(ListView.self)
-    
+
     // Picker
     ExpoUIView(PickerView.self)
     View(PickerContentView.self)
     View(PickerLabelView.self)
-    
+
     ExpoUIView(ExpoUI.ProgressView.self)
     ExpoUIView(SectionView.self)
+
+    // Slider
     ExpoUIView(SliderView.self)
+    View(SliderLabelView.self)
+
     ExpoUIView(SpacerView.self)
     ExpoUIView(StepperView.self)
-    ExpoUIView(SwitchView.self)
+    ExpoUIView(ToggleView.self)
     ExpoUIView(TextView.self)
     ExpoUIView(VStackView.self)
     ExpoUIView(ZStackView.self)

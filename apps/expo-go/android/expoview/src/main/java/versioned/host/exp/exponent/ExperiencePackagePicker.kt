@@ -26,7 +26,6 @@ import expo.modules.easclient.EASClientModule
 import expo.modules.fetch.ExpoFetchModule
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.legacy.FileSystemLegacyModule
-import expo.modules.filesystem.legacy.FileSystemPackage
 import expo.modules.font.FontLoaderModule
 import expo.modules.font.FontUtilsModule
 import expo.modules.gl.GLModule
@@ -37,7 +36,6 @@ import expo.modules.imagemanipulator.ImageManipulatorModule
 import expo.modules.imagepicker.ImagePickerModule
 import expo.modules.intentlauncher.IntentLauncherModule
 import expo.modules.keepawake.KeepAwakeModule
-import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
@@ -91,10 +89,8 @@ object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
     ConstantsPackage(),
-    FileSystemPackage(),
     ExpoLinkingPackage(),
     ImageLoaderPackage(),
-    KeepAwakePackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
     SplashScreenPackage(),

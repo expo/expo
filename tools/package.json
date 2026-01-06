@@ -62,7 +62,7 @@
     "strip-ansi": "^6.0.0",
     "tar": "^7.4.3",
     "terminal-link": "^2.1.1",
-    "typedoc": "0.27.6",
+    "typedoc": "^0.28.15",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

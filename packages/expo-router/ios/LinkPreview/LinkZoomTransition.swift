@@ -3,12 +3,14 @@ import RNScreens
 import UIKit
 
 class LinkSourceInfo {
-  let alignment: CGRect?
+  var alignment: CGRect?
+  var animateAspectRatioChange: Bool
   weak var view: UIView?
 
-  init(view: UIView, alignment: CGRect?) {
-    self.alignment = alignment
+  init(view: UIView, alignment: CGRect?, animateAspectRatioChange: Bool) {
     self.view = view
+    self.alignment = alignment
+    self.animateAspectRatioChange = animateAspectRatioChange
   }
 }
 
@@ -16,7 +18,11 @@ class LinkZoomTransitionsSourceRepository {
   private var sources: [String: LinkSourceInfo] = [:]
   private let lock = NSLock()
 
-  init() {}
+  private weak var logger: Logger?
+
+  init(logger: Logger?) {
+    self.logger = logger
+  }
 
   func registerSource(
     identifier: String,
@@ -25,8 +31,8 @@ class LinkZoomTransitionsSourceRepository {
     lock.lock()
     defer { lock.unlock() }
     if sources[identifier] != nil {
-      print(
-        "[expo-router] LinkPreviewZoomTransitionSource with identifier \(identifier) is already registered. Overwriting the existing source."
+      logger?.warn(
+        "[expo-router] Link.AppleZoom with identifier \(identifier) is already registered. This means that you used two sources for the same target, which is not supported and may lead to unexpected behavior."
       )
     }
     if !identifier.isEmpty {
@@ -66,11 +72,19 @@ class LinkZoomTransitionsSourceRepository {
   ) {
     lock.lock()
     defer { lock.unlock() }
-    if let source = sources[identifier], let view = source.view, !identifier.isEmpty {
-      sources[identifier] = LinkSourceInfo(
-        view: view,
-        alignment: alignment,
-      )
+    if let source = sources[identifier], !identifier.isEmpty {
+      source.alignment = alignment
+    }
+  }
+
+  func updateAnimateAspectRatioChange(
+    identifier: String,
+    animateAspectRatioChange: Bool
+  ) {
+    lock.lock()
+    defer { lock.unlock() }
+    if let source: LinkSourceInfo = sources[identifier], !identifier.isEmpty {
+      source.animateAspectRatioChange = animateAspectRatioChange
     }
   }
 }
@@ -127,11 +141,21 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
 
   var alignment: CGRect? {
     didSet {
-      // Update alignment info in the sourceRepository
       if child != nil {
         sourceRepository?.updateAlignment(
           identifier: identifier,
           alignment: alignment
+        )
+      }
+    }
+  }
+
+  var animateAspectRatioChange: Bool = false {
+    didSet {
+      if child != nil {
+        sourceRepository?.updateAnimateAspectRatioChange(
+          identifier: identifier,
+          animateAspectRatioChange: animateAspectRatioChange
         )
       }
     }
@@ -144,7 +168,9 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
         if oldValue.isEmpty {
           sourceRepository?.registerSource(
             identifier: identifier,
-            source: LinkSourceInfo(view: child, alignment: alignment)
+            source: LinkSourceInfo(
+              view: child, alignment: alignment,
+              animateAspectRatioChange: animateAspectRatioChange)
           )
         } else {
           sourceRepository?.updateIdentifier(
@@ -164,27 +190,30 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
     _ childComponentView: UIView,
     index: Int
   ) {
-    if child != nil {
-      print(
-        "[expo-router] LinkZoomTransitionSource can only have one child view."
+    guard child == nil else {
+      logger?.warn(
+        "[expo-router] Link.AppleZoom can only have a single native child. If you passed a single child, consider adding collapsible={false} to your component"
       )
       return
     }
     child = childComponentView
     sourceRepository?.registerSource(
       identifier: identifier,
-      source: LinkSourceInfo(view: childComponentView, alignment: alignment)
+      source: LinkSourceInfo(
+        view: childComponentView, alignment: alignment,
+        animateAspectRatioChange: animateAspectRatioChange)
     )
     super.mountChildComponentView(childComponentView, index: index)
   }
 
   override func unmountChildComponentView(_ child: UIView, index: Int) {
-    if child == self.child {
-      self.child = nil
-      sourceRepository?.unregisterSource(
-        identifier: identifier
-      )
+    guard child == self.child else {
+      return
     }
+    self.child = nil
+    sourceRepository?.unregisterSource(
+      identifier: identifier
+    )
     super.unmountChildComponentView(child, index: index)
   }
 }
@@ -195,8 +224,8 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
   var identifier: String = "" {
     didSet {
       if oldValue != identifier && !oldValue.isEmpty {
-        print(
-          "[expo-router] LinkZoomTransitionAlignmentRectDetector does not support changing the identifier after it has been set."
+        logger?.warn(
+          "[expo-router] LinkZoomTransitionAlignmentRectDetector does not support changing the identifier after it has been set. This is most likely an internal bug in expo-router."
         )
         return
       }
@@ -213,9 +242,9 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
     _ childComponentView: UIView,
     index: Int
   ) {
-    if child != nil {
-      print(
-        "[expo-router] LinkZoomTransitionAlignmentRectDetector can only have one child view."
+    guard child == nil else {
+      logger?.warn(
+        "[expo-router] Link.AppleZoomTarget can only have a single native child. If you passed a single child, consider adding collapsible={false} to your component"
       )
       return
     }
@@ -230,13 +259,14 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
   }
 
   override func unmountChildComponentView(_ child: UIView, index: Int) {
-    if child == self.child {
-      self.child = nil
-      alignmentViewRepository?.removeIfSame(
-        identifier: identifier,
-        alignmentView: child
-      )
+    guard child == self.child else {
+      return
     }
+    self.child = nil
+    alignmentViewRepository?.removeIfSame(
+      identifier: identifier,
+      alignmentView: child
+    )
     super.unmountChildComponentView(child, index: index)
   }
 }
@@ -257,7 +287,7 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
 
   private func setupZoomTransition() {
     if self.zoomTransitionSourceIdentifier.isEmpty {
-      print("[expo-router] No zoomTransitionSourceIdentifier passed to LinkZoomTransitionEnabler")
+      logger?.warn("[expo-router] No zoomTransitionSourceIdentifier passed to LinkZoomTransitionEnabler. This is most likely a bug in expo-router.")
       return
     }
     if let controller = self.findViewController() {
@@ -265,17 +295,28 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
         let options = UIViewController.Transition.ZoomOptions()
 
         options.alignmentRectProvider = { context in
-          let sourceInfo = self.sourceRepository?.getSource(
-            identifier: self.zoomTransitionSourceIdentifier)
-          let alignmentView = self.alignmentViewRepository?.get(
-            identifier: self.zoomTransitionSourceIdentifier)
-          if let alignmentView = alignmentView {
-            return alignmentView.convert(
-              alignmentView.bounds,
-              to: context.zoomedViewController.view
-            )
+          guard
+            let sourceInfo = self.sourceRepository?.getSource(
+              identifier: self.zoomTransitionSourceIdentifier)
+          else {
+            return nil
           }
-          return sourceInfo?.alignment
+          guard
+            let alignmentView = self.alignmentViewRepository?.get(
+              identifier: self.zoomTransitionSourceIdentifier)
+          else {
+            return sourceInfo.alignment
+          }
+
+          let rect = alignmentView.convert(
+            alignmentView.bounds,
+            to: context.zoomedViewController.view
+          )
+          if sourceInfo.animateAspectRatioChange,
+            let sourceView = sourceInfo.view {
+            return self.calculateAdjustedRect(rect, toMatch: sourceView.bounds.size)
+          }
+          return rect
         }
         options.interactiveDismissShouldBegin = { _ in
           !self.isPreventingInteractiveDismissal
@@ -288,8 +329,8 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
             view = linkPreviewView.directChild
           }
           guard let view else {
-            print(
-              "[expo-router] No source view found for identifier \(self.zoomTransitionSourceIdentifier) to enable zoom transition"
+            self.logger?.warn(
+              "[expo-router] No source view found for identifier \(self.zoomTransitionSourceIdentifier) to enable zoom transition. This is most likely a bug in expo-router."
             )
             return nil
           }
@@ -298,8 +339,43 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
         return
       }
     } else {
-      print("[expo-router] No navigation controller found to enable zoom transition")
+      logger?.warn("[expo-router] No navigation controller found to enable zoom transition. This is most likely a bug in expo-router.")
     }
+  }
+
+  private func calculateAdjustedRect(
+    _ rect: CGRect, toMatch sourceSize: CGSize
+  ) -> CGRect {
+    guard sourceSize.width > 0, sourceSize.height > 0,
+      rect.width > 0, rect.height > 0
+    else {
+      return rect
+    }
+    let sourceAspectRatio = sourceSize.width / sourceSize.height
+    let rectAspectRatio = rect.width / rect.height
+
+    if abs(sourceAspectRatio - rectAspectRatio) < 0.001 {
+      return rect  // Aspect ratios are essentially equal
+    }
+
+    if rectAspectRatio > sourceAspectRatio {
+      // Rect is wider - adjust width
+      let adjustedWidth = rect.height * sourceAspectRatio
+      return CGRect(
+        x: rect.midX - (adjustedWidth / 2),
+        y: rect.origin.y,
+        width: adjustedWidth,
+        height: rect.height
+      )
+    }
+    // Rect is taller - adjust height
+    let adjustedHeight = rect.width / sourceAspectRatio
+    return CGRect(
+      x: rect.origin.x,
+      y: rect.midY - (adjustedHeight / 2),
+      width: rect.width,
+      height: adjustedHeight
+    )
   }
 
   private func findViewController() -> RNSScreen? {
@@ -314,7 +390,7 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
   }
 }
 
-class LinkZoomExpoView: ExpoView {
+class LinkZoomExpoView: RouterViewWithLogger {
   var module: LinkPreviewNativeModule? {
     return appContext?.moduleRegistry.get(moduleWithName: LinkPreviewNativeModule.moduleName)
       as? LinkPreviewNativeModule
@@ -322,7 +398,7 @@ class LinkZoomExpoView: ExpoView {
 
   var sourceRepository: LinkZoomTransitionsSourceRepository? {
     guard let module else {
-      print("[expo-router] LinkPreviewNativeModule not loaded")
+      logger?.warn("[expo-router] LinkPreviewNativeModule not loaded. Make sure expo-router is properly configured.")
       return nil
     }
     return module.zoomSourceRepository
@@ -330,7 +406,7 @@ class LinkZoomExpoView: ExpoView {
 
   var alignmentViewRepository: LinkZoomTransitionsAlignmentViewRepository? {
     guard let module else {
-      print("[expo-router] LinkPreviewNativeModule not loaded")
+      logger?.warn("[expo-router] LinkPreviewNativeModule not loaded.  Make sure expo-router is properly configured.")
       return nil
     }
     return module.zoomAlignmentViewRepository

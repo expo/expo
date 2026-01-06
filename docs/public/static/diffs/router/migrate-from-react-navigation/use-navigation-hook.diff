@@ -1,0 +1,14 @@
+diff --git a/app/index.tsx b/app/index.tsx
+index 0000000..1111111 100644
+--- a/app/index.tsx
++++ b/app/index.tsx
+@@ -1,4 +1,6 @@
++import { useNavigation } from 'expo-router';
+
+export default function Page() {
++ const navigation = useNavigation();
+
+  return (
+    <Button onPress={navigation.navigate('screenName')}>
+  )
+}

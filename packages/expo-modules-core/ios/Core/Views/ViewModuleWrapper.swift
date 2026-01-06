@@ -14,7 +14,7 @@ protocol DynamicModuleWrapperProtocol {
  Unfortunately, we can't use just one class because React Native checks for duplicated classes.
  We're generating its subclasses in runtime as a workaround.
  */
-@objc
+@objc(EXViewModuleWrapper)
 public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtocol {
   /**
    A reference to the module holder that stores the module definition.

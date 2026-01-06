@@ -1,4 +1,5 @@
 import versions from '~/public/static/constants/versions.json';
+import easCliData from '~/ui/components/EASCLIReference/data/eas-cli-commands.json';
 import { getThreeVersions } from '~/ui/components/SDKTables/utils';
 
 import { generateApiSectionMarkdownAsync } from './apiSectionMarkdown';
@@ -30,6 +31,7 @@ type SchemaMarkdownReplacer = {
 type MarkdownContext = {
   path?: string;
   packageName?: string;
+  cliVersion?: string;
 };
 
 export async function prepareMarkdownForCopyAsync(
@@ -44,6 +46,7 @@ export async function prepareMarkdownForCopyAsync(
   let title = '';
   let description = '';
   let pagePackageName = context.packageName ?? '';
+  let pageCliVersion = context.cliVersion ?? '';
   let pagePlatforms: string[] = [];
 
   const frontmatterMatch = content.match(FRONTMATTER_PATTERN);
@@ -70,6 +73,9 @@ export async function prepareMarkdownForCopyAsync(
       if (key === 'description') {
         description = value;
       }
+      if (key === 'cliVersion') {
+        pageCliVersion = value;
+      }
       if (key === 'packageName') {
         pagePackageName = value;
       }
@@ -87,6 +93,7 @@ export async function prepareMarkdownForCopyAsync(
   const enrichedContext: MarkdownContext = {
     ...context,
     packageName: pagePackageName || context.packageName,
+    cliVersion: pageCliVersion || context.cliVersion,
   };
 
   const schemaImports = extractSchemaImports(content);
@@ -117,6 +124,11 @@ export async function prepareMarkdownForCopyAsync(
   if (content.includes('<TemplateFeatures')) {
     const features = await generateTemplateFeaturesMarkdownAsync();
     content = content.replace(/<TemplateFeatures\s*\/>/, `\n${features}\n`);
+  }
+
+  if (content.includes('<EASCLIReference')) {
+    const easCliMarkdown = generateEasCliReferenceMarkdown(pageCliVersion || context.cliVersion);
+    content = content.replace(/<EASCLIReference\s*\/>/g, `\n${easCliMarkdown}\n`);
   }
 
   content = stripLayoutComponents(content);
@@ -343,6 +355,57 @@ function renderFileTreeAscii(structure: FileTreeNode[]): string[] {
   }
 
   return lines;
+}
+
+type EasCliCommand = {
+  command: string;
+  description?: string;
+  usage?: string;
+};
+
+function normalizeEasCliDescription(description?: string) {
+  const trimmed = description?.trim();
+  if (!trimmed) {
+    return '';
+  }
+
+  const prefixed = /^[A-Z]/.test(trimmed)
+    ? trimmed
+    : `${trimmed[0].toUpperCase()}${trimmed.slice(1)}`;
+
+  return prefixed.endsWith('.') ? prefixed : `${prefixed}.`;
+}
+
+function generateEasCliReferenceMarkdown(cliVersion?: string) {
+  const commands: EasCliCommand[] = Array.isArray((easCliData as any)?.commands)
+    ? ((easCliData as any).commands as EasCliCommand[])
+    : [];
+
+  if (commands.length === 0) {
+    return '';
+  }
+
+  const version = cliVersion?.trim() ?? (easCliData as any)?.source?.cliVersion;
+  const header = version ? `### EAS CLI commands (v${version})` : '### EAS CLI commands';
+
+  const commandBlocks = commands
+    .map(command => {
+      const description = normalizeEasCliDescription(command.description);
+      const usage = command.usage?.trim();
+
+      const lines = [`#### ${command.command}`];
+      if (description) {
+        lines.push(description);
+      }
+      if (usage) {
+        lines.push('```sh', usage, '```');
+      }
+
+      return lines.join('\n\n');
+    })
+    .join('\n\n');
+
+  return [header, commandBlocks].filter(Boolean).join('\n\n');
 }
 
 function findBoxLinkClosingIndex(source: string, searchStart: number) {
@@ -653,6 +716,8 @@ function stripLayoutComponents(content: string) {
   cleaned = cleaned.replace(/<RedirectNotification[^>]*>[\S\s]*?<\/RedirectNotification>/g, '');
   cleaned = cleaned.replace(/<CodeBlocksTable\b[^>]*>/g, '').replace(/<\/CodeBlocksTable>/g, '');
   cleaned = cleaned.replace(/<TabsGroup\b[^>]*>/g, '').replace(/<\/TabsGroup>/g, '');
+  cleaned = cleaned.replace(/<Tabs\b[^>]*>/g, '').replace(/<\/Tabs>/g, '');
+  cleaned = cleaned.replace(/<Tab\b[^>]*>/g, '').replace(/<\/Tab>/g, '');
   cleaned = cleaned.replace(/<\/PaddedAPIBox>/g, '');
   cleaned = cleaned.replace(/<PaddedAPIBox\b([^>]*)>/g, (_match, attributes) => {
     const header = extractAttributeValue(`<PaddedAPIBox ${attributes}>`, 'header');

@@ -10,8 +10,6 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
-import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -24,17 +22,18 @@ import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposeProps
-import java.io.Serializable
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposableScope
-import expo.modules.ui.DynamicTheme
+import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.ui.ExpoModifier
 import expo.modules.ui.ShapeRecord
 import expo.modules.ui.compose
 import expo.modules.ui.fromExpoModifiers
 import expo.modules.ui.getImageVector
 import expo.modules.ui.shapeFromShapeRecord
+import java.io.Serializable
 
 open class ButtonPressedEvent() : Record, Serializable
 
@@ -173,37 +172,35 @@ class Button(context: Context, appContext: AppContext) :
     val (trailingIcon) = props.trailingIcon
     val (disabled) = props.disabled
 
-    DynamicTheme {
-      StyledButton(
-        variant ?: ButtonVariant.DEFAULT,
-        colors,
-        disabled ?: false,
-        onPress = { onButtonPressed.invoke(ButtonPressedEvent()) },
-        modifier = Modifier.fromExpoModifiers(props.modifiers.value, composableScope = this@Content),
-        shape = shapeFromShapeRecord(props.shape.value)
-      ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-          Children(ComposableScope(rowScope = this))
-          leadingIcon?.let { iconName ->
-            getImageVector(iconName)?.let {
-              Icon(
-                it,
-                contentDescription = iconName,
-                modifier = Modifier.padding(end = 8.dp)
-              )
-            }
+    StyledButton(
+      variant ?: ButtonVariant.DEFAULT,
+      colors,
+      disabled ?: false,
+      onPress = { onButtonPressed.invoke(ButtonPressedEvent()) },
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, composableScope = this@Content),
+      shape = shapeFromShapeRecord(props.shape.value)
+    ) {
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Children(ComposableScope(rowScope = this))
+        leadingIcon?.let { iconName ->
+          getImageVector(iconName)?.let {
+            Icon(
+              it,
+              contentDescription = iconName,
+              modifier = Modifier.padding(end = 8.dp)
+            )
           }
+        }
 
-          Text(text)
+        Text(text)
 
-          trailingIcon?.let { iconName ->
-            getImageVector(iconName)?.let {
-              Icon(
-                it,
-                contentDescription = iconName,
-                modifier = Modifier.padding(start = 8.dp)
-              )
-            }
+        trailingIcon?.let { iconName ->
+          getImageVector(iconName)?.let {
+            Icon(
+              it,
+              contentDescription = iconName,
+              modifier = Modifier.padding(start = 8.dp)
+            )
           }
         }
       }

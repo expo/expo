@@ -40,6 +40,7 @@ const react_native_1 = require("react-native");
 const react_native_screens_1 = require("react-native-screens");
 const experimental_1 = require("react-native-screens/experimental");
 const appearance_1 = require("./appearance");
+const color_1 = require("../color");
 const elements_1 = require("./common/elements");
 const types_1 = require("./types");
 const icon_1 = require("./utils/icon");
@@ -73,11 +74,29 @@ function NativeTabsView(props) {
         : sidebarAdaptable === false
             ? 'tabBar'
             : 'automatic';
+    // Material Design 3 dynamic color defaults for Android
+    const androidMaterialDefaults = process.env.EXPO_OS === 'android'
+        ? {
+            inactiveColor: color_1.Color.android.dynamic.onSurfaceVariant,
+            activeIconColor: color_1.Color.android.dynamic.onSecondaryContainer,
+            activeLabelColor: color_1.Color.android.dynamic.onSurface,
+            backgroundColor: color_1.Color.android.dynamic.surfaceContainer,
+            rippleColor: color_1.Color.android.dynamic.primary,
+            indicatorColor: color_1.Color.android.dynamic.secondaryContainer,
+        }
+        : undefined;
     return (<BottomTabsWrapper 
     // #region android props
-    tabBarItemTitleFontColor={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor} tabBarItemTitleFontFamily={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontFamily} tabBarItemTitleFontSize={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontSizeActive={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontWeight={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontWeight} tabBarItemTitleFontStyle={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontStyle} tabBarItemIconColor={currentTabAppearance?.stacked?.normal?.tabBarItemIconColor} tabBarBackgroundColor={currentTabAppearance?.tabBarBackgroundColor} tabBarItemRippleColor={props.rippleColor} tabBarItemLabelVisibilityMode={props.labelVisibilityMode} tabBarItemIconColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemIconColor ?? props?.tintColor} tabBarItemTitleFontColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemTitleFontColor ?? props?.tintColor} 
+    tabBarItemTitleFontColor={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor ??
+            androidMaterialDefaults?.inactiveColor} tabBarItemTitleFontFamily={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontFamily} tabBarItemTitleFontSize={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontSizeActive={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontWeight={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontWeight} tabBarItemTitleFontStyle={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontStyle} tabBarItemIconColor={currentTabAppearance?.stacked?.normal?.tabBarItemIconColor ??
+            androidMaterialDefaults?.inactiveColor} tabBarBackgroundColor={currentTabAppearance?.tabBarBackgroundColor ?? androidMaterialDefaults?.backgroundColor} tabBarItemRippleColor={props.rippleColor ?? androidMaterialDefaults?.rippleColor} tabBarItemLabelVisibilityMode={props.labelVisibilityMode} tabBarItemIconColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemIconColor ??
+            props?.tintColor ??
+            androidMaterialDefaults?.activeIconColor} tabBarItemTitleFontColorActive={currentTabAppearance?.stacked?.selected?.tabBarItemTitleFontColor ??
+            props?.tintColor ??
+            androidMaterialDefaults?.activeLabelColor} 
     // tabBarItemTitleFontSizeActive={activeStyle?.fontSize}
-    tabBarItemActiveIndicatorColor={options[inBoundsDeferredFocusedIndex]?.indicatorColor} tabBarItemActiveIndicatorEnabled={!disableIndicator} 
+    tabBarItemActiveIndicatorColor={options[inBoundsDeferredFocusedIndex]?.indicatorColor ??
+            androidMaterialDefaults?.indicatorColor} tabBarItemActiveIndicatorEnabled={!disableIndicator} 
     // #endregion
     // #region iOS props
     tabBarTintColor={props?.tintColor} tabBarMinimizeBehavior={minimizeBehavior} tabBarControllerMode={tabBarControllerMode} bottomAccessory={bottomAccessoryFn} tabBarHidden={props.hidden} 

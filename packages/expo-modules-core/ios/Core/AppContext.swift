@@ -57,19 +57,28 @@ public final class AppContext: NSObject, @unchecked Sendable {
   public weak var reactBridge: RCTBridge?
 
   /**
+   RCTHost wrapper. This is set by ``ExpoReactNativeFactory`` in `didInitializeRuntime`.
+   */
+  private var hostWrapper: ExpoHostWrapper?
+
+  /**
    Underlying JSI runtime of the running app.
    */
   @objc
   public var _runtime: ExpoRuntime? {
     didSet {
       if _runtime == nil {
-        // When the runtime is unpinned from the context (e.g. deallocated),
-        // we should make sure to release all JS objects from the memory.
-        // Otherwise the JSCRuntime asserts may fail on deallocation.
-        releaseRuntimeObjects()
+        JavaScriptActor.assumeIsolated {
+          // When the runtime is unpinned from the context (e.g. deallocated),
+          // we should make sure to release all JS objects from the memory.
+          // Otherwise the JSCRuntime asserts may fail on deallocation.
+          releaseRuntimeObjects()
+        }
       } else if _runtime != oldValue {
-        // Try to install the core object automatically when the runtime changes.
-        try? prepareRuntime()
+        JavaScriptActor.assumeIsolated {
+          // Try to install the core object automatically when the runtime changes.
+          try? prepareRuntime()
+        }
       }
     }
   }
@@ -157,8 +166,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   // MARK: - UI
 
-  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
-    return reactBridge?.uiManager.view(forReactTag: NSNumber(value: viewTag)) as? ViewType
+  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {    
+    return hostWrapper?.findView(withTag: viewTag) as? ViewType
   }
 
   // MARK: - Running on specific queues
@@ -168,7 +177,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
    - Warning: This is deprecated, use `appContext.runtime.schedule` instead.
    */
   @available(*, deprecated, renamed: "runtime.schedule")
-  public func executeOnJavaScriptThread(_ closure: @escaping () -> Void) {
+  public func executeOnJavaScriptThread(_ closure: @JavaScriptActor @escaping () -> Void) {
     _runtime?.schedule(closure)
   }
 
@@ -203,7 +212,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
    Returns a legacy module implementing given protocol/interface.
    */
   public func legacyModule<ModuleProtocol>(implementing moduleProtocol: Protocol) -> ModuleProtocol? {
-    return legacyModuleRegistry?.getModuleImplementingProtocol(moduleProtocol) as? ModuleProtocol
+    return legacyModuleRegistry?.getModuleImplementingProtocol(moduleProtocol) as? ModuleProtocol ?? moduleRegistry.getModule(implementing: ModuleProtocol.self)
   }
 
   /**
@@ -330,6 +339,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
    Returns a JavaScript object that represents a module with given name.
    When remote debugging is enabled, this will always return `nil`.
    */
+  @JavaScriptActor
   @objc
   public func getNativeModuleObject(_ moduleName: String) -> JavaScriptObject? {
     return moduleRegistry.get(moduleHolderForName: moduleName)?.javaScriptObject
@@ -419,8 +429,55 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
+  // MARK: - Modules registration
+
+  /**
+   Registers native modules provided by generated `ExpoModulesProvider`.
+   */
+  @objc
+  public func registerNativeModules() {
+    registerNativeModules(provider: Self.modulesProvider())
+  }
+
+  /**
+   Registers native modules provided by given provider.
+   */
+  @objc
+  public func registerNativeModules(provider: ModulesProvider) {
+    useModulesProvider(provider)
+
+    // TODO: Make `registerNativeViews` thread-safe
+    if Thread.isMainThread {
+      MainActor.assumeIsolated {
+        self.registerNativeViews()
+      }
+    } else {
+      Task { @MainActor [weak self] in
+        self?.registerNativeViews()
+      }
+    }
+  }
+
+  /**
+   Registers native views defined by registered native modules.
+   - Note: It should stay private as `registerNativeModules` should be the only call site. Works only with the New Architecture.
+   - Todo: `RCTComponentViewFactory` is thread-safe, so this function should be as well.
+   */
+  @MainActor
+  private func registerNativeViews() {
+#if RCT_NEW_ARCH_ENABLED
+    for holder in moduleRegistry {
+      for (key, viewDefinition) in holder.definition.views {
+        let viewModule = ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
+        ExpoFabricView.registerComponent(viewModule, appContext: self)
+      }
+    }
+#endif
+  }
+
   // MARK: - Runtime
 
+  @JavaScriptActor
   internal func prepareRuntime() throws {
     let runtime = try runtime
     let coreObject = runtime.createObject()
@@ -453,6 +510,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
   /**
    Unsets runtime objects that we hold for each module.
    */
+  @JavaScriptActor
   private func releaseRuntimeObjects() {
     sharedObjectRegistry.clear()
     classRegistry.clear()
@@ -476,6 +534,11 @@ public final class AppContext: NSObject, @unchecked Sendable {
     if isModuleRegistryInitialized {
       moduleRegistry.post(event: .appContextDestroys)
     }
+  }
+  
+  @objc
+  public func setHostWrapper(_ wrapper: ExpoHostWrapper) {
+    self.hostWrapper = wrapper
   }
 
   // MARK: - Statics

@@ -1,3 +1,2 @@
-import { LegacyEventEmitter } from 'expo-modules-core';
-export declare const LocationEventEmitter: LegacyEventEmitter;
+export declare const LocationEventEmitter: any;
 //# sourceMappingURL=LocationEventEmitter.d.ts.map
