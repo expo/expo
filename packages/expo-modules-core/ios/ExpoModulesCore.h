@@ -50,8 +50,6 @@
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXAppLifecycleListener.h>
 #import <ExpoModulesCore/EXAppLifecycleService.h>
-#import <ExpoModulesCore/EXEventEmitter.h>
-#import <ExpoModulesCore/EXEventEmitterService.h>
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXJavaScriptContextProvider.h>
 #import <ExpoModulesCore/EXLogHandler.h>

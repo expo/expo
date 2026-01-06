@@ -11,7 +11,6 @@
 #import <jsi/jsi.h>
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
-#import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/Swift.h>
