@@ -153,7 +153,7 @@ React Native library authors can adopt CNG in several ways. It depends on the co
 
 - **Libraries Dependent on Native Runtime Hooks**: Libraries that depend on specific native runtime hooks, such as intercepting the initial launch URL via the `AppDelegate`, `MainActivity`, `MainApplication`, and so on, can utilize [**Lifecycle listeners**](/modules/android-lifecycle-listeners/) in the Expo Modules API. These lifecycle listeners allow these runtime hooks to be applied via Expo Autolinking instead of by modifying these standard native project files, eliminating the need for a config plugin.
 
-Many complex libraries and services already support CNG via Expo Prebuild such as, [MapBox](https://github.com/rnmapbox/maps), [Sentry](https://github.com/getsentry/sentry-react-native), [OneSignal](https://github.com/OneSignal/onesignal-expo-plugin), [Stripe](https://github.com/stripe/stripe-react-native), and [React Native Firebase](https://rnfirebase.io/#expo).
+Many complex libraries and services already support CNG via Expo Prebuild such as, [MapBox](https://github.com/rnmapbox/maps), [Sentry](https://github.com/getsentry/sentry-react-native), [Stripe](https://github.com/stripe/stripe-react-native), and [React Native Firebase](https://rnfirebase.io/#expo).
 
 Adopting CNG by library authors is not a preqrequisite for using `npx expo prebuild`. If a library author has not adopted CNG, developers can still use `npx expo prebuild` by creating local [Config Plugins](https://github.com/expo/config-plugins/) to modify the native generation pipeline. This flexibility makes CNG accessible and beneficial to all developers within the React Native community.
 
