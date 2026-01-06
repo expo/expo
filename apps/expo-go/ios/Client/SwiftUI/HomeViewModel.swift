@@ -66,6 +66,7 @@ class HomeViewModel: ObservableObject {
 
   func onViewWillAppear() {
     serverService.startDiscovery()
+    serverService.setSessionSecret(authService.sessionSecret)
 
     if isAuthenticated, let account = selectedAccount {
       dataService.startPolling(accountName: account.name)
@@ -121,6 +122,7 @@ class HomeViewModel: ObservableObject {
 
     async let task = dataService.fetchProjectsAndData(accountName: account.name)
     serverService.discoverDevelopmentServers()
+    serverService.refreshRemoteSessions()
 
     await task
   }
@@ -237,7 +239,10 @@ class HomeViewModel: ObservableObject {
       .store(in: &cancellables)
 
     authService.$isAuthenticated
-      .sink { [weak self] in self?.isAuthenticated = $0 }
+      .sink { [weak self] isAuthenticated in
+        self?.isAuthenticated = isAuthenticated
+        self?.serverService.setSessionSecret(self?.authService.sessionSecret)
+      }
       .store(in: &cancellables)
 
     dataService.$projects
@@ -300,11 +305,12 @@ struct RecentlyOpenedApp: Identifiable, Codable {
 }
 
 struct DevelopmentServer: Identifiable {
-  var id = UUID()
+  var id: String { url }
   let url: String
   let description: String
   let source: String
   let isRunning: Bool
+  var iconUrl: String?
 }
 
 struct ExpoProject: Identifiable, Codable {

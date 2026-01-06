@@ -187,6 +187,9 @@ NS_ASSUME_NONNULL_BEGIN
       NSDictionary *expoClient = extra[@"expoClient"];
       appName = expoClient[@"name"];
       iconUrl = expoClient[@"iconUrl"];
+      if (!iconUrl && [expoClient[@"icon"] isKindOfClass:[NSString class]]) {
+        iconUrl = expoClient[@"icon"];
+      }
     }
   }
 
@@ -194,8 +197,31 @@ NS_ASSUME_NONNULL_BEGIN
     appName = manifest.rawManifestJSON[@"name"];
   }
 
+  if (!iconUrl && manifest.rawManifestJSON[@"iconUrl"]) {
+    iconUrl = manifest.rawManifestJSON[@"iconUrl"];
+  }
+  if (!iconUrl && manifest.rawManifestJSON[@"icon"]) {
+    iconUrl = manifest.rawManifestJSON[@"icon"];
+  }
+  if (!iconUrl && [manifest.rawManifestJSON[@"ios"] isKindOfClass:[NSDictionary class]]) {
+    NSDictionary *iosConfig = manifest.rawManifestJSON[@"ios"];
+    if (iosConfig[@"iconUrl"]) {
+      iconUrl = iosConfig[@"iconUrl"];
+    } else if (iosConfig[@"icon"]) {
+      iconUrl = iosConfig[@"icon"];
+    }
+  }
+
   if (!appName) {
     appName = manifestUrl.absoluteString;
+  }
+
+  if (iconUrl && [iconUrl length] > 0) {
+    NSURL *resolved = [NSURL URLWithString:iconUrl];
+    if (resolved == nil || resolved.scheme == nil) {
+      resolved = [NSURL URLWithString:iconUrl relativeToURL:manifestUrl];
+    }
+    iconUrl = resolved.absoluteString;
   }
   
   [[ExpoGoHomeBridge shared] addHistoryItemWithUrl:manifestUrl.absoluteString

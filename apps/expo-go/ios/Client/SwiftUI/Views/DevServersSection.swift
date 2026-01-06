@@ -20,6 +20,11 @@ struct DevServersSection: View {
         if !viewModel.developmentServers.isEmpty {
           ForEach(viewModel.developmentServers) { server in
             DevServerRow(server: server) {
+              viewModel.addToRecentlyOpened(
+                url: server.url,
+                name: server.description,
+                iconUrl: server.iconUrl
+              )
               viewModel.openApp(url: server.url)
             }
           }
