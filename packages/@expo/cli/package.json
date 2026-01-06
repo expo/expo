@@ -42,7 +42,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/cli",
   "dependencies": {
     "@0no-co/graphql.web": "^1.0.8",
-    "@expo/code-signing-certificates": "^0.0.5",
+    "@expo/code-signing-certificates": "^0.0.6",
     "@expo/config": "~12.0.9",
     "@expo/config-plugins": "~54.0.1",
     "@expo/devcert": "^1.2.1",
