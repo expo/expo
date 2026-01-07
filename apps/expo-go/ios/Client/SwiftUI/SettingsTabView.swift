@@ -200,6 +200,11 @@ struct SettingsTabView: View {
     .task {
       await refreshTrackingStatus()
     }
+    .onAppear {
+      Task {
+        await refreshTrackingStatus()
+      }
+    }
   }
 
   private func getExpoSDKVersion() -> String {

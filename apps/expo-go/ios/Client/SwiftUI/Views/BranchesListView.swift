@@ -5,7 +5,6 @@ import SwiftUI
 struct BranchesListView: View {
   let projectId: String
   @StateObject private var viewModel: BranchesListViewModel
-  @EnvironmentObject var homeViewModel: HomeViewModel
 
   init(projectId: String) {
     self.projectId = projectId
@@ -28,9 +27,10 @@ struct BranchesListView: View {
         } else {
           VStack(spacing: 6) {
             ForEach(viewModel.branches) { branch in
-              BranchRow(branch: branch) {
-                openBranch(branch)
+              NavigationLink(destination: BranchDetailsView(projectId: projectId, branchName: branch.name)) {
+                BranchRowContent(branch: branch)
               }
+              .buttonStyle(PlainButtonStyle())
             }
 
             if viewModel.hasMore && !viewModel.isLoading {
@@ -71,19 +71,6 @@ struct BranchesListView: View {
     }
   }
 
-  private func openBranch(_ branch: BranchDetail) {
-    guard let update = branch.updates.first else {
-      homeViewModel.showError("This branch has no published updates")
-      return
-    }
-
-    homeViewModel.openApp(url: update.manifestPermalink)
-    homeViewModel.addToRecentlyOpened(
-      url: update.manifestPermalink,
-      name: "\(viewModel.projectName) - \(branch.name)",
-      iconUrl: nil
-    )
-  }
 }
 
 @MainActor
