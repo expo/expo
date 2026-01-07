@@ -13,6 +13,7 @@ final class VersionManager: EXVersionManagerObjC {
   var appContext: AppContext?
   var legacyModulesProxy: LegacyNativeModulesProxy?
   var legacyModuleRegistry: EXModuleRegistry?
+  private var hasRegisteredExpoModules = false
 
   let params: [AnyHashable: Any]
 
@@ -38,6 +39,39 @@ final class VersionManager: EXVersionManagerObjC {
     super.init(params: params, manifest: manifest, fatalHandler: fatalHandler, logFunction: logFunction, logThreshold: logThreshold)
   }
 
+  @objc
+  override func createExpoGoAppContext() -> AppContext {
+    return getOrCreateAppContext()
+  }
+
+  private func getOrCreateAppContext() -> AppContext {
+    if let appContext {
+      if !hasRegisteredExpoModules {
+        registerExpoModules(appContext)
+        hasRegisteredExpoModules = true
+      }
+      return appContext
+    }
+
+    let legacyModuleRegistry = createLegacyModuleRegistry(params: params, manifest: manifest)
+    let legacyModulesProxy = LegacyNativeModulesProxy(customModuleRegistry: legacyModuleRegistry)
+    let config = createAppContextConfig()
+    let appContext = AppContext(
+      legacyModulesProxy: legacyModulesProxy,
+      legacyModuleRegistry: legacyModuleRegistry,
+      config: config
+    )
+
+    self.appContext = appContext
+    self.legacyModuleRegistry = legacyModuleRegistry
+    self.legacyModulesProxy = legacyModulesProxy
+
+    registerExpoModules(appContext)
+    hasRegisteredExpoModules = true
+
+    return appContext
+  }
+
   /**
    Invalidates the app context when the bridge is about to be rebuilt.
    */
@@ -53,14 +87,12 @@ final class VersionManager: EXVersionManagerObjC {
   override func extraModules() -> [Any] {
     // Ideally if we don't initialize the app context here, but unfortunately there is no better place in bridge lifecycle
     // that would work well for us (especially properly invalidating existing app context on reload).
-    let legacyModuleRegistry = createLegacyModuleRegistry(params: params, manifest: manifest)
-    let legacyModulesProxy = LegacyNativeModulesProxy(customModuleRegistry: legacyModuleRegistry)
-    let config = createAppContextConfig()
-    let appContext = AppContext(legacyModulesProxy: legacyModulesProxy, legacyModuleRegistry: legacyModuleRegistry, config: config)
+    let appContext = getOrCreateAppContext()
 
-    self.appContext = appContext
-    self.legacyModuleRegistry = legacyModuleRegistry
-    self.legacyModulesProxy = legacyModulesProxy
+    guard let legacyModulesProxy,
+          let legacyModuleRegistry else {
+      fatalError("Legacy modules should have been initialized")
+    }
 
     let modules: [Any] = [
       EXAppState(),
@@ -78,18 +110,14 @@ final class VersionManager: EXVersionManagerObjC {
       ExpoBridgeModule(appContext: appContext)
     ]
 
-    // Register additional Expo modules, specific to Expo Go.
-    registerExpoModules()
-
     return modules + super.extraModules()
   }
 
   /**
    Registers Expo modules that are not generated in ``ExpoModulesProvider``, but are necessary for Expo Go apps.
    */
-  private func registerExpoModules() {
-    guard let appContext,
-      let kernelServices = params["services"] as? [AnyHashable: Any] else {
+  private func registerExpoModules(_ appContext: AppContext) {
+    guard let kernelServices = params["services"] as? [AnyHashable: Any] else {
       log.error("Unable to register Expo modules, the app context or kernel services is unavailable")
       return
     }

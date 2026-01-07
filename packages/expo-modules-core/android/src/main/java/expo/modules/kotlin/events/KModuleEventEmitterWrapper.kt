@@ -45,7 +45,7 @@ class KModuleEventEmitterWrapper(
   }
 
   private fun emitNative(eventName: String, eventBody: Map<String, Any?>?) {
-    val runtimeContext = moduleHolder.module.runtimeContext
+    val runtimeContext = moduleHolder.module.runtime
     val jsObject = moduleHolder.safeJSObject ?: return
     try {
       JNIUtils.emitEvent(jsObject, runtimeContext.jsiContext, eventName, eventBody)

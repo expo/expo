@@ -1,3 +1,4 @@
+import * as Notifications from 'expo-notifications';
 import { sendPushNotificationsAsync } from 'native-component-list/src/api/sendPushNotificationsAsync';
 import HeadingText from 'native-component-list/src/components/HeadingText';
 import ListButton from 'native-component-list/src/components/ListButton';
@@ -11,6 +12,13 @@ export default function ScenariosPage() {
       <HeadingText>Send push notification with deep link</HeadingText>
       <ListButton
         onPress={() => {
+          Notifications.subscribeToTopicAsync('news')
+            .then(() => {
+              alert('subscribed to topic "news"');
+            })
+            .catch(console.error);
+        }}
+        title="Subscribe to Topic, Send Notification manually from firebase console"
           // captured by useNotificationResponseRedirect()
           sendPushNotificationsAsync({
             data: { url: 'playground' },

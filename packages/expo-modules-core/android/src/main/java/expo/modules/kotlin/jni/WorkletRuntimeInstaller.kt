@@ -1,19 +1,19 @@
 package expo.modules.kotlin.jni
 
-import expo.modules.kotlin.runtime.RuntimeContext
+import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.weak
 import java.lang.ref.WeakReference
 
 class WorkletRuntimeInstaller(
-  val runtimeContext: RuntimeContext
+  val runtime: Runtime
 ) {
   fun install(
     jsRuntimePointer: Long
   ): JSIContext {
     return install(
-      runtimeContext.weak(),
+      runtime.weak(),
       jsRuntimePointer,
-      runtimeContext.deallocator
+      runtime.deallocator
     )
   }
 

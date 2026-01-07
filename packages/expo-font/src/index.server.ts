@@ -1,5 +1,7 @@
+import { UseFontHook } from './Font.types';
+
 export * from './Font';
 
-export function useFonts() {
-  return [];
-}
+export const useFonts: UseFontHook = () => {
+  return [false, null];
+};

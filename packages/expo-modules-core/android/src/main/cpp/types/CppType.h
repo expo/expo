@@ -33,5 +33,6 @@ enum CppType {
   VALUE_OR_UNDEFINED = 1 << 21,
   JS_ARRAY_BUFFER = 1 << 22,
   NATIVE_ARRAY_BUFFER = 1 << 23,
+  SERIALIZABLE = 1 << 24,
 };
 } // namespace expo

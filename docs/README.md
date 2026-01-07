@@ -46,7 +46,7 @@ The documentation is divided into four main sections:
 - **Home**: Provides a guided path from starting a project from scratch to deploying it to app stores.
 - **Guides**: General purpose and fundamental guides that help you understand how Expo works and how to use it.
 - **EAS**: Detailed documentation for all EAS services.
-- **Reference**: Detailed reference documentation for all Expo APIs and modules. All Expo SDK API docs are located under **pages/versions** directory. We keep separate versions of documentation for each SDK version currently supported in Expo Go. See [Update latest version of docs](#update-latest-version-of-docs) for more information.
+- **Reference**: Detailed reference documentation for all Expo APIs and modules. All Expo SDK API docs are located under **pages/versions** directory. We keep separate versions of documentation for each SDK version currently supported in Expo Go. See [Update latest version of API reference docs](#update-latest-version-of-api-reference-docs) for more information.
 - **Learn**: Tutorials and guides that help you learn how to use Expo and React Native.
 
 > [!NOTE]
@@ -77,6 +77,7 @@ These metadata items include:
 - `searchRank`: A number between 0 and 100 that represents the relevance of a page. This value is mapped to Algolia's `record.weight.pageRank` property. Higher values indicate higher priority. We set this value to `5` by default, otherwise specified in the frontmatter.
 - `searchPosition`: The position of a page in the search results. This value is mapped to Algolia's `record.weight.position` property. Algolia sets this value to `0` by default. Pages with lower values appear higher in the results. We set this value to `50` by default, otherwise specified in the frontmatter.
 - `hasVideoLink`: To display a video link icon in the sidebar for the page that has a video tutorial link. Defaults to `false`.
+- `cliVersion`: The CLI version to display for pages that include the CLI badge. Currently, this field is used for EAS CLI reference page and is populated automatically by `yarn run eas-cli-sync`.
 
 ### Edit Code
 
@@ -134,26 +135,21 @@ Open the doc file (`*.mdx`) that you are working on and you'll may see suggested
 
 ## Redirects
 
-### Server-side redirects
+We use two layers of redirects:
 
-These redirects are limited in their expressiveness &mdash; you can map a path to another path, but no regular expressions are supported. See [client-side redirects](#client-side-redirects) for more information on that. Server-side redirects are re-created on each run of **deploy.sh**.
+- **Server-side redirects** generated during deployment process in `deploy.sh` for simple 1:1 path mappings and SEO-friendly behavior.
+- **Client-side redirects** in `common/client-redirects.ts` that run on the 404 page for more complex rules (for example, stripping `.html`, version fallbacks) and to catch cases where server-side redirects do not apply (local/dev/preview or missed mappings).
 
 We currently do two client-side redirects, using meta tags with `http-equiv="refresh"`:
 
 - `/` -> `/versions/latest/`
 - `/versions` -> `/versions/latest`
 
-This method is not great for accessibility and should be avoided where possible.
-
-### Client-side redirects
-
-Use these for more complex rules than one-to-one path-to-path redirect mapping. For example, we use client-side redirects to strip the `.html` extension off, and to identify if the request is for a version of the documentation that we no longer support.
-
-You can add your own client-side redirect rules in `common/error-utilities.ts`.
+This works by loading a page and then immediately navigating, which can confuse assistive tech (announced content disappears, focus resets) and gives developers less control. Treat this as a fallback and prefer server-side redirects or the 404-based client rules when possible.
 
 ## Search
 
-We use Algolia as the main search results provider for our docs. This is set up in the `@expo/styleguide` library, which provides a universal search component that is used both in the docs, expo.dev, and EAS dashboard.
+We use Algolia as the main search results provider for our docs. This is set up in the `@expo/styleguide` library, which provides a universal search component that is used in the docs, expo.dev, and EAS dashboard.
 
 Besides the query, the results are also filtered based on the `version` tag. This tag represents the user's current location. The tag is set in the `components/DocumentationPage.tsx` head.
 

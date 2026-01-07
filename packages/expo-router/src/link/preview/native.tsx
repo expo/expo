@@ -26,6 +26,7 @@ export interface NativeLinkPreviewActionProps {
   // singleSelection?: boolean;
   displayAsPalette?: boolean;
   displayInline?: boolean;
+  preferredElementSize?: 'auto' | 'small' | 'medium' | 'large';
   isOn?: boolean;
   // There are issues with menu state updates when keep presented is set to true.
   // When updating the context menu state, it will either not update or it will recreate the menu. The latter is a problem,

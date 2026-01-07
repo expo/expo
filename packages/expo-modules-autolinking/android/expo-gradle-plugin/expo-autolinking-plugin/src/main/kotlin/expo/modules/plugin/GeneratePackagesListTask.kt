@@ -61,30 +61,30 @@ import expo.modules.kotlin.ModulesProvider;
 class ExpoModulesPackageList : ModulesProvider {
   companion object {
     val packagesList: List<Package> = listOf(
-${
-  modules
-    .filterNot { it.packageName == "expo" }
-    .flatMap { module ->
-      module.projects.flatMap { project ->
-        project.packages.map { "      ${it}()" }
-      }
+    ${
+      modules
+        .filterNot { it.packageName == "expo" }
+        .flatMap { module ->
+          module.projects.flatMap { project ->
+            project.packages.map { "      ${it}()" }
+          }
+        }
+        .joinToString(",\n")
     }
-    .joinToString(",\n")
-}
     )
 
     val modulesMap: Map<Class<out Module>, String?> = mapOf(
-${
-  modules
-    .flatMap { module ->
-      module.projects.flatMap { project ->
-        project.modules.map { (classifier, name) ->
-          "      ${classifier}::class.java to ${name?.let { "\"${it}\"" }}" 
+    ${
+      modules
+        .flatMap { module ->
+          module.projects.flatMap { project ->
+            project.modules.map { (classifier, name) ->
+              "      ${classifier}::class.java to ${name?.let { "\"${it}\"" }}"
+            }
+          }
         }
-      }
-    }
-    .joinToString(",\n")
-}
+        .joinToString(",\n")
+    } 
     )
 
     @JvmStatic
@@ -96,7 +96,22 @@ ${
   override fun getModulesMap(): Map<Class<out Module>, String?> {
     return modulesMap
   }
+  
+  override fun getServices(): List<Class<out expo.modules.kotlin.services.Service>> {
+    return listOf<Class<out expo.modules.kotlin.services.Service>>(
+    ${
+      modules
+        .flatMap { module ->
+          module.projects.flatMap { project ->
+            project.services.map { "      ${it}::class.java" }
+          }
+        }
+        .joinToString(",\n")
+    }
+    )
+  }
 }
+
 """.trimIndent()
   }
 }

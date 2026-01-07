@@ -14,6 +14,7 @@ export interface NativeLinkPreviewActionProps {
     accessibilityHint?: string;
     displayAsPalette?: boolean;
     displayInline?: boolean;
+    preferredElementSize?: 'auto' | 'small' | 'medium' | 'large';
     isOn?: boolean;
     keepPresented?: boolean;
     hidden?: boolean;

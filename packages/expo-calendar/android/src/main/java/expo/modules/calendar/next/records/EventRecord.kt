@@ -2,6 +2,7 @@ package expo.modules.calendar.next.records
 
 import android.provider.CalendarContract
 import expo.modules.calendar.domain.event.enums.Availability
+import expo.modules.calendar.next.utils.parseRrDate
 import expo.modules.calendar.next.utils.rrFormat
 import expo.modules.calendar.next.utils.sdf
 import expo.modules.kotlin.records.Field
@@ -99,7 +100,7 @@ data class RecurrenceRuleRecord(
       return RecurrenceRuleRecord(
         endDate = ruleMap["UNTIL"]
           ?.takeIf { it.isNotBlank() }
-          ?.let { rrFormat.parse(it) }
+          ?.let { parseRrDate(it) }
           ?.let { sdf.format(it) },
         frequency = ruleMap["FREQ"]?.lowercase(Locale.getDefault()),
         interval = ruleMap["INTERVAL"]?.toIntOrNull(),

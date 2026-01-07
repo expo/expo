@@ -11,7 +11,7 @@ import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.runtime.RuntimeContext
+import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.launch
 
@@ -40,7 +40,7 @@ class ModuleHolder<T : Module>(
 
     trace("$name.jsObject") {
       val appContext = module.appContext
-      val runtimeContext = module.runtimeContext
+      val runtimeContext = module.runtime
       val deallocator = runtimeContext.deallocator
 
       val moduleDecorator = JSDecoratorsBridgingObject(deallocator).apply {
@@ -58,7 +58,7 @@ class ModuleHolder<T : Module>(
 
   private fun JSDecoratorsBridgingObject.export(
     appContext: AppContext,
-    runtimeContext: RuntimeContext
+    runtime: Runtime
   ) {
     // Give the module object a name. It's used for compatibility reasons, see `EventEmitter.ts`.
     registerModuleName(name)
@@ -71,10 +71,10 @@ class ModuleHolder<T : Module>(
       }
 
       viewManagerDefinitions
-        .exportViewPrototypes(name, appContext, runtimeContext)
+        .exportViewPrototypes(name, appContext, runtime)
 
       classData
-        .exportClasses(appContext, runtimeContext)
+        .exportClasses(appContext, runtime)
     }
   }
 

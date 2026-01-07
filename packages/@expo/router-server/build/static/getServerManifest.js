@@ -27,8 +27,10 @@ async function getBuildTimeServerManifestAsync(options = {}) {
     if (!routeTree) {
         throw new Error('No routes found');
     }
-    // Evaluate all static params
-    await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
+    // Evaluate all static params; skip for SSR mode where routes are matched at runtime
+    if (!options.skipStaticParams) {
+        await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
+    }
     return (0, getServerManifest_1.getServerManifest)(routeTree, options);
 }
 /** Get the linking manifest from a Node.js process. */

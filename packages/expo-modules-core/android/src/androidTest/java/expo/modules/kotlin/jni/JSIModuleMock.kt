@@ -18,7 +18,7 @@ import expo.modules.kotlin.jni.tests.RuntimeHolder
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.modules.ModuleDefinitionBuilder
-import expo.modules.kotlin.runtime.MainRuntimeContext
+import expo.modules.kotlin.runtime.MainRuntime
 import expo.modules.kotlin.sharedobjects.ClassRegistry
 import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import expo.modules.kotlin.weak
@@ -29,9 +29,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 
-private fun defaultAppContextMock(): Pair<AppContext, MainRuntimeContext> {
+private fun defaultAppContextMock(): Pair<AppContext, MainRuntime> {
   val appContextMock = mockk<AppContext>()
-  val runtimeContext = mockk<MainRuntimeContext>()
+  val runtimeContext = mockk<MainRuntime>()
   val classRegistry = ClassRegistry()
 
   every { runtimeContext.classRegistry } answers { classRegistry }
@@ -217,7 +217,7 @@ internal inline fun withSingleModule(
     module,
     numberOfReloads = numberOfReloads,
     block = { methodQueue ->
-      val appContext = runtimeContextHolder.get()?.appContext
+      val appContext = runtimeHolder.get()?.appContext
         ?: throw IllegalStateException("AppContext is not available")
       val moduleList = appContext.registry.registry.toList()
       if (moduleList.size != 1) {

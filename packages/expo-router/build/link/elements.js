@@ -97,7 +97,7 @@ const LinkMenu = (props) => {
     const children = react_1.default.Children.toArray(props.children).filter((child) => (0, react_1.isValidElement)(child) && (child.type === LinkMenuAction || child.type === exports.LinkMenu));
     const displayAsPalette = props.palette ?? props.displayAsPalette;
     const displayInline = props.inline ?? props.displayInline;
-    return (<native_1.NativeLinkPreviewAction {...props} displayAsPalette={displayAsPalette} displayInline={displayInline} title={props.title ?? ''} onSelected={() => { }} children={children} identifier={identifier}/>);
+    return (<native_1.NativeLinkPreviewAction {...props} displayAsPalette={displayAsPalette} displayInline={displayInline} preferredElementSize={props.elementSize} title={props.title ?? ''} onSelected={() => { }} children={children} identifier={identifier}/>);
 };
 exports.LinkMenu = LinkMenu;
 /**

@@ -1,6 +1,6 @@
 package expo.modules.kotlin.sharedobjects
 
-import expo.modules.kotlin.runtime.RuntimeContext
+import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.InvalidSharedObjectIdException
 import expo.modules.kotlin.exception.UsingReleasedSharedObjectException
@@ -10,22 +10,22 @@ import expo.modules.kotlin.weak
 
 @JvmInline
 value class SharedObjectId(val value: Int) {
-  fun toNativeObject(runtimeContext: RuntimeContext): SharedObject {
-    return runtimeContext.sharedObjectRegistry.toNativeObject(this)
+  fun toNativeObject(runtime: Runtime): SharedObject {
+    return runtime.sharedObjectRegistry.toNativeObject(this)
   }
 
-  fun toNativeObjectOrNull(runtimeContext: RuntimeContext): SharedObject? {
-    return runtimeContext.sharedObjectRegistry.toNativeObjectOrNull(this)
+  fun toNativeObjectOrNull(runtime: Runtime): SharedObject? {
+    return runtime.sharedObjectRegistry.toNativeObjectOrNull(this)
   }
 
-  fun toJavaScriptObjectNull(runtimeContext: RuntimeContext): JavaScriptObject? {
-    val nativeObject = toNativeObjectOrNull(runtimeContext) ?: return null
-    return runtimeContext.sharedObjectRegistry.toJavaScriptObjectOrNull(nativeObject)
+  fun toJavaScriptObjectNull(runtime: Runtime): JavaScriptObject? {
+    val nativeObject = toNativeObjectOrNull(runtime) ?: return null
+    return runtime.sharedObjectRegistry.toJavaScriptObjectOrNull(nativeObject)
   }
 
-  fun toWeakJavaScriptObjectNull(runtimeContext: RuntimeContext): JavaScriptWeakObject? {
-    val nativeObject = toNativeObjectOrNull(runtimeContext) ?: return null
-    return runtimeContext.sharedObjectRegistry.toWeakJavaScriptObjectOrNull(nativeObject)
+  fun toWeakJavaScriptObjectNull(runtime: Runtime): JavaScriptWeakObject? {
+    val nativeObject = toNativeObjectOrNull(runtime) ?: return null
+    return runtime.sharedObjectRegistry.toWeakJavaScriptObjectOrNull(nativeObject)
   }
 }
 
@@ -33,8 +33,8 @@ typealias SharedObjectPair = Pair<SharedObject, JavaScriptWeakObject>
 
 const val sharedObjectIdPropertyName = "__expo_shared_object_id__"
 
-class SharedObjectRegistry(runtimeContext: RuntimeContext) {
-  private val runtimeContextHolder = runtimeContext.weak()
+class SharedObjectRegistry(runtime: Runtime) {
+  private val runtimeContextHolder = runtime.weak()
 
   private var currentId: SharedObjectId = SharedObjectId(1)
 
