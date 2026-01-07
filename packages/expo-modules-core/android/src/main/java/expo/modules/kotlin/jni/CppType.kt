@@ -2,6 +2,7 @@ package expo.modules.kotlin.jni
 
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import expo.modules.kotlin.jni.worklets.Worklet
 import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.ValueOrUndefined
 import kotlin.reflect.KClass
@@ -38,5 +39,6 @@ enum class CppType(val clazz: KClass<*>, val value: Int = nextValue()) {
   NULLABLE(Any::class),
   VALUE_OR_UNDEFINED(ValueOrUndefined::class),
   JS_ARRAY_BUFFER(JavaScriptArrayBuffer::class),
-  NATIVE_ARRAY_BUFFER(NativeArrayBuffer::class)
+  NATIVE_ARRAY_BUFFER(NativeArrayBuffer::class),
+  SERIALIZABLE(Worklet::class)
 }

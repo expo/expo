@@ -83,18 +83,23 @@ const children_1 = require("../../utils/children");
  */
 exports.StackHeaderMenu = primitives_1.Menu;
 function convertStackHeaderMenuPropsToRNHeaderItem(props) {
+    if (props.hidden) {
+        return undefined;
+    }
     const { title, ...rest } = props;
     const actions = react_1.Children.toArray(props.children).filter((child) => (0, children_1.isChildOfType)(child, exports.StackHeaderMenuAction) || (0, children_1.isChildOfType)(child, exports.StackHeaderMenu));
     const item = {
         ...(0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(rest),
         type: 'menu',
         menu: {
-            items: actions.map((action) => {
+            items: actions
+                .map((action) => {
                 if ((0, children_1.isChildOfType)(action, exports.StackHeaderMenu)) {
                     return convertStackHeaderSubmenuMenuPropsToRNHeaderItem(action.props);
                 }
                 return convertStackHeaderMenuActionPropsToRNHeaderItem(action.props);
-            }),
+            })
+                .filter((i) => !!i),
         },
     };
     if (title) {
@@ -103,6 +108,9 @@ function convertStackHeaderMenuPropsToRNHeaderItem(props) {
     return item;
 }
 function convertStackHeaderSubmenuMenuPropsToRNHeaderItem(props) {
+    if (props.hidden) {
+        return undefined;
+    }
     // Removing children. Otherwise the buttons will be broken
     const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props);
     const actions = react_1.Children.toArray(props.children).filter((child) => (0, children_1.isChildOfType)(child, exports.StackHeaderMenuAction) || (0, children_1.isChildOfType)(child, exports.StackHeaderMenu));
@@ -110,12 +118,14 @@ function convertStackHeaderSubmenuMenuPropsToRNHeaderItem(props) {
     // https://github.com/react-navigation/react-navigation/pull/12895
     const item = {
         type: 'submenu',
-        items: actions.map((action) => {
+        items: actions
+            .map((action) => {
             if ((0, children_1.isChildOfType)(action, exports.StackHeaderMenu)) {
                 return convertStackHeaderSubmenuMenuPropsToRNHeaderItem(action.props);
             }
             return convertStackHeaderMenuActionPropsToRNHeaderItem(action.props);
-        }),
+        })
+            .filter((i) => !!i),
         label: sharedProps.label || props.title || '',
     };
     if (props.inline !== undefined) {
@@ -127,6 +137,7 @@ function convertStackHeaderSubmenuMenuPropsToRNHeaderItem(props) {
     if (props.destructive !== undefined) {
         item.destructive = props.destructive;
     }
+    // TODO: Add elementSize to react-native-screens
     if (sharedProps.icon) {
         // Only SF Symbols are supported in submenu icons
         if (sharedProps.icon.type === 'sfSymbol') {

@@ -19,13 +19,6 @@ export interface PluginConfigType {
  */
 export interface PluginConfigTypeAndroid {
     /**
-     * Enable React Native New Architecture for Android platform.
-     *
-     * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
-     * app config file instead.
-     */
-    newArchEnabled?: boolean;
-    /**
      * Override the default `minSdkVersion` version number in **build.gradle**.
      * */
     minSdkVersion?: number;
@@ -184,6 +177,15 @@ export interface PluginConfigTypeAndroid {
      * @default 'stable'
      */
     reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
+    /**
+     * Enable the experimental Hermes V1 engine.
+     *
+     * In React Native 0.83, using Hermes V1 requires building React Native from source.
+     * You must set `buildReactNativeFromSource` to `true` when enabling this option.
+     *
+     * @default false
+     */
+    useHermesV1?: boolean;
 }
 /**
  * @platform android
@@ -260,13 +262,6 @@ export type AndroidMavenRepositoryCredentials = AndroidMavenRepositoryPasswordCr
  * @platform ios
  */
 export interface PluginConfigTypeIos {
-    /**
-     * Enable React Native New Architecture for iOS platform.
-     *
-     * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
-     * app config file instead.
-     */
-    newArchEnabled?: boolean;
     /**
      * Override the default iOS "Deployment Target" version in the following projects:
      *  - in CocoaPods projects,
@@ -353,6 +348,15 @@ export interface PluginConfigTypeIos {
      * @default 'stable'
      */
     reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
+    /**
+     * Enable the experimental Hermes V1 engine.
+     *
+     * In React Native 0.83, using Hermes V1 requires building React Native from source.
+     * You must set `buildReactNativeFromSource` to `true` when enabling this option.
+     *
+     * @default false
+     */
+    useHermesV1?: boolean;
 }
 /**
  * Interface representing extra CocoaPods dependency.

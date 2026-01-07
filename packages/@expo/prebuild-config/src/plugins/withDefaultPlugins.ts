@@ -27,7 +27,6 @@ import withNotifications from './unversioned/expo-notifications/expo-notificatio
 import withSplashScreen from './unversioned/expo-splash-screen/expo-splash-screen';
 import withSystemUI from './unversioned/expo-system-ui/expo-system-ui';
 import withUpdates from './unversioned/expo-updates';
-import withNewArchPlistHotfix from './unversioned/new-arch-plist-hotfix/new-arch-plist-hotfix';
 import withMaps from './unversioned/react-native-maps';
 
 const debug = Debug('expo:prebuild-config');
@@ -56,7 +55,6 @@ export const withIosExpoPlugins: ConfigPlugin<{
     IOSConfig.Version.withVersion,
     IOSConfig.Google.withGoogleServicesFile,
     IOSConfig.BuildProperties.withJsEnginePodfileProps,
-    IOSConfig.BuildProperties.withNewArchEnabledPodfileProps,
     // Entitlements
     IOSConfig.Entitlements.withAssociatedDomains,
     // XcodeProject
@@ -67,8 +65,6 @@ export const withIosExpoPlugins: ConfigPlugin<{
     // Dangerous
     withIosIcons,
     IOSConfig.PrivacyInfo.withPrivacyInfo,
-    // Temporary hotfix
-    withNewArchPlistHotfix,
   ]);
 };
 
@@ -86,7 +82,6 @@ export const withAndroidExpoPlugins: ConfigPlugin<{
   return withPlugins(config, [
     // gradle.properties
     AndroidConfig.BuildProperties.withJsEngineGradleProps,
-    AndroidConfig.BuildProperties.withNewArchEnabledGradleProps,
 
     // settings.gradle
     AndroidConfig.Name.withNameSettingsGradle,

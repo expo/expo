@@ -15,6 +15,10 @@
 #include "JNIUtils.h"
 #include "types/FrontendConverterProvider.h"
 #include "decorators/JSDecoratorsBridgingObject.h"
+#include "installers/MainRuntimeInstaller.h"
+#include "installers/WorkletRuntimeInstaller.h"
+#include "worklets/Worklet.h"
+#include "worklets/WorkletNativeRuntime.h"
 
 #if RN_FABRIC_ENABLED
 #include "FabricComponentsRegistry.h"
@@ -34,6 +38,9 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
 #if UNIT_TEST
     expo::RuntimeHolder::registerNatives();
 #endif
+    expo::MainRuntimeInstaller::registerNatives();
+    expo::WorkletNativeRuntime::registerNatives();
+    expo::WorkletRuntimeInstaller::registerNatives();
     expo::JSIContext::registerNatives();
     expo::JavaScriptModuleObject::registerNatives();
     expo::JavaScriptValue::registerNatives();
@@ -45,6 +52,10 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     expo::NativeArrayBuffer::registerNatives();
     expo::JavaCallback::registerNatives();
     expo::JNIUtils::registerNatives();
+
+#if WORKLETS_ENABLED
+    expo::Worklet::registerNatives();
+#endif
 
     // Decorators
     expo::JSDecoratorsBridgingObject::registerNatives();

@@ -28,12 +28,10 @@ import expo.modules.device.DeviceModule
 import expo.modules.easclient.EASClientModule
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.legacy.FileSystemLegacyModule
-import expo.modules.filesystem.legacy.FileSystemPackage
 import expo.modules.font.FontLoaderModule
 import expo.modules.font.FontUtilsModule
 import expo.modules.haptics.HapticsModule
 import expo.modules.keepawake.KeepAwakeModule
-import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
@@ -167,8 +165,6 @@ open class HomeActivity : BaseExperienceActivity() {
     fun homeExpoPackages(): List<Package> {
       return listOf(
         ConstantsPackage(),
-        FileSystemPackage(),
-        KeepAwakePackage(),
         NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
         TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
         SplashScreenPackage()

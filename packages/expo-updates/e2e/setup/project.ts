@@ -45,6 +45,7 @@ function getExpoDependencyChunks({
     ['expo-manifests'],
     ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
     ['@expo/image-utils'],
+    ['@expo/dom-webview', '@expo/log-box'],
     [
       'babel-preset-expo',
       'expo-application',

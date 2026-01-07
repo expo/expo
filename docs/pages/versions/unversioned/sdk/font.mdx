@@ -24,9 +24,9 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 ## Configuration in app config
 
-There are two ways to add fonts to your app: using the `expo-font` config plugin (recommended for native builds but has no effect on web) or loading them at runtime (which works across all platforms including web).
+There are two ways to add fonts to your app: using the `expo-font` config plugin (recommended for Android and iOS) or loading them at runtime (which works across all platforms including web).
 
-On native platforms, the plugin allows you to embed font files at build time which is more efficient than [`useFonts`](#usefontsmap) or [`loadAsync`](#loadasyncfontfamilyorfontmap-source). After you set up the config plugin and run [prebuild](/workflow/continuous-native-generation/#usage), you can render custom fonts right away. The plugin can be configured in different ways, see the [Fonts](/develop/user-interface/fonts/#with-expo-font-config-plugin) guide on how to use it.
+On Android and iOS, the plugin allows you to embed font files at build time which is more efficient than [`useFonts`](#usefontsmap) or [`loadAsync`](#loadasyncfontfamilyorfontmap-source). After you set up the config plugin and run [prebuild](/workflow/continuous-native-generation/#usage), you can render custom fonts right away. The plugin can be configured in different ways, see the [Fonts](/develop/user-interface/fonts/#with-expo-font-config-plugin) guide on how to use it.
 
 <ConfigPluginExample>
 

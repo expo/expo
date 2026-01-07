@@ -32,12 +32,14 @@ class ClassDefinitionSpec: ExpoSpec {
       }
 
       it("builds a class") {
-        let appContext = AppContext.create()
-        let klass = Class("") {}
-        let object = try klass.build(appContext: appContext)
+        try JavaScriptActor.assumeIsolated {
+          let appContext = AppContext.create()
+          let klass = Class("") {}
+          let object = try klass.build(appContext: appContext)
 
-        expect(object.hasProperty("prototype")) == true
-        expect(object.getProperty("prototype").kind) == .object
+          expect(object.hasProperty("prototype")) == true
+          expect(object.getProperty("prototype").kind) == .object
+        }
       }
     }
 

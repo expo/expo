@@ -4,8 +4,7 @@ import './async-require';
 import 'expo-asset';
 import 'expo/virtual/rsc';
 
-import Constants from 'expo-constants';
-import { AppRegistry, NativeModules, LogBox, Platform } from 'react-native';
+import { AppRegistry, NativeModules, LogBox } from 'react-native';
 
 import { isRunningInExpoGo } from './environment/ExpoGo';
 import { AppEntryNotFound } from './errors/AppEntryNotFound';
@@ -24,29 +23,6 @@ if (isRunningInExpoGo()) {
   // set up some improvements to commonly logged error messages stemming from react-native
   const globalHandler = ErrorUtils.getGlobalHandler();
   ErrorUtils.setGlobalHandler(createErrorHandler(globalHandler));
-}
-
-// Warn if the New Architecture is not explicitly enabled in the app config and we are running in Expo Go.
-// This could be problematic because you will be developing your app with the New Architecture enabled and
-// but your builds will have the New Architecture disabled.
-if (__DEV__ && isRunningInExpoGo() && process.env.NODE_ENV === 'development') {
-  (['android', 'ios'] as const).forEach((platform) => {
-    const newArchPlatformConfig = Constants.expoConfig?.[platform]?.newArchEnabled;
-    const newArchRootConfig = Constants.expoConfig?.newArchEnabled;
-
-    const isNewArchExplicitlyDisabled =
-      newArchPlatformConfig === false ||
-      (newArchPlatformConfig === undefined && newArchRootConfig === false);
-
-    if (Platform.OS === platform && isNewArchExplicitlyDisabled) {
-      // Wrap it in rAF to show the warning after the React Native DevTools message
-      requestAnimationFrame(() => {
-        console.warn(
-          `🚨 React Native's New Architecture is always enabled in Expo Go, but it is explicitly disabled in your project's app config. This may lead to unexpected behavior when creating a production or development build. Remove "newArchEnabled": false from your app.json.\nLearn more: https://docs.expo.dev/guides/new-architecture/`
-        );
-      });
-    }
-  });
 }
 
 // Disable the "Open debugger to view warnings" React Native DevTools warning in

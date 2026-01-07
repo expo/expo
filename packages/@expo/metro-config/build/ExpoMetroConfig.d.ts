@@ -56,6 +56,7 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
     };
     cacheStores: FileStore<any>[];
     watcher: {
+        unstable_workerThreads: false;
         additionalExts: string[];
     };
     serializer: {
@@ -90,6 +91,7 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
     };
     transformerPath: string;
     transformer: {
+        unstable_workerThreads: true;
         unstable_renameRequire: false;
         _expoRouterPath: string | undefined;
         postcssHash: string | null;
