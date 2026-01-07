@@ -8,6 +8,8 @@ import {
   IconButton,
   fillMaxWidth,
   paddingAll,
+  align,
+  offset,
 } from '@expo/ui/jetpack-compose';
 import { useState } from 'react';
 import { RefreshControl, ScrollView, useColorScheme } from 'react-native';
@@ -27,7 +29,9 @@ export default function Home() {
           <Column>
             <Button onPress={() => {}}>Search</Button>
           </Column>
-          <HorizontalFloatingToolbar variant="vibrant">
+          <HorizontalFloatingToolbar
+            variant="vibrant"
+            modifiers={[align('bottomCenter'), offset(0, -16)]}>
             <IconButton onPress={() => {}}>
               <Icon source={require('../../assets/symbols/shuffle.xml')} tintColor="#1d1b20" />
             </IconButton>

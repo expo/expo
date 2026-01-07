@@ -38,8 +38,6 @@ class HorizontalFloatingToolbarView(context: Context, appContext: AppContext) :
   @OptIn(ExperimentalMaterial3ExpressiveApi::class)
   @Composable
   override fun ComposableScope.Content() {
-    val boxScope = requireNotNull(this.boxScope)
-
     val colors = when (props.variant.value) {
       HorizontalFloatingToolbarVariant.VIBRANT -> FloatingToolbarDefaults.vibrantFloatingToolbarColors()
       else -> FloatingToolbarDefaults.standardFloatingToolbarColors()
@@ -65,17 +63,13 @@ class HorizontalFloatingToolbarView(context: Context, appContext: AppContext) :
       }
     }
 
-    with(boxScope) {
-      HorizontalFloatingToolbar(
-        expanded = true,
-        colors = colors,
-        modifier = Modifier
-          .fromExpoModifiers(props.modifiers.value, this@Content)
-          .then(Modifier.align(Alignment.BottomCenter).offset(y = (-16).dp)), // FIXME
-        floatingActionButton = floatingActionButton,
-      ) {
-        Children(this@Content, filter = { !isSlotView(it) })
-      }
+    HorizontalFloatingToolbar(
+      expanded = true,
+      colors = colors,
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content),
+      floatingActionButton = floatingActionButton,
+    ) {
+      Children(this@Content, filter = { !isSlotView(it) })
     }
   }
 

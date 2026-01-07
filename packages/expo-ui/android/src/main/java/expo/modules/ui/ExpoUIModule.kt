@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
@@ -26,6 +27,7 @@ import androidx.compose.ui.zIndex
 import expo.modules.kotlin.jni.JavaScriptFunction
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.viewevent.getValue
 import expo.modules.ui.button.Button
 import expo.modules.ui.button.IconButton
@@ -236,6 +238,19 @@ class ExpoUIModule : Module() {
       return@Function scopedExpoModifier
     }
 
+    Function("align") { alignmentType: AlignmentType ->
+      val scopedExpoModifier = ExpoModifier {
+        it.boxScope?.run {
+          alignmentType.toAlignment()?.let { alignment -> Modifier.align(alignment) }
+        } ?: it.rowScope?.run {
+          alignmentType.toVerticalAlignment()?.let { alignment -> Modifier.align(alignment) }
+        } ?:it.columnScope?.run {
+          alignmentType.toHorizontalAlignment()?.let { alignment -> Modifier.align(alignment) }
+        } ?: Modifier
+      }
+      return@Function scopedExpoModifier
+    }
+
     Function("matchParentSize") {
       val scopedExpoModifier = ExpoModifier {
         it.boxScope?.run {
@@ -256,5 +271,56 @@ class ExpoUIModule : Module() {
     }
 
     // TODO: Consider implementing semantics, layoutId, clip, navigationBarsPadding, systemBarsPadding
+  }
+}
+
+enum class AlignmentType(val value: String) : Enumerable {
+  TOP_START("topStart"),
+  TOP_CENTER("topCenter"),
+  TOP_END("topEnd"),
+  CENTER_START("centerStart"),
+  CENTER("center"),
+  CENTER_END("centerEnd"),
+  BOTTOM_START("bottomStart"),
+  BOTTOM_CENTER("bottomCenter"),
+  BOTTOM_END("bottomEnd"),
+  TOP("top"),
+  CENTER_VERTICALLY("centerVertically"),
+  BOTTOM("bottom"),
+  START("start"),
+  CENTER_HORIZONTALLY("centerHorizontally"),
+  END("end");
+
+  fun toAlignment(): Alignment? {
+    return when (this) {
+      TOP_START -> Alignment.TopStart
+      TOP_CENTER -> Alignment.TopCenter
+      TOP_END -> Alignment.TopEnd
+      CENTER_START -> Alignment.CenterStart
+      CENTER -> Alignment.Center
+      CENTER_END -> Alignment.CenterEnd
+      BOTTOM_START -> Alignment.BottomStart
+      BOTTOM_CENTER -> Alignment.BottomCenter
+      BOTTOM_END -> Alignment.BottomEnd
+      else -> null
+    }
+  }
+
+  fun toVerticalAlignment(): Alignment.Vertical? {
+    return when (this) {
+      TOP -> Alignment.Top
+      CENTER_VERTICALLY -> Alignment.CenterVertically
+      BOTTOM -> Alignment.Bottom
+      else -> null
+    }
+  }
+
+  fun toHorizontalAlignment(): Alignment.Horizontal? {
+    return when (this) {
+      START -> Alignment.Start
+      CENTER_HORIZONTALLY -> Alignment.CenterHorizontally
+      END -> Alignment.End
+      else -> null
+    }
   }
 }

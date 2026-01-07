@@ -5,6 +5,26 @@ import { parseJSXShape, ShapeJSXElement } from './Shape';
 
 const nativeExpoUIModule = requireNativeModule('ExpoUI');
 
+export type Alignment =
+  // 2D Alignments
+  | 'topStart'
+  | 'topCenter'
+  | 'topEnd'
+  | 'centerStart'
+  | 'center'
+  | 'centerEnd'
+  | 'bottomStart'
+  | 'bottomCenter'
+  | 'bottomEnd'
+  // 1D Alignments Vertically
+  | 'top'
+  | 'centerVertically'
+  | 'bottom'
+  // 1D Alignments Horizontally
+  | 'start'
+  | 'centerHorizontally'
+  | 'end';
+
 export const paddingAll: (all: number) => ExpoModifier = nativeExpoUIModule.paddingAll;
 export const padding: (start: number, top: number, end: number, bottom: number) => ExpoModifier =
   nativeExpoUIModule.padding;
@@ -24,6 +44,7 @@ export const rotate: (degrees: number) => ExpoModifier = nativeExpoUIModule.rota
 export const zIndex: (index: number) => ExpoModifier = nativeExpoUIModule.zIndex;
 export const weight: (weight: number) => ExpoModifier = nativeExpoUIModule.weight;
 export const testID: (tag: string) => ExpoModifier = nativeExpoUIModule.testID;
+export const align: (alignment: Alignment) => ExpoModifier = nativeExpoUIModule.align;
 export const matchParentSize: () => ExpoModifier = nativeExpoUIModule.matchParentSize;
 export const animateContentSize: (dampingRatio?: number, stiffness?: number) => ExpoModifier =
   nativeExpoUIModule.animateContentSize;

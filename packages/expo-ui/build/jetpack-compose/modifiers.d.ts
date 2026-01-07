@@ -1,5 +1,6 @@
 import { ExpoModifier } from '../types';
 import { ShapeJSXElement } from './Shape';
+export type Alignment = 'topStart' | 'topCenter' | 'topEnd' | 'centerStart' | 'center' | 'centerEnd' | 'bottomStart' | 'bottomCenter' | 'bottomEnd' | 'top' | 'centerVertically' | 'bottom' | 'start' | 'centerHorizontally' | 'end';
 export declare const paddingAll: (all: number) => ExpoModifier;
 export declare const padding: (start: number, top: number, end: number, bottom: number) => ExpoModifier;
 export declare const size: (width: number, height: number) => ExpoModifier;
@@ -17,6 +18,7 @@ export declare const rotate: (degrees: number) => ExpoModifier;
 export declare const zIndex: (index: number) => ExpoModifier;
 export declare const weight: (weight: number) => ExpoModifier;
 export declare const testID: (tag: string) => ExpoModifier;
+export declare const align: (alignment: Alignment) => ExpoModifier;
 export declare const matchParentSize: () => ExpoModifier;
 export declare const animateContentSize: (dampingRatio?: number, stiffness?: number) => ExpoModifier;
 export declare const clip: (shape: ShapeJSXElement) => ExpoModifier;
