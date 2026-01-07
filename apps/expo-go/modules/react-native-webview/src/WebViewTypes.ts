@@ -1160,6 +1160,14 @@ export interface AndroidWebViewProps extends WebViewSharedProps {
    * @platform android
    */
   allowsProtectedMedia?: boolean;
+
+  /**
+   * Function that is invoked when the `WebView` receives an SSL error for a sub-resource.
+   *
+   * @param event
+   * @platform android
+   */
+  onLoadSubResourceError?: (event: WebViewErrorEvent) => void;
 }
 
 export interface WebViewSharedProps extends ViewProps {

@@ -2329,7 +2329,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-webview (13.15.0):
+  - react-native-webview (13.16.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3872,7 +3872,7 @@ SPEC CHECKSUMS:
   react-native-skia: 009c318120ef7c6000bf14a6342ad8a89b44070b
   react-native-slider: 7814a1258f438c043f370eb82110ef036793e95a
   react-native-view-shot: 26174e54ec6b4b7c5d70b86964b747919759adc1
-  react-native-webview: a4f0775a31b73cf13cfc3d2d2b119aa94ec76e49
+  react-native-webview: a0107c12442bf2ac454d509f615daef00f34df47
   React-NativeModulesApple: 2097e50465c1e5521d2cc2547e78da227930cf7a
   React-networking: 25c132be194542cbe1b215963643a0049f2c068a
   React-oscompat: 759780c1327bb5e50f8e18f41ce40d5ed920abb3
