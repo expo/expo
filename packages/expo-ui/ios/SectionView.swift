@@ -40,13 +40,29 @@ internal struct SectionView: ExpoSwiftUI.View {
       Section(title) {
         contentChildren
       }
-    } else {
+    } else if let headerView, let footerView {
       Section {
         contentChildren
       } header: {
         headerView
       } footer: {
         footerView
+      }
+    } else if let headerView {
+      Section {
+        contentChildren
+      } header: {
+        headerView
+      }
+    } else if let footerView {
+      Section {
+        contentChildren
+      } footer: {
+        footerView
+      }
+    } else {
+      Section {
+        contentChildren
       }
     }
   }

@@ -1,4 +1,4 @@
-import { Host, HStack, Image, List, Section, Text, Toggle } from '@expo/ui/swift-ui';
+import { Host, List, Section, Text, Toggle } from '@expo/ui/swift-ui';
 import { headerProminence } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 
