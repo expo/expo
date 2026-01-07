@@ -8,7 +8,6 @@ import {
 import { Spacer } from 'expo-dev-client-components';
 import * as React from 'react';
 
-import AudioDiagnosticsScreen from './AudioDiagnosticsScreen';
 import { DiagnosticButton } from './DiagnosticsButton';
 import GeofencingScreen from './GeofencingDiagnosticsScreen';
 import LocationDiagnosticsScreen from './LocationDiagnosticsScreen';
@@ -43,11 +42,6 @@ export function DiagnosticsStackScreen() {
         }}
       />
       <DiagnosticsStack.Screen
-        name="Audio"
-        component={AudioDiagnosticsScreen}
-        options={{ title: 'Audio Diagnostics' }}
-      />
-      <DiagnosticsStack.Screen
         name="Location"
         component={LocationDiagnosticsScreen}
         options={{ title: 'Location Diagnostics' }}
@@ -68,7 +62,6 @@ function DiagnosticsScreen({
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: spacing[4] }}>
       <CappedWidthContainerView>
         <Spacer.Vertical size="large" />
-        <AudioDiagnostic navigation={navigation} />
         <Spacer.Vertical size="large" />
         {Environment.IsIOSRestrictedBuild ? (
           <ForegroundLocationDiagnostic navigation={navigation} />
@@ -79,22 +72,6 @@ function DiagnosticsScreen({
         <GeofencingDiagnostic navigation={navigation} />
       </CappedWidthContainerView>
     </ScrollView>
-  );
-}
-
-function AudioDiagnostic({
-  navigation,
-}: {
-  navigation: StackNavigationProp<DiagnosticsStackRoutes, 'Diagnostics'>;
-}) {
-  return (
-    <DiagnosticButton
-      title="Audio"
-      description={`On iOS you can play audio${
-        !Environment.IsIOSRestrictedBuild ? ` in the foreground and background` : ``
-      }, choose whether it plays when the device is on silent, and set how the audio interacts with audio from other apps. This diagnostic allows you to see the available options.`}
-      onPress={() => navigation.navigate('Audio', {})}
-    />
   );
 }
 
