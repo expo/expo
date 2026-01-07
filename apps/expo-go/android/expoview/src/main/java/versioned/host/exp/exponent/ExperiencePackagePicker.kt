@@ -28,7 +28,7 @@ import expo.modules.font.FontUtilsModule
 import expo.modules.gl.GLModule
 import expo.modules.haptics.HapticsModule
 import expo.modules.image.ExpoImageModule
-import expo.modules.imageloader.ImageLoaderPackage
+import expo.modules.imageloader.ImageLoaderService
 import expo.modules.imagemanipulator.ImageManipulatorModule
 import expo.modules.imagepicker.ImagePickerModule
 import expo.modules.intentlauncher.IntentLauncherModule
@@ -69,8 +69,6 @@ import expo.modules.sensors.modules.PedometerModule
 import expo.modules.sharing.SharingModule
 import expo.modules.sms.SMSModule
 import expo.modules.speech.SpeechModule
-import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
-import host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage
 import expo.modules.sqlite.SQLiteModule
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIModule
@@ -82,11 +80,12 @@ import expo.modules.updates.UpdatesPackage
 import expo.modules.video.VideoModule
 import expo.modules.videothumbnails.VideoThumbnailsModule
 import expo.modules.webbrowser.WebBrowserModule
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage
 
 object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     ExpoLinkingPackage(),
-    ImageLoaderPackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
     SplashScreenPackage(),
@@ -109,10 +108,6 @@ object ExperiencePackagePicker : ModulesProvider {
   fun packages(manifest: Manifest?): List<Package> {
     return EXPO_MODULES_PACKAGES
   }
-
-  override fun getServices(): List<Class<out Service>> = listOf(
-    ConstantsService::class.java
-  )
 
   override fun getModulesMap(): Map<Class<out Module>, String?> = mapOf(
     AudioModule::class.java to null,
@@ -190,4 +185,11 @@ object ExperiencePackagePicker : ModulesProvider {
     WebBrowserModule::class.java to null,
     BrightnessModule::class.java to null
   )
+
+  override fun getServices(): List<Class<out Service>> {
+    return listOf(
+      ConstantsService::class.java,
+      ImageLoaderService::class.java
+    )
+  }
 }
