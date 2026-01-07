@@ -8,7 +8,6 @@
     "scheme": "helloworld",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": false,
       "icon": "./assets/expo.icon"
     },
     "android": {
