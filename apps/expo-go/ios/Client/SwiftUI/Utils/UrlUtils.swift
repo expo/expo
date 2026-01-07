@@ -36,3 +36,20 @@ func sanitizeUrlString(_ urlString: String) -> String? {
 
   return sanitizedUrl
 }
+
+func toExpURLString(_ url: URL) -> String {
+  guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+    return url.absoluteString
+  }
+
+  if let scheme = components.scheme?.lowercased(), scheme == "exp" || scheme == "exps" {
+    return url.absoluteString
+  }
+
+  if let scheme = components.scheme?.lowercased(), scheme == "http" || scheme == "https" {
+    components.scheme = "exp"
+    return components.url?.absoluteString ?? url.absoluteString
+  }
+
+  return url.absoluteString
+}

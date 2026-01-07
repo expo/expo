@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) UIViewController *transitioningToViewController;
 @property (nonatomic, readonly) BOOL isLocalNetworkAccessGranted;
 @property (nonatomic, strong) HomeViewController *homeViewController;
+@property (nonatomic, strong) NSURL *pendingInitialHomeURL;
 
 @end
 
@@ -87,7 +88,20 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)createRootAppAndMakeVisible
 {
   _homeViewController = [[HomeViewController alloc] init];
+  if (_pendingInitialHomeURL) {
+    _homeViewController.initialURL = _pendingInitialHomeURL;
+  }
   [self _showHomeViewController];
+}
+
+#pragma mark - Initial URL
+
+- (void)setInitialHomeURL:(NSURL *)url
+{
+  _pendingInitialHomeURL = url;
+  if (_homeViewController != nil) {
+    _homeViewController.initialURL = url;
+  }
 }
 
 #pragma mark - EXAppBrowserController
