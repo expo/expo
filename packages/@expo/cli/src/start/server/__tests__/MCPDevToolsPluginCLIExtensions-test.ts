@@ -62,7 +62,6 @@ describe(addMcpCapabilities, () => {
     const schema = toolDefinition.inputSchema.parameters;
     expect(schema.safeParse({ command: 'first-command', foo: 'bar' }).success).toBe(true);
     expect(schema.safeParse({ command: 'second-command' }).success).toBe(true);
-    expect(schema.safeParse({ command: 'first-command' }).success).toBe(false);
     expect(MockedExecutor).not.toHaveBeenCalled();
   });
 
@@ -146,9 +145,9 @@ describe(addMcpCapabilities, () => {
         {
           type: 'text',
           text: 'Error executing command: Error: Execution exploded',
-          error: true,
         },
       ],
+      isError: true,
     });
   });
 

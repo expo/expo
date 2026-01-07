@@ -82,9 +82,8 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
           } catch (e: any) {
             Log.error('Error executing MCP CLI command:', e);
             return {
-              content: [
-                { type: 'text', text: `Error executing command: ${e.toString()}`, error: true },
-              ],
+              content: [{ type: 'text', text: `Error executing command: ${e.toString()}` }],
+              isError: true,
             };
           }
         }
