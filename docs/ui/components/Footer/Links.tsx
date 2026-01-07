@@ -58,12 +58,24 @@ export const EditPageLink = ({ pathname }: { pathname: string }) => (
   </LI>
 );
 
-export const LlmsTxtLink = () => (
-  <LI>
-    <A isStyled openInNewTab href="/llms.txt" className={LINK_CLASSES}>
-      <File02Icon className={ICON_CLASSES} />
-      <CALLOUT theme="secondary">View llms.txt</CALLOUT>
-    </A>
+type LlmsTxtLinkProps = {
+  fullVersionHref: string;
+  fullVersionLabel: string;
+};
+
+export const LlmsTxtLink = ({ fullVersionHref, fullVersionLabel }: LlmsTxtLinkProps) => (
+  <LI className="flex items-center">
+    <File02Icon className={ICON_CLASSES} />
+    <CALLOUT theme="secondary" tag="span">
+      View{' '}
+      <A openInNewTab href="/llms.txt" className="focus-visible:outline-offset-4">
+        llms.txt
+      </A>{' '}
+      and{' '}
+      <A openInNewTab href={fullVersionHref} className="focus-visible:outline-offset-4">
+        {fullVersionLabel}
+      </A>
+    </CALLOUT>
   </LI>
 );
 

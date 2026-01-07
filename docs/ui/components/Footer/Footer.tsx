@@ -3,6 +3,8 @@ import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { useRouter } from 'next/compat/router';
 
+import { isEasPath } from '~/common/routes';
+import { usePageApiVersion } from '~/providers/page-api-version';
 import { NavigationRouteWithSection } from '~/types/common';
 import { P, FOOTNOTE, UL, LI } from '~/ui/components/Text';
 
@@ -20,6 +22,8 @@ type Props = {
 };
 
 const isDev = process.env.NODE_ENV === 'development';
+const LLMS_SDK_VERSIONS = ['v53.0.0', 'v52.0.0'];
+const LLMS_SDK_LATEST_VERSION = LLMS_SDK_VERSIONS[0];
 
 export const Footer = ({
   title,
@@ -29,10 +33,21 @@ export const Footer = ({
   nextPage,
   modificationDate,
 }: Props) => {
+  const { hasVersion, version } = usePageApiVersion();
   const router = useRouter();
   const isAPIPage = router?.pathname.includes('/sdk/') ?? false;
   const isTutorial = router?.pathname.includes('/tutorial/') ?? false;
   const isExpoPackage = packageName ? packageName.startsWith('expo-') : isAPIPage;
+  const llmsSdkVersion = version === 'latest' ? LLMS_SDK_LATEST_VERSION : version;
+  const shouldUseLlmsSdkFile = hasVersion && LLMS_SDK_VERSIONS.includes(llmsSdkVersion);
+  const isEasPage = router?.pathname ? isEasPath(router.pathname) : false;
+  const llmsFullFilename = isEasPage
+    ? 'llms-eas.txt'
+    : shouldUseLlmsSdkFile
+      ? `llms-sdk-${llmsSdkVersion}.txt`
+      : 'llms-full.txt';
+  const llmsFullHref = `/${llmsFullFilename}`;
+  const llmsFullLabel = 'llms-full.txt';
 
   const shouldShowModifiedDate = !isExpoPackage && !isTutorial && title;
 
@@ -101,7 +116,7 @@ export const Footer = ({
               <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
             )}
             {title && router?.pathname && <EditPageLink pathname={router.pathname} />}
-            <LlmsTxtLink />
+            <LlmsTxtLink fullVersionHref={llmsFullHref} fullVersionLabel={llmsFullLabel} />
             {!isDev && shouldShowModifiedDate && modificationDate && (
               <LI className="!mt-4 !text-2xs !text-quaternary">
                 Last updated on <time dateTime={modificationDate}>{modificationDate}</time>
