@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- [ios] - Fix modifiers import path in the example ([#41811](https://github.com/expo/expo/pull/41811) by [@pchalupa](https://github.com/pchalupa))
+
 ### 🛠 Breaking changes
 
 - [iOS] - Match `DatePicker` API with SwiftUI API. Remove `DateTimePicker` component ([#41546](https://github.com/expo/expo/pull/41546) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -10,6 +12,7 @@
 - [iOS] - Add `label` support in `Slider` and match API with SwiftUI ([#41616](https://github.com/expo/expo/pull/41616) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Match `Button` API with SwiftUI's API ([#41617](https://github.com/expo/expo/pull/41617) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Remove `Switch` component and add `Toggle` component. ([#41675](https://github.com/expo/expo/pull/41675) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] - Replace `onStateChange` callback with `onIsPresentedChange` in `Popover` ([#41628](https://github.com/expo/expo/pull/41628) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Remove `scrollEnabled` prop from Form. Use `scrollDisabled` modifier instead. ([#41728](https://github.com/expo/expo/pull/41728) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🎉 New features
@@ -18,6 +21,7 @@
 - [jetpack-compose] Added `matchContents` support to `Host`. ([#41553](https://github.com/expo/expo/pull/41553) by [@kudo](https://github.com/kudo))
 - [iOS] Add `timerInterval` to `Progress` component. ([#41598](https://github.com/expo/expo/pull/41598) by [@jakex7](https://github.com/jakex7))
 - [iOS] Make some views public.
+- [iOS] - Add `Menu` component ([#41664](https://github.com/expo/expo/pull/41664) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
@@ -35,6 +39,7 @@
 
 ### 🎉 New features
 
+- [iOS] Add numeric x-axis support to Chart component ([#41236](https://github.com/expo/expo/pull/41236) by [@dileepapeiris](https://github.com/dileepapeiris))
 - [iOS] Add `listRowSeparator` modifier. ([#41372](https://github.com/expo/expo/pull/41372) by [@kfirfitousi](https://github.com/kfirfitousi))
 - [android] Add new modifiers. ([#41234](https://github.com/expo/expo/pull/41234) by [@aleqsio](https://github.com/aleqsio))
 - [android] Add IconButton. ([#41232](https://github.com/expo/expo/pull/41232) by [@aleqsio](https://github.com/aleqsio))

@@ -29,7 +29,6 @@ export default function HeaderItemsScreen() {
   // State for header customization
   const [headerBackgroundColor, setHeaderBackgroundColor] = useState('#fff');
   const [hideBackButton, setHideBackButton] = useState(false);
-  const [showLargeTitleSearch, setShowLargeTitleSearch] = useState(false);
 
   const handleLeftButton1Press = () => {
     Alert.alert('Left Button 1', 'First left button pressed');
@@ -127,9 +126,9 @@ export default function HeaderItemsScreen() {
             )}
 
             {showLeftCustomItem && (
-              <Stack.Header.Item>
+              <Stack.Header.View>
                 <CustomHeaderElement />
-              </Stack.Header.Item>
+              </Stack.Header.View>
             )}
 
             {showLeftMenu && (

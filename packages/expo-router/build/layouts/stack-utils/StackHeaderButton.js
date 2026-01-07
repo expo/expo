@@ -36,6 +36,9 @@ const shared_1 = require("./shared");
 const StackHeaderButton = () => null;
 exports.StackHeaderButton = StackHeaderButton;
 function convertStackHeaderButtonPropsToRNHeaderItem(props) {
+    if (props.hidden) {
+        return undefined;
+    }
     return {
         ...(0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props),
         type: 'button',

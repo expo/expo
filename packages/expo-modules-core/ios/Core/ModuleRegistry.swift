@@ -87,6 +87,15 @@ public final class ModuleRegistry: Sequence {
     return registry[moduleName]?.module
   }
 
+  internal func getModule<ModuleProtocol>(implementing protocol: ModuleProtocol.Type) -> ModuleProtocol? {
+    for holder in registry.values {
+      if let module = holder.module as? ModuleProtocol {
+        return module
+      }
+    }
+    return nil
+  }
+
   public func getModuleNames() -> [String] {
     return Array(registry.keys)
   }

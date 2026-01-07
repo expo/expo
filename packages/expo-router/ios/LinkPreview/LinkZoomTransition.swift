@@ -244,7 +244,7 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
   ) {
     guard child == nil else {
       logger?.warn(
-        "[expo-router] Link.AppleZoomTarget can only have a single native child."
+        "[expo-router] Link.AppleZoomTarget can only have a single native child. If you passed a single child, consider adding collapsible={false} to your component"
       )
       return
     }
@@ -287,7 +287,7 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
 
   private func setupZoomTransition() {
     if self.zoomTransitionSourceIdentifier.isEmpty {
-      print("[expo-router] No zoomTransitionSourceIdentifier passed to LinkZoomTransitionEnabler")
+      logger?.warn("[expo-router] No zoomTransitionSourceIdentifier passed to LinkZoomTransitionEnabler. This is most likely a bug in expo-router.")
       return
     }
     if let controller = self.findViewController() {
@@ -329,8 +329,8 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
             view = linkPreviewView.directChild
           }
           guard let view else {
-            print(
-              "[expo-router] No source view found for identifier \(self.zoomTransitionSourceIdentifier) to enable zoom transition"
+            self.logger?.warn(
+              "[expo-router] No source view found for identifier \(self.zoomTransitionSourceIdentifier) to enable zoom transition. This is most likely a bug in expo-router."
             )
             return nil
           }
@@ -339,7 +339,7 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
         return
       }
     } else {
-      print("[expo-router] No navigation controller found to enable zoom transition")
+      logger?.warn("[expo-router] No navigation controller found to enable zoom transition. This is most likely a bug in expo-router.")
     }
   }
 
@@ -390,7 +390,7 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
   }
 }
 
-class LinkZoomExpoView: ExpoView {
+class LinkZoomExpoView: RouterViewWithLogger {
   var module: LinkPreviewNativeModule? {
     return appContext?.moduleRegistry.get(moduleWithName: LinkPreviewNativeModule.moduleName)
       as? LinkPreviewNativeModule
@@ -398,7 +398,7 @@ class LinkZoomExpoView: ExpoView {
 
   var sourceRepository: LinkZoomTransitionsSourceRepository? {
     guard let module else {
-      print("[expo-router] LinkPreviewNativeModule not loaded")
+      logger?.warn("[expo-router] LinkPreviewNativeModule not loaded. Make sure expo-router is properly configured.")
       return nil
     }
     return module.zoomSourceRepository
@@ -406,11 +406,9 @@ class LinkZoomExpoView: ExpoView {
 
   var alignmentViewRepository: LinkZoomTransitionsAlignmentViewRepository? {
     guard let module else {
-      print("[expo-router] LinkPreviewNativeModule not loaded")
+      logger?.warn("[expo-router] LinkPreviewNativeModule not loaded.  Make sure expo-router is properly configured.")
       return nil
     }
     return module.zoomAlignmentViewRepository
   }
-
-  lazy var logger = appContext?.jsLogger
 }

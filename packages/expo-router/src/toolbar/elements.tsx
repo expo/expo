@@ -1,23 +1,33 @@
-import { nanoid } from 'nanoid/non-secure';
-import { useMemo } from 'react';
-import { View, type ColorValue, type StyleProp, type ViewStyle } from 'react-native';
+import { Children, isValidElement, useId, type ReactNode } from 'react';
+import { StyleSheet, type ColorValue, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { RouterToolbarHost, RouterToolbarItem } from './native';
 import { InternalLinkPreviewContext } from '../link/InternalLinkPreviewContext';
-import {
-  LinkMenu,
-  LinkMenuAction,
-  type LinkMenuActionProps,
-  type LinkMenuProps,
-} from '../link/elements';
+import { LinkMenuAction, type LinkMenuActionProps } from '../link/elements';
+import { NativeLinkPreviewAction } from '../link/preview/native';
+import { Icon, Label } from '../primitives';
+import { getFirstChildOfType } from '../utils/children';
+import type { BasicTextStyle } from '../utils/font';
 
-/**
- * For available props, see [`LinkMenuProps`](./router/#linkmenuprops).
- *
- * @platform ios
- */
-export interface ToolbarMenuProps extends LinkMenuProps {
+export interface ToolbarMenuProps {
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+  children?: React.ReactNode;
+  /**
+   * An optional subtitle for the menu. Does not appear on `inline` menus.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/subtitle) for more information.
+   */
+  subtitle?: string;
+  /**
+   * If `true`, the menu item will be displayed as destructive.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/destructive) for more information.
+   */
+  destructive?: boolean;
+  disabled?: boolean;
+  hidden?: boolean;
   /**
    * Whether to hide the shared background when `sharesBackground` is enabled.
    *
@@ -29,25 +39,75 @@ export interface ToolbarMenuProps extends LinkMenuProps {
    */
   hidesSharedBackground?: boolean;
   /**
-   * Whether the button shares the background with adjacent toolbar items.
+   * Optional SF Symbol displayed alongside the menu item.
+   */
+  icon?: SFSymbol;
+  /**
+   * If `true`, the menu will be displayed inline.
+   * This means that the menu will not be collapsed
+   *
+   * > **Note*: Inline menus are only supported in submenus.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline) for more information.
+   */
+  inline?: boolean;
+  /**
+   * If `true`, the menu will be displayed as a palette.
+   * This means that the menu will be displayed as one row.
+   * The `elementSize` property is ignored when palette is used, all items will be `elementSize="small"`. Use `elementSize="medium"` instead of `palette` to display actions with titles horizontally.
+   *
+   * > **Note**: Palette menus are only supported in submenus.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette) for more information.
+   */
+  palette?: boolean;
+  /**
+   * Whether to separate the background of this item from other header items.
    *
    * > **Note**: Text buttons cannot share the background.
    *
-   * Only available for root level menus.
+   * This prop reverses the native behavior of `sharesBackground`.
    *
    * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/sharesbackground) for more information.
    *
-   * @default true
+   * @default false
    *
    * @platform iOS 26+
    */
-  sharesBackground?: boolean;
+  separateBackground?: boolean;
+  /**
+   * Style for the label of the header item.
+   */
+  style?: StyleProp<BasicTextStyle>;
+  /**
+   * The title of the menu item
+   */
+  title?: string;
+
+  /**
+   * Tint color for the menu icon and text.
+   */
+  tintColor?: ColorValue;
+
+  /**
+   * Controls the visual style of the menu when represented as a bar button.
+   *
+   * @default 'plain'
+   */
+  variant?: 'plain' | 'done' | 'prominent';
+  /**
+   * The preferred size of the menu elements.
+   * `elementSize` property is ignored when `palette` is used.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/preferredelementsize) for more information.
+   *
+   * @platform iOS 16.0+
+   */
+  elementSize?: 'auto' | 'small' | 'medium' | 'large';
 }
 
 /**
  * Adds a context menu for to a toolbar.
- *
- * For available props, see [`LinkMenuProps`](./router/#linkmenuprops).
  *
  * @example
  * ```tsx
@@ -61,7 +121,61 @@ export interface ToolbarMenuProps extends LinkMenuProps {
  *
  * @platform ios
  */
-export const ToolbarMenu = LinkMenu;
+export const ToolbarMenu: React.FC<ToolbarMenuProps> = ({
+  accessibilityHint,
+  accessibilityLabel,
+  separateBackground,
+  hidesSharedBackground,
+  palette,
+  inline,
+  hidden,
+  subtitle,
+  title,
+  destructive,
+  children,
+  icon,
+  tintColor,
+  variant,
+  style,
+  elementSize,
+}) => {
+  const identifier = useId();
+  const validChildren = Children.toArray(children).filter(
+    (child) =>
+      isValidElement(child) && (child.type === ToolbarMenuAction || child.type === ToolbarMenu)
+  );
+  const label = getFirstChildOfType(children, Label);
+  const iconComponent = getFirstChildOfType(children, Icon);
+
+  const computedTitle = title ?? label?.props.children ?? '';
+  const computedIcon =
+    icon ??
+    (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
+  const sf = typeof computedIcon === 'string' ? computedIcon : undefined;
+  const titleStyle = StyleSheet.flatten(style);
+  return (
+    <NativeLinkPreviewAction
+      sharesBackground={!separateBackground}
+      hidesSharedBackground={hidesSharedBackground}
+      hidden={hidden}
+      icon={sf}
+      destructive={destructive}
+      subtitle={subtitle}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+      displayAsPalette={palette}
+      displayInline={inline}
+      preferredElementSize={elementSize}
+      tintColor={tintColor}
+      titleStyle={titleStyle}
+      barButtonItemStyle={variant === 'done' ? 'prominent' : variant}
+      title={computedTitle}
+      onSelected={() => {}}
+      children={validChildren}
+      identifier={identifier}
+    />
+  );
+};
 
 export type ToolbarMenuActionProps = LinkMenuActionProps;
 
@@ -85,6 +199,8 @@ export type ToolbarMenuActionProps = LinkMenuActionProps;
 export const ToolbarMenuAction = LinkMenuAction;
 
 export interface ToolbarButtonProps {
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
   /**
    * The text label for the button.
    *
@@ -98,7 +214,8 @@ export interface ToolbarButtonProps {
    * <Toolbar.Button>This is button label</Toolbar.Button>
    * ```
    */
-  children?: string;
+  children?: ReactNode;
+  disabled?: boolean;
 
   /**
    * Whether the button should be hidden.
@@ -158,17 +275,7 @@ export interface ToolbarButtonProps {
   /**
    * Style for the label of the header item.
    */
-  // TODO: support style prop to align with header items
-  // style?: StyleProp<
-  //   Pick<TextStyle, 'fontFamily' | 'fontSize' | 'fontWeight' | 'color'> & {
-  //     /**
-  //      * When set to 'transparent', the button will have no background color.
-  //      *
-  //      * @platform iOS 26+
-  //      */
-  //     backgroundColor?: 'transparent';
-  //   }>
-  // >;
+  style?: StyleProp<BasicTextStyle>;
 
   /**
    * Tint color for the button icon and text.
@@ -181,10 +288,6 @@ export interface ToolbarButtonProps {
    * @default 'plain'
    */
   variant?: 'plain' | 'done' | 'prominent';
-  // TODO: support this props to align with header items
-  // accessibilityLabel?: string;
-  // accessibilityHint?: string;
-  // disabled?: boolean;
 }
 
 // As noted in https://sebvidal.com/blog/whats-new-in-uikit-26/?utm_source=chatgpt.com#:~:text=It%27s%20worth%20noting%20that%2C%20at%20the%20time%20of%20writing%2C%20bar%20button%20badges%20are%20only%20supported%20in%20navigation%20bars%20%2D%20not%20tool%20bars.
@@ -206,11 +309,23 @@ export interface ToolbarButtonProps {
  * @platform ios
  */
 export const ToolbarButton = (props: ToolbarButtonProps) => {
-  const id = useMemo(() => nanoid(), []);
-  const sf = typeof props.icon === 'string' ? props.icon : undefined;
+  const id = useId();
+  const areChildrenString = typeof props.children === 'string';
+  const label = areChildrenString
+    ? (props.children as string)
+    : getFirstChildOfType(props.children, Label)?.props.children;
+  const iconComponent =
+    !props.icon && !areChildrenString ? getFirstChildOfType(props.children, Icon) : undefined;
+  const icon =
+    props.icon ??
+    (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
+  const sf = typeof icon === 'string' ? icon : undefined;
   return (
     <RouterToolbarItem
+      accessibilityHint={props.accessibilityHint}
+      accessibilityLabel={props.accessibilityLabel}
       barButtonItemStyle={props.variant === 'done' ? 'prominent' : props.variant}
+      disabled={props.disabled}
       hidden={props.hidden}
       hidesSharedBackground={props.hidesSharedBackground}
       identifier={id}
@@ -219,13 +334,9 @@ export const ToolbarButton = (props: ToolbarButtonProps) => {
       selected={props.selected}
       sharesBackground={!props.separateBackground}
       systemImageName={sf}
-      title={String(props.children)}
+      title={label}
       tintColor={props.tintColor}
-      // TODO: support this props to align with header items
-      // disabled={props.disabled}
-      // style={props.style}
-      // accessibilityLabel={props.accessibilityLabel}
-      // accessibilityHint={props.accessibilityHint}
+      titleStyle={StyleSheet.flatten(props.style)}
     />
   );
 };
@@ -281,7 +392,7 @@ export type ToolbarSpacerProps = {
  * @platform ios
  */
 export const ToolbarSpacer = (props: ToolbarSpacerProps) => {
-  const id = useMemo(() => nanoid(), []);
+  const id = useId();
   return (
     <RouterToolbarItem
       hidesSharedBackground={props.hidesSharedBackground}
@@ -330,13 +441,6 @@ export interface ToolbarViewProps {
    * @platform iOS 26+
    */
   separateBackground?: boolean;
-  /**
-   * Style properties for the view.
-   * Note: Position-related styles (position, inset, top, left, right, bottom, flex) are not allowed.
-   */
-  style?: StyleProp<
-    Omit<ViewStyle, 'position' | 'inset' | 'top' | 'left' | 'right' | 'bottom' | 'flex'>
-  >;
 }
 
 /**
@@ -350,14 +454,14 @@ export interface ToolbarViewProps {
  * ```tsx
  * <Toolbar>
  *   <Toolbar.Spacer />
- *   <Toolbar.View style={{ width: 200 }}>
+ *   <Toolbar.View>
  *     <TextInput
  *       placeholder="Search"
  *       placeholderTextColor={Color.ios.placeholderText}
  *     />
  *   </Toolbar.View>
- *   <Toolbar.View separateBackground style={{ width: 32, height: 32 }}>
- *     <Pressable onPress={handlePress}>
+ *   <Toolbar.View separateBackground>
+ *     <Pressable style={{ width: 32, height: 32 }} onPress={handlePress}>
  *       <SymbolView name="plus" size={22} />
  *     </Pressable>
  *   </Toolbar.View>
@@ -371,16 +475,15 @@ export const ToolbarView = ({
   hidden,
   hidesSharedBackground,
   separateBackground,
-  style,
 }: ToolbarViewProps) => {
-  const id = useMemo(() => nanoid(), []);
+  const id = useId();
   return (
     <RouterToolbarItem
       hidesSharedBackground={hidesSharedBackground}
       hidden={hidden}
       identifier={id}
       sharesBackground={!separateBackground}>
-      <View style={[style, { position: 'absolute' }]}>{children}</View>
+      {children}
     </RouterToolbarItem>
   );
 };

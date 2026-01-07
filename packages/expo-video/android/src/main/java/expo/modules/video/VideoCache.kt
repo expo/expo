@@ -9,6 +9,7 @@ import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.video.managers.VideoManager
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.UUID

@@ -6,6 +6,8 @@ import expo.modules.adapters.react.ModuleRegistryAdapter
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.RegistryLifecycleListener
 import expo.modules.kotlin.ModulesProvider
+import expo.modules.kotlin.services.AppDirectoriesService
+import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.utils.ScopedContext
@@ -21,8 +23,12 @@ import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotific
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsHandler
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedServerRegistrationModule
 
-open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistryProvider?, modulesProvider: ModulesProvider? = null) :
+open class ExpoModuleRegistryAdapter(
+  moduleRegistryProvider: ReactModuleRegistryProvider?,
+  modulesProvider: ModulesProvider? = null
+) :
   ModuleRegistryAdapter(moduleRegistryProvider, modulesProvider), ScopedModuleRegistryAdapter {
+
   override fun createNativeModules(
     scopedContext: ScopedContext,
     experienceKey: ExperienceKey,
@@ -35,10 +41,21 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     moduleRegistry.registerInternalModule(SharedCookiesDataSourceFactoryProvider())
 
     // Overriding expo-constants/ConstantsService -- binding provides manifest and other expo-related constants
-    moduleRegistry.registerInternalModule(ConstantsBinding(scopedContext, experienceProperties, manifest))
+    moduleRegistry.registerInternalModule(
+      ConstantsBinding(
+        scopedContext,
+        experienceProperties,
+        manifest
+      )
+    )
 
     // Overriding expo-notifications classes
-    moduleRegistry.registerInternalModule(ScopedNotificationsChannelsProvider(scopedContext, experienceKey))
+    moduleRegistry.registerInternalModule(
+      ScopedNotificationsChannelsProvider(
+        scopedContext,
+        experienceKey
+      )
+    )
     moduleRegistry.registerInternalModule(ScopedNotificationsCategoriesSerializer())
 
     // ReactAdapterPackage requires ReactContext
@@ -61,6 +78,11 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
       reactContext,
       moduleRegistry
     ) { appContext ->
+      with(appContext.services) {
+        register(FilePermissionService::class.java, ScopedFilePermissionService(scopedContext))
+        register(AppDirectoriesService::class.java, AppDirectoriesService(scopedContext))
+      }
+
       with(appContext.registry) {
         register(
           ExpoGoModule(manifest),
@@ -80,9 +102,6 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
       }
 
       with(appContext.legacyModuleRegistry) {
-        // Overriding expo-file-system FilePermissionModule
-        registerInternalModule(ScopedFilePermissionModule(scopedContext))
-
         // Overriding expo-permissions ScopedPermissionsService
         registerInternalModule(ScopedPermissionsService(scopedContext, experienceKey))
       }

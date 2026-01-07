@@ -11,12 +11,13 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigReactNative } from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
+import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 > **important** **This library is currently in alpha and will frequently experience breaking changes.**
 
 `expo-age-range` provides access to user age range information. It uses Google's [Play Age Signals API](https://developer.android.com/google/play/age-signals/use-age-signals-api) on Android and Apple's [Declared Age Range framework](https://developer.apple.com/documentation/declaredagerange/) on iOS.
 
-This API allows you to request age range information from users to help you comply with age-appropriate content regulations (such as in [Texas](https://developer.apple.com/news/?id=btkirlj8)) and provide age-appropriate experiences in your app.
+This library allows you to request age range information from your app users to help you comply with age-appropriate content regulations (such as in [Texas, USA](https://developer.apple.com/news/?id=btkirlj8)) and provide age-appropriate experiences in your app.
 
 ### Limitations
 
@@ -32,7 +33,7 @@ On Android, the Play Age Signals API (beta) may throw an exception until January
 
 ### Setup iOS project
 
-To use the age range API on iOS, you need to add the `com.apple.developer.declared-age-range` entitlement to your app. Add it to your [app config](./config/app/) file:
+To use the age range API on iOS, you need to build your project with Xcode 26.0 or later. The `com.apple.developer.declared-age-range` entitlement is required. Add it to your [app config](./config/app/) file:
 
 ```json app.json
 {
@@ -126,8 +127,8 @@ import * as AgeRange from 'expo-age-range';
 
 Available in the `code` property of any error thrown by the native module. For Android-specific error codes, see "Handle API error codes" in [Use Play Age Signals API docs](https://developer.android.com/google/play/age-signals/use-age-signals-api#handle-api-errors).
 
-| Code                            | Description                                                                                                                      |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `ERR_AGE_RANGE_USER_DECLINED`   | **iOS Only.** User declined to share their age range.                                                                            |
-| `ERR_AGE_RANGE_NOT_AVAILABLE`   | **iOS Only.** Age range not available. The most likely cause is that user is not signed in to their Apple account on the device. |
-| `ERR_AGE_RANGE_INVALID_REQUEST` | **iOS Only.** The provided params were invalid. The age ranges need to be minimum 2 years apart.                                 |
+| Code                            | Platform                             | Description                                                                                                        |
+| ------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `ERR_AGE_RANGE_USER_DECLINED`   | <PlatformTags platforms={['ios']} /> | User declined to share their age range.                                                                            |
+| `ERR_AGE_RANGE_NOT_AVAILABLE`   | <PlatformTags platforms={['ios']} /> | Age range not available. The most likely cause is that user is not signed in to their Apple account on the device. |
+| `ERR_AGE_RANGE_INVALID_REQUEST` | <PlatformTags platforms={['ios']} /> | The provided params were invalid. The age ranges need to be minimum 2 years apart.                                 |

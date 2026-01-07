@@ -6,8 +6,6 @@ import androidx.annotation.RequiresApi
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.notifications.ModuleNotFoundException
-import expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager
 import expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer
 import expo.modules.notifications.notifications.enums.NotificationImportance
 import java.util.Objects
@@ -15,20 +13,16 @@ import java.util.Objects
 /**
  * An exported module responsible for exposing methods for managing notification channels.
  */
-open class NotificationChannelManagerModule : Module() {
-  private lateinit var channelManager: NotificationsChannelManager
-  private lateinit var channelSerializer: NotificationsChannelSerializer
+open class NotificationChannelManagerModule : Module(), NotificationsChannelProviderAccessor {
+  private val channelManager by lazy {
+    getChannelProvider(appContext.registry).channelManager
+  }
+  private val channelSerializer by lazy {
+    getChannelProvider(appContext.registry).channelSerializer
+  }
 
   override fun definition() = ModuleDefinition {
     Name("ExpoNotificationChannelManager")
-
-    OnCreate {
-      val provider = appContext.legacyModule<NotificationsChannelsProvider>()
-        ?: throw ModuleNotFoundException(NotificationsChannelsProvider::class)
-
-      channelManager = provider.channelManager
-      channelSerializer = provider.channelSerializer
-    }
 
     AsyncFunction<List<Bundle?>>("getNotificationChannelsAsync") {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {

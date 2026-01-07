@@ -15,6 +15,9 @@ public final class LegacyEventEmitterCompat: EXEventEmitterService {
       return
     }
 
+    // `Any` is not sendable, so we must trick the compiler.
+    let eventArguments = NonisolatedUnsafeVar<[Any]>([body as Any])
+
     // Send the event to all modules that declare support for this particular event.
     // That's how it works in the device event emitter provided by React Native.
     let moduleHoldersWithEvent = appContext.moduleRegistry.filter { holder in
@@ -24,7 +27,7 @@ public final class LegacyEventEmitterCompat: EXEventEmitterService {
     runtime.schedule {
       for holder in moduleHoldersWithEvent {
         if let jsObject = holder.javaScriptObject {
-          JSUtils.emitEvent(name, to: jsObject, withArguments: [body], in: runtime)
+          JSUtils.emitEvent(name, to: jsObject, withArguments: eventArguments.value, in: runtime)
         }
       }
     }

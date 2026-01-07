@@ -155,6 +155,15 @@ export async function publishPackageAsync(
   });
 }
 
+function maybeNpmOtpFlag() {
+  const { NPM_OTP } = process.env;
+  if (NPM_OTP) {
+    return ['--otp', NPM_OTP];
+  } else {
+    return [];
+  }
+}
+
 /**
  * Adds dist-tag to a specific version of the package.
  */
@@ -164,7 +173,11 @@ export async function addTagAsync(
   tagName: string,
   spawnOptions?: SpawnOptions
 ): Promise<void> {
-  await spawnAsync('npm', ['dist-tag', 'add', `${packageName}@${version}`, tagName], spawnOptions);
+  await spawnAsync(
+    'npm',
+    ['dist-tag', 'add', `${packageName}@${version}`, tagName, ...maybeNpmOtpFlag()],
+    spawnOptions
+  );
 }
 
 /**
@@ -175,7 +188,11 @@ export async function removeTagAsync(
   tagName: string,
   spawnOptions?: SpawnOptions
 ): Promise<void> {
-  await spawnAsync('npm', ['dist-tag', 'rm', packageName, tagName], spawnOptions);
+  await spawnAsync(
+    'npm',
+    ['dist-tag', 'rm', packageName, tagName, ...maybeNpmOtpFlag()],
+    spawnOptions
+  );
 }
 
 /**

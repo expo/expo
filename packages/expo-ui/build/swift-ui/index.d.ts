@@ -15,6 +15,7 @@ export * from './Label';
 export * from './LabeledContent';
 export * from './Layout';
 export * from './List';
+export * from './Menu';
 export * from './Picker';
 export * from './Progress';
 export * from './Section';

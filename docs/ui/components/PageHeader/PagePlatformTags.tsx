@@ -9,7 +9,7 @@ type Props = {
 
 export function PagePlatformTags({ platforms, className }: Props) {
   return (
-    <div className={mergeClasses('inline-flex flex-wrap', className)}>
+    <div className={mergeClasses('inline-flex flex-wrap gap-y-1.5', className)}>
       {platforms
         .sort((a, b) => a.localeCompare(b))
         .map(platform => {

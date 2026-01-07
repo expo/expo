@@ -1,6 +1,12 @@
 import type { NativeStackHeaderItemSpacing } from '@react-navigation/native-stack';
 export interface StackHeaderSpacerProps {
     /**
+     * Whether the spacer should be hidden.
+     *
+     * @default false
+     */
+    hidden?: boolean;
+    /**
      * The width of the spacing element.
      *
      * This is typically used to create space between header elements.
@@ -36,5 +42,5 @@ export interface StackHeaderSpacerProps {
  * @platform ios
  */
 export declare const StackHeaderSpacer: React.FC<StackHeaderSpacerProps>;
-export declare function convertStackHeaderSpacerPropsToRNHeaderItem(props: StackHeaderSpacerProps): NativeStackHeaderItemSpacing;
+export declare function convertStackHeaderSpacerPropsToRNHeaderItem({ hidden, width, }: StackHeaderSpacerProps): NativeStackHeaderItemSpacing | undefined;
 //# sourceMappingURL=StackHeaderSpacer.d.ts.map

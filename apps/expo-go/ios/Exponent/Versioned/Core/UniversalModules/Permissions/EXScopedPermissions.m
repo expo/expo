@@ -17,6 +17,11 @@
 
 @implementation EXScopedPermissions
 
++ (const NSArray<Protocol *> *)exportedInterfaces
+{
+  return @[@protocol(EXPermissionsInterface)];
+}
+
 - (instancetype)initWithScopeKey:(NSString *)scopeKey andConstantsBinding:(EXConstantsBinding *)constantsBinding
 {
   if (self = [super init]) {
@@ -161,10 +166,6 @@
 {
   // temporarily exclude notifactions from permissions per experience; system brightness is always granted
   return ![@[@"notifications", @"userFacingNotifications", @"systemBrightness"] containsObject:permissionType];
-}
-
-+ (const NSArray<Protocol *> *)exportedInterfaces {
-  return @[@protocol(EXPermissionsInterface)];
 }
 
 @end

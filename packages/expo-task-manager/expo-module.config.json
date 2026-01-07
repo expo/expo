@@ -1,5 +1,9 @@
 {
   "platforms": ["apple", "android"],
+  "ios": {
+    "modules": ["TaskManagerModule"],
+    "appDelegateSubscribers": ["TaskManagerAppDelegateSubscriber"]
+  },
   "android": {
     "modules": ["expo.modules.taskManager.TaskManagerModule"]
   }
