@@ -3,9 +3,6 @@ package versioned.host.exp.exponent
 import expo.modules.application.ApplicationModule
 import expo.modules.asset.AssetModule
 import expo.modules.audio.AudioModule
-import expo.modules.av.AVModule
-import expo.modules.av.AVPackage
-import expo.modules.av.video.VideoViewModule
 import expo.modules.backgroundfetch.BackgroundFetchModule
 import expo.modules.backgroundtask.BackgroundTaskModule
 import expo.modules.battery.BatteryModule
@@ -88,7 +85,6 @@ import expo.modules.webbrowser.WebBrowserModule
 
 object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
-    AVPackage(),
     ExpoLinkingPackage(),
     ImageLoaderPackage(),
     NavigationBarPackage(),
@@ -120,7 +116,6 @@ object ExperiencePackagePicker : ModulesProvider {
 
   override fun getModulesMap(): Map<Class<out Module>, String?> = mapOf(
     AudioModule::class.java to null,
-    AVModule::class.java to null,
     ApplicationModule::class.java to null,
     // Sensors
     AccelerometerModule::class.java to null,
@@ -192,7 +187,6 @@ object ExperiencePackagePicker : ModulesProvider {
     TrackingTransparencyModule::class.java to null,
     VideoThumbnailsModule::class.java to null,
     VideoModule::class.java to null,
-    VideoViewModule::class.java to null,
     WebBrowserModule::class.java to null,
     BrightnessModule::class.java to null
   )
