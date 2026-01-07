@@ -43,10 +43,7 @@ export default function Home() {
             <IconButton onPress={() => {}}>
               <Icon source={require('../../assets/symbols/upward.xml')} tintColor="#1d1b20" />
             </IconButton>
-            <HorizontalFloatingToolbar.FloatingActionButton
-              onPress={() => {
-                alert('Search');
-              }}>
+            <HorizontalFloatingToolbar.FloatingActionButton onPress={() => alert('Search')}>
               <Icon source={require('../../assets/symbols/search.xml')} tintColor="#1d1b20" />
             </HorizontalFloatingToolbar.FloatingActionButton>
           </HorizontalFloatingToolbar>

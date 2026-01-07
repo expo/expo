@@ -117,8 +117,8 @@ class ExpoUIModule : Module() {
 //      }
 //    }
     View(HorizontalFloatingToolbarView::class)
-    View(FloatingActionButtonView::class) {
-      Events("onButtonPressed")
+    View(SlotView::class) {
+      Events("onSlotEvent")
     }
     View(IconView::class)
 

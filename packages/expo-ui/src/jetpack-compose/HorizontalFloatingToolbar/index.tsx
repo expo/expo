@@ -1,6 +1,7 @@
+import { Children } from 'react';
 import { requireNativeView } from 'expo';
 
-import { ExpoModifier, ViewEvent } from '../../types';
+import { ExpoModifier } from '../../types';
 
 export type HorizontalFloatingToolbarProps = {
   /**
@@ -20,7 +21,7 @@ export type HorizontalFloatingToolbarProps = {
   modifiers?: ExpoModifier[];
 };
 
-type FloatingActionButtonProps = {
+export type FloatingActionButtonProps = {
   /**
    * A callback that is called when the button is pressed.
    */
@@ -33,23 +34,28 @@ type FloatingActionButtonProps = {
 };
 
 type NativeHorizontalFloatingToolbarProps = HorizontalFloatingToolbarProps & {};
-type NativeFloatingActionButtonProps = Omit<FloatingActionButtonProps, 'onPress'> &
-  ViewEvent<'onButtonPressed', void>;
+
+type NativeSlotViewProps = {
+  slotName: string;
+  onSlotEvent?: () => void;
+  children: React.ReactNode;
+};
 
 const HorizontalFloatingToolbarNativeView: React.ComponentType<NativeHorizontalFloatingToolbarProps> =
   requireNativeView('ExpoUI', 'HorizontalFloatingToolbarView');
 
-const FloatingActionButtonNativeView: React.ComponentType<NativeFloatingActionButtonProps> =
-  requireNativeView('ExpoUI', 'FloatingActionButtonView');
+// Internal slot marker component - not exported
+const SlotNativeView: React.ComponentType<NativeSlotViewProps> =
+  requireNativeView('ExpoUI', 'SlotView');
 
 /**
  * FloatingActionButton component for HorizontalFloatingToolbar.
- * This component wraps the floating action button content.
+ * This component marks its children to be rendered in the FAB slot.
  */
 function FloatingActionButton(props: FloatingActionButtonProps) {
-  const { onPress, ...restProps } = props;
-  return <FloatingActionButtonNativeView {...restProps} onButtonPressed={onPress} />;
+  return <>{props.children}</>;
 }
+FloatingActionButton.tag = 'FloatingActionButton';
 
 function transformHorizontalFloatingToolbarProps(
   props: HorizontalFloatingToolbarProps
@@ -66,8 +72,29 @@ function transformHorizontalFloatingToolbarProps(
  * A horizontal toolbar that floats above content, typically used for action buttons.
  */
 function HorizontalFloatingToolbar(props: HorizontalFloatingToolbarProps) {
+  // Separate FloatingActionButton from regular children
+  let floatingActionButtonContent: React.ReactNode = null;
+  let floatingActionButtonOnPress: (() => void) | undefined = undefined;
+  const regularChildren: React.ReactNode[] = [];
+
+  Children.forEach(props.children as any, (child) => {
+    if (child?.type?.tag === FloatingActionButton.tag) {
+      floatingActionButtonContent = child.props.children;
+      floatingActionButtonOnPress = child.props.onPress;
+    } else {
+      regularChildren.push(child);
+    }
+  });
+
   return (
-    <HorizontalFloatingToolbarNativeView {...transformHorizontalFloatingToolbarProps(props)} />
+    <HorizontalFloatingToolbarNativeView {...transformHorizontalFloatingToolbarProps(props)}>
+      {regularChildren}
+      {floatingActionButtonContent && (
+        <SlotNativeView slotName="floatingActionButton" onSlotEvent={floatingActionButtonOnPress}>
+          {floatingActionButtonContent}
+        </SlotNativeView>
+      )}
+    </HorizontalFloatingToolbarNativeView>
   );
 }
 
