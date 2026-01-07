@@ -143,7 +143,7 @@ struct FormView: View {
 
 struct SubmittedView: View {
   let dismiss: () -> Void
-  
+
   var body: some View {
     VStack(spacing: 16) {
       Image(systemName: "checkmark.circle.fill")

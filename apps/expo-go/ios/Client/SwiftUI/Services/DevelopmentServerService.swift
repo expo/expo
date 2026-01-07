@@ -2,6 +2,7 @@
 
 import Foundation
 import Combine
+import UIKit
 
 @MainActor
 class DevelopmentServerService: ObservableObject {
@@ -9,10 +10,15 @@ class DevelopmentServerService: ObservableObject {
 
   private var discoveryCancellables = Set<AnyCancellable>()
   private let discoveryInterval: TimeInterval = 2.0
+  private let remoteRefreshInterval: TimeInterval = 10.0
+  private var localServers: [DevelopmentServer] = []
+  private var remoteServers: [DevelopmentServer] = []
+  private var sessionSecret: String?
 
   func startDiscovery() {
     stopDiscovery()
     discoverDevelopmentServers()
+    refreshRemoteSessions()
 
     Timer.publish(every: discoveryInterval, on: .main, in: .common)
       .autoconnect()
@@ -21,10 +27,23 @@ class DevelopmentServerService: ObservableObject {
         self?.discoverDevelopmentServers()
       }
       .store(in: &discoveryCancellables)
+
+    Timer.publish(every: remoteRefreshInterval, on: .main, in: .common)
+      .autoconnect()
+      .receive(on: DispatchQueue.global(qos: .background))
+      .sink { [weak self] _ in
+        self?.refreshRemoteSessions()
+      }
+      .store(in: &discoveryCancellables)
   }
 
   func stopDiscovery() {
     discoveryCancellables.removeAll()
+  }
+
+  func setSessionSecret(_ sessionSecret: String?) {
+    self.sessionSecret = sessionSecret
+    refreshRemoteSessions()
   }
 
   func discoverDevelopmentServers() {
@@ -50,8 +69,15 @@ class DevelopmentServerService: ObservableObject {
       }
 
       await MainActor.run {
-        self.developmentServers = discoveredServers.sorted { $0.url < $1.url }
+        self.localServers = discoveredServers
+        self.updateDevelopmentServers()
       }
+    }
+  }
+
+  func refreshRemoteSessions() {
+    Task {
+      await fetchRemoteSessions()
     }
   }
 
@@ -67,11 +93,14 @@ class DevelopmentServerService: ObservableObject {
          httpResponse.statusCode == 200 {
         if let statusString = String(data: data, encoding: .utf8),
            statusString.contains("packager-status:running") {
+          let manifestInfo = await fetchLocalManifestInfo(url: url)
+          let description = manifestInfo?.name ?? url
           return DevelopmentServer(
             url: url,
-            description: url,
-            source: "local",
-            isRunning: true
+            description: description,
+            source: "desktop",
+            isRunning: true,
+            iconUrl: manifestInfo?.iconUrl
           )
         }
       }
@@ -79,4 +108,159 @@ class DevelopmentServerService: ObservableObject {
 
     return nil
   }
+
+  private func fetchLocalManifestInfo(url: String) async -> (name: String?, iconUrl: String?)? {
+    let manifestPaths = [
+      "\(url)/manifest",
+      "\(url)/manifest?platform=ios"
+    ]
+
+    for manifestPath in manifestPaths {
+      guard let manifestURL = URL(string: manifestPath) else {
+        continue
+      }
+
+      var request = URLRequest(url: manifestURL)
+      request.setValue("application/expo+json,application/json", forHTTPHeaderField: "Accept")
+      request.setValue("ios", forHTTPHeaderField: "Expo-Platform")
+      request.setValue("client", forHTTPHeaderField: "Expo-Client-Environment")
+      request.setValue(EXVersions.sharedInstance().sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
+
+      do {
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200..<300).contains(httpResponse.statusCode) else {
+          continue
+        }
+
+        if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+          if let parsed = parseManifestInfo(json: json, baseUrl: url) {
+            return parsed
+          }
+        }
+      } catch {}
+    }
+
+    return nil
+  }
+
+  private func parseManifestInfo(json: [String: Any], baseUrl: String) -> (name: String?, iconUrl: String?)? {
+    var name: String?
+    var iconUrl: String?
+
+    if let extra = json["extra"] as? [String: Any],
+       let expoClient = extra["expoClient"] as? [String: Any] {
+      if let expoName = expoClient["name"] as? String, !expoName.isEmpty {
+        name = expoName
+      }
+      if let expoIcon = expoClient["iconUrl"] as? String, !expoIcon.isEmpty {
+        iconUrl = absoluteIconUrl(expoIcon, baseUrl: baseUrl)
+      }
+      if iconUrl == nil, let expoIcon = expoClient["icon"] as? String, !expoIcon.isEmpty {
+        iconUrl = absoluteIconUrl(expoIcon, baseUrl: baseUrl)
+      }
+    }
+
+    if name == nil, let manifestName = json["name"] as? String, !manifestName.isEmpty {
+      name = manifestName
+    }
+
+    if iconUrl == nil, let manifestIcon = json["iconUrl"] as? String, !manifestIcon.isEmpty {
+      iconUrl = absoluteIconUrl(manifestIcon, baseUrl: baseUrl)
+    }
+    if iconUrl == nil, let manifestIcon = json["icon"] as? String, !manifestIcon.isEmpty {
+      iconUrl = absoluteIconUrl(manifestIcon, baseUrl: baseUrl)
+    }
+    if iconUrl == nil,
+       let iosConfig = json["ios"] as? [String: Any],
+       let iosIcon = iosConfig["iconUrl"] as? String ?? iosConfig["icon"] as? String,
+       !iosIcon.isEmpty {
+      iconUrl = absoluteIconUrl(iosIcon, baseUrl: baseUrl)
+    }
+
+    return (name, iconUrl)
+  }
+
+  private func fetchRemoteSessions() async {
+    guard let sessionSecret, !sessionSecret.isEmpty else {
+      await MainActor.run {
+        self.remoteServers = []
+        self.updateDevelopmentServers()
+      }
+      return
+    }
+
+    guard let url = URL(string: "\(APIClient.shared.apiOrigin)/--/api/v2/development-sessions") else {
+      return
+    }
+
+    var request = URLRequest(url: url)
+    request.httpMethod = "GET"
+    request.setValue(sessionSecret, forHTTPHeaderField: "Expo-Session")
+    request.setValue("ios", forHTTPHeaderField: "Expo-Platform")
+    request.setValue(EXVersions.sharedInstance().sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
+
+    do {
+      let (data, response) = try await URLSession.shared.data(for: request)
+      guard let httpResponse = response as? HTTPURLResponse,
+            (200..<300).contains(httpResponse.statusCode) else {
+        return
+      }
+
+      let decoder = JSONDecoder()
+      let sessions: [DevSession]
+      if let response = try? decoder.decode(DevSessionsResponse.self, from: data) {
+        sessions = response.data
+      } else if let directSessions = try? decoder.decode([DevSession].self, from: data) {
+        sessions = directSessions
+      } else {
+        return
+      }
+
+      let mappedServers = sessions.map { session in
+        DevelopmentServer(
+          url: session.url,
+          description: session.description,
+          source: session.source,
+          isRunning: true,
+          iconUrl: session.iconUrl
+        )
+      }
+
+      await MainActor.run {
+        self.remoteServers = mappedServers
+        self.updateDevelopmentServers()
+      }
+    } catch {}
+  }
+
+  private func updateDevelopmentServers() {
+    var merged: [String: DevelopmentServer] = [:]
+    for server in localServers + remoteServers {
+      merged[server.url] = server
+    }
+    developmentServers = merged.values.sorted { $0.url < $1.url }
+  }
+
+  private func absoluteIconUrl(_ iconUrl: String, baseUrl: String) -> String? {
+    if URL(string: iconUrl)?.scheme != nil {
+      return iconUrl
+    }
+    guard let base = URL(string: baseUrl),
+          let absolute = URL(string: iconUrl, relativeTo: base) else {
+      return nil
+    }
+    return absolute.absoluteString
+  }
+}
+
+private struct DevSessionsResponse: Decodable {
+  let data: [DevSession]
+}
+
+private struct DevSession: Decodable {
+  let description: String
+  let url: String
+  let source: String
+  let iconUrl: String?
 }
