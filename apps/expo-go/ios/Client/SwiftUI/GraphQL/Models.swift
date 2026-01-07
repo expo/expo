@@ -179,6 +179,25 @@ struct ProjectDetail: Codable {
   let updateBranches: [BranchDetail]
 }
 
+struct BranchesListResponse: Codable {
+  let data: BranchesListData
+}
+
+struct BranchesListData: Codable {
+  let app: BranchesListApp
+}
+
+struct BranchesListApp: Codable {
+  let byId: BranchesListProject
+}
+
+struct BranchesListProject: Codable {
+  let id: String
+  let name: String
+  let updateBranches: [BranchDetail]
+  let updateBranchesCount: Int
+}
+
 struct BranchDetail: Identifiable, Codable {
   let id: String
   let name: String

@@ -188,4 +188,32 @@ struct Queries {
     }
     """
   }
+
+  static func getBranchesList() -> String {
+    return """
+    query BranchesListQuery($appId: String!, $limit: Int!, $offset: Int!, $platform: AppPlatform!) {
+      app {
+        byId(appId: $appId) {
+          id
+          name
+          updateBranches(limit: $limit, offset: $offset) {
+            id
+            name
+            updates(limit: 1, offset: 0, filter: { platform: $platform }) {
+              id
+              group
+              message
+              createdAt
+              runtimeVersion
+              expoGoSDKVersion
+              platform
+              manifestPermalink
+            }
+          }
+          updateBranchesCount
+        }
+      }
+    }
+    """
+  }
 }
