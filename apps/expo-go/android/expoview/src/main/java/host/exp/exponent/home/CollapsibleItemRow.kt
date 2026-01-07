@@ -12,20 +12,20 @@ import androidx.compose.runtime.setValue
 
 @Composable
 fun CollapsibleItemRow(
-    item: @Composable (isExpanded: Boolean, onClick: () -> Unit) -> Unit,
-    expandedContent: @Composable () -> Unit
+  item: @Composable (isExpanded: Boolean, onClick: () -> Unit) -> Unit,
+  expandedContent: @Composable () -> Unit
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
+  var isExpanded by remember { mutableStateOf(false) }
 
-    Column {
-        item(isExpanded, { isExpanded = !isExpanded })
+  Column {
+    item(isExpanded) { isExpanded = !isExpanded }
 
-        AnimatedVisibility(
-            visible = isExpanded,
-            enter = expandVertically(),
-            exit = shrinkVertically()
-        ) {
-            expandedContent()
-        }
+    AnimatedVisibility(
+      visible = isExpanded,
+      enter = expandVertically(),
+      exit = shrinkVertically()
+    ) {
+      expandedContent()
     }
+  }
 }

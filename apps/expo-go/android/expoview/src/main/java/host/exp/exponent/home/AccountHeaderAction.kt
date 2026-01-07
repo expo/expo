@@ -14,22 +14,38 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import host.exp.exponent.graphql.fragment.CurrentUserActorData
-import host.exp.expoview.R
+
 @Composable
-fun AccountHeaderAction(account: CurrentUserActorData.Account?, onLoginClick: () -> Unit = {}, onAccountClick: () -> Unit = {}) {
-    if(account == null) {
-        OutlinedButton(onClick = onLoginClick) { Text("Log In") }
-    } else {
-        if(account.ownerUserActor == null) {
-            Icon(painter = painterResource(expo.modules.devmenu.R.drawable.alert), contentDescription = "Account icon", modifier = Modifier.size(24.dp).clip(shape = RoundedCornerShape(4.dp)).clickable(onClick = onAccountClick),)
-            return
-        }
-        // Show account info
-        AsyncImage(
-            model = account.ownerUserActor.profilePhoto,
-            contentDescription = "Avatar",
-            modifier = Modifier.size(24.dp).clip(shape = RoundedCornerShape(4.dp)).clickable(onClick = onAccountClick),
-            contentScale = ContentScale.Crop,
-        )
-    }
+fun AccountHeaderAction(
+  account: CurrentUserActorData.Account?,
+  onLoginClick: () -> Unit = {},
+  onAccountClick: () -> Unit = {}
+) {
+  if (account == null) {
+    OutlinedButton(onClick = onLoginClick) { Text("Log In") }
+    return
+  }
+
+  if (account.ownerUserActor == null) {
+    Icon(
+      painter = painterResource(expo.modules.devmenu.R.drawable.alert),
+      contentDescription = "Account icon",
+      modifier = Modifier
+        .size(24.dp)
+        .clip(shape = RoundedCornerShape(4.dp))
+        .clickable(onClick = onAccountClick),
+    )
+    return
+  }
+
+  // Show account info
+  AsyncImage(
+    model = account.ownerUserActor.profilePhoto,
+    contentDescription = "Avatar",
+    modifier = Modifier
+      .size(24.dp)
+      .clip(shape = RoundedCornerShape(4.dp))
+      .clickable(onClick = onAccountClick),
+    contentScale = ContentScale.Crop,
+  )
 }

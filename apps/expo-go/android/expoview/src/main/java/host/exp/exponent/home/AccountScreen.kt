@@ -1,149 +1,146 @@
 package host.exp.exponent.home
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import expo.modules.devmenu.compose.newtheme.NewAppTheme
-import host.exp.expoview.R
-import androidx.compose.ui.res.painterResource
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.LocalContext
-import host.exp.exponent.graphql.Home_CurrentUserActorQuery
+import coil.compose.AsyncImage
 import host.exp.exponent.graphql.fragment.CurrentUserActorData
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import host.exp.expoview.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountScreen(
-    viewModel: HomeAppViewModel,
-    goBack: () -> Unit
+  viewModel: HomeAppViewModel,
+  goBack: () -> Unit
 ) {
+  val account by viewModel.account.dataFlow.collectAsState()
+  val selectedAccount by viewModel.selectedAccount.collectAsState()
 
-
-    val account by viewModel.account.dataFlow.collectAsState()
-    val selectedAccount by viewModel.selectedAccount.collectAsState()
-
-    Scaffold(
-        topBar = {
-            TopAppBarWithBackIcon("Account", onGoBack = goBack)
-        },
-    ) { paddingValues ->
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(paddingValues)
+  Scaffold(
+    topBar = {
+      TopAppBarWithBackIcon("Account", onGoBack = goBack)
+    },
+  ) { paddingValues ->
+    Column(
+      modifier = Modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState())
+        .padding(paddingValues)
+    ) {
+      LabeledGroup(label = "Log Out") {
+        Button(
+          onClick = {
+            viewModel.logout()
+            goBack()
+          },
+          modifier = Modifier.fillMaxWidth()
         ) {
-            LabeledGroup(label = "Log Out") {
-                Button(onClick = {
-                    viewModel.logout()
-                    goBack()
-                }, modifier = Modifier.fillMaxWidth()) {
-                    Text("Log Out")
-                }
-            }
-            LabeledGroup(label = "Accounts") {
-                SeparatedList(account?.accounts ?: emptyList(), renderItem = { item ->
-                    AccountRow(
-                        account = item,
-                        isSelected = item.id == selectedAccount?.id,
-                        onClick = {
-                            viewModel.selectAccount(item.id)
-                            goBack()
-                        }
-                    )
-                })
-            }
+          Text("Log Out")
         }
+      }
+      LabeledGroup(label = "Accounts") {
+        SeparatedList(account?.accounts ?: emptyList()) { item ->
+          AccountRow(
+            account = item,
+            isSelected = item.id == selectedAccount?.id,
+            onClick = {
+              viewModel.selectAccount(item.id)
+              goBack()
+            }
+          )
+        }
+      }
     }
+  }
 }
-
 
 @Composable
 private fun AccountRow(
-    account: CurrentUserActorData.Account,
-    isSelected: Boolean,
-    onClick: () -> Unit
+  account: CurrentUserActorData.Account,
+  isSelected: Boolean,
+  onClick: () -> Unit
 ) {
-    val owner = account.ownerUserActor
+  val owner = account.ownerUserActor
 
-    @Composable
-    fun Action() {
-        if (isSelected) {
-            Image(
-                painter = painterResource(id = R.drawable.check),
-                contentDescription = "Selected Account",
-                modifier = Modifier.size(16.dp)
-            )
-        }
+  @Composable
+  fun Action() {
+    if (isSelected) {
+      Image(
+        painter = painterResource(id = R.drawable.check),
+        contentDescription = "Selected Account",
+        modifier = Modifier.size(16.dp)
+      )
     }
+  }
 
-    @Composable
-    fun Content() {
-        Column {
-            if (owner != null) {
-                if (!owner.fullName.isNullOrBlank()) {
-                    // Case 1: Display Full Name and Username
-                    Text(text = owner.fullName, fontWeight = FontWeight.SemiBold)
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = owner.username,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                } else {
-                    // Case 2: Display only Username
-                    Text(text = owner.username, fontWeight = FontWeight.SemiBold)
-                }
-            } else {
-                // Case 3: Fallback to account.name
-                Text(text = account.name, fontWeight = FontWeight.Bold)
-            }
-        }
-    }
+  @Composable
+  fun Content() {
+    Column {
+      val name = owner?.fullName?.takeIf { it.isNotBlank() }
+        ?: owner?.username
+        ?: account.name
 
-    if (owner != null) {
-        ClickableItemRow(onClick = { onClick() }, imageUrl = owner.profilePhoto, content = {
-            Content()
-        }, action = {
-            Action()
-        })
-        return
-    } else {
-        ClickableItemRow(
-            onClick = { onClick() },
-            icon = painterResource(expo.modules.devmenu.R.drawable.alert),
-            content = {
-                Content()
-            },
-            action = {
-                Action()
-            })
+      Text(
+        text = name,
+        fontWeight = FontWeight.SemiBold
+      )
+
+      if (owner?.username != null) {
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+          text = owner.username,
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+      }
     }
+  }
+
+  ClickableItemRow(
+    onClick = onClick,
+    icon = {
+      if (owner != null) {
+        AsyncImage(
+          model = owner.profilePhoto,
+          contentDescription = "Account icon",
+          modifier = Modifier
+            .size(24.dp)
+            .clip(CircleShape),
+          contentScale = ContentScale.Crop
+        )
+      } else {
+        Icon(
+          painter = painterResource(expo.modules.devmenu.R.drawable.alert),
+          contentDescription = "Account icon",
+          modifier = Modifier.size(24.dp)
+        )
+      }
+    },
+    content = { Content() },
+    action = { Action() }
+  )
 }
