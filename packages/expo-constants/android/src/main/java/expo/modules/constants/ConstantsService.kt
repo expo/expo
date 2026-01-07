@@ -41,7 +41,6 @@ open class ConstantsService(private val context: Context) : ConstantsInterface {
       "platform" to mapOf<String, Map<String, Any>>("android" to emptyMap())
     )
 
-
   // Just use package name in vanilla React Native apps.
   override val appScopeKey: String?
     get() = context.packageName
