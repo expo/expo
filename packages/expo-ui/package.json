@@ -2,7 +2,9 @@
   "name": "@expo/ui",
   "version": "0.2.0-beta.10",
   "description": "A collection of UI components",
-  "sideEffects": false,
+  "sideEffects": [
+    "*.fx.js"
+  ],
   "exports": {
     "./package.json": "./package.json",
     "./swift-ui": {

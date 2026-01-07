@@ -26,12 +26,11 @@ import androidx.compose.ui.zIndex
 import expo.modules.kotlin.jni.JavaScriptFunction
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.viewevent.getValue
 import expo.modules.ui.button.Button
 import expo.modules.ui.button.IconButton
+import expo.modules.ui.icon.IconView
 import expo.modules.ui.menu.ContextMenu
-import kotlin.reflect.KProperty
 
 class ExpoUIModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -105,6 +104,20 @@ class ExpoUIModule : Module() {
         view.text = text
       }
     }
+
+    View(SearchBarView::class)
+//      Events("onValueChanged")
+//      Prop("defaultValue", "") { view: SearchBarView, text: String ->
+//        if (view.text == null) {
+//          view.text = text
+//        }
+//      }
+//      AsyncFunction("setText") { view: SearchBarView, text: String ->
+//        view.text = text
+//      }
+//    }
+    View(HorizontalFloatingToolbarView::class)
+    View(IconView::class)
 
     View(BoxView::class)
     View(RowView::class)

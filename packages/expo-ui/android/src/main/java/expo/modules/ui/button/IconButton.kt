@@ -124,9 +124,9 @@ class IconButton(context: Context, appContext: AppContext) :
             ),
             shape = shapeFromShapeRecord(props.shape.value)
         ) {
-            Box(modifier = Modifier.fillMaxSize()) {
+//            Box(modifier = Modifier.fillMaxSize()) {
                 Children(this@Content)
-            }
+//            }
         }
     }
 }
