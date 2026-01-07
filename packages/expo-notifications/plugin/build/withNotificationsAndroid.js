@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withNotificationsAndroid = exports.withNotificationSounds = exports.withNotificationManifest = exports.withNotificationIconColor = exports.withNotificationIcons = exports.NOTIFICATION_ICON_COLOR_RESOURCE = exports.NOTIFICATION_ICON_COLOR = exports.NOTIFICATION_ICON_RESOURCE = exports.NOTIFICATION_ICON = exports.META_DATA_LOCAL_NOTIFICATION_ICON_COLOR = exports.META_DATA_LOCAL_NOTIFICATION_ICON = exports.META_DATA_FCM_NOTIFICATION_DEFAULT_CHANNEL_ID = exports.META_DATA_FCM_NOTIFICATION_ICON_COLOR = exports.META_DATA_FCM_NOTIFICATION_ICON = exports.dpiValues = exports.ANDROID_RES_PATH = void 0;
-exports.getNotificationIcon = getNotificationIcon;
-exports.getNotificationColor = getNotificationColor;
 exports.setNotificationIconColor = setNotificationIconColor;
 exports.setNotificationIconAsync = setNotificationIconAsync;
 exports.setNotificationSounds = setNotificationSounds;
@@ -35,7 +33,7 @@ exports.NOTIFICATION_ICON_COLOR = 'notification_icon_color';
 exports.NOTIFICATION_ICON_COLOR_RESOURCE = `@color/${exports.NOTIFICATION_ICON_COLOR}`;
 const withNotificationIcons = (config, { icon }) => {
     // If no icon provided in the config plugin props, fallback to value from app.json
-    icon = icon || getNotificationIcon(config);
+    icon = icon || null;
     return (0, config_plugins_1.withDangerousMod)(config, [
         'android',
         async (config) => {
@@ -48,7 +46,7 @@ exports.withNotificationIcons = withNotificationIcons;
 const withNotificationIconColor = (config, { color }) => {
     // If no color provided in the config plugin props, fallback to value from app.json
     return (0, config_plugins_1.withAndroidColors)(config, (config) => {
-        color = color || getNotificationColor(config);
+        color = color || null;
         config.modResults = setNotificationIconColor(color, config.modResults);
         return config;
     });
@@ -56,8 +54,8 @@ const withNotificationIconColor = (config, { color }) => {
 exports.withNotificationIconColor = withNotificationIconColor;
 const withNotificationManifest = (config, { icon, color, defaultChannel }) => {
     // If no icon or color provided in the config plugin props, fallback to value from app.json
-    icon = icon || getNotificationIcon(config);
-    color = color || getNotificationColor(config);
+    icon = icon || null;
+    color = color || null;
     defaultChannel = defaultChannel || null;
     return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
         config.modResults = setNotificationConfig({ icon, color, defaultChannel }, config.modResults);
@@ -75,12 +73,6 @@ const withNotificationSounds = (config, { sounds }) => {
     ]);
 };
 exports.withNotificationSounds = withNotificationSounds;
-function getNotificationIcon(config) {
-    return null;
-}
-function getNotificationColor(config) {
-    return null;
-}
 function setNotificationIconColor(color, colors) {
     return Colors.assignColorValue(colors, {
         name: exports.NOTIFICATION_ICON_COLOR,
