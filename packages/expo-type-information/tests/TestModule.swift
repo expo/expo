@@ -29,10 +29,6 @@ public class TestModule: Module {
       return TestRecord2(field1: 10, "field2")
     }
 
-    // Function("TestEither") { (a: Either<Either<Int, String>, Either<Float, Double>>) -> Either<String, Either<Int, Double>> in 
-    //   return "test"
-    // }
-
     Function("TestArrays") { (a: [Int]) -> [[String]] in 
       return ["test"]
     }
@@ -61,7 +57,7 @@ public class TestModule: Module {
       return a + b
     }
 
-    AsyncFunction("TestUnderscore") { (url: URL, _: [BarcodeType], promise: Promise) in
+    AsyncFunction("TestUnderscore") { (url: URL, _: [BarcodeType]) in
     }
 
 
@@ -76,10 +72,6 @@ public class TestModule: Module {
         TestClass(a)
       }
 
-      // TODO check this - does nothing - should it do anything?
-      // Constant("TestConstant") { () -> String in
-      //   "test"
-      // }
       Property("TestIntProperty") { () -> Int in
         1
       }
@@ -96,14 +88,6 @@ public class TestModule: Module {
         TestRecord2(1, "2")
       }
 
-      // Property("TestParametrizedProperty") { () -> [Either<Int, [Either<String, Double> : Set<[TestEnum]>]>] in
-      //   1
-      // }
-
-      // Function("TestComplexFunction") { (a: [[[Int]]], b: Either<String, [Int: [Int]]>) -> [Either<Int, [Either<String, Double> : Set<[TestEnum]>]>] in
-      //   "string"
-      // }
-
       AsyncFunction("TestAsyncFunction") { (a: Int) async -> String in 
         "string"
       }
@@ -112,15 +96,8 @@ public class TestModule: Module {
     Class(TestEmptyClass.self) {
     }
 
-    // View(TestView.self) {
-      // Prop("TestProp") 
-    // }
-
-    // TODO check if multiple views should be allowed
     View(ExpoWebView.self) {
       Events("onEvent1", "onEvent2")
-      // TODO check if multiple Events should be allowed
-      Events("onEvent3", "onEvent4")
 
       Prop("testProp") { (view, testProp: URL) in
         if view.webView.url != testProp {
@@ -156,7 +133,6 @@ struct TestRecord: Record {
   @Field
   let letDoubleBinding: Double = 0.1
 
-  // TODO check what we actually want to do for unannotated fields
   var fieldWithoutAnnotation: Int = 1
 }
 

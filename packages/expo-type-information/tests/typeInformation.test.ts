@@ -20,7 +20,7 @@ it('Same type information', () => {
       getFileTypeInformation(swiftFile) ?? {
         usedTypeIdentifiers: new Set(),
         declaredTypeIdentifiers: new Set(),
-        typeParametersCount: new Map(),
+        inferredTypeParametersCount: new Map(),
         typeIdentifierDefinitionMap: new Map(),
         moduleClasses: [],
         records: [],
@@ -61,7 +61,17 @@ it('Generation from string is the same as generation from file', async () => {
   const fileInfo = getFileTypeInformation(swiftFile, true);
   const fileInfoForString = getFileTypeInformationForString(
     fs.readFileSync(swiftFile, 'utf8'),
-    'swift'
+    'Swift',
+    true
+  );
+  expect(fileInfo).toEqual(fileInfoForString);
+});
+it('Generation from string is the same as generation from file 2', async () => {
+  const fileInfo = getFileTypeInformation(swiftFile, false);
+  const fileInfoForString = getFileTypeInformationForString(
+    fs.readFileSync(swiftFile, 'utf8'),
+    'Swift',
+    false
   );
   expect(fileInfo).toEqual(fileInfoForString);
 });
