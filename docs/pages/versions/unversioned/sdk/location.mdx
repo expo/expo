@@ -92,6 +92,12 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
       description:
         'A boolean to enable the [`FOREGROUND_SERVICE`](#permission-foreground_service) permission and [`FOREGROUND_SERVICE_LOCATION`](#permission-foreground_service_location). Defaults to `true` if `isAndroidBackgroundLocationEnabled` is `true`, otherwise `false`.',
     },
+    {
+      name: 'androidForegroundServiceIcon',
+      platform: 'android',
+      description:
+        'Local path to an image to use as the icon for the foreground service started by `startLocationUpdatesAsync`. 96x96 all-white png with transparency. If not set, the app icon will be used.',
+    }
   ]}
 />
 
