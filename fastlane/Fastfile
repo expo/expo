@@ -181,8 +181,9 @@ platform :ios do
       configuration: 'Debug',
       clean: false,
       skip_build: true,
-      prelaunch_simulator: true,
-      skip_detect_devices: true,
+      # .github/workflows/ios-unit-tests.yml runs XCTests w/o needing a simulator
+      prelaunch_simulator: false,
+      skip_detect_devices: false,
       skip_package_dependencies_resolution: true,
       derived_data_path: "/tmp/ExpoUnitTestsDerivedData",
       xcargs: 'CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO',

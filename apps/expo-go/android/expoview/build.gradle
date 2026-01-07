@@ -9,6 +9,10 @@ buildscript {
     google()
     maven { url "https://jitpack.io" }
   }
+
+  dependencies {
+    classpath(expoLibs.apollo.gradle)
+  }
 }
 
 plugins {
@@ -19,6 +23,8 @@ plugins {
 }
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
+apply plugin: 'com.apollographql.apollo'
+
 
 def reactProperties = new Properties()
 file("${project(':packages:react-native:ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
@@ -106,6 +112,18 @@ android {
   }
 }
 
+apollo {
+  service("service") {
+    packageName.set("host.exp.exponent.graphql")
+    srcDir("src/main/graphql")
+
+    introspection {
+      endpointUrl.set("https://api.expo.dev/graphql")
+      schemaFile.set(file("src/main/graphql/schema.graphqls"))
+    }
+  }
+}
+
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 import org.apache.tools.ant.taskdefs.condition.Os
 
@@ -189,6 +207,9 @@ dependencies {
   api(libs.okhttp3)
   api(libs.okio)
   api(libs.javax.inject)
+
+  implementation expoLibs.apollo
+  implementation expoLibs.apollo.cache
 
   // Our dependencies
   compileOnly 'org.glassfish:javax.annotation:3.1.1'

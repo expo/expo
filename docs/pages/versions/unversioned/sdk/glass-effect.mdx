@@ -182,10 +182,35 @@ export default function CheckLiquidGlass() {
 }
 ```
 
+### `isGlassEffectAPIAvailable`
+
+The `isGlassEffectAPIAvailable` function checks whether the Liquid Glass API is available at runtime on the device.
+
+> **Warning** This API was added because some iOS 26 beta versions do not have the Liquid Glass API available, which can lead to crashes. You should check this before using `GlassView` in your app to ensure compatibility. See [issue #40911](https://github.com/expo/expo/issues/40911) for more details.
+
+```tsx
+import { isGlassEffectAPIAvailable } from 'expo-glass-effect';
+
+export default function CheckGlassEffectAPI() {
+  return (
+    <Text>
+      {isGlassEffectAPIAvailable()
+        ? 'Glass Effect API is available'
+        : 'Glass Effect API is not available'}
+    </Text>
+  );
+}
+```
+
 ## API
 
 ```js
-import { GlassView, GlassContainer, isLiquidGlassAvailable } from 'expo-glass-effect';
+import {
+  GlassView,
+  GlassContainer,
+  isLiquidGlassAvailable,
+  isGlassEffectAPIAvailable,
+} from 'expo-glass-effect';
 ```
 
 <APISection packageName="expo-glass-effect" />

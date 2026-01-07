@@ -7,6 +7,8 @@ export type Options = {
     ignoreEntryPoints?: boolean;
     internal_stripLoadRoute?: boolean;
     skipGenerated?: boolean;
+    /** Skip routes created by `generateStaticParams()` */
+    skipStaticParams?: boolean;
     notFound?: boolean;
     unstable_useServerMiddleware?: boolean;
     importMode?: string;

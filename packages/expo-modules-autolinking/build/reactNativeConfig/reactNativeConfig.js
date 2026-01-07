@@ -131,7 +131,7 @@ async function resolveAppProjectConfigAsync(projectRoot, platform, sourceDir) {
         if (gradle == null || manifest == null) {
             return {};
         }
-        const packageName = await (0, androidResolver_1.parsePackageNameAsync)(androidDir, manifest, gradle);
+        const packageName = await (0, androidResolver_1.parsePackageNameAsync)(manifest, gradle);
         return {
             android: {
                 packageName: packageName ?? '',

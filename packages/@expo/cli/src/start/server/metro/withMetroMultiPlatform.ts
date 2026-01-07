@@ -12,9 +12,8 @@ import type {
   ResolutionContext,
   CustomResolutionContext,
 } from '@expo/metro/metro-resolver';
-import { resolve as metroResolver } from '@expo/metro/metro-resolver';
+import { resolve as resolver } from '@expo/metro/metro-resolver';
 import type { SourceFileResolution } from '@expo/metro/metro-resolver/types';
-import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -25,7 +24,7 @@ import {
   AutolinkingModuleResolverInput,
 } from './createExpoAutolinkingResolver';
 import { createFallbackModuleResolver } from './createExpoFallbackResolver';
-import { createFastResolver, FailedToResolvePathError } from './createExpoMetroResolver';
+import { FailedToResolveNativeOnlyModuleError } from './errors/FailedToResolveNativeOnlyModuleError';
 import { isNodeExternal, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
@@ -42,8 +41,6 @@ import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsC
 import { isServerEnvironment } from '../middleware/metroOptions';
 import { PlatformBundlers } from '../platformBundlers';
 
-type Mutable<T> = { -readonly [K in keyof T]: T[K] };
-
 export type StrictResolver = (moduleName: string) => Resolution;
 export type StrictResolverFactory = (
   context: ResolutionContext,
@@ -53,6 +50,10 @@ export type StrictResolverFactory = (
 const ASSET_REGISTRY_SRC = `const assets=[];module.exports={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};`;
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
+
+function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
+  return input;
+}
 
 function withWebPolyfills(
   config: ConfigT,
@@ -82,7 +83,10 @@ function withWebPolyfills(
       virtualModuleId,
       (() => {
         if (ctx.platform === 'web') {
-          return `global.$$require_external = typeof require !== "undefined" ? require : () => null;`;
+          // NOTE(@hassankhan): We need to wrap require in an arrow function rather than assigning
+          // it directly because `workerd` loses its `this` context when `require` is dereferenced
+          // and called later.
+          return `global.$$require_external = typeof require !== "undefined" ? (m) => require(m) : () => null;`;
         } else {
           // Wrap in try/catch to support Android.
           return 'try { global.$$require_external = typeof expo === "undefined" ? require : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
@@ -168,7 +172,6 @@ export function withExtendedResolver(
     tsconfig,
     autolinkingModuleResolverInput,
     isTsconfigPathsEnabled,
-    isFastResolverEnabled,
     isExporting,
     isReactServerComponentsEnabled,
     getMetroBundler,
@@ -176,7 +179,6 @@ export function withExtendedResolver(
     tsconfig: TsConfigPaths | null;
     autolinkingModuleResolverInput?: AutolinkingModuleResolverInput;
     isTsconfigPathsEnabled?: boolean;
-    isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactServerComponentsEnabled?: boolean;
     getMetroBundler: () => Bundler;
@@ -185,21 +187,6 @@ export function withExtendedResolver(
   if (isReactServerComponentsEnabled) {
     Log.warn(`React Server Components (beta) is enabled.`);
   }
-  if (isFastResolverEnabled) {
-    Log.log(chalk.dim`Fast resolver is enabled.`);
-  }
-
-  const defaultResolver = metroResolver;
-  const resolver = isFastResolverEnabled
-    ? createFastResolver({
-        preserveSymlinks: true,
-        blockList: !config.resolver?.blockList
-          ? []
-          : Array.isArray(config.resolver?.blockList)
-            ? config.resolver?.blockList
-            : [config.resolver?.blockList],
-      })
-    : defaultResolver;
 
   const aliases: { [key: string]: Record<string, string> } = {
     web: {
@@ -325,6 +312,20 @@ export function withExtendedResolver(
     id: number | string,
     context: { platform: string; environment?: string }
   ) => number | string;
+
+  // We're manually resolving the `asyncRequireModulePath` since it's a module request
+  // However, in isolated installations it might not resolve from all paths, so we're resolving
+  // it from the project root manually
+  let _asyncRequireModuleResolvedPath: string | null | undefined;
+  const getAsyncRequireModule = () => {
+    if (_asyncRequireModuleResolvedPath === undefined) {
+      _asyncRequireModuleResolvedPath =
+        resolveFrom.silent(config.projectRoot, config.transformer.asyncRequireModulePath) ?? null;
+    }
+    return _asyncRequireModuleResolvedPath
+      ? ({ type: 'sourceFile', filePath: _asyncRequireModuleResolvedPath } as const)
+      : null;
+  };
 
   const getAssetRegistryModule = () => {
     const virtualModuleId = `\0polyfill:assets-registry`;
@@ -611,12 +612,17 @@ export function withExtendedResolver(
       return null;
     },
 
-    // Polyfill for asset registry
-    function requestStableAssetRegistry(
+    // Polyfill for asset registry (assetRegistryPath) and async require module (asyncRequireModulePath)
+    function requestStableConfigModules(
       context: ResolutionContext,
       moduleName: string,
       platform: string | null
     ) {
+      if (moduleName === config.transformer.asyncRequireModulePath) {
+        return getAsyncRequireModule();
+      }
+
+      // TODO(@kitten): Compare against `config.transformer.assetRegistryPath`
       if (/^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)) {
         return getAssetRegistryModule();
       }
@@ -686,8 +692,9 @@ export function withExtendedResolver(
               moduleName.includes(matcher)
             )
           ) {
-            throw new FailedToResolvePathError(
-              `Importing native-only module "${moduleName}" on web from: ${path.relative(config.projectRoot, context.originModulePath)}`
+            throw new FailedToResolveNativeOnlyModuleError(
+              moduleName,
+              path.relative(config.projectRoot, context.originModulePath)
             );
           }
 
@@ -766,10 +773,10 @@ export function withExtendedResolver(
       moduleName: string,
       platform: string | null
     ): CustomResolutionContext => {
-      const context: Mutable<CustomResolutionContext> = {
+      const context = asWritable({
         ...immutableContext,
         preferNativePlatform: platform !== 'web',
-      };
+      });
 
       if (isServerEnvironment(context.customResolverOptions?.environment)) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
@@ -895,7 +902,6 @@ export async function withMetroMultiPlatformAsync(
     platformBundlers,
     isTsconfigPathsEnabled,
     isAutolinkingResolverEnabled,
-    isFastResolverEnabled,
     isExporting,
 
     isReactServerComponentsEnabled,
@@ -906,7 +912,6 @@ export async function withMetroMultiPlatformAsync(
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
     isAutolinkingResolverEnabled?: boolean;
-    isFastResolverEnabled?: boolean;
     isExporting?: boolean;
 
     isReactServerComponentsEnabled: boolean;
@@ -916,30 +921,19 @@ export async function withMetroMultiPlatformAsync(
 ) {
   // Change the default metro-runtime to a custom one that supports bundle splitting.
   // NOTE(@kitten): This is now always active and EXPO_USE_METRO_REQUIRE / isNamedRequiresEnabled is disregarded
-  const metroDefaults: Mutable<
-    typeof import('@expo/metro/metro-config/defaults/defaults')
-  > = require('@expo/metro/metro-config/defaults/defaults');
-  metroDefaults.moduleSystem = require.resolve('@expo/cli/build/metro-require/require');
-
-  if (!config.projectRoot) {
-    // @ts-expect-error: read-only types
-    config.projectRoot = projectRoot;
-  }
+  const metroDefaults: typeof import('@expo/metro/metro-config/defaults/defaults') = require('@expo/metro/metro-config/defaults/defaults');
+  asWritable(metroDefaults).moduleSystem = require.resolve('@expo/cli/build/metro-require/require');
 
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
 
   // This is used for running Expo CLI in development against projects outside the monorepo.
   if (!isDirectoryIn(__dirname, projectRoot)) {
-    // TODO(@kitten): Remove ts-export-errors here and replace with cast for type safety
-    if (!config.watchFolders) {
-      // @ts-expect-error: watchFolders is readonly
-      config.watchFolders = [];
-    }
-    // @ts-expect-error: watchFolders is readonly
-    config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
-    // @ts-expect-error: watchFolders is readonly
-    config.watchFolders.push(
+    const watchFolders = (config.watchFolders as string[]) || [];
+    asWritable(config).watchFolders = watchFolders;
+
+    watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
+    watchFolders.push(
       path.join(require.resolve('@expo/metro-config/package.json'), '../..'),
       // For virtual modules
       path.join(require.resolve('expo/package.json'), '..')
@@ -962,8 +956,7 @@ export async function withMetroMultiPlatformAsync(
     expoConfigPlatforms = [...new Set(expoConfigPlatforms.concat(config.resolver.platforms))];
   }
 
-  // @ts-expect-error: typed as `readonly`.
-  config.resolver.platforms = expoConfigPlatforms;
+  asWritable(config.resolver).platforms = expoConfigPlatforms;
 
   config = withWebPolyfills(config, { getMetroBundler });
 
@@ -980,7 +973,6 @@ export async function withMetroMultiPlatformAsync(
     tsconfig,
     isExporting,
     isTsconfigPathsEnabled,
-    isFastResolverEnabled,
     isReactServerComponentsEnabled,
     getMetroBundler,
   });

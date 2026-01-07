@@ -98,15 +98,17 @@ export const runServer = async (
   // timeout of 120 seconds to respond to a request.
   httpServer.timeout = 0;
 
-  httpServer.on('close', () => {
-    end();
-  });
-
   // Extend the close method to ensure all websocket servers are closed, and connections are terminated
   const originalClose = httpServer.close.bind(httpServer);
 
   httpServer.close = function closeHttpServer(callback) {
-    originalClose(callback);
+    originalClose((err?: Error) => {
+      // Always call end() to clean up Metro workers, even if the server wasn't started.
+      // The 'close' event doesn't fire for servers that were never started (mockServer case),
+      // so we need to call end() explicitly here.
+      end();
+      callback?.(err);
+    });
 
     // Close all websocket servers, including possible client connections (see: https://github.com/websockets/ws/issues/2137#issuecomment-1507469375)
     for (const endpoint of Object.values(websocketEndpoints) as WebSocketServer[]) {

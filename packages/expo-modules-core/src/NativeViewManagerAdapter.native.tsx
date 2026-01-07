@@ -5,12 +5,7 @@
 'use client';
 
 import { type Component, type ComponentType, createRef, PureComponent } from 'react';
-import {
-  findNodeHandle,
-  type HostComponent,
-  type NativeMethods,
-  NativeModules,
-} from 'react-native';
+import { findNodeHandle, type HostComponent, ReactNativeElement } from 'react-native';
 import { get as componentRegistryGet } from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
 import { requireNativeModule } from './requireNativeModule';
@@ -104,23 +99,12 @@ export function requireNativeViewManager<P>(
   moduleName: string,
   viewName?: string
 ): ComponentType<P> {
-  const { viewManagersMetadata } = NativeModules.NativeUnimoduleProxy;
-
-  const viewManagerConfig = viewManagersMetadata?.[moduleName];
-
-  if (__DEV__ && !viewManagerConfig) {
-    const exportedViewManagerNames = Object.keys(viewManagersMetadata).join(', ');
-    console.warn(
-      `The native view manager for module(${moduleName}) ${viewName ? ` required by name (${viewName})` : ''}) from NativeViewManagerAdapter isn't exported by expo-modules-core. Views of this type may not render correctly. Exported view managers: [${exportedViewManagerNames}].`
-    );
-  }
-
   const ReactNativeComponent = requireCachedNativeComponent(moduleName, viewName);
 
   class NativeComponent extends PureComponent<P> {
     static displayName = viewName ? viewName : moduleName;
 
-    nativeRef = createRef<Component & NativeMethods>();
+    nativeRef = createRef<Component & ReactNativeElement>();
 
     // This will be accessed from native when the prototype functions are called,
     // in order to find the associated native view.

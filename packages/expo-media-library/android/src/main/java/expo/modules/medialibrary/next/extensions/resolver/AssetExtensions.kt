@@ -9,34 +9,54 @@ import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import expo.modules.medialibrary.next.exceptions.AssetCouldNotBeCreated
+import expo.modules.medialibrary.next.extensions.resolver.AssetMediaStoreItemBuilder.Companion.buildAssetMediaStoreItem
+import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 suspend fun ContentResolver.queryAssetDisplayName(contentUri: Uri): String? =
-  queryOne(contentUri, MediaStore.MediaColumns.DISPLAY_NAME, Cursor::getString)
+  queryOne(contentUri, AssetMediaStoreProperty.DisplayName.column, Cursor::getString)
 
-suspend fun ContentResolver.queryAssetCreationTime(contentUri: Uri): Long? =
-  queryOne(contentUri, MediaStore.Images.Media.DATE_TAKEN, Cursor::getLong)
+suspend fun ContentResolver.queryAssetDateTaken(contentUri: Uri): Long? =
+  queryOne(contentUri, AssetMediaStoreProperty.DateTaken.column, Cursor::getLong)
 
-suspend fun ContentResolver.queryAssetModificationTime(contentUri: Uri): Long? =
-  queryOne(contentUri, MediaStore.MediaColumns.DATE_MODIFIED, Cursor::getLong)
+suspend fun ContentResolver.queryAssetDateModified(contentUri: Uri): Long? =
+  queryOne(contentUri, AssetMediaStoreProperty.DateModified.column, Cursor::getLong)
 
 suspend fun ContentResolver.queryAssetDuration(contentUri: Uri): Long? =
-  queryOne(contentUri, MediaStore.Video.VideoColumns.DURATION, Cursor::getLong)
+  queryOne(contentUri, AssetMediaStoreProperty.Duration.column, Cursor::getLong)
 
 suspend fun ContentResolver.queryAssetWidth(contentUri: Uri): Int? =
-  queryOne(contentUri, MediaStore.MediaColumns.WIDTH, Cursor::getInt)
+  queryOne(contentUri, AssetMediaStoreProperty.Width.column, Cursor::getInt)
 
 suspend fun ContentResolver.queryAssetHeight(contentUri: Uri): Int? =
-  queryOne(contentUri, MediaStore.MediaColumns.HEIGHT, Cursor::getInt)
+  queryOne(contentUri, AssetMediaStoreProperty.Height.column, Cursor::getInt)
 
-suspend fun ContentResolver.queryAssetPath(contentUri: Uri): String? =
-  queryOne(contentUri, MediaStore.Files.FileColumns.DATA, Cursor::getString)
+suspend fun ContentResolver.queryAssetData(contentUri: Uri): String? =
+  queryOne(contentUri, AssetMediaStoreProperty.Data.column, Cursor::getString)
 
 suspend fun ContentResolver.queryAssetBucketId(contentUri: Uri): Int? =
-  queryOne(contentUri, MediaStore.MediaColumns.BUCKET_ID, Cursor::getInt)
+  queryOne(contentUri, AssetMediaStoreProperty.BucketId.column, Cursor::getInt)
+
+suspend fun ContentResolver.queryAssetMediaStoreItem(
+  contentUri: Uri
+): AssetMediaStoreItem? = withContext(Dispatchers.IO) {
+  // Attempting to get a duration from an image may result in an exception on older Android versions
+  val includeDuration = MediaType.fromContentUri(contentUri) != MediaType.IMAGE
+  val projection = AssetMediaStoreProperty.projection(includeDuration)
+  val cursor = safeQuery(contentUri, projection, null, null)
+    ?: return@withContext null
+
+  return@withContext cursor.use {
+    if (it.moveToFirst()) {
+      it.buildAssetMediaStoreItem(includeDuration)
+    } else {
+      null
+    }
+  }
+}
 
 suspend fun ContentResolver.insertPendingAsset(
   displayName: String,

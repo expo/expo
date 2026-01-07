@@ -6,7 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Stack = void 0;
 const StackClient_1 = __importDefault(require("./StackClient"));
 exports.Stack = StackClient_1.default;
-const Screen_1 = require("../views/Screen");
-StackClient_1.default.Screen = Screen_1.Screen;
+const stack_utils_1 = require("./stack-utils");
+StackClient_1.default.Screen = stack_utils_1.StackScreen;
+StackClient_1.default.Header = stack_utils_1.StackHeader;
 exports.default = StackClient_1.default;
 //# sourceMappingURL=Stack.js.map

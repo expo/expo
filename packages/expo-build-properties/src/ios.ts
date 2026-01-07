@@ -14,19 +14,6 @@ const { createBuildPodfilePropsConfigPlugin } = IOSConfig.BuildProperties;
 export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<PluginConfigType>(
   [
     {
-      propName: 'newArchEnabled',
-      propValueGetter: (config) => {
-        if (config.ios?.newArchEnabled !== undefined) {
-          WarningAggregator.addWarningIOS(
-            'withIosBuildProperties',
-            'ios.newArchEnabled is deprecated, use app config `newArchEnabled` instead.\n' +
-              'https://docs.expo.dev/versions/latest/config/app/#newarchenabled'
-          );
-        }
-        return config.ios?.newArchEnabled?.toString();
-      },
-    },
-    {
       propName: 'ios.useFrameworks',
       propValueGetter: (config) => config.ios?.useFrameworks,
     },
@@ -57,6 +44,18 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
     {
       propName: 'ios.buildReactNativeFromSource',
       propValueGetter: (config) => config.ios?.buildReactNativeFromSource?.toString(),
+    },
+    {
+      propName: 'expo.useHermesV1',
+      propValueGetter: (config) => {
+        if (config.ios?.useHermesV1 && config.ios?.buildReactNativeFromSource !== true) {
+          WarningAggregator.addWarningIOS(
+            'withIosBuildProperties',
+            'Hermes V1 requires building React Native from source. Set `buildReactNativeFromSource` to `true` to enable it.'
+          );
+        }
+        return config.ios?.useHermesV1?.toString();
+      },
     },
   ],
   'withIosBuildProperties'

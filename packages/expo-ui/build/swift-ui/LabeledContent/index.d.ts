@@ -3,7 +3,7 @@ export type LabeledContentProps = {
     /**
      * The label to be displayed in the labeled content.
      */
-    label?: string;
+    label?: string | React.ReactNode;
     children: React.ReactNode;
 } & CommonViewModifierProps;
 /**

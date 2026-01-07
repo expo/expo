@@ -4,6 +4,7 @@ import qrcode from 'qrcode-terminal';
 import wrapAnsi from 'wrap-ansi';
 
 import * as Log from '../../log';
+import type { McpServer } from '../server/MCP';
 
 export const BLT = '\u203A';
 
@@ -14,6 +15,7 @@ export type StartOptions = {
   nonPersistent?: boolean;
   maxWorkers?: number;
   platforms?: ExpoConfig['platforms'];
+  mcpServer?: McpServer;
 };
 
 export const printHelp = (): void => {

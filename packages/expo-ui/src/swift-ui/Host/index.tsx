@@ -36,6 +36,13 @@ export type HostProps = {
    */
   layoutDirection?: 'leftToRight' | 'rightToLeft';
 
+  /**
+   * When `true`, the SwiftUI content will not perform keyboard avoidance behaviour when keyboard is shown.
+   * Can be only set once on mount.
+   * @default false
+   */
+  ignoreSafeAreaKeyboardInsets?: boolean;
+
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
 } & CommonViewModifierProps;
@@ -48,7 +55,14 @@ const HostNativeView: React.ComponentType<
  * A hosting component for SwiftUI views.
  */
 export function Host(props: HostProps) {
-  const { matchContents, onLayoutContent, modifiers, layoutDirection, ...restProps } = props;
+  const {
+    matchContents,
+    onLayoutContent,
+    ignoreSafeAreaKeyboardInsets,
+    modifiers,
+    layoutDirection,
+    ...restProps
+  } = props;
 
   return (
     <HostNativeView
@@ -64,6 +78,7 @@ export function Host(props: HostProps) {
       layoutDirection={
         layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
       }
+      ignoreSafeAreaKeyboardInsets={ignoreSafeAreaKeyboardInsets}
       {...restProps}
     />
   );

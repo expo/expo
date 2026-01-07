@@ -1,5 +1,5 @@
-import UIKit
 import SwiftUI
+import ExpoModulesCore
 
 @objc public class DevLauncherViewController: UIViewController {
   private var hostingController: UIHostingController<DevLauncherRootView>?
@@ -25,6 +25,9 @@ import SwiftUI
     let rootView = DevLauncherRootView(viewModel: viewModel)
     hostingController = UIHostingController(rootView: rootView)
     hostingController?.view.backgroundColor = UIColor.clear
+#if os(macOS)
+    hostingController?.view.appearance = NSAppearance(named: .aqua)
+#endif
   }
 
   @objc public func resetHostingController() {
@@ -45,15 +48,28 @@ import SwiftUI
     addChild(hostingController)
     view.addSubview(hostingController.view)
 
+#if !os(macOS)
     hostingController.view.frame = view.bounds
     hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
     hostingController.didMove(toParent: self)
     navigationController?.setNavigationBarHidden(true, animated: false)
+#else
+    hostingController.view.frame = view.frame
+    hostingController.view.autoresizingMask = [.width, .height]
+#endif
+
   }
 
+#if os(iOS) || os(tvOS)
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     hostingController?.view.frame = view.bounds
   }
+
+#else
+  public override func viewDidLayout() {
+    super.viewDidLayout()
+    hostingController?.view.frame = view.bounds
+  }
+#endif
 }

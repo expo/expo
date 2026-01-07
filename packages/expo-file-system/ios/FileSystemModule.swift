@@ -143,11 +143,11 @@ public final class FileSystemModule: Module {
       output.exists = false
       output.isDirectory = nil
 
-      guard let permissionsManager: EXFilePermissionModuleInterface = appContext?.legacyModule(implementing: EXFilePermissionModuleInterface.self) else {
+      guard let fileSystemManager = appContext?.fileSystem else {
         return output
       }
 
-      if permissionsManager.getPathPermissions(url.path).contains(.read) {
+      if fileSystemManager.getPathPermissions(url.path).contains(.read) {
         var isDirectory: ObjCBool = false
         if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) {
           output.exists = true

@@ -28,7 +28,7 @@ To setup **two-way association** between the website and app for iOS, you need t
 
 Create an **apple-app-site-association** file for the website verification inside the **/.well-known** directory. This file specifies your Apple Developer Team ID, bundle identifier, and a list of supported paths to redirect to the native app.
 
-> **info** You can run the **experimental** CLI command `npx setup-safari` inside your project to automatically register a bundle identifier to your Apple account, assign entitlements to the ID, and create an iTunes app entry in the store. The local setup will be printed and you can skip most the following. This is the easiest way to get started with universal links on iOS.
+> **info** You can run the experimental CLI command `npx setup-safari` inside your project to automatically register a bundle identifier to your Apple account, assign entitlements to the ID, and create an iTunes app entry in the store. The local setup will be printed and you can skip most the following. This is the easiest way to get started with universal links on iOS.
 
 If you're using Expo Router to build your website (or any other modern React framework such as Remix, Next.js, and so on), create the AASA file at **public/.well-known/apple-app-site-association**. For legacy Expo webpack projects, create the file at **web/.well-known/apple-app-site-association**.
 
@@ -180,7 +180,7 @@ If you're having trouble setting up the banner, run the following command to aut
 
 ### Add the meta tag to your statically rendered website
 
-If you're building a [statically rendered website with Expo Router](/router/reference/static-rendering), then add the HTML tag to the `<head>` component in your [**app/+html.js** file](/router/reference/static-rendering#root-html).
+If you're building a [statically rendered website with Expo Router](/router/web/static-rendering), then add the HTML tag to the `<head>` component in your [**app/+html.js** file](/router/web/static-rendering#root-html).
 
 ```tsx app/+html.tsx
 import { type PropsWithChildren } from 'react';

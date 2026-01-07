@@ -256,6 +256,10 @@ class FunctionSpec: ExpoSpec {
         @Field var a: ValueOrUndefined<Double> = .value(unwrapped: 1.0)
         @Field var b: ValueOrUndefined<Double> = .undefined
       }
+      
+      struct NullableValueOfUndefinedRecord: Record {
+        @Field var a: ValueOrUndefined<Double?> = .value(unwrapped: 1.0)
+      }
 
       struct TestEncodable: Encodable {
         let name: String
@@ -322,6 +326,19 @@ class FunctionSpec: ExpoSpec {
           Function("withOptionalRecord") { (f: TestRecord?) in
             return "\(f?.property ?? "no value")"
           }
+          
+          Function("withNullableValueOrUndefinded") { (record: NullableValueOfUndefinedRecord) in
+            expect(record.a.isUndefined).to(beFalse())
+            expect(record.a.optional).to(beNil())
+          }
+          
+          Function("withNullableValueOrUndefindedInArray") { (items: [ValueOrUndefined<Double?>]) in
+            expect(items[0].isUndefined).to(beFalse())
+            expect(items[0].optional).to(beNil())
+
+            expect(items[1].isUndefined).to(beTrue())
+            expect(items[1].optional).to(beNil())
+          }
 
           Function("returnEncodable") {
             return TestEncodable(name: "Expo SDK", version: 55)
@@ -341,6 +358,10 @@ class FunctionSpec: ExpoSpec {
 
           AsyncFunction("withSharedObjectPromise") { (p: Promise) in
             p.resolve(SharedString("Test with Promise"))
+          }
+
+          Function("returnBaseSharedRef") {
+            return BaseSharedRef(1.2)
           }
 
           Function("withEither") { (either: Either<Bool, String>) in
@@ -412,6 +433,14 @@ class FunctionSpec: ExpoSpec {
 
       it("accepts optional record") {
         expect(try runtime.eval("expo.modules.TestModule.withOptionalRecord({property: \"123\"})").asString()) == "123"
+      }
+
+      it("accepts nullable ValueOrUndefinded") {
+        try runtime.eval("expo.modules.TestModule.withNullableValueOrUndefinded({a: null})")
+      }
+
+      it("accepts nullable ValueOrUndefinded in array") {
+        try runtime.eval("expo.modules.TestModule.withNullableValueOrUndefindedInArray([null, undefined])")
       }
 
       it("returns encodable struct") {
@@ -549,6 +578,15 @@ class FunctionSpec: ExpoSpec {
         expect(result.getString()) == "Test with Promise"
       }
 
+      it("returns shared ref without the Class definition") {
+        // In this case the native shared ref type is not defined as a class in the module's definition.
+        // Nevertheless, it should be converted to JS object that is an instance of the base `SharedRef` class.
+        let isSharedRef = try runtime.eval("expo.modules.TestModule.returnBaseSharedRef() instanceof expo.SharedRef")
+
+        expect(isSharedRef.kind) == .bool
+        expect(isSharedRef.getBool()) == true
+      }
+
       it("accepts and returns Either value") {
         let stringResult = try runtime.eval("expo.modules.TestModule.withEither('test string')")
         expect(stringResult.kind) == .string
@@ -582,5 +620,11 @@ class FunctionSpec: ExpoSpec {
 private class SharedString: SharedRef<String> {
   override var nativeRefType: String {
     "string"
+  }
+}
+
+private class BaseSharedRef: SharedRef<Double> {
+  override var nativeRefType: String {
+    "none"
   }
 }

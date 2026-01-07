@@ -1,3 +1,4 @@
+import { mergeClasses } from '@expo/styleguide';
 import { PackageIcon } from '@expo/styleguide-icons/outline/PackageIcon';
 import { useRouter } from 'next/compat/router';
 
@@ -13,9 +14,15 @@ const { LATEST_VERSION } = versions;
 type Props = {
   packageName: string;
   showMarkdownActions?: boolean;
+  className?: string;
 } & WithTestRequire;
 
-export function PagePackageVersion({ packageName, testRequire, showMarkdownActions }: Props) {
+export function PagePackageVersion({
+  packageName,
+  testRequire,
+  showMarkdownActions,
+  className,
+}: Props) {
   const { version } = usePageApiVersion();
   const router = useRouter();
   const currentPath = router?.asPath ?? router?.pathname ?? '';
@@ -37,7 +44,7 @@ export function PagePackageVersion({ packageName, testRequire, showMarkdownActio
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className={mergeClasses('flex items-center gap-2', className)}>
       {versionRange && (
         <div className="flex items-center justify-center gap-1.5 text-xs text-secondary">
           <PackageIcon className="icon-sm text-icon-secondary" />

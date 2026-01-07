@@ -7,6 +7,7 @@
 import { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import { RouteNode } from 'expo-router/build/Route';
+import { getLoaderModulePath } from 'expo-router/build/loaders/utils';
 import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
 import { type RoutesManifest } from 'expo-server/private';
@@ -89,6 +90,7 @@ export async function getFilesToExportFromServerAsync(
     // don't require the build-time generation of every possible group
     // variation.
     exportServer,
+    skipHtmlPrerendering,
     // name : contents
     files = new Map(),
   }: {
@@ -96,6 +98,13 @@ export async function getFilesToExportFromServerAsync(
     serverManifest: RoutesManifest;
     renderAsync: (requestLocation: HtmlRequestLocation) => Promise<string>;
     exportServer?: boolean;
+    /**
+     * Skip HTML pre-rendering when SSR is enabled (HTML will be rendered at runtime).
+     *
+     * This is separate from `exportServer` because RSC mode also uses `exportServer: true`,
+     * but still needs placeholder HTML files.
+     */
+    skipHtmlPrerendering?: boolean;
     files?: ExportAssetMap;
   }
 ): Promise<ExportAssetMap> {
@@ -110,6 +119,11 @@ export async function getFilesToExportFromServerAsync(
       contents: JSON.stringify(subsetServerManifest, null, 2),
       targetDomain: 'client',
     });
+  }
+
+  // Skip HTML pre-rendering in SSR mode since HTML will be rendered at runtime.
+  if (skipHtmlPrerendering) {
+    return files;
   }
 
   await Promise.all(
@@ -199,6 +213,9 @@ export async function exportFromServerAsync(
 
   const platform = 'web';
   const isExporting = true;
+  const useServerRendering = exp?.extra?.router?.unstable_useServerRendering ?? false;
+  const isExportingWithSSR =
+    exportServer && useServerRendering && !devServer.isReactServerComponentsEnabled;
   const appDir = path.join(projectRoot, routerRoot);
   const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, {
     outputDir,
@@ -207,12 +224,13 @@ export async function exportFromServerAsync(
     exp,
   });
 
-  const [resources, { manifest, serverManifest, renderAsync }] = await Promise.all([
-    devServer.getStaticResourcesAsync({
-      includeSourceMaps,
-    }),
-    devServer.getStaticRenderFunctionAsync(),
-  ]);
+  const [resources, { manifest, serverManifest, renderAsync, executeLoaderAsync }] =
+    await Promise.all([
+      devServer.getStaticResourcesAsync({
+        includeSourceMaps,
+      }),
+      devServer.getStaticRenderFunctionAsync(),
+    ]);
 
   makeRuntimeEntryPointsAbsolute(manifest, appDir);
 
@@ -223,9 +241,32 @@ export async function exportFromServerAsync(
     manifest,
     serverManifest,
     exportServer,
+    skipHtmlPrerendering: isExportingWithSSR,
     async renderAsync({ pathname, route }) {
-      const template = await renderAsync(pathname);
-      let html = await serializeHtmlWithAssets({
+      const normalizedPathname =
+        pathname === '' ? '/' : pathname.startsWith('/') ? pathname : `/${pathname}`;
+
+      const useServerLoaders = exp?.extra?.router?.unstable_useServerDataLoaders;
+      let renderOpts;
+
+      if (useServerLoaders) {
+        const loaderData = await executeLoaderAsync(normalizedPathname, route);
+
+        if (loaderData != null) {
+          const loaderPath = getLoaderModulePath(normalizedPathname);
+          const fileSystemPath = loaderPath.startsWith('/') ? loaderPath.slice(1) : loaderPath;
+          files.set(fileSystemPath, {
+            contents: JSON.stringify(loaderData, null, 2),
+            targetDomain: 'client',
+            loaderId: normalizedPathname,
+          });
+
+          renderOpts = { loader: { data: loaderData } };
+        }
+      }
+
+      const template = await renderAsync(normalizedPathname, route, renderOpts);
+      let html = serializeHtmlWithAssets({
         isExporting,
         resources: resources.artifacts,
         template,
@@ -278,6 +319,39 @@ export async function exportFromServerAsync(
     // Add the api routes to the files to export.
     for (const [route, contents] of apiRoutes) {
       files.set(route, contents);
+    }
+
+    // Export SSR render module and add SSR configuration to routes manifest
+    if (isExportingWithSSR) {
+      await devServer.exportExpoRouterRenderModuleAsync({
+        files,
+        includeSourceMaps: true,
+        platform: 'web',
+      });
+
+      const cssAssets = resources.artifacts
+        .filter((asset) => asset.type === 'css')
+        .map((asset) => (baseUrl ? `${baseUrl}/${asset.filename}` : `/${asset.filename}`));
+      const jsAssets = resources.artifacts
+        .filter((asset) => asset.type === 'js')
+        .map((asset) => (baseUrl ? `${baseUrl}/${asset.filename}` : `/${asset.filename}`));
+
+      // Add assets and rendering config to the routes manifest
+      const routesJsonEntry = files.get('_expo/routes.json');
+      if (routesJsonEntry) {
+        // NOTE(@hassankhan): We should ideally persist the manifest to `files` only once instead of
+        // modifying it afterwards. We'll need to refactor how `exportApiRoutesAsync()` works.
+        const manifest = JSON.parse(routesJsonEntry.contents as string);
+        manifest.assets = { css: cssAssets, js: jsAssets };
+        manifest.rendering = {
+          mode: 'ssr',
+          file: '_expo/server/render.js',
+        };
+        files.set('_expo/routes.json', {
+          ...routesJsonEntry,
+          contents: JSON.stringify(manifest, null, 2),
+        });
+      }
     }
   } else {
     warnPossibleInvalidExportType(appDir);

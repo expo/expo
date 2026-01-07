@@ -18,7 +18,9 @@ export function createDebugMiddleware(
     require('@react-native/dev-middleware') as typeof import('@react-native/dev-middleware');
 
   const { middleware, websocketEndpoints } = createDevMiddleware({
-    projectRoot: metroBundler.projectRoot,
+    // TODO: Check with cedric why this can be removed
+    // https://github.com/facebook/react-native/pull/53921
+    // projectRoot: metroBundler.projectRoot,
     serverBaseUrl: metroBundler
       .getUrlCreator()
       .constructUrl({ scheme: 'http', hostType: 'localhost' }),

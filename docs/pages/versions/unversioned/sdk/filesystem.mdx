@@ -127,8 +127,11 @@ import * as DocumentPicker from 'expo-document-picker';
 
 try {
   const result = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
-  const file = new File(result.assets[0]);
-  console.log(file.textSync());
+  if (!result.canceled) {
+    const { uri } = result.assets[0];
+    const file = new File(uri);
+    console.log(file.textSync());
+  }
 } catch (error) {
   console.error(error);
 }
@@ -172,7 +175,7 @@ Or using `expo/fetch`:
 
 ```ts example.ts
 import { fetch } from 'expo/fetch';
-import { File } from 'expo-file-system';
+import { File, Paths } from 'expo-file-system';
 
 const url = 'https://pdfobject.com/pdf/sample.pdf';
 const response = await fetch(url);
@@ -188,7 +191,7 @@ You can upload files as blobs directly with `fetch` built into the Expo package:
 
 ```ts example.ts
 import { fetch } from 'expo/fetch';
-import { File } from 'expo-file-system';
+import { File, Paths } from 'expo-file-system';
 
 const file = new File(Paths.cache, 'file.txt');
 file.write('Hello, world!');

@@ -1,0 +1,1 @@
+{"version":3,"file":"IsWithinLayoutContext.js","sourceRoot":"","sources":["../../src/layouts/IsWithinLayoutContext.ts"],"names":[],"mappings":";AAAA,YAAY,CAAC;;;AAEb,iCAAsC;AAEzB,QAAA,qBAAqB,GAAG,IAAA,qBAAa,EAAC,KAAK,CAAC,CAAC","sourcesContent":["'use client';\n\nimport { createContext } from 'react';\n\nexport const IsWithinLayoutContext = createContext(false);\n"]}

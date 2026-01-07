@@ -19,11 +19,13 @@ export interface ResponseCache {
 }
 
 export function getResponseInfo(response: Response) {
+  const headers = Object.fromEntries(response.headers.entries());
+  delete headers['set-cookie'];
   return {
     url: response.url,
     status: response.status,
     statusText: response.statusText,
-    headers: Object.fromEntries(response.headers.entries()),
+    headers,
   };
 }
 

@@ -10,6 +10,8 @@ isAlpha: true
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
+> **important** **This library is currently in alpha and will frequently experience breaking changes.**
+
 `@expo/app-integrity` provides APIs to help ensure your backend resources are accessed only by legitimate installations of your app running on genuine devices. It uses Google's [Play Integrity APIs](https://developer.android.com/google/play/integrity) on Android and Apple's [App Attest service](https://developer.apple.com/documentation/devicecheck/establishing-your-app-s-integrity) on iOS to verify app authenticity, helping prevent unauthorized clients, modified apps, or automated scripts from making requests to your server.
 
 Generally, `@expo/app-integrity` helps your server tell the difference between:

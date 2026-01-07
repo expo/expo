@@ -23,9 +23,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
-import expo.modules.kotlin.views.ComposableScope
 import java.util.Calendar
 import java.util.Date
 import android.graphics.Color as AndroidColor
@@ -76,11 +76,11 @@ class DateTimePickerView(context: Context, appContext: AppContext) :
   @Composable
   override fun ComposableScope.Content() {
     if (props.displayedComponents.value == DisplayedComponents.HOUR_AND_MINUTE) {
-      ExpoTimePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value)) {
+      ExpoTimePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)) {
         onDateSelected(it)
       }
     } else {
-      ExpoDatePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value)) {
+      ExpoDatePicker(props = props, modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)) {
         onDateSelected(it)
       }
     }
@@ -109,19 +109,17 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
     onDateSelected(DatePickerResult(date = state.selectedDateMillis))
   }
 
-  DynamicTheme {
-    DatePicker(
-      modifier = modifier,
-      state = state,
-      showModeToggle = props.showVariantToggle.value,
-      colors = DatePickerDefaults.colors().copy(
-        titleContentColor = colorToComposeColor(props.color.value),
-        selectedDayContainerColor = colorToComposeColor(props.color.value),
-        todayDateBorderColor = colorToComposeColor(props.color.value),
-        headlineContentColor = colorToComposeColor(props.color.value)
-      )
+  DatePicker(
+    modifier = modifier,
+    state = state,
+    showModeToggle = props.showVariantToggle.value,
+    colors = DatePickerDefaults.colors().copy(
+      titleContentColor = colorToComposeColor(props.color.value),
+      selectedDayContainerColor = colorToComposeColor(props.color.value),
+      todayDateBorderColor = colorToComposeColor(props.color.value),
+      headlineContentColor = colorToComposeColor(props.color.value)
     )
-  }
+  )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

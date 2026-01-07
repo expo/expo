@@ -17,7 +17,6 @@
 
 @property (nonatomic, strong) dispatch_queue_t glQueue;
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) EXGLObjectManager *objectManager;
 @property (nonatomic, assign) BOOL isContextReady;
 @property (nonatomic, assign) BOOL wasPrepareCalled;
 @property (nonatomic) BOOL appIsBackgrounded;
@@ -33,7 +32,6 @@
     self.delegate = delegate;
 
     _moduleRegistry = moduleRegistry;
-    _objectManager = (EXGLObjectManager *)[_moduleRegistry getExportedModuleOfClass:[EXGLObjectManager class]];
     _glQueue = dispatch_queue_create("host.exp.gl", DISPATCH_QUEUE_SERIAL);
     _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3] ?: [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     _isContextReady = NO;
@@ -75,7 +73,7 @@
 - (void)initialize
 {
   self->_contextId = EXGLContextCreate();
-  [self->_objectManager saveContext:self];
+  [[EXGLObjectManager shared] saveContext:self];
 
   // listen for foreground/background transitions
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -182,7 +180,7 @@
       EXGLContextDestroy(self->_contextId);
 
       // Remove from dictionary of contexts
-      [self->_objectManager deleteContextWithId:@(self->_contextId)];
+      [[EXGLObjectManager shared] deleteContextWithId:@(self->_contextId)];
     }];
   }];
 }

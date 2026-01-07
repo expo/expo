@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { createRequestHandler as createExpoHandler } from './abstract';
+import { createRequestHandler as createExpoHandler, } from './abstract';
 import { createNodeEnv, createNodeRequestScope } from './environment/node';
 export { ExpoError } from './abstract';
 const STORE = new AsyncLocalStorage();

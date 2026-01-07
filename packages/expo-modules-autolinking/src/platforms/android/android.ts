@@ -1,14 +1,9 @@
 import fs from 'fs';
-import { glob } from 'glob';
 import path from 'path';
 
 import { AutolinkingOptions } from '../../commands/autolinkingOptions';
-import type {
-  ExtraDependencies,
-  ModuleAndroidProjectInfo,
-  ModuleDescriptorAndroid,
-  PackageRevision,
-} from '../../types';
+import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../../types';
+import { scanFilesRecursively } from '../../utils';
 
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
@@ -90,13 +85,11 @@ export async function resolveModuleAsync(
         : undefined;
 
       const packages = new Set<string>();
-      const files =
-        (await glob('**/*Package.{java,kt}', {
-          cwd: projectPath,
-        })) || [];
-
-      for (const file of files) {
-        const fileContent = await fs.promises.readFile(path.join(projectPath, file), 'utf8');
+      for await (const file of scanFilesRecursively(projectPath)) {
+        if (!file.name.endsWith('Package.java') && !file.name.endsWith('Package.kt')) {
+          continue;
+        }
+        const fileContent = await fs.promises.readFile(file.path, 'utf8');
 
         // Very naive check to skip non-expo packages
         if (
@@ -108,7 +101,7 @@ export async function resolveModuleAsync(
         const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);
 
         if (classPathMatches) {
-          const basename = path.basename(file, path.extname(file));
+          const basename = path.basename(file.name, path.extname(file.name));
           packages.add(`${classPathMatches[1]}.${basename}`);
         }
       }
@@ -117,7 +110,8 @@ export async function resolveModuleAsync(
         name: project.name,
         sourceDir: projectPath,
         modules: project.modules ?? [],
-        packages: [...packages],
+        services: project.services ?? [],
+        packages: [...packages].sort((a, b) => a.localeCompare(b)),
         ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
         ...(publication ? { publication } : {}),
         ...(aarProjects?.length > 0 ? { aarProjects } : {}),

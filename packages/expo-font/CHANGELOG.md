@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
+- add support for line-height ([#41094](https://github.com/expo/expo/pull/41094) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
+- unify `useFonts` return value in RSC ([#40481](https://github.com/expo/expo/pull/40481) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
+
+- update ExpoFontUtils mock, to align with new API ([#40964](https://github.com/expo/expo/pull/40964) by [@Ubax](https://github.com/Ubax))
+
+## 14.0.10 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 14.0.9 - 2025-10-09
 

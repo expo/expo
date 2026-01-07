@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import { ColorValue } from 'react-native';
 
 import { ExpoModifier } from '../../types';
 
@@ -13,10 +13,6 @@ export type ProgressElementColors = {
 };
 
 export type CircularProgressProps = {
-  /**
-   * Custom styles for the progress component.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * The current progress value of the slider. This is a number between `0` and `1`.
    */
@@ -37,10 +33,6 @@ export type CircularProgressProps = {
 };
 
 export type LinearProgressProps = {
-  /**
-   * Custom styles for the progress component.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * The current progress value of the slider. This is a number between `0` and `1`.
    */
@@ -63,7 +55,7 @@ export type LinearProgressProps = {
 type NativeProgressProps =
   | CircularProgressProps
   | (LinearProgressProps & {
-      variant: 'linear' | 'circular';
+      variant: 'linear' | 'circular' | 'linearWavy' | 'circularWavy';
     });
 
 const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNativeView(
@@ -93,6 +85,32 @@ export function LinearProgress(props: LinearProgressProps) {
       {...props} // @ts-expect-error
       modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
       variant="linear"
+    />
+  );
+}
+
+/**
+ * Renders a `CircularWavyProgress` component with wavy animation.
+ */
+export function CircularWavyProgress(props: CircularProgressProps) {
+  return (
+    <NativeProgressView
+      {...props} // @ts-expect-error
+      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
+      variant="circularWavy"
+    />
+  );
+}
+
+/**
+ * Renders a `LinearWavyProgress` component with wavy animation.
+ */
+export function LinearWavyProgress(props: LinearProgressProps) {
+  return (
+    <NativeProgressView
+      {...props} // @ts-expect-error
+      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
+      variant="linearWavy"
     />
   );
 }

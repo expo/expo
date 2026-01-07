@@ -41,7 +41,7 @@ class ReloadTest {
       val jsObject = callClass("MySharedObject").getObject()
       val id = SharedObjectId(jsObject.getProperty(sharedObjectIdPropertyName).getInt())
 
-      val runtimeContext = jsiInterop.runtimeContextHolder.get()!!
+      val runtimeContext = jsiInterop.runtimeHolder.get()!!
       val (native, _) = runtimeContext.sharedObjectRegistry.pairs[id]!!
       Truth.assertThat(native).isSameInstanceAs(mySharedObject)
     }

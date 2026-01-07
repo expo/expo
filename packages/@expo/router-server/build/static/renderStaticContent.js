@@ -54,7 +54,8 @@ const react_1 = __importDefault(require("react"));
 const server_node_1 = __importDefault(require("react-dom/server.node"));
 const getRootComponent_1 = require("./getRootComponent");
 const html_1 = require("./html");
-const debug = require('debug')('expo:router:server:renderStaticContent');
+const debug_1 = require("../utils/debug");
+const debug = (0, debug_1.createDebug)('expo:router:server:renderStaticContent');
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
     // https://github.com/react-navigation/react-navigation/blob/9fe34b445fcb86e5666f61e144007d7540f014fa/packages/elements/src/getNamedContext.tsx#LL3C1-L4C1
@@ -98,6 +99,30 @@ async function getStaticContent(location, options) {
     if (loadedData) {
         const loaderDataScript = server_node_1.default.renderToStaticMarkup(<html_1.PreloadedDataScript data={loadedData}/>);
         output = output.replace('</head>', `${loaderDataScript}</head>`);
+    }
+    // Inject hydration assets (JS/CSS bundles). Used in SSR mode
+    if (options?.assets) {
+        if (options.assets.css.length > 0) {
+            /**
+             * For each CSS file, inject two link elements; one for preloading and one as the actual
+             * stylesheet. This matches what we do for SSG
+             *
+             * @see @expo/cli/src/start/server/metro/serializeHtml.ts
+             */
+            const injectedCSS = options.assets.css
+                .flatMap((href) => [
+                `<link rel="preload" href="${href}" as="style">`,
+                `<link rel="stylesheet" href="${href}">`,
+            ])
+                .join('\n');
+            output = output.replace('</head>', `${injectedCSS}\n</head>`);
+        }
+        if (options.assets.js.length > 0) {
+            const injectedJS = options.assets.js
+                .map((src) => `<script src="${src}" defer></script>`)
+                .join('\n');
+            output = output.replace('</body>', `${injectedJS}\n</body>`);
+        }
     }
     return '<!DOCTYPE html>' + output;
 }

@@ -7,7 +7,7 @@
 
 @protocol EXViewControllerDelegate <NSObject>
 
-- (void)viewController:(EXViewController * _Nonnull)vc didNavigateAppToVisible:(EXKernelAppRecord * _Nonnull)appRecord;
+- (void)viewController:(EXViewController * _Nonnull)vc didNavigateAppToVisible:(EXKernelAppRecord * _Nullable)appRecord;
 
 @end
 

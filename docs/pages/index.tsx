@@ -1,5 +1,4 @@
 import DocumentationPage from '~/components/DocumentationPage';
-import { ExpoAppAwardsBanner } from '~/ui/components/ExpoAppAwardsBanner';
 import { DevicesImageMasks } from '~/ui/components/Home/resources';
 import {
   QuickStart,
@@ -10,6 +9,7 @@ import {
   JoinTheCommunity,
 } from '~/ui/components/Home/sections';
 import { ExploreExamples } from '~/ui/components/Home/sections/ExploreExamples';
+import { StateOfRNBanner } from '~/ui/components/StateOfRNBanner';
 
 function Home() {
   return (
@@ -20,7 +20,7 @@ function Home() {
       <div className="h-0">
         <DevicesImageMasks />
       </div>
-      <ExpoAppAwardsBanner />
+      <StateOfRNBanner />
       <QuickStart />
       <CommandLineTools />
       <DiscoverMore />

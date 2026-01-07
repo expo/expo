@@ -19,7 +19,12 @@ import {
   frame,
   headerProminence,
   padding,
+  pickerStyle,
+  refreshable,
   scrollDismissesKeyboard,
+  foregroundStyle,
+  shapes,
+  tag,
 } from '@expo/ui/swift-ui/modifiers';
 import { useNavigation } from '@react-navigation/native';
 import type { SFSymbol } from 'expo-symbols';
@@ -28,7 +33,7 @@ import { useLayoutEffect } from 'react';
 
 export default function ListScreen() {
   const [color, setColor] = React.useState<string>('blue');
-  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(0);
+  const [selectedIndex, setSelectedIndex] = React.useState<number>(0);
   const data: { text: string; systemImage: SFSymbol }[] = [
     { text: 'Good Morning', systemImage: 'sun.max.fill' },
     { text: 'Weather', systemImage: 'cloud.sun.fill' },
@@ -55,15 +60,15 @@ export default function ListScreen() {
   const [deleteEnabled, setDeleteEnabled] = React.useState<boolean>(true);
   const [moveEnabled, setMoveEnabled] = React.useState<boolean>(true);
   const [editModeEnabled, setEditModeEnabled] = React.useState<boolean>(false);
-  const [scrollDismissesKeyboardIndex, setScrollDismissesKeyboardIndex] = React.useState<
-    number | null
-  >(0);
+  const [scrollDismissesKeyboardIndex, setScrollDismissesKeyboardIndex] = React.useState<number>(0);
   const [increasedHeader, setIncreasedHeader] = React.useState(false);
   const [collapsible, setCollapsible] = React.useState<boolean>(false);
   const [customHeaderFooter, setCustomHeaderFooter] = React.useState<{
     header: boolean;
     footer: boolean;
   }>({ header: false, footer: false });
+  const [lastRefresh, setLastRefresh] = React.useState<Date | null>(null);
+  const [refreshEnabled, setRefreshEnabled] = React.useState<boolean>(false);
 
   const navigation = useNavigation();
 
@@ -90,6 +95,15 @@ export default function ListScreen() {
             scrollDismissesKeyboardOptions[scrollDismissesKeyboardIndex ?? 0]
           ),
           headerProminence(increasedHeader ? 'increased' : 'standard'),
+          ...(refreshEnabled
+            ? [
+                refreshable(async () => {
+                  // Simulate async data fetching
+                  await new Promise((resolve) => setTimeout(resolve, 2000));
+                  setLastRefresh(new Date());
+                }),
+              ]
+            : []),
         ]}
         deleteEnabled={deleteEnabled}
         selectEnabled={selectEnabled}>
@@ -138,10 +152,20 @@ export default function ListScreen() {
           />
         </Section>
         <Section title="Controls" collapsible>
-          <Button onPress={() => setEditModeEnabled(!editModeEnabled)}>Toggle Edit</Button>
+          <Button onPress={() => setEditModeEnabled(!editModeEnabled)} label="Toggle Edit" />
           <Switch value={selectEnabled} label="Select enabled" onValueChange={setSelectEnabled} />
           <Switch value={deleteEnabled} label="Delete enabled" onValueChange={setDeleteEnabled} />
           <Switch value={moveEnabled} label="Move enabled" onValueChange={setMoveEnabled} />
+          <Switch
+            value={refreshEnabled}
+            label="Refreshable enabled"
+            onValueChange={setRefreshEnabled}
+          />
+          {lastRefresh && (
+            <Text size={12} color="gray">
+              Last refresh: {lastRefresh.toLocaleTimeString()}
+            </Text>
+          )}
           <ColorPicker
             label="Item icon color"
             selection={color}
@@ -150,31 +174,51 @@ export default function ListScreen() {
           />
           <Picker
             label="Scroll dismisses keyboard"
-            options={[...scrollDismissesKeyboardOptions]}
-            selectedIndex={scrollDismissesKeyboardIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setScrollDismissesKeyboardIndex(index);
-            }}
-            variant="menu"
-          />
+            modifiers={[pickerStyle('menu')]}
+            selection={scrollDismissesKeyboardIndex}
+            onSelectionChange={setScrollDismissesKeyboardIndex}>
+            {scrollDismissesKeyboardOptions.map((option, index) => (
+              <Text key={index} modifiers={[tag(index)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
           <Picker
             label="List style"
-            options={listStyleOptions}
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedIndex(index);
-            }}
-            variant="menu"
-          />
+            modifiers={[pickerStyle('menu')]}
+            selection={selectedIndex}
+            onSelectionChange={setSelectedIndex}>
+            {listStyleOptions.map((option, index) => (
+              <Text key={index} modifiers={[tag(index)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
         </Section>
         <Section title="Data">
+          <Label
+            icon={
+              <Image
+                systemName="sun.max.fill"
+                color="white"
+                size={15}
+                modifiers={[
+                  padding({ all: 4 }),
+                  background(
+                    'blue',
+                    shapes.roundedRectangle({ cornerRadius: 12, roundedCornerStyle: 'continuous' })
+                  ),
+                ]}
+              />
+            }
+            title="Label with custom icon"
+          />
           {data.map((item, index) => (
             <Label
               key={index}
-              modifiers={[frame({ height: 24 })]}
+              modifiers={[frame({ height: 24 }), foregroundStyle(color)]}
               title={item.text}
               systemImage={item.systemImage}
-              color={color}
             />
           ))}
         </Section>

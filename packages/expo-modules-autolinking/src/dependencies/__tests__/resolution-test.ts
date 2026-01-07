@@ -367,7 +367,7 @@ describe(scanDependenciesRecursively, () => {
               "name": "react-native-dependency",
               "originPath": "/fake/project/node_modules/parent-b/node_modules/react-native-dependency",
               "path": "/fake/project/node_modules/parent-b/node_modules/react-native-dependency",
-              "version": "",
+              "version": "0.0.1",
             },
           ],
           "name": "react-native-dependency",

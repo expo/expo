@@ -1,0 +1,17 @@
+appId: com.expo.routere2e
+name: Toolbar button press
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://toolbar?searchButton=true&micButton=true
+- runFlow: ../close-warning.yml
+- assertVisible: "Toolbar E2E Test Screen"
+# TODO: Add screenshots comparison
+- takeScreenshot: button-shares-background
+- tapOn:
+    id: toggle-search-button-share-background
+- takeScreenshot: button-does-not-share-background
+- tapOn:
+    id: toggle-search-button-share-background
+- tapOn:
+    id: toggle-search-button-hide-shared-background
+- takeScreenshot: button-hides-shared-background

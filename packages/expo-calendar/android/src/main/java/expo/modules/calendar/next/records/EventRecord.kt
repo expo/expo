@@ -1,8 +1,8 @@
 package expo.modules.calendar.next.records
 
 import android.provider.CalendarContract
-import expo.modules.calendar.accessConstantMatchingString
-import expo.modules.calendar.availabilityConstantMatchingString
+import expo.modules.calendar.domain.event.enums.Availability
+import expo.modules.calendar.next.utils.parseRrDate
 import expo.modules.calendar.next.utils.rrFormat
 import expo.modules.calendar.next.utils.sdf
 import expo.modules.kotlin.records.Field
@@ -100,7 +100,7 @@ data class RecurrenceRuleRecord(
       return RecurrenceRuleRecord(
         endDate = ruleMap["UNTIL"]
           ?.takeIf { it.isNotBlank() }
-          ?.let { rrFormat.parse(it) }
+          ?.let { parseRrDate(it) }
           ?.let { sdf.format(it) },
         frequency = ruleMap["FREQ"]?.lowercase(Locale.getDefault()),
         interval = ruleMap["INTERVAL"]?.toIntOrNull(),
@@ -123,7 +123,7 @@ enum class EventAvailability(val value: String) : Enumerable {
   TENTATIVE("tentative");
 
   fun toAndroidValue(availability: EventAvailability?): Int? {
-    return availability?.value?.let { availabilityConstantMatchingString(it) }
+    return availability?.value?.let { Availability.fromString(it).contentProviderValue }
   }
 
   companion object {
@@ -165,7 +165,9 @@ enum class EventAccessLevel(val value: String) : Enumerable {
   DEFAULT("default");
 
   fun toAndroidValue(accessLevel: EventAccessLevel?): Int? {
-    return accessLevel?.value?.let { accessConstantMatchingString(it) }
+    return accessLevel?.value?.let {
+      expo.modules.calendar.domain.event.enums.EventAccessLevel.fromString(it).contentProviderValue
+    }
   }
 
   companion object {

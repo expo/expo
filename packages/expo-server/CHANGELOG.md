@@ -6,11 +6,33 @@
 
 ### 🎉 New features
 
+- Improve SSR support ([#41477](https://github.com/expo/expo/pull/41477) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
 - Deduplicate shared types across `@expo/cli`, `@expo/router-server`, `expo-server` ([#40614](https://github.com/expo/expo/pull/40614) by [@hassankhan](https://github.com/hassankhan))
+- Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
+
+## 1.0.5 - 2025-12-04
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.4 - 2025-11-03
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.3 - 2025-10-28
+
+### 🐛 Bug fixes
+
+- Fix `handleRouteError` not being scoped to unhandled errors and only expose it on `http` and `express` adapter ([#40627](https://github.com/expo/expo/pull/40627) by [@kitten](https://github.com/kitten))
+- Convert `Response.error()` status `0` to `500` ([#40672](https://github.com/expo/expo/pull/40672) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+### 💡 Others
+
+- Remove internal adapter parameters from public API surface ([#40627](https://github.com/expo/expo/pull/40627) by [@kitten](https://github.com/kitten))
 
 ## 1.0.2 - 2025-10-20
 

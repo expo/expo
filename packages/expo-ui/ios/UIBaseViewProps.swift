@@ -8,9 +8,6 @@ import SwiftUI
  Contains common modifiers that are shared across most views.
  */
 public class UIBaseViewProps: ExpoSwiftUI.ViewProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
   @Field var testID: String?
   @Field var modifiers: ModifierArray?
 

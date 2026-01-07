@@ -488,7 +488,7 @@ Then send a push notification which:
 
 ### Background notification configuration&ensp;<PlatformTags platforms={["ios"]} />
 
-To be able to use background push notifications on iOS, the `remote-notification` value needs to be present in the `UIBackgroundModes` array in your app's **Info.plist** file.
+To be able to use headless (background) notifications push notifications on iOS, the `remote-notification` value needs to be present in the `UIBackgroundModes` array in your app's **Info.plist** file.
 
 **If you're using [CNG](/workflow/continuous-native-generation/)**, set the [`enableBackgroundRemoteNotifications` property](#configurable-properties) of the config plugin to true, and the correct configuration will be applied automatically by prebuild.
 

@@ -60,13 +60,13 @@ const metro_cache_1 = require("@expo/metro/metro-cache");
 const metro_cache_key_1 = require("@expo/metro/metro-cache-key");
 const metro_source_map_1 = require("@expo/metro/metro-source-map");
 const metroTransformPlugins = __importStar(require("@expo/metro/metro-transform-plugins"));
-const getMinifier_1 = __importDefault(require("@expo/metro/metro-transform-worker/utils/getMinifier"));
 const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
 const collect_dependencies_1 = __importStar(require("./collect-dependencies"));
 const count_lines_1 = require("./count-lines");
 const resolveOptions_1 = require("./resolveOptions");
 const transform_plugins_1 = require("../transform-plugins");
+const getMinifier_1 = require("./utils/getMinifier");
 class InvalidRequireCallError extends Error {
     innerError;
     filename;
@@ -105,7 +105,7 @@ const minifyCode = async (config, filename, code, source, map, reserved = []) =>
             isIgnored: false,
         },
     ]).toMap(undefined, {});
-    const minify = (0, getMinifier_1.default)(config.minifierPath);
+    const minify = (0, getMinifier_1.getMinifier)(config.minifierPath);
     try {
         const minified = await minify({
             code,
@@ -149,7 +149,7 @@ function applyUseStrictDirective(ast) {
         directives.push(core_1.types.directive(core_1.types.directiveLiteral('use strict')));
     }
 }
-function applyImportSupport(ast, { filename, options, importDefault, importAll, collectLocations, }) {
+function applyImportSupport(ast, { filename, options, importDefault, importAll, collectLocations, performConstantFolding, }) {
     // Perform the import-export transform (in case it's still needed), then
     // fold requires and perform constant folding (if in dev).
     const plugins = [];
@@ -170,7 +170,7 @@ function applyImportSupport(ast, { filename, options, importDefault, importAll, 
         const liveBindings = options.customTransformOptions?.liveBindings !== 'false';
         plugins.push([
             liveBindings ? transform_plugins_1.importExportLiveBindingsPlugin : transform_plugins_1.importExportPlugin,
-            { ...babelPluginOpts },
+            { ...babelPluginOpts, performConstantFolding },
         ]);
     }
     // NOTE(EvanBacon): This can basically never be safely enabled because it doesn't respect side-effects and
@@ -270,17 +270,20 @@ async function transformJS(file, { config, options }) {
     // not exist yet.
     applyUseStrictDirective(ast);
     const unstable_renameRequire = config.unstable_renameRequire;
+    // NOTE(@hassankhan): Constant folding can be an expensive/slow operation, so we limit it to
+    // production builds, or files that have specifically seen a change in their exports
+    if (!options.dev || file.performConstantFolding) {
+        ast = performConstantFolding(ast, { filename: file.filename });
+    }
     // Disable all Metro single-file optimizations when full-graph optimization will be used.
     if (!optimize) {
         ast = applyImportSupport(ast, {
             filename: file.filename,
+            performConstantFolding: Boolean(file.performConstantFolding),
             options,
             importDefault,
             importAll,
         }).ast;
-    }
-    if (!options.dev) {
-        ast = performConstantFolding(ast, { filename: file.filename });
     }
     let dependencyMapName = '';
     let dependencies;
@@ -483,6 +486,7 @@ async function transformJSWithBabel(file, context) {
         reactServerReference: transformResult.metadata?.reactServerReference,
         reactClientReference: transformResult.metadata?.reactClientReference,
         expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
+        performConstantFolding: transformResult.metadata?.performConstantFolding,
     };
     return await transformJS(jsFile, context);
 }
@@ -585,13 +589,11 @@ async function transform(config, projectRoot, filename, data, options) {
 function getCacheKey(config) {
     const { 
     // The `expo_customTransformerPath` from `./supervising-transform-worker` should not participate be part of the cache key
-    expo_customTransformerPath: _customTransformerPath, babelTransformerPath, minifierPath, 
-    // Pull out of the cache key to prevent accidental cache invalidation.
-    asyncRequireModulePath, ...remainingConfig } = config;
+    expo_customTransformerPath: _customTransformerPath, babelTransformerPath, minifierPath, ...remainingConfig } = config;
     // TODO(@kitten): We can now tie this into `@expo/metro`, which could also simply export a static version export
     const filesKey = (0, metro_cache_key_1.getCacheKey)([
         require.resolve(babelTransformerPath),
-        require.resolve(minifierPath),
+        (0, getMinifier_1.resolveMinifier)(minifierPath),
         require.resolve('@expo/metro/metro-transform-worker/utils/getMinifier'),
         require.resolve('./collect-dependencies'),
         require.resolve('./asset-transformer'),

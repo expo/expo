@@ -175,9 +175,6 @@ export class GLView extends React.Component {
         const gl = this.getGLContextOrReject();
         return await GLView.takeSnapshotAsync(gl, options);
     }
-    async startARSessionAsync() {
-        throw new UnavailabilityError('GLView', 'startARSessionAsync');
-    }
     async createCameraTextureAsync() {
         throw new UnavailabilityError('GLView', 'createCameraTextureAsync');
     }

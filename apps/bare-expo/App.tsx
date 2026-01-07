@@ -1,6 +1,7 @@
 import { ThemeProvider } from 'ThemeProvider';
 import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
+import * as DevMenu from 'expo-dev-menu';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
 
@@ -10,6 +11,23 @@ try {
 } catch {
   // do nothing
 }
+
+DevMenu.registerDevMenuItems([
+  {
+    name: 'Action 1',
+    callback: () => {
+      console.log('Action 1 executed');
+    },
+    shouldCollapse: true,
+  },
+  {
+    name: 'Action 2',
+    callback: () => {
+      console.log('Action 2 executed');
+    },
+    shouldCollapse: false,
+  },
+]);
 
 Splashscreen.setOptions({ fade: true, duration: 800 });
 

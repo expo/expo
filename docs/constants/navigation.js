@@ -223,6 +223,7 @@ export const general = [
     makeSection('Existing native apps', [
       makePage('brownfield/overview.mdx'),
       makePage('brownfield/get-started.mdx'),
+      makePage('brownfield/lifecycle-listeners.mdx'),
     ]),
     makeGroup(
       'Reference',
@@ -269,15 +270,17 @@ export const general = [
       makePage('router/advanced/apple-handoff.mdx'),
       makePage('router/advanced/custom-tabs.mdx'),
     ]),
+    makeGroup('Web', [
+      makePage('router/web/api-routes.mdx'),
+      makePage('router/web/middleware.mdx'),
+      makePage('router/web/static-rendering.mdx'),
+      makePage('router/web/async-routes.mdx'),
+    ]),
     makeGroup('Reference', [
       makePage('router/error-handling.mdx'),
       makePage('router/reference/url-parameters.mdx'),
-      makePage('router/reference/middleware.mdx'),
-      makePage('router/reference/redirects.mdx'),
-      makePage('router/reference/static-rendering.mdx'),
-      makePage('router/reference/async-routes.mdx'),
-      makePage('router/reference/api-routes.mdx'),
       makePage('router/reference/sitemap.mdx'),
+      makePage('router/reference/redirects.mdx'),
       makePage('router/reference/link-preview.mdx'),
       makePage('router/reference/typed-routes.mdx'),
       makePage('router/reference/screen-tracking.mdx'),
@@ -309,6 +312,7 @@ export const general = [
         makePage('modules/android-lifecycle-listeners.mdx'),
         makePage('modules/appdelegate-subscribers.mdx'),
         makePage('modules/autolinking.mdx'),
+        makePage('modules/shared-objects.mdx'),
         makePage('modules/module-config.mdx'),
         makePage('modules/mocking.mdx'),
         makePage('modules/design.mdx'),
@@ -332,6 +336,33 @@ export const general = [
       { expanded: false }
     ),
   ]),
+  makeSection('Integrations', [
+    makeGroup('Analytics and error reports', [
+      makePage('guides/using-analytics.mdx'),
+      makePage('guides/using-sentry.mdx'),
+      makePage('guides/using-bugsnag.mdx'),
+      makePage('guides/using-logrocket.mdx'),
+      makePage('guides/using-vexo.mdx'),
+    ]),
+    makeGroup('Authentication', [
+      makePage('guides/using-authentication.mdx'),
+      makePage('guides/using-clerk.mdx'),
+      makePage('guides/facebook-authentication.mdx'),
+      makePage('guides/google-authentication.mdx'),
+    ]),
+    makeGroup('CMS', [makePage('guides/using-a-cms.mdx')]),
+    makeGroup('Database and SDKs', [
+      makePage('guides/using-firebase.mdx'),
+      makePage('guides/using-supabase.mdx'),
+    ]),
+    makeGroup('Emails', [makePage('guides/using-resend.mdx')]),
+    makeGroup('Feature flags', [makePage('guides/using-feature-flags.mdx')]),
+    makeGroup('In-app purchases', [makePage('guides/in-app-purchases.mdx')]),
+    makeGroup('Push notifications', [makePage('guides/using-push-notifications-services.mdx')]),
+    makeGroup('Tools', [makePage('guides/using-eslint.mdx'), makePage('guides/typescript.mdx')]),
+    makeGroup('TV apps', [makePage('guides/building-for-tv.mdx')]),
+    makeGroup('Web apps', [makePage('guides/using-nextjs.mdx')]),
+  ]),
   makeSection(
     'More',
     [
@@ -349,24 +380,6 @@ export const general = [
         makePage('guides/local-first.mdx'),
         makePage('guides/keyboard-handling.mdx'),
         makePage('guides/expo-ui-swift-ui.mdx'),
-      ]),
-      makeSection('Integrations', [
-        makePage('guides/using-analytics.mdx'),
-        makePage('guides/facebook-authentication.mdx'),
-        makePage('guides/using-supabase.mdx'),
-        makePage('guides/using-firebase.mdx'),
-        makePage('guides/google-authentication.mdx'),
-        makePage('guides/using-eslint.mdx'),
-        makePage('guides/using-nextjs.mdx'),
-        makePage('guides/using-logrocket.mdx'),
-        makePage('guides/using-sentry.mdx'),
-        makePage('guides/using-bugsnag.mdx'),
-        makePage('guides/using-vexo.mdx'),
-        makePage('guides/building-for-tv.mdx'),
-        makePage('guides/typescript.mdx'),
-        makePage('guides/in-app-purchases.mdx'),
-        makePage('guides/using-push-notifications-services.mdx'),
-        makePage('guides/using-feature-flags.mdx'),
       ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),
@@ -392,6 +405,7 @@ export const eas = [
     [
       makePage('eas/index.mdx'),
       makePage('eas/json.mdx'),
+      makePage('eas/cli.mdx'),
       makePage('eas/environment-variables.mdx'),
     ],
     {
@@ -467,6 +481,7 @@ export const eas = [
         makePage('build-reference/infrastructure.mdx'),
         makePage('build-reference/app-extensions.mdx'),
         makePage('build-reference/easignore.mdx'),
+        makePage('build-reference/npx-testflight.mdx'),
         makePage('build-reference/limitations.mdx'),
       ],
       { expanded: false }
@@ -684,6 +699,7 @@ const versionsReference = VERSIONS.reduce(
           makePage('more/expo-cli.mdx'),
           makePage('more/create-expo.mdx'),
           makePage('more/qr-codes.mdx'),
+          makePage('more/release-statuses.mdx'),
           makePage('more/glossary-of-terms.mdx'),
         ],
         {

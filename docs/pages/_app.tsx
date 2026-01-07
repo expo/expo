@@ -43,7 +43,7 @@ Sentry.init({
     /https:\/\/expo\.nodejs\.cn/,
   ],
   integrations: [Sentry.browserTracingIntegration(), Sentry.extraErrorDataIntegration()],
-  tracesSampleRate: 0.0001,
+  tracesSampleRate: 0.00001,
   replaysSessionSampleRate: 0.000005,
   replaysOnErrorSampleRate: 0.002,
 });

@@ -9,14 +9,12 @@
 #import <React/RCTKeyCommands.h>
 
 #import <EXDevLauncher/EXDevLauncherController.h>
-#import <EXDevLauncher/EXDevLauncherRCTBridge.h>
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
 #import <EXDevLauncher/EXDevLauncherRCTDevSettings.h>
 #import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
 #import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
 
-#import <EXDevLauncher/EXDevLauncherReactNativeFactory.h>
-#import <EXDevMenu/DevClientNoOpLoadingView.h>
+
 #import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
@@ -53,9 +51,9 @@
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong, nullable) EXDevLauncherNetworkInterceptor *networkInterceptor;
-@property (nonatomic, strong) EXDevLauncherReactNativeFactory *reactNativeFactory;
 @property (nonatomic, strong) DevLauncherViewController *devLauncherViewController;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
+@property (nonatomic, strong) DevLauncherDevMenuDelegate *devMenuDelegate;
 
 @end
 
@@ -83,7 +81,8 @@
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
     self.dependencyProvider = [RCTAppDependencyProvider new];
-    self.reactNativeFactory = [[EXDevLauncherReactNativeFactory alloc] initWithDelegate:self releaseLevel:[self getReactNativeReleaseLevel]];
+    self.devMenuDelegate = [[DevLauncherDevMenuDelegate alloc] initWithController:self];
+    [[DevMenuManager shared] setDelegate:self.devMenuDelegate];
   }
   return self;
 }
@@ -100,6 +99,7 @@
   return [_recentlyOpenedAppsRegistry clearRegistry];
 }
 
+#if !TARGET_OS_OSX
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
 {
   NSMutableDictionary *launchOptions = [self.launchOptions ?: @{} mutableCopy];
@@ -125,6 +125,20 @@
 
   return launchOptions;
 }
+#else
+- (NSDictionary *)getLaunchOptions
+{
+  NSMutableDictionary *launchOptions = [self.launchOptions ?: @{} mutableCopy];
+  NSURL *deepLink = [self.pendingDeepLinkRegistry consumePendingDeepLink];
+
+  if (deepLink) {
+    // Passes pending deep link to initialURL if any
+    launchOptions[NSApplicationLaunchUserNotificationKey] = deepLink;
+  }
+
+  return launchOptions;
+}
+#endif
 
 - (EXManifestsManifest *)appManifest
 {
@@ -200,15 +214,13 @@
 
   self.networkInterceptor = nil;
 
+#if !TARGET_OS_OSX
   [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
+#endif
 
-  [self _removeInitModuleObserver];
   // Reset app react host
   [self.delegate destroyReactInstance];
 
-#if RCT_DEV
-  [self _addInitModuleObserver];
-#endif
   if (_devLauncherViewController != nil) {
     [_devLauncherViewController resetHostingController];
   }
@@ -253,12 +265,6 @@
   }
 
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
-
-  // cold boot -- need to initialize the dev launcher app RN app to handle the link
-  if (_reactNativeFactory.rootViewFactory.reactHost == nil) {
-    [self navigateToLauncher];
-  }
-
   return true;
 }
 
@@ -451,6 +457,7 @@
     self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
 #endif
 
+#if !TARGET_OS_OSX
     UIUserInterfaceStyle userInterfaceStyle = [EXDevLauncherManifestHelper exportManifestUserInterfaceStyle:manifest.userInterfaceStyle];
     [self _applyUserInterfaceStyle:userInterfaceStyle];
 
@@ -461,15 +468,16 @@
     if (userInterfaceStyle != UIUserInterfaceStyleUnspecified) {
       UITraitCollection.currentTraitCollection = [self.window.rootViewController.traitCollection copy];
     }
-
-    [self _addInitModuleObserver];
+#endif
 
     [self.delegate devLauncherController:self didStartWithSuccess:YES];
 
     [self setDevMenuAppBridge];
 
     if (backgroundColor) {
+#if !TARGET_OS_OSX
       self.window.rootViewController.view.backgroundColor = backgroundColor;
+#endif
       self.window.backgroundColor = backgroundColor;
     }
   });
@@ -484,6 +492,7 @@
   return [_appBridge isValid];
 }
 
+#if !TARGET_OS_OSX
 /**
  * Temporary `expo-splash-screen` fix.
  *
@@ -514,29 +523,7 @@
   // change RN appearance
   RCTOverrideAppearancePreference(colorSchema);
 }
-
-- (void)_addInitModuleObserver {
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitializeModule:) name:RCTDidInitializeModuleNotification object:nil];
-}
-
-- (void)_removeInitModuleObserver {
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTDidInitializeModuleNotification object:nil];
-}
-
-- (void)didInitializeModule:(NSNotification *)note {
-  id<RCTBridgeModule> module = note.userInfo[@"module"];
-  if ([module isKindOfClass:[RCTDevMenu class]]) {
-    // RCTDevMenu registers its global keyboard commands at init.
-    // To avoid clashes with keyboard commands registered by expo-dev-client, we unregister some of them
-    // and this needs to happen after the module has been initialized.
-    // RCTDevMenu registers its commands here: https://github.com/facebook/react-native/blob/f3e8ea9c2910b33db17001e98b96720b07dce0b3/React/CoreModules/RCTDevMenu.mm#L130-L135
-    // expo-dev-menu registers its commands here: https://github.com/expo/expo/blob/6da15324ff0b4a9cb24055e9815b8aa11f0ac3af/packages/expo-dev-menu/ios/Interceptors/DevMenuKeyCommandsInterceptor.swift#L27-L29
-    [[RCTKeyCommands sharedInstance] unregisterKeyCommandWithInput:@"d"
-                                                     modifierFlags:UIKeyModifierCommand];
-    [[RCTKeyCommands sharedInstance] unregisterKeyCommandWithInput:@"r"
-                                                    modifierFlags:UIKeyModifierCommand];
-  }
-}
+#endif
 
 -(NSDictionary *)getBuildInfo
 {
@@ -602,27 +589,11 @@
   return appVersion;
 }
 
--(RCTReleaseLevel)getReactNativeReleaseLevel
-{
-//  @TODO: Read this value from the main react-native factory instance on 0.82
-  NSString *releaseLevelString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ReactNativeReleaseLevel"];
-  RCTReleaseLevel releaseLevel = Stable;
-  if ([releaseLevelString isKindOfClass:[NSString class]]) {
-    NSString *lower = [releaseLevelString lowercaseString];
-    if ([lower isEqualToString:@"canary"]) {
-      releaseLevel = Canary;
-    } else if ([lower isEqualToString:@"experimental"]) {
-      releaseLevel = Experimental;
-    } else if ([lower isEqualToString:@"stable"]) {
-      releaseLevel = Stable;
-    }
-  }
-
-  return releaseLevel;
-}
-
 -(void)copyToClipboard:(NSString *)content {
-#if !TARGET_OS_TV
+#if TARGET_OS_OSX
+  NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+  [pasteboard setString:(content ?: @"") forType:NSPasteboardTypeString];
+#elif !TARGET_OS_TV
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   clipboard.string = (content ?: @"");
 #endif
@@ -631,20 +602,20 @@
 - (void)setDevMenuAppBridge
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  manager.currentBridge = self.appBridge.parentBridge;
+  [manager updateCurrentBridge:self.appBridge];
 
   if (self.manifest != nil) {
-    manager.currentManifest = self.manifest;
-    manager.currentManifestURL = self.manifestURL;
+    [manager updateCurrentManifest:self.manifest manifestURL:self.manifestURL];
+  } else {
+    [manager updateCurrentManifest:nil manifestURL:nil];
   }
 }
 
 - (void)invalidateDevMenuApp
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  manager.currentBridge = nil;
-  manager.currentManifest = nil;
-  manager.currentManifestURL = nil;
+  [manager updateCurrentBridge:nil];
+  [manager updateCurrentManifest:nil manifestURL:nil];
 }
 
 -(NSDictionary *)getUpdatesConfig: (nullable NSDictionary *) constants

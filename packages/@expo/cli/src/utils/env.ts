@@ -171,11 +171,6 @@ class Env {
     return boolish('EXPO_USE_STICKY_RESOLVER', false);
   }
 
-  /** Enable the unstable fast resolver for Metro. */
-  get EXPO_USE_FAST_RESOLVER() {
-    return boolish('EXPO_USE_FAST_RESOLVER', false);
-  }
-
   /** Disable Environment Variable injection in client bundles. */
   get EXPO_NO_CLIENT_ENV_VARS(): boolean {
     return boolish('EXPO_NO_CLIENT_ENV_VARS', false);

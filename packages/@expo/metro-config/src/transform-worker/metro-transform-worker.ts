@@ -33,7 +33,6 @@ import type {
   JsTransformOptions,
   Type,
 } from '@expo/metro/metro-transform-worker';
-import getMinifier from '@expo/metro/metro-transform-worker/utils/getMinifier';
 import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
@@ -50,6 +49,7 @@ import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
 import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
+import { getMinifier, resolveMinifier } from './utils/getMinifier';
 
 export { JsTransformOptions };
 
@@ -74,6 +74,7 @@ interface JSFile extends BaseFile {
   readonly reactClientReference?: string;
   readonly expoDomComponentReference?: string;
   readonly hasCjsExports?: boolean;
+  readonly performConstantFolding?: boolean;
 }
 
 interface JSONFile extends BaseFile {
@@ -205,6 +206,7 @@ export function applyImportSupport<TFile extends t.File>(
     importDefault,
     importAll,
     collectLocations,
+    performConstantFolding,
   }: {
     filename: string;
 
@@ -218,6 +220,7 @@ export function applyImportSupport<TFile extends t.File>(
     importDefault: string;
     importAll: string;
     collectLocations?: boolean;
+    performConstantFolding?: boolean;
   }
 ): { ast: TFile; metadata?: any } {
   // Perform the import-export transform (in case it's still needed), then
@@ -243,7 +246,7 @@ export function applyImportSupport<TFile extends t.File>(
     const liveBindings = options.customTransformOptions?.liveBindings !== 'false';
     plugins.push([
       liveBindings ? importExportLiveBindingsPlugin : importExportPlugin,
-      { ...babelPluginOpts },
+      { ...babelPluginOpts, performConstantFolding },
     ]);
   }
 
@@ -367,18 +370,21 @@ async function transformJS(
 
   const unstable_renameRequire = config.unstable_renameRequire;
 
+  // NOTE(@hassankhan): Constant folding can be an expensive/slow operation, so we limit it to
+  // production builds, or files that have specifically seen a change in their exports
+  if (!options.dev || file.performConstantFolding) {
+    ast = performConstantFolding(ast, { filename: file.filename });
+  }
+
   // Disable all Metro single-file optimizations when full-graph optimization will be used.
   if (!optimize) {
     ast = applyImportSupport(ast, {
       filename: file.filename,
+      performConstantFolding: Boolean(file.performConstantFolding),
       options,
       importDefault,
       importAll,
     }).ast;
-  }
-
-  if (!options.dev) {
-    ast = performConstantFolding(ast, { filename: file.filename });
   }
 
   let dependencyMapName: string = '';
@@ -642,6 +648,7 @@ async function transformJSWithBabel(
     reactServerReference: transformResult.metadata?.reactServerReference,
     reactClientReference: transformResult.metadata?.reactClientReference,
     expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
+    performConstantFolding: transformResult.metadata?.performConstantFolding,
   };
 
   return await transformJS(jsFile, context);
@@ -780,15 +787,13 @@ export function getCacheKey(config: JsTransformerConfig): string {
     expo_customTransformerPath: _customTransformerPath,
     babelTransformerPath,
     minifierPath,
-    // Pull out of the cache key to prevent accidental cache invalidation.
-    asyncRequireModulePath,
     ...remainingConfig
   } = config;
 
   // TODO(@kitten): We can now tie this into `@expo/metro`, which could also simply export a static version export
   const filesKey = getMetroCacheKey([
     require.resolve(babelTransformerPath),
-    require.resolve(minifierPath),
+    resolveMinifier(minifierPath),
     require.resolve('@expo/metro/metro-transform-worker/utils/getMinifier'),
     require.resolve('./collect-dependencies'),
     require.resolve('./asset-transformer'),
@@ -842,10 +847,7 @@ const disabledDependencyTransformer: DependencyTransformer = {
   transformIllegalDynamicRequire: () => {},
 };
 
-export function collectDependenciesForShaking(
-  ast: ParseResult,
-  options: CollectDependenciesOptions
-) {
+export function collectDependenciesForShaking(ast: t.File, options: CollectDependenciesOptions) {
   const collectDependenciesOptions = {
     ...options,
 

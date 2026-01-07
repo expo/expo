@@ -1,10 +1,14 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package expo.modules.ui
 
 import android.content.Context
 import android.graphics.Color
-import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -14,15 +18,15 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.views.AutoSizingComposable
-import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.Direction
 import expo.modules.kotlin.views.ComposableScope
-import java.util.EnumSet
+import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.ExpoComposeView
 
 enum class ProgressVariant(val value: String) : Enumerable {
   CIRCULAR("circular"),
-  LINEAR("linear")
+  LINEAR("linear"),
+  CIRCULAR_WAVY("circularWavy"),
+  LINEAR_WAVY("linearWavy")
 }
 
 class ProgressColors : Record {
@@ -48,43 +52,79 @@ class ProgressView(context: Context, appContext: AppContext) :
     val (progress) = props.progress
     val (color) = props.color
     val (colors) = props.elementColors
-    DynamicTheme {
-      when (variant) {
-        ProgressVariant.LINEAR ->
-          AutoSizingComposable(shadowNodeProxy, axis = EnumSet.of(Direction.VERTICAL)) {
-            val composeColor = color.composeOrNull ?: ProgressIndicatorDefaults.linearColor
-            val trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.linearTrackColor
-            if (progress != null) {
-              LinearProgressIndicator(
-                progress = { progress },
-                color = composeColor,
-                trackColor = trackColor,
-                drawStopIndicator = {},
-                modifier = Modifier.fromExpoModifiers(props.modifiers.value)
-              )
-            } else {
-              LinearProgressIndicator(color = composeColor, trackColor = trackColor)
-            }
+
+    when (variant) {
+      ProgressVariant.LINEAR -> {
+          val composeColor = color.composeOrNull ?: ProgressIndicatorDefaults.linearColor
+          val trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.linearTrackColor
+          if (progress != null) {
+            LinearProgressIndicator(
+              progress = { progress },
+              color = composeColor,
+              trackColor = trackColor,
+              drawStopIndicator = {},
+              modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
+            )
+          } else {
+            LinearProgressIndicator(
+              color = composeColor,
+              trackColor = trackColor,
+              modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+            )
           }
-        ProgressVariant.CIRCULAR ->
-          AutoSizingComposable(shadowNodeProxy) {
-            val composeColor = color.composeOrNull ?: ProgressIndicatorDefaults.circularColor
-            if (progress != null) {
-              CircularProgressIndicator(
-                progress = { progress },
-                color = composeColor,
-                trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularDeterminateTrackColor,
-                modifier = Modifier.fromExpoModifiers(props.modifiers.value)
-              )
-            } else {
-              CircularProgressIndicator(
-                color = composeColor,
-                trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularIndeterminateTrackColor,
-                modifier = Modifier.fromExpoModifiers(props.modifiers.value)
-              )
-            }
+        }
+      ProgressVariant.CIRCULAR -> {
+          val composeColor = color.composeOrNull ?: ProgressIndicatorDefaults.circularColor
+          if (progress != null) {
+            CircularProgressIndicator(
+              progress = { progress },
+              color = composeColor,
+              trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularDeterminateTrackColor,
+              modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
+            )
+          } else {
+            CircularProgressIndicator(
+              color = composeColor,
+              trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularIndeterminateTrackColor,
+              modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
+            )
           }
-      }
+        }
+      ProgressVariant.LINEAR_WAVY -> {
+          val composeColor = color.composeOrNull ?: ProgressIndicatorDefaults.linearColor
+          val trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.linearTrackColor
+          if (progress != null) {
+            LinearWavyProgressIndicator(
+              progress = { progress },
+              color = composeColor,
+              trackColor = trackColor,
+              modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+            )
+          } else {
+            LinearWavyProgressIndicator(
+              color = composeColor,
+              trackColor = trackColor,
+              modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+            )
+          }
+        }
+      ProgressVariant.CIRCULAR_WAVY -> {
+          val composeColor = color.composeOrNull ?: ProgressIndicatorDefaults.circularColor
+          if (progress != null) {
+            CircularWavyProgressIndicator(
+              progress = { progress },
+              color = composeColor,
+              trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularDeterminateTrackColor,
+              modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+            )
+          } else {
+            CircularWavyProgressIndicator(
+              color = composeColor,
+              trackColor = colors.trackColor.composeOrNull ?: ProgressIndicatorDefaults.circularDeterminateTrackColor,
+              modifier = Modifier.fromExpoModifiers(props.modifiers.value)
+            )
+          }
+        }
     }
   }
 }

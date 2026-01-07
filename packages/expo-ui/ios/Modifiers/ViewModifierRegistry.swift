@@ -16,34 +16,22 @@ internal struct ListSectionSpacingModifier: ViewModifier, Record {
   @Field var value: CGFloat = 0
 
   func body(content: Content) -> some View {
-    #if os(tvOS)
-      content
-    #else
-      if #available(iOS 17.0, *) {
-        switch spacing {
-        case .compact:
-          content.listSectionSpacing(.compact)
-        case .custom:
-          content.listSectionSpacing(value)
-        default:
-          content.listSectionSpacing(.default)
-        }
-      } else {
-        content
+#if os(tvOS)
+    content
+#else
+    if #available(iOS 17.0, *) {
+      switch spacing {
+      case .compact:
+        content.listSectionSpacing(.compact)
+      case .custom:
+        content.listSectionSpacing(value)
+      default:
+        content.listSectionSpacing(.default)
       }
-    #endif
-  }
-}
-
-internal struct BackgroundModifier: ViewModifier, Record {
-  @Field var color: Color?
-
-  func body(content: Content) -> some View {
-    if let color = color {
-      content.background(color)
     } else {
       content
     }
+#endif
   }
 }
 
@@ -105,19 +93,22 @@ internal struct PaddingModifier: ViewModifier, Record {
   @Field var trailing: CGFloat?
 
   func body(content: Content) -> some View {
-    let topValue = top ?? vertical ?? all ?? 0
-    let bottomValue = bottom ?? vertical ?? all ?? 0
-    let leadingValue = leading ?? horizontal ?? all ?? 0
-    let trailingValue = trailing ?? horizontal ?? all ?? 0
+    let hasCustomPadding = [
+      all, horizontal, vertical, top, leading, bottom, trailing
+    ].contains { $0 != nil }
 
-    content.padding(
-      EdgeInsets(
-        top: topValue,
-        leading: leadingValue,
-        bottom: bottomValue,
-        trailing: trailingValue
+    if !hasCustomPadding {
+      // Default SwiftUI padding (system spacing)
+      content.padding()
+    } else {
+      let insets = EdgeInsets(
+        top: top ?? vertical ?? all ?? 0,
+        leading: leading ?? horizontal ?? all ?? 0,
+        bottom: bottom ?? vertical ?? all ?? 0,
+        trailing: trailing ?? horizontal ?? all ?? 0
       )
-    )
+      content.padding(insets)
+    }
   }
 }
 
@@ -279,6 +270,12 @@ internal struct HiddenModifier: ViewModifier, Record {
     } else {
       content
     }
+  }
+}
+
+internal struct LabelsHiddenModifier: ViewModifier, Record {
+  func body(content: Content) -> some View {
+    content.labelsHidden()
   }
 }
 
@@ -483,6 +480,31 @@ internal struct ScrollDismissesKeyboardModifier: ViewModifier, Record {
   }
 }
 
+internal enum MenuActionDismissBehaviorMode: String, Enumerable {
+  case automatic
+  case disabled
+  case enabled
+}
+
+internal struct MenuActionDismissBehaviorModifier: ViewModifier, Record {
+  @Field var behavior: MenuActionDismissBehaviorMode = .automatic
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.4, macOS 13.3, tvOS 17.0, *) {
+      switch behavior {
+      case .automatic:
+        content.menuActionDismissBehavior(.automatic)
+      case .disabled:
+        content.menuActionDismissBehavior(.disabled)
+      case .enabled:
+        content.menuActionDismissBehavior(.enabled)
+      }
+    } else {
+      content
+    }
+  }
+}
+
 internal struct AccessibilityLabelModifier: ViewModifier, Record {
   @Field var label: String?
 
@@ -641,7 +663,6 @@ internal struct AnyViewModifier: ViewModifier {
   }
 }
 
-
 internal enum AnimationType: String, Enumerable {
   case easeInOut
   case easeIn
@@ -777,24 +798,24 @@ internal enum ScrollContentBackgroundTypes: String, Enumerable {
 
 internal struct ScrollContentBackground: ViewModifier, Record {
   @Field var visible: ScrollContentBackgroundTypes = .visible
-  
+
   func body(content: Content) -> some View {
-    #if os(tvOS)
-      content
-    #else
-      if #available(iOS 16.0, *) {
-        switch visible {
-        case .visible:
-          content.scrollContentBackground(.visible)
-        case .hidden:
-          content.scrollContentBackground(.hidden)
-        case .automatic:
-          content.scrollContentBackground(.automatic)
-        }
-      } else {
-        content
+#if os(tvOS)
+    content
+#else
+    if #available(iOS 16.0, *) {
+      switch visible {
+      case .visible:
+        content.scrollContentBackground(.visible)
+      case .hidden:
+        content.scrollContentBackground(.hidden)
+      case .automatic:
+        content.scrollContentBackground(.automatic)
       }
-    #endif
+    } else {
+      content
+    }
+#endif
   }
 }
 
@@ -810,6 +831,57 @@ internal struct ListRowBackground: ViewModifier, Record {
   }
 }
 
+internal enum ListRowSeparatorVisibility: String, Enumerable {
+  case automatic
+  case visible
+  case hidden
+
+  func toVisibility() -> Visibility {
+    switch self {
+    case .visible:
+      return .visible
+    case .hidden:
+      return .hidden
+    default:
+      return .automatic
+    }
+  }
+}
+
+internal enum VerticalEdgeOptions: String, Enumerable {
+  case all
+  case top
+  case bottom
+
+  func toVerticalEdges() -> VerticalEdge.Set {
+    switch self {
+    case .all:
+      return .all
+    case .top:
+      return .top
+    case .bottom:
+      return .bottom
+    }
+  }
+}
+
+internal struct ListRowSeparator: ViewModifier, Record {
+  @Field var visibility: ListRowSeparatorVisibility = .automatic
+  @Field var edges: VerticalEdgeOptions?
+
+  func body(content: Content) -> some View {
+#if os(tvOS)
+    content
+#else
+    if let edges {
+      content.listRowSeparator(visibility.toVisibility(), edges: edges.toVerticalEdges())
+    } else {
+      content.listRowSeparator(visibility.toVisibility())
+    }
+#endif
+  }
+}
+
 internal enum TextTruncationModeTypes: String, Enumerable {
   case head
   case middle
@@ -821,12 +893,12 @@ internal struct TextTruncationMode: ViewModifier, Record {
 
   func body(content: Content) -> some View {
     switch mode {
-      case .head:
-        content.truncationMode(.head)
-      case .middle:
-        content.truncationMode(.middle)
-      case .tail:
-        content.truncationMode(.tail)
+    case .head:
+      content.truncationMode(.head)
+    case .middle:
+      content.truncationMode(.middle)
+    case .tail:
+      content.truncationMode(.tail)
     }
   }
 }
@@ -864,21 +936,21 @@ internal struct TextCase: ViewModifier, Record {
   @Field var value: TextCaseTypes = .lowercase
 
   func body(content: Content) -> some View {
-     switch value {
-      case .lowercase:
-        content.textCase(.lowercase)
-      case .uppercase:
-        content.textCase(.uppercase)
-      }
+    switch value {
+    case .lowercase:
+      content.textCase(.lowercase)
+    case .uppercase:
+      content.textCase(.uppercase)
+    }
   }
 }
 
 internal enum TextLinePattern: String, Enumerable {
-    case solid
-    case dash
-    case dot
-    case dashDot
-    case dashDotDot
+  case solid
+  case dash
+  case dot
+  case dashDot
+  case dashDotDot
 }
 
 internal struct TextUnderLine: ViewModifier, Record {
@@ -889,19 +961,19 @@ internal struct TextUnderLine: ViewModifier, Record {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
       switch pattern {
-        case .solid:  
-          content.underline(isActive, pattern: .solid, color: color)
-        case .dash:  
-          content.underline(isActive, pattern: .dash, color: color)
-        case .dot:  
-          content.underline(isActive, pattern: .dot, color: color)
-        case .dashDot:  
-          content.underline(isActive, pattern: .dashDot, color: color)
-        case .dashDotDot:  
-          content.underline(isActive, pattern: .dashDotDot, color: color)
-        }
-      } else {
-        content
+      case .solid:
+        content.underline(isActive, pattern: .solid, color: color)
+      case .dash:
+        content.underline(isActive, pattern: .dash, color: color)
+      case .dot:
+        content.underline(isActive, pattern: .dot, color: color)
+      case .dashDot:
+        content.underline(isActive, pattern: .dashDot, color: color)
+      case .dashDotDot:
+        content.underline(isActive, pattern: .dashDotDot, color: color)
+      }
+    } else {
+      content
     }
   }
 }
@@ -914,19 +986,19 @@ internal struct TextStrikeThrough: ViewModifier, Record {
   func body(content: Content) -> some View {
     if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
       switch pattern {
-        case .solid: 
-          content.strikethrough(isActive, pattern: .solid, color: color)
-        case .dash:
-          content.strikethrough(isActive, pattern: .dash, color: color)
-        case .dot:  
-          content.strikethrough(isActive, pattern: .dot, color: color)
-        case .dashDot: 
-          content.strikethrough(isActive, pattern: .dashDot, color: color)
-        case .dashDotDot:  
-          content.strikethrough(isActive, pattern: .dashDotDot, color: color)
-        }
-      } else {
-        content
+      case .solid:
+        content.strikethrough(isActive, pattern: .solid, color: color)
+      case .dash:
+        content.strikethrough(isActive, pattern: .dash, color: color)
+      case .dot:
+        content.strikethrough(isActive, pattern: .dot, color: color)
+      case .dashDot:
+        content.strikethrough(isActive, pattern: .dashDot, color: color)
+      case .dashDotDot:
+        content.strikethrough(isActive, pattern: .dashDotDot, color: color)
+      }
+    } else {
+      content
     }
   }
 }
@@ -942,12 +1014,12 @@ internal struct MultilineTextAlignment: ViewModifier, Record {
 
   func body(content: Content) -> some View {
     switch alignment {
-      case .center: 
-        content.multilineTextAlignment(.center)
-      case .leading: 
-        content.multilineTextAlignment(.leading)
-      case .trailing:
-        content.multilineTextAlignment(.trailing)
+    case .center:
+      content.multilineTextAlignment(.center)
+    case .leading:
+      content.multilineTextAlignment(.leading)
+    case .trailing:
+      content.multilineTextAlignment(.trailing)
     }
   }
 }
@@ -956,16 +1028,16 @@ internal struct TextSelection: ViewModifier, Record {
   @Field var value: Bool = true
 
   func body(content: Content) -> some View {
-    #if os(tvOS)
-      content
-    #else
-      switch value {
-        case true: 
-          content.textSelection(.enabled)
-        case false: 
-          content.textSelection(.disabled)
-      }
-    #endif
+#if os(tvOS)
+    content
+#else
+    switch value {
+    case true:
+      content.textSelection(.enabled)
+    case false:
+      content.textSelection(.disabled)
+    }
+#endif
   }
 }
 
@@ -992,11 +1064,11 @@ internal struct HeaderProminence: ViewModifier, Record {
   func body(content: Content) -> some View {
     if let prominence = prominence {
       switch prominence {
-        case .standard:
-          content.headerProminence(.standard)
-        case .increased:
-          content.headerProminence(.increased)
-        }
+      case .standard:
+        content.headerProminence(.standard)
+      case .increased:
+        content.headerProminence(.increased)
+      }
     } else {
       content
     }
@@ -1033,22 +1105,22 @@ internal struct BadgeProminence: ViewModifier, Record {
   @Field var badgeType: BadgeProminenceType = .standard
 
   func body(content: Content) -> some View {
-    #if os(tvOS)
-      content
-    #else
-      if #available(iOS 17.0, macOS 14.0, *) {
-        switch badgeType {
-          case .standard:         
-            content.badgeProminence(.standard)
-          case .increased:         
-            content.badgeProminence(.increased)
-          case .decreased:         
-            content.badgeProminence(.decreased)
-        }
-      } else {
-        content
+#if os(tvOS)
+    content
+#else
+    if #available(iOS 17.0, macOS 14.0, *) {
+      switch badgeType {
+      case .standard:
+        content.badgeProminence(.standard)
+      case .increased:
+        content.badgeProminence(.increased)
+      case .decreased:
+        content.badgeProminence(.decreased)
       }
-    #endif
+    } else {
+      content
+    }
+#endif
   }
 }
 
@@ -1056,15 +1128,15 @@ internal struct Badge: ViewModifier, Record {
   @Field var value: String?
 
   func body(content: Content) -> some View {
-    #if os(tvOS)
+#if os(tvOS)
+    content
+#else
+    if let value {
+      content.badge(value)
+    } else {
       content
-    #else
-      if let value {
-        content.badge(value)
-      } else {
-        content
-      }
-    #endif
+    }
+#endif
   }
 }
 
@@ -1073,25 +1145,139 @@ internal struct ListSectionMargins: ViewModifier, Record {
   @Field var edges: EdgeOptions?
 
   func body(content: Content) -> some View {
-    #if os(tvOS)
-      content
-    #else
-      #if compiler(>=6.2) // Xcode 26
-        if #available(iOS 26.0, *) {
-          if let edges, let length {
-            content.listSectionMargins(edges.toEdge(), length)
-          } else if let edges {
-            content.listSectionMargins(edges.toEdge(), 0)
-          } else {
-            content
-          }
-        } else {
-          content
-        }
-      #else 
+#if compiler(>=6.2) && !os(tvOS) // Xcode 26
+    if #available(iOS 26.0, *) {
+      if let edges {
+        content.listSectionMargins(edges.toEdge(), length ?? 0)
+      } else {
         content
-      #endif
-    #endif
+      }
+    } else {
+      content
+    }
+#else
+    content
+#endif
+  }
+}
+
+internal enum AxisOptions: String, Enumerable {
+  case horizontal
+  case vertical
+}
+
+internal struct GridCellUnsizedAxes: ViewModifier, Record {
+  @Field var axes: AxisOptions?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      if let axes {
+        switch axes {
+        case .horizontal:
+          content.gridCellUnsizedAxes(.horizontal)
+        case .vertical:
+          content.gridCellUnsizedAxes(.vertical)
+        }
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
+internal struct GridCellColumns: ViewModifier, Record {
+  @Field var count: Int?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      if let count {
+        content.gridCellColumns(count)
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
+internal enum GridColumnAlignmentType: String, Enumerable {
+  case leading
+  case center
+  case trailing
+
+  var alignment: HorizontalAlignment {
+    switch self {
+    case .center: return .center
+    case .leading: return .leading
+    case .trailing: return .trailing
+    }
+  }
+}
+
+internal struct GridColumnAlignment: ViewModifier, Record {
+  @Field var alignment: GridColumnAlignmentType?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      if let alignment {
+        content.gridColumnAlignment(alignment.alignment)
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
+internal enum UnitPointOptions: String, Enumerable {
+  case zero
+  case topLeading
+  case top
+  case topTrailing
+  case leading
+  case center
+  case trailing
+  case bottomLeading
+  case bottom
+  case bottomTrailing
+
+  var toUnitPoint: UnitPoint {
+    switch self {
+    case .zero: return .zero
+    case .topLeading: return .topLeading
+    case .top: return .top
+    case .topTrailing: return .topTrailing
+    case .leading: return .leading
+    case .center: return .center
+    case .trailing: return .trailing
+    case .bottomLeading: return .bottomLeading
+    case .bottom: return .bottom
+    case .bottomTrailing: return .bottomTrailing
+    }
+  }
+}
+
+internal struct GridCellAnchor: ViewModifier, Record {
+  @Field var points: UnitPoint?
+  @Field var type: String?
+  @Field var anchor: UnitPointOptions?
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
+      if let points {
+        content.gridCellAnchor(points)
+      } else if type == "preset", let anchor {
+        content.gridCellAnchor(anchor.toUnitPoint)
+      } else {
+        content
+      }
+    } else {
+      content
+    }
   }
 }
 
@@ -1168,14 +1354,6 @@ internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
   }
 }
 
-internal struct ContainerShapeModifier: ViewModifier, Record {
-  @Field var cornerRadius: CGFloat = 0
-
-  func body(content: Content) -> some View {
-    content.containerShape(.rect(cornerRadius: cornerRadius))
-  }
-}
-
 internal enum ButtonStyle: String, Enumerable {
   case automatic
   case bordered
@@ -1203,21 +1381,21 @@ internal struct ButtonStyleModifier: ViewModifier, Record {
       }
     case .glass:
       if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
-        #if compiler(>=6.2) // Xcode 26
+#if compiler(>=6.2) // Xcode 26
         content.buttonStyle(.glass)
-        #else
+#else
         content.buttonStyle(.automatic)
-        #endif
+#endif
       } else {
         content.buttonStyle(.automatic)
       }
     case .glassProminent:
       if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
-        #if compiler(>=6.2) // Xcode 26
+#if compiler(>=6.2) // Xcode 26
         content.buttonStyle(.glassProminent)
-        #else
+#else
         content.buttonStyle(.automatic)
-        #endif
+#endif
       } else {
         content.buttonStyle(.automatic)
       }
@@ -1225,6 +1403,31 @@ internal struct ButtonStyleModifier: ViewModifier, Record {
       content.buttonStyle(.plain)
     default:
       content.buttonStyle(.automatic)
+    }
+  }
+}
+
+internal enum TextFieldStyle: String, Enumerable {
+  case automatic
+  case plain
+  case roundedBorder
+}
+
+internal struct TextFieldStyleModifier: ViewModifier, Record {
+  @Field var style: TextFieldStyle = .automatic
+
+  func body(content: Content) -> some View {
+    switch style {
+    case .plain:
+      content.textFieldStyle(.plain)
+    case .roundedBorder:
+#if os(iOS)
+      content.textFieldStyle(.roundedBorder)
+#else
+      content.textFieldStyle(.automatic)
+#endif
+    default:
+      content.textFieldStyle(.automatic)
     }
   }
 }
@@ -1290,6 +1493,10 @@ extension ViewModifierRegistry {
       return try HiddenModifier(from: params, appContext: appContext)
     }
 
+    register("labelsHidden") { params, appContext, _ in
+      return try LabelsHiddenModifier(from: params, appContext: appContext)
+    }
+
     register("disabled") { params, appContext, _ in
       return try DisabledModifier(from: params, appContext: appContext)
     }
@@ -1344,6 +1551,10 @@ extension ViewModifierRegistry {
 
     register("onDisappear") { params, appContext, eventDispatcher in
       return try OnDisappearModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
+    register("refreshable") { params, appContext, eventDispatcher in
+      return try RefreshableModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
     register("hueRotation") { params, appContext, _ in
@@ -1418,6 +1629,22 @@ extension ViewModifierRegistry {
       return try ButtonStyleModifier(from: params, appContext: appContext)
     }
 
+    register("toggleStyle") { params, appContext, _ in
+      return try ToggleStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("controlSize") { params, appContext, _ in
+      return try ControlSizeModifier(from: params, appContext: appContext)
+    }
+
+    register("labelStyle") { params, appContext, _ in
+      return try LabelStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("textFieldStyle") { params, appContext, _ in
+      return try TextFieldStyleModifier(from: params, appContext: appContext)
+    }
+
     register("scrollContentBackground") { params, appContext, _ in
       return try ScrollContentBackground(from: params, appContext: appContext)
     }
@@ -1425,6 +1652,11 @@ extension ViewModifierRegistry {
     register("listRowBackground") { params, appContext, _ in
       return try ListRowBackground(from: params, appContext: appContext)
     }
+
+    register("listRowSeparator") { params, appContext, _ in
+      return try ListRowSeparator(from: params, appContext: appContext)
+    }
+
     register("truncationMode") { params, appContext, _ in
       return try TextTruncationMode(from: params, appContext: appContext)
     }
@@ -1481,12 +1713,48 @@ extension ViewModifierRegistry {
       return try ScrollDismissesKeyboardModifier(from: params, appContext: appContext)
     }
 
+    register("menuActionDismissBehavior") { params, appContext, _ in
+      return try MenuActionDismissBehaviorModifier(from: params, appContext: appContext)
+    }
+
     register("headerProminence") { params, appContext, _ in
       return try HeaderProminence(from: params, appContext: appContext)
     }
 
     register("font") { params, appContext, _ in
       return try FontModifier(from: params, appContext: appContext)
+    }
+
+    register("gridCellUnsizedAxes") { params, appContext, _ in
+      return try GridCellUnsizedAxes(from: params, appContext: appContext)
+    }
+
+    register("gridCellColumns") { params, appContext, _ in
+      return try GridCellColumns(from: params, appContext: appContext)
+    }
+
+    register("gridColumnAlignment") { params, appContext, _ in
+      return try GridColumnAlignment(from: params, appContext: appContext)
+    }
+
+    register("gridCellAnchor") { params, appContext, _ in
+      return try GridCellAnchor(from: params, appContext: appContext)
+    }
+
+    register("tag") { params, appContext, _ in
+      return try TagModifier(from: params, appContext: appContext)
+    }
+
+    register("pickerStyle") { params, appContext, _ in
+      return try PickerStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("submitLabel") { params, appContext, _ in
+      return try SubmitLabelModifier(from: params, appContext: appContext)
+    }
+
+    register("datePickerStyle") { params, appContext, _ in
+      return try DatePickerStyleModifier(from: params, appContext: appContext)
     }
   }
 }

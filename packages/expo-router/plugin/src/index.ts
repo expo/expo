@@ -1,5 +1,5 @@
 import { validate } from '@expo/schema-utils';
-import { ConfigPlugin, withInfoPlist } from 'expo/config-plugins';
+import { ConfigPlugin, withInfoPlist, withPodfile } from 'expo/config-plugins';
 
 const schema = require('../options.json');
 
@@ -18,6 +18,21 @@ const withExpoHeadIos: ConfigPlugin = (config) => {
     const activityType = '$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route';
     if (!config.modResults.NSUserActivityTypes.includes(activityType)) {
       config.modResults.NSUserActivityTypes.push(activityType);
+    }
+    return config;
+  });
+};
+
+const withGammaScreens: ConfigPlugin<
+  {
+    /** Enable experimental data loader support. Requires `web.output: 'static'` to be set in app config. */
+    unstable_splitView?: boolean;
+  } | void
+> = (config, props) => {
+  const value = props?.unstable_splitView ?? false;
+  return withPodfile(config, (config) => {
+    if (!config.modResults.contents.includes('RNS_GAMMA_ENABLED')) {
+      config.modResults.contents = `ENV['RNS_GAMMA_ENABLED']='${value ? 1 : 0}'\n${config.modResults.contents}`;
     }
     return config;
   });
@@ -43,12 +58,15 @@ const withRouter: ConfigPlugin<
     unstable_useServerMiddleware?: boolean;
     /** Enable experimental data loader support. Requires `web.output: 'static'` to be set in app config. */
     unstable_useServerDataLoaders?: boolean;
+    /** Enable experimental server-side rendering. When enabled with `web.output: 'server'`, HTML is rendered at request time instead of being pre-rendered at build time. */
+    unstable_useServerRendering?: boolean;
   } | void
 > = (config, _props) => {
   const props = _props || {};
   validate(schema, props);
 
   withExpoHeadIos(config);
+  withGammaScreens(config, props);
 
   return {
     ...config,

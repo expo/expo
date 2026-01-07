@@ -1,60 +1,95 @@
 import { requireNativeView } from 'expo';
-import type { ColorValue } from 'react-native';
+import type { NativeSyntheticEvent } from 'react-native';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type PickerProps = {
+type SelectionValueType = string | number | null;
+export type PickerProps<T extends SelectionValueType = any> = {
   /**
-   * An array of options to be displayed in the picker.
+   * The name of the system image (SF Symbol).
+   * For example: 'photo', 'heart.fill', 'star.circle'
    */
-  options: string[];
+  systemImage?: SFSymbol;
   /**
-   * The index of the currently selected option.
+   * A label displayed on the picker.
    */
-  selectedIndex: number | null;
+  label?: string | React.ReactNode;
   /**
-   * A label displayed on the picker when in `'menu'` variant inside a form section on iOS.
+   * The selected option's `tag` modifier value.
    */
-  label?: string;
+  selection?: T;
   /**
    * Callback function that is called when an option is selected.
+   * Gets called with the selected `tag` value.
    */
-  onOptionSelected?: (event: { nativeEvent: { index: number; label: string } }) => void;
+  onSelectionChange?: (selection: T) => void;
+
   /**
-   * The variant of the picker, which determines its appearance and behavior.
-   * The `'inline'` variant can only be used inside sections or lists. The `'palette'` variant displays differently inside menus.
-   * > **Note**: The `wheel` variant is not available on tvOS.
-   * @default 'segmented'
+   * The content of the picker. You can use `Text` components with `tag` modifiers to display the options.
    */
-  variant?: 'wheel' | 'segmented' | 'menu' | 'inline' | 'palette';
-  /**
-   * Picker color. On iOS it only applies to the `'menu'` variant.
-   */
-  color?: ColorValue;
+  children?: React.ReactNode;
 } & CommonViewModifierProps;
 
-const PickerNativeView: React.ComponentType<PickerProps> = requireNativeView(
+type NativePickerProps = Omit<PickerProps, 'onSelectionChange'> & {
+  onSelectionChange?: (event: NativeSyntheticEvent<{ selection: SelectionValueType }>) => void;
+  children?: React.ReactNode;
+};
+
+const PickerNativeView: React.ComponentType<NativePickerProps> = requireNativeView(
   'ExpoUI',
   'PickerView'
 );
 
-type NativePickerProps = PickerProps;
+const PickerContentNativeView: React.ComponentType<{ children: React.ReactNode }> =
+  requireNativeView('ExpoUI', 'PickerContentView');
 
-function transformPickerProps(props: PickerProps): NativePickerProps {
-  const { modifiers, ...restProps } = props;
+const PickerLabelNativeView: React.ComponentType<{ children: React.ReactNode }> = requireNativeView(
+  'ExpoUI',
+  'PickerLabelView'
+);
+
+function transformPickerProps<T extends SelectionValueType>(
+  props: PickerProps<T>
+): NativePickerProps {
+  const { modifiers, onSelectionChange, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
-    variant: props.variant ?? 'segmented',
-    color: props.color,
+    onSelectionChange: onSelectionChange
+      ? ({ nativeEvent: { selection } }) => {
+          onSelectionChange(selection as T);
+        }
+      : undefined,
   };
 }
 
 /**
- * Displays a native picker component. Depending on the variant it can be a segmented button, an inline picker, a list of choices or a radio button.
+ * Displays a native picker component
+ * @example
+ * ```tsx
+ * <Picker modifiers={[pickerStyle('segmented')]}>
+ *   <Text modifiers={[tag('option1')]}>Option 1</Text>
+ *   <Text modifiers={[tag(0)]}>Option 3</Text>
+ * </Picker>
+ * ```
  */
-export function Picker(props: PickerProps) {
-  return <PickerNativeView {...transformPickerProps(props)} />;
+export function Picker<T extends SelectionValueType>(props: PickerProps<T>) {
+  const { label, children, ...restProps } = transformPickerProps(props);
+  if (typeof label === 'string') {
+    return (
+      <PickerNativeView {...restProps} label={label}>
+        <PickerContentNativeView>{children}</PickerContentNativeView>
+      </PickerNativeView>
+    );
+  } else {
+    return (
+      <PickerNativeView {...restProps}>
+        <PickerLabelNativeView>{label}</PickerLabelNativeView>
+        <PickerContentNativeView>{children}</PickerContentNativeView>
+      </PickerNativeView>
+    );
+  }
 }

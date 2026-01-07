@@ -38,8 +38,6 @@ jest.mock('../icons/withAndroidIcons', () => {
     setIconAsync() {},
   };
 });
-const NotificationsPlugin = require('../unversioned/expo-notifications/withAndroidNotifications');
-NotificationsPlugin.withNotificationIcons = jest.fn((config) => config);
 
 function getLargeConfig(): ExportedConfig {
   // A very extensive Expo Config.
@@ -61,13 +59,6 @@ function getLargeConfig(): ExportedConfig {
     backgroundColor: 'orange',
     primaryColor: '#fff000',
     // icon: './icons/icon.png',
-    notification: {
-      icon: './icons/notification-icon.png',
-      color: 'green',
-      iosDisplayInForeground: true,
-      androidMode: 'collapse',
-      androidCollapsedTitle: '#{unread_notifications} new interactions',
-    },
     androidStatusBar: {
       barStyle: 'light-content',
       backgroundColor: '#000FFF',
@@ -371,7 +362,6 @@ describe('built-in plugins', () => {
         'android/app/src/debug/AndroidManifest.xml',
         'android/app/src/debugOptimized/AndroidManifest.xml',
         'android/app/src/main/AndroidManifest.xml',
-        'android/build/reports/problems/problems-report.html',
         'android/app/src/main/java/com/bacon/todo/MainActivity.kt',
         'android/app/src/main/java/com/bacon/todo/MainApplication.kt',
         'android/app/src/main/res/drawable/ic_launcher_background.xml',

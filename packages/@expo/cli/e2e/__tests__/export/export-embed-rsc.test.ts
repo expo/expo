@@ -11,7 +11,8 @@ runExportSideEffects();
 
 jest.unmock('resolve-from');
 
-describe('export embed for RSC iOS', () => {
+// TODO(@kitten): Fails on Node 20 on Windows; skipping for now
+(process.platform === 'win32' ? describe.skip : describe)('export embed for RSC iOS', () => {
   const projectRoot = getRouterE2ERoot();
   const outputName = 'dist-export-embed-rsc';
   const outputDir = path.join(projectRoot, outputName);
@@ -57,7 +58,6 @@ describe('export embed for RSC iOS', () => {
           E2E_ROUTER_JS_ENGINE: 'hermes',
 
           E2E_RSC_ENABLED: '1',
-          EXPO_USE_METRO_REQUIRE: '1',
           TEST_SECRET_VALUE: 'test-secret',
         },
       }

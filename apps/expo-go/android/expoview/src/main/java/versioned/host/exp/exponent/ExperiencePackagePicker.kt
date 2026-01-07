@@ -26,11 +26,9 @@ import expo.modules.easclient.EASClientModule
 import expo.modules.fetch.ExpoFetchModule
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.legacy.FileSystemLegacyModule
-import expo.modules.filesystem.legacy.FileSystemPackage
 import expo.modules.font.FontLoaderModule
 import expo.modules.font.FontUtilsModule
-import expo.modules.gl.GLObjectManagerModule
-import expo.modules.gl.GLViewModule
+import expo.modules.gl.GLModule
 import expo.modules.haptics.HapticsModule
 import expo.modules.image.ExpoImageModule
 import expo.modules.imageloader.ImageLoaderPackage
@@ -38,7 +36,6 @@ import expo.modules.imagemanipulator.ImageManipulatorModule
 import expo.modules.imagepicker.ImagePickerModule
 import expo.modules.intentlauncher.IntentLauncherModule
 import expo.modules.keepawake.KeepAwakeModule
-import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.lineargradient.LinearGradientModule
@@ -92,10 +89,8 @@ object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
     ConstantsPackage(),
-    FileSystemPackage(),
     ExpoLinkingPackage(),
     ImageLoaderPackage(),
-    KeepAwakePackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
     SplashScreenPackage(),
@@ -163,8 +158,7 @@ object ExperiencePackagePicker : ModulesProvider {
     FileSystemLegacyModule::class.java to null,
     FontLoaderModule::class.java to null,
     PrintModule::class.java to null,
-    GLViewModule::class.java to null,
-    GLObjectManagerModule::class.java to null,
+    GLModule::class.java to null,
     HapticsModule::class.java to null,
     ImagePickerModule::class.java to null,
     ImageManipulatorModule::class.java to null,

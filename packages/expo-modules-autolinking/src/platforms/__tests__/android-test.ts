@@ -1,17 +1,13 @@
-import { glob } from 'glob';
 import { vol } from 'memfs';
 import * as path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
-import { registerGlobMock } from '../../__tests__/mockHelpers';
 import {
   convertPackageToProjectName,
   convertPackageWithGradleToProjectName,
   resolveExtraBuildDependenciesAsync,
   resolveModuleAsync,
 } from '../android/android';
-
-jest.mock('glob');
 
 afterEach(() => {
   vol.reset();
@@ -22,8 +18,8 @@ describe(resolveModuleAsync, () => {
   it('should not resolve module without `android` folder ', async () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);
-
     const result = await resolveModuleAsync(name, {
+      name,
       path: pkgDir,
       version: '0.0.1',
       config: new ExpoModuleConfig({
@@ -36,8 +32,8 @@ describe(resolveModuleAsync, () => {
   it('should resolve android/build.gradle', async () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);
-
     const result = await resolveModuleAsync(name, {
+      name,
       path: pkgDir,
       version: '0.0.1',
       config: new ExpoModuleConfig({
@@ -52,6 +48,7 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          services: [],
           packages: [],
         },
       ],
@@ -61,10 +58,8 @@ describe(resolveModuleAsync, () => {
   it('should contain coreFeature field', async () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);
-
-    registerGlobMock(glob, ['android/build.gradle'], pkgDir);
-
     const result = await resolveModuleAsync(name, {
+      name,
       path: pkgDir,
       version: '0.0.1',
       config: new ExpoModuleConfig({
@@ -80,6 +75,7 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          services: [],
           packages: [],
         },
       ],
@@ -90,10 +86,8 @@ describe(resolveModuleAsync, () => {
   it('should resolve android/build.gradle.kts', async () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);
-
-    registerGlobMock(glob, ['android/build.gradle.kts'], pkgDir);
-
     const result = await resolveModuleAsync(name, {
+      name,
       path: pkgDir,
       version: '0.0.1',
       config: new ExpoModuleConfig({ platforms: ['android'], android: { path: 'android' } }),
@@ -105,6 +99,7 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          services: [],
           packages: [],
         },
       ],
@@ -114,14 +109,8 @@ describe(resolveModuleAsync, () => {
   it('should resolve multiple gradle files', async () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);
-
-    registerGlobMock(
-      glob,
-      ['android/build.gradle', 'subproject/build.gradle', 'kotlinSubProject/build.gradle.kts'],
-      pkgDir
-    );
-
     const result = await resolveModuleAsync(name, {
+      name,
       path: pkgDir,
       version: '0.0.1',
       config: new ExpoModuleConfig({
@@ -148,18 +137,21 @@ describe(resolveModuleAsync, () => {
           name: 'react-native-third-party',
           sourceDir: 'node_modules/react-native-third-party/android',
           modules: [],
+          services: [],
           packages: [],
         },
         {
           name: 'react-native-third-party$subproject',
           sourceDir: 'node_modules/react-native-third-party/subproject',
           modules: [],
+          services: [],
           packages: [],
         },
         {
           name: 'react-native-third-party$kotlinSubProject',
           sourceDir: 'node_modules/react-native-third-party/kotlinSubProject',
           modules: [],
+          services: [],
           packages: [],
         },
       ],

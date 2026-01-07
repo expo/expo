@@ -12,8 +12,8 @@ exports.convertPackageToProjectName = convertPackageToProjectName;
 exports.convertPackageWithGradleToProjectName = convertPackageWithGradleToProjectName;
 exports.searchGradlePropertyFirst = searchGradlePropertyFirst;
 const fs_1 = __importDefault(require("fs"));
-const glob_1 = require("glob");
 const path_1 = __importDefault(require("path"));
+const utils_1 = require("../../utils");
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
 function getConfiguration(options) {
@@ -67,18 +67,18 @@ async function resolveModuleAsync(packageName, revision) {
             ? path_1.default.join(revision.path, project.shouldUsePublicationScriptPath)
             : undefined;
         const packages = new Set();
-        const files = (await (0, glob_1.glob)('**/*Package.{java,kt}', {
-            cwd: projectPath,
-        })) || [];
-        for (const file of files) {
-            const fileContent = await fs_1.default.promises.readFile(path_1.default.join(projectPath, file), 'utf8');
+        for await (const file of (0, utils_1.scanFilesRecursively)(projectPath)) {
+            if (!file.name.endsWith('Package.java') && !file.name.endsWith('Package.kt')) {
+                continue;
+            }
+            const fileContent = await fs_1.default.promises.readFile(file.path, 'utf8');
             // Very naive check to skip non-expo packages
             if (!/\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent)) {
                 continue;
             }
             const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);
             if (classPathMatches) {
-                const basename = path_1.default.basename(file, path_1.default.extname(file));
+                const basename = path_1.default.basename(file.name, path_1.default.extname(file.name));
                 packages.add(`${classPathMatches[1]}.${basename}`);
             }
         }
@@ -86,7 +86,8 @@ async function resolveModuleAsync(packageName, revision) {
             name: project.name,
             sourceDir: projectPath,
             modules: project.modules ?? [],
-            packages: [...packages],
+            services: project.services ?? [],
+            packages: [...packages].sort((a, b) => a.localeCompare(b)),
             ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
             ...(publication ? { publication } : {}),
             ...(aarProjects?.length > 0 ? { aarProjects } : {}),

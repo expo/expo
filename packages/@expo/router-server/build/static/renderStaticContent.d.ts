@@ -5,9 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 import '@expo/metro-runtime';
-type GetStaticContentOptions = {
+export type GetStaticContentOptions = {
     loader?: {
         data?: any;
+    };
+    request?: Request;
+    /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
+    assets?: {
+        css: string[];
+        js: string[];
     };
 };
 export declare function getStaticContent(location: URL, options?: GetStaticContentOptions): Promise<string>;

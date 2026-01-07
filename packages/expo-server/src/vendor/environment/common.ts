@@ -1,4 +1,5 @@
 import type { Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
+import type { ServerRenderModule, SsrRenderFn } from '../../rendering';
 
 function initManifestRegExp(manifest: RawManifest): Manifest {
   return {
@@ -33,13 +34,69 @@ interface EnvironmentInput {
 }
 
 export function createEnvironment(input: EnvironmentInput) {
+  // Cached manifest and SSR renderer, initialized on first request
+  let cachedManifest: Manifest | null = null;
+  let ssrRenderer: SsrRenderFn | null = null;
+
+  async function getCachedRoutesManifest(): Promise<Manifest> {
+    if (!cachedManifest) {
+      const json = await input.readJson('_expo/routes.json');
+      cachedManifest = initManifestRegExp(json as RawManifest);
+    }
+    return cachedManifest;
+  }
+
+  async function getServerRenderer(): Promise<SsrRenderFn | null> {
+    if (ssrRenderer) {
+      return ssrRenderer;
+    }
+
+    const manifest = await getCachedRoutesManifest();
+    if (manifest.rendering?.mode !== 'ssr') {
+      return null;
+    }
+
+    // If `manifest.rendering.mode === 'ssr'`, we always expect the SSR rendering module to be
+    // available
+    const ssrModule = (await input.loadModule(
+      manifest.rendering.file
+    )) as ServerRenderModule | null;
+
+    if (!ssrModule) {
+      throw new Error(`SSR module not found at: ${manifest.rendering.file}`);
+    }
+
+    const assets = manifest.assets;
+    ssrRenderer = async (request, options) => {
+      const url = new URL(request.url);
+      const location = new URL(url.pathname + url.search, url.origin);
+      return ssrModule.getStaticContent(location, {
+        loader: options?.loader,
+        request,
+        assets,
+      });
+    };
+    return ssrRenderer;
+  }
+
   return {
     async getRoutesManifest(): Promise<Manifest> {
-      const json = await input.readJson('_expo/routes.json');
-      return initManifestRegExp(json as RawManifest);
+      return getCachedRoutesManifest();
     },
 
-    async getHtml(_request: Request, route: Route): Promise<string | Response | null> {
+    async getHtml(request: Request, route: Route): Promise<string | Response | null> {
+      // SSR path: Render at runtime if SSR module is available
+      const renderer = await getServerRenderer();
+      if (renderer) {
+        try {
+          return await renderer(request);
+        } catch (error) {
+          console.error('SSR render error:', error);
+          throw error;
+        }
+      }
+
+      // SSG fallback: Read pre-rendered HTML from disk
       let html: string | null;
       if ((html = await input.readText(route.page + '.html')) != null) {
         return html;
@@ -66,10 +123,6 @@ export function createEnvironment(input: EnvironmentInput) {
         return null;
       }
       return mod;
-    },
-
-    handleRouteError(error: Error): Promise<Response> {
-      throw error;
     },
   };
 }

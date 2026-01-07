@@ -65,8 +65,11 @@ function getBabelCaller({ filename, options, }) {
         // Provide the project root for accurately reading the Expo config.
         projectRoot: options.projectRoot,
         isNodeModule,
-        // TODO(@kitten): Removed and the default; however, we set this to be always enabled to imitate the
-        // new default, in case this is used against an older version of `babel-preset-expo`
+        // TODO(@kitten): Removed and the default; The `hot` parameter is now force-enabled in Metro
+        // to align caching for `dev` with `hot` being enforced. Hence, we match this by forcing our
+        // own caller flag to `true` for `babel-preset-expo`. However, `babel-preset-expo` is still
+        // able to disable the React Refresh transform plugin for other runtimes and uses this flag
+        // to identify Metro / React Refresh runtime targets
         isHMREnabled: true,
         // Pass on the input type. Scripts shall be transformed to avoid dependencies (imports/requires),
         // for example by polyfills or Babel runtime

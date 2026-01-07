@@ -4,12 +4,25 @@ import type { ConfigT } from '@expo/metro/metro-config';
 import type { CustomResolutionContext, Resolution } from '@expo/metro/metro-resolver';
 import { vol } from 'memfs';
 import assert from 'node:assert';
+import resolveFrom from 'resolve-from';
 
 import { AutolinkingModuleResolverInput } from '../createExpoAutolinkingResolver';
 import { shouldCreateVirtualShim } from '../externals';
 import { getNodejsExtensions, withExtendedResolver } from '../withMetroMultiPlatform';
 
-const asMetroConfig = (config: Partial<ConfigT> = {}): ConfigT => config as any;
+jest.mock('resolve-from', () => {
+  const actual = jest.requireActual<typeof import('resolve-from')>('resolve-from');
+  const resolve = jest.fn(actual) as any as typeof actual;
+  resolve.silent = jest.fn(actual.silent);
+  return resolve;
+});
+
+const asMetroConfig = (config: Partial<ConfigT> = {}): ConfigT => ({
+  ...(config as any),
+  transformer: {
+    asyncRequireModulePath: 'expo/internal/async-require-module',
+  },
+});
 
 class FailedToResolveNameError extends Error {
   extraPaths: string[] = [];
@@ -96,6 +109,10 @@ function getResolveFunc() {
   const metroResolver: typeof import('@expo/metro/metro-resolver') = require('@expo/metro/metro-resolver');
   return metroResolver.resolve;
 }
+
+beforeEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe(withExtendedResolver, () => {
   function mockMinFs() {
@@ -341,13 +358,9 @@ describe(withExtendedResolver, () => {
   });
 
   it(`resolves to @expo/vector-icons on any platform`, async () => {
-    vol.fromJSON(
-      {
-        'node_modules/@react-native/assets-registry/registry.js': '',
-        'node_modules/@expo/vector-icons/index.js': '',
-      },
-      '/root/'
-    );
+    jest.mocked(resolveFrom.silent).mockImplementation((_from, moduleId) => {
+      return moduleId === '@expo/vector-icons' ? 'node_modules/@expo/vector-icons' : undefined;
+    });
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
@@ -370,13 +383,9 @@ describe(withExtendedResolver, () => {
   });
 
   it(`resolves nested imports to @expo/vector-icons on any platform`, async () => {
-    vol.fromJSON(
-      {
-        'node_modules/@react-native/assets-registry/registry.js': '',
-        'node_modules/@expo/vector-icons/index.js': '',
-      },
-      '/root/'
-    );
+    jest.mocked(resolveFrom.silent).mockImplementation((_from, moduleId) => {
+      return moduleId === '@expo/vector-icons' ? 'node_modules/@expo/vector-icons' : undefined;
+    });
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
@@ -399,12 +408,7 @@ describe(withExtendedResolver, () => {
   });
 
   it(`does not alias react-native-vector-icons if @expo/vector-icons is not installed`, async () => {
-    vol.fromJSON(
-      {
-        'node_modules/@react-native/assets-registry/registry.js': '',
-      },
-      '/root/'
-    );
+    jest.mocked(resolveFrom.silent).mockReturnValue(undefined);
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
@@ -732,6 +736,67 @@ describe(withExtendedResolver, () => {
     );
   });
 
+  it('aliases assets registry to virtual shim', async () => {
+    vol.fromJSON(
+      {
+        'node_modules/@react-native/assets-registry/registry.js': '',
+        mock: '',
+      },
+      '/'
+    );
+
+    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+      tsconfig: {},
+      getMetroBundler: getMetroBundlerGetter(),
+    });
+
+    const result = modified.resolver.resolveRequest!(
+      getDefaultRequestContext(),
+      '@react-native/assets-registry/registry',
+      'ios'
+    );
+
+    expect(result).toEqual({
+      filePath: '\0polyfill:assets-registry',
+      type: 'sourceFile',
+    });
+  });
+
+  it('aliases async require module to resolved path', async () => {
+    // Mock path we're expecting `asyncRequireModulePath` requests to have been replaced with
+    const expectedPath = 'node_modules/expo/internal/async-require-module.js';
+
+    vol.fromJSON(
+      {
+        'node_modules/@react-native/assets-registry/registry.js': '',
+        mock: '',
+      },
+      '/'
+    );
+
+    jest.mocked(resolveFrom.silent).mockImplementation((_from, moduleId) => {
+      return moduleId === config.transformer.asyncRequireModulePath ? expectedPath : undefined;
+    });
+
+    const config = asMetroConfig({ projectRoot: '/root/' });
+    const modified = withExtendedResolver(config, {
+      tsconfig: {},
+      getMetroBundler: getMetroBundlerGetter(),
+    });
+
+    // Requesting `asyncRequireModulePath` will replace the path with a Node-resolved path
+    const result = modified.resolver.resolveRequest!(
+      getDefaultRequestContext(),
+      config.transformer.asyncRequireModulePath,
+      'ios'
+    );
+
+    expect(result).toEqual({
+      filePath: expectedPath,
+      type: 'sourceFile',
+    });
+  });
+
   describe('built-in externals', () => {
     function getModifiedConfig(props: { isExporting?: boolean } = {}) {
       return withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
@@ -977,7 +1042,7 @@ describe(withExtendedResolver, () => {
         3,
         expect.objectContaining({
           originModulePath: '/node_modules/expo/index.js',
-          nodeModulesPaths: ['/node_modules/expo'],
+          nodeModulesPaths: [],
         }),
         '@babel/runtime/helpers/interopRequireDefault',
         platform
@@ -1055,7 +1120,7 @@ describe(withExtendedResolver, () => {
         4,
         expect.objectContaining({
           originModulePath: '/node_modules/expo-router/index.js',
-          nodeModulesPaths: ['/node_modules/expo-router'],
+          nodeModulesPaths: [],
         }),
         'example',
         platform

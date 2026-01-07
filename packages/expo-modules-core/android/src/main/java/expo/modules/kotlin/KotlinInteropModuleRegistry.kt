@@ -20,7 +20,11 @@ class KotlinInteropModuleRegistry(
   legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   reactContext: WeakReference<ReactApplicationContext>
 ) {
-  val appContext = AppContext(modulesProvider, legacyModuleRegistry, reactContext)
+  val appContext = AppContext(
+    modulesProvider,
+    legacyModuleRegistry,
+    reactContext
+  )
 
   private val registry: ModuleRegistry
     get() = appContext.registry

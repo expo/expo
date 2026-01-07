@@ -24,6 +24,7 @@ public extension NotificationDelegate {
     return false
   }
   func didReceive(_ userInfo: [AnyHashable: Any], completionHandler: @escaping (UIBackgroundFetchResult) -> Void) -> Bool {
+    // false is equivalent to not handled, we then call completionHandler(.noData) below
     return false
   }
   func openSettings(_ notification: UNNotification?) {}
@@ -129,7 +130,7 @@ public class NotificationCenterManager: NSObject,
   }
 
   // MARK: - Called from NotificationsAppDelegateSubscriber
-  public func didReceiveNotification(_ userInfo: [AnyHashable: Any], completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+  public func didReceive(_ userInfo: [AnyHashable: Any], completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
     var handled = false
     for delegate in delegates {
       handled = delegate.didReceive(userInfo, completionHandler: completionHandler) || handled

@@ -37,11 +37,6 @@ class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
 
       splashScreenView?.backgroundColor = .white
       if let imageUrl = configuration?.imageUrl {
-        let homeAppRecord = EXKernel.sharedInstance().appRegistry.homeAppRecord
-        if homeAppRecord?.appManager.reactHost == nil {
-          return
-        }
-
         if previousConfiguration?.imageUrl != imageUrl ||
           previousConfiguration?.imageResizeMode != configuration?.imageResizeMode {
           imageViewContainer?.removeFromSuperview()

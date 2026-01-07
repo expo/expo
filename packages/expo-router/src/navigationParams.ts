@@ -1,10 +1,16 @@
-const INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = '__internal_expo_router_no_animation';
-const INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME =
+export const INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME = '__internal_expo_router_no_animation';
+export const INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME =
   '__internal__expo_router_is_preview_navigation';
+export const INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME =
+  '__internal_expo_router_zoom_transition_source_id';
+export const INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME =
+  '__internal_expo_router_zoom_transition_screen_id';
 
 const internalExpoRouterParamNames = [
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
 ] as const;
 
 export type InternalExpoRouterParamName = (typeof internalExpoRouterParamNames)[number];
@@ -60,6 +66,40 @@ export function getInternalExpoRouterParams(
   return expoParams;
 }
 
+export function hasParam(params: unknown, paramName: string): boolean {
+  if (!!params && typeof params === 'object') {
+    const recordParams = params as Record<string, unknown>;
+    if (recordParams[paramName] !== undefined) {
+      return true;
+    }
+    if (recordParams.params && typeof recordParams.params === 'object') {
+      return hasParam(recordParams.params, paramName);
+    }
+  }
+  return false;
+}
+
+export function removeParams(
+  params: Record<string, unknown> | object | undefined,
+  paramName: readonly string[]
+): Record<string, unknown> | object | undefined {
+  if (!params) {
+    return undefined;
+  }
+  const nestedParams =
+    'params' in params && typeof params.params === 'object' && params.params
+      ? (params.params as Record<string, unknown>)
+      : undefined;
+  const newNestedParams = nestedParams ? removeParams(nestedParams, paramName) : undefined;
+  const newParams = Object.fromEntries(
+    Object.entries(params).filter(([key]) => !paramName.includes(key) && key !== 'params')
+  );
+  if (Object.keys(newNestedParams ?? {}).length > 0) {
+    return { ...newParams, params: newNestedParams };
+  }
+  return newParams;
+}
+
 export function removeInternalExpoRouterParams(
   params: Record<string, unknown> | object
 ): Record<string, unknown> | object;
@@ -72,23 +112,5 @@ export function removeInternalExpoRouterParams(
   if (!params) {
     return undefined;
   }
-  const newNestedParams =
-    'params' in params && typeof params.params === 'object' && params.params
-      ? Object.fromEntries(
-          Object.entries(params.params).filter(
-            ([key]) => !internalExpoRouterParamNames.includes(key as InternalExpoRouterParamName)
-          )
-        )
-      : {};
-  const newParams = Object.fromEntries(
-    Object.entries(params).filter(
-      ([key]) =>
-        !internalExpoRouterParamNames.includes(key as InternalExpoRouterParamName) &&
-        key !== 'params'
-    )
-  );
-  if (Object.keys(newNestedParams).length > 0) {
-    return { ...newParams, params: newNestedParams };
-  }
-  return newParams;
+  return removeParams(params, [...internalExpoRouterParamNames, 'params']);
 }

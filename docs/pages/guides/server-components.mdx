@@ -28,7 +28,10 @@ Your project must use Expo Router and React Native new architecture (default fro
 
 To use React Server Components in your Expo app, you need to:
 
-1. Install the required RSC dependency `react-server-dom-webpack@19.0.0-rc-6230622a1a-20240610` (`react-server-dom-webpack@~19.0.0` for SDK 53 and later).
+1. Install the required RSC dependency
+
+   <Terminal cmd={['$ npx expo install react-server-dom-webpack']} />
+
 2. Ensure the entry module is `expo-router/entry` (default) in **package.json**.
 3. Enable the flag in the project app config:
 
@@ -42,7 +45,7 @@ To use React Server Components in your Expo app, you need to:
 }
 ```
 
-4. Ensure `"origin": "false"` is not set anywhere in your app config.
+4. Ensure `"origin"` is not set to a boolean value anywhere in your app config.
 5. Create an initial route **app/index.tsx**:
 
 ```tsx app/index.tsx (Client Component)
@@ -424,7 +427,7 @@ The `unstable_headers` function returns a promise that resolves to a read-only `
 
 ## Full React Server Components mode
 
-> This mode is even more experimental!
+> **important** This mode is experimental.
 
 Enabling full React Server Components support allows you to leverage even more features. In this mode, the default rendering mode for routes is server components instead of client components. It is still in development, as the Router and React Navigation need to be rewritten to support concurrency.
 
@@ -568,7 +571,7 @@ You can deploy your native React Server Components by following the server deplo
 <BoxLink
   title="Deploy native servers to EAS"
   description="Deploy and link versioned servers to your production native apps."
-  href="/router/reference/api-routes#native-deployment"
+  href="/router/web/api-routes#native-deployment"
   Icon={Cloud01Icon}
 />
 
@@ -581,7 +584,7 @@ You can deploy your native React Server Components by following the server deplo
 - DOM components cannot use React Server Functions in production yet.
 - Production deployment is limited and not recommended yet.
 - Server Rendering RSC payloads to HTML is not supported yet. This means static and server output doesn't fully work yet.
-- [`generateStaticParams`](/router/reference/static-rendering/#generatestaticparams) is only partially supported in full React Server Components mode.
+- [`generateStaticParams`](/router/web/static-rendering/#generatestaticparams) is only partially supported in full React Server Components mode.
 - HTML `form` integration with Server Functions is not supported yet (this partially works automatically, but data is not encrypted).
 - `StyleSheet.create` and `Platform.OS` are not supported on native. Use standard objects for styles and `process.env.EXPO_OS` for platform detection.
 - React Server Functions that invoke other Server Functions are not supported on Hermes due to a limitation in the Hermes runtime. This may be resolved with Static Hermes.

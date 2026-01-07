@@ -1,0 +1,1 @@
+{"version":3,"file":"elements.d.ts","sourceRoot":"","sources":["../../src/split-view/elements.tsx"],"names":[],"mappings":"AAGA,MAAM,WAAW,oBAAoB;IACnC,QAAQ,CAAC,EAAE,KAAK,CAAC,SAAS,CAAC;CAC5B;AAED,wBAAgB,eAAe,CAAC,KAAK,EAAE,oBAAoB,+BAM1D;AAED;;GAEG;AACH,wBAAgB,kBAAkB,CAAC,KAAK,EAAE,oBAAoB,+BAE7D"}
