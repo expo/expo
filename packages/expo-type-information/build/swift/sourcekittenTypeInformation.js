@@ -393,7 +393,7 @@ function hasFieldAttribute(attributes, file) {
     }
     return false;
 }
-function parseRecordStructure(recordStructure, usedTypeIdentifiers, typeParametersCount, file) {
+function parseRecordStructure(recordStructure, usedTypeIdentifiers, inferredTypeParametersCount, file) {
     const fields = [];
     for (const substructure of recordStructure['key.substructure']) {
         if (substructure['key.kind'] !== 'source.lang.swift.decl.var.instance' ||
@@ -405,7 +405,7 @@ function parseRecordStructure(recordStructure, usedTypeIdentifiers, typeParamete
             name: substructure['key.name'],
             type,
         });
-        collectTypeIdentifiers(type, usedTypeIdentifiers, typeParametersCount);
+        collectTypeIdentifiers(type, usedTypeIdentifiers, inferredTypeParametersCount);
     }
     return {
         name: recordStructure['key.name'],
@@ -502,19 +502,19 @@ function getTypeIdentifierDefinitionMap(fileTypeInformation) {
     fileTypeInformation.enums.forEach((e) => typeIdentifierDefinitionMap.set(e.name, { kind: typeInformation_1.IdentifierKind.ENUM, definition: e }));
     return typeIdentifierDefinitionMap;
 }
-function collectTypeIdentifiers(type, typeIdentiers, typeParametersCount) {
+function collectTypeIdentifiers(type, typeIdentiers, inferredTypeParametersCount) {
     switch (type.kind) {
         case typeInformation_1.TypeKind.ARRAY:
         case typeInformation_1.TypeKind.OPTIONAL:
-            collectTypeIdentifiers(type.type, typeIdentiers, typeParametersCount);
+            collectTypeIdentifiers(type.type, typeIdentiers, inferredTypeParametersCount);
             break;
         case typeInformation_1.TypeKind.DICTIONARY:
-            collectTypeIdentifiers(type.type.key, typeIdentiers, typeParametersCount);
-            collectTypeIdentifiers(type.type.value, typeIdentiers, typeParametersCount);
+            collectTypeIdentifiers(type.type.key, typeIdentiers, inferredTypeParametersCount);
+            collectTypeIdentifiers(type.type.value, typeIdentiers, inferredTypeParametersCount);
             break;
         case typeInformation_1.TypeKind.SUM:
             for (const t of type.type.types) {
-                collectTypeIdentifiers(t, typeIdentiers, typeParametersCount);
+                collectTypeIdentifiers(t, typeIdentiers, inferredTypeParametersCount);
             }
             break;
         case typeInformation_1.TypeKind.BASIC:
@@ -529,9 +529,9 @@ function collectTypeIdentifiers(type, typeIdentiers, typeParametersCount) {
             const parametrizedType = type.type;
             const typename = parametrizedType.name;
             typeIdentiers.add(typename);
-            typeParametersCount.set(typename, Math.max(typeParametersCount.get(typename) ?? 0, parametrizedType.types.length));
+            inferredTypeParametersCount.set(typename, Math.max(inferredTypeParametersCount.get(typename) ?? 0, parametrizedType.types.length));
             for (const t of type.type.types) {
-                collectTypeIdentifiers(t, typeIdentiers, typeParametersCount);
+                collectTypeIdentifiers(t, typeIdentiers, inferredTypeParametersCount);
             }
             break;
         }
@@ -539,7 +539,7 @@ function collectTypeIdentifiers(type, typeIdentiers, typeParametersCount) {
 }
 function collectModuleTypeIdentifiers(moduleClassDeclaration, fileTypeInformation) {
     const collect = (type) => {
-        collectTypeIdentifiers(type, fileTypeInformation.usedTypeIdentifiers, fileTypeInformation.typeParametersCount);
+        collectTypeIdentifiers(type, fileTypeInformation.usedTypeIdentifiers, fileTypeInformation.inferredTypeParametersCount);
     };
     const collectArg = (arg) => {
         collect(arg.type);
@@ -570,14 +570,14 @@ function getSwiftFileTypeInformation(filePath) {
     const recordsStructures = [];
     const enumsStructures = [];
     parseStructure(getStructureFromFile(file), '', modulesStructures, recordsStructures, enumsStructures);
-    const typeParametersCount = new Map();
+    const inferredTypeParametersCount = new Map();
     const moduleClasses = [];
     const moduleTypeIdentifiers = new Set();
     const declaredTypeIdentifiers = new Set();
     const recordTypeIdentifiers = new Set();
     const typeIdentifierDefinitionMap = new Map();
     const enums = enumsStructures.map(parseEnumStructure);
-    const recordMap = (rd) => parseRecordStructure(rd, recordTypeIdentifiers, typeParametersCount, file);
+    const recordMap = (rd) => parseRecordStructure(rd, recordTypeIdentifiers, inferredTypeParametersCount, file);
     const records = recordsStructures.map(recordMap);
     enums.forEach(({ name }) => {
         declaredTypeIdentifiers.add(name);
@@ -592,7 +592,7 @@ function getSwiftFileTypeInformation(filePath) {
         functions: [],
         usedTypeIdentifiers: moduleTypeIdentifiers.union(recordTypeIdentifiers),
         declaredTypeIdentifiers,
-        typeParametersCount,
+        inferredTypeParametersCount,
         typeIdentifierDefinitionMap,
     };
     for (const { structure, name } of modulesStructures) {

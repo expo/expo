@@ -69,42 +69,67 @@ var BasicType;
     BasicType[BasicType["UNDEFINED"] = 5] = "UNDEFINED";
     BasicType[BasicType["UNRESOLVED"] = 6] = "UNRESOLVED";
 })(BasicType || (exports.BasicType = BasicType = {}));
-function serializeTypeInformation({ usedTypeIdentifiers, declaredTypeIdentifiers, typeParametersCount, typeIdentifierDefinitionMap, moduleClasses, records, enums, }) {
+/**
+ * Used for testing purposes, maps Sets and Maps to Arrays and returns FileTypeInformationSerialized object which can be written to a JSON.
+ * @param param0 FileTypeInformation object to serialize.
+ * @returns FileTypeInformationSerialized object.
+ */
+function serializeTypeInformation({ usedTypeIdentifiers, declaredTypeIdentifiers, inferredTypeParametersCount, typeIdentifierDefinitionMap, moduleClasses, records, enums, }) {
     return {
         usedTypeIdentifiersList: [...usedTypeIdentifiers.keys()].sort(),
         declaredTypeIdentifiersList: [...declaredTypeIdentifiers.keys()].sort(),
-        typeParametersCountList: [...typeParametersCount.entries()].sort(),
+        inferredTypeParametersCountList: [...inferredTypeParametersCount.entries()].sort(),
         typeIdentifierDefinitionList: [...typeIdentifierDefinitionMap.entries()].sort(),
         moduleClasses,
         records,
         enums,
     };
 }
-function deserializeTypeInformation({ usedTypeIdentifiersList, declaredTypeIdentifiersList, typeParametersCountList, typeIdentifierDefinitionList, moduleClasses, records, enums, }) {
+/**
+ * Used for testing purposes, maps Arrays to Sets and Maps depending on the field and returns FileTypeInformation object.
+ * @param param0 FileTypeInformationSerialized object to deserialize.
+ * @returns FileTypeInformation object.
+ */
+function deserializeTypeInformation({ usedTypeIdentifiersList, declaredTypeIdentifiersList, inferredTypeParametersCountList, typeIdentifierDefinitionList, moduleClasses, records, enums, }) {
     return {
         usedTypeIdentifiers: new Set(usedTypeIdentifiersList),
         declaredTypeIdentifiers: new Set(declaredTypeIdentifiersList),
-        typeParametersCount: new Map(typeParametersCountList),
+        inferredTypeParametersCount: new Map(inferredTypeParametersCountList),
         typeIdentifierDefinitionMap: new Map(typeIdentifierDefinitionList),
         moduleClasses,
         records,
         enums,
     };
 }
+/**
+ * This function reads and extracts FileTypeInformation from a given file.
+ * @param absoluteFilePath Absolute path to a Swift/Kotlin file.
+ * @param preprocessFile If this flag is set to true and Swift file is provided, then the file is preprocessed so that more type information can be inferred.
+ *  For now this option is slow so it's not enabled by default.
+ * @returns FileTypeInformation object if the file provided was .swift file and it was parsed successfully. Otherwise it returns null.
+ */
 function getFileTypeInformation(absoluteFilePath, preprocessFile = false) {
     if (absoluteFilePath.endsWith('.swift')) {
         if (preprocessFile) {
-            return getFileTypeInformationForString(fs.readFileSync(absoluteFilePath, 'utf-8'), 'swift');
+            return getFileTypeInformationForString(fs.readFileSync(absoluteFilePath, 'utf-8'), 'Swift', true);
         }
         return (0, sourcekittenTypeInformation_1.getSwiftFileTypeInformation)(absoluteFilePath);
     }
     return null;
 }
-function getFileTypeInformationForString(content, language) {
-    if (language === 'swift') {
+/**
+ * This function creates a temporary file with the provided content and extracts FileTypeInformation from it.
+ * @param content Swift code.
+ * @param language For now only Swift is supported.
+ * @param preprocessFile If this flag is set to true and Swift file is provided, then the file is preprocessed so that more type information can be inferred.
+ *  For now this option is slow so it's not enabled by default.
+ * @returns FileTypeInformation object if the content provided was Swift and was parsed successfully. Otherwise it returns null.
+ */
+function getFileTypeInformationForString(content, language, preprocessFile = false) {
+    if (language === 'Swift') {
         const tmp = os.tmpdir();
         const filePath = path.resolve(tmp, 'TypeInformationTemporaryFile.swift');
-        const preprocessedContent = (0, sourcekittenTypeInformation_1.preprocessSwiftFile)(content);
+        const preprocessedContent = preprocessFile ? (0, sourcekittenTypeInformation_1.preprocessSwiftFile)(content) : content;
         fs.writeFileSync(filePath, preprocessedContent, 'utf8');
         const fileTypeInfo = getFileTypeInformation(filePath);
         fs.rmSync(filePath);
