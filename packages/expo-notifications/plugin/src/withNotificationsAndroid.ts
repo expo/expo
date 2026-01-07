@@ -55,8 +55,6 @@ export const NOTIFICATION_ICON_COLOR = 'notification_icon_color';
 export const NOTIFICATION_ICON_COLOR_RESOURCE = `@color/${NOTIFICATION_ICON_COLOR}`;
 
 export const withNotificationIcons: ConfigPlugin<{ icon: string | null }> = (config, { icon }) => {
-  // If no icon provided in the config plugin props, fallback to value from app.json
-  icon = icon || null;
   return withDangerousMod(config, [
     'android',
     async (config) => {
@@ -72,7 +70,6 @@ export const withNotificationIconColor: ConfigPlugin<{ color: string | null }> =
 ) => {
   // If no color provided in the config plugin props, fallback to value from app.json
   return withAndroidColors(config, (config) => {
-    color = color || null;
     config.modResults = setNotificationIconColor(color, config.modResults);
     return config;
   });
@@ -83,10 +80,6 @@ export const withNotificationManifest: ConfigPlugin<{
   color: string | null;
   defaultChannel: string | null;
 }> = (config, { icon, color, defaultChannel }) => {
-  // If no icon or color provided in the config plugin props, fallback to value from app.json
-  icon = icon || null;
-  color = color || null;
-  defaultChannel = defaultChannel || null;
   return withAndroidManifest(config, (config) => {
     config.modResults = setNotificationConfig({ icon, color, defaultChannel }, config.modResults);
     return config;

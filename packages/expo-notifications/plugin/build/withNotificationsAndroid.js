@@ -32,8 +32,6 @@ exports.NOTIFICATION_ICON_RESOURCE = `@drawable/${exports.NOTIFICATION_ICON}`;
 exports.NOTIFICATION_ICON_COLOR = 'notification_icon_color';
 exports.NOTIFICATION_ICON_COLOR_RESOURCE = `@color/${exports.NOTIFICATION_ICON_COLOR}`;
 const withNotificationIcons = (config, { icon }) => {
-    // If no icon provided in the config plugin props, fallback to value from app.json
-    icon = icon || null;
     return (0, config_plugins_1.withDangerousMod)(config, [
         'android',
         async (config) => {
@@ -46,17 +44,12 @@ exports.withNotificationIcons = withNotificationIcons;
 const withNotificationIconColor = (config, { color }) => {
     // If no color provided in the config plugin props, fallback to value from app.json
     return (0, config_plugins_1.withAndroidColors)(config, (config) => {
-        color = color || null;
         config.modResults = setNotificationIconColor(color, config.modResults);
         return config;
     });
 };
 exports.withNotificationIconColor = withNotificationIconColor;
 const withNotificationManifest = (config, { icon, color, defaultChannel }) => {
-    // If no icon or color provided in the config plugin props, fallback to value from app.json
-    icon = icon || null;
-    color = color || null;
-    defaultChannel = defaultChannel || null;
     return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
         config.modResults = setNotificationConfig({ icon, color, defaultChannel }, config.modResults);
         return config;
