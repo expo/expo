@@ -23,6 +23,8 @@ React components that render native iOS liquid glass effect using [`UIVisualEffe
 
 The `isInteractive` prop can only be set once on mount and cannot be changed dynamically after the component has been rendered. If you need to toggle interactive behavior, you must remount the component with a different `key`.
 
+Avoid `opacity` values less than `1` on `GlassView` or its parent views, as this causes effects to render incorrectly. See [Apple's documentation](https://developer.apple.com/documentation/uikit/uivisualeffectview#Set-the-correct-alpha-value) and [issue #41024](https://github.com/expo/expo/issues/41024).
+
 ## Usage
 
 ### `GlassView`
