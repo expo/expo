@@ -17,7 +17,6 @@ struct ListView: ExpoSwiftUI.View {
   @ObservedObject var props: ListProps
   @State private var selection: Set<Int> = []
   @State var editModeEnabled: EditMode = .inactive
-  @State var search: String = ""
 
   init(props: ListProps) {
     self.props = props
