@@ -6,10 +6,9 @@ import {
   Image,
   Label,
   List,
-  type ListStyle,
   Picker,
   Section,
-  Switch,
+  Toggle,
   Text,
 } from '@expo/ui/swift-ui';
 import {
@@ -20,7 +19,10 @@ import {
   headerProminence,
   padding,
   pickerStyle,
+  font,
   refreshable,
+  type ListStyle,
+  listStyle,
   scrollDismissesKeyboard,
   foregroundStyle,
   shapes,
@@ -89,8 +91,8 @@ export default function ListScreen() {
         moveEnabled={moveEnabled}
         onMoveItem={(from, to) => alert(`moved item at index ${from} to index ${to}`)}
         onDeleteItem={(item) => alert(`deleted item at index: ${item}`)}
-        listStyle={listStyleOptions[selectedIndex ?? 0]}
         modifiers={[
+          listStyle(listStyleOptions[selectedIndex ?? 0]),
           scrollDismissesKeyboard(
             scrollDismissesKeyboardOptions[scrollDismissesKeyboardIndex ?? 0]
           ),
@@ -133,36 +135,36 @@ export default function ListScreen() {
               )}
             </>
           }>
-          <Switch
+          <Toggle
             label="Use increased section header"
-            value={increasedHeader}
-            onValueChange={setIncreasedHeader}
+            isOn={increasedHeader}
+            onIsOnChange={setIncreasedHeader}
           />
-          <Switch label="Collapsible" value={collapsible} onValueChange={setCollapsible} />
-          <Switch
+          <Toggle label="Collapsible" isOn={collapsible} onIsOnChange={setCollapsible} />
+          <Toggle
             label="Custom header"
-            value={customHeaderFooter.header}
-            onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, header: v }))}
+            isOn={customHeaderFooter.header}
+            onIsOnChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, header: v }))}
           />
-          <Switch
+          <Toggle
             label="Custom footer"
-            value={customHeaderFooter.footer}
-            onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, footer: v }))}
+            isOn={customHeaderFooter.footer}
+            onIsOnChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, footer: v }))}
             modifiers={[disabled(collapsible)]}
           />
         </Section>
         <Section title="Controls" collapsible>
           <Button onPress={() => setEditModeEnabled(!editModeEnabled)} label="Toggle Edit" />
-          <Switch value={selectEnabled} label="Select enabled" onValueChange={setSelectEnabled} />
-          <Switch value={deleteEnabled} label="Delete enabled" onValueChange={setDeleteEnabled} />
-          <Switch value={moveEnabled} label="Move enabled" onValueChange={setMoveEnabled} />
-          <Switch
-            value={refreshEnabled}
+          <Toggle isOn={selectEnabled} label="Select enabled" onIsOnChange={setSelectEnabled} />
+          <Toggle isOn={deleteEnabled} label="Delete enabled" onIsOnChange={setDeleteEnabled} />
+          <Toggle isOn={moveEnabled} label="Move enabled" onIsOnChange={setMoveEnabled} />
+          <Toggle
+            isOn={refreshEnabled}
             label="Refreshable enabled"
-            onValueChange={setRefreshEnabled}
+            onIsOnChange={setRefreshEnabled}
           />
           {lastRefresh && (
-            <Text size={12} color="gray">
+            <Text modifiers={[font({ size: 12 })]} color="gray">
               Last refresh: {lastRefresh.toLocaleTimeString()}
             </Text>
           )}

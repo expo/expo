@@ -857,6 +857,24 @@ export const submitLabel = (
   submitLabel: 'continue' | 'done' | 'go' | 'join' | 'next' | 'return' | 'route' | 'search' | 'send'
 ) => createModifier('submitLabel', { submitLabel });
 
+export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
+/**
+ * Sets the style for a List view.
+ * @param style - The list style to apply.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/liststyle(_:)).
+ */
+export const listStyle = (style: ListStyle) => createModifier('listStyle', { style });
+
+/**
+ * Disables scrolling in a scrollable view.
+ * @param disabled - Whether scrolling should be disabled.
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolldisabled(_:)).
+ */
+export const scrollDisabled = (disabled: boolean = true) =>
+  createModifier('scrollDisabled', { disabled });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -941,7 +959,9 @@ export type BuiltInModifier =
   | ReturnType<typeof gridColumnAlignment>
   | ReturnType<typeof gridCellAnchor>
   | ReturnType<typeof submitLabel>
-  | ReturnType<typeof datePickerStyle>;
+  | ReturnType<typeof datePickerStyle>
+  | ReturnType<typeof listStyle>
+  | ReturnType<typeof scrollDisabled>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.

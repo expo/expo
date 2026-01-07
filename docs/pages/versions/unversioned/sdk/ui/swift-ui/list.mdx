@@ -8,10 +8,8 @@ platforms: ['ios', 'tvos']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A list component for displaying scrollable lists with support for selection, editing, and reordering.
+Expo UI List matches the official SwiftUI [List API](https://developer.apple.com/documentation/swiftui/list) and supports styling via the [`listStyle`](modifiers/#liststylestyle) modifier and various row/section modifiers.
 
 ## Installation
 
@@ -19,40 +17,309 @@ A list component for displaying scrollable lists with support for selection, edi
 
 ## Usage
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="List component on iOS."
-      src="/static/images/expo-ui/list/ios.png"
-      className="max-w-[380px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { Host, List } from '@expo/ui/swift-ui';
+### Basic list
 
+```tsx BasicListExample.tsx
+import { Host, List, Text, Section } from '@expo/ui/swift-ui';
+
+export default function BasicListExample() {
+  return (
     <Host style={{ flex: 1 }}>
-      <List
-        scrollEnabled={false}
-        editModeEnabled={editModeEnabled}
-        onSelectionChange={(items) => alert(`indexes of selected items: ${items.join(', ')}`)}
-        moveEnabled={moveEnabled}
-        onMoveItem={(from, to) => alert(`moved item at index ${from} to index ${to}`)}
-        onDeleteItem={(item) => alert(`deleted item at index: ${item}`)}
-        listStyle='automatic'
-        deleteEnabled={deleteEnabled}
-        selectEnabled={selectEnabled}>
-        {data.map((item, index) => (
-          <LabelPrimitive key={index} title={item.text} systemImage={item.systemImage} color={color} />
-        ))}
+      <List>
+        <Section title="Fruits">
+          <Text>Apple</Text>
+          <Text>Banana</Text>
+          <Text>Orange</Text>
+        </Section>
+        <Section title="Vegetables">
+          <Text>Carrot</Text>
+          <Text>Broccoli</Text>
+          <Text>Spinach</Text>
+        </Section>
       </List>
     </Host>
-    ```
+  );
+}
+```
 
-  </Tab>
-</Tabs>
+### List with labels and icons
 
-> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/list) for more information.
+```tsx ListWithLabelsExample.tsx
+import { Host, List, Label, Section } from '@expo/ui/swift-ui';
+
+export default function ListWithLabelsExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List>
+        <Section title="Settings">
+          <Label title="Wi-Fi" systemImage="wifi" />
+          <Label title="Bluetooth" systemImage="antenna.radiowaves.left.and.right" />
+          <Label title="Cellular" systemImage="antenna.radiowaves.left.and.right.circle" />
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+### List styles
+
+Use the `listStyle` modifier to change the list's appearance. Available styles are: `automatic`, `plain`, `inset`, `insetGrouped`, `grouped`, and `sidebar`.
+
+> **Note:** The `inset`, `insetGrouped`, and `sidebar` styles are not available on tvOS.
+
+```tsx ListStylesExample.tsx
+import { useState } from 'react';
+import { Host, List, Text, Section, Picker } from '@expo/ui/swift-ui';
+import { listStyle, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+
+const styles = ['automatic', 'plain', 'inset', 'insetGrouped', 'grouped', 'sidebar'] as const;
+
+export default function ListStylesExample() {
+  const [styleIndex, setStyleIndex] = useState(0);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <List modifiers={[listStyle(styles[styleIndex])]}>
+        <Section title="Style Picker">
+          <Picker
+            label="List Style"
+            selection={styleIndex}
+            onSelectionChange={setStyleIndex}
+            modifiers={[pickerStyle('menu')]}>
+            {styles.map((style, index) => (
+              <Text key={style} modifiers={[tag(index)]}>
+                {style}
+              </Text>
+            ))}
+          </Picker>
+        </Section>
+        <Section title="Sample Items">
+          <Text>Item 1</Text>
+          <Text>Item 2</Text>
+          <Text>Item 3</Text>
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+### Collapsible sections
+
+Use the `collapsible` prop on `Section` to make it expandable/collapsible.
+
+```tsx CollapsibleSectionExample.tsx
+import { Host, List, Text, Section } from '@expo/ui/swift-ui';
+import { listStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function CollapsibleSectionExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List modifiers={[listStyle('sidebar')]}>
+        <Section title="Notifications" collapsible>
+          <Text>Push Notifications</Text>
+          <Text>Email Alerts</Text>
+          <Text>SMS Alerts</Text>
+        </Section>
+        <Section title="Privacy" collapsible>
+          <Text>Location Services</Text>
+          <Text>Tracking</Text>
+          <Text>Analytics</Text>
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+### Selection and edit mode
+
+Enable selection, deletion, and reordering of list items using the `selectEnabled`, `deleteEnabled`, `moveEnabled`, and `editModeEnabled` props.
+
+```tsx EditableListExample.tsx
+import { useState } from 'react';
+import { Host, List, Text, Section, Button } from '@expo/ui/swift-ui';
+
+export default function EditableListExample() {
+  const [editMode, setEditMode] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <List
+        editModeEnabled={editMode}
+        selectEnabled
+        deleteEnabled
+        moveEnabled
+        onSelectionChange={indices => console.log('Selected:', indices)}
+        onDeleteItem={index => console.log('Deleted:', index)}
+        onMoveItem={(from, to) => console.log('Moved from', from, 'to', to)}>
+        <Section title="Tasks">
+          <Button label={editMode ? 'Done' : 'Edit'} onPress={() => setEditMode(!editMode)} />
+        </Section>
+        <Section title="Items">
+          <Text>Task 1</Text>
+          <Text>Task 2</Text>
+          <Text>Task 3</Text>
+          <Text>Task 4</Text>
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+### Pull to refresh
+
+Use the `refreshable` modifier to enable pull-to-refresh functionality.
+
+```tsx RefreshableListExample.tsx
+import { useState } from 'react';
+import { Host, List, Text, Section } from '@expo/ui/swift-ui';
+import { refreshable } from '@expo/ui/swift-ui/modifiers';
+
+export default function RefreshableListExample() {
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+
+  const handleRefresh = async () => {
+    // Simulate async data fetching
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setLastRefresh(new Date());
+  };
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <List modifiers={[refreshable(handleRefresh)]}>
+        <Section title="Data">
+          <Text>Pull down to refresh</Text>
+          {lastRefresh && <Text>Last refresh: {lastRefresh.toLocaleTimeString()}</Text>}
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+### Custom section header and footer
+
+Use the `header` and `footer` props on `Section` for custom content.
+
+```tsx CustomHeaderFooterExample.tsx
+import { Host, List, Text, Section, HStack, Image } from '@expo/ui/swift-ui';
+import { background, padding, clipShape } from '@expo/ui/swift-ui/modifiers';
+
+export default function CustomHeaderFooterExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List>
+        <Section
+          header={
+            <HStack modifiers={[padding({ vertical: 4 })]}>
+              <Image systemName="star.fill" color="orange" size={16} />
+              <Text color="orange">FEATURED</Text>
+            </HStack>
+          }
+          footer={<Text color="secondaryLabel">Updated daily</Text>}>
+          <Text>Featured Item 1</Text>
+          <Text>Featured Item 2</Text>
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+### Row styling
+
+Use `listRowBackground`, `listRowSeparator`, and `listRowInsets` modifiers to customize individual rows.
+
+```tsx RowStylingExample.tsx
+import { Host, List, Text, Section } from '@expo/ui/swift-ui';
+import { listRowBackground, listRowSeparator, listRowInsets } from '@expo/ui/swift-ui/modifiers';
+
+export default function RowStylingExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List>
+        <Section title="Styled Rows">
+          <Text modifiers={[listRowBackground('blue')]}>Blue background</Text>
+          <Text modifiers={[listRowSeparator('hidden')]}>Hidden separator</Text>
+          <Text modifiers={[listRowInsets({ leading: 40 })]}>Extra leading inset</Text>
+          <Text modifiers={[listRowInsets({ leading: 0, trailing: 0 })]}>No horizontal insets</Text>
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+### Badges
+
+Use the `badge` modifier to add badges to list rows.
+
+```tsx BadgesExample.tsx
+import { Host, List, Label, Section } from '@expo/ui/swift-ui';
+import { badge } from '@expo/ui/swift-ui/modifiers';
+
+export default function BadgesExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List>
+        <Label title="Primary" systemImage="tray" modifiers={[badge('5')]} />
+        <Label title="Social" systemImage="person.2" modifiers={[badge('12')]} />
+        <Label title="Updates" systemImage="bell" modifiers={[badge('3')]} />
+      </List>
+    </Host>
+  );
+}
+```
+
+### Keyboard dismiss behavior
+
+Use the `scrollDismissesKeyboard` modifier to control how the keyboard is dismissed when scrolling. Available modes are: `automatic`, `never`, `interactively`, and `immediately`.
+
+```tsx KeyboardDismissExample.tsx
+import { Host, List, Section, TextField } from '@expo/ui/swift-ui';
+import { scrollDismissesKeyboard } from '@expo/ui/swift-ui/modifiers';
+
+export default function KeyboardDismissExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List modifiers={[scrollDismissesKeyboard('interactively')]}>
+        <Section title="Form">
+          <TextField placeholder="Name" />
+          <TextField placeholder="Email" />
+          <TextField placeholder="Phone" />
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+### Header prominence
+
+Use the `headerProminence` modifier to adjust the visual prominence of section headers. Available values are: `standard` and `increased`.
+
+```tsx HeaderProminenceExample.tsx
+import { Host, List, Text, Section } from '@expo/ui/swift-ui';
+import { headerProminence } from '@expo/ui/swift-ui/modifiers';
+
+export default function HeaderProminenceExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List modifiers={[headerProminence('increased')]}>
+        <Section title="Important Section">
+          <Text>This section has increased header prominence</Text>
+        </Section>
+        <Section title="Another Section">
+          <Text>Headers are more prominent</Text>
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
 
 ## API
 

@@ -21,15 +21,7 @@ function transformListProps(props: Omit<ListProps, 'children'>): Omit<NativeList
   };
 }
 
-export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
-
 export interface ListProps extends CommonViewModifierProps {
-  /**
-   * One of the predefined ListStyle types in SwiftUI.
-   * @default 'automatic'
-   */
-  listStyle?: ListStyle;
-
   /**
    * Allows the selection of list items.
    * @default false
@@ -47,14 +39,6 @@ export interface ListProps extends CommonViewModifierProps {
    * @default false
    */
   deleteEnabled?: boolean;
-
-  /**
-   * Makes the list scrollable.
-   * @default true
-   * @platform ios 16.0+
-   * @platform tvos 16.0+
-   */
-  scrollEnabled?: boolean;
 
   /**
    * Enables SwiftUI edit mode.

@@ -4,11 +4,9 @@ import ExpoModulesCore
 import SwiftUI
 
 final class ListProps: UIBaseViewProps {
-  @Field var listStyle: String = "automatic"
   @Field var moveEnabled: Bool = false
   @Field var deleteEnabled: Bool = false
   @Field var selectEnabled: Bool = true
-  @Field var scrollEnabled: Bool = true
   @Field var editModeEnabled: Bool = false
   var onDeleteItem = EventDispatcher()
   var onMoveItem = EventDispatcher()
@@ -26,32 +24,25 @@ struct ListView: ExpoSwiftUI.View {
   }
 
   var body: some View {
-    let list = List(selection: props.selectEnabled ? $selection : nil) {
+    List(selection: props.selectEnabled ? $selection : nil) {
       Children()
         .onDelete(perform: handleDelete)
         .onMove(perform: handleMove)
         .deleteDisabled(!props.deleteEnabled)
         .moveDisabled(!props.moveEnabled)
     }
-      .modifier(ListStyleModifer(style: props.listStyle))
-      .onAppear {
-        editModeEnabled = props.editModeEnabled ? .active : .inactive
-      }
-      .onChange(of: props.editModeEnabled) { newValue in
-        withAnimation {
-          editModeEnabled = newValue ? .active : .inactive
-        }
-      }
-      .onChange(of: selection) { selection in
-        handleSelectionChange(selection: selection)
-      }
-      .modifier(ScrollDisabledModifier(scrollEnabled: props.scrollEnabled))
-      .environment(\.editMode, $editModeEnabled)
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      list.scrollDisabled(!props.scrollEnabled)
-    } else {
-      list
+    .onAppear {
+      editModeEnabled = props.editModeEnabled ? .active : .inactive
     }
+    .onChange(of: props.editModeEnabled) { newValue in
+      withAnimation {
+        editModeEnabled = newValue ? .active : .inactive
+      }
+    }
+    .onChange(of: selection) { selection in
+      handleSelectionChange(selection: selection)
+    }
+    .environment(\.editMode, $editModeEnabled)
   }
   func handleDelete(at offsets: IndexSet) {
     for offset in offsets {
@@ -75,46 +66,5 @@ struct ListView: ExpoSwiftUI.View {
       "selection": selectionArray
     ]
     props.onSelectionChange(jsonDict)
-  }
-}
-
-struct ListStyleModifer: ViewModifier {
-  var style: String
-  @ViewBuilder func body(content: Content) -> some View {
-    switch style {
-    case "grouped":
-      content.listStyle(.grouped)
-    case "plain":
-      content.listStyle(.plain)
-    case "automatic":
-      content.listStyle(.automatic)
-
-    case "insetGrouped":
-#if !os(tvOS) // fallthrough to default
-      content.listStyle(.insetGrouped)
-#endif
-    case "inset":
-#if !os(tvOS) // fallthrough to default
-      content.listStyle(.inset)
-#endif
-    case "sidebar":
-#if !os(tvOS) // fallthrough to default
-      content.listStyle(.sidebar)
-#endif
-    default:
-      content
-    }
-  }
-}
-
-struct ScrollDisabledModifier: ViewModifier {
-  let scrollEnabled: Bool
-
-  func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      content.scrollDisabled(!scrollEnabled)
-    } else {
-      content
-    }
   }
 }
