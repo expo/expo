@@ -1560,13 +1560,12 @@
   dependencies:
     uuid "^8.0.0"
 
-"@expo/code-signing-certificates@0.0.5", "@expo/code-signing-certificates@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@expo/code-signing-certificates/-/code-signing-certificates-0.0.5.tgz#a693ff684fb20c4725dade4b88a6a9f96b02496c"
-  integrity sha512-BNhXkY1bblxKZpltzAx98G2Egj9g1Q+JRcvR7E99DOj862FTCX+ZPsAUtPTr7aHxwtrL7+fL3r0JSmM9kBm+Bw==
+"@expo/code-signing-certificates@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@expo/code-signing-certificates/-/code-signing-certificates-0.0.6.tgz#6b7b22830cb69c77a45e357c2f3aa7ab436ac772"
+  integrity sha512-iNe0puxwBNEcuua9gmTGzq+SuMDa0iATai1FlFTMHJ/vUmKvN/V//drXoLJkVb5i5H3iE/n/qIJxyoBnXouD0w==
   dependencies:
-    node-forge "^1.2.1"
-    nullthrows "^1.1.1"
+    node-forge "^1.3.3"
 
 "@expo/devcert@^1.2.1":
   version "1.2.1"
@@ -3610,10 +3609,10 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-11.4.1.tgz#a3c247aceab35f75dd0aa4bfa85d2be5a4508688"
   integrity sha512-B0BYAkghz3Q2V09BF88RA601XursIEA111tnc2JOaN7axJWmNefmfjZqw/KdSxKZp7CZUuPpjBmz/WCR9uaHYg==
 
-"@react-native-community/slider@5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-5.0.1.tgz#478789e526af31e0660c6f49fa5c5429d8d4287b"
-  integrity sha512-K3JRWkIW4wQ79YJ6+BPZzp1SamoikxfPRw7Yw4B4PElEQmqZFrmH9M5LxvIo460/3QSrZF/wCgi3qizJt7g/iw==
+"@react-native-community/slider@5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-5.1.1.tgz#321c37da565b264fd8f96a4edcb55d3fe78f26aa"
+  integrity sha512-W98If/LnTaziU3/0h5+G1LvJaRhMc6iLQBte6UWa4WBIHDMaDPglNBIFKcCXc9Dxp83W+f+5Wv22Olq9M2HJYA==
 
 "@react-native-masked-view/masked-view@0.3.2":
   version "0.3.2"
@@ -12039,10 +12038,10 @@ node-fetch@^2.6.1:
   dependencies:
     whatwg-url "^5.0.0"
 
-node-forge@^1.2.1, node-forge@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-1.3.1.tgz#be8da2af243b2417d5f646a770663a92b7e9ded3"
-  integrity sha512-dPEtOeMvF9VMcYV/1Wb8CPoVAXtp6MKMlcbAt4ddqmGqUJ6fQZFXkNZNkNlfevtNkGtaSoXf/vNNNSvgrdXwtA==
+node-forge@^1.3.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-1.3.3.tgz#0ad80f6333b3a0045e827ac20b7f735f93716751"
+  integrity sha512-rLvcdSyRCyouf6jcOIPe/BgwG/d7hKjzMKOas33/pHEr6gbq18IK9zV7DiPvzsz0oBJPme6qr6H6kGZuI9/DZg==
 
 node-html-parser@^6.1.5:
   version "6.1.5"
@@ -13290,10 +13289,10 @@ react-native-fade-in-image@^1.6.1:
     react-mixin "^3.0.5"
     react-timer-mixin "^0.13.3"
 
-react-native-gesture-handler@~2.28.0:
-  version "2.28.0"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.28.0.tgz#07fb4f5eae72f810aac3019b060d26c1835bfd0c"
-  integrity sha512-0msfJ1vRxXKVgTgvL+1ZOoYw3/0z1R+Ked0+udoJhyplC2jbVKIJ8Z1bzWdpQRCV3QcQ87Op0zJVE5DhKK2A0A==
+react-native-gesture-handler@~2.30.0:
+  version "2.30.0"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.30.0.tgz#990c621fbeeefde853ececdcab7cbe1b621dbb8b"
+  integrity sha512-5YsnKHGa0X9C8lb5oCnKm0fLUPM6CRduvUUw2Bav4RIj/C3HcFh4RIUnF8wgG6JQWCL1//gRx4v+LVWgcIQdGA==
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^3.3.0"
@@ -13326,10 +13325,10 @@ react-native-keyboard-aware-scroll-view@^0.9.5:
     prop-types "^15.6.2"
     react-native-iphone-x-helper "^1.0.3"
 
-react-native-keyboard-controller@^1.18.5:
-  version "1.18.5"
-  resolved "https://registry.yarnpkg.com/react-native-keyboard-controller/-/react-native-keyboard-controller-1.18.5.tgz#ae12131f2019c574178479d2c55784f55e08bb68"
-  integrity sha512-wbYN6Tcu3G5a05dhRYBgjgd74KqoYWuUmroLpigRg9cXy5uYo7prTMIvMgvLtARQtUF7BOtFggUnzgoBOgk0TQ==
+react-native-keyboard-controller@^1.20.3:
+  version "1.20.3"
+  resolved "https://registry.yarnpkg.com/react-native-keyboard-controller/-/react-native-keyboard-controller-1.20.3.tgz#7bb75005cac79f7df80b221580afdc06fb7c24d1"
+  integrity sha512-OkfEkDFmFHRVdDM/uzAz5jYPjRgDHCZHI8NwcBcOTy7u2BxgcjiEHx/7IG1ct71hHBBcHfSUsMxR2n2cP4SHgA==
   dependencies:
     react-native-is-edge-to-edge "^1.2.1"
 
@@ -13354,10 +13353,10 @@ react-native-paper@^5.12.5:
     color "^3.1.2"
     use-latest-callback "^0.1.5"
 
-react-native-reanimated@4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-4.2.0.tgz#5b08e53abd12f38a097c9853c8da2b1e8923fc4a"
-  integrity sha512-frhu5b8/m/VvaMWz48V8RxcsXnE3hrlErQ5chr21MzAeDCpY4X14sQjvm+jvu3aOI+7Cz2atdRpyhhIuqxVaXg==
+react-native-reanimated@4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-4.2.1.tgz#fbdee721bff0946a6e5ae67c8c38c37ca4a0a057"
+  integrity sha512-/NcHnZMyOvsD/wYXug/YqSKw90P9edN0kEPL5lP4PFf1aQ4F1V7MKe/E0tvfkXKIajy3Qocp5EiEnlcrK/+BZg==
   dependencies:
     react-native-is-edge-to-edge "1.2.1"
     semver "7.7.3"

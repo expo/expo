@@ -490,7 +490,7 @@ class AudioModule : Module() {
       }
 
       Property("currentTime") { recorder ->
-        recorder.startTime
+        recorder.getCurrentTimeSeconds()
       }
 
       AsyncFunction("prepareToRecordAsync") { recorder: AudioRecorder, options: RecordingOptions? ->

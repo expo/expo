@@ -39,7 +39,7 @@ export const APISectionDeprecationNote = ({ comment, className, sticky = false }
           className
         )}>
         {content.length > 0 ? (
-          <ReactMarkdown components={mdComponents}>{`**Deprecated** ${content}`}</ReactMarkdown>
+          <ReactMarkdown components={mdComponents}>{`**Deprecated:** ${content}`}</ReactMarkdown>
         ) : (
           <BOLD>Deprecated</BOLD>
         )}

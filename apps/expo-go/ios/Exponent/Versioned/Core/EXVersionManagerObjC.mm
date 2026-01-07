@@ -3,10 +3,13 @@
 #import "EXAppState.h"
 #import "EXDevSettings.h"
 #import "EXDisabledDevLoadingView.h"
+#import "EXExpoPerfMonitor.h"
 #import "EXDisabledRedBox.h"
 #import "EXVersionManagerObjC.h"
 #import "EXStatusBarManager.h"
 #import "EXTest.h"
+
+#import <string.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTDevMenu.h>
@@ -277,7 +280,12 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 - (id<RCTTurboModule>)_moduleInstanceForHost:(id)host named:(NSString *)name
 {
-  return [[host moduleRegistry] moduleForName:[name UTF8String]];
+  const char *cName = [name UTF8String];
+  id module = [[host moduleRegistry] moduleForName:cName];
+  if (module && strcmp(cName, "PerfMonitor") == 0 && [module respondsToSelector:@selector(updateHost:)]) {
+    [module updateHost:host];
+  }
+  return module;
 }
 
 - (NSArray *)extraModules
@@ -354,6 +362,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 {
   if (strcmp(name, "DevSettings") == 0) {
     return EXDevSettings.class;
+  }
+  if (strcmp(name, "PerfMonitor") == 0) {
+    return EXExpoPerfMonitor.class;
   }
   if (strcmp(name, "RedBox") == 0) {
     if (![_params[@"isDeveloper"] boolValue]) {

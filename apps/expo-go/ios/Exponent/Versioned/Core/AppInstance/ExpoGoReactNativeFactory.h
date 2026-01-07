@@ -1,5 +1,9 @@
+#import <ExpoModulesCore/ExpoModulesCore.h>
 #import <Expo/RCTAppDelegateUmbrella.h>
 
-@interface ExpoGoReactNativeFactory : RCTReactNativeFactory
+@protocol RCTHostDelegate;
+@protocol RCTHostRuntimeDelegate;
+
+@interface ExpoGoReactNativeFactory : RCTReactNativeFactory <RCTHostDelegate, RCTHostRuntimeDelegate>
 
 @end

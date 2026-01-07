@@ -16,7 +16,7 @@ import expo.modules.camera.CameraViewModule
 import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
-import expo.modules.constants.ConstantsPackage
+import expo.modules.constants.ConstantsService
 import expo.modules.contacts.ContactsModule
 import expo.modules.core.interfaces.Package
 import expo.modules.crypto.CryptoModule
@@ -38,6 +38,7 @@ import expo.modules.intentlauncher.IntentLauncherModule
 import expo.modules.keepawake.KeepAwakeModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.services.Service
 import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.linking.ExpoLinkingModule
 import expo.modules.linking.ExpoLinkingPackage
@@ -88,7 +89,6 @@ import expo.modules.webbrowser.WebBrowserModule
 object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
-    ConstantsPackage(),
     ExpoLinkingPackage(),
     ImageLoaderPackage(),
     NavigationBarPackage(),
@@ -113,6 +113,10 @@ object ExperiencePackagePicker : ModulesProvider {
   fun packages(manifest: Manifest?): List<Package> {
     return EXPO_MODULES_PACKAGES
   }
+
+  override fun getServices(): List<Class<out Service>> = listOf(
+    ConstantsService::class.java
+  )
 
   override fun getModulesMap(): Map<Class<out Module>, String?> = mapOf(
     AudioModule::class.java to null,

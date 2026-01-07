@@ -212,7 +212,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
    Returns a legacy module implementing given protocol/interface.
    */
   public func legacyModule<ModuleProtocol>(implementing moduleProtocol: Protocol) -> ModuleProtocol? {
-    return legacyModuleRegistry?.getModuleImplementingProtocol(moduleProtocol) as? ModuleProtocol
+    return legacyModuleRegistry?.getModuleImplementingProtocol(moduleProtocol) as? ModuleProtocol ?? moduleRegistry.getModule(implementing: ModuleProtocol.self)
   }
 
   /**
