@@ -77,7 +77,7 @@
     "react-native-pager-view": "6.9.1",
     "react-native-paper": "^5.12.5",
     "react-native-reanimated": "4.2.1",
-    "react-native-safe-area-context": "5.6.0",
+    "react-native-safe-area-context": "5.6.2",
     "react-native-screens": "4.19.0",
     "react-native-svg": "15.15.1",
     "react-native-view-shot": "4.0.3",
