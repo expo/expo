@@ -499,7 +499,7 @@ function hasFieldAttribute(attributes: Attribute[] | null, file: FileType): bool
 function parseRecordStructure(
   recordStructure: Structure,
   usedTypeIdentifiers: Set<string>,
-  typeParametersCount: Map<string, number>,
+  inferredTypeParametersCount: Map<string, number>,
   file: FileType
 ): RecordType {
   const fields: Field[] = [];
@@ -517,7 +517,7 @@ function parseRecordStructure(
       name: substructure['key.name'],
       type,
     });
-    collectTypeIdentifiers(type, usedTypeIdentifiers, typeParametersCount);
+    collectTypeIdentifiers(type, usedTypeIdentifiers, inferredTypeParametersCount);
   }
 
   return {
@@ -654,24 +654,28 @@ function getTypeIdentifierDefinitionMap(
 function collectTypeIdentifiers(
   type: Type,
   typeIdentiers: Set<string>,
-  typeParametersCount: Map<string, number>
+  inferredTypeParametersCount: Map<string, number>
 ) {
   switch (type.kind) {
     case TypeKind.ARRAY:
     case TypeKind.OPTIONAL:
-      collectTypeIdentifiers(type.type as Type, typeIdentiers, typeParametersCount);
+      collectTypeIdentifiers(type.type as Type, typeIdentiers, inferredTypeParametersCount);
       break;
     case TypeKind.DICTIONARY:
-      collectTypeIdentifiers((type.type as DictionaryType).key, typeIdentiers, typeParametersCount);
+      collectTypeIdentifiers(
+        (type.type as DictionaryType).key,
+        typeIdentiers,
+        inferredTypeParametersCount
+      );
       collectTypeIdentifiers(
         (type.type as DictionaryType).value,
         typeIdentiers,
-        typeParametersCount
+        inferredTypeParametersCount
       );
       break;
     case TypeKind.SUM:
       for (const t of (type.type as SumType).types) {
-        collectTypeIdentifiers(t, typeIdentiers, typeParametersCount);
+        collectTypeIdentifiers(t, typeIdentiers, inferredTypeParametersCount);
       }
       break;
     case TypeKind.BASIC:
@@ -686,12 +690,12 @@ function collectTypeIdentifiers(
       const parametrizedType: ParametrizedType = type.type as ParametrizedType;
       const typename = parametrizedType.name;
       typeIdentiers.add(typename);
-      typeParametersCount.set(
+      inferredTypeParametersCount.set(
         typename,
-        Math.max(typeParametersCount.get(typename) ?? 0, parametrizedType.types.length)
+        Math.max(inferredTypeParametersCount.get(typename) ?? 0, parametrizedType.types.length)
       );
       for (const t of (type.type as ParametrizedType).types) {
-        collectTypeIdentifiers(t, typeIdentiers, typeParametersCount);
+        collectTypeIdentifiers(t, typeIdentiers, inferredTypeParametersCount);
       }
       break;
     }
@@ -706,7 +710,7 @@ function collectModuleTypeIdentifiers(
     collectTypeIdentifiers(
       type,
       fileTypeInformation.usedTypeIdentifiers,
-      fileTypeInformation.typeParametersCount
+      fileTypeInformation.inferredTypeParametersCount
     );
   };
   const collectArg = (arg: Argument) => {
@@ -747,7 +751,7 @@ export function getSwiftFileTypeInformation(filePath: string): FileTypeInformati
     enumsStructures
   );
 
-  const typeParametersCount: Map<string, number> = new Map<string, number>();
+  const inferredTypeParametersCount: Map<string, number> = new Map<string, number>();
   const moduleClasses: ModuleClassDeclaration[] = [];
   const moduleTypeIdentifiers: Set<string> = new Set<string>();
   const declaredTypeIdentifiers: Set<string> = new Set<string>();
@@ -755,7 +759,7 @@ export function getSwiftFileTypeInformation(filePath: string): FileTypeInformati
   const typeIdentifierDefinitionMap: TypeIdentifierDefinitionMap = new Map();
   const enums: EnumType[] = enumsStructures.map(parseEnumStructure);
   const recordMap = (rd: Structure) =>
-    parseRecordStructure(rd, recordTypeIdentifiers, typeParametersCount, file);
+    parseRecordStructure(rd, recordTypeIdentifiers, inferredTypeParametersCount, file);
   const records = recordsStructures.map(recordMap);
 
   enums.forEach(({ name }) => {
@@ -772,7 +776,7 @@ export function getSwiftFileTypeInformation(filePath: string): FileTypeInformati
     functions: [],
     usedTypeIdentifiers: moduleTypeIdentifiers.union(recordTypeIdentifiers),
     declaredTypeIdentifiers,
-    typeParametersCount,
+    inferredTypeParametersCount,
     typeIdentifierDefinitionMap,
   };
 

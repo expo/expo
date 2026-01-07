@@ -64,7 +64,7 @@ export function TestTypeCombinations(a: number[][][]): (string | {
 export function TestFunctionReturningRecord(): TestRecord { return { basicString: "", basicStringInitialized: "", basicIntInferred: 0, basicDoubleInferred: 0, basicStringInferred: "", enumInferred: TestEnum.simpleCase, complexEnumInferred: TestEnum.simpleCase, recordInferred: { field1: 0, field2: "" }, optionalInt: 0, letDoubleBinding: 0 }; }
 export function TestFunctionReturningEnum(): TestEnum { return TestEnum.simpleCase; }
 export async function TestSimpleAsyncFunction(a: string, b: string): Promise<string> { return ""; }
-export async function TestUnderscore(url: URL, _2: BarcodeType[], promise: Promise): Promise<unknown /*The type couldn't be resolved automatically.*/> { return; }
+export async function TestUnderscore(url: URL, _2: BarcodeType[]): Promise<unknown /*The type couldn't be resolved automatically.*/> { return; }
 export class TestClassWithConstructor {
     constructor(a: number) { }
 }
@@ -78,8 +78,6 @@ export type ExpoWebViewProps = {
     testProp: URL;
     onEvent1: (event: any) => void;
     onEvent2: (event: any) => void;
-    onEvent3: (event: any) => void;
-    onEvent4: (event: any) => void;
 };
 export function ExpoWebView(props: ExpoWebViewProps) { }
 "
@@ -111,7 +109,7 @@ export function TestTypeCombinations(a) { return []; }
 export function TestFunctionReturningRecord() { return { basicString: "", basicStringInitialized: "", basicIntInferred: 0, basicDoubleInferred: 0, basicStringInferred: "", enumInferred: TestEnum.simpleCase, complexEnumInferred: TestEnum.simpleCase, recordInferred: { field1: 0, field2: "" }, optionalInt: 0, letDoubleBinding: 0 }; }
 export function TestFunctionReturningEnum() { return TestEnum.simpleCase; }
 export async function TestSimpleAsyncFunction(a, b) { return ""; }
-export async function TestUnderscore(url, _3, promise) { return; }
+export async function TestUnderscore(url, _3) { return; }
 export class TestClassWithConstructor {
     constructor(a) { }
 }
@@ -135,10 +133,10 @@ exports[`Same generated module file 1`] = `
 
 import { NativeModule } from 'expo';
 
-export namespace TestModuleTypes {
-  type URL = unknown;
-  type BarcodeType = unknown;
-  type SomeParametrizedType<T0, T1> = unknown;
+export declare namespace TestModuleTypes {
+  export type URL = unknown;
+  export type BarcodeType = unknown;
+  export type SomeParametrizedType<T0, T1> = unknown;
 }
 export type URL = TestModuleTypes.URL;
 export type BarcodeType = TestModuleTypes.BarcodeType;
@@ -219,15 +217,14 @@ export declare class TestModule extends NativeModule {
   TestSimpleAsyncFunction(a: string, b: string): Promise<string>;
   TestUnderscore(
     url: URL,
-    _1: BarcodeType[],
-    promise: Promise
+    _1: BarcodeType[]
   ): Promise<unknown /*The type couldn't be resolved automatically.*/>;
   TestClassWithConstructor: typeof TestClassWithConstructor;
   TestBasicClass: typeof TestBasicClass;
   TestEmptyClass: typeof TestEmptyClass;
 }
 
-const _default: TestModule;
+export const _default: TestModule;
 export default _default;
 "
 `;
@@ -252,11 +249,9 @@ type ExpoWebViewProps = {
   testProp: URL;
   onEvent1: (event: any) => void;
   onEvent2: (event: any) => void;
-  onEvent3: (event: any) => void;
-  onEvent4: (event: any) => void;
 };
 
-const _default: React.JSXElementConstructor<ExpoWebViewProps>;
+export const _default: React.JSXElementConstructor<ExpoWebViewProps>;
 export default _default;
 "
 `;
@@ -283,6 +278,20 @@ exports[`Same type information 1`] = `
       ],
       "name": "TestEnum",
     },
+  ],
+  "inferredTypeParametersCountList": [
+    [
+      "Map",
+      2,
+    ],
+    [
+      "Set",
+      1,
+    ],
+    [
+      "SomeParametrizedType",
+      2,
+    ],
   ],
   "moduleClasses": [
     {
@@ -328,13 +337,6 @@ exports[`Same type information 1`] = `
                   "kind": 1,
                   "type": "BarcodeType",
                 },
-              },
-            },
-            {
-              "name": "promise",
-              "type": {
-                "kind": 1,
-                "type": "Promise",
               },
             },
           ],
@@ -801,8 +803,6 @@ exports[`Same type information 1`] = `
           "events": [
             "onEvent1",
             "onEvent2",
-            "onEvent3",
-            "onEvent4",
           ],
           "functions": [],
           "name": "ExpoWebView",
@@ -1103,24 +1103,9 @@ exports[`Same type information 1`] = `
       },
     ],
   ],
-  "typeParametersCountList": [
-    [
-      "Map",
-      2,
-    ],
-    [
-      "Set",
-      1,
-    ],
-    [
-      "SomeParametrizedType",
-      2,
-    ],
-  ],
   "usedTypeIdentifiersList": [
     "BarcodeType",
     "Map",
-    "Promise",
     "Set",
     "SomeParametrizedType",
     "TestEnum",

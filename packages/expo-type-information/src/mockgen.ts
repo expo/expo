@@ -240,7 +240,11 @@ function getMockForModule(
       getPrefix(),
       newlineIdentifier,
       [...undeclaredTypeIdentifiers].map((identifier) =>
-        getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.typeParametersCount)
+        getIdentifierUnknownDeclaration(
+          identifier,
+          true,
+          fileTypeInformation.inferredTypeParametersCount
+        )
       ),
       newlineIdentifier,
       fileTypeInformation.records.flatMap(getRecordDeclaration),

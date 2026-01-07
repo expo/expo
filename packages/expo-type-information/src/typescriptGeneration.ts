@@ -456,13 +456,13 @@ function getNTypeNodes(n: number): ts.TypeNode[] {
 export function getIdentifierUnknownDeclaration(
   identifier: string,
   exported: boolean,
-  typeParametersCount: Map<string, number>
+  inferredTypeParametersCount: Map<string, number>
 ): ts.Statement {
   return getTypeAliasDeclaration(
     identifier,
     ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword),
     exported,
-    typeParametersCount.get(identifier)
+    inferredTypeParametersCount.get(identifier)
   );
 }
 
@@ -523,7 +523,7 @@ function getUndeclaredIdentifiersDeclaration(
             getIdentifierUnknownDeclaration(
               identifier,
               true,
-              fileTypeInformation.typeParametersCount
+              fileTypeInformation.inferredTypeParametersCount
             )
           )
         ),
@@ -531,7 +531,8 @@ function getUndeclaredIdentifiersDeclaration(
       ),
     ],
     [...undeclaredTypeIdentifiers].map((undeclaredTypeIdentifier) => {
-      const paramCount = fileTypeInformation.typeParametersCount.get(undeclaredTypeIdentifier);
+      const paramCount =
+        fileTypeInformation.inferredTypeParametersCount.get(undeclaredTypeIdentifier);
       return getTypeAliasDeclaration(
         undeclaredTypeIdentifier,
         ts.factory.createTypeReferenceNode(
@@ -621,7 +622,11 @@ function getViewTypesDeclarationsForModule(
     getOneNamedImport('ViewProps', 'react-native'),
     newlineIdentifier,
     [...undeclaredTypeIdentifiers].map((identifier) =>
-      getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.typeParametersCount)
+      getIdentifierUnknownDeclaration(
+        identifier,
+        true,
+        fileTypeInformation.inferredTypeParametersCount
+      )
     ),
     newlineIdentifier,
     getPropsTypeDeclaration(getViewPropsTypeName(mainView), mainView.props, mainView.events, false),

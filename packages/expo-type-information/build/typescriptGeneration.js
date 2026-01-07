@@ -234,8 +234,8 @@ function getNTypeNodes(n) {
     }
     return params;
 }
-function getIdentifierUnknownDeclaration(identifier, exported, typeParametersCount) {
-    return getTypeAliasDeclaration(identifier, typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.UnknownKeyword), exported, typeParametersCount.get(identifier));
+function getIdentifierUnknownDeclaration(identifier, exported, inferredTypeParametersCount) {
+    return getTypeAliasDeclaration(identifier, typescript_1.default.factory.createKeywordTypeNode(typescript_1.default.SyntaxKind.UnknownKeyword), exported, inferredTypeParametersCount.get(identifier));
 }
 function getTypeAliasDeclaration(alias, typeIdentifier, exported, paramCount) {
     return typescript_1.default.factory.createTypeAliasDeclaration(exported ? [typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ExportKeyword)] : undefined, alias, paramCount === undefined ? undefined : getNTypeParameterDeclaration(paramCount), typeIdentifier);
@@ -252,9 +252,9 @@ function getEnumDeclaration(enumType) {
 }
 function getUndeclaredIdentifiersDeclaration(fileTypeInformation, undeclaredTypeIdentifiers, unresolvedTypesNamespace) {
     return [].concat([
-        typescript_1.default.factory.createModuleDeclaration(getExportDeclareModifiers(), typescript_1.default.factory.createIdentifier(unresolvedTypesNamespace), typescript_1.default.factory.createModuleBlock([...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.typeParametersCount))), typescript_1.default.NodeFlags.Namespace),
+        typescript_1.default.factory.createModuleDeclaration(getExportDeclareModifiers(), typescript_1.default.factory.createIdentifier(unresolvedTypesNamespace), typescript_1.default.factory.createModuleBlock([...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.inferredTypeParametersCount))), typescript_1.default.NodeFlags.Namespace),
     ], [...undeclaredTypeIdentifiers].map((undeclaredTypeIdentifier) => {
-        const paramCount = fileTypeInformation.typeParametersCount.get(undeclaredTypeIdentifier);
+        const paramCount = fileTypeInformation.inferredTypeParametersCount.get(undeclaredTypeIdentifier);
         return getTypeAliasDeclaration(undeclaredTypeIdentifier, typescript_1.default.factory.createTypeReferenceNode(typescript_1.default.factory.createQualifiedName(typescript_1.default.factory.createIdentifier(unresolvedTypesNamespace), undeclaredTypeIdentifier), paramCount === undefined ? undefined : getNTypeNodes(paramCount)), true, paramCount);
     }));
 }
@@ -280,7 +280,7 @@ function getViewTypesDeclarationsForModule(moduleClassDeclaration, fileTypeInfor
     const undeclaredTypeIdentifiers = fileTypeInformation.usedTypeIdentifiers
         .difference(fileTypeInformation.declaredTypeIdentifiers)
         .difference(basicTypesIdentifiers());
-    return [].concat(getPrefix(), newlineIdentifier, getOneNamedImport('SharedObject', 'expo'), newlineIdentifier, getOneNamedImport('ViewProps', 'react-native'), newlineIdentifier, [...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.typeParametersCount)), newlineIdentifier, getPropsTypeDeclaration(getViewPropsTypeName(mainView), mainView.props, mainView.events, false), newlineIdentifier, getViewDefaultValueExport(moduleClassDeclaration.views[0]));
+    return [].concat(getPrefix(), newlineIdentifier, getOneNamedImport('SharedObject', 'expo'), newlineIdentifier, getOneNamedImport('ViewProps', 'react-native'), newlineIdentifier, [...undeclaredTypeIdentifiers].map((identifier) => getIdentifierUnknownDeclaration(identifier, true, fileTypeInformation.inferredTypeParametersCount)), newlineIdentifier, getPropsTypeDeclaration(getViewPropsTypeName(mainView), mainView.props, mainView.events, false), newlineIdentifier, getViewDefaultValueExport(moduleClassDeclaration.views[0]));
 }
 async function prettifyCode(text, parser = 'babel') {
     return await prettier_1.default.format(text, {
