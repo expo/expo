@@ -106,15 +106,3 @@ struct ListStyleModifer: ViewModifier {
     }
   }
 }
-
-struct ScrollDisabledModifier: ViewModifier {
-  let scrollEnabled: Bool
-
-  func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      content.scrollDisabled(!scrollEnabled)
-    } else {
-      content
-    }
-  }
-}
