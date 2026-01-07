@@ -13353,10 +13353,10 @@ react-native-paper@^5.12.5:
     color "^3.1.2"
     use-latest-callback "^0.1.5"
 
-react-native-reanimated@4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-4.2.0.tgz#5b08e53abd12f38a097c9853c8da2b1e8923fc4a"
-  integrity sha512-frhu5b8/m/VvaMWz48V8RxcsXnE3hrlErQ5chr21MzAeDCpY4X14sQjvm+jvu3aOI+7Cz2atdRpyhhIuqxVaXg==
+react-native-reanimated@4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-4.2.1.tgz#fbdee721bff0946a6e5ae67c8c38c37ca4a0a057"
+  integrity sha512-/NcHnZMyOvsD/wYXug/YqSKw90P9edN0kEPL5lP4PFf1aQ4F1V7MKe/E0tvfkXKIajy3Qocp5EiEnlcrK/+BZg==
   dependencies:
     react-native-is-edge-to-edge "1.2.1"
     semver "7.7.3"
