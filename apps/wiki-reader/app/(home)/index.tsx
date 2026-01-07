@@ -27,7 +27,10 @@ export default function Home() {
           <Column>
             <Button onPress={() => {}}>Search</Button>
           </Column>
-          <HorizontalFloatingToolbar>
+          <HorizontalFloatingToolbar variant="vibrant">
+            <IconButton onPress={() => {}}>
+              <Icon source={require('../../assets/symbols/shuffle.xml')} tintColor="#1d1b20" />
+            </IconButton>
             <IconButton onPress={() => {}}>
               <Icon source={require('../../assets/symbols/translate.xml')} tintColor="#1d1b20" />
             </IconButton>
@@ -40,9 +43,12 @@ export default function Home() {
             <IconButton onPress={() => {}}>
               <Icon source={require('../../assets/symbols/upward.xml')} tintColor="#1d1b20" />
             </IconButton>
-            <IconButton onPress={() => {}}>
-              <Icon source={require('../../assets/symbols/shuffle.xml')} tintColor="#1d1b20" />
-            </IconButton>
+            <HorizontalFloatingToolbar.FloatingActionButton
+              onPress={() => {
+                alert('Search');
+              }}>
+              <Icon source={require('../../assets/symbols/search.xml')} tintColor="#1d1b20" />
+            </HorizontalFloatingToolbar.FloatingActionButton>
           </HorizontalFloatingToolbar>
         </Box>
       </Host>

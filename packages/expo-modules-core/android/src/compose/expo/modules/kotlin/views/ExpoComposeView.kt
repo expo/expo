@@ -89,6 +89,21 @@ abstract class ExpoComposeView<T : ComposeProps>(
   }
 
   @Composable
+  fun Children(composableScope: ComposableScope?, filter: (child: ExpoComposeView<*>) -> Boolean) {
+    for (index in 0..<this.size) {
+      val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
+      if (!filter(child)) {
+        continue
+      }
+      with(composableScope ?: ComposableScope()) {
+        with(child) {
+          Content()
+        }
+      }
+    }
+  }
+
+  @Composable
   fun Child(composableScope: ComposableScope, index: Int) {
     val child = getChildAt(index) as? ExpoComposeView<*> ?: return
     with(composableScope) {
