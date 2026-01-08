@@ -1,63 +1,58 @@
-import { Gauge, Host, VStack } from '@expo/ui/swift-ui';
-import * as React from 'react';
-import { PlatformColor } from 'react-native';
-
-import { Page, Section } from '../../components/Page';
-
-const COLORS = [
-  PlatformColor('systemGreen'),
-  PlatformColor('systemYellow'),
-  PlatformColor('systemRed'),
-];
+import { Gauge, Host, List, Section, Text, Button } from '@expo/ui/swift-ui';
+import { gaugeStyle, tint } from '@expo/ui/swift-ui/modifiers';
+import { useState } from 'react';
 
 export default function GaugeScreen() {
+  const [value, setValue] = useState(0.5);
+
   return (
-    <Page>
-      <Section title="Default">
-        <Host matchContents>
-          <VStack spacing={16}>
-            <Gauge label="label" current={{ value: 0.2 }} />
-            <Gauge
-              label="Usage"
-              current={{ value: 70, label: '70%', color: PlatformColor('systemYellow') }}
-              min={{ value: 0, label: '0', color: PlatformColor('systemGreen') }}
-              max={{ value: 100, label: '100', color: PlatformColor('systemRed') }}
-              color={COLORS}
-            />
-          </VStack>
-        </Host>
-      </Section>
-      <Section title="Circular">
-        <Host matchContents>
-          <VStack spacing={16}>
-            <Gauge current={{ value: 0.2, label: '20%' }} color={COLORS} type="circular" />
-            <Gauge
-              current={{ value: 0.7, label: '70%' }}
-              color={[...COLORS].reverse()}
-              type="circularCapacity"
-            />
-          </VStack>
-        </Host>
-      </Section>
-      <Section title="Linear">
-        <Host matchContents>
-          <VStack spacing={16}>
-            <Gauge
-              label="linear label"
-              current={{ value: 0.2, label: '20%' }}
-              color={COLORS}
-              type="linear"
-            />
-            <Gauge
-              label="linearCapacity label"
-              current={{ value: 0.7, label: '70%' }}
-              color={COLORS}
-              type="linearCapacity"
-            />
-          </VStack>
-        </Host>
-      </Section>
-    </Page>
+    <Host style={{ flex: 1 }}>
+      <List>
+        <Section title="Basic">
+          <Gauge value={value} />
+          <Button
+            onPress={() => {
+              if (value >= 1) {
+                setValue(0);
+              } else {
+                setValue(value + 0.5);
+              }
+            }}
+            label={value >= 1 ? 'Reset' : 'Increase progress'}></Button>
+        </Section>
+        <Section title="With Labels">
+          <Gauge
+            value={50}
+            min={0}
+            max={100}
+            currentValueLabel={<Text>50%</Text>}
+            minimumValueLabel={<Text>0</Text>}
+            maximumValueLabel={<Text>100</Text>}>
+            <Text>Usage</Text>
+          </Gauge>
+        </Section>
+        <Section title="Circular Styles">
+          <Gauge value={value} modifiers={[gaugeStyle('circular')]}>
+            <Text>Circular</Text>
+          </Gauge>
+          <Gauge value={value} modifiers={[gaugeStyle('circularCapacity')]}>
+            <Text>Capacity</Text>
+          </Gauge>
+        </Section>
+        <Section title="Linear Styles">
+          <Gauge value={value} modifiers={[gaugeStyle('linear')]}>
+            <Text>Linear</Text>
+          </Gauge>
+          <Gauge value={value} modifiers={[gaugeStyle('linearCapacity')]}>
+            <Text>Capacity</Text>
+          </Gauge>
+        </Section>
+        <Section title="With Tint">
+          <Gauge value={value} modifiers={[gaugeStyle('circular'), tint('green')]} />
+          <Gauge value={value} modifiers={[gaugeStyle('linear'), tint('red')]} />
+        </Section>
+      </List>
+    </Host>
   );
 }
 

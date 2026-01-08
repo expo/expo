@@ -10,6 +10,7 @@ import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
+import { gaugeStyle } from './gaugeStyle';
 import type { Color } from './types';
 
 const ExpoUI = requireNativeModule('ExpoUI');
@@ -941,7 +942,8 @@ export type BuiltInModifier =
   | ReturnType<typeof gridColumnAlignment>
   | ReturnType<typeof gridCellAnchor>
   | ReturnType<typeof submitLabel>
-  | ReturnType<typeof datePickerStyle>;
+  | ReturnType<typeof datePickerStyle>
+  | ReturnType<typeof gaugeStyle>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -991,3 +993,4 @@ export type * from './types';
 export * from './tag';
 export * from './pickerStyle';
 export * from './datePickerStyle';
+export * from './gaugeStyle';

@@ -1,76 +1,91 @@
 import { requireNativeView } from 'expo';
-import { ColorValue } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 /**
- * The type of `Gauge`.
+ * The kind of gauge label.
  */
-export type GaugeType = 'default' | 'circular' | 'circularCapacity' | 'linear' | 'linearCapacity';
-
-/**
- * Value options for the `Gauge` component.
- */
-export type ValueOptions = {
-  /**
-   * Value of the element.
-   */
-  value: number;
-  /**
-   * Label of the element.
-   */
-  label?: string;
-  /**
-   * Color of the label.
-   */
-  color?: ColorValue;
-};
+type GaugeLabelKind = 'label' | 'currentValue' | 'minimumValue' | 'maximumValue';
 
 export type GaugeProps = {
   /**
-   * A label displayed on the `Gauge`.
+   * The current value of the gauge.
    */
-  label?: string;
+  value: number;
   /**
-   * Color of the label.
+   * The minimum value of the gauge range.
+   * @default 0
    */
-  labelColor?: ColorValue;
+  min?: number;
   /**
-   * Current value options.
+   * The maximum value of the gauge range.
+   * @default 1
    */
-  current: ValueOptions;
+  max?: number;
   /**
-   * Minimum value options.
+   * A label describing the gauge's purpose.
    */
-  min?: ValueOptions;
+  children?: React.ReactNode;
   /**
-   * Maximum value options.
+   * A label showing the current value. Use `Text` or `Label` to display the value.
    */
-  max?: ValueOptions;
+  currentValueLabel?: React.ReactNode;
   /**
-   * The type of `Gauge`.
+   * A label showing the minimum value. Use `Text` or `Label` to display the value.
    */
-  type?: GaugeType;
+  minimumValueLabel?: React.ReactNode;
   /**
-   * Color (or array of colors for gradient) of the `Gauge`.
+   * A label showing the maximum value. Use `Text` or `Label` to display the value.
    */
-  color?: ColorValue | ColorValue[];
+  maximumValueLabel?: React.ReactNode;
 } & CommonViewModifierProps;
 
-const GaugeNativeView: React.ComponentType<GaugeProps> = requireNativeView('ExpoUI', 'GaugeView');
+type NativeGaugeProps = Omit<
+  GaugeProps,
+  'currentValueLabel' | 'minimumValueLabel' | 'maximumValueLabel'
+> & {
+  children?: React.ReactNode;
+};
+
+const GaugeNativeView: React.ComponentType<NativeGaugeProps> = requireNativeView(
+  'ExpoUI',
+  'GaugeView'
+);
+
+const GaugeLabelNativeView: React.ComponentType<{
+  kind: GaugeLabelKind;
+  children?: React.ReactNode;
+}> = requireNativeView('ExpoUI', 'GaugeLabelView');
 
 /**
- * Renders a native `Gauge` component.
- * @platform ios 16.0+
+ * Renders a SwiftUI `Gauge` component.
  */
-export function Gauge({ type = 'default', modifiers, ...props }: GaugeProps) {
+export function Gauge(props: GaugeProps) {
+  const {
+    modifiers,
+    children,
+    currentValueLabel,
+    minimumValueLabel,
+    maximumValueLabel,
+    ...restProps
+  } = props;
+
   return (
     <GaugeNativeView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      type={type}
-      {...props}
-    />
+      {...restProps}>
+      {children && <GaugeLabelNativeView kind="label">{children}</GaugeLabelNativeView>}
+      {currentValueLabel && (
+        <GaugeLabelNativeView kind="currentValue">{currentValueLabel}</GaugeLabelNativeView>
+      )}
+      {minimumValueLabel && (
+        <GaugeLabelNativeView kind="minimumValue">{minimumValueLabel}</GaugeLabelNativeView>
+      )}
+      {maximumValueLabel && (
+        <GaugeLabelNativeView kind="maximumValue">{maximumValueLabel}</GaugeLabelNativeView>
+      )}
+    </GaugeNativeView>
   );
 }

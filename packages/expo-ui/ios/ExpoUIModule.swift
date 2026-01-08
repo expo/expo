@@ -95,6 +95,7 @@ public final class ExpoUIModule: Module {
 
     ExpoUIView(FormView.self)
     ExpoUIView(GaugeView.self)
+    View(GaugeLabelView.self)
     ExpoUIView(GroupView.self)
     ExpoUIView(HStackView.self)
     ExpoUIView(ImageView.self)

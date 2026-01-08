@@ -1,59 +1,38 @@
-import { ColorValue } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
-/**
- * The type of `Gauge`.
- */
-export type GaugeType = 'default' | 'circular' | 'circularCapacity' | 'linear' | 'linearCapacity';
-/**
- * Value options for the `Gauge` component.
- */
-export type ValueOptions = {
+export type GaugeProps = {
     /**
-     * Value of the element.
+     * The current value of the gauge.
      */
     value: number;
     /**
-     * Label of the element.
+     * The minimum value of the gauge range.
+     * @default 0
      */
-    label?: string;
+    min?: number;
     /**
-     * Color of the label.
+     * The maximum value of the gauge range.
+     * @default 1
      */
-    color?: ColorValue;
-};
-export type GaugeProps = {
+    max?: number;
     /**
-     * A label displayed on the `Gauge`.
+     * A label describing the gauge's purpose.
      */
-    label?: string;
+    children?: React.ReactNode;
     /**
-     * Color of the label.
+     * A label showing the current value. Use `Text` or `Label` to display the value.
      */
-    labelColor?: ColorValue;
+    currentValueLabel?: React.ReactNode;
     /**
-     * Current value options.
+     * A label showing the minimum value. Use `Text` or `Label` to display the value.
      */
-    current: ValueOptions;
+    minimumValueLabel?: React.ReactNode;
     /**
-     * Minimum value options.
+     * A label showing the maximum value. Use `Text` or `Label` to display the value.
      */
-    min?: ValueOptions;
-    /**
-     * Maximum value options.
-     */
-    max?: ValueOptions;
-    /**
-     * The type of `Gauge`.
-     */
-    type?: GaugeType;
-    /**
-     * Color (or array of colors for gradient) of the `Gauge`.
-     */
-    color?: ColorValue | ColorValue[];
+    maximumValueLabel?: React.ReactNode;
 } & CommonViewModifierProps;
 /**
- * Renders a native `Gauge` component.
- * @platform ios 16.0+
+ * Renders a SwiftUI `Gauge` component.
  */
-export declare function Gauge({ type, modifiers, ...props }: GaugeProps): import("react").JSX.Element;
+export declare function Gauge(props: GaugeProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
