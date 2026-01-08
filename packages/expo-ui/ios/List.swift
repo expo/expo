@@ -17,7 +17,7 @@ final class ListProps: UIBaseViewProps {
 
 struct ListView: ExpoSwiftUI.View {
   @ObservedObject var props: ListProps
-  @State private var selection: Set<Int> = []
+  @State private var selection: Set<AnyHashable> = []
   @State var editModeEnabled: EditMode = .inactive
   @State var search: String = ""
 
@@ -33,20 +33,20 @@ struct ListView: ExpoSwiftUI.View {
         .deleteDisabled(!props.deleteEnabled)
         .moveDisabled(!props.moveEnabled)
     }
-      .modifier(ListStyleModifer(style: props.listStyle))
-      .onAppear {
-        editModeEnabled = props.editModeEnabled ? .active : .inactive
+    .modifier(ListStyleModifer(style: props.listStyle))
+    .onAppear {
+      editModeEnabled = props.editModeEnabled ? .active : .inactive
+    }
+    .onChange(of: props.editModeEnabled) { newValue in
+      withAnimation {
+        editModeEnabled = newValue ? .active : .inactive
       }
-      .onChange(of: props.editModeEnabled) { newValue in
-        withAnimation {
-          editModeEnabled = newValue ? .active : .inactive
-        }
-      }
-      .onChange(of: selection) { selection in
-        handleSelectionChange(selection: selection)
-      }
-      .modifier(ScrollDisabledModifier(scrollEnabled: props.scrollEnabled))
-      .environment(\.editMode, $editModeEnabled)
+    }
+    .onChange(of: selection) { selection in
+      handleSelectionChange(selection: selection)
+    }
+    .modifier(ScrollDisabledModifier(scrollEnabled: props.scrollEnabled))
+    .environment(\.editMode, $editModeEnabled)
     if #available(iOS 16.0, tvOS 16.0, *) {
       list.scrollDisabled(!props.scrollEnabled)
     } else {
@@ -65,12 +65,22 @@ struct ListView: ExpoSwiftUI.View {
     for source in sources {
       props.onMoveItem([
         "from": source,
-        "to": destination
+        "to": destination,
       ])
     }
   }
-  func handleSelectionChange(selection: Set<Int>) {
-    let selectionArray = Array(selection)
+  func handleSelectionChange(selection: Set<AnyHashable>) {
+    // Convert AnyHashable values to their base types for JSON serialization
+    let selectionArray = selection.compactMap { item -> Any? in
+      if let intValue = item.base as? Int {
+        return intValue
+      } else if let doubleValue = item.base as? Double {
+        return Int(doubleValue)
+      } else if let stringValue = item.base as? String {
+        return stringValue
+      }
+      return nil
+    }
     let jsonDict: [String: Any] = [
       "selection": selectionArray
     ]
@@ -90,17 +100,17 @@ struct ListStyleModifer: ViewModifier {
       content.listStyle(.automatic)
 
     case "insetGrouped":
-#if !os(tvOS) // fallthrough to default
-      content.listStyle(.insetGrouped)
-#endif
+      #if !os(tvOS)  // fallthrough to default
+        content.listStyle(.insetGrouped)
+      #endif
     case "inset":
-#if !os(tvOS) // fallthrough to default
-      content.listStyle(.inset)
-#endif
+      #if !os(tvOS)  // fallthrough to default
+        content.listStyle(.inset)
+      #endif
     case "sidebar":
-#if !os(tvOS) // fallthrough to default
-      content.listStyle(.sidebar)
-#endif
+      #if !os(tvOS)  // fallthrough to default
+        content.listStyle(.sidebar)
+      #endif
     default:
       content
     }

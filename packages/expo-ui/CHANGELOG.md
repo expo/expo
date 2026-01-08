@@ -26,6 +26,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix seletable elements in List. ([#41840](https://github.com/expo/expo/pull/41840) by [@remyr](https://github.com/remyr))
+
 ### 💡 Others
 
 - [jetpack-compose] Replaced `DynamicTheme` as `Host.colorScheme` prop. ([#41413](https://github.com/expo/expo/pull/41413) by [@kudo](https://github.com/kudo))
