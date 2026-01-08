@@ -7,6 +7,7 @@
 #import <ExpoModulesCore/EXUIManager.h>
 #import <ExpoModulesCore/EXJavaScriptContextProvider.h>
 #import <ExpoModulesCore/EXFileSystemInterface.h>
+#import <React/RCTLog.h>
 
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
@@ -143,7 +144,7 @@
     }];
   } else {
     BLOCK_SAFE_RUN(callback, NO);
-    EXLogWarn(@"EXGL: Can only run on JavaScriptCore! Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://reactnative.dev/docs/debugging)? EXGL is not supported while using Remote Debugging, you will need to disable it to use EXGL.");
+    RCTLogWarn(@"EXGL: Can only run on JavaScriptCore! Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://reactnative.dev/docs/debugging)? EXGL is not supported while using Remote Debugging, you will need to disable it to use EXGL.");
   }
 }
 
@@ -229,7 +230,7 @@
       reject(
              @"E_GL_NO_FRAMEBUFFER",
              nil,
-             EXErrorWithMessage(@"No framebuffer bound. Create and bind one to take a snapshot from it.")
+             RCTErrorWithMessage(@"No framebuffer bound. Create and bind one to take a snapshot from it.")
              );
       return;
     }
@@ -237,7 +238,7 @@
       reject(
              @"E_GL_INVALID_VIEWPORT",
              nil,
-             EXErrorWithMessage(@"Rect's width and height must be greater than 0. If you didn't set `rect` option, check if the viewport is set correctly.")
+             RCTErrorWithMessage(@"Rect's width and height must be greater than 0. If you didn't set `rect` option, check if the viewport is set correctly.")
              );
       return;
     }
@@ -286,7 +287,7 @@
     NSString *extension;
 
     if ([format isEqualToString:@"webp"]) {
-      EXLogWarn(@"iOS doesn't support 'webp' representation, so 'takeSnapshot' won't work with that format. The image is going to be exported as 'png', but consider using a different code for iOS. Check this docs to learn how to do platform specific code (https://reactnative.dev/docs/platform-specific-code)");
+      RCTLogWarn(@"iOS doesn't support 'webp' representation, so 'takeSnapshot' won't work with that format. The image is going to be exported as 'png', but consider using a different code for iOS. Check this docs to learn how to do platform specific code (https://reactnative.dev/docs/platform-specific-code)");
       imageData = UIImagePNGRepresentation(image);
       extension = @".png";
     }

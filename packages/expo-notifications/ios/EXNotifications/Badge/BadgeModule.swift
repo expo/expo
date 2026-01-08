@@ -8,7 +8,7 @@ public class BadgeModule: Module {
     Name("ExpoBadgeModule")
 
     AsyncFunction("getBadgeCountAsync") { () -> Int in
-      return EXSharedApplication().applicationIconBadgeNumber
+      return RCTSharedApplication()?.applicationIconBadgeNumber ?? 0
     }
     .runOnQueue(.main)
 
@@ -22,7 +22,7 @@ public class BadgeModule: Module {
           try await center.setBadgeCount(badgeCount)
         } else {
           await MainActor.run {
-            EXSharedApplication().applicationIconBadgeNumber = badgeCount
+            RCTSharedApplication()?.applicationIconBadgeNumber = badgeCount
           }
         }
         return true
