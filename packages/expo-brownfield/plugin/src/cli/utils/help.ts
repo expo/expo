@@ -23,7 +23,7 @@ export const helpMessage = ({
     title: 'Commands:',
   });
 
-  const usageSection = `${chalk.bold('Usage:')} expo-brownfield-target ${promptCommand}  [${promptOptions}]`;
+  const usageSection = `${chalk.bold('Usage:')} expo-brownfield ${promptCommand}  [${promptOptions}]`;
 
   return `\n${usageSection}${optionsSection}${commandsSection}\n`;
 };

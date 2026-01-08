@@ -19,7 +19,7 @@ const helpMessage = ({ commands, options, promptCommand = '<command>', promptOpt
         right: ({ description }) => description,
         title: 'Commands:',
     });
-    const usageSection = `${chalk_1.default.bold('Usage:')} expo-brownfield-target ${promptCommand}  [${promptOptions}]`;
+    const usageSection = `${chalk_1.default.bold('Usage:')} expo-brownfield ${promptCommand}  [${promptOptions}]`;
     return `\n${usageSection}${optionsSection}${commandsSection}\n`;
 };
 exports.helpMessage = helpMessage;

@@ -4,6 +4,7 @@
   "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
+  "bin": "./plugin/build/cli/index.js",
   "exports": {
     ".": {
       "source": "./src/index.ts",
@@ -17,12 +18,31 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
+    "copy-templates": "cp -r ./plugin/src/templates ./plugin/build/templates",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+    "prepare": "expo-module prepare && yarn copy-templates",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
+  "files": [
+    "android/src",
+    "android/build.gradle",
+    "build/",
+    "gradle-plugins/",
+    "ios/",
+    "plugin/",
+    "src/",
+    ".eslintignore",
+    ".eslintrc.js",
+    "CHANGELOG.md",
+    "README.md",
+    "app.plugin.js",
+    "babel.config.js",
+    "expo-module.config.json",
+    "package.json",
+    "tsconfig.json"
+  ],
   "keywords": [
     "react-native",
     "expo",
