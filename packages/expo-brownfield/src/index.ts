@@ -1,4 +1,5 @@
 import type { EventSubscription } from 'expo-modules-core';
+
 import NativeModule from './ExpoBrownfieldModule';
 import type { ExpoBrownfieldModuleSpec, Listener, MessageEvent } from './types';
 

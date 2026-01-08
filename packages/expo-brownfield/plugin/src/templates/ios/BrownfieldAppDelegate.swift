@@ -18,10 +18,7 @@ open class BrownfieldAppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
-    // Initialize ReactNativeHostManager shared instance
-    ReactNativeHostManager.shared.initialize()
-
-    return expoWrapper?.application(application, didFinishLaunchingWithOptions: launchOptions) ?? true
+    expoWrapper?.application(application, didFinishLaunchingWithOptions: launchOptions) ?? true
   }
 
   // END SECTION: Initializing the app
