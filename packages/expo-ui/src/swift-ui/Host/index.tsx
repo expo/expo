@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { type ColorSchemeName, I18nManager, StyleProp, ViewStyle } from 'react-native';
+import { I18nManager, StyleProp, ViewStyle } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -28,7 +28,7 @@ export type HostProps = {
   /**
    * The color scheme of the host view.
    */
-  colorScheme?: ColorSchemeName;
+  colorScheme?: 'light' | 'dark';
 
   /**
    * The layout direction for the SwiftUI content.
