@@ -11,7 +11,7 @@
   "@react-native-community/viewpager": "5.0.11",
   "@react-native-picker/picker": "2.11.2",
   "@react-native-segmented-control/segmented-control": "2.5.7",
-  "@stripe/stripe-react-native": "0.50.3",
+  "@stripe/stripe-react-native": "0.57.2",
   "eslint-config-expo": "~10.0.0",
   "expo-analytics-amplitude": "~11.3.0",
   "expo-app-auth": "~11.1.0",
