@@ -144,7 +144,7 @@
     "react-native": "0.83.1",
     "react-native-dropdown-picker": "^5.3.0",
     "react-native-gesture-handler": "~2.30.0",
-    "react-native-keyboard-controller": "^1.20.3",
+    "react-native-keyboard-controller": "^1.20.4",
     "react-native-maps": "1.26.20",
     "react-native-pager-view": "8.0.0",
     "react-native-paper": "^5.12.5",
