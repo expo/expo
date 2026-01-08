@@ -39,6 +39,7 @@
     "@babel/generator": "^7.20.5",
     "@expo/config": "~55.0.2",
     "@expo/metro": "~54.2.0",
+    "@expo/inline-modules": "0.0.1",
     "@expo/env": "~2.0.10",
     "@expo/json-file": "~10.0.10",
     "@expo/spawn-async": "^1.7.2",

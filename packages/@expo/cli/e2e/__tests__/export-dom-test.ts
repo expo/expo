@@ -34,7 +34,10 @@ describe('Export DOM Components', () => {
   let projectRoot: string;
 
   beforeAll(async () => {
-    projectRoot = await setupTestProjectWithOptionsAsync('dom-export', 'with-dom');
+    projectRoot = await setupTestProjectWithOptionsAsync('dom-export', 'with-dom', {
+      // TODO(@HubertBer): remove @expo/inline-modules after publishing
+      linkExpoPackages: ['@expo/inline-modules'],
+    });
   });
 
   it('runs `npx expo export`', async () => {

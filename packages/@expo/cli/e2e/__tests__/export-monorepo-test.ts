@@ -20,7 +20,8 @@ beforeAll(async () => {
     // NOTE(cedric): this is a temporary workaround to avoid `@expo/cli` or `@expo/metro-config` to link to packages inside the expo/expo monorepo
     // For some reason, this has gotten more unstable than it was and may result in unexpected SHA1 files not being calculated (even though they are included in the watch folders)
     // TODO(@hassankhan): remove expo-router and @expo/router-server after publishing
-    linkExpoPackages: ['@expo/cli', '@expo/router-server', 'expo-router'],
+    // TODO(@HubertBer): remove @expo/inline-modules after publishing
+    linkExpoPackages: ['@expo/inline-modules', '@expo/cli', '@expo/router-server', 'expo-router'],
   });
 });
 

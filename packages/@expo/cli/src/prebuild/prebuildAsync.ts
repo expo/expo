@@ -1,5 +1,6 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
+import { updateXCodeProject } from '@expo/inline-modules';
 import chalk from 'chalk';
 
 import { clearNativeFolder, promptToClearMalformedNativeProjectsAsync } from './clearNativeFolder';
@@ -7,7 +8,6 @@ import { configureProjectAsync } from './configureProjectAsync';
 import { ensureConfigAsync } from './ensureConfigAsync';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
 import { updateFromTemplateAsync } from './updateFromTemplate';
-import { updateXCodeProject } from '../inlineModules/generation';
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
 import { env } from '../utils/env';
