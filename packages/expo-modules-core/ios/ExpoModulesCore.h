@@ -52,12 +52,9 @@
 #import <ExpoModulesCore/EXAppLifecycleService.h>
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXJavaScriptContextProvider.h>
-#import <ExpoModulesCore/EXLogHandler.h>
 #import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 #import <ExpoModulesCore/EXUIManager.h>
 #import <ExpoModulesCore/EXUtilitiesInterface.h>
-#import <ExpoModulesCore/EXLogManager.h>
-#import <ExpoModulesCore/EXReactLogHandler.h>
 #import <ExpoModulesCore/EXReactNativeAdapter.h>
 #import <ExpoModulesCore/EXPermissionsService.h>
 #import <ExpoModulesCore/EXReactNativeUserNotificationCenterProxy.h>

@@ -68,7 +68,7 @@
     [self _deleteValueWithKey:scopedKey
                   withOptions:options];
   } else {
-    EXLogWarn(@"Encountered an error while saving SecureStore data: %@.", [[super class] _messageForError:error]);
+    RCTLogWarn(@"Encountered an error while saving SecureStore data: %@.", [[super class] _messageForError:error]);
   }
 }
 
