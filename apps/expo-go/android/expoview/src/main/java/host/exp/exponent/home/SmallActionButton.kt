@@ -7,11 +7,11 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun SmallActionButton(label: String, onClick: () -> Unit) {
-  TextButton(onClick = onClick) {
-    Text(
-      text = label,
-      style = MaterialTheme.typography.labelMedium,
-      color = MaterialTheme.colorScheme.primary
-    )
-  }
+    TextButton(onClick = onClick) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
 }

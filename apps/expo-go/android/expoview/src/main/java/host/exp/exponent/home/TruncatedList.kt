@@ -11,31 +11,31 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun <T> TruncatedList(
-  items: List<T>,
-  maxItems: Int = 3,
-  showMoreText: String = "View All",
-  onShowMoreClick: () -> Unit,
-  renderItem: @Composable (T) -> Unit
+    items: List<T>,
+    maxItems: Int = 3,
+    showMoreText: String = "View All",
+    onShowMoreClick: () -> Unit,
+    renderItem: @Composable (T) -> Unit
 ) {
-  val displayItems = items.take(maxItems)
+    val displayItems = items.take(maxItems)
 
-  displayItems.forEachIndexed { index, item ->
-    renderItem(item)
+    displayItems.forEachIndexed { index, item ->
+        renderItem(item)
 
-    if (index < displayItems.lastIndex) {
-      HorizontalDivider()
+        if (index < displayItems.lastIndex) {
+            HorizontalDivider()
+        }
     }
-  }
 
-  if (items.size > maxItems) {
-    HorizontalDivider()
-    TextButton(
-      onClick = onShowMoreClick,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 4.dp)
-    ) {
-      Text(showMoreText)
+    if (items.size > maxItems) {
+        HorizontalDivider()
+        TextButton(
+            onClick = onShowMoreClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+        ) {
+            Text(showMoreText)
+        }
     }
-  }
 }

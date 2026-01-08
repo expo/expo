@@ -29,97 +29,97 @@ import kotlinx.coroutines.flow.map
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun BranchesScreen(
-  viewModel: HomeAppViewModel,
-  appId: String,
+    viewModel: HomeAppViewModel,
+    appId: String,
 
-  onGoBack: () -> Unit,
+    onGoBack: () -> Unit,
 
-  navigateToBranchDetails: (appId: String, branchName: String) -> Unit,
-  bottomBar: @Composable () -> Unit = {}
+    navigateToBranchDetails: (appId: String, branchName: String) -> Unit,
+    bottomBar: @Composable () -> Unit = {}
 ) {
-  val paginatorRefreshableFlow = remember { viewModel.branchesPaginatorRefreshableFlow(appId) }
+    val paginatorRefreshableFlow = remember { viewModel.branchesPaginatorRefreshableFlow(appId) }
 
-  val branches by paginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
-    paginator?.data ?: flowOf(emptyList())
-  }.collectAsState(initial = emptyList())
+    val branches by paginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
+        paginator?.data ?: flowOf(emptyList())
+    }.collectAsState(initial = emptyList())
 
-  val isFetching by paginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
-    paginator?.isFetching ?: flowOf(false)
-  }.collectAsState(initial = false)
+    val isFetching by paginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
+        paginator?.isFetching ?: flowOf(false)
+    }.collectAsState(initial = false)
 
-  val canLoadMore by paginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
-    paginator?.isLastPage?.map { it.not() } ?: flowOf(true)
-  }.collectAsState(initial = true)
+    val canLoadMore by paginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
+        paginator?.isLastPage?.map { it.not() } ?: flowOf(true)
+    }.collectAsState(initial = true)
 
-  val paginator by paginatorRefreshableFlow.dataFlow.collectAsState()
+    val paginator by paginatorRefreshableFlow.dataFlow.collectAsState()
 
-  val pullToRefreshState = rememberPullToRefreshState()
-  val lazyListState = rememberLazyListState()
-  rememberCoroutineScope()
+    val pullToRefreshState = rememberPullToRefreshState()
+    val lazyListState = rememberLazyListState()
+    rememberCoroutineScope()
 
-  Scaffold(
-    topBar = {
-      TopAppBarWithBackIcon(
-        label = "Branches",
-        onGoBack = onGoBack,
-      )
-    },
-    bottomBar = bottomBar
-  ) { padding ->
-    PullToRefreshBox(
-      modifier = Modifier.padding(padding),
-      state = pullToRefreshState,
-      isRefreshing = isFetching && branches.isNotEmpty(),
-      onRefresh = { paginator }
-    ) {
-      // Initial loading indicator
-      if (isFetching && branches.isEmpty()) {
-        Box(
-          modifier = Modifier.fillMaxSize(),
-          contentAlignment = Alignment.Center
-        ) {
-          CircularProgressIndicator()
-        }
-      } else {
-        LazyColumn(
-          modifier = Modifier.fillMaxSize(),
-          state = lazyListState
-        ) {
-          items(branches, key = { it.id }) { branch ->
-            // Make the BranchRow clickable
-            BranchRow(
-              branch = branch,
-              onClick = {
-                // Use the branch's app ID and name for navigation
-                navigateToBranchDetails(appId, branch.name)
-              }
+    Scaffold(
+        topBar = {
+            TopAppBarWithBackIcon(
+                label = "Branches",
+                onGoBack = onGoBack,
             )
-            HorizontalDivider()
-          }
+        },
+        bottomBar = bottomBar
+    ) { padding ->
+        PullToRefreshBox(
+            modifier = Modifier.padding(padding),
+            state = pullToRefreshState,
+            isRefreshing = isFetching && branches.isNotEmpty(),
+            onRefresh = { paginator }
+        ) {
+            // Initial loading indicator
+            if (isFetching && branches.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    state = lazyListState
+                ) {
+                    items(branches, key = { it.id }) { branch ->
+                        // Make the BranchRow clickable
+                        BranchRow(
+                            branch = branch,
+                            onClick = {
+                                // Use the branch's app ID and name for navigation
+                                navigateToBranchDetails(appId, branch.name)
+                            }
+                        )
+                        HorizontalDivider()
+                    }
 
-          // Loading indicator for pagination
-          if (canLoadMore) {
-            item {
-              Box(
-                modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(16.dp),
-                contentAlignment = Alignment.Center
-              ) {
-                CircularProgressIndicator()
-              }
+                    // Loading indicator for pagination
+                    if (canLoadMore) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                  .fillMaxWidth()
+                                  .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                    }
+                }
             }
-          }
-        }
-      }
 
-      InfiniteListHandler(
-        listState = lazyListState,
-        isFetching = isFetching,
-        canLoadMore = canLoadMore
-      ) {
-        paginator?.loadMore()
-      }
+            InfiniteListHandler(
+                listState = lazyListState,
+                isFetching = isFetching,
+                canLoadMore = canLoadMore
+            ) {
+                paginator?.loadMore()
+            }
+        }
     }
-  }
 }
