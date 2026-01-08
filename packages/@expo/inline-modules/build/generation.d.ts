@@ -21,4 +21,5 @@ export declare function typesAndModulePathsForFile(dotExpoDir: string, watchedDi
     moduleName: string;
 };
 export declare function generateMirrorDirectories(projectRoot: string, filesWatched?: Set<string>, directoryToPackage?: Map<string, string>): Promise<void>;
+export declare function removeInlineModulesWatcherListener(metro: Server): void;
 export declare function startInlineModulesMetroWatcherAsync({ projectRoot, metro }: ModuleGenerationArguments, filesWatched?: Set<string>, directoryToPackage?: Map<string, string>): Promise<void>;

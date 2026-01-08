@@ -42,6 +42,7 @@ exports.findUpPackageJsonDirectoryCached = findUpPackageJsonDirectoryCached;
 exports.createFreshMirrorDirectories = createFreshMirrorDirectories;
 exports.typesAndModulePathsForFile = typesAndModulePathsForFile;
 exports.generateMirrorDirectories = generateMirrorDirectories;
+exports.removeInlineModulesWatcherListener = removeInlineModulesWatcherListener;
 exports.startInlineModulesMetroWatcherAsync = startInlineModulesMetroWatcherAsync;
 const config_1 = require("@expo/config");
 const fs = __importStar(require("fs"));
@@ -216,6 +217,16 @@ async function generateMirrorDirectories(projectRoot, filesWatched, directoryToP
         await generateExportsAndTypesForDirectory(path.resolve(projectRoot, watchedDirectory), await fs.promises.realpath(watchedDirectory));
     }
 }
+let inlineModulesWatcherListener = null;
+function removeInlineModulesWatcherListener(metro) {
+    if (inlineModulesWatcherListener) {
+        metro
+            .getBundler()
+            .getBundler()
+            .getWatcher()
+            .removeListener('change', inlineModulesWatcherListener);
+    }
+}
 async function startInlineModulesMetroWatcherAsync({ projectRoot, metro }, filesWatched = new Set(), directoryToPackage = new Map()) {
     const dotExpoDir = path.resolve(projectRoot, '.expo');
     const removeFileAndEmptyDirectories = async (absoluteFilePath) => {
@@ -262,5 +273,6 @@ async function startInlineModulesMetroWatcherAsync({ projectRoot, metro }, files
             }
         }
     };
+    inlineModulesWatcherListener = listener;
     watcher?.addListener('change', listener);
 }
