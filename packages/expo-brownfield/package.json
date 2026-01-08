@@ -1,10 +1,27 @@
 {
   "name": "expo-brownfield",
   "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
+  "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js"
+  },
+  "sideEffects": false,
   "scripts": {
-
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
   },
   "keywords": [
     "react-native",
@@ -26,7 +43,8 @@
     "preset": "expo-module-scripts"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "^5.0.7",
+    "jest-expo": "~54.0.11"
   },
   "peerDependencies": {
     "expo": "*"
