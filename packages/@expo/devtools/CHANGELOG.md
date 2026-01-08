@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Changed module type to `module` in `package.json` for expo/devtools. ([#42194](https://github.com/expo/expo/pull/42194) by [@chrfalch](https://github.com/chrfalch))
+
 ## 0.1.8 - 2025-12-05
 
 _This version does not introduce any user-facing changes._
