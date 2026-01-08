@@ -178,7 +178,7 @@ export function createFallbackModuleResolver({
         // We instead resolve as if it was depended on by the `originModulePath` (the module named in `originModuleNames`)
         const context: ResolutionContext = {
           ...immutableContext,
-          nodeModulesPaths: [moduleDescription.originModulePath],
+          nodeModulesPaths: [],
           // NOTE(@kitten): We need to add a fake filename here. Metro performs a `path.dirname` on this path
           // and then searches `${path.dirname(originModulePath)}/node_modules`. If we don't add it, we miss
           // fallback resolution for packages that failed to hoist

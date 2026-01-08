@@ -33,7 +33,7 @@ export default function SegmentedPickerExample() {
         modifiers={[pickerStyle('segmented')]}
         label="Select a fruit"
         selection={selectedTag}
-        onSelectionChange={({ nativeEvent: { selection } }) => {
+        onSelectionChange={selection => {
           setSelectedTag(selection);
         }}>
         {options.map(option => (
@@ -65,7 +65,7 @@ export default function MenuPickerExample() {
         modifiers={[pickerStyle('menu')]}
         label="Select a fruit"
         selection={selectedTag}
-        onSelectionChange={({ nativeEvent: { selection } }) => {
+        onSelectionChange={selection => {
           setSelectedTag(selection);
         }}>
         {options.map(option => (
@@ -99,7 +99,7 @@ export default function WheelPickerExample() {
         modifiers={[pickerStyle('wheel')]}
         label="Select a fruit"
         selection={selectedTag}
-        onSelectionChange={({ nativeEvent: { selection } }) => {
+        onSelectionChange={selection => {
           setSelectedTag(selection);
         }}>
         {options.map(option => (

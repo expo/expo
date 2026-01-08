@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Android] Removed references to legacy native modules API. ([#41858](https://github.com/expo/expo/pull/41858) by [@lukmccall](https://github.com/lukmccall))
+
 ## 6.0.0 — 2025-08-13
 
 ### 🎉 New features

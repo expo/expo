@@ -144,6 +144,8 @@ class AudioRecorder(
   fun stopRecording(): Bundle {
     val url = currentFileUrl()
     var durationMillis: Long
+    var stopFailed = false
+    var stopError: String? = null
 
     if (useForegroundService && isRegisteredWithService) {
       AudioRecordingService.getInstance()?.unregisterRecorder(this)
@@ -153,6 +155,10 @@ class AudioRecorder(
     try {
       recorder?.stop()
       durationMillis = getAudioRecorderDurationMillis()
+    } catch (e: RuntimeException) {
+      stopFailed = true
+      stopError = e.localizedMessage ?: "Failed to stop recording"
+      durationMillis = getAudioRecorderDurationMillis()
     } finally {
       reset()
     }
@@ -161,7 +167,9 @@ class AudioRecorder(
       putBoolean("canRecord", false)
       putBoolean("isRecording", false)
       putLong("durationMillis", durationMillis)
-      url?.let { putString("url", it) }
+      if (!stopFailed) {
+        url?.let { putString("url", it) }
+      }
     }
 
     // Emit completion event on the main thread
@@ -171,9 +179,9 @@ class AudioRecorder(
         mapOf(
           "id" to id,
           "isFinished" to true,
-          "hasError" to false,
-          "error" to null,
-          "url" to url
+          "hasError" to stopFailed,
+          "error" to stopError,
+          "url" to if (stopFailed) null else url
         )
       )
     }
@@ -285,6 +293,10 @@ class AudioRecorder(
     return duration
   }
 
+  fun getCurrentTimeSeconds(): Double {
+    return getAudioRecorderDurationMillis() / 1000.0
+  }
+
   override fun onError(mr: MediaRecorder?, what: Int, extra: Int) {
     val error = when (what) {
       MEDIA_RECORDER_ERROR_UNKNOWN -> "An unknown recording error occurred"
@@ -305,14 +317,27 @@ class AudioRecorder(
   override fun onInfo(mr: MediaRecorder?, what: Int, extra: Int) {
     when (what) {
       MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED -> {
-        recorder?.stop()
+        val url = currentFileUrl()
+
+        if (useForegroundService && isRegisteredWithService) {
+          AudioRecordingService.getInstance()?.unregisterRecorder(this)
+          isRegisteredWithService = false
+        }
+
+        try {
+          recorder?.stop()
+        } catch (_: RuntimeException) {
+          // Ignore stop errors
+        } finally {
+          reset()
+        }
         emit(
           RECORDING_STATUS_UPDATE,
           mapOf(
             "isFinished" to true,
             "hasError" to true,
             "error" to null,
-            "url" to currentFileUrl()
+            "url" to url
           )
         )
       }

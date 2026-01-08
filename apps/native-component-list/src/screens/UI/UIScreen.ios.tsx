@@ -27,11 +27,11 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Switch component',
-    route: 'ui/switch',
+    name: 'Toggle component',
+    route: 'ui/toggle',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./SwitchScreen'));
+      return optionalRequire(() => require('./ToggleScreen'));
     },
   },
   {
@@ -64,6 +64,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./StepperScreen'));
+    },
+  },
+  {
+    name: 'Menu component',
+    route: 'ui/menu',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MenuScreen'));
     },
   },
   {
@@ -104,6 +112,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ListScreen'));
+    },
+  },
+  {
+    name: 'Section component',
+    route: 'ui/section',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SectionScreen'));
     },
   },
   {

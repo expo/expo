@@ -1,6 +1,7 @@
 export { default as getDevicePushTokenAsync } from './getDevicePushTokenAsync';
 export { default as unregisterForNotificationsAsync } from './unregisterForNotificationsAsync';
 export { default as getExpoPushTokenAsync } from './getExpoPushTokenAsync';
+export { subscribeToTopicAsync, unsubscribeFromTopicAsync } from './topicSubscription';
 export { default as getPresentedNotificationsAsync } from './getPresentedNotificationsAsync';
 export { default as dismissNotificationAsync } from './dismissNotificationAsync';
 export { default as dismissAllNotificationsAsync } from './dismissAllNotificationsAsync';

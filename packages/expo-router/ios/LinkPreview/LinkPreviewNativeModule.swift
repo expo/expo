@@ -2,7 +2,7 @@ import ExpoModulesCore
 
 public class LinkPreviewNativeModule: Module {
   static let moduleName: String = "ExpoRouterNativeLinkPreview"
-  lazy var zoomSourceRepository = LinkZoomTransitionsSourceRepository()
+  lazy var zoomSourceRepository = LinkZoomTransitionsSourceRepository(logger: appContext?.jsLogger)
   lazy var zoomAlignmentViewRepository = LinkZoomTransitionsAlignmentViewRepository()
 
   public func definition() -> ModuleDefinition {
@@ -37,7 +37,7 @@ public class LinkPreviewNativeModule: Module {
         let height = size["height", default: 0]
 
         guard width >= 0, height >= 0 else {
-          print("Preferred content size cannot be negative (\(width), \(height))")
+          view.logger?.warn("[expo-router] Preferred content size cannot be negative (\(width), \(height))")
           return
         }
 
@@ -59,16 +59,28 @@ public class LinkPreviewNativeModule: Module {
         view.icon = icon
       }
       Prop("disabled") { (view: LinkPreviewNativeActionView, disabled: Bool?) in
-        view.disabled = disabled
+        view.disabled = disabled ?? false
       }
       Prop("destructive") { (view: LinkPreviewNativeActionView, destructive: Bool?) in
         view.destructive = destructive
       }
-      Prop("singleSelection") { (view: LinkPreviewNativeActionView, singleSelection: Bool) in
-        view.singleSelection = singleSelection
+      Prop("discoverabilityLabel") { (view: LinkPreviewNativeActionView, label: String?) in
+        view.discoverabilityLabel = label
       }
-      Prop("displayAsPalette") { (view: LinkPreviewNativeActionView, displayAsPalette: Bool) in
-        view.displayAsPalette = displayAsPalette
+      Prop("subtitle") { (view: LinkPreviewNativeActionView, subtitle: String?) in
+        view.subtitle = subtitle
+      }
+      Prop("accessibilityLabel") { (view: LinkPreviewNativeActionView, label: String?) in
+        view.accessibilityLabelForMenu = label
+      }
+      Prop("accessibilityHint") { (view: LinkPreviewNativeActionView, hint: String?) in
+        view.accessibilityHintForMenu = hint
+      }
+      Prop("singleSelection") { (view: LinkPreviewNativeActionView, singleSelection: Bool?) in
+        view.singleSelection = singleSelection ?? false
+      }
+      Prop("displayAsPalette") { (view: LinkPreviewNativeActionView, displayAsPalette: Bool?) in
+        view.displayAsPalette = displayAsPalette ?? false
       }
       Prop("isOn") { (view: LinkPreviewNativeActionView, isOn: Bool?) in
         view.isOn = isOn
@@ -76,10 +88,27 @@ public class LinkPreviewNativeModule: Module {
       Prop("keepPresented") { (view: LinkPreviewNativeActionView, keepPresented: Bool?) in
         view.keepPresented = keepPresented
       }
-      Prop("displayInline") { (view: LinkPreviewNativeActionView, displayInline: Bool) in
-        view.displayInline = displayInline
+      Prop("displayInline") { (view: LinkPreviewNativeActionView, displayInline: Bool?) in
+        view.displayInline = displayInline ?? false
       }
-
+      Prop("hidden") { (view: LinkPreviewNativeActionView, hidden: Bool?) in
+        view.routerHidden = hidden ?? false
+      }
+      Prop("sharesBackground") { (view: LinkPreviewNativeActionView, sharesBackground: Bool?) in
+        view.sharesBackground = sharesBackground
+      }
+      Prop("hidesSharedBackground") { (view: LinkPreviewNativeActionView, hidesSharedBackground: Bool?) in
+        view.hidesSharedBackground = hidesSharedBackground
+      }
+      Prop("tintColor") { (view: LinkPreviewNativeActionView, tintColor: UIColor?) in
+        view.customTintColor = tintColor
+      }
+      Prop("barButtonItemStyle") { (view: LinkPreviewNativeActionView, style: BarItemStyle?) in
+        view.barButtonItemStyle = style?.toUIBarButtonItemStyle()
+      }
+      Prop("preferredElementSize") { (view: LinkPreviewNativeActionView, preferredElementSize: MenuElementSize?) in
+        view.preferredElementSize = preferredElementSize
+      }
       Events("onSelected")
     }
 
@@ -147,4 +176,29 @@ struct LinkSourceAlignmentRect: Record {
   @Field var y: Double
   @Field var width: Double
   @Field var height: Double
+}
+
+enum MenuElementSize: String, Enumerable {
+  case small
+  case medium
+  case large
+  case auto
+
+  @available(iOS 16.0, *)
+  func toUIMenuElementSize() -> UIMenu.ElementSize {
+    switch self {
+    case .small:
+      return .small
+    case .medium:
+      return .medium
+    case .large:
+      return .large
+    case .auto:
+      if #available(iOS 17.0, *) {
+        return .automatic
+      } else {
+        return .medium
+      }
+    }
+  }
 }

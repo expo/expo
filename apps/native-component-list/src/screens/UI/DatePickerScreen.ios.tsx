@@ -57,7 +57,7 @@ export default function DatePickerScreen() {
                 .value as unknown as DatePickerComponent[]
             }
             range={useRange ? { start: today, end: thirtyDaysFromNow } : undefined}
-            onDateChange={({ nativeEvent: { date } }) => setSelectedDate(new Date(date))}
+            onDateChange={(date) => setSelectedDate(date)}
             modifiers={[
               datePickerStyle(styleOptions[styleIndex]),
               ...(tintColor ? [tint(tintColor)] : []),
@@ -77,8 +77,8 @@ export default function DatePickerScreen() {
             label="Style"
             modifiers={[pickerStyle('menu')]}
             selection={styleIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setStyleIndex(selection as number);
+            onSelectionChange={(selection) => {
+              setStyleIndex(selection);
               setAnimate(!animate);
             }}>
             {styleOptions.map((option, index) => (
@@ -91,8 +91,8 @@ export default function DatePickerScreen() {
             label="Components"
             modifiers={[pickerStyle('menu')]}
             selection={displayedComponentsIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setDisplayedComponentsIndex(selection as number);
+            onSelectionChange={(selection) => {
+              setDisplayedComponentsIndex(selection);
               setAnimate(!animate);
             }}>
             {displayedComponentsOptions.map((option, index) => (
@@ -102,7 +102,7 @@ export default function DatePickerScreen() {
             ))}
           </Picker>
           <Switch value={useRange} label="Limit to next 30 days" onValueChange={setUseRange} />
-          <ColorPicker label="Tint Color" selection={tintColor} onValueChanged={setTintColor} />
+          <ColorPicker label="Tint Color" selection={tintColor} onSelectionChange={setTintColor} />
         </Section>
         <Section title="Date Picker with custom label">
           <DatePicker
@@ -112,7 +112,7 @@ export default function DatePickerScreen() {
                 .value as unknown as DatePickerComponent[]
             }
             range={useRange ? { start: today, end: thirtyDaysFromNow } : undefined}
-            onDateChange={({ nativeEvent: { date } }) => setSelectedDate(new Date(date))}
+            onDateChange={(date) => setSelectedDate(date)}
             modifiers={[datePickerStyle(styleOptions[styleIndex])]}>
             <Text color="#007AFF">Select date</Text>
             <Text>{selectedDate.toDateString()}</Text>

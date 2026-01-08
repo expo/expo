@@ -4,23 +4,16 @@
 
 #import <ExpoModulesCore/ExpoModulesCore.h>
 #import <ExpoModulesCore/EXRuntime.h>
-#import <ExpoModulesCore-Swift.h>
+#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
+#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
+#else
+#import "ExpoModulesCore-Swift.h"
+#endif
 #import <ReactCommon/RCTHost.h>
 
 @implementation EXReactNativeFactory {
   EXAppContext *_appContext;
 }
-
-// TODO: Remove check when react-native-macos 0.81 is released (this init was not available before)
-#if !TARGET_OS_OSX
-- (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate releaseLevel:(RCTReleaseLevel)releaseLevel
-{
-  if (self = [super initWithDelegate:delegate releaseLevel:releaseLevel]) {
-    _appContext = [[EXAppContext alloc] init];
-  }
-  return self;
-}
-#endif
 
 #pragma mark - RCTHostDelegate
 
@@ -40,8 +33,11 @@
 // [JS thread]
 - (void)host:(nonnull RCTHost *)host didInitializeRuntime:(jsi::Runtime &)runtime
 {
+  _appContext = [[EXAppContext alloc] init];
+
   // Inject and decorate the `global.expo` object
   _appContext._runtime = [[EXRuntime alloc] initWithRuntime:runtime];
+  [_appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
 
   [_appContext registerNativeModules];
 }

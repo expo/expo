@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- remove expo-notifications from auto plugins; the `notification` entry in app.json is no longer valid ([#40787](https://github.com/expo/expo/pull/40787) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -16,6 +18,7 @@
 ### ⚠️ Notices
 
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.83.x. ([#41564](https://github.com/expo/expo/pull/41564) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 54.0.7 - 2025-12-05
 

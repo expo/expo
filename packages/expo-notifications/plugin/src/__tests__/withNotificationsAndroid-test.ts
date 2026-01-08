@@ -2,12 +2,7 @@ import { ExpoConfig } from 'expo/config';
 import { fs, vol } from 'memfs';
 import * as path from 'path';
 
-import {
-  getNotificationColor,
-  getNotificationIcon,
-  setNotificationIconAsync,
-  setNotificationSounds,
-} from '../withNotificationsAndroid';
+import { setNotificationIconAsync, setNotificationSounds } from '../withNotificationsAndroid';
 
 export function getDirFromFS(fsJSON: Record<string, string | null>, rootDir: string) {
   return Object.entries(fsJSON)
@@ -72,20 +67,6 @@ describe('Android notifications configuration', () => {
   afterAll(() => {
     jest.unmock('@expo/image-utils');
     jest.unmock('fs');
-  });
-
-  it(`returns null if no config provided`, () => {
-    expect(getNotificationIcon({} as ExpoConfig)).toBeNull();
-    expect(getNotificationColor({} as ExpoConfig)).toBeNull();
-  });
-
-  it(`returns config if provided`, () => {
-    expect(getNotificationIcon({ notification: { icon: './myIcon.png' } } as ExpoConfig)).toMatch(
-      './myIcon.png'
-    );
-    expect(getNotificationColor({ notification: { color: '#123456' } } as ExpoConfig)).toMatch(
-      '#123456'
-    );
   });
 
   it('writes all the asset files (sounds and images) as expected', async () => {

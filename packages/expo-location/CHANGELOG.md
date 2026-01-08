@@ -6,10 +6,13 @@
 
 ### 🎉 New features
 
+- [Android] Add option `androidForegroundServiceIcon` for controlling the icon for the foreground service. ([#41132](https://github.com/expo/expo/pull/41132) by [@jeppester](https://github.com/jeppester))
+
 ### 🐛 Bug fixes
 
 - use WGS 84 as reference for altitude on iOS ([#41318](https://github.com/expo/expo/pull/41318) by [@vonovak](https://github.com/vonovak))
 - fix position of the `scope` field in a permissions request result ([#41328](https://github.com/expo/expo/pull/41328) by [@vonovak](https://github.com/vonovak))
+- [Web] Stop using legacy event emitter. ([#41680](https://github.com/expo/expo/pull/41680) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
