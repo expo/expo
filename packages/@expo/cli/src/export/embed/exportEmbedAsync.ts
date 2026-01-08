@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
+import { generateMirrorDirectories } from '@expo/inline-modules';
 import Server from '@expo/metro/metro/Server';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
 import * as output from '@expo/metro/metro/shared/output/bundle';
@@ -33,7 +34,6 @@ import { persistMetroAssetsAsync } from '../persistMetroAssets';
 import { copyPublicFolderAsync } from '../publicFolder';
 import { BundleAssetWithFileHashes, ExportAssetMap, persistMetroFilesAsync } from '../saveAssets';
 import { exportStandaloneServerAsync } from './exportServer';
-import { startModuleGenerationAsync } from '../../inlineModules/generation';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
 import { resolveRealEntryFilePath } from '../../utils/filePath';
 
@@ -371,15 +371,13 @@ export async function createMetroServerAndBundleRequestAsync(
       (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
   };
 
+  if (exp.experiments?.inlineModules) {
+    await generateMirrorDirectories(projectRoot);
+  }
+
   const server = new Server(config, {
     watch: false,
   });
-
-  // This is needed for the CI, as it runs `Executing expo-updates Pods/EXUpdates » [CP-User] Generate updates resources for expo-updates`
-  // Which in turn leads to this function.
-  if (exp.experiments?.inlineModules) {
-    await startModuleGenerationAsync({ projectRoot, metro: server });
-  }
 
   return { server, bundleRequest };
 }

@@ -10,6 +10,7 @@ exports.getDefaultConfig = getDefaultConfig;
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
+const inline_modules_1 = require("@expo/inline-modules");
 const json_file_1 = __importDefault(require("@expo/json-file"));
 const metro_cache_1 = require("@expo/metro/metro-cache");
 const chalk_1 = __importDefault(require("chalk"));
@@ -87,22 +88,6 @@ function memoize(fn) {
         return result;
     });
 }
-function findUpPackageJsonDirectory(cwd, directoryToPackage) {
-    if (['.', path_1.default.sep].includes(cwd))
-        return undefined;
-    if (directoryToPackage.has(cwd))
-        return directoryToPackage.get(cwd);
-    const packageFound = fs_1.default.existsSync(path_1.default.resolve(cwd, './package.json'));
-    if (packageFound) {
-        directoryToPackage.set(cwd, cwd);
-        return cwd;
-    }
-    const packageRoot = findUpPackageJsonDirectory(path_1.default.dirname(cwd), directoryToPackage);
-    if (packageRoot) {
-        directoryToPackage.set(cwd, packageRoot);
-    }
-    return packageRoot;
-}
 function resolveInlineModules(projectRoot, directoryToPackage, context, moduleName, platform) {
     const inlineModulesModulesPath = path_1.default.resolve(projectRoot, './.expo/inlineModules/modules');
     let inlineModuleFileExtension = null;
@@ -116,7 +101,7 @@ function resolveInlineModules(projectRoot, directoryToPackage, context, moduleNa
         const originModuleDirname = path_1.default.dirname(context.originModulePath);
         let modulePackageRoot = directoryToPackage.get(originModuleDirname);
         if (!modulePackageRoot) {
-            modulePackageRoot = findUpPackageJsonDirectory(path_1.default.dirname(context.originModulePath), directoryToPackage);
+            modulePackageRoot = (0, inline_modules_1.findUpPackageJsonDirectoryCached)(path_1.default.dirname(context.originModulePath), directoryToPackage);
         }
         if (!modulePackageRoot) {
             return { type: 'empty' };

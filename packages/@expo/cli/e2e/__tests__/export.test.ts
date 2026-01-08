@@ -75,7 +75,10 @@ describe('server', () => {
   let projectRoot: string;
 
   beforeAll(async () => {
-    projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets');
+    projectRoot = await setupTestProjectWithOptionsAsync('basic-export', 'with-assets', {
+      // TODO(@HubertBer): remove @expo/inline-modules after publishing
+      linkExpoPackages: ['@expo/inline-modules'],
+    });
   });
 
   it('runs `npx expo export`', async () => {

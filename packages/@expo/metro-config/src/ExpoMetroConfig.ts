@@ -1,6 +1,7 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { getConfig, getPackageJson } from '@expo/config';
 import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
+import { findUpPackageJsonDirectoryCached } from '@expo/inline-modules';
 import JsonFile from '@expo/json-file';
 import type { Reporter } from '@expo/metro/metro';
 import type { Graph, Result as GraphResult } from '@expo/metro/metro/DeltaBundler/Graph';
@@ -143,25 +144,6 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
   }) as T;
 }
 
-function findUpPackageJsonDirectory(
-  cwd: string,
-  directoryToPackage: Map<string, string>
-): string | undefined {
-  if (['.', path.sep].includes(cwd)) return undefined;
-  if (directoryToPackage.has(cwd)) return directoryToPackage.get(cwd);
-
-  const packageFound = fs.existsSync(path.resolve(cwd, './package.json'));
-  if (packageFound) {
-    directoryToPackage.set(cwd, cwd);
-    return cwd;
-  }
-  const packageRoot = findUpPackageJsonDirectory(path.dirname(cwd), directoryToPackage);
-  if (packageRoot) {
-    directoryToPackage.set(cwd, packageRoot);
-  }
-  return packageRoot;
-}
-
 export function resolveInlineModules(
   projectRoot: string,
   directoryToPackage: Map<string, string>,
@@ -182,7 +164,7 @@ export function resolveInlineModules(
     const originModuleDirname = path.dirname(context.originModulePath);
     let modulePackageRoot: string | undefined = directoryToPackage.get(originModuleDirname);
     if (!modulePackageRoot) {
-      modulePackageRoot = findUpPackageJsonDirectory(
+      modulePackageRoot = findUpPackageJsonDirectoryCached(
         path.dirname(context.originModulePath),
         directoryToPackage
       );
