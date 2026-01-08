@@ -1,0 +1,34 @@
+{
+  "name": "expo-brownfield",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "brownfield"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-brownfield"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "TODO: add homepage",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^5.0.7"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  }
+}
