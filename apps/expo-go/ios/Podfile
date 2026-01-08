@@ -154,17 +154,7 @@ target 'Expo Go' do
     end
   end
 
-  # Test targets
-  target 'ExponentIntegrationTests' do
-    inherit! :search_paths
-  end
-
   target 'Tests' do
-    # `ExpoModulesTestCore` has implicit dependency to `React-Core` which has a resource bundle.
-    # To prevent CocoaPods generating new `React-Core` resource bundle and the strange `React-Core-60309c9c` target,
-    # this test target should inherit all properties from parents.
-    inherit! :complete
-
     pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
   end
 end
