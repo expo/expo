@@ -2,11 +2,13 @@
   "name": "@expo/devtools",
   "version": "55.0.2",
   "description": "DevTools plugin helpers for Expo",
+  "type": "module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
     ".": {
       "types": "./build/index.d.ts",
+      "node": "./build/index.node.js",
       "default": "./build/index.js"
     },
     "./package.json": "./package.json"
