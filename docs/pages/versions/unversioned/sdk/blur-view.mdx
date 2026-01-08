@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
 </Collapsible>
 <Collapsible summary={<>Basic <CODE>BlurView</CODE> usage with Android support</>}>
   To blur the background of a view on Android, wrap the content to be blurred in a `BlurTargetView` component and pass its ref to the `BlurView`.
-  > **info** **Note:** Notice that as long as all of the `BlurView`s fit into the bounds of a single `BlurTargetView`, you can use the single `BlurTargetView` for multiple `BlurViews`. This is more efficient than creating multiple `BlurTargetViews`.
+  > **info** **Note:** Notice that, as long as all of the `BlurViews` fit into the bounds of a single `BlurTargetView`, you can use the single `BlurTargetView` for multiple `BlurViews`. This is more efficient than creating multiple `BlurTargetViews`.
   <SnackInline label='Basic BlurView usage with Android support' dependencies={['expo-blur']}>
 
 ```tsx
