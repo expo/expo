@@ -20,21 +20,26 @@ import host.exp.exponent.graphql.Home_AccountSnacksQuery
 @Composable
 fun SnackRow(snack: Home_AccountSnacksQuery.Snack) {
 //    TODO: Add missing SDK versions
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = {  })
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Icon for Scan QR Code
-        AsyncImage(model = "https://picsum.photos/200", contentDescription = "Session Icon", modifier = Modifier
-            .size(24.dp)
-            .clip(shape = RoundedCornerShape(4.dp)))
+  Row(
+    modifier = Modifier
+      .fillMaxWidth()
+      .clickable(onClick = { })
+      .padding(16.dp),
+    verticalAlignment = Alignment.CenterVertically
+  ) {
+    // Icon for Scan QR Code
+    AsyncImage(
+      model = "https://picsum.photos/200",
+      contentDescription = "Session Icon",
+      modifier = Modifier
+        .size(24.dp)
+        .clip(shape = RoundedCornerShape(4.dp))
+    )
 
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = snack.commonSnackData.name,
-        )
-    }
+    Spacer(modifier = Modifier.width(8.dp))
+
+    Text(
+      text = snack.commonSnackData.name,
+    )
+  }
 }

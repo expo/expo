@@ -22,46 +22,47 @@ import expo.modules.devmenu.compose.primitives.Spacer
 
 @Composable
 fun LabeledGroup(
-    label: String? = null,
-    icon: Painter? = null,
-    action: @Composable (() -> Unit)? = null,
-    content: @Composable ColumnScope.() -> Unit
+  label: String? = null,
+  icon: Painter? = null,
+  action: @Composable (() -> Unit)? = null,
+  content: @Composable ColumnScope.() -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        // Section Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (icon != null) {
-                Icon(
-                    painter = icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-            }
-            if(label != null) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            action?.invoke()
+  Column(modifier = Modifier.fillMaxWidth()) {
+    // Section Header
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 8.dp),
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+      if (icon != null) {
+        Icon(
+          painter = icon,
+          contentDescription = null,
+          modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+      }
 
-        }
+      if (label != null) {
+        Text(
+          text = label,
+          style = MaterialTheme.typography.titleSmall,
+          modifier = Modifier.weight(1f)
+        )
+      }
 
-        // Main Card/Container for the actions
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            colors = CardDefaults.cardColors(containerColor = NewAppTheme.colors.background.default)
-        ) {
-            content()
-        }
+      action?.invoke()
     }
+
+    // Main Card/Container for the actions
+    Card(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 8.dp),
+      colors = CardDefaults.cardColors(containerColor = NewAppTheme.colors.background.default)
+    ) {
+      content()
+    }
+  }
 }
