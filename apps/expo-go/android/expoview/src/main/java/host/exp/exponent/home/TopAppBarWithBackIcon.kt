@@ -15,15 +15,18 @@ import host.exp.expoview.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopAppBarWithBackIcon(label: String, onGoBack: () -> Unit) {
-    TopAppBar(navigationIcon = {
-        IconButton(onClick = onGoBack) {
-            Icon(painter = painterResource(id = R.drawable.arrow_back),  contentDescription = "Go back to home",
-            )
-        }
+  TopAppBar(
+    navigationIcon = {
+      IconButton(onClick = onGoBack) {
+        Icon(
+          painter = painterResource(id = R.drawable.arrow_back),
+          contentDescription = "Go back to home",
+        )
+      }
     },
     title = {
-        Text(label, fontWeight = FontWeight.Bold)
+      Text(label, fontWeight = FontWeight.Bold)
     },
     colors = TopAppBarDefaults.topAppBarColors(containerColor = NewAppTheme.colors.background.default),
-    )
+  )
 }
