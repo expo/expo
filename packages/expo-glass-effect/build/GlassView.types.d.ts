@@ -8,7 +8,7 @@ export type GlassEffectStyleConfig = {
     style: GlassStyle;
     /**
      * Whether to animate the style change.
-     * @default true
+     * @default false
      */
     animate?: boolean;
     /**

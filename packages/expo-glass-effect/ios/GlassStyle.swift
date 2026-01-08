@@ -28,7 +28,7 @@ public struct GlassEffectStyleConfig: Record {
   public var style: GlassStyle = .regular
 
   @Field
-  public var animate: Bool = true
+  public var animate: Bool = false
 
   @Field
   public var animationDuration: Double?
