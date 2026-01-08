@@ -2,24 +2,24 @@
 title: Functional CSS
 sidebar_title: CSS
 maxHeadingDepth: 4
-description: Learn about using functional CSS to style native apps
+description: Learn about using functional CSS to style native apps.
 ---
 
-> Experimentally available in **SDK 55 and above**. This is a beta release and subject to breaking changes.
+> Experimentally available in **SDK 55 and later**. This is a beta release and is subject to breaking changes.
 
 Expo's bundler supports full comprehensive CSS for web platforms, but this traditionally doesn't work for React Native because the native platform doesn't support CSS files. However, you can use **Functional CSS** to enable a subset of CSS features on native platforms.
 
 ## What is Functional CSS?
 
-Functional CSS is a system for parsing CSS styles to JS objects, then using React hooks to apply those objects to components and reactively update them when media queries and CSS variables change. This is limited however:
+Functional CSS is a system for parsing CSS styles to JS objects, then using React hooks to apply those objects to components and reactively update them when media queries and CSS variables change. This is limited, however:
 
-- Only class selectors are supported (e.g. `.my-class { color: red; }`), element selectors (e.g. `div { color: red; }`) and ID selectors (e.g. `#my-id { color: red; }`) are not supported.
+- Only class selectors are supported (for example, `.my-class { color: red; }`), element selectors (for example, `div { color: red; }`) and ID selectors (for example, `#my-id { color: red; }`) are not supported.
 - Only a subset of CSS properties are supported. If the underlying native platform doesn't support a style property, it won't work in Functional CSS.
 - Cascading is not supported. This is with exception to nested text elements.
 
 ## How to use Functional CSS
 
-Enable the experimental Functional CSS feature in your **app.json** or **app.config.js**:
+Enable the experimental Functional CSS feature in your [app config](/workflow/configuration/) file:
 
 ```json app.json
 {
@@ -79,7 +79,7 @@ export default function Page() {
 }
 ```
 
-Now run `npx expo` to start the project. You should see a white screen with black text. On web, this will fallback to standard CSS behavior.
+Now run `npx expo start` command in a terminal window to start the project. You should see a white screen with black text. On web, this will fall back to standard CSS behavior.
 
 ## Platform specification
 
@@ -101,7 +101,7 @@ You can use media queries to adapt styles based on the device's screen size, and
 ## Benefits of Functional CSS
 
 - CSS is backwards compatible and follows a well defined specification.
-- When you use CSS, Expo can automatically optimize the styles for different platforms resulting in more performant bundles and faster load times.
-- CSS has dynamic functionality that would normally require React hooks. React hooks are limiting as they don't support server rendering, and you cannot call them conditionally meaning you need to refactor components to optimize them.
-- High-performance animations and built-in. We use the native Reanimated animation library on native and CSS as-is on web. This results in smooth max-fps animations on all platforms.
+- When you use CSS, Expo can automatically optimize the styles for different platforms, resulting in more performant bundles and faster load times.
+- CSS has dynamic functionality that would normally require React hooks. React hooks are limited as they don't support server rendering, and you cannot call them conditionally. This means you need to refactor components to optimize them.
+- High-performance animations are built in. We use the native Reanimated animation library on native and CSS as-is on web. This results in smooth max-FPS animations on all platforms.
 - Additional CSS units such as `vw`, `vh`, `%`, `em`, and `rem` are supported.
