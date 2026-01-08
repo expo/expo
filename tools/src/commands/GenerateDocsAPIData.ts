@@ -52,6 +52,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/form': ['swift-ui/Form/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/divider': ['swift-ui/Divider/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/modifiers': ['swift-ui/modifiers/index.ts', 'expo-ui'],
+  'expo-ui/swift-ui/progressview': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/switch': ['jetpack-compose/Switch/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/textfield': ['swift-ui/TextField/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/textinput': ['jetpack-compose/TextInput/index.tsx', 'expo-ui'],
