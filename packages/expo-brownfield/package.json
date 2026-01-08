@@ -18,10 +18,9 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
-    "copy-templates": "cp -r ./plugin/src/templates ./plugin/build/templates",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare && yarn copy-templates",
+    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -32,6 +31,7 @@
     "gradle-plugins/",
     "ios/",
     "plugin/",
+    "templates/",
     "src/",
     ".eslintignore",
     ".eslintrc.js",
