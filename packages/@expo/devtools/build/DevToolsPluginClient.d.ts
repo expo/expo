@@ -1,6 +1,6 @@
-import { WebSocketBackingStore } from './WebSocketBackingStore';
-import { type WebSocketMessageEvent } from './WebSocketWithReconnect';
-import type { ConnectionInfo, DevToolsPluginClientOptions, HandshakeMessageParams } from './devtools.types';
+import { WebSocketBackingStore } from './WebSocketBackingStore.js';
+import { type WebSocketMessageEvent } from './WebSocketWithReconnect.js';
+import type { ConnectionInfo, DevToolsPluginClientOptions, HandshakeMessageParams } from './devtools.types.js';
 export interface EventSubscription {
     remove(): void;
 }

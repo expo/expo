@@ -1,4 +1,4 @@
-import type { DevToolsPluginClientOptions } from './devtools.types';
+import type { DevToolsPluginClientOptions } from './devtools.types.js';
 export interface WebSocketCloseEvent extends Event {
     code?: number;
     reason?: string;

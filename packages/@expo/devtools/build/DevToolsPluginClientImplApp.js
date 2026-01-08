@@ -1,5 +1,5 @@
-import { DevToolsPluginClient } from './DevToolsPluginClient';
-import * as logger from './logger';
+import { DevToolsPluginClient } from './DevToolsPluginClient.js';
+import * as logger from './logger.js';
 /**
  * The DevToolsPluginClient for the app -> browser communication.
  */

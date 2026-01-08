@@ -1,17 +1,17 @@
-import { MessageFramePacker } from './MessageFramePacker';
-import { WebSocketBackingStore } from './WebSocketBackingStore';
+import { MessageFramePacker } from './MessageFramePacker.js';
+import { WebSocketBackingStore } from './WebSocketBackingStore.js';
 import {
   WebSocketWithReconnect,
   type WebSocketCloseEvent,
   type WebSocketMessageEvent,
-} from './WebSocketWithReconnect';
+} from './WebSocketWithReconnect.js';
 import type {
   ConnectionInfo,
   DevToolsPluginClientOptions,
   HandshakeMessageParams,
-} from './devtools.types';
-import * as logger from './logger';
-import { blobToArrayBufferAsync } from './utils/blobUtils';
+} from './devtools.types.js';
+import * as logger from './logger.js';
+import { blobToArrayBufferAsync } from './utils/blobUtils.js';
 
 interface MessageFramePackerMessageKey {
   pluginName: string;
