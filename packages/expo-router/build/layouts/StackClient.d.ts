@@ -165,7 +165,7 @@ declare const Stack: ((props: ComponentProps<typeof RNStack>) => React.JSX.Eleme
         Icon: React.FC<import("./stack-utils").StackHeaderIconProps>;
         Menu: React.FC<import("./stack-utils").StackHeaderMenuProps>;
         MenuAction: React.FC<import("./stack-utils").StackHeaderMenuActionProps>;
-        Item: React.FC<import("./stack-utils").StackHeaderItemProps>;
+        View: React.FC<import("./stack-utils").StackHeaderViewProps>;
         Spacer: React.FC<import("./stack-utils").StackHeaderSpacerProps>;
     };
 };

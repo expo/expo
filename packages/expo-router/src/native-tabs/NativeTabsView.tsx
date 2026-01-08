@@ -14,6 +14,7 @@ import {
   createScrollEdgeAppearanceFromOptions,
   createStandardAppearanceFromOptions,
 } from './appearance';
+import { Color } from '../color';
 import { NativeTabsBottomAccessory } from './common/elements';
 import {
   SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES,
@@ -90,27 +91,55 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       ? 'tabBar'
       : 'automatic';
 
+  // Material Design 3 dynamic color defaults for Android
+  const androidMaterialDefaults =
+    process.env.EXPO_OS === 'android'
+      ? {
+          inactiveColor: Color.android.dynamic.onSurfaceVariant,
+          activeIconColor: Color.android.dynamic.onSecondaryContainer,
+          activeLabelColor: Color.android.dynamic.onSurface,
+          backgroundColor: Color.android.dynamic.surfaceContainer,
+          rippleColor: Color.android.dynamic.primary,
+          indicatorColor: Color.android.dynamic.secondaryContainer,
+        }
+      : undefined;
+
   return (
     <BottomTabsWrapper
       // #region android props
-      tabBarItemTitleFontColor={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor}
+      tabBarItemTitleFontColor={
+        currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor ??
+        androidMaterialDefaults?.inactiveColor
+      }
       tabBarItemTitleFontFamily={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontFamily}
       tabBarItemTitleFontSize={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize}
       tabBarItemTitleFontSizeActive={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize}
       tabBarItemTitleFontWeight={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontWeight}
       tabBarItemTitleFontStyle={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontStyle}
-      tabBarItemIconColor={currentTabAppearance?.stacked?.normal?.tabBarItemIconColor}
-      tabBarBackgroundColor={currentTabAppearance?.tabBarBackgroundColor}
-      tabBarItemRippleColor={props.rippleColor}
+      tabBarItemIconColor={
+        currentTabAppearance?.stacked?.normal?.tabBarItemIconColor ??
+        androidMaterialDefaults?.inactiveColor
+      }
+      tabBarBackgroundColor={
+        currentTabAppearance?.tabBarBackgroundColor ?? androidMaterialDefaults?.backgroundColor
+      }
+      tabBarItemRippleColor={props.rippleColor ?? androidMaterialDefaults?.rippleColor}
       tabBarItemLabelVisibilityMode={props.labelVisibilityMode}
       tabBarItemIconColorActive={
-        currentTabAppearance?.stacked?.selected?.tabBarItemIconColor ?? props?.tintColor
+        currentTabAppearance?.stacked?.selected?.tabBarItemIconColor ??
+        props?.tintColor ??
+        androidMaterialDefaults?.activeIconColor
       }
       tabBarItemTitleFontColorActive={
-        currentTabAppearance?.stacked?.selected?.tabBarItemTitleFontColor ?? props?.tintColor
+        currentTabAppearance?.stacked?.selected?.tabBarItemTitleFontColor ??
+        props?.tintColor ??
+        androidMaterialDefaults?.activeLabelColor
       }
       // tabBarItemTitleFontSizeActive={activeStyle?.fontSize}
-      tabBarItemActiveIndicatorColor={options[inBoundsDeferredFocusedIndex]?.indicatorColor}
+      tabBarItemActiveIndicatorColor={
+        options[inBoundsDeferredFocusedIndex]?.indicatorColor ??
+        androidMaterialDefaults?.indicatorColor
+      }
       tabBarItemActiveIndicatorEnabled={!disableIndicator}
       // #endregion
       // #region iOS props

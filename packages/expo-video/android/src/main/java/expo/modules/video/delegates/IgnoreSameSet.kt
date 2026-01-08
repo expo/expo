@@ -16,7 +16,7 @@ class IgnoreSameSet<T : Any?>(private var value: T, val propertyMapper: ((T) -> 
   }
 
   operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-    if (this.value == propertyMapper(value)) return
+    if (this.value?.equals(propertyMapper(value)) ?: false) return
     val oldValue = this.value
     this.value = propertyMapper(value)
     didSet?.invoke(this.value, oldValue)

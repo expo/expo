@@ -142,6 +142,7 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
 
   // MARK: - JavaScriptObjectBuilder
 
+  @JavaScriptActor
   func build(appContext: AppContext) throws -> JavaScriptObject {
     // We intentionally capture a strong reference to `self`, otherwise the "detached" objects would
     // immediately lose the reference to the definition and thus the underlying native function.

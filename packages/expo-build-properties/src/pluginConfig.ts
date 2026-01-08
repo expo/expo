@@ -39,13 +39,6 @@ export interface PluginConfigType {
  */
 export interface PluginConfigTypeAndroid {
   /**
-   * Enable React Native New Architecture for Android platform.
-   *
-   * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
-   * app config file instead.
-   */
-  newArchEnabled?: boolean;
-  /**
    * Override the default `minSdkVersion` version number in **build.gradle**.
    * */
   minSdkVersion?: number;
@@ -216,6 +209,16 @@ export interface PluginConfigTypeAndroid {
    * @default 'stable'
    */
   reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
+
+  /**
+   * Enable the experimental Hermes V1 engine.
+   *
+   * In React Native 0.83, using Hermes V1 requires building React Native from source.
+   * You must set `buildReactNativeFromSource` to `true` when enabling this option.
+   *
+   * @default false
+   */
+  useHermesV1?: boolean;
 }
 
 // @docsMissing
@@ -307,13 +310,6 @@ export type AndroidMavenRepositoryCredentials =
  * @platform ios
  */
 export interface PluginConfigTypeIos {
-  /**
-   * Enable React Native New Architecture for iOS platform.
-   *
-   * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
-   * app config file instead.
-   */
-  newArchEnabled?: boolean;
   /**
    * Override the default iOS "Deployment Target" version in the following projects:
    *  - in CocoaPods projects,
@@ -410,6 +406,16 @@ export interface PluginConfigTypeIos {
    * @default 'stable'
    */
   reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
+
+  /**
+   * Enable the experimental Hermes V1 engine.
+   *
+   * In React Native 0.83, using Hermes V1 requires building React Native from source.
+   * You must set `buildReactNativeFromSource` to `true` when enabling this option.
+   *
+   * @default false
+   */
+  useHermesV1?: boolean;
 }
 
 /**
@@ -600,7 +606,6 @@ const schema: JSONSchemaType<PluginConfigType> = {
     android: {
       type: 'object',
       properties: {
-        newArchEnabled: { type: 'boolean', nullable: true },
         minSdkVersion: { type: 'integer', nullable: true },
         compileSdkVersion: { type: 'integer', nullable: true },
         targetSdkVersion: { type: 'integer', nullable: true },
@@ -727,13 +732,13 @@ const schema: JSONSchemaType<PluginConfigType> = {
           enum: ['stable', 'canary', 'experimental'],
           nullable: true,
         },
+        useHermesV1: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
     ios: {
       type: 'object',
       properties: {
-        newArchEnabled: { type: 'boolean', nullable: true },
         deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
         useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
         forceStaticLinking: { type: 'array', items: { type: 'string' }, nullable: true },
@@ -770,6 +775,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
           enum: ['stable', 'canary', 'experimental'],
           nullable: true,
         },
+        useHermesV1: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },

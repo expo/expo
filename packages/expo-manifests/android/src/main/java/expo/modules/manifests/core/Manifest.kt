@@ -174,11 +174,6 @@ abstract class Manifest(protected val json: JSONObject) {
     return expoClientConfig.getNullable("iconUrl")
   }
 
-  fun getNotificationPreferences(): JSONObject? {
-    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    return expoClientConfig.getNullable("notification")
-  }
-
   fun getAndroidSplashInfo(): JSONObject? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
     return expoClientConfig.getNullable<JSONObject>("android")?.getNullable("splash")

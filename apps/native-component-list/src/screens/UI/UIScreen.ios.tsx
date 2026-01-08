@@ -67,6 +67,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Menu component',
+    route: 'ui/menu',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MenuScreen'));
+    },
+  },
+  {
     name: 'ContextMenu component',
     route: 'ui/context-menu',
     options: {},
@@ -104,6 +112,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ListScreen'));
+    },
+  },
+  {
+    name: 'Section component',
+    route: 'ui/section',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SectionScreen'));
     },
   },
   {

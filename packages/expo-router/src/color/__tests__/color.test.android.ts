@@ -3,6 +3,16 @@ import { PlatformColor } from 'react-native';
 import { Color } from '..';
 import { Material3Color, Material3DynamicColor } from '../materialColor';
 
+let warnMock: jest.SpyInstance;
+
+beforeEach(() => {
+  warnMock = jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  warnMock.mockRestore();
+});
+
 it.each([
   { color: Color.android.background_dark, platformColorString: '@android:color/background_dark' },
   {
@@ -28,6 +38,7 @@ it.each([
   ({ color, platformColorString }) => {
     expect(typeof color).toBe('object');
     expect(color).toStrictEqual(PlatformColor(platformColorString));
+    expect(warnMock).not.toHaveBeenCalled();
   }
 );
 
@@ -46,13 +57,18 @@ it.each([
   ({ color, platformColorString }) => {
     expect(typeof color).toBe('object');
     expect(color).toStrictEqual(PlatformColor(platformColorString));
+    expect(warnMock).not.toHaveBeenCalled();
   }
 );
 
-it('retrieves ios base color as platform color', () => {
+it('returns null for ios base color', () => {
   const color = Color.ios.systemBlue;
   expect(typeof color).toBe('object');
-  expect(color).toStrictEqual(PlatformColor('systemBlue'));
+  expect(color).toStrictEqual(null);
+  expect(warnMock).toHaveBeenCalledTimes(1);
+  expect(warnMock).toHaveBeenCalledWith(
+    `Color.ios.systemBlue is not available on android. Consider using a different color for this platform.`
+  );
 });
 
 jest.mock('../materialColor', () => {
@@ -81,6 +97,7 @@ it.each([
     const result = color();
     expect(Material3Color).toHaveBeenCalledWith(expected);
     expect(result).toBe('Material3Color:' + expected);
+    expect(warnMock).not.toHaveBeenCalled();
   }
 );
 
@@ -98,5 +115,6 @@ it.each([
     const result = color();
     expect(Material3DynamicColor).toHaveBeenCalledWith(expected);
     expect(result).toBe('Material3DynamicColor:' + expected);
+    expect(warnMock).not.toHaveBeenCalled();
   }
 );

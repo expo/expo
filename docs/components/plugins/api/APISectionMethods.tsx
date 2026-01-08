@@ -8,9 +8,14 @@ import { H2 } from '~/ui/components/Text';
 
 import {
   AccessorDefinitionData,
+  CommentContentData,
+  CommentData,
   CommentTagData,
   MethodDefinitionData,
+  MethodParamData,
+  MethodSignatureData,
   PropData,
+  TypeDefinitionData,
 } from './APIDataTypes';
 import { APISectionDeprecationNote } from './APISectionDeprecationNote';
 import { getMethodName, resolveTypeName, getTagData, getAllTagData } from './APISectionUtils';
@@ -36,6 +41,60 @@ export type RenderMethodOptions = {
   parentPlatforms?: CommentTagData[];
 };
 
+const CONFIG_PLUGIN_NAME = 'ConfigPlugin';
+
+const isConfigPluginReference = (type?: TypeDefinitionData) =>
+  type?.type === 'reference' &&
+  type.name === CONFIG_PLUGIN_NAME &&
+  (!type.target?.qualifiedName || type.target?.qualifiedName === CONFIG_PLUGIN_NAME);
+
+const getParamTagContent = (comment: CommentData | undefined, paramName: string) =>
+  comment?.blockTags?.find(tag => tag.tag === '@param' && tag.name === paramName)?.content;
+
+const toParamComment = (content?: CommentContentData[]): CommentData | undefined =>
+  content ? { summary: content } : undefined;
+
+const expoConfigType: TypeDefinitionData = {
+  type: 'reference',
+  name: 'ExpoConfig',
+  package: '@expo/config-types',
+};
+
+const getConfigPluginSignatures = (method: PropData): MethodSignatureData[] => {
+  if (!isConfigPluginReference(method.type)) {
+    return [];
+  }
+
+  const comment = method.comment ?? { summary: [] };
+  const propsType = method.type?.typeArguments?.[0];
+  const propsComment = toParamComment(getParamTagContent(method.comment, 'props'));
+
+  const parameters: MethodParamData[] = [
+    {
+      name: 'config',
+      type: expoConfigType,
+      comment: toParamComment(getParamTagContent(method.comment, 'config')),
+    },
+  ];
+
+  if (propsType || propsComment) {
+    parameters.push({
+      name: 'props',
+      type: propsType ?? { type: 'intrinsic', name: 'void' },
+      comment: propsComment,
+    });
+  }
+
+  return [
+    {
+      name: method.name ?? '',
+      parameters,
+      comment,
+      type: expoConfigType,
+    },
+  ];
+};
+
 function getMethodRootSignatures(method: MethodDefinitionData | AccessorDefinitionData | PropData) {
   if ('signatures' in method) {
     return method.signatures ?? [];
@@ -53,6 +112,7 @@ function getMethodRootSignatures(method: MethodDefinitionData | AccessorDefiniti
       }
       return method.type.declaration.signatures ?? [];
     }
+    return getConfigPluginSignatures(method);
   }
   return [];
 }

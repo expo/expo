@@ -7,7 +7,7 @@ import semver from 'semver';
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import { SourceSkips } from './SourceSkips';
 import { getFileBasedHashSourceAsync, relativizeJsonPaths, stringifyJsonSorted } from './Utils';
-import type { HashSource, HashSourceFile, NormalizedOptions } from '../Fingerprint.types';
+import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { toPosixPath } from '../utils/Path';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
@@ -46,7 +46,6 @@ export async function getExpoConfigSourcesAsync(
     ...(isIos ? collectIosIcons(expoConfig.ios?.icon) : []),
     isAndroid ? expoConfig.android?.adaptiveIcon?.foregroundImage : undefined,
     isAndroid ? expoConfig.android?.adaptiveIcon?.backgroundImage : undefined,
-    expoConfig.notification?.icon,
 
     // expo-splash-screen images
     splashScreenPluginProps?.image,

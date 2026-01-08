@@ -5,26 +5,21 @@ import android.os.Bundle
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.notifications.ModuleNotFoundException
-import expo.modules.notifications.notifications.channels.managers.NotificationsChannelGroupManager
 import expo.modules.notifications.notifications.channels.serializers.NotificationsChannelGroupSerializer
 
 /**
  * An exported module responsible for exposing methods for managing notification channel groups.
  */
-class NotificationChannelGroupManagerModule : Module() {
-  private lateinit var groupManager: NotificationsChannelGroupManager
-  private lateinit var groupSerializer: NotificationsChannelGroupSerializer
+open class NotificationChannelGroupManagerModule : Module(), NotificationsChannelProviderAccessor {
+  private val groupManager by lazy {
+    getChannelProvider(appContext.registry).groupManager
+  }
+  private val groupSerializer by lazy {
+    getChannelProvider(appContext.registry).groupSerializer
+  }
 
   override fun definition() = ModuleDefinition {
     Name("ExpoNotificationChannelGroupManager")
-
-    OnCreate {
-      val provider = appContext.legacyModule<NotificationsChannelsProvider>()
-        ?: throw ModuleNotFoundException(NotificationsChannelsProvider::class)
-      groupManager = provider.groupManager
-      groupSerializer = provider.groupSerializer
-    }
 
     AsyncFunction("getNotificationChannelGroupAsync") { groupId: String ->
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

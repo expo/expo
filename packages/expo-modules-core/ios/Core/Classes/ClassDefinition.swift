@@ -43,6 +43,7 @@ public final class ClassDefinition: ObjectDefinition {
 
   // MARK: - JavaScriptObjectBuilder
 
+  @JavaScriptActor
   public override func build(appContext: AppContext) throws -> JavaScriptObject {
     let constructorBlock: ClassConstructorBlock = { [weak self, weak appContext] this, arguments in
       guard let self, let appContext else {
@@ -94,6 +95,7 @@ public final class ClassDefinition: ObjectDefinition {
     return klass
   }
 
+  @JavaScriptActor
   public override func decorate(object: JavaScriptObject, appContext: AppContext) throws {
     try decorateWithStaticFunctions(object: object, appContext: appContext)
 
@@ -107,6 +109,7 @@ public final class ClassDefinition: ObjectDefinition {
     try decorateWithProperties(object: prototype, appContext: appContext)
   }
 
+  @JavaScriptActor
   private func createClass(appContext: AppContext, name: String, consturctor: @escaping ClassConstructorBlock) throws -> JavaScriptObject {
     if isSharedRef {
       return try appContext.runtime.createSharedRefClass(name, constructor: consturctor)

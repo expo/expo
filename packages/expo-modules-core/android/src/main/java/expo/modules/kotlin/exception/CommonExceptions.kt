@@ -1,6 +1,5 @@
 package expo.modules.kotlin.exception
 
-import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
 import expo.modules.interfaces.permissions.Permissions
 import kotlin.reflect.KClass
 
@@ -35,11 +34,6 @@ class Exceptions {
    * An exception to throw when there is no module implementing the [expo.modules.interfaces.permissions.Permissions] interface.
    */
   class PermissionsModuleNotFound : ModuleNotFound(Permissions::class)
-
-  /**
-   * An exception to throw when there is no module implementing the [expo.modules.interfaces.filesystem.FilePermissionModuleInterface] interface.
-   */
-  class FileSystemModuleNotFound : ModuleNotFound(FilePermissionModuleInterface::class)
 
   /**
    * An exception to throw when the operation is not supported on the simulator.
