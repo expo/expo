@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- unify `useFonts` return value in RSC ([#40481](https://github.com/expo/expo/pull/40481) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 - update ExpoFontUtils mock, to align with new API ([#40964](https://github.com/expo/expo/pull/40964) by [@Ubax](https://github.com/Ubax))

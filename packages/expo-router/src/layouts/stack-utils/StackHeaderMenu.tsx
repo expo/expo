@@ -15,14 +15,70 @@ import {
 import { Menu, MenuAction } from '../../primitives';
 import { isChildOfType } from '../../utils/children';
 
-export interface StackHeaderMenuProps extends StackHeaderItemSharedProps {
+export interface StackHeaderMenuProps {
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
   /**
-   * Optional title to show on top of the menu.
+   * There are two ways to specify the content of the menu header item - using props or child components:
+   *
+   * @example
+   * ```tsx
+   * import { Stack } from 'expo-router';
+   *
+   * ...
+   * <Stack.Header.Menu icon="star.fill" title="As props">
+   *  <Stack.Header.MenuAction>Action 1</Stack.Header.MenuAction>
+   * </Stack.Header.Menu>
+   * ```
+   *
+   * @example
+   * ```tsx
+   * import { Stack } from 'expo-router';
+   *
+   * ...
+   * <Stack.Header.Menu>
+   *   <Stack.Header.Icon sf="star.fill" />
+   *   <Stack.Header.Label>As components</Stack.Header.Label>
+   *   <Stack.Header.Badge>3</Stack.Header.Badge>
+   *   <Stack.Header.MenuAction>Action 1</Stack.Header.MenuAction>
+   * </Stack.Header.Menu>
+   * ```
+   *
+   * **Note**: When icon is used, the label will not be shown and will be used for accessibility purposes only.
    */
-  title?: string;
+  children?: ReactNode;
+  /**
+   * If `true`, the menu item will be displayed as destructive.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive) for more information.
+   */
+  destructive?: boolean;
+  disabled?: boolean;
+  /**
+   * Whether to hide the shared background.
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/hidessharedbackground) for more information.
+   *
+   * @platform iOS 26+
+   */
+  hidesSharedBackground?: boolean;
+  /**
+   * Whether the menu should be hidden.
+   *
+   * @default false
+   */
+  hidden?: boolean;
+  /**
+   * Icon for the menu item.
+   *
+   * Can be an SF Symbol name or an image source.
+   */
+  icon?: StackHeaderItemSharedProps['icon'];
   /**
    * If `true`, the menu will be displayed inline.
    * This means that the menu will not be collapsed
+   *
+   * > **Note*: Inline menus are only supported in submenus.
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline) for more information.
    */
@@ -31,15 +87,35 @@ export interface StackHeaderMenuProps extends StackHeaderItemSharedProps {
    * If `true`, the menu will be displayed as a palette.
    * This means that the menu will be displayed as one row
    *
+   * > **Note**: Palette menus are only supported in submenus.
+   *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette) for more information.
    */
   palette?: boolean;
   /**
-   * If `true`, the menu item will be displayed as destructive.
+   * Whether to separate the background of this item from other header items.
    *
-   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive) for more information.
+   * @default false
    */
-  destructive?: boolean;
+  separateBackground?: boolean;
+  /**
+   * Style for the label of the header item.
+   */
+  style?: StackHeaderItemSharedProps['style'];
+  /**
+   * The tint color to apply to the button item
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/tintcolor) for more information.
+   */
+  tintColor?: StackHeaderItemSharedProps['tintColor'];
+  /**
+   * Optional title to show on top of the menu.
+   */
+  title?: string;
+  /**
+   * @default 'plain'
+   */
+  variant?: StackHeaderItemSharedProps['variant'];
 }
 
 /**
@@ -120,7 +196,10 @@ export const StackHeaderMenu: React.FC<StackHeaderMenuProps> = Menu;
 
 export function convertStackHeaderMenuPropsToRNHeaderItem(
   props: StackHeaderMenuProps
-): NativeStackHeaderItemMenu {
+): NativeStackHeaderItemMenu | undefined {
+  if (props.hidden) {
+    return undefined;
+  }
   const { title, ...rest } = props;
   const actions = Children.toArray(props.children).filter(
     (child) => isChildOfType(child, StackHeaderMenuAction) || isChildOfType(child, StackHeaderMenu)
@@ -129,12 +208,14 @@ export function convertStackHeaderMenuPropsToRNHeaderItem(
     ...convertStackHeaderSharedPropsToRNSharedHeaderItem(rest),
     type: 'menu',
     menu: {
-      items: actions.map((action) => {
-        if (isChildOfType(action, StackHeaderMenu)) {
-          return convertStackHeaderSubmenuMenuPropsToRNHeaderItem(action.props);
-        }
-        return convertStackHeaderMenuActionPropsToRNHeaderItem(action.props);
-      }),
+      items: actions
+        .map((action) => {
+          if (isChildOfType(action, StackHeaderMenu)) {
+            return convertStackHeaderSubmenuMenuPropsToRNHeaderItem(action.props);
+          }
+          return convertStackHeaderMenuActionPropsToRNHeaderItem(action.props);
+        })
+        .filter((i) => !!i),
     },
   };
   if (title) {
@@ -146,7 +227,10 @@ export function convertStackHeaderMenuPropsToRNHeaderItem(
 
 function convertStackHeaderSubmenuMenuPropsToRNHeaderItem(
   props: StackHeaderMenuProps
-): NativeStackHeaderItemMenuSubmenu {
+): NativeStackHeaderItemMenuSubmenu | undefined {
+  if (props.hidden) {
+    return undefined;
+  }
   // Removing children. Otherwise the buttons will be broken
   const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
   const actions = Children.toArray(props.children).filter(
@@ -158,12 +242,14 @@ function convertStackHeaderSubmenuMenuPropsToRNHeaderItem(
   const item: NativeStackHeaderItemMenuSubmenu &
     Pick<HeaderBarButtonItemSubmenu, 'displayAsPalette' | 'displayInline' | 'destructive'> = {
     type: 'submenu',
-    items: actions.map((action) => {
-      if (isChildOfType(action, StackHeaderMenu)) {
-        return convertStackHeaderSubmenuMenuPropsToRNHeaderItem(action.props);
-      }
-      return convertStackHeaderMenuActionPropsToRNHeaderItem(action.props);
-    }),
+    items: actions
+      .map((action) => {
+        if (isChildOfType(action, StackHeaderMenu)) {
+          return convertStackHeaderSubmenuMenuPropsToRNHeaderItem(action.props);
+        }
+        return convertStackHeaderMenuActionPropsToRNHeaderItem(action.props);
+      })
+      .filter((i) => !!i),
     label: sharedProps.label || props.title || '',
   };
 
@@ -176,6 +262,7 @@ function convertStackHeaderSubmenuMenuPropsToRNHeaderItem(
   if (props.destructive !== undefined) {
     item.destructive = props.destructive;
   }
+  // TODO: Add elementSize to react-native-screens
 
   if (sharedProps.icon) {
     // Only SF Symbols are supported in submenu icons

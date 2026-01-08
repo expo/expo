@@ -13,8 +13,8 @@ import { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarVi
  *       <Toolbar>
  *         <Toolbar.Spacer />
  *         <Toolbar.Button icon="magnifyingglass" tintColor={Color.ios.placeholderText} />
- *         <Toolbar.View style={{ width: 200 }}>
- *           <TextInput placeholder="Search" />
+ *         <Toolbar.View>
+ *           <TextInput style={{ width: 200 }} placeholder="Search" />
  *         </Toolbar.View>
  *         <Toolbar.Menu icon="ellipsis">
  *           <Toolbar.MenuAction icon="mail" title="Send email" onPress={() => {}} />
@@ -30,11 +30,11 @@ import { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarVi
  * @platform ios
  */
 export declare const Toolbar: ((props: import("./elements").ToolbarProps) => import("react").JSX.Element) & {
-    Menu: import("react").FC<import("..").LinkMenuProps>;
+    Menu: import("react").FC<import("./elements").ToolbarMenuProps>;
     MenuAction: typeof import("..").LinkMenuAction;
     Button: (props: import("./elements").ToolbarButtonProps) => import("react").JSX.Element;
     Spacer: (props: import("./elements").ToolbarSpacerProps) => import("react").JSX.Element;
-    View: ({ children, hidden, hidesSharedBackground, separateBackground, style, }: import("./elements").ToolbarViewProps) => import("react").JSX.Element;
+    View: ({ children, hidden, hidesSharedBackground, separateBackground, }: import("./elements").ToolbarViewProps) => import("react").JSX.Element;
 };
 export { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarView };
 export type { ToolbarProps, ToolbarMenuProps, ToolbarMenuActionProps, ToolbarButtonProps, ToolbarSpacerProps, ToolbarViewProps as ToolbarCustomViewProps, } from './elements';

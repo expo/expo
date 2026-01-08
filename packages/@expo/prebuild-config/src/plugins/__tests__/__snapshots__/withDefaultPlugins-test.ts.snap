@@ -405,7 +405,6 @@ exports[`built-in plugins compiles mods 1`] = `
         "NSAllowsLocalNetworking": true,
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-      "RCTNewArchEnabled": true,
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "arm64",
@@ -441,13 +440,6 @@ exports[`built-in plugins compiles mods 1`] = `
     },
   },
   "name": "my cool app",
-  "notification": {
-    "androidCollapsedTitle": "#{unread_notifications} new interactions",
-    "androidMode": "collapse",
-    "color": "green",
-    "icon": "./icons/notification-icon.png",
-    "iosDisplayInForeground": true,
-  },
   "orientation": "default",
   "packagerOpts": {
     "extraThing": true,
@@ -511,12 +503,6 @@ exports[`built-in plugins introspects mods 1`] = `
                   "name": "activityBackground",
                 },
                 "_": "#ff0000",
-              },
-              {
-                "$": {
-                  "name": "notification_icon_color",
-                },
-                "_": "green",
               },
             ],
           },
@@ -930,18 +916,6 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                   {
                     "$": {
-                      "android:name": "expo.modules.notifications.default_notification_icon",
-                      "android:resource": "@drawable/notification_icon",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "expo.modules.notifications.default_notification_color",
-                      "android:resource": "@color/notification_icon_color",
-                    },
-                  },
-                  {
-                    "$": {
                       "android:name": "com.google.android.gms.ads.APPLICATION_ID",
                       "android:value": "MY_GOOGLE_MOBILE_ADS_APP_ID",
                     },
@@ -1210,7 +1184,6 @@ exports[`built-in plugins introspects mods 1`] = `
             "NSAllowsLocalNetworking": true,
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-          "RCTNewArchEnabled": true,
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": [
             "arm64",
@@ -1635,7 +1608,6 @@ exports[`built-in plugins introspects mods 1`] = `
         "NSAllowsLocalNetworking": true,
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-      "RCTNewArchEnabled": true,
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "arm64",
@@ -1671,13 +1643,6 @@ exports[`built-in plugins introspects mods 1`] = `
     },
   },
   "name": "my cool app",
-  "notification": {
-    "androidCollapsedTitle": "#{unread_notifications} new interactions",
-    "androidMode": "collapse",
-    "color": "green",
-    "icon": "./icons/notification-icon.png",
-    "iosDisplayInForeground": true,
-  },
   "orientation": "default",
   "packagerOpts": {
     "extraThing": true,
@@ -1741,12 +1706,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                   "name": "activityBackground",
                 },
                 "_": "#ff0000",
-              },
-              {
-                "$": {
-                  "name": "notification_icon_color",
-                },
-                "_": "green",
               },
             ],
           },
@@ -1927,18 +1886,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                     "$": {
                       "android:name": "expo.modules.updates.EXPO_RUNTIME_VERSION",
                       "android:value": "@string/expo_runtime_version",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "expo.modules.notifications.default_notification_icon",
-                      "android:resource": "@drawable/notification_icon",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "expo.modules.notifications.default_notification_color",
-                      "android:resource": "@color/notification_icon_color",
                     },
                   },
                   {
@@ -2202,7 +2149,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             },
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-          "RCTNewArchEnabled": true,
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": [
             "armv7",
@@ -2620,7 +2566,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-      "RCTNewArchEnabled": true,
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "armv7",
@@ -2656,13 +2601,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     },
   },
   "name": "my cool app",
-  "notification": {
-    "androidCollapsedTitle": "#{unread_notifications} new interactions",
-    "androidMode": "collapse",
-    "color": "green",
-    "icon": "./icons/notification-icon.png",
-    "iosDisplayInForeground": true,
-  },
   "orientation": "default",
   "packagerOpts": {
     "extraThing": true,

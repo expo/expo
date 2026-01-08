@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.convertStackHeaderSharedPropsToRNSharedHeaderItem = convertStackHeaderSharedPropsToRNSharedHeaderItem;
 const react_1 = require("react");
-const react_native_1 = require("react-native");
 const common_primitives_1 = require("./common-primitives");
 const children_1 = require("../../utils/children");
+const font_1 = require("../../utils/font");
 function convertStackHeaderSharedPropsToRNSharedHeaderItem(props) {
     const { children, style, separateBackground, icon, ...rest } = props;
     const stringChildren = react_1.Children.toArray(children)
@@ -39,18 +39,14 @@ function convertStackHeaderSharedPropsToRNSharedHeaderItem(props) {
         sharesBackground: !separateBackground,
     };
     if (style) {
-        const { backgroundColor, ...convertedStyle } = convertTextStyleToRNTextStyle(style) ?? {};
+        const convertedStyle = (0, font_1.convertTextStyleToRNTextStyle)(style) ?? {};
         item.labelStyle = convertedStyle;
-        item.hidesSharedBackground = backgroundColor === 'transparent';
-    }
-    else {
-        item.hidesSharedBackground = false;
     }
     if (badgeComponent) {
         item.badge = {
             value: badgeComponent.props.children ?? '',
         };
-        const badgeStyle = convertTextStyleToRNTextStyle(badgeComponent.props.style);
+        const badgeStyle = (0, font_1.convertTextStyleToRNTextStyle)(badgeComponent.props.style);
         if (badgeStyle) {
             item.badge.style = badgeStyle;
         }
@@ -59,20 +55,5 @@ function convertStackHeaderSharedPropsToRNSharedHeaderItem(props) {
         item.icon = rnsIcon;
     }
     return item;
-}
-function convertTextStyleToRNTextStyle(style) {
-    const flattenedStyle = react_native_1.StyleSheet.flatten(style);
-    if (!flattenedStyle) {
-        return undefined;
-    }
-    if ('fontWeight' in flattenedStyle) {
-        return {
-            ...flattenedStyle,
-            fontWeight: typeof flattenedStyle.fontWeight === 'number'
-                ? String(flattenedStyle.fontWeight)
-                : flattenedStyle.fontWeight,
-        };
-    }
-    return flattenedStyle;
 }
 //# sourceMappingURL=shared.js.map

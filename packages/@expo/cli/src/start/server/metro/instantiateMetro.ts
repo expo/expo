@@ -126,10 +126,21 @@ export async function loadMetroConfigAsync(
   let config: ConfigT = resolvedConfig.isEmpty
     ? defaultConfig
     : await mergeConfig(defaultConfig, resolvedConfig.config);
+
   // Set the watchfolders to include the projectRoot, as Metro assumes this
   // Force-override the reporter
   config = {
     ...config,
+
+    // See: `overrideConfigWithArguments` https://github.com/facebook/metro/blob/5059e26/packages/metro-config/src/loadConfig.js#L274-L339
+    // Compare to `LoadOptions` type (disregard `reporter` as we don't expose this)
+    resetCache: !!options.resetCache,
+    maxWorkers: options.maxWorkers ?? config.maxWorkers,
+    server: {
+      ...config.server,
+      port: options.port ?? config.server.port,
+    },
+
     watchFolders: !config.watchFolders.includes(config.projectRoot)
       ? [config.projectRoot, ...config.watchFolders]
       : config.watchFolders,
