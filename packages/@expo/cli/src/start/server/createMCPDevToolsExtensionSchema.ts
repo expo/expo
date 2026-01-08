@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { DevToolsPlugin } from './DevToolsPlugin';
-import { DevToolsPluginCommand } from './DevToolsPlugin.schema';
 
 /**
  * Creates an MCP-compatible JSON schema for a DevTools plugin's CLI extensions.
