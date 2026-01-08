@@ -2605,7 +2605,7 @@ PODS:
     - React-Core
   - react-native-netinfo (11.4.1):
     - React-Core
-  - react-native-pager-view (6.9.1):
+  - react-native-pager-view (8.0.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2632,6 +2632,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - SocketRocket
+    - SwiftUIIntrospect (~> 1.0)
     - Yoga
   - react-native-safe-area-context (5.6.2):
     - boost
@@ -3991,6 +3992,7 @@ PODS:
     - StripeUICore (= 25.0.1)
   - StripeUICore (25.0.1):
     - StripeCore (= 25.0.1)
+  - SwiftUIIntrospect (1.3.0)
   - UMAppLoader (6.0.7)
   - Yoga (0.0.0)
   - ZXingObjC/Core (3.6.9)
@@ -4237,6 +4239,7 @@ SPEC REPOS:
     - StripePaymentSheet
     - StripePaymentsUI
     - StripeUICore
+    - SwiftUIIntrospect
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -4729,7 +4732,7 @@ SPEC CHECKSUMS:
   react-native-keyboard-controller: 706ad87594216864e79542852018165a5e6e0eb8
   react-native-maps: ee1e65647460c3d41e778071be5eda10e3da6225
   react-native-netinfo: f0a9899081c185db1de5bb2fdc1c88c202a059ac
-  react-native-pager-view: 899989dd025d219d3ac0d386b2bc162f81ae8330
+  react-native-pager-view: 4cc305d9d25eda66adf44029a84a591d8b98c072
   react-native-safe-area-context: 54d812805f3c4e08a4580ad086cbde1d8780c2e4
   react-native-segmented-control: 44d14c6899ee12de3384517f4fa1cf4a66ae105c
   react-native-skia: 4df548eb44d05ce5e35679b15a9d765e5724126e
@@ -4792,6 +4795,7 @@ SPEC CHECKSUMS:
   StripePaymentSheet: 3f93ce6ea84afde770d3c7e18a9b8f99aed63896
   StripePaymentsUI: 626726a01255a6458c35436f7f6431dacee82684
   StripeUICore: 30f8352fd7a5cf1541b7777a57b3ad1133bf6763
+  SwiftUIIntrospect: fee9aa07293ee280373a591e1824e8ddc869ba5d
   UMAppLoader: b649e542381c8abe788ffb13893e632d598910a5
   Yoga: 5456bb010373068fc92221140921b09d126b116e
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
