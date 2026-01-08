@@ -14,22 +14,30 @@ import host.exp.expoview.R
 
 @Composable
 fun DevSessionRow(session: DevSession) {
-    val uriHandler = LocalUriHandler.current
-    val image = if (session.source == DevSessionSource.Desktop) {
-        painterResource(id = R.drawable.cli)
-    } else {
-        painterResource(id = R.drawable.snack)
+  val uriHandler = LocalUriHandler.current
+  val image = if (session.source == DevSessionSource.Desktop) {
+    painterResource(id = R.drawable.cli)
+  } else {
+    painterResource(id = R.drawable.snack)
+  }
+  ClickableItemRow(
+    onClick = { uriHandler.openUri(session.url) },
+    icon = {
+      Image(
+        painter = image,
+        contentDescription = session.source.name,
+        modifier = Modifier.size(24.dp)
+      )
+    }) {
+    Column {
+      // TODO: Add platform icon
+      Text(
+        text = session.description,
+      )
+      Text(
+        text = session.url,
+        style = MaterialTheme.typography.bodySmall
+      )
     }
-    ClickableItemRow(onClick = { uriHandler.openUri(session.url) }, icon = { Image(painter = image, contentDescription = session.source.name, modifier = Modifier.size(24.dp)) }) {
-        Column {
-            // TODO: Add platform icon
-            Text(
-                text = session.description,
-            )
-            Text(
-                text = session.url,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-    }
+  }
 }

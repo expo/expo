@@ -18,27 +18,27 @@ import host.exp.exponent.graphql.BranchesForProjectQuery
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun BranchRow(branch: BranchesForProjectQuery.UpdateBranch, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+  Row(
+    modifier = Modifier
+        .fillMaxWidth()
+        .clickable { onClick() }
+        .padding(16.dp),
+    verticalAlignment = Alignment.CenterVertically
+  ) {
 //         TODO: Add icons for branch and update
-        val lastUpdate = branch.updates.lastOrNull()
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = "Branch: " + branch.name,
-                // You might want to make the branch name more prominent
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(bottom = 6.dp)
-            )
-            // If a last update exists, display it using the new UpdateRow composable
-            if (lastUpdate != null) {
-                UpdateRow(update = lastUpdate)
-            }
-        }
+    val lastUpdate = branch.updates.lastOrNull()
+    Column(modifier = Modifier.weight(1f)) {
+      Text(
+        text = "Branch: " + branch.name,
+        // You might want to make the branch name more prominent
+        style = MaterialTheme.typography.bodyLarge,
+        fontWeight = FontWeight.Medium,
+        modifier = Modifier.padding(bottom = 6.dp)
+      )
+      // If a last update exists, display it using the new UpdateRow composable
+      if (lastUpdate != null) {
+        UpdateRow(update = lastUpdate)
+      }
     }
+  }
 }

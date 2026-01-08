@@ -13,13 +13,13 @@ import java.util.Locale
  * @return A formatted, readable date-time string, or the original string if parsing fails.
  */
 fun formatIsoDateTime(dateString: String?): String {
-    if (dateString == null) return "Unknown date"
+  if (dateString == null) return "Unknown date"
 
-    return try {
-        val instant = Instant.parse(dateString)
-        val formatter = DateTimeFormatter.ofPattern("MMM d, yyyy, h:mm a", Locale.ENGLISH)
-        instant.atZone(ZoneId.systemDefault()).format(formatter)
-    } catch (e: Exception) {
-        dateString
-    }
+  return try {
+    val instant = Instant.parse(dateString)
+    val formatter = DateTimeFormatter.ofPattern("MMM d, yyyy, h:mm a", Locale.ENGLISH)
+    instant.atZone(ZoneId.systemDefault()).format(formatter)
+  } catch (e: Exception) {
+    dateString
+  }
 }

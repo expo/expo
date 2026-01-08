@@ -49,6 +49,7 @@ fun launchAuthSession(
     onAuthComplete: (String) -> Unit,
 ) {
     val customTabsIntent = CustomTabsIntent.Builder().build()
+//    TODO: Fix for password managers (spawn new activity
     customTabsIntent.launchUrl(context, getAuthSessionURL(type.typeString))
     PendingAuthSession.callback = onAuthComplete
 }
@@ -74,6 +75,7 @@ object PendingAuthSession {
 //    }
 }
 
+//TODO: Rename
 class SessionRepository(context: Context) {
     private val sharedPreferences = context.getSharedPreferences("expo_session", Context.MODE_PRIVATE)
 
