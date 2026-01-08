@@ -2238,7 +2238,7 @@ PODS:
     - Yoga
   - react-native-segmented-control (2.5.7):
     - React-Core
-  - react-native-skia (2.2.14):
+  - react-native-skia (2.4.14):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3869,7 +3869,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: e37989fc447aa4b5de6d0d2ffb0229e817329246
   react-native-safe-area-context: 53f796cb6c814661bbe99fbdfd0585d07b996cdd
   react-native-segmented-control: 44d14c6899ee12de3384517f4fa1cf4a66ae105c
-  react-native-skia: 9150fdcd08a9a8cf06447038898d5c93a5330b17
+  react-native-skia: 81f8ef68c66781d41a6a970dd076f91a8d799af5
   react-native-slider: 7814a1258f438c043f370eb82110ef036793e95a
   react-native-view-shot: 26174e54ec6b4b7c5d70b86964b747919759adc1
   react-native-webview: a0107c12442bf2ac454d509f615daef00f34df47
