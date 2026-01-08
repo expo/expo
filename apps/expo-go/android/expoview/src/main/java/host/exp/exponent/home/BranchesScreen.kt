@@ -72,7 +72,6 @@ fun BranchesScreen(
             isRefreshing = isFetching && branches.isNotEmpty(),
             onRefresh = { paginator }
         ) {
-            // Initial loading indicator
             if (isFetching && branches.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -86,18 +85,15 @@ fun BranchesScreen(
                     state = lazyListState
                 ) {
                     items(branches, key = { it.id }) { branch ->
-                        // Make the BranchRow clickable
                         BranchRow(
                             branch = branch,
                             onClick = {
-                                // Use the branch's app ID and name for navigation
                                 navigateToBranchDetails(appId, branch.name)
                             }
                         )
                         HorizontalDivider()
                     }
 
-                    // Loading indicator for pagination
                     if (canLoadMore) {
                         item {
                             Box(

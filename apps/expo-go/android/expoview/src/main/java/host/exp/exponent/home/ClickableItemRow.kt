@@ -18,9 +18,7 @@ typealias ComposableFunction = @Composable () -> Unit
 @Composable
 fun ClickableItemRow(
     text: String? = null,
-    image: Painter? = null,
-    imageUrl: String? = null,
-    icon: Painter? = null,
+    icon: ComposableFunction? = null,
     onClick: () -> Unit,
     action: ComposableFunction? = null,
     content: ComposableFunction? = null,
@@ -32,52 +30,14 @@ fun ClickableItemRow(
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val hasIcon = imageUrl != null || icon != null || image != null
 
-        // TODO: Reconsider passing icon as Painter vs COmposableFunction
         if (icon != null) {
-            Icon(
-                painter = icon,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-        } else if (image != null) {
-            Image(
-                painter = image,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
-        } else if (imageUrl != null) {
-            AsyncImage(
-                model = imageUrl,
-                contentDescription = "$text icon",
-                modifier = Modifier
-                    .size(24.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        if (hasIcon) {
+            icon()
             Spacer(modifier = Modifier.width(8.dp))
         }
 
-        if (text != null) {
-            Text(
-                text = text,
-                modifier = Modifier.weight(1f)
-            )
-        }
 
-        if (content != null) {
-            content()
-        }
 
-        if (action != null) {
-            Spacer(modifier = Modifier.width(8.dp))
-            action()
-        }
-    }
 
     if (text != null) {
         Text(

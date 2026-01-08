@@ -1,14 +1,18 @@
 // In BranchDetailsScreen.kt (or create the file if it doesn't exist)
 package host.exp.exponent.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -27,63 +31,67 @@ import host.exp.exponent.graphql.BranchDetailsQuery
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BranchDetailsScreen(
-    onGoBack: () -> Unit,
-    branchRefreshableFlow: RefreshableFlow<BranchDetailsQuery.ById?>,
-    bottomBar: @Composable () -> Unit = { }
+  onGoBack: () -> Unit,
+  branchRefreshableFlow: RefreshableFlow<BranchDetailsQuery.ById?>,
+  bottomBar: @Composable () -> Unit = { }
 ) {
-    // 1. Collect state from the RefreshableFlow
-    val isRefreshing by branchRefreshableFlow.loadingFlow.collectAsState()
-    val branch by branchRefreshableFlow.dataFlow.collectAsState()
-    val onRefresh = { branchRefreshableFlow.refresh() }
+  // 1. Collect state from the RefreshableFlow
+  val isRefreshing by branchRefreshableFlow.loadingFlow.collectAsState()
+  val branch by branchRefreshableFlow.dataFlow.collectAsState()
+  val onRefresh = { branchRefreshableFlow.refresh() }
 
-    val pullToRefreshState = rememberPullToRefreshState()
-    val updates = branch?.updateBranchByName?.updates ?: emptyList()
+  val pullToRefreshState = rememberPullToRefreshState()
+  val updates = branch?.updateBranchByName?.updates ?: emptyList()
 
-    Scaffold(
-        topBar = {
-            TopAppBarWithBackIcon(
-                branch?.name ?: "Branch",
-                onGoBack = onGoBack
-            )
-        },
-        bottomBar = bottomBar
-    ) { padding ->
-        PullToRefreshBox(
-            modifier = Modifier.padding(padding),
-            state = pullToRefreshState,
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh
+  Scaffold(
+    topBar = {
+      TopAppBarWithBackIcon(
+        "Branch",
+        onGoBack = onGoBack
+      )
+    },
+    bottomBar = bottomBar
+  ) { padding ->
+    PullToRefreshBox(
+      modifier = Modifier.padding(padding),
+      state = pullToRefreshState,
+      isRefreshing = isRefreshing,
+      onRefresh = onRefresh
+    ) {
+      Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+          modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)
+            .padding(16.dp)
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                item {
-                    Text(
-                        text = "Updates for branch: ${branch?.name}",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                    HorizontalDivider(modifier = Modifier.padding(top = 16.dp))
-                }
-
-                items(updates, key = { it.id }) { update ->
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = update.updateData.message ?: "No message",
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            text = "ID: ${update.id}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        HorizontalDivider(modifier = Modifier.padding(top = 16.dp))
-                    }
-                }
-            }
+          Text(
+//          TODO: Fix name here
+            text = branch?.name ?: "Unnamed Branch",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium
+          )
+          Spacer(modifier = Modifier.height(4.dp))
         }
+        HorizontalDivider()
+        LabeledGroup(label = "Updates", modifier = Modifier.padding(top = 8.dp)) {
+          Box(modifier = Modifier.weight(1f)) {
+            val scrollState = rememberScrollState()
+            Column(
+              modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(PaddingValues(16.dp)),
+              verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+              updates.forEachIndexed { index, update ->
+                UpdateRow(update = update)
+                if (index < updates.lastIndex) {
+                  HorizontalDivider()
+                }
+              }
+            }
+          }
+        }
+      }
     }
+  }
 }
