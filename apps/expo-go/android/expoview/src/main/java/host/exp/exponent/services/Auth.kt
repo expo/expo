@@ -31,10 +31,16 @@ fun getAuthSessionURL(urlPath: String): Uri {
     return "$origin/$urlPath?confirm_account=1&app_redirect_uri=$encodedRedirect".toUri()
 }
 
-// enum with strings login, signup
 enum class AuthSessionType(val typeString: String) {
     LOGIN("login"),
     SIGNUP("signup")
+}
+
+
+enum class ThemeSetting {
+    Automatic,
+    Light,
+    Dark
 }
 
 fun launchAuthSession(
@@ -75,6 +81,23 @@ class SessionRepository(context: Context) {
         private const val SESSION_SECRET_KEY = "session_secret"
         private const val SELECTED_ACCOUNT_ID_KEY = "selected_account_id"
         private const val RECENTS_KEY = "recents_history"
+        private const val THEME_KEY = "theme"
+    }
+
+    fun saveThemeSetting(themeSetting: ThemeSetting) {
+        sharedPreferences.edit().putString(THEME_KEY, themeSetting.name).apply()
+    }
+
+    fun getThemeSetting(): ThemeSetting {
+        // Get the stored string, defaulting to "Automatic" if not found
+        val themeName = sharedPreferences.getString(THEME_KEY, ThemeSetting.Automatic.name)
+        // Safely convert the string back to an enum
+        return try {
+            ThemeSetting.valueOf(themeName ?: ThemeSetting.Automatic.name)
+        } catch (e: IllegalArgumentException) {
+            // If the stored value is invalid for some reason, default to Automatic
+            ThemeSetting.Automatic
+        }
     }
 
     fun saveSessionSecret(secret: String?) {

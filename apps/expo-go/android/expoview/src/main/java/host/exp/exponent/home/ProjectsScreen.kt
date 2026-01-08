@@ -28,73 +28,73 @@ import kotlinx.coroutines.flow.map
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun ProjectsScreen(
-  viewModel: HomeAppViewModel,
-  onGoBack: () -> Unit,
-  navigateToProjectDetails: (appId: String) -> Unit,
-  bottomBar: @Composable () -> Unit = { }
+    viewModel: HomeAppViewModel,
+    onGoBack: () -> Unit,
+    navigateToProjectDetails: (appId: String) -> Unit,
+    bottomBar: @Composable () -> Unit = { }
 ) {
-  val isRefreshing by viewModel.appsPaginatorRefreshableFlow.loadingFlow.collectAsState()
+    val isRefreshing by viewModel.appsPaginatorRefreshableFlow.loadingFlow.collectAsState()
 
-  val apps by viewModel.appsPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
-    paginator?.data ?: flowOf(emptyList())
-  }.collectAsState(initial = emptyList())
+    val apps by viewModel.appsPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
+        paginator?.data ?: flowOf(emptyList())
+    }.collectAsState(initial = emptyList())
 
-  val paginator by viewModel.appsPaginatorRefreshableFlow.dataFlow.collectAsState()
-  val isFetching by viewModel.appsPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
-    paginator?.isFetching ?: flowOf(false)
-  }.collectAsState(initial = false)
+    val paginator by viewModel.appsPaginatorRefreshableFlow.dataFlow.collectAsState()
+    val isFetching by viewModel.appsPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
+        paginator?.isFetching ?: flowOf(false)
+    }.collectAsState(initial = false)
 
-  val canLoadMore by viewModel.appsPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
-    paginator?.isLastPage?.map { it.not() } ?: flowOf(true)
-  }.collectAsState(initial = true)
+    val canLoadMore by viewModel.appsPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
+        paginator?.isLastPage?.map { it.not() } ?: flowOf(true)
+    }.collectAsState(initial = true)
 
-  val pullToRefreshState = rememberPullToRefreshState()
-  val lazyListState = rememberLazyListState()
-  rememberCoroutineScope()
+    val pullToRefreshState = rememberPullToRefreshState()
+    val lazyListState = rememberLazyListState()
+    rememberCoroutineScope()
 
-  Scaffold(
-    topBar = {
-      TopAppBarWithBackIcon("Projects", onGoBack = onGoBack)
-    },
-    bottomBar = bottomBar
-  ) {
-    PullToRefreshBox(
-      modifier = Modifier.padding(it),
-      state = pullToRefreshState,
-//            TODO: find something better than checking apps.isNotEmpty()
-      isRefreshing = isRefreshing && apps.isNotEmpty(),
-      onRefresh = {
-        viewModel.appsPaginatorRefreshableFlow.refresh()
-      },
+    Scaffold(
+        topBar = {
+            TopAppBarWithBackIcon("Projects", onGoBack = onGoBack)
+        },
+        bottomBar = bottomBar
     ) {
-      LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        state = lazyListState
-      ) {
-        items(apps) { app ->
-          AppRow(app = app, onClick = { navigateToProjectDetails(app.commonAppData.id) })
-          HorizontalDivider()
-        }
-        if (isFetching) {
-          item {
-            Box(
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-              contentAlignment = Alignment.Center
+        PullToRefreshBox(
+            modifier = Modifier.padding(it),
+            state = pullToRefreshState,
+//            TODO: find something better than checking apps.isNotEmpty()
+            isRefreshing = isRefreshing && apps.isNotEmpty(),
+            onRefresh = {
+                viewModel.appsPaginatorRefreshableFlow.refresh()
+            },
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = lazyListState
             ) {
-              CircularProgressIndicator()
+                items(apps) { app ->
+                    AppRow(app = app, onClick = { navigateToProjectDetails(app.commonAppData.id) })
+                    HorizontalDivider()
+                }
+                if (isFetching) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                              .fillMaxWidth()
+                              .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                }
             }
-          }
-        }
-      }
 
-      InfiniteListHandler(
-        listState = lazyListState,
-        isFetching = isFetching,
-        canLoadMore = canLoadMore,
-        onLoadMore = { paginator?.loadMore() }
-      )
+            InfiniteListHandler(
+                listState = lazyListState,
+                isFetching = isFetching,
+                canLoadMore = canLoadMore,
+                onLoadMore = { paginator?.loadMore() }
+            )
+        }
     }
-  }
 }

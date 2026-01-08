@@ -34,113 +34,113 @@ import host.exp.expoview.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountScreen(
-  viewModel: HomeAppViewModel,
-  goBack: () -> Unit
+    viewModel: HomeAppViewModel,
+    goBack: () -> Unit
 ) {
-  val account by viewModel.account.dataFlow.collectAsState()
-  val selectedAccount by viewModel.selectedAccount.collectAsState()
+    val account by viewModel.account.dataFlow.collectAsState()
+    val selectedAccount by viewModel.selectedAccount.collectAsState()
 
-  Scaffold(
-    topBar = {
-      TopAppBarWithBackIcon("Account", onGoBack = goBack)
-    },
-  ) { paddingValues ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(paddingValues)
-    ) {
-      LabeledGroup(label = "Log Out") {
-        Button(
-          onClick = {
-            viewModel.logout()
-            goBack()
-          },
-          modifier = Modifier.fillMaxWidth()
+    Scaffold(
+        topBar = {
+            TopAppBarWithBackIcon("Account", onGoBack = goBack)
+        },
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+              .fillMaxSize()
+              .verticalScroll(rememberScrollState())
+              .padding(paddingValues)
         ) {
-          Text("Log Out")
-        }
-      }
-      LabeledGroup(label = "Accounts") {
-        SeparatedList(account?.accounts ?: emptyList()) { item ->
-          AccountRow(
-            account = item,
-            isSelected = item.id == selectedAccount?.id,
-            onClick = {
-              viewModel.selectAccount(item.id)
-              goBack()
+            LabeledGroup(label = "Log Out") {
+                Button(
+                    onClick = {
+                        viewModel.logout()
+                        goBack()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Log Out")
+                }
             }
-          )
+            LabeledGroup(label = "Accounts") {
+                SeparatedList(account?.accounts ?: emptyList()) { item ->
+                    AccountRow(
+                        account = item,
+                        isSelected = item.id == selectedAccount?.id,
+                        onClick = {
+                            viewModel.selectAccount(item.id)
+                            goBack()
+                        }
+                    )
+                }
+            }
         }
-      }
     }
-  }
 }
 
 @Composable
 private fun AccountRow(
-  account: CurrentUserActorData.Account,
-  isSelected: Boolean,
-  onClick: () -> Unit
+    account: CurrentUserActorData.Account,
+    isSelected: Boolean,
+    onClick: () -> Unit
 ) {
-  val owner = account.ownerUserActor
+    val owner = account.ownerUserActor
 
-  @Composable
-  fun Action() {
-    if (isSelected) {
-      Image(
-        painter = painterResource(id = R.drawable.check),
-        contentDescription = "Selected Account",
-        modifier = Modifier.size(16.dp)
-      )
+    @Composable
+    fun Action() {
+        if (isSelected) {
+            Image(
+                painter = painterResource(id = R.drawable.check),
+                contentDescription = "Selected Account",
+                modifier = Modifier.size(16.dp)
+            )
+        }
     }
-  }
 
-  @Composable
-  fun Content() {
-    Column {
-      val name = owner?.fullName?.takeIf { it.isNotBlank() }
-        ?: owner?.username
-        ?: account.name
+    @Composable
+    fun Content() {
+        Column {
+            val name = owner?.fullName?.takeIf { it.isNotBlank() }
+                ?: owner?.username
+                ?: account.name
 
-      Text(
-        text = name,
-        fontWeight = FontWeight.SemiBold
-      )
+            Text(
+                text = name,
+                fontWeight = FontWeight.SemiBold
+            )
 
-      if (owner?.username != null) {
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-          text = owner.username,
-          style = MaterialTheme.typography.bodySmall,
-          color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-      }
+            if (owner?.username != null) {
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = owner.username,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
     }
-  }
 
-  ClickableItemRow(
-    onClick = onClick,
-    icon = {
-      if (owner != null) {
-        AsyncImage(
-          model = owner.profilePhoto,
-          contentDescription = "Account icon",
-          modifier = Modifier
-            .size(24.dp)
-            .clip(CircleShape),
-          contentScale = ContentScale.Crop
-        )
-      } else {
-        Icon(
-          painter = painterResource(expo.modules.devmenu.R.drawable.alert),
-          contentDescription = "Account icon",
-          modifier = Modifier.size(24.dp)
-        )
-      }
-    },
-    content = { Content() },
-    action = { Action() }
-  )
+    ClickableItemRow(
+        onClick = onClick,
+        icon = {
+            if (owner != null) {
+                AsyncImage(
+                    model = owner.profilePhoto,
+                    contentDescription = "Account icon",
+                    modifier = Modifier
+                      .size(24.dp)
+                      .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Icon(
+                    painter = painterResource(expo.modules.devmenu.R.drawable.alert),
+                    contentDescription = "Account icon",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        },
+        content = { Content() },
+        action = { Action() }
+    )
 }

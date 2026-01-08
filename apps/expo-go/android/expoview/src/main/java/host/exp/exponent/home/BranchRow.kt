@@ -16,19 +16,19 @@ import host.exp.exponent.graphql.BranchesForProjectQuery
 
 @Composable
 fun BranchRow(branch: BranchesForProjectQuery.UpdateBranch, onClick: () -> Unit) {
-  Row(
-    modifier = Modifier
-      .fillMaxWidth()
-      .clickable { onClick() }
-      .padding(16.dp),
-    verticalAlignment = Alignment.CenterVertically
-  ) {
-    Column {
-      Text(
-        text = branch.name,
-      )
-    }
+    Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .clickable { onClick() }
+          .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column {
+            Text(
+                text = branch.name,
+            )
+        }
 
-    Spacer(modifier = Modifier.width(8.dp))
-  }
+        Spacer(modifier = Modifier.width(8.dp))
+    }
 }
