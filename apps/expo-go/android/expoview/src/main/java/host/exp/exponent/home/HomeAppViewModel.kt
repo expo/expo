@@ -132,21 +132,6 @@ class HomeAppViewModel(application: Application) : AndroidViewModel(application)
         initialValue = emptyList()
     )
 
-//    fun branch(branchName: String, appId: String): Flow<BranchDetailsQuery.ById?> {
-//        viewModelScope.launch {
-//            Log.d("HomeAppViewModel", "Fetching branch details for branch: $branchName, appId: $appId, found: ${service.branchDetails(branchName, appId).last()}")
-//
-//        }
-//        return service.branchDetails(branchName, appId)
-//    }
-
-    fun branch(branchName: String, appId: String): RefreshableFlow<BranchDetailsQuery.ById?> {
-        return refreshableFlow(scope = viewModelScope, fetcher = {
-            service.branchDetails(branchName, appId)
-        }, initialValue = null)
-    }
-    )
-
     fun branch(branchName: String, appId: String): RefreshableFlow<BranchDetailsQuery.ById?> {
         return refreshableFlow(scope = viewModelScope, fetcher = {
             service.branchDetails(branchName, appId)
@@ -223,64 +208,8 @@ class HomeAppViewModel(application: Application) : AndroidViewModel(application)
         initialValue = emptyList()
     )
 
-    val snacksPaginatorRefreshableFlow =
-        refreshableFlow(
-            scope = viewModelScope,
-            externalTrigger = selectedAccount,
-            fetcher = { account ->
-                flow<Paginator<Home_AccountSnacksQuery.Snack>> {
-                    emit(service.snacks(account?.name ?: ""))
-                }
-            },
-            initialValue = null
-        )
 
-    init {
-        loadSessions()
-    }
 
-    private fun loadSessions() {
-        viewModelScope.launch {
-            // Simulate fetching data
-            listOf(
-                DevSession(
-                    description = "My First Project",
-                    url = "exp://192.168.1.5:8081",
-                    source = DevSessionSource.Desktop,
-                    platform = DevSessionPlatform.Native,
-                    hostname = "macbook-pro.local"
-                ),
-                DevSession(
-                    description = "Cool Snack",
-                    url = "exp://exp.host/@snack/sdk.49.0.0",
-                    source = DevSessionSource.Snack,
-                    platform = DevSessionPlatform.Web
-                ),
-                DevSession(
-                    description = "Cool Snack",
-                    url = "exp://exp.host/@snack/sdk.49.0.0",
-                    source = DevSessionSource.Snack,
-                    platform = DevSessionPlatform.Web
-                ),
-                DevSession(
-                    description = "Cool Snack",
-                    url = "exp://exp.host/@snack/sdk.49.0.0",
-                    source = DevSessionSource.Snack,
-                    platform = DevSessionPlatform.Web
-                ),
-                DevSession(
-                    description = "Cool Snack",
-                    url = "exp://exp.host/@snack/sdk.49.0.0",
-                    source = DevSessionSource.Snack,
-                    platform = DevSessionPlatform.Web
-                )
-            )
-//            recents.value = mockSessions.take(1)
-//            apps.value = mockSessions// Just an example
-        }
-    },
-    initialValue = null
-    )
 
     fun login(context: Context) {
         launchAuthSession(context = context, type = AuthSessionType.LOGIN, { secret ->
@@ -290,18 +219,7 @@ class HomeAppViewModel(application: Application) : AndroidViewModel(application)
         })
     }
 
-    val recents = persistedMutableStateFlow(
-        viewModelScope,
-        readValue = { sessionRepository.getRecents() },
-        writeValue = { sessionRepository.saveRecents(it) }
-    )
 
-    val snacks = refreshableFlow(
-        scope = viewModelScope,
-        externalTrigger = selectedAccount,
-        fetcher = { account -> service.snacks(account?.name ?: "", count = 5) },
-        initialValue = emptyList()
-    )
 
     val snacksPaginatorRefreshableFlow =
         refreshableFlow(
@@ -315,74 +233,12 @@ class HomeAppViewModel(application: Application) : AndroidViewModel(application)
             initialValue = null
         )
 
-    init {
-        loadSessions()
-    }
 
-    private fun loadSessions() {
-        viewModelScope.launch {
-            // Simulate fetching data
-            val mockSessions = listOf(
-                DevSession(
-                    description = "My First Project",
-                    url = "exp://192.168.1.5:8081",
-                    source = DevSessionSource.Desktop,
-                    platform = DevSessionPlatform.Native,
-                    hostname = "macbook-pro.local"
-                ),
-                DevSession(
-                    description = "Cool Snack",
-                    url = "exp://exp.host/@snack/sdk.49.0.0",
-                    source = DevSessionSource.Snack,
-                    platform = DevSessionPlatform.Web
-                ),
-                DevSession(
-                    description = "Cool Snack",
-                    url = "exp://exp.host/@snack/sdk.49.0.0",
-                    source = DevSessionSource.Snack,
-                    platform = DevSessionPlatform.Web
-                ),
-                DevSession(
-                    description = "Cool Snack",
-                    url = "exp://exp.host/@snack/sdk.49.0.0",
-                    source = DevSessionSource.Snack,
-                    platform = DevSessionPlatform.Web
-                ),
-                DevSession(
-                    description = "Cool Snack",
-                    url = "exp://exp.host/@snack/sdk.49.0.0",
-                    source = DevSessionSource.Snack,
-                    platform = DevSessionPlatform.Web
-                )
-            )
-            sessions.value = mockSessions
-        }
-    }
-
-    fun addSession(session: DevSession) {
-        val currentList = sessions.value.toMutableList()
-        currentList.add(session)
-        sessions.value = currentList
-    }
-
-    fun login(context: Context) {
-        launchAuthSession(
-            context = context,
-            type = AuthSessionType.LOGIN
-        ) { secret ->
-            sessionRepository.saveSessionSecret(secret)
-            account.refresh()
-        }
-    }
 
     fun logout() {
         sessionRepository.clearSessionSecret()
         account.refresh()
 //        TODO: logout browser session too
-    }
-
-    fun removeSession(url: String) {
-        sessions.value = sessions.value.filter { it.url != url }
     }
 
     fun clearRecents() {
@@ -473,8 +329,6 @@ fun <T> persistedMutableStateFlow(
     readValue: () -> T,
     writeValue: (T) -> Unit,
 ): MutableStateFlow<T> {
-    // This object implements the MutableStateFlow interface and delegates behavior
-    // to an internal MutableStateFlow while adding the persistence logic.
     return object : MutableStateFlow<T> {
 
         private val _state = MutableStateFlow(readValue())
