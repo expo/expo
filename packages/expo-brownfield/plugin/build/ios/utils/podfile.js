@@ -6,7 +6,7 @@ const getTargetNameLines = (targetName) => {
 };
 const getCustomScriptLines = (targetName) => [
     `$BROWNFIELD_TARGET_NAME = '${targetName}'`,
-    'require File.join(File.dirname(`node --print "require.resolve(\'expo-brownfield-target/package.json\')"`), "plugin/src/ios/scripts/reorder_build_phases.rb")',
+    'require File.join(File.dirname(`node --print "require.resolve(\'expo-brownfield/package.json\')"`), "plugin/src/ios/scripts/reorder_build_phases.rb")',
 ];
 const addNewPodsTarget = (podfile, targetName) => {
     const targetLines = getTargetNameLines(targetName);

@@ -24,7 +24,7 @@ const getBrownfieldPluginIncludeStatement = () => {
     `def brownfieldPluginsPath = new File(`,
     `  providers.exec {`,
     `    workingDir(rootDir)`,
-    `    commandLine("node", "--print", "require.resolve('expo-brownfield-target/package.json')")`,
+    `    commandLine("node", "--print", "require.resolve('expo-brownfield/package.json')")`,
     `  }.standardOutput.asText.get().trim(),`,
     `  "../gradle-plugins"`,
     `).absolutePath`,
