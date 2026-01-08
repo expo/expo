@@ -55,22 +55,34 @@ class VideoPlayerItem: AVPlayerItem {
 
   func createTracksLoadingTask() {
     tracksLoadingTask = Task { [weak self] in
-      var tracks: [VideoTrack] = []
-      guard let self else {
+      guard let self, let mainUrl = videoSource.uri else {
         return []
       }
 
-      if isHls {
-        do {
-          tracks = try await self.fetchHlsVideoTracks()
-        } catch {
-          tracks = []
-          log.warn("Failed to fetch HLS video tracks, this is not required for playback, but `expo-video` will have no knowledge of the available tracks: \(error.localizedDescription)")
-        }
-      } else {
-        let avAssetTracks = asset.tracks(withMediaType: .video)
-        for avAssetTrack in avAssetTracks {
+      var tracks: [VideoTrack] = []
+      if let assetTracks = try? await urlAsset.loadTracks(withMediaType: .video), !assetTracks.isEmpty {
+        for avAssetTrack in assetTracks {
           tracks.append(await VideoTrack.from(assetTrack: avAssetTrack))
+        }
+      }
+
+      if isHls {
+        if #available(iOS 26.0, *) {
+          if let assetVariants = try? await urlAsset.load(.variants) {
+            let isPlayable = (try? await urlAsset.load(.isPlayable)) ?? false
+            for variant in assetVariants {
+              if let track = VideoTrack.from(assetVariant: variant, isPlayable: isPlayable, mainUrl: mainUrl) {
+                tracks.append(track)
+              }
+            }
+          }
+        } else {
+          do {
+            tracks = try await self.fetchHlsVideoTracks()
+          } catch {
+            tracks = []
+            log.warn("Failed to fetch HLS video tracks, this is not required for playback, but `expo-video` will have no knowledge of the available tracks: \(error.localizedDescription)")
+          }
         }
       }
       return tracks
@@ -93,13 +105,13 @@ class VideoPlayerItem: AVPlayerItem {
 
     let (data, _) = try await URLSession.shared.data(for: request)
     let content = String(data: data, encoding: .utf8) ?? ""
-    return parseM3U8(content)
+    return parseM3U8(content, mainUrl: uri)
   }
 
-  private func parseM3U8(_ content: String) -> [VideoTrack] {
+  private func parseM3U8(_ content: String, mainUrl: URL) -> [VideoTrack] {
     let lines = content.components(separatedBy: "\n")
     return zip(lines, lines.dropFirst()).compactMap { line, nextLine in
-      VideoTrack.from(hlsHeaderLine: line, idLine: nextLine)
+      VideoTrack.from(hlsHeaderLine: line, idLine: nextLine, mainUrl: mainUrl)
     }
   }
 }
