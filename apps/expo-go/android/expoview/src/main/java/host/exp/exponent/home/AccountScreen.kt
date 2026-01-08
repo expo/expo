@@ -51,7 +51,7 @@ fun AccountScreen(
               .verticalScroll(rememberScrollState())
               .padding(paddingValues)
         ) {
-            LabeledGroup(label = "Log Out") {
+            LabeledGroup(label = "Log Out", modifier = Modifier.padding(top = 8.dp)) {
                 Button(
                     onClick = {
                         viewModel.logout()
@@ -62,7 +62,7 @@ fun AccountScreen(
                     Text("Log Out")
                 }
             }
-            LabeledGroup(label = "Accounts") {
+            LabeledGroup(label = "Accounts", modifier = Modifier.padding(top = 8.dp)) {
                 SeparatedList(account?.accounts ?: emptyList()) { item ->
                     AccountRow(
                         account = item,
@@ -134,7 +134,7 @@ private fun AccountRow(
                 )
             } else {
                 Icon(
-                    painter = painterResource(expo.modules.devmenu.R.drawable.alert),
+                    painter = painterResource(R.drawable.account_circle),
                     contentDescription = "Account icon",
                     modifier = Modifier.size(24.dp)
                 )

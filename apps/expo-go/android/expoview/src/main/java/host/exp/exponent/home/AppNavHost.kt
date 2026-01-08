@@ -119,6 +119,7 @@ fun AppNavHost(
                 viewModel = viewModel,
                 navigateToProjects = { navController.navigate(Destination.Projects) },
                 navigateToSnacks = { navController.navigate(Destination.Snacks) },
+                onLoginClick = { viewModel.login(context) },
                 navigateToProjectDetails = { appId ->
                     navController.navigate(Destination.ProjectDetails(appId = appId))
                 },
@@ -131,31 +132,6 @@ fun AppNavHost(
                 accountHeader = { NavAccountHeaderAction() }
             )
         }
-
-        NavHost(
-            navController = navController,
-            startDestination = startDestination
-        ) {
-            composable<Destination.Home> {
-                HomeScreen(
-                    viewModel = viewModel,
-                    navigateToProjects = { navController.navigate(Destination.Projects) },
-                    navigateToSnacks = { navController.navigate(Destination.Snacks) },
-                    navigateToProjectDetails = { appId ->
-                        navController.navigate(Destination.ProjectDetails(appId = appId))
-                    },
-                    bottomBar = {
-                        BottomBar(
-                            navController = navController,
-                            currentDestination = Destination.Home,
-                        )
-                    },
-                    accountHeader = { NavAccountHeaderAction() },
-                    navigateToLogin = {
-                        viewModel.login(context)
-                    }
-                )
-            }
 
             composable<Destination.Settings> {
                 SettingsScreen(
@@ -177,7 +153,7 @@ fun AppNavHost(
                     bottomBar = {
                         BottomBar(
                             navController = navController,
-                            currentDestination = Destination.Home, // Or another default
+                            currentDestination = Destination.Home,
                         )
                     },
                     navigateToProjectDetails = { appId ->
@@ -240,7 +216,7 @@ fun AppNavHost(
                     bottomBar = {
                         BottomBar(
                             navController = navController,
-                            currentDestination = Destination.Home, // Or another default
+                            currentDestination = Destination.Home,
                         )
                     }
                 )
@@ -252,119 +228,19 @@ fun AppNavHost(
                     viewModel.branch(args.branchName, args.appId)
                 }
 
-                // --- Start of Fix ---
                 BranchDetailsScreen(
                     onGoBack = { navController.popBackStack() },
                     branchRefreshableFlow = branchRefreshableFlow,
-                    // Pass the BottomBar composable here
                     bottomBar = {
                         BottomBar(
                             navController = navController,
-                            currentDestination = Destination.Home // Or another appropriate default
+                            currentDestination = Destination.Home
                         )
                     }
                 )
-                // --- End of Fix ---
             }
         }
 
-        composable<Destination.Projects> {
-            ProjectsScreen(
-                viewModel = viewModel,
-                onGoBack = { navController.popBackStack() },
-                bottomBar = {
-                    BottomBar(
-                        navController = navController,
-                        currentDestination = Destination.Home, // Or another default
-                    )
-                },
-                navigateToProjectDetails = { appId ->
-                    navController.navigate(Destination.ProjectDetails(appId = appId))
-                }
-            )
-        }
-
-        composable<Destination.Snacks> {
-            SnacksScreen(
-                viewModel = viewModel,
-                onGoBack = { navController.popBackStack() },
-                bottomBar = {
-                    BottomBar(
-                        navController = navController,
-                        currentDestination = Destination.Home,
-                    )
-                }
-            )
-        }
-
-        composable<Destination.Account> {
-            AccountScreen(
-                viewModel = viewModel,
-                goBack = { navController.popBackStack() },
-            )
-        }
-
-        composable<Destination.ProjectDetails> { backStackEntry ->
-            val args = backStackEntry.toRoute<Destination.ProjectDetails>()
-            val appFlow = remember { viewModel.app(args.appId) }
-            ProjectDetailsScreen(
-                viewModel = viewModel,
-                onGoBack = { navController.popBackStack() },
-                appFlow = appFlow,
-                onBranchClick = { branchName ->
-                    navController.navigate(
-                        Destination.BranchDetails(
-                            branchName = branchName,
-                            appId = args.appId
-                        )
-                    )
-                },
-                onShowAllBranchesClick = {
-                    navController.navigate(Destination.Branches(appId = args.appId))
-                },
-            )
-        }
-
-        composable<Destination.Branches> { backStackEntry ->
-            val args = backStackEntry.toRoute<Destination.Branches>()
-
-            BranchesScreen(
-                viewModel = viewModel,
-                onGoBack = { navController.popBackStack() },
-                appId = args.appId,
-                navigateToBranchDetails = { appId, branchName ->
-                    navController.navigate(Destination.BranchDetails(branchName, appId))
-                },
-                bottomBar = {
-                    BottomBar(
-                        navController = navController,
-                        currentDestination = Destination.Home, // Or another default
-                    )
-                }
-            )
-        }
-
-        composable<Destination.BranchDetails> { backStackEntry ->
-            val args = backStackEntry.toRoute<Destination.BranchDetails>()
-            val branchRefreshableFlow = remember(args.branchName, args.appId) {
-                viewModel.branch(args.branchName, args.appId)
-            }
-
-            // --- Start of Fix ---
-            BranchDetailsScreen(
-                onGoBack = { navController.popBackStack() },
-                branchRefreshableFlow = branchRefreshableFlow,
-                // Pass the BottomBar composable here
-                bottomBar = {
-                    BottomBar(
-                        navController = navController,
-                        currentDestination = Destination.Home // Or another appropriate default
-                    )
-                }
-            )
-            // --- End of Fix ---
-        }
-    }
 }
 
 @Composable
@@ -398,5 +274,4 @@ fun BottomBar(
             )
         }
     }
-}
 }

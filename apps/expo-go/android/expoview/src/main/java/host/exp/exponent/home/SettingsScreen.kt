@@ -1,44 +1,36 @@
 package host.exp.exponent.home
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import expo.modules.devmenu.compose.newtheme.NewAppTheme
+import host.exp.expoview.R
+import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import host.exp.exponent.services.ThemeSetting
-import host.exp.expoview.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,7 +42,8 @@ fun SettingsScreen(
 ) {
 
 
-    LocalContext.current
+    val selectedTheme by viewModel.selectedTheme.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -66,32 +59,11 @@ fun SettingsScreen(
                 },
                 actions = { accountHeader() }
             )
-            Text("Expo Go", fontWeight = FontWeight.Bold)
-        }
-},
-colors = TopAppBarDefaults.topAppBarColors(containerColor = NewAppTheme.colors.background.default),
-actions = { accountHeader() }
-)
-},
-bottomBar = bottomBar
-) {
-    paddingValues ->
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(paddingValues)
-    ) {
-        ThemeSection(
-            selectedTheme = selectedTheme,
-            onThemeSelected = { selectedTheme = it }
-        )
+        },
+        bottomBar = bottomBar
+    ) { paddingValues ->
 
-        AppInfoSection(
-            clientVersion = "54.0.6",
-            supportedSdk = "54"
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -103,16 +75,17 @@ bottomBar = bottomBar
                 onThemeSelected = { viewModel.selectedTheme.value = it }
             )
 
+
+            AppInfoSection(
+                clientVersion = "54.0.6",
+                supportedSdk = "54"
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             DeleteAccountSection()
         }
     }
-}
-
-// Define the available theme options
-enum class AppTheme {
-    AUTOMATIC,
-    LIGHT,
-    DARK
 }
 
 @Composable
@@ -128,7 +101,7 @@ fun ThemeSection(
             action = {
                 RadioButton(
                     selected = selectedTheme == ThemeSetting.Automatic,
-                    onClick = null
+                    onClick = null // Null because the row click handles it
                 )
             }
         )
@@ -157,9 +130,8 @@ fun ThemeSection(
             }
         )
     }
-    )
 }
-}
+
 
 @Composable
 fun AppInfoSection(
@@ -169,10 +141,11 @@ fun AppInfoSection(
     val context = LocalContext.current
 
     fun copyToClipboard(label: String, text: String) {
-        val clipboard =
-            context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+        val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
         val clip = android.content.ClipData.newPlainText(label, text)
         clipboard.setPrimaryClip(clip)
+        // Optional: Show a toast to confirm copy
+        // android.widget.Toast.makeText(context, "Copied $label", android.widget.Toast.LENGTH_SHORT).show()
     }
 
     LabeledGroup(label = "App Info") {
@@ -202,6 +175,7 @@ fun AppInfoSection(
     }
 }
 
+
 @Composable
 fun DeleteAccountSection() {
     Card(
@@ -215,6 +189,12 @@ fun DeleteAccountSection() {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
+//                Icon(
+//                    imageVector =
+//                    contentDescription = "Delete Account",
+//                    tint = Color.Red,
+//                    modifier = Modifier.size(24.dp).padding(end = 8.dp)
+//                )
                 Text(
                     text = "Delete your account",
                     style = MaterialTheme.typography.bodySmall,

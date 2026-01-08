@@ -40,4 +40,3 @@ fun AppRow(app: Home_AccountAppsQuery.App, onClick: () -> Unit) {
     }
     Spacer(modifier = Modifier.width(8.dp))
 }
-}

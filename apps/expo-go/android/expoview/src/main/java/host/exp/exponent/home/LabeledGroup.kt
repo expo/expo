@@ -32,7 +32,6 @@ fun LabeledGroup(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
-        // Section Header
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -65,31 +64,15 @@ fun LabeledGroup(
             }
             action?.invoke()
 
-            if (label != null) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            // Main Card/Container for the actions
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-            ) {
-                content()
-            }
         }
+
 
         // Main Card/Container for the actions
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            colors = CardDefaults.cardColors(containerColor = NewAppTheme.colors.background.default)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             content()
         }
