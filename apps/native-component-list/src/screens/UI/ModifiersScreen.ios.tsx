@@ -736,7 +736,7 @@ function AppearSection() {
   return (
     <Section title={`Appear(${appearCount}) Disappear(${disappearCount})`}>
       <DisclosureGroup
-        onStateChange={setDisclosureGroupExpanded}
+        onIsExpandedChange={setDisclosureGroupExpanded}
         isExpanded={disclosureGroupExpanded}
         label="Show rectangle">
         <Rectangle

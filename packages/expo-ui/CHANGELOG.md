@@ -13,6 +13,7 @@
 - [iOS] Match `Button` API with SwiftUI's API ([#41617](https://github.com/expo/expo/pull/41617) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Remove `Switch` component and add `Toggle` component. ([#41675](https://github.com/expo/expo/pull/41675) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] - Replace `onStateChange` callback with `onIsPresentedChange` in `Popover` ([#41628](https://github.com/expo/expo/pull/41628) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Replace `onStateChange` event with `onIsExpandedChange` in `DisclosureGroup` ([#41726](https://github.com/expo/expo/pull/41726) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Replace `onValueChange` event with `onSelectionChange` in `ColorPicker`. ([#41725](https://github.com/expo/expo/pull/41725) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🎉 New features
