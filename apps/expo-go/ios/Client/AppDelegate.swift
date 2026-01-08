@@ -48,6 +48,9 @@ class AppDelegate: ExpoAppDelegate {
     window.backgroundColor = UIColor.white
     rootViewController = (ExpoKit.sharedInstance().rootViewController() as! EXRootViewController)
     window.rootViewController = rootViewController
+    if let initialURL = EXKernelLinkingManager.initialUrl(fromLaunchOptions: launchOptions) {
+      rootViewController?.setInitialHomeURL(initialURL)
+    }
 
     window.makeKeyAndVisible()
   }

@@ -11,8 +11,8 @@
     "lint": "expo lint",
     "prebuild:android": "./scripts/prebuild-android.sh",
     "prebuild:ios": "./scripts/prebuild-ios.sh",
-		"set-debug-app": "adb shell am set-debug-app -w --persistent \"com.brents.microfoam\"",
-		"clear-debug-app": "adb shell am clear-debug-app \"com.brents.microfoam\""
+    "set-debug-app": "adb shell am set-debug-app -w --persistent \"com.brents.microfoam\"",
+    "clear-debug-app": "adb shell am clear-debug-app \"com.brents.microfoam\""
   },
   "jest": {
     "preset": "jest-expo"
@@ -31,7 +31,7 @@
     "expo-status-bar": "3.0.8",
     "expo-notifications": "0.32.11",
     "expo-task-manager": "14.0.7",
-    "react-native-gesture-handler": "~2.28.0",
+    "react-native-gesture-handler": "~2.30.0",
     "react": "19.2.0",
     "react-native": "0.83.1",
     "react-native-safe-area-context": "5.6.0",

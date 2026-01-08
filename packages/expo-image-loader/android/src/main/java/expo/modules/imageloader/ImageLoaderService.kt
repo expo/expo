@@ -7,17 +7,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import expo.modules.core.interfaces.InternalModule
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
+import expo.modules.kotlin.services.ServiceInterface
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
 
-class ImageLoaderModule(val context: Context) : InternalModule, ImageLoaderInterface {
-
-  override fun getExportedInterfaces(): List<Class<*>> {
-    return listOf(ImageLoaderInterface::class.java)
-  }
-
+@ServiceInterface(ImageLoaderInterface::class)
+class ImageLoaderService(val context: Context) : ImageLoaderInterface {
   override fun loadImageForDisplayFromURL(url: String): Future<Bitmap> {
     val future = SimpleSettableFuture<Bitmap>()
     loadImageForDisplayFromURL(

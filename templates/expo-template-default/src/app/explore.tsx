@@ -59,12 +59,12 @@ export default function TabTwoScreen() {
           <ThemedView style={styles.sectionsWrapper}>
             <Collapsible title="File-based routing">
               <ThemedText type="small">
-                This app has two screens: <ThemedText type="code">app/(tabs)/index.tsx</ThemedText>{' '}
-                and <ThemedText type="code">app/(tabs)/explore.tsx</ThemedText>
+                This app has two screens: <ThemedText type="code">src/app/index.tsx</ThemedText>{' '}
+                and <ThemedText type="code">src/app/explore.tsx</ThemedText>
               </ThemedText>
               <ThemedText type="small">
-                The layout file in <ThemedText type="code">app/(tabs)/_layout.tsx</ThemedText> sets
-                up the tab navigator.
+                The layout file in <ThemedText type="code">src/app/_layout.tsx</ThemedText> sets up
+                the tab navigator.
               </ThemedText>
               <ExternalLink href="https://docs.expo.dev/router/introduction">
                 <ThemedText type="linkPrimary">Learn more</ThemedText>
@@ -111,7 +111,7 @@ export default function TabTwoScreen() {
             <Collapsible title="Animations">
               <ThemedText type="small">
                 This template includes an example of an animated component. The{' '}
-                <ThemedText type="code">components/ui/collapsible.tsx</ThemedText> component uses
+                <ThemedText type="code">src/components/ui/collapsible.tsx</ThemedText> component uses
                 the powerful <ThemedText type="code">react-native-reanimated</ThemedText> library to
                 animate opening this hint.
               </ThemedText>

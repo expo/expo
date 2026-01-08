@@ -2725,7 +2725,7 @@ PODS:
     - Yoga
   - react-native-segmented-control (2.5.7):
     - React-Core
-  - react-native-skia (2.2.12):
+  - react-native-skia (2.2.14):
     - boost
     - DoubleConversion
     - fast_float
@@ -2755,7 +2755,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-slider (5.0.1):
+  - react-native-slider (5.1.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2773,7 +2773,7 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-slider/common (= 5.0.1)
+    - react-native-slider/common (= 5.1.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2784,7 +2784,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-slider/common (5.0.1):
+  - react-native-slider/common (5.1.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -2840,7 +2840,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-webview (13.15.0):
+  - react-native-webview (13.16.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3537,7 +3537,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNGestureHandler (2.28.0):
+  - RNGestureHandler (2.30.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -3565,38 +3565,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNReanimated (4.2.0):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-hermes
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated (= 4.2.0)
-    - RNWorklets
-    - SocketRocket
-    - Yoga
-  - RNReanimated/reanimated (4.2.0):
+  - RNReanimated (4.2.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3623,11 +3592,42 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNReanimated/reanimated/apple (= 4.2.0)
+    - RNReanimated/reanimated (= 4.2.1)
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNReanimated/reanimated/apple (4.2.0):
+  - RNReanimated/reanimated (4.2.1):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNReanimated/reanimated/apple (= 4.2.1)
+    - RNWorklets
+    - SocketRocket
+    - Yoga
+  - RNReanimated/reanimated/apple (4.2.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -4660,7 +4660,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 452f2dd7422b2fd7973ae9ca103898d28d7744f0
+  hermes-engine: d7a9424b7191b73c5c774d04fc2e147dd400e67f
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -4716,10 +4716,10 @@ SPEC CHECKSUMS:
   react-native-pager-view: 899989dd025d219d3ac0d386b2bc162f81ae8330
   react-native-safe-area-context: 2249e17382bd5a97cbccaa89e22af8756188c0fb
   react-native-segmented-control: 44d14c6899ee12de3384517f4fa1cf4a66ae105c
-  react-native-skia: 6fe142fbe7f93579e6205d4045abdf5d6574b942
-  react-native-slider: 30cea7008de785564de2f4fd064f2deb38614a4a
+  react-native-skia: 4df548eb44d05ce5e35679b15a9d765e5724126e
+  react-native-slider: e35799fb9983a19307195d77f10caf5f6a716842
   react-native-view-shot: aac285cd08144be29c19ab659930172836f0067f
-  react-native-webview: 183e0d1f10b3c61c5ddd70f4ecd46488856a3573
+  react-native-webview: 8b9097e270a99ee8798449f191a7ea27c790fa1c
   React-NativeModulesApple: 7f2f2fed3f6c858889eb61d09941be965d52df58
   React-networking: 43e5e6773ac2ca2a93261a1388fed269c9fce092
   React-oscompat: 80166b66da22e7af7fad94474e9997bd52d4c8c6
@@ -4757,8 +4757,8 @@ SPEC CHECKSUMS:
   RNCMaskedView: 63268de1986a098b5f4d1fb5b1bc1e97fade0aee
   RNCPicker: 51992b3407f6b70ddb8e417ec5714c3f2d48d8a4
   RNDateTimePicker: c4a42c6a77d474f05162d61a4ab4253d13008277
-  RNGestureHandler: afae32614741017de0f813f74586eee29773f31a
-  RNReanimated: ef851cdf95ca947de3199fb05b863be9596a9a91
+  RNGestureHandler: 77eecab5fd636666ca73a55bb61e2f1a685b7e84
+  RNReanimated: 31da8d5f1605f5367e2392748ba9f4ba6eaf1178
   RNScreens: 69f68c95d395bc4261d27c3aae7b4a458b947b7e
   RNSVG: 6e742388ed2c7bfe7c9f5baf42b8eb850adc0442
   RNWorklets: 4e3230b74c2e466e608458b7f665a41825bca6c1

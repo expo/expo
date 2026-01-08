@@ -22,7 +22,7 @@ public final class GlassEffectModule: Module {
 
     Constant("isGlassEffectAPIAvailable") {
       #if compiler(>=6.2)
-      if #available(iOS 26.0, *) {
+      if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {
         guard let glassEffectClass = NSClassFromString("UIGlassEffect") as? NSObject.Type else {
           return false
         }

@@ -64,9 +64,11 @@ You can either provide an array of supported locales directly, or use the `suppo
 
 Creating and managing translations quickly becomes a large task. You can handle translations manually, but it's best to use a library to handle this for you.
 
-Let's make the app support English and Japanese. To achieve this install the i18n package `i18n-js`:
+Let's make the app support English and Japanese. To achieve that, this guide uses the `i18n-js` package:
 
 <Terminal cmd={['$ npx expo install i18n-js']} />
+
+Take a look at [other translation libraries](#other-translation-libraries) to find one that best suits your needs.
 
 Then, configure the languages for your app:
 
@@ -148,17 +150,20 @@ const styles = StyleSheet.create({
 
 ### Other translation libraries
 
-This guide uses `i18n-js` as an example. Other libraries can also help you with translations, and each has different features:
+This guide uses `i18n-js` as an example, but other libraries can also help you with the task. Creating translations is a major effort. Some pointers to consider when choosing a library:
 
-- Creating translations is a huge effort. Consider hiring experts and using translation libraries with management tools for easier edits and automation. Some translation libraries can integrate with translation management tools (essentially, a web service that lets you outsource, auto-generate, or make it easier to create translations).
+- Integration with translation management tools for easier strings management and automations.
+- Ability to provide context to strings, so that AI translation tools and/or human reviewers can understand the context of the string and provide better translations.
+- Developer experience - usage in the context of React / JSX. Some libraries come with ESLint plugins and other tools to help in development.
+- Don't worry about localizing dates or numbers - use standardized `Intl` APIs for that.
 
-- Some libraries allow rearranging component structures based on translation strings. For example, you want to localize a string that includes a `<Pressable>` link, and depending on the translation you want the link to be in a different order from the rest of the text.
+Here is a non-exhaustive list of other libraries you can consider:
 
-Here are some libraries:
+- [Lingui](https://lingui.dev/) is a mature library with first-class React (including React Server Components (RSC)) support and integrates well with translation management tools.
 
-- [`React i18next`](https://react.i18next.com/) is a stable, well-maintained library based on `i18next`.
+- [fbtee](https://fbtee.dev/) is an internationalization framework for JavaScript and React designed to be powerful, flexible, and intuitive.
 
-- [`typesafe-i18n`](https://github.com/ivanhofer/typesafe-i18n) compiles translations to save space in the production bundle. It also generates TypeScript types for your translations so that you can use them in your code and get autocomplete and type safety. It requires the `Intl` API for some features, so it's only usable in projects with Hermes enabled.
+- [React i18next](https://react.i18next.com/) is a stable, well-maintained library based on `i18next`.
 
 ### Translating app metadata
 

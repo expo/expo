@@ -92,7 +92,6 @@ class RNCWebViewManagerImpl(private val newArch: Boolean = false) {
             WebView.setWebContentsDebuggingEnabled(true)
         }
         webView.setDownloadListener(DownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
-            webView.setIgnoreErrFailedForThisURL(url)
             val module = webView.reactApplicationContext.getNativeModule(RNCWebViewModule::class.java) ?: return@DownloadListener
             val request: DownloadManager.Request = try {
                 DownloadManager.Request(Uri.parse(url))
