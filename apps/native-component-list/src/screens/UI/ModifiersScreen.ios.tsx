@@ -392,13 +392,13 @@ export default function ModifiersScreen() {
               label="Select a row color"
               selection={rowColor}
               supportsOpacity
-              onValueChanged={setRowColor}
+              onSelectionChange={setRowColor}
             />
             <ColorPicker
               label="Select a background color"
               selection={backgroundFormColor}
               supportsOpacity
-              onValueChanged={setBackgroundFormColor}
+              onSelectionChange={setBackgroundFormColor}
             />
           </Section>
 
@@ -429,7 +429,7 @@ export default function ModifiersScreen() {
             <ColorPicker
               label="Select a color"
               selection={color}
-              onValueChanged={setColor}
+              onSelectionChange={setColor}
               // primary is a named color in SwiftUI
               modifiers={[foregroundStyle({ type: 'color', color: 'primary' })]}
             />

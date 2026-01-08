@@ -170,7 +170,7 @@ export default function ListScreen() {
             label="Item icon color"
             selection={color}
             supportsOpacity
-            onValueChanged={setColor}
+            onSelectionChange={setColor}
           />
           <Picker
             label="Scroll dismisses keyboard"
