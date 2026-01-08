@@ -34,8 +34,8 @@ public final class GlassEffectModule: Module {
     }
 
     View(GlassView.self) {
-      Prop("glassEffectStyle", .regular) { (view, style: GlassStyle) in
-        view.setGlassStyle(style)
+      Prop("glassEffectStyle") { (view, config: GlassEffectStyleConfig) in
+        view.setGlassStyle(config)
       }
 
       Prop("tintColor") { (view, tintColor: UIColor?) in

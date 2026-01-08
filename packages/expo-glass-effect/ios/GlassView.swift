@@ -85,18 +85,38 @@ public final class GlassView: ExpoView {
     }
   }
 
-  public func setGlassStyle(_ style: GlassStyle) {
-    if glassStyle != style {
-      glassStyle = style
+  public func setGlassStyle(_ config: GlassEffectStyleConfig) {
+    let newStyle = config.style
+    if glassStyle != newStyle {
+      glassStyle = newStyle
       guard isGlassEffectAvailable() else {
         return
       }
       if #available(iOS 26.0, *) {
-      #if compiler(>=6.2) // Xcode 26
-        let effect = UIGlassEffect(style: glassStyle?.toUIGlassEffectStyle() ?? .regular)
-        glassEffectView.effect = effect
-        glassEffect = effect
-        updateEffect()
+        #if compiler(>=6.2) // Xcode 26
+        let applyEffect = {
+          if let uiStyle = newStyle.toUIGlassEffectStyle() {
+            let effect = UIGlassEffect(style: uiStyle)
+            self.glassEffectView.effect = effect
+            self.glassEffect = effect
+            self.updateEffect()
+          } else {
+            // TODO: revisit this in newer versions of iOS
+            // setting `nil` does not work as expected, so we need to set a visual effect with no effect
+            self.glassEffectView.effect = UIVisualEffect()
+            self.glassEffect = self.glassEffectView.effect
+          }
+        }
+
+        if config.animate {
+          if let duration = config.animationDuration {
+            UIView.animate(withDuration: duration, animations: applyEffect)
+          } else {
+            UIView.animate(animations: applyEffect)
+          }
+        } else {
+          applyEffect()
+        }
         #endif
       }
     }
