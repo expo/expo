@@ -7,7 +7,6 @@
 @class EXModulesProxyConfig;
 @class EXNativeModulesProxy;
 @class EXRuntime;
-@protocol EXEventEmitterService;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -90,13 +89,6 @@ typedef void (NS_SWIFT_SENDABLE ^EXPromiseRejectBlock)(NSString * _Nullable code
  Returns NSArray of objects (ViewModuleWrapper instances).
  */
 - (nonnull NSArray *)getViewManagers;
-
-#pragma mark - Event Emitter
-
-/**
- Returns the event emitter service for sending events to JavaScript.
- */
-@property(nonatomic, readonly, nullable) id<EXEventEmitterService> eventEmitter;
 
 #pragma mark - Native Module Registration
 
