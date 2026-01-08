@@ -79,7 +79,7 @@ const readTemplate = (template: string, platform?: PlatformString): string => {
   // If not use the default template
   const templatesPath = path.join(
     __filename,
-    '../..',
+    '../../..',
     'templates',
     platform ?? '.',
   );

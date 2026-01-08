@@ -43,7 +43,7 @@ const readTemplate = (template, platform) => {
         return overwrittenTemplate;
     }
     // If not use the default template
-    const templatesPath = node_path_1.default.join(__filename, '../..', 'templates', platform ?? '.');
+    const templatesPath = node_path_1.default.join(__filename, '../../..', 'templates', platform ?? '.');
     const templatePath = node_path_1.default.join(templatesPath, template);
     if (!(0, node_fs_1.existsSync)(templatePath)) {
         throw new Error(`Template ${template} doesn't exist at ${templatePath}`);
