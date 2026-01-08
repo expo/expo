@@ -94,27 +94,17 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
                     if (!route.loader) {
                         continue; // Route matched but has no loader
                     }
-                    try {
-                        // Create a request with the actual route path so `parseParams()` works correctly
-                        const loaderUrl = new URL(matchedPath + url.search, url.origin);
-                        const loaderRequest = new Request(loaderUrl, request);
-                        const data = await getLoaderData(loaderRequest, route);
-                        return createResponse('api', route, JSON.stringify(data), {
-                            status: 200,
-                            headers: new Headers({
-                                'Content-Type': 'application/json',
-                            }),
-                        });
-                    }
-                    catch (error) {
-                        console.error('Loader error:', error);
-                        return createResponse('api', route, JSON.stringify({ error: 'Loader failed' }), {
-                            status: 500,
-                            headers: new Headers({
-                                'Content-Type': 'application/json',
-                            }),
-                        });
-                    }
+                    // Create a request with the actual route path so `parseParams()` works correctly
+                    // NOTE(@hassankhan): Relocate the request rewriting logic from here
+                    url.pathname = matchedPath;
+                    const loaderRequest = new Request(url, request);
+                    const data = await getLoaderData(loaderRequest, route);
+                    return createResponse('api', route, JSON.stringify(data), {
+                        status: 200,
+                        headers: new Headers({
+                            'Content-Type': 'application/json',
+                        }),
+                    });
                 }
                 const html = await getHtml(request, route);
                 return respondHTML(html, route);
