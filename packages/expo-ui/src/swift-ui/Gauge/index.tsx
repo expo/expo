@@ -4,7 +4,7 @@ import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 /**
- * The kind of gauge label.
+ * The type of gauge label.
  */
 type GaugeLabelKind = 'label' | 'currentValue' | 'minimumValue' | 'maximumValue';
 
