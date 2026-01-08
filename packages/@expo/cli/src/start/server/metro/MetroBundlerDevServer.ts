@@ -6,6 +6,10 @@
  */
 import { ExpoConfig, getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
+import {
+  startInlineModulesMetroWatcherAsync,
+  generateMirrorDirectories,
+} from '@expo/inline-modules';
 import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
 import {
   sourceMapGeneratorNonBlocking,
@@ -68,7 +72,6 @@ import type {
   ExportAssetDescriptor,
   ExportAssetMap,
 } from '../../../export/saveAssets';
-import { startModuleGenerationAsync } from '../../../inlineModules/generation';
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
@@ -176,6 +179,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroServer | null = null;
   private hmrServer: MetroHmrServer<MetroHmrClient> | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
+  private inlineModulesFilesWatched = new Set<string>();
+  private directoryToPackage = new Map<string, string>();
   isReactServerComponentsEnabled?: boolean;
   isReactServerRoutesEnabled?: boolean;
 
@@ -1215,6 +1220,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
     }
 
+    // Need to generate the inline modules import files before creating metro instance
+    // so that these files are watched and there are no race conditions.
+    if (exp.experiments?.inlineModules) {
+      await this.inlineModulesGeneration();
+    }
+
     const instanceMetroOptions = {
       isExporting: !!options.isExporting,
       baseUrl,
@@ -1644,27 +1655,37 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
   }
 
-  public async startTypeScriptServices(): Promise<any> {
-    const startTypescriptTypeGenerationPromise = startTypescriptTypeGenerationAsync({
+  public async startTypeScriptServices() {
+    return startTypescriptTypeGenerationAsync({
       server: this.instance?.server,
       metro: this.metro,
       projectRoot: this.projectRoot,
     });
-
-    return startTypescriptTypeGenerationPromise;
   }
 
-  private async inlineModulesSetup(): Promise<void> {
+  private async inlineModulesGeneration(): Promise<void> {
+    await generateMirrorDirectories(
+      this.projectRoot,
+      this.inlineModulesFilesWatched,
+      this.directoryToPackage
+    );
+  }
+
+  private async inlineModulesWatcherSetup(): Promise<void> {
     const { projectRoot, metro } = this;
-    const { exp } = getConfig(this.projectRoot);
-    if (exp.experiments?.inlineModules) {
-      return startModuleGenerationAsync({ projectRoot, metro });
-    }
+    return startInlineModulesMetroWatcherAsync(
+      { projectRoot, metro },
+      this.inlineModulesFilesWatched,
+      this.directoryToPackage
+    );
   }
 
   protected async postStartAsync(options: BundlerStartOptions): Promise<void> {
     await super.postStartAsync(options);
-    return this.inlineModulesSetup();
+    const { exp } = getConfig(this.projectRoot);
+    if (exp.experiments?.inlineModules) {
+      return this.inlineModulesWatcherSetup();
+    }
   }
 
   protected getConfigModuleIds(): string[] {

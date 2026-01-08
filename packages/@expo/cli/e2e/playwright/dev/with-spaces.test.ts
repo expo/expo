@@ -28,8 +28,13 @@ test.describe('router-e2e with spaces', () => {
       // created project. This is required to be able to execute the SSR bundle
       // outside the Expo monorepo module
       {
-        // TODO(@hassankhan, @krystofwoldrich): remove linked packages after publishing
-        linkExpoPackages: ['@expo/router-server', 'expo-router', '@expo/log-box'],
+        // TODO(@hassankhan, @krystofwoldrich, @HubertBer): remove linked packages after publishing
+        linkExpoPackages: [
+          '@expo/inline-modules',
+          '@expo/router-server',
+          'expo-router',
+          '@expo/log-box',
+        ],
         linkExpoPackagesDev: ['@expo/cli', 'expo-server', '@expo/require-utils'],
       }
     );

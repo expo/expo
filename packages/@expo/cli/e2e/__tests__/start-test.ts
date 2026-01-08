@@ -98,8 +98,9 @@ describeSkipWin('server', () => {
 
   beforeEach(async () => {
     expo.options.cwd = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank', {
-      // TODO(@hassankhan, @krystofwoldrich, @kitten): remove all linked after publishing
+      // TODO(@hassankhan, @krystofwoldrich, @kitten, @HubertBer): remove all linked after publishing
       linkExpoPackages: [
+        '@expo/inline-modules',
         '@expo/router-server',
         '@expo/log-box',
         '@expo/require-utils',
@@ -184,7 +185,9 @@ describe('start - dev clients', () => {
   let projectRoot: string;
 
   beforeAll(async () => {
-    projectRoot = await setupTestProjectWithOptionsAsync('start-dev-clients', 'with-blank');
+    projectRoot = await setupTestProjectWithOptionsAsync('start-dev-clients', 'with-blank', {
+      linkExpoPackages: ['@expo/inline-modules'],
+    });
     expo.options.cwd = projectRoot;
 
     // Add a `.env` file with `TEST_SCHEME`
