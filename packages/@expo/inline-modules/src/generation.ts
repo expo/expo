@@ -293,6 +293,18 @@ export async function generateMirrorDirectories(
   }
 }
 
+let inlineModulesWatcherListener: any = null;
+
+export function removeInlineModulesWatcherListener(metro: Server) {
+  if (inlineModulesWatcherListener) {
+    metro
+      .getBundler()
+      .getBundler()
+      .getWatcher()
+      .removeListener('change', inlineModulesWatcherListener);
+  }
+}
+
 export async function startInlineModulesMetroWatcherAsync(
   { projectRoot, metro }: ModuleGenerationArguments,
   filesWatched: Set<string> = new Set<string>(),
@@ -370,5 +382,6 @@ export async function startInlineModulesMetroWatcherAsync(
     }
   };
 
+  inlineModulesWatcherListener = listener;
   watcher?.addListener('change', listener);
 }
