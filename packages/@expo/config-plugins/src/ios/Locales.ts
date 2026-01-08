@@ -6,7 +6,7 @@ import { XcodeProject } from 'xcode';
 import { ConfigPlugin } from '../Plugin.types';
 import { addResourceFileToGroup, ensureGroupRecursively, getProjectName } from './utils/Xcodeproj';
 import { withXcodeProject } from '../plugins/ios-plugins';
-import { getResolvedLocalesAsync, LocaleJson } from '../utils/locales';
+import { getResolvedLocalesAsync, LocaleJson, ResolvedLocalesJson } from '../utils/locales';
 
 export const withLocales: ConfigPlugin = (config) => {
   return withXcodeProject(config, async (config) => {
@@ -25,7 +25,7 @@ export async function writeStringsFile({
   projectName,
   project,
 }: {
-  localesMap: LocaleJson | Record<string, LocaleJson>;
+  localesMap: LocaleJson | ResolvedLocalesJson;
   supportingDirectory: string;
   fileName: string;
   projectName: string;
@@ -34,7 +34,6 @@ export async function writeStringsFile({
   for (const [lang, localizationObj] of Object.entries(localesMap)) {
     if (Object.entries(localizationObj).length === 0) return project;
     const dir = path.join(supportingDirectory, `${lang}.lproj`);
-    // await fs.ensureDir(dir);
     await fs.promises.mkdir(dir, { recursive: true });
 
     const strings = path.join(dir, fileName);
@@ -79,7 +78,7 @@ export async function setLocalesAsync(
     return project;
   }
   // possibly validate CFBundleAllowMixedLocalizations is enabled
-  const { locales: localesMap, localizableStrings } = await getResolvedLocalesAsync(
+  const { localesMap, localizableStringsIOS: localizableStrings } = await getResolvedLocalesAsync(
     projectRoot,
     locales,
     'ios'
@@ -96,7 +95,7 @@ export async function setLocalesAsync(
     projectName,
     project,
   });
-  if (localizableStrings) {
+  if (localizableStrings && Object.keys(localizableStrings).length) {
     project = await writeStringsFile({
       localesMap: localizableStrings,
       supportingDirectory,

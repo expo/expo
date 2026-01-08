@@ -1,16 +1,17 @@
 import { ExpoConfig } from '@expo/config-types';
+/**
+ * on iOS only, we support a special case where
+ * StringsMap contains a 'Localizable.strings'?: StringsMap; entry
+ * Values written into `Localizable.strings` for iOS.
+ */
+export type StringsMap = Record<string, string>;
 export type LocaleJson = Record<string, string> & {
-    ios?: Record<string, string>;
-    android?: Record<string, string>;
+    ios?: StringsMap;
+    android?: StringsMap;
 };
-export type ResolvediOSLocalesJson = {
-    locales: Record<string, LocaleJson>;
-    localizableStrings: Record<string, LocaleJson>;
-};
-export type IOSConfig = {
-    localizableStrings?: Record<string, string>;
-    [key: string]: any;
-};
-export type ResolvedLocalesJson = Record<string, LocaleJson>;
 export type ExpoConfigLocales = NonNullable<ExpoConfig['locales']>;
-export declare function getResolvedLocalesAsync(projectRoot: string, input: ExpoConfigLocales, forPlatform: 'ios' | 'android'): Promise<ResolvedLocalesJson | ResolvediOSLocalesJson>;
+export type ResolvedLocalesJson = Record<string, LocaleJson>;
+export declare function getResolvedLocalesAsync(projectRoot: string, input: ExpoConfigLocales, forPlatform: 'ios' | 'android'): Promise<{
+    localesMap: ResolvedLocalesJson;
+    localizableStringsIOS?: ResolvedLocalesJson;
+}>;

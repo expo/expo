@@ -11,8 +11,8 @@
     "lint": "expo lint",
     "prebuild:android": "./scripts/prebuild-android.sh",
     "prebuild:ios": "./scripts/prebuild-ios.sh",
-		"set-debug-app": "adb shell am set-debug-app -w --persistent \"com.brents.microfoam\"",
-		"clear-debug-app": "adb shell am clear-debug-app \"com.brents.microfoam\""
+    "set-debug-app": "adb shell am set-debug-app -w --persistent \"com.brents.microfoam\"",
+    "clear-debug-app": "adb shell am clear-debug-app \"com.brents.microfoam\""
   },
   "jest": {
     "preset": "jest-expo"
@@ -23,6 +23,7 @@
     "expo": "~54.0.8",
     "expo-font": "14.0.8",
     "expo-linking": "8.0.8",
+    "expo-localization": "17.0.7",
     "expo-router": "6.0.6",
     "expo-device": "8.0.7",
     "expo-constants": "18.0.9",

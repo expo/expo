@@ -48,16 +48,16 @@ describe('e2e: iOS locales', () => {
             app_name: 'us-name',
           },
         }),
-        // backwards compatiblity test
+        // backwards compatibility test
         'lang/en.json': JSON.stringify({
           CFBundleDisplayName: 'us-name',
           app_name: 'us-name',
         }),
-        // with localizableStrings test
+        // with Localizable.strings
         'lang/ar.json': JSON.stringify({
           ios: {
             CFBundleDisplayName: 'ar-name',
-            localizableStrings: {
+            'Localizable.strings': {
               NOTIF_KEY: 'ar-notification',
             },
           },
@@ -65,10 +65,10 @@ describe('e2e: iOS locales', () => {
             app_name: 'ar-name',
           },
         }),
-        // localizableStrings only test
+        // Localizable.strings-only test
         'lang/de.json': JSON.stringify({
           ios: {
-            localizableStrings: {
+            'Localizable.strings': {
               NOTIF_KEY: 'de-notification',
             },
           },
@@ -115,7 +115,13 @@ describe('e2e: iOS locales', () => {
     const localizableStrings = Object.keys(after).filter((value) =>
       value.endsWith('Localizable.strings')
     );
-    expect(infoPlists.length).toBe(5);
+    expect(infoPlists).toStrictEqual([
+      'ios/testproject/Supporting/fr.lproj/InfoPlist.strings',
+      'ios/testproject/Supporting/es.lproj/InfoPlist.strings',
+      'ios/testproject/Supporting/en-US.lproj/InfoPlist.strings',
+      'ios/testproject/Supporting/en.lproj/InfoPlist.strings',
+      'ios/testproject/Supporting/ar.lproj/InfoPlist.strings',
+    ]);
     expect(after[infoPlists[0]]).toMatchSnapshot();
     // Test that the inlined locale is resolved.
     expect(after[infoPlists[1]]).toMatch(/spanish-name/);
@@ -125,7 +131,10 @@ describe('e2e: iOS locales', () => {
       app_name = "us-name";"
     `);
     expect(after[infoPlists[4]]).toMatchInlineSnapshot(`"CFBundleDisplayName = "ar-name";"`);
-    expect(localizableStrings.length).toBe(2);
+    expect(localizableStrings).toStrictEqual([
+      'ios/testproject/Supporting/ar.lproj/Localizable.strings',
+      'ios/testproject/Supporting/de.lproj/Localizable.strings',
+    ]);
     expect(after[localizableStrings[0]]).toMatchInlineSnapshot(`"NOTIF_KEY = "ar-notification";"`);
     expect(after[localizableStrings[1]]).toMatchInlineSnapshot(`"NOTIF_KEY = "de-notification";"`);
 

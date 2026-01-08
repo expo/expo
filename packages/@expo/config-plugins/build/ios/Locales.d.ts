@@ -1,10 +1,10 @@
 import { ExpoConfig } from '@expo/config-types';
 import { XcodeProject } from 'xcode';
 import { ConfigPlugin } from '../Plugin.types';
-import { LocaleJson } from '../utils/locales';
+import { LocaleJson, ResolvedLocalesJson } from '../utils/locales';
 export declare const withLocales: ConfigPlugin;
 export declare function writeStringsFile({ localesMap, supportingDirectory, fileName, projectName, project, }: {
-    localesMap: LocaleJson | Record<string, LocaleJson>;
+    localesMap: LocaleJson | ResolvedLocalesJson;
     supportingDirectory: string;
     fileName: string;
     projectName: string;

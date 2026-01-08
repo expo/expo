@@ -63,7 +63,6 @@ async function writeStringsFile({
   for (const [lang, localizationObj] of Object.entries(localesMap)) {
     if (Object.entries(localizationObj).length === 0) return project;
     const dir = _path().default.join(supportingDirectory, `${lang}.lproj`);
-    // await fs.ensureDir(dir);
     await _fs().default.promises.mkdir(dir, {
       recursive: true
     });
@@ -107,8 +106,8 @@ async function setLocalesAsync(config, {
   }
   // possibly validate CFBundleAllowMixedLocalizations is enabled
   const {
-    locales: localesMap,
-    localizableStrings
+    localesMap,
+    localizableStringsIOS: localizableStrings
   } = await (0, _locales().getResolvedLocalesAsync)(projectRoot, locales, 'ios');
   const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
   const supportingDirectory = _path().default.join(projectRoot, 'ios', projectName, 'Supporting');
@@ -121,7 +120,7 @@ async function setLocalesAsync(config, {
     projectName,
     project
   });
-  if (localizableStrings) {
+  if (localizableStrings && Object.keys(localizableStrings).length) {
     project = await writeStringsFile({
       localesMap: localizableStrings,
       supportingDirectory,
