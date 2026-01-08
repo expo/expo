@@ -18,14 +18,8 @@ describe(`getAssetSchemasAsync return array of strings including some known valu
   });
 
   test.each([
-    [
-      '44.0.0',
-      ['icon', 'notification.icon', 'splash.image', 'ios.splash.xib', 'android.splash.xxhdpi'],
-    ],
-    [
-      'UNVERSIONED',
-      ['icon', 'notification.icon', 'splash.image', 'ios.splash.xib', 'android.splash.xxhdpi'],
-    ],
+    ['44.0.0', ['icon', 'splash.image', 'ios.splash.xib', 'android.splash.xxhdpi']],
+    ['UNVERSIONED', ['icon', 'splash.image', 'ios.splash.xib', 'android.splash.xxhdpi']],
   ])('for SDK %s', async (sdkVersion, expectedAssetsPaths) => {
     const schemas = await getAssetSchemasAsync(sdkVersion);
     for (const field of schemas) {

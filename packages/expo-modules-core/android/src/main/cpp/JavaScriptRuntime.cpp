@@ -86,32 +86,4 @@ void JavaScriptRuntime::drainJSEventLoop() {
   while (!runtime->drainMicrotasks()) {}
 }
 
-void JavaScriptRuntime::installMainObject() {
-  auto coreModule = getJSIContext(get())->getCoreModule();
-
-  // As opposed to other modules, the core module is represented by a raw JS object instead of an instance of NativeModule class.
-  mainObject = std::make_shared<jsi::Object>(*runtime);
-
-  // Decorate the core object based on the module definition.
-  for (const auto &decorator : coreModule->cthis()->decorators) {
-    decorator->decorate(*runtime, *mainObject);
-  }
-
-  auto global = runtime->global();
-
-  jsi::Object descriptor = JavaScriptObject::preparePropertyDescriptor(*runtime, 1 << 1);
-
-  descriptor.setProperty(*runtime, "value", jsi::Value(*runtime, *mainObject));
-
-  common::defineProperty(
-    *runtime,
-    &global,
-    "expo",
-    std::move(descriptor)
-  );
-}
-
-std::shared_ptr<jsi::Object> JavaScriptRuntime::getMainObject() noexcept {
-  return mainObject;
-}
 } // namespace expo

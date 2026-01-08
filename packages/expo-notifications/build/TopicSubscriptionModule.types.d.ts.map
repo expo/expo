@@ -1,0 +1,1 @@
+{"version":3,"file":"TopicSubscriptionModule.types.d.ts","sourceRoot":"","sources":["../src/TopicSubscriptionModule.types.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,mBAAmB,CAAC;AAEtD,MAAM,WAAW,uBAAwB,SAAQ,iBAAiB;IAChE,qBAAqB,CAAC,EAAE,CAAC,KAAK,EAAE,MAAM,KAAK,OAAO,CAAC,IAAI,CAAC,CAAC;IACzD,yBAAyB,CAAC,EAAE,CAAC,KAAK,EAAE,MAAM,KAAK,OAAO,CAAC,IAAI,CAAC,CAAC;CAC9D"}

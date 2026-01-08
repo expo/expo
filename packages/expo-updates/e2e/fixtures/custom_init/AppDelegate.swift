@@ -24,7 +24,7 @@ class CustomReactNativeFactoryDelegate: ExpoReactNativeFactoryDelegate {
   }
 }
 
-@UIApplicationMain
+@main
 class AppDelegate: ExpoAppDelegate {
   var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   // AppDelegate keeps a nullable reference to the updates controller

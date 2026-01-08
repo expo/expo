@@ -1,194 +1,130 @@
-import { Button, Host, HStack, Image, Picker, Popover, Text, VStack } from '@expo/ui/swift-ui';
 import {
-  background,
-  buttonStyle,
-  clipShape,
-  frame,
-  onTapGesture,
-  padding,
-  pickerStyle,
-  tag,
-} from '@expo/ui/swift-ui/modifiers';
-import { isLiquidGlassAvailable } from 'expo-glass-effect';
-import { Image as ExpoImage } from 'expo-image';
-import React from 'react';
-import { Alert, ScrollView, Text as RNText } from 'react-native';
+  Button,
+  Form,
+  Host,
+  LabeledContent,
+  Picker,
+  Popover,
+  RNHostView,
+  Section,
+  Text,
+  VStack,
+} from '@expo/ui/swift-ui';
+import { frame, padding, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+import React, { useState } from 'react';
+import { Pressable, Text as RNText, View } from 'react-native';
+
+const attachmentAnchorOptions = ['center', 'leading', 'trailing', 'top', 'bottom'] as const;
+const arrowEdgeOptions = ['none', 'leading', 'trailing', 'top', 'bottom'] as const;
+
+type AttachmentAnchor = (typeof attachmentAnchorOptions)[number];
+type ArrowEdge = (typeof arrowEdgeOptions)[number];
 
 export default function PopoverScreen() {
-  const [showPop, setShowPop] = React.useState<boolean>(true);
-  const [textShowPop, setTextShowPop] = React.useState<boolean>(false);
-  const [iconShowPop, setIconShowPop] = React.useState<boolean>(false);
-  const [scrollShowPop, setScrollShowPop] = React.useState<boolean>(false);
-  const [imageShowPop, setImageShowPop] = React.useState<boolean>(false);
-
-  const attachmentAnchorOptions = ['leading', 'trailing', 'center', 'top', 'bottom'] as const;
-  const arrowEdgeOptions = ['leading', 'trailing', 'top', 'bottom'] as const;
-  const [attachmentAnchor, setAttachmentAnchor] = React.useState<number>(0);
-  const [arrowEdge, setArrowEdge] = React.useState<number>(0);
+  const [showBasicPopover, setShowBasicPopover] = useState(false);
+  const [showConfiguredPopover, setShowConfiguredPopover] = useState(false);
+  const [showRNPopover, setShowRNPopover] = useState(false);
+  const [attachmentAnchor, setAttachmentAnchor] = useState<AttachmentAnchor>('center');
+  const [arrowEdge, setArrowEdge] = useState<ArrowEdge>('none');
+  const [counter, setCounter] = useState(0);
 
   return (
-    <Host matchContents>
-      <VStack spacing={40} alignment="leading" modifiers={[padding({ horizontal: 20 })]}>
-        <VStack spacing={20}>
-          <Text>Attachment Anchor</Text>
+    <Host style={{ flex: 1 }}>
+      <Form>
+        <Section title="Basic Popover">
+          <Popover isPresented={showBasicPopover} onIsPresentedChange={setShowBasicPopover}>
+            <Popover.Trigger>
+              <Button onPress={() => setShowBasicPopover(true)} label="Show Basic Popover" />
+            </Popover.Trigger>
+            <Popover.Content>
+              <VStack modifiers={[padding({ all: 16 }), frame({ minWidth: 200 })]}>
+                <Text>Hello from Popover!</Text>
+                <Text color="#666666">This is the popover content.</Text>
+              </VStack>
+            </Popover.Content>
+          </Popover>
+        </Section>
+
+        <Section title="Configuration">
           <Picker
-            modifiers={[pickerStyle('segmented')]}
-            selection={attachmentAnchor}
-            onSelectionChange={setAttachmentAnchor}>
+            label="Attachment Anchor"
+            modifiers={[pickerStyle('menu')]}
+            selection={attachmentAnchorOptions.indexOf(attachmentAnchor)}
+            onSelectionChange={(index) => setAttachmentAnchor(attachmentAnchorOptions[index])}>
             {attachmentAnchorOptions.map((option, index) => (
-              <Text key={index} modifiers={[tag(index)]}>
+              <Text key={option} modifiers={[tag(index)]}>
                 {option}
               </Text>
             ))}
           </Picker>
-          <Text>Arrow edge</Text>
           <Picker
-            modifiers={[pickerStyle('segmented')]}
-            selection={arrowEdge}
-            onSelectionChange={setArrowEdge}>
+            label="Arrow Edge"
+            modifiers={[pickerStyle('menu')]}
+            selection={arrowEdgeOptions.indexOf(arrowEdge)}
+            onSelectionChange={(index) => setArrowEdge(arrowEdgeOptions[index])}>
             {arrowEdgeOptions.map((option, index) => (
-              <Text key={index} modifiers={[tag(index)]}>
+              <Text key={option} modifiers={[tag(index)]}>
                 {option}
               </Text>
             ))}
           </Picker>
-        </VStack>
+        </Section>
 
-        <VStack alignment="center">
-          <HStack spacing={60}>
-            <Popover
-              isPresented={showPop}
-              onStateChange={(e) => setShowPop(e.isPresented)}
-              attachmentAnchor={attachmentAnchorOptions[attachmentAnchor]}
-              arrowEdge={arrowEdgeOptions[arrowEdge]}>
-              <Popover.Content>
-                <VStack modifiers={[padding({ all: 20 })]}>
-                  <Text size={16}>Hello is button popover</Text>
-                </VStack>
-              </Popover.Content>
-              <Popover.Trigger>
-                <Button
-                  modifiers={[buttonStyle('borderedProminent')]}
-                  onPress={() => setShowPop(true)}
-                  label="Button Popover"
-                />
-              </Popover.Trigger>
-            </Popover>
-            <Popover isPresented={textShowPop} onStateChange={(e) => setTextShowPop(e.isPresented)}>
-              <Popover.Content>
-                <VStack modifiers={[padding({ all: 20 })]}>
-                  <Text size={16}>Hello is text popover</Text>
-                </VStack>
-              </Popover.Content>
-              <Popover.Trigger>
-                <Text modifiers={[onTapGesture(() => setTextShowPop(true))]}>Text Popover</Text>
-              </Popover.Trigger>
-            </Popover>
-          </HStack>
-        </VStack>
-
-        <HStack>
+        <Section title="Configured Popover">
+          <LabeledContent label="Settings">
+            <Text color="#888888">
+              anchor: {attachmentAnchor}, arrow: {arrowEdge}
+            </Text>
+          </LabeledContent>
           <Popover
-            isPresented={iconShowPop}
-            onStateChange={(e) => setIconShowPop(e.isPresented)}
-            attachmentAnchor={attachmentAnchorOptions[attachmentAnchor]}
-            arrowEdge={arrowEdgeOptions[arrowEdge]}>
+            isPresented={showConfiguredPopover}
+            onIsPresentedChange={setShowConfiguredPopover}
+            attachmentAnchor={attachmentAnchor}
+            arrowEdge={arrowEdge}>
+            <Popover.Trigger>
+              <Button onPress={() => setShowConfiguredPopover(true)} label="Show Configured" />
+            </Popover.Trigger>
             <Popover.Content>
-              <VStack modifiers={[padding({ all: 20 })]} spacing={10}>
-                <HStack alignment="center" spacing={6}>
-                  <Image systemName="star.fill" size={24} color="green" />
-                  <Text size={18}>Hello is icon popover</Text>
-                </HStack>
-                <Button
-                  modifiers={[
-                    buttonStyle(isLiquidGlassAvailable() ? 'glassProminent' : 'borderedProminent'),
-                  ]}
-                  onPress={() => Alert.alert('This allert from popover!')}
-                  label="Press me"
-                />
+              <VStack modifiers={[padding({ all: 16 }), frame({ minWidth: 250 })]}>
+                <Text>Configured Popover</Text>
+                <Text color="#666666">Attachment: {attachmentAnchor}</Text>
+                <Text color="#666666">Arrow Edge: {arrowEdge}</Text>
               </VStack>
             </Popover.Content>
-            <Popover.Trigger>
-              <VStack modifiers={[background('gray'), clipShape('circle')]}>
-                <Image
-                  systemName="house"
-                  size={24}
-                  modifiers={[padding({ all: 10 }), onTapGesture(() => setIconShowPop(true))]}
-                />
-              </VStack>
-            </Popover.Trigger>
           </Popover>
-        </HStack>
-
-        <HStack spacing={20}>
+        </Section>
+        <Section title="Popover with React Native Content">
           <Popover
-            isPresented={scrollShowPop}
-            onStateChange={(e) => setScrollShowPop(e.isPresented)}
-            attachmentAnchor={attachmentAnchorOptions[attachmentAnchor]}
-            arrowEdge={arrowEdgeOptions[arrowEdge]}>
+            isPresented={showRNPopover}
+            onIsPresentedChange={setShowRNPopover}
+            attachmentAnchor={attachmentAnchor}
+            arrowEdge={arrowEdge}>
+            <Popover.Trigger>
+              <Button onPress={() => setShowRNPopover(true)} label="Show RN Popover" />
+            </Popover.Trigger>
             <Popover.Content>
-              <VStack modifiers={[frame({ width: 200, height: 150 })]}>
-                <ScrollView contentContainerStyle={{ width: 200, padding: 20, gap: 4 }}>
-                  <RNText style={{ fontSize: 16, fontWeight: '700' }}>
-                    Scroll content inside popover
+              <RNHostView matchContents>
+                <View style={{ padding: 24 }}>
+                  <RNText style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8 }}>
+                    React Native Content
                   </RNText>
-                  {['1', '2', '3', '4', '5', '6'].map((i, index) => (
-                    <RNText
-                      key={index}
-                      style={{
-                        backgroundColor: 'green',
-                        padding: 4,
-                        borderRadius: 6,
-                        color: 'white',
-                      }}>
-                      {i}
-                    </RNText>
-                  ))}
-                  <Host matchContents>
-                    <Button
-                      modifiers={[
-                        buttonStyle(
-                          isLiquidGlassAvailable() ? 'glassProminent' : 'borderedProminent'
-                        ),
-                      ]}
-                      onPress={() => Alert.alert('This allert from popover!')}
-                      label="Press me"
-                    />
-                  </Host>
-                </ScrollView>
-              </VStack>
+                  <RNText style={{ color: '#666', marginBottom: 12 }}>Counter: {counter}</RNText>
+                  <Pressable
+                    style={{
+                      backgroundColor: '#007AFF',
+                      padding: 12,
+                      borderRadius: 8,
+                      alignItems: 'center',
+                    }}
+                    onPress={() => setCounter(counter + 1)}>
+                    <RNText style={{ color: 'white', fontWeight: '600' }}>Increment</RNText>
+                  </Pressable>
+                </View>
+              </RNHostView>
             </Popover.Content>
-            <Popover.Trigger>
-              <Button
-                modifiers={[buttonStyle('borderedProminent')]}
-                onPress={() => setScrollShowPop(true)}
-                label="ScrollView Popover"
-              />
-            </Popover.Trigger>
           </Popover>
-          <Popover
-            isPresented={imageShowPop}
-            onStateChange={(e) => setImageShowPop(e.isPresented)}
-            attachmentAnchor={attachmentAnchorOptions[attachmentAnchor]}
-            arrowEdge={arrowEdgeOptions[arrowEdge]}>
-            <Popover.Content>
-              <VStack modifiers={[frame({ width: 400, height: 200 })]}>
-                <ExpoImage
-                  source={require('../../../assets/images/example2.jpg')}
-                  style={{ width: 400, height: 200 }}
-                />
-              </VStack>
-            </Popover.Content>
-            <Popover.Trigger>
-              <Button
-                modifiers={[buttonStyle('borderedProminent')]}
-                onPress={() => setImageShowPop(true)}
-                label="Image popover"
-              />
-            </Popover.Trigger>
-          </Popover>
-        </HStack>
-      </VStack>
+        </Section>
+      </Form>
     </Host>
   );
 }

@@ -1,7 +1,7 @@
 import { useTheme } from '@react-navigation/native';
 import { Link, useNavigation } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Faces, StaticFaces } from '../../components/faces';
 
@@ -42,7 +42,7 @@ export default function Index() {
         <Link.Trigger>
           <Pressable>
             <Link.AppleZoom>
-              <View style={{ width: 170 }}>
+              <View style={{ width: 170 }} collapsable={false}>
                 <StaticFaces numberOfFaces={9} size={50} />
               </View>
             </Link.AppleZoom>
@@ -93,6 +93,32 @@ export default function Index() {
                 }}
                 icon="3.circle"
               />
+            </Link.Menu>
+            <Link.Menu inline elementSize="small" title="Small Actions">
+              <Link.MenuAction icon="star.fill" onPress={() => Alert.alert('Star')}>
+                Star
+              </Link.MenuAction>
+              <Link.MenuAction icon="flag.fill" onPress={() => Alert.alert('Flag')}>
+                Flag
+              </Link.MenuAction>
+              <Link.MenuAction icon="pin.fill" onPress={() => Alert.alert('Pin')}>
+                Pin
+              </Link.MenuAction>
+            </Link.Menu>
+
+            {/* elementSize="medium" displays actions horizontally with titles (iOS 16+) */}
+            <Link.Menu inline elementSize="medium" title="Medium Size">
+              <Link.MenuAction
+                icon="arrow.clockwise"
+                title="Refresh"
+                onPress={() => Alert.alert('Refreshing')}
+              />
+              <Link.MenuAction
+                icon="arrow.2.circlepath"
+                title="Resume"
+                onPress={() => Alert.alert('Resuming')}
+              />
+              <Link.MenuAction icon="pin" title="Pin" onPress={() => Alert.alert('Pin')} />
             </Link.Menu>
           </Link.Menu>
         </Link>

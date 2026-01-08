@@ -1,8 +1,7 @@
 import ExpoModulesCore
-import React
 import UIKit
 
-class RouterToolbarItemView: ExpoView {
+class RouterToolbarItemView: RouterViewWithLogger {
   var identifier: String = ""
   @ReactiveProp var type: ItemType?
   @ReactiveProp var title: String?
@@ -18,6 +17,10 @@ class RouterToolbarItemView: ExpoView {
   @ReactiveProp var selected: Bool = false
   @ReactiveProp var possibleTitles: Set<String>?
   @ReactiveProp var badgeConfiguration: BadgeConfiguration?
+  @ReactiveProp var titleStyle: TitleStyle?
+  @ReactiveProp var routerAccessibilityLabel: String?
+  @ReactiveProp var routerAccessibilityHint: String?
+  @ReactiveProp var disabled: Bool = false
 
   var host: RouterToolbarHostView?
 
@@ -50,6 +53,9 @@ class RouterToolbarItemView: ExpoView {
       if let tintColor = customTintColor {
         item.tintColor = tintColor
       }
+      if let titleStyle {
+        RouterFontUtils.setTitleStyle(fromConfig: titleStyle, for: item)
+      }
     }
     if #available(iOS 26.0, *) {
       item.hidesSharedBackground = hidesSharedBackground
@@ -67,6 +73,13 @@ class RouterToolbarItemView: ExpoView {
       item.isHidden = routerHidden
     }
     item.isSelected = selected
+    if let routerAccessibilityLabel = routerAccessibilityLabel {
+      item.accessibilityLabel = routerAccessibilityLabel
+    }
+    if let routerAccessibilityHint = routerAccessibilityHint {
+      item.accessibilityHint = routerAccessibilityHint
+    }
+    item.isEnabled = !disabled
     if #available(iOS 26.0, *) {
       if let badgeConfig = badgeConfiguration {
         var badge = UIBarButtonItem.Badge.indicator()
@@ -81,17 +94,14 @@ class RouterToolbarItemView: ExpoView {
         }
         if badgeConfig.fontFamily != nil || badgeConfig.fontSize != nil
           || badgeConfig.fontWeight != nil {
-          let font = RCTFont.update(
-            nil,
-            withFamily: badgeConfig.fontFamily,
-            size: badgeConfig.fontSize != nil ? NSNumber(value: badgeConfig.fontSize!) : nil,
-            weight: badgeConfig.fontWeight,
-            style: nil,
-            variant: nil,
-            scaleMultiplier: 1.0)
+          let font = RouterFontUtils.convertTitleStyleToFont(
+            TitleStyle(
+              fontFamily: badgeConfig.fontFamily,
+              fontSize: badgeConfig.fontSize,
+              fontWeight: badgeConfig.fontWeight
+            ))
           badge.font = font
         }
-        // TODO: Find out why this does not work
         item.badge = badge
       }
     }
@@ -105,8 +115,8 @@ class RouterToolbarItemView: ExpoView {
 
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
     if customView != nil {
-      print(
-        "[expo-router] Warning: RouterToolbarItemView can only have one child view"
+      logger?.warn(
+        "[expo-router] RouterToolbarItemView can only have one child view. This is most likely a bug in expo-router."
       )
       return
     }
@@ -136,6 +146,13 @@ struct BadgeConfiguration: Equatable {
   var fontFamily: String?
   var fontSize: Double?
   var fontWeight: String?
+}
+
+struct TitleStyle: Equatable {
+  var fontFamily: String?
+  var fontSize: Double?
+  var fontWeight: String?
+  var color: UIColor?
 }
 
 @propertyWrapper

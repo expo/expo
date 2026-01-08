@@ -69,31 +69,6 @@ export interface ExpoConfig {
      */
     icon?: string;
     /**
-     * @deprecated in favor of expo-notifications config plugin. Configuration for remote (push) notifications.
-     */
-    notification?: {
-        /**
-         * (Android only) Local path or remote URL to an image to use as the icon for push notifications. 96x96 png grayscale with transparency. We recommend following [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles). If not provided, defaults to your app icon.
-         */
-        icon?: string;
-        /**
-         * (Android only) Tint color for the push notification image when it appears in the notification tray. Defaults to `#ffffff`
-         */
-        color?: string;
-        /**
-         * Whether or not to display notifications when the app is in the foreground on iOS. `_displayInForeground` option in the individual push notification message overrides this option. [Learn more.](https://docs.expo.dev/push-notifications/receiving-notifications/#foreground-notification-behavior) Defaults to `false`.
-         */
-        iosDisplayInForeground?: boolean;
-        /**
-         * Show each push notification individually (`default`) or collapse into one (`collapse`).
-         */
-        androidMode?: 'default' | 'collapse';
-        /**
-         * If `androidMode` is set to `collapse`, this title is used for the collapsed notification message. For example, `'#{unread_notifications} new interactions'`.
-         */
-        androidCollapsedTitle?: string;
-    };
-    /**
      * Configuration for the status bar on Android. For more details please navigate to [Configuring StatusBar](https://docs.expo.dev/guides/configuring-statusbar/).
      */
     androidStatusBar?: {
@@ -246,10 +221,6 @@ export interface ExpoConfig {
      * @deprecated This field will be removed in a future release. When it is removed, you can continue using JavaScriptCore instead of Hermes by following the instructions in [@react-native-community/javascriptcore](https://github.com/react-native-community/javascriptcore). Specifies the JavaScript engine for Android apps. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
      */
     jsEngine?: 'hermes' | 'jsc';
-    /**
-     * A Boolean value that indicates whether the app should use the new architecture. Defaults to true.
-     */
-    newArchEnabled?: boolean;
     /**
      * Enable downloading cached builds from remote.
      */
@@ -560,10 +531,6 @@ export interface IOS {
      */
     jsEngine?: 'hermes' | 'jsc';
     /**
-     * A Boolean value that indicates whether the iOS app should use the new architecture.
-     */
-    newArchEnabled?: boolean;
-    /**
      * Property indicating compatibility between an iOS build's native code and an OTA update for the iOS platform. If provided, this will override the value of the top level `runtimeVersion` key on iOS.
      */
     runtimeVersion?: string | {
@@ -815,10 +782,6 @@ export interface Android {
      * @deprecated This field will be removed in a future release. When it is removed, you can continue using JavaScriptCore instead of Hermes by following the instructions in [@react-native-community/javascriptcore](https://github.com/react-native-community/javascriptcore). Specifies the JavaScript engine for Android apps. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
      */
     jsEngine?: 'hermes' | 'jsc';
-    /**
-     * A Boolean value that indicates whether the Android app should use the new architecture.
-     */
-    newArchEnabled?: boolean;
     /**
      * Property indicating compatibility between a Android build's native code and an OTA update for the Android platform. If provided, this will override the value of top level `runtimeVersion` key on Android.
      */

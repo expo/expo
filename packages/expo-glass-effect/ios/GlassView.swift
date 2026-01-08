@@ -34,7 +34,7 @@ public final class GlassView: ExpoView {
   // https://github.com/expo/expo/issues/40911
   private func isGlassEffectAvailable() -> Bool {
     #if compiler(>=6.2)
-    if #available(iOS 26.0, *) {
+    if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {
       guard let glassEffectClass = NSClassFromString("UIGlassEffect") as? NSObject.Type else {
         return false
       }
@@ -49,7 +49,7 @@ public final class GlassView: ExpoView {
     guard isGlassEffectAvailable() else {
       return
     }
-    if #available(iOS 26.0, *) {
+    if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
       let isRTL = RCTI18nUtil.sharedInstance()?.isRTL() ?? false
 
@@ -91,7 +91,7 @@ public final class GlassView: ExpoView {
       guard isGlassEffectAvailable() else {
         return
       }
-      if #available(iOS 26.0, *) {
+      if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
         let effect = UIGlassEffect(style: glassStyle?.toUIGlassEffectStyle() ?? .regular)
         glassEffectView.effect = effect
@@ -187,7 +187,7 @@ public final class GlassView: ExpoView {
     guard isGlassEffectAvailable() else {
       return
     }
-    if #available(iOS 26.0, *) {
+    if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {
       #if compiler(>=6.2) // Xcode 26
       if let effect = glassEffect as? UIGlassEffect {
         effect.tintColor = glassTintColor

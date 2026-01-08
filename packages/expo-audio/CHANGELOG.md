@@ -17,11 +17,13 @@
 - [iOS/Android] Aligned Android and iOS pitch correction by changing the default quality on iOS to match Android. `shouldCorrectPitch` now defaults to `true`. ([#40176](https://github.com/expo/expo/pull/40176) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Use correct method to start foreground service on android 14+. ([#41145](https://github.com/expo/expo/pull/41145) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix incorrect notify others on deactivation ([#41196](https://github.com/expo/expo/pull/41196) by [@dylancom](https://github.com/dylancom))
+- [Android] Handle `stop` errors on the `recorder` and return correct timestamp for `currentTime`. ([#41933](https://github.com/expo/expo/pull/41933) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
 - Removing `Record` from `RecordingPresets` type annotation to improve type safety ([#39391](https://github.com/expo/expo/pull/39391) by [@Shoghy](https://github.com/Shoghy))
 - Separate the conditions to enable and disable microphone permissions. ([#40861](https://github.com/expo/expo/pull/40861) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Dedupe events when sending status updates. ([#41700](https://github.com/expo/expo/pull/41700) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 1.0.16 - 2025-12-04
 

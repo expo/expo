@@ -67,6 +67,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Menu component',
+    route: 'ui/menu',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MenuScreen'));
+    },
+  },
+  {
     name: 'ContextMenu component',
     route: 'ui/context-menu',
     options: {},
