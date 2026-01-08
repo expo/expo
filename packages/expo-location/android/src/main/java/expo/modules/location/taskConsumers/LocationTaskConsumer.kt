@@ -43,6 +43,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
   private var mLastReportedLocation: Location? = null
   private var mDeferredDistance = 0.0
   private val mDeferredLocations: MutableList<Location> = ArrayList()
+
   // Apps start in foreground state; lifecycle callbacks update this after initialization
   private var mIsHostPaused = false
   private val mLocationClient: FusedLocationProviderClient by lazy {
@@ -101,13 +102,13 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
    */
   private fun handleLocationUpdate(locations: List<Location>) {
     if (locations.isEmpty()) return
-    
+
     // Foreground: report immediately for responsive UI (matches iOS behavior)
     if (!mIsHostPaused) {
       reportLocationsImmediately(locations)
       return
     }
-    
+
     // Background: use deferred buffer for battery optimization
     deferLocations(locations)
     maybeReportDeferredLocations()
