@@ -19,40 +19,40 @@ import host.exp.exponent.graphql.BranchesForProjectQuery
  */
 @Composable
 fun UpdateRow(update: BranchesForProjectQuery.Update) {
-    Column {
-        Text(
-            text = update.updateData.message ?: "No message",
-            // Apply bodySmall style for secondary text
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Medium,
-            // Prevent long messages from taking up too many lines
-            maxLines = 2,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
-        Text(
-            text = "Published: " + formatIsoDateTime(update.updateData.createdAt as? String),
-            // Apply bodySmall style here as well
-            style = MaterialTheme.typography.bodySmall,
-        )
-    }
+  Column {
+    Text(
+      text = update.updateData.message ?: "No message",
+      // Apply bodySmall style for secondary text
+      style = MaterialTheme.typography.bodySmall,
+      fontWeight = FontWeight.Medium,
+      // Prevent long messages from taking up too many lines
+      maxLines = 2,
+      modifier = Modifier.padding(bottom = 4.dp)
+    )
+    Text(
+      text = "Published: " + formatIsoDateTime(update.updateData.createdAt as? String),
+      // Apply bodySmall style here as well
+      style = MaterialTheme.typography.bodySmall,
+    )
+  }
 }
 
 @Composable
 fun UpdateRow(update: BranchDetailsQuery.Update) {
-    Column {
-        Text(
-            text = update.updateData.message ?: "No message",
-            // Apply bodySmall style for secondary text
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Medium,
-            // Prevent long messages from taking up too many lines
-            maxLines = 2,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
-        Text(
-            text = "Published: " + formatIsoDateTime(update.updateData.createdAt as? String),
-            // Apply bodySmall style here as well
-            style = MaterialTheme.typography.bodySmall,
-        )
-    }
+  Column(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)) {
+    Text(
+      text = update.updateData.message ?: "No message",
+      // Apply bodySmall style for secondary text
+      style = MaterialTheme.typography.bodySmall,
+      fontWeight = FontWeight.Medium,
+      // Prevent long messages from taking up too many lines
+      maxLines = 2,
+      modifier = Modifier.padding(bottom = 4.dp)
+    )
+    Text(
+      text = "Published: " + formatIsoDateTime(update.updateData.createdAt as? String),
+      // Apply bodySmall style here as well
+      style = MaterialTheme.typography.bodySmall,
+    )
+  }
 }

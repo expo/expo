@@ -1,7 +1,6 @@
 package host.exp.exponent.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,14 +17,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import host.exp.exponent.graphql.ProjectsQuery
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class,
-    ExperimentalMaterial3ExpressiveApi::class
+@OptIn(
+  ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class,
+  ExperimentalMaterial3ExpressiveApi::class
 )
 @Composable
 fun ProjectDetailsScreen(
@@ -61,7 +60,12 @@ fun ProjectDetailsScreen(
         .padding(padding)
         .fillMaxSize(),
     ) {
-      Column(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(16.dp)) {
+      Column(
+        modifier = Modifier
+          .fillMaxWidth()
+          .background(MaterialTheme.colorScheme.surface)
+          .padding(16.dp)
+      ) {
         Text(
           text = app?.name ?: "Unnamed Project",
           style = MaterialTheme.typography.bodyLargeEmphasized,
@@ -82,28 +86,29 @@ fun ProjectDetailsScreen(
 
       }
       HorizontalDivider()
-LabeledGroup(label = "Branches", modifier = Modifier.padding(top = 8.dp)) {
-      if (branchesToRender?.isNotEmpty() == true) {
-        TruncatedList(
-          items = branchesToRender,
-          // TODO: Bring back to 3
-          maxItems = 0,
-          onShowMoreClick = {
-            onShowAllBranchesClick()
-          },
-          renderItem = { branch ->
-            BranchRow(
-              branch = branch,
-              onClick = { onBranchClick(branch.name) }
-            )
-          }
-        )
-      } else {
-        Text(
-          text = "No branches found",
-          style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(16.dp))
-      }
+      LabeledGroup(label = "Branches", modifier = Modifier.padding(top = 8.dp)) {
+        if (branchesToRender?.isNotEmpty() == true) {
+          TruncatedList(
+            items = branchesToRender,
+            // TODO: Bring back to 3
+            maxItems = 0,
+            onShowMoreClick = {
+              onShowAllBranchesClick()
+            },
+            renderItem = { branch ->
+              BranchRow(
+                branch = branch,
+                onClick = { onBranchClick(branch.name) }
+              )
+            }
+          )
+        } else {
+          Text(
+            text = "No branches found",
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.padding(16.dp)
+          )
+        }
       }
     }
   }

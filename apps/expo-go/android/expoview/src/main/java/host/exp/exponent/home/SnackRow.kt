@@ -15,18 +15,18 @@ import host.exp.exponent.graphql.Home_AccountSnacksQuery
 
 @Composable
 fun SnackRow(snack: Home_AccountSnacksQuery.Snack) {
-    val uriHandler = LocalUriHandler.current
+  val uriHandler = LocalUriHandler.current
 //    TODO: Add missing SDK versions
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = { uriHandler.openUri(normalizeSnackUrl(snack.commonSnackData.fullName)) })
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = snack.commonSnackData.name,
-            fontWeight = FontWeight.Medium
-        )
-    }
+  Row(
+    modifier = Modifier
+        .fillMaxWidth()
+        .clickable(onClick = { uriHandler.openUri(normalizeSnackUrl(snack.commonSnackData.fullName)) })
+        .padding(16.dp),
+    verticalAlignment = Alignment.CenterVertically
+  ) {
+    Text(
+      text = snack.commonSnackData.name,
+      fontWeight = FontWeight.Medium
+    )
+  }
 }

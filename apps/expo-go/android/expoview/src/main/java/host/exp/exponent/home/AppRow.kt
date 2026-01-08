@@ -18,25 +18,25 @@ import host.exp.exponent.graphql.Home_AccountAppsQuery
 
 @Composable
 fun AppRow(app: Home_AccountAppsQuery.App, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = { onClick() })
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column {
-            Text(
-                text = app.commonAppData.name,
-                fontWeight = FontWeight.Medium
-            )
-            Text(
-                text = app.commonAppData.fullName,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-        Spacer(modifier = Modifier.width(8.dp))
-
+  Row(
+    modifier = Modifier
+        .fillMaxWidth()
+        .clickable(onClick = { onClick() })
+        .padding(16.dp),
+    verticalAlignment = Alignment.CenterVertically
+  ) {
+    Column {
+      Text(
+        text = app.commonAppData.name,
+        fontWeight = FontWeight.Medium
+      )
+      Text(
+        text = app.commonAppData.fullName,
+        style = MaterialTheme.typography.bodySmall
+      )
     }
     Spacer(modifier = Modifier.width(8.dp))
+
+  }
+  Spacer(modifier = Modifier.width(8.dp))
 }

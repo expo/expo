@@ -18,77 +18,77 @@ import host.exp.exponent.services.ThemeSetting
 
 // Define your text styles
 val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    */
+  bodyLarge = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.Normal,
+    fontSize = 16.sp,
+    lineHeight = 24.sp,
+    letterSpacing = 0.5.sp
+  )
+  /* Other default text styles to override
+  titleLarge = TextStyle(
+      fontFamily = FontFamily.Default,
+      fontWeight = FontWeight.Normal,
+      fontSize = 22.sp,
+      lineHeight = 28.sp,
+      letterSpacing = 0.sp
+  ),
+  labelSmall = TextStyle(
+      fontFamily = FontFamily.Default,
+      fontWeight = FontWeight.Medium,
+      fontSize = 11.sp,
+      lineHeight = 16.sp,
+      letterSpacing = 0.5.sp
+  )
+  */
 )
 
 
 // Define your component shapes
 val Shapes = Shapes(
-    small = RoundedCornerShape(4.dp),
+  small = RoundedCornerShape(4.dp),
 //    medium = RoundedCornerShape(8.dp),
 //    large = RoundedCornerShape(16.dp)
 )
 
 private val LightColors = lightColorScheme(
-    primary = Color(0xFF5A5AD1),
-    surface = Color(0xFFFFFFFF),
-    background = Color(0xFFF7F7F7),
-    onBackground = Color(0xFF1C1B1F),
-    onSurfaceVariant = Color(0xFF757575)
+  primary = Color(0xFF5A5AD1),
+  surface = Color(0xFFFFFFFF),
+  background = Color(0xFFF7F7F7),
+  onBackground = Color(0xFF1C1B1F),
+  onSurfaceVariant = Color(0xFF757575)
 )
 
 private val DarkColors = darkColorScheme(
-    primary = Color(0xFF9EA1FF),
-    background = Color(0xFF000000),
-    surface = Color(0xFF161B22),
-    onSurface = Color(0xFFE6EDF3),
-    onSurfaceVariant = Color(0xFF8B949E),
-    outline = Color(0xFF30363D)
+  primary = Color(0xFF9EA1FF),
+  background = Color(0xFF000000),
+  surface = Color(0xFF161B22),
+  onSurface = Color(0xFFE6EDF3),
+  onSurfaceVariant = Color(0xFF8B949E),
+  outline = Color(0xFF30363D)
 )
 
 @Composable
 fun HomeAppTheme(
-    themeSetting: ThemeSetting,
-    content: @Composable () -> Unit
+  themeSetting: ThemeSetting,
+  content: @Composable () -> Unit
 ) {
-    val colorScheme = when (themeSetting) {
-        ThemeSetting.Automatic -> if (isSystemInDarkTheme()) {
-            DarkColors
-        } else {
-            LightColors
-        }
-
-        ThemeSetting.Dark -> DarkColors
-        ThemeSetting.Light -> LightColors
+  val colorScheme = when (themeSetting) {
+    ThemeSetting.Automatic -> if (isSystemInDarkTheme()) {
+      DarkColors
+    } else {
+      LightColors
     }
 
+    ThemeSetting.Dark -> DarkColors
+    ThemeSetting.Light -> LightColors
+  }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        shapes = Shapes,
-        typography = Typography,
-        content = content
-    )
+
+  MaterialTheme(
+    colorScheme = colorScheme,
+    shapes = Shapes,
+    typography = Typography,
+    content = content
+  )
 }

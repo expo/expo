@@ -29,78 +29,78 @@ import kotlinx.coroutines.flow.map
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun SnacksScreen(
-    viewModel: HomeAppViewModel,
-    onGoBack: () -> Unit,
-    bottomBar: @Composable () -> Unit = {}
+  viewModel: HomeAppViewModel,
+  onGoBack: () -> Unit,
+  bottomBar: @Composable () -> Unit = {}
 ) {
-    val paginator by viewModel.snacksPaginatorRefreshableFlow.dataFlow.collectAsState()
+  val paginator by viewModel.snacksPaginatorRefreshableFlow.dataFlow.collectAsState()
 
-    val snacks = paginator?.data?.collectAsState(initial = emptyList())?.value ?: emptyList()
-    val isFetching by viewModel.snacksPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
-        paginator?.isFetching ?: flowOf(false)
-    }.collectAsState(initial = false)
+  val snacks = paginator?.data?.collectAsState(initial = emptyList())?.value ?: emptyList()
+  val isFetching by viewModel.snacksPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
+    paginator?.isFetching ?: flowOf(false)
+  }.collectAsState(initial = false)
 
-    val canLoadMore by viewModel.snacksPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
-        paginator?.isLastPage?.map { it.not() } ?: flowOf(true)
-    }.collectAsState(initial = true)
+  val canLoadMore by viewModel.snacksPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
+    paginator?.isLastPage?.map { it.not() } ?: flowOf(true)
+  }.collectAsState(initial = true)
 
-    val pullToRefreshState = rememberPullToRefreshState()
-    val lazyListState = rememberLazyListState()
-    rememberCoroutineScope()
+  val pullToRefreshState = rememberPullToRefreshState()
+  val lazyListState = rememberLazyListState()
+  rememberCoroutineScope()
 
-    Scaffold(
-        topBar = {
-            TopAppBarWithBackIcon(
-                label = "Snacks",
-                onGoBack = onGoBack,
-            )
-        },
-        bottomBar = bottomBar
-    ) { padding ->
-        PullToRefreshBox(
-            modifier = Modifier.padding(padding),
-            state = pullToRefreshState,
-            isRefreshing = isFetching && snacks.isNotEmpty(),
-            onRefresh = { viewModel.snacksPaginatorRefreshableFlow.refresh() }
+  Scaffold(
+    topBar = {
+      TopAppBarWithBackIcon(
+        label = "Snacks",
+        onGoBack = onGoBack,
+      )
+    },
+    bottomBar = bottomBar
+  ) { padding ->
+    PullToRefreshBox(
+      modifier = Modifier.padding(padding),
+      state = pullToRefreshState,
+      isRefreshing = isFetching && snacks.isNotEmpty(),
+      onRefresh = { viewModel.snacksPaginatorRefreshableFlow.refresh() }
+    ) {
+      if (isFetching && snacks.isEmpty()) {
+        Box(
+          modifier = Modifier.fillMaxSize(),
+          contentAlignment = Alignment.Center
         ) {
-            if (isFetching && snacks.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    state = lazyListState
-                ) {
-                    items(snacks, key = { it.commonSnackData.id }) { snack ->
-                        SnackRow(snack = snack)
-                        HorizontalDivider()
-                    }
-
-                    if (canLoadMore) {
-                        item {
-                            Box(
-                                modifier = Modifier
-                                  .fillMaxWidth()
-                                  .padding(16.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
-                            }
-                        }
-                    }
-                }
-            }
-
-            InfiniteListHandler(
-                listState = lazyListState,
-                isFetching = isFetching,
-                canLoadMore = canLoadMore,
-                onLoadMore = { paginator?.loadMore() }
-            )
+          CircularProgressIndicator()
         }
+      } else {
+        LazyColumn(
+          modifier = Modifier.fillMaxSize(),
+          state = lazyListState
+        ) {
+          items(snacks, key = { it.commonSnackData.id }) { snack ->
+            SnackRow(snack = snack)
+            HorizontalDivider()
+          }
+
+          if (canLoadMore) {
+            item {
+              Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+              ) {
+                CircularProgressIndicator()
+              }
+            }
+          }
+        }
+      }
+
+      InfiniteListHandler(
+        listState = lazyListState,
+        isFetching = isFetching,
+        canLoadMore = canLoadMore,
+        onLoadMore = { paginator?.loadMore() }
+      )
     }
+  }
 }

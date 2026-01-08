@@ -5,16 +5,16 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun <T> SeparatedList(
-    items: List<T>,
-    divider: @Composable () -> Unit = { HorizontalDivider() },
-    renderItem: @Composable (T) -> Unit
+  items: List<T>,
+  divider: @Composable () -> Unit = { HorizontalDivider() },
+  renderItem: @Composable (T) -> Unit
 ) {
-    items.forEachIndexed { index, item ->
-        renderItem(item)
+  items.forEachIndexed { index, item ->
+    renderItem(item)
 
-        // Show divider if it's not the last item in the *displayed* list
-        if (index < items.lastIndex) {
-            divider()
-        }
+    // Show divider if it's not the last item in the *displayed* list
+    if (index < items.lastIndex) {
+      divider()
     }
+  }
 }

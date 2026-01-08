@@ -18,42 +18,46 @@ import host.exp.expoview.R
 
 @Composable
 fun EnterUrlRow() {
-    val textFieldState = rememberTextFieldState(initialText = "")
-    val uriHandler = LocalUriHandler.current
+  val textFieldState = rememberTextFieldState(initialText = "")
+  val uriHandler = LocalUriHandler.current
 
-    val connect = {
-        val urlText = textFieldState.text.toString()
+  val connect = {
+    val urlText = textFieldState.text.toString()
 
-        if (urlText.isNotBlank()) {
-            val normalized = normalizeUrl(urlText)
-            uriHandler.openUri(normalized)
-        }
+    if (urlText.isNotBlank()) {
+      val normalized = normalizeUrl(urlText)
+      uriHandler.openUri(normalized)
     }
+  }
 
-    CollapsibleItemRow(item = { isExpanded, onClick ->
-        ClickableItemRow(
-            text = "Enter URL",
-            onClick = onClick,
-            icon = {
-                Icon(painter = painterResource(id = R.drawable.chevron_right), contentDescription = "Enter URL icon", modifier = Modifier.size(24.dp))
-            }
+  CollapsibleItemRow(item = { isExpanded, onClick ->
+    ClickableItemRow(
+      text = "Enter URL",
+      onClick = onClick,
+      icon = {
+        Icon(
+          painter = painterResource(id = R.drawable.chevron_right),
+          contentDescription = "Enter URL icon",
+          modifier = Modifier.size(24.dp)
         )
-    }) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            OutlinedTextField(
-                state = textFieldState,
-                placeholder = { Text("exp://") },
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Button(
-                onClick = connect,
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .fillMaxWidth(),
-                enabled = textFieldState.text.isNotBlank()
-            ) {
-                Text("Connect")
-            }
-        }
+      }
+    )
+  }) {
+    Column(modifier = Modifier.padding(16.dp)) {
+      OutlinedTextField(
+        state = textFieldState,
+        placeholder = { Text("exp://") },
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Button(
+        onClick = connect,
+        modifier = Modifier
+            .padding(top = 8.dp)
+            .fillMaxWidth(),
+        enabled = textFieldState.text.isNotBlank()
+      ) {
+        Text("Connect")
+      }
     }
+  }
 }
