@@ -190,15 +190,21 @@ The keys provided to `locales` should be the [language identifier](https://devel
 {
   "ios": {
     "CFBundleDisplayName": "こんにちは",
-    "NSContactsUsageDescription": "日本語のこれらの言葉"
+    "NSContactsUsageDescription": "日本語のこれらの言葉",
+    "Localizable.strings": {
+      "HELLO_NOTIFICATION_KEY": "こんにちは世界"
+    }
   },
   "android": {
-    "app_name": "こんにちは"
+    "app_name": "こんにちは",
+    "HELLO_NOTIFICATION_KEY": "こんにちは世界"
   }
 }
 ```
 
 Now, the display name of your app is set to `こんにちは` whenever it's installed on a device with the language set to Japanese.
+
+For [iOS localized notifications](https://developer.apple.com/documentation/usernotifications/generating-a-remote-notification#Localize-your-alert-messages), keys should be defined in `Localizable.strings`.
 
 ## Enabling RTL support
 
