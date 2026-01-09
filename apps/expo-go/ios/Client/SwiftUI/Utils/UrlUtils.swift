@@ -27,7 +27,11 @@ func sanitizeUrlString(_ urlString: String) -> String? {
   var sanitizedUrl = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
 
   if !sanitizedUrl.contains("://") {
-    sanitizedUrl = "http://" + sanitizedUrl
+    if sanitizedUrl.hasPrefix("@") {
+      sanitizedUrl = "exp://exp.host/" + sanitizedUrl
+    } else {
+      sanitizedUrl = "http://" + sanitizedUrl
+    }
   }
 
   guard URL(string: sanitizedUrl) != nil else {
