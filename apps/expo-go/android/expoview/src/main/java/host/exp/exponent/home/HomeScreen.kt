@@ -1,5 +1,6 @@
 package host.exp.exponent.home
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,6 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import host.exp.expoview.R
@@ -40,6 +43,8 @@ fun HomeScreen(
   val apps by viewModel.apps.dataFlow.collectAsState()
   val developmentServers by viewModel.developmentServers.collectAsState()
 
+  val context = LocalContext.current
+  val uriHandler = LocalUriHandler.current
 
   val state = rememberPullToRefreshState()
   val onRefresh: () -> Unit = {
@@ -93,7 +98,18 @@ fun HomeScreen(
                 modifier = Modifier.size(24.dp)
               )
             },
-            onClick = { TODO() })
+            onClick = {
+              viewModel.scanQR(
+                context,
+                onSuccess = { url ->
+                  uriHandler.openUri(url)
+                },
+                onError = { error ->
+                  Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                }
+              )
+            }
+          )
         }
 
         if (!recents.isEmpty()) {
