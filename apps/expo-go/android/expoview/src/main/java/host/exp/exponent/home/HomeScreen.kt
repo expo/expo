@@ -54,23 +54,7 @@ fun HomeScreen(
   }
 
   Scaffold(
-    topBar = {
-      TopAppBar(
-        title = {
-          Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-              painter = painterResource(id = R.drawable.big_logo_new_filled),
-              contentDescription = "Expo Go logo",
-              modifier = Modifier.size(48.dp, 48.dp)
-            )
-            Text("Expo", fontWeight = FontWeight.Bold)
-          }
-        },
-        actions = {
-          accountHeader()
-        }
-      )
-    },
+    topBar = { SettingsTopBar(accountHeader = accountHeader) },
     bottomBar = bottomBar
   ) {
     PullToRefreshBox(
@@ -85,6 +69,7 @@ fun HomeScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
       ) {
+        UpgradeWarning()
 //    TODO: java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.String host.exp.exponent.home.DevSessionSource.name()' on a null object reference
         LabeledGroup(
           label = "Development servers",

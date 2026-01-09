@@ -3,7 +3,10 @@ package host.exp.exponent.home
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import host.exp.exponent.apollo.Paginator
 import host.exp.exponent.graphql.BranchDetailsQuery
 import host.exp.exponent.graphql.BranchesForProjectQuery
@@ -11,8 +14,11 @@ import host.exp.exponent.graphql.Home_AccountAppsQuery
 import host.exp.exponent.graphql.Home_AccountSnacksQuery
 import host.exp.exponent.graphql.ProjectsQuery
 import host.exp.exponent.graphql.fragment.CurrentUserActorData
+import host.exp.exponent.kernel.ExpoViewKernel
+import host.exp.exponent.kernel.Kernel
 import host.exp.exponent.services.ApolloClientService
 import host.exp.exponent.services.AuthSessionType
+import host.exp.exponent.services.ExponentHistoryService
 import host.exp.exponent.services.RESTApiClient
 import host.exp.exponent.services.SessionRepository
 import host.exp.exponent.services.ThemeSetting
@@ -64,15 +70,28 @@ data class DevSessionResponse(
   val data: List<DevSession>
 )
 
-data class HistoryItem(
-  val manifest: String?,
-  val url: String,
-  val time: Long
-)
-
 fun Int.toJDuration(unit: DurationUnit) = this.toDuration(unit).toJavaDuration()
 
-class HomeAppViewModel(application: Application) : AndroidViewModel(application) {
+class HomeAppViewModelFactory(
+  private val exponentHistoryService: ExponentHistoryService,
+  private val expoViewKernel: ExpoViewKernel
+) : ViewModelProvider.Factory {
+  @Suppress("UNCHECKED_CAST")
+  override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+    if (modelClass.isAssignableFrom(HomeAppViewModel::class.java)) {
+      val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
+      return HomeAppViewModel(application, exponentHistoryService, expoViewKernel) as T
+    }
+    throw IllegalArgumentException("Unknown ViewModel class")
+  }
+}
+
+class HomeAppViewModel(
+  application: Application,
+  private val exponentHistoryService: ExponentHistoryService,
+  expoViewKernel: ExpoViewKernel
+) : AndroidViewModel(application) {
+
   private val client = OkHttpClient
     .Builder()
     .connectTimeout(10.toJDuration(DurationUnit.SECONDS))
@@ -80,7 +99,7 @@ class HomeAppViewModel(application: Application) : AndroidViewModel(application)
     .writeTimeout(10.toJDuration(DurationUnit.SECONDS))
     .build()
 
-
+  val recents = exponentHistoryService.history
   val sessionRepository = SessionRepository(context = application)
 
   val service = ApolloClientService(client, sessionRepository)
@@ -105,7 +124,7 @@ class HomeAppViewModel(application: Application) : AndroidViewModel(application)
     }
   )
 
-  val selectedTheme = persistedMutableStateFlow<ThemeSetting>(
+  val selectedTheme = persistedMutableStateFlow(
     scope = viewModelScope,
     readValue = { sessionRepository.getThemeSetting() },
     writeValue = { value ->
@@ -195,12 +214,6 @@ class HomeAppViewModel(application: Application) : AndroidViewModel(application)
     )
   }
 
-
-  val recents = persistedMutableStateFlow<List<HistoryItem>>(
-    viewModelScope,
-    readValue = { sessionRepository.getRecents() },
-    writeValue = { sessionRepository.saveRecents(it) }
-  )
   val snacks = refreshableFlow(
     scope = viewModelScope,
     externalTrigger = selectedAccount,
@@ -238,7 +251,7 @@ class HomeAppViewModel(application: Application) : AndroidViewModel(application)
   }
 
   fun clearRecents() {
-    recents.value = emptyList()
+    exponentHistoryService.clearHistory()
   }
 
   fun selectAccount(accountId: String?) {

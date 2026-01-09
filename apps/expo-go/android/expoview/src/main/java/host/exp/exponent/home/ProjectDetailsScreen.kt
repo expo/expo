@@ -90,8 +90,7 @@ fun ProjectDetailsScreen(
         if (branchesToRender?.isNotEmpty() == true) {
           TruncatedList(
             items = branchesToRender,
-            // TODO: Bring back to 3
-            maxItems = 0,
+            maxItems = 3,
             onShowMoreClick = {
               onShowAllBranchesClick()
             },

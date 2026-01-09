@@ -1,6 +1,7 @@
 package host.exp.exponent.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,15 +52,17 @@ fun AccountScreen(
           .verticalScroll(rememberScrollState())
           .padding(paddingValues)
     ) {
-      LabeledGroup(label = "Log Out", modifier = Modifier.padding(top = 8.dp)) {
-        Button(
-          onClick = {
-            viewModel.logout()
-            goBack()
-          },
-          modifier = Modifier.fillMaxWidth()
-        ) {
-          Text("Log Out")
+      LabeledGroup(label = "Log Out", modifier = Modifier.padding(top = 8.dp), wrapWithCard = false) {
+        Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+          Button(
+            onClick = {
+              viewModel.logout()
+              goBack()
+            },
+            modifier = Modifier.fillMaxWidth()
+          ) {
+            Text("Log Out")
+          }
         }
       }
       LabeledGroup(label = "Accounts", modifier = Modifier.padding(top = 8.dp)) {

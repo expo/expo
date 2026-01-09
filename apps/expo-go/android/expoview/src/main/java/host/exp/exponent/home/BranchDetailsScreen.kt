@@ -1,6 +1,7 @@
 // In BranchDetailsScreen.kt (or create the file if it doesn't exist)
 package host.exp.exponent.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -61,8 +62,7 @@ fun BranchDetailsScreen(
             .padding(16.dp)
         ) {
           Text(
-//          TODO: Fix name here
-            text = branch?.name ?: "Unnamed Branch",
+            text = branch?.updateBranchByName?.name ?: "Unnamed Branch",
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium
           )
@@ -70,6 +70,7 @@ fun BranchDetailsScreen(
         }
         HorizontalDivider()
         LabeledGroup(label = "Updates", modifier = Modifier.padding(top = 8.dp)) {
+        //  TODO: Migrate to a LazyColumn if the list of updates can be long
           updates.forEachIndexed { index, update ->
             UpdateRow(update = update)
             if (index < updates.lastIndex) {
