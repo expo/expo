@@ -49,8 +49,8 @@ export type TokenRequestConfig = {
      */
     extraParams?: Record<string, string>;
     /**
-    * Extra HTTP header params that'll be added to the HTTP header of requests.
-    */
+     * Extra HTTP header params that'll be added to the HTTP header of requests.
+     */
     extraHeaders?: Record<string, string>;
     /**
      * List of strings to request access to.

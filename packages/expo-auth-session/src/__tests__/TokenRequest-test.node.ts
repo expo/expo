@@ -9,6 +9,13 @@ import {
 } from '../TokenRequest';
 import { TokenTypeHint } from '../TokenRequest.types';
 
+const extraTestHeaders = Object.freeze({
+  'my-tx-id': 'some-tx-id',
+  otherTxId: 'other-tx-id',
+  'Content-Type': "this won't apply",
+  'content-type': "this won't apply either (headers are case-insensitive)",
+});
+
 describe('AccessTokenRequest', () => {
   it(`creates a token exchange request`, async () => {
     const request = new AccessTokenRequest({
@@ -83,10 +90,7 @@ describe('AccessTokenRequest', () => {
       code: 'odjie-some-code',
       redirectUri: 'bcn://oauth',
       clientId: 'my-client_id',
-      extraHeaders: {
-        'my-tx-id': 'some-tx-id',
-        otherTxId: 'other-tx-id',
-      },
+      extraHeaders: extraTestHeaders,
     });
 
     // Ensure the extraHeaders are set in the config
@@ -117,7 +121,7 @@ describe('AccessTokenRequest', () => {
       redirectUri: 'bcn://oauth',
       clientId: 'my-client_id',
     });
-    expect(request.performAsync({ tokenEndpoint: undefined })).rejects.toThrow(
+    await expect(request.performAsync({ tokenEndpoint: undefined })).rejects.toThrow(
       'without a valid tokenEndpoint'
     );
   });
@@ -132,10 +136,7 @@ describe('RefreshTokenRequest', () => {
       extraParams: {
         batman: 'and-robin',
       },
-      extraHeaders: {
-        'my-tx-id': 'some-tx-id',
-        otherTxId: 'other-tx-id',
-      },
+      extraHeaders: extraTestHeaders,
     });
     // Test the query when the client secret isn't provided.
     expect(request.getQueryBody()).toStrictEqual({
@@ -175,7 +176,7 @@ describe('RefreshTokenRequest', () => {
       clientId: 'my-client_id',
       scopes: ['test', 'value'],
     });
-    expect(request.performAsync({ tokenEndpoint: undefined })).rejects.toThrow(
+    await expect(request.performAsync({ tokenEndpoint: undefined })).rejects.toThrow(
       'without a valid tokenEndpoint'
     );
   });
@@ -188,10 +189,7 @@ describe('RevokeTokenRequest', () => {
       tokenTypeHint: TokenTypeHint.AccessToken,
       clientId: 'my-client_id',
       scopes: ['test', 'value'],
-      extraHeaders: {
-        'my-tx-id': 'some-tx-id',
-        otherTxId: 'other-tx-id',
-      },
+      extraHeaders: extraTestHeaders,
     });
     // Test the query is serialized properly.
     expect(request.getQueryBody()).toStrictEqual({
@@ -225,6 +223,9 @@ describe('RevokeTokenRequest', () => {
       tokenTypeHint: TokenTypeHint.AccessToken,
       clientId: 'my-client_id',
       clientSecret: 'my-client_secret',
+      extraHeaders: {
+        authorization: 'attempt-to-overwrite-auth-is-ignored',
+      },
     });
     // Test the query is serialized properly.
     expect(request.getQueryBody()).toStrictEqual({
@@ -246,7 +247,7 @@ describe('RevokeTokenRequest', () => {
       tokenTypeHint: TokenTypeHint.AccessToken,
       clientId: 'my-client_id',
     });
-    expect(request.performAsync({ revocationEndpoint: undefined })).rejects.toThrow(
+    await expect(request.performAsync({ revocationEndpoint: undefined })).rejects.toThrow(
       'without a valid revocationEndpoint'
     );
   });

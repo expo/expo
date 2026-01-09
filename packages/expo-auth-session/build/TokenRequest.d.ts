@@ -118,6 +118,7 @@ export declare class RevokeTokenRequest extends Request<RevokeTokenRequestConfig
     readonly clientSecret?: string;
     readonly token: string;
     readonly tokenTypeHint?: TokenTypeHint;
+    readonly extraHeaders?: Record<string, string>;
     constructor(request: RevokeTokenRequestConfig);
     getHeaders(): Headers;
     /**
@@ -131,6 +132,7 @@ export declare class RevokeTokenRequest extends Request<RevokeTokenRequestConfig
         clientSecret: string | undefined;
         token: string;
         tokenTypeHint: TokenTypeHint | undefined;
+        extraHeaders: Record<string, string> | undefined;
     };
     getQueryBody(): Record<string, string>;
 }
