@@ -4,9 +4,6 @@ jsEngine: graaljs
 # when devving, start from different screen so state is reset
 #- openLink: bareexpo://components
 - openLink: bareexpo://components/video/events
-- tapOn:
-    text: 'Open'
-    optional: true
 
 - assertVisible: 'source = Big Buck Bunny'
 - assertVisible: 'isPlaying = false'
@@ -32,7 +29,7 @@ jsEngine: graaljs
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
     env:
-      screenshotOutputPath: 'expo-video'
+      screenshotOutputPath: 'expo-video/screenshots/playback-test-1'
       testID: 'video-view'
       mode: 'keep-originals'
 
