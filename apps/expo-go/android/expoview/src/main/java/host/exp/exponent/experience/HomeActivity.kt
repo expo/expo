@@ -59,6 +59,13 @@ import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
 import host.exp.exponent.utils.ExperienceActivityUtils
 import host.exp.exponent.utils.ExperienceRTLManager
 import host.exp.exponent.utils.currentDeviceIsAPhone
+import org.json.JSONException
+import androidx.compose.ui.platform.ComposeView
+import androidx.lifecycle.lifecycleScope
+import host.exp.exponent.home.HomeActivityEvent
+import host.exp.exponent.home.RootNavigation
+import host.exp.exponent.kernel.ExpoViewKernel
+import host.exp.exponent.services.PendingAuthSession
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import org.json.JSONException
@@ -85,8 +92,11 @@ open class HomeActivity : BaseExperienceActivity() {
     )
   }
 
+
   //region Activity Lifecycle
   override fun onCreate(savedInstanceState: Bundle?) {
+    usesComposeNavigation = true
+
     configureSplashScreen(installSplashScreen())
     enableEdgeToEdge()
 

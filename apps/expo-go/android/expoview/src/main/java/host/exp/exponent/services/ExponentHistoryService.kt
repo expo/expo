@@ -35,6 +35,10 @@ class ExponentHistoryService constructor(
     loadHistory()
   }
 
+  fun getLastCrashDate(): Long {
+    return exponentSharedPreferences.getLong(ExponentSharedPreferences.ExponentSharedPreferencesKey.LAST_FATAL_ERROR_DATE_KEY)
+  }
+
   private fun loadHistory() {
     val jsonString =
       exponentSharedPreferences.getString(ExponentSharedPreferences.ExponentSharedPreferencesKey.HISTORY)

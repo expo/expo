@@ -1,5 +1,6 @@
 package host.exp.exponent.home
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -53,6 +54,9 @@ sealed interface Destination {
 
   @Serializable
   class BranchDetails(val branchName: String, val appId: String) : Destination
+
+  @Serializable
+  object Feedback : Destination
 }
 
 data class BottomBarDestination(
@@ -83,12 +87,23 @@ fun RootNavigation(
 ) {
   val navController = rememberNavController()
 
+  BackHandler(enabled = true) {
+    navController.popBackStack()
+  }
+
+  val viewModelFactory =
+    remember { HomeAppViewModelFactory(exponentHistoryService, expoViewKernel, homeActivityEvents) }
+
+  val viewModel: HomeAppViewModel = viewModel(factory = viewModelFactory)
+
   val themeSetting by viewModel.selectedTheme.collectAsState()
 
   HomeAppTheme(themeSetting = themeSetting) {
-    Box(modifier = Modifier
-      .fillMaxSize()
-      .background(MaterialTheme.colorScheme.background)) {
+    Box(
+      modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)
+    ) {
       AppNavHost(
         navController = navController,
         startDestination = Destination.Home,
@@ -129,6 +144,9 @@ fun AppNavHost(
         onLoginClick = { viewModel.login(context) },
         navigateToProjectDetails = { appId ->
           navController.navigate(Destination.ProjectDetails(appId = appId))
+        },
+        navigateToFeedback = {
+          navController.navigate(Destination.Feedback)
         },
         bottomBar = {
           BottomBar(
@@ -179,6 +197,13 @@ fun AppNavHost(
             currentDestination = Destination.Home,
           )
         }
+      )
+    }
+
+    composable<Destination.Feedback> {
+      FeedbackScreen(
+        viewModel = viewModel,
+        onGoBack = { navController.popBackStack() }
       )
     }
 

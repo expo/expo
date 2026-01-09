@@ -1,5 +1,6 @@
 package host.exp.exponent.home
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import androidx.activity.result.ActivityResultLauncher
@@ -8,9 +9,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.google.android.play.core.review.ReviewManagerFactory
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import host.exp.exponent.analytics.EXL
 import host.exp.exponent.apollo.Paginator
 import host.exp.exponent.graphql.BranchDetailsQuery
 import host.exp.exponent.graphql.BranchesForProjectQuery
@@ -25,6 +30,7 @@ import host.exp.exponent.services.ExponentHistoryService
 import host.exp.exponent.services.RESTApiClient
 import host.exp.exponent.services.SessionRepository
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.delay
@@ -42,14 +48,17 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 import okhttp3.OkHttpClient
+import java.util.Date
 import kotlin.reflect.typeOf
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 import kotlin.time.toJavaDuration
 
-// Enums to match the TypeScript union types
 enum class DevSessionPlatform {
   Native, Web
 }
@@ -58,13 +67,11 @@ enum class DevSessionSource {
   Desktop, Snack
 }
 
-// The Data Class representing the TypeScript type
 data class DevSession(
   val description: String,
   val url: String,
   val source: DevSessionSource,
   val hostname: String? = null,
-  // 'object' in TS is best represented as a Map or a generic JSON element in Kotlin
   val config: Map<String, Any>? = null,
   val platform: DevSessionPlatform? = null
 )
@@ -72,6 +79,36 @@ data class DevSession(
 data class DevSessionResponse(
   val data: List<DevSession>
 )
+
+private const val USER_REVIEW_INFO_PREFS_KEY = "userReviewInfo"
+
+data class UserReviewState(
+  val shouldShow: Boolean = false,
+)
+
+private data class UserReviewInfo(
+  val askedForNativeReviewDate: Long? = null,
+  val lastDismissDate: Long? = null,
+  val showFeedbackFormDate: Long? = null,
+  val appOpenedCounter: Int = 0
+)
+
+data class FeedbackState(
+  val isSubmitting: Boolean = false,
+  val isSubmitted: Boolean = false,
+  val error: String? = null
+)
+
+@Serializable
+data class FeedbackBody(
+  val feedback: String,
+  val email: String?,
+  val metadata: Map<String, String?>
+)
+
+private val EMAIL_REGEX =
+  Regex("^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$")
+
 
 fun Int.toJDuration(unit: DurationUnit) = this.toDuration(unit).toJavaDuration()
 
@@ -106,17 +143,16 @@ class HomeAppViewModel(
   private val authLauncher: ActivityResultLauncher<AuthRequestType>
 ) : AndroidViewModel(application) {
 
-  init {
-    homeActivityEvents
-      .onEach { event ->
-        when (event) {
-          is HomeActivityEvent.AccountDeleted -> {
-            logout()
-          }
-        }
-      }
-      .launchIn(viewModelScope)
-  }
+  val userReviewState = MutableStateFlow(UserReviewState())
+
+  private val userReviewPrefs =
+    application.getSharedPreferences(USER_REVIEW_INFO_PREFS_KEY, Context.MODE_PRIVATE)
+
+  private val gson: Gson =
+    GsonBuilder().create()
+
+  private var lastCrashDate: Long? = null
+
 
   private val client = OkHttpClient
     .Builder()
@@ -129,6 +165,9 @@ class HomeAppViewModel(
   val sessionRepository = SessionRepository(context = application)
 
   val expoVersion = expoViewKernel.versionName
+
+  val isDevice =
+    !(android.os.Build.MODEL.contains("google_sdk") || android.os.Build.MODEL.contains("Emulator"))
 
   val service = ApolloClientService(client, sessionRepository)
   private val restClient =
@@ -159,6 +198,8 @@ class HomeAppViewModel(
       sessionRepository.saveThemeSetting(value)
     }
   )
+
+  val feedbackState = MutableStateFlow(FeedbackState())
 
   val developmentServers: StateFlow<List<DevSession>> = flow {
     while (true) {
@@ -264,6 +305,27 @@ class HomeAppViewModel(
     account.refresh()
   }
 
+  init {
+    homeActivityEvents
+      .onEach { event ->
+        when (event) {
+          is HomeActivityEvent.AccountDeleted -> {
+            logout()
+          }
+        }
+      }
+      .launchIn(viewModelScope)
+    lastCrashDate = exponentHistoryService.getLastCrashDate()
+
+    combine(
+      apps.dataFlow,
+      snacks.dataFlow,
+    ) { appsList, snacksList ->
+      updateUserReviewState(appsList.size, snacksList.size)
+    }.launchIn(viewModelScope)
+  }
+
+
   val snacksPaginatorRefreshableFlow =
     refreshableFlow(
       scope = viewModelScope,
@@ -289,6 +351,38 @@ class HomeAppViewModel(
 
   fun selectAccount(accountId: String?) {
     selectedAccountId.value = accountId
+  }
+
+  fun sendFeedback(feedback: String, email: String) {
+    viewModelScope.launch {
+      feedbackState.update { it.copy(isSubmitting = true, error = null) }
+      try {
+        if (email.isNotBlank() && !EMAIL_REGEX.matches(email)) {
+          throw Exception("Please enter a valid email address.")
+        }
+
+        val metadata = mapOf(
+          "os" to "${android.os.Build.VERSION.RELEASE}",
+          "model" to android.os.Build.MODEL,
+          "expoGoVersion" to expoVersion
+        )
+
+        val body = FeedbackBody(feedback, email, metadata)
+
+        restClient.sendUnauthenticatedApiV2Request<Unit, FeedbackBody>(
+          "feedback/expo-go-send",
+          typeOf<Unit>(),
+          body
+        )
+        feedbackState.update { it.copy(isSubmitting = false, isSubmitted = true) }
+      } catch (e: Exception) {
+        feedbackState.update { it.copy(isSubmitting = false, error = e.message) }
+      }
+    }
+  }
+
+  fun resetFeedbackState() {
+    feedbackState.value = FeedbackState()
   }
 
   fun scanQR(
@@ -317,6 +411,81 @@ class HomeAppViewModel(
       .addOnFailureListener { exception ->
         onError("QR code scan failed: ${exception.message ?: "Unknown error"}")
       }
+  }
+
+  /**
+   * We should only prompt users to review the app if they seem to be
+   * having a good experience, to check that we verify if the user
+   * has not experienced any crashes in the last hour, and has at least
+   * 5 apps or 5 snacks or has opened the app at least 50 times.
+   * If the user dismisses the review section, we only show it again
+   * after 15 days.
+   */
+  private suspend fun updateUserReviewState(appsCount: Int, snacksCount: Int) {
+    val context = getApplication<Application>()
+
+    val isStoreReviewAvailable = withContext(Dispatchers.IO) {
+      if (!isDevice) return@withContext false
+      try {
+        ReviewManagerFactory.create(context); true
+      } catch (e: Exception) {
+        false
+      }
+    }
+
+    val info = withContext(Dispatchers.IO) {
+      val json = userReviewPrefs.getString(USER_REVIEW_INFO_PREFS_KEY, null)
+      json?.let { gson.fromJson(it, UserReviewInfo::class.java) } ?: UserReviewInfo()
+    }
+
+    val timeNow = Date()
+    val noRecentCrashes = lastCrashDate?.let { timeNow.time - it > 60 * 60 * 1000 } ?: true
+    val noRecentDismisses =
+      info.lastDismissDate?.let { timeNow.time - it > 15L * 24 * 60 * 60 * 1000 } ?: true
+
+    val shouldShow = isStoreReviewAvailable &&
+      info.askedForNativeReviewDate == null &&
+      info.showFeedbackFormDate == null &&
+      noRecentCrashes &&
+      noRecentDismisses &&
+      (info.appOpenedCounter >= 50 || appsCount >= 5 || snacksCount >= 5)
+
+    userReviewState.update { it.copy(shouldShow = shouldShow) }
+  }
+
+  fun requestStoreReview(activity: Activity) {
+    updateUserReviewInfo { it.copy(askedForNativeReviewDate = Date().time) }
+    val manager = ReviewManagerFactory.create(activity)
+    manager.requestReviewFlow().addOnCompleteListener { task ->
+      if (task.isSuccessful) {
+        manager.launchReviewFlow(activity, task.result)
+      } else {
+        EXL.e("HomeAppViewModel", "Failed to launch in-app review: ${task.exception?.message}")
+      }
+    }
+    userReviewState.update { it.copy(shouldShow = false) }
+  }
+
+  fun dismissReviewSection() {
+    updateUserReviewInfo { it.copy(lastDismissDate = Date().time) }
+    userReviewState.update { it.copy(shouldShow = false) }
+  }
+
+  fun provideFeedback() {
+    updateUserReviewInfo { it.copy(showFeedbackFormDate = Date().time) }
+    userReviewState.update { it.copy(shouldShow = false) }
+    // Navigation should be handled in the Composable
+  }
+
+  private fun updateUserReviewInfo(updateAction: (UserReviewInfo) -> UserReviewInfo) {
+    viewModelScope.launch(Dispatchers.IO) {
+      val currentInfo =
+        userReviewPrefs.getString(USER_REVIEW_INFO_PREFS_KEY, null)
+          ?.let { gson.fromJson(it, UserReviewInfo::class.java) } ?: UserReviewInfo()
+      val newInfo = updateAction(currentInfo)
+      userReviewPrefs.edit().putString(USER_REVIEW_INFO_PREFS_KEY, gson.toJson(newInfo)).apply()
+      updateUserReviewState(apps.dataFlow.value.size, snacks.dataFlow.value.size)
+    }
   }
 }
 
@@ -366,8 +535,6 @@ fun <T, U> refreshableFlow(
   val manualRefreshTrigger = MutableSharedFlow<Unit>(replay = 1)
   val loadingState = MutableStateFlow(false)
 
-  // This is the key: it combines the external trigger (e.g., selectedAccount)
-  // with a manual trigger, so both can cause a refresh.
   val combinedTrigger = externalTrigger.combine(
     manualRefreshTrigger.onStart { emit(Unit) }
   ) { triggerValue, _ ->
