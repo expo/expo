@@ -2,11 +2,16 @@ import { createModifier } from './createModifier';
 
 /**
  * Presentation detent type for controlling sheet heights.
- * - `medium` - Medium height sheet
- * - `large` - Full height sheet
- * - number (0-1) - Fraction of screen height (e.g., 0.4 = 40% of screen)
+ * - `'medium'` - System medium height (approximately half screen)
+ * - `'large'` - System large height (full screen)
+ * - `{ fraction: number }` - Fraction of screen height (0-1, e.g., 0.4 = 40% of screen)
+ * - `{ height: number }` - Fixed height in points
  */
-export type PresentationDetent = 'medium' | 'large' | number;
+export type PresentationDetent =
+  | 'medium'
+  | 'large'
+  | { fraction: number }
+  | { height: number };
 
 /**
  * Sets the available heights for a sheet presentation.
@@ -50,11 +55,9 @@ export const presentationBackgroundInteraction = (
   if (typeof interaction === 'string') {
     return createModifier('presentationBackgroundInteraction', { interactionType: interaction });
   }
-  const detent = interaction.detent;
-  const detentValue = typeof detent === 'number' ? { fraction: detent } : { preset: detent };
   return createModifier('presentationBackgroundInteraction', {
     interactionType: 'enabledUpThrough',
-    detent: detentValue,
+    detent: interaction.detent,
   });
 };
 

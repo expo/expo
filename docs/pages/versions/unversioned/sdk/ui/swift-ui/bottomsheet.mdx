@@ -72,7 +72,11 @@ export default function BottomSheetFitsContentExample() {
 
 ### Bottom sheet with presentation detents
 
-Use the [`presentationDetents`](/versions/unversioned/sdk/ui/swift-ui/modifiers/#presentationdetentsdetents) modifier on `BottomSheet.Content` to control the available heights.
+Use the [`presentationDetents`](/versions/unversioned/sdk/ui/swift-ui/modifiers/#presentationdetentsdetents) modifier on `BottomSheet.Content` to control the available heights. You can use:
+- `'medium'` - System medium height (approximately half screen)
+- `'large'` - System large height (full screen)
+- `{ fraction: number }` - Fraction of screen height (0-1)
+- `{ height: number }` - Fixed height in points
 
 ```tsx BottomSheetWithDetentsExample.tsx
 import { useState } from 'react';
@@ -87,8 +91,9 @@ export default function BottomSheetWithDetentsExample() {
       <VStack>
         <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
         <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
-          <BottomSheet.Content modifiers={[presentationDetents(['medium', 'large'])]}>
-            <Text>This sheet can snap to medium or large heights.</Text>
+          <BottomSheet.Content
+            modifiers={[presentationDetents(['medium', 'large', { fraction: 0.3 }, { height: 200 }])]}>
+            <Text>This sheet can snap to multiple heights.</Text>
           </BottomSheet.Content>
         </BottomSheet>
       </VStack>
