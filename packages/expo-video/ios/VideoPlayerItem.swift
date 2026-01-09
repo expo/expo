@@ -68,7 +68,7 @@ class VideoPlayerItem: AVPlayerItem {
           log.warn("Failed to fetch HLS video tracks, this is not required for playback, but `expo-video` will have no knowledge of the available tracks: \(error.localizedDescription)")
         }
       } else {
-        let avAssetTracks = asset.tracks(withMediaType: .video)
+        let avAssetTracks = (try? await asset.loadTracks(withMediaType: .video)) ?? []
         for avAssetTrack in avAssetTracks {
           tracks.append(await VideoTrack.from(assetTrack: avAssetTrack))
         }
