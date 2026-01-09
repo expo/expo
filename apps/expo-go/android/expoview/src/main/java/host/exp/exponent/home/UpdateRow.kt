@@ -1,6 +1,5 @@
 package host.exp.exponent.home
 
-import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -14,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import host.exp.exponent.generated.ExponentBuildConstants
 import host.exp.exponent.graphql.BranchDetailsQuery
 import host.exp.exponent.graphql.BranchesForProjectQuery
+import androidx.core.net.toUri
 
 private fun isUpdateCompatible(sdkVersion: String?): Boolean {
   if (sdkVersion == null) return false
@@ -22,22 +22,15 @@ private fun isUpdateCompatible(sdkVersion: String?): Boolean {
   return expoGoMajorVersion != null && expoGoMajorVersion == updateMajorVersion
 }
 
-/**
- * Converts a standard HTTP(S) URL to an `exp:` URL.
- */
 private fun toExp(httpUrl: String): String {
   return try {
-    val uri = Uri.parse(httpUrl)
+    val uri = httpUrl.toUri()
     uri.buildUpon().scheme("exp").build().toString()
-  } catch (e: Exception) {
-    // Fallback to original URL if parsing fails
+  } catch (_: Exception) {
     httpUrl
   }
 }
 
-/**
- * Opens the manifest permalink for an update.
- */
 private fun openUpdateManifestPermalink(
   uriHandler: androidx.compose.ui.platform.UriHandler,
   manifestPermalink: String
@@ -103,12 +96,11 @@ fun UpdateRow(update: BranchesForProjectQuery.Update, omitCompatibility: Boolean
 @Composable
 fun UpdateRow(update: BranchDetailsQuery.Update, omitCompatibility: Boolean = false) {
   val uriHandler = LocalUriHandler.current
-  val isAvailable = update.updateData.manifestPermalink != null
   val isCompatible = isUpdateCompatible(update.updateData.runtimeVersion)
 
-  val modifier = if (isAvailable && isCompatible) {
+  val modifier = if (isCompatible) {
     Modifier.clickable {
-      update.updateData.manifestPermalink?.let {
+      update.updateData.manifestPermalink.let {
         openUpdateManifestPermalink(uriHandler, it)
       }
     }
