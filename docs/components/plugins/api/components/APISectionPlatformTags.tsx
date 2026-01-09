@@ -4,6 +4,7 @@ import { STYLES_SECONDARY } from '~/components/plugins/api/styles';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
+import { isClientPlatformTag } from '~/ui/components/Tag/helpers';
 import { StatusTag } from '~/ui/components/Tag/StatusTag';
 
 import { CommentData, CommentTagData } from '../APIDataTypes';
@@ -33,10 +34,8 @@ export const APISectionPlatformTags = ({
   const platformsData = platforms ?? getAllTagData('platform', comment);
   const experimentalData = getAllTagData('experimental', comment);
 
-  const runtimePlatforms = new Set(['expo-go', 'dev-builds']);
-  const isRuntimeTag = (platform: string) => runtimePlatforms.has(platform.toLowerCase());
   const filteredDefaultPlatforms = defaultPlatforms?.filter(
-    platform => !isRuntimeTag(platform)
+    platform => !isClientPlatformTag(platform)
   );
   const platformNames =
     userProvidedPlatforms ??

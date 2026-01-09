@@ -1,6 +1,7 @@
 import { mergeClasses } from '@expo/styleguide';
 
 import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
+import { isClientPlatformTag } from '~/ui/components/Tag/helpers';
 
 type Props = {
   platforms: string[];
@@ -8,12 +9,10 @@ type Props = {
 };
 
 export function PagePlatformTags({ platforms, className }: Props) {
-  const runtimePlatforms = new Set(['expo-go', 'dev-builds']);
-  const isRuntimeTag = (platform: string) => runtimePlatforms.has(platform.toLowerCase());
   const standardPlatforms = platforms
-    .filter(platform => !isRuntimeTag(platform))
+    .filter(platform => !isClientPlatformTag(platform))
     .sort((a, b) => a.localeCompare(b));
-  const runtimePlatformsOrdered = platforms.filter(platform => isRuntimeTag(platform));
+  const runtimePlatformsOrdered = platforms.filter(platform => isClientPlatformTag(platform));
   const orderedPlatforms = [...standardPlatforms, ...runtimePlatformsOrdered];
 
   return (

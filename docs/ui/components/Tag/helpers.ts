@@ -57,14 +57,16 @@ export function getTagClasses(type: string) {
   }
 }
 
+export const isClientPlatformTag = (platform: string) =>
+  new Set(['expo-go', 'dev-builds']).has(platform.toLowerCase());
+
 export const formatName = (name: PlatformName) => {
   const cleanName = name.toLowerCase().replace('\n', '').trim();
-  if (cleanName === 'expo-go') {
+  if (cleanName.includes('expo-go')) {
     return 'Expo Go';
-  } else if (cleanName === 'dev-builds') {
+  } else if (cleanName.includes('dev-builds')) {
     return 'Dev builds';
-  }
-  if (cleanName.includes('ios')) {
+  } else if (cleanName.includes('ios')) {
     return cleanName.replace('ios', 'iOS');
   } else if (cleanName.includes('macos')) {
     return cleanName.replace('macos', 'macOS');
