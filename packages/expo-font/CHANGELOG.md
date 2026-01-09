@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Defer native font querying to prevent startup hang on iOS. ([#42033](https://github.com/expo/expo/pull/42033) by [@mozzius](https://github.com/mozzius))
 - unify `useFonts` return value in RSC ([#40481](https://github.com/expo/expo/pull/40481) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
