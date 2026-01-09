@@ -55,7 +55,6 @@ export default function VideoFullscreenScreen() {
           addNewHistoryEntry('onFullscreenExit');
           setIsFullscreen(false);
         }}
-        allowsFullscreen={allowFullscreen}
         fullscreenOptions={{
           enable: allowFullscreen,
           orientation: orientations[lockIndex] as FullscreenOrientation,
