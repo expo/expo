@@ -41,10 +41,14 @@ open class DevMenuManager: NSObject {
   public class Callback {
     let name: String
     let shouldCollapse: Bool
+    let type: String
+    let value: Bool
 
-    init(name: String, shouldCollapse: Bool) {
+    init(name: String, shouldCollapse: Bool, type: String = "action", value: Bool = false) {
       self.name = name
       self.shouldCollapse = shouldCollapse
+      self.type = type
+      self.value = value
     }
   }
 

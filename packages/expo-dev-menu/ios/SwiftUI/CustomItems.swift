@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CustomItems: View {
-  let callbacks: [String]
+  let callbacks: [DevMenuManager.Callback]
   let onFireCallback: (String) -> Void
 
   var body: some View {
@@ -11,18 +11,28 @@ struct CustomItems: View {
         .foregroundColor(.primary.opacity(0.6))
 
       VStack(spacing: 6) {
-        ForEach(Array(callbacks.enumerated()), id: \.offset) { _, name in
-          Button {
-            onFireCallback(name)
+        ForEach(callbacks, id: \.name) { callback in
+          if callback.type == "toggle" {
+            DevMenuToggleButton(
+              title: callback.name,
+              icon: "switch.2",
+              isEnabled: callback.value,
+              action: { onFireCallback(callback.name) }
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+          } else {
+            Button {
+              onFireCallback(callback.name)
+            }
+            label: {
+              Text(callback.name)
+                .foregroundColor(.primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding()
+            .background(Color.expoSecondarySystemBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
           }
-          label: {
-            Text(name)
-              .foregroundColor(.primary)
-              .frame(maxWidth: .infinity, alignment: .leading)
-          }
-          .padding()
-          .background(Color.expoSecondarySystemBackground)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
         }
       }
     }

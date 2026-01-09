@@ -9,6 +9,7 @@ import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.Spacer
+import expo.modules.devmenu.compose.primitives.ToggleSwitch
 
 @Composable
 fun CustomItemsSection(
@@ -22,13 +23,26 @@ fun CustomItemsSection(
   RoundedSurface {
     Column {
       items.withIndex().forEach { (index, item) ->
-        NewMenuButton(
-          withSurface = false,
-          content = {
-            NewText(text = item.name)
-          },
-          onClick = { onItemClick(item) }
-        )
+        if (item.type == "toggle") {
+          NewMenuButton(
+            withSurface = false,
+            content = {
+              NewText(text = item.name)
+            },
+            rightComponent = {
+              ToggleSwitch(isToggled = item.value)
+            },
+            onClick = { onItemClick(item) }
+          )
+        } else {
+          NewMenuButton(
+            withSurface = false,
+            content = {
+              NewText(text = item.name)
+            },
+            onClick = { onItemClick(item) }
+          )
+        }
 
         if (index < items.size - 1) {
           Divider(thickness = 0.5.dp)

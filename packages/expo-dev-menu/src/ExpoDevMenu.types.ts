@@ -15,6 +15,16 @@ export type ExpoDevMenuItem = {
    * @default false
    */
   shouldCollapse?: boolean;
+  /**
+   * The type of menu item. Defaults to 'action'.
+   * Use 'toggle' to render a switch that the user can toggle on/off.
+   */
+  type?: 'action' | 'toggle';
+  /**
+   * The current value of the toggle. Only used when type is 'toggle'.
+   * The app should manage this state and re-register items when it changes.
+   */
+  value?: boolean;
 };
 
 /**
@@ -24,5 +34,12 @@ export type ExpoDevMenu = {
   openMenu(): void;
   closeMenu(): void;
   hideMenu(): void;
-  addDevMenuCallbacks(callbacks: { name: string; shouldCollapse?: boolean }[]): void;
+  addDevMenuCallbacks(
+    callbacks: {
+      name: string;
+      shouldCollapse?: boolean;
+      type?: 'action' | 'toggle';
+      value?: boolean;
+    }[]
+  ): void;
 };
