@@ -56,7 +56,6 @@ const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps> = (
         targetName,
         widgets,
         groupIdentifier,
-        bundleIdentifier: config.ios.bundleIdentifier,
         onFilesGenerated: setFiles,
       },
     ],

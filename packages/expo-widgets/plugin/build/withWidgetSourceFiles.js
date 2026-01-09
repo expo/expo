@@ -40,7 +40,7 @@ const plist_1 = __importDefault(require("@expo/plist"));
 const config_plugins_1 = require("expo/config-plugins");
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
-const withWidgetSourceFiles = (config, { widgets, bundleIdentifier, targetName, onFilesGenerated, groupIdentifier }) => (0, config_plugins_1.withDangerousMod)(config, [
+const withWidgetSourceFiles = (config, { widgets, targetName, onFilesGenerated, groupIdentifier }) => (0, config_plugins_1.withDangerousMod)(config, [
     'ios',
     async (config) => {
         const projectRoot = config.modRequest.platformProjectRoot;
@@ -56,33 +56,21 @@ const withWidgetSourceFiles = (config, { widgets, bundleIdentifier, targetName, 
             'com.apple.security.application-groups': [groupIdentifier],
         };
         fs.writeFileSync(entitlementsPath, plist_1.default.build(entitlementsContent));
-        const infoPlistPath = `${targetDirectory}/Info.plist`;
-        fs.writeFileSync(infoPlistPath, infoPlist(groupIdentifier));
+        const infoPlistPath = createInfoPlist(groupIdentifier, targetDirectory);
         const indexSwiftPath = createIndexSwift(widgets, targetDirectory);
-        const providerSwiftPath = createProviderSwift(targetDirectory);
-        const widgetSwiftPaths = widgets.map((widget) => createWidgetSwift(bundleIdentifier, widget, targetDirectory));
-        onFilesGenerated([
-            entitlementsPath,
-            infoPlistPath,
-            indexSwiftPath,
-            providerSwiftPath,
-            ...widgetSwiftPaths,
-        ]);
+        const widgetSwiftPaths = widgets.map((widget) => createWidgetSwift(widget, targetDirectory));
+        onFilesGenerated([entitlementsPath, infoPlistPath, indexSwiftPath, ...widgetSwiftPaths]);
         return config;
     },
 ]);
-const createProviderSwift = (targetPath) => {
-    const providerFilePath = path.join(targetPath, `Provider.swift`);
-    fs.writeFileSync(providerFilePath, providerSwift);
-    return path.join(targetPath, 'Provider.swift');
-};
 const createIndexSwift = (widgets, targetPath) => {
     const indexFilePath = path.join(targetPath, `index.swift`);
     const numberOfWidgets = widgets.length;
     const numberOfBundles = Math.ceil(numberOfWidgets / 4);
     let output = `import WidgetKit
-import SwiftUI 
-  `;
+import SwiftUI
+import ExpoWidgets
+`;
     for (let i = 0; i < numberOfBundles; i++) {
         const start = i * 4;
         const end = Math.min(start + 4, numberOfWidgets);
@@ -93,77 +81,38 @@ import SwiftUI
     fs.writeFileSync(indexFilePath, output);
     return indexFilePath;
 };
-const createWidgetSwift = (bundleIdentifier, widget, targetPath) => {
+const createWidgetSwift = (widget, targetPath) => {
     const widgetFilePath = path.join(targetPath, `${widget.name}.swift`);
-    fs.writeFileSync(widgetFilePath, widgetSwift(bundleIdentifier, widget));
+    fs.writeFileSync(widgetFilePath, widgetSwift(widget));
     return widgetFilePath;
+};
+const createInfoPlist = (groupIdentifier, targetPath) => {
+    const infoPlistPath = `${targetPath}/Info.plist`;
+    fs.writeFileSync(infoPlistPath, infoPlist(groupIdentifier));
+    return infoPlistPath;
 };
 const addIndexSwiftChunk = (widgets, index, isLastChunk) => `
 ${index === 0 ? '@main' : ''}
 struct ExportWidgets${index}: WidgetBundle {
   var body: some Widget {
     ${widgets.map((widget) => `${widget.name}()`).join('\n\t\t')}
-    ${!isLastChunk ? `ExportWidgets${index + 1}().body` : `ExpoWidgets.WidgetLiveActivity()`}
+    ${!isLastChunk ? `ExportWidgets${index + 1}().body` : `WidgetLiveActivity()`}
   }
 }`;
-const widgetSwift = (bundleIdentifier, widget) => `
-import WidgetKit
+const widgetSwift = (widget) => `import WidgetKit
 import SwiftUI
+import ExpoWidgets
 
 struct ${widget.name}: Widget {
-  let kind: String = "${widget.name}"
-  let buildleIdentifier: String = "${bundleIdentifier}"
+  let name: String = "${widget.name}"
 
   var body: some WidgetConfiguration {
-    StaticConfiguration(kind: kind, provider: Provider()) { entry in
-      WidgetEntryView(entry: entry)
+    StaticConfiguration(kind: name, provider: WidgetsTimelineProvider(name: name)) { entry in
+      WidgetsEntryView(entry: entry)
     }
     .configurationDisplayName("${widget.displayName}")
     .description("${widget.description}")
     .supportedFamilies([.${widget.supportedFamilies.join(', .')}])
-  }
-}`;
-const providerSwift = `import WidgetKit
-import SwiftUI
-
-struct Provider: TimelineProvider {
-  func placeholder(in context: Context) -> SimpleEntry {
-    SimpleEntry(date: Date())
-  }
-
-  func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-    let entry = SimpleEntry(date: Date())
-    completion(entry)
-  }
-
-  func getTimeline(in context: Context, completion: @escaping (Timeline<SimpleEntry>) -> ()) {
-    var entries: [SimpleEntry] = []
-
-    let currentDate = Date()
-    for hourOffset in 0 ..< 5 {
-      if let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate) {
-        let entry = SimpleEntry(date: entryDate)
-        entries.append(entry)
-      }
-    }
-
-    let timeline = Timeline(entries: entries, policy: .atEnd)
-    completion(timeline)
-  }
-}
-
-struct SimpleEntry: TimelineEntry {
-  let date: Date
-}
-
-struct WidgetEntryView : View {
-  var entry: Provider.Entry
-
-  var body: some View {
-    VStack {
-      Text("Time:")
-      Text(entry.date, style: .time)
-    }
   }
 }`;
 const infoPlist = (groupIdentifier) => `<?xml version="1.0" encoding="UTF-8"?>
