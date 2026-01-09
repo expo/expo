@@ -1,19 +1,61 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
+import prompts from 'prompts';
+
+import { env } from './env';
 
 const debug = require('debug')('expo:init:git') as typeof console.log;
 
-export async function initGitRepoAsync(root: string) {
-  // let's see if we're in a git tree
+/** Check if the given directory is inside an existing git repository */
+async function isInsideGitRepoAsync(root: string): Promise<boolean> {
   try {
     await spawnAsync('git', ['rev-parse', '--is-inside-work-tree'], { stdio: 'ignore', cwd: root });
-    debug(chalk.dim('New project is already inside of a Git repo, skipping git init.'));
+    return true;
+  } catch {
     return false;
-  } catch (e: any) {
-    if (e.errno === 'ENOENT') {
-      debug(chalk.dim('Unable to initialize Git repo. `git` not in $PATH.'));
+  }
+}
+
+/** Check if git is available in PATH */
+async function isGitInstalledAsync(): Promise<boolean> {
+  try {
+    await spawnAsync('git', ['--version'], { stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function initGitRepoAsync(root: string) {
+  // Check if git is installed
+  if (!(await isGitInstalledAsync())) {
+    debug(chalk.dim('Unable to initialize Git repo. `git` not in $PATH.'));
+    return false;
+  }
+
+  // Check if already inside a git repository
+  if (await isInsideGitRepoAsync(root)) {
+    // In headless/CI mode, skip by default
+    if (env.CI) {
+      debug(chalk.dim('New project is already inside of a Git repo, skipping git init (CI mode).'));
       return false;
     }
+
+    // In interactive mode, prompt the user
+    const { answer } = await prompts({
+      type: 'confirm',
+      name: 'answer',
+      message: 'You are creating a project inside of an existing Git repository. Skip initializing a new git repository?',
+      initial: true,
+    });
+
+    // If user confirms skip (or cancels/ctrl+c which returns undefined), skip git init
+    if (answer !== false) {
+      debug(chalk.dim('User chose to skip git init inside existing repo.'));
+      return false;
+    }
+    // User explicitly chose not to skip, proceed with git init (creates nested repo)
+    debug(chalk.dim('User chose to initialize git inside existing repo.'));
   }
 
   const packageJSON = require('../package.json');
