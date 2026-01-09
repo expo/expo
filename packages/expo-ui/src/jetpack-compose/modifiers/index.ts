@@ -1,9 +1,11 @@
 import { requireNativeModule } from 'expo';
 
-import { ExpoModifier } from '../types';
-import { parseJSXShape, ShapeJSXElement } from './Shape';
+import { ExpoModifier } from '../../types';
+import { parseJSXShape, ShapeJSXElement } from '../Shape';
 
 const nativeExpoUIModule = requireNativeModule('ExpoUI');
+
+export type { ExpoModifier };
 
 export type Alignment =
   // 2D Alignments

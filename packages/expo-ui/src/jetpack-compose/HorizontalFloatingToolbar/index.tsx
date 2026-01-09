@@ -1,5 +1,5 @@
-import { Children } from 'react';
 import { requireNativeView } from 'expo';
+import { Children } from 'react';
 
 import { ExpoModifier } from '../../types';
 
@@ -45,14 +45,16 @@ const HorizontalFloatingToolbarNativeView: React.ComponentType<NativeHorizontalF
   requireNativeView('ExpoUI', 'HorizontalFloatingToolbarView');
 
 // Internal slot marker component - not exported
-const SlotNativeView: React.ComponentType<NativeSlotViewProps> =
-  requireNativeView('ExpoUI', 'SlotView');
+const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeView(
+  'ExpoUI',
+  'SlotView'
+);
 
 /**
  * FloatingActionButton component for HorizontalFloatingToolbar.
  * This component marks its children to be rendered in the FAB slot.
  */
-function FloatingActionButton(props: FloatingActionButtonProps) {
+export function FloatingActionButton(props: FloatingActionButtonProps) {
   return <>{props.children}</>;
 }
 FloatingActionButton.tag = 'FloatingActionButton';

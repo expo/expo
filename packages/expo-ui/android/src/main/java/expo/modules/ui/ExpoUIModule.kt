@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -123,6 +125,9 @@ class ExpoUIModule : Module() {
       Events("onSlotEvent")
     }
     View(IconView::class)
+    View(PullToRefreshBoxView::class) {
+      Events("onRefresh")
+    }
 
     View(BoxView::class)
     View(RowView::class)
@@ -134,6 +139,7 @@ class ExpoUIModule : Module() {
         view.onViewDidUpdateProps()
       }
     }
+    View(RNHostView::class)
     View(TextView::class)
     View(CarouselView::class)
 

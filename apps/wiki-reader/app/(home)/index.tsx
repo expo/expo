@@ -1,38 +1,84 @@
 import {
-  Button,
   Box,
-  Column,
   Host,
   HorizontalFloatingToolbar,
   Icon,
   IconButton,
-  fillMaxWidth,
   paddingAll,
   align,
   offset,
+  PullToRefreshBox,
+  fillMaxSize,
+  SearchBar,
 } from '@expo/ui/jetpack-compose';
-import { useState } from 'react';
-import { RefreshControl, ScrollView, useColorScheme } from 'react-native';
+import { useCallback, useRef, useState } from 'react';
+import { useColorScheme } from 'react-native';
+
+import { ComposeWebView, type ComposeWebViewRef } from '../../modules/compose-webview';
+import { Stack, useNavigation } from 'expo-router';
+import { DrawerActions } from '@react-navigation/native';
+
+const WIKIPEDIA_URL = 'https://en.wikipedia.org/wiki/Special:Random';
 
 export default function Home() {
   const colorScheme = useColorScheme();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const webViewRef = useRef<ComposeWebViewRef>(null);
+
+  const navigation = useNavigation();
+
+  const shuffle = useCallback(() => {
+    webViewRef.current?.loadUrl(WIKIPEDIA_URL);
+  }, []);
 
   return (
-    <ScrollView
-      contentContainerStyle={{ flex: 1, backgroundColor: 'white' }}
-      refreshControl={
-        <RefreshControl refreshing={isRefreshing} onRefresh={() => setIsRefreshing(true)} />
-      }>
+    <>
+      <Stack.Screen
+        options={{
+          headerLeft: () => (
+            <Host matchContents>
+              <IconButton onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+                <Icon source={require('../../assets/symbols/menu.xml')} tintColor="black" />
+              </IconButton>
+            </Host>
+          ),
+          headerRight: () => (
+            <Host matchContents>
+              <IconButton variant="bordered" onPress={shuffle}>
+                <Icon source={require('../../assets/symbols/shuffle.xml')} tintColor="#1d1b20" />
+              </IconButton>
+            </Host>
+          ),
+          headerTitle: () => (
+            <Host
+              style={{
+                height: 56,
+                marginHorizontal: 16,
+              }}>
+              <SearchBar />
+            </Host>
+          ),
+          headerShadowVisible: false,
+        }}
+      />
+
       <Host style={{ flex: 1 }} colorScheme={colorScheme}>
-        <Box modifiers={[fillMaxWidth(), paddingAll(8)]}>
-          <Column>
-            <Button onPress={() => {}}>Search</Button>
-          </Column>
+        <Box modifiers={[fillMaxSize(), paddingAll(8)]}>
+          <PullToRefreshBox
+            modifiers={[fillMaxSize()]}
+            isRefreshing={isRefreshing}
+            onRefresh={async () => {
+              setIsRefreshing(true);
+              await webViewRef.current?.reload();
+              setIsRefreshing(false);
+            }}>
+            <ComposeWebView url={WIKIPEDIA_URL} ref={webViewRef} />
+          </PullToRefreshBox>
+
           <HorizontalFloatingToolbar
             variant="vibrant"
             modifiers={[align('bottomCenter'), offset(0, -16)]}>
-            <IconButton onPress={() => {}}>
+            <IconButton onPress={shuffle}>
               <Icon source={require('../../assets/symbols/shuffle.xml')} tintColor="#1d1b20" />
             </IconButton>
             <IconButton onPress={() => {}}>
@@ -53,6 +99,6 @@ export default function Home() {
           </HorizontalFloatingToolbar>
         </Box>
       </Host>
-    </ScrollView>
+    </>
   );
 }

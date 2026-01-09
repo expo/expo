@@ -37,13 +37,13 @@ android {
 dependencies {
   implementation 'com.facebook.react:react-android'
 
-  implementation 'androidx.compose.foundation:foundation-android:1.9.1'
-  implementation 'androidx.compose.ui:ui-android:1.9.1'
-  implementation "androidx.compose.material3:material3:1.5.0-alpha08"
-  implementation 'androidx.compose.material3:material3-android:1.5.0-alpha08'
-  implementation 'androidx.lifecycle:lifecycle-runtime:2.9.3'
+  implementation 'androidx.compose.foundation:foundation-android:1.10.0'
+  implementation 'androidx.compose.ui:ui-android:1.10.0'
+  implementation "androidx.compose.material3:material3:1.5.0-alpha11"
+  implementation 'androidx.compose.material3:material3-android:1.5.0-alpha11'
+  implementation 'androidx.lifecycle:lifecycle-runtime:2.10.0'
   implementation 'androidx.fragment:fragment-ktx:1.8.9'
-  implementation "androidx.graphics:graphics-shapes:1.0.1"
+  implementation "androidx.graphics:graphics-shapes:1.1.0"
   implementation "com.squareup.okhttp3:okhttp:4.9.2"
   implementation "androidx.core:core-ktx:1.17.0"
 

@@ -14,7 +14,7 @@ export type HorizontalFloatingToolbarProps = {
      */
     modifiers?: ExpoModifier[];
 };
-type FloatingActionButtonProps = {
+export type FloatingActionButtonProps = {
     /**
      * A callback that is called when the button is pressed.
      */
@@ -25,12 +25,20 @@ type FloatingActionButtonProps = {
     children: React.ReactNode;
 };
 /**
+ * FloatingActionButton component for HorizontalFloatingToolbar.
+ * This component marks its children to be rendered in the FAB slot.
+ */
+export declare function FloatingActionButton(props: FloatingActionButtonProps): import("react").JSX.Element;
+export declare namespace FloatingActionButton {
+    var tag: string;
+}
+/**
  * Renders a `HorizontalFloatingToolbar` component.
  * A horizontal toolbar that floats above content, typically used for action buttons.
  */
 declare function HorizontalFloatingToolbar(props: HorizontalFloatingToolbarProps): import("react").JSX.Element;
 declare namespace HorizontalFloatingToolbar {
-    var FloatingActionButton: (props: FloatingActionButtonProps) => import("react").JSX.Element;
+    var FloatingActionButton: typeof import(".").FloatingActionButton;
 }
 export { HorizontalFloatingToolbar };
 //# sourceMappingURL=index.d.ts.map

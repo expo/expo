@@ -148,7 +148,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
   }
 
   override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
-    val view = if (child !is ExpoComposeView<*> && child !is ComposeView) {
+    val view = if (child !is ExpoComposeView<*> && child !is ComposeView && this !is RNHostViewInterface) {
       ExpoComposeAndroidView(child, appContext)
     } else {
       child

@@ -18,16 +18,13 @@ export type SearchBarProps = {
   modifiers?: ExpoModifier[];
 };
 
-export type NativeSearchBarProps = SearchBarProps & {};
+type NativeSearchBarProps = SearchBarProps & {};
 
 const SearchBarNativeView: React.ComponentType<NativeSearchBarProps> = requireNativeView(
   'ExpoUI',
   'SearchBarView'
 );
 
-/**
- * @hidden
- */
 function transformSearchBarProps(props: SearchBarProps): NativeSearchBarProps {
   return {
     ...props,

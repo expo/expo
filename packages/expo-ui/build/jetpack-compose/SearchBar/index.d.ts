@@ -13,7 +13,6 @@ export type SearchBarProps = {
      */
     modifiers?: ExpoModifier[];
 };
-export type NativeSearchBarProps = SearchBarProps & {};
 /**
  * Renders a `SearchBar` component.
  */

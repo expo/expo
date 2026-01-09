@@ -1,0 +1,26 @@
+import { ExpoModifier } from '../../types';
+import { ShapeJSXElement } from '../Shape';
+export type { ExpoModifier };
+export type Alignment = 'topStart' | 'topCenter' | 'topEnd' | 'centerStart' | 'center' | 'centerEnd' | 'bottomStart' | 'bottomCenter' | 'bottomEnd' | 'top' | 'centerVertically' | 'bottom' | 'start' | 'centerHorizontally' | 'end';
+export declare const paddingAll: (all: number) => ExpoModifier;
+export declare const padding: (start: number, top: number, end: number, bottom: number) => ExpoModifier;
+export declare const size: (width: number, height: number) => ExpoModifier;
+export declare const fillMaxSize: (fraction?: number) => ExpoModifier;
+export declare const fillMaxWidth: (fraction?: number) => ExpoModifier;
+export declare const fillMaxHeight: (fraction?: number) => ExpoModifier;
+export declare const offset: (x: number, y: number) => ExpoModifier;
+export declare const background: (color: string) => ExpoModifier;
+export declare const border: (borderWidth: number, borderColor: string) => ExpoModifier;
+export declare const shadow: (elevation: number) => ExpoModifier;
+export declare const alpha: (alpha: number) => ExpoModifier;
+export declare const blur: (radius: number) => ExpoModifier;
+export declare const clickable: (callback: () => void) => ExpoModifier;
+export declare const rotate: (degrees: number) => ExpoModifier;
+export declare const zIndex: (index: number) => ExpoModifier;
+export declare const weight: (weight: number) => ExpoModifier;
+export declare const testID: (tag: string) => ExpoModifier;
+export declare const align: (alignment: Alignment) => ExpoModifier;
+export declare const matchParentSize: () => ExpoModifier;
+export declare const animateContentSize: (dampingRatio?: number, stiffness?: number) => ExpoModifier;
+export declare const clip: (shape: ShapeJSXElement) => ExpoModifier;
+//# sourceMappingURL=index.d.ts.map

@@ -1,7 +1,6 @@
 package expo.modules.ui
 
 import android.content.Context
-import android.graphics.Color as AndroidColor
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,10 +17,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.with
+import android.graphics.Color as AndroidColor
 
 enum class HorizontalArrangement(val value: String) : Enumerable {
   START("start"),

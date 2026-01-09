@@ -1,0 +1,37 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  }
+}
+
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+
+group = 'host.exp.exponent'
+version = '1.0.0'
+
+expoModule {
+  canBePublished false
+}
+
+android {
+  namespace "expo.modules.wikireader"
+  defaultConfig {
+    versionCode 1
+    versionName '1.0.0'
+  }
+}
+
+dependencies {
+  implementation project(":expo-ui")
+
+  implementation 'androidx.compose.foundation:foundation-android:1.10.0'
+}
+
