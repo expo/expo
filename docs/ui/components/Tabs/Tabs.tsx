@@ -26,7 +26,7 @@ const collectTabPanels = (nodes: ReactNode): TabChild[] => {
   const panels: TabChild[] = [];
 
   Children.forEach(nodes, child => {
-    if (!isValidElement(child)) {
+    if (!isValidElement<{ children?: ReactNode }>(child)) {
       return;
     }
 
@@ -64,8 +64,7 @@ const InnerTabs = ({
   setIndex,
 }: Props & { index: number; setIndex: (index: number) => void }) => {
   const tabPanels = useMemo(() => collectTabPanels(children), [children]);
-  const tabTitles =
-    tabs && tabs.length === tabPanels.length ? tabs : generateTabLabels(tabPanels);
+  const tabTitles = tabs && tabs.length === tabPanels.length ? tabs : generateTabLabels(tabPanels);
 
   const layoutId = useMemo(
     () => tabTitles.reduce((acc, tab) => acc + tab, `${Math.random().toString(36).slice(5)}-`),

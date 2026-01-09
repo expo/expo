@@ -40,7 +40,9 @@ const initPackageManagerStore = () => {
 };
 
 const notifyPackageManagerStore = () => {
-  packageManagerStore.listeners.forEach(listener => listener());
+  packageManagerStore.listeners.forEach(listener => {
+    listener();
+  });
 };
 
 const updatePackageManagerStore = (manager: PackageManagerKey | null) => {
