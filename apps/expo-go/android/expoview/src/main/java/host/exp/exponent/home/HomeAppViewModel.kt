@@ -7,6 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import host.exp.exponent.apollo.Paginator
 import host.exp.exponent.graphql.BranchDetailsQuery
 import host.exp.exponent.graphql.BranchesForProjectQuery
@@ -260,6 +263,34 @@ class HomeAppViewModel(
 
   fun selectAccount(accountId: String?) {
     selectedAccountId.value = accountId
+  }
+
+  fun scanQR(
+    context: Context,
+    onSuccess: (String) -> Unit,
+    onError: (String) -> Unit = {}
+  ) {
+    val options = GmsBarcodeScannerOptions
+      .Builder()
+      .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+      .build()
+
+    val scanner = GmsBarcodeScanning.getClient(context, options)
+
+    scanner.startScan()
+      .addOnSuccessListener { barcode ->
+        val url = barcode.rawValue ?: run {
+          onError("No QR code data found")
+          return@addOnSuccessListener
+        }
+        onSuccess(url)
+      }
+      .addOnCanceledListener {
+        onError("QR code scan cancelled")
+      }
+      .addOnFailureListener { exception ->
+        onError("QR code scan failed: ${exception.message ?: "Unknown error"}")
+      }
   }
 }
 
