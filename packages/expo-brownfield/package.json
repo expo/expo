@@ -65,6 +65,7 @@
   "dependencies": {
     "arg": "^5.0.2",
     "chalk": "^4.1.2",
+    "expo-build-properties": "~1.0.8",
     "ora": "^5.4.1",
     "prompts": "^2.4.2"
   },
