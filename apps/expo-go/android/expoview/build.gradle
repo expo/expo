@@ -11,7 +11,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("com.apollographql.apollo:apollo-gradle-plugin:4.3.1")
+    classpath(expoLibs.apollo.gradle)
   }
 }
 
@@ -208,7 +208,8 @@ dependencies {
   api(libs.okio)
   api(libs.javax.inject)
 
-  implementation 'com.apollographql.apollo:apollo-runtime:4.3.1'
+  implementation expoLibs.apollo
+  implementation expoLibs.apollo.cache
 
   // Our dependencies
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
@@ -252,10 +253,6 @@ dependencies {
   // expo-file-system
   api 'com.squareup.okhttp3:okhttp:3.10.0'
   api 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
-
-  // expo-av
-  // See explanation in expo-av/build.gradle
-  api 'com.google.android.exoplayer:extension-okhttp:2.18.1'
 
   // expo-application
   api 'com.android.installreferrer:installreferrer:1.0'

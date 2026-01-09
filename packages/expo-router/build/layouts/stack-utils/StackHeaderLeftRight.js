@@ -33,28 +33,121 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackHeaderLeft = StackHeaderLeft;
-exports.StackHeaderRight = StackHeaderRight;
+exports.StackHeaderRight = exports.StackHeaderLeft = void 0;
 exports.appendStackHeaderRightPropsToOptions = appendStackHeaderRightPropsToOptions;
 exports.appendStackHeaderLeftPropsToOptions = appendStackHeaderLeftPropsToOptions;
 const react_1 = __importStar(require("react"));
+const react_2 = require("react");
 const StackHeaderButton_1 = require("./StackHeaderButton");
-const StackHeaderItem_1 = require("./StackHeaderItem");
 const StackHeaderMenu_1 = require("./StackHeaderMenu");
 const StackHeaderSpacer_1 = require("./StackHeaderSpacer");
+const StackHeaderView_1 = require("./StackHeaderView");
 const children_1 = require("../../utils/children");
-function StackHeaderLeft(props) {
-    return null;
-}
-function StackHeaderRight(props) {
-    return null;
-}
+const Screen_1 = require("../../views/Screen");
+/**
+ * The component used to configure the left area of the stack header.
+ *
+ * When used inside a screen, it allows you to customize the left side of the header dynamically.
+ *
+ * @example
+ * ```tsx
+ * import { Stack } from 'expo-router';
+ *
+ * export default function Page() {
+ *   return (
+ *     <>
+ *       <Stack.Header.Left>
+ *         <Stack.Header.Button onPress={() => alert('Left button pressed!')} />
+ *       </Stack.Header.Left>
+ *       <ScreenContent />
+ *     </>
+ *   );
+ * }
+ * ```
+ *
+ * When used inside the layout, it needs to be wrapped in `Stack.Header` to take effect.
+ *
+ * @example
+ * ```tsx
+ * import { Stack } from 'expo-router';
+ *
+ * export default function Layout() {
+ *   return (
+ *     <Stack>
+ *       <Stack.Screen name="index">
+ *         <Stack.Header>
+ *           <Stack.Header.Left>
+ *             <Stack.Header.Button onPress={() => alert('Left button pressed!')} />
+ *           </Stack.Header.Left>
+ *         </Stack.Header>
+ *       </Stack.Screen>
+ *     </Stack>
+ *   );
+ * }
+ * ```
+ */
+const StackHeaderLeft = (props) => {
+    // This component will only render when used inside a page
+    // but only if it is not wrapped in Stack.Screen.Header
+    const updatedOptions = (0, react_2.useMemo)(() => appendStackHeaderLeftPropsToOptions({}, props), [props]);
+    return <Screen_1.Screen options={updatedOptions}/>;
+};
+exports.StackHeaderLeft = StackHeaderLeft;
+/**
+ * The component used to configure the right area of the stack header.
+ *
+ * When used inside a screen, it allows you to customize the right side of the header dynamically.
+ *
+ * @example
+ * ```tsx
+ * import { Stack } from 'expo-router';
+ *
+ * export default function Page() {
+ *   return (
+ *     <>
+ *       <Stack.Header.Right>
+ *         <Stack.Header.Button onPress={() => alert('Right button pressed!')} />
+ *       </Stack.Header.Right>
+ *       <ScreenContent />
+ *     </>
+ *   );
+ * }
+ * ```
+ *
+ * When used inside the layout, it needs to be wrapped in `Stack.Header` to take effect.
+ *
+ * @example
+ * ```tsx
+ * import { Stack } from 'expo-router';
+ *
+ * export default function Layout() {
+ *   return (
+ *     <Stack>
+ *       <Stack.Screen name="index">
+ *         <Stack.Header>
+ *           <Stack.Header.Right>
+ *             <Stack.Header.Button onPress={() => alert('Right button pressed!')} />
+ *           </Stack.Header.Right>
+ *         </Stack.Header>
+ *       </Stack.Screen>
+ *     </Stack>
+ *   );
+ * }
+ * ```
+ */
+const StackHeaderRight = (props) => {
+    // This component will only render when used inside a page
+    // but only if it is not wrapped in Stack.Screen.Header
+    const updatedOptions = (0, react_2.useMemo)(() => appendStackHeaderRightPropsToOptions({}, props), [props]);
+    return <Screen_1.Screen options={updatedOptions}/>;
+};
+exports.StackHeaderRight = StackHeaderRight;
 function convertHeaderRightLeftChildrenToUnstableItems(children, side) {
     const allChildren = react_1.default.Children.toArray(children);
     const actions = allChildren.filter((child) => (0, children_1.isChildOfType)(child, StackHeaderButton_1.StackHeaderButton) ||
         (0, children_1.isChildOfType)(child, StackHeaderMenu_1.StackHeaderMenu) ||
         (0, children_1.isChildOfType)(child, StackHeaderSpacer_1.StackHeaderSpacer) ||
-        (0, children_1.isChildOfType)(child, StackHeaderItem_1.StackHeaderItem));
+        (0, children_1.isChildOfType)(child, StackHeaderView_1.StackHeaderView));
     if (actions.length !== allChildren.length && process.env.NODE_ENV !== 'production') {
         const otherElements = allChildren
             .filter((child) => !actions.some((action) => action === child))
@@ -71,7 +164,8 @@ function convertHeaderRightLeftChildrenToUnstableItems(children, side) {
         });
         console.warn(`Stack.Header.${side} only accepts <Stack.Header.Button>, <Stack.Header.Menu>, <Menu>, and <Stack.Header.Item> as children. Found invalid children: ${otherElements.join(', ')}`);
     }
-    return () => actions.map((action) => {
+    return () => actions
+        .map((action) => {
         if ((0, children_1.isChildOfType)(action, StackHeaderButton_1.StackHeaderButton)) {
             return (0, StackHeaderButton_1.convertStackHeaderButtonPropsToRNHeaderItem)(action.props);
         }
@@ -81,8 +175,9 @@ function convertHeaderRightLeftChildrenToUnstableItems(children, side) {
         else if ((0, children_1.isChildOfType)(action, StackHeaderSpacer_1.StackHeaderSpacer)) {
             return (0, StackHeaderSpacer_1.convertStackHeaderSpacerPropsToRNHeaderItem)(action.props);
         }
-        return (0, StackHeaderItem_1.convertStackHeaderItemPropsToRNHeaderItem)(action.props);
-    });
+        return (0, StackHeaderView_1.convertStackHeaderViewPropsToRNHeaderItem)(action.props);
+    })
+        .filter((item) => !!item);
 }
 function appendStackHeaderRightPropsToOptions(options, props) {
     if (props.asChild) {

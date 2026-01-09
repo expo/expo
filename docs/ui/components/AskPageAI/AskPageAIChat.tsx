@@ -1,4 +1,4 @@
-import { useChat } from '@kapaai/react-sdk';
+import { type Reaction, useChat } from '@kapaai/react-sdk';
 import { useRouter } from 'next/compat/router';
 import {
   type FormEvent,
@@ -13,12 +13,7 @@ import {
 import { usePageMetadata } from '~/providers/page-metadata';
 
 import { FOOTNOTE } from '../Text';
-import type {
-  ContextMarker,
-  ContextScope,
-  FeedbackTarget,
-  GlobalSwitchStatus,
-} from './AskPageAIChat.types';
+import type { ContextMarker, ContextScope, GlobalSwitchStatus } from './AskPageAIChat.types';
 import { createMarkerMap, normalizeQuestion } from './AskPageAIChat.utils';
 import { AskPageAIChatHeader } from './AskPageAIChatHeader';
 import { AskPageAIChatInput } from './AskPageAIChatInput';
@@ -257,21 +252,6 @@ export function AskPageAIChat({
 
   const isBusy = isPreparingAnswer || isGeneratingAnswer;
 
-  const feedbackTarget = useMemo<FeedbackTarget>(() => {
-    for (let index = conversation.length - 1; index >= 0; index -= 1) {
-      const entry = conversation[index];
-      if (
-        entry &&
-        entry.id &&
-        'isFeedbackSubmissionEnabled' in entry &&
-        entry.isFeedbackSubmissionEnabled
-      ) {
-        return entry;
-      }
-    }
-    return null;
-  }, [conversation]);
-
   const buildPrompt = useCallback(
     (text: string, overrideScope?: ContextScope) => {
       const scope = overrideScope ?? contextScope;
@@ -328,16 +308,16 @@ export function AskPageAIChat({
   }, [conversation.length, isBusy, resetLocalState, stopGeneration]);
 
   const handleFeedback = useCallback(
-    (reaction: 'upvote' | 'downvote') => {
-      if (!feedbackTarget?.isFeedbackSubmissionEnabled) {
+    (qaId: string, currentReaction: Reaction | null, reaction: Reaction) => {
+      if (!qaId) {
         return;
       }
-      if (feedbackTarget.reaction === reaction) {
+      if (currentReaction === reaction) {
         return;
       }
-      addFeedback(feedbackTarget.id!, reaction);
+      addFeedback(qaId, reaction);
     },
-    [addFeedback, feedbackTarget]
+    [addFeedback]
   );
 
   const handleNavigation = useCallback(
@@ -420,6 +400,7 @@ export function AskPageAIChat({
         question: qa.question,
         answer: qa.answer,
         sources: qa.sources,
+        reaction: 'reaction' in qa ? qa.reaction : null,
         isFeedbackSubmissionEnabled:
           'isFeedbackSubmissionEnabled' in qa ? qa.isFeedbackSubmissionEnabled : undefined,
       })),
@@ -436,8 +417,6 @@ export function AskPageAIChat({
         onSwitchToPageContext={handleSwitchBackToPageContext}
         onReset={handleConversationReset}
         onClose={handleClose}
-        feedbackTarget={feedbackTarget}
-        onFeedback={handleFeedback}
       />
 
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-5 py-6">
@@ -455,6 +434,7 @@ export function AskPageAIChat({
           onSearchAcrossDocs={handleSearchAcrossDocs}
           extractUserQuestion={extractUserQuestion}
           onNavigate={handleNavigation}
+          onFeedback={handleFeedback}
         />
         {error && (
           <FOOTNOTE theme="danger" className="mt-4">

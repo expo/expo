@@ -13,7 +13,7 @@
     "lint-links": "remark -u validate-links ./pages",
     "lint-prose": "yarn vale --glob='!pages/versions/latest/**' .",
     "watch": "tsc --noEmit -w",
-    "test": "yarn generate-static-resources && yarn node --experimental-vm-modules $(yarn bin jest)",
+    "test": "yarn generate-static-resources && yarn node --experimental-vm-modules \"$(yarn bin jest)\"",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
     "copy-latest": "node ./scripts/copy-latest.js",
     "generate-llms": "node ./scripts/generate-llms/index.js",
@@ -23,6 +23,7 @@
     "permissions-sync-android": "npx scrape-permissions-json@latest components/plugins/permissions/data --android",
     "versions-schema-sync": "node ./scripts/fetch-versions-schema.js",
     "react-navigation-docs-sync": "node ./scripts/fetch-react-navigation-options.js",
+    "eas-cli-sync": "node ./ui/components/EASCLIReference/eas-cli-rerference.js",
     "postinstall": "yarn copy-latest && yarn generate-static-resources"
   },
   "packageManager": "yarn@4.9.1",

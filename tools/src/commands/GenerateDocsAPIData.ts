@@ -5,6 +5,7 @@ import fs from 'fs-extra';
 import os from 'node:os';
 import path from 'node:path';
 import recursiveOmitBy from 'recursive-omit-by';
+import type { TypeDocOptions } from 'typedoc';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
@@ -23,12 +24,14 @@ const MINIFY_JSON = true;
 const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/bottomsheet': ['jetpack-compose/BottomSheet/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/popover': ['swift-ui/Popover/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/button': ['jetpack-compose/Button/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/circularprogress': ['swift-ui/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/circularprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/colorpicker': ['swift-ui/ColorPicker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/contextmenu': ['swift-ui/ContextMenu/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/disclosuregroup': ['swift-ui/DisclosureGroup/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/contextmenu': ['jetpack-compose/ContextMenu/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/datepicker': ['swift-ui/DatePicker/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/datetimepicker': ['jetpack-compose/DatePicker/index.tsx', 'expo-ui'],
@@ -38,11 +41,12 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/linearprogress': ['swift-ui/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/linearprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/list': ['swift-ui/List/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/menu': ['swift-ui/Menu/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/picker': ['swift-ui/Picker/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/picker': ['jetpack-compose/Picker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/slider': ['swift-ui/Slider/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/slider': ['jetpack-compose/Slider/index.tsx', 'expo-ui'],
-  'expo-ui/swift-ui/switch': ['swift-ui/Switch/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/toggle': ['swift-ui/Toggle/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/namespace': ['swift-ui/Namespace.tsx', 'expo-ui'],
   'expo-ui/swift-ui/section': ['swift-ui/Section/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/form': ['swift-ui/Form/index.tsx', 'expo-ui'],
@@ -126,6 +130,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-router-ui': ['ui/index.ts', 'expo-router'],
   'expo-router-native-tabs': ['native-tabs/index.ts', 'expo-router'],
   'expo-router-split-view': ['split-view/index.ts', 'expo-router'],
+  'expo-router-toolbar': ['toolbar/index.ts', 'expo-router'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
   'expo-secure-store': ['SecureStore.ts'],
@@ -186,33 +191,35 @@ const executeCommand = async (
     ? entryPoint.map((entry) => path.join(entriesPath, entry))
     : [path.join(entriesPath, entryPoint)];
 
-  const app = await Application.bootstrapWithPlugins(
-    {
-      entryPoints,
-      tsconfig: tsConfigPath,
-      disableSources: true,
-      hideGenerator: true,
-      excludePrivate: true,
-      excludeProtected: true,
-      excludeExternals: true,
-      pretty: !MINIFY_JSON,
-      commentStyle: 'block',
-      jsDocCompatibility: false,
-      preserveLinkText: true,
-      sourceLinkExternal: false,
-      markdownLinkExternal: false,
-      blockTags: [
-        ...Configuration.OptionDefaults.blockTags,
-        '@alias',
-        '@deprecated',
-        '@docsMissing',
-        '@header',
-        '@needsAudit',
-        '@platform',
-      ],
-    },
-    [new TSConfigReader(), new TypeDocReader()]
-  );
+  const typedocOptions = {
+    entryPoints,
+    tsconfig: tsConfigPath,
+    disableSources: true,
+    hideGenerator: true,
+    excludePrivate: true,
+    excludeProtected: true,
+    excludeExternals: true,
+    pretty: !MINIFY_JSON,
+    commentStyle: 'block',
+    jsDocCompatibility: false,
+    preserveLinkText: true,
+    sourceLinkExternal: false,
+    markdownLinkExternal: false,
+    blockTags: [
+      ...Configuration.OptionDefaults.blockTags,
+      '@alias',
+      '@deprecated',
+      '@docsMissing',
+      '@header',
+      '@needsAudit',
+      '@platform',
+    ],
+  } as unknown as TypeDocOptions;
+
+  const app = await Application.bootstrapWithPlugins(typedocOptions, [
+    new TSConfigReader(),
+    new TypeDocReader(),
+  ]);
 
   const project = await app.convert();
 

@@ -7,7 +7,12 @@ import MetroHmrServer, { Client as MetroHmrClient } from '@expo/metro/metro/HmrS
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
-import { loadConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
+import {
+  mergeConfig,
+  resolveConfig,
+  type InputConfigT,
+  type ConfigT,
+} from '@expo/metro/metro-config';
 import { Terminal } from '@expo/metro/metro-core';
 import {
   createStableModuleIdFactory,
@@ -115,15 +120,32 @@ export async function loadMetroConfigAsync(
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
-  const hasConfig = await resolveConfig(options.config, projectRoot);
-  let config: ConfigT = {
-    ...(await loadConfig(
-      { cwd: projectRoot, projectRoot, ...options },
-      // If the project does not have a metro.config.js, then we use the default config.
-      hasConfig.isEmpty ? getDefaultConfig(projectRoot) : undefined
-    )),
+  const defaultConfig = getDefaultConfig(projectRoot);
+  const resolvedConfig = await resolveConfig(options.config, projectRoot);
+
+  let config: ConfigT = resolvedConfig.isEmpty
+    ? defaultConfig
+    : await mergeConfig(defaultConfig, resolvedConfig.config);
+
+  // Set the watchfolders to include the projectRoot, as Metro assumes this
+  // Force-override the reporter
+  config = {
+    ...config,
+
+    // See: `overrideConfigWithArguments` https://github.com/facebook/metro/blob/5059e26/packages/metro-config/src/loadConfig.js#L274-L339
+    // Compare to `LoadOptions` type (disregard `reporter` as we don't expose this)
+    resetCache: !!options.resetCache,
+    maxWorkers: options.maxWorkers ?? config.maxWorkers,
+    server: {
+      ...config.server,
+      port: options.port ?? config.server.port,
+    },
+
+    watchFolders: !config.watchFolders.includes(config.projectRoot)
+      ? [config.projectRoot, ...config.watchFolders]
+      : config.watchFolders,
     reporter: {
-      update(event: any) {
+      update(event) {
         terminalReporter.update(event);
         if (reportEvent) {
           reportEvent(event);
@@ -450,8 +472,8 @@ function pruneCustomTransformOptions(
     // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
     const isRouterModule = /\/expo-router\/build\//.test(filePath);
     // Any page/router inside the expo-router app folder may access the `routerRoot` option to determine whether it's in the app folder
-    const isRouterRoute =
-      path.isAbsolute(filePath) && filePath.startsWith(path.resolve(projectRoot, routerRoot));
+    const resolvedRouterRoot = path.resolve(projectRoot, routerRoot).split(path.sep).join('/');
+    const isRouterRoute = path.isAbsolute(filePath) && filePath.startsWith(resolvedRouterRoot);
 
     // In any other file than the above, we enforce that we mustn't use `routerRoot`, and set it to an arbitrary value here (the default)
     // to ensure that the cache never invalidates when this value is changed

@@ -1045,10 +1045,6 @@ export async function withMetroMultiPlatformAsync(
     );
   }
 
-  if (!config.projectRoot) {
-    asWritable(config).projectRoot = projectRoot;
-  }
-
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
 

@@ -1,8 +1,12 @@
 
 #import "ExpoGoReactNativeFactory.h"
 #import "ExpoGoRootViewFactory.h"
+#import "ExpoAppInstance.h"
 #import <RCTAppSetupUtils.h>
 #import <React/CoreModulesPlugins.h>
+#import <ExpoModulesCore/EXRuntime.h>
+#import <ExpoModulesCore-Swift.h>
+
 
 @implementation ExpoGoReactNativeFactory
 
@@ -88,6 +92,22 @@
   if ([self.delegate respondsToSelector:@selector(loadBundleAtURL:onProgress:onComplete:)]) {
     [self.delegate loadBundleAtURL:sourceURL onProgress:onProgress onComplete:loadCallback];
   }
+}
+
+- (void)hostDidStart:(nonnull RCTHost *)host {
+  host.runtimeDelegate = self;
+}
+
+- (void)host:(nonnull RCTHost *)host didInitializeRuntime:(jsi::Runtime &)runtime
+{
+  ExpoAppInstance *appInstance = (ExpoAppInstance *)self.delegate;
+  EXAppContext *appContext = [appInstance createExpoGoAppContext];
+
+  // Inject and decorate the `global.expo` object
+  appContext._runtime = [[EXRuntime alloc] initWithRuntime:runtime];
+  [appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
+
+  [appContext registerNativeModules];
 }
 
 @end

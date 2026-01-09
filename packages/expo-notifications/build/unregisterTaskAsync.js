@@ -5,7 +5,7 @@ import BackgroundNotificationTasksModule from './BackgroundNotificationTasksModu
  * @param taskName The string you passed to `registerTaskAsync` as the `taskName` parameter.
  * @header inBackground
  */
-export default async function unregisterTaskAsync(taskName) {
+export async function unregisterTaskAsync(taskName) {
     if (!BackgroundNotificationTasksModule.unregisterTaskAsync) {
         throw new UnavailabilityError('Notifications', 'unregisterTaskAsync');
     }

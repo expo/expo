@@ -8,6 +8,7 @@
 
 - Added support for cli command extensions in the interactive devtools menu ([#39598](https://github.com/expo/expo/pull/39598) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Sync flavor dimensions and product flavors from app to expo module ([#40238](https://github.com/expo/expo/pull/40238) by [@kosmydel](https://github.com/kosmydel))
+- [Android] Added support for `services`. ([#41809](https://github.com/expo/expo/pull/41809) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
@@ -20,6 +21,7 @@
 - [Android] Move generate-package-list to Gradle task ([#39917](https://github.com/expo/expo/pull/39917) by [@jakex7](https://github.com/jakex7))
 - [Android] Use module name from `expo-module.config.json`. ([#39985](https://github.com/expo/expo/pull/39985) by [@jakex7](https://github.com/jakex7))
 - [Android] Align `expo-gradle-plugin`'s CLI command to align with iOS invocation of `expo-modules-autolinking` ([#41264](https://github.com/expo/expo/pull/41264) by [@kitten](https://github.com/kitten))
+- [Android] Removed `AppContext.camera`, `AppContext.font` and `AppContext.taskManager`. ([#41810](https://github.com/expo/expo/pull/41810) by [@lukmccall](https://github.com/lukmccall))
 
 ## 3.0.23 - 2025-12-04
 

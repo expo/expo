@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
+- Improve performance of Expo Router babel plugins. ([#41693](https://github.com/expo/expo/pull/41693) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure `loader()` functions are stripped from client bundles ([#40670](https://github.com/expo/expo/pull/40670) by [@hassankhan](https://github.com/hassankhan))
+- Add support for server data loaders in server export mode ([#41934](https://github.com/expo/expo/pull/41934) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Bump to `@expo/metro@54.2.0` and `metro@0.83.3` ([#41142](https://github.com/expo/expo/pull/41142) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 

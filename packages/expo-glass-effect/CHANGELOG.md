@@ -2,11 +2,14 @@
 
 ## Unpublished
 
+- Add ref prop type to `GlassContainer` and `GlassView` components ([#41799](https://github.com/expo/expo/pull/41799) by [@pchalupa](https://github.com/pchalupa))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 - Add `isGlassEffectAPIAvailable` API to prevent some iOS 26 beta version crashes ([#40992](https://github.com/expo/expo/pull/40992) by [@nishan](https://github.com/intergalacticspacehighway))
+- Add `tvOS` support ([#41962](https://github.com/expo/expo/pull/41962) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 

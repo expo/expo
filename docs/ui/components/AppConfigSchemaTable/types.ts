@@ -2,7 +2,6 @@ export type PropertyMeta = {
   regexHuman?: string;
   deprecated?: boolean;
   hidden?: boolean;
-  expoKit?: string;
   bareWorkflow?: string;
 };
 
@@ -29,7 +28,6 @@ export type FormattedProperty = {
   description: string;
   type?: string | string[];
   example?: any;
-  expoKit?: string;
   bareWorkflow?: string;
   subproperties: FormattedProperty[];
   parent?: string;

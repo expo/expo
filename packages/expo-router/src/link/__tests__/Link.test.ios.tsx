@@ -899,9 +899,9 @@ describe('Preview', () => {
                   <Link.Preview />
                   <Link.Trigger>Trigger</Link.Trigger>
                   <Link.Menu title="base menu">
-                    <Link.MenuAction title="Action 1" onPress={action1OnPress} />
+                    <Link.MenuAction onPress={action1OnPress}>Action 1</Link.MenuAction>
                     <Link.Menu title="Nested Menu">
-                      <Link.MenuAction title="Action 2" onPress={action2OnPress} />
+                      <Link.MenuAction onPress={action2OnPress}>Action 2</Link.MenuAction>
                     </Link.Menu>
                   </Link.Menu>
                 </Link>
@@ -922,7 +922,7 @@ describe('Preview', () => {
         });
         expect(NativeLinkPreviewAction.mock.calls[1][0]).toMatchObject({
           title: 'Action 1',
-          onSelected: action1OnPress,
+          onSelected: expect.any(Function),
           identifier: expect.any(String),
         });
         expect(NativeLinkPreviewAction.mock.calls[2][0]).toMatchObject({
@@ -932,7 +932,7 @@ describe('Preview', () => {
         });
         expect(NativeLinkPreviewAction.mock.calls[3][0]).toMatchObject({
           title: 'Action 2',
-          onSelected: action2OnPress,
+          onSelected: expect.any(Function),
           identifier: expect.any(String),
         });
       });

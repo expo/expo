@@ -9,7 +9,7 @@
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
 #import "EXVersions.h"
-#import "EXHomeModule.h"
+#import "EXKernelDevKeyCommands.h"
 
 #import <EXConstants/EXConstantsService.h>
 #import <React/RCTBridge+Private.h>
@@ -62,6 +62,9 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
 
     [DevMenuManager.shared setDelegate:self];
+
+    // Register keyboard commands (e.g., Cmd+D) for simulator
+    [[EXKernelDevKeyCommands sharedInstance] registerDevCommands];
 
     // register for notifications to request reloading the visible app
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -163,9 +166,9 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     return;
   }
 
-  if (_visibleApp != _appRegistry.homeAppRecord) {
+  if (_visibleApp != nil) {
     [EXUtil performSynchronouslyOnMainThread:^{
-      [_browserController moveHomeToVisible];
+      [self->_browserController moveHomeToVisible];
     }];
   } else {
     EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
@@ -191,7 +194,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   [appRecord.viewController reloadFromCache];
 }
 
-- (void)viewController:(__unused EXViewController *)vc didNavigateAppToVisible:(EXKernelAppRecord *)appRecord
+- (void)viewController:(__unused EXViewController *)vc didNavigateAppToVisible:(EXKernelAppRecord * _Nullable)appRecord
 {
   EXKernelAppRecord *appRecordPreviouslyVisible = _visibleApp;
   if (appRecord != appRecordPreviouslyVisible) {
@@ -215,7 +218,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
       _visibleApp = nil;
     }
     
-    if (_visibleApp && _visibleApp != _appRegistry.homeAppRecord) {
+    if (_visibleApp != nil) {
       [self _unregisterUnusedAppRecords];
     }
   }

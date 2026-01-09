@@ -49,6 +49,8 @@ export type ExpoMetroOptions = {
   hosted?: boolean;
   /** Disable live bindings (enabled by default, required for circular deps) in experimental import export support. */
   liveBindings?: boolean;
+  /** When true, indicates this bundle should contain only the loader export. */
+  isLoaderBundle?: boolean;
 };
 
 // See: @expo/metro-config/src/serializer/fork/baseJSBundle.ts `ExpoSerializerOptions`
@@ -167,6 +169,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     useMd5Filename,
     hosted,
     liveBindings,
+    isLoaderBundle,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -208,6 +211,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     hosted: hosted ? '1' : undefined,
     useMd5Filename: useMd5Filename || undefined,
     liveBindings: !liveBindings ? String(liveBindings) : undefined,
+    isLoaderBundle: isLoaderBundle ? String(isLoaderBundle) : undefined,
   };
 
   // Iterate and delete undefined values

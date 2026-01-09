@@ -39,6 +39,9 @@
  */
 @property (nonatomic, strong) UIView *contentView;
 
-@end
+/**
+ *  The app record this view controller manages.
+ */
+@property (nonatomic, readonly) EXKernelAppRecord *appRecord;
 
-extern NSString *const kEXLastFatalErrorDateDefaultsKey;
+@end

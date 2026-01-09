@@ -78,10 +78,14 @@ export default function SliderScreen() {
             step={10}
             onValueChange={setControlledValue}
           />
-          <Button onPress={() => setControlledValue((v) => Math.max(0, v - 10))}>Decrement</Button>
-          <Button onPress={() => setControlledValue((v) => Math.min(100, v + 10))}>
-            Increment
-          </Button>
+          <Button
+            onPress={() => setControlledValue((v) => Math.max(0, v - 10))}
+            label="Decrement"
+          />
+          <Button
+            onPress={() => setControlledValue((v) => Math.min(100, v + 10))}
+            label="Increment"
+          />
         </Section>
         <Section title="Red color Slider">
           <Slider modifiers={[tint('red')]} />

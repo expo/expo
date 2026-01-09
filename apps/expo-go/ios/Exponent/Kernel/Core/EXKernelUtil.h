@@ -12,7 +12,3 @@ static const DDLogLevel ddLogLevel = DDLogLevelWarning;
 #endif
 
 #define EXAssertMainThread() NSAssert([NSThread isMainThread], @"Method must be called on main thread")
-
-@protocol EXKernelUtil <NSObject>
-
-@end

@@ -8,23 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		0349B76C6320565D0B2E851A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 41AAB6FC8982ACA48EAD8CCE /* PrivacyInfo.xcprivacy */; };
-		24C3B781E40BA87F7702303B /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D607CBE135ED3708B0B19DD3 /* libPods-ExponentIntegrationTests.a */; };
 		4A62800A2E69DBF000D916B0 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4A6280092E69DBF000D916B0 /* AppIcon.icon */; };
 		ABE005EBFA92123617D22216 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D1A518C4DFB7D94147AC4B /* ExpoModulesProvider.swift */; };
 		B287BB2427DD909C008DA282 /* expo-root.pem in Resources */ = {isa = PBXBuildFile; fileRef = B287BB2327DD909B008DA282 /* expo-root.pem */; };
-		B505BA2020CAF80D0046ACFB /* EXEnvironmentMocks.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */; };
-		B505BA2120CAF80D0046ACFB /* EXEnvironmentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B505BA1D20CAF80D0046ACFB /* EXEnvironmentTests.m */; };
-		B51333431CE649FE00E9FC9E /* ExponentIntegrationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */; };
-		B5854ED720D078C6001D2F6E /* EXClientTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854ED620D078C6001D2F6E /* EXClientTestCase.m */; };
-		B5854ED920D0790C001D2F6E /* EXDevTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854ED820D0790C001D2F6E /* EXDevTestCase.m */; };
-		B5854EEB20D07D4D001D2F6E /* EXLinkingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5854EEA20D07D4D001D2F6E /* EXLinkingTests.m */; };
-		B59B59491F6369480083850D /* EXTestEnvironment.plist in Resources */ = {isa = PBXBuildFile; fileRef = B59B59481F6369480083850D /* EXTestEnvironment.plist */; };
-		B5FABDF020DD8E6800642528 /* EXAppLoaderRequestExpectation.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDEF20DD8E6800642528 /* EXAppLoaderRequestExpectation.m */; };
-		B5FABDF220DD91D500642528 /* EXAppLoaderConfigurationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF120DD91D500642528 /* EXAppLoaderConfigurationTests.m */; };
-		B5FABDF620DD926E00642528 /* EXFileDownloaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF520DD926E00642528 /* EXFileDownloaderTests.m */; };
-		B5FABDF820DD942A00642528 /* EXAppLoaderRequestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FABDF720DD942A00642528 /* EXAppLoaderRequestTests.m */; };
 		B832D3668B2FFD1CED2DDE12 /* libPods-Expo Go-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9003E4BAC9D7FD870EE69703 /* libPods-Expo Go-Tests.a */; };
-		E49A0BB45440D0306F0ADCDE /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A29D3F60570DCFE867B5AD19 /* ExpoModulesProvider.swift */; };
 		EC8D7E182E36030D45964678 /* libPods-Expo Go.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D8ABD4D495DA97B3FFF6F8A3 /* libPods-Expo Go.a */; };
 		F12A1AB922ABD4BA008542C6 /* generate-dynamic-macros.sh in Resources */ = {isa = PBXBuildFile; fileRef = F12A1AB822ABD4BA008542C6 /* generate-dynamic-macros.sh */; };
 		F77DDB931E04AC1100624CA2 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
@@ -35,13 +22,6 @@
 
 /* Begin PBXContainerItemProxy section */
 		B505BA1320CAF77A0046ACFB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 78CEE2B81ACD07D70095B124 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 78CEE2BF1ACD07D70095B124;
-			remoteInfo = Exponent;
-		};
-		B51333451CE649FE00E9FC9E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 78CEE2B81ACD07D70095B124 /* Project object */;
 			proxyType = 1;
@@ -87,30 +67,9 @@
 		88A25B1DAF71DFE5C4134A46 /* libPods-Expo Go-Expo Go (versioned).a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go-Expo Go (versioned).a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8EE60BD85240AF63736C047A /* Pods-Expo Go-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go-Tests.debug.xcconfig"; path = "Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		9003E4BAC9D7FD870EE69703 /* libPods-Expo Go-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A29D3F60570DCFE867B5AD19 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		A6EAF60D92D03B190DFCD5D2 /* Pods-Expo Go-Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go-Tests.release.xcconfig"; path = "Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests.release.xcconfig"; sourceTree = "<group>"; };
 		B287BB2327DD909B008DA282 /* expo-root.pem */ = {isa = PBXFileReference; lastKnownFileType = text; name = "expo-root.pem"; path = "Exponent/Supporting/expo-root.pem"; sourceTree = "<group>"; };
 		B505BA0E20CAF77A0046ACFB /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B505BA1220CAF77A0046ACFB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXEnvironmentMocks.m; sourceTree = "<group>"; };
-		B505BA1B20CAF80D0046ACFB /* EXEnvironment+Tests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "EXEnvironment+Tests.h"; sourceTree = "<group>"; };
-		B505BA1C20CAF80D0046ACFB /* EXEnvironmentMocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXEnvironmentMocks.h; sourceTree = "<group>"; };
-		B505BA1D20CAF80D0046ACFB /* EXEnvironmentTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXEnvironmentTests.m; sourceTree = "<group>"; };
-		B51333401CE649FE00E9FC9E /* ExponentIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExponentIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExponentIntegrationTests.m; sourceTree = "<group>"; };
-		B51333441CE649FE00E9FC9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B5854ED620D078C6001D2F6E /* EXClientTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXClientTestCase.m; sourceTree = "<group>"; };
-		B5854ED820D0790C001D2F6E /* EXDevTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevTestCase.m; sourceTree = "<group>"; };
-		B5854EE420D07AE3001D2F6E /* EXClientTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXClientTestCase.h; sourceTree = "<group>"; };
-		B5854EE520D07B3E001D2F6E /* EXDevTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevTestCase.h; sourceTree = "<group>"; };
-		B5854EE720D07BCB001D2F6E /* EXAppLoader+Tests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EXAppLoader+Tests.h"; sourceTree = "<group>"; };
-		B5854EEA20D07D4D001D2F6E /* EXLinkingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXLinkingTests.m; sourceTree = "<group>"; };
-		B59B59481F6369480083850D /* EXTestEnvironment.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXTestEnvironment.plist; sourceTree = "<group>"; };
-		B5FABDEE20DD8E6800642528 /* EXAppLoaderRequestExpectation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppLoaderRequestExpectation.h; sourceTree = "<group>"; };
-		B5FABDEF20DD8E6800642528 /* EXAppLoaderRequestExpectation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderRequestExpectation.m; sourceTree = "<group>"; };
-		B5FABDF120DD91D500642528 /* EXAppLoaderConfigurationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderConfigurationTests.m; sourceTree = "<group>"; };
-		B5FABDF520DD926E00642528 /* EXFileDownloaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXFileDownloaderTests.m; sourceTree = "<group>"; };
-		B5FABDF720DD942A00642528 /* EXAppLoaderRequestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderRequestTests.m; sourceTree = "<group>"; };
 		C279B31A23EF096F3969DAD5 /* Pods-Expo Go.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go.debug.xcconfig"; path = "Target Support Files/Pods-Expo Go/Pods-Expo Go.debug.xcconfig"; sourceTree = "<group>"; };
 		D607CBE135ED3708B0B19DD3 /* libPods-ExponentIntegrationTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExponentIntegrationTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8ABD4D495DA97B3FFF6F8A3 /* libPods-Expo Go.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -176,14 +135,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B513333D1CE649FE00E9FC9E /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				24C3B781E40BA87F7702303B /* libPods-ExponentIntegrationTests.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		FCF6D36A25B34BC200808BF5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -214,14 +165,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		78B070920855541A4D469D4D /* ExponentIntegrationTests */ = {
-			isa = PBXGroup;
-			children = (
-				A29D3F60570DCFE867B5AD19 /* ExpoModulesProvider.swift */,
-			);
-			name = ExponentIntegrationTests;
-			sourceTree = "<group>";
-		};
 		78CEE2B71ACD07D70095B124 = {
 			isa = PBXGroup;
 			children = (
@@ -231,12 +174,10 @@
 				XXEXPOCLIENTXXXXXXXXXXXX /* Client */,
 				XXEXPONENTXXXXXXXXXXXXXX /* Exponent */,
 				F1F7433C24ABECD400EA5023 /* Exponent-Bridging-Header.h */,
-				B51333411CE649FE00E9FC9E /* ExponentIntegrationTests */,
 				FCF6D36E25B34BC200808BF5 /* ExpoNotificationServiceExtension */,
 				3050F5A98E56E9379C36ABD2 /* Frameworks */,
 				AE58247EE2419C33B3A8CBAE /* Pods */,
 				78CEE2C11ACD07D70095B124 /* Products */,
-				B505BA0F20CAF77A0046ACFB /* Tests */,
 				994130004C859A4758AD583C /* ExpoModulesProviders */,
 				41AAB6FC8982ACA48EAD8CCE /* PrivacyInfo.xcprivacy */,
 			);
@@ -248,7 +189,6 @@
 			isa = PBXGroup;
 			children = (
 				78CEE2C01ACD07D70095B124 /* Expo Go.app */,
-				B51333401CE649FE00E9FC9E /* ExponentIntegrationTests.xctest */,
 				B505BA0E20CAF77A0046ACFB /* Tests.xctest */,
 				FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */,
 			);
@@ -260,7 +200,6 @@
 			children = (
 				CB1F0CEE33FA52600597D003 /* Expo Go */,
 				2676C57A9176C75127D22133 /* Tests */,
-				78B070920855541A4D469D4D /* ExponentIntegrationTests */,
 			);
 			name = ExpoModulesProviders;
 			sourceTree = "<group>";
@@ -280,63 +219,6 @@
 				265F3243A214713066396657 /* Pods-Expo Go (main)-Tests.release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		B505BA0F20CAF77A0046ACFB /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				B5854EDE20D07996001D2F6E /* AppLoader */,
-				B505BA1920CAF80D0046ACFB /* Environment */,
-				B5854EDC20D07996001D2F6E /* Linking */,
-				B505BA1220CAF77A0046ACFB /* Info.plist */,
-			);
-			path = Tests;
-			sourceTree = "<group>";
-		};
-		B505BA1920CAF80D0046ACFB /* Environment */ = {
-			isa = PBXGroup;
-			children = (
-				B505BA1B20CAF80D0046ACFB /* EXEnvironment+Tests.h */,
-				B505BA1D20CAF80D0046ACFB /* EXEnvironmentTests.m */,
-				B505BA1C20CAF80D0046ACFB /* EXEnvironmentMocks.h */,
-				B505BA1A20CAF80D0046ACFB /* EXEnvironmentMocks.m */,
-				B5854EE420D07AE3001D2F6E /* EXClientTestCase.h */,
-				B5854ED620D078C6001D2F6E /* EXClientTestCase.m */,
-				B5854EE520D07B3E001D2F6E /* EXDevTestCase.h */,
-				B5854ED820D0790C001D2F6E /* EXDevTestCase.m */,
-			);
-			path = Environment;
-			sourceTree = "<group>";
-		};
-		B51333411CE649FE00E9FC9E /* ExponentIntegrationTests */ = {
-			isa = PBXGroup;
-			children = (
-				B51333421CE649FE00E9FC9E /* ExponentIntegrationTests.m */,
-				B59B59481F6369480083850D /* EXTestEnvironment.plist */,
-				B51333441CE649FE00E9FC9E /* Info.plist */,
-			);
-			path = ExponentIntegrationTests;
-			sourceTree = "<group>";
-		};
-		B5854EDC20D07996001D2F6E /* Linking */ = {
-			isa = PBXGroup;
-			children = (
-				B5854EEA20D07D4D001D2F6E /* EXLinkingTests.m */,
-			);
-			path = Linking;
-			sourceTree = "<group>";
-		};
-		B5854EDE20D07996001D2F6E /* AppLoader */ = {
-			isa = PBXGroup;
-			children = (
-				B5854EE720D07BCB001D2F6E /* EXAppLoader+Tests.h */,
-				B5FABDF120DD91D500642528 /* EXAppLoaderConfigurationTests.m */,
-				B5FABDEE20DD8E6800642528 /* EXAppLoaderRequestExpectation.h */,
-				B5FABDEF20DD8E6800642528 /* EXAppLoaderRequestExpectation.m */,
-				B5FABDF720DD942A00642528 /* EXAppLoaderRequestTests.m */,
-				B5FABDF520DD926E00642528 /* EXFileDownloaderTests.m */,
-			);
-			path = AppLoader;
 			sourceTree = "<group>";
 		};
 		CB1F0CEE33FA52600597D003 /* Expo Go */ = {
@@ -421,26 +303,6 @@
 			productReference = B505BA0E20CAF77A0046ACFB /* Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		B513333F1CE649FE00E9FC9E /* ExponentIntegrationTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = B513334A1CE649FE00E9FC9E /* Build configuration list for PBXNativeTarget "ExponentIntegrationTests" */;
-			buildPhases = (
-				2DA4AA338E6D5422567DE1EB /* [CP] Check Pods Manifest.lock */,
-				A04F3C9AC66B709E16F4F5AB /* [Expo] Configure project */,
-				B513333C1CE649FE00E9FC9E /* Sources */,
-				B513333D1CE649FE00E9FC9E /* Frameworks */,
-				B513333E1CE649FE00E9FC9E /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				B51333461CE649FE00E9FC9E /* PBXTargetDependency */,
-			);
-			name = ExponentIntegrationTests;
-			productName = ExponentIntegrationTests;
-			productReference = B51333401CE649FE00E9FC9E /* ExponentIntegrationTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		FCF6D36C25B34BC200808BF5 /* ExpoNotificationServiceExtension */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = FCF6D37825B34BC200808BF5 /* Build configuration list for PBXNativeTarget "ExpoNotificationServiceExtension" */;
@@ -499,10 +361,6 @@
 						ProvisioningStyle = Automatic;
 						TestTargetID = 78CEE2BF1ACD07D70095B124;
 					};
-					B513333F1CE649FE00E9FC9E = {
-						CreatedOnToolsVersion = 7.3.1;
-						TestTargetID = 78CEE2BF1ACD07D70095B124;
-					};
 					FCF6D36C25B34BC200808BF5 = {
 						CreatedOnToolsVersion = 12.2;
 						DevelopmentTeam = C8D8QTF339;
@@ -526,7 +384,6 @@
 			projectRoot = "";
 			targets = (
 				78CEE2BF1ACD07D70095B124 /* Expo Go */,
-				B513333F1CE649FE00E9FC9E /* ExponentIntegrationTests */,
 				B505BA0D20CAF77A0046ACFB /* Tests */,
 				FCF6D36C25B34BC200808BF5 /* ExpoNotificationServiceExtension */,
 			);
@@ -552,14 +409,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B513333E1CE649FE00E9FC9E /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B59B59491F6369480083850D /* EXTestEnvironment.plist in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		FCF6D36B25B34BC200808BF5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -570,28 +419,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2DA4AA338E6D5422567DE1EB /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ExponentIntegrationTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 		347794D3234BFFC20087B402 /* Copy Bundle Resources Conditionally */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -689,29 +516,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Expo Go/Pods-Expo Go-resources.sh\"\n";
 			showEnvVarsInLog = 0;
-		};
-		A04F3C9AC66B709E16F4F5AB /* [Expo] Configure project */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/.xcode.env",
-				"$(SRCROOT)/.xcode.env.local",
-				"$(SRCROOT)/Pods/Target Support Files/Pods-ExponentIntegrationTests/expo-configure-project.sh",
-			);
-			name = "[Expo] Configure project";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(SRCROOT)/Pods/Target Support Files/Pods-ExponentIntegrationTests/ExpoModulesProvider.swift",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-ExponentIntegrationTests/expo-configure-project.sh\"\n";
 		};
 		B2C4E74600B5875B0118890B /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -861,25 +665,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B5FABDF020DD8E6800642528 /* EXAppLoaderRequestExpectation.m in Sources */,
-				B505BA2020CAF80D0046ACFB /* EXEnvironmentMocks.m in Sources */,
-				B5FABDF820DD942A00642528 /* EXAppLoaderRequestTests.m in Sources */,
-				B5854ED720D078C6001D2F6E /* EXClientTestCase.m in Sources */,
-				B505BA2120CAF80D0046ACFB /* EXEnvironmentTests.m in Sources */,
-				B5FABDF620DD926E00642528 /* EXFileDownloaderTests.m in Sources */,
-				B5FABDF220DD91D500642528 /* EXAppLoaderConfigurationTests.m in Sources */,
-				B5854ED920D0790C001D2F6E /* EXDevTestCase.m in Sources */,
-				B5854EEB20D07D4D001D2F6E /* EXLinkingTests.m in Sources */,
 				FB4B49E32E5D99D79400A124 /* ExpoModulesProvider.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B513333C1CE649FE00E9FC9E /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				B51333431CE649FE00E9FC9E /* ExponentIntegrationTests.m in Sources */,
-				E49A0BB45440D0306F0ADCDE /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -898,11 +684,6 @@
 			isa = PBXTargetDependency;
 			target = 78CEE2BF1ACD07D70095B124 /* Expo Go */;
 			targetProxy = B505BA1320CAF77A0046ACFB /* PBXContainerItemProxy */;
-		};
-		B51333461CE649FE00E9FC9E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 78CEE2BF1ACD07D70095B124 /* Expo Go */;
-			targetProxy = B51333451CE649FE00E9FC9E /* PBXContainerItemProxy */;
 		};
 		FCF6D37325B34BC200808BF5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1200,7 +981,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
@@ -1210,7 +990,7 @@
 				DEVELOPMENT_TEAM = C8D8QTF339;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = Tests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1221,6 +1001,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Expo Go.app/Exponent";
+				TVOS_DEPLOYMENT_TARGET = 15.1;
 			};
 			name = Debug;
 		};
@@ -1232,7 +1013,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
@@ -1242,7 +1022,7 @@
 				DEVELOPMENT_TEAM = C8D8QTF339;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = Tests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1253,52 +1033,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Expo Go.app/Exponent";
-			};
-			name = Release;
-		};
-		B51333471CE649FE00E9FC9E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1A7952F30F72271C821848D7 /* Pods-ExponentIntegrationTests.debug.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_ANALYZER_NONNULL = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = ExponentIntegrationTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = host.exp.ExponentIntegrationTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Expo Go.app/Exponent";
-			};
-			name = Debug;
-		};
-		B51333481CE649FE00E9FC9E /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 39E8C61B17879D7B4A44D983 /* Pods-ExponentIntegrationTests.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_ANALYZER_NONNULL = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = ExponentIntegrationTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = host.exp.ExponentIntegrationTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Expo Go.app/Exponent";
+				TVOS_DEPLOYMENT_TARGET = 15.1;
 			};
 			name = Release;
 		};
@@ -1408,15 +1143,6 @@
 			buildConfigurations = (
 				B505BA1520CAF77A0046ACFB /* Debug */,
 				B505BA1620CAF77A0046ACFB /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		B513334A1CE649FE00E9FC9E /* Build configuration list for PBXNativeTarget "ExponentIntegrationTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				B51333471CE649FE00E9FC9E /* Debug */,
-				B51333481CE649FE00E9FC9E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
