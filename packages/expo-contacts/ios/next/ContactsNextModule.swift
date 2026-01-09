@@ -49,7 +49,9 @@ public class ContactsNextModule: Module {
       }
 
       AsyncFunction("getDetails") { (this: ContactNext, fields: [ContactField]?) in
-        try this.getDetails(fields: fields)
+        try this.getDetails(fields: fields).format {
+          formatter in getDetailsFormat(formatter: formatter, fields: fields)
+        }
       }
 
       AsyncFunction("addEmail") { (this: ContactNext, email: NewEmailRecord) in
@@ -376,7 +378,11 @@ public class ContactsNextModule: Module {
           queryOptions: contactQueryOptions,
           contactRepository: contactRepository,
           getContactDetailsMapper: GetContactDetailsMapper(imageService: imageService)
-        )
+        ).map {
+          $0.format {
+            formatter in getDetailsFormat(formatter: formatter, fields: fields)
+          }
+        }
       }
 
       StaticAsyncFunction("getPermissionsAsync") { (promise: Promise) in
