@@ -5,15 +5,17 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Bundle
 import android.os.Debug
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.animation.AccelerateInterpolator
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
@@ -46,25 +48,43 @@ import host.exp.exponent.Constants
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
 import host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage
+import host.exp.exponent.home.HomeActivityEvent
+import host.exp.exponent.home.HomeAppViewModel
+import host.exp.exponent.home.HomeAppViewModelFactory
+import host.exp.exponent.home.RootNavigation
+import host.exp.exponent.home.auth.AuthActivity
+import host.exp.exponent.home.auth.AuthResult
 import host.exp.exponent.kernel.ExperienceKey
+import host.exp.exponent.kernel.ExpoViewKernel
 import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
 import host.exp.exponent.utils.ExperienceActivityUtils
 import host.exp.exponent.utils.ExperienceRTLManager
 import host.exp.exponent.utils.currentDeviceIsAPhone
-import org.json.JSONException
-import androidx.compose.ui.platform.ComposeView
-import androidx.lifecycle.lifecycleScope
-import host.exp.exponent.home.HomeActivityEvent
-import host.exp.exponent.home.RootNavigation
-import host.exp.exponent.kernel.ExpoViewKernel
-import host.exp.exponent.services.PendingAuthSession
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
-
+import org.json.JSONException
 
 open class HomeActivity : BaseExperienceActivity() {
   val homeActivityEvents = MutableSharedFlow<HomeActivityEvent>()
+
+  val authLauncher = registerForActivityResult(AuthActivity.Contract()) { result ->
+    when (result) {
+      is AuthResult.Success -> {
+        viewModel.onNewAuthSession(result.sessionSecret)
+      }
+
+      is AuthResult.Canceled -> {}
+    }
+  }
+
+  val viewModel: HomeAppViewModel by viewModels {
+    HomeAppViewModelFactory(
+      kernel.exponentHistoryService,
+      ExpoViewKernel.instance,
+      homeActivityEvents,
+      authLauncher
+    )
+  }
 
   //region Activity Lifecycle
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,10 +125,7 @@ open class HomeActivity : BaseExperienceActivity() {
 
     val contentView = ComposeView(this).apply {
       setContent {
-        RootNavigation(exponentHistoryService = kernel.exponentHistoryService,
-          expoViewKernel = ExpoViewKernel.instance,
-          homeActivityEvents = homeActivityEvents
-        )
+        RootNavigation(viewModel)
       }
     }
     setContentView(contentView)
@@ -117,9 +134,7 @@ open class HomeActivity : BaseExperienceActivity() {
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
     val data = intent.data
-    if (data != null && data.host == "auth" && data.scheme == "expauth") {
-      PendingAuthSession.complete(data)
-    } else if (data != null && data.host == "after-delete" && data.scheme == "expauth") {
+    if (data != null && data.host == "after-delete" && data.scheme == "expauth") {
       lifecycleScope.launch {
         homeActivityEvents.emit(HomeActivityEvent.AccountDeleted)
       }

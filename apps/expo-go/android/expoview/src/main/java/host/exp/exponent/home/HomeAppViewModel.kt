@@ -2,6 +2,7 @@ package host.exp.exponent.home
 
 import android.app.Application
 import android.content.Context
+import androidx.activity.result.ActivityResultLauncher
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -17,13 +18,12 @@ import host.exp.exponent.graphql.Home_AccountAppsQuery
 import host.exp.exponent.graphql.Home_AccountSnacksQuery
 import host.exp.exponent.graphql.ProjectsQuery
 import host.exp.exponent.graphql.fragment.CurrentUserActorData
+import host.exp.exponent.home.auth.AuthRequestType
 import host.exp.exponent.kernel.ExpoViewKernel
 import host.exp.exponent.services.ApolloClientService
-import host.exp.exponent.services.AuthSessionType
 import host.exp.exponent.services.ExponentHistoryService
 import host.exp.exponent.services.RESTApiClient
 import host.exp.exponent.services.SessionRepository
-import host.exp.exponent.services.launchAuthSession
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
@@ -78,7 +78,8 @@ fun Int.toJDuration(unit: DurationUnit) = this.toDuration(unit).toJavaDuration()
 class HomeAppViewModelFactory(
   private val exponentHistoryService: ExponentHistoryService,
   private val expoViewKernel: ExpoViewKernel,
-  private val homeActivityEvents: MutableSharedFlow<HomeActivityEvent>
+  private val homeActivityEvents: MutableSharedFlow<HomeActivityEvent>,
+  private val authLauncher: ActivityResultLauncher<AuthRequestType>
 ) : ViewModelProvider.Factory {
   @Suppress("UNCHECKED_CAST")
   override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
@@ -89,7 +90,8 @@ class HomeAppViewModelFactory(
         application,
         exponentHistoryService,
         expoViewKernel,
-        homeActivityEvents
+        homeActivityEvents,
+        authLauncher
       ) as T
     }
     throw IllegalArgumentException("Unknown ViewModel class")
@@ -100,7 +102,8 @@ class HomeAppViewModel(
   application: Application,
   private val exponentHistoryService: ExponentHistoryService,
   expoViewKernel: ExpoViewKernel,
-  homeActivityEvents: MutableSharedFlow<HomeActivityEvent>
+  homeActivityEvents: MutableSharedFlow<HomeActivityEvent>,
+  private val authLauncher: ActivityResultLauncher<AuthRequestType>
 ) : AndroidViewModel(application) {
 
   init {
@@ -253,13 +256,13 @@ class HomeAppViewModel(
 
 
   fun login(context: Context) {
-    launchAuthSession(context = context, type = AuthSessionType.LOGIN, { secret ->
-      println("Received auth token: $secret")
-      sessionRepository.saveSessionSecret(secret)
-      account.refresh()
-    })
+    authLauncher.launch(AuthRequestType.LOGIN)
   }
 
+  fun onNewAuthSession(sessionSecret: String) {
+    sessionRepository.saveSessionSecret(sessionSecret)
+    account.refresh()
+  }
 
   val snacksPaginatorRefreshableFlow =
     refreshableFlow(
