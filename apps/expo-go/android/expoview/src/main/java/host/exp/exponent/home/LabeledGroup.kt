@@ -1,6 +1,7 @@
 package host.exp.exponent.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -23,19 +24,20 @@ import expo.modules.devmenu.compose.primitives.Spacer
 
 @Composable
 fun LabeledGroup(
+  modifier: Modifier = Modifier,
   label: String? = null,
   icon: Painter? = null,
   image: Painter? = null,
   action: @Composable (() -> Unit)? = null,
-  modifier: Modifier = Modifier,
+  wrapWithCard: Boolean = true,
   content: @Composable ColumnScope.() -> Unit,
-) {
+  ) {
   Column(modifier = modifier.fillMaxWidth()) {
     Row(
       modifier = Modifier
-          .fillMaxWidth()
-          .defaultMinSize(minHeight = 44.dp)
-          .padding(start = 24.dp, end = 24.dp),
+        .fillMaxWidth()
+        .defaultMinSize(minHeight = 44.dp)
+        .padding(start = 24.dp, end = 24.dp),
       verticalAlignment = Alignment.CenterVertically
     ) {
       if (icon != null) {
@@ -64,16 +66,23 @@ fun LabeledGroup(
       action?.invoke()
 
     }
-
-
-    // Main Card/Container for the actions
-    Card(
-      modifier = Modifier
+    if (wrapWithCard) {
+      Card(
+        modifier = Modifier
           .fillMaxWidth()
-          .padding(horizontal = 16.dp, vertical = 8.dp),
-      colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-    ) {
+          .padding(horizontal = 16.dp, vertical = 8.dp)
+          .border(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.outlineVariant,
+            shape = MaterialTheme.shapes.medium
+          ),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+      ) {
+        content()
+      }
+    } else {
       content()
     }
+
   }
 }

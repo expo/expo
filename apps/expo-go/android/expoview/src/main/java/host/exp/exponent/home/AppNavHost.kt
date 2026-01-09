@@ -23,6 +23,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import host.exp.exponent.kernel.ExpoViewKernel
+import host.exp.exponent.services.ExponentHistoryService
 import host.exp.expoview.R
 import kotlinx.serialization.Serializable
 
@@ -75,11 +77,17 @@ val bottomBarDestinations = listOf(
   )
 )
 
-
 @Composable
-fun RootNavigation() {
+fun RootNavigation(
+  exponentHistoryService: ExponentHistoryService,
+  expoViewKernel: ExpoViewKernel
+) {
   val navController = rememberNavController()
-  val viewModel: HomeAppViewModel = viewModel<HomeAppViewModel>()
+
+  val viewModelFactory = remember { HomeAppViewModelFactory(exponentHistoryService, expoViewKernel) }
+
+  val viewModel: HomeAppViewModel = viewModel(factory = viewModelFactory)
+
   val themeSetting by viewModel.selectedTheme.collectAsState()
 
   HomeAppTheme(themeSetting = themeSetting) {

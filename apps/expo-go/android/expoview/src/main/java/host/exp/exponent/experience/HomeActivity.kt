@@ -2,20 +2,14 @@
 package host.exp.exponent.experience
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Debug
-import android.util.AttributeSet
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.animation.AccelerateInterpolator
-import android.widget.FrameLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -56,10 +50,9 @@ import host.exp.exponent.utils.ExperienceActivityUtils
 import host.exp.exponent.utils.ExperienceRTLManager
 import host.exp.exponent.utils.currentDeviceIsAPhone
 import org.json.JSONException
-import androidx.activity.ComponentActivity
-import androidx.compose.material3.Text
 import androidx.compose.ui.platform.ComposeView
 import host.exp.exponent.home.RootNavigation
+import host.exp.exponent.kernel.ExpoViewKernel
 import host.exp.exponent.services.PendingAuthSession
 
 open class HomeActivity : BaseExperienceActivity() {
@@ -102,10 +95,7 @@ open class HomeActivity : BaseExperienceActivity() {
 
     val contentView = ComposeView(this).apply {
       setContent {
-//        AppTheme {
-          Text(text = "Home Activity")
-        RootNavigation()
-//        }
+        RootNavigation(kernel.exponentHistoryService,ExpoViewKernel.instance)
       }
     }
     setContentView(contentView)

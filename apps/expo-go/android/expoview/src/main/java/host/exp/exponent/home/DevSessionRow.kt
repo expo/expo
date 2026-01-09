@@ -3,10 +3,12 @@ package host.exp.exponent.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -25,9 +27,10 @@ fun DevSessionRow(session: DevSession) {
     icon = {
       Image(
         painter = image,
-        contentDescription = session.source.name,
-        modifier = Modifier.size(24.dp)
-      )
+        contentDescription = "Icon",
+        modifier = Modifier
+          .size(24.dp)
+          .clip(shape = RoundedCornerShape(4.dp)))
     }) {
     Column {
       // TODO: Add platform icon

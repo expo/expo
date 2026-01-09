@@ -20,7 +20,6 @@ import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-import host.exp.exponent.home.HistoryItem
 
 const val redirectBase = "expauth://auth"
 const val origin = "https://expo.dev"

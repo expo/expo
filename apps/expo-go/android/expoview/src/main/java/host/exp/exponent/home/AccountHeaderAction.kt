@@ -14,6 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import host.exp.exponent.graphql.fragment.CurrentUserActorData
+import host.exp.expoview.R
 
 @Composable
 fun AccountHeaderAction(
@@ -28,7 +29,7 @@ fun AccountHeaderAction(
 
   if (account.ownerUserActor == null) {
     Icon(
-      painter = painterResource(expo.modules.devmenu.R.drawable.alert),
+      painter = painterResource(R.drawable.account_circle),
       contentDescription = "Account icon",
       modifier = Modifier
         .size(24.dp)

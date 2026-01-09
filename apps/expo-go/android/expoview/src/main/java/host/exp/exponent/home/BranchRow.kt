@@ -37,7 +37,7 @@ fun BranchRow(branch: BranchesForProjectQuery.UpdateBranch, onClick: () -> Unit)
       )
       // If a last update exists, display it using the new UpdateRow composable
       if (lastUpdate != null) {
-        UpdateRow(update = lastUpdate)
+        UpdateRow(update = lastUpdate, omitCompatibility = true)
       }
     }
   }

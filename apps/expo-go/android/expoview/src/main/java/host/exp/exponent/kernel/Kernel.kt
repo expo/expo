@@ -28,6 +28,7 @@ import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
 import expo.modules.jsonutils.require
+import expo.modules.manifests.core.EmbeddedManifest
 import expo.modules.manifests.core.ExpoUpdatesManifest
 import expo.modules.manifests.core.Manifest
 import expo.modules.notifications.service.NotificationsService.Companion.getNotificationResponseFromOpenIntent
@@ -57,6 +58,8 @@ import host.exp.exponent.notifications.ExponentNotification
 import host.exp.exponent.notifications.ExponentNotificationManager
 import host.exp.exponent.notifications.NotificationActionCenter
 import host.exp.exponent.notifications.ScopedNotificationsUtils
+import host.exp.exponent.services.ExponentHistoryService
+import host.exp.exponent.services.HistoryItem
 import host.exp.exponent.storage.ExponentDB
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.utils.AsyncCondition
@@ -108,6 +111,9 @@ class Kernel : KernelInterface() {
 
   @Inject
   lateinit var exponentNetwork: ExponentNetwork
+  @Inject
+  lateinit var exponentHistoryService: ExponentHistoryService
+
 
   var activityContext: Activity? = null
     set(value) {
@@ -693,26 +699,27 @@ class Kernel : KernelInterface() {
     if (existingTask == null) {
       sendManifestToExperienceActivity(manifestUrl, manifest, bundleUrl)
     }
-    val params = Arguments.createMap().apply {
-      putString("manifestUrl", manifestUrl)
-      putString("manifestString", manifest.toString())
+    if(manifest is ExpoUpdatesManifest) {
+      exponentHistoryService.addHistoryItem(HistoryItem(manifestUrl = manifestUrl, updatesManifest = manifest))
+    } else if(manifest is EmbeddedManifest) {
+      exponentHistoryService.addHistoryItem(HistoryItem(manifestUrl = manifestUrl, embeddedManifest = manifest))
     }
-    queueEvent(
-      "ExponentKernel.addHistoryItem",
-      params,
-      object : KernelEventCallback {
-        override fun onEventSuccess(result: ReadableMap) {
-          EXL.d(TAG, "Successfully called ExponentKernel.addHistoryItem in kernel JS.")
-        }
-
-        override fun onEventFailure(errorMessage: String?) {
-          EXL.e(
-            TAG,
-            "Error calling ExponentKernel.addHistoryItem in kernel JS: $errorMessage"
-          )
-        }
-      }
-    )
+//    queueEvent(
+//      "ExponentKernel.addHistoryItem",
+//      params,
+//      object : KernelEventCallback {
+//        override fun onEventSuccess(result: ReadableMap) {
+//          EXL.d(TAG, "Successfully called ExponentKernel.addHistoryItem in kernel JS.")
+//        }
+//
+//        override fun onEventFailure(errorMessage: String?) {
+//          EXL.e(
+//            TAG,
+//            "Error calling ExponentKernel.addHistoryItem in kernel JS: $errorMessage"
+//          )
+//        }
+//      }
+//    )
     killOrphanedLauncherActivities()
   }
 
