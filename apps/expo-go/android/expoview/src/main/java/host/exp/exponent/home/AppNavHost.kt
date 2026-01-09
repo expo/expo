@@ -1,6 +1,9 @@
 package host.exp.exponent.home
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +29,7 @@ import androidx.navigation.toRoute
 import host.exp.exponent.kernel.ExpoViewKernel
 import host.exp.exponent.services.ExponentHistoryService
 import host.exp.expoview.R
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -80,23 +84,28 @@ val bottomBarDestinations = listOf(
 @Composable
 fun RootNavigation(
   exponentHistoryService: ExponentHistoryService,
-  expoViewKernel: ExpoViewKernel
+  expoViewKernel: ExpoViewKernel,
+  homeActivityEvents: MutableSharedFlow<HomeActivityEvent>
 ) {
   val navController = rememberNavController()
 
   val viewModelFactory =
-    remember { HomeAppViewModelFactory(exponentHistoryService, expoViewKernel) }
+    remember { HomeAppViewModelFactory(exponentHistoryService, expoViewKernel, homeActivityEvents) }
 
   val viewModel: HomeAppViewModel = viewModel(factory = viewModelFactory)
 
   val themeSetting by viewModel.selectedTheme.collectAsState()
 
   HomeAppTheme(themeSetting = themeSetting) {
-    AppNavHost(
-      navController = navController,
-      startDestination = Destination.Home,
-      viewModel = viewModel
-    )
+    Box(modifier = Modifier
+      .fillMaxSize()
+      .background(MaterialTheme.colorScheme.background)) {
+      AppNavHost(
+        navController = navController,
+        startDestination = Destination.Home,
+        viewModel = viewModel,
+      )
+    }
   }
 }
 

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.os.Debug
 import android.view.View
@@ -52,11 +53,19 @@ import host.exp.exponent.utils.ExperienceRTLManager
 import host.exp.exponent.utils.currentDeviceIsAPhone
 import org.json.JSONException
 import androidx.compose.ui.platform.ComposeView
+import androidx.lifecycle.lifecycleScope
+import host.exp.exponent.home.HomeActivityEvent
 import host.exp.exponent.home.RootNavigation
 import host.exp.exponent.kernel.ExpoViewKernel
 import host.exp.exponent.services.PendingAuthSession
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
+
 
 open class HomeActivity : BaseExperienceActivity() {
+  val homeActivityEvents = MutableSharedFlow<HomeActivityEvent>()
+
   //region Activity Lifecycle
   override fun onCreate(savedInstanceState: Bundle?) {
     configureSplashScreen(installSplashScreen())
@@ -96,7 +105,10 @@ open class HomeActivity : BaseExperienceActivity() {
 
     val contentView = ComposeView(this).apply {
       setContent {
-        RootNavigation(kernel.exponentHistoryService,ExpoViewKernel.instance)
+        RootNavigation(exponentHistoryService = kernel.exponentHistoryService,
+          expoViewKernel = ExpoViewKernel.instance,
+          homeActivityEvents = homeActivityEvents
+        )
       }
     }
     setContentView(contentView)
@@ -104,7 +116,18 @@ open class HomeActivity : BaseExperienceActivity() {
 
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
-    PendingAuthSession.complete(intent.data)
+    val data = intent.data
+    if (data != null && data.host == "auth" && data.scheme == "expauth") {
+      PendingAuthSession.complete(data)
+    } else if (data != null && data.host == "after-delete" && data.scheme == "expauth") {
+      lifecycleScope.launch {
+        homeActivityEvents.emit(HomeActivityEvent.AccountDeleted)
+      }
+      // Here you would trigger the sign-out logic, perhaps by calling a method on a ViewModel
+      // For example:
+      // val viewModel: HomeAppViewModel by viewModels()
+      // viewModel.signOut()
+    }
   }
 
   override fun shouldCreateLoadingView(): Boolean {

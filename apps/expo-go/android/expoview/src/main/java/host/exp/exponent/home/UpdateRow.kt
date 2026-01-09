@@ -10,10 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import host.exp.exponent.generated.ExponentBuildConstants
 import host.exp.exponent.graphql.BranchDetailsQuery
 import host.exp.exponent.graphql.BranchesForProjectQuery
-import androidx.core.net.toUri
 
 private fun isUpdateCompatible(sdkVersion: String?): Boolean {
   if (sdkVersion == null) return false
