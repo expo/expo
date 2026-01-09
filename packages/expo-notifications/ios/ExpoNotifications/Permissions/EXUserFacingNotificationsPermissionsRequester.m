@@ -1,6 +1,6 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import <EXNotifications/EXUserFacingNotificationsPermissionsRequester.h>
+#import <ExpoNotifications/EXUserFacingNotificationsPermissionsRequester.h>
 #import <ExpoModulesCore/EXDefines.h>
 #import <UserNotifications/UserNotifications.h>
 
