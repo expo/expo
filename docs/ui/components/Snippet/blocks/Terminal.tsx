@@ -7,11 +7,6 @@ import { useMemo, useSyncExternalStore } from 'react';
 import { CODE } from '~/ui/components/Text';
 import { useIsMobileView } from '~/ui/components/utils/isMobileView';
 
-import { Select } from '../../Select';
-import { Snippet } from '../Snippet';
-import { SnippetAction } from '../SnippetAction';
-import { SnippetContent } from '../SnippetContent';
-import { SnippetHeader } from '../SnippetHeader';
 import {
   PACKAGE_MANAGER_ORDER,
   getPackageManagerServerSnapshot,
@@ -20,6 +15,11 @@ import {
   subscribePackageManagerStore,
 } from './packageManagerStore';
 import type { PackageManagerKey } from './packageManagerStore';
+import { Select } from '../../Select';
+import { Snippet } from '../Snippet';
+import { SnippetAction } from '../SnippetAction';
+import { SnippetContent } from '../SnippetContent';
+import { SnippetHeader } from '../SnippetHeader';
 import { CopyAction } from '../actions/CopyAction';
 
 type PackageManagerCommandSet = Partial<Record<PackageManagerKey, string[]>>;
