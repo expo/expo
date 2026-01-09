@@ -15,13 +15,11 @@ import host.exp.exponent.graphql.Home_AccountSnacksQuery
 import host.exp.exponent.graphql.ProjectsQuery
 import host.exp.exponent.graphql.fragment.CurrentUserActorData
 import host.exp.exponent.kernel.ExpoViewKernel
-import host.exp.exponent.kernel.Kernel
 import host.exp.exponent.services.ApolloClientService
 import host.exp.exponent.services.AuthSessionType
 import host.exp.exponent.services.ExponentHistoryService
 import host.exp.exponent.services.RESTApiClient
 import host.exp.exponent.services.SessionRepository
-import host.exp.exponent.services.ThemeSetting
 import host.exp.exponent.services.launchAuthSession
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -79,7 +77,8 @@ class HomeAppViewModelFactory(
   @Suppress("UNCHECKED_CAST")
   override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
     if (modelClass.isAssignableFrom(HomeAppViewModel::class.java)) {
-      val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
+      val application =
+        checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
       return HomeAppViewModel(application, exponentHistoryService, expoViewKernel) as T
     }
     throw IllegalArgumentException("Unknown ViewModel class")

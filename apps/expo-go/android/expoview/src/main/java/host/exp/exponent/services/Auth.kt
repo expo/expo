@@ -1,73 +1,63 @@
 package host.exp.exponent.services
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.net.Uri
-import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.ui.input.key.type
-import androidx.compose.ui.platform.LocalContext
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
-import androidx.core.net.toUri
-import androidx.core.util.remove
-
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
 import androidx.core.content.edit
+import androidx.core.net.toUri
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 
 const val redirectBase = "expauth://auth"
 const val origin = "https://expo.dev"
 
 fun getAuthSessionURL(urlPath: String): Uri {
-    val encodedRedirect = URLEncoder.encode(redirectBase, StandardCharsets.UTF_8.toString())
+  val encodedRedirect = URLEncoder.encode(redirectBase, StandardCharsets.UTF_8.toString())
 
-    return "$origin/$urlPath?confirm_account=1&app_redirect_uri=$encodedRedirect".toUri()
+  return "$origin/$urlPath?confirm_account=1&app_redirect_uri=$encodedRedirect".toUri()
 }
 
 enum class AuthSessionType(val typeString: String) {
-    LOGIN("login"),
-    SIGNUP("signup")
+  LOGIN("login"),
+  SIGNUP("signup")
 }
 
 
 enum class ThemeSetting {
-    Automatic,
-    Light,
-    Dark
+  Automatic,
+  Light,
+  Dark
 }
 
 fun launchAuthSession(
-    context: Context,
-    type: AuthSessionType,
-    onAuthComplete: (String) -> Unit,
+  context: Context,
+  type: AuthSessionType,
+  onAuthComplete: (String) -> Unit,
 ) {
-    val customTabsIntent = CustomTabsIntent.Builder().build()
+  val customTabsIntent = CustomTabsIntent.Builder().build()
 //    TODO: Fix for password managers (spawn new activity
-    customTabsIntent.launchUrl(context, getAuthSessionURL(type.typeString))
-    PendingAuthSession.callback = onAuthComplete
+  customTabsIntent.launchUrl(context, getAuthSessionURL(type.typeString))
+  PendingAuthSession.callback = onAuthComplete
 }
 
 object PendingAuthSession {
-    var callback: ((String) -> Unit)? = null
+  var callback: ((String) -> Unit)? = null
 
-    fun complete(callbackUri: Uri?) {
-        // decode the token from the callbackUri
-        val token = callbackUri?.getQueryParameter("session_secret")
-        // Invoke the callback with the token
-        if (token == null) {
-            callback = null
-            return
-        }
-
-        callback?.invoke(token)
-        callback = null
+  fun complete(callbackUri: Uri?) {
+    // decode the token from the callbackUri
+    val token = callbackUri?.getQueryParameter("session_secret")
+    // Invoke the callback with the token
+    if (token == null) {
+      callback = null
+      return
     }
+
+    callback?.invoke(token)
+    callback = null
+  }
 //
 //    fun cancel() {
 //        callback = null
@@ -76,68 +66,68 @@ object PendingAuthSession {
 
 //TODO: Rename
 class SessionRepository(context: Context) {
-    private val sharedPreferences = context.getSharedPreferences("expo_session", Context.MODE_PRIVATE)
+  private val sharedPreferences = context.getSharedPreferences("expo_session", Context.MODE_PRIVATE)
 
-    companion object {
-        private const val SESSION_SECRET_KEY = "session_secret"
-        private const val SELECTED_ACCOUNT_ID_KEY = "selected_account_id"
-        private const val RECENTS_KEY = "recents_history"
-        private const val THEME_KEY = "theme"
-    }
+  companion object {
+    private const val SESSION_SECRET_KEY = "session_secret"
+    private const val SELECTED_ACCOUNT_ID_KEY = "selected_account_id"
+    private const val RECENTS_KEY = "recents_history"
+    private const val THEME_KEY = "theme"
+  }
 
-    fun saveThemeSetting(themeSetting: ThemeSetting) {
-        sharedPreferences.edit().putString(THEME_KEY, themeSetting.name).apply()
-    }
+  fun saveThemeSetting(themeSetting: ThemeSetting) {
+    sharedPreferences.edit().putString(THEME_KEY, themeSetting.name).apply()
+  }
 
-    fun getThemeSetting(): ThemeSetting {
-        // Get the stored string, defaulting to "Automatic" if not found
-        val themeName = sharedPreferences.getString(THEME_KEY, ThemeSetting.Automatic.name)
-        // Safely convert the string back to an enum
-        return try {
-            ThemeSetting.valueOf(themeName ?: ThemeSetting.Automatic.name)
-        } catch (e: IllegalArgumentException) {
-            // If the stored value is invalid for some reason, default to Automatic
-            ThemeSetting.Automatic
-        }
+  fun getThemeSetting(): ThemeSetting {
+    // Get the stored string, defaulting to "Automatic" if not found
+    val themeName = sharedPreferences.getString(THEME_KEY, ThemeSetting.Automatic.name)
+    // Safely convert the string back to an enum
+    return try {
+      ThemeSetting.valueOf(themeName ?: ThemeSetting.Automatic.name)
+    } catch (e: IllegalArgumentException) {
+      // If the stored value is invalid for some reason, default to Automatic
+      ThemeSetting.Automatic
     }
+  }
 
-    fun saveSessionSecret(secret: String?) {
-        sharedPreferences.edit().putString(SESSION_SECRET_KEY, secret).apply()
-    }
+  fun saveSessionSecret(secret: String?) {
+    sharedPreferences.edit().putString(SESSION_SECRET_KEY, secret).apply()
+  }
 
-    fun getSessionSecret(): String? {
-        return sharedPreferences.getString(SESSION_SECRET_KEY, null)
-    }
+  fun getSessionSecret(): String? {
+    return sharedPreferences.getString(SESSION_SECRET_KEY, null)
+  }
 
-    fun clearSessionSecret() {
-        sharedPreferences.edit().remove(SESSION_SECRET_KEY).apply()
-    }
+  fun clearSessionSecret() {
+    sharedPreferences.edit().remove(SESSION_SECRET_KEY).apply()
+  }
 
-    fun saveSelectedAccountId(accountId: String?) {
-        sharedPreferences.edit().putString(SELECTED_ACCOUNT_ID_KEY, accountId).apply()
-    }
+  fun saveSelectedAccountId(accountId: String?) {
+    sharedPreferences.edit().putString(SELECTED_ACCOUNT_ID_KEY, accountId).apply()
+  }
 
-    fun clearSelectedAccountId() {
-        sharedPreferences.edit().remove(SELECTED_ACCOUNT_ID_KEY).apply()
-    }
+  fun clearSelectedAccountId() {
+    sharedPreferences.edit().remove(SELECTED_ACCOUNT_ID_KEY).apply()
+  }
 
-    fun getSelectedAccountId(): String? {
-        return sharedPreferences.getString(SELECTED_ACCOUNT_ID_KEY, null)
-    }
+  fun getSelectedAccountId(): String? {
+    return sharedPreferences.getString(SELECTED_ACCOUNT_ID_KEY, null)
+  }
 
-    fun saveRecents(recents: List<HistoryItem>) {
-        val json = Gson().toJson(recents)
-        sharedPreferences.edit {
-            putString(RECENTS_KEY, json)
-        }
+  fun saveRecents(recents: List<HistoryItem>) {
+    val json = Gson().toJson(recents)
+    sharedPreferences.edit {
+      putString(RECENTS_KEY, json)
     }
+  }
 
-    fun getRecents(): List<HistoryItem> {
-        val json = sharedPreferences.getString(RECENTS_KEY, null)
-        if (json.isNullOrBlank()) {
-            return emptyList()
-        }
-        val type = object : TypeToken<List<HistoryItem>>() {}.type
-        return Gson().fromJson(json, type)
+  fun getRecents(): List<HistoryItem> {
+    val json = sharedPreferences.getString(RECENTS_KEY, null)
+    if (json.isNullOrBlank()) {
+      return emptyList()
     }
+    val type = object : TypeToken<List<HistoryItem>>() {}.type
+    return Gson().fromJson(json, type)
+  }
 }

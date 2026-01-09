@@ -20,9 +20,9 @@ import host.exp.exponent.graphql.BranchesForProjectQuery
 fun BranchRow(branch: BranchesForProjectQuery.UpdateBranch, onClick: () -> Unit) {
   Row(
     modifier = Modifier
-        .fillMaxWidth()
-        .clickable { onClick() }
-        .padding(16.dp),
+      .fillMaxWidth()
+      .clickable { onClick() }
+      .padding(16.dp),
     verticalAlignment = Alignment.CenterVertically
   ) {
 //         TODO: Add icons for branch and update

@@ -24,9 +24,9 @@ fun ClickableItemRow(
 ) {
   Row(
     modifier = Modifier
-        .fillMaxWidth()
-        .clickable(onClick = onClick)
-        .padding(16.dp),
+      .fillMaxWidth()
+      .clickable(onClick = onClick)
+      .padding(16.dp),
     verticalAlignment = Alignment.CenterVertically
   ) {
 

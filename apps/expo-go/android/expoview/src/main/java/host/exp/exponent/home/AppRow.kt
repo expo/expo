@@ -20,9 +20,9 @@ import host.exp.exponent.graphql.Home_AccountAppsQuery
 fun AppRow(app: Home_AccountAppsQuery.App, onClick: () -> Unit) {
   Row(
     modifier = Modifier
-        .fillMaxWidth()
-        .clickable(onClick = { onClick() })
-        .padding(16.dp),
+      .fillMaxWidth()
+      .clickable(onClick = { onClick() })
+      .padding(16.dp),
     verticalAlignment = Alignment.CenterVertically
   ) {
     Column {

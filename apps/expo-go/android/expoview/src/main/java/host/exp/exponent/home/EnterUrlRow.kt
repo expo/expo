@@ -52,8 +52,8 @@ fun EnterUrlRow() {
       Button(
         onClick = connect,
         modifier = Modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth(),
+          .padding(top = 8.dp)
+          .fillMaxWidth(),
         enabled = textFieldState.text.isNotBlank()
       ) {
         Text("Connect")

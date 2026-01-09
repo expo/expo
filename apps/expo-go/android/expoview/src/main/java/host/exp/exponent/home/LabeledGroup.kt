@@ -31,7 +31,7 @@ fun LabeledGroup(
   action: @Composable (() -> Unit)? = null,
   wrapWithCard: Boolean = true,
   content: @Composable ColumnScope.() -> Unit,
-  ) {
+) {
   Column(modifier = modifier.fillMaxWidth()) {
     Row(
       modifier = Modifier

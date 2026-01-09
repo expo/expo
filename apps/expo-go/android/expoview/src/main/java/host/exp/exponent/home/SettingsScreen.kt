@@ -2,7 +2,6 @@ package host.exp.exponent.home
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,12 +36,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import host.exp.exponent.generated.ExponentBuildConstants
 import host.exp.exponent.services.ThemeSetting
-import host.exp.expoview.R
 import kotlinx.coroutines.launch
 
 private fun getMajorVersion(version: String): String {
@@ -193,7 +188,8 @@ fun DeleteAccountSection() {
       try {
         val redirectBase = "expauth://after-delete"
         val encodedRedirect = Uri.encode(redirectBase)
-        val authSessionURL = "https://expo.dev/settings/delete-user-expo-go?post_delete_redirect_uri=$encodedRedirect"
+        val authSessionURL =
+          "https://expo.dev/settings/delete-user-expo-go?post_delete_redirect_uri=$encodedRedirect"
 
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(authSessionURL)).apply {
           addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

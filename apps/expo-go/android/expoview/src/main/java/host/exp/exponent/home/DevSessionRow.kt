@@ -30,7 +30,8 @@ fun DevSessionRow(session: DevSession) {
         contentDescription = "Icon",
         modifier = Modifier
           .size(24.dp)
-          .clip(shape = RoundedCornerShape(4.dp)))
+          .clip(shape = RoundedCornerShape(4.dp))
+      )
     }) {
     Column {
       // TODO: Add platform icon
