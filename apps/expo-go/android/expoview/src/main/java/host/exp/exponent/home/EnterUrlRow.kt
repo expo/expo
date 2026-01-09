@@ -1,5 +1,6 @@
 package host.exp.exponent.home
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,6 +12,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -20,13 +22,19 @@ import host.exp.expoview.R
 fun EnterUrlRow() {
   val textFieldState = rememberTextFieldState(initialText = "")
   val uriHandler = LocalUriHandler.current
+  val context = LocalContext.current
 
   val connect = {
     val urlText = textFieldState.text.toString()
 
     if (urlText.isNotBlank()) {
       val normalized = normalizeUrl(urlText)
-      uriHandler.openUri(normalized)
+      try {
+        uriHandler.openUri(normalized)
+
+      } catch (_: Exception) {
+        Toast.makeText(context, "Failed to open URL", Toast.LENGTH_SHORT).show()
+      }
     }
   }
 
