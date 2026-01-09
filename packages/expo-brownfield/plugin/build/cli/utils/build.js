@@ -4,11 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ensurePrebuild = exports.maybeRunPrebuild = exports.checkPrebuild = exports.withSpinner = exports.printConfig = void 0;
-const ora_1 = __importDefault(require("ora"));
 const chalk_1 = __importDefault(require("chalk"));
-const prompts_1 = __importDefault(require("prompts"));
 const promises_1 = __importDefault(require("node:fs/promises"));
 const node_path_1 = __importDefault(require("node:path"));
+const ora_1 = __importDefault(require("ora"));
+const prompts_1 = __importDefault(require("prompts"));
 const commands_1 = require("./commands");
 const constants_1 = require("../constants");
 const isBuildConfigAndroid = (config) => {
@@ -46,9 +46,7 @@ const withSpinner = async ({ operation, loaderMessage, successMessage, errorMess
     }
     catch (error) {
         if (!verbose) {
-            onError === 'error'
-                ? spinner?.fail(errorMessage)
-                : spinner?.warn(errorMessage);
+            onError === 'error' ? spinner?.fail(errorMessage) : spinner?.warn(errorMessage);
         }
         return constants_1.Errors.generic(error);
     }

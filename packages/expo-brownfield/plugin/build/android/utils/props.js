@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getVersion = exports.getPublishing = exports.getProjectRoot = exports.getPackagePath = exports.getPluginConfig = void 0;
-const node_path_1 = __importDefault(require("node:path"));
 const config_plugins_1 = require("expo/config-plugins");
+const node_path_1 = __importDefault(require("node:path"));
 const getPluginConfig = (props, config) => {
     const libraryName = props?.libraryName || 'brownfield';
     const packageId = getPackage(config, props);

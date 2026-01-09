@@ -34,11 +34,7 @@ const addApplyStatement = (lines) => {
     if (expoApplyIndex === -1) {
         throw new Error('Error: "expo-root-project" apply statement not found in the project build.gradle file');
     }
-    lines = [
-        ...lines.slice(0, expoApplyIndex + 1),
-        statement,
-        ...lines.slice(expoApplyIndex + 1),
-    ];
+    lines = [...lines.slice(0, expoApplyIndex + 1), statement, ...lines.slice(expoApplyIndex + 1)];
     return lines;
 };
 const addPublicationConfiguration = (lines, publications, projectRoot, libraryName) => {

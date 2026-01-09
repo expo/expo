@@ -18,9 +18,7 @@ const genericError = (error: unknown) => {
  * Prints the error message for failed inference.
  */
 const inferenceError = (valueName: string) => {
-  console.error(
-    `Error: Value of ${valueName} could not be inferred from the project`,
-  );
+  console.error(`Error: Value of ${valueName} could not be inferred from the project`);
   return process.exit(1);
 };
 

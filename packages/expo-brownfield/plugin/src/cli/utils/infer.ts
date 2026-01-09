@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
-import { Defaults, Errors } from '../constants';
 import path from 'node:path';
+
+import { Defaults, Errors } from '../constants';
 
 export const inferAndroidLibrary = async (): Promise<string> => {
   const files = ['ReactNativeFragment.kt', 'ReactNativeHostManager.kt'];
@@ -13,9 +14,7 @@ export const inferAndroidLibrary = async (): Promise<string> => {
         recursive: true,
       });
 
-      const hasAllFiles = files.every((file) =>
-        contents.find((item) => item.includes(file)),
-      );
+      const hasAllFiles = files.every((file) => contents.find((item) => item.includes(file)));
 
       if (hasAllFiles) {
         return directory.name;
@@ -30,8 +29,8 @@ export const inferAndroidLibrary = async (): Promise<string> => {
 
 export const inferXCWorkspace = async (): Promise<string> => {
   try {
-    const xcworkspace = (await fs.readdir('ios', { withFileTypes: true })).find(
-      (item) => item.name.endsWith('.xcworkspace'),
+    const xcworkspace = (await fs.readdir('ios', { withFileTypes: true })).find((item) =>
+      item.name.endsWith('.xcworkspace')
     );
     if (xcworkspace) {
       return path.join(xcworkspace.parentPath, xcworkspace.name);
@@ -45,17 +44,13 @@ export const inferXCWorkspace = async (): Promise<string> => {
 
 export const inferScheme = async (): Promise<string> => {
   try {
-    const subDirs = (await fs.readdir('ios', { withFileTypes: true })).filter(
-      (item) => item.isDirectory(),
+    const subDirs = (await fs.readdir('ios', { withFileTypes: true })).filter((item) =>
+      item.isDirectory()
     );
     let scheme: string | undefined = undefined;
     for (const subDir of subDirs) {
       // TODO: Rename this file to RNHostManager?
-      if (
-        (await fs.readdir(`ios/${subDir.name}`)).includes(
-          'ReactNativeHostManager.swift',
-        )
-      ) {
+      if ((await fs.readdir(`ios/${subDir.name}`)).includes('ReactNativeHostManager.swift')) {
         scheme = subDir.name;
       }
     }

@@ -1,6 +1,5 @@
-import path from 'node:path';
-
 import { type ConfigPlugin, withXcodeProject } from 'expo/config-plugins';
+import path from 'node:path';
 
 import type { PluginConfig } from '../types';
 import {
@@ -14,14 +13,10 @@ import {
   mkdir,
 } from '../utils';
 
-const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
-  config,
-  pluginConfig,
-) => {
+const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig) => {
   return withXcodeProject(config, (config) => {
     const projectName =
-      config.modRequest.projectName ??
-      inferProjectName(config.modRequest.platformProjectRoot);
+      config.modRequest.projectName ?? inferProjectName(config.modRequest.platformProjectRoot);
     const projectRoot = config.modRequest.projectRoot;
     const xcodeProject = config.modResults;
 
@@ -29,7 +24,7 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     const target = createFramework(
       xcodeProject,
       pluginConfig.targetName,
-      pluginConfig.bundleIdentifier,
+      pluginConfig.bundleIdentifier
     );
 
     // Create a directory for the framework files
@@ -69,7 +64,7 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     createFileFromTemplateAs(
       'Target.entitlements',
       groupPath,
-      pluginConfig.targetName + '.entitlements',
+      pluginConfig.targetName + '.entitlements'
     );
 
     // Configure build phases:
@@ -79,27 +74,21 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (
     //   'Messaging.swift', 'ReactNativeViewController.swift' and
     //   'ExpoAppDelegateWrapper.swift' and 'BrownfieldAppDelegate.swift'
     //   to the compile sources phase
-    configureBuildPhases(
-      xcodeProject,
-      target,
-      pluginConfig.targetName,
-      projectName,
-      [
-        `${pluginConfig.targetName}/ReactNativeHostManager.swift`,
-        `${pluginConfig.targetName}/Messaging.swift`,
-        `${pluginConfig.targetName}/ReactNativeView.swift`,
-        `${pluginConfig.targetName}/ReactNativeViewController.swift`,
-        `${pluginConfig.targetName}/ExpoAppDelegateWrapper.swift`,
-        `${pluginConfig.targetName}/BrownfieldAppDelegate.swift`,
-        `${pluginConfig.targetName}/ReactNativeDelegate.swift`,
-      ],
-    );
+    configureBuildPhases(xcodeProject, target, pluginConfig.targetName, projectName, [
+      `${pluginConfig.targetName}/ReactNativeHostManager.swift`,
+      `${pluginConfig.targetName}/Messaging.swift`,
+      `${pluginConfig.targetName}/ReactNativeView.swift`,
+      `${pluginConfig.targetName}/ReactNativeViewController.swift`,
+      `${pluginConfig.targetName}/ExpoAppDelegateWrapper.swift`,
+      `${pluginConfig.targetName}/BrownfieldAppDelegate.swift`,
+      `${pluginConfig.targetName}/ReactNativeDelegate.swift`,
+    ]);
     // Add the required build settings
     configureBuildSettings(
       xcodeProject,
       pluginConfig.targetName,
       config.ios?.buildNumber || '1',
-      pluginConfig.bundleIdentifier,
+      pluginConfig.bundleIdentifier
     );
 
     return config;

@@ -35,8 +35,7 @@ export interface RemotePrivateBasicPublication {
   allowInsecure?: boolean;
 }
 
-export interface RemotePrivatePublicationInternal
-  extends RemotePrivateBasicPublication {
+export interface RemotePrivatePublicationInternal extends RemotePrivateBasicPublication {
   url: string;
   username: string;
   password: string;

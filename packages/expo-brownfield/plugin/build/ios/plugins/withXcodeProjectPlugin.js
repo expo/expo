@@ -3,13 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const node_path_1 = __importDefault(require("node:path"));
 const config_plugins_1 = require("expo/config-plugins");
+const node_path_1 = __importDefault(require("node:path"));
 const utils_1 = require("../utils");
 const withXcodeProjectPlugin = (config, pluginConfig) => {
     return (0, config_plugins_1.withXcodeProject)(config, (config) => {
-        const projectName = config.modRequest.projectName ??
-            (0, utils_1.inferProjectName)(config.modRequest.platformProjectRoot);
+        const projectName = config.modRequest.projectName ?? (0, utils_1.inferProjectName)(config.modRequest.platformProjectRoot);
         const projectRoot = config.modRequest.projectRoot;
         const xcodeProject = config.modResults;
         // Create a target for the framework

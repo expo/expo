@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { Args, Help } from '../../constants';
 import {
   BuildTypeAndroid,
@@ -8,7 +10,6 @@ import {
   runCommand,
   withSpinner,
 } from '../../utils';
-import path from 'node:path';
 
 const action = async () => {
   const args = parseArgs({ spec: Args.Android, argv: process.argv.slice(2) });
@@ -40,13 +41,9 @@ const action = async () => {
 
 export default action;
 
-const constructTask = (
-  buildType: BuildTypeAndroid,
-  repository: string,
-): string => {
+const constructTask = (buildType: BuildTypeAndroid, repository: string): string => {
   const buildTypeCapitalized = buildType[0].toUpperCase() + buildType.slice(1);
-  const repositorySuffixed =
-    repository === 'MavenLocal' ? repository : `${repository}Repository`;
+  const repositorySuffixed = repository === 'MavenLocal' ? repository : `${repository}Repository`;
   return `publishBrownfield${buildTypeCapitalized}PublicationTo${repositorySuffixed}`;
 };
 
@@ -55,11 +52,11 @@ const runTask = async (task: string, verbose: boolean) => {
     operation: () =>
       runCommand('./gradlew', [task], {
         cwd: path.join(process.cwd(), 'android'),
-        verbose: verbose,
+        verbose,
       }),
     loaderMessage: 'Running task: ' + task,
     successMessage: 'Running task: ' + task + ' succeeded',
     errorMessage: 'Running task: ' + task + ' failed',
-    verbose: verbose,
+    verbose,
   });
 };

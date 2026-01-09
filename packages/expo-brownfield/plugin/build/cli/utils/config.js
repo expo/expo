@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getBuildTypeAndroid = exports.getBuildTypeCommon = exports.getTasksAndroidConfig = exports.getIosConfig = exports.getAndroidConfig = exports.getCommonConfig = void 0;
+const node_path_1 = __importDefault(require("node:path"));
 const constants_1 = require("../constants");
 const infer_1 = require("./infer");
-const node_path_1 = __importDefault(require("node:path"));
 const getCommonConfig = (args) => {
     return {
         help: !!args['--help'],
@@ -53,8 +53,7 @@ const getBuildTypeCommon = (args) => {
 };
 exports.getBuildTypeCommon = getBuildTypeCommon;
 const getBuildTypeAndroid = (args) => {
-    if ((args['--debug'] && args['--release']) ||
-        (!args['--debug'] && !args['--release'])) {
+    if ((args['--debug'] && args['--release']) || (!args['--debug'] && !args['--release'])) {
         return 'all';
     }
     return (0, exports.getBuildTypeCommon)(args);

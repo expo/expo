@@ -2,10 +2,7 @@ import type { ExpoConfig } from 'expo/config';
 
 import type { PluginConfig, PluginProps } from '../types';
 
-export const getPluginConfig = (
-  props: PluginProps,
-  config: ExpoConfig,
-): PluginConfig => {
+export const getPluginConfig = (props: PluginProps, config: ExpoConfig): PluginConfig => {
   const targetName = getTargetName(props, config);
 
   return {
@@ -35,7 +32,7 @@ const getTargetName = (props: PluginProps, config: ExpoConfig): string => {
 const getBundleIdentifier = (
   props: PluginProps,
   config: ExpoConfig,
-  targetName: string,
+  targetName: string
 ): string => {
   // If bundle identifier is passed through plugin props use that value
   if (props?.bundleIdentifier) {
@@ -46,10 +43,7 @@ const getBundleIdentifier = (
   if (config.ios?.bundleIdentifier) {
     const lastDotIndex = config.ios.bundleIdentifier.lastIndexOf('.');
     if (lastDotIndex !== -1) {
-      const removingLastComponent = config.ios.bundleIdentifier.substring(
-        0,
-        lastDotIndex,
-      );
+      const removingLastComponent = config.ios.bundleIdentifier.substring(0, lastDotIndex);
       return `${removingLastComponent}.${targetName}`;
     }
   }

@@ -11,13 +11,13 @@ exports.Commands = {
     'build-ios': {
         run: ios_1.runBuildIos,
     },
-    'help': {
+    help: {
         run: general_1.runHelp,
     },
     'tasks-android': {
         run: android_1.runTasksAndroid,
     },
-    'version': {
+    version: {
         run: general_1.runVersion,
     },
 };

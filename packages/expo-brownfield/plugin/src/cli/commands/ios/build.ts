@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+
 import { Args, Help } from '../../constants';
 import {
   BuildConfigIos,
@@ -44,7 +45,7 @@ const cleanUpArtifacts = async (artifactsPath: string) => {
       }
 
       const artifacts = (await fs.readdir(artifactsPath)).filter((artifact) =>
-        artifact.endsWith('.xcframework'),
+        artifact.endsWith('.xcframework')
       );
 
       for (const artifact of artifacts) {
@@ -81,7 +82,7 @@ const runBuild = async (config: BuildConfigIos) => {
         ],
         {
           verbose: config.verbose,
-        },
+        }
       ),
     loaderMessage: 'Compiling framework...',
     successMessage: 'Compiling framework succeeded',
@@ -106,7 +107,7 @@ const packageFrameworks = async (config: BuildConfigIos) => {
         ],
         {
           verbose: config.verbose,
-        },
+        }
       ),
     loaderMessage: 'Packaging framework into an XCFramework...',
     successMessage: 'Packaging framework into an XCFramework succeeded',
@@ -118,19 +119,13 @@ const packageFrameworks = async (config: BuildConfigIos) => {
 const copyHermesFramework = async (config: BuildConfigIos) => {
   return withSpinner({
     operation: () =>
-      fs.cp(
-        `./ios/${config.hermesFrameworkPath}`,
-        `${config.artifacts}/hermes.xcframework`,
-        {
-          force: true,
-          recursive: true,
-        },
-      ),
+      fs.cp(`./ios/${config.hermesFrameworkPath}`, `${config.artifacts}/hermes.xcframework`, {
+        force: true,
+        recursive: true,
+      }),
     loaderMessage: 'Copying hermes.xcframework to the artifacts directory...',
-    successMessage:
-      'Copying hermes.xcframework to the artifacts directory succeeded',
-    errorMessage:
-      'Copying hermes.xcframework to the artifacts directory failed',
+    successMessage: 'Copying hermes.xcframework to the artifacts directory succeeded',
+    errorMessage: 'Copying hermes.xcframework to the artifacts directory failed',
     verbose: config.verbose,
   });
 };

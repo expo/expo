@@ -1,26 +1,19 @@
-import path from 'node:path';
-
 import { type ConfigPlugin, withAndroidManifest } from 'expo/config-plugins';
+import path from 'node:path';
 
 import { mkdir } from '../../common';
 import type { PluginConfig } from '../types';
 import { createFileFromTemplate } from '../utils';
 
-const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (
-  config,
-  pluginConfig,
-) => {
+const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig) => {
   return withAndroidManifest(config, (config) => {
     // Define paths for the brownfield target
     const brownfieldPath = path.join(
       pluginConfig.projectRoot,
-      `android/${pluginConfig.libraryName}`,
+      `android/${pluginConfig.libraryName}`
     );
     const brownfieldMainPath = path.join(brownfieldPath, 'src/main/');
-    const brownfieldSourcesPath = path.join(
-      brownfieldMainPath,
-      pluginConfig.packagePath,
-    );
+    const brownfieldSourcesPath = path.join(brownfieldMainPath, pluginConfig.packagePath);
 
     // Create directory for the brownfield library sources
     // (and all intermediate directories)

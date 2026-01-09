@@ -10,13 +10,13 @@ export const Commands: CommandsMap = {
   'build-ios': {
     run: runBuildIos,
   },
-  'help': {
+  help: {
     run: runHelp,
   },
   'tasks-android': {
     run: runTasksAndroid,
   },
-  'version': {
+  version: {
     run: runVersion,
   },
 };

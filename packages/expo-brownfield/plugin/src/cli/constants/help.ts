@@ -48,8 +48,7 @@ const generalHelp = helpMessage({
     },
     {
       command: 'tasks-android',
-      description:
-        'list available publishing tasks and repositories for android',
+      description: 'list available publishing tasks and repositories for android',
       hasOptions: true,
     },
   ],
@@ -77,8 +76,7 @@ const buildAndroidHelp = helpMessage({
       short: '-a',
     },
     {
-      description:
-        'maven repository for publishing artifacts (multiple can be passed)',
+      description: 'maven repository for publishing artifacts (multiple can be passed)',
       option: '--repository',
       short: '--repo',
     },

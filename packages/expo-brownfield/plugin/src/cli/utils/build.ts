@@ -1,14 +1,15 @@
-import ora, { type Ora } from 'ora';
 import chalk from 'chalk';
-import prompts from 'prompts';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { BuildConfigAndroid, BuildConfigIos, WithSpinnerParams } from './types';
+import ora, { type Ora } from 'ora';
+import prompts from 'prompts';
+
 import { runCommand } from './commands';
+import { BuildConfigAndroid, BuildConfigIos, WithSpinnerParams } from './types';
 import { Errors } from '../constants';
 
 const isBuildConfigAndroid = (
-  config: BuildConfigAndroid | BuildConfigIos,
+  config: BuildConfigAndroid | BuildConfigIos
 ): config is BuildConfigAndroid => {
   return 'libraryName' in config;
 };
@@ -19,19 +20,17 @@ export const printConfig = (config: BuildConfigAndroid | BuildConfigIos) => {
 
   if (isBuildConfigAndroid(config)) {
     console.log(
-      `- Build type: ${config.buildType.charAt(0).toUpperCase() + config.buildType.slice(1)}`,
+      `- Build type: ${config.buildType.charAt(0).toUpperCase() + config.buildType.slice(1)}`
     );
     console.log(`- Brownfield library: ${config.libraryName}`);
     console.log(
-      `- Repositories: ${config.repositories.length > 0 ? config.repositories.join(', ') : '[]'}`,
+      `- Repositories: ${config.repositories.length > 0 ? config.repositories.join(', ') : '[]'}`
     );
-    console.log(
-      `- Tasks: ${config.tasks.length > 0 ? config.tasks.join(', ') : '[]'}`,
-    );
+    console.log(`- Tasks: ${config.tasks.length > 0 ? config.tasks.join(', ') : '[]'}`);
   } else {
     console.log(`- Artifacts directory: ${config.artifacts}`);
     console.log(
-      `- Build type: ${config.buildType.charAt(0).toUpperCase() + config.buildType.slice(1)}`,
+      `- Build type: ${config.buildType.charAt(0).toUpperCase() + config.buildType.slice(1)}`
     );
     console.log(`- Xcode Scheme: ${config.scheme}`);
     console.log(`- Xcode Workspace: ${config.workspace}`);
@@ -64,9 +63,7 @@ export const withSpinner = async <T>({
     return result;
   } catch (error) {
     if (!verbose) {
-      onError === 'error'
-        ? spinner?.fail(errorMessage)
-        : spinner?.warn(errorMessage);
+      onError === 'error' ? spinner?.fail(errorMessage) : spinner?.warn(errorMessage);
     }
 
     return Errors.generic(error);
@@ -77,9 +74,7 @@ export const withSpinner = async <T>({
   }
 };
 
-export const checkPrebuild = async (
-  platform: 'android' | 'ios',
-): Promise<boolean> => {
+export const checkPrebuild = async (platform: 'android' | 'ios'): Promise<boolean> => {
   const nativeProjectPath = path.join(process.cwd(), platform);
   try {
     await fs.access(nativeProjectPath);
@@ -91,9 +86,7 @@ export const checkPrebuild = async (
 };
 
 export const maybeRunPrebuild = async (platform: 'android' | 'ios') => {
-  console.info(
-    `${chalk.yellow('⚠')} Prebuild for platform: ${platform} is missing`,
-  );
+  console.info(`${chalk.yellow('⚠')} Prebuild for platform: ${platform} is missing`);
   const response = await prompts({
     type: 'confirm',
     name: 'shouldRunPrebuild',
@@ -103,17 +96,14 @@ export const maybeRunPrebuild = async (platform: 'android' | 'ios') => {
 
   if (response.shouldRunPrebuild) {
     return withSpinner({
-      operation: () =>
-        runCommand('npx', ['expo', 'prebuild', '--platform', platform]),
+      operation: () => runCommand('npx', ['expo', 'prebuild', '--platform', platform]),
       loaderMessage: `Running 'npx expo prebuild' for platform: ${platform}...`,
       successMessage: `Prebuild for ${platform} completed\n`,
       errorMessage: `Prebuild for ${platform} failed`,
       verbose: false,
     });
   } else {
-    console.error(
-      `${chalk.red('✖')} Brownfield cannot be built without prebuild`,
-    );
+    console.error(`${chalk.red('✖')} Brownfield cannot be built without prebuild`);
     return process.exit(1);
   }
 };

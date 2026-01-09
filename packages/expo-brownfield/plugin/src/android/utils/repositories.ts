@@ -9,16 +9,8 @@ import {
 } from '../types';
 
 const repositoryTemplates = {
-  localMaven: () => [
-    '    localDefault {',
-    '        type = "localMaven"',
-    '    }',
-  ],
-  localDirectory: (
-    count: number,
-    publication: LocalDirectoryPublication,
-    projectRoot: string,
-  ) => {
+  localMaven: () => ['    localDefault {', '        type = "localMaven"', '    }'],
+  localDirectory: (count: number, publication: LocalDirectoryPublication, projectRoot: string) => {
     const nameOrPlaceholder = publication.name ?? `localDirectory${count + 1}`;
     return [
       `    ${nameOrPlaceholder} {`,
@@ -27,11 +19,7 @@ const repositoryTemplates = {
       '    }',
     ];
   },
-  remotePublic: (
-    count: number,
-    publication: RemotePublicPublication,
-    _projectRoot: string,
-  ) => {
+  remotePublic: (count: number, publication: RemotePublicPublication, _projectRoot: string) => {
     const nameOrPlaceholder = publication.name ?? `remotePublic${count + 1}`;
     return [
       `    ${nameOrPlaceholder} {`,
@@ -44,7 +32,7 @@ const repositoryTemplates = {
   remotePrivate: (
     count: number,
     publication: RemotePrivatePublicationInternal,
-    _projectRoot: string,
+    _projectRoot: string
   ) => {
     const nameOrPlaceholder = publication.name ?? `remotePrivate${count + 1}`;
     return [
@@ -59,27 +47,21 @@ const repositoryTemplates = {
   },
 } as const;
 
-export const addRepository = (
-  lines: string[],
-  projectRoot: string,
-  publication: Publication,
-) => {
+export const addRepository = (lines: string[], projectRoot: string, publication: Publication) => {
   switch (publication.type) {
     case 'localMaven':
-      const isAlreadyAdded = countOccurences(lines, 'localDefault') > 0;
-      return isAlreadyAdded ? [] : repositoryTemplates.localMaven();
+      return countOccurences(lines, 'localDefault') > 0 ? [] : repositoryTemplates.localMaven();
     case 'localDirectory':
     case 'remotePublic':
     case 'remotePrivate':
-      const count = countOccurences(lines, `type = "${publication.type}"`);
       if (publication.type === 'remotePrivate') {
         publication = resolveEnv(publication);
       }
       return repositoryTemplates[publication.type](
-        count,
+        countOccurences(lines, `type = "${publication.type}"`),
         // @ts-expect-error - TypeScript can't narrow union in fall-through case
         publication,
-        projectRoot,
+        projectRoot
       );
     default:
       // @ts-expect-error - Non-existent, invalid publication type
@@ -97,7 +79,7 @@ const standardizePath = (url: string, projectRoot: string) => {
 };
 
 const resolveEnv = (
-  publication: RemotePrivateBasicPublication,
+  publication: RemotePrivateBasicPublication
 ): RemotePrivatePublicationInternal => {
   const publicationInternal = {
     ...publication,
@@ -108,15 +90,11 @@ const resolveEnv = (
   }
 
   if (typeof publication.username === 'object') {
-    publicationInternal.username = findEnvOrThrow(
-      publication.username.variable,
-    );
+    publicationInternal.username = findEnvOrThrow(publication.username.variable);
   }
 
   if (typeof publication.password === 'object') {
-    publicationInternal.password = findEnvOrThrow(
-      publication.password.variable,
-    );
+    publicationInternal.password = findEnvOrThrow(publication.password.variable);
   }
 
   return publicationInternal as RemotePrivatePublicationInternal;
@@ -128,6 +106,6 @@ const findEnvOrThrow = (envVariable: string) => {
   }
 
   throw new Error(
-    `Environment variable: "${envVariable}" used to define publishing configuration not found`,
+    `Environment variable: "${envVariable}" used to define publishing configuration not found`
   );
 };

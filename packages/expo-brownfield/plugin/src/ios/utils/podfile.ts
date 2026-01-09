@@ -7,10 +7,7 @@ const getCustomScriptLines = (targetName: string): string[] => [
   'require File.join(File.dirname(`node --print "require.resolve(\'expo-brownfield/package.json\')"`), "plugin/src/ios/scripts/reorder_build_phases.rb")',
 ];
 
-export const addNewPodsTarget = (
-  podfile: string,
-  targetName: string,
-): string => {
+export const addNewPodsTarget = (podfile: string, targetName: string): string => {
   const targetLines = getTargetNameLines(targetName);
   let podFileLines = podfile.split('\n');
   if (podFileLines.find((line) => line.includes(targetLines[0].trim()))) {
@@ -29,10 +26,7 @@ export const addNewPodsTarget = (
   return podFileLines.join('\n');
 };
 
-export const addCustomRubyScriptImport = (
-  podfile: string,
-  targetName: string,
-) => {
+export const addCustomRubyScriptImport = (podfile: string, targetName: string) => {
   const requireLines = getCustomScriptLines(targetName);
   let podFileLines = podfile.split('\n');
   if (podFileLines.find((line) => line.includes(requireLines[0].trim()))) {

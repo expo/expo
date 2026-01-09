@@ -1,4 +1,6 @@
 import type { Result, Spec } from 'arg';
+import path from 'node:path';
+
 import type {
   BuildConfigAndroid,
   BuildConfigCommon,
@@ -8,7 +10,6 @@ import type {
 } from './types';
 import { Defaults } from '../constants';
 import { inferAndroidLibrary, inferScheme, inferXCWorkspace } from './infer';
-import path from 'node:path';
 
 export const getCommonConfig = (args: Result<Spec>): BuildConfigCommon => {
   return {
@@ -17,9 +18,7 @@ export const getCommonConfig = (args: Result<Spec>): BuildConfigCommon => {
   };
 };
 
-export const getAndroidConfig = async (
-  args: Result<Spec>,
-): Promise<BuildConfigAndroid> => {
+export const getAndroidConfig = async (args: Result<Spec>): Promise<BuildConfigAndroid> => {
   return {
     ...getCommonConfig(args),
     buildType: getBuildTypeAndroid(args),
@@ -29,25 +28,19 @@ export const getAndroidConfig = async (
   };
 };
 
-export const getIosConfig = async (
-  args: Result<Spec>,
-): Promise<BuildConfigIos> => {
+export const getIosConfig = async (args: Result<Spec>): Promise<BuildConfigIos> => {
   const buildType = getBuildTypeCommon(args);
   const derivedDataPath = path.join(process.cwd(), 'ios/build');
   const buildProductsPath = path.join(derivedDataPath, 'Build/Products');
 
   return {
     ...getCommonConfig(args),
-    artifacts: path.join(
-      process.cwd(),
-      args['--artifacts'] || Defaults.artifactsPath,
-    ),
+    artifacts: path.join(process.cwd(), args['--artifacts'] || Defaults.artifactsPath),
     buildType,
     derivedDataPath,
     device: path.join(buildProductsPath, `${buildType}-iphoneos`),
     simulator: path.join(buildProductsPath, `${buildType}-iphonesimulator`),
-    hermesFrameworkPath:
-      args['--hermes-framework'] || Defaults.hermesFrameworkPath,
+    hermesFrameworkPath: args['--hermes-framework'] || Defaults.hermesFrameworkPath,
     scheme: args['--scheme'] || (await inferScheme()),
     workspace: args['--workspace'] || (await inferXCWorkspace()),
   };
@@ -65,10 +58,7 @@ export const getBuildTypeCommon = (args: Result<Spec>): BuildTypeCommon => {
 };
 
 export const getBuildTypeAndroid = (args: Result<Spec>): BuildTypeAndroid => {
-  if (
-    (args['--debug'] && args['--release']) ||
-    (!args['--debug'] && !args['--release'])
-  ) {
+  if ((args['--debug'] && args['--release']) || (!args['--debug'] && !args['--release'])) {
     return 'all';
   }
 

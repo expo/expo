@@ -1,14 +1,10 @@
-import path from 'node:path';
-
 import type { ExpoConfig } from 'expo/config';
 import { withAndroidManifest } from 'expo/config-plugins';
+import path from 'node:path';
 
 import type { PluginConfig, PluginProps, Publication } from '../types';
 
-export const getPluginConfig = (
-  props: PluginProps,
-  config: ExpoConfig,
-): PluginConfig => {
+export const getPluginConfig = (props: PluginProps, config: ExpoConfig): PluginConfig => {
   const libraryName = props?.libraryName || 'brownfield';
   const packageId = getPackage(config, props);
 

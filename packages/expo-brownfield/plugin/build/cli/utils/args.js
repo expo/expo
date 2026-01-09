@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseArgs = void 0;
 const arg_1 = __importDefault(require("arg"));
 const constants_1 = require("../constants");
-const parseArgs = ({ spec, argv, stopAtPositional, }) => {
+const parseArgs = ({ spec, argv, stopAtPositional }) => {
     try {
         const parsed = (0, arg_1.default)(spec, { argv, stopAtPositional });
         return parsed;

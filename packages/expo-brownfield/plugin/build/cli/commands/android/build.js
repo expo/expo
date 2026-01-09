@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const node_path_1 = __importDefault(require("node:path"));
 const constants_1 = require("../../constants");
 const utils_1 = require("../../utils");
-const node_path_1 = __importDefault(require("node:path"));
 const action = async () => {
     const args = (0, utils_1.parseArgs)({ spec: constants_1.Args.Android, argv: process.argv.slice(2) });
     await (0, utils_1.ensurePrebuild)('android');
@@ -39,11 +39,11 @@ const runTask = async (task, verbose) => {
     return (0, utils_1.withSpinner)({
         operation: () => (0, utils_1.runCommand)('./gradlew', [task], {
             cwd: node_path_1.default.join(process.cwd(), 'android'),
-            verbose: verbose,
+            verbose,
         }),
         loaderMessage: 'Running task: ' + task,
         successMessage: 'Running task: ' + task + ' succeeded',
         errorMessage: 'Running task: ' + task + ' failed',
-        verbose: verbose,
+        verbose,
     });
 };

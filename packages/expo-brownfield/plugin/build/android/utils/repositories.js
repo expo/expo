@@ -6,11 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.addRepository = void 0;
 const node_path_1 = __importDefault(require("node:path"));
 const repositoryTemplates = {
-    localMaven: () => [
-        '    localDefault {',
-        '        type = "localMaven"',
-        '    }',
-    ],
+    localMaven: () => ['    localDefault {', '        type = "localMaven"', '    }'],
     localDirectory: (count, publication, projectRoot) => {
         const nameOrPlaceholder = publication.name ?? `localDirectory${count + 1}`;
         return [
@@ -46,16 +42,14 @@ const repositoryTemplates = {
 const addRepository = (lines, projectRoot, publication) => {
     switch (publication.type) {
         case 'localMaven':
-            const isAlreadyAdded = countOccurences(lines, 'localDefault') > 0;
-            return isAlreadyAdded ? [] : repositoryTemplates.localMaven();
+            return countOccurences(lines, 'localDefault') > 0 ? [] : repositoryTemplates.localMaven();
         case 'localDirectory':
         case 'remotePublic':
         case 'remotePrivate':
-            const count = countOccurences(lines, `type = "${publication.type}"`);
             if (publication.type === 'remotePrivate') {
                 publication = resolveEnv(publication);
             }
-            return repositoryTemplates[publication.type](count, 
+            return repositoryTemplates[publication.type](countOccurences(lines, `type = "${publication.type}"`), 
             // @ts-expect-error - TypeScript can't narrow union in fall-through case
             publication, projectRoot);
         default:

@@ -15,25 +15,20 @@ exports.getGroupByUUID = getGroupByUUID;
 const createGroup = (project, name, path, files = []) => {
     const group = project.addPbxGroup(files, name, path, '"<group>"');
     const mainGroup = (0, exports.getGroupByUUID)(project, project.getFirstProject().firstProject.mainGroup);
-    mainGroup.children = [
-        ...mainGroup.children,
-        { value: group.uuid, comment: name },
-    ];
+    mainGroup.children = [...mainGroup.children, { value: group.uuid, comment: name }];
     return group;
 };
 exports.createGroup = createGroup;
 const configureBuildPhases = (project, target, targetName, projectName, files = []) => {
     const nativeTargetSection = project.pbxNativeTargetSection();
     const mainTargetKey = Object.keys(nativeTargetSection).find((key) => !key.endsWith('_comment') &&
-        nativeTargetSection[key].productType ===
-            constants_1.Constants.Target.ApplicationProductType);
+        nativeTargetSection[key].productType === constants_1.Constants.Target.ApplicationProductType);
     const mainTarget = nativeTargetSection[mainTargetKey];
     // TODO: Fix types
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const bundlePhase = mainTarget.buildPhases.find((phase) => phase.comment.includes(constants_1.Constants.BuildPhase.RNBundlePhase));
     const destTargetKey = Object.keys(nativeTargetSection).find((key) => !key.endsWith('_comment') &&
-        nativeTargetSection[key].productType !==
-            constants_1.Constants.Target.ApplicationProductType);
+        nativeTargetSection[key].productType !== constants_1.Constants.Target.ApplicationProductType);
     const destTarget = nativeTargetSection[destTargetKey];
     destTarget.buildPhases = [...destTarget.buildPhases, bundlePhase];
     const script = (0, utils_1.readFromTemplate)('patch-expo.sh', { targetName, projectName });
@@ -62,8 +57,7 @@ const configureBuildSettings = (project, targetName, currentProjectVersion, bund
     const configurationList = project.addXCConfigurationList(buildConfigurationList, 'Release', 'Build configuration list for PBXNativeTarget');
     const nativeTargetSection = project.pbxNativeTargetSection();
     const destTargetKey = Object.keys(nativeTargetSection).find((key) => !key.endsWith('_comment') &&
-        nativeTargetSection[key].productType !==
-            constants_1.Constants.Target.ApplicationProductType);
+        nativeTargetSection[key].productType !== constants_1.Constants.Target.ApplicationProductType);
     const destTarget = nativeTargetSection[destTargetKey];
     destTarget.buildConfigurationList = configurationList.uuid;
 };

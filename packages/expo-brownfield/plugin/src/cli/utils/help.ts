@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+
 import type { HelpMessageParams, HelpMessageSectionParams } from './types';
 import { Output } from '../constants/output';
 
@@ -17,8 +18,7 @@ export const helpMessage = ({
 
   const commandsSection = helpMessageSection({
     items: commands,
-    left: ({ command, hasOptions }) =>
-      `${command}${hasOptions ? ` [${promptOptions}]` : ''}`,
+    left: ({ command, hasOptions }) => `${command}${hasOptions ? ` [${promptOptions}]` : ''}`,
     right: ({ description }) => description,
     title: 'Commands:',
   });

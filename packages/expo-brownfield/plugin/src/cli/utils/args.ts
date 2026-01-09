@@ -1,12 +1,9 @@
 import arg from 'arg';
+
 import { Errors } from '../constants';
 import type { ParseArgsParams } from './types';
 
-export const parseArgs = ({
-  spec,
-  argv,
-  stopAtPositional,
-}: ParseArgsParams) => {
+export const parseArgs = ({ spec, argv, stopAtPositional }: ParseArgsParams) => {
   try {
     const parsed = arg(spec, { argv, stopAtPositional });
     return parsed;

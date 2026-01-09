@@ -1,12 +1,8 @@
-import path from 'node:path';
 import chalk from 'chalk';
+import path from 'node:path';
+
 import { Args, Help } from '../../constants';
-import {
-  getTasksAndroidConfig,
-  parseArgs,
-  runCommand,
-  withSpinner,
-} from '../../utils';
+import { getTasksAndroidConfig, parseArgs, runCommand, withSpinner } from '../../utils';
 
 const action = async () => {
   const args = parseArgs({
@@ -22,17 +18,12 @@ const action = async () => {
 
   const { stdout } = await withSpinner({
     operation: () =>
-      runCommand(
-        './gradlew',
-        [`${config.libraryName}:tasks`, '--group', 'publishing'],
-        {
-          cwd: path.join(process.cwd(), 'android'),
-          verbose: config.verbose,
-        },
-      ),
+      runCommand('./gradlew', [`${config.libraryName}:tasks`, '--group', 'publishing'], {
+        cwd: path.join(process.cwd(), 'android'),
+        verbose: config.verbose,
+      }),
     loaderMessage: 'Reading publish tasks from the android project...',
-    successMessage:
-      'Successfully read publish tasks from the android project\n',
+    successMessage: 'Successfully read publish tasks from the android project\n',
     errorMessage: 'Failed to read publish tasks from the android project',
     verbose: config.verbose,
   });
@@ -47,24 +38,21 @@ const action = async () => {
     .split('\n')
     .map((line) => regex.exec(line)?.[0])
     // Remove duplicate maven local tasks
-    .filter(
-      (task) => task && !task.includes('MavenLocalRepository'),
-    ) as string[];
+    .filter((task) => task && !task.includes('MavenLocalRepository')) as string[];
 
   console.log(chalk.bold('Publish tasks:'));
   publishTasks.forEach((task) => {
     console.log(`- ${task}`);
   });
 
-  const splitRegex =
-    /^publishBrownfield(?:All|Debug|Release)PublicationTo(.+?)(?:Repository)?$/;
+  const splitRegex = /^publishBrownfield(?:All|Debug|Release)PublicationTo(.+?)(?:Repository)?$/;
   const repositories = [
     ...new Set(
       publishTasks
         .map((task) => {
           return splitRegex.exec(task)?.[1];
         })
-        .filter((repo) => repo),
+        .filter((repo) => repo)
     ),
   ];
 

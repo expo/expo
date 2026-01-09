@@ -1,4 +1,5 @@
 import { ChildProcess, spawn } from 'node:child_process';
+
 import { RunCommandOptions, RunCommandResult } from './types';
 
 let subprocess: ChildProcess | null = null;
@@ -32,7 +33,7 @@ process.on('SIGQUIT', killChildProcess);
 export const runCommand = (
   command: string,
   args: string[] = [],
-  options?: RunCommandOptions,
+  options?: RunCommandOptions
 ): Promise<RunCommandResult> => {
   return new Promise((resolve, reject) => {
     const stdio = options?.verbose ? 'inherit' : 'pipe';
