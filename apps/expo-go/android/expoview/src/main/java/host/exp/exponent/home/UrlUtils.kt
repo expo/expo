@@ -2,19 +2,19 @@ package host.exp.exponent.home
 
 import android.net.Uri
 import androidx.core.net.toUri
+import host.exp.exponent.generated.ExponentBuildConstants
 
 // Hardcoded Snack runtime URLs – these should ideally be fetched from an npm package, but we'll need to keep them in sync.
 private const val EXPO_HOST = "expo.dev"
 private const val SNACK_RUNTIME_URL_PROTOCOL = "exp"
 private const val SNACK_RUNTIME_URL_ENDPOINT = "u.expo.dev/933fd9c0-1666-11e7-afca-d980795c5824"
 
-val SDK_VERSION = "54.0.0" // TODO: Replace with actual SDK version
 
 fun normalizeSnackUrl(fullName: String, channelName: String? = null): String {
   val builder = Uri.Builder()
     .scheme(SNACK_RUNTIME_URL_PROTOCOL)
     .encodedAuthority(SNACK_RUNTIME_URL_ENDPOINT)
-    .appendQueryParameter("runtime-version", "exposdk:$SDK_VERSION")
+    .appendQueryParameter("runtime-version", "exposdk:${ExponentBuildConstants.TEMPORARY_SDK_VERSION}")
     .appendQueryParameter("channel-name", "production")
     .appendQueryParameter("snack", fullName)
 
