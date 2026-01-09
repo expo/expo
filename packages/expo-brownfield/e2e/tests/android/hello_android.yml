@@ -1,0 +1,5 @@
+appId: host.exp.exponent.brownfieldtest.android
+---
+- launchApp
+- assertVisible:
+    text: "Hello Android!"
