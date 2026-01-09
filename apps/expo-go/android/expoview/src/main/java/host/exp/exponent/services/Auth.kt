@@ -38,18 +38,17 @@ fun launchAuthSession(
   onAuthComplete: (String) -> Unit,
 ) {
   val customTabsIntent = CustomTabsIntent.Builder().build()
-//    TODO: Fix for password managers (spawn new activity
+//    TODO: Fix for password managers (spawn new activity)
   customTabsIntent.launchUrl(context, getAuthSessionURL(type.typeString))
   PendingAuthSession.callback = onAuthComplete
 }
 
+// TODO: Rewrite to the events-based mutable flow
 object PendingAuthSession {
   var callback: ((String) -> Unit)? = null
 
   fun complete(callbackUri: Uri?) {
-    // decode the token from the callbackUri
     val token = callbackUri?.getQueryParameter("session_secret")
-    // Invoke the callback with the token
     if (token == null) {
       callback = null
       return
@@ -58,10 +57,6 @@ object PendingAuthSession {
     callback?.invoke(token)
     callback = null
   }
-//
-//    fun cancel() {
-//        callback = null
-//    }
 }
 
 //TODO: Rename
@@ -80,13 +75,10 @@ class SessionRepository(context: Context) {
   }
 
   fun getThemeSetting(): ThemeSetting {
-    // Get the stored string, defaulting to "Automatic" if not found
     val themeName = sharedPreferences.getString(THEME_KEY, ThemeSetting.Automatic.name)
-    // Safely convert the string back to an enum
     return try {
       ThemeSetting.valueOf(themeName ?: ThemeSetting.Automatic.name)
     } catch (e: IllegalArgumentException) {
-      // If the stored value is invalid for some reason, default to Automatic
       ThemeSetting.Automatic
     }
   }

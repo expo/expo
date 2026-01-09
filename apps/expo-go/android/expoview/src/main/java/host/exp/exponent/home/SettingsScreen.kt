@@ -2,6 +2,7 @@ package host.exp.exponent.home
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,15 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -32,11 +29,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import host.exp.exponent.generated.ExponentBuildConstants
 import host.exp.exponent.services.ThemeSetting
 import kotlinx.coroutines.launch
@@ -174,14 +170,11 @@ fun AppInfoSection(
 
 @Composable
 fun DeleteAccountSection() {
-  var isDeleting by remember { mutableStateOf(false) }
   var deletionError by remember { mutableStateOf<String?>(null) }
   val context = LocalContext.current
   val coroutineScope = rememberCoroutineScope()
 
   fun handleDeleteAccount() {
-    if (isDeleting) return
-    isDeleting = true
     deletionError = null
 
     coroutineScope.launch {
@@ -191,46 +184,18 @@ fun DeleteAccountSection() {
         val authSessionURL =
           "https://expo.dev/settings/delete-user-expo-go?post_delete_redirect_uri=$encodedRedirect"
 
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(authSessionURL)).apply {
+        val intent = Intent(Intent.ACTION_VIEW, authSessionURL.toUri()).apply {
           addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         context.startActivity(intent)
-        // Unlike WebBrowser.openAuthSessionAsync, we can't directly await a result here.
-        // The deep link `expauth://after-delete` would need to be handled by an
-        // Activity with a corresponding intent filter to complete the sign-out flow.
       } catch (e: Exception) {
         deletionError = e.message ?: "An unknown error occurred"
-      } finally {
-        isDeleting = false
       }
     }
   }
 
-  Card(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp),
-    shape = RoundedCornerShape(8.dp),
-    colors = CardDefaults.cardColors(
-      containerColor = MaterialTheme.colorScheme.surface
-    )
-  ) {
-    Column(modifier = Modifier.padding(16.dp)) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
-//                Icon(
-//                    imageVector =
-//                    contentDescription = "Delete Account",
-//                    tint = Color.Red,
-//                    modifier = Modifier.size(24.dp).padding(end = 8.dp)
-//                )
-        Text(
-          text = "Delete your account",
-          style = MaterialTheme.typography.bodySmall,
-        )
-      }
-
-      Spacer(modifier = Modifier.height(8.dp))
-
+  LabeledGroup(label = "Delete Account") {
+    Column(modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)) {
       Text(
         text = "This action is irreversible. It will delete your personal account, projects, and activity.",
         style = MaterialTheme.typography.bodySmall,
@@ -254,22 +219,14 @@ fun DeleteAccountSection() {
       ) {
         Button(
           onClick = { handleDeleteAccount() },
-          enabled = !isDeleting,
           colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Red,
-            contentColor = Color.White
+            containerColor = MaterialTheme.colorScheme.errorContainer,
+            contentColor = MaterialTheme.colorScheme.error
           ),
-          shape = RoundedCornerShape(4.dp)
+          shape = RoundedCornerShape(4.dp),
+          border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
         ) {
-          if (isDeleting) {
-            CircularProgressIndicator(
-              modifier = Modifier.size(24.dp),
-              color = Color.White,
-              strokeWidth = 2.dp
-            )
-          } else {
-            Text("Delete Account")
-          }
+          Text("Delete Account")
         }
       }
     }

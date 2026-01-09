@@ -37,7 +37,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -75,14 +77,20 @@ fun Int.toJDuration(unit: DurationUnit) = this.toDuration(unit).toJavaDuration()
 
 class HomeAppViewModelFactory(
   private val exponentHistoryService: ExponentHistoryService,
-  private val expoViewKernel: ExpoViewKernel
+  private val expoViewKernel: ExpoViewKernel,
+  private val homeActivityEvents: MutableSharedFlow<HomeActivityEvent>
 ) : ViewModelProvider.Factory {
   @Suppress("UNCHECKED_CAST")
   override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
     if (modelClass.isAssignableFrom(HomeAppViewModel::class.java)) {
       val application =
         checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
-      return HomeAppViewModel(application, exponentHistoryService, expoViewKernel) as T
+      return HomeAppViewModel(
+        application,
+        exponentHistoryService,
+        expoViewKernel,
+        homeActivityEvents
+      ) as T
     }
     throw IllegalArgumentException("Unknown ViewModel class")
   }
@@ -91,8 +99,21 @@ class HomeAppViewModelFactory(
 class HomeAppViewModel(
   application: Application,
   private val exponentHistoryService: ExponentHistoryService,
-  expoViewKernel: ExpoViewKernel
+  expoViewKernel: ExpoViewKernel,
+  homeActivityEvents: MutableSharedFlow<HomeActivityEvent>
 ) : AndroidViewModel(application) {
+
+  init {
+    homeActivityEvents
+      .onEach { event ->
+        when (event) {
+          is HomeActivityEvent.AccountDeleted -> {
+            logout()
+          }
+        }
+      }
+      .launchIn(viewModelScope)
+  }
 
   private val client = OkHttpClient
     .Builder()
@@ -103,6 +124,8 @@ class HomeAppViewModel(
 
   val recents = exponentHistoryService.history
   val sessionRepository = SessionRepository(context = application)
+
+  val expoVersion = expoViewKernel.versionName
 
   val service = ApolloClientService(client, sessionRepository)
   private val restClient =
@@ -254,7 +277,7 @@ class HomeAppViewModel(
   fun logout() {
     sessionRepository.clearSessionSecret()
     account.refresh()
-//        TODO: logout browser session too
+//        TODO: is there a way to logout browser session too?
   }
 
   fun clearRecents() {
