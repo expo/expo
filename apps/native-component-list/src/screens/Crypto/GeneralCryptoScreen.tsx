@@ -2,7 +2,7 @@ import * as Crypto from 'expo-crypto';
 import { CryptoDigestAlgorithm, CryptoEncoding } from 'expo-crypto';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 
-import FunctionDemo, { FunctionDescription } from '../components/FunctionDemo';
+import FunctionDemo, { FunctionDescription } from '../../components/FunctionDemo';
 
 const GET_RANDOM_BYTES: FunctionDescription = {
   name: 'getRandomBytes',
@@ -132,7 +132,7 @@ const FUNCTIONS_DESCRIPTIONS = [
   DIGEST,
 ];
 
-function CryptoScreen() {
+function GeneralCryptoScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {FUNCTIONS_DESCRIPTIONS.map((props, idx) => (
@@ -142,8 +142,8 @@ function CryptoScreen() {
   );
 }
 
-CryptoScreen.navigationOptions = {
-  title: 'Crypto',
+GeneralCryptoScreen.navigationOptions = {
+  title: 'General Crypto',
 };
 
 const styles = StyleSheet.create({
@@ -153,4 +153,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CryptoScreen;
+export default GeneralCryptoScreen;
