@@ -4,8 +4,8 @@ import { STYLES_SECONDARY } from '~/components/plugins/api/styles';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
-import { isClientPlatformTag } from '~/ui/components/Tag/helpers';
 import { StatusTag } from '~/ui/components/Tag/StatusTag';
+import { isClientPlatformTag } from '~/ui/components/Tag/helpers';
 
 import { CommentData, CommentTagData } from '../APIDataTypes';
 import { getAllTagData, getCommentContent } from '../APISectionUtils';
