@@ -2,61 +2,14 @@ package host.exp.exponent.services
 
 import android.content.Context
 import android.net.Uri
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.edit
-import androidx.core.net.toUri
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
-
-
-const val redirectBase = "expauth://auth"
-const val origin = "https://expo.dev"
-
-fun getAuthSessionURL(urlPath: String): Uri {
-  val encodedRedirect = URLEncoder.encode(redirectBase, StandardCharsets.UTF_8.toString())
-
-  return "$origin/$urlPath?confirm_account=1&app_redirect_uri=$encodedRedirect".toUri()
-}
-
-enum class AuthSessionType(val typeString: String) {
-  LOGIN("login"),
-  SIGNUP("signup")
-}
-
 
 enum class ThemeSetting {
   Automatic,
   Light,
   Dark
-}
-
-fun launchAuthSession(
-  context: Context,
-  type: AuthSessionType,
-  onAuthComplete: (String) -> Unit,
-) {
-  val customTabsIntent = CustomTabsIntent.Builder().build()
-//    TODO: Fix for password managers (spawn new activity)
-  customTabsIntent.launchUrl(context, getAuthSessionURL(type.typeString))
-  PendingAuthSession.callback = onAuthComplete
-}
-
-// TODO: Rewrite to the events-based mutable flow
-object PendingAuthSession {
-  var callback: ((String) -> Unit)? = null
-
-  fun complete(callbackUri: Uri?) {
-    val token = callbackUri?.getQueryParameter("session_secret")
-    if (token == null) {
-      callback = null
-      return
-    }
-
-    callback?.invoke(token)
-    callback = null
-  }
 }
 
 //TODO: Rename
