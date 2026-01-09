@@ -2,7 +2,7 @@ import { mergeClasses } from '@expo/styleguide';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { TerminalSquareIcon } from '@expo/styleguide-icons/outline/TerminalSquareIcon';
 import { Language, Prism } from 'prism-react-renderer';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 
 import { CODE } from '~/ui/components/Text';
 import { useIsMobileView } from '~/ui/components/utils/isMobileView';
@@ -13,8 +13,15 @@ import { SnippetAction } from '../SnippetAction';
 import { SnippetContent } from '../SnippetContent';
 import { SnippetHeader } from '../SnippetHeader';
 import { CopyAction } from '../actions/CopyAction';
+import {
+  PACKAGE_MANAGER_ORDER,
+  getPackageManagerServerSnapshot,
+  getPackageManagerSnapshot,
+  setPackageManagerPreference,
+  subscribePackageManagerStore,
+} from './packageManagerStore';
+import type { PackageManagerKey } from './packageManagerStore';
 
-type PackageManagerKey = 'npm' | 'yarn' | 'pnpm' | 'bun';
 type PackageManagerCommandSet = Partial<Record<PackageManagerKey, string[]>>;
 
 type TerminalProps = {
@@ -51,10 +58,6 @@ type PackageManagerState = {
   setActiveManager: (manager: PackageManagerKey) => void;
 };
 
-const STORAGE_KEY = 'expo-docs-terminal-package-manager';
-const CHANGE_EVENT = 'expo-docs-terminal-package-manager-change';
-
-const PACKAGE_MANAGER_ORDER: PackageManagerKey[] = ['npm', 'yarn', 'pnpm', 'bun'];
 export const Terminal = ({
   cmd,
   cmdCopy,
@@ -138,65 +141,18 @@ function usePackageManagerState(
     [packageManagers]
   );
 
-  const [activeManager, setActiveManager] = useState<PackageManagerKey | null>(() => {
-    if (typeof window === 'undefined') {
-      return availableManagers[0] ?? null;
-    }
-    const stored = window.localStorage.getItem(STORAGE_KEY) as PackageManagerKey | null;
-    if (stored && availableManagers.includes(stored)) {
-      return stored;
+  const preferredManager = useSyncExternalStore(
+    subscribePackageManagerStore,
+    getPackageManagerSnapshot,
+    getPackageManagerServerSnapshot
+  );
+
+  const activeManager = useMemo(() => {
+    if (preferredManager && availableManagers.includes(preferredManager)) {
+      return preferredManager;
     }
     return availableManagers[0] ?? null;
-  });
-
-  useEffect(() => {
-    const shouldReset = !activeManager || !availableManagers.includes(activeManager);
-    setActiveManager(
-      availableManagers.length > 0 ? (shouldReset ? availableManagers[0] : activeManager) : null
-    );
-  }, [activeManager, availableManagers]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-    if (activeManager) {
-      window.localStorage.setItem(STORAGE_KEY, activeManager);
-      window.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: activeManager }));
-    }
-  }, [activeManager]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key !== STORAGE_KEY || !event.newValue) {
-        return;
-      }
-      const manager = event.newValue as PackageManagerKey;
-      if (!availableManagers.includes(manager) || manager === activeManager) {
-        return;
-      }
-      setActiveManager(manager);
-    };
-
-    const handleChange = (event: Event) => {
-      const manager = (event as CustomEvent<PackageManagerKey>).detail;
-      if (!manager || !availableManagers.includes(manager) || manager === activeManager) {
-        return;
-      }
-      setActiveManager(manager);
-    };
-
-    window.addEventListener('storage', handleStorage);
-    window.addEventListener(CHANGE_EVENT, handleChange);
-    return () => {
-      window.removeEventListener('storage', handleStorage);
-      window.removeEventListener(CHANGE_EVENT, handleChange);
-    };
-  }, [activeManager, availableManagers]);
+  }, [availableManagers, preferredManager]);
 
   const shouldShowPackageTabs = availableManagers.length > 0;
   const activeCmd = useMemo(() => {
@@ -206,7 +162,20 @@ function usePackageManagerState(
     return fallbackCmd;
   }, [activeManager, fallbackCmd, packageManagers, shouldShowPackageTabs]);
 
-  return { availableManagers, activeManager, activeCmd, shouldShowPackageTabs, setActiveManager };
+  const setActiveManager = (manager: PackageManagerKey) => {
+    if (!availableManagers.includes(manager)) {
+      return;
+    }
+    setPackageManagerPreference(manager);
+  };
+
+  return {
+    availableManagers,
+    activeManager,
+    activeCmd,
+    shouldShowPackageTabs,
+    setActiveManager,
+  };
 }
 
 /**
