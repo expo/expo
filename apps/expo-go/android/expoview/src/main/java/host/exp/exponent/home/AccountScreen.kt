@@ -48,11 +48,15 @@ fun AccountScreen(
   ) { paddingValues ->
     Column(
       modifier = Modifier
-          .fillMaxSize()
-          .verticalScroll(rememberScrollState())
-          .padding(paddingValues)
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState())
+        .padding(paddingValues)
     ) {
-      LabeledGroup(label = "Log Out", modifier = Modifier.padding(top = 8.dp), wrapWithCard = false) {
+      LabeledGroup(
+        label = "Log Out",
+        modifier = Modifier.padding(top = 8.dp),
+        wrapWithCard = false
+      ) {
         Box(modifier = Modifier.padding(horizontal = 16.dp)) {
           Button(
             onClick = {
@@ -131,8 +135,8 @@ private fun AccountRow(
           model = owner.profilePhoto,
           contentDescription = "Account icon",
           modifier = Modifier
-              .size(24.dp)
-              .clip(CircleShape),
+            .size(24.dp)
+            .clip(CircleShape),
           contentScale = ContentScale.Crop
         )
       } else {

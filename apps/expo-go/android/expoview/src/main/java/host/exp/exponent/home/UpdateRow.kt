@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import host.exp.exponent.Constants
 import host.exp.exponent.generated.ExponentBuildConstants
 import host.exp.exponent.graphql.BranchDetailsQuery
 import host.exp.exponent.graphql.BranchesForProjectQuery
@@ -39,7 +38,10 @@ private fun toExp(httpUrl: String): String {
 /**
  * Opens the manifest permalink for an update.
  */
-private fun openUpdateManifestPermalink(uriHandler: androidx.compose.ui.platform.UriHandler, manifestPermalink: String) {
+private fun openUpdateManifestPermalink(
+  uriHandler: androidx.compose.ui.platform.UriHandler,
+  manifestPermalink: String
+) {
   val expUrl = toExp(manifestPermalink)
   uriHandler.openUri(normalizeUrl(expUrl))
 }
@@ -65,7 +67,10 @@ private fun UpdateRowContents(
     style = MaterialTheme.typography.bodySmall,
   )
   if (!isCompatible && !omitCompatibility) {
-    ItemRowTag(text = "Not compatible with this version of Expo Go", modifier = Modifier.padding(top = 4.dp))
+    ItemRowTag(
+      text = "Not compatible with this version of Expo Go",
+      modifier = Modifier.padding(top = 4.dp)
+    )
   }
 }
 

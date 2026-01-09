@@ -1,8 +1,6 @@
 package host.exp.exponent.services
 
-import android.util.Log
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.ApolloResponse
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo.cache.normalized.fetchPolicy
@@ -131,7 +129,8 @@ class ApolloClientService(
         platform = AppPlatform.ANDROID,
         limit = count,
         offset = 0
-      )).toFlow()
+      )
+    ).toFlow()
       .map { response ->
         response.data?.account?.byName?.apps ?: emptyList()
       }
@@ -187,7 +186,8 @@ class ApolloClientService(
         accountName = accountName,
         limit = count,
         offset = 0
-      )).toFlow()
+      )
+    ).toFlow()
       .map { response ->
         response.data?.account?.byName?.snacks ?: emptyList()
       }

@@ -1,7 +1,5 @@
 package host.exp.exponent.services
 
-import android.content.Context
-import androidx.core.util.remove
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import expo.modules.manifests.core.EmbeddedManifest
@@ -12,15 +10,14 @@ import host.exp.exponent.storage.ExponentSharedPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.Date
-import javax.inject.Inject
 import javax.inject.Singleton
 
 data class HistoryItem(
   val manifestUrl: String,
   val embeddedManifest: EmbeddedManifest? = null,
   val updatesManifest: ExpoUpdatesManifest? = null,
-  val timestamp: Long = Date().time)
-{
+  val timestamp: Long = Date().time
+) {
   val manifest: Manifest?
     get() = updatesManifest ?: embeddedManifest
 }

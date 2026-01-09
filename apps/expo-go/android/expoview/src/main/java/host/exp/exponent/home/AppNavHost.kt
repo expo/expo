@@ -84,7 +84,8 @@ fun RootNavigation(
 ) {
   val navController = rememberNavController()
 
-  val viewModelFactory = remember { HomeAppViewModelFactory(exponentHistoryService, expoViewKernel) }
+  val viewModelFactory =
+    remember { HomeAppViewModelFactory(exponentHistoryService, expoViewKernel) }
 
   val viewModel: HomeAppViewModel = viewModel(factory = viewModelFactory)
 
