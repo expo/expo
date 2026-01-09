@@ -37,6 +37,7 @@ fun HomeScreen(
   navigateToProjects: () -> Unit,
   navigateToSnacks: () -> Unit,
   navigateToProjectDetails: (appId: String) -> Unit,
+  navigateToFeedback: () -> Unit,
   onLoginClick: () -> Unit,
   accountHeader: @Composable () -> Unit = { },
   bottomBar: @Composable () -> Unit = { }
@@ -97,6 +98,7 @@ fun HomeScreen(
           .verticalScroll(rememberScrollState())
       ) {
         UpgradeWarning()
+        UserReviewSection(viewModel = viewModel, navigateToFeedback = { navigateToFeedback() })
         LabeledGroup(
           label = "Development servers",
           modifier = Modifier.padding(top = 8.dp),
