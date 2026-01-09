@@ -165,6 +165,7 @@ export abstract class ManifestMiddleware<
       routerRoot: getRouterDirectoryModuleIdWithManifest(this.projectRoot, projectConfig.exp),
       protocol,
       reactCompiler: !!projectConfig.exp.experiments?.reactCompiler,
+      css: !!projectConfig.exp.experiments?.functionalCSS,
     });
 
     // Resolve all assets and set them on the manifest as URLs
@@ -222,6 +223,7 @@ export abstract class ManifestMiddleware<
     routerRoot,
     protocol,
     reactCompiler,
+    css,
   }: {
     platform: string;
     hostname?: string | null;
@@ -233,6 +235,7 @@ export abstract class ManifestMiddleware<
     routerRoot: string;
     protocol?: 'http' | 'https';
     reactCompiler: boolean;
+    css: boolean;
   }): string {
     const path = createBundleUrlPath({
       mode: this.options.mode ?? 'development',
@@ -247,6 +250,7 @@ export abstract class ManifestMiddleware<
       asyncRoutes,
       routerRoot,
       reactCompiler,
+      css,
     });
 
     return (

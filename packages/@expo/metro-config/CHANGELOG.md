@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Added support for functional CSS. ([#40342](https://github.com/expo/expo/pull/40342) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable unstable worker threads for transformer by default ([#41714](https://github.com/expo/expo/pull/41714) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `toString()` to image assets on web (excluding RSC) for easier asset resolution. ([#40895](https://github.com/expo/expo/pull/40895) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure `loader()` functions are stripped from client bundles ([#40670](https://github.com/expo/expo/pull/40670) by [@hassankhan](https://github.com/hassankhan))

@@ -325,6 +325,7 @@ export async function getErrorOverlayHtmlAsync({
       routerRoot,
       isExporting: false,
       reactCompiler: false,
+      css: false,
     }
   );
 

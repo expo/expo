@@ -49,6 +49,9 @@ export type ExpoMetroOptions = {
   hosted?: boolean;
   /** Disable live bindings (enabled by default, required for circular deps) in experimental import export support. */
   liveBindings?: boolean;
+
+  /** Enable CSS support for native platforms. */
+  css?: boolean;
 };
 
 // See: @expo/metro-config/src/serializer/fork/baseJSBundle.ts `ExpoSerializerOptions`
@@ -129,6 +132,7 @@ export function getMetroDirectBundleOptionsForExpoConfig(
   return getMetroDirectBundleOptions({
     ...options,
     reactCompiler: !!exp.experiments?.reactCompiler,
+    css: !!exp.experiments?.functionalCSS,
     baseUrl: getBaseUrlFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     asyncRoutes: getAsyncRoutesFromExpoConfig(exp, options.mode, options.platform),
@@ -164,6 +168,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     useMd5Filename,
     hosted,
     liveBindings,
+    css,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -205,6 +210,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     hosted: hosted ? '1' : undefined,
     useMd5Filename: useMd5Filename || undefined,
     liveBindings: !liveBindings ? String(liveBindings) : undefined,
+    css: css ? '1' : undefined,
   };
 
   // Iterate and delete undefined values
@@ -253,6 +259,7 @@ export function createBundleUrlPathFromExpoConfig(
 ): string {
   return createBundleUrlPath({
     ...options,
+    css: !!exp.experiments?.functionalCSS,
     reactCompiler: !!exp.experiments?.reactCompiler,
     baseUrl: getBaseUrlFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
@@ -303,6 +310,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
     runModule,
     hosted,
     liveBindings,
+    css,
   } = withDefaults(options);
 
   const dev = String(mode !== 'production');
@@ -398,6 +406,9 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
   if (liveBindings === false) {
     queryParams.append('transform.liveBindings', String(false));
   }
+  if (css) {
+    queryParams.append('transform.css', String('1'));
+  }
 
   return queryParams;
 }
@@ -448,6 +459,7 @@ export function getMetroOptionsFromUrl(urlFragment: string) {
     runModule: isTruthy(getStringParam('runModule') ?? 'true'),
     modulesOnly: isTruthy(getStringParam('modulesOnly') ?? 'false'),
     liveBindings: isTruthy(getStringParam('transform.liveBindings') ?? 'true'),
+    css: isTruthy(getStringParam('transform.css') ?? 'false'),
   };
 
   return options;

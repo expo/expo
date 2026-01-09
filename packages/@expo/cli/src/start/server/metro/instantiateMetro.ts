@@ -203,6 +203,7 @@ export async function loadMetroConfigAsync(
     isTsconfigPathsEnabled: exp.experiments?.tsconfigPaths ?? true,
     isAutolinkingResolverEnabled: autolinkingModuleResolutionEnabled,
     isExporting,
+    isFunctionalCSSEnabled: !!exp.experiments?.functionalCSS,
     isNamedRequiresEnabled: env.EXPO_USE_METRO_REQUIRE,
     isReactServerComponentsEnabled: !!exp.experiments?.reactServerComponentRoutes,
     getMetroBundler,
