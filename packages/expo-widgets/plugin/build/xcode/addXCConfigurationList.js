@@ -17,6 +17,9 @@ function addXCConfigurationList(xcodeProject, props) {
         SWIFT_OPTIMIZATION_LEVEL: `"-Onone"`,
         CODE_SIGN_ENTITLEMENTS: `"${props.targetName}/${props.targetName}.entitlements"`,
         APPLICATION_EXTENSION_API_ONLY: '"YES"',
+        // Mark the target as an Expo Widget
+        // it is important because some functions in linked libraries (e.g. ExpoModulesCore) are not compatible with widgets.
+        OTHER_SWIFT_FLAGS: '"$(inherited) -D IS_EXPO_WIDGET"',
     };
     const buildConfigurationsList = [
         {

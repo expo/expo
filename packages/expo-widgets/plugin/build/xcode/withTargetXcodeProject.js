@@ -13,9 +13,6 @@ const withTargetXcodeProject = (config, { targetName, targetBundleIdentifier, de
     const targetUuid = xcodeProject.generateUuid();
     const groupName = 'Embed Foundation Extensions';
     const marketingVersion = config.version;
-    // Mark the target as an Expo Widget
-    // it is important because some functions in linked libraries (e.g. ExpoModulesCore) are not compatible with widgets.
-    xcodeProject.addBuildProperty('IS_EXPO_WIDGET', 'YES', 'Debug', targetUuid);
     const xCConfigurationList = (0, addXCConfigurationList_1.addXCConfigurationList)(xcodeProject, {
         targetName,
         currentProjectVersion: config.ios.buildNumber || '1',
