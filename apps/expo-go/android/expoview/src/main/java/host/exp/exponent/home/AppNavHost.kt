@@ -83,18 +83,13 @@ val bottomBarDestinations = listOf(
 
 @Composable
 fun RootNavigation(
-  viewModel: HomeAppViewModel,
+  viewModel: HomeAppViewModel
 ) {
   val navController = rememberNavController()
 
   BackHandler(enabled = true) {
     navController.popBackStack()
   }
-
-  val viewModelFactory =
-    remember { HomeAppViewModelFactory(exponentHistoryService, expoViewKernel, homeActivityEvents) }
-
-  val viewModel: HomeAppViewModel = viewModel(factory = viewModelFactory)
 
   val themeSetting by viewModel.selectedTheme.collectAsState()
 
