@@ -1,6 +1,7 @@
 import { ExpoGoLogo, mergeClasses } from '@expo/styleguide';
 import { AndroidIcon } from '@expo/styleguide-icons/custom/AndroidIcon';
 import { AppleIcon } from '@expo/styleguide-icons/custom/AppleIcon';
+import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
 import { AtSignIcon } from '@expo/styleguide-icons/outline/AtSignIcon';
 
 import { PlatformName } from '~/types/common';
@@ -31,6 +32,8 @@ export const PlatformIcon = ({ platform }: PlatformIconProps) => {
       return <AtSignIcon className="icon-2xs shrink-0 text-palette-orange12 opacity-80" />;
     case 'expo':
       return <ExpoGoLogo className="icon-2xs shrink-0 text-palette-purple12 opacity-80" />;
+    case 'dev-builds':
+      return <BuildIcon className="icon-2xs shrink-0 text-palette-gray12 opacity-80" />;
     default:
       return null;
   }

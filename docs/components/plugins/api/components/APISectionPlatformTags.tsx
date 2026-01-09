@@ -33,12 +33,17 @@ export const APISectionPlatformTags = ({
   const platformsData = platforms ?? getAllTagData('platform', comment);
   const experimentalData = getAllTagData('experimental', comment);
 
+  const runtimePlatforms = new Set(['expo-go', 'dev-builds']);
+  const isRuntimeTag = (platform: string) => runtimePlatforms.has(platform.toLowerCase());
+  const filteredDefaultPlatforms = defaultPlatforms?.filter(
+    platform => !isRuntimeTag(platform)
+  );
   const platformNames =
     userProvidedPlatforms ??
     (platformsData.length > 0
       ? platformsData?.map(platformData => getCommentContent(platformData.content))
       : isCompatibleVersion && !disableFallback
-        ? defaultPlatforms?.map(platform => platform.replace('*', ''))
+        ? filteredDefaultPlatforms?.map(platform => platform.replace('*', ''))
         : []);
 
   if (experimentalData.length === 0 && !platformNames?.length) {
