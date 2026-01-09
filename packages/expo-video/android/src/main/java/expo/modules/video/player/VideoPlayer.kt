@@ -58,7 +58,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   private var renderersFactory = DefaultRenderersFactory(context)
     .forceEnableMediaCodecAsynchronousQueueing()
     .setEnableDecoderFallback(true)
-  private var listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
+  private val listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
   private val currentVideoViewRef = MutableWeakReference<VideoView?>(null) { new, old ->
     sendEvent(PlayerEvent.TargetViewChanged(new, old))
   }
@@ -481,19 +481,24 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   fun addListener(videoPlayerListener: VideoPlayerListener) {
-    if (listeners.all { it.get() != videoPlayerListener }) {
-      listeners.add(WeakReference(videoPlayerListener))
+    synchronized(listeners) {
+      if (listeners.all { it.get() != videoPlayerListener }) {
+        listeners.add(WeakReference(videoPlayerListener))
+      }
     }
   }
 
   fun removeListener(videoPlayerListener: VideoPlayerListener) {
-    listeners.removeAll { it.get() == videoPlayerListener }
+    synchronized(listeners) {
+      listeners.removeAll { it.get() == videoPlayerListener }
+    }
   }
 
   private fun sendEvent(event: PlayerEvent) {
+    val listenersSnapshot = synchronized(listeners) {
+      listeners.mapNotNull { it.get() }
+    }
     // Emits to the native listeners
-    val listenersSnapshot = listeners.toList().mapNotNull { it.get() }
-
     event.emit(this, listenersSnapshot)
 
     // Emits to the JS side
