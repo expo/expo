@@ -2,21 +2,7 @@ import ExpoModulesCore
 
 public final class FontLoaderModule: Module {
   // could be a Set, but to be able to pass to JS we keep it as an array
-  private var _registeredFonts: [String] = []
-  private var hasQueriedNativeFonts = false
-
-  private var registeredFonts: [String] {
-    get {
-      if !hasQueriedNativeFonts {
-        hasQueriedNativeFonts = true
-        _registeredFonts = queryCustomNativeFonts()
-      }
-      return _registeredFonts
-    }
-    set {
-      _registeredFonts = newValue
-    }
-  }
+  private lazy var registeredFonts: [String] = queryCustomNativeFonts()
 
   public required init(appContext: AppContext) {
     super.init(appContext: appContext)
