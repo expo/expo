@@ -2,8 +2,8 @@ import { ConfigPlugin, createRunOncePlugin, withPlugins } from 'expo/config-plug
 
 import { WidgetConfig } from './types/WidgetConfig.type';
 import withAppGroupEntitlements from './withAppGroupEntitlements';
+import withAppInfoPlist from './withAppInfoPlist';
 import withPodsLinking from './withPodsLinking';
-import withLiveActivities from './withProjectInfoPlist';
 import withPushNotifications from './withPushNotifications';
 import withWidgetSourceFiles from './withWidgetSourceFiles';
 import withTargetXcodeProject from './xcode/withTargetXcodeProject';
@@ -60,7 +60,7 @@ const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps> = (
         onFilesGenerated: setFiles,
       },
     ],
-    [withLiveActivities, { frequentUpdates }],
+    [withAppInfoPlist, { frequentUpdates, groupIdentifier }],
     [withPushNotifications, { enablePushNotifications: enablePushNotifications ?? false }],
     [withAppGroupEntitlements, { targetName, targetBundleIdentifier, groupIdentifier }],
     [

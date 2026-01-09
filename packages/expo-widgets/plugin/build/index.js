@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
 const withAppGroupEntitlements_1 = __importDefault(require("./withAppGroupEntitlements"));
+const withAppInfoPlist_1 = __importDefault(require("./withAppInfoPlist"));
 const withPodsLinking_1 = __importDefault(require("./withPodsLinking"));
-const withProjectInfoPlist_1 = __importDefault(require("./withProjectInfoPlist"));
 const withPushNotifications_1 = __importDefault(require("./withPushNotifications"));
 const withWidgetSourceFiles_1 = __importDefault(require("./withWidgetSourceFiles"));
 const withTargetXcodeProject_1 = __importDefault(require("./xcode/withTargetXcodeProject"));
@@ -43,7 +43,7 @@ const withWidgets = (config, { groupIdentifier, enablePushNotifications, widgets
                 onFilesGenerated: setFiles,
             },
         ],
-        [withProjectInfoPlist_1.default, { frequentUpdates }],
+        [withAppInfoPlist_1.default, { frequentUpdates, groupIdentifier }],
         [withPushNotifications_1.default, { enablePushNotifications: enablePushNotifications ?? false }],
         [withAppGroupEntitlements_1.default, { targetName, targetBundleIdentifier, groupIdentifier }],
         [

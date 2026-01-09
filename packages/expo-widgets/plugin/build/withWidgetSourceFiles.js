@@ -57,7 +57,7 @@ const withWidgetSourceFiles = (config, { widgets, bundleIdentifier, targetName, 
         };
         fs.writeFileSync(entitlementsPath, plist_1.default.build(entitlementsContent));
         const infoPlistPath = `${targetDirectory}/Info.plist`;
-        fs.writeFileSync(infoPlistPath, infoPlist);
+        fs.writeFileSync(infoPlistPath, infoPlist(groupIdentifier));
         const indexSwiftPath = createIndexSwift(widgets, targetDirectory);
         const providerSwiftPath = createProviderSwift(targetDirectory);
         const widgetSwiftPaths = widgets.map((widget) => createWidgetSwift(bundleIdentifier, widget, targetDirectory));
@@ -166,7 +166,7 @@ struct WidgetEntryView : View {
     }
   }
 }`;
-const infoPlist = `<?xml version="1.0" encoding="UTF-8"?>
+const infoPlist = (groupIdentifier) => `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
@@ -175,6 +175,8 @@ const infoPlist = `<?xml version="1.0" encoding="UTF-8"?>
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.widgetkit-extension</string>
 	</dict>
+  <key>ExpoWidgetsAppGroupIdentifier</key>
+  <string>${groupIdentifier}</string>
 </dict>
 </plist>
 `;
