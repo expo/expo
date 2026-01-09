@@ -208,8 +208,12 @@ class ContactRepository(val contentResolver: ContentResolver) {
         .take(limit ?: Int.MAX_VALUE)
         .forEach { _ -> queryAggregator.aggregateContactsRow(cursor) }
     }
-
-    val contactIds = queryAggregator.getContactIdsFromBuilders()
+    // Filtering by contactIds in the next step is not necessary, provided all contacts are fetched
+    val contactIds = if (limit != null || offset != null || searchedDisplayName != null) {
+      queryAggregator.getContactIdsFromBuilders()
+    } else {
+      null
+    }
     contentResolver.safeQuery(
       uri = ContactsContract.Data.CONTENT_URI,
       projection = queryBuilder.buildDataProjection(),
