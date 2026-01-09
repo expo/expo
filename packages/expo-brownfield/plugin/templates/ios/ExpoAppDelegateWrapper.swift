@@ -6,7 +6,6 @@ public class ExpoAppDelegateWrapper {
 
   init(factory: RCTReactNativeFactory) {
     expoDelegate = ExpoAppDelegate()
-    expoDelegate.bindReactNativeFactory(factory)
   }
 
   func recreateRootView(
