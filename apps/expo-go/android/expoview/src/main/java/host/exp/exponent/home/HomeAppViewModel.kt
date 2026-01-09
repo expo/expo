@@ -166,9 +166,14 @@ class HomeAppViewModel(
 
   val selectedAccount: StateFlow<CurrentUserActorData.Account?> =
     selectedAccountId.combine(account.dataFlow) { id, currentUserData ->
-      if (id == null || currentUserData == null) {
+      if (currentUserData == null) {
         return@combine null
       }
+
+      if (id == null) {
+        return@combine currentUserData.accounts.firstOrNull()
+      }
+
       currentUserData.accounts.find { it.id == id }
     }.stateIn(
       scope = viewModelScope,
