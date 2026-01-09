@@ -10,7 +10,7 @@ type PlatformTagProps = Omit<TagProps, 'name'> & {
   platform: PlatformName;
 };
 
-export const PlatformTag = ({ platform, className }: PlatformTagProps) => {
+export const PlatformTag = ({ platform, className, ...rest }: PlatformTagProps) => {
   const platformName = getPlatformName(platform);
 
   return (
@@ -22,7 +22,8 @@ export const PlatformTag = ({ platform, className }: PlatformTagProps) => {
         '[h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0',
         getTagClasses(platformName),
         className
-      )}>
+      )}
+      {...rest}>
       <PlatformIcon platform={platformName} />
       <span className={mergeClasses('whitespace-nowrap !text-3xs font-normal !leading-none')}>
         {formatName(platform)}
