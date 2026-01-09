@@ -16,6 +16,7 @@ enum ContactField: String, Enumerable {
   case PHONETIC_COMPANY_NAME = "phoneticCompanyName"
   case IMAGE = "image"
   case THUMBNAIL = "thumbnail"
+  case NOTE = "note"
   case EMAILS = "emails"
   case PHONES = "phones"
   case ADDRESSES = "addresses"

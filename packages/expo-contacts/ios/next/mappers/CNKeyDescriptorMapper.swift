@@ -40,6 +40,8 @@ class CNKeyDescriptorMapper {
         return CNContactImageDataKey as CNKeyDescriptor
       case .THUMBNAIL:
         return CNContactThumbnailImageDataKey as CNKeyDescriptor
+      case .NOTE:
+        return CNContactNoteKey as CNKeyDescriptor
       case .EMAILS:
         return CNContactEmailAddressesKey as CNKeyDescriptor
       case .PHONES:

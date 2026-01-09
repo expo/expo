@@ -4,6 +4,7 @@ import ExpoModulesCore
 
 class ContactRepository {
   private let store: CNContactStore
+  private var cachedNotesAccess: Bool?
 
   init(store: CNContactStore) {
     self.store = store
@@ -29,11 +30,12 @@ class ContactRepository {
   }
 
   func getById(id: String, keysToFetch: [CNKeyDescriptor]) -> CNContact? {
-    return try? store.unifiedContact(withIdentifier: id, keysToFetch: keysToFetch)
+    let safeKeys = getSafeKeys(keysToFetch: keysToFetch)
+    return try? store.unifiedContact(withIdentifier: id, keysToFetch: safeKeys)
   }
 
   func getMutableById(id: String, keysToFetch: [CNKeyDescriptor]) throws -> CNMutableContact {
-    let contact = getById(id: id, keysToFetch: keysToFetch)
+    let contact = getById(id: id, keysToFetch: getSafeKeys(keysToFetch: keysToFetch))
     guard let mutableContact = contact?.mutableCopy() as? CNMutableContact else {
       throw FailedToGetMutableContact()
     }
@@ -49,7 +51,7 @@ class ContactRepository {
     sortOrder: CNContactSortOrder? = CNContactSortOrder.userDefault,
     unifyResults: Bool? = false
   ) throws -> [CNContact] {
-    let request = CNContactFetchRequest(keysToFetch: keysToFetch)
+    let request = CNContactFetchRequest(keysToFetch: getSafeKeys(keysToFetch: keysToFetch))
     request.unifyResults = unifyResults ?? false
     request.predicate = predicate
     request.sortOrder = sortOrder ?? CNContactSortOrder.userDefault
@@ -75,7 +77,7 @@ class ContactRepository {
   }
 
   func getAll(keysToFetch: [CNKeyDescriptor]) throws -> [CNContact] {
-    let request = CNContactFetchRequest(keysToFetch: keysToFetch)
+    let request = CNContactFetchRequest(keysToFetch: getSafeKeys(keysToFetch: keysToFetch))
     var contacts: [CNContact] = []
 
     try store.enumerateContacts(with: request) { contact, _ in
@@ -102,5 +104,29 @@ class ContactRepository {
       stop.pointee = true
     }
     return result
+  }
+
+  private func getSafeKeys(keysToFetch: [CNKeyDescriptor]) -> [CNKeyDescriptor] {
+    return keysToFetch.filter { key in
+      if let keyString = key as? String, keyString == CNContactNoteKey {
+        return canAccessNotesField()
+      }
+      return true
+    }
+  }
+
+  private func canAccessNotesField() -> Bool {
+    if let cached = cachedNotesAccess {
+      return cached
+    }
+    let fetchRequest = CNContactFetchRequest(keysToFetch: [CNContactNoteKey as CNKeyDescriptor])
+    do {
+      try store.enumerateContacts(with: fetchRequest) { (contact, stop) in
+        stop.pointee = true
+      }
+    } catch {
+      return false
+    }
+    return true
   }
 }
