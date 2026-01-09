@@ -67,7 +67,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
     by owner: AnyObject?,
     withArguments args: [Any],
     appContext: AppContext,
-    callback: @Sendable @escaping (FunctionCallResult) -> ()
+    callback: @Sendable @escaping (FunctionCallResult) -> Void
   ) {
     let promise = Promise(appContext: appContext) { value in
       callback(.success(Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: ~ReturnType.self)))

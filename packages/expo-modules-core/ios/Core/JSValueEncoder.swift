@@ -187,7 +187,7 @@ private struct JSArrayEncodingContainer: UnkeyedEncodingContainer {
     valueHolder.value = .from(items, runtime: runtime)
   }
 
-  mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
+  mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> where NestedKey: CodingKey {
     fatalError("JSValueEncoder does not support nested containers")
   }
 
