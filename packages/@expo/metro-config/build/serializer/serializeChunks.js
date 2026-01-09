@@ -358,6 +358,19 @@ class Chunk {
                     })
                         .flat()),
                 ].filter((value) => typeof value === 'string'),
+                loaderReferences: [
+                    ...new Set([...this.deps]
+                        .map((module) => {
+                        return module.output.map((output) => {
+                            if ('loaderReference' in output.data &&
+                                typeof output.data.loaderReference === 'string') {
+                                return output.data.loaderReference;
+                            }
+                            return undefined;
+                        });
+                    })
+                        .flat()),
+                ].filter((value) => typeof value === 'string'),
             },
             source: jsCode.code,
         };

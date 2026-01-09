@@ -46,6 +46,8 @@ export interface RouteInfo<TRegex = RegExp | string> {
     permanent?: boolean;
     /** If a redirect, which methods are allowed. Undefined represents all methods */
     methods?: string[];
+    /** Path to the loader module for this route, typically `_expo/loaders/[ROUTE].js`. When present, the loader should be executed before rendering. */
+    loader?: string;
 }
 export interface RoutesManifest<TRegex = RegExp | string> {
     /**

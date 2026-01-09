@@ -1,5 +1,6 @@
 import type { Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
-import type { ServerRenderModule, SsrRenderFn } from '../../rendering';
+import type { LoaderModule, RenderOptions, ServerRenderModule, SsrRenderFn } from '../../rendering';
+import { parseParams } from '../../utils/matchers';
 
 function initManifestRegExp(manifest: RawManifest): Manifest {
   return {
@@ -79,6 +80,18 @@ export function createEnvironment(input: EnvironmentInput) {
     return ssrRenderer;
   }
 
+  async function executeLoader(request: Request, route: Route): Promise<unknown> {
+    if (!route.loader) {
+      return null;
+    }
+    const loaderModule = (await input.loadModule(route.loader)) as LoaderModule | null;
+    if (!loaderModule?.loader) {
+      return null;
+    }
+    const params = parseParams(request, route);
+    return loaderModule.loader({ params, request });
+  }
+
   return {
     async getRoutesManifest(): Promise<Manifest> {
       return getCachedRoutesManifest();
@@ -88,8 +101,20 @@ export function createEnvironment(input: EnvironmentInput) {
       // SSR path: Render at runtime if SSR module is available
       const renderer = await getServerRenderer();
       if (renderer) {
+        let renderOptions: RenderOptions | undefined;
+
         try {
-          return await renderer(request);
+          const data = await executeLoader(request, route);
+          if (data !== null) {
+            renderOptions = { loader: { data } };
+          }
+        } catch (error) {
+          console.error('Loader error:', error);
+          throw error;
+        }
+
+        try {
+          return await renderer(request, renderOptions);
         } catch (error) {
           console.error('SSR render error:', error);
           throw error;
@@ -123,6 +148,10 @@ export function createEnvironment(input: EnvironmentInput) {
         return null;
       }
       return mod;
+    },
+
+    async getLoaderData(request: Request, route: Route): Promise<unknown> {
+      return executeLoader(request, route);
     },
   };
 }

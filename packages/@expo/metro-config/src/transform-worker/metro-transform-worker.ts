@@ -73,6 +73,7 @@ interface JSFile extends BaseFile {
   readonly reactServerReference?: string;
   readonly reactClientReference?: string;
   readonly expoDomComponentReference?: string;
+  readonly loaderReference?: string;
   readonly hasCjsExports?: boolean;
   readonly performConstantFolding?: boolean;
 }
@@ -557,6 +558,7 @@ async function transformJS(
         reactServerReference: file.reactServerReference,
         reactClientReference: file.reactClientReference,
         expoDomComponentReference: file.expoDomComponentReference,
+        loaderReference: file.loaderReference,
         ...(possibleReconcile
           ? {
               ast: wrappedAst,
@@ -648,6 +650,7 @@ async function transformJSWithBabel(
     reactServerReference: transformResult.metadata?.reactServerReference,
     reactClientReference: transformResult.metadata?.reactClientReference,
     expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
+    loaderReference: transformResult.metadata?.loaderReference,
     performConstantFolding: transformResult.metadata?.performConstantFolding,
   };
 

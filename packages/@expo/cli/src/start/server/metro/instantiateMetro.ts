@@ -472,8 +472,8 @@ function pruneCustomTransformOptions(
     // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
     const isRouterModule = /\/expo-router\/build\//.test(filePath);
     // Any page/router inside the expo-router app folder may access the `routerRoot` option to determine whether it's in the app folder
-    const isRouterRoute =
-      path.isAbsolute(filePath) && filePath.startsWith(path.resolve(projectRoot, routerRoot));
+    const resolvedRouterRoot = path.resolve(projectRoot, routerRoot).split(path.sep).join('/');
+    const isRouterRoute = path.isAbsolute(filePath) && filePath.startsWith(resolvedRouterRoot);
 
     // In any other file than the above, we enforce that we mustn't use `routerRoot`, and set it to an arbitrary value here (the default)
     // to ensure that the cache never invalidates when this value is changed
