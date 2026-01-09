@@ -21,6 +21,7 @@
 - [Android] Fix crashes when exiting PiP with one than more `VideoView` present on the screen. ([#41090](https://github.com/expo/expo/pull/41090) by [@behenate](https://github.com/behenate))
 - [Android] Fix rare crashes related to VideoPlayer listeners. ([#41608](https://github.com/expo/expo/pull/41608) by [@behenate](https://github.com/behenate))
 - Fix `fullscreenOptions.enable` and `allowsFullscreen` props issues. ([#41600](https://github.com/expo/expo/pull/41600) by [@behenate](https://github.com/behenate))
+- [Android] Fix player duration property refreshing too late. ([#41609](https://github.com/expo/expo/pull/41609) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
