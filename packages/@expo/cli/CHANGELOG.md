@@ -21,6 +21,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix SSR manifest key format to use `lastIndexOf('/node_modules/')` for pnpm compatibility. ([#41823](https://github.com/expo/expo/pull/41823) by [@ceo](https://github.com/ceo))
 - clean up hanging processes at the end of `expo export` better. ([#41692](https://github.com/expo/expo/pull/41692) by [@EvanBacon](https://github.com/EvanBacon))
 - refactor launching Expo Go on Android ([#40020](https://github.com/expo/expo/pull/40020) by [@vonovak](https://github.com/vonovak))
 - only skip dependency validation for `EXPO_NO_DEPENDENCY_VALIDATION=1` ([#40043](https://github.com/expo/expo/pull/40043) by [@kitten](https://github.com/kitten))

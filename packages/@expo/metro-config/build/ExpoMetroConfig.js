@@ -202,6 +202,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         },
         watchFolders,
         resolver: {
+            // Enable package.json exports field support for consistent resolution
+            // between Metro and Node.js (required for RSC specifier-based output keys)
+            unstable_enablePackageExports: true,
             unstable_conditionsByPlatform: {
                 ios: ['react-native'],
                 android: ['react-native'],

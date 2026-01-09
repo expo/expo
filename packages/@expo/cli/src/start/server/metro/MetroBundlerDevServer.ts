@@ -956,6 +956,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const serverRoot = getMetroServerRoot(this.projectRoot);
 
     // HACK: Maybe this should be done in the serializer.
+    // Keep original relative paths for ssrManifest - normalization happens during lookup
     const clientBoundariesAsOpaqueIds = clientBoundaries.map((boundary) =>
       // NOTE(cedric): relative module specifiers / IDs should always be POSIX formatted
       toPosixPath(path.relative(serverRoot, boundary))
@@ -1009,11 +1010,25 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         JSON.stringify(
           // TODO: Add a less leaky version of this across the framework with just [key, value] (module ID, chunk).
           Object.fromEntries(
-            Array.from(ssrManifest.entries()).map(([key, value]) => [
-              // Must match babel plugin.
-              './' + toPosixPath(path.relative(this.projectRoot, path.join(serverRoot, key))),
-              [key, value],
-            ])
+            Array.from(ssrManifest.entries()).map(([key, value]) => {
+              const absolutePath = path.join(serverRoot, key);
+              // Normalize to POSIX for consistent path operations across platforms (Windows uses backslashes)
+              const posixAbsolutePath = toPosixPath(absolutePath);
+
+              // Must match rscOutputKeySerializerPlugin output format:
+              // - Package files (node_modules): path after last /node_modules/ (handles pnpm)
+              // - App files: ./ + relative path from project root
+              let manifestKey: string;
+              if (posixAbsolutePath.includes('/node_modules/')) {
+                const nodeModulesIndex = posixAbsolutePath.lastIndexOf('/node_modules/');
+                manifestKey = posixAbsolutePath.slice(nodeModulesIndex + '/node_modules/'.length);
+              } else {
+                // Use serverRoot (monorepo root) for consistent keys with rscOutputKeySerializerPlugin
+                manifestKey = './' + toPosixPath(path.relative(serverRoot, absolutePath));
+              }
+
+              return [manifestKey, [key, value]];
+            })
           )
         ),
     });

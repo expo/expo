@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Use file:// URL placeholders for RSC client module proxies and server actions. ([#41823](https://github.com/expo/expo/pull/41823) by [@kimchi-developer](https://github.com/kimchi-developer))
+
 ### 💡 Others
 
 - Bump to `@expo/metro@54.2.0` and `metro@0.83.3` ([#41142](https://github.com/expo/expo/pull/41142) by [@kitten](https://github.com/kitten))

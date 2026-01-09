@@ -17,6 +17,10 @@ const expo_constants_1 = __importDefault(require("expo-constants"));
 const node_path_1 = __importDefault(require("node:path"));
 const rsc_renderer_1 = require("./rsc-renderer");
 const debug_1 = require("../utils/debug");
+/** Convert Windows paths to POSIX format for consistent path operations. */
+function toPosixPath(filePath) {
+    return filePath.replace(/\\/g, '/');
+}
 const debug = (0, debug_1.createDebug)('expo:router:server:rsc-renderer');
 // Tracking the implementation in expo/cli's MetroBundlerDevServer
 const rscRenderContext = new Map();
@@ -41,6 +45,50 @@ function getServerActionManifest(_distFolder, platform) {
 function getSSRManifest(_distFolder, platform) {
     const filePath = `../../rsc/${platform}/ssr-manifest.js`;
     return serverRequire(filePath);
+}
+/**
+ * Convert an absolute file path to a manifest key.
+ *
+ * Manifest keys can be:
+ * - node_modules paths: "react-native-web/dist/exports/View/index.js"
+ * - relative paths: "./__e2e__/01-rsc/components/counter.tsx"
+ * - package paths: "./../../packages/expo-router/build/rsc/router/client.js"
+ *
+ * Bundle paths are relative to projectRoot (app directory), while manifest paths
+ * are relative to serverRoot (monorepo root). This function handles the mapping.
+ */
+function resolveManifestKey(filePath, manifest) {
+    // Normalize to POSIX for consistent path operations across platforms (Windows uses backslashes)
+    const posixFilePath = toPosixPath(filePath);
+    // Fast path: already a manifest key
+    if (posixFilePath in manifest) {
+        return posixFilePath;
+    }
+    // node_modules files: extract path after last /node_modules/
+    if (posixFilePath.includes('/node_modules/')) {
+        const idx = posixFilePath.lastIndexOf('/node_modules/');
+        const nodeModulesPath = posixFilePath.slice(idx + '/node_modules/'.length);
+        if (nodeModulesPath in manifest) {
+            return nodeModulesPath;
+        }
+    }
+    // Fallback: search manifest values for matching path suffix
+    for (const [key, [actualPath]] of Object.entries(manifest)) {
+        if (posixFilePath.endsWith(actualPath) || posixFilePath.endsWith('/' + actualPath)) {
+            return key;
+        }
+    }
+    // For app-local files: the bundle path is relative to projectRoot (e.g., "./__e2e__/...")
+    // but the manifest key is relative to serverRoot (e.g., "./apps/router-e2e/__e2e__/...")
+    // Try to match by checking if the manifest key ends with the input path (minus ./ prefix)
+    const pathWithoutDotSlash = posixFilePath.replace(/^\.\//, '');
+    for (const key of Object.keys(manifest)) {
+        const keyWithoutDotSlash = key.replace(/^\.\//, '');
+        if (keyWithoutDotSlash.endsWith('/' + pathWithoutDotSlash) || keyWithoutDotSlash.endsWith(pathWithoutDotSlash)) {
+            return key;
+        }
+    }
+    return null;
 }
 async function renderRscWithImportsAsync(distFolder, imports, { body, platform, searchParams, config, method, input, contentType, headers }) {
     globalThis.__expo_platform_header = platform;
@@ -68,19 +116,21 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
         resolveClientEntry(file, isServer) {
             debug('resolveClientEntry', file, { isServer });
             if (isServer) {
-                if (!(file in actionManifest)) {
+                const actionKey = resolveManifestKey(file, actionManifest);
+                if (!actionKey) {
                     throw new Error(`Could not find file in server action manifest: ${file}. ${JSON.stringify(actionManifest)}`);
                 }
-                const [id, chunk] = actionManifest[file];
+                const [id, chunk] = actionManifest[actionKey];
                 return {
                     id,
                     chunks: chunk ? [chunk] : [],
                 };
             }
-            if (!(file in ssrManifest)) {
+            const ssrKey = resolveManifestKey(file, ssrManifest);
+            if (!ssrKey) {
                 throw new Error(`Could not find file in SSR manifest: ${file}`);
             }
-            const [id, chunk] = ssrManifest[file];
+            const [id, chunk] = ssrManifest[ssrKey];
             return {
                 id,
                 chunks: chunk ? [chunk] : [],

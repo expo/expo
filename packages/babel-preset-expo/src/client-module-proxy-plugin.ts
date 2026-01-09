@@ -2,10 +2,9 @@
  * Copyright © 2024 650 Industries.
  */
 import type { ConfigAPI, PluginObj } from '@babel/core';
-import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
 
-import { getPossibleProjectRoot, getIsReactServer, toPosixPath } from './common';
+import { getPossibleProjectRoot, getIsReactServer } from './common';
 
 export function reactClientReferencesPlugin(
   api: ConfigAPI & typeof import('@babel/core')
@@ -46,13 +45,8 @@ export function reactClientReferencesPlugin(
           throw new Error('[Babel] Expected a filename to be set in the state');
         }
 
-        const projectRoot = possibleProjectRoot || state.file.opts.root || '';
-
-        // TODO: Replace with opaque paths in production.
-        const outputKey = './' + toPosixPath(getRelativePath(projectRoot, filePath));
-        // const outputKey = isProd
-        //   ? './' + getRelativePath(projectRoot, filePath)
-        //   : url.pathToFileURL(filePath).href;
+        // Use file:// URL as outputKey placeholder - serializer will replace with specifier from dependency graph
+        const outputKey = url.pathToFileURL(filePath).href;
 
         function iterateExports(callback: (exportName: string, path: any) => void, type: string) {
           const exportNames = new Set<string>();

@@ -19,5 +19,8 @@ export type SerialAsset = {
     // DOM Component references from the static babel pass.
     expoDomComponentReferences?: string[];
     requires?: string[];
+    // RSC package manifest: maps package specifiers to absolute file paths.
+    // Used by the middleware to resolve package specifiers without CJS/ESM mismatch.
+    rscPackageManifest?: Record<string, string>;
   };
 };

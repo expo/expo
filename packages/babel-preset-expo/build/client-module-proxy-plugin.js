@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.reactClientReferencesPlugin = reactClientReferencesPlugin;
-const node_path_1 = require("node:path");
 const node_url_1 = __importDefault(require("node:url"));
 const common_1 = require("./common");
 function reactClientReferencesPlugin(api) {
@@ -31,12 +30,8 @@ function reactClientReferencesPlugin(api) {
                     // This can happen in tests or systems that use Babel standalone.
                     throw new Error('[Babel] Expected a filename to be set in the state');
                 }
-                const projectRoot = possibleProjectRoot || state.file.opts.root || '';
-                // TODO: Replace with opaque paths in production.
-                const outputKey = './' + (0, common_1.toPosixPath)((0, node_path_1.relative)(projectRoot, filePath));
-                // const outputKey = isProd
-                //   ? './' + getRelativePath(projectRoot, filePath)
-                //   : url.pathToFileURL(filePath).href;
+                // Use file:// URL as outputKey placeholder - serializer will replace with specifier from dependency graph
+                const outputKey = node_url_1.default.pathToFileURL(filePath).href;
                 function iterateExports(callback, type) {
                     const exportNames = new Set();
                     // Collect all of the exports
