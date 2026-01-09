@@ -3778,7 +3778,7 @@
     invariant "^2.2.4"
     nullthrows "^1.1.1"
 
-"@react-navigation/bottom-tabs@7.7.3", "@react-navigation/bottom-tabs@^7.3.10", "@react-navigation/bottom-tabs@^7.7.3":
+"@react-navigation/bottom-tabs@^7.3.10", "@react-navigation/bottom-tabs@^7.7.3":
   version "7.7.3"
   resolved "https://registry.yarnpkg.com/@react-navigation/bottom-tabs/-/bottom-tabs-7.7.3.tgz#b5f25f013b531e69e68bc6cb356d6b36953b3805"
   integrity sha512-aqsutx8auVaPySf8p165Cqj8K2s8e96uXYViU01sEGrBHdOg/pdR7XPiLoqmpsYcRifwZJlZwLAENhzyqdL/DQ==
@@ -3787,7 +3787,7 @@
     color "^4.2.3"
     sf-symbols-typescript "^2.1.0"
 
-"@react-navigation/core@7.13.2", "@react-navigation/core@^7.13.2":
+"@react-navigation/core@^7.13.2":
   version "7.13.2"
   resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-7.13.2.tgz#25c67bf578eb4329b8bf6c4ed9ef348871964f95"
   integrity sha512-A0pFeZlKp+FJob2lVr7otDt3M4rsSJrnAfXWoWR9JVeFtfEXsH/C0s7xtpDCMRUO58kzSBoTF1GYzoMC5DLD4g==
@@ -3801,7 +3801,7 @@
     use-latest-callback "^0.2.4"
     use-sync-external-store "^1.5.0"
 
-"@react-navigation/drawer@7.7.2", "@react-navigation/drawer@^7.7.2":
+"@react-navigation/drawer@^7.7.2":
   version "7.7.2"
   resolved "https://registry.yarnpkg.com/@react-navigation/drawer/-/drawer-7.7.2.tgz#86f0fcf7065d8754d7532bebd4800a8fa17afde2"
   integrity sha512-393VoJLiQe1wMw6FxP+ajCgJRRI3PuEX+OA1YQG1my1BB2AbrbBld6e5uyvU5eoYykIpkQ5D1mxDmZ5MhF4yPA==
@@ -3811,7 +3811,7 @@
     react-native-drawer-layout "^4.2.0"
     use-latest-callback "^0.2.4"
 
-"@react-navigation/elements@2.8.3", "@react-navigation/elements@^2.8.1", "@react-navigation/elements@^2.8.3":
+"@react-navigation/elements@^2.8.1", "@react-navigation/elements@^2.8.3":
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-2.8.3.tgz#d8f15b3d1ed2a1a5c8bf766a97382505e39851be"
   integrity sha512-0c5nSDPP3bUFujgkSVqqMShaAup3XIxNe1KTK9LSmwKgWEneyo6OPIjIdiEwPlZvJZKi7ag5hDjacQLGwO0LGA==
@@ -3820,7 +3820,7 @@
     use-latest-callback "^0.2.4"
     use-sync-external-store "^1.5.0"
 
-"@react-navigation/native-stack@7.8.0", "@react-navigation/native-stack@^7.8.0":
+"@react-navigation/native-stack@^7.8.0":
   version "7.8.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/native-stack/-/native-stack-7.8.0.tgz#6e83e34c9f6aed196a6dcb92929e6443f7298602"
   integrity sha512-iRqQY+IYB610BJY/335/kdNDhXQ8L9nPUlIT+DSk88FA86+C+4/vek8wcKw8IrfwdorT4m+6TY0v7Qnrt+WLKQ==
@@ -3830,7 +3830,7 @@
     sf-symbols-typescript "^2.1.0"
     warn-once "^0.1.1"
 
-"@react-navigation/native@7.1.21", "@react-navigation/native@^7.1.21", "@react-navigation/native@^7.1.6":
+"@react-navigation/native@^7.1.21", "@react-navigation/native@^7.1.6":
   version "7.1.21"
   resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-7.1.21.tgz#77228e0c556a35e5d6aa7e571a17465ae796f789"
   integrity sha512-mhpAewdivBL01ibErr91FUW9bvKhfAF6Xv/yr6UOJtDhv0jU6iUASUcA3i3T8VJCOB/vxmoke7VDp8M+wBFs/Q==
@@ -3841,14 +3841,14 @@
     nanoid "^3.3.11"
     use-latest-callback "^0.2.4"
 
-"@react-navigation/routers@7.5.1", "@react-navigation/routers@^7.5.2":
-  version "7.5.1"
-  resolved "https://registry.yarnpkg.com/@react-navigation/routers/-/routers-7.5.1.tgz#b8f6e9b491fdc1bc7164fdac4fa4faa82f397daf"
-  integrity sha512-pxipMW/iEBSUrjxz2cDD7fNwkqR4xoi0E/PcfTQGCcdJwLoaxzab5kSadBLj1MTJyT0YRrOXL9umHpXtp+Dv4w==
+"@react-navigation/routers@^7.5.2":
+  version "7.5.3"
+  resolved "https://registry.yarnpkg.com/@react-navigation/routers/-/routers-7.5.3.tgz#8002930ef5f62351be2475d0dffde3ffaee174d7"
+  integrity sha512-1tJHg4KKRJuQ1/EvJxatrMef3NZXEPzwUIUZ3n1yJ2t7Q97siwRtbynRpQG9/69ebbtiZ8W3ScOZF/OmhvM4Rg==
   dependencies:
     nanoid "^3.3.11"
 
-"@react-navigation/stack@7.6.7", "@react-navigation/stack@^7.6.7":
+"@react-navigation/stack@^7.6.7":
   version "7.6.7"
   resolved "https://registry.yarnpkg.com/@react-navigation/stack/-/stack-7.6.7.tgz#8cd599681964ba930a15b70134bcbe38bf96424d"
   integrity sha512-8NZWKTBYRVl8oSvhLKs26C6Dw5a3OhyfRc8ITS9A0kRSYaaX/KcZpObbAxp8kCJfTaJ7ZmghyX2NCGwnKw6V7A==
@@ -4178,14 +4178,14 @@
     "@types/babel__template" "*"
     "@types/babel__traverse" "*"
 
-"@types/babel__generator@*", "@types/babel__generator@^7.27.0":
+"@types/babel__generator@*":
   version "7.27.0"
   resolved "https://registry.yarnpkg.com/@types/babel__generator/-/babel__generator-7.27.0.tgz#b5819294c51179957afaec341442f9341e4108a9"
   integrity sha512-ufFd2Xi92OAVPYsy+P4n7/U7e68fex0+Ee8gSG9KX7eo084CWiQ4sdxktvdl0bOPupXtVJPY19zk6EwWqUQ8lg==
   dependencies:
     "@babel/types" "^7.0.0"
 
-"@types/babel__template@*", "@types/babel__template@^7.4.4":
+"@types/babel__template@*":
   version "7.4.4"
   resolved "https://registry.yarnpkg.com/@types/babel__template/-/babel__template-7.4.4.tgz#5672513701c1b2199bc6dad636a9d7491586766f"
   integrity sha512-h/NUaSyG5EyxBIp8YRxo4RMe2/qQgvyowRwVMzhYhBCONbW8PUsg4lkFMrhgZhUe5z3L3MiLDuvyJ/CaPa2A8A==
@@ -4193,7 +4193,7 @@
     "@babel/parser" "^7.1.0"
     "@babel/types" "^7.0.0"
 
-"@types/babel__traverse@*", "@types/babel__traverse@^7.0.6", "@types/babel__traverse@^7.20.7":
+"@types/babel__traverse@*", "@types/babel__traverse@^7.0.6":
   version "7.28.0"
   resolved "https://registry.yarnpkg.com/@types/babel__traverse/-/babel__traverse-7.28.0.tgz#07d713d6cce0d265c9849db0cbe62d3f61f36f74"
   integrity sha512-8PvcXf70gTDZBgt9ptxJ8elBeBjcLOAcOtoO/mPJjtji1+CdGbHgm77om1GrsPxsiE+uXIpNSK64UYaIwQXd4Q==
@@ -8216,6 +8216,14 @@ expo-atlas@^0.4.1:
     serve-static "^1.15.0"
     stream-json "^1.8.0"
 
+expo-build-properties@~1.0.10:
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/expo-build-properties/-/expo-build-properties-1.0.10.tgz#2c3fb4248f78828e952defa636635a653e3ad546"
+  integrity sha512-mFCZbrbrv0AP5RB151tAoRzwRJelqM7bCJzCkxpu+owOyH+p/rFC/q7H5q8B9EpVWj8etaIuszR+gKwohpmu1Q==
+  dependencies:
+    ajv "^8.11.0"
+    semver "^7.6.0"
+
 expo-progress@^0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/expo-progress/-/expo-progress-0.0.2.tgz#0d42470f8f1f019d3ae0f1da377c9bca891f3dd8"
@@ -9553,6 +9561,11 @@ inherits@2, inherits@2.0.4, inherits@^2.0.1, inherits@^2.0.3, inherits@^2.0.4, i
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
+
+inherits@2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.3.tgz#633c2c83e3da42a502f52466022480f4208261de"
+  integrity sha512-x00IRNXNy63jwGkJmzPigoySHbaqpNuzKbBOmzK+g2OdZpQ9w+sxCN+VSB3ja7IAge2OP2qpfxTjeNcyjmW1uw==
 
 ini@^1.3.4, ini@~1.3.0:
   version "1.3.8"
@@ -13559,7 +13572,12 @@ react-timer-mixin@^0.13.3:
   resolved "https://registry.yarnpkg.com/react-timer-mixin/-/react-timer-mixin-0.13.4.tgz#75a00c3c94c13abe29b43d63b4c65a88fc8264d3"
   integrity sha512-4+ow23tp/Tv7hBM5Az5/Be/eKKF7DIvJ09voz5LyHGQaqqz9WV8YMs31eFvcYQs7d451LSg7kDJV70XYN/Ug/Q==
 
-react@19.1.1, react@19.2.0:
+react@19.1.1:
+  version "19.1.1"
+  resolved "https://registry.yarnpkg.com/react/-/react-19.1.1.tgz#06d9149ec5e083a67f9a1e39ce97b06a03b644af"
+  integrity sha512-w8nqGImo45dmMIfljjMwOGtbmC/mk4CMYhWIicdSflH91J9TyCyczcPFXJzrZ/ZXcgGRFeP6BU0BEJTw6tZdfQ==
+
+react@19.2.0:
   version "19.2.0"
   resolved "https://registry.yarnpkg.com/react/-/react-19.2.0.tgz#d33dd1721698f4376ae57a54098cb47fc75d93a5"
   integrity sha512-tmbWg6W31tQLeB5cdIBOicJDJRR2KzXsV7uSK9iNfLWQ5bIZfxuPEHp7M8wiHyHnn0DD1i7w3Zmin0FtkrwoCQ==
@@ -15852,7 +15870,14 @@ util-deprecate@^1.0.1, util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=
 
-util@^0.10.3, util@^0.12.0, util@~0.12.4:
+util@^0.10.3:
+  version "0.10.4"
+  resolved "https://registry.yarnpkg.com/util/-/util-0.10.4.tgz#3aa0125bfe668a4672de58857d3ace27ecb76901"
+  integrity sha512-0Pm9hTQ3se5ll1XihRic3FDIku70C+iHUdT/W926rSgHV5QgXsYbKZN8MSC3tJtSkhuROzvsQjAaFENRXr+19A==
+  dependencies:
+    inherits "2.0.3"
+
+util@^0.12.0:
   version "0.12.5"
   resolved "https://registry.yarnpkg.com/util/-/util-0.12.5.tgz#5f17a6059b73db61a875668781a1c2b136bd6fbc"
   integrity sha512-kZf/K6hEIrWHI6XqOFUiiMa+79wE/D8Q+NCNAWclkyg3b4d2k7s0QGepNjiABc+aR3N1PAyHL7p6UcLY6LmrnA==
