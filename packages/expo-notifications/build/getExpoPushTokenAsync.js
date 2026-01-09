@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import { Platform, CodedError, UnavailabilityError } from 'expo-modules-core';
 import { setAutoServerRegistrationEnabledAsync } from './DevicePushTokenAutoRegistration.fx';
 import ServerRegistrationModule from './ServerRegistrationModule';
-import getDevicePushTokenAsync from './getDevicePushTokenAsync';
+import { getDevicePushTokenAsync } from './getDevicePushTokenAsync';
 const productionBaseUrl = 'https://exp.host/--/api/v2/';
 /**
  * Returns an Expo token that can be used to send a push notification to the device using Expo's push notifications service.
@@ -42,7 +42,7 @@ const productionBaseUrl = 'https://exp.host/--/api/v2/';
  * }
  * ```
  */
-export default async function getExpoPushTokenAsync(options = {}) {
+export async function getExpoPushTokenAsync(options = {}) {
     const devicePushToken = options.devicePushToken || (await getDevicePushTokenAsync());
     const deviceId = options.deviceId || (await getDeviceIdAsync());
     // Depending on the runtime environment, the default may be located in various places.

@@ -36,5 +36,5 @@ import { ExpoPushToken, ExpoPushTokenOptions } from './Tokens.types';
  * }
  * ```
  */
-export default function getExpoPushTokenAsync(options?: ExpoPushTokenOptions): Promise<ExpoPushToken>;
+export declare function getExpoPushTokenAsync(options?: ExpoPushTokenOptions): Promise<ExpoPushToken>;
 //# sourceMappingURL=getExpoPushTokenAsync.d.ts.map
