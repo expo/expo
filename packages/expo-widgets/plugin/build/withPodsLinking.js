@@ -51,10 +51,9 @@ const withPodsLinking = (config, { targetName }) => (0, config_plugins_1.withDan
 ]);
 exports.default = withPodsLinking;
 const podfileExpoWidgetsLinking = (targetName) => `
+require File.join(File.dirname(\`node --print "require.resolve('expo-widgets/package.json')"\`), "scripts/autolinking")
 target "${targetName}" do
-    require File.join(File.dirname(\`node --print "require.resolve('react-native/package.json')"\`), "scripts/react_native_pods")
-    exclude = []
-    use_expo_modules!(exclude: exclude)
+    use_expo_modules_widgets!
 
     if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
       config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
@@ -71,7 +70,7 @@ target "${targetName}" do
       ]
     end
 
-    config = use_native_modules!(config_command)
+    config = use_expo_native_module!(config_command)
 
     use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
     use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
