@@ -20,12 +20,13 @@ struct DevServersSection: View {
         if !viewModel.developmentServers.isEmpty {
           ForEach(viewModel.developmentServers) { server in
             DevServerRow(server: server) {
+              let normalizedUrl = normalizeDevServerUrl(server.url)
               viewModel.addToRecentlyOpened(
-                url: server.url,
+                url: normalizedUrl,
                 name: server.description,
                 iconUrl: server.iconUrl
               )
-              viewModel.openApp(url: server.url)
+              viewModel.openApp(url: normalizedUrl)
             }
           }
         }
@@ -154,5 +155,12 @@ struct DevServersSection: View {
     troubleshootingTitle = "Troubleshooting"
     troubleshootingMessage = message
     showingTroubleshootingAlert = true
+  }
+
+  private func normalizeDevServerUrl(_ urlString: String) -> String {
+    guard let url = URL(string: urlString) else {
+      return urlString
+    }
+    return toExpURLString(url)
   }
 }
