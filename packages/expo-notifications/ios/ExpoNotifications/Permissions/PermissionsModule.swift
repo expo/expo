@@ -6,8 +6,7 @@ import MachO
 
 public class PermissionsModule: Module {
   var permissionsManager: (any EXPermissionsInterface)?
-  var requester: EXUserFacingNotificationsPermissionsRequester =
-    EXUserFacingNotificationsPermissionsRequester()
+  let requester = ExpoNotificationsPermissionsRequester()
 
   public func definition() -> ModuleDefinition {
     Name("ExpoNotificationPermissionsModule")
@@ -22,7 +21,7 @@ public class PermissionsModule: Module {
       appContext?
         .permissions?
         .getPermissionUsingRequesterClass(
-          EXUserFacingNotificationsPermissionsRequester.self,
+          ExpoNotificationsPermissionsRequester.self,
           resolve: promise.resolver,
           reject: promise.legacyRejecter
         )
@@ -30,14 +29,15 @@ public class PermissionsModule: Module {
 
     AsyncFunction("requestPermissionsAsync") { (requestedPermissions: NotificationPermissionRecord, promise: Promise) in
       let defaultAuthorizationOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-      requester.authorizationOptions = requestedPermissions.numberOfOptionsRequested() > 0
+      let options = requestedPermissions.numberOfOptionsRequested() > 0
         ? requestedPermissions.authorizationOptionValue()
         : defaultAuthorizationOptions
+      requester.setAuthorizationOptions(options)
 
       appContext?
         .permissions?
         .askForPermission(
-          usingRequesterClass: EXUserFacingNotificationsPermissionsRequester.self,
+          usingRequesterClass: ExpoNotificationsPermissionsRequester.self,
           resolve: promise.resolver,
           reject: promise.legacyRejecter
         )
