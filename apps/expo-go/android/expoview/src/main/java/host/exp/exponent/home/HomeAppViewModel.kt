@@ -281,7 +281,7 @@ class HomeAppViewModel(
         onSuccess(url)
       }
       .addOnCanceledListener {
-        onError("QR code scan canceled")
+        onError("QR code scan cancelled")
       }
       .addOnFailureListener { exception ->
         onError("QR code scan failed: ${exception.message ?: "Unknown error"}")
