@@ -11,6 +11,7 @@ exports.formatArrayOfReactDelegateHandler = formatArrayOfReactDelegateHandler;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const iosInlineModules_1 = require("../../inlineModules/iosInlineModules");
 const utils_1 = require("../../utils");
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
@@ -76,10 +77,10 @@ async function resolveExtraBuildDependenciesAsync(projectNativeRoot) {
 /**
  * Generates Swift file that contains all autolinked Swift packages.
  */
-async function generateModulesProviderAsync(modules, targetPath, entitlementPath) {
+async function generateModulesProviderAsync(modules, targetPath, entitlementPath, watchedDirectories) {
     const className = path_1.default.basename(targetPath, path_1.default.extname(targetPath));
     const entitlements = await parseEntitlementsAsync(entitlementPath);
-    const generatedFileContent = await generatePackageListFileContentAsync(modules, className, entitlements);
+    const generatedFileContent = await generatePackageListFileContentAsync(modules, className, entitlements, watchedDirectories);
     const parentPath = path_1.default.dirname(targetPath);
     await fs_1.default.promises.mkdir(parentPath, { recursive: true });
     await fs_1.default.promises.writeFile(targetPath, generatedFileContent, 'utf8');
@@ -87,7 +88,7 @@ async function generateModulesProviderAsync(modules, targetPath, entitlementPath
 /**
  * Generates the string to put into the generated package list.
  */
-async function generatePackageListFileContentAsync(modules, className, entitlements) {
+async function generatePackageListFileContentAsync(modules, className, entitlements, watchedDirectories) {
     const iosModules = modules.filter((module) => module.modules.length ||
         module.appDelegateSubscribers.length ||
         module.reactDelegateHandlers.length);
@@ -99,9 +100,10 @@ async function generatePackageListFileContentAsync(modules, className, entitleme
     const debugOnlySwiftModules = []
         .concat(...debugOnlyModules.map((module) => module.swiftModuleNames))
         .filter(Boolean);
-    const modulesClassNames = []
+    let modulesClassNames = []
         .concat(...modulesToImport.map((module) => module.modules))
         .filter(Boolean);
+    modulesClassNames = modulesClassNames.concat(await (0, iosInlineModules_1.getIosInlineModulesClassNames)(watchedDirectories));
     const debugOnlyModulesClassNames = []
         .concat(...debugOnlyModules.map((module) => module.modules))
         .filter(Boolean);

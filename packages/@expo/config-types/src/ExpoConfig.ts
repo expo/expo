@@ -295,6 +295,15 @@ export interface ExpoConfig {
      * Experimentally enable React Server Functions support in Expo CLI and Expo Router.
      */
     reactServerFunctions?: boolean;
+    /**
+     * Configuration for inline modules. If defined it enables inline modules functionality in expo cli and expo-modules-autolinking.
+     */
+    inlineModules?: {
+      /**
+       * List of directories watched for inline modules.
+       */
+      watchedDirectories: [string];
+    };
   };
   /**
    * Internal properties for developer tools

@@ -22,6 +22,7 @@ import withAdMob from './unversioned/expo-ads-admob/expo-ads-admob';
 import withAppleAuthentication from './unversioned/expo-apple-authentication';
 import withContacts from './unversioned/expo-contacts';
 import withDocumentPicker from './unversioned/expo-document-picker';
+import withInlineModules from './unversioned/expo-inline-modules/withInlineModules';
 import withNavigationBar from './unversioned/expo-navigation-bar/expo-navigation-bar';
 import withNotifications from './unversioned/expo-notifications/expo-notifications';
 import withSplashScreen from './unversioned/expo-splash-screen/expo-splash-screen';
@@ -139,6 +140,7 @@ const versionedExpoSDKPackages: string[] = [
   'expo-document-picker',
   'expo-splash-screen',
   'expo-system-ui',
+  'expo-inline-modules',
 ];
 
 export const withVersionedExpoSDKPlugins: ConfigPlugin = (config) => {
@@ -155,6 +157,7 @@ export const withVersionedExpoSDKPlugins: ConfigPlugin = (config) => {
     withSystemUI,
     withSplashScreen,
     withNavigationBar,
+    withInlineModules,
   ]);
 };
 

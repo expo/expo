@@ -1,0 +1,33 @@
+{
+  "name": "@expo/inline-modules",
+  "version": "0.0.1",
+  "description": "The Expo inline modules",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "node node_modules/.bin/jest"
+  },
+  "files": [
+    "build"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/inline-modules"
+  },
+  "keywords": [
+    "expo",
+    "inline",
+    "inline-modules"
+  ],
+  "author": "Expo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "dependencies": {
+    "@expo/config": "~12.0.9",
+    "@expo/config-plugins": "~54.0.1",
+    "@expo/metro": "~54.2.0"
+  }
+}
