@@ -519,7 +519,7 @@ export type VideoTrack = {
      */
     id: string;
     /**
-     * The url of the VideoTrack for HLS video sources, null for other source types.
+     * The URL of the `VideoTrack` for HLS video sources. `null` for other source types.
      */
     url: string | null;
     /**
