@@ -17,7 +17,6 @@ fun LocalServerTutorial(isSignedIn: Boolean, onLoginClick: () -> Unit, modifier:
     if (isSignedIn) {
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text("Start a local development server with:")
-//                TODO: Add background
         OutlinedTextField(
           "npx expo start",
           onValueChange = { },
