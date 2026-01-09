@@ -109,6 +109,26 @@ open class DevMenuManager: NSObject {
   }
 
   @objc
+  public func setMotionGestureEnabled(_ enabled: Bool) {
+    DevMenuPreferences.motionGestureEnabled = enabled
+  }
+
+  @objc
+  public func setTouchGestureEnabled(_ enabled: Bool) {
+    DevMenuPreferences.touchGestureEnabled = enabled
+  }
+
+  @objc
+  public func getMotionGestureEnabled() -> Bool {
+    return DevMenuPreferences.motionGestureEnabled
+  }
+
+  @objc
+  public func getTouchGestureEnabled() -> Bool {
+    return DevMenuPreferences.touchGestureEnabled
+  }
+
+  @objc
   public func updateCurrentBridge(_ bridge: RCTBridge?) {
     currentBridge = bridge
   }
@@ -344,7 +364,8 @@ open class DevMenuManager: NSObject {
         self.window?.makeKeyAndOrderFront(nil)
 #else
         if self.window?.windowScene == nil {
-          let windowScene = UIApplication.shared.connectedScenes
+          let keyWindowScene = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene
+          let windowScene = keyWindowScene ?? UIApplication.shared.connectedScenes
             .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
           self.window?.windowScene = windowScene
         }
