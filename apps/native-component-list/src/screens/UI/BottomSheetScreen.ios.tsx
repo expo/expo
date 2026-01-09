@@ -1,218 +1,266 @@
 import {
   Button,
   BottomSheet,
+  Form,
   Host,
-  HStack,
-  List,
-  VStack,
-  Rectangle,
+  Picker,
   RNHostView,
   Section,
-  Switch,
-  PresentationDragIndicatorVisibility,
-  PresentationBackgroundInteraction,
+  Text,
+  Toggle,
+  VStack,
 } from '@expo/ui/swift-ui';
-import { frame } from '@expo/ui/swift-ui/modifiers';
+import {
+  frame,
+  padding,
+  pickerStyle,
+  presentationDetents,
+  presentationDragIndicator,
+  presentationBackgroundInteraction,
+  interactiveDismissDisabled,
+  tag,
+} from '@expo/ui/swift-ui/modifiers';
+import type { PresentationDetent } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
-import { Pressable } from 'react-native';
+import { useState } from 'react';
+import { Pressable, Text as RNText, useWindowDimensions, View } from 'react-native';
+
+const dragIndicatorOptions = ['automatic', 'visible', 'hidden'] as const;
+
+type DragIndicatorOption = (typeof dragIndicatorOptions)[number];
 
 export default function BottomSheetScreen() {
-  const [bottomSheetOpen1, setBottomSheetOpen1] = React.useState<boolean>(false);
-  const [bottomSheetOpen2, setBottomSheetOpen2] = React.useState<boolean>(false);
-  const [enableDetent, setEnableDetent] = React.useState<boolean>(false);
-  const [interactiveDismissDisabled, setInteractiveDismissDisabled] =
-    React.useState<boolean>(false);
-  const [presentationDragIndicator, setPresentationDragIndicator] =
-    React.useState<PresentationDragIndicatorVisibility>('visible');
-  const [bottomSheetOpen3, setBottomSheetOpen3] = React.useState<boolean>(false);
-  const [enableBackgroundInteraction, setEnableBackgroundInteraction] =
-    React.useState<boolean>(false);
-  const [limitBackgroundInteraction, setLimitBackgroundInteraction] =
-    React.useState<boolean>(false);
+  const [showBasic, setShowBasic] = React.useState(false);
 
-  const presentationBackgroundInteraction = React.useMemo(() => {
-    if (!enableBackgroundInteraction) {
-      return 'automatic';
-    }
-    if (limitBackgroundInteraction) {
-      return {
-        type: 'enabledUpThrough',
-        detent: 0.2,
-      } as const;
-    }
-    return 'enabled';
-  }, [enableBackgroundInteraction, limitBackgroundInteraction]);
+  const [showFitsContent, setShowFitsContent] = React.useState(false);
 
-  const handleToggleBackgroundInteraction = React.useCallback((value: boolean) => {
-    setEnableBackgroundInteraction(value);
-    if (!value) {
-      setLimitBackgroundInteraction(false);
+  const [showConfigured, setShowConfigured] = React.useState(false);
+  const [useMedium, setUseMedium] = React.useState(true);
+  const [useLarge, setUseLarge] = React.useState(true);
+  const [useFraction, setUseFraction] = React.useState(false);
+  const [dragIndicator, setDragIndicator] = React.useState<DragIndicatorOption>('automatic');
+  const [backgroundInteractionEnabled, setBackgroundInteractionEnabled] = React.useState(false);
+  const [dismissDisabled, setDismissDisabled] = React.useState(false);
+
+  const [showRNContent, setShowRNContent] = React.useState(false);
+  const [showRNContentWithFlex1, setShowRNContentWithFlex1] = React.useState(false);
+  const [counter, setCounter] = React.useState(0);
+
+  const configuredDetents: PresentationDetent[] = (() => {
+    const detents: PresentationDetent[] = [];
+    if (useMedium) detents.push('medium');
+    if (useLarge) detents.push('large');
+    if (useFraction) detents.push(0.3);
+    return detents.length > 0 ? detents : ['large'];
+  })();
+
+  const configuredModifiers = (() => {
+    const mods = [presentationDetents(configuredDetents), presentationDragIndicator(dragIndicator)];
+
+    if (backgroundInteractionEnabled) {
+      mods.push(presentationBackgroundInteraction('enabled'));
     }
-  }, []);
+
+    if (dismissDisabled) {
+      mods.push(interactiveDismissDisabled());
+    }
+
+    return mods;
+  })();
+
+  const [isPresented, setIsPresented] = useState(false);
 
   return (
     <Host style={{ flex: 1 }}>
-      <List>
-        <Section title="BottomSheet with SwiftUI content">
-          <Button label="Open BottomSheet" onPress={() => setBottomSheetOpen1(!bottomSheetOpen1)} />
+      <VStack>
+        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
+        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented} fitToContents>
+          <BottomSheet.Content modifiers={[presentationDragIndicator('visible')]}>
+            <RNHostView matchContents>
+              <View style={{ padding: 24 }}>
+                <RNText style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
+                  React Native Content
+                </RNText>
+                <RNText style={{ color: '#666', marginBottom: 16 }}>Counter: {counter}</RNText>
+                <Pressable
+                  style={{
+                    backgroundColor: '#007AFF',
+                    padding: 12,
+                    borderRadius: 8,
+                    alignItems: 'center',
+                    marginBottom: 12,
+                  }}
+                  onPress={() => setCounter(counter + 1)}>
+                  <RNText style={{ color: 'white', fontWeight: '600' }}>Increment</RNText>
+                </Pressable>
+                <Pressable
+                  style={{
+                    backgroundColor: '#FF3B30',
+                    padding: 12,
+                    borderRadius: 8,
+                    alignItems: 'center',
+                  }}
+                  onPress={() => setIsPresented(false)}>
+                  <RNText style={{ color: 'white', fontWeight: '600' }}>Close</RNText>
+                </Pressable>
+              </View>
+            </RNHostView>
+          </BottomSheet.Content>
+        </BottomSheet>
+      </VStack>
+    </Host>
+  );
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Form>
+        <Section title="Basic">
+          <Button label="Open Basic Sheet" onPress={() => setShowBasic(true)} />
         </Section>
-        <Section title="BottomSheet with React Native content">
-          <Button label="Open BottomSheet" onPress={() => setBottomSheetOpen2(!bottomSheetOpen2)} />
+
+        <Section title="Fits Content">
+          <Text color="secondaryLabel">Sheet automatically sizes to fit its content</Text>
+          <Button label="Open Fits Content Sheet" onPress={() => setShowFitsContent(true)} />
         </Section>
-        <Section title="BottomSheet with React Native content full height">
-          <Button label="Open BottomSheet" onPress={() => setBottomSheetOpen3(!bottomSheetOpen3)} />
+
+        <Section title="Configured Sheet">
+          <Button label="Open Configured Sheet" onPress={() => setShowConfigured(true)} />
+          <Toggle isOn={useMedium} onIsOnChange={setUseMedium} label="Medium" />
+          <Toggle isOn={useLarge} onIsOnChange={setUseLarge} label="Large" />
+          <Toggle isOn={useFraction} onIsOnChange={setUseFraction} label="30% (Fraction)" />
+          <Picker
+            label="Drag Indicator"
+            modifiers={[pickerStyle('menu')]}
+            selection={dragIndicatorOptions.indexOf(dragIndicator)}
+            onSelectionChange={(index) => setDragIndicator(dragIndicatorOptions[index])}>
+            {dragIndicatorOptions.map((option, index) => (
+              <Text key={option} modifiers={[tag(index)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
+          <Toggle
+            isOn={backgroundInteractionEnabled}
+            onIsOnChange={setBackgroundInteractionEnabled}
+            label="Background Interaction"
+          />
+          <Toggle
+            isOn={dismissDisabled}
+            onIsOnChange={setDismissDisabled}
+            label="Dismiss Disabled"
+          />
         </Section>
-        <Switch
-          value={enableDetent}
-          onValueChange={() => setEnableDetent(!enableDetent)}
-          label="Enable detent"
-        />
-        <Switch
-          value={interactiveDismissDisabled}
-          onValueChange={() => setInteractiveDismissDisabled(!interactiveDismissDisabled)}
-          label="Interactive dismiss disabled"
-        />
-        <Switch
-          value={presentationDragIndicator === 'visible'}
-          onValueChange={() =>
-            setPresentationDragIndicator(
-              presentationDragIndicator === 'visible' ? 'automatic' : 'visible'
-            )
-          }
-          label="Presentation drag indicator visible"
-        />
-        <Switch
-          value={enableBackgroundInteraction}
-          onValueChange={handleToggleBackgroundInteraction}
-          label="Enable background interaction"
-        />
-        <Switch
-          value={limitBackgroundInteraction}
-          onValueChange={() => setLimitBackgroundInteraction(!limitBackgroundInteraction)}
-          label="Limit interaction up to small detent"
-        />
-      </List>
-      <BottomSheetWithSwiftUIContent
-        isOpened={bottomSheetOpen1}
-        onIsOpenedChange={setBottomSheetOpen1}
-        enableDetent={enableDetent}
-        interactiveDismissDisabled={interactiveDismissDisabled}
-        presentationDragIndicator={presentationDragIndicator}
-        presentationBackgroundInteraction={presentationBackgroundInteraction}
-      />
-      <BottomSheetWithReactNativeContent
-        isOpened={bottomSheetOpen2}
-        onIsOpenedChange={setBottomSheetOpen2}
-        enableDetent={enableDetent}
-        interactiveDismissDisabled={interactiveDismissDisabled}
-        presentationDragIndicator={presentationDragIndicator}
-        presentationBackgroundInteraction={presentationBackgroundInteraction}
-      />
-      <BottomSheetWithReactNativeContentFullHeight
-        isOpened={bottomSheetOpen3}
-        onIsOpenedChange={setBottomSheetOpen3}
-        enableDetent={enableDetent}
-        interactiveDismissDisabled={interactiveDismissDisabled}
-        presentationDragIndicator={presentationDragIndicator}
-        presentationBackgroundInteraction={presentationBackgroundInteraction}
-      />
+
+        <Section title="React Native Content">
+          <Text color="secondaryLabel">Sheet with React Native views inside</Text>
+          <Button label="Open RN Content Sheet" onPress={() => setShowRNContent(true)} />
+        </Section>
+        <Section title="React Native Content with flex 1 children">
+          <Button
+            label="Open RN Content Sheet with flex 1 children"
+            onPress={() => setShowRNContentWithFlex1(true)}
+          />
+        </Section>
+      </Form>
+
+      {/* Basic Sheet */}
+      <BottomSheet isPresented={showBasic} onIsPresentedChange={setShowBasic}>
+        <BottomSheet.Content modifiers={[presentationDetents(['medium', 'large'])]}>
+          <VStack modifiers={[padding({ all: 20 })]}>
+            <Text>Basic Bottom Sheet</Text>
+            <Text color="secondaryLabel">Swipe down or tap outside to dismiss</Text>
+            <Button label="Close" onPress={() => setShowBasic(false)} />
+          </VStack>
+        </BottomSheet.Content>
+      </BottomSheet>
+
+      {/* Fits Content Sheet */}
+      <BottomSheet
+        isPresented={showFitsContent}
+        onIsPresentedChange={setShowFitsContent}
+        fitToContents>
+        <BottomSheet.Content>
+          <VStack modifiers={[padding({ all: 20 })]}>
+            <Text>Fits Content Sheet</Text>
+            <Text color="secondaryLabel">This sheet sizes to fit its content automatically</Text>
+            <Button label="Close" onPress={() => setShowFitsContent(false)} />
+          </VStack>
+        </BottomSheet.Content>
+      </BottomSheet>
+
+      {/* Configured Sheet */}
+      <BottomSheet isPresented={showConfigured} onIsPresentedChange={setShowConfigured}>
+        <BottomSheet.Content modifiers={configuredModifiers}>
+          <VStack modifiers={[padding({ all: 20 }), frame({ minHeight: 200 })]}>
+            <Text>Configured Sheet</Text>
+            <Text color="secondaryLabel">Detents: {configuredDetents.join(', ')}</Text>
+            <Text color="secondaryLabel">Drag Indicator: {dragIndicator}</Text>
+            <Text color="secondaryLabel">
+              Background Interaction: {backgroundInteractionEnabled ? 'enabled' : 'disabled'}
+            </Text>
+            <Text color="secondaryLabel">Dismiss: {dismissDisabled ? 'disabled' : 'enabled'}</Text>
+            <Button label="Close" onPress={() => setShowConfigured(false)} />
+          </VStack>
+        </BottomSheet.Content>
+      </BottomSheet>
+
+      {/* React Native Content Sheet */}
+      <BottomSheet isPresented={showRNContent} onIsPresentedChange={setShowRNContent} fitToContents>
+        <BottomSheet.Content modifiers={[presentationDragIndicator('visible')]}>
+          <RNHostView matchContents>
+            <View style={{ padding: 24 }}>
+              <RNText style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
+                React Native Content
+              </RNText>
+              <RNText style={{ color: '#666', marginBottom: 16 }}>Counter: {counter}</RNText>
+              <Pressable
+                style={{
+                  backgroundColor: '#007AFF',
+                  padding: 12,
+                  borderRadius: 8,
+                  alignItems: 'center',
+                  marginBottom: 12,
+                }}
+                onPress={() => setCounter(counter + 1)}>
+                <RNText style={{ color: 'white', fontWeight: '600' }}>Increment</RNText>
+              </Pressable>
+              <Pressable
+                style={{
+                  backgroundColor: '#FF3B30',
+                  padding: 12,
+                  borderRadius: 8,
+                  alignItems: 'center',
+                }}
+                onPress={() => setShowRNContent(false)}>
+                <RNText style={{ color: 'white', fontWeight: '600' }}>Close</RNText>
+              </Pressable>
+            </View>
+          </RNHostView>
+        </BottomSheet.Content>
+      </BottomSheet>
+
+      {/* React Native Content Sheet with flex 1 children */}
+      <BottomSheet
+        isPresented={showRNContentWithFlex1}
+        onIsPresentedChange={setShowRNContentWithFlex1}>
+        <BottomSheet.Content
+          modifiers={[
+            presentationDetents(['medium', 'large']),
+            presentationDragIndicator('visible'),
+          ]}>
+          <RNHostView>
+            <View style={{ flex: 1, backgroundColor: 'blue' }}>
+              <RNText style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
+                React Native Content
+              </RNText>
+            </View>
+          </RNHostView>
+        </BottomSheet.Content>
+      </BottomSheet>
     </Host>
   );
 }
 
-const BottomSheetWithSwiftUIContent = (props: {
-  isOpened: boolean;
-  onIsOpenedChange: (isOpened: boolean) => void;
-  enableDetent: boolean;
-  interactiveDismissDisabled: boolean;
-  presentationDragIndicator: PresentationDragIndicatorVisibility;
-  presentationBackgroundInteraction: PresentationBackgroundInteraction;
-}) => {
-  const [height, setHeight] = React.useState<number>(100);
-  return (
-    <BottomSheet
-      isOpened={props.isOpened}
-      onIsOpenedChange={props.onIsOpenedChange}
-      presentationDetents={props.enableDetent ? ['medium', 'large', 0.2] : undefined}
-      interactiveDismissDisabled={props.interactiveDismissDisabled}
-      presentationDragIndicator={props.presentationDragIndicator}
-      presentationBackgroundInteraction={props.presentationBackgroundInteraction}>
-      <VStack>
-        <Rectangle modifiers={[frame({ width: 100, height })]} />
-        <HStack spacing={20} modifiers={[frame({ maxWidth: Infinity, height: Infinity })]}>
-          <Button
-            label="Increase height"
-            onPress={() => {
-              setHeight(height + 10);
-            }}
-          />
-        </HStack>
-        <Button
-          label="Close sheet"
-          onPress={() => {
-            props.onIsOpenedChange(false);
-          }}
-        />
-      </VStack>
-    </BottomSheet>
-  );
-};
-
-const BottomSheetWithReactNativeContent = (props: {
-  isOpened: boolean;
-  onIsOpenedChange: (isOpened: boolean) => void;
-  enableDetent: boolean;
-  interactiveDismissDisabled: boolean;
-  presentationDragIndicator: PresentationDragIndicatorVisibility;
-  presentationBackgroundInteraction: PresentationBackgroundInteraction;
-}) => {
-  const [height, setHeight] = React.useState<number>(100);
-  return (
-    <BottomSheet
-      isOpened={props.isOpened}
-      onIsOpenedChange={props.onIsOpenedChange}
-      presentationDetents={props.enableDetent ? ['medium', 'large', 0.2] : undefined}
-      interactiveDismissDisabled={props.interactiveDismissDisabled}
-      presentationBackgroundInteraction={props.presentationBackgroundInteraction}>
-      <RNHostView matchContents>
-        <Pressable
-          style={{ backgroundColor: 'red', width: 100, height }}
-          onPress={() => {
-            setHeight(height + 10);
-          }}
-        />
-      </RNHostView>
-      <Button
-        label="Close sheet"
-        onPress={() => {
-          props.onIsOpenedChange(false);
-        }}
-      />
-    </BottomSheet>
-  );
-};
-
-const BottomSheetWithReactNativeContentFullHeight = (props: {
-  isOpened: boolean;
-  onIsOpenedChange: (isOpened: boolean) => void;
-  enableDetent: boolean;
-  interactiveDismissDisabled: boolean;
-  presentationDragIndicator: PresentationDragIndicatorVisibility;
-  presentationBackgroundInteraction: PresentationBackgroundInteraction;
-}) => {
-  return (
-    <BottomSheet
-      isOpened={props.isOpened}
-      onIsOpenedChange={props.onIsOpenedChange}
-      presentationDetents={['large']}
-      interactiveDismissDisabled={props.interactiveDismissDisabled}
-      presentationBackgroundInteraction={props.presentationBackgroundInteraction}>
-      <RNHostView>
-        <Pressable style={{ backgroundColor: 'pink', flex: 1 }} />
-      </RNHostView>
-    </BottomSheet>
-  );
-};
 BottomSheetScreen.navigationOptions = {
   title: 'BottomSheet',
 };

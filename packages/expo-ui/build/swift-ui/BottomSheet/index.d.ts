@@ -1,50 +1,39 @@
 import { type CommonViewModifierProps } from '../types';
-export type PresentationDetent = 'medium' | 'large' | number;
-export type PresentationDragIndicatorVisibility = 'automatic' | 'visible' | 'hidden';
-export type PresentationBackgroundInteraction = 'automatic' | 'enabled' | 'disabled' | {
-    type: 'enabledUpThrough';
-    detent: PresentationDetent;
-};
 export type BottomSheetProps = {
     /**
      * The children of the `BottomSheet` component.
+     * Use `BottomSheet.Content` to wrap your content and apply presentation modifiers
+     * like `presentationDetents`, `presentationDragIndicator`,
+     * `presentationBackgroundInteraction`, and `interactiveDismissDisabled`.
      */
     children: any;
     /**
-     * Whether the `BottomSheet` is opened.
+     * Whether the `BottomSheet` is presented.
      */
-    isOpened: boolean;
+    isPresented: boolean;
     /**
-     * Callback function that is called when the `BottomSheet` is opened.
+     * Callback function that is called when the `BottomSheet` presented state changes.
      */
-    onIsOpenedChange: (isOpened: boolean) => void;
+    onIsPresentedChange: (isPresented: boolean) => void;
     /**
-     * Setting it to `true` will disable the interactive dismiss of the `BottomSheet`.
+     * When `true`, the sheet will automatically size itself to fit its content.
+     * This sets the presentation detent to match the height of the children.
+     * @default false
      */
-    interactiveDismissDisabled?: boolean;
-    /**
-     * Array of presentation detents for the `BottomSheet`.
-     * Controls the heights that the sheet can snap to.
-     * - `medium` - Medium height sheet
-     * - `large` - Full height sheet
-     * - number (0-1) - Fraction of screen height (for example, 0.4 equals to 40% of screen)
-     */
-    presentationDetents?: PresentationDetent[];
-    /**
-     * Controls the visibility of the drag indicator for the `BottomSheet`.
-     * - `automatic` - System decides based on context (default)
-     * - `visible` - Always show the drag indicator
-     * - `hidden` - Never show the drag indicator
-     */
-    presentationDragIndicator?: PresentationDragIndicatorVisibility;
-    /**
-     * Controls how interactions on the dimmed background are handled while the sheet is visible.
-     * - `automatic` - System decides the interaction behavior (default)
-     * - `enabled` - Allow touches to pass through to the presenting view
-     * - `disabled` - Prevent interactions with the presenting view
-     * - `{ type: 'enabledUpThrough', detent: <detent> }` - Enable interactions while the sheet is expanded up through the specified detent
-     */
-    presentationBackgroundInteraction?: PresentationBackgroundInteraction;
+    fitToContents?: boolean;
 } & CommonViewModifierProps;
-export declare function BottomSheet(props: BottomSheetProps): import("react").JSX.Element;
+export type BottomSheetContentProps = {
+    /**
+     * The content to display inside the bottom sheet.
+     */
+    children: React.ReactNode;
+} & CommonViewModifierProps;
+/**
+ * `BottomSheet` presents content from the bottom of the screen.
+ */
+declare function BottomSheet(props: BottomSheetProps): import("react").JSX.Element;
+declare namespace BottomSheet {
+    var Content: (props: BottomSheetContentProps) => import("react").JSX.Element;
+}
+export { BottomSheet };
 //# sourceMappingURL=index.d.ts.map

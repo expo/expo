@@ -8,10 +8,8 @@ platforms: ['ios', 'tvos']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A bottom sheet component that slides up from the bottom of the screen to present content.
+Expo UI BottomSheet matches the official SwiftUI [sheet API](<https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:)>) and presents content from the bottom of the screen.
 
 ## Installation
 
@@ -19,34 +17,247 @@ A bottom sheet component that slides up from the bottom of the screen to present
 
 ## Usage
 
-<Tabs>
+### Basic bottom sheet
 
-<Tab label="Preview">
-  <ContentSpotlight
-    alt="BottomSheet component on iOS."
-    src="/static/images/expo-ui/bottomsheet/ios.png"
-    className="max-w-[240px]"
-  />
-</Tab>
+```tsx BasicBottomSheetExample.tsx
+import { useState } from 'react';
+import { Host, BottomSheet, Button, Text, VStack } from '@expo/ui/swift-ui';
 
-  <Tab label="Code">
-    ```tsx
-    import { BottomSheet, Host, Text } from '@expo/ui/swift-ui';
-    import { useWindowDimensions } from 'react-native';
+export default function BasicBottomSheetExample() {
+  const [isPresented, setIsPresented] = useState(false);
 
-    const { width } = useWindowDimensions();
-
-    <Host style={{ position: 'absolute', width }}>
-      <BottomSheet isOpened={isOpened} onIsOpenedChange={e => setIsOpened(e)}>
-        <Text>Hello, world!</Text>
-      </BottomSheet>
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack>
+        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
+        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+          <BottomSheet.Content>
+            <Text>Hello, world!</Text>
+          </BottomSheet.Content>
+        </BottomSheet>
+      </VStack>
     </Host>
-    ```
+  );
+}
+```
 
-  </Tab>
-</Tabs>
+### Bottom sheet that fits content
 
-> See [official SwiftUI documentation](<https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:)>) for more information.
+Use the [`fitToContents`](#fittocontents) prop to automatically size the sheet to fit its content.
+
+```tsx BottomSheetFitsContentExample.tsx
+import { useState } from 'react';
+import { Host, BottomSheet, Button, Text, VStack } from '@expo/ui/swift-ui';
+
+export default function BottomSheetFitsContentExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack>
+        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
+        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented} fitToContents>
+          <BottomSheet.Content>
+            <VStack>
+              <Text>This sheet automatically sizes to fit its content.</Text>
+              <Button label="Close" onPress={() => setIsPresented(false)} />
+            </VStack>
+          </BottomSheet.Content>
+        </BottomSheet>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Bottom sheet with presentation detents
+
+Use the [`presentationDetents`](/versions/unversioned/sdk/ui/swift-ui/modifiers/#presentationdetentsdetents) modifier on `BottomSheet.Content` to control the available heights.
+
+```tsx BottomSheetWithDetentsExample.tsx
+import { useState } from 'react';
+import { Host, BottomSheet, Button, Text, VStack } from '@expo/ui/swift-ui';
+import { presentationDetents } from '@expo/ui/swift-ui/modifiers';
+
+export default function BottomSheetWithDetentsExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack>
+        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
+        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+          <BottomSheet.Content modifiers={[presentationDetents(['medium', 'large'])]}>
+            <Text>This sheet can snap to medium or large heights.</Text>
+          </BottomSheet.Content>
+        </BottomSheet>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Bottom sheet with background interaction
+
+Use the [`presentationBackgroundInteraction`](/versions/unversioned/sdk/ui/swift-ui/modifiers/#presentationbackgroundinteractioninteraction) modifier to allow interactions with content behind the sheet.
+
+```tsx BottomSheetWithBackgroundInteractionExample.tsx
+import { useState } from 'react';
+import { Host, BottomSheet, Button, Text, VStack } from '@expo/ui/swift-ui';
+import {
+  presentationDetents,
+  presentationBackgroundInteraction,
+} from '@expo/ui/swift-ui/modifiers';
+
+export default function BottomSheetWithBackgroundInteractionExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack>
+        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
+        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+          <BottomSheet.Content
+            modifiers={[
+              presentationDetents(['medium', 'large']),
+              presentationBackgroundInteraction({ type: 'enabledUpThrough', detent: 'medium' }),
+            ]}>
+            <Text>Interact with content behind when at medium height.</Text>
+          </BottomSheet.Content>
+        </BottomSheet>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Non-dismissible bottom sheet
+
+Use the [`interactiveDismissDisabled`](/versions/unversioned/sdk/ui/swift-ui/modifiers/#interactivedismissdisabledisdisabled) modifier to prevent users from dismissing the sheet by swiping.
+
+```tsx NonDismissibleBottomSheetExample.tsx
+import { useState } from 'react';
+import { Host, BottomSheet, Button, Text, VStack } from '@expo/ui/swift-ui';
+import { interactiveDismissDisabled } from '@expo/ui/swift-ui/modifiers';
+
+export default function NonDismissibleBottomSheetExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack>
+        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
+        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+          <BottomSheet.Content modifiers={[interactiveDismissDisabled()]}>
+            <VStack>
+              <Text>This sheet cannot be dismissed by swiping.</Text>
+              <Button label="Close" onPress={() => setIsPresented(false)} />
+            </VStack>
+          </BottomSheet.Content>
+        </BottomSheet>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Bottom sheet with React Native content
+
+Use `RNHostView` to embed React Native components inside the bottom sheet. Set `matchContents` to automatically size the host view to fit its content.
+
+```tsx BottomSheetWithRNContentExample.tsx
+import { useState } from 'react';
+import { Pressable, Text as RNText, View } from 'react-native';
+import { Host, BottomSheet, Button, RNHostView, VStack } from '@expo/ui/swift-ui';
+import { presentationDragIndicator } from '@expo/ui/swift-ui/modifiers';
+
+export default function BottomSheetWithRNContentExample() {
+  const [isPresented, setIsPresented] = useState(false);
+  const [counter, setCounter] = useState(0);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack>
+        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
+        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented} fitToContents>
+          <BottomSheet.Content modifiers={[presentationDragIndicator('visible')]}>
+            <RNHostView matchContents>
+              <View style={{ padding: 24 }}>
+                <RNText style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
+                  React Native Content
+                </RNText>
+                <RNText style={{ color: '#666', marginBottom: 16 }}>Counter: {counter}</RNText>
+                <Pressable
+                  style={{
+                    backgroundColor: '#007AFF',
+                    padding: 12,
+                    borderRadius: 8,
+                    alignItems: 'center',
+                    marginBottom: 12,
+                  }}
+                  onPress={() => setCounter(counter + 1)}>
+                  <RNText style={{ color: 'white', fontWeight: '600' }}>Increment</RNText>
+                </Pressable>
+                <Pressable
+                  style={{
+                    backgroundColor: '#FF3B30',
+                    padding: 12,
+                    borderRadius: 8,
+                    alignItems: 'center',
+                  }}
+                  onPress={() => setIsPresented(false)}>
+                  <RNText style={{ color: 'white', fontWeight: '600' }}>Close</RNText>
+                </Pressable>
+              </View>
+            </RNHostView>
+          </BottomSheet.Content>
+        </BottomSheet>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Bottom sheet with flexible React Native content
+
+When using React Native content with `flex: 1`, omit the `matchContents` prop on `RNHostView` and use [`presentationDetents`](/versions/unversioned/sdk/ui/swift-ui/modifiers/#presentationdetentsdetents) to control the sheet height.
+
+```tsx BottomSheetWithFlexRNContentExample.tsx
+import { useState } from 'react';
+import { Text as RNText, View } from 'react-native';
+import { Host, BottomSheet, Button, RNHostView, VStack } from '@expo/ui/swift-ui';
+import { presentationDetents, presentationDragIndicator } from '@expo/ui/swift-ui/modifiers';
+
+export default function BottomSheetWithFlexRNContentExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack>
+        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
+        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+          <BottomSheet.Content
+            modifiers={[
+              presentationDetents(['medium', 'large']),
+              presentationDragIndicator('visible'),
+            ]}>
+            <RNHostView>
+              <View style={{ flex: 1, backgroundColor: '#007AFF', padding: 24 }}>
+                <RNText style={{ fontSize: 18, fontWeight: 'bold', color: 'white' }}>
+                  Flexible React Native Content
+                </RNText>
+                <RNText style={{ color: 'white', marginTop: 8 }}>
+                  This content fills the available space in the sheet.
+                </RNText>
+              </View>
+            </RNHostView>
+          </BottomSheet.Content>
+        </BottomSheet>
+      </VStack>
+    </Host>
+  );
+}
+```
 
 ## API
 

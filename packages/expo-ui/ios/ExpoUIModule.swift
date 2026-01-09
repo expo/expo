@@ -81,6 +81,7 @@ public final class ExpoUIModule: Module {
     // MARK: - Expo UI Views
 
     ExpoUIView(BottomSheetView.self)
+    View(BottomSheetContentView.self)
     ExpoUIView(ExpoUI.Button.self)
     ExpoUIView(ChartView.self)
     ExpoUIView(ColorPickerView.self)
