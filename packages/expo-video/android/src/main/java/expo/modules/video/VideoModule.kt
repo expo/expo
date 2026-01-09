@@ -395,9 +395,6 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
   Prop("startsPictureInPictureAutomatically") { view: T, autoEnterPiP: Boolean ->
     view.autoEnterPiP = autoEnterPiP
   }
-  Prop("allowsFullscreen") { view: T, allowsFullscreen: Boolean? ->
-    view.allowsFullscreen = allowsFullscreen ?: true
-  }
   Prop("fullscreenOptions") { view: T, fullscreenOptions: FullscreenOptions? ->
     if (fullscreenOptions != null) {
       view.fullscreenOptions = fullscreenOptions

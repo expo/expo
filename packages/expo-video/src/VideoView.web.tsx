@@ -50,6 +50,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
    */
   const audioContextRef = useRef<null | AudioContext>(null);
   const zeroGainNodeRef = useRef<null | GainNode>(null);
+  const allowFullscreen = props.fullscreenOptions?.enable ?? props.allowsFullscreen;
 
   useEffect(() => {
     if (props.useAudioNodePlayback) {
@@ -247,7 +248,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   return (
     <video
       controls={props.nativeControls ?? true}
-      controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'}
+      controlsList={allowFullscreen ? undefined : 'nofullscreen'}
       crossOrigin={props.crossOrigin}
       style={{
         ...mapStyles(props.style),

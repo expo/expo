@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `fullscreenOptions.enable` and `allowsFullscreen` props issues. ([#41600](https://github.com/expo/expo/pull/41600) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 3.0.15 — 2025-12-05

@@ -54,15 +54,19 @@ export class VideoView extends PureComponent {
         return await this.nativeRef.current?.stopPictureInPicture();
     }
     render() {
-        const { player, ...props } = this.props;
-        const playerId = getPlayerId(player);
-        if (props.allowsFullscreen !== undefined) {
+        const { player, allowsFullscreen, ...props } = this.props;
+        const playerId = player ? getPlayerId(player) : null;
+        if (allowsFullscreen !== undefined) {
             console.warn('The `allowsFullscreen` prop is deprecated and will be removed in a future release. Use `fullscreenOptions` prop instead.');
         }
+        const fullscreenOptions = {
+            enable: allowsFullscreen,
+            ...props.fullscreenOptions,
+        };
         if (NativeTextureVideoView && this.props.surfaceType === 'textureView') {
-            return <NativeTextureVideoView {...props} player={playerId} ref={this.nativeRef}/>;
+            return (<NativeTextureVideoView {...props} fullscreenOptions={fullscreenOptions} player={playerId} ref={this.nativeRef}/>);
         }
-        return <NativeVideoView {...props} player={playerId} ref={this.nativeRef}/>;
+        return (<NativeVideoView {...props} fullscreenOptions={fullscreenOptions} player={playerId} ref={this.nativeRef}/>);
     }
 }
 // Temporary solution to pass the shared object ID instead of the player object.

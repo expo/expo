@@ -64,19 +64,38 @@ export class VideoView extends PureComponent<VideoViewProps> {
   }
 
   render(): ReactNode {
-    const { player, ...props } = this.props;
-    const playerId = getPlayerId(player);
+    const { player, allowsFullscreen, ...props } = this.props;
+    const playerId = player ? getPlayerId(player) : null;
 
-    if (props.allowsFullscreen !== undefined) {
+    if (allowsFullscreen !== undefined) {
       console.warn(
         'The `allowsFullscreen` prop is deprecated and will be removed in a future release. Use `fullscreenOptions` prop instead.'
       );
     }
 
+    const fullscreenOptions = {
+      enable: allowsFullscreen,
+      ...props.fullscreenOptions,
+    };
+
     if (NativeTextureVideoView && this.props.surfaceType === 'textureView') {
-      return <NativeTextureVideoView {...props} player={playerId} ref={this.nativeRef} />;
+      return (
+        <NativeTextureVideoView
+          {...props}
+          fullscreenOptions={fullscreenOptions}
+          player={playerId}
+          ref={this.nativeRef}
+        />
+      );
     }
-    return <NativeVideoView {...props} player={playerId} ref={this.nativeRef} />;
+    return (
+      <NativeVideoView
+        {...props}
+        fullscreenOptions={fullscreenOptions}
+        player={playerId}
+        ref={this.nativeRef}
+      />
+    );
   }
 }
 
