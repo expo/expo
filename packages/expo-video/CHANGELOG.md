@@ -22,6 +22,7 @@
 - [Android] Fix rare crashes related to VideoPlayer listeners. ([#41608](https://github.com/expo/expo/pull/41608) by [@behenate](https://github.com/behenate))
 - Fix `fullscreenOptions.enable` and `allowsFullscreen` props issues. ([#41600](https://github.com/expo/expo/pull/41600) by [@behenate](https://github.com/behenate))
 - [Android] Fix player duration property refreshing too late. ([#41609](https://github.com/expo/expo/pull/41609) by [@behenate](https://github.com/behenate))
+- [iOS] Prevents blocking main thread when loading asset tracks for non-HSL tracks ([#42037](https://github.com/expo/expo/pull/42037) by [@santitopo](https://github.com/santitopo))
 
 ### 💡 Others
 
