@@ -57,26 +57,6 @@ export default function SpacerVStackExample() {
 }
 ```
 
-### With minimum length
-
-Use the `minLength` prop to ensure the spacer takes up at least a certain amount of space.
-
-```tsx SpacerMinLengthExample.tsx
-import { Host, HStack, Text, Spacer } from '@expo/ui/swift-ui';
-
-export default function SpacerMinLengthExample() {
-  return (
-    <Host matchContents>
-      <HStack>
-        <Text>Label</Text>
-        <Spacer minLength={20} />
-        <Text>Value</Text>
-      </HStack>
-    </Host>
-  );
-}
-```
-
 ## API
 
 <APISection packageName="expo-ui/swift-ui/spacer" apiName="Spacer" />

@@ -160,6 +160,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   Readonly: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype',
   Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
   SFSymbol: 'https://github.com/nandorojo/sf-symbols-typescript',
+  SFSymbols6_0: 'https://github.com/nandorojo/sf-symbols-typescript',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
   SpeechSynthesisEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisEvent',
   SpeechSynthesisUtterance:

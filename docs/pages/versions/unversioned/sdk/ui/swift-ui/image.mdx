@@ -9,7 +9,7 @@ platforms: ['ios', 'tvos']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-Expo UI Image displays SF Symbols using the SwiftUI [Image API](https://developer.apple.com/documentation/swiftui/image). SF Symbols are a library of over 5,000 configurable symbols provided by Apple.
+Expo UI Image displays SF Symbols using the SwiftUI [Image API](https://developer.apple.com/documentation/swiftui/image). SF Symbols are a library of configurable symbols provided by Apple.
 
 ## Installation
 
@@ -51,58 +51,23 @@ export default function ImageSizeColorExample() {
 
 ### With variable value
 
-Some SF Symbols support variable color rendering. Use the `variableValue` prop with a value between 0.0 and 1.0 to control the fill level. Requires iOS 16.0+.
+Some SF Symbols alter their appearance based on a variable value. Use the `variableValue` prop with a value between 0.0 and 1.0 to control the rendered symbol. Requires iOS 16.0+ and SF Symbols 4.0+.
 
 ```tsx ImageVariableExample.tsx
-import { useState } from 'react';
-import { Host, VStack, Image, Slider } from '@expo/ui/swift-ui';
+import { Host, HStack, Image } from '@expo/ui/swift-ui';
 
 export default function ImageVariableExample() {
-  const [value, setValue] = useState(0.5);
-
   return (
     <Host matchContents>
-      <VStack spacing={16}>
-        <Image systemName="speaker.wave.3.fill" size={48} variableValue={value} />
-        <Slider value={value} onValueChange={({ value }) => setValue(value)} />
-      </VStack>
+      <HStack spacing={16}>
+        <Image systemName="chart.bar.fill" size={32} variableValue={0.3} />
+        <Image systemName="chart.bar.fill" size={32} variableValue={0.6} />
+        <Image systemName="chart.bar.fill" size={32} variableValue={1.0} />
+      </HStack>
     </Host>
   );
 }
 ```
-
-### With tap gesture
-
-Use the `onPress` prop to handle taps on the image.
-
-```tsx ImageOnPressExample.tsx
-import { Host, Image } from '@expo/ui/swift-ui';
-
-export default function ImageOnPressExample() {
-  return (
-    <Host matchContents>
-      <Image
-        systemName="hand.tap.fill"
-        size={32}
-        color="blue"
-        onPress={() => console.log('Image pressed')}
-      />
-    </Host>
-  );
-}
-```
-
-### Common SF Symbols
-
-Here are some commonly used SF Symbol names:
-
-- Navigation: `chevron.right`, `chevron.left`, `arrow.right`, `arrow.left`
-- Actions: `plus`, `minus`, `xmark`, `checkmark`
-- Communication: `envelope`, `phone`, `message`
-- Media: `play.fill`, `pause.fill`, `stop.fill`
-- Status: `heart`, `star`, `bell`, `bookmark`
-
-Browse the full list at [Apple's SF Symbols app](https://developer.apple.com/sf-symbols/).
 
 ## API
 
