@@ -1,0 +1,61 @@
+---
+title: VStack
+description: A SwiftUI VStack component for vertical layouts.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI VStack matches the official SwiftUI [VStack API](https://developer.apple.com/documentation/swiftui/vstack) and arranges its children vertically.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic vertical stack
+
+```tsx BasicVStackExample.tsx
+import { Host, VStack, Text } from '@expo/ui/swift-ui';
+
+export default function BasicVStackExample() {
+  return (
+    <Host matchContents>
+      <VStack spacing={12}>
+        <Text>First</Text>
+        <Text>Second</Text>
+        <Text>Third</Text>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### With alignment
+
+The `alignment` prop controls horizontal alignment of children. Available options are: `leading`, `center`, and `trailing`.
+
+```tsx VStackAlignmentExample.tsx
+import { Host, VStack, Rectangle } from '@expo/ui/swift-ui';
+import { frame } from '@expo/ui/swift-ui/modifiers';
+
+export default function VStackAlignmentExample() {
+  return (
+    <Host matchContents>
+      <VStack spacing={12} alignment="leading">
+        <Rectangle modifiers={[frame({ width: 50, height: 50 })]} />
+        <Rectangle modifiers={[frame({ width: 100, height: 50 })]} />
+        <Rectangle modifiers={[frame({ width: 75, height: 50 })]} />
+      </VStack>
+    </Host>
+  );
+}
+```
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/vstack" apiName="VStack" />

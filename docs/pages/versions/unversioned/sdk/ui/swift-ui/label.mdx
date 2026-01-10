@@ -1,0 +1,106 @@
+---
+title: Label
+description: A SwiftUI Label component for displaying text with an icon.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Label matches the official SwiftUI [Label API](https://developer.apple.com/documentation/swiftui/label) and displays a title alongside an icon.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic label with SF Symbol
+
+```tsx BasicLabelExample.tsx
+import { Host, Label } from '@expo/ui/swift-ui';
+
+export default function BasicLabelExample() {
+  return (
+    <Host matchContents>
+      <Label title="Favorites" systemImage="star.fill" />
+    </Host>
+  );
+}
+```
+
+### Multiple labels in a list
+
+```tsx LabelListExample.tsx
+import { Host, List, Label } from '@expo/ui/swift-ui';
+
+export default function LabelListExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List>
+        <Label title="Profile" systemImage="person.fill" />
+        <Label title="Settings" systemImage="gear" />
+        <Label title="Notifications" systemImage="bell.fill" />
+        <Label title="Privacy" systemImage="lock.fill" />
+      </List>
+    </Host>
+  );
+}
+```
+
+### With custom icon
+
+Use the `icon` prop to provide a custom React node as the icon instead of an SF Symbol.
+
+```tsx LabelCustomIconExample.tsx
+import { Host, Label, Image } from '@expo/ui/swift-ui';
+
+export default function LabelCustomIconExample() {
+  return (
+    <Host matchContents>
+      <Label title="Custom Icon" icon={<Image systemName="sparkles" size={20} color="purple" />} />
+    </Host>
+  );
+}
+```
+
+### Title only
+
+When no icon is provided, the label displays only the title.
+
+```tsx LabelTitleOnlyExample.tsx
+import { Host, Label } from '@expo/ui/swift-ui';
+
+export default function LabelTitleOnlyExample() {
+  return (
+    <Host matchContents>
+      <Label title="Text Only Label" />
+    </Host>
+  );
+}
+```
+
+### With modifiers
+
+```tsx LabelModifiersExample.tsx
+import { Host, Label } from '@expo/ui/swift-ui';
+import { foregroundStyle, font } from '@expo/ui/swift-ui/modifiers';
+
+export default function LabelModifiersExample() {
+  return (
+    <Host matchContents>
+      <Label
+        title="Styled Label"
+        systemImage="paintbrush.fill"
+        modifiers={[foregroundStyle({ color: 'blue' }), font({ weight: 'bold' })]}
+      />
+    </Host>
+  );
+}
+```
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/label" apiName="Label" />

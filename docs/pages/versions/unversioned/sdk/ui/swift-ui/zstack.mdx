@@ -1,0 +1,80 @@
+---
+title: ZStack
+description: A SwiftUI ZStack component for overlapping layouts.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI ZStack matches the official SwiftUI [ZStack API](https://developer.apple.com/documentation/swiftui/zstack) and overlays its children on top of each other.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic overlapping stack
+
+```tsx BasicZStackExample.tsx
+import { Host, ZStack, Rectangle, Text } from '@expo/ui/swift-ui';
+import { frame, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function BasicZStackExample() {
+  return (
+    <Host matchContents>
+      <ZStack>
+        <Rectangle modifiers={[frame({ width: 100, height: 100 })]} />
+        <Text modifiers={[foregroundStyle({ color: 'white' })]}>Overlay</Text>
+      </ZStack>
+    </Host>
+  );
+}
+```
+
+### With alignment
+
+The `alignment` prop controls how children are positioned within the stack. Available options include: `center`, `leading`, `trailing`, `top`, `bottom`, `topLeading`, `topTrailing`, `bottomLeading`, and `bottomTrailing`.
+
+```tsx ZStackAlignmentExample.tsx
+import { Host, ZStack, Rectangle, Circle } from '@expo/ui/swift-ui';
+import { frame, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function ZStackAlignmentExample() {
+  return (
+    <Host matchContents>
+      <ZStack alignment="bottomTrailing">
+        <Rectangle
+          modifiers={[frame({ width: 100, height: 100 }), foregroundStyle({ color: 'blue' })]}
+        />
+        <Circle modifiers={[frame({ width: 30, height: 30 }), foregroundStyle({ color: 'red' })]} />
+      </ZStack>
+    </Host>
+  );
+}
+```
+
+### Creating a badge overlay
+
+```tsx ZStackBadgeExample.tsx
+import { Host, ZStack, Circle, Text, Image } from '@expo/ui/swift-ui';
+import { frame, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function ZStackBadgeExample() {
+  return (
+    <Host matchContents>
+      <ZStack alignment="topTrailing">
+        <Image systemName="bell.fill" size={32} color="blue" />
+        <Circle modifiers={[frame({ width: 16, height: 16 }), foregroundStyle({ color: 'red' })]} />
+      </ZStack>
+    </Host>
+  );
+}
+```
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/zstack" apiName="ZStack" />

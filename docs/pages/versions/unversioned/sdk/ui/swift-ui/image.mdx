@@ -1,0 +1,109 @@
+---
+title: Image
+description: A SwiftUI Image component for displaying SF Symbols.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Image displays SF Symbols using the SwiftUI [Image API](https://developer.apple.com/documentation/swiftui/image). SF Symbols are a library of over 5,000 configurable symbols provided by Apple.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic SF Symbol
+
+```tsx BasicImageExample.tsx
+import { Host, Image } from '@expo/ui/swift-ui';
+
+export default function BasicImageExample() {
+  return (
+    <Host matchContents>
+      <Image systemName="star.fill" />
+    </Host>
+  );
+}
+```
+
+### With size and color
+
+```tsx ImageSizeColorExample.tsx
+import { Host, HStack, Image } from '@expo/ui/swift-ui';
+
+export default function ImageSizeColorExample() {
+  return (
+    <Host matchContents>
+      <HStack spacing={16}>
+        <Image systemName="heart.fill" size={24} color="red" />
+        <Image systemName="star.fill" size={32} color="orange" />
+        <Image systemName="bell.fill" size={40} color="blue" />
+      </HStack>
+    </Host>
+  );
+}
+```
+
+### With variable value
+
+Some SF Symbols support variable color rendering. Use the `variableValue` prop with a value between 0.0 and 1.0 to control the fill level. Requires iOS 16.0+.
+
+```tsx ImageVariableExample.tsx
+import { useState } from 'react';
+import { Host, VStack, Image, Slider } from '@expo/ui/swift-ui';
+
+export default function ImageVariableExample() {
+  const [value, setValue] = useState(0.5);
+
+  return (
+    <Host matchContents>
+      <VStack spacing={16}>
+        <Image systemName="speaker.wave.3.fill" size={48} variableValue={value} />
+        <Slider value={value} onValueChange={({ value }) => setValue(value)} />
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### With tap gesture
+
+Use the `onPress` prop to handle taps on the image.
+
+```tsx ImageOnPressExample.tsx
+import { Host, Image } from '@expo/ui/swift-ui';
+
+export default function ImageOnPressExample() {
+  return (
+    <Host matchContents>
+      <Image
+        systemName="hand.tap.fill"
+        size={32}
+        color="blue"
+        onPress={() => console.log('Image pressed')}
+      />
+    </Host>
+  );
+}
+```
+
+### Common SF Symbols
+
+Here are some commonly used SF Symbol names:
+
+- Navigation: `chevron.right`, `chevron.left`, `arrow.right`, `arrow.left`
+- Actions: `plus`, `minus`, `xmark`, `checkmark`
+- Communication: `envelope`, `phone`, `message`
+- Media: `play.fill`, `pause.fill`, `stop.fill`
+- Status: `heart`, `star`, `bell`, `bookmark`
+
+Browse the full list at [Apple's SF Symbols app](https://developer.apple.com/sf-symbols/).
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/image" apiName="Image" />
