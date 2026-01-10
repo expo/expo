@@ -31,25 +31,6 @@ export default function BasicLabelExample() {
 }
 ```
 
-### Multiple labels in a list
-
-```tsx LabelListExample.tsx
-import { Host, List, Label } from '@expo/ui/swift-ui';
-
-export default function LabelListExample() {
-  return (
-    <Host style={{ flex: 1 }}>
-      <List>
-        <Label title="Profile" systemImage="person.fill" />
-        <Label title="Settings" systemImage="gear" />
-        <Label title="Notifications" systemImage="bell.fill" />
-        <Label title="Privacy" systemImage="lock.fill" />
-      </List>
-    </Host>
-  );
-}
-```
-
 ### With custom icon
 
 Use the `icon` prop to provide a custom React node as the icon instead of an SF Symbol.
@@ -66,36 +47,18 @@ export default function LabelCustomIconExample() {
 }
 ```
 
-### Title only
+### Icon only
 
-When no icon is provided, the label displays only the title.
+Use the [`labelStyle`](/versions/unversioned/sdk/ui/swift-ui/modifiers/#labelstyle) modifier with `iconOnly` to display only the icon. Always provide a `title` for accessibility even though it won't be visible.
 
-```tsx LabelTitleOnlyExample.tsx
+```tsx LabelIconOnlyExample.tsx
 import { Host, Label } from '@expo/ui/swift-ui';
+import { labelStyle } from '@expo/ui/swift-ui/modifiers';
 
-export default function LabelTitleOnlyExample() {
+export default function LabelIconOnlyExample() {
   return (
     <Host matchContents>
-      <Label title="Text Only Label" />
-    </Host>
-  );
-}
-```
-
-### With modifiers
-
-```tsx LabelModifiersExample.tsx
-import { Host, Label } from '@expo/ui/swift-ui';
-import { foregroundStyle, font } from '@expo/ui/swift-ui/modifiers';
-
-export default function LabelModifiersExample() {
-  return (
-    <Host matchContents>
-      <Label
-        title="Styled Label"
-        systemImage="paintbrush.fill"
-        modifiers={[foregroundStyle({ color: 'blue' }), font({ weight: 'bold' })]}
-      />
+      <Label title="Settings" systemImage="gear" modifiers={[labelStyle('iconOnly')]} />
     </Host>
   );
 }
