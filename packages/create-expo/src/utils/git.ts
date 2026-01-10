@@ -45,7 +45,8 @@ export async function initGitRepoAsync(root: string) {
     const { answer } = await prompts({
       type: 'confirm',
       name: 'answer',
-      message: 'You are creating a project inside of an existing Git repository. Skip initializing a new git repository?',
+      message:
+        'You are creating a project inside of an existing Git repository. Skip initializing a new git repository?',
       initial: true,
     });
 
