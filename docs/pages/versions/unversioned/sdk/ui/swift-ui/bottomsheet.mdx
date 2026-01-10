@@ -72,11 +72,11 @@ export default function BottomSheetFitsContentExample() {
 
 ### Bottom sheet with presentation detents
 
-Use the [`presentationDetents`](/versions/unversioned/sdk/ui/swift-ui/modifiers/#presentationdetentsdetents) modifier on `BottomSheet.Content` to control the available heights. You can use:
-- `'medium'` - System medium height (approximately half screen)
-- `'large'` - System large height (full screen)
-- `{ fraction: number }` - Fraction of screen height (0-1)
-- `{ height: number }` - Fixed height in points
+Use the [`presentationDetents`](/modifiers/#presentationdetentsdetents) modifier on `BottomSheet.Content` to control the available heights. You can use:
+- `'medium'`: System medium height (approximately half screen)
+- `'large'`: System large height (full screen)
+- `{ fraction: number }`: Fraction of screen height (0-1)
+- `{ height: number }`: Fixed height in points
 
 ```tsx BottomSheetWithDetentsExample.tsx
 import { useState } from 'react';
@@ -104,7 +104,7 @@ export default function BottomSheetWithDetentsExample() {
 
 ### Bottom sheet with background interaction
 
-Use the [`presentationBackgroundInteraction`](/versions/unversioned/sdk/ui/swift-ui/modifiers/#presentationbackgroundinteractioninteraction) modifier to allow interactions with content behind the sheet.
+Use the [`presentationBackgroundInteraction`](modifiers/#presentationbackgroundinteractioninteraction) modifier to allow interactions with content behind the sheet.
 
 ```tsx BottomSheetWithBackgroundInteractionExample.tsx
 import { useState } from 'react';
@@ -138,7 +138,7 @@ export default function BottomSheetWithBackgroundInteractionExample() {
 
 ### Non-dismissible bottom sheet
 
-Use the [`interactiveDismissDisabled`](/versions/unversioned/sdk/ui/swift-ui/modifiers/#interactivedismissdisabledisdisabled) modifier to prevent users from dismissing the sheet by swiping.
+Use the [`interactiveDismissDisabled`](modifiers/#interactivedismissdisabledisdisabled) modifier to prevent users from dismissing the sheet by swiping.
 
 ```tsx NonDismissibleBottomSheetExample.tsx
 import { useState } from 'react';
@@ -225,7 +225,7 @@ export default function BottomSheetWithRNContentExample() {
 
 ### Bottom sheet with flexible React Native content
 
-When using React Native content with `flex: 1`, omit the `matchContents` prop on `RNHostView` and use [`presentationDetents`](/versions/unversioned/sdk/ui/swift-ui/modifiers/#presentationdetentsdetents) to control the sheet height.
+When using React Native content with `flex: 1`, omit the `matchContents` prop on `RNHostView` and use [`presentationDetents`](modifiers/#presentationdetentsdetents) to control the sheet height.
 
 ```tsx BottomSheetWithFlexRNContentExample.tsx
 import { useState } from 'react';
