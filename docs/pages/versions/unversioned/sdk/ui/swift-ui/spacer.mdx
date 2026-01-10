@@ -77,53 +77,6 @@ export default function SpacerMinLengthExample() {
 }
 ```
 
-### Multiple spacers for even distribution
-
-Use multiple Spacers to evenly distribute content.
-
-```tsx SpacerDistributionExample.tsx
-import { Host, HStack, Image, Spacer } from '@expo/ui/swift-ui';
-
-export default function SpacerDistributionExample() {
-  return (
-    <Host style={{ flex: 1 }}>
-      <HStack>
-        <Spacer />
-        <Image systemName="house.fill" size={24} />
-        <Spacer />
-        <Image systemName="magnifyingglass" size={24} />
-        <Spacer />
-        <Image systemName="person.fill" size={24} />
-        <Spacer />
-      </HStack>
-    </Host>
-  );
-}
-```
-
-### Navigation bar layout
-
-A common pattern for creating navigation-style layouts.
-
-```tsx SpacerNavBarExample.tsx
-import { Host, HStack, Text, Spacer, Image } from '@expo/ui/swift-ui';
-import { padding } from '@expo/ui/swift-ui/modifiers';
-
-export default function SpacerNavBarExample() {
-  return (
-    <Host style={{ flex: 1 }}>
-      <HStack modifiers={[padding({ all: 16 })]}>
-        <Image systemName="chevron.left" size={20} color="blue" />
-        <Spacer />
-        <Text>Title</Text>
-        <Spacer />
-        <Image systemName="ellipsis" size={20} color="blue" />
-      </HStack>
-    </Host>
-  );
-}
-```
-
 ## API
 
 <APISection packageName="expo-ui/swift-ui/spacer" apiName="Spacer" />
