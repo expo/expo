@@ -3,6 +3,7 @@ package host.exp.exponent.home
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -28,7 +29,8 @@ fun LocalServerTutorial(
           colors = TextFieldDefaults.colors(
             disabledContainerColor = MaterialTheme.colorScheme.background,
             disabledTextColor = MaterialTheme.colorScheme.onBackground
-          )
+          ),
+          modifier = Modifier.fillMaxWidth()
         )
         Text("Select the local server when it appears here.")
       }
