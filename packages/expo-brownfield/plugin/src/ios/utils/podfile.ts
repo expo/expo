@@ -2,8 +2,7 @@ const getTargetNameLines = (targetName: string): string[] => {
   return [`  target '${targetName}' do`, '    inherit! :complete', '  end'];
 };
 
-const getCustomScriptLines = (targetName: string): string[] => [
-  `$BROWNFIELD_TARGET_NAME = '${targetName}'`,
+const getCustomScriptLines = (): string[] => [
   'require File.join(File.dirname(`node --print "require.resolve(\'expo-brownfield/package.json\')"`), "plugin/src/ios/scripts/reorder_build_phases.rb")',
 ];
 
@@ -27,7 +26,7 @@ export const addNewPodsTarget = (podfile: string, targetName: string): string =>
 };
 
 export const addCustomRubyScriptImport = (podfile: string, targetName: string) => {
-  const requireLines = getCustomScriptLines(targetName);
+  const requireLines = getCustomScriptLines();
   let podFileLines = podfile.split('\n');
   if (podFileLines.find((line) => line.includes(requireLines[0].trim()))) {
     console.info('Require for custom script is already added. Skipping...');
