@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed an issue where `pageSize` and `pageOffset` were ignored when searching for contacts by name.
+- [Android] Fixed an issue where `pageSize` and `pageOffset` were ignored when searching for contacts by name. ([#42063](https://github.com/expo/expo/pull/42063) by [@mensonones](https://github.com/mensonones))
 
 ### 💡 Others
 
