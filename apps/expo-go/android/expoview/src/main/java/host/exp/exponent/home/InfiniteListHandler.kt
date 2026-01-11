@@ -4,6 +4,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.launch
 
 /**
@@ -26,31 +27,25 @@ fun InfiniteListHandler(
   onLoadMore: suspend () -> Unit
 ) {
   val scope = rememberCoroutineScope()
+  LaunchedEffect(listState) {
+    snapshotFlow {
+      val layoutInfo = listState.layoutInfo
+      val visibleItemsInfo = layoutInfo.visibleItemsInfo
+      val totalItemCount = layoutInfo.totalItemsCount
 
-  // We use a LaunchedEffect that will re-run if any of its keys change.
-  LaunchedEffect(listState.layoutInfo, isFetching, canLoadMore) {
-    // Do not trigger load if we are already fetching or if there are no more items
-    if (isFetching || !canLoadMore) {
-      return@LaunchedEffect
-    }
-
-    val visibleItemsInfo = listState.layoutInfo.visibleItemsInfo
-    // Do not trigger if the list is empty, as there's nothing to scroll.
-    if (visibleItemsInfo.isEmpty()) {
-      scope.launch {
-        onLoadMore()
+      if (visibleItemsInfo.isEmpty()) {
+        // List is empty, should trigger load
+        true
+      } else {
+        // Check if the last visible item is close to the end
+        val lastVisibleItem = visibleItemsInfo.last()
+        lastVisibleItem.index >= totalItemCount - 1 - buffer
       }
-      return@LaunchedEffect
-    }
-
-    // Check if the last visible item is close to the end of the list
-    val lastVisibleItem = visibleItemsInfo.last()
-    val totalItemCount = listState.layoutInfo.totalItemsCount
-
-    if (lastVisibleItem.index >= totalItemCount - 1 - buffer) {
-      // Launch the load more function in the provided scope
-      scope.launch {
-        onLoadMore()
+    }.collect { shouldLoadMore ->
+      if (shouldLoadMore && !isFetching && canLoadMore) {
+        scope.launch {
+          onLoadMore()
+        }
       }
     }
   }

@@ -48,6 +48,7 @@ class RESTApiClient(private val sessionRepository: SessionRepository) {
       }
     }
   }
+
   @OptIn(ExperimentalStdlibApi::class)
   suspend fun <T, B> sendUnauthenticatedApiV2Request(route: String, type: KType, body: B? = null): T {
     val url = apiV2BaseUrl + route

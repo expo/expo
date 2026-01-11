@@ -1,7 +1,5 @@
 package host.exp.exponent.home
 
-// path: /Users/aleqsio/Work/Expo/expoA/apps/expo-go/android/expoview/src/main/java/host/exp/exponent/home/UserReviewSection.kt
-
 import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

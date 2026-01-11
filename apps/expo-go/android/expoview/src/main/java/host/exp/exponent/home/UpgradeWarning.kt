@@ -155,7 +155,6 @@ fun UpgradeWarning() {
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.fillMaxWidth()
       ) {
-
         Icon(
           painter = painterResource(id = R.drawable.warning),
           contentDescription = "Warning",
@@ -213,7 +212,7 @@ private fun Message() {
 
     Text(
       text = textPart2,
-      style = MaterialTheme.typography.bodySmall,
+      style = MaterialTheme.typography.bodySmall
     )
   }
 }

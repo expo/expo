@@ -1,8 +1,9 @@
 package host.exp.exponent.home
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,7 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,10 +27,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import host.exp.exponent.graphql.fragment.CurrentUserActorData
 import host.exp.expoview.R
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,13 +38,13 @@ fun AccountScreen(
   viewModel: HomeAppViewModel,
   goBack: () -> Unit
 ) {
-  val account by viewModel.account.dataFlow.collectAsState()
-  val selectedAccount by viewModel.selectedAccount.collectAsState()
+  val account by viewModel.account.dataFlow.collectAsStateWithLifecycle()
+  val selectedAccount by viewModel.selectedAccount.collectAsStateWithLifecycle()
 
   Scaffold(
     topBar = {
       TopAppBarWithBackIcon("Account", onGoBack = goBack)
-    },
+    }
   ) { paddingValues ->
     Column(
       modifier = Modifier
@@ -96,10 +96,11 @@ private fun AccountRow(
   @Composable
   fun Action() {
     if (isSelected) {
-      Image(
+      Icon(
         painter = painterResource(id = R.drawable.check),
         contentDescription = "Selected Account",
-        modifier = Modifier.size(16.dp)
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.size(24.dp)
       )
     }
   }
@@ -148,6 +149,13 @@ private fun AccountRow(
       }
     },
     content = { Content() },
-    action = { Action() }
+    action = {
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End
+      ) {
+        Action()
+      }
+    }
   )
 }

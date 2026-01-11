@@ -43,7 +43,7 @@ class AuthActivity : AppCompatActivity() {
       val sessionSecret = intent.getStringExtra(SESSION_SECRET_KEY) ?: return AuthResult.Canceled
 
       return AuthResult.Success(
-        sessionSecret = sessionSecret,
+        sessionSecret = sessionSecret
       )
     }
   }

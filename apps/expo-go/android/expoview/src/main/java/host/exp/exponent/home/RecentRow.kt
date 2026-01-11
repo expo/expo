@@ -28,7 +28,7 @@ fun RecentRow(historyItem: HistoryItem) {
         modifier = Modifier
           .size(24.dp)
           .clip(shape = RoundedCornerShape(4.dp)),
-        contentScale = ContentScale.Crop,
+        contentScale = ContentScale.Crop
       )
     },
     onClick = {

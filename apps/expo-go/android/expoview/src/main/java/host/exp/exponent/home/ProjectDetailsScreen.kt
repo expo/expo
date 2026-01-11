@@ -14,16 +14,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import host.exp.exponent.graphql.ProjectsQuery
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(
-  ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class,
+  ExperimentalMaterial3Api::class,
+  ExperimentalCoroutinesApi::class,
   ExperimentalMaterial3ExpressiveApi::class
 )
 @Composable
@@ -35,9 +36,11 @@ fun ProjectDetailsScreen(
   bottomBar: @Composable () -> Unit = { },
   appFlow: Flow<ProjectsQuery.ById?>
 ) {
-  val app by appFlow.collectAsState(initial = null)
+  val app by appFlow.collectAsStateWithLifecycle(initialValue = null)
   // Should we use the same flow pattern as in ProjectsScreen? Only case is probably account deletion.
-  val branches by viewModel.branches(app?.id, 5).collectAsState(null)
+  val branches by viewModel
+    .branches(app?.id, 5)
+    .collectAsStateWithLifecycle(initialValue = null)
 
   // Filter the branches to only include those that have updates.
   val branchesToRender = branches?.filter { it.updates.isNotEmpty() }
@@ -50,7 +53,10 @@ fun ProjectDetailsScreen(
 
   Scaffold(
     topBar = {
-      TopAppBarWithBackIcon(app?.name ?: "Project", onGoBack = onGoBack)
+      TopAppBarWithBackIcon(
+        app?.name ?: "Project",
+        onGoBack = onGoBack
+      )
     },
     bottomBar = bottomBar
   ) { padding ->
@@ -58,7 +64,7 @@ fun ProjectDetailsScreen(
     Column(
       modifier = Modifier
         .padding(padding)
-        .fillMaxSize(),
+        .fillMaxSize()
     ) {
       Column(
         modifier = Modifier
@@ -68,7 +74,7 @@ fun ProjectDetailsScreen(
       ) {
         Text(
           text = app?.name ?: "Unnamed Project",
-          style = MaterialTheme.typography.bodyLargeEmphasized,
+          style = MaterialTheme.typography.bodyLargeEmphasized
         )
         Spacer(modifier = Modifier.height(4.dp))
 
@@ -83,10 +89,12 @@ fun ProjectDetailsScreen(
           text = "Owned by ${app?.ownerAccount?.name}",
           style = MaterialTheme.typography.bodySmall
         )
-
       }
       HorizontalDivider()
-      LabeledGroup(label = "Branches", modifier = Modifier.padding(top = 8.dp)) {
+      LabeledGroup(
+        label = "Branches",
+        modifier = Modifier.padding(top = 8.dp)
+      ) {
         if (branchesToRender?.isNotEmpty() == true) {
           TruncatedList(
             items = branchesToRender,

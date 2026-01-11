@@ -16,11 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import host.exp.exponent.graphql.BranchDetailsQuery
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,9 +30,8 @@ fun BranchDetailsScreen(
   branchRefreshableFlow: RefreshableFlow<BranchDetailsQuery.ById?>,
   bottomBar: @Composable () -> Unit = { }
 ) {
-  // 1. Collect state from the RefreshableFlow
-  val isRefreshing by branchRefreshableFlow.loadingFlow.collectAsState()
-  val branch by branchRefreshableFlow.dataFlow.collectAsState()
+  val isRefreshing by branchRefreshableFlow.loadingFlow.collectAsStateWithLifecycle()
+  val branch by branchRefreshableFlow.dataFlow.collectAsStateWithLifecycle()
   val onRefresh = { branchRefreshableFlow.refresh() }
 
   val pullToRefreshState = rememberPullToRefreshState()

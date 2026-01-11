@@ -20,7 +20,7 @@ fun ClickableItemRow(
   icon: ComposableFunction? = null,
   onClick: () -> Unit,
   action: ComposableFunction? = null,
-  content: ComposableFunction? = null,
+  content: ComposableFunction? = null
 ) {
   Row(
     modifier = Modifier
@@ -29,14 +29,10 @@ fun ClickableItemRow(
       .padding(16.dp),
     verticalAlignment = Alignment.CenterVertically
   ) {
-
     if (icon != null) {
       icon()
       Spacer(modifier = Modifier.width(8.dp))
     }
-
-
-
 
     if (text != null) {
       Text(

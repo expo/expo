@@ -9,8 +9,10 @@ private const val EXPO_HOST = "expo.dev"
 private const val SNACK_RUNTIME_URL_PROTOCOL = "exp"
 private const val SNACK_RUNTIME_URL_ENDPOINT = "u.expo.dev/933fd9c0-1666-11e7-afca-d980795c5824"
 
-
-fun normalizeSnackUrl(fullName: String, channelName: String? = null): String {
+fun normalizeSnackUrl(
+  fullName: String,
+  channelName: String? = null
+): String {
   val builder = Uri.Builder()
     .scheme(SNACK_RUNTIME_URL_PROTOCOL)
     .encodedAuthority(SNACK_RUNTIME_URL_ENDPOINT)

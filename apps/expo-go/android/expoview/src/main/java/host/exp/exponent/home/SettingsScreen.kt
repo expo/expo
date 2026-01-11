@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -18,12 +19,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,10 +32,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import host.exp.exponent.generated.ExponentBuildConstants
 import host.exp.exponent.services.ThemeSetting
+import host.exp.expoview.R
 import kotlinx.coroutines.launch
 
 private fun getMajorVersion(version: String): String {
@@ -48,16 +52,12 @@ fun SettingsScreen(
   bottomBar: @Composable () -> Unit = { },
   accountHeader: @Composable () -> Unit = { }
 ) {
-
-
-  val selectedTheme by viewModel.selectedTheme.collectAsState()
+  val selectedTheme by viewModel.selectedTheme.collectAsStateWithLifecycle()
 
   Scaffold(
     topBar = { SettingsTopBar(accountHeader = accountHeader) },
     bottomBar = bottomBar
   ) { paddingValues ->
-
-
     Column(
       modifier = Modifier
         .fillMaxSize()
@@ -89,7 +89,14 @@ fun ThemeSection(
   LabeledGroup(label = "Theme") {
     ClickableItemRow(
       text = "Automatic",
-//            icon = rememberVectorPainter(Icons.Default.BrightnessAuto),
+      icon = {
+        Icon(
+          painter = painterResource(R.drawable.theme_auto),
+          contentDescription = "Automatic Theme Icon",
+          tint = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.size(20.dp)
+        )
+      },
       onClick = { onThemeSelected(ThemeSetting.Automatic) },
       action = {
         RadioButton(
@@ -101,7 +108,14 @@ fun ThemeSection(
     HorizontalDivider()
     ClickableItemRow(
       text = "Light",
-//            icon = rememberVectorPainter(Icons.Default.LightMode),
+      icon = {
+        Icon(
+          painter = painterResource(R.drawable.theme_light),
+          contentDescription = "Light Theme Icon",
+          tint = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.size(20.dp)
+        )
+      },
       onClick = { onThemeSelected(ThemeSetting.Light) },
       action = {
         RadioButton(
@@ -113,7 +127,14 @@ fun ThemeSection(
     HorizontalDivider()
     ClickableItemRow(
       text = "Dark",
-//            icon = rememberVectorPainter(Icons.Default.DarkMode),
+      icon = {
+        Icon(
+          painter = painterResource(R.drawable.theme_dark),
+          contentDescription = "Dark Theme Icon",
+          tint = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.size(20.dp)
+        )
+      },
       onClick = { onThemeSelected(ThemeSetting.Dark) },
       action = {
         RadioButton(
@@ -124,7 +145,6 @@ fun ThemeSection(
     )
   }
 }
-
 
 @Composable
 fun AppInfoSection(
@@ -167,14 +187,13 @@ fun AppInfoSection(
   }
 }
 
-
 @Composable
 fun DeleteAccountSection() {
   var deletionError by remember { mutableStateOf<String?>(null) }
   val context = LocalContext.current
   val coroutineScope = rememberCoroutineScope()
 
-  fun handleDeleteAccount() {
+  val handleDeleteAccount: () -> Unit = {
     deletionError = null
 
     coroutineScope.launch {
@@ -195,7 +214,15 @@ fun DeleteAccountSection() {
   }
 
   LabeledGroup(label = "Delete Account") {
-    Column(modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp)) {
+    Column(
+      modifier = Modifier
+        .padding(
+          start = 16.dp,
+          top = 16.dp,
+          end = 16.dp,
+          bottom = 8.dp
+        )
+    ) {
       Text(
         text = "This action is irreversible. It will delete your personal account, projects, and activity.",
         style = MaterialTheme.typography.bodySmall,
@@ -218,13 +245,13 @@ fun DeleteAccountSection() {
         horizontalArrangement = Arrangement.End
       ) {
         Button(
-          onClick = { handleDeleteAccount() },
+          onClick = handleDeleteAccount,
           colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.errorContainer,
             contentColor = MaterialTheme.colorScheme.error
           ),
           shape = RoundedCornerShape(4.dp),
-          border = BorderStroke(1.dp, MaterialTheme.colorScheme.error),
+          border = BorderStroke(1.dp, MaterialTheme.colorScheme.error)
         ) {
           Text("Delete Account")
         }

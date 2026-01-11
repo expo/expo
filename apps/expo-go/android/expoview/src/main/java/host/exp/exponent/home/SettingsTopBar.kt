@@ -16,7 +16,9 @@ import host.exp.expoview.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsTopBar(accountHeader: @Composable () -> Unit) {
+fun SettingsTopBar(
+  accountHeader: @Composable () -> Unit
+) {
   TopAppBar(
     title = {
       Row(verticalAlignment = Alignment.CenterVertically) {

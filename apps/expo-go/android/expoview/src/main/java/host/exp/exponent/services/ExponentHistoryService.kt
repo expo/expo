@@ -23,7 +23,7 @@ data class HistoryItem(
 }
 
 @Singleton
-class ExponentHistoryService constructor(
+class ExponentHistoryService(
   val exponentSharedPreferences: ExponentSharedPreferences
 ) {
   private val _history = MutableStateFlow<List<HistoryItem>>(emptyList())

@@ -14,17 +14,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
@@ -33,16 +32,33 @@ fun SnacksScreen(
   onGoBack: () -> Unit,
   bottomBar: @Composable () -> Unit = {}
 ) {
-  val paginator by viewModel.snacksPaginatorRefreshableFlow.dataFlow.collectAsState()
+  val paginator by viewModel
+    .snacksPaginatorRefreshableFlow
+    .dataFlow
+    .collectAsStateWithLifecycle()
 
-  val snacks = paginator?.data?.collectAsState(initial = emptyList())?.value ?: emptyList()
-  val isFetching by viewModel.snacksPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
-    paginator?.isFetching ?: flowOf(false)
-  }.collectAsState(initial = false)
+  val snacks = paginator
+    ?.data
+    ?.collectAsStateWithLifecycle(
+      initialValue = emptyList()
+    )
+    ?.value
+    ?: emptyList()
+  val isFetching by viewModel
+    .snacksPaginatorRefreshableFlow
+    .dataFlow
+    .flatMapLatest { paginator ->
+      paginator?.isFetching ?: flowOf(false)
+    }
+    .collectAsStateWithLifecycle(initialValue = false)
 
-  val canLoadMore by viewModel.snacksPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
-    paginator?.isLastPage?.map { it.not() } ?: flowOf(true)
-  }.collectAsState(initial = true)
+  val canLoadMore by viewModel
+    .snacksPaginatorRefreshableFlow
+    .dataFlow
+    .flatMapLatest { paginator ->
+      paginator?.isLastPage?.map { it.not() } ?: flowOf(true)
+    }
+    .collectAsStateWithLifecycle(initialValue = true)
 
   val pullToRefreshState = rememberPullToRefreshState()
   val lazyListState = rememberLazyListState()
@@ -52,7 +68,7 @@ fun SnacksScreen(
     topBar = {
       TopAppBarWithBackIcon(
         label = "Snacks",
-        onGoBack = onGoBack,
+        onGoBack = onGoBack
       )
     },
     bottomBar = bottomBar

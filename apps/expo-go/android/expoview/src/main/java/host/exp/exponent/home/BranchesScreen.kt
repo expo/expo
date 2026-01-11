@@ -14,13 +14,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -31,9 +31,7 @@ import kotlinx.coroutines.flow.map
 fun BranchesScreen(
   viewModel: HomeAppViewModel,
   appId: String,
-
   onGoBack: () -> Unit,
-
   navigateToBranchDetails: (appId: String, branchName: String) -> Unit,
   bottomBar: @Composable () -> Unit = {}
 ) {
@@ -41,20 +39,19 @@ fun BranchesScreen(
 
   val branches by paginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
     paginator?.data ?: flowOf(emptyList())
-  }.collectAsState(initial = emptyList())
+  }.collectAsStateWithLifecycle(initialValue = emptyList())
 
   val branchesToRender = branches.filter { it.updates.isNotEmpty() }
 
-
   val isFetching by paginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
     paginator?.isFetching ?: flowOf(false)
-  }.collectAsState(initial = false)
+  }.collectAsStateWithLifecycle(initialValue = false)
 
   val canLoadMore by paginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
     paginator?.isLastPage?.map { it.not() } ?: flowOf(true)
-  }.collectAsState(initial = true)
+  }.collectAsStateWithLifecycle(initialValue = true)
 
-  val paginator by paginatorRefreshableFlow.dataFlow.collectAsState()
+  val paginator by paginatorRefreshableFlow.dataFlow.collectAsStateWithLifecycle()
 
   val pullToRefreshState = rememberPullToRefreshState()
   val lazyListState = rememberLazyListState()
@@ -64,7 +61,7 @@ fun BranchesScreen(
     topBar = {
       TopAppBarWithBackIcon(
         label = "Branches",
-        onGoBack = onGoBack,
+        onGoBack = onGoBack
       )
     },
     bottomBar = bottomBar

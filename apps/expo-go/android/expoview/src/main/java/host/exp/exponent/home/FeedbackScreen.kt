@@ -19,7 +19,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import host.exp.expoview.R
 
@@ -38,45 +38,12 @@ fun FeedbackScreen(
   viewModel: HomeAppViewModel = viewModel(),
   onGoBack: () -> Unit
 ) {
-  val feedbackState by viewModel.feedbackState.collectAsState()
+  val feedbackState by viewModel.feedbackState.collectAsStateWithLifecycle()
   var feedback by remember { mutableStateOf("") }
   var email by remember { mutableStateOf(viewModel.account.dataFlow.value?.bestContactEmail ?: "") }
 
   if (feedbackState.isSubmitted) {
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp),
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Center
-    ) {
-      Icon(
-        painter = painterResource(id = R.drawable.check),
-        contentDescription = "Success",
-        tint = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.size(80.dp)
-      )
-      Spacer(modifier = Modifier.height(24.dp))
-      Text(
-        text = "Thanks for sharing your feedback!",
-        style = MaterialTheme.typography.headlineSmall,
-        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center
-      )
-      Spacer(modifier = Modifier.height(8.dp))
-      Text(
-        text = "Your feedback will help us make our app better.",
-        style = MaterialTheme.typography.bodyLarge,
-        textAlign = TextAlign.Center
-      )
-      Spacer(modifier = Modifier.height(24.dp))
-      Button(onClick = {
-        viewModel.resetFeedbackState()
-        onGoBack()
-      }, modifier = Modifier.fillMaxWidth()) {
-        Text("Continue")
-      }
-    }
+    SubmittedFeedback(viewModel, onGoBack)
     return
   }
 
@@ -157,6 +124,47 @@ fun FeedbackScreen(
           }
         }
       }
+    }
+  }
+}
+
+@Composable
+private fun SubmittedFeedback(
+  viewModel: HomeAppViewModel,
+  onGoBack: () -> Unit
+) {
+  Column(
+    modifier = Modifier
+      .fillMaxSize()
+      .padding(16.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.Center
+  ) {
+    Icon(
+      painter = painterResource(id = R.drawable.check),
+      contentDescription = "Success",
+      tint = MaterialTheme.colorScheme.primary,
+      modifier = Modifier.size(80.dp)
+    )
+    Spacer(modifier = Modifier.height(24.dp))
+    Text(
+      text = "Thanks for sharing your feedback!",
+      style = MaterialTheme.typography.headlineSmall,
+      fontWeight = FontWeight.Bold,
+      textAlign = TextAlign.Center
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(
+      text = "Your feedback will help us make our app better.",
+      style = MaterialTheme.typography.bodyLarge,
+      textAlign = TextAlign.Center
+    )
+    Spacer(modifier = Modifier.height(24.dp))
+    Button(onClick = {
+      viewModel.resetFeedbackState()
+      onGoBack()
+    }, modifier = Modifier.fillMaxWidth()) {
+      Text("Continue")
     }
   }
 }

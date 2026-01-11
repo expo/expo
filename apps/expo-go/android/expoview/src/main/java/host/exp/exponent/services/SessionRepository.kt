@@ -1,10 +1,7 @@
 package host.exp.exponent.services
 
 import android.content.Context
-import android.net.Uri
 import androidx.core.content.edit
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 enum class ThemeSetting {
   Automatic,
@@ -12,9 +9,11 @@ enum class ThemeSetting {
   Dark
 }
 
-//TODO: Rename
 class SessionRepository(context: Context) {
-  private val sharedPreferences = context.getSharedPreferences("expo_session", Context.MODE_PRIVATE)
+  private val sharedPreferences = context.getSharedPreferences(
+    "expo_session",
+    Context.MODE_PRIVATE
+  )
 
   companion object {
     private const val SESSION_SECRET_KEY = "session_secret"
@@ -24,20 +23,24 @@ class SessionRepository(context: Context) {
   }
 
   fun saveThemeSetting(themeSetting: ThemeSetting) {
-    sharedPreferences.edit().putString(THEME_KEY, themeSetting.name).apply()
+    sharedPreferences.edit(commit = true) {
+      putString(THEME_KEY, themeSetting.name)
+    }
   }
 
   fun getThemeSetting(): ThemeSetting {
     val themeName = sharedPreferences.getString(THEME_KEY, ThemeSetting.Automatic.name)
     return try {
       ThemeSetting.valueOf(themeName ?: ThemeSetting.Automatic.name)
-    } catch (e: IllegalArgumentException) {
+    } catch (_: IllegalArgumentException) {
       ThemeSetting.Automatic
     }
   }
 
   fun saveSessionSecret(secret: String?) {
-    sharedPreferences.edit().putString(SESSION_SECRET_KEY, secret).apply()
+    sharedPreferences.edit(commit = true) {
+      putString(SESSION_SECRET_KEY, secret)
+    }
   }
 
   fun getSessionSecret(): String? {
@@ -45,34 +48,24 @@ class SessionRepository(context: Context) {
   }
 
   fun clearSessionSecret() {
-    sharedPreferences.edit().remove(SESSION_SECRET_KEY).apply()
+    sharedPreferences.edit(commit = true) {
+      remove(SESSION_SECRET_KEY)
+    }
   }
 
   fun saveSelectedAccountId(accountId: String?) {
-    sharedPreferences.edit().putString(SELECTED_ACCOUNT_ID_KEY, accountId).apply()
+    sharedPreferences.edit(commit = true) {
+      putString(SELECTED_ACCOUNT_ID_KEY, accountId)
+    }
   }
 
   fun clearSelectedAccountId() {
-    sharedPreferences.edit().remove(SELECTED_ACCOUNT_ID_KEY).apply()
+    sharedPreferences.edit(commit = true) {
+      remove(SELECTED_ACCOUNT_ID_KEY)
+    }
   }
 
   fun getSelectedAccountId(): String? {
     return sharedPreferences.getString(SELECTED_ACCOUNT_ID_KEY, null)
-  }
-
-  fun saveRecents(recents: List<HistoryItem>) {
-    val json = Gson().toJson(recents)
-    sharedPreferences.edit {
-      putString(RECENTS_KEY, json)
-    }
-  }
-
-  fun getRecents(): List<HistoryItem> {
-    val json = sharedPreferences.getString(RECENTS_KEY, null)
-    if (json.isNullOrBlank()) {
-      return emptyList()
-    }
-    val type = object : TypeToken<List<HistoryItem>>() {}.type
-    return Gson().fromJson(json, type)
   }
 }

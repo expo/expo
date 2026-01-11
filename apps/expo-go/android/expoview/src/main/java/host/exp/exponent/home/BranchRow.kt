@@ -17,7 +17,10 @@ import host.exp.exponent.graphql.BranchesForProjectQuery
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun BranchRow(branch: BranchesForProjectQuery.UpdateBranch, onClick: () -> Unit) {
+fun BranchRow(
+  branch: BranchesForProjectQuery.UpdateBranch,
+  onClick: () -> Unit
+) {
   Row(
     modifier = Modifier
       .fillMaxWidth()

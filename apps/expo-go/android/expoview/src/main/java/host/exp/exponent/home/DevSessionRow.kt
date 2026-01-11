@@ -32,11 +32,12 @@ fun DevSessionRow(session: DevSession) {
           .size(24.dp)
           .clip(shape = RoundedCornerShape(4.dp))
       )
-    }) {
+    }
+  ) {
     Column {
       // TODO: Add platform icon
       Text(
-        text = session.description,
+        text = session.description
       )
       Text(
         text = session.url,

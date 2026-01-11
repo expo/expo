@@ -86,7 +86,6 @@ open class HomeActivity : BaseExperienceActivity() {
     )
   }
 
-
   //region Activity Lifecycle
   override fun onCreate(savedInstanceState: Bundle?) {
     usesComposeNavigation = true
