@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct DevServersSection: View {
   @EnvironmentObject var viewModel: HomeViewModel
@@ -20,6 +21,7 @@ struct DevServersSection: View {
         if !viewModel.developmentServers.isEmpty {
           ForEach(viewModel.developmentServers) { server in
             DevServerRow(server: server) {
+              UIImpactFeedbackGenerator(style: .light).impactOccurred()
               let normalizedUrl = normalizeDevServerUrl(server.url)
               viewModel.addToRecentlyOpened(
                 url: normalizedUrl,
