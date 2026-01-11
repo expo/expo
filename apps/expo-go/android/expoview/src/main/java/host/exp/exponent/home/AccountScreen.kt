@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,10 +26,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import host.exp.exponent.graphql.fragment.CurrentUserActorData
 import host.exp.expoview.R
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,13 +37,13 @@ fun AccountScreen(
   viewModel: HomeAppViewModel,
   goBack: () -> Unit
 ) {
-  val account by viewModel.account.dataFlow.collectAsState()
-  val selectedAccount by viewModel.selectedAccount.collectAsState()
+  val account by viewModel.account.dataFlow.collectAsStateWithLifecycle()
+  val selectedAccount by viewModel.selectedAccount.collectAsStateWithLifecycle()
 
   Scaffold(
     topBar = {
       TopAppBarWithBackIcon("Account", onGoBack = goBack)
-    },
+    }
   ) { paddingValues ->
     Column(
       modifier = Modifier

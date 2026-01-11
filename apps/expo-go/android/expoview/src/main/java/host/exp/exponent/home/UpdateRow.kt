@@ -57,7 +57,7 @@ private fun UpdateRowContents(
   )
   Text(
     text = "Published: " + formatIsoDateTime(createdAt),
-    style = MaterialTheme.typography.bodySmall,
+    style = MaterialTheme.typography.bodySmall
   )
   if (!isCompatible && !omitCompatibility) {
     ItemRowTag(
@@ -67,9 +67,11 @@ private fun UpdateRowContents(
   }
 }
 
-
 @Composable
-fun UpdateRow(update: BranchesForProjectQuery.Update, omitCompatibility: Boolean = false) {
+fun UpdateRow(
+  update: BranchesForProjectQuery.Update,
+  omitCompatibility: Boolean = false
+) {
   val uriHandler = LocalUriHandler.current
   val isCompatible = isUpdateCompatible(update.updateData.runtimeVersion)
 
@@ -94,7 +96,10 @@ fun UpdateRow(update: BranchesForProjectQuery.Update, omitCompatibility: Boolean
 }
 
 @Composable
-fun UpdateRow(update: BranchDetailsQuery.Update, omitCompatibility: Boolean = false) {
+fun UpdateRow(
+  update: BranchDetailsQuery.Update,
+  omitCompatibility: Boolean = false
+) {
   val uriHandler = LocalUriHandler.current
   val isCompatible = isUpdateCompatible(update.updateData.runtimeVersion)
 

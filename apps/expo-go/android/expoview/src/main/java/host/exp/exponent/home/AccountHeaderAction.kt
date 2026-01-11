@@ -34,7 +34,7 @@ fun AccountHeaderAction(
       modifier = Modifier
         .size(24.dp)
         .clip(shape = CircleShape)
-        .clickable(onClick = onAccountClick),
+        .clickable(onClick = onAccountClick)
     )
     return
   }
@@ -47,6 +47,6 @@ fun AccountHeaderAction(
       .size(24.dp)
       .clip(shape = CircleShape)
       .clickable(onClick = onAccountClick),
-    contentScale = ContentScale.Crop,
+    contentScale = ContentScale.Crop
   )
 }

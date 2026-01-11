@@ -1,6 +1,7 @@
 package host.exp.exponent.home
 
 import android.widget.Toast
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,7 +12,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -29,10 +32,9 @@ fun EnterUrlRow() {
 
     if (urlText.isNotBlank()) {
       val normalized = normalizeUrl(urlText)
-      try {
+      runCatching {
         uriHandler.openUri(normalized)
-
-      } catch (_: Exception) {
+      }.onFailure {
         Toast.makeText(context, "Failed to open URL", Toast.LENGTH_SHORT).show()
       }
     }
@@ -43,10 +45,16 @@ fun EnterUrlRow() {
       text = "Enter URL",
       onClick = onClick,
       icon = {
+        val rotation by animateFloatAsState(
+          targetValue = if (isExpanded) 90f else 0f,
+          label = "accordion-arrow"
+        )
         Icon(
           painter = painterResource(id = R.drawable.chevron_right),
           contentDescription = "Enter URL icon",
-          modifier = Modifier.size(24.dp)
+          modifier = Modifier
+            .size(24.dp)
+            .rotate(rotation)
         )
       }
     )
@@ -55,7 +63,7 @@ fun EnterUrlRow() {
       OutlinedTextField(
         state = textFieldState,
         placeholder = { Text("exp://") },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
       )
       Button(
         onClick = connect,

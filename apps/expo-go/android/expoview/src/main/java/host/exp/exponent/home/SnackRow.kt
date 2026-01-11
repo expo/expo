@@ -56,7 +56,7 @@ fun SnackRow(snack: Home_AccountSnacksQuery.Snack) {
 
     AlertDialog(
       onDismissRequest = { showUnsupportedDialog = false },
-      title = { Text("Unsupported SDK (${snackMajorVersion})") },
+      title = { Text("Unsupported SDK ($snackMajorVersion)") },
       text = { Text("The currently running version of Expo Go supports SDK $goMajorVersion only. Update your Snack to this version to run it.") },
       confirmButton = {
         TextButton(onClick = { showUnsupportedDialog = false }) {
@@ -82,11 +82,14 @@ fun SnackRow(snack: Home_AccountSnacksQuery.Snack) {
         text = snack.commonSnackData.name,
         fontWeight = FontWeight.Medium
       )
-      if (snack.commonSnackData.description.isNotBlank() && snack.commonSnackData.description != "No description") {
+      if (
+        snack.commonSnackData.description.isNotBlank() &&
+        snack.commonSnackData.description != "No description"
+      ) {
         Spacer(modifier = Modifier.height(4.dp))
         Text(
           text = snack.commonSnackData.description,
-          style = MaterialTheme.typography.bodySmall,
+          style = MaterialTheme.typography.bodySmall
         )
       }
       if (snack.commonSnackData.isDraft || !isSupported) {
@@ -103,5 +106,3 @@ fun SnackRow(snack: Home_AccountSnacksQuery.Snack) {
     }
   }
 }
-
-

@@ -17,11 +17,14 @@ import androidx.compose.ui.unit.dp
 import host.exp.exponent.graphql.Home_AccountAppsQuery
 
 @Composable
-fun AppRow(app: Home_AccountAppsQuery.App, onClick: () -> Unit) {
+fun AppRow(
+  app: Home_AccountAppsQuery.App,
+  onClick: () -> Unit
+) {
   Row(
     modifier = Modifier
       .fillMaxWidth()
-      .clickable(onClick = { onClick() })
+      .clickable(onClick = onClick)
       .padding(16.dp),
     verticalAlignment = Alignment.CenterVertically
   ) {
@@ -36,7 +39,6 @@ fun AppRow(app: Home_AccountAppsQuery.App, onClick: () -> Unit) {
       )
     }
     Spacer(modifier = Modifier.width(8.dp))
-
   }
   Spacer(modifier = Modifier.width(8.dp))
 }

@@ -24,7 +24,7 @@ import okhttp3.OkHttpClient
 
 class ApolloClientService(
   httpClient: OkHttpClient,
-  sessionRepository: SessionRepository,
+  sessionRepository: SessionRepository
 ) {
   private val normalizedCacheFactory = MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
 
@@ -147,21 +147,6 @@ class ApolloClientService(
         response.data?.app?.byId
       }
   }
-
-//  suspend fun app(
-//    appId: String
-//  ): ProjectsQuery.ById {
-//    return apolloClient.query(
-//      ProjectsQuery(
-//        appId = appId,
-//        platform = AppPlatform.ANDROID
-//      )
-//    )
-//      .execute()
-//      .dataOrThrow()
-//      .app
-//      .byId
-//  }
 
   fun snacks(
     accountName: String

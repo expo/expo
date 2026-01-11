@@ -13,13 +13,12 @@ import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -91,7 +90,7 @@ fun RootNavigation(
     navController.popBackStack()
   }
 
-  val themeSetting by viewModel.selectedTheme.collectAsState()
+  val themeSetting by viewModel.selectedTheme.collectAsStateWithLifecycle()
 
   HomeAppTheme(themeSetting = themeSetting) {
     Box(
@@ -102,7 +101,7 @@ fun RootNavigation(
       AppNavHost(
         navController = navController,
         startDestination = Destination.Home,
-        viewModel = viewModel,
+        viewModel = viewModel
       )
     }
   }
@@ -114,14 +113,13 @@ fun AppNavHost(
   startDestination: Destination,
   viewModel: HomeAppViewModel
 ) {
-  val selectedAccount by viewModel.selectedAccount.collectAsState()
-  val context = LocalContext.current
+  val selectedAccount by viewModel.selectedAccount.collectAsStateWithLifecycle()
 
   @Composable
   fun NavAccountHeaderAction() {
     AccountHeaderAction(
       account = selectedAccount,
-      onLoginClick = { viewModel.login(context) },
+      onLoginClick = { viewModel.login() },
       onAccountClick = { navController.navigate(Destination.Account) }
     )
     Spacer(Modifier.padding(8.dp))
@@ -136,7 +134,7 @@ fun AppNavHost(
         viewModel = viewModel,
         navigateToProjects = { navController.navigate(Destination.Projects) },
         navigateToSnacks = { navController.navigate(Destination.Snacks) },
-        onLoginClick = { viewModel.login(context) },
+        onLoginClick = { viewModel.login() },
         navigateToProjectDetails = { appId ->
           navController.navigate(Destination.ProjectDetails(appId = appId))
         },
@@ -146,7 +144,7 @@ fun AppNavHost(
         bottomBar = {
           BottomBar(
             navController = navController,
-            currentDestination = Destination.Home,
+            currentDestination = Destination.Home
           )
         },
         accountHeader = { NavAccountHeaderAction() }
@@ -159,7 +157,7 @@ fun AppNavHost(
         bottomBar = {
           BottomBar(
             navController = navController,
-            currentDestination = Destination.Settings,
+            currentDestination = Destination.Settings
           )
         },
         accountHeader = { NavAccountHeaderAction() }
@@ -173,7 +171,7 @@ fun AppNavHost(
         bottomBar = {
           BottomBar(
             navController = navController,
-            currentDestination = Destination.Home,
+            currentDestination = Destination.Home
           )
         },
         navigateToProjectDetails = { appId ->
@@ -189,7 +187,7 @@ fun AppNavHost(
         bottomBar = {
           BottomBar(
             navController = navController,
-            currentDestination = Destination.Home,
+            currentDestination = Destination.Home
           )
         }
       )
@@ -205,7 +203,7 @@ fun AppNavHost(
     composable<Destination.Account> {
       AccountScreen(
         viewModel = viewModel,
-        goBack = { navController.popBackStack() },
+        goBack = { navController.popBackStack() }
       )
     }
 
@@ -226,7 +224,7 @@ fun AppNavHost(
         },
         onShowAllBranchesClick = {
           navController.navigate(Destination.Branches(appId = args.appId))
-        },
+        }
       )
     }
 
@@ -243,7 +241,7 @@ fun AppNavHost(
         bottomBar = {
           BottomBar(
             navController = navController,
-            currentDestination = Destination.Home,
+            currentDestination = Destination.Home
           )
         }
       )
@@ -267,17 +265,16 @@ fun AppNavHost(
       )
     }
   }
-
 }
 
 @Composable
 fun BottomBar(
   navController: NavHostController,
-  currentDestination: Destination,
+  currentDestination: Destination
 ) {
   NavigationBar(
     windowInsets = NavigationBarDefaults.windowInsets,
-    containerColor = MaterialTheme.colorScheme.surface,
+    containerColor = MaterialTheme.colorScheme.surface
   ) {
     bottomBarDestinations.forEach { item ->
       NavigationBarItem(

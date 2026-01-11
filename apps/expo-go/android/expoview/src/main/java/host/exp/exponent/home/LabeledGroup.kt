@@ -30,7 +30,7 @@ fun LabeledGroup(
   image: Painter? = null,
   action: @Composable (() -> Unit)? = null,
   wrapWithCard: Boolean = true,
-  content: @Composable ColumnScope.() -> Unit,
+  content: @Composable ColumnScope.() -> Unit
 ) {
   Column(modifier = modifier.fillMaxWidth()) {
     Row(
@@ -44,7 +44,7 @@ fun LabeledGroup(
         Icon(
           painter = icon,
           contentDescription = null,
-          modifier = Modifier.size(24.dp),
+          modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
       }
@@ -52,7 +52,7 @@ fun LabeledGroup(
         Image(
           painter = image,
           contentDescription = null,
-          modifier = Modifier.size(24.dp),
+          modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
       }
@@ -64,7 +64,6 @@ fun LabeledGroup(
         )
       }
       action?.invoke()
-
     }
     if (wrapWithCard) {
       Card(
@@ -83,6 +82,5 @@ fun LabeledGroup(
     } else {
       content()
     }
-
   }
 }

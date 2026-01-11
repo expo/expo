@@ -12,7 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LocalServerTutorial(isSignedIn: Boolean, onLoginClick: () -> Unit, modifier: Modifier) {
+fun LocalServerTutorial(
+  isSignedIn: Boolean,
+  onLoginClick: () -> Unit,
+  modifier: Modifier
+) {
   Column(modifier = modifier) {
     if (isSignedIn) {
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -33,7 +37,8 @@ fun LocalServerTutorial(isSignedIn: Boolean, onLoginClick: () -> Unit, modifier:
         "Press here to sign in to your Expo account and see the projects you have recently been working on.",
         modifier = Modifier.clickable {
           onLoginClick()
-        })
+        }
+      )
     }
   }
 }

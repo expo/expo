@@ -14,12 +14,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -33,20 +33,38 @@ fun ProjectsScreen(
   navigateToProjectDetails: (appId: String) -> Unit,
   bottomBar: @Composable () -> Unit = { }
 ) {
-  val isRefreshing by viewModel.appsPaginatorRefreshableFlow.loadingFlow.collectAsState()
+  val isRefreshing by viewModel
+    .appsPaginatorRefreshableFlow
+    .loadingFlow
+    .collectAsStateWithLifecycle()
 
-  val apps by viewModel.appsPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
-    paginator?.data ?: flowOf(emptyList())
-  }.collectAsState(initial = emptyList())
+  val apps by viewModel
+    .appsPaginatorRefreshableFlow
+    .dataFlow
+    .flatMapLatest { paginator ->
+      paginator?.data ?: flowOf(emptyList())
+    }
+    .collectAsStateWithLifecycle(initialValue = emptyList())
 
-  val paginator by viewModel.appsPaginatorRefreshableFlow.dataFlow.collectAsState()
-  val isFetching by viewModel.appsPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
-    paginator?.isFetching ?: flowOf(false)
-  }.collectAsState(initial = false)
+  val paginator by viewModel
+    .appsPaginatorRefreshableFlow
+    .dataFlow
+    .collectAsStateWithLifecycle()
+  val isFetching by viewModel
+    .appsPaginatorRefreshableFlow
+    .dataFlow
+    .flatMapLatest { paginator ->
+      paginator?.isFetching ?: flowOf(false)
+    }
+    .collectAsStateWithLifecycle(initialValue = false)
 
-  val canLoadMore by viewModel.appsPaginatorRefreshableFlow.dataFlow.flatMapLatest { paginator ->
-    paginator?.isLastPage?.map { it.not() } ?: flowOf(true)
-  }.collectAsState(initial = true)
+  val canLoadMore by viewModel
+    .appsPaginatorRefreshableFlow
+    .dataFlow
+    .flatMapLatest { paginator ->
+      paginator?.isLastPage?.map { it.not() } ?: flowOf(true)
+    }
+    .collectAsStateWithLifecycle(initialValue = true)
 
   val pullToRefreshState = rememberPullToRefreshState()
   val lazyListState = rememberLazyListState()
@@ -65,7 +83,7 @@ fun ProjectsScreen(
       isRefreshing = isRefreshing && apps.isNotEmpty(),
       onRefresh = {
         viewModel.appsPaginatorRefreshableFlow.refresh()
-      },
+      }
     ) {
       LazyColumn(
         modifier = Modifier.fillMaxSize(),

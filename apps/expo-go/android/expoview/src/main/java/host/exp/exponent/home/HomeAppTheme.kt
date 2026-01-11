@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import host.exp.exponent.services.ThemeSetting
 
-// Define your text styles
 val Typography = Typography(
   bodyLarge = TextStyle(
     fontFamily = FontFamily.Default,
@@ -25,30 +24,10 @@ val Typography = Typography(
     lineHeight = 24.sp,
     letterSpacing = 0.5.sp
   )
-  /* Other default text styles to override
-  titleLarge = TextStyle(
-      fontFamily = FontFamily.Default,
-      fontWeight = FontWeight.Normal,
-      fontSize = 22.sp,
-      lineHeight = 28.sp,
-      letterSpacing = 0.sp
-  ),
-  labelSmall = TextStyle(
-      fontFamily = FontFamily.Default,
-      fontWeight = FontWeight.Medium,
-      fontSize = 11.sp,
-      lineHeight = 16.sp,
-      letterSpacing = 0.5.sp
-  )
-  */
 )
 
-
-// Define your component shapes
 val Shapes = Shapes(
-  small = RoundedCornerShape(4.dp),
-//    medium = RoundedCornerShape(8.dp),
-//    large = RoundedCornerShape(16.dp)
+  small = RoundedCornerShape(4.dp)
 )
 
 private val LightColors = lightColorScheme(
@@ -83,7 +62,6 @@ fun HomeAppTheme(
     ThemeSetting.Dark -> DarkColors
     ThemeSetting.Light -> LightColors
   }
-
 
   MaterialTheme(
     colorScheme = colorScheme,

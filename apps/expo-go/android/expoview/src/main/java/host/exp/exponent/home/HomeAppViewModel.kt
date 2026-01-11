@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import androidx.activity.result.ActivityResultLauncher
+import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -60,11 +61,13 @@ import kotlin.time.toDuration
 import kotlin.time.toJavaDuration
 
 enum class DevSessionPlatform {
-  Native, Web
+  Native,
+  Web
 }
 
 enum class DevSessionSource {
-  Desktop, Snack
+  Desktop,
+  Snack
 }
 
 data class DevSession(
@@ -83,7 +86,7 @@ data class DevSessionResponse(
 private const val USER_REVIEW_INFO_PREFS_KEY = "userReviewInfo"
 
 data class UserReviewState(
-  val shouldShow: Boolean = false,
+  val shouldShow: Boolean = false
 )
 
 private data class UserReviewInfo(
@@ -105,10 +108,6 @@ data class FeedbackBody(
   val email: String?,
   val metadata: Map<String, String?>
 )
-
-private val EMAIL_REGEX =
-  Regex("^(([^<>()\\[\\]\\\\.,;:\\s@\"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$")
-
 
 fun Int.toJDuration(unit: DurationUnit) = this.toDuration(unit).toJavaDuration()
 
@@ -145,14 +144,15 @@ class HomeAppViewModel(
 
   val userReviewState = MutableStateFlow(UserReviewState())
 
-  private val userReviewPrefs =
-    application.getSharedPreferences(USER_REVIEW_INFO_PREFS_KEY, Context.MODE_PRIVATE)
+  private val userReviewPrefs = application.getSharedPreferences(
+    USER_REVIEW_INFO_PREFS_KEY,
+    Context.MODE_PRIVATE
+  )
 
   private val gson: Gson =
     GsonBuilder().create()
 
   private var lastCrashDate: Long? = null
-
 
   private val client = OkHttpClient
     .Builder()
@@ -179,7 +179,7 @@ class HomeAppViewModel(
     initialValue = null
   )
 
-  private val selectedAccountId = persistedMutableStateFlow<String?>(
+  private val selectedAccountId = persistedMutableStateFlow(
     scope = viewModelScope,
     readValue = { sessionRepository.getSelectedAccountId() },
     writeValue = { value ->
@@ -209,7 +209,7 @@ class HomeAppViewModel(
           typeOf<DevSessionResponse>()
         )
         emit(sessions.data)
-      } catch (e: Exception) {
+      } catch (_: Exception) {
         emit(emptyList())
       }
       delay(3000)
@@ -268,7 +268,8 @@ class HomeAppViewModel(
 
           emit(paginator)
         }
-      }, initialValue = null
+      },
+      initialValue = null
     )
 
   fun app(appId: String): Flow<ProjectsQuery.ById?> {
@@ -279,7 +280,7 @@ class HomeAppViewModel(
     return refreshableFlow(
       scope = viewModelScope,
       externalTrigger = selectedAccount,
-      fetcher = { account ->
+      fetcher = { _ ->
         flow<Paginator<BranchesForProjectQuery.UpdateBranch>> {
           emit(service.branches(appId = appId))
         }
@@ -295,8 +296,7 @@ class HomeAppViewModel(
     initialValue = emptyList()
   )
 
-
-  fun login(context: Context) {
+  fun login() {
     authLauncher.launch(AuthRequestType.LOGIN)
   }
 
@@ -319,12 +319,11 @@ class HomeAppViewModel(
 
     combine(
       apps.dataFlow,
-      snacks.dataFlow,
+      snacks.dataFlow
     ) { appsList, snacksList ->
       updateUserReviewState(appsList.size, snacksList.size)
     }.launchIn(viewModelScope)
   }
-
 
   val snacksPaginatorRefreshableFlow =
     refreshableFlow(
@@ -337,7 +336,6 @@ class HomeAppViewModel(
       },
       initialValue = null
     )
-
 
   fun logout() {
     sessionRepository.clearSessionSecret()
@@ -357,7 +355,10 @@ class HomeAppViewModel(
     viewModelScope.launch {
       feedbackState.update { it.copy(isSubmitting = true, error = null) }
       try {
-        if (email.isNotBlank() && !EMAIL_REGEX.matches(email)) {
+        if (
+          email.isNotBlank() &&
+          !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        ) {
           throw Exception("Please enter a valid email address.")
         }
 
@@ -427,8 +428,9 @@ class HomeAppViewModel(
     val isStoreReviewAvailable = withContext(Dispatchers.IO) {
       if (!isDevice) return@withContext false
       try {
-        ReviewManagerFactory.create(context); true
-      } catch (e: Exception) {
+        ReviewManagerFactory.create(context)
+        true
+      } catch (_: Exception) {
         false
       }
     }
@@ -481,9 +483,12 @@ class HomeAppViewModel(
     viewModelScope.launch(Dispatchers.IO) {
       val currentInfo =
         userReviewPrefs.getString(USER_REVIEW_INFO_PREFS_KEY, null)
-          ?.let { gson.fromJson(it, UserReviewInfo::class.java) } ?: UserReviewInfo()
+          ?.let { gson.fromJson(it, UserReviewInfo::class.java) }
+          ?: UserReviewInfo()
       val newInfo = updateAction(currentInfo)
-      userReviewPrefs.edit().putString(USER_REVIEW_INFO_PREFS_KEY, gson.toJson(newInfo)).apply()
+      userReviewPrefs.edit(commit = true) {
+        putString(USER_REVIEW_INFO_PREFS_KEY, gson.toJson(newInfo))
+      }
       updateUserReviewState(apps.dataFlow.value.size, snacks.dataFlow.value.size)
     }
   }
@@ -564,7 +569,7 @@ fun <T, U> refreshableFlow(
 fun <T> persistedMutableStateFlow(
   scope: CoroutineScope,
   readValue: () -> T,
-  writeValue: (T) -> Unit,
+  writeValue: (T) -> Unit
 ): MutableStateFlow<T> {
   return object : MutableStateFlow<T> {
 

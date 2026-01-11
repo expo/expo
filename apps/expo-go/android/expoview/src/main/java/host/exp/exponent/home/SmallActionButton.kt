@@ -6,7 +6,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 
 @Composable
-fun SmallActionButton(label: String, onClick: () -> Unit) {
+fun SmallActionButton(
+  label: String,
+  onClick: () -> Unit
+) {
   TextButton(onClick = onClick) {
     Text(
       text = label,

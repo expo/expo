@@ -17,7 +17,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,9 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import host.exp.expoview.R
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,13 +42,13 @@ fun HomeScreen(
   accountHeader: @Composable () -> Unit = { },
   bottomBar: @Composable () -> Unit = { }
 ) {
-  val recents by viewModel.recents.collectAsState()
-  val snacks by viewModel.snacks.dataFlow.collectAsState()
+  val recents by viewModel.recents.collectAsStateWithLifecycle()
+  val snacks by viewModel.snacks.dataFlow.collectAsStateWithLifecycle()
 
-  val account by viewModel.account.dataFlow.collectAsState()
-  val isRefreshing by viewModel.account.loadingFlow.collectAsState()
-  val apps by viewModel.apps.dataFlow.collectAsState()
-  val developmentServers by viewModel.developmentServers.collectAsState()
+  val account by viewModel.account.dataFlow.collectAsStateWithLifecycle()
+  val isRefreshing by viewModel.account.loadingFlow.collectAsStateWithLifecycle()
+  val apps by viewModel.apps.dataFlow.collectAsStateWithLifecycle()
+  val developmentServers by viewModel.developmentServers.collectAsStateWithLifecycle()
 
   val context = LocalContext.current
   val uriHandler = LocalUriHandler.current
@@ -67,10 +67,7 @@ fun HomeScreen(
       title = { Text("Troubleshooting") },
       text = {
         Text(
-          "Make sure you are signed in to the same Expo account on your computer and this app. " +
-            "Also verify that your computer is connected to the internet, and ideally to the same " +
-            "Wi-Fi network as your mobile device. Lastly, ensure that you are using the latest " +
-            "version of Expo CLI. Pull to refresh to update."
+          stringResource(R.string.help_dialog)
         )
       },
       confirmButton = {
@@ -89,21 +86,24 @@ fun HomeScreen(
       modifier = Modifier.padding(it),
       state = state,
       isRefreshing = isRefreshing,
-      onRefresh = onRefresh,
+      onRefresh = onRefresh
     ) {
-
       Column(
         modifier = Modifier
           .fillMaxSize()
           .verticalScroll(rememberScrollState())
       ) {
         UpgradeWarning()
-        UserReviewSection(viewModel = viewModel, navigateToFeedback = { navigateToFeedback() })
+        UserReviewSection(
+          viewModel = viewModel,
+          navigateToFeedback = { navigateToFeedback() }
+        )
         LabeledGroup(
           label = "Development servers",
           modifier = Modifier.padding(top = 8.dp),
           image = painterResource(id = R.drawable.terminal_icon),
-          action = { SmallActionButton(label = "HELP", onClick = { showHelpDialog = true }) }) {
+          action = { SmallActionButton(label = "HELP", onClick = { showHelpDialog = true }) }
+        ) {
           for (session in developmentServers) {
             DevSessionRow(session = session)
             HorizontalDivider()
@@ -148,8 +148,10 @@ fun HomeScreen(
             action = {
               SmallActionButton(
                 label = "CLEAR",
-                onClick = { viewModel.clearRecents() })
-            }) {
+                onClick = { viewModel.clearRecents() }
+              )
+            }
+          ) {
             for (historyItem in recents) {
               RecentRow(historyItem = historyItem)
               HorizontalDivider()
@@ -160,7 +162,7 @@ fun HomeScreen(
         if (!apps.isEmpty()) {
           LabeledGroup(
             label = "Projects",
-            modifier = Modifier.padding(top = 8.dp),
+            modifier = Modifier.padding(top = 8.dp)
           ) {
             TruncatedList(
               apps,
@@ -175,7 +177,7 @@ fun HomeScreen(
         if (!snacks.isEmpty()) {
           LabeledGroup(
             label = "Snacks",
-            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
           ) {
             TruncatedList(
               snacks,

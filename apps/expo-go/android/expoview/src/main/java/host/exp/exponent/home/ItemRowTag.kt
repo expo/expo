@@ -10,7 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ItemRowTag(text: String, modifier: Modifier = Modifier) {
+fun ItemRowTag(
+  text: String,
+  modifier: Modifier = Modifier
+) {
   Surface(
     shape = RoundedCornerShape(4.dp),
     color = MaterialTheme.colorScheme.background,
@@ -19,7 +22,7 @@ fun ItemRowTag(text: String, modifier: Modifier = Modifier) {
     Text(
       text = text,
       modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-      style = MaterialTheme.typography.bodySmall,
+      style = MaterialTheme.typography.bodySmall
     )
   }
 }

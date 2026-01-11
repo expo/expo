@@ -19,8 +19,6 @@ import androidx.core.os.bundleOf
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.ReactSurfaceImpl
@@ -49,8 +47,6 @@ import host.exp.exponent.experience.KernelReactNativeHost
 import host.exp.exponent.factories.ReactHostFactory
 import host.exp.exponent.headless.InternalHeadlessAppLoader
 import host.exp.exponent.kernel.ExponentErrorMessage.Companion.developerErrorMessage
-import host.exp.exponent.kernel.ExponentKernelModuleProvider.KernelEventCallback
-import host.exp.exponent.kernel.ExponentKernelModuleProvider.queueEvent
 import host.exp.exponent.kernel.ExponentUrls.toHttp
 import host.exp.exponent.kernel.KernelConstants.ExperienceOptions
 import host.exp.exponent.network.ExponentNetwork
@@ -111,9 +107,9 @@ class Kernel : KernelInterface() {
 
   @Inject
   lateinit var exponentNetwork: ExponentNetwork
+
   @Inject
   lateinit var exponentHistoryService: ExponentHistoryService
-
 
   var activityContext: Activity? = null
     set(value) {
@@ -699,9 +695,9 @@ class Kernel : KernelInterface() {
     if (existingTask == null) {
       sendManifestToExperienceActivity(manifestUrl, manifest, bundleUrl)
     }
-    if(manifest is ExpoUpdatesManifest) {
+    if (manifest is ExpoUpdatesManifest) {
       exponentHistoryService.addHistoryItem(HistoryItem(manifestUrl = manifestUrl, updatesManifest = manifest))
-    } else if(manifest is EmbeddedManifest) {
+    } else if (manifest is EmbeddedManifest) {
       exponentHistoryService.addHistoryItem(HistoryItem(manifestUrl = manifestUrl, embeddedManifest = manifest))
     }
 //    queueEvent(
