@@ -8,6 +8,7 @@ export default function App() {
     <>
       <Text testID="env-var">{process.env.EXPO_PUBLIC_VALUE}</Text>
       <Text testID="env-var-inline">{process.env.EXPO_PUBLIC_VALUE_INLINE}</Text>
+      <Text testID="env-var-override-me">{process.env.EXPO_PUBLIC_OVERRIDE_ME}</Text>
     </>
   );
 }

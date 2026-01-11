@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { initialEnv } from '@expo/env';
 import type {
   ReadOnlyGraph,
   MixedOutput,
@@ -118,7 +119,7 @@ export function environmentVariableSerializerPlugin(
   return [entryPoint, preModules, graph, options];
 }
 
-export function getEnvVarDevString(env: NodeJS.ProcessEnv = process.env) {
+export function getEnvVarDevString(env: NodeJS.ProcessEnv = initialEnv ?? process.env) {
   // Set the process.env object to the current environment variables object
   // ensuring they aren't iterable, settable, or enumerable.
   const str =
