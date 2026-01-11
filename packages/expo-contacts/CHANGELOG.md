@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed an issue where `pageSize` and `pageOffset` were ignored when searching for contacts by name.
+
 ### 💡 Others
 
 - Added contact image uri validation. ([#39658](https://github.com/expo/expo/pull/39658) by [@hryhoriiK97](https://github.com/hryhoriiK97))

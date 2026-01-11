@@ -190,7 +190,7 @@ class ContactsModule : Module() {
           val name = options.name
           val contactData = if (!name.isNullOrBlank()) {
             val predicateMatchingName = "%$name%"
-            getContactByName(predicateMatchingName, options.fields, options.sort)
+            getContactByName(predicateMatchingName, options.pageSize, options.pageOffset, options.fields, options.sort)
           } else {
             getAllContactsAsync(options)
           }
@@ -498,10 +498,10 @@ class ContactsModule : Module() {
     return null
   }
 
-  private fun getContactByName(query: String, keysToFetch: Set<String>, sortOrder: String?): ContactPage? {
+  private fun getContactByName(query: String, pageSize: Int, pageOffset: Int, keysToFetch: Set<String>, sortOrder: String?): ContactPage? {
     return fetchContacts(
-      0,
-      9999,
+      pageOffset,
+      pageSize,
       arrayOf(query),
       ContactsContract.Data.DISPLAY_NAME_PRIMARY,
       keysToFetch,
