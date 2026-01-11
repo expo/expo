@@ -22,6 +22,8 @@ struct HomeTabView: View {
             }
           }
 
+          UpgradeWarningView()
+
           DevServersSection()
 
           if !viewModel.recentlyOpenedApps.isEmpty {

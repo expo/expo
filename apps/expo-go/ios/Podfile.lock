@@ -20,11 +20,6 @@ PODS:
   - EXManifests/Tests (1.0.8):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - EXNotifications (0.32.11):
-    - ExpoModulesCore
-  - EXNotifications/Tests (0.32.11):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
   - Expo (54.0.8):
     - boost
     - DoubleConversion
@@ -324,6 +319,11 @@ PODS:
     - React-hermes
   - ExpoNetwork (8.0.7):
     - ExpoModulesCore
+  - ExpoNotifications (0.32.11):
+    - ExpoModulesCore
+  - ExpoNotifications/Tests (0.32.11):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoPrint (15.0.7):
     - ExpoModulesCore
   - ExpoRouter (6.0.6):
@@ -4094,8 +4094,6 @@ DEPENDENCIES:
   - EXJSONUtils/Tests (from `../../../packages/expo-json-utils/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
   - EXManifests/Tests (from `../../../packages/expo-manifests/ios`)
-  - EXNotifications (from `../../../packages/expo-notifications/ios`)
-  - EXNotifications/Tests (from `../../../packages/expo-notifications/ios`)
   - Expo (from `../../../packages/expo`)
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
@@ -4146,6 +4144,8 @@ DEPENDENCIES:
   - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
+  - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
+  - ExpoNotifications/Tests (from `../../../packages/expo-notifications/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
   - ExpoRouter (from `../../../packages/expo-router/ios`)
   - ExpoScreenCapture (from `../../../packages/expo-screen-capture/ios`)
@@ -4337,8 +4337,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-json-utils/ios"
   EXManifests:
     :path: "../../../packages/expo-manifests/ios"
-  EXNotifications:
-    :path: "../../../packages/expo-notifications/ios"
   Expo:
     :path: "../../../packages/expo"
   expo-dev-menu:
@@ -4427,6 +4425,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-modules-test-core/ios"
   ExpoNetwork:
     :path: "../../../packages/expo-network/ios"
+  ExpoNotifications:
+    :path: "../../../packages/expo-notifications/ios"
   ExpoPrint:
     :path: "../../../packages/expo-print/ios"
   ExpoRouter:
@@ -4674,7 +4674,6 @@ SPEC CHECKSUMS:
   EXConstants: 59d46d25b89f88cc38291a56dbce4d550758f72d
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 7469efed75d694ce3c43a6da9c6f3886f66d3c26
-  EXNotifications: a9eb811deeb51fb8e50ef45569be6ffab3994648
   Expo: 446942b564f6fa3f855457d1f1678a9d5c5f3741
   expo-dev-menu: ae1feaf51f47590afc4527c6a75165beb7aed0dd
   expo-dev-menu-interface: 30d9aa2fbca275a1335ca7e076273dac1d42d40a
@@ -4719,6 +4718,7 @@ SPEC CHECKSUMS:
   ExpoModulesJSI: c470ea2ed825fce73bdc4ef060c8a22e3f664092
   ExpoModulesTestCore: e65555b75a4ed7dd3bcf421ad01d7748bd372c88
   ExpoNetwork: 97073786edfe405aba5d0987a544617ed0671ad1
+  ExpoNotifications: ce045fa5f6ab4109f04468e04e6fe6ff0427a6d1
   ExpoPrint: ad836bb90da10793509651c0ea1f39e120db001e
   ExpoRouter: 84268c2b41722697cb02cd6c377d588b4f71c9b5
   ExpoScreenCapture: 0c785ab7e1fa38943f04b16060d54ae8f886544a
