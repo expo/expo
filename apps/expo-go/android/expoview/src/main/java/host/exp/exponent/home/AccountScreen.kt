@@ -1,8 +1,9 @@
 package host.exp.exponent.home
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -95,10 +96,11 @@ private fun AccountRow(
   @Composable
   fun Action() {
     if (isSelected) {
-      Image(
+      Icon(
         painter = painterResource(id = R.drawable.check),
         contentDescription = "Selected Account",
-        modifier = Modifier.size(16.dp)
+        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.size(24.dp)
       )
     }
   }
@@ -147,6 +149,13 @@ private fun AccountRow(
       }
     },
     content = { Content() },
-    action = { Action() }
+    action = {
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End
+      ) {
+        Action()
+      }
+    }
   )
 }
