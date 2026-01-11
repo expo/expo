@@ -113,7 +113,7 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * When provided as an array of sources, the source that fits best into the container size and is closest to the screen scale
    * will be chosen. In this case it is important to provide `width`, `height` and `scale` properties.
    *
-   * For SF Symbols (iOS), use the `sf:` prefix followed by the symbol name, e.g. `sf:star.fill`.
+   * For SF Symbols (iOS), use the `sf:` prefix followed by the symbol name, for example, `sf:star.fill`.
    */
   source?:
     | ImageSource
@@ -685,7 +685,7 @@ export type ImageTransition = {
    * - `'sf:up-up'` - New symbol slides in from top.
    * - `'sf:off-up'` - Cross-dissolve transition between symbols.
    *
-   * For other SF Symbol animations (bounce, pulse, scale, etc.), use the `sfEffect` prop instead.
+   * For other SF Symbol animations (bounce, pulse, scale, and so on), use the `sfEffect` prop instead.
    */
   effect?:
     | 'cross-dissolve'

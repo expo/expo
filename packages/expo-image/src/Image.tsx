@@ -20,7 +20,7 @@ import { resolveContentFit, resolveContentPosition, resolveTransition } from './
 import { resolveSource, resolveSources } from './utils/resolveSources';
 
 /**
- * Normalizes the sfEffect prop to always be an array of SFSymbolEffectObject.
+ * Normalizes the `sfEffect` prop to always be an array of `SFSymbolEffectObject`.
  * Supports: string, object, or array of strings/objects.
  */
 function resolveSfEffect(
