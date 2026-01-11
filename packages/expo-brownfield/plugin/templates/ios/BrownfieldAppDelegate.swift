@@ -1,6 +1,6 @@
 import UIKit
 
-@objc(BrownfieldAppDelegate)
+@objc
 open class BrownfieldAppDelegate: UIResponder, UIApplicationDelegate {
   private var expoWrapper: ExpoAppDelegateWrapper? {
     ReactNativeHostManager.shared.expoDelegateWrapper

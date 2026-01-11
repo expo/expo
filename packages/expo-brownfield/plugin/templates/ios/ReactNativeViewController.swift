@@ -23,10 +23,6 @@ public class ReactNativeViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
-  deinit {
-    NotificationCenter.default.removeObserver(self)
-  }
-
   override public func viewDidLoad() {
     super.viewDidLoad()
 
