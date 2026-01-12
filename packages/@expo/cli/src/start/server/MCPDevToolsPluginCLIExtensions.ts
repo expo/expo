@@ -28,15 +28,8 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
       mcpServer.registerTool(
         plugin.packageName,
         { title: plugin.packageName, description: plugin.description, inputSchema },
-        async (cliCommandArgs) => {
+        async ({ parameters }) => {
           try {
-            if (!('parameters' in cliCommandArgs)) {
-              throw new Error(`No parameters provided : ${JSON.stringify(cliCommandArgs)}`);
-            }
-            const parameters = cliCommandArgs['parameters'];
-            if (!('command' in parameters)) {
-              throw new Error('No command provided');
-            }
             const { command, ...args } = parameters;
 
             const metroServerOrigin = devServerManager
