@@ -19,6 +19,7 @@ import { MediaLibraryScreens } from '../screens/MediaLibrary@Next/MediaLibrarySc
 import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
 import { WorkletsScreens } from '../screens/Worklets/WorkletsScreen';
 import { type ScreenConfig } from '../types/ScreenConfig';
+import { WorkletsScreens } from '../screens/Worklets/WorkletsScreen';
 
 const Stack = createNativeStackNavigator();
 
