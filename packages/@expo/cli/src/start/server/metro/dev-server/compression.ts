@@ -19,15 +19,12 @@ export const compression: NextHandleFunction = (req, res, next) => {
   // if we detect event stream content type, we skip compression
   // this is better default than breaking the streaming response
   const contentType = res.getHeader('Content-Type');
-  if (
-    isEventSteam(contentType) ||
-    (Array.isArray(contentType) && contentType.some(isEventSteam))
-  ) {
+  if (isEventSteam(contentType) || (Array.isArray(contentType) && contentType.some(isEventSteam))) {
     return next();
   }
 
   return compressionMiddleware(req, res, next);
-}
+};
 
 function isEventSteam(type: unknown): boolean {
   if (typeof type !== 'string') {
