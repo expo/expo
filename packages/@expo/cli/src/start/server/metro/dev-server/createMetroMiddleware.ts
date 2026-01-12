@@ -1,11 +1,11 @@
 import type { MetroConfig } from '@expo/metro/metro';
 import connect from 'connect';
 
+import { compression } from './compression';
 import { createEventsSocket } from './createEventSocket';
 import { createMessagesSocket } from './createMessageSocket';
 import { Log } from '../../../../log';
 import { openInEditorAsync } from '../../../../utils/editor';
-import { compression } from './compression';
 
 export function createMetroMiddleware(metroConfig: Pick<MetroConfig, 'projectRoot'>) {
   const messages = createMessagesSocket({ logger: Log });
