@@ -1,5 +1,7 @@
 // This needs to run before the renderer initializes.
 
+declare const global: typeof globalThis & { [key: string]: any };
+
 const ReactRefreshRuntime = require('react-refresh/runtime');
 ReactRefreshRuntime.injectIntoGlobalHook(global);
 
