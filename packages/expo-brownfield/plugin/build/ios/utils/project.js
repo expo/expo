@@ -20,16 +20,12 @@ const createGroup = (project, name, path, files = []) => {
 };
 exports.createGroup = createGroup;
 const configureBuildPhases = (project, target, targetName, projectName, files = []) => {
-    const nativeTargetSection = project.pbxNativeTargetSection();
-    const mainTargetKey = Object.keys(nativeTargetSection).find((key) => !key.endsWith('_comment') &&
-        nativeTargetSection[key].productType === constants_1.Constants.Target.ApplicationProductType);
-    const mainTarget = nativeTargetSection[mainTargetKey];
-    // TODO: Fix types
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mainTarget = findNativeTargetSection(project, (target) => target.productType === constants_1.Constants.Target.ApplicationProductType);
     const bundlePhase = mainTarget.buildPhases.find((phase) => phase.comment.includes(constants_1.Constants.BuildPhase.RNBundlePhase));
-    const destTargetKey = Object.keys(nativeTargetSection).find((key) => !key.endsWith('_comment') &&
-        nativeTargetSection[key].productType !== constants_1.Constants.Target.ApplicationProductType);
-    const destTarget = nativeTargetSection[destTargetKey];
+    if (!bundlePhase) {
+        throw new Error('`Bundle React Native code and images` build phase cannot be found in main target build phases');
+    }
+    const destTarget = findNativeTargetSection(project, (target) => target.productType !== constants_1.Constants.Target.ApplicationProductType);
     destTarget.buildPhases = [...destTarget.buildPhases, bundlePhase];
     const script = (0, utils_1.readFromTemplate)('patch-expo.sh', { targetName, projectName });
     project.addBuildPhase([], constants_1.Constants.BuildPhase.Script, constants_1.Constants.BuildPhase.PatchExpoPhase, target.uuid, { shellPath: '/bin/sh', shellScript: script });
@@ -115,3 +111,13 @@ const inferProjectName = (platformProjectRoot) => {
     return xcodeproj.replace('.xcodeproj', '');
 };
 exports.inferProjectName = inferProjectName;
+const findNativeTargetSection = (project, predicate) => {
+    const nativeTargetSection = project.pbxNativeTargetSection();
+    const key = Object.keys(nativeTargetSection).find((key) => !key.endsWith('_comment') &&
+        typeof nativeTargetSection[key] !== 'string' &&
+        predicate(nativeTargetSection[key]));
+    if (!key) {
+        throw new Error('Native target key mathching predicate cannot be found in native target section of PBXProj');
+    }
+    return nativeTargetSection[key];
+};

@@ -46,7 +46,6 @@ const inferScheme = async () => {
         const subDirs = (await promises_1.default.readdir('ios', { withFileTypes: true })).filter((item) => item.isDirectory());
         let scheme = undefined;
         for (const subDir of subDirs) {
-            // TODO: Rename this file to RNHostManager?
             if ((await promises_1.default.readdir(`ios/${subDir.name}`)).includes('ReactNativeHostManager.swift')) {
                 scheme = subDir.name;
             }
