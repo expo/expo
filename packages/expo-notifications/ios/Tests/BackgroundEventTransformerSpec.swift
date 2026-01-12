@@ -1,6 +1,6 @@
 import ExpoModulesTestCore
 import Foundation
-@testable import EXNotifications
+@testable import ExpoNotifications
 
 // BackgroundEventTransformerSpec aligns the event payload with what Android does
 // run this test from bare-expo, not notification-tester

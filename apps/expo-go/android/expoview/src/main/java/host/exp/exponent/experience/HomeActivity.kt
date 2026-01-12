@@ -22,7 +22,7 @@ import expo.modules.blur.BlurModule
 import expo.modules.camera.CameraViewModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
-import expo.modules.constants.ConstantsPackage
+import expo.modules.constants.ConstantsService
 import expo.modules.core.interfaces.Package
 import expo.modules.device.DeviceModule
 import expo.modules.easclient.EASClientModule
@@ -34,6 +34,7 @@ import expo.modules.haptics.HapticsModule
 import expo.modules.keepawake.KeepAwakeModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.services.Service
 import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.notifications.NotificationsPackage
 import expo.modules.storereview.StoreReviewModule
@@ -164,12 +165,15 @@ open class HomeActivity : BaseExperienceActivity() {
   companion object : ModulesProvider {
     fun homeExpoPackages(): List<Package> {
       return listOf(
-        ConstantsPackage(),
         NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
         TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
         SplashScreenPackage()
       )
     }
+
+    override fun getServices(): List<Class<out Service>> = listOf(
+      ConstantsService::class.java
+    )
 
     override fun getModulesMap(): Map<Class<out Module>, String?> {
       return mapOf(

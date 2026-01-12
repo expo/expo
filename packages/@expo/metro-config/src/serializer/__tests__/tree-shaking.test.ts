@@ -1168,6 +1168,7 @@ it(`removes unused exports`, async () => {
         "metadata": {
           "expoDomComponentReferences": [],
           "isAsync": false,
+          "loaderReferences": [],
           "modulePaths": [
             "/app/index.js",
             "/app/math.js",

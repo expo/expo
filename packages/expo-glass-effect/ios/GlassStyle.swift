@@ -7,7 +7,7 @@ public enum GlassStyle: String, Enumerable {
   case none
 
   #if compiler(>=6.2) // Xcode 26
-  @available(iOS 26.0, *)
+  @available(iOS 26.0, tvOS 26.0, macOS 26.0, *)
   func toUIGlassEffectStyle() -> UIGlassEffect.Style? {
     switch self {
     case .clear:

@@ -726,7 +726,7 @@ describe('serializes', () => {
     const bundle = await serializeTo({
       fs: {
         'index.js': `
-          import('./foo')          
+          import('./foo')
         `,
         'foo.js': `
           export const foo = 'foo';
@@ -770,6 +770,7 @@ describe('serializes', () => {
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
+            "loaderReferences": [],
             "modulePaths": [
               "/app/index.js",
             ],
@@ -794,6 +795,7 @@ describe('serializes', () => {
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
+            "loaderReferences": [],
             "modulePaths": [
               "/app/foo.js",
             ],
@@ -832,6 +834,7 @@ describe('serializes', () => {
       expoDomComponentReferences: [],
       reactClientReferences: [],
       reactServerReferences: [],
+      loaderReferences: [],
     });
   });
 
@@ -859,6 +862,7 @@ describe('serializes', () => {
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
+            "loaderReferences": [],
             "modulePaths": [
               "/app/index.js",
               "/app/expo-mock/async-require",
@@ -887,6 +891,7 @@ describe('serializes', () => {
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
+            "loaderReferences": [],
             "modulePaths": [
               "/app/foo.js",
             ],
@@ -925,6 +930,7 @@ describe('serializes', () => {
       expoDomComponentReferences: [],
       reactClientReferences: [],
       reactServerReferences: [],
+      loaderReferences: [],
     });
   });
 
@@ -962,6 +968,7 @@ describe('serializes', () => {
       expoDomComponentReferences: [],
       reactClientReferences: [],
       reactServerReferences: [],
+      loaderReferences: [],
     });
   });
 
@@ -1019,6 +1026,7 @@ describe('serializes', () => {
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
+            "loaderReferences": [],
             "modulePaths": [
               "/app/index.js",
               "/app/two.js",
@@ -1053,6 +1061,7 @@ describe('serializes', () => {
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
+            "loaderReferences": [],
             "modulePaths": [
               "/app/foo.js",
             ],
@@ -1091,6 +1100,7 @@ describe('serializes', () => {
       expoDomComponentReferences: [],
       reactClientReferences: [],
       reactServerReferences: [],
+      loaderReferences: [],
     });
   });
 
@@ -1150,6 +1160,7 @@ describe('serializes', () => {
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
+            "loaderReferences": [],
             "modulePaths": [
               "/app/index.js",
               "/app/expo-mock/async-require",
@@ -1185,6 +1196,7 @@ describe('serializes', () => {
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
+            "loaderReferences": [],
             "modulePaths": [
               "/app/a.js",
             ],
@@ -1219,6 +1231,7 @@ describe('serializes', () => {
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
+            "loaderReferences": [],
             "modulePaths": [
               "/app/b.js",
             ],
@@ -1252,6 +1265,7 @@ describe('serializes', () => {
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": true,
+            "loaderReferences": [],
             "modulePaths": [
               "/app/c.js",
             ],
@@ -1285,6 +1299,7 @@ describe('serializes', () => {
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
+            "loaderReferences": [],
             "modulePaths": [
               "/app/d.js",
               "/app/e.js",
@@ -1332,6 +1347,7 @@ describe('serializes', () => {
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
+            "loaderReferences": [],
             "modulePaths": [],
             "paths": {},
             "reactClientReferences": [],
@@ -1358,6 +1374,7 @@ describe('serializes', () => {
       expoDomComponentReferences: [],
       reactClientReferences: [],
       reactServerReferences: [],
+      loaderReferences: [],
     });
     expect(artifacts[2].metadata).toEqual({
       isAsync: true,
@@ -1367,6 +1384,7 @@ describe('serializes', () => {
       expoDomComponentReferences: [],
       reactClientReferences: [],
       reactServerReferences: [],
+      loaderReferences: [],
     });
 
     expect(artifacts[4].filename).toEqual(
@@ -1380,6 +1398,7 @@ describe('serializes', () => {
       expoDomComponentReferences: [],
       reactClientReferences: [],
       reactServerReferences: [],
+      loaderReferences: [],
     });
     // Ensure the common chunk isn't run, just loaded.
     expect(artifacts[4].source).not.toMatch(/TEST_RUN_MODULE/);
@@ -1396,6 +1415,7 @@ describe('serializes', () => {
       expoDomComponentReferences: [],
       reactClientReferences: [],
       reactServerReferences: [],
+      loaderReferences: [],
     });
     expect(artifacts[5].source).toMatch(/PRE_MODULE_TEST/);
   });
@@ -1494,6 +1514,7 @@ describe('serializes', () => {
         expoDomComponentReferences: [],
         reactClientReferences: ['file:///app/other.js'],
         reactServerReferences: [],
+        loaderReferences: [],
         requires: [],
       });
 
@@ -1555,6 +1576,7 @@ describe('serializes', () => {
         expoDomComponentReferences: [],
         reactClientReferences: ['file:///app/other.js', 'file:///app/second.js'],
         reactServerReferences: [],
+        loaderReferences: [],
         requires: [],
       });
     });
@@ -1586,6 +1608,7 @@ describe('serializes', () => {
         expoDomComponentReferences: [],
         reactClientReferences: [],
         reactServerReferences: ['file:///app/server-actions.js'],
+        loaderReferences: [],
         requires: [],
       });
     });
@@ -1624,8 +1647,127 @@ describe('serializes', () => {
           // This is here because the module is marked with "use server".
           'file:///app/server-actions.js',
         ],
+        loaderReferences: [],
         requires: [],
       });
+    });
+  });
+  describe('loader references', () => {
+    it(`collects loader reference from module with loader export`, async () => {
+      const artifacts = await serializeSplitAsync(
+        {
+          'app/index.js': `
+            export function loader() {
+              return { data: 'test' };
+            }
+            export default function Index() {
+              return null;
+            }
+          `,
+        },
+        {
+          isReactServer: false,
+        }
+      );
+
+      expect(artifacts.length).toBe(1);
+      expect(artifacts[0].metadata).toEqual(
+        expect.objectContaining({
+          loaderReferences: ['/app/app/index.js'],
+        })
+      );
+    });
+    it(`collects loader references from multiple modules`, async () => {
+      const artifacts = await serializeSplitAsync(
+        {
+          // This acts as `_layout` for the two routes below
+          'index.js': `
+            import './app/index.js';
+            import './app/about.js';
+          `,
+          'app/index.js': `
+            export function loader() {
+              return { data: 'index' };
+            }
+            export default function Index() {
+              return null;
+            }
+          `,
+          'app/about.js': `
+            export function loader() {
+              return { data: 'about' };
+            }
+            export default function About() {
+              return null;
+            }
+          `,
+        },
+        {
+          isReactServer: false,
+        }
+      );
+
+      expect(artifacts.length).toBe(1);
+      expect(artifacts[0].metadata.loaderReferences).toEqual([
+        '/app/app/index.js',
+        '/app/app/about.js',
+      ]);
+      expect(artifacts[0].metadata.loaderReferences).toHaveLength(2);
+    });
+    it(`only collects loader references from modules that have loaders`, async () => {
+      const artifacts = await serializeSplitAsync(
+        {
+          // This acts as `_layout` for the two routes below
+          'index.js': `
+            import './app/index.js';
+            import './app/about.js';
+          `,
+          'app/index.js': `
+            export function loader() {
+              return { data: 'index' };
+            }
+            export default function Index() {
+              return null;
+            }
+          `,
+          'app/about.js': `
+            export default function About() {
+              return null;
+            }
+          `,
+        },
+        {
+          isReactServer: false,
+        }
+      );
+
+      expect(artifacts.length).toBe(1);
+      expect(artifacts[0].metadata.loaderReferences).toEqual(['/app/app/index.js']);
+    });
+    it(`does not collect loader references from files outside app/ directory`, async () => {
+      const artifacts = await serializeSplitAsync(
+        {
+          'app/index.js': `
+            import '../utils.js';
+            export default function Index() {
+              return null;
+            }
+          `,
+          'utils.js': `
+            // This has a loader but is outside app directory
+            export function loader() {
+              return { data: 'test' };
+            }
+            export const helper = () => 'helper';
+          `,
+        },
+        {
+          isReactServer: false,
+        }
+      );
+
+      expect(artifacts.length).toBe(1);
+      expect(artifacts[0].metadata.loaderReferences).toEqual([]);
     });
   });
 });
