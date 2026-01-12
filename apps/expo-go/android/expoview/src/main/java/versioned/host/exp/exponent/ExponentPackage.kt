@@ -131,10 +131,10 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(NetInfoModule(reactContext))
         nativeModules.add(EdgeToEdgeModule(reactContext))
         nativeModules.add(KeyboardControllerModule(reactContext))
-        nativeModules.addAll(svgPackage.getReactModuleInfoProvider().getReactModuleInfos().values.mapNotNull  { svgPackage.getModule(it.name, reactContext) })
+        nativeModules.addAll(svgPackage.getReactModuleInfoProvider().getReactModuleInfos().values.mapNotNull { svgPackage.getModule(it.name, reactContext) })
         nativeModules.addAll(mapsPackage.getReactModuleInfoProvider().getReactModuleInfos().values.mapNotNull { mapsPackage.getModule(it.name, reactContext) })
-        nativeModules.addAll(dateTimePackage.getReactModuleInfoProvider().getReactModuleInfos().values.mapNotNull  { dateTimePackage.getModule(it.name, reactContext) })
-        nativeModules.addAll(stripePackage.getReactModuleInfoProvider().getReactModuleInfos().values.mapNotNull  { stripePackage.getModule(it.name, reactContext) })
+        nativeModules.addAll(dateTimePackage.getReactModuleInfoProvider().getReactModuleInfos().values.mapNotNull { dateTimePackage.getModule(it.name, reactContext) })
+        nativeModules.addAll(stripePackage.getReactModuleInfoProvider().getReactModuleInfos().values.mapNotNull { stripePackage.getModule(it.name, reactContext) })
         nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
 
         // Call to create native modules has to be at the bottom --
