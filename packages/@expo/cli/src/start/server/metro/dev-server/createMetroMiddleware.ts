@@ -5,8 +5,7 @@ import { createEventsSocket } from './createEventSocket';
 import { createMessagesSocket } from './createMessageSocket';
 import { Log } from '../../../../log';
 import { openInEditorAsync } from '../../../../utils/editor';
-
-const compression = require('compression');
+import { compression } from './compression';
 
 export function createMetroMiddleware(metroConfig: Pick<MetroConfig, 'projectRoot'>) {
   const messages = createMessagesSocket({ logger: Log });
@@ -14,7 +13,7 @@ export function createMetroMiddleware(metroConfig: Pick<MetroConfig, 'projectRoo
 
   const middleware = connect()
     .use(noCacheMiddleware)
-    .use(compression())
+    .use(compression)
     // Support opening stack frames from clients directly in the editor
     .use('/open-stack-frame', rawBodyMiddleware)
     .use('/open-stack-frame', metroOpenStackFrameMiddleware)
