@@ -1,4 +1,4 @@
-import AesCryptoModule from './AesModule';
+import AesCryptoModule from './ExpoCryptoAES';
 import { ArrayBufferDecryptOptions, Base64DecryptOptions, AESDecryptOptions, AESEncryptOptions, BinaryInput, AESSealedDataConfig } from './aes.types';
 export * from './aes.types';
 /**
