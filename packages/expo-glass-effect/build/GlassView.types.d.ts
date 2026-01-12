@@ -22,14 +22,6 @@ export type GlassViewProps = {
      * Can be a simple string ('clear', 'regular', 'none') or a config object
      * for controlling animation behavior.
      * @default 'regular'
-     * @example
-     * // Simple usage
-     * <GlassView glassEffectStyle="regular" />
-     *
-     * // With animation config
-     * <GlassView glassEffectStyle={{ style: "none", animationDuration: 0.5 }} />
-     * // Disable animation
-     * <GlassView glassEffectStyle={{ style: "clear", animate: false }} />
      */
     glassEffectStyle?: GlassStyle | GlassEffectStyleConfig;
     /**
