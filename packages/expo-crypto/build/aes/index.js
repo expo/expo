@@ -1,4 +1,4 @@
-import AesCryptoModule from './AesModule';
+import AesCryptoModule from './ExpoCryptoAES';
 import { uint8ArrayToBase64 } from './web-utils';
 export * from './aes.types';
 /**
