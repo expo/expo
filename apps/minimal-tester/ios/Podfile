@@ -1,3 +1,5 @@
+$BROWNFIELD_TARGET_NAME = 'minimaltesterbrownfield'
+require File.join(File.dirname(`node --print "require.resolve('expo-brownfield/package.json')"`), "plugin/src/ios/scripts/reorder_build_phases.rb")
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 
@@ -59,5 +61,9 @@ target 'minimaltester' do
       :mac_catalyst_enabled => false,
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
+  end
+
+  target 'minimaltesterbrownfield' do
+    inherit! :complete
   end
 end
