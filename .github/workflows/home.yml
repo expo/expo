@@ -48,8 +48,8 @@ jobs:
         run: yarn install --frozen-lockfile
         working-directory: react-native-lab/react-native
 
-      - name: 🛠 Compile Home sources
-        run: yarn tsc
+      - name: 🔎 Type Check Home
+        run: yarn tsc --noEmit
         working-directory: apps/expo-go
 
       - name: 🧪 Run Home tests
