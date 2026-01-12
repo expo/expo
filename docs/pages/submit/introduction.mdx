@@ -36,22 +36,16 @@ Build and submit in one step:
 
 EAS Submit helps teams:
 
+- Upload Android binaries to [Google Play Console](https://play.google.com/console/about/)
+- Upload iOS binaries to [App Store Connect](https://developer.apple.com/app-store-connect/)
 - Avoid manual uploads through Play Console, App Store Connect or Transporter
 - Submit builds from [CI or automated workflows](/eas/workflows/pre-packaged-jobs/#submit)
 - Standardize release processes via [eas.json](/eas/json/) config file
 - Reduce human errors during submission
 
-## What EAS Submit does
-
-EAS Submit enables teams to:
-
-- Upload Android binaries to [Google Play Console](https://play.google.com/console/about/)
-- Upload iOS binaries to [App Store Connect](https://developer.apple.com/app-store-connect/)
-- Apply submission profiles for different environments
-
 ## How EAS Submit works
 
-**EAS Submit** delivers your app to the app stores' distribution pipelines (a chosen track on Google Play Store or [TestFlight](https://developer.apple.com/testflight/) for iOS), following the [default submission behavior for app stores](/build/automate-submissions/#default-submission-behavior-for-app-stores). It queues up your app for distribution on the Play Store Console and App Store Connect, and then you can log into those sites to send your apps off to review, so then they can be distributed to your users.
+**EAS Submit** delivers your app to the app stores' distribution pipelines (a chosen track on Google Play Store or [TestFlight](https://developer.apple.com/testflight/) for iOS), following the [default submission behavior for app stores](/build/automate-submissions/#default-submission-behavior-for-app-stores). It queues up your app for distribution on the Google Play Console and App Store Connect, and then you can log into those sites to send your apps off to review, so then they can be distributed to your users.
 
 ### Android (Google Play Store)
 
@@ -71,7 +65,7 @@ EAS Submit enables teams to:
 
 ## When to use EAS Submit
 
-Use EAS Submit when you want to:
+EAS Submit is useful when:
 
 - Submit builds to the app stores without installing or interacting with upload tools
 - Automate release workflows in CI
