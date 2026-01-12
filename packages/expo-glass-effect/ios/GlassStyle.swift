@@ -21,15 +21,13 @@ public enum GlassStyle: String, Enumerable {
   #endif
 }
 
-public struct GlassEffectStyleConfig: Record {
-  public init() {}
+internal struct GlassEffectStyleConfig: Record {
+  @Field
+  var style: GlassStyle = .regular
 
   @Field
-  public var style: GlassStyle = .regular
+  var animate: Bool = false
 
   @Field
-  public var animate: Bool = false
-
-  @Field
-  public var animationDuration: Double?
+  var animationDuration: Double?
 }

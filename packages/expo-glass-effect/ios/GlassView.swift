@@ -45,7 +45,7 @@ public final class GlassView: ExpoView {
     return false
   }
 
-  public func updateBorderRadius() {
+  func updateBorderRadius() {
     guard isGlassEffectAvailable() else {
       return
     }
@@ -85,7 +85,7 @@ public final class GlassView: ExpoView {
     }
   }
 
-  public func setGlassStyle(_ config: GlassEffectStyleConfig) {
+  func setGlassStyle(_ config: GlassEffectStyleConfig) {
     let newStyle = config.style
     if glassStyle != newStyle {
       glassStyle = newStyle
@@ -123,80 +123,80 @@ public final class GlassView: ExpoView {
   }
 
   // TODO: support UIVisualEffectView with ExpoFabricView?
-  public func setBorderRadius(_ _radius: CGFloat?) {
+  func setBorderRadius(_ _radius: CGFloat?) {
     if _radius != radius {
       radius = _radius
       updateBorderRadius()
     }
   }
-  public func setBorderCurve(_: String?) {
+  func setBorderCurve(_: String?) {
     glassEffectView.layer.cornerCurve = self.layer.cornerCurve
   }
 
-  public func setBorderBottomLeftRadius(_ radius: CGFloat?) {
+  func setBorderBottomLeftRadius(_ radius: CGFloat?) {
     if radius != bottomLeftRadius {
       bottomLeftRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setBorderBottomRightRadius(_ radius: CGFloat?) {
+  func setBorderBottomRightRadius(_ radius: CGFloat?) {
     if radius != bottomRightRadius {
       bottomRightRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setBorderTopLeftRadius(_ radius: CGFloat?) {
+  func setBorderTopLeftRadius(_ radius: CGFloat?) {
     if radius != topLeftRadius {
       topLeftRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setBorderTopRightRadius(_ radius: CGFloat?) {
+  func setBorderTopRightRadius(_ radius: CGFloat?) {
     if radius != topRightRadius {
       topRightRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setBorderBottomStartRadius(_ radius: CGFloat?) {
+  func setBorderBottomStartRadius(_ radius: CGFloat?) {
     if radius != bottomStartRadius {
       bottomStartRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setBorderBottomEndRadius(_ radius: CGFloat?) {
+  func setBorderBottomEndRadius(_ radius: CGFloat?) {
     if radius != bottomEndRadius {
       bottomEndRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setBorderTopStartRadius(_ radius: CGFloat?) {
+  func setBorderTopStartRadius(_ radius: CGFloat?) {
     if radius != topStartRadius {
       topStartRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setBorderTopEndRadius(_ radius: CGFloat?) {
+  func setBorderTopEndRadius(_ radius: CGFloat?) {
     if radius != topEndRadius {
       topEndRadius = radius
       updateBorderRadius()
     }
   }
 
-  public func setTintColor(_ color: UIColor?) {
+  func setTintColor(_ color: UIColor?) {
     if color != glassTintColor {
       glassTintColor = color
       updateEffect()
     }
   }
 
-  public func setInteractive(_ interactive: Bool) {
+  func setInteractive(_ interactive: Bool) {
     if interactive != glassIsInteractive {
       glassIsInteractive = interactive
       updateEffect()
