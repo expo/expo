@@ -90,7 +90,6 @@ open class HomeActivity : BaseExperienceActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     usesComposeNavigation = true
 
-    configureSplashScreen(installSplashScreen())
     enableEdgeToEdge()
 
     if (currentDeviceIsAPhone(this)) {
@@ -121,7 +120,6 @@ open class HomeActivity : BaseExperienceActivity() {
     )
 
     EventBus.getDefault().registerSticky(this)
-    kernel.startJSKernel(this)
 
     ExperienceRTLManager.setRTLPreferences(this, allowRTL = false, forceRTL = false)
 
@@ -140,18 +138,7 @@ open class HomeActivity : BaseExperienceActivity() {
       lifecycleScope.launch {
         homeActivityEvents.emit(HomeActivityEvent.AccountDeleted)
       }
-      // Here you would trigger the sign-out logic, perhaps by calling a method on a ViewModel
-      // For example:
-      // val viewModel: HomeAppViewModel by viewModels()
-      // viewModel.signOut()
     }
-  }
-
-  override fun shouldCreateLoadingView(): Boolean {
-    // Home app shouldn't show LoadingView as it indicates state when the app's manifest is being
-    // downloaded and Splash info is not yet available and this is not the case for Home app
-    // (Splash info is known from the start).
-    return false
   }
 
   override fun onResume() {
@@ -159,27 +146,7 @@ open class HomeActivity : BaseExperienceActivity() {
     super.onResume()
   }
   //endregion Activity Lifecycle
-  /**
-   * This method has been split out from onDestroy lifecycle method to [ReactNativeActivity.destroyReactHost]
-   * and overridden here as we want to prevent destroying react instance manager when HomeActivity gets destroyed.
-   * It needs to continue to live since it is needed for DevMenu to work as expected (it relies on ExponentKernelModule from that react context).
-   */
-  override fun destroyReactHost(reason: String) {}
 
-  fun onEventMainThread(event: KernelStartedRunningEvent?) {
-    reactHost = kernel.reactHost
-    reactSurface = kernel.surface
-
-    reactHost?.onHostResume(this, this)
-    reactSurface?.view?.let {
-      setReactRootView(it)
-    }
-    finishLoading()
-
-    if (Constants.DEBUG_COLD_START_METHOD_TRACING) {
-      Debug.stopMethodTracing()
-    }
-  }
 
   private fun configureSplashScreen(customSplashscreen: SplashScreen) {
     val contentView = findViewById<View>(android.R.id.content)
@@ -216,43 +183,5 @@ open class HomeActivity : BaseExperienceActivity() {
     // Will update the navigation bar colors if the system theme has changed. This is only relevant for the three button navigation bar.
     enableEdgeToEdge()
     super.onConfigurationChanged(newConfig)
-  }
-
-  companion object : ModulesProvider {
-    fun homeExpoPackages(): List<Package> {
-      return listOf(
-        NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
-        TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
-        SplashScreenPackage()
-      )
-    }
-
-    override fun getServices(): List<Class<out Service>> = listOf(
-      ConstantsService::class.java
-    )
-
-    override fun getModulesMap(): Map<Class<out Module>, String?> {
-      return mapOf(
-        AssetModule::class.java to null,
-        BlurModule::class.java to null,
-        CameraViewModule::class.java to null,
-        ClipboardModule::class.java to null,
-        ConstantsModule::class.java to null,
-        DeviceModule::class.java to null,
-        EASClientModule::class.java to null,
-        FileSystemModule::class.java to null,
-        FileSystemLegacyModule::class.java to null,
-        FontLoaderModule::class.java to null,
-        FontUtilsModule::class.java to null,
-        HapticsModule::class.java to null,
-        KeepAwakeModule::class.java to null,
-        LinearGradientModule::class.java to null,
-        SplashScreenModule::class.java to null,
-        TrackingTransparencyModule::class.java to null,
-        StoreReviewModule::class.java to null,
-        WebBrowserModule::class.java to null,
-        ApplicationModule::class.java to null
-      )
-    }
   }
 }
