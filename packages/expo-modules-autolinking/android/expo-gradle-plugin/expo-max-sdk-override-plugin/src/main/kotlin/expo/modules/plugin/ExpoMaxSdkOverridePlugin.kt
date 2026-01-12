@@ -7,7 +7,6 @@ import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import expo.modules.plugin.text.Colors
 import expo.modules.plugin.text.Emojis
 import expo.modules.plugin.text.withColor
-import expo.modules.plugin.utils.camelToKebab
 import org.gradle.internal.cc.base.logger
 
 /**
@@ -24,7 +23,7 @@ class ExpoMaxSdkOverridePlugin : Plugin<Project> {
 
     androidComponents.onVariants(androidComponents.selector().all()) { variant ->
       val taskName = "expo${variant.name.replaceFirstChar { it.uppercase() }}OverrideMaxSdkConflicts"
-      val blameReportPath = "outputs/logs/manifest-merger-${variant.name.camelToKebab()}-report.txt"
+      val blameReportPath = "outputs/logs/manifest-merger-${variant.flavorName}-${variant.buildType}-report.txt"
       val reportFile = project.layout.buildDirectory.file(blameReportPath)
       val fixTaskProvider = project.tasks.register(
         taskName,
