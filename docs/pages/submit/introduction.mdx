@@ -14,7 +14,9 @@ import { Terminal } from '~/ui/components/Snippet';
 
 **Expo Application Services (EAS) Submit** is Expo's cloud service for submitting Android and iOS binaries directly to the Google Play Store and Apple App Store without using Google Play Console, App Store Connect or Transporter.
 
-EAS Submit automates the final step of mobile app distribution by sending your built binaries to Google and Apple for store review. It removes the need for manual uploads and reduces errors that happen during store submission. It works with apps built with [EAS Build](/build/introduction/) or locally and supports multiple submission profiles. You can trigger a submission from a CLI command, after a build is finished, or from a CI/CD service. This gives teams a faster, more consistent release workflow across both platforms.
+EAS Submit automates the final step of mobile app distribution by sending your built binaries to Google and Apple for store review. It removes the need for manual uploads and reduces errors that happen during store submission.
+
+EAS Submit works with apps built with [EAS Build](/build/introduction/) or locally and supports multiple submission profiles. You can trigger a submission from a CLI command, after a build is finished, or from a CI/CD service. This gives teams a faster, more consistent release workflow across both platforms.
 
 ## Quick example
 
@@ -76,50 +78,6 @@ Use EAS Submit when you want to:
 - Promote consistent submission processes across the team
 - Manage multiple release channels from one configuration
 
-<Collapsible summary="Did you build your binary with EAS Build or locally?">
-
-Either works. EAS Submit accepts any valid **.aab** (Android App Bundle) or **.ipa** (iOS App Archive) file.
-
-For builds created with EAS Build, run `eas submit` and select a build from the list or let it use the latest build automatically.
-
-For local builds, use the `--path` flag to specify the binary:
-
-<Terminal
-  cmd={[
-    '$ eas submit --platform android --path ./my-app.aab',
-    '',
-    '$ eas submit --platform ios --path ./my-app.ipa',
-  ]}
-/>
-
-Local builds must be signed with the correct credentials before submission.
-
-</Collapsible>
-
-<Collapsible summary="Do you want to automate submissions from CI?">
-
-Yes. EAS Submit works in CI environments and integrates with [EAS Workflows](/eas/workflows/get-started/).
-
-To build and submit in one step, use the `--auto-submit` flag:
-
-<Terminal cmd={['$ eas build --platform ios --auto-submit']} />
-
-For CI pipelines, use `--non-interactive` to skip prompts and `--latest` to automatically select the most recent build:
-
-<Terminal cmd={['$ eas submit --platform android --latest --non-interactive']} />
-
-</Collapsible>
-
-<Collapsible summary="Do you need to handle metadata or screenshots?">
-
-EAS Submit uploads your binary but does not manage store listing metadata, screenshots, or release notes.
-
-For Google Play Store, configure your store listing directly in [Google Play Console](https://play.google.com/console/about/) before submitting.
-
-For Apple App Store, you can use [EAS Metadata](/eas/metadata/) to automate app information and localized descriptions.
-
-</Collapsible>
-
 ## When not to use EAS Submit
 
 EAS Submit is not needed when:
@@ -133,7 +91,11 @@ In these cases, preparing your store listing is required.
 
 <Collapsible summary="Can I submit builds that were not built with EAS Build?">
 
-Yes. Use the `--path` flag to submit any valid binary:
+Yes. EAS Submit accepts any valid **.aab** (Android App Bundle) or **.ipa** (iOS App Archive) file.
+
+For builds created with EAS Build, run `eas submit` and select a build from the list or let it use the latest build automatically.
+
+For local builds, use the `--path` flag to specify the binary:
 
 <Terminal
   cmd={[
@@ -155,9 +117,9 @@ Once processed, you can distribute the build to internal testers immediately or 
 
 </Collapsible>
 
-<Collapsible summary="Can I use EAS Submit inside EAS Workflows?">
+<Collapsible summary="Can I use EAS Submit inside EAS Workflows or from other CI/CD pipelines?">
 
-Yes. You can add a submit job to your workflow configuration. For example:
+Yes. EAS Submit works in CI environments and integrates with [EAS Workflows](/eas/workflows/get-started/). You can add a submit job to your workflow configuration. For example:
 
 ```yaml
 jobs:
@@ -170,6 +132,20 @@ jobs:
 ```
 
 For more information, see [EAS Workflows pre-packaged jobs](/eas/workflows/pre-packaged-jobs/#submit).
+
+For CI pipelines, you can also use the `--non-interactive` flag to skip prompts and `--latest` to automatically select the most recent build:
+
+<Terminal cmd={['$ eas submit --platform android --latest --non-interactive']} />
+
+</Collapsible>
+
+<Collapsible summary="Do I need to handle metadata or screenshots?">
+
+EAS Submit uploads your binary but does not manage store listing metadata, screenshots, or release notes.
+
+For Google Play Store, configure your store listing directly in [Google Play Console](https://play.google.com/console/about/) before submitting.
+
+For Apple App Store, you can use [EAS Metadata](/eas/metadata/) to automate app information and localized descriptions.
 
 </Collapsible>
 
