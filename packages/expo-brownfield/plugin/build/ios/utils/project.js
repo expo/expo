@@ -23,7 +23,7 @@ const configureBuildPhases = (project, target, targetName, projectName, files = 
     const mainTarget = findNativeTargetSection(project, (target) => target.productType === constants_1.Constants.Target.ApplicationProductType);
     const bundlePhase = mainTarget.buildPhases.find((phase) => phase.comment.includes(constants_1.Constants.BuildPhase.RNBundlePhase));
     if (!bundlePhase) {
-        throw new Error('`Bundle React Native code and images` build phase cannot be found in main target build phases');
+        throw new Error(`'${constants_1.Constants.BuildPhase.RNBundlePhase}' build phase cannot be found in main target build phases`);
     }
     const destTarget = findNativeTargetSection(project, (target) => target.productType !== constants_1.Constants.Target.ApplicationProductType);
     destTarget.buildPhases = [...destTarget.buildPhases, bundlePhase];

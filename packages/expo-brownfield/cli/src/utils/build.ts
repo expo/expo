@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import fs from 'node:fs/promises';
-import path from 'node:path';
+import path from 'path';
 import ora, { type Ora } from 'ora';
 import prompts from 'prompts';
 

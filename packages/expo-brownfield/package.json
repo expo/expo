@@ -4,7 +4,7 @@
   "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
-  "bin": "./plugin/build/cli/index.js",
+  "bin": "./cli/build/index.js",
   "exports": {
     ".": {
       "source": "./src/index.ts",
@@ -28,6 +28,7 @@
     "android/src",
     "android/build.gradle",
     "build/",
+    "cli/",
     "gradle-plugins/",
     "ios/",
     "plugin/",
