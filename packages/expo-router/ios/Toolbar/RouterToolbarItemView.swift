@@ -47,6 +47,29 @@ class RouterToolbarItemView: RouterViewWithLogger {
       item = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
     } else if type == .fixedSpacer {
       item = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
+    } else if type == .searchBar {
+      if #available(iOS 16, *) {
+        // Hide the item if no search bar is provided
+        item.isHidden = true
+      }
+      guard #available(iOS 26.0, *), let controller = self.host?.findViewController() else {
+        // Check for iOS 26, should already be guarded by the JS side, so this warning will only fire if controller is nil
+        logger?.warn(
+          "[expo-router] navigationItem.searchBarPlacementBarButtonItem not available. This is most likely a bug in expo-router."
+        )
+        return item
+      }
+      guard let navController = controller.navigationController else {
+        return item
+      }
+      guard navController.isNavigationBarHidden == false else {
+        logger?.warn(
+          "[expo-router] Toolbar.SearchBarPreferredSlot should only be used when stack header is shown."
+        )
+        return item
+      }
+
+      item = controller.navigationItem.searchBarPlacementBarButtonItem
     } else {
       if let title {
         item.title = title
@@ -123,21 +146,19 @@ class RouterToolbarItemView: RouterViewWithLogger {
   }
 
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
-    if customView != nil {
+    guard customView == nil else {
       logger?.warn(
         "[expo-router] RouterToolbarItemView can only have one child view. This is most likely a bug in expo-router."
       )
       return
     }
     customView = childComponentView
-    performUpdate()
   }
 
   override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
     if customView == childComponentView {
       childComponentView.removeFromSuperview()
       customView = nil
-      performUpdate()
     }
   }
 }
@@ -146,6 +167,7 @@ enum ItemType: String, Enumerable {
   case normal
   case fixedSpacer
   case fluidSpacer
+  case searchBar
 }
 
 struct BadgeConfiguration: Equatable {

@@ -6,8 +6,8 @@ const react_1 = require("react");
 const react_native_1 = require("react-native");
 const StackHeaderBackButton_1 = require("./StackHeaderBackButton");
 const StackHeaderLeftRight_1 = require("./StackHeaderLeftRight");
-const StackHeaderSearchBar_1 = require("./StackHeaderSearchBar");
 const StackHeaderTitle_1 = require("./StackHeaderTitle");
+const StackSearchBar_1 = require("./StackSearchBar");
 const children_1 = require("../../utils/children");
 const Screen_1 = require("../../views/Screen");
 /**
@@ -101,8 +101,8 @@ function appendStackHeaderPropsToOptions(options, props) {
         else if ((0, children_1.isChildOfType)(child, StackHeaderBackButton_1.StackHeaderBackButton)) {
             updatedOptions = (0, StackHeaderBackButton_1.appendStackHeaderBackButtonPropsToOptions)(updatedOptions, child.props);
         }
-        else if ((0, children_1.isChildOfType)(child, StackHeaderSearchBar_1.StackHeaderSearchBar)) {
-            updatedOptions = (0, StackHeaderSearchBar_1.appendStackHeaderSearchBarPropsToOptions)(updatedOptions, child.props);
+        else if ((0, children_1.isChildOfType)(child, StackSearchBar_1.StackSearchBar)) {
+            updatedOptions = (0, StackSearchBar_1.appendStackSearchBarPropsToOptions)(updatedOptions, child.props);
         }
         else {
             console.warn(`Warning: Unknown child element passed to Stack.Header: ${child.type.name ?? child.type}`);
