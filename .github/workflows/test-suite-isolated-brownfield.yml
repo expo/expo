@@ -69,10 +69,11 @@ jobs:
         uses: actions/checkout@v5
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
-      - name: 🚀 Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
+      # TODO(pmleczek): Remove (?)
+      # - name: 🚀 Setup Bun
+      #   uses: oven-sh/setup-bun@v2
+      #   with:
+      #     bun-version: latest
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v4
         with:
@@ -92,7 +93,7 @@ jobs:
       - name: 🤖 Build and publish Android artifacts
         run: |
           npx expo prebuild --clean --platform android
-          npx expo-brownfield build-android -t publishBrownfieldAllToCustomDirRepository --verbose
+          npx expo-brownfield build-android --repo MavenLocal --all --verbose
         shell: bash
         working-directory: ./apps/minimal-tester
         env:
