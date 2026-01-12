@@ -131,6 +131,20 @@ export class Request {
         throw new Error('getQueryBody must be extended');
     }
 }
+function sanitizeExtraHeaders(extra, hasClientSecret) {
+    if (!extra) {
+        return undefined;
+    }
+    const extraHeaders = { ...extra };
+    delete extraHeaders['Content-Type'];
+    delete extraHeaders['content-type'];
+    if (hasClientSecret) {
+        // auth-session will set the Authorization header in this case
+        delete extraHeaders.authorization;
+        delete extraHeaders.Authorization;
+    }
+    return extraHeaders;
+}
 /**
  * A generic token request.
  */
@@ -140,6 +154,7 @@ export class TokenRequest extends Request {
     clientSecret;
     scopes;
     extraParams;
+    extraHeaders;
     constructor(request, grantType) {
         super(request);
         this.grantType = grantType;
@@ -147,9 +162,12 @@ export class TokenRequest extends Request {
         this.clientSecret = request.clientSecret;
         this.extraParams = request.extraParams;
         this.scopes = request.scopes;
+        this.extraHeaders = sanitizeExtraHeaders(request.extraHeaders, typeof request.clientSecret !== 'undefined');
     }
     getHeaders() {
-        const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+        const headers = Object.assign({}, this.extraHeaders, {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        });
         if (typeof this.clientSecret !== 'undefined') {
             // If client secret exists, it should be converted to base64
             // https://tools.ietf.org/html/rfc6749#section-2.3.1
@@ -240,6 +258,7 @@ export class AccessTokenRequest extends TokenRequest {
             code: this.code,
             redirectUri: this.redirectUri,
             extraParams: this.extraParams,
+            extraHeaders: this.extraHeaders,
             scopes: this.scopes,
         };
     }
@@ -270,6 +289,7 @@ export class RefreshTokenRequest extends TokenRequest {
             grantType: this.grantType,
             refreshToken: this.refreshToken,
             extraParams: this.extraParams,
+            extraHeaders: this.extraHeaders,
             scopes: this.scopes,
         };
     }
@@ -284,6 +304,7 @@ export class RevokeTokenRequest extends Request {
     clientSecret;
     token;
     tokenTypeHint;
+    extraHeaders;
     constructor(request) {
         super(request);
         invariant(request.token, `\`RevokeTokenRequest\` requires a valid \`token\` to revoke.`);
@@ -291,9 +312,12 @@ export class RevokeTokenRequest extends Request {
         this.clientSecret = request.clientSecret;
         this.token = request.token;
         this.tokenTypeHint = request.tokenTypeHint;
+        this.extraHeaders = sanitizeExtraHeaders(request.extraHeaders, typeof request.clientSecret !== 'undefined');
     }
     getHeaders() {
-        const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+        const headers = Object.assign({}, this.extraHeaders, {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        });
         if (typeof this.clientSecret !== 'undefined' && this.clientId) {
             // If client secret exists, it should be converted to base64
             // https://tools.ietf.org/html/rfc6749#section-2.3.1
@@ -325,6 +349,7 @@ export class RevokeTokenRequest extends Request {
             clientSecret: this.clientSecret,
             token: this.token,
             tokenTypeHint: this.tokenTypeHint,
+            extraHeaders: this.extraHeaders,
         };
     }
     getQueryBody() {
