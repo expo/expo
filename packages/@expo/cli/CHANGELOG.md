@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix response streaming from dev server (remove compression) ([#41955](https://github.com/expo/expo/pull/41955) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 💡 Others
 
 ## 54.0.21 — 2026-01-06
