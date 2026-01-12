@@ -131,10 +131,10 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(NetInfoModule(reactContext))
         nativeModules.add(EdgeToEdgeModule(reactContext))
         nativeModules.add(KeyboardControllerModule(reactContext))
-        nativeModules.addAll(SvgPackage().getReactModuleInfoProvider().getReactModuleInfos().map { SvgPackage().getModule(it.value.name, reactContext)!! })
-        nativeModules.addAll(MapsPackage().getReactModuleInfoProvider().getReactModuleInfos().map { MapsPackage().getModule(it.value.name, reactContext)!! })
-        nativeModules.addAll(RNDateTimePickerPackage().getReactModuleInfoProvider().getReactModuleInfos().map { RNDateTimePickerPackage().getModule(it.value.name, reactContext)!! })
-        nativeModules.addAll(stripePackage.getReactModuleInfoProvider().getReactModuleInfos().map { stripePackage.getModule(it.value.name, reactContext)!! })
+        nativeModules.addAll(svgPackage.getReactModuleInfoProvider().getReactModuleInfos().values.mapNotNull { svgPackage.getModule(it.name, reactContext) })
+        nativeModules.addAll(mapsPackage.getReactModuleInfoProvider().getReactModuleInfos().values.mapNotNull { mapsPackage.getModule(it.name, reactContext) })
+        nativeModules.addAll(dateTimePackage.getReactModuleInfoProvider().getReactModuleInfos().values.mapNotNull { dateTimePackage.getModule(it.name, reactContext) })
+        nativeModules.addAll(stripePackage.getReactModuleInfoProvider().getReactModuleInfos().values.mapNotNull { stripePackage.getModule(it.name, reactContext) })
         nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
 
         // Call to create native modules has to be at the bottom --
@@ -214,6 +214,9 @@ class ExponentPackage : ReactPackage {
     // Need to avoid initializing duplicated packages
     private val stripePackage = StripeSdkPackage()
     private val skiaPackage = RNSkiaPackage()
+    private val mapsPackage = MapsPackage()
+    private val dateTimePackage = RNDateTimePickerPackage()
+    private val svgPackage = SvgPackage()
 
     fun kernelExponentPackage(
       context: Context,
