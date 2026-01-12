@@ -7,8 +7,8 @@
 
 @interface WorkletRuntimeFactory : NSObject
 
-+(nonnull EXRuntime *)createWorkletRuntime:(nonnull EXAppContext *)appContext fromPointer:(unsigned long)pointer;
++ (nonnull EXRuntime *)createWorkletRuntime:(nonnull EXAppContext *)appContext fromPointer:(nullable void *)pointer;
 
-+(unsigned long)extractRuntimePointer:(nonnull EXJavaScriptValue *)jsValue runtime:(nonnull EXJavaScriptRuntime *)runtime;
++ (nullable void *)extractRuntimePointer:(nonnull EXJavaScriptValue *)jsValue runtime:(nonnull EXJavaScriptRuntime *)runtime;
 
 @end

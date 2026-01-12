@@ -106,9 +106,12 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
-  public var uiRuntime: ExpoRuntime? {
-    get {
-      return _uiRuntime
+  public var uiRuntime: ExpoRuntime {
+    get throws {
+      if let uiRuntime = _uiRuntime {
+        return uiRuntime
+      }
+      throw Exceptions.UIRuntimeLost()
     }
   }
 
@@ -526,20 +529,17 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   @MainActor
   internal func prepareUIRuntime() throws {
-    guard let runtime = uiRuntime else {
-      throw Exceptions.RuntimeLost()
-    }
-
-    let coreObject = runtime.createObject()
+    let uiRuntime = try uiRuntime
+    let coreObject = uiRuntime.createObject()
 
     // Initialize `global.expo`.
-    runtime.global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: .enumerable)
+    uiRuntime.global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: .enumerable)
 
     // Install `global.expo.EventEmitter`.
-    EXJavaScriptRuntimeManager.installEventEmitterClass(runtime)
+    EXJavaScriptRuntimeManager.installEventEmitterClass(uiRuntime)
 
     // Install `global.expo.NativeModule`.
-    EXJavaScriptRuntimeManager.installNativeModuleClass(runtime)
+    EXJavaScriptRuntimeManager.installNativeModuleClass(uiRuntime)
   }
 
   /**

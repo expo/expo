@@ -3,18 +3,6 @@
 import React
 import Foundation
 
-internal final class WorkletUIRuntimeException: Exception, @unchecked Sendable {
-  override var reason: String {
-    "Cannot find UI worklet runtime"
-  }
-}
-
-internal final class WorkletUIRuntimePointerExtractionException: Exception, @unchecked Sendable {
-  override var reason: String {
-    "Cannot extract pointer to UI worklet runtime"
-  }
-}
-
 private let WORKLET_RUNTIME_KEY = "_WORKLET_RUNTIME"
 
 // The core module that describes the `global.expo` object.
@@ -41,7 +29,7 @@ internal final class CoreModule: Module {
     }
 
     Function("installOnUIRuntime") {
-      guard let appContext = appContext else {
+      guard let appContext else {
         throw Exceptions.AppContextLost()
       }
 
@@ -51,16 +39,17 @@ internal final class CoreModule: Module {
       }
 
       let runtime = try appContext.runtime
-
       if !runtime.global().hasProperty(WORKLET_RUNTIME_KEY) {
         throw WorkletUIRuntimeException()
       }
 
       let pointerHolder = runtime.global().getProperty(WORKLET_RUNTIME_KEY)
-      assert(pointerHolder.isObject())
+      if !pointerHolder.isObject() {
+        throw WorkletUIRuntimeException()
+      }
 
       let uiRuntimePointer = WorkletRuntimeFactory.extractRuntimePointer(pointerHolder, runtime: runtime)
-      if uiRuntimePointer == 0 {
+      if uiRuntimePointer == nil {
         throw WorkletUIRuntimePointerExtractionException()
       }
 
@@ -123,5 +112,17 @@ internal final class CoreModule: Module {
     }
 
     return viewName
+  }
+}
+
+internal final class WorkletUIRuntimeException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Cannot find UI worklet runtime"
+  }
+}
+
+internal final class WorkletUIRuntimePointerExtractionException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Cannot extract pointer to UI worklet runtime"
   }
 }

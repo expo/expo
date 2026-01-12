@@ -42,15 +42,26 @@ if defined?(Expo::PackagesConfig)
   coreFeatures = Expo::PackagesConfig.instance.coreFeatures
 end
 
+# During resolution phase, it will always false as Pod::Config.instance.podfile is not yet set.
+# However, for our use case, we only need to check this value during installation phase.
 def Pod::hasWorklets()
-  path = `cd "#{Pod::Config.instance.installation_root.to_s}" && node --print "try { require.resolve('react-native-worklets/package.json') } catch(e) { null }"`
-  path = path.strip
+  begin
+    # Safely access Pod::Config.instance.podfile without initiating it
+    if Pod::Config.instance_variable_defined?(:@instance) && !Pod::Config.instance_variable_get(:@instance).nil?
+      config = Pod::Config.instance
 
-  if path == "null"
-    return false
+      # Saefly access podfile and its dependencies
+      if config.instance_variable_defined?(:@podfile)
+        podfile = config.instance_variable_get(:@podfile)
+        if podfile && podfile.respond_to?(:dependencies)
+          dependencies = podfile.dependencies.map(&:name)
+          return dependencies.include?('RNWorklets')
+        end
+      end
+    end
+  rescue
   end
-
-  return true
+  return false
 end
 
 shouldEnableWorkletsIntegration = hasWorklets()

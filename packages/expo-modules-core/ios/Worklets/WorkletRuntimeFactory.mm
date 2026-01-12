@@ -13,7 +13,7 @@
 
 @implementation WorkletRuntimeFactory
 
-+(nonnull EXRuntime *)createWorkletRuntime:(nonnull EXAppContext *)appContext fromPointer:(unsigned long)pointer
++ (nonnull EXRuntime *)createWorkletRuntime:(nonnull EXAppContext *)appContext fromPointer:(nullable void *)pointer
 {
 #if WORKLETS_ENABLED
   jsi::Runtime* jsRuntime = reinterpret_cast<jsi::Runtime *>(pointer);
@@ -29,23 +29,23 @@
 #endif
 }
 
-+(unsigned long)extractRuntimePointer:(nonnull EXJavaScriptValue *)jsValue runtime:(nonnull EXJavaScriptRuntime *)runtime
++ (nullable void *)extractRuntimePointer:(nonnull EXJavaScriptValue *)jsValue runtime:(nonnull EXJavaScriptRuntime *)runtime
 {
   jsi::Value rawValue = [jsValue get];
   jsi::Runtime *rawRuntime = [runtime get];
 
   jsi::Object workletRuntimeObject = rawValue.getObject(*rawRuntime);
   if (!workletRuntimeObject.isArrayBuffer(*rawRuntime)) {
-    return 0;
+    return NULL;
   }
 
   size_t pointerSize = sizeof(uintptr_t *);
   jsi::ArrayBuffer workletRuntimeArrayBuffer = workletRuntimeObject.getArrayBuffer(*rawRuntime);
   if (workletRuntimeArrayBuffer.size(*rawRuntime) != pointerSize) {
-    return 0;
+    return NULL;
   }
 
-  return *reinterpret_cast<uintptr_t *>(workletRuntimeArrayBuffer.data(*rawRuntime));
+  return *reinterpret_cast<uintptr_t **>(workletRuntimeArrayBuffer.data(*rawRuntime));
 }
 
 @end
