@@ -1,6 +1,4 @@
 /* eslint-env jest */
-import path from 'node:path';
-
 import { runExportSideEffects } from './export-side-effects';
 import {
   prepareServers,
@@ -48,13 +46,16 @@ describe.each(
     expect(files).toContain('_expo/loaders/posts/[postId]');
     expect(files).toContain('_expo/loaders/posts/static-post-1');
     expect(files).toContain('_expo/loaders/posts/static-post-2');
+    expect(files).toContain('_expo/loaders/nullish/undefined');
+    expect(files).toContain('_expo/loaders/nullish/null');
   });
 
   it('loader endpoint returns JSON', async () => {
     const response = await server.fetchAsync('/_expo/loaders/second');
     expect(response.status).toBe(200);
-    // NOTE: expo serve returns application/octet-stream for extensionless files,
-    // but the content is still valid JSON. In production, a proper server would set the correct content-type.
+    // NOTE(@hassankhan): expo-server returns `application/octet-stream` for extensionless files,
+    // but the content is still valid JSON.
+    // expect(response.headers.get('content-type')).toContain('application/json');
 
     const data = await response.json();
     expect(data).toBeDefined();
@@ -66,5 +67,19 @@ describe.each(
 
     const data = await response.json();
     expect(data.params).toHaveProperty('postId', 'static-post-1');
+  });
+
+  it('returns `{}` for `undefined` loader data', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/nullish/undefined');
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data).toEqual({});
+  });
+
+  it('returns `null` for `null` loader data', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/nullish/null');
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data).toBeNull();
   });
 });
