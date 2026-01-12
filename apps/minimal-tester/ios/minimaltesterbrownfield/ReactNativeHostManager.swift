@@ -38,14 +38,13 @@ public class ReactNativeHostManager {
     initialProps: [AnyHashable: Any]?,
     launchOptions: [AnyHashable: Any]?
   ) throws -> UIView {
-    guard let expoDelegateWrapper else {
-      fatalError("Trying to load view without ExpoAppDelegateWrapper initialized")
+    guard let reactNativeFactory else {
+      fatalError("Trying to load view without initializing reactNativeFactory")
     }
 
-    return expoDelegateWrapper.recreateRootView(
-      withBundleURL: nil,
-      moduleName: moduleName,
-      initialProps: initialProps,
+    return reactNativeFactory.rootViewFactory.view(
+      withModuleName: moduleName,
+      initialProperties: initialProps,
       launchOptions: launchOptions
     )
   }

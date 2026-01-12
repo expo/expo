@@ -1,4 +1,4 @@
-internal import ExpoBrownfieldModule
+internal import ExpoBrownfield
 
 public struct BrownfieldMessaging {
   @discardableResult

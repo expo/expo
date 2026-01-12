@@ -8,20 +8,6 @@ public class ExpoAppDelegateWrapper {
     expoDelegate = ExpoAppDelegate()
   }
 
-  func recreateRootView(
-    withBundleURL: URL?,
-    moduleName: String?,
-    initialProps: [AnyHashable: Any]?,
-    launchOptions: [AnyHashable: Any]?
-  ) -> UIView {
-    expoDelegate.recreateRootView(
-      withBundleURL: withBundleURL,
-      moduleName: moduleName,
-      initialProps: initialProps,
-      launchOptions: launchOptions
-    )
-  }
-
   // Below sections match sections from ExpoAppDelegate.swift:
   // https://github.com/expo/expo/blob/main/packages/expo/ios/AppDelegates/ExpoAppDelegate.swift
   // SECTION: Initializing the app

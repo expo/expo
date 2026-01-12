@@ -4,5 +4,6 @@
   "ios.forceStaticLinking": "[]",
   "apple.privacyManifestAggregationEnabled": "true",
   "ios.buildReactNativeFromSource": "true",
-  "ios.useFrameworks": "static"
+  "ios.useFrameworks": "static",
+  "ios.brownfieldTargetName": "minimaltesterbrownfield"
 }

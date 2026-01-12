@@ -6,6 +6,7 @@ if [ -f "$FILE" ]; then
   sed \\
     -e 's/^import EX/internal import EX/' \\
     -e 's/^import Ex/internal import Ex/' \\
+    -e 's/^import EAS/internal import EAS/' \\
     -e 's/public class ExpoModulesProvider/internal class ExpoModulesProvider/' "$FILE" > "$TEMP_FILE"
   mv "$TEMP_FILE" "$FILE"
 fi
