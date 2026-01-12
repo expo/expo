@@ -3,14 +3,14 @@ import {
   Host,
   HStack,
   Image,
-  Progress,
+  ProgressView,
   Picker,
   Slider,
   Switch,
   Text,
   VStack,
 } from '@expo/ui/swift-ui';
-import { frame, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+import { frame, pickerStyle, progressViewStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
 import { ScrollPage, Section } from '../../components/Page';
@@ -110,7 +110,7 @@ export default function RTLTestScreen() {
         <Host matchContents layoutDirection={isRTL ? 'rightToLeft' : 'leftToRight'}>
           <HStack spacing={8}>
             <Text>20%</Text>
-            <Progress progress={0.2} variant="linear" />
+            <ProgressView value={0.2} modifiers={[progressViewStyle('linear')]} />
           </HStack>
         </Host>
       </Section>
