@@ -25,26 +25,6 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
-  "files": [
-    "android/src",
-    "android/build.gradle",
-    "build/",
-    "cli/",
-    "gradle-plugins/",
-    "ios/",
-    "plugin/",
-    "templates/",
-    "src/",
-    ".eslintignore",
-    ".eslintrc.js",
-    "CHANGELOG.md",
-    "README.md",
-    "app.plugin.js",
-    "babel.config.js",
-    "expo-module.config.json",
-    "package.json",
-    "tsconfig.json"
-  ],
   "keywords": [
     "react-native",
     "expo",
