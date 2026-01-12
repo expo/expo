@@ -75,7 +75,7 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
     invokeNative(result.toJSValueExperimental())
   }
 
-  operator fun invoke(code: String, errorMessage: String) = checkIfValid {
+  operator fun invoke(code: String?, errorMessage: String) = checkIfValid {
     invokeNative(code, errorMessage)
   }
 
@@ -92,7 +92,7 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
   private external fun invokeNative(result: SharedObject)
   private external fun invokeNative(result: JavaScriptArrayBuffer)
   private external fun invokeNative(result: NativeArrayBuffer)
-  private external fun invokeNative(code: String, errorMessage: String)
+  private external fun invokeNative(code: String?, errorMessage: String)
 
   private external fun invokeIntArray(result: IntArray)
   private external fun invokeLongArray(result: LongArray)
