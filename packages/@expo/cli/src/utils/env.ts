@@ -63,7 +63,7 @@ class Env {
 
   /** Skip warning users about a dirty git status */
   get EXPO_NO_GIT_STATUS() {
-    return boolish('EXPO_NO_GIT_STATUS', false);
+    return boolish('EXPO_NO_GIT_STATUS', true);
   }
   /** Disable auto web setup */
   get EXPO_NO_WEB_SETUP() {

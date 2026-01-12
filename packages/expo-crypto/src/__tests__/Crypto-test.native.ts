@@ -1,6 +1,8 @@
 import * as Crypto from '../Crypto';
 import ExpoCrypto from '../ExpoCrypto';
 
+jest.mock('../aes', () => ({}));
+
 it(`invokes native method correctly`, async () => {
   const value = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA1, '<DEBUG>', {
     encoding: Crypto.CryptoEncoding.HEX,

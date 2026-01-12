@@ -51,11 +51,3 @@ if (var == nil) { return; }
 #define UMDirectEventBlock EXDirectEventBlock
 #define UMPromiseResolveBlock EXPromiseResolveBlock
 #define UMPromiseRejectBlock EXPromiseRejectBlock
-
-// These should be defined by the concrete platform adapter
-#define UMLogInfo EXLogInfo
-#define UMLogWarn EXLogWarn
-#define UMLogError EXLogError
-#define UMFatal EXFatal
-#define UMErrorWithMessage EXErrorWithMessage
-#define UMSharedApplication EXSharedApplication

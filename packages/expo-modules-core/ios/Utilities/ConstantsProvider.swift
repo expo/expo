@@ -29,9 +29,9 @@ internal final class ConstantsProvider: EXConstantsInterface {
       "manifest": getManifest(), // Deprecated, but still used internally.
       "platform": [
         "ios": [
-          "buildNumber": getBuildVersion(),
-        ],
-      ],
+          "buildNumber": getBuildVersion()
+        ]
+      ]
     ]
   }
 }

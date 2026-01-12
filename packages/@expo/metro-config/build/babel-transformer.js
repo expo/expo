@@ -81,6 +81,11 @@ function getBabelCaller({ filename, options, }) {
         supportsReactCompiler: isCustomTruthy(options.customTransformOptions?.reactCompiler)
             ? true
             : undefined,
+        // When true, indicates this bundle should contain only the loader export.
+        // Used by server-data-loaders-plugin to strip everything except the loader function.
+        isLoaderBundle: isCustomTruthy(options.customTransformOptions?.isLoaderBundle)
+            ? true
+            : undefined,
         // This is picked up by `babel-preset-expo` if it's set, and overrides the minimum supported
         // `@babel/runtime` version that `@babel/plugin-transform-runtime` can assume is installed
         // This option should be set to the project's version of `@babel/runtime`, if it's installed directly

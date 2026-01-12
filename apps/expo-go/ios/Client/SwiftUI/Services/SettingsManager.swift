@@ -2,6 +2,7 @@
 
 import Foundation
 import UIKit
+import EXDevMenu
 
 @MainActor
 class SettingsManager: ObservableObject {
@@ -19,11 +20,13 @@ class SettingsManager: ObservableObject {
   func updateShakeGesture(_ enabled: Bool) {
     shakeToShowDevMenu = enabled
     saveDevSetting(key: "shakeToShow", value: enabled)
+    DevMenuManager.shared.setMotionGestureEnabled(enabled)
   }
 
   func updateThreeFingerGesture(_ enabled: Bool) {
     threeFingerLongPressEnabled = enabled
     saveDevSetting(key: "threeFingerLongPress", value: enabled)
+    DevMenuManager.shared.setTouchGestureEnabled(enabled)
   }
 
   func updateTheme(_ themeIndex: Int) {
@@ -33,9 +36,8 @@ class SettingsManager: ObservableObject {
   }
 
   private func loadDevSettings() {
-    let devMenuDefaults = UserDefaults.standard.dictionary(forKey: "RCTDevMenu") ?? [:]
-    shakeToShowDevMenu = devMenuDefaults["shakeToShow"] as? Bool ?? true
-    threeFingerLongPressEnabled = devMenuDefaults["threeFingerLongPress"] as? Bool ?? true
+    shakeToShowDevMenu = DevMenuManager.shared.getMotionGestureEnabled()
+    threeFingerLongPressEnabled = DevMenuManager.shared.getTouchGestureEnabled()
   }
 
   private func saveDevSetting(key: String, value: Bool) {

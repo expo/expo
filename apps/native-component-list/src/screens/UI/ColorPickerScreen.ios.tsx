@@ -1,15 +1,12 @@
-import { ColorPicker, Host, Switch, VStack } from '@expo/ui/swift-ui';
+import { ColorPicker, Form, Host, Section, Switch, Text, VStack } from '@expo/ui/swift-ui';
 import * as React from 'react';
-import { ScrollView, Text } from 'react-native';
-
-import { Page, Section } from '../../components/Page';
 
 export default function ColorPickerScreen() {
   const [color, setColor] = React.useState<string | null>('blue');
   const [supportsOpacity, setSupportsOpacity] = React.useState<boolean>(false);
   return (
-    <ScrollView>
-      <Page>
+    <Host style={{ flex: 1 }}>
+      <Form>
         <Section title="Color Picker">
           <Text>Color: {color}</Text>
           <Host matchContents>
@@ -23,13 +20,13 @@ export default function ColorPickerScreen() {
                 label="Select a color"
                 selection={color}
                 supportsOpacity={supportsOpacity}
-                onValueChanged={setColor}
+                onSelectionChange={setColor}
               />
             </VStack>
           </Host>
         </Section>
-      </Page>
-    </ScrollView>
+      </Form>
+    </Host>
   );
 }
 

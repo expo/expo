@@ -30,6 +30,8 @@ declare module '@expo/metro/metro-babel-transformer' {
     hasCjsExports?: boolean;
     /** @privateRemarks Augmentation used in babel-preset-expo/src/server-data-loaders-plugin.ts */
     performConstantFolding?: boolean;
+    /** @privateRemarks Augmentation used in babel-preset-expo/src/server-data-loaders-plugin.ts */
+    loaderReference?: string;
   }
 }
 

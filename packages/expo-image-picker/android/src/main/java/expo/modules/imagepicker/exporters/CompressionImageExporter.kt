@@ -10,6 +10,7 @@ import expo.modules.imagepicker.FailedToWriteFileException
 import expo.modules.imagepicker.MissingModuleException
 import expo.modules.imagepicker.copyExifData
 import expo.modules.imagepicker.toBitmapCompressFormat
+import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.kotlin.providers.AppContextProvider
 import kotlinx.coroutines.runInterruptible
 import java.io.ByteArrayOutputStream
@@ -50,7 +51,7 @@ class CompressionImageExporter(
   }
 
   private suspend fun readBitmap(source: Uri): Bitmap = runInterruptible {
-    val loaderResult = appContextProvider.appContext.imageLoader
+    val loaderResult = appContextProvider.appContext.service<ImageLoaderInterface>()
       ?.loadImageForManipulationFromURL(source.toString())
       ?: throw MissingModuleException("ImageLoader")
 

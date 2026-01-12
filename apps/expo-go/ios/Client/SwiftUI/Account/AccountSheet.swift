@@ -1,6 +1,7 @@
 //  Copyright © 2025 650 Industries. All rights reserved.
 
 import SwiftUI
+import UIKit
 
 struct AccountSheet: View {
   @Environment(\.dismiss) private var dismiss
@@ -75,11 +76,12 @@ struct AccountSheet: View {
         }
       }
 
-      Button {
-        viewModel.signOut()
-      }
-      label: {
-        Text("Logout")
+    Button {
+      UIImpactFeedbackGenerator(style: .light).impactOccurred()
+      viewModel.signOut()
+    }
+    label: {
+      Text("Logout")
           .font(.headline)
           .fontWeight(.bold)
           .foregroundColor(.white)
@@ -111,6 +113,7 @@ struct AccountSheet: View {
 
   private var signInButton: some View {
     Button {
+      UIImpactFeedbackGenerator(style: .light).impactOccurred()
       Task {
         await viewModel.signIn()
       }
@@ -130,6 +133,7 @@ struct AccountSheet: View {
 
   private var signUpButton: some View {
     Button {
+      UIImpactFeedbackGenerator(style: .light).impactOccurred()
       Task {
         await viewModel.signUp()
       }
@@ -149,6 +153,7 @@ struct AccountSheet: View {
 
   private func accountRow(account: Account) -> some View {
     Button {
+      UIImpactFeedbackGenerator(style: .light).impactOccurred()
       viewModel.selectAccount(accountId: account.id)
     }
     label: {

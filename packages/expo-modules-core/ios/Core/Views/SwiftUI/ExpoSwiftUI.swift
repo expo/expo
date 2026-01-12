@@ -1,5 +1,9 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+// Re-export Combine so that consumers building ExpoModulesCore as a framework
+// don't need to explicitly import Combine when using ObservableObject types.
+@_exported import Combine
+
 /**
  A namespace for Expo APIs that deal with SwiftUI.
  */

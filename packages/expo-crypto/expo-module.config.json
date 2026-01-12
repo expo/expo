@@ -1,9 +1,12 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
-    "modules": ["CryptoModule"]
+    "modules": ["CryptoModule", "AesCryptoModule"]
   },
   "android": {
-    "modules": ["expo.modules.crypto.CryptoModule"]
+    "modules": [
+      "expo.modules.crypto.CryptoModule",
+      "expo.modules.crypto.aes.AesCryptoModule"
+    ]
   }
 }

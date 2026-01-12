@@ -15,6 +15,10 @@ class AuthenticationService: ObservableObject {
   private let selectedAccountKey = "expo-selected-account-id"
   private let presentationContext = ExpoGoAuthPresentationContext()
 
+  var sessionSecret: String? {
+    UserDefaults.standard.string(forKey: sessionKey)
+  }
+
   var selectedAccount: Account? {
     guard let userData = user,
           let selectedAccountId = selectedAccountId else {

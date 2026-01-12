@@ -3,16 +3,23 @@
 import SwiftUI
 import UIKit
 
+enum HomeTab: Hashable {
+  case home
+  case diagnostics
+  case settings
+}
+
 public struct HomeRootView: View {
   @ObservedObject var viewModel: HomeViewModel
   @State private var showingUserProfile = false
+  @State private var selectedTab: HomeTab = .home
 
   init(viewModel: HomeViewModel) {
     self.viewModel = viewModel
   }
 
   public var body: some View {
-    TabView {
+    TabView(selection: $selectedTab) {
       NavigationView {
         HomeTabView()
       }
@@ -20,6 +27,7 @@ public struct HomeRootView: View {
         Image(systemName: "house.fill")
         Text("Home")
       }
+      .tag(HomeTab.home)
       .navigationBarHidden(true)
 
       NavigationView {
@@ -29,12 +37,14 @@ public struct HomeRootView: View {
         Image(systemName: "stethoscope")
         Text("Diagnostics")
       }
+      .tag(HomeTab.diagnostics)
 
-      SettingsTabView()
+      SettingsTabView(selectedTab: $selectedTab)
         .tabItem {
           Image(systemName: "gearshape")
           Text("Settings")
         }
+        .tag(HomeTab.settings)
     }
     .environmentObject(viewModel)
     .environmentObject(ExpoGoNavigation(showingUserProfile: $showingUserProfile))

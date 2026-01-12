@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct DevServersSection: View {
   @EnvironmentObject var viewModel: HomeViewModel
@@ -20,7 +21,14 @@ struct DevServersSection: View {
         if !viewModel.developmentServers.isEmpty {
           ForEach(viewModel.developmentServers) { server in
             DevServerRow(server: server) {
-              viewModel.openApp(url: server.url)
+              UIImpactFeedbackGenerator(style: .light).impactOccurred()
+              let normalizedUrl = normalizeDevServerUrl(server.url)
+              viewModel.addToRecentlyOpened(
+                url: normalizedUrl,
+                name: server.description,
+                iconUrl: server.iconUrl
+              )
+              viewModel.openApp(url: normalizedUrl)
             }
           }
         }
@@ -149,5 +157,12 @@ struct DevServersSection: View {
     troubleshootingTitle = "Troubleshooting"
     troubleshootingMessage = message
     showingTroubleshootingAlert = true
+  }
+
+  private func normalizeDevServerUrl(_ urlString: String) -> String {
+    guard let url = URL(string: urlString) else {
+      return urlString
+    }
+    return toExpURLString(url)
   }
 }
