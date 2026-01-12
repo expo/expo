@@ -9,6 +9,7 @@ import {
   Text,
   Toggle,
   VStack,
+  Group,
 } from '@expo/ui/swift-ui';
 import {
   frame,
@@ -127,13 +128,13 @@ export default function BottomSheetScreen() {
 
       {/* Basic Sheet */}
       <BottomSheet isPresented={showBasic} onIsPresentedChange={setShowBasic}>
-        <BottomSheet.Content modifiers={[presentationDetents(['medium', 'large'])]}>
+        <Group modifiers={[presentationDetents(['medium', 'large'])]}>
           <VStack modifiers={[padding({ all: 20 })]}>
             <Text>Basic Bottom Sheet</Text>
             <Text color="secondaryLabel">Swipe down or tap outside to dismiss</Text>
             <Button label="Close" onPress={() => setShowBasic(false)} />
           </VStack>
-        </BottomSheet.Content>
+        </Group>
       </BottomSheet>
 
       {/* Fits Content Sheet */}
@@ -141,18 +142,18 @@ export default function BottomSheetScreen() {
         isPresented={showFitsContent}
         onIsPresentedChange={setShowFitsContent}
         fitToContents>
-        <BottomSheet.Content>
+        <Group>
           <VStack modifiers={[padding({ all: 20 })]}>
             <Text>Fits Content Sheet</Text>
             <Text color="secondaryLabel">This sheet sizes to fit its content automatically</Text>
             <Button label="Close" onPress={() => setShowFitsContent(false)} />
           </VStack>
-        </BottomSheet.Content>
+        </Group>
       </BottomSheet>
 
       {/* Configured Sheet */}
       <BottomSheet isPresented={showConfigured} onIsPresentedChange={setShowConfigured}>
-        <BottomSheet.Content modifiers={configuredModifiers}>
+        <Group modifiers={configuredModifiers}>
           <VStack modifiers={[padding({ all: 20 }), frame({ minHeight: 200 })]}>
             <Text>Configured Sheet</Text>
             <Text color="secondaryLabel">
@@ -165,12 +166,12 @@ export default function BottomSheetScreen() {
             <Text color="secondaryLabel">Dismiss: {dismissDisabled ? 'disabled' : 'enabled'}</Text>
             <Button label="Close" onPress={() => setShowConfigured(false)} />
           </VStack>
-        </BottomSheet.Content>
+        </Group>
       </BottomSheet>
 
       {/* React Native Content Sheet */}
       <BottomSheet isPresented={showRNContent} onIsPresentedChange={setShowRNContent} fitToContents>
-        <BottomSheet.Content modifiers={[presentationDragIndicator('visible')]}>
+        <Group modifiers={[presentationDragIndicator('visible')]}>
           <RNHostView matchContents>
             <View style={{ padding: 24 }}>
               <RNText style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
@@ -200,14 +201,14 @@ export default function BottomSheetScreen() {
               </Pressable>
             </View>
           </RNHostView>
-        </BottomSheet.Content>
+        </Group>
       </BottomSheet>
 
       {/* React Native Content Sheet with flex 1 children */}
       <BottomSheet
         isPresented={showRNContentWithFlex1}
         onIsPresentedChange={setShowRNContentWithFlex1}>
-        <BottomSheet.Content
+        <Group
           modifiers={[
             presentationDetents(['medium', 'large']),
             presentationDragIndicator('visible'),
@@ -219,7 +220,7 @@ export default function BottomSheetScreen() {
               </RNText>
             </View>
           </RNHostView>
-        </BottomSheet.Content>
+        </Group>
       </BottomSheet>
     </Host>
   );

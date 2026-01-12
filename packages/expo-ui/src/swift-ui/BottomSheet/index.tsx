@@ -8,11 +8,11 @@ import { type CommonViewModifierProps } from '../types';
 export type BottomSheetProps = {
   /**
    * The children of the `BottomSheet` component.
-   * Use `BottomSheet.Content` to wrap your content and apply presentation modifiers
+   * Use `Group` to wrap your content and apply presentation modifiers
    * like `presentationDetents`, `presentationDragIndicator`,
    * `presentationBackgroundInteraction`, and `interactiveDismissDisabled`.
    */
-  children: any;
+  children: React.ReactNode;
   /**
    * Whether the `BottomSheet` is presented.
    */
@@ -29,13 +29,6 @@ export type BottomSheetProps = {
   fitToContents?: boolean;
 } & CommonViewModifierProps;
 
-export type BottomSheetContentProps = {
-  /**
-   * The content to display inside the bottom sheet.
-   */
-  children: React.ReactNode;
-} & CommonViewModifierProps;
-
 type NativeBottomSheetProps = Omit<BottomSheetProps, 'onIsPresentedChange'> & {
   onIsPresentedChange: (event: NativeSyntheticEvent<{ isPresented: boolean }>) => void;
 };
@@ -43,11 +36,6 @@ type NativeBottomSheetProps = Omit<BottomSheetProps, 'onIsPresentedChange'> & {
 const BottomSheetNativeView: ComponentType<NativeBottomSheetProps> = requireNativeView(
   'ExpoUI',
   'BottomSheetView'
-);
-
-const BottomSheetContentNativeView: ComponentType<BottomSheetContentProps> = requireNativeView(
-  'ExpoUI',
-  'BottomSheetContentView'
 );
 
 function transformBottomSheetProps(props: BottomSheetProps): NativeBottomSheetProps {
@@ -63,28 +51,10 @@ function transformBottomSheetProps(props: BottomSheetProps): NativeBottomSheetPr
 }
 
 /**
- * Content container for the bottom sheet that supports presentation modifiers.
- * Use this to apply modifiers like `presentationDetents`, `presentationDragIndicator`,
- * `presentationBackgroundInteraction`, and `interactiveDismissDisabled`.
- */
-function Content(props: BottomSheetContentProps) {
-  const { modifiers, ...restProps } = props;
-  return (
-    <BottomSheetContentNativeView
-      modifiers={modifiers}
-      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      {...restProps}
-    />
-  );
-}
-
-/**
  * `BottomSheet` presents content from the bottom of the screen.
  */
 function BottomSheet(props: BottomSheetProps) {
   return <BottomSheetNativeView {...transformBottomSheetProps(props)} />;
 }
-
-BottomSheet.Content = Content;
 
 export { BottomSheet };

@@ -2,11 +2,11 @@ import { type CommonViewModifierProps } from '../types';
 export type BottomSheetProps = {
     /**
      * The children of the `BottomSheet` component.
-     * Use `BottomSheet.Content` to wrap your content and apply presentation modifiers
+     * Use `Group` to wrap your content and apply presentation modifiers
      * like `presentationDetents`, `presentationDragIndicator`,
      * `presentationBackgroundInteraction`, and `interactiveDismissDisabled`.
      */
-    children: any;
+    children: React.ReactNode;
     /**
      * Whether the `BottomSheet` is presented.
      */
@@ -22,18 +22,9 @@ export type BottomSheetProps = {
      */
     fitToContents?: boolean;
 } & CommonViewModifierProps;
-export type BottomSheetContentProps = {
-    /**
-     * The content to display inside the bottom sheet.
-     */
-    children: React.ReactNode;
-} & CommonViewModifierProps;
 /**
  * `BottomSheet` presents content from the bottom of the screen.
  */
 declare function BottomSheet(props: BottomSheetProps): import("react").JSX.Element;
-declare namespace BottomSheet {
-    var Content: (props: BottomSheetContentProps) => import("react").JSX.Element;
-}
 export { BottomSheet };
 //# sourceMappingURL=index.d.ts.map

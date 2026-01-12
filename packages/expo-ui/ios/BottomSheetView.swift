@@ -9,17 +9,6 @@ final class BottomSheetProps: UIBaseViewProps {
   var onIsPresentedChange = EventDispatcher()
 }
 
-final class BottomSheetContentProps: UIBaseViewProps {}
-
-struct BottomSheetContentView: ExpoSwiftUI.View {
-  @ObservedObject var props: BottomSheetContentProps
-
-  var body: some View {
-    Children()
-      .modifier(UIBaseViewModifier(props: props))
-  }
-}
-
 struct SizePreferenceKey: PreferenceKey {
   static var defaultValue: CGSize?
 
