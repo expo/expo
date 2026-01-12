@@ -19,7 +19,7 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
         continue;
       }
 
-      const inputSchema = createMCPDevToolsExtensionSchema(plugin);
+      const schema = createMCPDevToolsExtensionSchema(plugin);
 
       debug(
         `Installing MCP CLI extension for plugin: ${plugin.packageName} - found ${commands.length} commands`
@@ -27,7 +27,11 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
 
       mcpServer.registerTool(
         plugin.packageName,
-        { title: plugin.packageName, description: plugin.description, inputSchema },
+        {
+          title: plugin.packageName,
+          description: plugin.description,
+          inputSchema: { parameters: schema },
+        },
         async ({ parameters }) => {
           try {
             const { command, ...args } = parameters;

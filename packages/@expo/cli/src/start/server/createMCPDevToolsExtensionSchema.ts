@@ -105,7 +105,5 @@ export function createMCPDevToolsExtensionSchema(plugin: DevToolsPlugin) {
     })
     .strict(); // .strict() adds additionalProperties: false
 
-  return {
-    parameters: schema,
-  };
+  return schema;
 }
