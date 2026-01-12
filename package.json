@@ -20,7 +20,7 @@
     ]
   },
   "resolutions": {
-    "react": "19.2.0",
+    "react": "19.2.3",
     "react-dom": "19.2.0",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.27.0",

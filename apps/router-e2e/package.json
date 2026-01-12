@@ -64,8 +64,8 @@
     "expo-sqlite": "~16.0.8",
     "expo-symbols": "~1.0.7",
     "jose": "^5",
-    "react": "19.2.0",
-    "react-native": "0.83.1",
+    "react": "19.2.3",
+    "react-native": "0.84.0-rc.0",
     "react-native-safe-area-context": "5.6.2",
     "react-native-screens": "4.19.0",
     "react-native-webview": "13.16.0"
