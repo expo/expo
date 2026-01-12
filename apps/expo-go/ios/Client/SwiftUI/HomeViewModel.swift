@@ -12,7 +12,6 @@ class HomeViewModel: ObservableObject {
 
   @Published var recentlyOpenedApps: [RecentlyOpenedApp] = []
 
-  @Published var showingAccountSheet = false
   @Published var showingFeedbackForm = false
   @Published var errorToShow: ErrorInfo?
   @Published var isNetworkAvailable = true
@@ -177,26 +176,6 @@ class HomeViewModel: ObservableObject {
     openAppViaBridge(url: url)
   }
 
-  func extractAppName(from url: String) -> String {
-    guard let urlComponents = URL(string: url) else {
-      return url
-    }
-
-    let pathComponents = urlComponents.path.components(separatedBy: "/").filter { !$0.isEmpty }
-    if let lastComponent = pathComponents.last, !lastComponent.isEmpty, lastComponent != "@" {
-      return lastComponent
-    }
-
-    if let host = urlComponents.host {
-      if let port = urlComponents.port {
-        return "\(host):\(port)"
-      }
-      return host
-    }
-
-    return url
-  }
-
   func updateShakeGesture(_ enabled: Bool) {
     settingsManager.updateShakeGesture(enabled)
   }
@@ -209,20 +188,12 @@ class HomeViewModel: ObservableObject {
     settingsManager.updateTheme(themeIndex)
   }
 
-  func showAccountSheet() {
-    showingAccountSheet = true
-  }
-
   func showFeedbackForm() {
     showingFeedbackForm = true
   }
 
   func showError(_ message: String, apiError: APIError? = nil) {
     errorToShow = ErrorInfo(message: message, apiError: apiError)
-  }
-
-  func clearError() {
-    errorToShow = nil
   }
 
   private func setupSubscriptions() {
