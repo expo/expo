@@ -22,39 +22,27 @@ object ReactNativeViewFactory {
       launchOptions: Bundle? = null,
   ): FrameLayout {
     val reactHost = ReactNativeHostManager.shared.getReactHost()
-    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      val reactDelegate = ReactDelegate(activity, reactHost!!, rootComponent.key, launchOptions)
+    val reactDelegate = ReactDelegate(activity, reactHost!!, rootComponent.key, launchOptions)
 
-      activity.lifecycle.addObserver(
-          object : DefaultLifecycleObserver {
-            override fun onResume(owner: LifecycleOwner) {
-              reactDelegate.onHostResume()
-            }
-
-            override fun onPause(owner: LifecycleOwner) {
-              reactDelegate.onHostPause()
-            }
-
-            override fun onDestroy(owner: LifecycleOwner) {
-              reactDelegate.onHostDestroy()
-              owner.lifecycle.removeObserver(this) // Cleanup to avoid leaks
-            }
+    activity.lifecycle.addObserver(
+        object : DefaultLifecycleObserver {
+          override fun onResume(owner: LifecycleOwner) {
+            reactDelegate.onHostResume()
           }
-      )
 
-      reactDelegate.loadApp()
-      return reactDelegate.reactRootView!!
-    }
+          override fun onPause(owner: LifecycleOwner) {
+            reactDelegate.onHostPause()
+          }
 
-    val instanceManager: ReactInstanceManager? =
-        ReactNativeHostManager.shared.getReactNativeHost()?.reactInstanceManager
-    val reactView = ReactRootView(context)
-    reactView.startReactApplication(
-        instanceManager,
-        rootComponent.key,
-        launchOptions,
+          override fun onDestroy(owner: LifecycleOwner) {
+            reactDelegate.onHostDestroy()
+            owner.lifecycle.removeObserver(this) // Cleanup to avoid leaks
+          }
+        }
     )
 
-    return reactView
+    reactDelegate.loadApp()
+    return reactDelegate.reactRootView!!
+
   }
 }

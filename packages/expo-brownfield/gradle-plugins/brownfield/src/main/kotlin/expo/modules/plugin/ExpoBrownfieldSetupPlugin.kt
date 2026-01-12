@@ -33,7 +33,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
     project.configurations.configureEach { config ->
       config.resolutionStrategy {
         it.force("com.facebook.react:react-android:$rnVersion")
-        it.force("com.facebook.react:hermes-android:$rnVersion")
+        it.force("com.facebook.hermes:hermes-android:0.14.0")
       }
     }
   }
@@ -54,8 +54,8 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
 
     libraryExtension.sourceSets.getByName("release").apply {
       jniLibs.srcDirs("libsRelease")
-      assets.srcDirs("$appBuildDir/generated/assets/createBundleReleaseJsAndAssets")
-      res.srcDirs("$appBuildDir/generated/res/createBundleReleaseJsAndAssets")
+      assets.srcDirs("$appBuildDir/generated/assets/react/release")
+      res.srcDirs("$appBuildDir/generated/res/react/release")
     }
 
     libraryExtension.sourceSets.getByName("debug").apply { jniLibs.srcDirs("libsDebug") }
@@ -149,7 +149,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
 
     val fromDir =
       appProject.layout.buildDirectory.dir(
-        "intermediates/stripped_native_libs/${buildType.toLowerCase()}/strip${buildType}DebugSymbols/out/lib"
+        "intermediates/stripped_native_libs/${buildType.lowercase()}/strip${buildType}DebugSymbols/out/lib"
       )
     val intoDir = brownfieldProject.rootProject.file("${brownfieldProject.name}/libs${buildType}")
 

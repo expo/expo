@@ -77,7 +77,7 @@ internal fun setupRepositories(
  * com.facebook.react:react-native is deprecated and has to be stripped similarly to what React
  * Native Gradle plugin does.
  *
- * Versions for com.facebook.react:react-android and com.facebook.react:hermes-android are set to
+ * Versions for com.facebook.react:react-android and com.facebook.hermes:hermes-android are set to
  * the same version as the React Native version of the npm project.
  *
  * @param project The project to remove react-native dependency from.
@@ -153,10 +153,14 @@ internal fun createSetReactNativeVersionModuleTask(
         val moduleJson = parseModuleJson(moduleFile)
         moduleJson?.dependencies()?.forEach { dependency ->
           if (
-            dependency["group"] == "com.facebook.react" &&
-              (dependency["module"] == "react-android" || dependency["module"] == "hermes-android")
+            (dependency["group"] == "com.facebook.react" && dependency["module"] == "react-android")
           ) {
             dependency["version"] = mapOf("requires" to rnVersion)
+          }
+          if (
+            (dependency["group"] == "com.facebook.hermes" && dependency["module"] == "hermes-android")
+          ) {
+            dependency["version"] = mapOf("requires" to "0.14.0")
           }
         }
 
