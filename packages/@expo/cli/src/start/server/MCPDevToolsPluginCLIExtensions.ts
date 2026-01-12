@@ -24,7 +24,6 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
       debug(
         `Installing MCP CLI extension for plugin: ${plugin.packageName} - found ${commands.length} commands`
       );
-      const devServerManagerRef = new WeakRef(devServerManager);
 
       mcpServer.registerTool(
         plugin.packageName,
@@ -37,10 +36,6 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
             const parameters = cliCommandArgs['parameters'];
             if (!('command' in parameters)) {
               throw new Error('No command provided');
-            }
-            const devServerManager = devServerManagerRef.deref();
-            if (!devServerManager) {
-              throw new Error('DevServerManager has been garbage collected');
             }
             const { command, ...args } = parameters;
 
