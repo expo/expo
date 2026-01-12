@@ -1,4 +1,3 @@
-import { View, Text } from 'react-native';
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
 
