@@ -8,7 +8,7 @@ export declare const shapes: {
         };
     }) => {
         cornerRadius: number | undefined;
-        roundedCornerStyle: "circular" | "continuous" | undefined;
+        roundedCornerStyle: "continuous" | "circular" | undefined;
         cornerSize: {
             width: number;
             height: number;
@@ -18,7 +18,7 @@ export declare const shapes: {
     capsule: (params?: {
         roundedCornerStyle?: "continuous" | "circular";
     }) => {
-        roundedCornerStyle: "circular" | "continuous" | undefined;
+        roundedCornerStyle: "continuous" | "circular" | undefined;
         shape: string;
     };
     rectangle: () => {
