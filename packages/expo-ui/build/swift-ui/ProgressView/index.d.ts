@@ -16,7 +16,7 @@ export type ProgressViewProps = {
      */
     timerInterval?: ClosedRangeDate;
     /**
-     * A Boolean value that determines whether the view empties or fills as time passes. If true (the default), the view empties.
+     * A Boolean value that determines whether the view empties or fills as time passes. If `true`, which is the default, the view empties.
      * @default true
      * @platform ios 16.0+
      * @platform tvos 16.0+
