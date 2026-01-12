@@ -6,18 +6,14 @@ public class DevLauncherModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoDevLauncher")
 
-    AsyncFunction("loadApp") { (url: URL, projectUrl: URL?, promise: Promise) in
+    AsyncFunction("loadApp") { (url: URL, promise: Promise) in
       if url.scheme == nil {
-        throw DevLauncherInvalidURLException()
-      }
-
-      if let projectUrl, projectUrl.scheme == nil {
         throw DevLauncherInvalidURLException()
       }
 
       EXDevLauncherController.sharedInstance().loadApp(
         url,
-        withProjectUrl: projectUrl,
+        withProjectUrl: nil,
         onSuccess: {
           promise.resolve(true)
         },

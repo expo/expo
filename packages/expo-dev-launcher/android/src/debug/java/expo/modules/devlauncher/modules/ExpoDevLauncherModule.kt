@@ -12,15 +12,9 @@ class ExpoDevLauncherModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoDevLauncher")
 
-    AsyncFunction("loadApp") { url: Uri, projectUrl: Uri? ->
+    AsyncFunction("loadApp") { url: Uri ->
       if (url.scheme.isNullOrEmpty()) {
         throw DevLauncherInvalidURLException()
-      }
-
-      projectUrl?.run {
-        if (this.scheme.isNullOrEmpty()) {
-          throw DevLauncherInvalidProjectURLException()
-        }
       }
 
       val devLauncherController =
@@ -29,7 +23,7 @@ class ExpoDevLauncherModule : Module() {
 
       devLauncherController.coroutineScope.launch {
         try {
-          devLauncherController.loadApp(url, projectUrl, currentActivity)
+          devLauncherController.loadApp(url, null, currentActivity)
         } catch (e: Exception) {
           Log.w("ExpoDevLauncher", "Failed to load app", DevLauncherLoadAppException(e))
         }

@@ -8,12 +8,6 @@ final class DevLauncherInvalidURLException: Exception, @unchecked Sendable {
   }
 }
 
-final class DevLauncherInvalidProjectURLException: Exception, @unchecked Sendable {
-  override var reason: String {
-    "Invalid projectUrl provided to loadApp"
-  }
-}
-
 final class DevLauncherLoadAppException: GenericException<String>, @unchecked Sendable {
   override var reason: String {
     "Failed to load app: \(param)"
