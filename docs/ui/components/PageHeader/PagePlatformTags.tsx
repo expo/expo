@@ -1,4 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
+import { InfoCircleDuotoneIcon } from '@expo/styleguide-icons/duotone/InfoCircleDuotoneIcon';
 
 import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
 import { isClientPlatformTag } from '~/ui/components/Tag/helpers';
@@ -33,7 +34,16 @@ export function PagePlatformTags({ platforms, className }: Props) {
           <Tooltip.Root key={text} delayDuration={300}>
             <Tooltip.Trigger asChild>
               <span className="mr-2 inline-flex last:mr-0">
-                <PlatformTag platform={text} className="rounded-full px-2.5 py-1.5" />
+                <PlatformTag
+                  platform={text}
+                  className="mr-0 rounded-full px-2.5 py-1.5"
+                  suffix={
+                    <InfoCircleDuotoneIcon
+                      aria-hidden="true"
+                      className="icon-2xs text-palette-gray10"
+                    />
+                  }
+                />
               </span>
             </Tooltip.Trigger>
             <Tooltip.Content side="bottom" align="start" className="max-w-[260px]">

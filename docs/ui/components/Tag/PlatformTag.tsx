@@ -1,4 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
+import type { ReactNode } from 'react';
 
 import { PlatformName } from '~/types/common';
 import { formatName, getPlatformName, getTagClasses } from '~/ui/components/Tag/helpers';
@@ -8,9 +9,10 @@ import { TagProps } from './types';
 
 type PlatformTagProps = Omit<TagProps, 'name'> & {
   platform: PlatformName;
+  suffix?: ReactNode;
 };
 
-export const PlatformTag = ({ platform, className, ...rest }: PlatformTagProps) => {
+export const PlatformTag = ({ platform, className, suffix, ...rest }: PlatformTagProps) => {
   const platformName = getPlatformName(platform);
 
   return (
@@ -28,6 +30,7 @@ export const PlatformTag = ({ platform, className, ...rest }: PlatformTagProps) 
       <span className={mergeClasses('whitespace-nowrap !text-3xs font-normal !leading-none')}>
         {formatName(platform)}
       </span>
+      {suffix}
     </div>
   );
 };
