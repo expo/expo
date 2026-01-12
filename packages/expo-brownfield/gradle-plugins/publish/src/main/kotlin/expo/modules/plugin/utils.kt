@@ -210,10 +210,14 @@ internal fun removeReactNativeDependencyPom(xml: XmlProvider) {
 internal fun setReactNativeVersionPom(xml: XmlProvider, rnVersion: String) {
   xml.dependencyNodes().forEach { dependency ->
     if (
-      dependency.groupId() == "com.facebook.react" &&
-        (dependency.artifactId() == "react-android" || dependency.artifactId() == "hermes-android")
+      dependency.groupId() == "com.facebook.react" && dependency.artifactId() == "react-android"
     ) {
       dependency.setVersion(rnVersion)
+    }
+    if (
+      dependency.groupId() == "com.facebook.hermes" && dependency.artifactId() == "hermes-android"
+    ) {
+      dependency.setVersion("0.14.0")
     }
   }
 }
