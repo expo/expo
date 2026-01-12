@@ -7,6 +7,16 @@ jest.mock('../../../../../utils/editor');
 describe(createMetroMiddleware, () => {
   const { metro, server, projectRoot } = withMetroServer();
 
+  it('does not compress know non compressible content types like event stream', async () => {
+    metro.middleware.use('/thisiseventstream', (_req, res) => {
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.end(':OK\n\n');
+    });
+    const response = await server.fetch('/thisiseventstream');
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Encoding')).toBeUndefined();
+  });
+
   it('disables cache on all requests', async () => {
     // Register an endpoint to capture the response headers
     metro.middleware.use('/thisisatest', (_req, res) => res.end('OK'));
