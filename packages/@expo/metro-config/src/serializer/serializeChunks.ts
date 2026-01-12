@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { MetroConfig, AssetData } from '@expo/metro/metro';
-import { sourceMapString } from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
 import type {
   MixedOutput,
   Module,
@@ -19,19 +18,60 @@ import assert from 'assert';
 import path from 'path';
 
 import { stringToUUID } from './debugId';
-import { buildHermesBundleAsync } from './exportHermes';
 import { getExportPathForDependencyWithOptions } from './exportPath';
-import {
-  ExpoSerializerOptions,
-  baseJSBundleWithDependencies,
-  getBaseUrlOption,
-  getPlatformOption,
-} from './fork/baseJSBundle';
+import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
 import { SerialAsset } from './serializerAssets';
 import { SerializerConfigOptions } from './withExpoSerializers';
 import getMetroAssets from '../transform-worker/getAssets';
 import { toPosixPath } from '../utils/filePath';
+
+// Lazy-loaded to avoid pulling in metro-source-map at startup
+let _buildHermesBundleAsync: typeof import('./exportHermes').buildHermesBundleAsync;
+function getBuildHermesBundleAsync() {
+  if (!_buildHermesBundleAsync) {
+    _buildHermesBundleAsync = require('./exportHermes').buildHermesBundleAsync;
+  }
+  return _buildHermesBundleAsync;
+}
+
+// Lazy-loaded to avoid pulling in metro's getAppendScripts -> sourceMapString -> @babel/traverse at startup
+let _sourceMapString: typeof import('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
+function getSourceMapString() {
+  if (!_sourceMapString) {
+    _sourceMapString =
+      require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
+  }
+  return _sourceMapString;
+}
+
+let _baseJSBundleWithDependencies: typeof import('./fork/baseJSBundle').baseJSBundleWithDependencies;
+function getBaseJSBundleWithDependencies() {
+  if (!_baseJSBundleWithDependencies) {
+    _baseJSBundleWithDependencies = require('./fork/baseJSBundle').baseJSBundleWithDependencies;
+  }
+  return _baseJSBundleWithDependencies;
+}
+
+let _getBaseUrlOption: typeof import('./fork/baseJSBundle').getBaseUrlOption;
+function getBaseUrlOption(
+  ...args: Parameters<typeof import('./fork/baseJSBundle').getBaseUrlOption>
+) {
+  if (!_getBaseUrlOption) {
+    _getBaseUrlOption = require('./fork/baseJSBundle').getBaseUrlOption;
+  }
+  return _getBaseUrlOption(...args);
+}
+
+let _getPlatformOption: typeof import('./fork/baseJSBundle').getPlatformOption;
+function getPlatformOption(
+  ...args: Parameters<typeof import('./fork/baseJSBundle').getPlatformOption>
+) {
+  if (!_getPlatformOption) {
+    _getPlatformOption = require('./fork/baseJSBundle').getPlatformOption;
+  }
+  return _getPlatformOption(...args);
+}
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;
@@ -267,7 +307,9 @@ export class Chunk {
 
   private serializeToCodeWithTemplates(
     serializerConfig: Partial<SerializerConfigT>,
-    options: Partial<Parameters<typeof baseJSBundleWithDependencies>[3]> & {
+    options: Partial<
+      Parameters<typeof import('./fork/baseJSBundle').baseJSBundleWithDependencies>[3]
+    > & {
       preModules?: Set<Module>;
     } = {}
   ) {
@@ -278,7 +320,7 @@ export class Chunk {
     const preModules = [...(options.preModules ?? this.preModules).values()];
     const dependencies = [...this.deps];
 
-    const jsSplitBundle = baseJSBundleWithDependencies(entryFile, preModules, dependencies, {
+    const jsSplitBundle = getBaseJSBundleWithDependencies()(entryFile, preModules, dependencies, {
       ...this.options,
       runBeforeMainModule:
         serializerConfig?.getModulesRunBeforeMainModule?.(
@@ -502,6 +544,23 @@ export class Chunk {
               .flat()
           ),
         ].filter((value) => typeof value === 'string') as string[],
+        loaderReferences: [
+          ...new Set(
+            [...this.deps]
+              .map((module) => {
+                return module.output.map((output) => {
+                  if (
+                    'loaderReference' in output.data &&
+                    typeof output.data.loaderReference === 'string'
+                  ) {
+                    return output.data.loaderReference;
+                  }
+                  return undefined;
+                });
+              })
+              .flat()
+          ),
+        ].filter((value) => typeof value === 'string') as string[],
       },
       source: jsCode.code,
     };
@@ -552,7 +611,7 @@ export class Chunk {
 
       // TODO: We may not need to mutate the original source map with a `debugId` when hermes is enabled since we'll have different source maps.
       const sourceMap = mutateSourceMapWithDebugId(
-        sourceMapString(modules, {
+        getSourceMapString()(modules, {
           excludeSource: false,
           ...this.options,
         })
@@ -580,7 +639,7 @@ export class Chunk {
       );
 
       // TODO: Generate hbc for each chunk
-      const hermesBundleOutput = await buildHermesBundleAsync({
+      const hermesBundleOutput = await getBuildHermesBundleAsync()({
         projectRoot: this.options.projectRoot,
         filename: this.name,
         code: adjustedSource,

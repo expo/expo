@@ -105,6 +105,11 @@ export function getIsServer(caller?: any) {
   return caller?.isServer ?? false;
 }
 
+export function getIsLoaderBundle(caller?: any) {
+  assertExpoBabelCaller(caller);
+  return caller?.isLoaderBundle ?? false;
+}
+
 export function getMetroSourceType(caller?: any) {
   assertExpoBabelCaller(caller);
   return caller?.metroSourceType;
