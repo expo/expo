@@ -3,7 +3,7 @@ title: GlassEffect
 description: React components that render a liquid glass effect using iOS's native UIVisualEffectView.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-glass-effect'
 packageName: 'expo-glass-effect'
-platforms: ['ios']
+platforms: ['ios', 'tvos']
 isNew: true
 ---
 
@@ -21,9 +21,9 @@ React components that render native iOS liquid glass effect using [`UIVisualEffe
 
 ### Known issues
 
-The `isInteractive` prop can only be set once on mount and cannot be changed dynamically after the component has been rendered. If you need to toggle interactive behavior, you must remount the component with a different `key`.
+- The `isInteractive` prop can only be set once on mount and cannot be changed dynamically after the component has been rendered. If you need to toggle interactive behavior, you must remount the component with a different `key`.
 
-Avoid `opacity` values less than `1` on `GlassView` or its parent views, as this causes effects to render incorrectly. See [Apple's documentation](https://developer.apple.com/documentation/uikit/uivisualeffectview#Set-the-correct-alpha-value) and [issue #41024](https://github.com/expo/expo/issues/41024).
+- Avoid `opacity` values less than `1` on `GlassView` or its parent views, as this causes effects to render incorrectly. Use the `animate` and `animationDuration` props in `glassEffectStyle` to fade in/out the effect instead. See [Apple's documentation](https://developer.apple.com/documentation/uikit/uivisualeffectview#Set-the-correct-alpha-value) and [GitHub issue #41024](https://github.com/expo/expo/issues/41024) for more information.
 
 ## Usage
 
@@ -188,7 +188,7 @@ export default function CheckLiquidGlass() {
 
 The `isGlassEffectAPIAvailable` function checks whether the Liquid Glass API is available at runtime on the device.
 
-> **Warning** This API was added because some iOS 26 beta versions do not have the Liquid Glass API available, which can lead to crashes. You should check this before using `GlassView` in your app to ensure compatibility. See [issue #40911](https://github.com/expo/expo/issues/40911) for more details.
+> **Warning** This API was added because some iOS 26 beta versions do not have the Liquid Glass API available, which can lead to crashes. You should check this before using `GlassView` in your app to ensure compatibility. See [GitHub issue #40911](https://github.com/expo/expo/issues/40911) for more information.
 
 ```tsx
 import { isGlassEffectAPIAvailable } from 'expo-glass-effect';
