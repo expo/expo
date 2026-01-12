@@ -224,8 +224,10 @@ function getQualifiedRouteComponent(value) {
                 }
             });
         }, [navigation]);
+        const isRouteType = value.type === 'route';
+        const hasRouteKey = !!route?.key;
         return (<Route_1.Route node={value} route={route}>
-        {value.type === 'route' && navigationEvents_1.unstable_navigationEvents.hasAnyListener() && (<AnalyticsListeners navigation={navigation} screenId={route.key}/>)}
+        {isRouteType && hasRouteKey && navigationEvents_1.unstable_navigationEvents.hasAnyListener() && (<AnalyticsListeners navigation={navigation} screenId={route.key}/>)}
         <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
         <zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider route={route}>
           <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
