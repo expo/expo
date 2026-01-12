@@ -120,8 +120,10 @@ export async function loadMetroConfigAsync(
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
+  // NOTE: Allow external tools to override the metro config. This is considered internal and unstable
+  const configPath = env.EXPO_OVERRIDE_METRO_CONFIG ?? undefined;
+  const resolvedConfig = await resolveConfig(configPath, projectRoot);
   const defaultConfig = getDefaultConfig(projectRoot);
-  const resolvedConfig = await resolveConfig(options.config, projectRoot);
 
   let config: ConfigT = resolvedConfig.isEmpty
     ? defaultConfig
