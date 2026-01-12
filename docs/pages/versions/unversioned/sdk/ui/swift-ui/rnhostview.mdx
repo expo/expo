@@ -11,7 +11,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 A component that enables proper layout behavior when React Native views are rendered inside SwiftUI components. It syncs layout information from SwiftUI back to React Native's Yoga layout system by updating the shadow node size.
 
-When React Native views are placed inside SwiftUI components like [`BottomSheet`](bottomsheet) or [`Popover`](popover) or [`HStack`](hstack) etc, the layout systems need to communicate. `RNHostView` bridges this gap:
+When React Native views are placed inside SwiftUI components like [`BottomSheet`](bottomsheet), [`Popover`](popover) or [`HStack`](hstack) and so on, the layout systems need to communicate. `RNHostView` bridges this gap:
 
 - **With `matchContents`**: The shadow node size is set to match the child React Native view's intrinsic size, allowing the SwiftUI parent to size itself based on the React Native content.
 - **Without `matchContents`**: The shadow node size is set to match the parent SwiftUI view's size, allowing the React Native content to fill the available space (useful for `flex: 1` layouts).
