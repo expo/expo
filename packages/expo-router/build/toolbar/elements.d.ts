@@ -296,7 +296,7 @@ export type ToolbarSpacerProps = {
  * @platform ios
  */
 export declare const ToolbarSpacer: (props: ToolbarSpacerProps) => import("react").JSX.Element;
-export interface ToolbarSearchBarPlacementProps {
+export interface ToolbarSearchBarPreferredSlotProps {
     /**
      * Whether to hide the shared background when `sharesBackground` is enabled.
      *
@@ -336,7 +336,7 @@ export interface ToolbarSearchBarPlacementProps {
  * ```tsx
  * <Stack.SearchBar placeholder="Search..." />
  * <Toolbar>
- *   <Toolbar.SearchBarPlacement />
+ *   <Toolbar.SearchBarPreferredSlot />
  *   <Toolbar.Spacer />
  *   <Toolbar.Button icon="mic" />
  * </Toolbar>
@@ -344,7 +344,7 @@ export interface ToolbarSearchBarPlacementProps {
  *
  * @platform ios 26+
  */
-export declare const ToolbarSearchBarPlacement: ({ hidesSharedBackground, hidden, sharesBackground, }: ToolbarSearchBarPlacementProps) => import("react").JSX.Element | null;
+export declare const ToolbarSearchBarPreferredSlot: ({ hidesSharedBackground, hidden, sharesBackground, }: ToolbarSearchBarPreferredSlotProps) => import("react").JSX.Element | null;
 /**
  * Props for the ToolbarView component.
  *

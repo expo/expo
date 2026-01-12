@@ -426,7 +426,7 @@ export const ToolbarSpacer = (props: ToolbarSpacerProps) => {
   );
 };
 
-export interface ToolbarSearchBarPlacementProps {
+export interface ToolbarSearchBarPreferredSlotProps {
   /**
    * Whether to hide the shared background when `sharesBackground` is enabled.
    *
@@ -467,7 +467,7 @@ export interface ToolbarSearchBarPlacementProps {
  * ```tsx
  * <Stack.SearchBar placeholder="Search..." />
  * <Toolbar>
- *   <Toolbar.SearchBarPlacement />
+ *   <Toolbar.SearchBarPreferredSlot />
  *   <Toolbar.Spacer />
  *   <Toolbar.Button icon="mic" />
  * </Toolbar>
@@ -475,11 +475,11 @@ export interface ToolbarSearchBarPlacementProps {
  *
  * @platform ios 26+
  */
-export const ToolbarSearchBarPlacement = ({
+export const ToolbarSearchBarPreferredSlot = ({
   hidesSharedBackground,
   hidden,
   sharesBackground,
-}: ToolbarSearchBarPlacementProps) => {
+}: ToolbarSearchBarPreferredSlotProps) => {
   const id = useId();
   if (process.env.EXPO_OS !== 'ios' || parseInt(String(Platform.Version).split('.')[0], 10) < 26) {
     return null;

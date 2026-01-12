@@ -60,12 +60,11 @@ class RouterToolbarItemView: RouterViewWithLogger {
         return item
       }
       guard let navController = controller.navigationController else {
-        currentBarButtonItem = nil
-        return
+        return item
       }
       guard navController.isNavigationBarHidden == false else {
         logger?.warn(
-          "[expo-router] Toolbar.SearchBarPlacement should only be used when stack header is shown."
+          "[expo-router] Toolbar.SearchBarPreferredSlot should only be used when stack header is shown."
         )
         return item
       }

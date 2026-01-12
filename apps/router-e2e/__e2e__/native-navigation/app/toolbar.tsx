@@ -269,7 +269,7 @@ export default function ToolbarScreen() {
         <Toolbar.Spacer />
 
         {/* Search bar */}
-        <Toolbar.SearchBarPlacement
+        <Toolbar.SearchBarPreferredSlot
           hidden={!showSearchBar}
           sharesBackground={sharesBackgroundSearchBar}
           hidesSharedBackground={hidesSharedBackgroundSearchBar}

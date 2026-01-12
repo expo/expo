@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ToolbarHost = exports.ToolbarView = exports.ToolbarSearchBarPlacement = exports.ToolbarSpacer = exports.ToolbarButton = exports.ToolbarMenuAction = exports.ToolbarMenu = void 0;
+exports.ToolbarHost = exports.ToolbarView = exports.ToolbarSearchBarPreferredSlot = exports.ToolbarSpacer = exports.ToolbarButton = exports.ToolbarMenuAction = exports.ToolbarMenu = void 0;
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const native_1 = require("./native");
@@ -125,7 +125,7 @@ exports.ToolbarSpacer = ToolbarSpacer;
  * ```tsx
  * <Stack.SearchBar placeholder="Search..." />
  * <Toolbar>
- *   <Toolbar.SearchBarPlacement />
+ *   <Toolbar.SearchBarPreferredSlot />
  *   <Toolbar.Spacer />
  *   <Toolbar.Button icon="mic" />
  * </Toolbar>
@@ -133,7 +133,7 @@ exports.ToolbarSpacer = ToolbarSpacer;
  *
  * @platform ios 26+
  */
-const ToolbarSearchBarPlacement = ({ hidesSharedBackground, hidden, sharesBackground, }) => {
+const ToolbarSearchBarPreferredSlot = ({ hidesSharedBackground, hidden, sharesBackground, }) => {
     const id = (0, react_1.useId)();
     if (process.env.EXPO_OS !== 'ios' || parseInt(String(react_native_1.Platform.Version).split('.')[0], 10) < 26) {
         return null;
@@ -143,7 +143,7 @@ const ToolbarSearchBarPlacement = ({ hidesSharedBackground, hidden, sharesBackgr
     }
     return (<native_1.RouterToolbarItem hidesSharedBackground={hidesSharedBackground} identifier={id} sharesBackground={sharesBackground} type="searchBar"/>);
 };
-exports.ToolbarSearchBarPlacement = ToolbarSearchBarPlacement;
+exports.ToolbarSearchBarPreferredSlot = ToolbarSearchBarPreferredSlot;
 /**
  * A custom view component for the toolbar that can contain any React elements.
  * Useful for embedding custom components.

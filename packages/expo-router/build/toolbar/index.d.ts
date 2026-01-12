@@ -1,4 +1,4 @@
-import { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarSearchBarPlacement, ToolbarView } from './elements';
+import { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarSearchBarPreferredSlot, ToolbarView } from './elements';
 /**
  * A component that provides a [bottom toolbar](https://developer.apple.com/design/human-interface-guidelines/toolbars).
  *
@@ -34,9 +34,9 @@ export declare const Toolbar: ((props: import("./elements").ToolbarProps) => imp
     MenuAction: typeof import("..").LinkMenuAction;
     Button: (props: import("./elements").ToolbarButtonProps) => import("react").JSX.Element;
     Spacer: (props: import("./elements").ToolbarSpacerProps) => import("react").JSX.Element;
-    SearchBarPlacement: ({ hidesSharedBackground, hidden, sharesBackground, }: import("./elements").ToolbarSearchBarPlacementProps) => import("react").JSX.Element | null;
+    SearchBarPreferredSlot: ({ hidesSharedBackground, hidden, sharesBackground, }: import("./elements").ToolbarSearchBarPreferredSlotProps) => import("react").JSX.Element | null;
     View: ({ children, hidden, hidesSharedBackground, separateBackground, }: import("./elements").ToolbarViewProps) => import("react").JSX.Element;
 };
-export { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarSearchBarPlacement, ToolbarView, };
-export type { ToolbarProps, ToolbarMenuProps, ToolbarMenuActionProps, ToolbarButtonProps, ToolbarSpacerProps, ToolbarSearchBarPlacementProps, ToolbarViewProps as ToolbarCustomViewProps, } from './elements';
+export { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarSearchBarPreferredSlot, ToolbarView, };
+export type { ToolbarProps, ToolbarMenuProps, ToolbarMenuActionProps, ToolbarButtonProps, ToolbarSpacerProps, ToolbarSearchBarPreferredSlotProps, ToolbarViewProps as ToolbarCustomViewProps, } from './elements';
 //# sourceMappingURL=index.d.ts.map
