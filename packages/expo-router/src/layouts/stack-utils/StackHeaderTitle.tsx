@@ -40,7 +40,9 @@ export function appendStackHeaderTitlePropsToOptions(
     ...options,
     title: props.children,
     headerLargeTitle: props.large,
-    headerTitleAlign: flattenedStyle?.textAlign,
+    ...(flattenedStyle?.textAlign !== undefined
+      ? { headerTitleAlign: flattenedStyle.textAlign }
+      : {}),
     headerTitleStyle: {
       ...flattenedStyle,
       ...(flattenedStyle?.fontWeight
