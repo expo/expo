@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Added support for React Native 0.83 in [#42038](https://github.com/expo/expo/pull/42038) by [@gabrieldonadel](https://github.com/gabrieldonadel)
+- [iOS] Refactor podspec and fix template ([#42105](https://github.com/expo/expo/pull/42105) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
