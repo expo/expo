@@ -18,7 +18,8 @@
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "expo-module lint && expo-module lint plugin && expo-module lint cli",
+    "lint:fix": "expo-module lint --fix && expo-module lint plugin --fix && expo-module lint cli --fix",
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
