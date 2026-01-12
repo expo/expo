@@ -18,6 +18,7 @@ import ExpoApis from '../screens/ExpoApisScreen';
 import { MediaLibraryScreens } from '../screens/MediaLibrary@Next/MediaLibraryScreens';
 import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
 import { type ScreenConfig } from '../types/ScreenConfig';
+import { WorkletsScreens } from '../screens/Worklets/WorkletsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -448,6 +449,13 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Worklets/WorkletsScreen'));
+    },
+    name: 'Worklets integration',
+    route: 'worklets',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/WebBrowser/WebBrowserScreen'));
     },
     name: 'WebBrowser',
@@ -476,6 +484,7 @@ export const Screens: ScreenConfig[] = [
   ...CalendarsScreens,
   ...CalendarsNextScreens,
   ...CryptoScreens,
+  ...WorkletsScreens,
 ];
 
 export const screenApiItems = apiScreensToListElements(ScreensList);

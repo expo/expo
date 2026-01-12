@@ -42,6 +42,23 @@ if defined?(Expo::PackagesConfig)
   coreFeatures = Expo::PackagesConfig.instance.coreFeatures
 end
 
+def Pod::hasWorklets()
+  path = `cd "#{Pod::Config.instance.installation_root.to_s}" && node --print "try { require.resolve('react-native-worklets/package.json') } catch(e) { null }"`
+  path = path.strip
+
+  if path == "null"
+    return false
+  end
+
+  return true
+end
+
+shouldEnableWorkletsIntegration = hasWorklets()
+workletsCppFlags = 'WORKLETS_ENABLED=0'
+if shouldEnableWorkletsIntegration
+  workletsCppFlags = "WORKLETS_ENABLED=1 REACT_NATIVE_MINOR_VERSION=#{reactNativeTargetVersion}"
+end
+
 Pod::Spec.new do |s|
   s.name           = 'ExpoModulesCore'
   s.version        = package['version']
@@ -89,7 +106,7 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
     'OTHER_SWIFT_FLAGS' => "$(inherited) #{new_arch_enabled ? new_arch_compiler_flags : ''}",
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
-    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) EXPO_MODULES_CORE_VERSION=' + package['version'],
+    'GCC_PREPROCESSOR_DEFINITIONS' => "$(inherited) #{workletsCppFlags} EXPO_MODULES_CORE_VERSION=" + package['version'],
   }
   s.user_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => [
@@ -111,6 +128,10 @@ Pod::Spec.new do |s|
   s.dependency 'ReactCommon/turbomodule/core'
   s.dependency 'React-NativeModulesApple'
   s.dependency 'React-RCTFabric'
+
+  if shouldEnableWorkletsIntegration
+    s.dependency 'RNWorklets'
+  end
 
   install_modules_dependencies(s)
 

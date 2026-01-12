@@ -3,6 +3,20 @@
 import React
 import Foundation
 
+internal final class WorkletUIRuntimeException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Cannot find UI worklet runtime"
+  }
+}
+
+internal final class WorkletUIRuntimePointerExtractionException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Cannot extract pointer to UI worklet runtime"
+  }
+}
+
+private let WORKLET_RUNTIME_KEY = "_WORKLET_RUNTIME"
+
 // The core module that describes the `global.expo` object.
 internal final class CoreModule: Module {
   internal func definition() -> ModuleDefinition {
@@ -24,6 +38,36 @@ internal final class CoreModule: Module {
 
     Constant("documentsDir") {
       FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
+    }
+
+    Function("installOnUIRuntime") {
+      guard let appContext = appContext else {
+        throw Exceptions.AppContextLost()
+      }
+
+      // Check if was already installed
+      if appContext._uiRuntime != nil {
+        return
+      }
+
+      let runtime = try appContext.runtime
+
+      if !runtime.global().hasProperty(WORKLET_RUNTIME_KEY) {
+        throw WorkletUIRuntimeException()
+      }
+
+      let pointerHolder = runtime.global().getProperty(WORKLET_RUNTIME_KEY)
+      assert(pointerHolder.isObject())
+
+      let uiRuntimePointer = WorkletRuntimeFactory.extractRuntimePointer(pointerHolder, runtime: runtime)
+      if uiRuntimePointer == 0 {
+        throw WorkletUIRuntimePointerExtractionException()
+      }
+
+      DispatchQueue.main.sync {
+        let workletRuntime = WorkletRuntimeFactory.createWorkletRuntime(appContext, fromPointer: uiRuntimePointer)
+        appContext._uiRuntime = workletRuntime
+      }
     }
 
     // Expose some common classes and maybe even the `modules` host object in the future.

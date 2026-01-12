@@ -95,6 +95,23 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
+  @objc
+  public var _uiRuntime: ExpoRuntime? {
+    didSet {
+      if _uiRuntime != oldValue {
+        MainActor.assumeIsolated {
+          try? prepareUIRuntime()
+        }
+      }
+    }
+  }
+
+  public var uiRuntime: ExpoRuntime? {
+    get {
+      return _uiRuntime
+    }
+  }
+
   /**
    The application identifier that is used to distinguish between different `RCTHost`.
    It might be equal to `nil`, meaning we couldn't obtain the Id for the current app.
@@ -505,6 +522,24 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
     // Install the modules host object as the `global.expo.modules`.
     EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
+  }
+
+  @MainActor
+  internal func prepareUIRuntime() throws {
+    guard let runtime = uiRuntime else {
+      throw Exceptions.RuntimeLost()
+    }
+
+    let coreObject = runtime.createObject()
+
+    // Initialize `global.expo`.
+    runtime.global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: .enumerable)
+
+    // Install `global.expo.EventEmitter`.
+    EXJavaScriptRuntimeManager.installEventEmitterClass(runtime)
+
+    // Install `global.expo.NativeModule`.
+    EXJavaScriptRuntimeManager.installNativeModuleClass(runtime)
   }
 
   /**
