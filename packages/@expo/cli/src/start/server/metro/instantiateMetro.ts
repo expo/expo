@@ -10,11 +10,7 @@ import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
 import { mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
 import { Terminal } from '@expo/metro/metro-core';
-import {
-  createStableModuleIdFactory,
-  getDefaultConfig,
-  type LoadOptions,
-} from '@expo/metro-config';
+import { createStableModuleIdFactory, getDefaultConfig } from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
 import path from 'path';
