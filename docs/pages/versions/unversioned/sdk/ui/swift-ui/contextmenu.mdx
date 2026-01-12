@@ -9,7 +9,7 @@ platforms: ['ios', 'tvos']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-Expo UI ContextMenu matches the official SwiftUI [contextMenu API](https://developer.apple.com/documentation/swiftui/view/contextmenu(menuitems:)) and displays a menu when long-pressed.
+Expo UI ContextMenu matches the official SwiftUI [contextMenu API](<https://developer.apple.com/documentation/swiftui/view/contextmenu(menuitems:)>) and displays a menu when long-pressed.
 
 ## Installation
 
@@ -54,11 +54,7 @@ export default function ContextMenuWithImagesExample() {
             systemImage="square.and.arrow.up"
             onPress={() => console.log('Share')}
           />
-          <Button
-            label="Favorite"
-            systemImage="heart"
-            onPress={() => console.log('Favorite')}
-          />
+          <Button label="Favorite" systemImage="heart" onPress={() => console.log('Favorite')} />
           <Button
             label="Delete"
             systemImage="trash"
