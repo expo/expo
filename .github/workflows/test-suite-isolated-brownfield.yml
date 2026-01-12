@@ -44,6 +44,11 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      # If we use locally linked `npx expo-brownfield` without this it fails:
+      # sh: 1: expo-brownfield: Permission denied
+      - name: 🔒 Update permissions for expo-brownfield CLI
+        run: sudo chmod +x cli/build/index.js
+        working-directory: ./packages/expo-brownfield
       - name: 🍏 Build iOS artifacts
         working-directory: ./apps/minimal-tester
         run: |
@@ -90,6 +95,11 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      # If we use locally linked `npx expo-brownfield` without this it fails:
+      # sh: 1: expo-brownfield: Permission denied
+      - name: 🔒 Update permissions for expo-brownfield CLI
+        run: sudo chmod +x cli/build/index.js
+        working-directory: ./packages/expo-brownfield
       - name: 🤖 Build and publish Android artifacts
         run: |
           npx expo prebuild --clean --platform android
