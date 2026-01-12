@@ -10,15 +10,17 @@ export type HorizontalArrangement = 'start' | 'end' | 'center' | 'spaceBetween' 
 export type VerticalArrangement = 'top' | 'bottom' | 'center' | 'spaceBetween' | 'spaceAround' | 'spaceEvenly';
 export type HorizontalAlignment = 'start' | 'end' | 'center';
 export type VerticalAlignment = 'top' | 'bottom' | 'center';
+export type FloatingToolbarExitAlwaysScrollBehavior = 'top' | 'bottom' | 'start' | 'end';
 type LayoutBaseProps = {
     children?: React.ReactNode;
     horizontalArrangement?: HorizontalArrangement;
     verticalArrangement?: VerticalArrangement;
     horizontalAlignment?: HorizontalAlignment;
     verticalAlignment?: VerticalAlignment;
+    floatingToolbarExitAlwaysScrollBehavior?: FloatingToolbarExitAlwaysScrollBehavior;
     modifiers?: ExpoModifier[];
 } & PrimitiveBaseProps;
-export type BoxProps = Pick<LayoutBaseProps, 'children' | 'modifiers'>;
+export type BoxProps = Pick<LayoutBaseProps, 'children' | 'modifiers' | 'floatingToolbarExitAlwaysScrollBehavior'>;
 export declare function Box(props: BoxProps): import("react").JSX.Element | null;
 export type RowProps = LayoutBaseProps;
 export declare function Row(props: RowProps): import("react").JSX.Element | null;

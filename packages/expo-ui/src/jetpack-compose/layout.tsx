@@ -27,6 +27,7 @@ export type VerticalArrangement =
   | 'spaceEvenly';
 export type HorizontalAlignment = 'start' | 'end' | 'center';
 export type VerticalAlignment = 'top' | 'bottom' | 'center';
+export type FloatingToolbarExitAlwaysScrollBehavior = 'top' | 'bottom' | 'start' | 'end';
 
 type LayoutBaseProps = {
   children?: React.ReactNode;
@@ -34,11 +35,15 @@ type LayoutBaseProps = {
   verticalArrangement?: VerticalArrangement;
   horizontalAlignment?: HorizontalAlignment;
   verticalAlignment?: VerticalAlignment;
+  floatingToolbarExitAlwaysScrollBehavior?: FloatingToolbarExitAlwaysScrollBehavior;
   modifiers?: ExpoModifier[];
 } & PrimitiveBaseProps;
 
 //#region Box Component
-export type BoxProps = Pick<LayoutBaseProps, 'children' | 'modifiers'>;
+export type BoxProps = Pick<
+  LayoutBaseProps,
+  'children' | 'modifiers' | 'floatingToolbarExitAlwaysScrollBehavior'
+>;
 const BoxNativeView: React.ComponentType<BoxProps> | null =
   Platform.OS === 'android' ? requireNativeView('ExpoUI', 'BoxView') : null;
 export function Box(props: BoxProps) {

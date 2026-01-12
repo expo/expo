@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.size
@@ -21,8 +21,16 @@ import expo.modules.kotlin.viewevent.ViewEventDelegate
 data class ComposableScope(
   val rowScope: RowScope? = null,
   val columnScope: ColumnScope? = null,
-  val boxScope: BoxScope? = null
+  val boxScope: BoxScope? = null,
+  val nestedScrollConnection: NestedScrollConnection? = null,
 )
+
+inline fun ComposableScope.withIf(
+  condition: Boolean,
+  block: ComposableScope.() -> ComposableScope
+): ComposableScope {
+  return if (condition) block() else this
+}
 
 fun ComposableScope.with(rowScope: RowScope?): ComposableScope {
   return this.copy(rowScope = rowScope)
@@ -34,6 +42,10 @@ fun ComposableScope.with(columnScope: ColumnScope?): ComposableScope {
 
 fun ComposableScope.with(boxScope: BoxScope?): ComposableScope {
   return this.copy(boxScope = boxScope)
+}
+
+fun ComposableScope.with(nestedScrollConnection: NestedScrollConnection?): ComposableScope {
+  return this.copy(nestedScrollConnection = nestedScrollConnection)
 }
 
 /**

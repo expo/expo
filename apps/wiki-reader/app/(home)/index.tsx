@@ -11,12 +11,12 @@ import {
   fillMaxSize,
   SearchBar,
 } from '@expo/ui/jetpack-compose';
+import { DrawerActions } from '@react-navigation/native';
+import { Stack, useNavigation } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
 import { useColorScheme } from 'react-native';
 
 import { ComposeWebView, type ComposeWebViewRef } from '../../modules/compose-webview';
-import { Stack, useNavigation } from 'expo-router';
-import { DrawerActions } from '@react-navigation/native';
 
 const WIKIPEDIA_URL = 'https://en.wikipedia.org/wiki/Special:Random';
 
@@ -63,7 +63,9 @@ export default function Home() {
       />
 
       <Host style={{ flex: 1 }} colorScheme={colorScheme}>
-        <Box modifiers={[fillMaxSize(), paddingAll(8)]}>
+        <Box
+          modifiers={[fillMaxSize(), paddingAll(8)]}
+          floatingToolbarExitAlwaysScrollBehavior="bottom">
           <PullToRefreshBox
             modifiers={[fillMaxSize()]}
             isRefreshing={isRefreshing}
