@@ -14,7 +14,7 @@ const withIosPlugin: ConfigPlugin<PluginProps> = (config, props) => {
 
   config = withXcodeProjectPlugin(config, pluginConfig);
   config = withPodfilePlugin(config, pluginConfig);
-  config = withPodfilePropertiesPlugin(config);
+  config = withPodfilePropertiesPlugin(config, pluginConfig);
   config = withBuildPropertiesPlugin(config);
 
   return config;

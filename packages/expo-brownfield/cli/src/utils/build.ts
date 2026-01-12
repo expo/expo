@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import fs from 'node:fs/promises';
-import path from 'node:path';
 import ora, { type Ora } from 'ora';
+import path from 'path';
 import prompts from 'prompts';
 
 import { runCommand } from './commands';

@@ -1,5 +1,5 @@
 import type { Result, Spec } from 'arg';
-import path from 'node:path';
+import path from 'path';
 
 import type {
   BuildConfigAndroid,

@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises';
-import path from 'node:path';
+import path from 'path';
 
 import { Defaults, Errors } from '../constants';
 
@@ -49,7 +49,6 @@ export const inferScheme = async (): Promise<string> => {
     );
     let scheme: string | undefined = undefined;
     for (const subDir of subDirs) {
-      // TODO: Rename this file to RNHostManager?
       if ((await fs.readdir(`ios/${subDir.name}`)).includes('ReactNativeHostManager.swift')) {
         scheme = subDir.name;
       }

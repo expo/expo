@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import path from 'node:path';
+import path from 'path';
 
 import { Args, Help } from '../../constants';
 import { getTasksAndroidConfig, parseArgs, runCommand, withSpinner } from '../../utils';

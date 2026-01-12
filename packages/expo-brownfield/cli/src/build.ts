@@ -1,5 +1,5 @@
 // import fs from 'node:fs/promises';
-// import path from 'node:path';
+// import path from 'path';
 // import readline from 'node:readline/promises';
 
 // import chalk from 'chalk';

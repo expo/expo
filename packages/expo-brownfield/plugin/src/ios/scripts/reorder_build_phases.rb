@@ -18,6 +18,7 @@ module Pod
         results = _original_integrate_user_targets.bind(self).()
 
         UI.message '- Ensuring correct order of build phases' do
+          podfile_properties = JSON.parse(File.read(File.join(Pod::Config.instance.project_root, 'Podfile.properties.json')))
           all_projects = targets.map { |target| target.user_project }.uniq
 
           projects_to_integrate = user_projects_to_integrate()
@@ -31,7 +32,7 @@ module Pod
             end
 
             targets_with_modules_provider.each do |target|
-              next unless target.target_definition.name == $BROWNFIELD_TARGET_NAME
+              next unless target.target_definition.name == podfile_properties['ios.brownfieldTargetName']
 
               target_name = target.target_definition.name
               native_target = project.native_targets.find { |native_target| native_target.name == target_name }
