@@ -39,12 +39,12 @@ export function PagePlatformTags({ platforms, className }: Props) {
             <Tooltip.Content side="bottom" align="start" className="max-w-[260px]">
               {isExpoGo ? (
                 <FOOTNOTE>
-                  This package is included in Expo Go. See "Bundled version" for the exact version
+                  This library is included in Expo Go. See "Bundled version" for the exact version
                   included in the Expo Go app.
                 </FOOTNOTE>
               ) : (
                 <FOOTNOTE>
-                  This package is not available in the Expo Go app. Create a{' '}
+                  This library is not available in the Expo Go app. Create a{' '}
                   <A href="/develop/development-builds/introduction">development build</A> to use
                   it.
                 </FOOTNOTE>
