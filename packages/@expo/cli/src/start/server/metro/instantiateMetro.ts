@@ -1,5 +1,6 @@
 import { type ExpoConfig, getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
+import type { Reporter } from '@expo/metro/metro';
 import type Bundler from '@expo/metro/metro/Bundler';
 import type { ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
 import type { TransformOptions } from '@expo/metro/metro/DeltaBundler/Worker';
@@ -7,12 +8,7 @@ import MetroHmrServer, { Client as MetroHmrClient } from '@expo/metro/metro/HmrS
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
-import {
-  mergeConfig,
-  resolveConfig,
-  type InputConfigT,
-  type ConfigT,
-} from '@expo/metro/metro-config';
+import { mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
 import { Terminal } from '@expo/metro/metro-core';
 import {
   createStableModuleIdFactory,
@@ -87,9 +83,16 @@ class LogRespectingTerminal extends Terminal {
 // Share one instance of Terminal for all instances of Metro.
 const terminal = new LogRespectingTerminal(process.stdout);
 
+interface LoadMetroConfigOptions {
+  maxWorkers?: number;
+  port?: number;
+  reporter?: Reporter;
+  resetCache?: boolean;
+}
+
 export async function loadMetroConfigAsync(
   projectRoot: string,
-  options: LoadOptions,
+  options: LoadMetroConfigOptions,
   {
     exp,
     isExporting,
@@ -220,7 +223,7 @@ export async function loadMetroConfigAsync(
 /** The most generic possible setup for Metro bundler. */
 export async function instantiateMetroAsync(
   metroBundler: MetroBundlerDevServer,
-  options: Omit<LoadOptions, 'logger'>,
+  options: LoadMetroConfigOptions,
   {
     isExporting,
     exp = getConfig(metroBundler.projectRoot, {
