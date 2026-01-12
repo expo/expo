@@ -26,4 +26,16 @@ internal class ResponseSink {
     isFinalized = true
     return byteBuffer.array()
   }
+
+  fun finalizeDirect(): ByteBuffer {
+    val size = bodyQueue.sumOf { it.size }
+    val byteBuffer = ByteBuffer.allocateDirect(size)
+    for (byteArray in bodyQueue) {
+      byteBuffer.put(byteArray)
+    }
+    bodyQueue.clear()
+    bodyUsed = true
+    isFinalized = true
+    return byteBuffer
+  }
 }
