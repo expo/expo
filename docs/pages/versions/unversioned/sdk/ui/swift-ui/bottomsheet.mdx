@@ -31,9 +31,7 @@ export default function BasicBottomSheetExample() {
       <VStack>
         <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
         <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
-          <Group>
-            <Text>Hello, world!</Text>
-          </Group>
+          <Text>Hello, world!</Text>
         </BottomSheet>
       </VStack>
     </Host>
@@ -57,12 +55,10 @@ export default function BottomSheetFitsContentExample() {
       <VStack>
         <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
         <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented} fitToContents>
-          <Group>
-            <VStack>
-              <Text>This sheet automatically sizes to fit its content.</Text>
-              <Button label="Close" onPress={() => setIsPresented(false)} />
-            </VStack>
-          </Group>
+          <VStack>
+            <Text>This sheet automatically sizes to fit its content.</Text>
+            <Button label="Close" onPress={() => setIsPresented(false)} />
+          </VStack>
         </BottomSheet>
       </VStack>
     </Host>
