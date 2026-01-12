@@ -8,13 +8,11 @@ public class DevLauncherModule: Module {
 
     AsyncFunction("loadApp") { (url: URL, projectUrl: URL?, promise: Promise) in
       if url.scheme == nil {
-        promise.reject(DevLauncherInvalidURLException())
-        return
+        throw DevLauncherInvalidURLException()
       }
 
       if let projectUrl, projectUrl.scheme == nil {
-        promise.reject(DevLauncherInvalidProjectURLException())
-        return
+        throw DevLauncherInvalidURLException()
       }
 
       EXDevLauncherController.sharedInstance().loadApp(

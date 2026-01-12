@@ -1,7 +1,7 @@
 package expo.modules.devlauncher.modules
 
+import android.net.Uri
 import android.util.Log
-import androidx.core.net.toUri
 import com.facebook.react.ReactActivity
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.kotlin.modules.Module
@@ -12,18 +12,15 @@ class ExpoDevLauncherModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoDevLauncher")
 
-    AsyncFunction("loadApp") { urlString: String, projectUrlString: String? ->
-      val url = urlString.toUri()
+    AsyncFunction("loadApp") { url: Uri, projectUrl: Uri? ->
       if (url.scheme.isNullOrEmpty()) {
         throw DevLauncherInvalidURLException()
       }
 
-      val projectUrl = projectUrlString?.let {
-        val parsedProjectUrl = it.toUri()
-        if (parsedProjectUrl.scheme.isNullOrEmpty()) {
+      projectUrl?.run {
+        if (this.scheme.isNullOrEmpty()) {
           throw DevLauncherInvalidProjectURLException()
         }
-        parsedProjectUrl
       }
 
       val devLauncherController =
