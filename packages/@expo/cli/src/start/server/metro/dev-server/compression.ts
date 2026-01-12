@@ -5,32 +5,43 @@ const createCompressionMiddleware = require('compression');
 const compressionMiddleware = createCompressionMiddleware();
 
 /**
- * Compression middleware that skips compression for event stream content type
- * and explicitly set content encoding.
+ * Compression middleware that allows compression for bundles and source maps only.
  */
 export const compression: NextHandleFunction = (req, res, next) => {
-  // if user explicitly set content encoding, we skip compression
-  // this will allow users to handle content encoding themselves
-  if (res.getHeader('Content-Encoding')) {
+  // We need to make compression decision based on request,
+  // because resposnse is not ready when the middleware is executed.
+
+  if (!req.url) {
     return next();
   }
 
-  // compression package breaks streaming responses
-  // if we detect event stream content type, we skip compression
-  // this is better default than breaking the streaming response
-  const contentType = res.getHeader('Content-Type');
-  if (isEventSteam(contentType) || (Array.isArray(contentType) && contentType.some(isEventSteam))) {
-    return next();
+  const pathname = getPathname(req.url);
+
+  // Detection based on Metro Server implementation
+  // All pathnames ending with .bundle or .map are handled as bundles and source maps respectively.
+  // https://github.com/facebook/metro/blob/83fd895c567207efb6568cb8850bf05a238d83d2/packages/metro/src/Server.js#L649
+  if (isBundle(pathname) || isSourceMap(pathname)) {
+    return compressionMiddleware(req, res, next);
   }
 
-  return compressionMiddleware(req, res, next);
+  // For all other pathnames, we skip compression.
+  return next();
 };
 
-function isEventSteam(type: unknown): boolean {
-  if (typeof type !== 'string') {
-    return false;
+function getPathname(url: string): string {
+  let pathname: string;
+  try {
+    pathname = new URL(url, 'https://expo.dev').pathname;
+  } catch {
+    pathname = '';
   }
-  return type === EVENT_STREAM_CONTENT_TYPE;
+  return pathname;
 }
 
-const EVENT_STREAM_CONTENT_TYPE = 'text/event-stream';
+function isBundle(pathname: string): boolean {
+  return pathname.endsWith('.bundle');
+}
+
+function isSourceMap(pathname: string): boolean {
+  return pathname.endsWith('.map');
+}
