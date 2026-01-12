@@ -1,9 +1,9 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+#import <ExpoModulesCore/EXRuntime.h>
+#import <ExpoModulesJSI/EXJavaScriptValue.h>
+
 @class EXAppContext;
-@class EXRuntime;
-@class EXJavaScriptValue;
-@class EXJavaScriptRuntime;
 
 @interface WorkletRuntimeFactory : NSObject
 

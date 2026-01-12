@@ -1,8 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/WorkletRuntimeFactory.h>
-#import <ExpoModulesCore/EXRuntime.h>
-#import <ExpoModulesJSI/EXJavaScriptValue.h>
 
 #if WORKLETS_ENABLED
 
