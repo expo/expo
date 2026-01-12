@@ -1,3 +1,35 @@
+import React from 'react';
+import { View, Text, Image, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+
+const VideoCard = ({ video }) => (
+  <TouchableOpacity style={styles.card}>
+    <Image source={{ uri: video.thumbnail }} style={styles.thumbnail} />
+    <View style={styles.details}>
+      <Text style={styles.title}>{video.title}</Text>
+      <Text style={styles.channel}>{video.channelName} • {video.views} views</Text>
+    </View>
+  </TouchableOpacity>
+);
+
+// এটি কেবল ডিজাইন দেখার জন্য একটি উদাহরণ
+export default function HomeScreen() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>YouTube Clone</Text>
+      {/* এখানে ভিডিওর লিস্ট থাকবে */}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#fff', paddingTop: 40 },
+  header: { fontSize: 20, fontWeight: 'bold', marginLeft: 15, marginBottom: 10 },
+  card: { marginBottom: 20 },
+  thumbnail: { width: '100%', height: 200 },
+  details: { padding: 10 },
+  title: { fontSize: 16, fontWeight: 'bold' },
+  channel: { color: 'gray', fontSize: 12 }
+});
 ---
 title: Understanding app size
 description: Learn about how to determine what the actual size of your app will be when distributed to users, and how to get insights into your app size and optimize it.
