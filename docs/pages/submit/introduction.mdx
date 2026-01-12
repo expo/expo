@@ -76,27 +76,47 @@ Use EAS Submit when you want to:
 - Promote consistent submission processes across the team
 - Manage multiple release channels from one configuration
 
-<Collapsible summary="Do you want to upload a binary to a store?">
-
-Yes, use EAS Submit.
-
-</Collapsible>
-
 <Collapsible summary="Did you build your binary with EAS Build or locally?">
 
 Either works. EAS Submit accepts any valid **.aab** (Android App Bundle) or **.ipa** (iOS App Archive) file.
+
+For builds created with EAS Build, run `eas submit` and select a build from the list or let it use the latest build automatically.
+
+For local builds, use the `--path` flag to specify the binary:
+
+<Terminal
+  cmd={[
+    '$ eas submit --platform android --path ./my-app.aab',
+    '',
+    '$ eas submit --platform ios --path ./my-app.ipa',
+  ]}
+/>
+
+Local builds must be signed with the correct credentials before submission.
 
 </Collapsible>
 
 <Collapsible summary="Do you want to automate submissions from CI?">
 
-Yes, use EAS Submit with [EAS Workflows](/eas/workflows/get-started/).
+Yes. EAS Submit works in CI environments and integrates with [EAS Workflows](/eas/workflows/get-started/).
+
+To build and submit in one step, use the `--auto-submit` flag:
+
+<Terminal cmd={['$ eas build --platform ios --auto-submit']} />
+
+For CI pipelines, use `--non-interactive` to skip prompts and `--latest` to automatically select the most recent build:
+
+<Terminal cmd={['$ eas submit --platform android --latest --non-interactive']} />
 
 </Collapsible>
 
 <Collapsible summary="Do you need to handle metadata or screenshots?">
 
-For Google Play Store, you must configure these manually. For App Store Connect, you can use [EAS Metadata](/eas/metadata/) to handle metadata automatically.
+EAS Submit uploads your binary but does not manage store listing metadata, screenshots, or release notes.
+
+For Google Play Store, configure your store listing directly in [Google Play Console](https://play.google.com/console/about/) before submitting.
+
+For Apple App Store, you can use [EAS Metadata](/eas/metadata/) to automate app information and localized descriptions.
 
 </Collapsible>
 
@@ -113,25 +133,51 @@ In these cases, preparing your store listing is required.
 
 <Collapsible summary="Can I submit builds that were not built with EAS Build?">
 
-Yes. Any valid binary can be submitted.
+Yes. Use the `--path` flag to submit any valid binary:
+
+<Terminal
+  cmd={[
+    '$ eas submit --platform android --path ./my-app.aab',
+    '',
+    '$ eas submit --platform ios --path ./my-app.ipa',
+  ]}
+/>
+
+The binary must be correctly signed. For Android, this means a release keystore. For iOS, this means a distribution certificate and provisioning profile.
 
 </Collapsible>
 
 <Collapsible summary="Can I use EAS Submit for TestFlight?">
 
-Yes. Submitting an iOS binary creates a TestFlight build.
+Yes. All iOS submissions through EAS Submit are uploaded to App Store Connect and appear in TestFlight after processing. Processing typically takes 10-15 minutes but can vary.
+
+Once processed, you can distribute the build to internal testers immediately or add external testers after a brief Beta App Review. To release to the App Store, you must manually submit the build for App Review through App Store Connect.
 
 </Collapsible>
 
 <Collapsible summary="Can I use EAS Submit inside EAS Workflows?">
 
-Yes. Submit commands can be triggered in automated pipelines. For more information, see [EAS Workflows pre-packaged jobs](/eas/workflows/pre-packaged-jobs/#submit).
+Yes. You can add a submit job to your workflow configuration. For example:
+
+```yaml
+jobs:
+  submit_ios_to_store:
+    type: submit
+    params:
+      platform: ios
+    after:
+      - build_ios
+```
+
+For more information, see [EAS Workflows pre-packaged jobs](/eas/workflows/pre-packaged-jobs/#submit).
 
 </Collapsible>
 
 <Collapsible summary="What credentials do I need?">
 
-For Android, a Google Play Console developer account and a Google Service Account Key are required. For iOS, an Apple Developer account and [`ascAppId`](/eas/json/#ascappid) (Apple App Store Connect unique application ID) are required.
+For Android, you need a [Google Service Account Key](/submit/android/#creating-a-google-service-account) with access to your app in Google Play Console. Your app must be uploaded manually at least once before API submissions work.
+
+For iOS, you need an Apple Developer account. EAS Submit requires your [`ascAppId`](/eas/json/#ascappid) (App Store Connect app ID) and will prompt for your Apple ID credentials or use an App Store Connect API Key if configured.
 
 For more information, see [Google's Play Store's prerequisites](/submit/android/#prerequisites) and [Apple's App Store prerequisites](/submit/ios/#prerequisites).
 
