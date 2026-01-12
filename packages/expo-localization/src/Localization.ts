@@ -1,10 +1,6 @@
-import { useEffect, useReducer, useMemo } from 'react';
+import { useSyncExternalStore } from 'react';
 
-import ExpoLocalization, {
-  addCalendarListener,
-  addLocaleListener,
-  removeSubscription,
-} from './ExpoLocalization';
+import ExpoLocalization, { addCalendarListener, addLocaleListener } from './ExpoLocalization';
 
 export * from './Localization.types';
 
@@ -72,15 +68,10 @@ export const getCalendars = ExpoLocalization.getCalendars;
  * ```
  */
 export function useLocales() {
-  const [key, invalidate] = useReducer((k) => k + 1, 0);
-  const locales = useMemo(() => getLocales(), [key]);
-  useEffect(() => {
-    const subscription = addLocaleListener(invalidate);
-    return () => {
-      removeSubscription(subscription);
-    };
-  }, []);
-  return locales;
+  return useSyncExternalStore((callback) => {
+    const subscription = addLocaleListener(callback);
+    return subscription.remove;
+  }, getLocales);
 }
 
 /**
@@ -99,13 +90,8 @@ export function useLocales() {
  * ```
  */
 export function useCalendars() {
-  const [key, invalidate] = useReducer((k) => k + 1, 0);
-  const calendars = useMemo(() => getCalendars(), [key]);
-  useEffect(() => {
-    const subscription = addCalendarListener(invalidate);
-    return () => {
-      removeSubscription(subscription);
-    };
-  }, []);
-  return calendars;
+  return useSyncExternalStore((callback) => {
+    const subscription = addCalendarListener(callback);
+    return subscription.remove;
+  }, getCalendars);
 }

@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - [Web] Add `getTextInfo()` fallback for deprecated `textInfo` in `getLocales()` ([#39255](https://github.com/expo/expo/pull/39255) by [@desii101](https://github.com/desii101))
+- simplify hooks implementation ([#42099](https://github.com/expo/expo/pull/42099) by [@vonovak](https://github.com/vonovak))
 
 ## 17.0.8 - 2025-12-05
 

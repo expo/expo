@@ -1,5 +1,5 @@
-import { useEffect, useReducer, useMemo } from 'react';
-import ExpoLocalization, { addCalendarListener, addLocaleListener, removeSubscription, } from './ExpoLocalization';
+import { useSyncExternalStore } from 'react';
+import ExpoLocalization, { addCalendarListener, addLocaleListener } from './ExpoLocalization';
 export * from './Localization.types';
 /**
  * List of user's locales, returned as an array of objects of type `Locale`.
@@ -63,15 +63,10 @@ export const getCalendars = ExpoLocalization.getCalendars;
  * ```
  */
 export function useLocales() {
-    const [key, invalidate] = useReducer((k) => k + 1, 0);
-    const locales = useMemo(() => getLocales(), [key]);
-    useEffect(() => {
-        const subscription = addLocaleListener(invalidate);
-        return () => {
-            removeSubscription(subscription);
-        };
-    }, []);
-    return locales;
+    return useSyncExternalStore((callback) => {
+        const subscription = addLocaleListener(callback);
+        return subscription.remove;
+    }, getLocales);
 }
 /**
  * A hook providing a list of user's preferred calendars, returned as an array of objects of type `Calendar`.
@@ -89,14 +84,9 @@ export function useLocales() {
  * ```
  */
 export function useCalendars() {
-    const [key, invalidate] = useReducer((k) => k + 1, 0);
-    const calendars = useMemo(() => getCalendars(), [key]);
-    useEffect(() => {
-        const subscription = addCalendarListener(invalidate);
-        return () => {
-            removeSubscription(subscription);
-        };
-    }, []);
-    return calendars;
+    return useSyncExternalStore((callback) => {
+        const subscription = addCalendarListener(callback);
+        return subscription.remove;
+    }, getCalendars);
 }
 //# sourceMappingURL=Localization.js.map
