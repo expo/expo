@@ -1,3 +1,4 @@
+import type { ImageRef } from 'expo-image';
 import type { ColorValue } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -12,6 +13,21 @@ export interface RouterToolbarItemProps {
   identifier: string;
   title?: string;
   systemImageName?: SFSymbol;
+  /**
+   * Custom image loaded using expo-image's `useImage` hook.
+   * Takes priority over `systemImageName` when both are provided.
+   *
+   * @example
+   * ```tsx
+   * const customIcon = useImage('https://example.com/icon.png', {
+   *   maxWidth: 44,
+   *   maxHeight: 44,
+   * });
+   *
+   * <Toolbar.Item image={customIcon} title="Custom" />
+   * ```
+   */
+  image?: ImageRef | null;
   type?: 'normal' | 'fixedSpacer' | 'fluidSpacer';
   tintColor?: ColorValue;
   hidesSharedBackground?: boolean;

@@ -40,6 +40,7 @@
 - [android] Add Material 3 dynamic color defaults for NativeTabs ([#41869](https://github.com/expo/expo/pull/41869) by [@Ubax](https://github.com/Ubax))
 - [iOS] enable zoom transition by default ([#41891](https://github.com/expo/expo/pull/41891) by [@Ubax](https://github.com/Ubax))
 - Improve SSR support ([#41477](https://github.com/expo/expo/pull/41477) by [@hassankhan](https://github.com/hassankhan))
+- [iOS] expose image prop from Toolbar.Button ([#41882](https://github.com/expo/expo/pull/41882) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

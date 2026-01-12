@@ -1,3 +1,4 @@
+import { useImage } from 'expo-image';
 import { Color, useLocalSearchParams } from 'expo-router';
 import { Toolbar } from 'expo-router/unstable-toolbar';
 import { SymbolView } from 'expo-symbols';
@@ -74,6 +75,14 @@ export default function ToolbarScreen() {
     );
     Alert.alert('Color Selected', `You selected ${color}`);
   };
+
+  const image = useImage('https://simpleicons.org/icons/expo.svg', {
+    maxWidth: 24,
+    maxHeight: 24,
+    onError(error) {
+      console.error(error);
+    },
+  });
 
   return (
     <>
@@ -226,6 +235,8 @@ export default function ToolbarScreen() {
           separateBackground={!sharesBackgroundSearchButton}
           hidesSharedBackground={hidesSharedBackgroundSearchButton}
         />
+
+        <Toolbar.Button image={image} />
 
         {/* Fixed width spacer */}
         {showFixedSpacer && (

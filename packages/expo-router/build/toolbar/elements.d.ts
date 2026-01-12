@@ -1,3 +1,4 @@
+import type { ImageRef } from 'expo-image';
 import { type ReactNode } from 'react';
 import { type ColorValue, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
@@ -168,6 +169,24 @@ export interface ToolbarButtonProps {
      * For a list of available symbols, see [SF Symbols](https://developer.apple.com/sf-symbols/).
      */
     icon?: SFSymbol;
+    /**
+     * Custom image loaded using expo-image's `useImage` hook.
+     * Takes priority over `icon` (SF Symbol) when both are provided.
+     *
+     * @example
+     * ```tsx
+     * import { useImage } from 'expo-image';
+     * import { Toolbar } from 'expo-router/unstable-toolbar';
+     *
+     * const customIcon = useImage('https://example.com/icon.png', {
+     *   maxWidth: 44,
+     *   maxHeight: 44,
+     * });
+     *
+     * <Toolbar.Button image={customIcon} onPress={() => {}} />
+     * ```
+     */
+    image?: ImageRef | null;
     /**
      * Callback function when the button is pressed.
      */
