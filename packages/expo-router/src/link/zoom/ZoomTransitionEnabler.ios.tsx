@@ -11,11 +11,10 @@ import {
 import { useIsPreview } from '../preview/PreviewRouteContext';
 import { LinkZoomTransitionEnabler } from '../preview/native';
 
-let _isZoomTransitionEnabled = false;
+let _isZoomTransitionEnabled = process.env.EXPO_OS === 'ios';
 
-export function enableZoomTransition() {
-  console.warn('[expo-router] Zoom transition is an experimental feature. Use at your own risk.');
-  _isZoomTransitionEnabled = true;
+export function disableZoomTransition() {
+  _isZoomTransitionEnabled = false;
 }
 
 export function isZoomTransitionEnabled() {

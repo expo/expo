@@ -2,7 +2,9 @@
 
 import { requireNativeView } from 'expo';
 import { Fragment, type PropsWithChildren } from 'react';
-import { Platform, StyleSheet, type ViewProps } from 'react-native';
+import { Platform, StyleSheet, type ViewProps, type ColorValue } from 'react-native';
+
+import type { BasicTextStyle } from '../../utils/font';
 
 const areNativeViewsAvailable =
   process.env.EXPO_OS === 'ios' && !Platform.isTV && global.RN$Bridgeless === true;
@@ -15,18 +17,32 @@ export interface NativeLinkPreviewActionProps {
   children?: React.ReactNode;
   disabled?: boolean;
   destructive?: boolean;
+  discoverabilityLabel?: string;
+  subtitle?: string;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
   // This may lead to race conditions, when two menu actions are on at the same time.
   // The logic should be enforced in the JS code, rather than in the native code.
   // singleSelection?: boolean;
   displayAsPalette?: boolean;
   displayInline?: boolean;
+  preferredElementSize?: 'auto' | 'small' | 'medium' | 'large';
   isOn?: boolean;
   // There are issues with menu state updates when keep presented is set to true.
   // When updating the context menu state, it will either not update or it will recreate the menu. The latter is a problem,
   // because it will close all opened submenus and reset the scroll position.
   // TODO: (@ubax) find a way to fix this.
   keepPresented?: boolean;
+  hidden?: boolean;
+  tintColor?: ColorValue;
+  barButtonItemStyle?: 'plain' | 'prominent';
+
+  // These properties are for UIBarButtonItem compatibility but don't apply to context menus.
+  // They're included for API consistency with toolbar items.
+  sharesBackground?: boolean;
+  hidesSharedBackground?: boolean;
   onSelected: () => void;
+  titleStyle?: BasicTextStyle;
 }
 const LinkPreviewNativeActionView: React.ComponentType<NativeLinkPreviewActionProps> | null =
   areNativeViewsAvailable
@@ -98,7 +114,7 @@ export function NativeLinkPreviewContent(props: NativeLinkPreviewContentProps) {
 }
 // #endregion
 
-// #region Zoom transition
+// #region Zoom transition enabler
 const LinkZoomTransitionEnablerNativeView: React.ComponentType<
   ViewProps & { zoomTransitionSourceIdentifier: string; disableForceFlatten?: boolean }
 > | null = areNativeViewsAvailable
@@ -119,7 +135,9 @@ export function LinkZoomTransitionEnabler(props: {
     />
   );
 }
+// #endregion
 
+// #region Zoom transition source
 interface LinkSourceAlignmentRect {
   x: number;
   y: number;
@@ -127,18 +145,21 @@ interface LinkSourceAlignmentRect {
   height: number;
 }
 
-const LinkZoomTransitionSourceNativeView: React.ComponentType<
-  ViewProps & {
-    identifier: string;
-    disableForceFlatten?: boolean;
-    alignment?: LinkSourceAlignmentRect;
-  }
-> | null = areNativeViewsAvailable
-  ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionSource')
-  : null;
-export function LinkZoomTransitionSource(
-  props: PropsWithChildren<{ identifier: string; alignment?: LinkSourceAlignmentRect }>
-) {
+interface LinkZoomTransitionSourceProps extends PropsWithChildren {
+  identifier: string;
+  alignment?: LinkSourceAlignmentRect;
+  animateAspectRatioChange?: boolean;
+}
+
+interface LinkZoomTransitionSourceNativeProps extends ViewProps, LinkZoomTransitionSourceProps {
+  disableForceFlatten?: boolean;
+}
+
+const LinkZoomTransitionSourceNativeView: React.ComponentType<LinkZoomTransitionSourceNativeProps> | null =
+  areNativeViewsAvailable
+    ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionSource')
+    : null;
+export function LinkZoomTransitionSource(props: LinkZoomTransitionSourceProps) {
   if (!LinkZoomTransitionSourceNativeView) {
     return null;
   }
@@ -152,7 +173,9 @@ export function LinkZoomTransitionSource(
     />
   );
 }
+// #endregion
 
+// #region Zoom transition rect detector
 const LinkZoomTransitionAlignmentRectDetectorNative: React.ComponentType<
   ViewProps & { identifier: string; disableForceFlatten?: boolean; children?: React.ReactNode }
 > | null = areNativeViewsAvailable

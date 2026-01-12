@@ -33,7 +33,6 @@ import type {
   JsTransformOptions,
   Type,
 } from '@expo/metro/metro-transform-worker';
-import getMinifier from '@expo/metro/metro-transform-worker/utils/getMinifier';
 import assert from 'node:assert';
 
 import * as assetTransformer from './asset-transformer';
@@ -50,6 +49,7 @@ import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
 import { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
+import { getMinifier, resolveMinifier } from './utils/getMinifier';
 
 export { JsTransformOptions };
 
@@ -73,6 +73,7 @@ interface JSFile extends BaseFile {
   readonly reactServerReference?: string;
   readonly reactClientReference?: string;
   readonly expoDomComponentReference?: string;
+  readonly loaderReference?: string;
   readonly hasCjsExports?: boolean;
   readonly performConstantFolding?: boolean;
 }
@@ -557,6 +558,7 @@ async function transformJS(
         reactServerReference: file.reactServerReference,
         reactClientReference: file.reactClientReference,
         expoDomComponentReference: file.expoDomComponentReference,
+        loaderReference: file.loaderReference,
         ...(possibleReconcile
           ? {
               ast: wrappedAst,
@@ -648,6 +650,7 @@ async function transformJSWithBabel(
     reactServerReference: transformResult.metadata?.reactServerReference,
     reactClientReference: transformResult.metadata?.reactClientReference,
     expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
+    loaderReference: transformResult.metadata?.loaderReference,
     performConstantFolding: transformResult.metadata?.performConstantFolding,
   };
 
@@ -793,7 +796,7 @@ export function getCacheKey(config: JsTransformerConfig): string {
   // TODO(@kitten): We can now tie this into `@expo/metro`, which could also simply export a static version export
   const filesKey = getMetroCacheKey([
     require.resolve(babelTransformerPath),
-    require.resolve(minifierPath),
+    resolveMinifier(minifierPath),
     require.resolve('@expo/metro/metro-transform-worker/utils/getMinifier'),
     require.resolve('./collect-dependencies'),
     require.resolve('./asset-transformer'),
@@ -847,10 +850,7 @@ const disabledDependencyTransformer: DependencyTransformer = {
   transformIllegalDynamicRequire: () => {},
 };
 
-export function collectDependenciesForShaking(
-  ast: ParseResult,
-  options: CollectDependenciesOptions
-) {
+export function collectDependenciesForShaking(ast: t.File, options: CollectDependenciesOptions) {
   const collectDependenciesOptions = {
     ...options,
 

@@ -7,7 +7,6 @@
 #import "EXAppLoadingProgressWindowController.h"
 #import "EXAppLoadingCancelView.h"
 #import "Expo_Go-Swift.h"
-#import "EXHomeModule.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXErrorView.h"
@@ -111,32 +110,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+  _isHomeApp = NO;
 
-  // EXKernel.appRegistry.homeAppRecord does not contain any homeAppRecord until this point,
-  // therefore we cannot move this property initialization to the constructor/initializer
-  _isHomeApp = _appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord;
+  
+  self.appLoadingCancelView = [EXAppLoadingCancelView new];
+  self.appLoadingCancelView.delegate = self;
+  [self.view addSubview:self.appLoadingCancelView];
+  [self.view bringSubviewToFront:self.appLoadingCancelView];
 
-  // show LoadingCancelView in managed apps only
-  if (!self.isHomeApp) {
-    self.appLoadingCancelView = [EXAppLoadingCancelView new];
-    // if home app is available then LoadingCancelView can show `go to home` button
-    if ([EXKernel sharedInstance].appRegistry.homeAppRecord) {
-      self.appLoadingCancelView.delegate = self;
-    }
-    [self.view addSubview:self.appLoadingCancelView];
-    [self.view bringSubviewToFront:self.appLoadingCancelView];
-  }
-
-  // show LoadingProgressWindow in the development client for all apps other than production home
-  BOOL isProductionHomeApp = self.isHomeApp && ![EXEnvironment sharedEnvironment].isDebugXCodeScheme;
-  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:!isProductionHomeApp];
-
-  // show SplashScreen in standalone apps and home app only
-  // SplashScreen for managed is shown once the manifest is available
-  if (self.isHomeApp) {
-    EXHomeAppSplashScreenViewProvider *homeAppSplashScreenViewProvider = [EXHomeAppSplashScreenViewProvider new];
-    [self _showSplashScreenWithProvider:homeAppSplashScreenViewProvider];
-  }
+  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:YES];
 
   self.view.backgroundColor = [UIColor whiteColor];
   _appRecord.appManager.delegate = self;
@@ -386,7 +368,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        options:EXSplashScreenDefault
                                successCallback:^(BOOL hasEffect){}
                                failureCallback:^(NSString * _Nonnull message) {
-        EXLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
+        RCTLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
       }];
     });
   };
@@ -398,13 +380,12 @@ NS_ASSUME_NONNULL_BEGIN
                                      options:EXSplashScreenDefault
                     splashScreenViewProvider:provider
                              successCallback:hideRootViewControllerSplashScreen
-                             failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
+                             failureCallback:^(NSString *message){ RCTLogWarn(@"%@", message); }];
   });
 }
 
 - (void)_showManagedSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
 {
-
   EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
 
   EX_WEAKIFY(self);
@@ -419,7 +400,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      options:EXSplashScreenDefault
                       splashScreenController:self.managedSplashScreenController
                              successCallback:^{}
-                             failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
+                             failureCallback:^(NSString *message){ RCTLogWarn(@"%@", message); }];
   });
 
 }
@@ -719,8 +700,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_storeLastFatalErrorDate:(NSDate *)date
 {
-  [[NSUserDefaults standardUserDefaults] setObject:date forKey:kEXLastFatalErrorDateDefaultsKey];
-  [[NSUserDefaults standardUserDefaults] synchronize];
+  [[NSUserDefaults standardUserDefaults] setObject:date forKey:@"EXKernelLastFatalErrorDateDefaultsKey"];
 }
 
 #pragma mark - Internal

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Remove new architecture checks. ([#41767](https://github.com/expo/expo/pull/41767) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 31.0.12 - 2025-12-05
 
 _This version does not introduce any user-facing changes._

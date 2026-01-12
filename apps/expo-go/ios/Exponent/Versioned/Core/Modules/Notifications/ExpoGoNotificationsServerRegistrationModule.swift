@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import EXNotifications
+import ExpoNotifications
 
 // swiftlint:disable:next type_name
 public final class ExpoGoNotificationsServerRegistrationModule: ServerRegistrationModule {

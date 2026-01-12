@@ -9,6 +9,10 @@ buildscript {
     google()
     maven { url "https://jitpack.io" }
   }
+
+  dependencies {
+    classpath(expoLibs.apollo.gradle)
+  }
 }
 
 plugins {
@@ -19,6 +23,8 @@ plugins {
 }
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
+apply plugin: 'com.apollographql.apollo'
+
 
 def reactProperties = new Properties()
 file("${project(':packages:react-native:ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
@@ -102,6 +108,18 @@ android {
   buildTypes {
     release {
       consumerProguardFiles('proguard-rules.pro')
+    }
+  }
+}
+
+apollo {
+  service("service") {
+    packageName.set("host.exp.exponent.graphql")
+    srcDir("src/main/graphql")
+
+    introspection {
+      endpointUrl.set("https://api.expo.dev/graphql")
+      schemaFile.set(file("src/main/graphql/schema.graphqls"))
     }
   }
 }
@@ -190,6 +208,9 @@ dependencies {
   api(libs.okio)
   api(libs.javax.inject)
 
+  implementation expoLibs.apollo
+  implementation expoLibs.apollo.cache
+
   // Our dependencies
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
@@ -232,10 +253,6 @@ dependencies {
   // expo-file-system
   api 'com.squareup.okhttp3:okhttp:3.10.0'
   api 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
-
-  // expo-av
-  // See explanation in expo-av/build.gradle
-  api 'com.google.android.exoplayer:extension-okhttp:2.18.1'
 
   // expo-application
   api 'com.android.installreferrer:installreferrer:1.0'

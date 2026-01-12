@@ -22,6 +22,7 @@ public final class ModuleHolder {
   /**
    JavaScript object that represents the module instance in the runtime.
    */
+  @JavaScriptActor
   public internal(set) lazy var javaScriptObject: JavaScriptObject? = createJavaScriptModuleObject()
 
   /**
@@ -61,7 +62,7 @@ public final class ModuleHolder {
   // MARK: Calling functions
 
   @preconcurrency
-  func call(function functionName: String, args: [Any], _ callback: @Sendable @escaping (FunctionCallResult) -> () = { _ in }) {
+  func call(function functionName: String, args: [Any], _ callback: @Sendable @escaping (FunctionCallResult) -> Void = { _ in }) {
     guard let appContext else {
       callback(.failure(Exceptions.AppContextLost()))
       return
@@ -99,6 +100,7 @@ public final class ModuleHolder {
    JavaScript can access it through `global.expo.modules[moduleName]`.
    - Note: The object will be `nil` when the runtime is unavailable (e.g. remote debugger is enabled).
    */
+  @JavaScriptActor
   private func createJavaScriptModuleObject() -> JavaScriptObject? {
     // It might be impossible to create any object at the moment (e.g. remote debugging, app context destroyed)
     guard let appContext else {

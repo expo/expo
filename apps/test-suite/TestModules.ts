@@ -56,6 +56,7 @@ export function getTestModules() {
   modules.push(
     require('./tests/EASClient'),
     require('./tests/Crypto'),
+    require('./tests/CryptoAES'),
     require('./tests/KeepAwake'),
     require('./tests/Blur'),
     require('./tests/LinearGradient'),
@@ -138,6 +139,9 @@ export function getTestModules() {
     modules.push(TaskManagerTestScreen);
     // Audio tests are flaky in CI due to asynchronous fetching of resources
     modules.push(optionalRequire(() => require('./tests/Audio')));
+
+    // Same as Audio
+    modules.push(optionalRequire(() => require('./tests/Video')));
   }
 
   modules.push(optionalRequire(() => require('./tests/Cellular')));

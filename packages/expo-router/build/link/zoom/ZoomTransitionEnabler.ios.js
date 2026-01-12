@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.enableZoomTransition = enableZoomTransition;
+exports.disableZoomTransition = disableZoomTransition;
 exports.isZoomTransitionEnabled = isZoomTransitionEnabled;
 exports.ZoomTransitionEnabler = ZoomTransitionEnabler;
 const react_1 = require("react");
@@ -8,10 +8,9 @@ const descriptors_context_1 = require("../../fork/native-stack/descriptors-conte
 const navigationParams_1 = require("../../navigationParams");
 const PreviewRouteContext_1 = require("../preview/PreviewRouteContext");
 const native_1 = require("../preview/native");
-let _isZoomTransitionEnabled = false;
-function enableZoomTransition() {
-    console.warn('[expo-router] Zoom transition is an experimental feature. Use at your own risk.');
-    _isZoomTransitionEnabled = true;
+let _isZoomTransitionEnabled = process.env.EXPO_OS === 'ios';
+function disableZoomTransition() {
+    _isZoomTransitionEnabled = false;
 }
 function isZoomTransitionEnabled() {
     return _isZoomTransitionEnabled;

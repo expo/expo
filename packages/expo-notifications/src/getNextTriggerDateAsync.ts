@@ -27,7 +27,7 @@ import { parseTrigger } from './scheduleNotificationAsync';
  * ```
  * @header schedule
  */
-export default async function getNextTriggerDateAsync(
+export async function getNextTriggerDateAsync(
   trigger: SchedulableNotificationTriggerInput
 ): Promise<number | null> {
   if (!NotificationScheduler.getNextTriggerDateAsync) {

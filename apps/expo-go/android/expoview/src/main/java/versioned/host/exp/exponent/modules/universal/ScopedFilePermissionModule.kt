@@ -1,17 +1,14 @@
 package versioned.host.exp.exponent.modules.universal
 
-import expo.modules.core.ModuleRegistry
-import expo.modules.filesystem.legacy.FilePermissionModule
 import expo.modules.interfaces.filesystem.Permission
+import expo.modules.kotlin.services.FilePermissionService
 import host.exp.exponent.utils.ScopedContext
 import java.io.File
 import java.io.IOException
-import java.util.*
+import java.util.EnumSet
 
-class ScopedFilePermissionModule(private val scopedContext: ScopedContext) : FilePermissionModule() {
-
-  private lateinit var moduleRegistry: ModuleRegistry
-
+class ScopedFilePermissionService(private val scopedContext: ScopedContext) :
+  FilePermissionService() {
   override fun getExternalPathPermissions(path: String): EnumSet<Permission> {
     try {
       // In scoped context we do not allow access to Expo Go's directory,
@@ -20,7 +17,8 @@ class ScopedFilePermissionModule(private val scopedContext: ScopedContext) : Fil
       val context = scopedContext.context
       val dataDirCanonicalPath = File(context.applicationInfo.dataDir).canonicalPath
       val canonicalPath = File(path).canonicalPath
-      val isInDataDir = canonicalPath.startsWith("$dataDirCanonicalPath/") || (canonicalPath == dataDirCanonicalPath)
+      val isInDataDir =
+        canonicalPath.startsWith("$dataDirCanonicalPath/") || (canonicalPath == dataDirCanonicalPath)
       if (isInDataDir) {
         return EnumSet.noneOf(Permission::class.java)
       }
@@ -29,9 +27,5 @@ class ScopedFilePermissionModule(private val scopedContext: ScopedContext) : Fil
       return EnumSet.noneOf(Permission::class.java)
     }
     return super.getExternalPathPermissions(path)
-  }
-
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    this.moduleRegistry = moduleRegistry
   }
 }

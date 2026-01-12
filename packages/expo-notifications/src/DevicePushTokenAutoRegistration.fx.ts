@@ -4,7 +4,7 @@ import { UnavailabilityError } from 'expo-modules-core';
 import ServerRegistrationModule from './ServerRegistrationModule';
 import { addPushTokenListener } from './TokenEmitter';
 import { DevicePushToken } from './Tokens.types';
-import getDevicePushTokenAsync from './getDevicePushTokenAsync';
+import { getDevicePushTokenAsync } from './getDevicePushTokenAsync';
 import { updateDevicePushTokenAsync as updateDevicePushTokenAsyncWithSignal } from './utils/updateDevicePushTokenAsync';
 
 let lastAbortController: AbortController | null = null;

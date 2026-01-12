@@ -1,0 +1,59 @@
+---
+title: DisclosureGroup
+description: A SwiftUI DisclosureGroup component for displaying expandable content.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI DisclosureGroup matches the official SwiftUI [DisclosureGroup API](https://developer.apple.com/documentation/swiftui/disclosuregroup) and displays a disclosure indicator that reveals or hides content.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic disclosure group
+
+```tsx BasicDisclosureGroupExample.tsx
+import { Host, DisclosureGroup, Text } from '@expo/ui/swift-ui';
+
+export default function BasicDisclosureGroupExample() {
+  return (
+    <Host matchContents>
+      <DisclosureGroup label="More Information">
+        <Text>This content is revealed when the disclosure group is expanded.</Text>
+      </DisclosureGroup>
+    </Host>
+  );
+}
+```
+
+### Initially expanded
+
+Set `isExpanded` to `true` initially to show the content by default.
+
+```tsx InitiallyExpandedExample.tsx
+import { useState } from 'react';
+import { Host, DisclosureGroup, Text } from '@expo/ui/swift-ui';
+
+export default function InitiallyExpandedExample() {
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  return (
+    <Host matchContents>
+      <DisclosureGroup label="Details" isExpanded={isExpanded} onIsExpandedChange={setIsExpanded}>
+        <Text>This content is visible by default.</Text>
+      </DisclosureGroup>
+    </Host>
+  );
+}
+```
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/disclosuregroup" apiName="DisclosureGroup" />
