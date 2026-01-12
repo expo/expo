@@ -2,18 +2,16 @@
 
 ## Unpublished
 
-- [android] Support subscribing to Firebase broadcast topics by ([#17674](https://github.com/expo/expo/pull/17674) [@mmomtchev](https://github.com/mmomtchev))
 
 ### 🛠 Breaking changes
 
 - expose `BackgroundNotificationTaskResult` ([#41291](https://github.com/expo/expo/pull/41291) by [@vonovak](https://github.com/vonovak))
-- throw instead of logging when attempting to use push notifications on Android with Expo Go ([#39459](https://github.com/expo/expo/pull/39459) by [@vonovak](https://github.com/vonovak))
 - [ios], [internal] rename `EXNotifications` pod to `ExpoNotifications` ([#42009](https://github.com/expo/expo/pull/42009) by [@vonovak](https://github.com/vonovak))
-- [android] throw instead of logging when attempting to use push notifications with Expo Go ([#39459](https://github.com/expo/expo/pull/39459) by [@vonovak](https://github.com/vonovak))
+- [android] throw instead of logging a warning when attempting to use push notifications with Expo Go ([#39459](https://github.com/expo/expo/pull/39459) by [@vonovak](https://github.com/vonovak))
 
 ### 🎉 New features
 
-- migrate off of legacy core apis on Android ([#41731](https://github.com/expo/expo/pull/41731) by [@vonovak](https://github.com/vonovak))
+- [android] Support subscribing to Firebase broadcast topics by ([#17674](https://github.com/expo/expo/pull/17674) [@mmomtchev](https://github.com/mmomtchev))
 - improve runtime validation for NotificationTriggerInput ([#41538](https://github.com/expo/expo/pull/41538) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
@@ -24,6 +22,7 @@
 
 ### 💡 Others
 
+- migrate off of legacy core apis on Android ([#41731](https://github.com/expo/expo/pull/41731) by [@vonovak](https://github.com/vonovak))
 - mark `NotificationImportance.UNSPECIFIED` as not suitable for use ([#41709](https://github.com/expo/expo/pull/41709) by [@vonovak](https://github.com/vonovak))
 - [ios] migrate permission requester to swift ([#42010](https://github.com/expo/expo/pull/42010) by [@vonovak](https://github.com/vonovak))
 - remove token listener on module destroy ([#41275](https://github.com/expo/expo/pull/41275) by [@vonovak](https://github.com/vonovak))
