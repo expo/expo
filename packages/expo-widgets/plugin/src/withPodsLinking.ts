@@ -16,6 +16,24 @@ const withPodsLinking: ConfigPlugin<PodsLinkingProps> = (config, { targetName })
         return config;
       }
       podfileContent += podfileExpoWidgetsLinking(targetName);
+      // expo_widgets_post_install hook
+      if (!podfileContent.includes('post_install do |installer|')) {
+        podfileContent += `
+post_install do |installer|
+  expo_widgets_post_install(installer)
+end
+`;
+      } else {
+        podfileContent = podfileContent.replace(
+          /post_install do \|installer\|([\s\S]*?)end\s*$/m,
+          (match, p1) => {
+            return `post_install do |installer|
+    expo_widgets_post_install(installer)
+${p1}end
+`;
+          }
+        );
+      }
       fs.writeFileSync(podsFilePath, podfileContent, 'utf8');
       return config;
     },
