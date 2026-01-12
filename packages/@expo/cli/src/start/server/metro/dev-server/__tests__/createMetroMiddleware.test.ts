@@ -7,6 +7,41 @@ jest.mock('../../../../../utils/editor');
 describe(createMetroMiddleware, () => {
   const { metro, server, projectRoot } = withMetroServer();
 
+  it('responds to a bundle request with compression', async () => {
+    // Mocked Metro Server response for a bundle request
+    metro.middleware.use('/test.bundle', (_req, res) => {
+      res.setHeader('Content-Type', 'application/javascript');
+      res.write('console.log("Hello, world!");');
+      res.end();
+    });
+    const response = await server.fetch('/test.bundle', { headers: { 'Accept-Encoding': 'gzip' } });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Encoding')).toBe('gzip');
+  });
+
+  it('responds to a map request with compression', async () => {
+    // Mocked Metro Server response for a map request
+    metro.middleware.use('/test.map', (_req, res) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.write('{}');
+      res.end();
+    });
+    const response = await server.fetch('/test.map', { headers: { 'Accept-Encoding': 'gzip' } });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Encoding')).toBe('gzip');
+  });
+
+  it('responds to a request without compression', async () => {
+    metro.middleware.use('/test', (_req, res) => {
+      res.setHeader('Content-Type', 'text/plain');
+      res.write('Hello, world!');
+      res.end();
+    });
+    const response = await server.fetch('/test', { headers: { 'Accept-Encoding': 'gzip' } });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Encoding')).toBeFalsy();
+  });
+
   it('disables cache on all requests', async () => {
     // Register an endpoint to capture the response headers
     metro.middleware.use('/thisisatest', (_req, res) => res.end('OK'));
