@@ -132,7 +132,7 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(EdgeToEdgeModule(reactContext))
         nativeModules.add(KeyboardControllerModule(reactContext))
         nativeModules.addAll(SvgPackage().getReactModuleInfoProvider().getReactModuleInfos().map { SvgPackage().getModule(it.value.name, reactContext)!! })
-        nativeModules.addAll(MapsPackage().getReactModuleInfoProvider().getReactModuleInfos().map { MapsPackage().getModule(it.value.name, reactContext)!! })
+        nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
         nativeModules.addAll(RNDateTimePickerPackage().getReactModuleInfoProvider().getReactModuleInfos().map { RNDateTimePickerPackage().getModule(it.value.name, reactContext)!! })
         nativeModules.addAll(stripePackage.getReactModuleInfoProvider().getReactModuleInfos().map { stripePackage.getModule(it.value.name, reactContext)!! })
         nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
