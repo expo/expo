@@ -23,7 +23,7 @@ class ExpoMaxSdkOverridePlugin : Plugin<Project> {
 
     androidComponents.onVariants(androidComponents.selector().all()) { variant ->
       val taskName = "expo${variant.name.replaceFirstChar { it.uppercase() }}OverrideMaxSdkConflicts"
-      val blameReportPath = "outputs/logs/manifest-merger-${variant.flavorName}-${variant.buildType}-report.txt"
+      val blameReportPath = "outputs/logs/manifest-merger-${listOfNotNull(variant.flavorName?.takeIf { it.isNotEmpty() }, variant.buildType).joinToString("-")}-report.txt"
       val reportFile = project.layout.buildDirectory.file(blameReportPath)
       val fixTaskProvider = project.tasks.register(
         taskName,
