@@ -125,8 +125,7 @@ const data: SectionListData<ImageProps>[] = [
     title: 'PSD',
     data: [
       {
-        source:
-          'https://filesamples.com/samples/image/psd/sample_640%C3%97426.psd',
+        source: 'https://filesamples.com/samples/image/psd/sample_640%C3%97426.psd',
       },
     ],
   },
