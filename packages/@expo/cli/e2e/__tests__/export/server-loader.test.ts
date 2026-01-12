@@ -53,6 +53,7 @@ describe.each(
     expect(files).toContain('_expo/loaders/second.js');
     expect(files).toContain('_expo/loaders/posts/[postId].js');
     expect(files).toContain('_expo/loaders/nullish/[value].js');
+    expect(files).toContain('_expo/loaders/response.js');
   });
 
   (server.isExpoStart ? it.skip : it)('routes.json has loader paths', async () => {
@@ -90,6 +91,17 @@ describe.each(
 
     const data = await response.json();
     expect(data.params).toHaveProperty('postId', 'my-test-post');
+  });
+
+  it('loader endpoint returns `Response` with headers', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/response');
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('application/json');
+    expect(response.headers.get('cache-control')).toBe('public, max-age=3600');
+    expect(response.headers.get('x-custom-header')).toBe('test-value');
+
+    const data = await response.json();
+    expect(data).toEqual({ foo: 'bar' });
   });
 
   it('loader can access server environment variables', async () => {

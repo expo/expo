@@ -469,7 +469,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       route: RouteNode,
       opts?: GetStaticContentOptions
     ) => Promise<string>;
-    executeLoaderAsync: (path: string, route: RouteNode) => Promise<{ data: unknown } | undefined>;
+    executeLoaderAsync: (path: string, route: RouteNode) => Promise<Response | undefined>;
   }> {
     const { routerRoot } = this.instanceMetroOptions;
     assert(
@@ -640,7 +640,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       if (!loaderResult) {
         return await getStaticContent(location);
       }
-      return await getStaticContent(location, { loader: { data: loaderResult.data } });
+
+      const loaderData = await loaderResult.json();
+      return await getStaticContent(location, { loader: { data: loaderData } });
     };
 
     const [{ artifacts: resources }, staticHtml] = await Promise.all([
@@ -1706,9 +1708,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     route: ResolvedLoaderRoute,
     // The `request` object is only available when using SSR
     request?: ImmutableRequest
-  ): Promise<{ data: unknown } | undefined> {
+  ): Promise<Response | undefined> {
     const { exp } = getConfig(this.projectRoot);
-    const { unstable_useServerDataLoaders } = exp.extra?.router;
+    const { unstable_useServerDataLoaders, unstable_useServerRendering } = exp.extra?.router;
 
     if (!unstable_useServerDataLoaders) {
       throw new CommandError(
@@ -1742,14 +1744,29 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // Register this module for loader HMR
         this.setupLoaderHmr(modulePath);
 
-        const data = await routeModule.loader({
+        const maybeResponse = await routeModule.loader({
           params: route.params,
           request,
         });
 
+        let data: unknown;
+        if (maybeResponse instanceof Response) {
+          debug('Loader returned Response for location:', location.pathname);
+
+          // In SSR, preserve `Response` from the loader
+          if (exp.web?.output === 'server' && unstable_useServerRendering) {
+            return maybeResponse;
+          }
+
+          // In SSG, extract body
+          data = await maybeResponse.json();
+        } else {
+          data = maybeResponse;
+        }
+
         const normalizedData = data === undefined ? {} : data;
         debug('Loader data:', normalizedData, ' for location:', location.pathname);
-        return { data: normalizedData };
+        return Response.json(normalizedData);
       }
 
       debug('No loader found for location:', location.pathname);

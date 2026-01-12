@@ -39,7 +39,7 @@ export function createRouteHandlerMiddleware(
     executeLoaderAsync: (
       route: RouteInfo<RegExp>,
       request: ImmutableRequest
-    ) => Promise<{ data: unknown } | undefined>;
+    ) => Promise<Response | undefined>;
     config: ProjectConfig;
     headers: Record<string, string | string[]>;
   } & import('@expo/router-server/build/routes-manifest').Options
@@ -63,7 +63,7 @@ export function createRouteHandlerMiddleware(
           // In development, set `loader` property on all HTML routes. We can't know which routes
           // have loaders without bundling via Metro to detect exports. In production, this is
           // populated by `exportStaticAsync.ts` after bundling.
-          // At runtime, `getLoaderData()` returns `undefined` if no loader exists.
+          // At runtime, `getLoaderData()` returns a 404 response if no loader exists.
           for (const route of manifest.htmlRoutes) {
             route.loader = `_expo/loaders${route.page}.js`;
           }
@@ -233,7 +233,8 @@ export function createRouteHandlerMiddleware(
         }
       },
       async getLoaderData(request, route) {
-        return options.executeLoaderAsync(route, new ImmutableRequest(request));
+        const response = await options.executeLoaderAsync(route, new ImmutableRequest(request));
+        return response ?? new Response(null, { status: 404 });
       },
     }
   );
