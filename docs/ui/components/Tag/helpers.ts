@@ -1,6 +1,8 @@
 import { capitalize } from '~/common/utilities';
 import { PlatformName } from '~/types/common';
 
+const CLIENT_PLATFORM_TAGS = new Set(['expo-go', 'dev-builds']);
+
 export function getPlatformName(text: string): PlatformName {
   const lowerText = text.toLowerCase().trim();
   if (lowerText.includes('ios')) {
@@ -58,7 +60,7 @@ export function getTagClasses(type: string) {
 }
 
 export const isClientPlatformTag = (platform: string) =>
-  new Set(['expo-go', 'dev-builds']).has(platform.toLowerCase());
+  CLIENT_PLATFORM_TAGS.has(platform.toLowerCase());
 
 export const formatName = (name: PlatformName) => {
   const cleanName = name.toLowerCase().replace('\n', '').trim();
