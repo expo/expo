@@ -28,7 +28,8 @@ NS_SWIFT_NAME(ExpoReactRootViewFactory)
 - (UIView *)superViewWithModuleName:(NSString *)moduleName
                   initialProperties:(nullable NSDictionary *)initialProperties
                       launchOptions:(nullable NSDictionary *)launchOptions
-               devMenuConfiguration:(nullable RCTDevMenuConfiguration *)devMenuConfiguration;
+                bundleConfiguration:(RCTBundleConfiguration *)bundleConfiguration
+               devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration;
 #else
 - (UIView *)superViewWithModuleName:(NSString *)moduleName
                   initialProperties:(nullable NSDictionary *)initialProperties
