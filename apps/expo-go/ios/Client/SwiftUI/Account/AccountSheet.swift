@@ -45,8 +45,7 @@ struct AccountSheet: View {
 
         Button {
           dismiss()
-        }
-        label: {
+        } label: {
           Image(systemName: "xmark")
             .font(.system(size: 16, weight: .medium))
             .foregroundColor(.primary)
@@ -79,17 +78,16 @@ struct AccountSheet: View {
     Button {
       UIImpactFeedbackGenerator(style: .light).impactOccurred()
       viewModel.signOut()
-    }
-    label: {
+    } label: {
       Text("Logout")
-          .font(.headline)
-          .fontWeight(.bold)
-          .foregroundColor(.white)
-          .frame(maxWidth: .infinity)
-          .padding(.vertical, 12)
-      }
-      .background(Color.black)
-      .cornerRadius(12)
+        .font(.headline)
+        .fontWeight(.bold)
+        .foregroundColor(.white)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+    }
+    .background(Color.black)
+    .cornerRadius(12)
     }
   }
 
@@ -117,8 +115,7 @@ struct AccountSheet: View {
       Task {
         await viewModel.signIn()
       }
-    }
-    label: {
+    } label: {
       Text("Log In")
         .font(.headline)
         .fontWeight(.semibold)
@@ -137,8 +134,7 @@ struct AccountSheet: View {
       Task {
         await viewModel.signUp()
       }
-    }
-    label: {
+    } label: {
       Text("Sign Up")
         .font(.headline)
         .fontWeight(.semibold)
@@ -146,7 +142,7 @@ struct AccountSheet: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
     }
-    .background(Color(.white))
+    .background(Color.white)
     .cornerRadius(12)
     .disabled(viewModel.isAuthenticating)
   }
@@ -155,8 +151,7 @@ struct AccountSheet: View {
     Button {
       UIImpactFeedbackGenerator(style: .light).impactOccurred()
       viewModel.selectAccount(accountId: account.id)
-    }
-    label: {
+    } label: {
       HStack(spacing: 12) {
         AvatarView(account: account, size: 40)
 

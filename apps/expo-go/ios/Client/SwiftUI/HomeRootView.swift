@@ -28,7 +28,6 @@ public struct HomeRootView: View {
         Text("Home")
       }
       .tag(HomeTab.home)
-      .navigationBarHidden(true)
 
       NavigationView {
         DiagnosticsTabView()
@@ -52,17 +51,12 @@ public struct HomeRootView: View {
       AccountSheet()
         .environmentObject(viewModel)
     }
-    .alert("Error", isPresented: Binding(
-      get: { viewModel.errorToShow != nil },
-      set: { if !$0 { viewModel.clearError() } }
-    )) {
-      Button("OK") {
-        viewModel.clearError()
-      }
-    } message: {
-      if let error = viewModel.errorToShow {
-        Text(error.message)
-      }
+    .alert(item: $viewModel.errorToShow) { error in
+      Alert(
+        title: Text("Error"),
+        message: Text(error.message),
+        dismissButton: .default(Text("OK"))
+      )
     }
   }
 }
