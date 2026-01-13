@@ -1,3 +1,4 @@
+import { isRunningInExpoGo } from 'expo';
 import { Platform } from 'expo-modules-core';
 
 import ExponentTest from './ExponentTest';
@@ -113,10 +114,14 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Speech')),
     optionalRequire(() => require('./tests/Recording')),
     optionalRequire(() => require('./tests/ScreenOrientation')),
-    optionalRequire(() => require('./tests/Notifications')),
+
     optionalRequire(() => require('./tests/NavigationBar')),
     optionalRequire(() => require('./tests/SystemUI'))
   );
+
+  if (!isRunningInExpoGo()) {
+    modules.push(optionalRequire(() => require('./tests/Notifications')));
+  }
 
   if (!isDeviceFarm()) {
     // Popup to request device's location which uses Google's location service
