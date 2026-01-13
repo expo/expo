@@ -8,7 +8,7 @@ import expo.modules.kotlin.iterator
 class BenchmarkingBridgeModule : BaseJavaModule() {
   override fun getName(): String = "BenchmarkingBridgeModule"
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
+  @ReactMethod
   fun nothing() {
     // Do nothing
   }
