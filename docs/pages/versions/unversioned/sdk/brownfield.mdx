@@ -1,0 +1,353 @@
+---
+title: Brownfield
+description: Toolkit and APIs for integrating Expo into existing native applications.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-brownfield'
+packageName: 'expo-brownfield'
+platforms: ['android', 'ios']
+isNew: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+`expo-brownfield` is a toolkit for adding React Native views to existing native iOS and Android applications. It provides:
+
+- **Built-in APIs** for bi-directional communication and navigation between native and React Native apps
+- **Config plugin** for automatic setup of brownfield targets in your Expo project
+- **CLI** for building and publishing artifacts to Maven repositories (Android) and XCFrameworks (iOS)
+
+## Installation
+
+<APIInstallSection />
+
+
+## Usage
+
+### Communication API
+
+The Communication API enables bi-directional, message-based communication between the native (host) app and React Native.
+
+#### Sending messages from React Native to native
+
+```typescript
+import ExpoBrownfield from 'expo-brownfield';
+
+ExpoBrownfield.sendMessage({
+  type: 'MyMessage',
+  data: {
+    language: 'TypeScript',
+    expo: true,
+    platforms: ['android', 'ios'],
+  },
+});
+```
+
+#### Receiving messages from native in React Native
+
+```typescript
+import ExpoBrownfield, { type MessageEvent } from 'expo-brownfield';
+import { useEffect } from 'react';
+
+function MyComponent() {
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      console.log('Received message:', event);
+    };
+
+    ExpoBrownfield.addListener(handleMessage);
+
+    return () => {
+      ExpoBrownfield.removeListener(handleMessage);
+    };
+  }, []);
+
+  // ...
+}
+```
+
+#### Sending messages from native to React Native
+
+<Tabs>
+<Tab label="Android (Kotlin)">
+
+```kotlin
+import expo.modules.brownfield.BrownfieldMessaging
+
+BrownfieldMessaging.sendMessage(mapOf(
+    "type" to "MyAndroidMessage",
+    "timestamp" to System.currentTimeMillis(),
+    "data" to mapOf(
+        "platform" to "android"
+    )
+))
+```
+
+</Tab>
+<Tab label="iOS (Swift)">
+
+```swift
+import ExpoBrownfield
+
+BrownfieldMessaging.sendMessage([
+    "type": "MyIOSMessage",
+    "timestamp": Date().timeIntervalSince1970,
+    "data": [
+        "platform": "ios"
+    ]
+])
+```
+
+</Tab>
+</Tabs>
+
+#### Receiving messages from React Native in native
+
+<Tabs>
+<Tab label="Android (Kotlin)">
+
+```kotlin
+import expo.modules.brownfield.BrownfieldMessaging
+
+val listenerId = BrownfieldMessaging.addListener { event ->
+    println("Message from React Native: $event")
+}
+
+// Later, to remove the listener:
+BrownfieldMessaging.removeListener(listenerId)
+```
+
+</Tab>
+<Tab label="iOS (Swift)">
+
+```swift
+import ExpoBrownfield
+
+let listenerId = BrownfieldMessaging.addListener { message in
+    print("Message from React Native: \(message)")
+}
+
+// Later, to remove the listener:
+BrownfieldMessaging.removeListener(id: listenerId)
+```
+
+</Tab>
+</Tabs>
+
+### Navigation API
+
+The Navigation API provides methods for implementing common brownfield patterns.
+
+#### Return to native app
+
+Use `popToNative` to return to the native view that precedes the React Native brownfield in the navigation history:
+
+```typescript
+import ExpoBrownfield from 'expo-brownfield';
+
+// Without animation
+ExpoBrownfield.popToNative();
+
+// With animation (iOS only)
+ExpoBrownfield.popToNative(true);
+```
+
+#### Control native back handling
+
+Use `setNativeBackEnabled` to enable or disable native handling of the back action (back gesture on iOS or back button on Android):
+
+```typescript
+import ExpoBrownfield from 'expo-brownfield';
+import { useNavigation } from 'expo-router';
+import { useEffect } from 'react';
+
+export default function HomeScreen() {
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('state', () => {
+      // Enable native handling only when we can't go back within React Native
+      const canGoBack = navigation.canGoBack();
+      ExpoBrownfield.setNativeBackEnabled(!canGoBack);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  // ...
+}
+```
+
+## CLI
+
+The `expo-brownfield` package includes a CLI for building and publishing brownfield artifacts.
+
+<Terminal cmd={['$ npx expo-brownfield [command] [options]']} />
+
+### Commands
+
+#### `build-android`
+
+Builds and publishes the brownfield library and its dependencies to Maven repositories.
+
+<Terminal cmd={['$ npx expo-brownfield build-android [options]']} />
+
+| Option | Description |
+| --- | --- |
+| `-d, --debug` | Build in debug mode |
+| `-r, --release` | Build in release mode |
+| `-a, --all` | Build in both debug and release mode (default) |
+| `-l, --library` | Specify brownfield library name |
+| `--repo, --repository` | Specify Maven repositories to publish to |
+| `-t, --task` | Specify Gradle publish tasks to run |
+| `--verbose` | Include all logs from subprocesses |
+
+#### `build-ios`
+
+Builds the brownfield XCFramework and copies the Hermes XCFramework to the artifacts directory.
+
+<Terminal cmd={['$ npx expo-brownfield build-ios [options]']} />
+
+| Option | Description |
+| --- | --- |
+| `-d, --debug` | Build in debug mode |
+| `-r, --release` | Build in release mode (default) |
+| `-a, --artifacts` | Path to the artifacts directory (default: `./artifacts`) |
+| `-s, --scheme` | Xcode scheme to build |
+| `-x, --xcworkspace` | Xcode workspace path |
+| `--verbose` | Include all logs from subprocesses |
+
+#### `tasks-android`
+
+Lists all available publish tasks and Maven repositories.
+
+<Terminal cmd={['$ npx expo-brownfield tasks-android']} />
+
+### Examples
+
+<Collapsible summary="Building for Android">
+
+List available publish tasks and repositories:
+
+<Terminal cmd={['$ npx expo-brownfield tasks-android']} />
+
+Build and publish to repositories:
+
+<Terminal cmd={['$ npx expo-brownfield build-android --repo MavenLocal --repo CustomLocal']} />
+
+Or using specific tasks:
+
+<Terminal cmd={['$ npx expo-brownfield build-android -t publishBrownfieldAllPublicationToMavenLocal']} />
+
+</Collapsible>
+
+<Collapsible summary="Building for iOS">
+
+Build the brownfield XCFramework:
+
+<Terminal cmd={['$ npx expo-brownfield build-ios']} />
+
+The XCFrameworks will be output to the artifacts directory:
+
+```
+./artifacts/
+├── MyBrownfield.xcframework
+└── hermes.xcframework
+```
+
+</Collapsible>
+
+## Android publishing
+
+The plugin supports publishing to multiple types of Maven repositories:
+
+### Repository types
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-brownfield",
+      {
+        "android": {
+          "publishing": [
+            { "type": "localMaven" },
+            {
+              "type": "localDirectory",
+              "name": "customLocal",
+              "path": "./maven"
+            },
+            {
+              "type": "remotePublic",
+              "name": "myPublicRepo",
+              "url": "https://maven.example.com/public"
+            },
+            {
+              "type": "remotePrivate",
+              "url": { "variable": "MAVEN_REPO_URL" },
+              "username": { "variable": "MAVEN_REPO_USERNAME" },
+              "password": { "variable": "MAVEN_REPO_PASSWORD" }
+            }
+          ]
+        }
+      }
+    ]
+  ]
+}
+```
+
+| Type | Description |
+| --- | --- |
+| `localMaven` | Default Maven local repository (`~/.m2/repository/`) |
+| `localDirectory` | Custom local directory path |
+| `remotePublic` | Remote repository without authentication |
+| `remotePrivate` | Remote repository with password-based authentication |
+
+## Config plugin
+
+The brownfield setup can be configured by passing options via the config plugin interface in your **app.json** or **app.config.js** file:
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-brownfield",
+      {
+        "android": {
+          "library": "brownfield",
+          "package": "com.example.brownfield",
+          "version": "1.0.0"
+        },
+        "ios": {
+          "targetName": "MyBrownfield",
+          "bundleIdentifier": "com.example.brownfield"
+        }
+      }
+    ]
+  ]
+}
+```
+
+### Android options
+
+| Option | Description | Default |
+| --- | --- | --- |
+| `library` | Name of the Android library used for the brownfield | `brownfield` |
+| `package` | Package identifier for the brownfield library | `android.package` appended with `.brownfield` |
+| `group` | Group property for the brownfield library | Resolved value of `package` stripped of the last component |
+| `version` | Version of the brownfield library | `1.0.0` |
+| `publishing` | An array of Maven publishing configurations | `[{ type: 'localMaven' }]` |
+
+### iOS options
+
+| Option | Description | Default |
+| --- | --- | --- |
+| `bundleIdentifier` | Bundle identifier for the brownfield native target | `ios.bundleIdentifier` with last component replaced with the target name |
+| `targetName` | Name of the brownfield native target | `<scheme>brownfield` or `<slug>brownfield` |
+
+
+## API
+
+<APISection packageName="expo-brownfield" />
