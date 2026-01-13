@@ -235,10 +235,7 @@ export abstract class BundlerDevServer {
     }
 
     if (!options.isExporting) {
-      await Promise.all([
-        this.startDevSessionAsync(),
-        this.startBonjourAsync(),
-      ]);
+      await Promise.all([this.startDevSessionAsync(), this.startBonjourAsync()]);
       this.watchConfig();
     }
   }
@@ -283,10 +280,7 @@ export abstract class BundlerDevServer {
     // This is used to make Expo Go open the project in either Expo Go, or the web browser.
     // Must come after ngrok (`startTunnelAsync`) setup.
     if (!this.bonjour) {
-      this.bonjour = new Bonjour(
-        this.projectRoot,
-        this.getInstance()?.location.port,
-      );
+      this.bonjour = new Bonjour(this.projectRoot, this.getInstance()?.location.port);
     }
 
     await this.bonjour.announceAsync({});

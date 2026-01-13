@@ -11,7 +11,7 @@ export class Bonjour {
     /** Project root directory */
     private projectRoot: string,
     /** Port to advertise, if any */
-    private port: number | undefined,
+    private port: number | undefined
   ) {}
 
   public async announceAsync({
