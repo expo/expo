@@ -10,17 +10,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarExitDirection
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposableScope
@@ -28,7 +23,6 @@ import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.with
 import expo.modules.kotlin.views.withIf
-import android.graphics.Color as AndroidColor
 
 enum class HorizontalArrangement(val value: String) : Enumerable {
   START("start"),
@@ -195,60 +189,5 @@ class BoxView(context: Context, appContext: AppContext) : ExpoComposeView<Layout
         }
       Children(scope)
     }
-  }
-}
-
-enum class TextFontWeight(val value: String) : Enumerable {
-  NORMAL("normal"),
-  BOLD("bold"),
-  W100("100"),
-  W200("200"),
-  W300("300"),
-  W400("400"),
-  W500("500"),
-  W600("600"),
-  W700("700"),
-  W800("800"),
-  W900("900");
-
-  fun toComposeFontWeight(): FontWeight {
-    return when (this) {
-      NORMAL -> FontWeight.Normal
-      BOLD -> FontWeight.Bold
-      W100 -> FontWeight.W100
-      W200 -> FontWeight.W200
-      W300 -> FontWeight.W300
-      W400 -> FontWeight.W400
-      W500 -> FontWeight.W500
-      W600 -> FontWeight.W600
-      W700 -> FontWeight.W700
-      W800 -> FontWeight.W800
-      W900 -> FontWeight.W900
-    }
-  }
-}
-
-data class TextProps(
-  val text: MutableState<String> = mutableStateOf(""),
-  val color: MutableState<AndroidColor?> = mutableStateOf(null),
-  val fontSize: MutableState<Float> = mutableFloatStateOf(16f),
-  val fontWeight: MutableState<TextFontWeight> = mutableStateOf(TextFontWeight.NORMAL),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
-) : ComposeProps
-
-class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextProps>(context, appContext) {
-  override val props = TextProps()
-
-  @Composable
-  override fun ComposableScope.Content() {
-    Text(
-      text = props.text.value,
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content),
-      color = colorToComposeColor(props.color.value),
-      style = TextStyle(
-        fontSize = props.fontSize.value.sp,
-        fontWeight = props.fontWeight.value.toComposeFontWeight()
-      )
-    )
   }
 }

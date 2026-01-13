@@ -10,6 +10,9 @@ import {
   PullToRefreshBox,
   fillMaxSize,
   SearchBar,
+  Text,
+  fillMaxWidth,
+  Column,
 } from '@expo/ui/jetpack-compose';
 import { DrawerActions } from '@react-navigation/native';
 import { Stack, useNavigation } from 'expo-router';
@@ -52,10 +55,16 @@ export default function Home() {
           headerTitle: () => (
             <Host
               style={{
-                height: 56,
+                height: 52,
                 marginHorizontal: 16,
               }}>
-              <SearchBar />
+              <SearchBar>
+                <SearchBar.Placeholder>
+                  <Column modifiers={[fillMaxWidth()]}>
+                    <Text style={{ typography: 'bodyLarge' }}>Search wikipedia</Text>
+                  </Column>
+                </SearchBar.Placeholder>
+              </SearchBar>
             </Host>
           ),
           headerShadowVisible: false,

@@ -2,19 +2,14 @@ package expo.modules.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
@@ -26,6 +21,7 @@ data class SearchBarProps(
   val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
+@SuppressLint("ViewConstructor")
 class SearchBarView(context: Context, appContext: AppContext) :
   ExpoComposeView<SearchBarProps>(context, appContext) {
   override val props = SearchBarProps()
@@ -44,15 +40,18 @@ class SearchBarView(context: Context, appContext: AppContext) :
           textFieldState = textFieldState,
           onSearch = {},
           placeholder = {
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-              Text("Search Wikipedia", style = typography.bodyLarge)
-            }
+            Children(this@Content, filter = { isSlotWithName(it, "placeholder") })
           }
         )
       }
     SearchBar(
       state = searchBarState,
       inputField = inputField,
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content),
     )
+  }
+
+  private fun isSlotWithName(view: ExpoComposeView<*>, slotName: String): Boolean {
+    return view is SlotView && view.props.slotName.value == slotName
   }
 }

@@ -19,6 +19,7 @@ export * from './Carousel';
 export * from './SearchBar';
 export * from './HorizontalFloatingToolbar';
 export * from './PullToRefreshBox';
+export * from './Text';
 export * from './modifiers';
 export * from './layout';
 //# sourceMappingURL=index.d.ts.map
