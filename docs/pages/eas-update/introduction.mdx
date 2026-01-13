@@ -24,7 +24,7 @@ Install the `expo-updates` library and configure EAS Update:
 
 <Terminal cmd={['$ npx expo install expo-updates', '', '$ eas update:configure']} />
 
-Push an update to the production channel:
+You need to create a new build for Android or iOS. After that, you can push an update to the production channel:
 
 <Terminal cmd={['$ eas update --channel production --message "Fix login button alignment"']} />
 
@@ -37,7 +37,7 @@ For complete steps to start using EAS Update, see [Get started with EAS Update](
 ### JS API for update management
 
 <ContentSpotlight
-  alt="Updates JS API example"
+  alt="Updates JavaScript API example"
   src="/static/images/eas-update/frontpage/critical-update.png"
   className="max-w-[480px]"
 />
@@ -72,8 +72,8 @@ EAS Update helps teams to:
 
 - Fix a bug or crash in JavaScript code and deploy updates in minutes
 - Update copy, translations, UI styling, or screen layouts
-- Change configuration values or feature flags
 - Roll out changes to a percentage of users using [rollouts](/eas-update/rollouts/)
+- Publish updates from [CI or automated workflows](/eas/workflows/pre-packaged-jobs/#update)
 - Test updates with internal teams before production release
 
 ## When not to use EAS Update
@@ -116,12 +116,6 @@ By default, `expo-updates` checks for updates every time the app is loaded. You 
 
 </Collapsible>
 
-<Collapsible summary="Can I test updates with a small group before releasing to everyone?">
-
-Yes. Use EAS Update with [rollouts](/eas-update/rollouts/) to release to a percentage of users, or use staging [channels](/eas-update/how-it-works/#conceptual-overview) to test with internal teams first.
-
-</Collapsible>
-
 <Collapsible summary="Can I use EAS Update with my existing React Native project?">
 
 Yes. EAS Update works with both projects that use [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/) and [existing React Native projects](/bare/installing-updates/) that have the [`expo-updates`](/versions/latest/sdk/updates) library installed.
@@ -140,9 +134,28 @@ EAS Update uses [runtime version policies](/eas-update/runtime-versions/) to ens
 
 </Collapsible>
 
+<Collapsible summary="Can I use EAS Update inside EAS Workflows or from other CI/CD pipelines?">
+
+Yes. EAS Update works with [EAS Workflows](/eas/workflows/get-started/). You still need to configure and create a new build for Android or iOS. After that, you can add an update job to your workflow configuration. For example:
+
+```yaml
+jobs:
+  publish_update:
+    type: update
+    params:
+      message: 'Fix login button alignment'
+      channel: production
+```
+
+For more information, see [EAS Workflows pre-packaged jobs](/eas/workflows/pre-packaged-jobs/#update).
+
+To automate publishing updates with GitHub Actions, see the [GitHub Action for PR previews](/eas-update/github-actions/) guide.
+
+</Collapsible>
+
 <Collapsible summary="What's the difference between EAS Update and CodePush?">
 
-EAS Update is Expo's native solution that also integrates with [EAS Build](/build/introduction/), supports modern Expo features, and provides a unified workflow. CodePush uses a slightly different approach. To learn more about the differences between EAS Update and CodePush, see [Conceptual differences between CodePush and EAS Update](/eas-update/codepush/#conceptual-differences-between-codepush-and-eas-update).
+EAS Update is a native solution that also integrates with [EAS Build](/build/introduction/) and provides a unified workflow. CodePush uses a slightly different approach. To learn more about the differences between EAS Update and CodePush, see [Conceptual differences between CodePush and EAS Update](/eas-update/codepush/#conceptual-differences-between-codepush-and-eas-update).
 
 </Collapsible>
 
