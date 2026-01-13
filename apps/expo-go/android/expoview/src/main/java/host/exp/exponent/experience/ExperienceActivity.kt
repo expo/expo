@@ -51,7 +51,6 @@ import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenViewProvi
 import host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.ExponentUrls
-import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.kernel.KernelConstants.ExperienceOptions
 import host.exp.exponent.kernel.KernelProvider
@@ -319,10 +318,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     }
   }
 
-  fun onEventMainThread(event: KernelStartedRunningEvent?) {
-    AsyncCondition.notify(KERNEL_STARTED_RUNNING_KEY)
-  }
-
   override fun onDoneLoading() {
     reactSurface?.view?.let {
       setReactRootView(it)
@@ -342,7 +337,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
               sdkVersion = manifest?.getExpoGoSDKVersion() ?: "Unknown",
               engine = "Hermes"
             )
-          }
+          },
+          preferences = DevMenuSharedPreferencesAdapter(
+            application,
+            kernel.exponentSharedPreferences
+          )
         )
       )
     }
@@ -778,7 +777,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
   companion object {
     private val TAG = ExperienceActivity::class.java.simpleName
-    private const val KERNEL_STARTED_RUNNING_KEY = "experienceActivityKernelDidLoad"
     const val PERSISTENT_EXPONENT_NOTIFICATION_ID = 10101
     private const val READY_FOR_BUNDLE = "readyForBundle"
 
