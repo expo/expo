@@ -46,7 +46,7 @@ export function PagePlatformTags({ platforms, className }: Props) {
               </span>
             </Tooltip.Trigger>
             <Tooltip.Content side="bottom" align="start" className="max-w-[260px]">
-              {isExpoGo ? (
+              {isExpoGo && (
                 <FOOTNOTE>
                   This library is included in Expo Go. See "Bundled version" for the exact version
                   included in the Expo Go app.
