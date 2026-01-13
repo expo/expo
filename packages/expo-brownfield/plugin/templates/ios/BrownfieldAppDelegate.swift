@@ -166,5 +166,6 @@ open class BrownfieldAppDelegate: UIResponder, UIApplicationDelegate {
   ) -> UIInterfaceOrientationMask {
     ExpoAppDelegateSubscriberManager.application(
       application, supportedInterfaceOrientationsFor: window)
-  }  // END SECTION: Managing Interface Geometry
+  }
+  // END SECTION: Managing Interface Geometry
 }
