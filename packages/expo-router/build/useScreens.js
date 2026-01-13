@@ -228,8 +228,8 @@ function getQualifiedRouteComponent(value) {
         const hasRouteKey = !!route?.key;
         return (<Route_1.Route node={value} params={route?.params}>
         {isRouteType && hasRouteKey && navigationEvents_1.unstable_navigationEvents.hasAnyListener() && (<AnalyticsListeners navigation={navigation} screenId={route.key}/>)}
-        <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
         <zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider route={route}>
+          <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
           <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
             <ScreenComponent {...props} 
         // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`

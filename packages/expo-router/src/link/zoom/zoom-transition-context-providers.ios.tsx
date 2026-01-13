@@ -7,6 +7,7 @@ import {
   ZoomTransitionSourceContext,
   ZoomTransitionTargetContext,
   type ZoomTransitionSourceContextValueType,
+  type DismissalBoundsRect,
 } from './zoom-transition-context';
 import type {
   ZoomTransitionSourceContextProviderProps,
@@ -77,6 +78,7 @@ export function ZoomTransitionTargetContextProvider({
   route,
   children,
 }: ZoomTransitionTargetContextProviderProps) {
+  const [dismissalBoundsRect, setDismissalBoundsRect] = useState<DismissalBoundsRect | null>(null);
   const isPreview = useIsPreview();
   if (
     isZoomTransitionEnabled() &&
@@ -97,7 +99,12 @@ export function ZoomTransitionTargetContextProvider({
     const hasZoomTransition = !!zoomTransitionId && zoomTransitionScreenId === route.key;
     if (hasZoomTransition && typeof zoomTransitionId === 'string') {
       return (
-        <ZoomTransitionTargetContext value={{ identifier: zoomTransitionId }}>
+        <ZoomTransitionTargetContext
+          value={{
+            identifier: zoomTransitionId,
+            dismissalBoundsRect,
+            setDismissalBoundsRect,
+          }}>
           {children}
         </ZoomTransitionTargetContext>
       );

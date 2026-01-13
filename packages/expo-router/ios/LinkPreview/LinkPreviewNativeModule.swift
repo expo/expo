@@ -145,8 +145,8 @@ public class LinkPreviewNativeModule: Module {
         // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
       }
 
-      Prop("preventInteractiveDismissal") { (view: LinkZoomTransitionEnabler, prevent: Bool) in
-        view.isPreventingInteractiveDismissal = prevent
+      Prop("dismissalBoundsRect") { (view: LinkZoomTransitionEnabler, rect: DismissalBoundsRect?) in
+        view.dismissalBoundsRect = rect
       }
     }
 
@@ -201,4 +201,11 @@ enum MenuElementSize: String, Enumerable {
       }
     }
   }
+}
+
+struct DismissalBoundsRect: Record {
+  @Field var minX: Double?
+  @Field var maxX: Double?
+  @Field var minY: Double?
+  @Field var maxY: Double?
 }

@@ -39,6 +39,7 @@ const native_stack_1 = require("@react-navigation/native-stack");
 const React = __importStar(require("react"));
 const descriptors_context_1 = require("./descriptors-context");
 const LinkPreviewContext_1 = require("../../link/preview/LinkPreviewContext");
+const navigationParams_1 = require("../../navigationParams");
 function NativeStackNavigator({ id, initialRouteName, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_router, ...rest }) {
     const { state, describe, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
         id,
@@ -141,6 +142,14 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
                 };
             }
         }
+        // Map internal gesture option to React Navigation's gestureEnabled option
+        // This allows Expo Router to override gesture behavior without affecting user settings
+        Object.keys(descriptors).forEach((key) => {
+            const internalGestureEnabled = descriptors[key].options?.[navigationParams_1.INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME];
+            if (internalGestureEnabled !== undefined) {
+                descriptors[key].options.gestureEnabled = internalGestureEnabled;
+            }
+        });
         return {
             computedState: state,
             computedDescriptors: descriptors,
