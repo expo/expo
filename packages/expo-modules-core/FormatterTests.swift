@@ -15,8 +15,8 @@ struct FormatterTests {
       self.appContext.moduleRegistry.register(moduleType: FormatterTestModule.self, name: nil)
     }
 
-    @Test("can be used in sync functions")
-    func syncFunctions() throws {
+    @Test
+    func `can be used in sync functions`() throws {
       let r1 = try appContext.runtime
         .eval("expo.modules.FormatterModule.f1()")
         .asObject()
@@ -34,8 +34,8 @@ struct FormatterTests {
       #expect(r2.getProperty("c").isUndefined() == true)
     }
 
-    @Test("can be used in async functions")
-    func asyncFunctions() async throws {
+    @Test
+    func `can be used in async functions`() async throws {
       try appContext.runtime.eval(
         "expo.modules.FormatterModule.f1Async().then((result) => { globalThis.result = result; })"
       )
