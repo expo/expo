@@ -9,11 +9,13 @@ import { TagProps } from './types';
 
 type PlatformTagProps = Omit<TagProps, 'name'> & {
   platform: PlatformName;
+  label?: string;
   suffix?: ReactNode;
 };
 
-export const PlatformTag = ({ platform, className, suffix, ...rest }: PlatformTagProps) => {
+export const PlatformTag = ({ platform, label, className, suffix, ...rest }: PlatformTagProps) => {
   const platformName = getPlatformName(platform);
+  const displayLabel = label ?? formatName(platform);
 
   return (
     <div
@@ -28,7 +30,7 @@ export const PlatformTag = ({ platform, className, suffix, ...rest }: PlatformTa
       {...rest}>
       <PlatformIcon platform={platformName} />
       <span className={mergeClasses('whitespace-nowrap !text-3xs font-normal !leading-none')}>
-        {formatName(platform)}
+        {displayLabel}
       </span>
       {suffix}
     </div>

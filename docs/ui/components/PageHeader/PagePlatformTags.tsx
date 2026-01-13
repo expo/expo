@@ -1,10 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
-import { InfoCircleDuotoneIcon } from '@expo/styleguide-icons/duotone/InfoCircleDuotoneIcon';
-
 import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
 import { isClientPlatformTag } from '~/ui/components/Tag/helpers';
-import { FOOTNOTE } from '~/ui/components/Text';
-import * as Tooltip from '~/ui/components/Tooltip';
 
 type Props = {
   platforms: string[];
@@ -30,30 +26,12 @@ export function PagePlatformTags({ platforms, className }: Props) {
         }
 
         return (
-          <Tooltip.Root key={text} delayDuration={300}>
-            <Tooltip.Trigger asChild>
-              <span className="mr-2 inline-flex last:mr-0">
-                <PlatformTag
-                  platform={text}
-                  className="mr-0 rounded-full px-2.5 py-1.5"
-                  suffix={
-                    <InfoCircleDuotoneIcon
-                      aria-hidden="true"
-                      className="icon-2xs text-palette-gray10"
-                    />
-                  }
-                />
-              </span>
-            </Tooltip.Trigger>
-            <Tooltip.Content side="bottom" align="start" className="max-w-[260px]">
-              {isExpoGo && (
-                <FOOTNOTE>
-                  This library is included in Expo Go. See "Bundled version" for the exact version
-                  included in the Expo Go app.
-                </FOOTNOTE>
-              )}
-            </Tooltip.Content>
-          </Tooltip.Root>
+          <PlatformTag
+            key={text}
+            platform="expo-go"
+            label="Included in Expo Go"
+            className="rounded-full px-2.5 py-1.5 bg-palette-gray3 text-palette-gray12 border-palette-gray4 dark:bg-palette-gray4 dark:border-palette-gray4"
+          />
         );
       })}
     </div>
