@@ -134,6 +134,30 @@ internal fun getReactNativeVersion(project: Project): String {
   }
 }
 
+  /**
+   * Get the Hermes version for the project.
+   *
+   * @param project The project to get the Hermes version for.
+   * @return The Hermes version for the project.
+   * @throws IllegalStateException if the Hermes version cannot be inferred.
+   */
+  internal fun getHermesVersion(project: Project): String {
+    val process =
+      ProcessBuilder("node", "--print", "require('hermes-compiler/package.json').version")
+        .directory(project.rootProject.projectDir)
+        .redirectErrorStream(true)
+        .start()
+
+    val version = process.inputStream.bufferedReader().readText().trim()
+    process.waitFor()
+
+    if (process.exitValue() == 0 && version.isNotEmpty()) {
+      return version
+    }
+
+    throw IllegalStateException("Failed to infer Hermes version via Node")
+  }
+
 /**
  * Get the React Native version from the package.json file.
  *
@@ -206,8 +230,9 @@ internal fun removeReactNativeDependencyPom(xml: XmlProvider) {
  *
  * @param xml The XML provider to modify.
  * @param rnVersion The React Native version to set.
+  * @param hermesVersion The Hermes version to set.
  */
-internal fun setReactNativeVersionPom(xml: XmlProvider, rnVersion: String) {
+internal fun setReactNativeVersionPom(xml: XmlProvider, rnVersion: String, hermesVersion: String) {
   xml.dependencyNodes().forEach { dependency ->
     if (
       dependency.groupId() == "com.facebook.react" && dependency.artifactId() == "react-android"
@@ -217,7 +242,7 @@ internal fun setReactNativeVersionPom(xml: XmlProvider, rnVersion: String) {
     if (
       dependency.groupId() == "com.facebook.hermes" && dependency.artifactId() == "hermes-android"
     ) {
-      dependency.setVersion("0.14.0")
+      dependency.setVersion(hermesVersion)
     }
   }
 }

@@ -28,12 +28,14 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
    */
   private fun setupDependencySubstitution(project: Project) {
     val rnVersion = getReactNativeVersion(project)
+    val hermesVersion = getHermesVersion(project)
     project.logger.lifecycle("Resolved React Native version: $rnVersion")
+    project.logger.lifecycle("Resolved Hermes version: $hermesVersion")
 
     project.configurations.configureEach { config ->
       config.resolutionStrategy {
         it.force("com.facebook.react:react-android:$rnVersion")
-        it.force("com.facebook.hermes:hermes-android:0.14.0")
+        it.force("com.facebook.hermes:hermes-android:$hermesVersion")
       }
     }
   }
@@ -203,6 +205,30 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
       project.logger.warn("Falling back to reading from package.json...")
       return getReactNativeVersionFromPackageJson(project)
     }
+  }
+
+  /**
+   * Get the Hermes version for the project.
+   *
+   * @param project The project to get the Hermes version for.
+   * @return The Hermes version for the project.
+   * @throws IllegalStateException if the Hermes version cannot be inferred.
+   */
+  private fun getHermesVersion(project: Project): String {
+    val process =
+      ProcessBuilder("node", "--print", "require('hermes-compiler/package.json').version")
+        .directory(project.rootProject.projectDir)
+        .redirectErrorStream(true)
+        .start()
+
+    val version = process.inputStream.bufferedReader().readText().trim()
+    process.waitFor()
+
+    if (process.exitValue() == 0 && version.isNotEmpty()) {
+      return version
+    }
+
+    throw IllegalStateException("Failed to infer Hermes version via Node")
   }
 
   /**

@@ -36,12 +36,18 @@ internal fun setupPublishing(project: Project) {
         } else {
           null
         }
+      val hermesVersion =
+        if (project.name == configExtension.libraryName.get()) {
+          getHermesVersion(project)
+        } else {
+          null
+        }
 
       variants.forEach { variant ->
-        publicationExtension.createPublication(variant, project, libraryExtension, rnVersion)
+        publicationExtension.createPublication(variant, project, libraryExtension, rnVersion, hermesVersion)
       }
 
-      createModuleRelatedTasks(project, rnVersion)
+      createModuleRelatedTasks(project, rnVersion, hermesVersion)
       setupRepositories(publicationExtension, project, configExtension)
     }
   }
@@ -83,12 +89,12 @@ internal fun setupRepositories(
  * @param project The project to remove react-native dependency from.
  * @param isBrownfieldProject Whether the project is the brownfield project.
  */
-internal fun createModuleRelatedTasks(project: Project, rnVersion: String?) {
-  val vairants = listOf("brownfieldDebug", "brownfieldRelease", "brownfieldAll")
-  vairants.forEach { variant ->
+internal fun createModuleRelatedTasks(project: Project, rnVersion: String?, hermesVersion: String?) {
+  val variants = listOf("brownfieldDebug", "brownfieldRelease", "brownfieldAll")
+  variants.forEach { variant ->
     createRemoveReactNativeDependencyModuleTask(project, variant)
-    if (rnVersion != null) {
-      createSetReactNativeVersionModuleTask(project, variant, rnVersion)
+    if (rnVersion != null && hermesVersion != null) {
+      createSetReactNativeVersionModuleTask(project, variant, rnVersion, hermesVersion)
     }
   }
 }
@@ -139,6 +145,7 @@ internal fun createSetReactNativeVersionModuleTask(
   project: Project,
   variant: String,
   rnVersion: String,
+  hermesVersion: String,
 ) {
   val setVersionTask =
     project.tasks.register("setRNDependencyVersionInModuleFile$variant") { task ->
@@ -153,14 +160,14 @@ internal fun createSetReactNativeVersionModuleTask(
         val moduleJson = parseModuleJson(moduleFile)
         moduleJson?.dependencies()?.forEach { dependency ->
           if (
-            (dependency["group"] == "com.facebook.react" && dependency["module"] == "react-android")
+            dependency["group"] == "com.facebook.react" && dependency["module"] == "react-android"
           ) {
             dependency["version"] = mapOf("requires" to rnVersion)
           }
           if (
-            (dependency["group"] == "com.facebook.hermes" && dependency["module"] == "hermes-android")
+            dependency["group"] == "com.facebook.hermes" && dependency["module"] == "hermes-android"
           ) {
-            dependency["version"] = mapOf("requires" to "0.14.0")
+            dependency["version"] = mapOf("requires" to hermesVersion)
           }
         }
 
