@@ -53,6 +53,6 @@ android {
 
 dependencies {
   api("com.facebook.react:react-android")
-  api("com.facebook.react:hermes-android")
+  api("com.facebook.hermes:hermes-android")
   compileOnly("androidx.fragment:fragment-ktx:1.6.1")
 }

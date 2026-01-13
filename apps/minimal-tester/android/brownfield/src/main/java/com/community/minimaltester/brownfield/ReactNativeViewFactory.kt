@@ -22,7 +22,6 @@ object ReactNativeViewFactory {
       launchOptions: Bundle? = null,
   ): FrameLayout {
     val reactHost = ReactNativeHostManager.shared.getReactHost()
-
     val reactDelegate = ReactDelegate(activity, reactHost!!, rootComponent.key, launchOptions)
 
     activity.lifecycle.addObserver(
