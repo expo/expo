@@ -12,7 +12,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
@@ -149,8 +148,7 @@ class HomeAppViewModel(
     Context.MODE_PRIVATE
   )
 
-  private val gson: Gson =
-    GsonBuilder().create()
+  private val gson = Gson()
 
   private var lastCrashDate: Long? = null
 
