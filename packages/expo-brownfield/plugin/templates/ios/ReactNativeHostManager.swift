@@ -9,7 +9,6 @@ public class ReactNativeHostManager {
 
   private var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   private var reactNativeFactory: RCTReactNativeFactory?
-  private var expoDelegate: ExpoAppDelegate?
 
   /**
    * Initializes ReactNativeHostManager instance
@@ -27,9 +26,6 @@ public class ReactNativeHostManager {
 
     reactNativeDelegate = delegate
     reactNativeFactory = factory
-
-    expoDelegate = ExpoAppDelegate()
-    expoDelegate?.bindReactNativeFactory(factory)
 
     // Ensure this won't get stripped by the Swift compiler
     _ = ExpoModulesProvider()

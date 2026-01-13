@@ -1,3 +1,4 @@
+internal import ExpoModulesCore
 import UIKit
 
 @objc
