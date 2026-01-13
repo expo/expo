@@ -4,6 +4,9 @@ import android.graphics.Color
 import android.os.Build
 import android.util.Log
 import androidx.compose.ui.graphics.vector.ImageVector
+import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
 
 fun colorToComposeColorOrNull(color: Color?): androidx.compose.ui.graphics.Color? {
   return color?.let {
@@ -39,3 +42,9 @@ fun getImageVector(icon: String?): ImageVector? {
     return null
   }
 }
+
+data class GenericEventPayload1<T>(
+  @Field val value: T
+) : Record
+
+

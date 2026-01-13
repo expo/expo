@@ -4,17 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
-import androidx.compose.material3.FloatingToolbarDefaults.floatingToolbarVerticalNestedScroll
-import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.material3.FloatingToolbarScrollBehavior
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
-import androidx.core.view.size
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposableScope
@@ -46,7 +41,7 @@ class HorizontalFloatingToolbarView(context: Context, appContext: AppContext) :
     }
 
     // Find the FAB slot and extract its onClick handler
-    val fabSlotView = findSlotView("floatingActionButton")
+    val fabSlotView = findChildSlotView(this@HorizontalFloatingToolbarView, "floatingActionButton")
     val fabOnClick: () -> Unit = {
       fabSlotView?.onSlotEvent?.invoke(Unit)
     }
@@ -75,23 +70,5 @@ class HorizontalFloatingToolbarView(context: Context, appContext: AppContext) :
     ) {
       Children(this@Content, filter = { !isSlotView(it) })
     }
-  }
-
-  private fun isSlotView(view: ExpoComposeView<*>): Boolean {
-    return view is SlotView
-  }
-
-  private fun isSlotWithName(view: ExpoComposeView<*>, slotName: String): Boolean {
-    return view is SlotView && view.props.slotName.value == slotName
-  }
-
-  private fun findSlotView(slotName: String): SlotView? {
-    for (index in 0..<this.size) {
-      val child = getChildAt(index) as? SlotView
-      if (child != null && child.props.slotName.value == slotName) {
-        return child
-      }
-    }
-    return null
   }
 }

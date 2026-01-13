@@ -109,17 +109,10 @@ class ExpoUIModule : Module() {
       }
     }
 
-    View(SearchBarView::class)
-//      Events("onValueChanged")
-//      Prop("defaultValue", "") { view: SearchBarView, text: String ->
-//        if (view.text == null) {
-//          view.text = text
-//        }
-//      }
-//      AsyncFunction("setText") { view: SearchBarView, text: String ->
-//        view.text = text
-//      }
-//    }
+    View(SearchBarView::class) {
+      Events("onSearch")
+    }
+
     View(HorizontalFloatingToolbarView::class)
     View(SlotView::class) {
       Events("onSlotEvent")

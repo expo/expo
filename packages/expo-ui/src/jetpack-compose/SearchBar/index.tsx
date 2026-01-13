@@ -1,21 +1,19 @@
 import { requireNativeView } from 'expo';
-import { Children, Ref } from 'react';
+import { Children } from 'react';
 
-import { ExpoModifier } from '../../types';
-
-export type SearchBarRef = {
-  setText: (newText: string) => Promise<void>;
-};
+import { type ExpoModifier, type ViewEvent } from '../../types';
 
 export type SearchBarProps = {
   /**
-   * Can be used for imperatively setting text on the SearchBar component.
+   * Callback function that is called when the search text is submitted.
    */
-  ref?: Ref<SearchBarRef>;
+  onSearch?: (searchText: string) => void;
+
   /**
    * Modifiers for the component.
    */
   modifiers?: ExpoModifier[];
+
   /**
    * The children of the component.
    */
@@ -29,7 +27,15 @@ type PlaceholderProps = {
   children: React.ReactNode;
 };
 
-type NativeSearchBarProps = SearchBarProps & {};
+type ExpandedFullScreenSearchBarProps = {
+  /**
+   * The children of the component.
+   */
+  children: React.ReactNode;
+};
+
+type NativeSearchBarProps = Omit<SearchBarProps, 'onSearch'> &
+  ViewEvent<'onSearch', { value: string }>;
 
 type NativeSlotViewProps = {
   slotName: string;
@@ -56,11 +62,24 @@ export function Placeholder(props: PlaceholderProps) {
 }
 Placeholder.tag = 'Placeholder';
 
+/**
+ * ExpandedFullScreenSearchBar component for SearchBar.
+ * This component marks its children to be rendered in the expanded full-screen search bar.
+ */
+export function ExpandedFullScreenSearchBar(props: ExpandedFullScreenSearchBarProps) {
+  return <>{props.children}</>;
+}
+ExpandedFullScreenSearchBar.tag = 'ExpandedFullScreenSearchBar';
+
 function transformSearchBarProps(props: SearchBarProps): NativeSearchBarProps {
+  const { onSearch, ...restProps } = props;
   return {
-    ...props,
+    ...restProps,
+    onSearch: (event) => {
+      onSearch?.(event.nativeEvent.value);
+    },
     // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
+    modifiers: restProps.modifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 
@@ -68,13 +87,16 @@ function transformSearchBarProps(props: SearchBarProps): NativeSearchBarProps {
  * Renders a `SearchBar` component.
  */
 function SearchBar(props: SearchBarProps) {
-  // Separate Placeholder from regular children
+  // Separate slots from regular children
   let placeholderContent: React.ReactNode = null;
+  let expandedFullScreenSearchBarContent: React.ReactNode = null;
   const regularChildren: React.ReactNode[] = [];
 
   Children.forEach(props.children as any, (child) => {
     if (child?.type?.tag === Placeholder.tag) {
       placeholderContent = child.props.children;
+    } else if (child?.type?.tag === ExpandedFullScreenSearchBar.tag) {
+      expandedFullScreenSearchBarContent = child.props.children;
     } else {
       regularChildren.push(child);
     }
@@ -86,10 +108,16 @@ function SearchBar(props: SearchBarProps) {
       {placeholderContent && (
         <SlotNativeView slotName="placeholder">{placeholderContent}</SlotNativeView>
       )}
+      {expandedFullScreenSearchBarContent && (
+        <SlotNativeView slotName="expandedFullScreenSearchBar">
+          {expandedFullScreenSearchBarContent}
+        </SlotNativeView>
+      )}
     </SearchBarNativeView>
   );
 }
 
 SearchBar.Placeholder = Placeholder;
+SearchBar.ExpandedFullScreenSearchBar = ExpandedFullScreenSearchBar;
 
 export { SearchBar };

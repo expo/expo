@@ -3,6 +3,7 @@ package expo.modules.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
@@ -25,7 +26,7 @@ data class SearchBarProps(
 class SearchBarView(context: Context, appContext: AppContext) :
   ExpoComposeView<SearchBarProps>(context, appContext) {
   override val props = SearchBarProps()
-  private val onValueChanged by EventDispatcher()
+  private val onSearch by EventDispatcher<GenericEventPayload1<String>>()
 
   @OptIn(ExperimentalMaterial3Api::class)
   @Composable
@@ -38,7 +39,7 @@ class SearchBarView(context: Context, appContext: AppContext) :
         SearchBarDefaults.InputField(
           searchBarState = searchBarState,
           textFieldState = textFieldState,
-          onSearch = {},
+          onSearch = { value -> onSearch.invoke(GenericEventPayload1(value)) },
           placeholder = {
             Children(this@Content, filter = { isSlotWithName(it, "placeholder") })
           }
@@ -49,9 +50,24 @@ class SearchBarView(context: Context, appContext: AppContext) :
       inputField = inputField,
       modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content),
     )
+
+    val expandedFullScreenSearchBarView = findChildSlotView(this@SearchBarView, "expandedFullScreenSearchBar")
+    expandedFullScreenSearchBarView?.let { slotView ->
+      ExpandedFullScreenSearchBar(
+        state = searchBarState,
+        inputField = inputField,
+      ) {
+        ExpandedFullScreenSearchBarView(this@Content, slotView)
+      }
+    }
   }
 
-  private fun isSlotWithName(view: ExpoComposeView<*>, slotName: String): Boolean {
-    return view is SlotView && view.props.slotName.value == slotName
+  @Composable
+  private fun ExpandedFullScreenSearchBarView(composableScope: ComposableScope, view: SlotView) {
+    with(composableScope) {
+      with(view) {
+        Content()
+      }
+    }
   }
 }

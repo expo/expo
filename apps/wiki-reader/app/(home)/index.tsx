@@ -58,12 +58,20 @@ export default function Home() {
                 height: 52,
                 marginHorizontal: 16,
               }}>
-              <SearchBar>
+              <SearchBar
+                onSearch={(searchText) => {
+                  alert(`search for: ${searchText}`);
+                }}>
                 <SearchBar.Placeholder>
                   <Column modifiers={[fillMaxWidth()]}>
                     <Text style={{ typography: 'bodyLarge' }}>Search wikipedia</Text>
                   </Column>
                 </SearchBar.Placeholder>
+                <SearchBar.ExpandedFullScreenSearchBar>
+                  <Column modifiers={[fillMaxWidth()]}>
+                    <Text style={{ typography: 'labelLarge' }}>Dummy search item</Text>
+                  </Column>
+                </SearchBar.ExpandedFullScreenSearchBar>
               </SearchBar>
             </Host>
           ),
