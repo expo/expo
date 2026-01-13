@@ -27,7 +27,7 @@ class ExponentSharedPreferences(val context: Context) {
     sharedPreferences.getBoolean(key.preferenceKey, defaultValue)
 
   fun setBoolean(key: ExponentSharedPreferencesKey, value: Boolean) =
-    sharedPreferences.edit(commit = true) { putBoolean(key.preferenceKey, value)}
+    sharedPreferences.edit(commit = true) { putBoolean(key.preferenceKey, value) }
 
   fun getInteger(key: ExponentSharedPreferencesKey) = getInteger(key, 0)
 
@@ -35,7 +35,7 @@ class ExponentSharedPreferences(val context: Context) {
     sharedPreferences.getInt(key.preferenceKey, defaultValue)
 
   fun setInteger(key: ExponentSharedPreferencesKey, value: Int) =
-    sharedPreferences.edit(commit = true) {putInt(key.preferenceKey, value)}
+    sharedPreferences.edit(commit = true) { putInt(key.preferenceKey, value) }
 
   fun getLong(key: ExponentSharedPreferencesKey) =
     sharedPreferences.getLong(key.preferenceKey, 0)
