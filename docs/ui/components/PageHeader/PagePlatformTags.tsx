@@ -3,7 +3,7 @@ import { InfoCircleDuotoneIcon } from '@expo/styleguide-icons/duotone/InfoCircle
 
 import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
 import { isClientPlatformTag } from '~/ui/components/Tag/helpers';
-import { A, FOOTNOTE } from '~/ui/components/Text';
+import { FOOTNOTE } from '~/ui/components/Text';
 import * as Tooltip from '~/ui/components/Tooltip';
 
 type Props = {
@@ -24,9 +24,8 @@ export function PagePlatformTags({ platforms, className }: Props) {
         const text = platform.includes('*') ? platform.replace('*', ' (device only)') : platform;
         const platformLower = platform.toLowerCase();
         const isExpoGo = platformLower.includes('expo-go');
-        const isDevBuilds = platformLower.includes('dev-builds');
 
-        if (!isExpoGo && !isDevBuilds) {
+        if (!isExpoGo) {
           return <PlatformTag key={text} platform={text} className="rounded-full px-2.5 py-1.5" />;
         }
 
@@ -51,12 +50,6 @@ export function PagePlatformTags({ platforms, className }: Props) {
                 <FOOTNOTE>
                   This library is included in Expo Go. See "Bundled version" for the exact version
                   included in the Expo Go app.
-                </FOOTNOTE>
-              ) : (
-                <FOOTNOTE>
-                  This library is not available in the Expo Go app. Create a{' '}
-                  <A href="/develop/development-builds/introduction">development build</A> to use
-                  it.
                 </FOOTNOTE>
               )}
             </Tooltip.Content>
