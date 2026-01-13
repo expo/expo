@@ -60,7 +60,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - [iOS] Fix setting audio quality for recordings. ([#39705](https://github.com/expo/expo/pull/39705) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Removed requiring shouldPlayInBackground to be true for background recording.
+- [Android] Removed requiring shouldPlayInBackground to be true for background recording. ([#42134](https://github.com/expo/expo/pull/42134) by [@chrfalch](https://github.com/chrfalch))
 
 ## 1.0.11 — 2025-09-11
 
