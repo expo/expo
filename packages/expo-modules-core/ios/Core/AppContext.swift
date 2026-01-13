@@ -560,8 +560,16 @@ public final class AppContext: NSObject, @unchecked Sendable {
     if let providerClass = NSClassFromString(providerName) as? ModulesProvider.Type {
       return providerClass.init()
     }
+    
+    // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
+    for bundle in Bundle.allFrameworks {
+      guard let bundleName = bundle.infoDictionary?["CFBundleName"] as? String else { continue }
+      if let providerClass = NSClassFromString("\(bundleName).\(providerName)") as? ModulesProvider.Type {
+        return providerClass.init()
+      }
+    }
 
-    // [2] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
+    // [3] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
     return ModulesProvider()
   }
 }
