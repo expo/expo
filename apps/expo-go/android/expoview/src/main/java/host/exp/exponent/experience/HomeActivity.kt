@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
-import android.os.Debug
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.animation.AccelerateInterpolator
@@ -14,40 +13,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.splashscreen.SplashScreen
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
-import expo.modules.application.ApplicationModule
-import expo.modules.asset.AssetModule
-import expo.modules.blur.BlurModule
-import expo.modules.camera.CameraViewModule
-import expo.modules.clipboard.ClipboardModule
-import expo.modules.constants.ConstantsModule
-import expo.modules.constants.ConstantsService
-import expo.modules.core.interfaces.Package
-import expo.modules.device.DeviceModule
-import expo.modules.easclient.EASClientModule
-import expo.modules.filesystem.FileSystemModule
-import expo.modules.filesystem.legacy.FileSystemLegacyModule
-import expo.modules.font.FontLoaderModule
-import expo.modules.font.FontUtilsModule
-import expo.modules.haptics.HapticsModule
-import expo.modules.keepawake.KeepAwakeModule
-import expo.modules.kotlin.ModulesProvider
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.services.Service
-import expo.modules.lineargradient.LinearGradientModule
-import expo.modules.notifications.NotificationsPackage
-import expo.modules.storereview.StoreReviewModule
-import expo.modules.taskManager.TaskManagerPackage
-import expo.modules.trackingtransparency.TrackingTransparencyModule
-import expo.modules.webbrowser.WebBrowserModule
-import host.exp.exponent.Constants
 import host.exp.exponent.di.NativeModuleDepsProvider
-import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
-import host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage
 import host.exp.exponent.home.HomeActivityEvent
 import host.exp.exponent.home.HomeAppViewModel
 import host.exp.exponent.home.HomeAppViewModelFactory
@@ -56,7 +26,6 @@ import host.exp.exponent.home.auth.AuthActivity
 import host.exp.exponent.home.auth.AuthResult
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.ExpoViewKernel
-import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
 import host.exp.exponent.utils.ExperienceActivityUtils
 import host.exp.exponent.utils.ExperienceRTLManager
 import host.exp.exponent.utils.currentDeviceIsAPhone
@@ -146,7 +115,6 @@ open class HomeActivity : BaseExperienceActivity() {
     super.onResume()
   }
   //endregion Activity Lifecycle
-
 
   private fun configureSplashScreen(customSplashscreen: SplashScreen) {
     val contentView = findViewById<View>(android.R.id.content)
