@@ -21,11 +21,10 @@ const withExpoHeadIos = (config) => {
         return config;
     });
 };
-const withGammaScreens = (config, props) => {
-    const value = props?.unstable_splitView ?? false;
+const withGammaScreens = (config) => {
     return (0, config_plugins_1.withPodfile)(config, (config) => {
         if (!config.modResults.contents.includes('RNS_GAMMA_ENABLED')) {
-            config.modResults.contents = `ENV['RNS_GAMMA_ENABLED']='${value ? 1 : 0}'\n${config.modResults.contents}`;
+            config.modResults.contents = `ENV['RNS_GAMMA_ENABLED']='1'\n${config.modResults.contents}`;
         }
         return config;
     });
@@ -34,7 +33,7 @@ const withRouter = (config, _props) => {
     const props = _props || {};
     (0, schema_utils_1.validate)(schema, props);
     withExpoHeadIos(config);
-    withGammaScreens(config, props);
+    withGammaScreens(config);
     return {
         ...config,
         extra: {

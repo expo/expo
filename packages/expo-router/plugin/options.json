@@ -167,11 +167,6 @@
           "description": "Enable experimental server-side rendering. When enabled with `web.output: 'server'`, HTML is rendered at request time instead of being pre-rendered at build time.",
           "type": "boolean",
           "default": false
-        },
-        "unstable_splitView": {
-          "description": "Enable experimental SplitView support on ios",
-          "type": "boolean",
-          "default": false
         }
       },
       "additionalProperties": false

@@ -12,7 +12,6 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import APISection from '~/components/plugins/APISection';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { ConfigPluginExample } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 
@@ -40,12 +39,6 @@ There can only be one `SplitView` in the navigation hierarchy. Attempting to nes
 
 </Collapsible>
 
-<Collapsible summary="Requires prebuild">
-
-After enabling split view in app config, you must run `npx expo prebuild` to apply the native configuration. The feature won't work in Expo Go.
-
-</Collapsible>
-
 <Collapsible summary="Only specific children allowed">
 
 `SplitView` only accepts `SplitView.Column` and `SplitView.Inspector` as direct children. Other components will be ignored with a warning.
@@ -62,29 +55,6 @@ To use `expo-router/unstable-split-view` in your project, you need to install `e
   href="/router/installation/"
   Icon={BookOpen02Icon}
 />
-
-## Configuration in app config
-
-To enable Split View support, add the `unstable_splitView` property to the `expo-router` plugin configuration in your [app config](/workflow/configuration/) file:
-
-<ConfigPluginExample>
-
-```json app.json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-router",
-        {
-          "unstable_splitView": true
-        }
-      ]
-    ]
-  }
-}
-```
-
-</ConfigPluginExample>
 
 ## Using `SplitView.Column`
 
