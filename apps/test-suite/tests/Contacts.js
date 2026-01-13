@@ -743,13 +743,16 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
     });
 
     it('Contacts.updateContactAsync() with image', async () => {
-      const contactId = await createContactWithImage({
-        [Contacts.Fields.FirstName]: 'Kenny',
-        [Contacts.Fields.LastName]: 'Bday guy',
-      });
+      const contactId = await createContactWithImage();
       expect(typeof contactId).toBe('string');
       const contact = await Contacts.getContactByIdAsync(contactId);
+      expect(contact.imageAvailable).toBe(true);
+      expect(contact.image).toBeDefined();
+      contact[Contacts.Fields.FirstName] = 'KennyUpdated';
       const modifiedId = await Contacts.updateContactAsync(contact);
+      const updatedContact = await Contacts.getContactByIdAsync(modifiedId);
+      updatedContact.firstName = 'KennyUpdated';
+      expect(updatedContact.image).toBeDefined();
       expect(typeof modifiedId).toBe('string');
     });
   });

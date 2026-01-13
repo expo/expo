@@ -389,7 +389,12 @@ class ContactsModule : Module() {
       val image = data["image"]
       if (image is Map<*, *> && image.containsKey("uri")) {
         val uri = image["uri"] as String?
-        if (uri != null && !uri.startsWith("file://")) {
+        // The list of supported schemas for ContentResolver
+        // https://developer.android.com/privacy-and-security/risks/content-resolver
+        if (uri != null &&
+          !uri.startsWith("file://") &&
+          !uri.startsWith("content://") &&
+          !uri.startsWith("android.resource://")) {
           throw RemoteImageUriException(uri)
         }
         contact.photoUri = uri
