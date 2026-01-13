@@ -24,3 +24,4 @@ export * from './Text';
 
 export * from './modifiers';
 export * from './layout';
+export { ViewEvent } from '../types';

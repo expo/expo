@@ -1,6 +1,7 @@
 package expo.modules.wikireader
 
 import android.content.Context
+import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.rememberScrollState
@@ -12,6 +13,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
@@ -19,6 +23,10 @@ import expo.modules.ui.ExpoModifier
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+
+private data class ComposeWebViewLoadingProgressChanged(
+  @Field val progress: Int
+) : Record
 
 data class ComposeWebViewProps(
   val url: MutableState<String> = mutableStateOf(""),
@@ -29,6 +37,7 @@ class ComposeWebView(context: Context, appContext: AppContext) : ExpoComposeView
   override val props = ComposeWebViewProps()
   private var reloadDeferred: CompletableDeferred<Unit>? = null
   private val mutex = Mutex()
+  private val onLoadingProgressChanged by EventDispatcher<ComposeWebViewLoadingProgressChanged>()
 
   private val webView by lazy {
     WebView(context).apply {
@@ -39,6 +48,13 @@ class ComposeWebView(context: Context, appContext: AppContext) : ExpoComposeView
           super.onPageFinished(view, url)
           reloadDeferred?.complete(Unit)
           reloadDeferred = null
+        }
+      }
+
+      webChromeClient = object : WebChromeClient() {
+        override fun onProgressChanged(view: WebView?, newProgress: Int) {
+          super.onProgressChanged(view, newProgress)
+          onLoadingProgressChanged.invoke(ComposeWebViewLoadingProgressChanged(newProgress))
         }
       }
     }

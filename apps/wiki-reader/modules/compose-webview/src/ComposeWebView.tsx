@@ -1,3 +1,4 @@
+import { type ViewEvent } from '@expo/ui/jetpack-compose';
 import { ExpoModifier } from '@expo/ui/jetpack-compose/modifiers';
 import { requireNativeView } from 'expo';
 import { type Ref } from 'react';
@@ -17,6 +18,11 @@ export interface ComposeWebViewProps {
    * Imperative ref to the web view.
    */
   ref?: Ref<ComposeWebViewRef>;
+
+  /**
+   * Callback function that is called when the loading progress of the web view changes.
+   */
+  onLoadingProgressChanged?: (progress: number) => void;
 }
 
 export type ComposeWebViewRef = {
@@ -29,11 +35,16 @@ const NativeView: React.ComponentType<ComposeWebViewProps> = requireNativeView(
   'ComposeWebView'
 );
 
-type NativeProps = ComposeWebViewProps;
+type NativeProps = Omit<ComposeWebViewProps, 'onLoadingProgressChanged'> &
+  ViewEvent<'onLoadingProgressChanged', { progress: number }>;
 
 function transformProps(props: ComposeWebViewProps): NativeProps {
+  const { onLoadingProgressChanged, ...restProps } = props;
   return {
-    ...props,
+    ...restProps,
+    onLoadingProgressChanged: (event) => {
+      onLoadingProgressChanged?.(event.nativeEvent.progress);
+    },
     // @ts-expect-error
     modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   };

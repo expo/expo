@@ -9,6 +9,8 @@ class ComposeWebViewModule : Module() {
     Name("ComposeWebViewModule")
 
     View(ComposeWebView::class) {
+      Events("onLoadingProgressChanged")
+
       AsyncFunction("loadUrl") Coroutine { view: ComposeWebView, url: String ->
         return@Coroutine view.loadUrlAsync(url)
       }
