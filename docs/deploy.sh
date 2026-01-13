@@ -377,6 +377,9 @@ redirects[router/reference/middleware]=router/web/middleware
 redirects[router/reference/static-rendering]=router/web/static-rendering
 redirects[router/reference/async-routes]=router/web/async-routes
 
+# After moving FAQ to EAS Update page
+redirects[eas-update/faq]=eas-update/introduction
+
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do
