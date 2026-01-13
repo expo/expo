@@ -297,14 +297,16 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     return false
   }
 
-  /**
-   * Handles key commands.
-   */
-  override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-    if (reactHost != null && !isCrashed) {
-      return devMenuFragment?.onKeyUp(keyCode, event) ?: super.onKeyUp(keyCode, event)
+  override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+    if (event.action == KeyEvent.ACTION_UP) {
+      if (reactHost != null && !isCrashed) {
+        val wasHandled = devMenuFragment?.onKeyUp(event.keyCode, event)
+        if (wasHandled == true) {
+          return true
+        }
+      }
     }
-    return super.onKeyUp(keyCode, event)
+    return super.dispatchKeyEvent(event)
   }
 
   /**
