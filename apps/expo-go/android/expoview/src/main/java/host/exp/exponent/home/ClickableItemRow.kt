@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import expo.modules.devmenu.compose.primitives.Spacer
 
@@ -18,6 +19,8 @@ typealias ComposableFunction = @Composable () -> Unit
 fun ClickableItemRow(
   text: String? = null,
   icon: ComposableFunction? = null,
+  paddingVertical: Dp = 16.dp,
+  paddingHorizontal: Dp = 16.dp,
   onClick: () -> Unit,
   action: ComposableFunction? = null,
   content: ComposableFunction? = null
@@ -26,7 +29,10 @@ fun ClickableItemRow(
     modifier = Modifier
       .fillMaxWidth()
       .clickable(onClick = onClick)
-      .padding(16.dp),
+      .padding(
+        vertical = paddingVertical,
+        horizontal = paddingHorizontal
+      ),
     verticalAlignment = Alignment.CenterVertically
   ) {
     if (icon != null) {

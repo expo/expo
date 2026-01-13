@@ -17,6 +17,7 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.apollo.Paginator
+import host.exp.exponent.experience.DevMenuSharedPreferencesAdapter
 import host.exp.exponent.graphql.BranchDetailsQuery
 import host.exp.exponent.graphql.BranchesForProjectQuery
 import host.exp.exponent.graphql.Home_AccountAppsQuery
@@ -140,12 +141,16 @@ class HomeAppViewModel(
   homeActivityEvents: MutableSharedFlow<HomeActivityEvent>,
   private val authLauncher: ActivityResultLauncher<AuthRequestType>
 ) : AndroidViewModel(application) {
-
   val userReviewState = MutableStateFlow(UserReviewState())
 
   private val userReviewPrefs = application.getSharedPreferences(
     USER_REVIEW_INFO_PREFS_KEY,
     Context.MODE_PRIVATE
+  )
+
+  val devMenuPreferencesAdapter = DevMenuSharedPreferencesAdapter(
+    application,
+    exponentHistoryService.exponentSharedPreferences
   )
 
   private val gson = Gson()
