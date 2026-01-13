@@ -1,8 +1,8 @@
 import { screen, act, fireEvent } from '@testing-library/react-native';
-import React from 'react';
 import { Button, View } from 'react-native';
 import {
   BottomTabs as _BottomTabs,
+  BottomTabsScreen as _BottomTabsScreen,
   type BottomTabsProps,
   type BottomTabsScreenProps,
 } from 'react-native-screens';
@@ -24,6 +24,7 @@ jest.mock('react-native-screens', () => {
 });
 
 const BottomTabs = _BottomTabs as jest.MockedFunction<typeof _BottomTabs>;
+const BottomTabsScreen = _BottomTabsScreen as jest.MockedFunction<typeof _BottomTabsScreen>;
 
 it.each([
   { value: undefined, expected: 'automatic' },
@@ -45,4 +46,38 @@ it.each([
   expect(screen.getByTestId('index')).toBeVisible();
   expect(BottomTabs).toHaveBeenCalledTimes(1);
   expect(BottomTabs.mock.calls[0][0].tabBarControllerMode).toBe(expected);
+});
+
+it('uses shadowColor when it is passed to NativeTabs', () => {
+  renderRouter({
+    _layout: () => (
+      <NativeTabs shadowColor="red">
+        <NativeTabs.Trigger name="index" />
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+  expect(BottomTabsScreen.mock.calls[0][0].standardAppearance.tabBarShadowColor).toBe('red');
+  expect(BottomTabsScreen.mock.calls[0][0].scrollEdgeAppearance.tabBarShadowColor).toBe(
+    'transparent'
+  );
+});
+
+it('uses shadowColor when it is passed to NativeTabs in both standardAppearance and scrollEdgeAppearance when disableTransparentOnScrollEdge is true', () => {
+  renderRouter({
+    _layout: () => (
+      <NativeTabs shadowColor="red" disableTransparentOnScrollEdge>
+        <NativeTabs.Trigger name="index" />
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
+  expect(BottomTabsScreen.mock.calls[0][0].standardAppearance.tabBarShadowColor).toBe('red');
+  expect(BottomTabsScreen.mock.calls[0][0].scrollEdgeAppearance.tabBarShadowColor).toBe('red');
 });

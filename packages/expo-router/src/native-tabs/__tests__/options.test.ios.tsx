@@ -137,6 +137,7 @@ it('when no options are passed, default ones are used', () => {
     selectedIconColor: undefined,
     labelStyle: undefined,
     selectedLabelStyle: undefined,
+    shadowColor: undefined,
     blurEffect: undefined,
     backgroundColor: undefined,
     badgeBackgroundColor: undefined,
