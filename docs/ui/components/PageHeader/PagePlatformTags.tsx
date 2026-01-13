@@ -1,4 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
+
 import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
 import { isClientPlatformTag } from '~/ui/components/Tag/helpers';
 
@@ -30,7 +31,7 @@ export function PagePlatformTags({ platforms, className }: Props) {
             key={text}
             platform="expo-go"
             label="Included in Expo Go"
-            className="rounded-full px-2.5 py-1.5 bg-palette-gray3 text-palette-gray12 border-palette-gray4 dark:bg-palette-gray4 dark:border-palette-gray4"
+            className="rounded-full border-palette-gray4 bg-palette-gray3 px-2.5 py-1.5 text-palette-gray12 dark:border-palette-gray4 dark:bg-palette-gray4"
           />
         );
       })}
