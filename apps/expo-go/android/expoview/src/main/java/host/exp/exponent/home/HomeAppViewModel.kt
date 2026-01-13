@@ -149,8 +149,7 @@ class HomeAppViewModel(
     Context.MODE_PRIVATE
   )
 
-  private val gson: Gson =
-    GsonBuilder().create()
+  private val gson = Gson()
 
   private var lastCrashDate: Long? = null
 
