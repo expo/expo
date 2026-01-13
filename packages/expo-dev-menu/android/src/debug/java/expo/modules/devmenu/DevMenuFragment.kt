@@ -52,7 +52,9 @@ class DevMenuFragment(
       goToHomeAction
     )
   }
-  private val threeFingerLongPressDetector = ThreeFingerLongPressDetector(::onThreeFingerLongPressDetected)
+  private val threeFingerLongPressDetector = ThreeFingerLongPressDetector(
+    ::onThreeFingerLongPressDetected
+  )
   private val shakeDetector = ShakeDetector(this::onShakeDetected)
 
   private val reactHost: ReactHost?
@@ -63,19 +65,32 @@ class DevMenuFragment(
 
     val shouldShowAtLaunch = preferences.showsAtLaunch || !preferences.isOnboardingFinished
     if (shouldShowAtLaunch) {
-      val onReactContext = object : ReactInstanceEventListener {
-        override fun onReactContextInitialized(context: ReactContext) {
-          val boundedContext = reactHost?.currentReactContext
-          // We check if that listener is called for the same context that is currently set in the host.
-          if (boundedContext != null && boundedContext == context) {
-            viewModel.onAction(DevMenuAction.Open)
-          }
-          reactHost?.removeReactInstanceEventListener(this)
-        }
-      }
-
-      reactHost?.addReactInstanceEventListener(onReactContext)
+      showMenuAtLaunch()
     }
+  }
+
+  private fun showMenuAtLaunch() {
+    val reactHost = reactHostHolder.get() ?: return
+
+    // If the React Context is already initialized, we can open the menu right away.
+    if (reactHost.currentReactContext != null) {
+      viewModel.onAction(DevMenuAction.Open)
+      return
+    }
+
+    // Otherwise, we add a listener to be notified when the context is ready.
+    val onReactContext = object : ReactInstanceEventListener {
+      override fun onReactContextInitialized(context: ReactContext) {
+        val boundedContext = reactHost.currentReactContext
+        // We check if that listener is called for the same context that is currently set in the host.
+        if (boundedContext != null && boundedContext == context) {
+          viewModel.onAction(DevMenuAction.Open)
+        }
+        reactHost.removeReactInstanceEventListener(this)
+      }
+    }
+
+    reactHost.addReactInstanceEventListener(onReactContext)
   }
 
   override fun onStart() {
@@ -115,7 +130,11 @@ class DevMenuFragment(
     updatePictureInPictureState()
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
     val context = requireContext()
     return LinearLayout(context).apply {
       z = Float.MAX_VALUE
