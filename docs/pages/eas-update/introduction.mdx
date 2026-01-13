@@ -1,29 +1,43 @@
 ---
 title: EAS Update
 sidebar_title: Introduction
-description: An introduction to EAS Update which is a hosted service for projects using the expo-updates library.
+description: EAS Update is a cloud service that serves updates for projects using the expo-updates library.
 searchRank: 99
 searchPosition: 2
 ---
 
+import { GraduationHat02DuotoneIcon } from '@expo/styleguide-icons/duotone/GraduationHat02DuotoneIcon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
 
-**EAS Update** is a hosted service that serves updates for projects using the [`expo-updates`](/versions/latest/sdk/updates) library.
+**EAS Update** is a cloud service from EAS (Expo Application Services) that serves updates for projects using the [`expo-updates`](/versions/latest/sdk/updates/) library.
 
-EAS Update makes fixing small bugs and pushing quick fixes a snap in between app store submissions. It accomplishes this by enabling an app to update its own non-native pieces (such as JS, styling, and images) over-the-air.
+EAS Update makes fixing small bugs and pushing quick fixes a snap in between app store submissions. It accomplishes this by enabling an app to update its own non-native pieces (such as JS, styling, and images) over-the-air. All apps that include the `expo-updates` library have the ability to receive updates.
 
-All apps that include the `expo-updates` library have the ability to receive updates.
+## Quick start
 
-- To start using EAS Update, continue to the [Getting Started](/eas-update/getting-started) guide.
-- For a complete tutorial of using EAS Update with other EAS services, refer to the [EAS Tutorial](/tutorial/eas/introduction/).
+Install the `expo-updates` library and configure EAS Update:
 
-## JS API for update management
+<Terminal cmd={['$ npx expo install expo-updates', '', '$ eas update:configure']} />
+
+Push an update to the production channel:
+
+<Terminal cmd={['$ eas update --channel production --message "Fix login button alignment"']} />
+
+This command publishes your JavaScript bundle and assets so users receive the new version on their next app launch.
+
+For complete steps to start using EAS Update, see [Get started with EAS Update](/eas-update/getting-started/).
+
+## Key features
+
+### JS API for update management
 
 <ContentSpotlight
-  alt="Updates JS API"
+  alt="Updates JS API example"
   src="/static/images/eas-update/frontpage/critical-update.png"
   className="max-w-[480px]"
 />
@@ -32,7 +46,7 @@ The updates [JavaScript API](/versions/latest/sdk/updates/) includes a React hoo
 
 The API also provides methods such as `checkForUpdateAsync()` and `fetchUpdateAsync()` which allows you to control when your app checks for and downloads updates.
 
-## Insight tracking
+### Insight tracking
 
 <ContentSpotlight
   alt="Website dashboard deployment insights"
@@ -42,7 +56,7 @@ The API also provides methods such as `checkForUpdateAsync()` and `fetchUpdateAs
 
 You'll get a [deployments dashboard](https://expo.dev/accounts/[account]/projects/[project]/deployments) that helps visualize which updates are being sent to builds. Updates work in concert with [insights](/eas-insights/introduction/) to provide data on the adoption rates of your updates with your users.
 
-## Republish for reverting mistakes
+### Republish for reverting mistakes
 
 <ContentSpotlight
   alt="Republishing button on an update"
@@ -51,6 +65,65 @@ You'll get a [deployments dashboard](https://expo.dev/accounts/[account]/project
 />
 
 If an update isn't performing as expected, you can [republish](/eas-update/eas-cli/#republish-a-previous-update-within-a-branch) a previous, stable version on top of the problematic one, much like a new "commit" in version control systems.
+
+## Why teams use EAS Update
+
+EAS Update helps teams to:
+
+- Fix a bug or crash in JavaScript code and deploy updates in minutes
+- Update copy, translations, UI styling, or screen layouts
+- Change configuration values or feature flags
+- Roll out changes to a percentage of users using [rollouts](/eas-update/rollouts/)
+- Test updates with internal teams before production release
+
+## When not to use EAS Update
+
+EAS Update is not suitable for:
+
+- Changes to native code or native dependencies
+- Changes to app permissions (camera, location, and others)
+- Updating the Expo SDK version
+- Anything that requires a new app binary version
+
+In these cases, use [EAS Build](/build/introduction/) to create and submit a new app binary.
+
+## FAQ
+
+<Collapsible summary="Can I test updates with a small group before releasing to everyone?">
+
+Yes. Use EAS Update with [rollouts](/eas-update/rollouts/) to release to a percentage of users, or use staging [channels](/eas-update/how-it-works/#conceptual-overview) to test with internal teams first.
+
+</Collapsible>
+
+<Collapsible summary="Can I use EAS Update with my existing React Native project?">
+
+Yes. EAS Update works with both projects that use [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/) and [existing React Native projects](/bare/installing-updates/) that have the [`expo-updates`](/versions/latest/sdk/updates) library installed.
+
+</Collapsible>
+
+<Collapsible summary="Do my app users need to reinstall the app to receive updates?">
+
+No. Updates are downloaded inside the app and applied based on your configuration. App users see the new version on their next app launch or reload.
+
+</Collapsible>
+
+<Collapsible summary="How does EAS Update handle native code compatibility?">
+
+EAS Update uses [runtime version policies](/eas-update/runtime-versions/) to ensure updates are only sent to builds with compatible native code. If your native code changes, you create a new runtime version.
+
+</Collapsible>
+
+<Collapsible summary="Can I roll back a bad update?">
+
+Yes. You can roll back updates using `eas update:rollback` to revert to a previous stable update. Learn more in the [Rollback to a previous update](/eas-update/rollbacks/) guide.
+
+</Collapsible>
+
+<Collapsible summary="What's the difference between EAS Update and CodePush?">
+
+EAS Update is Expo's native solution that also integrates with [EAS Build](/build/introduction/), supports modern Expo features, and provides a unified workflow. CodePush uses a slightly different approach. To learn more about the differences between EAS Update and CodePush, see [Conceptual differences between CodePush and EAS Update](/eas-update/codepush/#conceptual-differences-between-codepush-and-eas-update).
+
+</Collapsible>
 
 ## Get started
 
@@ -87,4 +160,11 @@ If an update isn't performing as expected, you can [republish](/eas-update/eas-c
   description="Learn how to migrate from CodePush to EAS Update."
   href="/eas-update/codepush/"
   Icon={LayersTwo02Icon}
+/>
+
+<BoxLink
+  title="Using EAS Update with other EAS services"
+  description="For a complete tutorial of using EAS Update with other EAS services, refer to this EAS tutorial."
+  href="/tutorial/eas/introduction/"
+  Icon={GraduationHat02DuotoneIcon}
 />
