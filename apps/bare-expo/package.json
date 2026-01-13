@@ -54,6 +54,7 @@
     "@shopify/flash-list": "2.0.2",
     "@shopify/react-native-skia": "2.4.14",
     "expo": "~54.0.8",
+    "expo-brownfield": "~0.0.1",
     "expo-build-properties": "~1.0.8",
     "expo-camera": "~17.0.8",
     "expo-dev-client": "~6.0.12",
