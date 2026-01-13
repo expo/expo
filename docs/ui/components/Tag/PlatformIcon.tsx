@@ -30,7 +30,7 @@ export const PlatformIcon = ({ platform }: PlatformIconProps) => {
     case 'web':
       return <AtSignIcon className="icon-2xs shrink-0 text-palette-orange12 opacity-80" />;
     case 'expo':
-      return <ExpoGoLogo className="icon-2xs shrink-0 text-palette-purple12 opacity-80" />;
+      return <ExpoGoLogo className="icon-2xs shrink-0 text-current opacity-80" />;
     default:
       return null;
   }
