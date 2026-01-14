@@ -44,6 +44,7 @@
 - [iOS] add Toolbar.SearchBarPreferredSlot ([#41863](https://github.com/expo/expo/pull/41863) by [@Ubax](https://github.com/Ubax))
 - [iOS] add usePreventZoomTransitionDismissal ([#41893](https://github.com/expo/expo/pull/41893) by [@Ubax](https://github.com/Ubax))
 - [iOS] expose image prop from Link.Menu and Toolbar.Menu ([#41883](https://github.com/expo/expo/pull/41883) by [@Ubax](https://github.com/Ubax))
+- use screen's synchronous layout updates by default in router ([#42154](https://github.com/expo/expo/pull/42154) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
