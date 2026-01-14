@@ -28,10 +28,10 @@ public struct TextView: ExpoSwiftUI.View {
     : Text(props.text)
 
     if let children = props.children {
-      for child in children {
-        if let textView = child.childView as? TextView {
-          result = result + textView.buildText(applyModifiers: true)
-        }
+      result += children
+        .compactMap { ($0.childView as? TextView)?.buildText(applyModifiers: true) }
+        .joined()
+    }
       }
     }
     return result
