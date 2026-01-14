@@ -1,7 +1,7 @@
 import { WidgetFamily } from './WidgetFamily.type';
-export interface WidgetConfig {
+export type WidgetConfig = {
     name: string;
     supportedFamilies: WidgetFamily[];
     displayName: string;
     description: string;
-}
+};

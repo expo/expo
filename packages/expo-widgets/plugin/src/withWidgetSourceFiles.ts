@@ -5,12 +5,12 @@ import * as path from 'path';
 
 import { WidgetConfig } from './types/WidgetConfig.type';
 
-interface WidgetSourceFilesProps {
-  widgets: WidgetConfig[];
+type WidgetSourceFilesProps = {
   targetName: string;
   groupIdentifier: string;
+  widgets: WidgetConfig[];
   onFilesGenerated: (files: string[]) => void;
-}
+};
 
 const withWidgetSourceFiles: ConfigPlugin<WidgetSourceFilesProps> = (
   config,

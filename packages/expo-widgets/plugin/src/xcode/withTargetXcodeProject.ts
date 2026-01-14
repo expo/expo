@@ -8,16 +8,16 @@ import { addToPbxNativeTargetSection } from './addToPbxNativeTargetSection';
 import { addToPbxProjectSection } from './addToPbxProjectSection';
 import { addXCConfigurationList } from './addXCConfigurationList';
 
-interface TargetXcodeProjectProps {
+type TargetXcodeProjectProps = {
   targetName: string;
-  targetBundleIdentifier: string;
+  bundleIdentifier: string;
   deploymentTarget: string;
   getFileUris: () => string[];
-}
+};
 
 const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
   config,
-  { targetName, targetBundleIdentifier, deploymentTarget, getFileUris }
+  { targetName, bundleIdentifier, deploymentTarget, getFileUris }
 ) =>
   withXcodeProject(config, (config) => {
     const xcodeProject = config.modResults;
@@ -28,7 +28,7 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
     const xCConfigurationList = addXCConfigurationList(xcodeProject, {
       targetName,
       currentProjectVersion: config.ios!.buildNumber || '1',
-      bundleIdentifier: targetBundleIdentifier,
+      bundleIdentifier,
       deploymentTarget,
       marketingVersion,
     });

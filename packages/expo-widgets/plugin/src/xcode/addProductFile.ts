@@ -1,9 +1,9 @@
 import { XcodeProject } from 'expo/config-plugins';
 
-interface AddProductFileProps {
+type AddProductFileProps = {
   targetName: string;
   groupName: string;
-}
+};
 
 export function addProductFile(
   xcodeProject: XcodeProject,

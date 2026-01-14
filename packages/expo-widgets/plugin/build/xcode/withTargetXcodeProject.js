@@ -8,7 +8,7 @@ const addTargetDependency_1 = require("./addTargetDependency");
 const addToPbxNativeTargetSection_1 = require("./addToPbxNativeTargetSection");
 const addToPbxProjectSection_1 = require("./addToPbxProjectSection");
 const addXCConfigurationList_1 = require("./addXCConfigurationList");
-const withTargetXcodeProject = (config, { targetName, targetBundleIdentifier, deploymentTarget, getFileUris }) => (0, config_plugins_1.withXcodeProject)(config, (config) => {
+const withTargetXcodeProject = (config, { targetName, bundleIdentifier, deploymentTarget, getFileUris }) => (0, config_plugins_1.withXcodeProject)(config, (config) => {
     const xcodeProject = config.modResults;
     const targetUuid = xcodeProject.generateUuid();
     const groupName = 'Embed Foundation Extensions';
@@ -16,7 +16,7 @@ const withTargetXcodeProject = (config, { targetName, targetBundleIdentifier, de
     const xCConfigurationList = (0, addXCConfigurationList_1.addXCConfigurationList)(xcodeProject, {
         targetName,
         currentProjectVersion: config.ios.buildNumber || '1',
-        bundleIdentifier: targetBundleIdentifier,
+        bundleIdentifier,
         deploymentTarget,
         marketingVersion,
     });

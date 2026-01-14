@@ -10,67 +10,60 @@ import withTargetXcodeProject from './xcode/withTargetXcodeProject';
 
 const pkg = require('expo-widgets/package.json');
 
-interface ExpoWidgetsConfigPluginProps {
-  // App group identifier - it is used for communication between the main app and widgets
-  groupIdentifier: string;
+type ExpoWidgetsConfigPluginProps = {
+  // Widget target app bundle identifier. Defaults to `<main app bundle identifier>.ExpoWidgetsTarget`.
+  bundleIdentifier?: string;
+  // App group identifier used for communication between the main app and widgets. Defaults to `group.<main app bundle identifier>`.
+  groupIdentifier?: string;
+  // Enable push notifications for widgets. Defaults to false.
   enablePushNotifications?: boolean;
-  widgets: WidgetConfig[];
-}
+  // Enable frequent updates for widgets. Defaults to false.
+  frequentUpdates?: boolean;
+  widgets?: WidgetConfig[];
+};
 
-const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps> = (
-  config,
-  { groupIdentifier, enablePushNotifications, widgets }
-) => {
-  if (!groupIdentifier) {
-    throw new Error(
-      'App Group Identifier is required to configure widgets. Please provide a valid groupIdentifier.'
-    );
-  }
-  if (!widgets) {
-    throw new Error(
-      'Widget names are required to configure widgets. Please provide at least one widget name.'
-    );
-  }
-  if (!config.ios?.bundleIdentifier) {
-    throw new Error(
-      'iOS bundle identifier is required to configure widgets. Please set ios.bundleIdentifier in app.json or app.config.js'
-    );
-  }
-
+const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps> = (config, props) => {
   const deploymentTarget = '16.2';
   const targetName = 'ExpoWidgetsTarget';
-  const targetBundleIdentifier = `${config.ios.bundleIdentifier}.${targetName}`;
-  // It is disabled by default because it may impact battery life
-  const frequentUpdates = false;
+
+  let bundleIdentifier = props.bundleIdentifier;
+  if (!bundleIdentifier) {
+    bundleIdentifier = `${config.ios?.bundleIdentifier}.${targetName}`;
+    console.log(`No bundleIdentifier provided, fallback to: ${bundleIdentifier}`);
+  }
+
+  let groupIdentifier = props.groupIdentifier;
+  if (!groupIdentifier) {
+    if (!config.ios?.bundleIdentifier) {
+      throw new Error(
+        'iOS bundle identifier is required. Please set `ios.bundleIdentifier` in `app.json` or `app.config.js`'
+      );
+    }
+    groupIdentifier = `group.${config.ios.bundleIdentifier}`;
+    console.log(`No groupIdentifier provided, fallback to: ${groupIdentifier}`);
+  }
+
+  let widgets = props.widgets;
+  if (!widgets) {
+    widgets = [];
+  }
+
+  const enablePushNotifications = props.enablePushNotifications ?? false;
+  const frequentUpdates = props.frequentUpdates ?? false;
 
   let sharedFiles: string[] = [];
   const setFiles = (files: string[]) => {
     sharedFiles = [...sharedFiles, ...files];
   };
-  const getFiles = () => sharedFiles;
+  const getFileUris = () => sharedFiles;
+
   return withPlugins(config, [
     [withPodsLinking, { targetName }],
-    [
-      withWidgetSourceFiles,
-      {
-        targetName,
-        widgets,
-        groupIdentifier,
-        onFilesGenerated: setFiles,
-      },
-    ],
+    [withWidgetSourceFiles, { targetName, widgets, groupIdentifier, onFilesGenerated: setFiles }],
     [withAppInfoPlist, { frequentUpdates, groupIdentifier }],
-    [withPushNotifications, { enablePushNotifications: enablePushNotifications ?? false }],
-    [withAppGroupEntitlements, { targetName, targetBundleIdentifier, groupIdentifier }],
-    [
-      withTargetXcodeProject,
-      {
-        targetName,
-        targetBundleIdentifier,
-        deploymentTarget,
-        getFileUris: getFiles,
-      },
-    ],
+    [withPushNotifications, { enablePushNotifications }],
+    [withAppGroupEntitlements, { groupIdentifier }],
+    [withTargetXcodeProject, { targetName, bundleIdentifier, deploymentTarget, getFileUris }],
   ]);
 };
 

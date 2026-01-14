@@ -1,9 +1,9 @@
 import { ConfigPlugin } from 'expo/config-plugins';
-interface TargetXcodeProjectProps {
+type TargetXcodeProjectProps = {
     targetName: string;
-    targetBundleIdentifier: string;
+    bundleIdentifier: string;
     deploymentTarget: string;
     getFileUris: () => string[];
-}
+};
 declare const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps>;
 export default withTargetXcodeProject;

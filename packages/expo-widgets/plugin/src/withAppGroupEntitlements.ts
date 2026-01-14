@@ -1,21 +1,16 @@
 import { ConfigPlugin, InfoPlist, withEntitlementsPlist } from 'expo/config-plugins';
 
-interface AppGroupEntitlementsProps {
-  bundleIdentifier: string;
-  targetName: string;
+type AppGroupEntitlementsProps = {
   groupIdentifier: string;
-}
+};
 
-const withAppGroupEntitlements: ConfigPlugin<AppGroupEntitlementsProps> = (
-  config,
-  { groupIdentifier }
-) =>
+const withAppGroupEntitlements: ConfigPlugin<AppGroupEntitlementsProps> = (config, props) =>
   withEntitlementsPlist(config, (config) => {
     config.ios = {
       ...config.ios,
       entitlements: _addApplicationGroupsEntitlement(
         config.ios?.entitlements ?? {},
-        groupIdentifier
+        props.groupIdentifier
       ),
     };
 
