@@ -109,6 +109,33 @@ API routes can return `Cache-Control` directives that EAS Hosting uses to cache 
 
 </Collapsible>
 
+<Collapsible summary="Can I use EAS Hosting with EAS Workflows?">
+
+EAS Hosting integrates with [EAS Workflows](/eas/workflows/get-started/) using the `deploy` job type. You can add a deploy job to your workflow configuration. For example:
+
+```yaml
+jobs:
+  deploy_web:
+    type: deploy
+    environment: production
+    params:
+      prod: true
+```
+
+You can also deploy to a specific alias or make production conditional based on the branch:
+
+```yaml
+jobs:
+  deploy:
+    type: deploy
+    params:
+      prod: ${{ github.ref_name == 'main' }}
+```
+
+For more information, see the [Web deployments with EAS Workflows](/eas/hosting/workflows/).
+
+</Collapsible>
+
 ## Get started
 
 <BoxLink
