@@ -574,7 +574,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   /**
    * This function is invoked when running in development via `expo start`
    */
-  private async getStaticPageAsync(pathname: string, route: RouteInfo<RegExp>) {
+  private async getStaticPageAsync(pathname: string, route: RouteInfo<RegExp>, request?: Request) {
     const { exp } = getConfig(this.projectRoot);
     const { mode, isExporting, clientBoundaries, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
@@ -629,7 +629,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         return await getStaticContent(location);
       }
 
-      const loaderResult = await this.executeServerDataLoaderAsync(location, resolvedLoaderRoute);
+      const loaderResult = await this.executeServerDataLoaderAsync(
+        location,
+        resolvedLoaderRoute,
+        request
+      );
       if (!loaderResult) {
         return await getStaticContent(location);
       }
@@ -1289,12 +1293,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           const loaderModuleMiddleware = new DataLoaderModuleMiddleware(
             this.projectRoot,
             appDir,
-            async (location: URL, route: RouteInfo<RegExp>) => {
+            async (location, route, request) => {
               const resolvedLoaderRoute = fromServerManifestRoute(location.pathname, route);
               if (!resolvedLoaderRoute) {
                 return;
               }
-              return this.executeServerDataLoaderAsync(location, resolvedLoaderRoute);
+              return this.executeServerDataLoaderAsync(location, resolvedLoaderRoute, request);
             },
             () => this.getDevServerUrlOrAssert()
           );
@@ -1383,7 +1387,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               ...config.exp.extra?.router,
               bundleApiRoute: (functionFilePath) =>
                 this.ssrImportApiRoute(functionFilePath, { platform: 'web' }),
-              getStaticPageAsync: async (pathname, route) => {
+              getStaticPageAsync: async (pathname, route, request) => {
                 // TODO: Add server rendering when RSC is enabled.
                 if (isReactServerComponentsEnabled) {
                   // NOTE: This is a temporary hack to return the SPA/template index.html in development when RSC is enabled.
@@ -1393,7 +1397,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
                 }
 
                 // Non-RSC apps will bundle the static HTML for a given pathname and respond with it.
-                return this.getStaticPageAsync(pathname, route);
+                return this.getStaticPageAsync(pathname, route, request);
               },
             })
           );
@@ -1696,7 +1700,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
    */
   async executeServerDataLoaderAsync(
     location: URL,
-    route: ResolvedLoaderRoute
+    route: ResolvedLoaderRoute,
+    // The `request` object is only available when using SSR
+    request?: Request
   ): Promise<{ data: unknown } | undefined> {
     const { exp } = getConfig(this.projectRoot);
     const { unstable_useServerDataLoaders } = exp.extra?.router;
@@ -1735,8 +1741,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
         const data = await routeModule.loader({
           params: route.params,
-          // NOTE(@hassankhan): The `request` object is only available when using SSR
-          request: null,
+          request,
         });
 
         const normalizedData = data === undefined ? {} : data;

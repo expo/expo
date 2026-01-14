@@ -1,5 +1,6 @@
 import { getConfig } from '@expo/config';
 import { type RouteInfo } from 'expo-server/private';
+import { Readable } from 'node:stream';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from './server.types';
@@ -19,7 +20,8 @@ export class DataLoaderModuleMiddleware extends ExpoMiddleware {
     protected appDir: string,
     private executeServerDataLoaderAsync: (
       url: URL,
-      route: RouteInfo<RegExp>
+      route: RouteInfo<RegExp>,
+      request?: Request
     ) => Promise<{ data: unknown } | undefined>,
     private getDevServerUrl: () => string
   ) {
@@ -27,18 +29,13 @@ export class DataLoaderModuleMiddleware extends ExpoMiddleware {
   }
 
   /**
-   * Only handles a request if `req.pathname` begins with `/_expo/loaders/` and if the request
-   * headers include `Accept: application/json`.
+   * Only handles a request if `req.pathname` begins with `/_expo/loaders/`.
    */
   override shouldHandleRequest(req: ServerRequest): boolean {
     if (!req.url) return false;
     const { pathname } = new URL(req.url, 'http://localhost');
 
     if (!pathname.startsWith(`${LOADER_MODULE_ENDPOINT}/`)) {
-      return false;
-    }
-
-    if (req.headers.accept !== 'application/json') {
       return false;
     }
 
@@ -72,9 +69,17 @@ export class DataLoaderModuleMiddleware extends ExpoMiddleware {
         throw new Error(`No matching route for ${routePath}`);
       }
 
+      const { exp } = getConfig(this.projectRoot);
+      const isSSREnabled =
+        exp.web?.output === 'server' && exp.extra?.router?.unstable_useServerRendering === true;
+
+      const routeUrl = new URL(routePath, this.getDevServerUrl());
+      const loaderRequest = isSSREnabled ? convertServerRequest(req, res, routeUrl) : undefined;
+
       const loaderResult = await this.executeServerDataLoaderAsync(
-        new URL(routePath, this.getDevServerUrl()),
-        matchingRoute
+        routeUrl,
+        matchingRoute,
+        loaderRequest
       );
 
       if (!loaderResult) {
@@ -93,4 +98,35 @@ export class DataLoaderModuleMiddleware extends ExpoMiddleware {
       res.end();
     }
   }
+}
+
+/**
+ * Converts a Node.js `ServerRequest` to a standard web `Request` object.
+ * @see import('expo-server/src/vendor/http.ts').convertRequest
+ */
+function convertServerRequest(req: ServerRequest, res: ServerResponse, url: URL): Request {
+  const controller = new AbortController();
+  res.on('close', () => controller.abort());
+
+  const init: RequestInit = {
+    method: req.method,
+    headers: convertRawHeaders(req.rawHeaders ?? []),
+    signal: controller.signal,
+  };
+
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    init.body = Readable.toWeb(req) as ReadableStream;
+    // NOTE(@hassankhan): Casting to `any` to work around typing issue
+    (init as any).duplex = 'half';
+  }
+
+  return new Request(url.href, init);
+}
+
+function convertRawHeaders(requestHeaders: readonly string[]): Headers {
+  const headers = new Headers();
+  for (let index = 0; index < requestHeaders.length; index += 2) {
+    headers.append(requestHeaders[index], requestHeaders[index + 1]);
+  }
+  return headers;
 }

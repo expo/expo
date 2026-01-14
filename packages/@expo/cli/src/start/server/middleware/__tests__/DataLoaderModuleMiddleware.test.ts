@@ -12,20 +12,12 @@ jest.mock('../../metro/fetchRouterManifest', () => ({
   fetchManifest: jest.fn(),
 }));
 
-const asRequest = (req: Partial<ServerRequest>) => {
-  return {
-    headers: {
-      accept: 'application/json',
-    },
-    ...req,
-  } as ServerRequest;
-};
-
 function getMockRes() {
   return {
     end: jest.fn(),
     setHeader: jest.fn(),
     statusCode: 200,
+    on: jest.fn(),
   } as unknown as ServerResponse;
 }
 
@@ -88,27 +80,24 @@ describe(DataLoaderModuleMiddleware, () => {
         },
       });
 
-      const req = asRequest({
-        url: '/_expo/loaders/index',
-      });
-
-      expect(middleware.shouldHandleRequest(req)).toBe(false);
+      expect(
+        middleware.shouldHandleRequest({
+          url: '/_expo/loaders/index',
+        })
+      ).toBe(false);
     });
 
     it.each(['/_expo/loaders/index', '/_expo/loaders/posts/[id]'])(
       'should return true for valid loader path %s',
       (url) => {
-        const req = asRequest({ url });
-
-        expect(middleware.shouldHandleRequest(req)).toBe(true);
+        expect(middleware.shouldHandleRequest({ url })).toBe(true);
       }
     );
 
     it.each(['/', '/api/data', '/_expo/other', '/expo/loaders/index', '/_expo', '/_expo/'])(
       'returns false for non-loader path %s',
       (url) => {
-        const req = asRequest({ url });
-        expect(middleware.shouldHandleRequest(req)).toBe(false);
+        expect(middleware.shouldHandleRequest({ url })).toBe(false);
       }
     );
 
@@ -117,11 +106,11 @@ describe(DataLoaderModuleMiddleware, () => {
         exp: {},
       });
 
-      const req = asRequest({
-        url: '/_expo/loaders/index',
-      });
-
-      expect(middleware.shouldHandleRequest(req)).toBe(false);
+      expect(
+        middleware.shouldHandleRequest({
+          url: '/_expo/loaders/index',
+        })
+      ).toBe(false);
     });
   });
 
@@ -132,18 +121,22 @@ describe(DataLoaderModuleMiddleware, () => {
 
       const res = getMockRes();
       const next = jest.fn();
-      const req = asRequest({
-        url: '/_expo/loaders/index',
-        method: 'GET',
-      });
 
-      await middleware.handleRequestAsync(req, res, next);
+      await middleware.handleRequestAsync(
+        {
+          url: '/_expo/loaders/index',
+          method: 'GET',
+        },
+        res,
+        next
+      );
 
       expect(mockExecuteRouteLoader).toHaveBeenCalledWith(
         new URL('/', mockDevServerUrl),
         expect.objectContaining({
           namedRegex: expect.any(RegExp),
-        })
+        }),
+        undefined
       );
       expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/json; charset=utf-8');
       expect(res.setHeader).toHaveBeenCalledWith('Cache-Control', 'no-cache');
@@ -158,18 +151,22 @@ describe(DataLoaderModuleMiddleware, () => {
 
       const res = getMockRes();
       const next = jest.fn();
-      const req = asRequest({
-        url: '/_expo/loaders/posts/123',
-        method: 'GET',
-      });
 
-      await middleware.handleRequestAsync(req, res, next);
+      await middleware.handleRequestAsync(
+        {
+          url: '/_expo/loaders/posts/123',
+          method: 'GET',
+        },
+        res,
+        next
+      );
 
       expect(mockExecuteRouteLoader).toHaveBeenCalledWith(
         new URL('/posts/123', mockDevServerUrl),
         expect.objectContaining({
           namedRegex: expect.any(RegExp),
-        })
+        }),
+        undefined
       );
       expect(res.end).toHaveBeenCalledWith(JSON.stringify(loaderData));
     });
@@ -180,18 +177,22 @@ describe(DataLoaderModuleMiddleware, () => {
 
       const res = getMockRes();
       const next = jest.fn();
-      const req = asRequest({
-        url: '/_expo/loaders/posts/[id]',
-        method: 'GET',
-      });
 
-      await middleware.handleRequestAsync(req, res, next);
+      await middleware.handleRequestAsync(
+        {
+          url: '/_expo/loaders/posts/[id]',
+          method: 'GET',
+        },
+        res,
+        next
+      );
 
       expect(mockExecuteRouteLoader).toHaveBeenCalledWith(
         new URL('/posts/[id]', mockDevServerUrl),
         expect.objectContaining({
           namedRegex: expect.any(RegExp),
-        })
+        }),
+        undefined
       );
     });
 
@@ -200,12 +201,15 @@ describe(DataLoaderModuleMiddleware, () => {
 
       const res = getMockRes();
       const next = jest.fn();
-      const req = asRequest({
-        url: '/_expo/loaders/no-loader',
-        method: 'GET',
-      });
 
-      await middleware.handleRequestAsync(req, res, next);
+      await middleware.handleRequestAsync(
+        {
+          url: '/_expo/loaders/no-loader',
+          method: 'GET',
+        },
+        res,
+        next
+      );
 
       expect(res.statusCode).toBe(404);
       expect(res.end).toHaveBeenCalledWith();
@@ -216,12 +220,15 @@ describe(DataLoaderModuleMiddleware, () => {
 
       const res = getMockRes();
       const next = jest.fn();
-      const req = asRequest({
-        url: '/_expo/loaders/null-data',
-        method: 'GET',
-      });
 
-      await middleware.handleRequestAsync(req, res, next);
+      await middleware.handleRequestAsync(
+        {
+          url: '/_expo/loaders/null-data',
+          method: 'GET',
+        },
+        res,
+        next
+      );
 
       expect(res.statusCode).toBe(200);
       expect(res.end).toHaveBeenCalledWith('null');
@@ -236,12 +243,15 @@ describe(DataLoaderModuleMiddleware, () => {
 
       const res = getMockRes();
       const next = jest.fn();
-      const req = asRequest({
-        url: '/_expo/loaders/error',
-        method: 'GET',
-      });
 
-      await middleware.handleRequestAsync(req, res, next);
+      await middleware.handleRequestAsync(
+        {
+          url: '/_expo/loaders/error',
+          method: 'GET',
+        },
+        res,
+        next
+      );
 
       expect(console.error).toHaveBeenCalledWith(
         'Failed to generate loader module for /_expo/loaders/error:',
@@ -265,12 +275,15 @@ describe(DataLoaderModuleMiddleware, () => {
 
       const res = getMockRes();
       const next = jest.fn();
-      const req = asRequest({
-        url: '/_expo/loaders/special',
-        method: 'GET',
-      });
 
-      await middleware.handleRequestAsync(req, res, next);
+      await middleware.handleRequestAsync(
+        {
+          url: '/_expo/loaders/special',
+          method: 'GET',
+        },
+        res,
+        next
+      );
 
       const expectedOutput = JSON.stringify(loaderData);
       expect(res.end).toHaveBeenCalledWith(expectedOutput);
@@ -294,19 +307,116 @@ describe(DataLoaderModuleMiddleware, () => {
 
       const res = getMockRes();
       const next = jest.fn();
-      const req = asRequest({
-        url: loaderPath,
-        method: 'GET',
-      });
 
-      await middleware.handleRequestAsync(req, res, next);
+      await middleware.handleRequestAsync(
+        {
+          url: loaderPath,
+          method: 'GET',
+        },
+        res,
+        next
+      );
 
       expect(mockExecuteRouteLoader).toHaveBeenCalledWith(
         new URL(expectedRoute, mockDevServerUrl),
         expect.objectContaining({
           namedRegex: expect.any(RegExp),
-        })
+        }),
+        undefined
       );
     }
   );
+
+  describe('SSG with `web.output: static`', () => {
+    beforeEach(() => {
+      (getConfig as jest.Mock).mockReturnValue({
+        exp: {
+          web: { output: 'static' },
+          extra: {
+            router: {
+              unstable_useServerDataLoaders: true,
+            },
+          },
+        },
+      });
+
+      middleware = new DataLoaderModuleMiddleware(
+        mockProjectRoot,
+        mockAppDir,
+        mockExecuteRouteLoader,
+        mockGetDevServerUrl
+      );
+    });
+
+    it('does not pass `Request` object to loader', async () => {
+      mockExecuteRouteLoader.mockResolvedValue({ data: {} });
+      const res = getMockRes();
+      const next = jest.fn();
+
+      await middleware.handleRequestAsync(
+        {
+          url: '/_expo/loaders/test',
+          method: 'GET',
+        },
+        res,
+        next
+      );
+
+      expect(mockExecuteRouteLoader).toHaveBeenCalledWith(
+        expect.any(URL),
+        expect.any(Object),
+        undefined
+      );
+    });
+  });
+
+  describe('SSR with `web.output: server` and `useServerRendering: true`', () => {
+    beforeEach(() => {
+      (getConfig as jest.Mock).mockReturnValue({
+        exp: {
+          web: { output: 'server' },
+          extra: {
+            router: {
+              unstable_useServerDataLoaders: true,
+              unstable_useServerRendering: true,
+            },
+          },
+        },
+      });
+
+      middleware = new DataLoaderModuleMiddleware(
+        mockProjectRoot,
+        mockAppDir,
+        mockExecuteRouteLoader,
+        mockGetDevServerUrl
+      );
+    });
+
+    it('passes `Request` object to loader', async () => {
+      mockExecuteRouteLoader.mockResolvedValue({ data: {} });
+      const res = getMockRes();
+      const next = jest.fn();
+
+      await middleware.handleRequestAsync(
+        {
+          url: '/_expo/loaders/test',
+          method: 'GET',
+          rawHeaders: ['Accept', 'application/json', 'X-Custom-Header', 'custom-value'],
+        },
+        res,
+        next
+      );
+
+      expect(mockExecuteRouteLoader).toHaveBeenCalledWith(
+        expect.any(URL),
+        expect.any(Object),
+        expect.any(Request)
+      );
+
+      const passedRequest = mockExecuteRouteLoader.mock.calls[0][2] as Request;
+      expect(passedRequest.url).toBe('http://localhost:8081/test');
+      expect(passedRequest.method).toBe('GET');
+      expect(passedRequest.headers.get('X-Custom-Header')).toBe('custom-value');
+    });
+  });
 });
