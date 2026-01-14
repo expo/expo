@@ -37,6 +37,7 @@
 - Bump `react-server-dom-webpack` ([#41574](https://github.com/expo/expo/pull/41574) by [@kitten](https://github.com/kitten)) ([#41589](https://github.com/expo/expo/pull/41589) by [@kitten](https://github.com/kitten))
 - Bump to `@expo/metro@54.2.0` and `metro@0.83.3` ([#41142](https://github.com/expo/expo/pull/41142) by [@kitten](https://github.com/kitten))
 - Update `metro-source-map` import source in `expo/scripts/compose-source-maps` ([#41458](https://github.com/expo/expo/pull/41458) by [@kitten](https://github.com/kitten))
+- change `global` for `globalThis` to fix failing `auth-session` js tests ([#42083](https://github.com/expo/expo/pull/42083) by [@vonovak](https://github.com/vonovak))
 
 ### ⚠️ Notices
 

@@ -85,32 +85,33 @@ fun ToolsSection(
         }
       )
 
+      // TODO(@lukmccall): Re-enable when toggling fast refresh is not longer crashing app
+//      Divider(thickness = 0.5.dp)
+//
+//      NewMenuButton(
+//        withSurface = false,
+//        icon = {
+//          MenuIcons.Refresh(
+//            size = 20.dp,
+//            tint = NewAppTheme.colors.icon.tertiary
+//          )
+//        },
+//        content = {
+//          NewText(
+//            text = "Fast Refresh"
+//          )
+//        },
+//        rightComponent = {
+//          ToggleSwitch(
+//            isToggled = devToolsSettings.isHotLoadingEnabled
+//          )
+//        },
+//        onClick = {
+//          onAction(DevMenuAction.ToggleFastRefresh(!devToolsSettings.isHotLoadingEnabled))
+//        }
+//      )
+
       Divider(thickness = 0.5.dp)
-
-      NewMenuButton(
-        withSurface = false,
-        icon = {
-          MenuIcons.Refresh(
-            size = 20.dp,
-            tint = NewAppTheme.colors.icon.tertiary
-          )
-        },
-        content = {
-          NewText(
-            text = "Fast Refresh"
-          )
-        },
-        rightComponent = {
-          ToggleSwitch(
-            isToggled = devToolsSettings.isHotLoadingEnabled
-          )
-        },
-        onClick = {
-          onAction(DevMenuAction.ToggleFastRefresh(!devToolsSettings.isHotLoadingEnabled))
-        }
-      )
-
-      Divider(color = NewAppTheme.colors.border.default)
 
       NewMenuButton(
         withSurface = false,

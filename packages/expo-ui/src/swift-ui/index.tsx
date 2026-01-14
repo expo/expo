@@ -20,7 +20,7 @@ export * from './Group';
 export * from './List';
 export * from './Menu';
 export * from './Picker';
-export * from './Progress';
+export * from './ProgressView';
 export * from './Section';
 export * from './ShareLink';
 export * from './Slider';

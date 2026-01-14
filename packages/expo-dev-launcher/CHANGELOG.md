@@ -11,6 +11,7 @@
 - [iOS] Decouple menu from dev-launcher ([#40669](https://github.com/expo/expo/pull/40669) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Add activity indicator when loading dev server URL. ([#40825](https://github.com/expo/expo/pull/40825) by [@alanjhughes](https://github.com/alanjhughes))
 - Add initial macOS support ([#41330](https://github.com/expo/expo/pull/41330) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add api to change bundleUrl from JS ([#42065](https://github.com/expo/expo/pull/42065) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
@@ -22,6 +23,7 @@
 - [Android] Prevent some debug only artifacts from being included in release builds. ([#41378](https://github.com/expo/expo/pull/41378) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fix `DevLauncherWrapperView` in SwiftUI brownfield apps ([#41431](https://github.com/expo/expo/pull/41431) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Fix dev server discovery cancellation. ([#41555](https://github.com/expo/expo/pull/41555) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixes an issue where a `nil` projectUrl could be passed to Expo Updates. ([#42126](https://github.com/expo/expo/pull/42126) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

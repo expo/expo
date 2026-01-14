@@ -3,6 +3,7 @@
 #import <ExpoModulesCore/EXUtilitiesInterface.h>
 #import <ExpoModulesCore/EXUtilities.h>
 #import <ExpoModulesCore/EXPermissionsService.h>
+#import <React/RCTLog.h>
 
 NSString * const EXStatusKey = @"status";
 NSString * const EXExpiresKey = @"expires";
@@ -74,7 +75,7 @@ NSString * const EXPermissionExpiresNever = @"never";
 {
   NSDictionary *permissions = [self getPermissionUsingRequesterClass:requesterClass];
   if (!permissions) {
-    EXLogWarn(@"Permission requester '%@' not found.", NSStringFromClass(requesterClass));
+    RCTLogWarn(@"Permission requester '%@' not found.", NSStringFromClass(requesterClass));
     return false;
   }
   

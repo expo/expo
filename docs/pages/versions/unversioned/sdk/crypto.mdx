@@ -9,9 +9,10 @@ platforms: ['android', 'ios', 'tvos', 'web']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { SnackInline } from '~/ui/components/Snippet';
 
-`expo-crypto` enables you to hash data in an equivalent manner to the Node.js core `crypto` API.
+`expo-crypto` enables you to hash data in an equivalent manner to the Node.js core `crypto` API, and perform crypto operations such as AES encryption and decryption.
 
 ## Installation
 
@@ -56,6 +57,110 @@ const styles = StyleSheet.create({
 ```
 
 </SnackInline>
+
+### AES encryption and decryption
+
+<SnackInline label='Simple encryption / decryption' dependencies={['expo-crypto']}>
+
+```tsx
+import { useEffect } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
+import { AESEncryptionKey, aesEncryptAsync, aesDecryptAsync } from 'expo-crypto';
+
+export default function App() {
+  useEffect(() => {
+    (async () => {
+      const plaintext = 'Hello, world!';
+      const plaintextBase64 = btoa(plaintexxt);
+
+      const encryptionKey = await AESEncryptionKey.generate();
+      const sealedData = await aesEncryptAsync(plaintextBase64, key);
+      const decryptedBase64 = await aesDecryptAsync(sealedData, key, {
+        output: 'base64',
+      });
+
+      const decrpyted = atob(decryptedBase64);
+      console.log('Decrypted: ', decrpyted);
+    })();
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Text>Crypto Module Example</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
+</SnackInline>
+
+<Collapsible summary="Encrypt data and save it to the file">
+
+```ts example.ts
+import { AESEncryptionKey, aesEncryptAsync } from 'expo-crypto';
+import { File, Paths } from 'expo-file-system';
+import * as SecureStore from 'expo-secure-store';
+
+async function encryptAndSaveData(plaintextData: Uint8Array) {
+  // Generate encryption key
+  const encryptionKey = await AESEncryptionKey.generate();
+
+  // Encrypt data
+  const sealedData = await aesEncryptAsync(plaintextData, encryptionKey);
+  const encryptedBytes = await sealedData.combined();
+
+  // Store encryption key
+  const keyHex = await encryptionKey.encoded('hex');
+  await SecureStore.setItemAsync('aes-encryption-key', keyHex);
+
+  // Save encrypted file
+  const file = new File(Paths.cache, 'encrypted.dat');
+  file.create({ overwrite: true });
+  file.write(encryptedBytes);
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Load file and decrypt data">
+
+```ts example.ts
+import { AESEncryptionKey, AESSealedData, aesDecryptAsync } from 'expo-crypto';
+import { File, Paths } from 'expo-file-system';
+import * as SecureStore from 'expo-secure-store';
+
+async function loadAndDecryptData(): Promise<Uint8Array | null> {
+  // Load encryption key
+  const keyHex = await SecureStore.getItemAsync('aes-encryption-key');
+  if (!keyHex) {
+    return null;
+  }
+  const encryptionKey = await AESEncryptionKey.import(keyHex, 'hex');
+
+  // Load encrypted file
+  const file = new File(Paths.cache, 'encrypted.dat');
+  if (!file.exists) {
+    return null;
+  }
+  const encryptedBytes = await file.bytes();
+  const sealedData = AESSealedData.fromCombined(encryptedBytes);
+
+  // Decrypt data
+  const plaintextBytes = await aesDecryptAsync(data, encryptionKey);
+  return plaintextBytes;
+}
+```
+
+</Collapsible>
 
 ## API
 

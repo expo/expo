@@ -36,6 +36,7 @@ export interface RequestHandlerInput {
     getRoutesManifest(): Promise<Manifest | null>;
     getApiRoute(route: Route): Promise<any>;
     getMiddleware(route: MiddlewareInfo): Promise<MiddlewareModule>;
+    getLoaderData(request: Request, route: Route): Promise<unknown>;
 }
-export declare function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMiddleware, beforeErrorResponse, beforeResponse, beforeHTMLResponse, beforeAPIResponse, }: RequestHandlerParams & RequestHandlerInput): (request: Request) => Promise<Response>;
+export declare function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMiddleware, getLoaderData, beforeErrorResponse, beforeResponse, beforeHTMLResponse, beforeAPIResponse, }: RequestHandlerParams & RequestHandlerInput): (request: Request) => Promise<Response>;
 export {};

@@ -31,6 +31,8 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
   platform?: string | null;
   routerRoot?: string;
   projectRoot: string;
+  /** When true, indicates this bundle should contain only the loader export */
+  isLoaderBundle?: boolean;
 };
 
 const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
@@ -132,6 +134,12 @@ function getBabelCaller({
     // Enable React compiler support in Babel.
     // TODO: Remove this in the future when compiler is on by default.
     supportsReactCompiler: isCustomTruthy(options.customTransformOptions?.reactCompiler)
+      ? true
+      : undefined,
+
+    // When true, indicates this bundle should contain only the loader export.
+    // Used by server-data-loaders-plugin to strip everything except the loader function.
+    isLoaderBundle: isCustomTruthy(options.customTransformOptions?.isLoaderBundle)
       ? true
       : undefined,
 
