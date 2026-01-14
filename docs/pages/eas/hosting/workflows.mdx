@@ -36,3 +36,21 @@ Now, whenever a commit is pushed to `main` or a PR is merged, the workflow will 
 You can also test this workflow by triggering it manually:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/deploy.yml']} />
+
+## Create a PR preview workflow
+
+To automatically deploy a preview of your website whenever a pull request is opened or updated, add the following file to **.eas/workflows/pr-preview.yml**:
+
+```yaml .eas/workflows/pr-preview.yml
+name: PR Preview
+
+on:
+  pull_request: {}
+
+jobs:
+  deploy:
+    type: deploy
+    name: Deploy PR Preview
+```
+
+This workflow will deploy a preview of your website for every pull request without promoting it to production. The preview URL will be available in the workflow run details, making it easy to review changes before merging.
