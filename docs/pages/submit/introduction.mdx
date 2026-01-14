@@ -32,17 +32,6 @@ Build and submit in one step:
 
 <Terminal cmd={['$ eas build --platform ios --auto-submit']} />
 
-## Why teams use EAS Submit
-
-EAS Submit helps teams to:
-
-- Upload Android binaries to [Google Play Console](https://play.google.com/console/about/)
-- Upload iOS binaries to [Apple App Store](https://developer.apple.com/app-store-connect/)
-- Avoid manual uploads through Play Console, App Store Connect or Transporter
-- Submit builds from [CI or automated workflows](/eas/workflows/pre-packaged-jobs/#submit)
-- Standardize release processes via [eas.json](/eas/json/) config file
-- Reduce human errors during submission
-
 ## How EAS Submit works
 
 **EAS Submit** delivers your app to the app stores' distribution pipelines (a chosen track on Google Play Store or [TestFlight](https://developer.apple.com/testflight/) for iOS), following the [default submission behavior for app stores](/build/automate-submissions/#default-submission-behavior-for-app-stores). It queues up your app for distribution on the Google Play Console and App Store Connect, and then you can log into those sites to send your apps off to review, so then they can be distributed to your users.
@@ -63,9 +52,20 @@ EAS Submit helps teams to:
 - Does this mean production? No &mdash; a TestFlight build is not automatically released to the Apple App Store.
 - How production happens: You must log into App Store Connect, choose the build, and submit it for App Review before it can be released to production.
 
+## When to use EAS Submit
+
+Use EAS Submit when you want to:
+
+- Upload Android binaries to [Google Play Console](https://play.google.com/console/about/)
+- Upload iOS binaries to [Apple App Store](https://developer.apple.com/app-store-connect/)
+- Avoid manual uploads through Play Console, App Store Connect or Transporter
+- Submit builds from [CI or automated workflows](/eas/workflows/pre-packaged-jobs/#submit)
+- Standardize release processes via [eas.json](/eas/json/) config file
+- Reduce human errors during submission
+
 ## When not to use EAS Submit
 
-EAS Submit is not needed when:
+You may not need EAS Submit when:
 
 - You are testing locally and not ready for a store submission
 - You do not have a store listing configured yet
