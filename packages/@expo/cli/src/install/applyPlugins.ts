@@ -18,7 +18,7 @@ export async function applyPluginsAsync(projectRoot: string, packages: string[])
       projectRoot,
       exp,
       // Split any possible NPM tags. i.e. `expo@latest` -> `expo`
-      packages.map(parsePackageSpecifier).filter((x) => x != null)
+      packages.map(parsePackageSpecifier).filter((x): x is string => x != null)
     );
   } catch (error: any) {
     // If we fail to apply plugins, the log a warning and continue.
