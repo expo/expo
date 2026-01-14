@@ -93,23 +93,25 @@ if (!isRunningInExpoGo() && Platform.OS === 'ios') {
           </SwiftUIPicker>
         </Host>
       </View>
-    )
-  }
+    );
+  };
 } else {
   ApplicationAudioSessionPicker = function ApplicationAudioSessionPicker(props) {
     return (
-      <Picker selectedValue={audioSessionOptions.findIndex(
-        (option) => option.value === props.useApplicationAudioSession
-      )} onValueChange={(_value, index) => {
-        const useApplicationAudioSession = audioSessionOptions[index].value;
-        props.onSelectionChange(useApplicationAudioSession);
-      }}>
+      <Picker
+        selectedValue={audioSessionOptions.findIndex(
+          (option) => option.value === props.useApplicationAudioSession
+        )}
+        onValueChange={(_value, index) => {
+          const useApplicationAudioSession = audioSessionOptions[index].value;
+          props.onSelectionChange(useApplicationAudioSession);
+        }}>
         {audioSessionOptions.map((option, index) => (
           <Picker.Item key={index} label={option.label} value={index} />
         ))}
       </Picker>
     );
-  }
+  };
 }
 
 export default class TextToSpeechScreen extends React.Component<object, State> {
@@ -220,12 +222,11 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
             <ApplicationAudioSessionPicker
               useApplicationAudioSession={this.state.useApplicationAudioSession}
               onSelectionChange={(useApplicationAudioSession) => {
-                this.setState({ useApplicationAudioSession })
+                this.setState({ useApplicationAudioSession });
               }}
             />
           </>
-        )
-        }
+        )}
       </ScrollView>
     );
   }
