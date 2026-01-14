@@ -21,6 +21,10 @@ public class AppleMapsModule: Module {
       AsyncFunction("openLookAroundAsync") { (view: AppleMapsViewWrapper, coordinates: Coordinate) in
         try await view.openLookAround(coordinate: coordinates)
       }
+
+      AsyncFunction("selectItem") { (view: AppleMapsViewWrapper, id: String?, options: SelectOptions?) in
+        view.selectItem(id: id, options: options)
+      }
     }
   }
 }
