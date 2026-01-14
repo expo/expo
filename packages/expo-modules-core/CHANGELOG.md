@@ -33,6 +33,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Prevent crash on iOS 18.6+ when converting HTTP URLs to file URLs by adding early HTTP/HTTPS URL detection and stricter validation before calling `URL(fileURLWithPath:)`. ([#TBD] by [@OtavioStasiak](https://github.com/OtavioStasiak))
 - [android] Fix source sets for events for functional view definitions. ([#41685](https://github.com/expo/expo/pull/41685) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix throwing `InvalidArgsNumberException` when declaring `AsyncFunction` with optional arguments and `Promise`. ([#41054](https://github.com/expo/expo/pull/41054) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] fix queue assertion crash ([#41296](https://github.com/expo/expo/pull/41296) by [@vonovak](https://github.com/vonovak))
