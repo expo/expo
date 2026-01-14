@@ -15,7 +15,7 @@
 
 ### 💡 Others
 
-- [iOS] Export `MapStyleElevation` enum.
+- [iOS] Export `MapStyleElevation` enum. ([#42148](https://github.com/expo/expo/pull/42148) by [@gustavoharff](https://github.com/gustavoharff))
 
 ## 0.12.9 - 2025-12-05
 
