@@ -1,6 +1,6 @@
 'use client';
 
-import { DependencyList, useRef, useMemo, useEffect } from 'react';
+import { DependencyList, useEffect, useMemo, useRef } from 'react';
 
 import type { SharedObject } from '../ts-declarations/SharedObject';
 
@@ -12,6 +12,7 @@ export function useReleasingSharedObject<TSharedObject extends SharedObject>(
   dependencies: DependencyList
 ): TSharedObject {
   const objectRef = useRef<TSharedObject | null>(null);
+  const objectRefToRelease = useRef<TSharedObject | null>(null);
   const isFastRefresh = useRef(false);
   const previousDependencies = useRef<DependencyList>(dependencies);
 
@@ -28,13 +29,22 @@ export function useReleasingSharedObject<TSharedObject extends SharedObject>(
     // If the dependencies have changed, release the previous object and create a new one, otherwise this has been called
     // because of an unrelated fast refresh, and we don't want to release the object.
     if (!newObject || !dependenciesAreEqual) {
-      objectRef.current?.release();
+      objectRefToRelease.current = objectRef.current;
       newObject = factory();
       objectRef.current = newObject;
       previousDependencies.current = dependencies;
     }
     return newObject;
   }, dependencies);
+
+  useEffect(() => {
+    // When the object changes, release the previous one - it is important to do this in a useEffect, so that we don't release
+    // the object during render.
+    if (objectRefToRelease.current) {
+      objectRefToRelease.current.release();
+      objectRefToRelease.current = null;
+    }
+  }, [object]);
 
   useMemo(() => {
     isFastRefresh.current = true;
