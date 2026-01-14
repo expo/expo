@@ -778,4 +778,5 @@ export * from './pickerStyle';
 export * from './datePickerStyle';
 export * from './progressViewStyle';
 export * from './gaugeStyle';
+export * from './presentationModifiers';
 //# sourceMappingURL=index.d.ts.map

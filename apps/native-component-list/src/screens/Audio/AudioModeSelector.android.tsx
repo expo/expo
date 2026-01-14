@@ -99,10 +99,6 @@ export default function AudioModeSelector() {
         valueName: 'shouldRouteThroughEarpiece',
       })}
       {renderToggle({
-        title: 'Stay active in background',
-        valueName: 'shouldPlayInBackground',
-      })}
-      {renderToggle({
         title: 'Allow background recording',
         valueName: 'allowsBackgroundRecording',
       })}
