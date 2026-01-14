@@ -9,10 +9,14 @@ class GoogleMapsModule : Module() {
     Name("ExpoGoogleMaps")
 
     View(GoogleMapsView::class) {
-      Events("onMapLoaded", "onMapClick", "onMapLongClick", "onPOIClick", "onMarkerClick", "onCameraMove", "onPolylineClick", "onCircleClick", "onPolygonClick")
+      Events("onMapLoaded", "onMapClick", "onMapLongClick", "onPOIClick", "onMarkerClick", "onCameraMove", "onPolylineClick", "onCircleClick", "onPolygonClick", "onDeselect")
 
       AsyncFunction("setCameraPosition") Coroutine { view: GoogleMapsView, config: SetCameraPositionConfig? ->
         view.setCameraPosition(config)
+      }
+
+      AsyncFunction("select") Coroutine { view: GoogleMapsView, id: String?, options: SelectOptionsRecord? ->
+        view.select(id, options)
       }
     }
   }
