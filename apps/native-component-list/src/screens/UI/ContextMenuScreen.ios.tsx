@@ -12,13 +12,7 @@ import {
   Divider,
   RNHostView,
 } from '@expo/ui/swift-ui';
-import {
-  buttonStyle,
-  foregroundStyle,
-  menuActionDismissBehavior,
-  pickerStyle,
-  tag,
-} from '@expo/ui/swift-ui/modifiers';
+import { buttonStyle, foregroundStyle, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
 import { View, StyleSheet, Text as RNText } from 'react-native';
