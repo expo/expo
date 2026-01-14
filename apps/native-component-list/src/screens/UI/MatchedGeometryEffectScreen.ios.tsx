@@ -61,7 +61,7 @@ export default function MatchedGeometryEffectDemo() {
                 </HStack>
               </VStack>
             ) : (
-              <ZStack onPress={() => setSelectedBox(null)}>
+              <ZStack modifiers={[onTapGesture(() => setSelectedBox(null))]}>
                 <HStack
                   modifiers={[
                     frame({ maxWidth: Infinity, maxHeight: Infinity }),
