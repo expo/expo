@@ -10,8 +10,8 @@ import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
-import { progressViewStyle } from './progressViewStyle';
 import { gaugeStyle } from './gaugeStyle';
+import { progressViewStyle } from './progressViewStyle';
 import type { Color } from './types';
 
 const ExpoUI = requireNativeModule('ExpoUI');
