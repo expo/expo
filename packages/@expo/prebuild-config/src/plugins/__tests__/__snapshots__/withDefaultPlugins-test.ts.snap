@@ -800,7 +800,7 @@ exports[`built-in plugins introspects mods 1`] = `
                 "activity": [
                   {
                     "$": {
-                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode",
+                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize",
                       "android:exported": "true",
                       "android:launchMode": "singleTask",
                       "android:name": ".MainActivity",
@@ -1774,7 +1774,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 "activity": [
                   {
                     "$": {
-                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode",
+                      "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize",
                       "android:exported": "true",
                       "android:launchMode": "singleTask",
                       "android:name": ".MainActivity",
