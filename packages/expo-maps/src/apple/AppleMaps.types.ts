@@ -15,8 +15,15 @@ export type AppleMapsMarker = {
 
   /**
    * The SF Symbol to display for the marker.
+   * This is mutually exclusive with `monogram`. If both are provided, `systemImage` takes precedence.
    */
   systemImage?: string;
+
+  /**
+   * A short text (typically initials or 1-2 characters) to display on the marker balloon.
+   * This is mutually exclusive with `systemImage`. If both are provided, `systemImage` takes precedence.
+   */
+  monogram?: string;
 
   /**
    * The coordinates of the marker.
