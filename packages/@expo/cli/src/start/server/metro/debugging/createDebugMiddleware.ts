@@ -58,7 +58,9 @@ export function createDebugMiddleware({
   // Explicitly limit debugger websocket to loopback requests
   debuggerWebsocketEndpoint.on('connection', (socket, request) => {
     if (!isLocalSocket(request.socket) || !isMatchingOrigin(request, serverBaseUrl)) {
-      socket.close();
+      // NOTE: `socket.close` nicely closes the websocket, which will still allow incoming messages
+      // `socket.terminate` instead forcefully closes down the socket
+      socket.terminate();
     }
   });
 
