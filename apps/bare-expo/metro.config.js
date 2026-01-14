@@ -1,6 +1,6 @@
 /* eslint-env node */
 // Learn more https://docs.expo.dev/guides/customizing-metro/
-const { getDefaultConfig, resolveInlineModules } = require('expo/metro-config');
+const { getDefaultConfig } = require('expo/metro-config');
 const path = require('node:path');
 
 /** @type {import('expo/metro-config').MetroConfig} */
@@ -24,8 +24,6 @@ config.watchFolders = [
   path.join(monorepoRoot, 'apps/test-suite'), // Workaround for Yarn v1 workspace issue where workspace dependencies aren't properly linked, should be at `<root>/node_modules/apps/test-suite`
 ];
 
-const directoryToPackage = new Map();
-
 // When testing on MacOS we need to swap out `react-native` for `react-native-macos`
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (
@@ -35,7 +33,7 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     const newModuleName = moduleName.replace('react-native', 'react-native-macos');
     return context.resolveRequest(context, newModuleName, platform);
   }
-  return resolveInlineModules(__dirname, directoryToPackage, context, moduleName, platform);
+  return context.resolveRequest(context, moduleName, platform);
 };
 // writing a screenshot otherwise shows a metro refresh banner at the top of the screen which can interfere with another screenshot
 config.resolver.blockList.push(/.*bare-expo\/e2e.*/);

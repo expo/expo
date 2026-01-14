@@ -1,11 +1,13 @@
+import { requireNativeModule, requireNativeView } from 'expo';
 import { useState } from 'react';
 import { StyleSheet, Text, View, Platform } from 'react-native';
 
-import SimpleModule from './inlineModulesExamples/SimpleModule.module';
-import TestView from './inlineModulesExamples/TestView.view';
 import HeadingText from '../../components/HeadingText';
 import MonoText from '../../components/MonoText';
 import { Page } from '../../components/Page';
+
+const SimpleModule = requireNativeModule('SimpleModule');
+const TestView = requireNativeView('TestView');
 
 export default function InlineModulesScreen() {
   const [inlineModuleConstant] = useState(
