@@ -551,11 +551,7 @@ export const eas = [
     makePage('eas/metadata/getting-started.mdx'),
     makeGroup(
       'Reference',
-      [
-        makePage('eas/metadata/config.mdx'),
-        makePage('eas/metadata/schema.mdx'),
-        makePage('eas/metadata/faq.mdx'),
-      ],
+      [makePage('eas/metadata/config.mdx'), makePage('eas/metadata/schema.mdx')],
       { expanded: false }
     ),
   ]),
