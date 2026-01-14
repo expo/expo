@@ -51,14 +51,21 @@ class AssetModernFactory(
   override suspend fun create(filePath: Uri, relativePath: RelativePath?): Asset = withContext(Dispatchers.IO) {
     val mimeType = contentResolver.getType(filePath)?.let { MimeType(it) }
       ?: MimeType.from(filePath)
-    val displayName = filePath.lastPathSegment ?: ""
+    val displayName = buildUniqueDisplayName(filePath)
     val path = relativePath ?: RelativePath.create(mimeType)
 
     val contentUri = contentResolver.insertPendingAsset(displayName, mimeType, path)
-    ensureActive()
-    contentResolver.copyUriContent(filePath, contentUri)
-    ensureActive()
-    contentResolver.publishPendingAsset(contentUri)
+    try {
+      ensureActive()
+      contentResolver.copyUriContent(filePath, contentUri)
+      ensureActive()
+      contentResolver.publishPendingAsset(contentUri)
+    } catch (e: Exception) {
+      // If anything goes wrong the pending asset should be deleted,
+      // otherwise it will clutter the database
+      contentResolver.delete(contentUri, null, null)
+      throw e
+    }
     return@withContext create(contentUri)
   }
 }

@@ -1,6 +1,7 @@
 package expo.modules.medialibrary.next.extensions
 
-import expo.modules.medialibrary.MediaLibraryUtils.getFileNameAndExtension
+import androidx.core.net.toUri
+import expo.modules.medialibrary.next.objects.asset.factories.buildUniqueDisplayName
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -12,7 +13,8 @@ fun File.safeMove(destinationDirectory: File): File =
   }
 
 fun File.safeCopy(destinationDirectory: File): File {
-  val newFile = createUniqueFileIn(destinationDirectory, name)
+  val displayName = buildUniqueDisplayName(this.toUri())
+  val newFile = File(destinationDirectory, displayName)
   FileInputStream(this).channel.use { input ->
     FileOutputStream(newFile).channel.use { output ->
       val transferred = input.transferTo(0, input.size(), output)
@@ -23,19 +25,4 @@ fun File.safeCopy(destinationDirectory: File): File {
       return newFile
     }
   }
-}
-
-private fun createUniqueFileIn(directory: File, newFileName: String): File {
-  var newFile = File(directory, newFileName)
-  var suffix = 2
-  val (filename, extension) = getFileNameAndExtension(newFileName)
-  val suffixLimit = Short.MAX_VALUE.toInt()
-  while (newFile.exists()) {
-    newFile = File(directory, filename + "_" + suffix + extension)
-    suffix++
-    if (suffix > suffixLimit) {
-      throw IOException("File name suffix limit reached ($suffixLimit)")
-    }
-  }
-  return newFile
 }
