@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- [iOS] Export `MapStyleElevation` enum.
+
 ## 0.12.9 - 2025-12-05
 
 _This version does not introduce any user-facing changes._
