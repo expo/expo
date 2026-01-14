@@ -1016,6 +1016,19 @@ You can pass the following parameters into the `params` list:
 
 > **important** You need to either set `maestro_api_key` parameter or `MAESTRO_CLOUD_API_KEY` environment variable in the job environment. Go to "Settings" on [Maestro Cloud](https://app.maestro.dev/) to generate an API key and then to [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) to add it to your project.
 
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output                      | Type   | Description                                                                  |
+| --------------------------- | ------ | ---------------------------------------------------------------------------- |
+| maestro_cloud_url           | string | URL to the Maestro Cloud upload results page.                                |
+| total_flows_count           | number | Total number of flows that were executed.                                    |
+| successful_flows_count      | number | Number of flows that completed successfully (status SUCCESS or WARNING).     |
+| failed_flows_count          | number | Number of flows that failed (status ERROR or STOPPED).                       |
+| successful_flow_names_json  | string | JSON array containing the names of successful flows.                         |
+| failed_flow_names_json      | string | JSON array containing the names of failed flows.                             |
+
 ### Examples
 
 Here are some practical examples of using the Maestro job:
