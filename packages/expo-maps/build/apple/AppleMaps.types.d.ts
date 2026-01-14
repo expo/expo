@@ -18,6 +18,7 @@ export type AppleMapsMarker = {
     /**
      * A short text (typically initials or 1-2 characters) to display on the marker balloon.
      * This is mutually exclusive with `systemImage`. If both are provided, `systemImage` takes precedence.
+     * @platform ios 17.0+
      */
     monogram?: string;
     /**
