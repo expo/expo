@@ -234,15 +234,21 @@ export async function instantiateMetroAsync(
   const { middleware, messagesSocket, eventsSocket, websocketEndpoints } =
     createMetroMiddleware(metroConfig);
 
+  // Get local URL to Metro bundler server (typically configured as 127.0.0.1:8081)
+  const serverBaseUrl = metroBundler
+    .getUrlCreator()
+    .constructUrl({ scheme: 'http', hostType: 'localhost' });
+
   if (!isExporting) {
     // Enable correct CORS headers for Expo Router features
     prependMiddleware(middleware, createCorsMiddleware(exp));
 
     // Enable debug middleware for CDP-related debugging
-    const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(
-      metroBundler,
-      reporter
-    );
+    const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware({
+      projectRoot: metroBundler.projectRoot,
+      serverBaseUrl,
+      reporter,
+    });
     Object.assign(websocketEndpoints, debugWebsocketEndpoints);
     middleware.use(debugMiddleware);
     middleware.use('/_expo/debugger', createJsInspectorMiddleware());
@@ -258,6 +264,9 @@ export async function instantiateMetroAsync(
       }
       return middleware.use(metroMiddleware);
     };
+
+    const devtoolsWebsocketEndpoints = createDevToolsPluginWebsocketEndpoint({ serverBaseUrl });
+    Object.assign(websocketEndpoints, devtoolsWebsocketEndpoints);
   }
 
   // Attach Expo Atlas if enabled
@@ -275,10 +284,7 @@ export async function instantiateMetroAsync(
     metroBundler,
     metroConfig,
     {
-      websocketEndpoints: {
-        ...websocketEndpoints,
-        ...createDevToolsPluginWebsocketEndpoint(),
-      },
+      websocketEndpoints,
       watch: !isExporting && isWatchEnabled(),
     },
     {

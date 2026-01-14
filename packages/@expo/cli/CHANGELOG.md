@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix response streaming from dev server (remove compression) ([#41955](https://github.com/expo/expo/pull/41955) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Restrict debugger (`/inspector/network`) and devtools (`/expo-dev-plugins/broadcast`) sockets to local connections ([#42156](https://github.com/expo/expo/pull/42156) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
