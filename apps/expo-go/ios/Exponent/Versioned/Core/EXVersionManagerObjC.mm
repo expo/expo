@@ -264,7 +264,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 - (BOOL)_isDevModeEnabledForHost:(NSURL *)bundleURL
 {
-  return ([RCTGetURLQueryParam(bundleURL, @"dev") boolValue]);
+  return ([RCTGetURLQueryParam(bundleURL, @"dev") boolValue] || _manifest.isDevelopmentMode);
 }
 
 - (void)_openJsInspector:(NSURL *)bundleURL

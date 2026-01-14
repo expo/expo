@@ -3,6 +3,7 @@ package expo.modules.core;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.RegistryLifecycleListener;
 import expo.modules.core.interfaces.SingletonModule;
+import expo.modules.kotlin.AppContext;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -16,6 +17,16 @@ public class ModuleRegistry {
   private final Map<String, SingletonModule> mSingletonModulesMap = new HashMap<>();
   private final List<WeakReference<RegistryLifecycleListener>> mExtraRegistryLifecycleListeners = new ArrayList<>();
   private volatile boolean mIsInitialized = false;
+
+  private WeakReference<AppContext> mAppContextHolder = new WeakReference<>(null);
+
+  public void setAppContext(AppContext appContext) {
+    mAppContextHolder = new WeakReference<>(appContext);
+  }
+
+  public AppContext getAppContext() {
+    return mAppContextHolder.get();
+  }
 
   public ModuleRegistry(
     Collection<InternalModule> internalModules,

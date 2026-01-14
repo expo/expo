@@ -99,11 +99,11 @@ export const UIScreens = [
     },
   },
   {
-    name: 'Progress component',
-    route: 'ui/progress',
+    name: 'ProgressView component',
+    route: 'ui/progress-view',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./ProgressScreen'));
+      return optionalRequire(() => require('./ProgressViewScreen'));
     },
   },
   {
@@ -112,6 +112,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ListScreen'));
+    },
+  },
+  {
+    name: 'Section component',
+    route: 'ui/section',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SectionScreen'));
     },
   },
   {

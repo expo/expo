@@ -10,6 +10,8 @@ import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
+import { gaugeStyle } from './gaugeStyle';
+import { progressViewStyle } from './progressViewStyle';
 import type { Color } from './types';
 
 const ExpoUI = requireNativeModule('ExpoUI');
@@ -508,6 +510,16 @@ export const scrollDismissesKeyboard = (
 ) => createModifier('scrollDismissesKeyboard', { mode });
 
 /**
+ * Disables or enables scrolling in scrollable views.
+ * @param disabled - Whether scrolling should be disabled (default: true).
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolldisabled(_:)).
+ */
+export const scrollDisabled = (disabled: boolean = true) =>
+  createModifier('scrollDisabled', { disabled });
+
+/**
  * Controls the dismissal behavior of menu actions.
  * @param behavior - The menu action dismiss behavior.
  * @platform ios 16.4+
@@ -941,6 +953,7 @@ export type BuiltInModifier =
   | ReturnType<typeof animation>
   | ReturnType<typeof containerShape>
   | ReturnType<typeof scrollContentBackground>
+  | ReturnType<typeof scrollDisabled>
   | ReturnType<typeof listRowBackground>
   | ReturnType<typeof listRowSeparator>
   | ReturnType<typeof truncationMode>
@@ -964,7 +977,9 @@ export type BuiltInModifier =
   | ReturnType<typeof gridColumnAlignment>
   | ReturnType<typeof gridCellAnchor>
   | ReturnType<typeof submitLabel>
-  | ReturnType<typeof datePickerStyle>;
+  | ReturnType<typeof datePickerStyle>
+  | ReturnType<typeof progressViewStyle>
+  | ReturnType<typeof gaugeStyle>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -1014,3 +1029,5 @@ export type * from './types';
 export * from './tag';
 export * from './pickerStyle';
 export * from './datePickerStyle';
+export * from './progressViewStyle';
+export * from './gaugeStyle';

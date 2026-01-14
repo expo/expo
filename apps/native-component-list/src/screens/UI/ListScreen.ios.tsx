@@ -9,13 +9,12 @@ import {
   type ListStyle,
   Picker,
   Section,
-  Switch,
+  Toggle,
   Text,
 } from '@expo/ui/swift-ui';
 import {
   background,
   clipShape,
-  disabled,
   frame,
   headerProminence,
   padding,
@@ -63,7 +62,6 @@ export default function ListScreen() {
   const [editModeEnabled, setEditModeEnabled] = React.useState<boolean>(false);
   const [scrollDismissesKeyboardIndex, setScrollDismissesKeyboardIndex] = React.useState<number>(0);
   const [increasedHeader, setIncreasedHeader] = React.useState(false);
-  const [collapsible, setCollapsible] = React.useState<boolean>(false);
   const [customHeaderFooter, setCustomHeaderFooter] = React.useState<{
     header: boolean;
     footer: boolean;
@@ -109,8 +107,6 @@ export default function ListScreen() {
         deleteEnabled={deleteEnabled}
         selectEnabled={selectEnabled}>
         <Section
-          collapsible={collapsible}
-          title="Collapsible section"
           {...(customHeaderFooter.header && {
             header: (
               <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
@@ -126,49 +122,27 @@ export default function ListScreen() {
                 </HStack>
               </HStack>
             ),
-          })}
-          footer={
-            <>
-              {customHeaderFooter.footer && (
-                <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
-                  <Text
-                    modifiers={[
-                      foregroundStyle({ type: 'color', color: 'white' }),
-                      font({ size: 16 }),
-                    ]}>
-                    Custom Footer
-                  </Text>
-                </HStack>
-              )}
-            </>
-          }>
-          <Switch
+          })}>
+          <Toggle
             label="Use increased section header"
-            value={increasedHeader}
-            onValueChange={setIncreasedHeader}
+            isOn={increasedHeader}
+            onIsOnChange={setIncreasedHeader}
           />
-          <Switch label="Collapsible" value={collapsible} onValueChange={setCollapsible} />
-          <Switch
+          <Toggle
             label="Custom header"
-            value={customHeaderFooter.header}
-            onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, header: v }))}
-          />
-          <Switch
-            label="Custom footer"
-            value={customHeaderFooter.footer}
-            onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, footer: v }))}
-            modifiers={[disabled(collapsible)]}
+            isOn={customHeaderFooter.header}
+            onIsOnChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, header: v }))}
           />
         </Section>
-        <Section title="Controls" collapsible>
+        <Section title="Controls">
           <Button onPress={() => setEditModeEnabled(!editModeEnabled)} label="Toggle Edit" />
-          <Switch value={selectEnabled} label="Select enabled" onValueChange={setSelectEnabled} />
-          <Switch value={deleteEnabled} label="Delete enabled" onValueChange={setDeleteEnabled} />
-          <Switch value={moveEnabled} label="Move enabled" onValueChange={setMoveEnabled} />
-          <Switch
-            value={refreshEnabled}
+          <Toggle isOn={selectEnabled} label="Select enabled" onIsOnChange={setSelectEnabled} />
+          <Toggle isOn={deleteEnabled} label="Delete enabled" onIsOnChange={setDeleteEnabled} />
+          <Toggle isOn={moveEnabled} label="Move enabled" onIsOnChange={setMoveEnabled} />
+          <Toggle
+            isOn={refreshEnabled}
             label="Refreshable enabled"
-            onValueChange={setRefreshEnabled}
+            onIsOnChange={setRefreshEnabled}
           />
           {lastRefresh && (
             <Text
@@ -180,7 +154,7 @@ export default function ListScreen() {
             label="Item icon color"
             selection={color}
             supportsOpacity
-            onValueChanged={setColor}
+            onSelectionChange={setColor}
           />
           <Picker
             label="Scroll dismisses keyboard"

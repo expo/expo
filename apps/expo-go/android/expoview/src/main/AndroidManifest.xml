@@ -120,6 +120,21 @@
         <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
       </intent-filter>
     </receiver>
+
+    <activity
+      android:name="host.exp.exponent.home.auth.AuthActivity"
+      android:exported="true"
+      android:launchMode="singleTask"
+      android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+
+        <data android:scheme="expauth" />
+      </intent-filter>
+    </activity>
   </application>
 
 </manifest>

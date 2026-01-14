@@ -40,8 +40,8 @@ export default function ContextMenuScreen() {
   return (
     <Host style={{ flex: 1 }}>
       <List>
-        <Section title="Context Menu with glass effect button">
-          <ContextMenu modifiers={[buttonStyle('glass')]}>
+        <Section title="Basic Context Menu">
+          <ContextMenu>
             <ContextMenu.Items>
               <Button
                 label="Hello"
@@ -60,7 +60,7 @@ export default function ContextMenuScreen() {
             </ContextMenu.Trigger>
           </ContextMenu>
         </Section>
-        <Section title="Single-Press Context Menu">
+        <Section title="Context Menu with Picker">
           <ContextMenu modifiers={[buttonStyle('bordered')]}>
             <ContextMenu.Items>
               <Button
@@ -91,8 +91,8 @@ export default function ContextMenuScreen() {
             </ContextMenu.Trigger>
           </ContextMenu>
         </Section>
-        <Section title="Long-Press Context Menu">
-          <ContextMenu activationMethod="longPress">
+        <Section title="Context Menu with Preview">
+          <ContextMenu>
             <ContextMenu.Items>
               <Switch
                 value={switchChecked}
@@ -143,26 +143,6 @@ export default function ContextMenuScreen() {
                 <RNText>This is a preview</RNText>
               </View>
             </ContextMenu.Preview>
-          </ContextMenu>
-        </Section>
-        <Section title="Context Menu Dismissal Behavior">
-          <ContextMenu modifiers={[menuActionDismissBehavior('disabled')]}>
-            <ContextMenu.Items>
-              <Button onPress={() => console.log('Pressed3')} label="Do not dismiss" />
-              <Button
-                label="Automatically dismiss"
-                onPress={() => console.log('Pressed1')}
-                modifiers={[menuActionDismissBehavior('automatic')]}
-              />
-              <Button
-                label="Always dismiss"
-                onPress={() => console.log('Pressed2')}
-                modifiers={[menuActionDismissBehavior('enabled')]}
-              />
-            </ContextMenu.Items>
-            <ContextMenu.Trigger>
-              <Text modifiers={[foregroundStyle('accentColor')]}>Show menu</Text>
-            </ContextMenu.Trigger>
           </ContextMenu>
         </Section>
         <Section title="SwiftUI Section and Divider Components">

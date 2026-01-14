@@ -70,3 +70,6 @@ buck-out/
 web-build/
 
 # @end expo-cli
+
+# Xcode brownfield frameworks
+ios/*.xcframework

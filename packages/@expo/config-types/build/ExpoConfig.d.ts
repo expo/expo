@@ -69,9 +69,6 @@ export interface ExpoConfig {
      */
     icon?: string;
     /**
-     * @deprecated in favor of expo-notifications config plugin. Configuration for remote (push) notifications.
-     */
-    /**
      * Configuration for the status bar on Android. For more details please navigate to [Configuring StatusBar](https://docs.expo.dev/guides/configuring-statusbar/).
      */
     androidStatusBar?: {

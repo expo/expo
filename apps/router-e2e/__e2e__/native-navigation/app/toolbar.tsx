@@ -1,4 +1,5 @@
-import { Color, useLocalSearchParams } from 'expo-router';
+import { useImage } from 'expo-image';
+import { Color, Stack, useLocalSearchParams } from 'expo-router';
 import { Toolbar } from 'expo-router/unstable-toolbar';
 import { SymbolView } from 'expo-symbols';
 import { useState, useRef } from 'react';
@@ -16,6 +17,9 @@ import {
 export default function ToolbarScreen() {
   const params = useLocalSearchParams();
   // State for controlling toolbar items visibility
+  const [showSearchBar, setShowSearchBar] = useState(!!params.searchBar);
+  const [sharesBackgroundSearchBar, setSharesBackgroundSearchBar] = useState(true);
+  const [hidesSharedBackgroundSearchBar, setHidesSharedBackgroundSearchBar] = useState(false);
   const [showSearchButton, setShowSearchButton] = useState(!!params.searchButton);
   const [sharesBackgroundSearchButton, setSharesBackgroundSearchButton] = useState(true);
   const [hidesSharedBackgroundSearchButton, setHidesSharedBackgroundSearchButton] = useState(false);
@@ -75,6 +79,14 @@ export default function ToolbarScreen() {
     Alert.alert('Color Selected', `You selected ${color}`);
   };
 
+  const image = useImage('https://simpleicons.org/icons/expo.svg', {
+    maxWidth: 24,
+    maxHeight: 24,
+    onError(error) {
+      console.error(error);
+    },
+  });
+
   return (
     <>
       <ScrollView
@@ -82,9 +94,48 @@ export default function ToolbarScreen() {
         contentContainerStyle={styles.contentContainer}
         contentInsetAdjustmentBehavior="automatic">
         <Text style={styles.title}>Toolbar E2E Test Screen</Text>
+        <Stack.Header />
+        <Stack.SearchBar
+          onFocus={() => setIsSearchFocused(true)}
+          onBlur={() => setIsSearchFocused(false)}
+          onChangeText={(e) => setSearchText(e.nativeEvent.text)}
+          placement="integratedButton"
+          placeholder="This is toolbar searchbar"
+        />
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Toolbar Items Visibility</Text>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Search Bar</Text>
+            <Switch
+              testID="toggle-search-bar"
+              value={showSearchBar}
+              onValueChange={setShowSearchBar}
+            />
+          </View>
+
+          {showSearchBar && (
+            <>
+              <View style={styles.switchRow}>
+                <Text style={styles.label}>Search Bar Shares Background</Text>
+                <Switch
+                  testID="toggle-search-bar-share-background"
+                  value={sharesBackgroundSearchBar}
+                  onValueChange={setSharesBackgroundSearchBar}
+                />
+              </View>
+
+              <View style={styles.switchRow}>
+                <Text style={styles.label}>Search Bar Hides Shared Background</Text>
+                <Switch
+                  testID="toggle-search-bar-hide-shared-background"
+                  value={hidesSharedBackgroundSearchBar}
+                  onValueChange={setHidesSharedBackgroundSearchBar}
+                />
+              </View>
+            </>
+          )}
 
           <View style={styles.switchRow}>
             <Text style={styles.label}>Show Search Button</Text>
@@ -217,6 +268,13 @@ export default function ToolbarScreen() {
         {/* Flexible spacer at the start */}
         <Toolbar.Spacer />
 
+        {/* Search bar */}
+        <Toolbar.SearchBarPreferredSlot
+          hidden={!showSearchBar}
+          sharesBackground={sharesBackgroundSearchBar}
+          hidesSharedBackground={hidesSharedBackgroundSearchBar}
+        />
+
         {/* Search button */}
         <Toolbar.Button
           hidden={!showSearchButton}
@@ -226,6 +284,8 @@ export default function ToolbarScreen() {
           separateBackground={!sharesBackgroundSearchButton}
           hidesSharedBackground={hidesSharedBackgroundSearchButton}
         />
+
+        <Toolbar.Button image={image} />
 
         {/* Fixed width spacer */}
         {showFixedSpacer && (

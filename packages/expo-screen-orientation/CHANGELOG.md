@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [web] fix undeclared `listener` reference ([#41441](https://github.com/expo/expo/pull/41441) by [@vonovak](https://github.com/vonovak))
+- [iOS] Remove use of deprecated API `UIApplication.shared.windows`. ([#40881](https://github.com/expo/expo/pull/40881) by [@bwallberg](https://github.com/bwallberg))
 
 ### 💡 Others
 

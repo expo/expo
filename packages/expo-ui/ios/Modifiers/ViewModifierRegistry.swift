@@ -1840,5 +1840,17 @@ extension ViewModifierRegistry {
     register("datePickerStyle") { params, appContext, _ in
       return try DatePickerStyleModifier(from: params, appContext: appContext)
     }
+
+    register("scrollDisabled") { params, appContext, _ in
+      return try ScrollDisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("progressViewStyle") { params, appContext, _ in
+      return try ProgressViewStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("gaugeStyle") { params, appContext, _ in
+      return try GaugeStyleModifier(from: params, appContext: appContext)
+    }
   }
 }

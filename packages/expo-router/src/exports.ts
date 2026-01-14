@@ -18,6 +18,9 @@ export { router, Router } from './imperative-api';
 
 export * from './link/Link';
 export * from './link/elements';
+export { usePreventZoomTransitionDismissal } from './link/zoom/usePreventZoomTransitionDismissal';
+export { type UsePreventZoomTransitionDismissalOptions } from './link/zoom/usePreventZoomTransitionDismissal.types';
+export type { DismissalBoundsRect } from './link/zoom/zoom-transition-context';
 export { useIsPreview } from './link/preview/PreviewRouteContext';
 
 export { withLayoutContext } from './layouts/withLayoutContext';

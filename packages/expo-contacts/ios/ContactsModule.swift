@@ -5,7 +5,7 @@ import ContactsUI
 let onContactsChangeEventName = "onContactsChange"
 
 public class ContactsModule: Module, OnContactPickingResultHandler {
-  private let contactStore = CNContactStore()
+  private lazy var contactStore = CNContactStore()
   private let delegate = ContactControllerDelegate()
   private var presentingViewController: UIViewController?
   private var contactPickerDelegate: ContactPickerControllerDelegate?

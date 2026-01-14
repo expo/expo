@@ -12,6 +12,8 @@ const projectRoot = getRouterE2ERoot();
 const outputDir = 'dist-static-loader';
 
 test.describe('static loader in production', () => {
+  test.describe.configure({ mode: 'serial' });
+
   const expoServe = createExpoServe({
     cwd: projectRoot,
     env: {
@@ -19,7 +21,7 @@ test.describe('static loader in production', () => {
     },
   });
 
-  test.beforeEach(async () => {
+  test.beforeAll(async () => {
     console.time('expo export');
     await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputDir], {
       env: {
@@ -35,7 +37,7 @@ test.describe('static loader in production', () => {
     await expoServe.startAsync([outputDir]);
     console.timeEnd('npx serve');
   });
-  test.afterEach(async () => {
+  test.afterAll(async () => {
     await expoServe.stopAsync();
   });
 
@@ -165,4 +167,26 @@ test.describe('static loader in production', () => {
 
     expect(pageErrors.all).toEqual([]);
   });
+
+  test('navigates from route with loader to another route with loader', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+
+    const url = new URL(expoServe.url.href);
+    url.pathname = '/second';
+
+    // Start on second route (with loader)
+    await page.goto(url.toString());
+    await page.waitForSelector('[data-testid="loader-result"]');
+
+    await expect(page.locator('[data-testid="loader-result"]')).toHaveText('{"data":"second"}');
+
+    // Navigate to posts route (has loader)
+    await page.click('a[href="/posts/static-post-1"]');
+    await expect(page.locator('[data-testid="loader-result"]')).toContainText(
+      '"postId":"static-post-1"'
+    );
+
+    expect(pageErrors.all).toEqual([]);
+  });
+
 });

@@ -422,7 +422,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 {
   EXManifestsManifest *manifest = _appRecord.appLoader.manifest;
   if (manifest) {
-    return manifest.isUsingDeveloperTool;
+    return manifest.isUsingDeveloperTool || manifest.isDevelopmentMode;
   }
   return false;
 }
@@ -464,7 +464,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 - (void)toggleDevMenu
 {
-  [[EXKernel sharedInstance] switchTasks];
+  [self showDevMenu];
 }
 
 - (void)setupWebSocketControls

@@ -199,13 +199,13 @@ function getQualifiedRouteComponent(value) {
         const store = (0, storeContext_1.useExpoRouterStore)();
         if (isFocused) {
             const state = navigation.getState();
-            const isLeaf = !('state' in state.routes[state.index]);
+            const isLeaf = !(state && 'state' in state.routes[state.index]);
             if (isLeaf && stateForPath)
                 store.setFocusedState(stateForPath);
         }
         (0, react_1.useEffect)(() => navigation.addListener('focus', () => {
             const state = navigation.getState();
-            const isLeaf = !('state' in state.routes[state.index]);
+            const isLeaf = !(state && 'state' in state.routes[state.index]);
             // Because setFocusedState caches the route info, this call will only trigger rerenders
             // if the component itself didn’t rerender and the route info changed.
             // Otherwise, the update from the `if` above will handle it,
@@ -224,10 +224,12 @@ function getQualifiedRouteComponent(value) {
                 }
             });
         }, [navigation]);
-        return (<Route_1.Route node={value} route={route}>
-        {value.type === 'route' && navigationEvents_1.unstable_navigationEvents.hasAnyListener() && (<AnalyticsListeners navigation={navigation} screenId={route.key}/>)}
-        <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
+        const isRouteType = value.type === 'route';
+        const hasRouteKey = !!route?.key;
+        return (<Route_1.Route node={value} params={route?.params}>
+        {isRouteType && hasRouteKey && navigationEvents_1.unstable_navigationEvents.hasAnyListener() && (<AnalyticsListeners navigation={navigation} screenId={route.key}/>)}
         <zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider route={route}>
+          <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
           <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
             <ScreenComponent {...props} 
         // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`

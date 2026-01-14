@@ -166,7 +166,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   // MARK: - UI
 
-  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {    
+  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
     return hostWrapper?.findView(withTag: viewTag) as? ViewType
   }
 
@@ -201,9 +201,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
       throw JavaScriptClassNotFoundException()
     }
     let prototype = try jsClass.getProperty("prototype").asObject()
-    let object = try runtime.createObject(withPrototype: prototype)
-
-    return object
+    return try runtime.createObject(withPrototype: prototype)
   }
 
   // MARK: - Legacy modules
@@ -251,8 +249,10 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   /**
    Provides an event emitter that is compatible with the legacy interface.
+   - Deprecated as of Expo SDK 55. May be removed in the future releases.
    */
-  public var eventEmitter: EXEventEmitterService? {
+  @available(*, deprecated, message: "Use `sendEvent` directly on the module instance instead")
+  public var eventEmitter: LegacyEventEmitterCompat? {
     return LegacyEventEmitterCompat(appContext: self)
   }
 
@@ -496,7 +496,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
     EXJavaScriptRuntimeManager.installSharedObjectClass(runtime) { [weak sharedObjectRegistry] objectId in
       sharedObjectRegistry?.delete(objectId)
     }
-    
+
     // Install `global.expo.SharedRef`.
     EXJavaScriptRuntimeManager.installSharedRefClass(runtime)
 
@@ -535,7 +535,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
       moduleRegistry.post(event: .appContextDestroys)
     }
   }
-  
+
   @objc
   public func setHostWrapper(_ wrapper: ExpoHostWrapper) {
     self.hostWrapper = wrapper

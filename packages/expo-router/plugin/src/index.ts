@@ -23,16 +23,10 @@ const withExpoHeadIos: ConfigPlugin = (config) => {
   });
 };
 
-const withGammaScreens: ConfigPlugin<
-  {
-    /** Enable experimental data loader support. Requires `web.output: 'static'` to be set in app config. */
-    unstable_splitView?: boolean;
-  } | void
-> = (config, props) => {
-  const value = props?.unstable_splitView ?? false;
+const withGammaScreens: ConfigPlugin = (config) => {
   return withPodfile(config, (config) => {
     if (!config.modResults.contents.includes('RNS_GAMMA_ENABLED')) {
-      config.modResults.contents = `ENV['RNS_GAMMA_ENABLED']='${value ? 1 : 0}'\n${config.modResults.contents}`;
+      config.modResults.contents = `ENV['RNS_GAMMA_ENABLED']='1'\n${config.modResults.contents}`;
     }
     return config;
   });
@@ -66,7 +60,7 @@ const withRouter: ConfigPlugin<
   validate(schema, props);
 
   withExpoHeadIos(config);
-  withGammaScreens(config, props);
+  withGammaScreens(config);
 
   return {
     ...config,
