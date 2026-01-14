@@ -40,6 +40,9 @@
 - [android] Add Material 3 dynamic color defaults for NativeTabs ([#41869](https://github.com/expo/expo/pull/41869) by [@Ubax](https://github.com/Ubax))
 - [iOS] enable zoom transition by default ([#41891](https://github.com/expo/expo/pull/41891) by [@Ubax](https://github.com/Ubax))
 - Improve SSR support ([#41477](https://github.com/expo/expo/pull/41477) by [@hassankhan](https://github.com/hassankhan))
+- [iOS] expose image prop from Toolbar.Button ([#41882](https://github.com/expo/expo/pull/41882) by [@Ubax](https://github.com/Ubax))
+- [iOS] add Toolbar.SearchBarPreferredSlot ([#41863](https://github.com/expo/expo/pull/41863) by [@Ubax](https://github.com/Ubax))
+- [iOS] add usePreventZoomTransitionDismissal ([#41893](https://github.com/expo/expo/pull/41893) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
@@ -58,6 +61,7 @@
 - [ios] fix zoom transition with custom params in href ([#41508](https://github.com/expo/expo/pull/41508) by [@Ubax](https://github.com/Ubax))
 - [ios] fix zoom transition issues with external links and preview ([#41507](https://github.com/expo/expo/pull/41507) by [@Ubax](https://github.com/Ubax))
 - fix PlatformColor not available when using Color on web ([#41801](https://github.com/expo/expo/pull/41801) by [@Ubax](https://github.com/Ubax))
+- Fix unknown key in link preview ([#41756](https://github.com/expo/expo/pull/41756) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
@@ -92,6 +96,9 @@
 - [ios] replace print with jsLog in native components ([#41757](https://github.com/expo/expo/pull/41757) by [@Ubax](https://github.com/Ubax))
 - [ios] add NativeActionProp to reduce repetition in LinkPreviewNativeActionView ([#41763](https://github.com/expo/expo/pull/41763) by [@Ubax](https://github.com/Ubax))
 - [docs] update Toolbar.View to reflect up to date props ([#41888](https://github.com/expo/expo/pull/41888) by [@Ubax](https://github.com/Ubax))
+- remove new arch checks ([#41766](https://github.com/expo/expo/pull/41766) by [@Ubax](https://github.com/Ubax))
+- add types to BaseRoute props ([#41765](https://github.com/expo/expo/pull/41765) by [@Ubax](https://github.com/Ubax))
+- throw error when array style is passed to Slot ([#41901](https://github.com/expo/expo/pull/41901) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.17 - 2025-12-05
 

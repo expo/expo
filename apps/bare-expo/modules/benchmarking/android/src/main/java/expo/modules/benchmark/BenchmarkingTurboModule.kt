@@ -9,8 +9,12 @@ class BenchmarkingTurboModule(reactContext: ReactApplicationContext) : NativeBen
     return "BenchmarkingTurboModule"
   }
 
-  override fun nothing() {
+  override fun nothing(): Double {
     // Do nothing
+
+    // For some reason, isBlockingSynchronousMethod doesn't let functions be Void/Unit
+    // so returning a dummy number
+    return 0.0
   }
 
   override fun addNumbers(a: Double, b: Double): Double {

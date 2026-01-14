@@ -42,7 +42,7 @@ export function resolvePackageManager(
     npm: [NPM_LOCK_FILE],
     pnpm: [PNPM_LOCK_FILE],
     yarn: [YARN_LOCK_FILE],
-    bun: [BUN_LOCK_FILE, BUN_TEXT_LOCK_FILE],
+    bun: [BUN_TEXT_LOCK_FILE, BUN_LOCK_FILE],
   };
 
   if (preferredManager) {
@@ -80,14 +80,13 @@ export function createForProject(
   }
 
   switch (resolvePackageManager(projectRoot)) {
-    case 'npm':
-      return new NpmPackageManager({ cwd: projectRoot, ...options });
     case 'pnpm':
       return new PnpmPackageManager({ cwd: projectRoot, ...options });
     case 'yarn':
       return new YarnPackageManager({ cwd: projectRoot, ...options });
     case 'bun':
       return new BunPackageManager({ cwd: projectRoot, ...options });
+    case 'npm':
     default:
       return new NpmPackageManager({ cwd: projectRoot, ...options });
   }

@@ -92,6 +92,20 @@ it('renders a Link with React Native array style prop when using asChild', () =>
   });
 });
 
+it('renders a Link with a slot and array style', () => {
+  expect(() =>
+    render(
+      <Link asChild href="/foo">
+        <Pressable style={[{ padding: 10 }, { margin: 5 }]}>
+          <Text>Button</Text>
+        </Pressable>
+      </Link>
+    )
+  ).toThrow(
+    '[expo-router]: You are passing an array of styles to a child of <Slot>. Consider flattening the styles with StyleSheet.flatten before passing them to the child component.'
+  );
+});
+
 xit('renders a Link with a slot', () => {
   const { getByText, getByTestId } = render(
     <Link asChild href="/foo">

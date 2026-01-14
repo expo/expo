@@ -4,9 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { ConfigAPI, types as t, PluginObj, NodePath, PluginPass } from '@babel/core';
+import type { ConfigAPI, types as t, PluginObj, PluginPass } from '@babel/core';
 
-import { getExpoRouterAbsoluteAppRoot, getIsServer, toPosixPath } from './common';
+import {
+  getExpoRouterAbsoluteAppRoot,
+  getIsLoaderBundle,
+  getIsServer,
+  toPosixPath,
+} from './common';
 
 const debug = require('debug')('expo:babel:server-data-loaders');
 
@@ -17,12 +22,31 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
 
   const routerAbsoluteRoot = api.caller(getExpoRouterAbsoluteAppRoot);
   const isServer = api.caller(getIsServer);
+  const isLoaderBundle = api.caller(getIsLoaderBundle);
 
   return {
     name: 'expo-server-data-loaders',
     visitor: {
+      ExportDefaultDeclaration(path, state) {
+        // Early exit if file is not within the `app/` directory
+        if (!isInAppDirectory(state.file.opts.filename ?? '', routerAbsoluteRoot)) {
+          return;
+        }
+
+        // Only remove default exports in loader-only bundles
+        if (!isLoaderBundle) {
+          return;
+        }
+
+        debug('Loader bundle: removing default export from', state.file.opts.filename);
+        markForConstantFolding(state);
+        path.remove();
+      },
+
       ExportNamedDeclaration(path, state) {
-        if (isServer) {
+        // NOTE(@hassankhan): Server bundles currently preserve loaders for SSG, a followup is
+        // required to remove them.
+        if (isServer && !isLoaderBundle) {
           return;
         }
 
@@ -33,7 +57,7 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
         }
 
         debug(
-          isServer ? 'Processing server bundle:' : 'Processing client bundle:',
+          `Processing ${isLoaderBundle ? 'loader' : 'client'} bundle:`,
           state.file.opts.filename
         );
 
@@ -41,7 +65,6 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
 
         // Is this a type export like `export type Foo`?
         const isTypeExport = path.node.exportKind === 'type';
-        // Does this export with `export { loader }`?
         // NOTE(@hassankhan): We should add proper handling for specifiers too
         const hasSpecifiers = specifiers.length > 0;
 
@@ -49,11 +72,23 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
           return;
         }
 
-        // Handles `export function loader() {}`
+        // Handles `export function loader() { ... }`
         if (t.isFunctionDeclaration(declaration)) {
           const name = declaration.id?.name;
           if (name && isLoaderIdentifier(name)) {
-            debug('Found and removed loader function declaration');
+            // Mark the file as having a loader (for all bundle types)
+            markWithLoaderReference(state);
+
+            if (!isLoaderBundle) {
+              // Client bundles: remove loader
+              debug('Found and removed loader function declaration');
+              markForConstantFolding(state);
+              path.remove();
+            }
+            // Loader bundle: keep the loader
+          } else if (name && isLoaderBundle) {
+            // Loader bundle: remove non-loader function declarations
+            debug('Loader bundle: removing non-loader function declaration:', name);
             markForConstantFolding(state);
             path.remove();
           }
@@ -61,21 +96,50 @@ export function serverDataLoadersPlugin(api: ConfigAPI & typeof import('@babel/c
 
         // Handles `export const loader = ...`
         if (t.isVariableDeclaration(declaration)) {
-          let hasRemovedLoader = false;
+          let hasModified = false;
 
-          declaration.declarations = declaration.declarations.filter(
+          // Check if any declaration is a loader
+          const hasLoaderDeclaration = declaration.declarations.some(
             (declarator: t.VariableDeclarator) => {
               const name = t.isIdentifier(declarator.id) ? declarator.id.name : null;
-              if (name && isLoaderIdentifier(name)) {
-                debug('Found and removed loader variable declaration');
-                hasRemovedLoader = true;
-                return false;
-              }
-              return true;
+              return name && isLoaderIdentifier(name);
             }
           );
 
-          if (hasRemovedLoader) {
+          // Mark the file as having a loader (for all bundle types)
+          if (hasLoaderDeclaration) {
+            markWithLoaderReference(state);
+          }
+
+          if (isLoaderBundle) {
+            // Loader bundle: keep only loader declarations, remove others
+            declaration.declarations = declaration.declarations.filter(
+              (declarator: t.VariableDeclarator) => {
+                const name = t.isIdentifier(declarator.id) ? declarator.id.name : null;
+                if (name && !isLoaderIdentifier(name)) {
+                  debug('Loader bundle: removing non-loader variable declaration:', name);
+                  hasModified = true;
+                  return false;
+                }
+                return true;
+              }
+            );
+          } else {
+            // Client bundles: remove loader declarations
+            declaration.declarations = declaration.declarations.filter(
+              (declarator: t.VariableDeclarator) => {
+                const name = t.isIdentifier(declarator.id) ? declarator.id.name : null;
+                if (name && isLoaderIdentifier(name)) {
+                  debug('Found and removed loader variable declaration');
+                  hasModified = true;
+                  return false;
+                }
+                return true;
+              }
+            );
+          }
+
+          if (hasModified) {
             markForConstantFolding(state);
 
             // If all declarations were removed, remove the export
@@ -98,6 +162,7 @@ function isLoaderIdentifier(name: string): boolean {
 
 function assertExpoMetadata(metadata: any): asserts metadata is {
   performConstantFolding?: boolean;
+  loaderReference?: string;
 } {
   if (metadata && typeof metadata === 'object') {
     return;
@@ -122,4 +187,13 @@ function isInAppDirectory(filePath: string, routerRoot: string) {
 function markForConstantFolding(state: PluginPass) {
   assertExpoMetadata(state.file.metadata);
   state.file.metadata.performConstantFolding = true;
+}
+
+/**
+ * Sets the `loaderReference` metadata to the file path. This is used to collect all modules with
+ * loaders in the Metro serializer.
+ */
+function markWithLoaderReference(state: PluginPass) {
+  assertExpoMetadata(state.file.metadata);
+  state.file.metadata.loaderReference = state.file.opts.filename ?? undefined;
 }

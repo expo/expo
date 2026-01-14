@@ -271,8 +271,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   if (hasModule('expo-router')) {
     extraPlugins.push(expoRouterBabelPlugin);
 
-    // Strip loader() functions from client bundles
-    if (!isServerEnv) {
+    // Process `loader()` functions for client, loader and server bundles (excluding RSC)
+    // - Client bundles: Remove loader exports, they run on server only
+    // - Server bundles: Keep loader exports (needed for SSG)
+    // - Loader-only bundles: Keep only loader exports, remove everything else
+    if (!isReactServer) {
       extraPlugins.push(serverDataLoadersPlugin);
     }
   }
