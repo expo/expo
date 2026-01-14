@@ -25,6 +25,8 @@ export declare namespace AppleMaps {
     const View: import("react").ForwardRefExoticComponent<Omit<AppleTypes.AppleMapsViewProps, "ref"> & import("react").RefAttributes<AppleTypes.AppleMapsViewType>>;
     const MapType: typeof AppleTypes.AppleMapsMapType;
     type MapType = AppleTypes.AppleMapsMapType;
+    const MapStyleElevation: typeof AppleTypes.AppleMapsMapStyleElevation;
+    type MapStyleElevation = AppleTypes.AppleMapsMapStyleElevation;
     type Marker = AppleTypes.AppleMapsMarker;
     type MapUISettings = AppleTypes.AppleMapsUISettings;
     type MapProperties = AppleTypes.AppleMapsProperties;
