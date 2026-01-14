@@ -7,11 +7,7 @@ import { createModifier } from './createModifier';
  * - `{ fraction: number }`: Fraction of screen height (0-1, for example, 0.4 equals to 40% of screen)
  * - `{ height: number }`: Fixed height in points
  */
-export type PresentationDetent =
-  | 'medium'
-  | 'large'
-  | { fraction: number }
-  | { height: number };
+export type PresentationDetent = 'medium' | 'large' | { fraction: number } | { height: number };
 
 /**
  * Sets the available heights for a sheet presentation.
