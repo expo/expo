@@ -77,20 +77,55 @@ open class DevMenuManager: NSObject {
       updateAutoLaunchObserver()
 
       if let currentBridge {
-        disableRNDevMenuHoykeys(for: currentBridge)
+        DispatchQueue.main.async {
+          self.disableRNDevMenuHoykeys(for: currentBridge)
+        }
       }
     }
   }
 
-  @objc
-  public private(set) var currentManifest: Manifest?
+  private let manifestSubject = PassthroughSubject<Void, Never>()
+  public var manifestPublisher: AnyPublisher<Void, Never> {
+    manifestSubject.eraseToAnyPublisher()
+  }
 
   @objc
-  public private(set) var currentManifestURL: URL?
+  public private(set) var currentManifest: Manifest? {
+    didSet {
+      manifestSubject.send()
+    }
+  }
+
+  @objc
+  public private(set) var currentManifestURL: URL? {
+    didSet {
+      manifestSubject.send()
+    }
+  }
 
   @objc
   public func setDelegate(_ delegate: DevMenuHostDelegate?) {
     hostDelegate = delegate
+  }
+
+  @objc
+  public func setMotionGestureEnabled(_ enabled: Bool) {
+    DevMenuPreferences.motionGestureEnabled = enabled
+  }
+
+  @objc
+  public func setTouchGestureEnabled(_ enabled: Bool) {
+    DevMenuPreferences.touchGestureEnabled = enabled
+  }
+
+  @objc
+  public func getMotionGestureEnabled() -> Bool {
+    return DevMenuPreferences.motionGestureEnabled
+  }
+
+  @objc
+  public func getTouchGestureEnabled() -> Bool {
+    return DevMenuPreferences.touchGestureEnabled
   }
 
   @objc
@@ -162,7 +197,11 @@ open class DevMenuManager: NSObject {
    */
   @objc
   public var isVisible: Bool {
+#if !os(macOS)
     return Dispatch.mainSync { !(window?.isHidden ?? true) }
+#else
+    return window?.isVisible ?? false
+#endif
   }
 
   /**
@@ -255,8 +294,12 @@ open class DevMenuManager: NSObject {
       return
     }
 
-    let eventDispatcher = bridge.moduleRegistry.module(forName: "EventDispatcher") as? RCTEventDispatcher
-    eventDispatcher?.sendDeviceEvent(withName: eventName, body: data)
+    if let eventDispatcher = bridge.moduleRegistry.module(forName: "EventDispatcher") as? NSObject {
+      let selector = NSSelectorFromString("sendDeviceEventWithName:body:")
+      if eventDispatcher.responds(to: selector) {
+        eventDispatcher.perform(selector, with: eventName, with: data)
+      }
+    }
   }
 
   /**
@@ -304,9 +347,11 @@ open class DevMenuManager: NSObject {
     }
   }
 
+#if !os(macOS)
   var userInterfaceStyle: UIUserInterfaceStyle {
     return UIUserInterfaceStyle.unspecified
   }
+#endif
 
   private func setVisibility(_ visible: Bool, screen: String? = nil) -> Bool {
     if !canChangeVisibility(to: visible) {
@@ -315,12 +360,17 @@ open class DevMenuManager: NSObject {
     if visible {
       setCurrentScreen(screen)
       DispatchQueue.main.async {
+#if os(macOS)
+        self.window?.makeKeyAndOrderFront(nil)
+#else
         if self.window?.windowScene == nil {
-          let windowScene = UIApplication.shared.connectedScenes
+          let keyWindowScene = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene
+          let windowScene = keyWindowScene ?? UIApplication.shared.connectedScenes
             .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
           self.window?.windowScene = windowScene
         }
         self.window?.makeKeyAndVisible()
+#endif
       }
     } else {
       DispatchQueue.main.async { self.window?.closeBottomSheet(nil) }

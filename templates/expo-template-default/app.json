@@ -7,9 +7,8 @@
     "icon": "./assets/images/icon.png",
     "scheme": "helloworld",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "icon": "./assets/expo.icon"
     },
     "android": {
       "adaptiveIcon": {

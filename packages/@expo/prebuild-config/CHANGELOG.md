@@ -4,15 +4,25 @@
 
 ### 🛠 Breaking changes
 
+- remove expo-notifications from auto plugins; the `notification` entry in app.json is no longer valid ([#40787](https://github.com/expo/expo/pull/40787) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Fix withEdgeToEdge types ([#41510](https://github.com/expo/expo/pull/41510) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Scope `.icon` build setting to app target. ([#41536](https://github.com/expo/expo/pull/41536) by [@patrickmichalik](https://github.com/patrickmichalik))
 
 ### 💡 Others
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added support for React Native 0.83.x. ([#41564](https://github.com/expo/expo/pull/41564) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 54.0.7 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 54.0.6 - 2025-10-21
 

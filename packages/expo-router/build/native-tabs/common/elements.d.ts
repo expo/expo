@@ -1,4 +1,5 @@
-import type { ColorValue, ImageSourcePropType } from 'react-native';
+import type { AndroidSymbol } from 'expo-symbols';
+import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import { VectorIcon } from '../../primitives';
 import type { NativeTabsLabelStyle } from '../types';
@@ -7,7 +8,7 @@ export interface NativeTabsTriggerLabelProps {
      * The text to display as the label for the tab.
      */
     children?: string;
-    selectedStyle?: NativeTabsLabelStyle;
+    selectedStyle?: StyleProp<NativeTabsLabelStyle>;
     /**
      * If true, the label will be hidden.
      * @default false
@@ -77,10 +78,21 @@ export interface DrawableIcon {
      */
     drawable?: string;
 }
+/**
+ * Material icon name for Android native tabs.
+ *
+ * @platform android
+ */
+export interface MaterialIcon {
+    /**
+     * Material icon glyph name. See the [Material icons for the complete catalog](https://fonts.google.com/icons).
+     */
+    md: AndroidSymbol;
+}
 export type BaseNativeTabsTriggerIconProps = {
     selectedColor?: ColorValue;
 };
-export type NativeTabsTriggerIconProps = BaseNativeTabsTriggerIconProps & ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
+export type NativeTabsTriggerIconProps = BaseNativeTabsTriggerIconProps & ((SFSymbolIcon & DrawableIcon) | (SFSymbolIcon & MaterialIcon) | (SFSymbolIcon & SrcIcon) | (MaterialIcon & SrcIcon) | (DrawableIcon & SrcIcon) | SrcIcon);
 /**
  * Renders an icon for the tab.
  *
@@ -116,6 +128,10 @@ export declare const NativeTabsTriggerIcon: React.FC<NativeTabsTriggerIconProps>
  * ```
  */
 export declare const NativeTabsTriggerVectorIcon: typeof VectorIcon;
+export interface NativeTabsTriggerPromiseIconProps {
+    loader: () => Promise<ImageSourcePropType | null>;
+}
+export declare const NativeTabsTriggerPromiseIcon: (props: NativeTabsTriggerPromiseIconProps) => null;
 export interface NativeTabsTriggerBadgeProps {
     /**
      * The text to display as the badge for the tab.
@@ -130,4 +146,29 @@ export interface NativeTabsTriggerBadgeProps {
     selectedBackgroundColor?: ColorValue;
 }
 export declare const NativeTabsTriggerBadge: React.FC<NativeTabsTriggerBadgeProps>;
+export interface NativeTabsBottomAccessoryProps {
+    children?: React.ReactNode;
+}
+/**
+ * A [bottom accessory](https://developer.apple.com/documentation/uikit/uitabbarcontroller/bottomaccessory) for `NativeTabs` on iOS 26 and above.
+ *
+ * @example
+ * ```tsx
+ * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ *
+ * export default Layout(){
+ *   return (
+ *     <NativeTabs>
+ *       <NativeTabs.BottomAccessory>
+ *         <YourAccessoryComponent />
+ *       </NativeTabs.BottomAccessory>
+ *       <NativeTabs.Trigger name="index" />
+ *     </NativeTabs>
+ *   );
+ * }
+ * ```
+ *
+ * @platform iOS 26+
+ */
+export declare const NativeTabsBottomAccessory: React.FC<NativeTabsBottomAccessoryProps>;
 //# sourceMappingURL=elements.d.ts.map

@@ -9,6 +9,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
+import { DiffBlock } from '~/ui/components/Snippet';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <VideoBoxLink
@@ -18,7 +19,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
   className="mb-6"
 />
 
-> **important** Native tabs is an experimental feature available in SDK 54 and later, and its API is subject to change.
+> **important** Native tabs is in alpha and is available in SDK 54 and later. Its API is subject to change.
 
 Tabs are a common way to navigate between different sections of an app. In Expo Router, you can use different tab layouts, depending on your needs. This guide covers the native tabs. Unlike the [other tabs layout](/router/advanced/tabs/#multiple-tab-layouts), native tabs use the native system tab bar.
 
@@ -436,6 +437,20 @@ export default function TabLayout() {
 }
 ```
 
+### Disabling keyboard avoidance on Android
+
+By default, when the keyboard is displayed on Android, the native tabs automatically adjust to avoid being obscured. You can disable this behavior by changing the [`android.softwareKeyboardLayoutMode`](/versions/latest/config/app/#softwarekeyboardlayoutmode) property to `pan` in your app config file:
+
+```json app.json
+{
+  "expo": {
+    "android": {
+      "softwareKeyboardLayoutMode": "pan"
+    }
+  }
+}
+```
+
 ## Migrating from JavaScript tabs
 
 Native tabs are not designed to be a drop-in replacement for [JavaScript tabs](/router/advanced/tabs/). The native tabs are constrained to the native platform behavior, whereas the JavaScript tabs can be customized more freely. If you aren't interested in the native platform behavior, you can continue using the JavaScript tabs.
@@ -448,14 +463,7 @@ Native tabs are not designed to be a drop-in replacement for [JavaScript tabs](/
 
 `NativeTabs` has a React-first API that opts to use components for defining UI in favor of props objects.
 
-```diff
-- options={{
--   tabBarIcon: ({ focused, color, size }) => (
--     <Icon name="home" color={color} size={size} />
--   ),
-- }}
-+ <Icon sf="house" drawable="home_drawable" />
-```
+<DiffBlock source="/static/diffs/router/native-tabs/trigger-icon-component.diff" />
 
 ### Use Stacks inside tabs
 

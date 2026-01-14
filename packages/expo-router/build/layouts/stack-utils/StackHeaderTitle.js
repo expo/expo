@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackHeaderTitle = StackHeaderTitle;
 exports.appendStackHeaderTitlePropsToOptions = appendStackHeaderTitlePropsToOptions;
 const react_native_1 = require("react-native");
+const style_1 = require("../../utils/style");
 function StackHeaderTitle(props) {
     return null;
 }
@@ -18,7 +19,7 @@ function appendStackHeaderTitlePropsToOptions(options, props) {
             ...flattenedStyle,
             ...(flattenedStyle?.fontWeight
                 ? {
-                    fontWeight: convertFontWeightToStringFontWeight(flattenedStyle?.fontWeight),
+                    fontWeight: (0, style_1.convertFontWeightToStringFontWeight)(flattenedStyle?.fontWeight),
                 }
                 : {}),
         },
@@ -26,16 +27,10 @@ function appendStackHeaderTitlePropsToOptions(options, props) {
             ...flattenedLargeStyle,
             ...(flattenedLargeStyle?.fontWeight
                 ? {
-                    fontWeight: convertFontWeightToStringFontWeight(flattenedLargeStyle?.fontWeight),
+                    fontWeight: (0, style_1.convertFontWeightToStringFontWeight)(flattenedLargeStyle?.fontWeight),
                 }
                 : {}),
         },
     };
-}
-function convertFontWeightToStringFontWeight(fontWeight) {
-    if (typeof fontWeight === 'number') {
-        return String(fontWeight);
-    }
-    return fontWeight;
 }
 //# sourceMappingURL=StackHeaderTitle.js.map

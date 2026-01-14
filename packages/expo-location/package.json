@@ -38,6 +38,9 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
+  "dependencies": {
+    "@expo/image-utils": "^0.8.7"
+  },
   "devDependencies": {
     "expo-module-scripts": "^5.0.7"
   },

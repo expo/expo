@@ -282,8 +282,8 @@ function getNavigateAction(baseHref, options, type = 'NAVIGATE', withAnchor, sin
     }
     const expoParams = isPreviewNavigation
         ? {
-            __internal__expo_router_is_preview_navigation: true,
-            __internal_expo_router_no_animation: true,
+            [navigationParams_1.INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
+            [navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
         }
         : {};
     const params = (0, navigationParams_1.appendInternalExpoRouterParams)(rootPayload.params, expoParams);

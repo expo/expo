@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-> **Info** **Note:** If you're migrating from [`expo-av`](av.mdx), you'll notice that `expo-audio` doesn't automatically reset the playback position when audio finishes. After [`play()`](#play), the player stays paused at the end of the sound. To play it again, call [`seekTo(seconds)`](#seektoseconds) to reset the position — as shown in the example above.
+> **Info** **Note:** If you're migrating from [`expo-av`](av.mdx), you'll notice that `expo-audio` doesn't automatically reset the playback position when audio finishes. After [`play()`](#play), the player stays paused at the end of the sound. To play it again, call [`seekTo(seconds)`](#seektoseconds-tolerancemillisbefore-tolerancemillisafter) to reset the position — as shown in the example above.
 
 ### Recording sounds
 
@@ -205,7 +205,7 @@ See an example of **app.json** that enables audio playback in background:
 ### Using the AudioPlayer directly
 
 In most cases, the [`useAudioPlayer`](#useaudioplayersource-options) hook should be used to create a `AudioPlayer` instance. It manages the player's lifecycle and ensures that it is properly disposed of when the component is unmounted. However, in some advanced use cases, it might be necessary to create a `AudioPlayer` that does not get automatically destroyed when the component is unmounted.
-In those cases, the `AudioPlayer` can be created using the [`createAudioPlayer`](#audiocreateaudioplayersource-updateinterval) function. You need to be aware of the risks that come with this approach, as it is your responsibility to call the [`release()`](../sdk/expo/#release) method when the player is no longer needed. If not handled properly, this approach may lead to memory leaks.
+In those cases, the `AudioPlayer` can be created using the [`createAudioPlayer`](#audiocreateaudioplayersource-options) function. You need to be aware of the risks that come with this approach, as it is your responsibility to call the [`release()`](../sdk/expo/#release) method when the player is no longer needed. If not handled properly, this approach may lead to memory leaks.
 
 ```tsx
 import { createAudioPlayer } from 'expo-audio';

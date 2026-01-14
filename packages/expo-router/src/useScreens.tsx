@@ -1,18 +1,31 @@
 'use client';
 
+import type { BottomTabNavigationEventMap } from '@react-navigation/bottom-tabs';
 import {
   useStateForPath,
+  type EventConsumer,
   type EventMapBase,
+  type NavigationProp,
   type NavigationState,
   type ParamListBase,
   type RouteProp,
   type ScreenListeners,
 } from '@react-navigation/native';
-import React, { useEffect } from 'react';
+import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
+import React, { useEffect, useMemo } from 'react';
 
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
+import { getPathFromState } from './fork/getPathFromState';
 import { useExpoRouterStore } from './global-state/storeContext';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
+import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
+import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
+import { unstable_navigationEvents } from './navigationEvents';
+import {
+  hasParam,
+  INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
+  removeParams,
+} from './navigationParams';
 import { Screen } from './primitives';
 import { UnknownOutputParams } from './types';
 import { EmptyRoute } from './views/EmptyRoute';
@@ -226,7 +239,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
   let ScreenComponent:
     | React.ForwardRefExoticComponent<React.RefAttributes<unknown>>
-    | React.ComponentType<any>;
+    | React.ComponentType<{ segment?: string }>;
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
   if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
@@ -252,14 +265,29 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     // Pass all other props to the component
     ...props
-  }: any) {
+  }: {
+    route?: RouteProp<ParamListBase, string>;
+    navigation: Omit<
+      NavigationProp<
+        ParamListBase,
+        string,
+        undefined,
+        NavigationState,
+        object,
+        NativeStackNavigationEventMap | BottomTabNavigationEventMap
+      >,
+      'getState'
+    > & {
+      getState(): NavigationState | undefined;
+    };
+  }) {
     const stateForPath = useStateForPath();
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
 
     if (isFocused) {
       const state = navigation.getState();
-      const isLeaf = !('state' in state.routes[state.index]);
+      const isLeaf = !(state && 'state' in state.routes[state.index]);
       if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
     }
 
@@ -267,7 +295,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       () =>
         navigation.addListener('focus', () => {
           const state = navigation.getState();
-          const isLeaf = !('state' in state.routes[state.index]);
+          const isLeaf = !(state && 'state' in state.routes[state.index]);
           // Because setFocusedState caches the route info, this call will only trigger rerenders
           // if the component itself didn’t rerender and the route info changed.
           // Otherwise, the update from the `if` above will handle it,
@@ -277,16 +305,39 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       [navigation]
     );
 
+    useEffect(() => {
+      return navigation.addListener('transitionEnd', (e) => {
+        if (!e?.data?.closing) {
+          // When navigating to a screen, remove the no animation param to re-enable animations
+          // Otherwise the navigation back would also have no animation
+          if (hasParam(route?.params, INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
+            navigation.replaceParams(
+              removeParams(route?.params, [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME])
+            );
+          }
+        }
+      });
+    }, [navigation]);
+
+    const isRouteType = value.type === 'route';
+    const hasRouteKey = !!route?.key;
+
     return (
-      <Route node={value} route={route}>
-        <React.Suspense fallback={<SuspenseFallback route={value} />}>
-          <ScreenComponent
-            {...props}
-            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-            // the intention is to make it possible to deduce shared routes.
-            segment={value.route}
-          />
-        </React.Suspense>
+      <Route node={value} params={route?.params}>
+        {isRouteType && hasRouteKey && unstable_navigationEvents.hasAnyListener() && (
+          <AnalyticsListeners navigation={navigation} screenId={route.key} />
+        )}
+        <ZoomTransitionTargetContextProvider route={route}>
+          <ZoomTransitionEnabler route={route} />
+          <React.Suspense fallback={<SuspenseFallback route={value} />}>
+            <ScreenComponent
+              {...props}
+              // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+              // the intention is to make it possible to deduce shared routes.
+              segment={value.route}
+            />
+          </React.Suspense>
+        </ZoomTransitionTargetContextProvider>
       </Route>
     );
   }
@@ -297,6 +348,68 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
   qualifiedStore.set(value, BaseRoute);
   return BaseRoute;
+}
+
+function AnalyticsListeners({
+  navigation,
+  screenId,
+}: {
+  navigation: EventConsumer<EventMapBase>;
+  screenId: string;
+}) {
+  const stateForPath = useStateForPath();
+  const isFirstRenderRef = React.useRef(true);
+
+  const pathname = useMemo(
+    () => (stateForPath ? decodeURIComponent(getPathFromState(stateForPath)) : undefined),
+    [stateForPath]
+  );
+
+  if (isFirstRenderRef.current) {
+    isFirstRenderRef.current = false;
+    if (pathname) {
+      unstable_navigationEvents.emit('pageWillRender', {
+        pathname,
+        screenId,
+      });
+    }
+  }
+
+  useEffect(() => {
+    if (pathname) {
+      return () => {
+        unstable_navigationEvents.emit('pageRemoved', {
+          pathname,
+          screenId,
+        });
+      };
+    }
+    return () => {};
+  }, [pathname]);
+
+  useEffect(() => {
+    if (pathname) {
+      const cleanFocus = navigation.addListener('focus', () => {
+        unstable_navigationEvents.emit('pageFocused', {
+          pathname,
+          screenId,
+        });
+      });
+      const cleanBlur = navigation.addListener('blur', () => {
+        unstable_navigationEvents.emit('pageBlurred', {
+          pathname,
+          screenId,
+        });
+      });
+      return () => {
+        cleanFocus();
+        cleanBlur();
+      };
+    }
+    return () => {};
+  }, [navigation, pathname]);
+
+  return null;
 }
 
 export function screenOptionsFactory(

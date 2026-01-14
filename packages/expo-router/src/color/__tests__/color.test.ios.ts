@@ -1,18 +1,35 @@
 import { PlatformColor } from 'react-native';
 
 import { Color } from '..';
-import { Material3Color, Material3DynamicColor } from '../materialColor';
+
+let warnMock: jest.SpyInstance;
+
+beforeEach(() => {
+  warnMock = jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  warnMock.mockRestore();
+});
 
 it('retrieves android base color as platform color', () => {
   const color = Color.android.background_dark;
   expect(typeof color).toBe('object');
-  expect(color).toStrictEqual(PlatformColor('@android:color/background_dark'));
+  expect(color).toStrictEqual(null);
+  expect(warnMock).toHaveBeenCalledTimes(1);
+  expect(warnMock).toHaveBeenCalledWith(
+    `Color.android.background_dark is not available on ios. Consider using a different color for this platform.`
+  );
 });
 
 it('retrieves android attr color as platform color', () => {
   const color = Color.android.attr.colorAccent;
   expect(typeof color).toBe('object');
-  expect(color).toStrictEqual(PlatformColor('?attr/colorAccent'));
+  expect(color).toStrictEqual(null);
+  expect(warnMock).toHaveBeenCalledTimes(1);
+  expect(warnMock).toHaveBeenCalledWith(
+    `Color.android.attr.colorAccent is not available on ios. Consider using a different color for this platform.`
+  );
 });
 
 it.each([
@@ -26,6 +43,7 @@ it.each([
   ({ color, platformColorString }) => {
     expect(typeof color).toBe('object');
     expect(color).toStrictEqual(PlatformColor(platformColorString));
+    expect(warnMock).not.toHaveBeenCalled();
   }
 );
 
@@ -39,6 +57,7 @@ it.each([
 ])('returns null for android material color', ({ color }) => {
   const result = color();
   expect(result).toBeNull();
+  expect(warnMock).toHaveBeenCalledTimes(1);
 });
 
 it.each([
@@ -51,4 +70,5 @@ it.each([
 ])('returns null for android material dynamic color', ({ color }) => {
   const result = color();
   expect(result).toBeNull();
+  expect(warnMock).toHaveBeenCalledTimes(1);
 });

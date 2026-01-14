@@ -173,7 +173,7 @@ export default class TextToSpeechScreen extends React.Component<object, State> {
                   selection={audioSessionOptions.findIndex(
                     (option) => option.value === this.state.useApplicationAudioSession
                   )}
-                  onSelectionChange={({ nativeEvent: { selection } }) => {
+                  onSelectionChange={(selection) => {
                     const index = typeof selection === 'number' ? selection : 0;
                     const useApplicationAudioSession = audioSessionOptions[index].value;
                     this.setState({

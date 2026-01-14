@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Pressable,
+  Image,
 } from 'react-native';
 
 import { useTimer } from '../utils/useTimer';
@@ -14,7 +15,7 @@ import { useTimer } from '../utils/useTimer';
 const HomeIndex = () => {
   const pathname = usePathname();
   const time = useTimer();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
 
   return (
     <ScrollView
@@ -43,7 +44,7 @@ const HomeIndex = () => {
       <Link href="/one" asChild>
         <Link.Trigger>
           <TouchableOpacity>
-            <Text>Normal link with trigger asChild: /one</Text>
+            <Text>Normal link with trigger asChild: /one with zoom</Text>
           </TouchableOpacity>
         </Link.Trigger>
       </Link>
@@ -64,7 +65,7 @@ const HomeIndex = () => {
         </Link.Trigger>
       </Link>
       <Link href="/one">
-        <Link.Trigger>Link.Preview: /one</Link.Trigger>
+        <Link.Trigger>Link.Preview: /one with zoom</Link.Trigger>
         <Link.Preview />
       </Link>
       <Link href="/one">
@@ -130,13 +131,81 @@ const HomeIndex = () => {
         <Link.Preview />
       </Link>
       <Spacer />
-      {/* @ts-expect-error */}
       <Link href="/404">
         <Link.Trigger>Link.Preview: Unmatched Route</Link.Trigger>
         <Link.Preview />
       </Link>
       <Link href="/_sitemap">
         <Link.Trigger>Link.Preview: Sitemap</Link.Trigger>
+        <Link.Preview />
+      </Link>
+      <Spacer />
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'flex-start',
+          justifyContent: 'flex-start',
+          gap: 8,
+          width: '100%',
+        }}>
+        <Link href="/zoom-dest" asChild>
+          <Link.Trigger withAppleZoom>
+            <Pressable style={{ flex: 5, aspectRatio: width / height }}>
+              <Image
+                source={require('../../../assets/frog.jpg')}
+                resizeMode="cover"
+                style={{ width: '100%', height: '100%' }}
+              />
+            </Pressable>
+          </Link.Trigger>
+        </Link>
+        <Link href="/zoom-dest" asChild>
+          <Link.Trigger>
+            <Pressable style={{ flex: 3, alignItems: 'center' }}>
+              <Link.AppleZoom>
+                <View style={{ width: '100%', aspectRatio: width / height }}>
+                  <Image
+                    source={require('../../../assets/frog.jpg')}
+                    resizeMode="cover"
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                </View>
+              </Link.AppleZoom>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}>
+                The frog
+              </Text>
+              <Text style={{ textAlign: 'center' }}>Photo by David Clode on Unsplash</Text>
+            </Pressable>
+          </Link.Trigger>
+        </Link>
+        <Link href="/zoom-dest-contain" asChild>
+          <Link.Trigger>
+            <Link.AppleZoom>
+              <Pressable style={{ flex: 5, alignItems: 'center' }}>
+                <View style={{ width: '100%', aspectRatio: 1 }}>
+                  <Image
+                    source={require('../../../assets/frog.jpg')}
+                    resizeMode="cover"
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                </View>
+              </Pressable>
+            </Link.AppleZoom>
+          </Link.Trigger>
+        </Link>
+      </View>
+      <Spacer />
+      <Text>Zoom with preview:</Text>
+      <Link href="/zoom-dest" asChild>
+        <Link.Trigger withAppleZoom>
+          <Pressable style={{ flex: 1, width: '33%', aspectRatio: width / height }}>
+            <Image
+              source={require('../../../assets/frog.jpg')}
+              resizeMode="cover"
+              style={{ width: '100%', height: '100%' }}
+            />
+          </Pressable>
+        </Link.Trigger>
         <Link.Preview />
       </Link>
     </ScrollView>

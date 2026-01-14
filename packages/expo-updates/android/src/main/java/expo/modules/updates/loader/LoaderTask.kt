@@ -297,14 +297,13 @@ class LoaderTask(
       ) {
         try {
           val embeddedLoader = EmbeddedLoader(context, configuration, logger, database, directory)
-          val result = embeddedLoader.load { updateResponse ->
+          embeddedLoader.load { _ ->
             Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
           }
-          launcher.launch(database)
         } catch (e: Exception) {
           logger.error("Unexpected error copying embedded update", e, UpdatesErrorCode.Unknown)
-          launcher.launch(database)
         }
+        launcher.launch(database)
       } else {
         launcher.launch(database)
       }

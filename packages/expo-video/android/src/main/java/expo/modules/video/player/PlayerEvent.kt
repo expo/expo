@@ -4,8 +4,10 @@ import androidx.annotation.OptIn
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
+import expo.modules.video.VideoView
 import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
+import expo.modules.video.listeners.VideoPlayerListener
 import expo.modules.video.records.AudioTrack
 import expo.modules.video.records.AvailableSubtitleTracksChangedEventPayload
 import expo.modules.video.records.AvailableAudioTracksChangedEventPayload
@@ -141,6 +143,11 @@ sealed class PlayerEvent {
     override val name = "playToEnd"
   }
 
+  data class TargetViewChanged(val newTargetView: VideoView?, val oldTargetView: VideoView?) : PlayerEvent() {
+    override val name = "targetViewChange"
+    override val emitToJS = false
+  }
+
   fun emit(player: VideoPlayer, listeners: List<VideoPlayerListener>) {
     when (this) {
       is StatusChanged -> listeners.forEach { it.onStatusChanged(player, status, oldStatus, error) }
@@ -157,6 +164,7 @@ sealed class PlayerEvent {
       is VideoTrackChanged -> listeners.forEach { it.onVideoTrackChanged(player, videoTrack, oldVideoTrack) }
       is RenderedFirstFrame -> listeners.forEach { it.onRenderedFirstFrame(player) }
       is VideoSourceLoaded -> listeners.forEach { it.onVideoSourceLoaded(player, videoSource, duration, availableVideoTracks, availableSubtitleTracks, availableAudioTracks) }
+      is TargetViewChanged -> listeners.forEach { it.onTargetViewChanged(player, newTargetView, oldTargetView) }
       // JS-only events - SubtitleTrackChanged - In the native events the TracksChanged can be used instead
       else -> Unit
     }

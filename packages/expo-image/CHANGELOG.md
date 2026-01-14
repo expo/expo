@@ -11,6 +11,8 @@
 - [iOS] Adopted Swift 6 ([#40369](https://github.com/expo/expo/pull/40369) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Provide plugin to disable `libdav1d`. ([#40691](https://github.com/expo/expo/pull/40691) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] feat: add `configureCache` option ([#40647](https://github.com/expo/expo/pull/40647) by [@kosmydel](https://github.com/kosmydel))
+- [Web] Add `loading` prop for lazy loading images. ([#41442](https://github.com/expo/expo/pull/41442) by [@mozzius](https://github.com/mozzius))
+- [iOS] Added support for PSD images. ([#42077](https://github.com/expo/expo/pull/42077) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
 
@@ -19,6 +21,10 @@
 ### 💡 Others
 
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
+
+## 3.0.11 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 3.0.10 - 2025-10-20
 

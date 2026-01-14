@@ -24,7 +24,7 @@ export interface VideoViewProps extends ViewProps {
   /**
    * A video player instance. Use [`useVideoPlayer()`](#usevideoplayersource-setup) hook to create one.
    */
-  player: VideoPlayer;
+  player?: VideoPlayer | null;
 
   /**
    * Determines whether native controls should be displayed or not.
@@ -40,14 +40,6 @@ export interface VideoViewProps extends ViewProps {
    * @default 'contain'
    */
   contentFit?: VideoContentFit;
-
-  /**
-   * Determines whether fullscreen mode is allowed or not.
-   *
-   * > Note: This option has been deprecated in favor of the `fullscreenOptions` prop and will be disabled in the future.
-   * @default true
-   */
-  allowsFullscreen?: boolean;
 
   /**
    * Determines the fullscreen mode options.
@@ -213,7 +205,6 @@ export type FullscreenOrientation =
 export type FullscreenOptions = {
   /**
    * Specifies whether the fullscreen mode should be available to the user. When `false`, the fullscreen button will be hidden in the player.
-   * Equivalent to the `allowsFullscreen` prop.
    * @default true
    */
   enable: boolean;

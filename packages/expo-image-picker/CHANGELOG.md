@@ -12,8 +12,15 @@
 ### 🐛 Bug fixes
 
 - [android] fix `cropToolbarColor` default value ([#40834](https://github.com/expo/expo/pull/40834) by [@kosmydel](https://github.com/kosmydel))
+- [android] do not crash if `ContentProvider` doesn't provide mime type ([#41495](https://github.com/expo/expo/pull/41495) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
+
+- [Android] Add `android:maxSdkVersion` annotation to  `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
+
+## 17.0.9 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 17.0.8 — 2025-09-11
 

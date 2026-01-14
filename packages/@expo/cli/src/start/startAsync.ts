@@ -16,6 +16,9 @@ import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
 import { maybeCreateMCPServerAsync } from './server/MCP';
+import { addMcpCapabilities } from './server/MCPDevToolsPluginCLIExtensions';
+
+const debug = require('debug')('expo:start');
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
@@ -114,20 +117,18 @@ export async function startAsync(
   await profile(openPlatformsAsync)(devServerManager, options);
 
   const defaultServerUrl = devServerManager.getDefaultDevServer()?.getDevServerUrl() ?? '';
+  const mcpServer =
+    (await profile(maybeCreateMCPServerAsync)({
+      projectRoot,
+      devServerUrl: defaultServerUrl,
+    })) ?? undefined;
+
   // Present the Terminal UI.
   if (isInteractive()) {
-    const mcpServer =
-      (await profile(maybeCreateMCPServerAsync)({
-        projectRoot,
-        devServerUrl: defaultServerUrl,
-      })) ?? undefined;
-
     await profile(startInterfaceAsync)(devServerManager, {
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
       mcpServer,
     });
-
-    mcpServer?.start();
   } else {
     // Display the server location in CI...
     if (defaultServerUrl) {
@@ -137,6 +138,11 @@ export async function startAsync(
       }
       Log.log(chalk`Waiting on {underline ${defaultServerUrl}}`);
     }
+  }
+
+  if (mcpServer) {
+    addMcpCapabilities(mcpServer, devServerManager);
+    mcpServer.start();
   }
 
   // Final note about closing the server.

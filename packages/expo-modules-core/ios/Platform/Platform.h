@@ -13,6 +13,7 @@
 @compatibility_alias UIResponder NSResponder;
 @compatibility_alias UIColor NSColor;
 @compatibility_alias UIWindow NSWindow;
+@compatibility_alias UIHostingController NSHostingController;
 
 #ifndef UIApplication
 @compatibility_alias UIApplication NSApplication;

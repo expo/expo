@@ -1,10 +1,9 @@
-interface SplitViewColumnProps {
+export interface SplitViewColumnProps {
     children?: React.ReactNode;
 }
 export declare function SplitViewColumn(props: SplitViewColumnProps): import("react").JSX.Element;
-interface SplitViewColumnProps {
-    children?: React.ReactNode;
-}
+/**
+ * @platform iOS 26+
+ */
 export declare function SplitViewInspector(props: SplitViewColumnProps): import("react").JSX.Element;
-export {};
 //# sourceMappingURL=elements.d.ts.map

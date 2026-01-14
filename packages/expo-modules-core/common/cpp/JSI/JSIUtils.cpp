@@ -1,6 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 #include <sstream>
+#include <utility>
 #include "JSIUtils.h"
 
 namespace expo::common {
@@ -45,7 +46,7 @@ jsi::Function createInheritingClass(jsi::Runtime &runtime, const char *className
     .getProperty(runtime, prototypePropNameId)
     .asObject(runtime);
 
-  jsi::Function klass = createClass(runtime, className, constructor);
+  jsi::Function klass = createClass(runtime, className, std::move(constructor));
   jsi::Object klassPrototype = klass.getProperty(runtime, prototypePropNameId).asObject(runtime);
 
   klassPrototype.setProperty(runtime, "__proto__", baseClassPrototype);

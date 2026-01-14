@@ -10,6 +10,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
 
 Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away. This guide will walk you through the process of setting up EAS Update in a new or existing project.
 
@@ -49,7 +50,7 @@ If the command fails, refer to the [Installing Expo modules](/bare/installing-ex
 
 </Collapsible>
 
-<Collapsible summary="Your project must use the registerRootComponent function instead of registerComponent">
+<Collapsible summary={<>Your project must use the <CODE>registerRootComponent</CODE> function instead of <CODE>registerComponent</CODE></>}>
 
 If you created your project with `npx create-expo-app`, or you don't call `registerRootComponent` in your app at all (for example, it's handled by Expo Router), then you are all set. The following applies to projects created with other tools, such as React Native Community CLI.
 
@@ -57,23 +58,20 @@ We recommend that apps using EAS Update use Expo's [`registerRootComponent`](/ve
 
 In a simple app created with React Native Community CLI, the diff would look like this:
 
-```diff
-diff --git a/index.js b/index.js
-index a850d03..8fb69fd 100644
+<DiffBlock
+  raw={`diff --git a/index.js b/index.js
+index 0000000..1111111 100644
 --- a/index.js
 +++ b/index.js
-@@ -2,8 +2,7 @@
-  * @forma
-  */
-
+@@ -1,5 +1,4 @@
 -import {AppRegistry} from 'react-native';
+-import {name as appName} from './app.json';
 +import {registerRootComponent} from 'expo';
  import App from './App';
--import {name as appName} from './app.json';
-
+-
 -AppRegistry.registerComponent(appName, () => App);
-+export default registerRootComponent(App);
-```
++export default registerRootComponent(App);`}
+/>
 
 After making that change, update your [`MainActivity`](/versions/latest/sdk/expo/#rootregistercomponent-setup-for-existing-react-native-projects) and [`AppDelegate`](/versions/latest//sdk/expo/#rootregistercomponent-setup-for-existing-react-native-projects) to use the module name `"main"` instead of your app name.
 

@@ -1,0 +1,41 @@
+---
+title: EAS CLI reference
+sidebar_title: EAS CLI
+description: EAS CLI is a command-line tool that allows you to interact with Expo Application Services (EAS) from your terminal.
+cliVersion: 16.28.0
+---
+
+import { EASCLIReference } from '~/ui/components/EASCLIReference';
+import { Terminal } from '~/ui/components/Snippet';
+
+You can use EAS Command-Line Interface (CLI) to build, update, submit, deploy or use workflows in your Expo and React Native project from a terminal window.
+
+## Installation
+
+You need to install the EAS CLI globally on your machine. You do this by running the following command:
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global eas-cli'],
+    yarn: ['$ yarn global add eas-cli'],
+    pnpm: ['$ pnpm add -g eas-cli'],
+    bun: ['$ bun add -g eas-cli'],
+  }}
+/>
+
+Alternatively, you can use CLI tools provided by your package manager to run EAS CLI commands:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx eas-cli@latest'],
+    yarn: ['$ yarn dlx eas-cli@latest'],
+    pnpm: ['$ pnpm dlx eas-cli@latest'],
+    bun: ['$ bunx eas-cli@latest'],
+  }}
+/>
+
+## Commands
+
+Use the EAS CLI by running one of the commands documented on this page, optionally followed by any flags or arguments. Flags customize the behavior of a command, and arguments are specific to the command.
+
+<EASCLIReference />

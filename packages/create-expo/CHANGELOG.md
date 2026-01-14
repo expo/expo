@@ -6,9 +6,22 @@
 
 ### 🎉 New features
 
+- Skip initializing git repo if inside another repo ([#42052](https://github.com/expo/expo/pull/42052) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.5.10 - 2025-12-04
+
+### 💡 Others
+
+- Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
+- Update to `tar@^7.5.2` ([#40732](https://github.com/expo/expo/pull/40732) by [@kitten](https://github.com/kitten))
+
+## 3.5.9 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
 
 ## 3.5.8 — 2025-09-11
 

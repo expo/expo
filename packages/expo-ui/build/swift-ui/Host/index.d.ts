@@ -1,4 +1,4 @@
-import { type ColorSchemeName, StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
 export type HostProps = {
     /**
@@ -29,12 +29,18 @@ export type HostProps = {
     /**
      * The color scheme of the host view.
      */
-    colorScheme?: ColorSchemeName;
+    colorScheme?: 'light' | 'dark';
     /**
      * The layout direction for the SwiftUI content.
      * Defaults to the current locale direction from I18nManager.
      */
     layoutDirection?: 'leftToRight' | 'rightToLeft';
+    /**
+     * When `true`, the SwiftUI content will not perform keyboard avoidance behaviour when keyboard is shown.
+     * Can be only set once on mount.
+     * @default false
+     */
+    ignoreSafeAreaKeyboardInsets?: boolean;
     children: React.ReactNode;
     style?: StyleProp<ViewStyle>;
 } & CommonViewModifierProps;

@@ -20,9 +20,11 @@ target 'Expo Go' do
   pod 'CocoaLumberjack', '~> 3.5.3'
   pod 'MBProgressHUD', '~> 1.2.0'
 
+  pod 'SocketRocket'
+
   # Required by react-native-maps
   # See https://github.com/react-native-maps/react-native-maps/blob/master/docs/installation.md
-  pod 'react-native-google-maps', :path => '../../../node_modules/react-native-maps'
+  pod 'react-native-maps/Google', :path => '../../../node_modules/react-native-maps'
 
   # Required by firebase core versions 9.x / 10.x (included with SDK 47)
   # See https://github.com/invertase/react-native-firebase/issues/6332#issuecomment-1189734581
@@ -38,23 +40,19 @@ target 'Expo Go' do
 
   # Expo modules
   use_expo_modules!({
-    searchPaths: [
-      '../../../packages'
-    ],
     exclude: [
       'expo-module-template',
       'expo-module-template-local',
-      'expo-dev-menu',
-      'expo-dev-menu-interface',
       'expo-dev-launcher',
       'expo-dev-client',
+      'expo-dev-menu',
       'expo-maps',
       'expo-network-addons',
       'expo-insights',
       'expo-splash-screen',
-      'expo-blob',
       '@expo/ui',
-      '@expo/app-integrity'
+      '@expo/app-integrity',
+      'expo-brownfield'
     ],
     includeTests: true,
     flags: {
@@ -65,8 +63,13 @@ target 'Expo Go' do
   # Install vendored pods.
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
+  pod 'expo-dev-menu', :path => '../../../packages/expo-dev-menu', :configurations => ['Debug', 'Release']
+
   config_command = [
-    'npx',
+    'node',
+    '--no-warnings',
+    '--eval',
+    'require(\'expo/bin/autolinking\')',
     'expo-modules-autolinking',
     'react-native-config',
     '--json',
@@ -151,17 +154,7 @@ target 'Expo Go' do
     end
   end
 
-  # Test targets
-  target 'ExponentIntegrationTests' do
-    inherit! :search_paths
-  end
-
   target 'Tests' do
-    # `ExpoModulesTestCore` has implicit dependency to `React-Core` which has a resource bundle.
-    # To prevent CocoaPods generating new `React-Core` resource bundle and the strange `React-Core-60309c9c` target,
-    # this test target should inherit all properties from parents.
-    inherit! :complete
-
     pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
   end
 end

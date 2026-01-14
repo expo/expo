@@ -9,14 +9,12 @@
 #import <React/RCTKeyCommands.h>
 
 #import <EXDevLauncher/EXDevLauncherController.h>
-#import <EXDevLauncher/EXDevLauncherRCTBridge.h>
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
 #import <EXDevLauncher/EXDevLauncherRCTDevSettings.h>
 #import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
 #import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
 
-#import <EXDevLauncher/EXDevLauncherReactNativeFactory.h>
-#import <EXDevMenu/DevClientNoOpLoadingView.h>
+
 #import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
@@ -53,7 +51,6 @@
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong, nullable) EXDevLauncherNetworkInterceptor *networkInterceptor;
-@property (nonatomic, strong) EXDevLauncherReactNativeFactory *reactNativeFactory;
 @property (nonatomic, strong) DevLauncherViewController *devLauncherViewController;
 @property (nonatomic, strong) NSURL *lastOpenedAppUrl;
 @property (nonatomic, strong) DevLauncherDevMenuDelegate *devMenuDelegate;
@@ -84,7 +81,6 @@
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
     self.dependencyProvider = [RCTAppDependencyProvider new];
-    self.reactNativeFactory = [[EXDevLauncherReactNativeFactory alloc] initWithDelegate:self releaseLevel:[self getReactNativeReleaseLevel]];
     self.devMenuDelegate = [[DevLauncherDevMenuDelegate alloc] initWithController:self];
     [[DevMenuManager shared] setDelegate:self.devMenuDelegate];
   }
@@ -103,6 +99,7 @@
   return [_recentlyOpenedAppsRegistry clearRegistry];
 }
 
+#if !TARGET_OS_OSX
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
 {
   NSMutableDictionary *launchOptions = [self.launchOptions ?: @{} mutableCopy];
@@ -128,6 +125,20 @@
 
   return launchOptions;
 }
+#else
+- (NSDictionary *)getLaunchOptions
+{
+  NSMutableDictionary *launchOptions = [self.launchOptions ?: @{} mutableCopy];
+  NSURL *deepLink = [self.pendingDeepLinkRegistry consumePendingDeepLink];
+
+  if (deepLink) {
+    // Passes pending deep link to initialURL if any
+    launchOptions[NSApplicationLaunchUserNotificationKey] = deepLink;
+  }
+
+  return launchOptions;
+}
+#endif
 
 - (EXManifestsManifest *)appManifest
 {
@@ -203,11 +214,13 @@
 
   self.networkInterceptor = nil;
 
+#if !TARGET_OS_OSX
   [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
- 
+#endif
+
   // Reset app react host
   [self.delegate destroyReactInstance];
- 
+
   if (_devLauncherViewController != nil) {
     [_devLauncherViewController resetHostingController];
   }
@@ -252,12 +265,6 @@
   }
 
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
-
-  // cold boot -- need to initialize the dev launcher app RN app to handle the link
-  if (_reactNativeFactory.rootViewFactory.reactHost == nil) {
-    [self navigateToLauncher];
-  }
-
   return true;
 }
 
@@ -450,6 +457,7 @@
     self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
 #endif
 
+#if !TARGET_OS_OSX
     UIUserInterfaceStyle userInterfaceStyle = [EXDevLauncherManifestHelper exportManifestUserInterfaceStyle:manifest.userInterfaceStyle];
     [self _applyUserInterfaceStyle:userInterfaceStyle];
 
@@ -460,13 +468,16 @@
     if (userInterfaceStyle != UIUserInterfaceStyleUnspecified) {
       UITraitCollection.currentTraitCollection = [self.window.rootViewController.traitCollection copy];
     }
+#endif
 
     [self.delegate devLauncherController:self didStartWithSuccess:YES];
 
     [self setDevMenuAppBridge];
 
     if (backgroundColor) {
+#if !TARGET_OS_OSX
       self.window.rootViewController.view.backgroundColor = backgroundColor;
+#endif
       self.window.backgroundColor = backgroundColor;
     }
   });
@@ -481,6 +492,7 @@
   return [_appBridge isValid];
 }
 
+#if !TARGET_OS_OSX
 /**
  * Temporary `expo-splash-screen` fix.
  *
@@ -511,6 +523,7 @@
   // change RN appearance
   RCTOverrideAppearancePreference(colorSchema);
 }
+#endif
 
 -(NSDictionary *)getBuildInfo
 {
@@ -576,27 +589,11 @@
   return appVersion;
 }
 
--(RCTReleaseLevel)getReactNativeReleaseLevel
-{
-//  @TODO: Read this value from the main react-native factory instance on 0.82
-  NSString *releaseLevelString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"ReactNativeReleaseLevel"];
-  RCTReleaseLevel releaseLevel = Stable;
-  if ([releaseLevelString isKindOfClass:[NSString class]]) {
-    NSString *lower = [releaseLevelString lowercaseString];
-    if ([lower isEqualToString:@"canary"]) {
-      releaseLevel = Canary;
-    } else if ([lower isEqualToString:@"experimental"]) {
-      releaseLevel = Experimental;
-    } else if ([lower isEqualToString:@"stable"]) {
-      releaseLevel = Stable;
-    }
-  }
-
-  return releaseLevel;
-}
-
 -(void)copyToClipboard:(NSString *)content {
-#if !TARGET_OS_TV
+#if TARGET_OS_OSX
+  NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+  [pasteboard setString:(content ?: @"") forType:NSPasteboardTypeString];
+#elif !TARGET_OS_TV
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   clipboard.string = (content ?: @"");
 #endif
@@ -605,7 +602,7 @@
 - (void)setDevMenuAppBridge
 {
   DevMenuManager *manager = [DevMenuManager shared];
-  [manager updateCurrentBridge:self.appBridge.parentBridge];
+  [manager updateCurrentBridge:self.appBridge];
 
   if (self.manifest != nil) {
     [manager updateCurrentManifest:self.manifest manifestURL:self.manifestURL];

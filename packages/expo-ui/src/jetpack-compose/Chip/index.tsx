@@ -1,6 +1,5 @@
 import { requireNativeView } from 'expo';
 import React from 'react';
-import { StyleSheet, ViewProps } from 'react-native';
 
 import { ExpoModifier } from '../../types';
 
@@ -15,7 +14,7 @@ export type ChipTextStyle =
   | 'bodyMedium'
   | 'bodyLarge';
 
-export interface ChipProps extends ViewProps {
+export interface ChipProps {
   /**
    * The variant of the chip.
    */
@@ -91,11 +90,5 @@ export function transformChipProps(props: ChipProps): ChipProps {
  * Displays a native chip component.
  */
 export function Chip(props: ChipProps): React.JSX.Element {
-  // Min height from https://m3.material.io/components/chips/specs, minWidth
-  return (
-    <ChipNativeView
-      {...transformChipProps(props)}
-      style={StyleSheet.compose({ minWidth: 100, height: 32 }, props.style)}
-    />
-  );
+  return <ChipNativeView {...transformChipProps(props)} />;
 }

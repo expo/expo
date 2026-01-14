@@ -1,3 +1,24 @@
+/**
+ * Asset manifest for client hydration bundles.
+ *
+ * {@link import('@expo/router-server/src/static/renderStaticContent').GetStaticContentOptions}
+ */
+export interface AssetInfo {
+    css: string[];
+    js: string[];
+}
+/**
+ * Rendering configuration. Discriminated union supporting multiple rendering modes.
+ */
+export type RenderingConfiguration = RenderingConfigurationForSSR;
+/**
+ * Configuration for server-side rendering (SSR). HTML is rendered at runtime on each request.
+ */
+export interface RenderingConfigurationForSSR {
+    mode: 'ssr';
+    /** Path to the SSR render module, typically `_expo/server/render.js` */
+    file: string;
+}
 export interface MiddlewareInfo {
     /**
      * Path to the module that contains the middleware function as a default export.
@@ -25,6 +46,8 @@ export interface RouteInfo<TRegex = RegExp | string> {
     permanent?: boolean;
     /** If a redirect, which methods are allowed. Undefined represents all methods */
     methods?: string[];
+    /** Path to the loader module for this route, typically `_expo/loaders/[ROUTE].js`. When present, the loader should be executed before rendering. */
+    loader?: string;
 }
 export interface RoutesManifest<TRegex = RegExp | string> {
     /**
@@ -57,7 +80,26 @@ export interface RoutesManifest<TRegex = RegExp | string> {
      * Rewrites. After middleware has processed and regular routing resumes, these occur first.
      */
     rewrites: RouteInfo<TRegex>[];
+    /**
+     * CSS/JS assets. Used for client hydration in SSR mode.
+     */
+    assets?: AssetInfo;
+    /**
+     * Rendering configuration. Determines how HTML is generated.
+     * When present, HTML routes are rendered at runtime instead of being served from pre-rendered files.
+     */
+    rendering?: RenderingConfiguration;
 }
 export type RawManifest = RoutesManifest<string>;
 export type Manifest = RoutesManifest<RegExp>;
 export type Route = RouteInfo<RegExp>;
+/**
+ * @type {import('@expo/router-server/src/static/renderStaticContent').GetStaticContentOptions}
+ */
+export interface GetStaticContentOptions {
+    loader?: {
+        data?: unknown;
+    };
+    request?: Request;
+    assets?: AssetInfo;
+}

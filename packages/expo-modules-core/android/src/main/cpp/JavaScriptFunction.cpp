@@ -46,7 +46,7 @@ jobject JavaScriptFunction::invoke(
 
   for (size_t i = 0; i < size; i++) {
     jni::local_ref<jobject> arg = args->getElement(i);
-    convertedArgs.push_back(convert(env, rt, std::move(arg)));
+    convertedArgs.push_back(convert(env, rt, arg));
   }
 
   // TODO(@lukmccall): add better error handling

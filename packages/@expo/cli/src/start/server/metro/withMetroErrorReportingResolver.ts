@@ -94,6 +94,10 @@ function optionsKeyForContext(context: ResolutionContext) {
   return JSON.stringify(context.customResolverOptions ?? {}, canonicalize) ?? '';
 }
 
+interface ErrorWithExpoImportStack extends Error {
+  _expoImportStack?: string;
+}
+
 export const createMutateResolutionError =
   (
     config: MetroConfig,
@@ -101,7 +105,12 @@ export const createMutateResolutionError =
     stackDepthLimit = STACK_DEPTH_LIMIT,
     stackCountLimit = STACK_COUNT_LIMIT
   ) =>
-  (error: Error, context: ResolutionContext, moduleName: string, platform: string | null) => {
+  (
+    error: ErrorWithExpoImportStack,
+    context: ResolutionContext,
+    moduleName: string,
+    platform: string | null
+  ) => {
     const inputPlatform = platform ?? 'null';
 
     const mapByOrigin = depGraph.get(optionsKeyForContext(context));
@@ -329,7 +338,6 @@ export const createMutateResolutionError =
 
       extraMessage += '\n';
 
-      // @ts-expect-error
       error._expoImportStack = extraMessage;
     } else {
       debug('Found no inverse tree for:', context.originModulePath);

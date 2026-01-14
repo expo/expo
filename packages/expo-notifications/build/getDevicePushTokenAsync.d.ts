@@ -4,5 +4,5 @@ import { DevicePushToken } from './Tokens.types';
  * that can be used with another push notification service.
  * @header fetch
  */
-export default function getDevicePushTokenAsync(): Promise<DevicePushToken>;
+export declare function getDevicePushTokenAsync(): Promise<DevicePushToken>;
 //# sourceMappingURL=getDevicePushTokenAsync.d.ts.map

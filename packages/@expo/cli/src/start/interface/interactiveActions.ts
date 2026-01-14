@@ -57,9 +57,7 @@ export class DevServerManagerActions {
         Log.log(printItem(chalk`Metro waiting on {underline ${nativeRuntimeUrl}}`));
         if (options.devClient === false) {
           // TODO: if development build, change this message!
-          Log.log(
-            printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)')
-          );
+          Log.log(printItem('Scan the QR code above to open the project in Expo Go.'));
         } else {
           Log.log(
             printItem(
@@ -150,7 +148,7 @@ export class DevServerManagerActions {
 
       const metroServerOrigin = this.devServerManager.getDefaultDevServer().getJsInspectorBaseUrl();
       const plugins = await this.devServerManager.devtoolsPluginManager.queryPluginsAsync();
-      Log.log();
+
       const menuItems = [
         ...defaultMenuItems,
         ...createDevToolsMenuItems(plugins, defaultServerUrl, metroServerOrigin),

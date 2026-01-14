@@ -251,6 +251,11 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: 'Announcing the 2025 Expo App Award winners!',
+    event: 'Expo Live Stream',
+    videoId: 'KnZ3LWkXzSk',
+  },
+  {
     title: "What's new in Expo SDK 54?",
     event: 'Expo Live Stream',
     videoId: 'KBlbkjqxNbM',
@@ -380,6 +385,31 @@ export const LIVE_STREAMS = [
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
+  {
+    title: 'How to add Android widgets to Expo apps | Native, Resizable, Configurable widgets',
+    event: 'Expo Tutorials',
+    videoId: 'rCVWq4WkoDA',
+  },
+  {
+    title: 'How to add native iOS Widgets to your Expo app',
+    event: 'Expo Tutorials',
+    videoId: 'UH4ejdz3fko',
+  },
+  {
+    title: 'How to send emails with Resend from your Expo app',
+    event: 'Expo Tutorials',
+    videoId: '8sPD8SNcUFA',
+  },
+  {
+    title: 'The fastest mobile QA workflow: Expo pull request previews in GitHub Actions',
+    event: 'EAS Tutorials',
+    videoId: '7UVIrqrrrso',
+  },
+  {
+    title: 'Getting started with Meta Horizon Development using Expo',
+    event: 'Expo Tutorials',
+    videoId: '24G2tui0Ts8',
+  },
   {
     title: 'How to make Expo apps faster | Expo app development best practices',
     event: 'Expo Tutorials',

@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import expo.modules.audio.service.AudioRecordingService
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.Job
@@ -43,6 +44,8 @@ class AudioRecorder(
   var isRecording = false
   var isPaused = false
   private var recordingTimerJob: Job? = null
+  var useForegroundService = false
+  private var isRegisteredWithService = false
 
   private fun currentFileUrl(): String? =
     filePath?.let(::File)?.toUri()?.toString()
@@ -95,6 +98,11 @@ class AudioRecorder(
     startTime = System.currentTimeMillis()
     isRecording = true
     isPaused = false
+
+    if (useForegroundService && !isRegisteredWithService) {
+      AudioRecordingService.startService(context, this)
+      isRegisteredWithService = true
+    }
   }
 
   fun recordWithOptions(atTimeSeconds: Double? = null, forDurationSeconds: Double? = null) {
@@ -136,9 +144,20 @@ class AudioRecorder(
   fun stopRecording(): Bundle {
     val url = currentFileUrl()
     var durationMillis: Long
+    var stopFailed = false
+    var stopError: String? = null
+
+    if (useForegroundService && isRegisteredWithService) {
+      AudioRecordingService.getInstance()?.unregisterRecorder(this)
+      isRegisteredWithService = false
+    }
 
     try {
       recorder?.stop()
+      durationMillis = getAudioRecorderDurationMillis()
+    } catch (e: RuntimeException) {
+      stopFailed = true
+      stopError = e.localizedMessage ?: "Failed to stop recording"
       durationMillis = getAudioRecorderDurationMillis()
     } finally {
       reset()
@@ -148,7 +167,9 @@ class AudioRecorder(
       putBoolean("canRecord", false)
       putBoolean("isRecording", false)
       putLong("durationMillis", durationMillis)
-      url?.let { putString("url", it) }
+      if (!stopFailed) {
+        url?.let { putString("url", it) }
+      }
     }
 
     // Emit completion event on the main thread
@@ -158,9 +179,9 @@ class AudioRecorder(
         mapOf(
           "id" to id,
           "isFinished" to true,
-          "hasError" to false,
-          "error" to null,
-          "url" to url
+          "hasError" to stopFailed,
+          "error" to stopError,
+          "url" to if (stopFailed) null else url
         )
       )
     }
@@ -238,6 +259,10 @@ class AudioRecorder(
 
   override fun sharedObjectDidRelease() {
     super.sharedObjectDidRelease()
+    if (useForegroundService && isRegisteredWithService) {
+      AudioRecordingService.getInstance()?.unregisterRecorder(this)
+      isRegisteredWithService = false
+    }
     reset()
   }
 
@@ -268,6 +293,10 @@ class AudioRecorder(
     return duration
   }
 
+  fun getCurrentTimeSeconds(): Double {
+    return getAudioRecorderDurationMillis() / 1000.0
+  }
+
   override fun onError(mr: MediaRecorder?, what: Int, extra: Int) {
     val error = when (what) {
       MEDIA_RECORDER_ERROR_UNKNOWN -> "An unknown recording error occurred"
@@ -288,14 +317,27 @@ class AudioRecorder(
   override fun onInfo(mr: MediaRecorder?, what: Int, extra: Int) {
     when (what) {
       MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED -> {
-        recorder?.stop()
+        val url = currentFileUrl()
+
+        if (useForegroundService && isRegisteredWithService) {
+          AudioRecordingService.getInstance()?.unregisterRecorder(this)
+          isRegisteredWithService = false
+        }
+
+        try {
+          recorder?.stop()
+        } catch (_: RuntimeException) {
+          // Ignore stop errors
+        } finally {
+          reset()
+        }
         emit(
           RECORDING_STATUS_UPDATE,
           mapOf(
             "isFinished" to true,
             "hasError" to true,
             "error" to null,
-            "url" to currentFileUrl()
+            "url" to url
           )
         )
       }
@@ -332,7 +374,7 @@ class AudioRecorder(
         val type = availableDeviceInfo.type
         if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC) {
           deviceInfo = availableDeviceInfo
-          recorder?.setPreferredDevice(deviceInfo)
+          recorder?.preferredDevice = deviceInfo
           break
         }
       }

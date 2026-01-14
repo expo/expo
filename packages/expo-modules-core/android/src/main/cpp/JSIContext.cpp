@@ -14,36 +14,14 @@
 
 #include <memory>
 
-#if IS_NEW_ARCHITECTURE_ENABLED
-
-#include "BridgelessJSCallInvoker.h"
-
-#endif
-
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 
 namespace expo {
 
-#if IS_NEW_ARCHITECTURE_ENABLED
-
-#include "BridgelessJSCallInvoker.h"
-
-#endif
-
-jni::local_ref<JSIContext::jhybriddata>
-JSIContext::initHybrid(jni::alias_ref<jhybridobject> jThis) {
-  return makeCxxInstance(jThis);
-}
 
 void JSIContext::registerNatives() {
   registerHybrid({
-                   makeNativeMethod("initHybrid", JSIContext::initHybrid),
-                   makeNativeMethod("installJSI", JSIContext::installJSI),
-#if IS_NEW_ARCHITECTURE_ENABLED
-                   makeNativeMethod("installJSIForBridgeless",
-                                    JSIContext::installJSIForBridgeless),
-#endif
                    makeNativeMethod("evaluateScript", JSIContext::evaluateScript),
                    makeNativeMethod("evaluateVoidScript", JSIContext::evaluateVoidScript),
                    makeNativeMethod("global", JSIContext::global),
@@ -54,50 +32,11 @@ void JSIContext::registerNatives() {
                  });
 }
 
-JSIContext::JSIContext(jni::alias_ref<jhybridobject> jThis)
-  : javaPart_(jni::make_global(jThis)),
-    threadSafeJThis(std::make_shared<ThreadSafeJNIGlobalRef<JSIContext::javaobject>>(
-      jni::Environment::current()->NewGlobalRef(javaPart_.get())
-    )) {}
-
-void JSIContext::installJSI(
-  jlong jsRuntimePointer,
-  jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
-  jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder
-) noexcept {
-  prepareJSIContext(
-    jsRuntimePointer,
-    jniDeallocator,
-    jsInvokerHolder->cthis()->getCallInvoker()
-  );
-
-  prepareRuntime();
-}
-
-#if IS_NEW_ARCHITECTURE_ENABLED
-
-void JSIContext::installJSIForBridgeless(
-  jlong jsRuntimePointer,
-  jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
-  jni::alias_ref<react::JRuntimeExecutor::javaobject> runtimeExecutor
-) {
-  prepareJSIContext(
-    jsRuntimePointer,
-    jniDeallocator,
-    std::make_shared<BridgelessJSCallInvoker>(runtimeExecutor->cthis()->get())
-  );
-
-  prepareRuntime();
-}
-
-#endif
-
-void JSIContext::prepareJSIContext(
+JSIContext::JSIContext(
   jlong jsRuntimePointer,
   jni::alias_ref<JNIDeallocator::javaobject> jniDeallocator,
   std::shared_ptr<react::CallInvoker> callInvoker
-) noexcept {
-  this->jniDeallocator = jni::make_global(jniDeallocator);
+) : jniDeallocator(jni::make_global(jniDeallocator)) {
   auto runtime = reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);
   jsRegistry = std::make_unique<JSReferencesCache>(*runtime);
 
@@ -107,40 +46,23 @@ void JSIContext::prepareJSIContext(
   );
 }
 
-void JSIContext::prepareRuntime() noexcept {
-  jsi::Runtime &runtime = runtimeHolder->get();
-  bindJSIContext(runtime, this);
-
-  runtimeHolder->installMainObject();
-
-  EventEmitter::installClass(runtime);
-  SharedObject::installBaseClass(
-    runtime,
-    // We can't predict the order of deallocation of the JSIContext and the SharedObject.
-    // So we need to pass a new ref to retain the JSIContext to make sure it's not deallocated before the SharedObject.
-    [threadSafeRef = threadSafeJThis](const SharedObject::ObjectId objectId) {
-      threadSafeRef->use([objectId](jni::alias_ref<JSIContext::javaobject> globalRef) {
-        JSIContext::deleteSharedObject(globalRef, objectId);
-      });
-    }
+jni::local_ref<JSIContext::javaobject> JSIContext::newJavaInstance(
+  jni::local_ref<jni::detail::HybridData> hybridData,
+  jni::alias_ref<jni::JWeakReference<jobject>::javaobject> runtimeContextHolder
+) {
+  return JSIContext::newObjectJavaArgs(
+    std::move(hybridData),
+    std::move(runtimeContextHolder)
   );
-  SharedRef::installBaseClass(runtime);
-  NativeModule::installClass(runtime);
+}
 
-  auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
-  auto expoModulesObject = jsi::Object::createFromHostObject(
-    runtime,
-    expoModules
+void JSIContext::bindToJavaPart(
+  jni::local_ref<JSIContext::javaobject> jThis
+) {
+  javaPart_ = jni::make_global(jThis);
+  threadSafeJThis = std::make_shared<ThreadSafeJNIGlobalRef<JSIContext::javaobject>>(
+    jni::Environment::current()->NewGlobalRef(javaPart_.get())
   );
-
-  // Define the `global.expo.modules` object.
-  runtimeHolder
-    ->getMainObject()
-    ->setProperty(
-      runtime,
-      "modules",
-      expoModulesObject
-    );
 }
 
 jni::local_ref<JavaScriptModuleObject::javaobject>
@@ -157,22 +79,10 @@ JSIContext::callGetJavaScriptModuleObjectMethod(const std::string &moduleName) c
     );
 
   auto jniString = jni::make_jstring(moduleName);
-  auto result = jni::Environment::current()->CallObjectMethod(javaPart_.get(), method.getId(), jniString.get());
+  auto result = jni::Environment::current()->CallObjectMethod(javaPart_.get(), method.getId(),
+                                                              jniString.get());
   throwPendingJniExceptionAsCppException();
   return jni::adopt_local(static_cast<JavaScriptModuleObject::javaobject>(result));
-}
-
-jni::local_ref<JavaScriptModuleObject::javaobject>
-JSIContext::callGetCoreModuleObject() const {
-  if (javaPart_ == nullptr) {
-    throw std::runtime_error("getCoreModule: JSIContext was prepared to be deallocated.");
-  }
-
-  const static auto method = expo::JSIContext::javaClassLocal()
-    ->getMethod<jni::local_ref<JavaScriptModuleObject::javaobject>()>(
-      "getCoreModuleObject"
-    );
-  return method(javaPart_);
 }
 
 jni::local_ref<jni::JArrayClass<jni::JString>>
@@ -201,7 +111,8 @@ bool JSIContext::callHasModule(const std::string &moduleName) const {
       "hasModule"
     );
   auto jniString = jni::make_jstring(moduleName);
-  auto result = jni::Environment::current()->CallBooleanMethod(javaPart_.get(), method.getId(), jniString.get());
+  auto result = jni::Environment::current()->CallBooleanMethod(javaPart_.get(), method.getId(),
+                                                               jniString.get());
   throwPendingJniExceptionAsCppException();
   return static_cast<bool>(result);
 }
@@ -209,10 +120,6 @@ bool JSIContext::callHasModule(const std::string &moduleName) const {
 jni::local_ref<JavaScriptModuleObject::javaobject>
 JSIContext::getModule(const std::string &moduleName) const {
   return callGetJavaScriptModuleObjectMethod(moduleName);
-}
-
-jni::local_ref<JavaScriptModuleObject::javaobject> JSIContext::getCoreModule() const {
-  return callGetCoreModuleObject();
 }
 
 bool JSIContext::hasModule(const std::string &moduleName) const {

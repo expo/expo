@@ -7,6 +7,7 @@ exports.appendStyleToAppearance = appendStyleToAppearance;
 exports.convertStyleToAppearance = convertStyleToAppearance;
 exports.convertStyleToItemStateAppearance = convertStyleToItemStateAppearance;
 const types_1 = require("./types");
+const style_1 = require("../utils/style");
 const supportedBlurEffectsSet = new Set(types_1.SUPPORTED_BLUR_EFFECTS);
 function createStandardAppearanceFromOptions(options) {
     let blurEffect = options.blurEffect;
@@ -118,10 +119,7 @@ function convertStyleToItemStateAppearance(style) {
         tabBarItemIconColor: style.iconColor,
         tabBarItemTitleFontFamily: style.fontFamily,
         tabBarItemTitleFontSize: style.fontSize,
-        // Only string values are accepted by rn-screens
-        tabBarItemTitleFontWeight: style?.fontWeight
-            ? String(style.fontWeight)
-            : undefined,
+        tabBarItemTitleFontWeight: (0, style_1.convertFontWeightToStringFontWeight)(style.fontWeight),
         tabBarItemTitleFontStyle: style.fontStyle,
         tabBarItemTitleFontColor: style.color,
     };

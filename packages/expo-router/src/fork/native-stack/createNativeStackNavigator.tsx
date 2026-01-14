@@ -21,7 +21,15 @@ import {
 } from '@react-navigation/native-stack';
 import * as React from 'react';
 
+import { DescriptorsContext } from './descriptors-context';
 import { useLinkPreviewContext } from '../../link/preview/LinkPreviewContext';
+import {
+  INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME,
+  type InternalNavigationOptions,
+} from '../../navigationParams';
+
+type NativeStackNavigationOptionsWithInternal = NativeStackNavigationOptions &
+  InternalNavigationOptions;
 
 function NativeStackNavigator({
   id,
@@ -38,7 +46,7 @@ function NativeStackNavigator({
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
-    NativeStackNavigationOptions,
+    NativeStackNavigationOptionsWithInternal,
     NativeStackNavigationEventMap
   >(StackRouter, {
     id,
@@ -63,10 +71,19 @@ function NativeStackNavigator({
           if (state.index > 0 && isFocused && !(e as EventArg<'tabPress', true>).defaultPrevented) {
             // When user taps on already focused tab and we're inside the tab,
             // reset the stack to replicate native behaviour
-            navigation.dispatch({
-              ...StackActions.popToTop(),
-              target: state.key,
-            });
+            // START FORK
+            // navigation.dispatch({
+            //   ...StackActions.popToTop(),
+            //   target: state.key,
+            // });
+            // The popToTop will be automatically triggered on native side for native tabs
+            if (e.data?.__internalTabsType !== 'native') {
+              navigation.dispatch({
+                ...StackActions.popToTop(),
+                target: state.key,
+              });
+            }
+            // END FORK
           }
         });
       }),
@@ -151,6 +168,15 @@ function NativeStackNavigator({
         };
       }
     }
+    // Map internal gesture option to React Navigation's gestureEnabled option
+    // This allows Expo Router to override gesture behavior without affecting user settings
+    Object.keys(descriptors).forEach((key) => {
+      const internalGestureEnabled =
+        descriptors[key].options?.[INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME];
+      if (internalGestureEnabled !== undefined) {
+        descriptors[key].options.gestureEnabled = internalGestureEnabled;
+      }
+    });
     return {
       computedState: state,
       computedDescriptors: descriptors,
@@ -159,20 +185,26 @@ function NativeStackNavigator({
   // END FORK
 
   return (
-    <NavigationContent>
-      <NativeStackView
-        {...rest}
-        // START FORK
-        state={computedState}
-        navigation={navigationWrapper}
-        descriptors={computedDescriptors}
-        // state={state}
-        // navigation={navigation}
-        // descriptors={descriptors}
-        // END FORK
-        describe={describe}
-      />
-    </NavigationContent>
+    // START FORK
+    <DescriptorsContext value={descriptors}>
+      {/* END FORK */}
+      <NavigationContent>
+        <NativeStackView
+          {...rest}
+          // START FORK
+          state={computedState}
+          navigation={navigationWrapper}
+          descriptors={computedDescriptors}
+          // state={state}
+          // navigation={navigation}
+          // descriptors={descriptors}
+          // END FORK
+          describe={describe}
+        />
+      </NavigationContent>
+      {/* START FORK */}
+    </DescriptorsContext>
+    // END FORK
   );
 }
 

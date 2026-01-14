@@ -67,8 +67,11 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     // For now, just manually convert the value so our CLI interface can be unified.
     const hackyConvertedMessage = method === 'reload' ? 'content-changed' : method;
 
-    if ('sendMessage' in this.instance.server) {
-      // @ts-expect-error: https://github.com/expo/expo/issues/21994#issuecomment-1517122501
+    if (
+      'sendMessage' in this.instance.server &&
+      typeof this.instance.server.sendMessage === 'function'
+    ) {
+      // NOTE: https://github.com/expo/expo/issues/21994#issuecomment-1517122501
       this.instance.server.sendMessage(this.instance.server.sockets, hackyConvertedMessage, params);
     } else {
       this.instance.server.sockWrite(this.instance.server.sockets, hackyConvertedMessage, params);

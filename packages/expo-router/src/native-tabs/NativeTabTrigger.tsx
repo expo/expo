@@ -1,14 +1,9 @@
 'use client';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { isValidElement, type ReactElement, type ReactNode } from 'react';
-import { type ImageSourcePropType } from 'react-native';
+import { isValidElement, useCallback, type ReactElement, type ReactNode } from 'react';
+import { StyleSheet, type ImageSourcePropType } from 'react-native';
 
-import type { NativeTabOptions, NativeTabTriggerProps } from './types';
-import { filterAllowedChildrenElements, isChildOfType } from './utils';
-import { useIsPreview } from '../link/preview/PreviewRouteContext';
-import type { VectorIconProps } from '../primitives';
-import { useSafeLayoutEffect } from '../views/useSafeLayoutEffect';
 import {
   NativeTabsTriggerIcon,
   NativeTabsTriggerBadge,
@@ -19,6 +14,12 @@ import {
   type NativeTabsTriggerIconProps,
   type SrcIcon,
 } from './common/elements';
+import type { NativeTabOptions, NativeTabTriggerProps } from './types';
+import { useIsPreview } from '../link/preview/PreviewRouteContext';
+import { useFocusEffect } from '../useFocusEffect';
+import { filterAllowedChildrenElements, isChildOfType } from '../utils/children';
+import { convertComponentSrcToImageSource } from './utils/icon';
+import { convertMaterialIconNameToImageSource } from './utils/materialIconConverter';
 
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
@@ -63,23 +64,24 @@ import {
 function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
   const route = useRoute();
   const navigation = useNavigation();
-  const isFocused = navigation.isFocused();
   const isInPreview = useIsPreview();
 
-  useSafeLayoutEffect(() => {
-    // This will cause the tab to update only when it is focused.
-    // As long as all tabs are loaded at the start, we don't need this check.
-    // It is here to ensure similar behavior to stack
-    if (isFocused && !isInPreview) {
-      if (navigation.getState()?.type !== 'tab') {
-        throw new Error(
-          `Trigger component can only be used in the tab screen. Current route: ${route.name}`
-        );
+  useFocusEffect(
+    useCallback(() => {
+      // This will cause the tab to update only when it is focused.
+      // As long as all tabs are loaded at the start, we don't need this check.
+      // It is here to ensure similar behavior to stack
+      if (!isInPreview) {
+        if (navigation.getState()?.type !== 'tab') {
+          throw new Error(
+            `Trigger component can only be used in the tab screen. Current route: ${route.name}`
+          );
+        }
+        const options = convertTabPropsToOptions(props, true);
+        navigation.setOptions(options);
       }
-      const options = convertTabPropsToOptions(props, true);
-      navigation.setOptions(options);
-    }
-  }, [isFocused, props, isInPreview]);
+    }, [props, isInPreview])
+  );
 
   return null;
 }
@@ -99,6 +101,8 @@ export function convertTabPropsToOptions(
     disablePopToTop,
     disableScrollToTop,
     unstable_nativeProps,
+    disableAutomaticContentInsets,
+    contentStyle,
   }: NativeTabTriggerProps,
   isDynamic: boolean = false
 ) {
@@ -114,8 +118,10 @@ export function convertTabPropsToOptions(
             scrollToTop: !disableScrollToTop,
           },
         },
+        contentStyle,
         role,
         nativeProps: unstable_nativeProps,
+        disableAutomaticContentInsets,
       };
   const allowedChildren = filterAllowedChildrenElements(children, [
     NativeTabsTriggerBadge,
@@ -155,7 +161,7 @@ function appendLabelOptions(options: NativeTabOptions, props: NativeTabsTriggerL
   } else {
     options.title = props.children;
     if (props.selectedStyle) {
-      options.selectedLabelStyle = props.selectedStyle;
+      options.selectedLabelStyle = StyleSheet.flatten(props.selectedStyle);
     }
   }
 }
@@ -182,8 +188,22 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
         : undefined;
     }
   } else if ('drawable' in props && props.drawable && process.env.EXPO_OS === 'android') {
+    if ('md' in props) {
+      console.warn(
+        'Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.'
+      );
+    }
     options.icon = { drawable: props.drawable };
     options.selectedIcon = undefined;
+  } else if ('md' in props && props.md && process.env.EXPO_OS === 'android') {
+    if (process.env.NODE_ENV !== 'production') {
+      if ('drawable' in props) {
+        console.warn(
+          'Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.'
+        );
+      }
+    }
+    options.icon = convertMaterialIconNameToImageSource(props.md);
   } else if ('src' in props && props.src) {
     const icon = convertIconSrcToIconOption(props);
     options.icon = icon?.icon;
@@ -215,12 +235,7 @@ function convertIconSrcToIconOption(
 function convertSrcOrComponentToSrc(src: ImageSourcePropType | ReactElement | undefined) {
   if (src) {
     if (isValidElement(src)) {
-      if (src.type === NativeTabsTriggerVectorIcon) {
-        const props = src.props as VectorIconProps<string>;
-        return { src: props.family.getImageSource(props.name, 24, 'white') };
-      } else {
-        console.warn('Only VectorIcon is supported as a React element in Icon.src');
-      }
+      return convertComponentSrcToImageSource(src);
     } else {
       return { src };
     }

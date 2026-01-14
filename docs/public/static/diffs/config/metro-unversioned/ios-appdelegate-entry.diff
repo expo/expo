@@ -1,0 +1,14 @@
+diff --git a/ios/<Project>/AppDelegate.mm b/ios/<Project>/AppDelegate.mm
+index 0000000..1111111 100644
+--- a/ios/<Project>/AppDelegate.mm
++++ b/ios/<Project>/AppDelegate.mm
+@@ -1,7 +1,7 @@
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+ {
+ #if DEBUG
+-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
++  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
+ #else
+   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+ #endif
+ }

@@ -6,13 +6,36 @@
 
 ### 🎉 New features
 
+- Enable unstable worker threads for transformer by default ([#41714](https://github.com/expo/expo/pull/41714) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `toString()` to image assets on web (excluding RSC) for easier asset resolution. ([#40895](https://github.com/expo/expo/pull/40895) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure `loader()` functions are stripped from client bundles ([#40670](https://github.com/expo/expo/pull/40670) by [@hassankhan](https://github.com/hassankhan))
+- Add support for server data loaders in server export mode ([#41934](https://github.com/expo/expo/pull/41934) by [@hassankhan](https://github.com/hassankhan))
+
+### 🐛 Bug fixes
+
+- Fix output typings to remove unreachable transitive dependencies from them ([#41676](https://github.com/expo/expo/pull/41676) by [@kitten](https://github.com/kitten))
+- Fix `minifierPath` resolution for cache key generation for strict isolated installations ([#41686](https://github.com/expo/expo/pull/41686) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Defer loading metro export sources on basic config loading. ([#42053](https://github.com/expo/expo/pull/42053) by [@EvanBacon](https://github.com/EvanBacon))
+- Bump to `@expo/metro@54.2.0` and `metro@0.83.3` ([#41142](https://github.com/expo/expo/pull/41142) by [@kitten](https://github.com/kitten))
+
+## 54.0.10 - 2025-12-04
+
+### 💡 Others
+
+- Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
+
+## 54.0.9 - 2025-11-07
+
+_This version does not introduce any user-facing changes._
+
+## 54.0.8 - 2025-10-28
 
 ### 🐛 Bug fixes
 
 - Fix `transformer.asyncRequireModulePath` polluting cache with absolute path in transform output ([#40584](https://github.com/expo/expo/pull/40584) by [@kitten](https://github.com/kitten))
-
-### 💡 Others
 
 ## 54.0.7 - 2025-10-20
 

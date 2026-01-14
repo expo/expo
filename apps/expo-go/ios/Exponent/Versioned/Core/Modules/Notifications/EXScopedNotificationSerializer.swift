@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import UserNotifications
-import EXNotifications
+import ExpoNotifications
 
 public class EXScopedNotificationSerializer {
 

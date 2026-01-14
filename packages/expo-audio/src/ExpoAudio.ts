@@ -348,7 +348,7 @@ export function useAudioRecorderState(recorder: AudioRecorder, interval: number 
 /**
  * Creates an instance of an `AudioPlayer` that doesn't release automatically.
  *
- * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayer) hook instead.
+ * > **info** For most use cases you should use the [`useAudioPlayer`](#useaudioplayersource-options) hook instead.
  * > See the [Using the `AudioPlayer` directly](#using-the-audioplayer-directly) section for more details.
  * @param source The audio source to load.
  * @param options Audio player configuration options.
@@ -420,11 +420,10 @@ export async function setIsAudioActiveAsync(active: boolean): Promise<void> {
  * ```tsx
  * import { setAudioModeAsync } from 'expo-audio';
  *
- * // Configure audio for background playback
+ * // Configure audio for background playback with mixing
  * await setAudioModeAsync({
  *   playsInSilentMode: true,
  *   shouldPlayInBackground: true,
- *   interruptionModeAndroid: 'duckOthers',
  *   interruptionMode: 'mixWithOthers'
  * });
  *
@@ -442,7 +441,8 @@ export async function setAudioModeAsync(mode: Partial<AudioMode>): Promise<void>
       : {
           shouldPlayInBackground: mode.shouldPlayInBackground,
           shouldRouteThroughEarpiece: mode.shouldRouteThroughEarpiece,
-          interruptionMode: mode.interruptionModeAndroid,
+          interruptionMode: mode.interruptionMode ?? mode.interruptionModeAndroid,
+          allowsBackgroundRecording: mode.allowsBackgroundRecording,
         };
   return await AudioModule.setAudioModeAsync(audioMode);
 }
