@@ -1074,6 +1074,34 @@ jobs:
 
 </Collapsible>
 
+<Collapsible summary="Using Maestro Cloud outputs in subsequent jobs">
+
+This workflow runs Maestro Cloud tests and then uses the test results in a Slack notification.
+
+```yaml .eas/workflows/maestro-with-notification.yml
+name: Maestro Cloud with Notification
+
+jobs:
+  maestro_test:
+    name: Run Maestro Cloud Tests
+    type: maestro-cloud
+    environment: preview
+    params:
+      build_id: ${{ needs.build.outputs.build_id }}
+      maestro_project_id: proj_xyz
+      flows: ./maestro/flows
+
+  notify:
+    name: Send Test Results
+    needs: [maestro_test]
+    type: slack
+    params:
+      webhook_url: https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+      message: 'Tests complete: ${{ needs.maestro_test.outputs.successful_flows_count }}/${{ needs.maestro_test.outputs.total_flows_count }} passed'
+```
+
+</Collapsible>
+
 ## Slack
 
 Send a message to a Slack channel using a [Slack webhook URL](https://api.slack.com/messaging/webhooks).
