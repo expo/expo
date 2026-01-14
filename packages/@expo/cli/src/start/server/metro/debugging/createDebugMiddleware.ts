@@ -1,25 +1,37 @@
 import chalk from 'chalk';
+import type { NextHandleFunction } from 'connect';
 import { WebSocketServer } from 'ws';
 
 import { createHandlersFactory } from './createHandlersFactory';
+import { NETWORK_RESPONSE_STORAGE } from './messageHandlers/NetworkResponse';
 import { Log } from '../../../../log';
 import { env } from '../../../../utils/env';
-import { type MetroBundlerDevServer } from '../MetroBundlerDevServer';
-import { NETWORK_RESPONSE_STORAGE } from './messageHandlers/NetworkResponse';
+import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
 
 const debug = require('debug')('expo:metro:debugging:middleware') as typeof console.log;
 
-export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
+interface DebugMiddleware {
+  debugMiddleware: NextHandleFunction;
+  debugWebsocketEndpoints: Record<string, WebSocketServer>;
+}
+
+interface DebugMiddlewareParams {
+  projectRoot: string;
+  serverBaseUrl: string;
+}
+
+export function createDebugMiddleware({
+  projectRoot,
+  serverBaseUrl,
+}: DebugMiddlewareParams): DebugMiddleware {
   // Load the React Native debugging tools from project
   // TODO: check if this works with isolated modules
   const { createDevMiddleware } =
     require('@react-native/dev-middleware') as typeof import('@react-native/dev-middleware');
 
   const { middleware, websocketEndpoints } = createDevMiddleware({
-    projectRoot: metroBundler.projectRoot,
-    serverBaseUrl: metroBundler
-      .getUrlCreator()
-      .constructUrl({ scheme: 'http', hostType: 'localhost' }),
+    projectRoot,
+    serverBaseUrl,
     logger: createLogger(chalk.bold('Debug:')),
     unstable_customInspectorMessageHandler: createHandlersFactory(),
     unstable_experiments: {
@@ -31,13 +43,29 @@ export function createDebugMiddleware(metroBundler: MetroBundlerDevServer) {
     },
   });
 
+  const debuggerWebsocketEndpoint = websocketEndpoints['/inspector/debug'] as WebSocketServer;
+
   // NOTE(cedric): add a temporary websocket to handle Network-related CDP events
-  websocketEndpoints['/inspector/network'] = createNetworkWebsocket(
-    websocketEndpoints['/inspector/debug']
-  );
+  websocketEndpoints['/inspector/network'] = createNetworkWebsocket(debuggerWebsocketEndpoint);
+
+  // Explicitly limit debugger websocket to loopback requests
+  debuggerWebsocketEndpoint.on('connection', (socket, request) => {
+    if (!isLocalSocket(request.socket) || !isMatchingOrigin(request, serverBaseUrl)) {
+      // NOTE: `socket.close` nicely closes the websocket, which will still allow incoming messages
+      // `socket.terminate` instead forcefully closes down the socket
+      socket.terminate();
+    }
+  });
 
   return {
-    debugMiddleware: middleware,
+    debugMiddleware(req, res, next) {
+      // The debugger middleware is skipped entirely if the connection isn't a loopback request
+      if (isLocalSocket(req.socket)) {
+        return middleware(req, res, next);
+      } else {
+        return next();
+      }
+    },
     debugWebsocketEndpoints: websocketEndpoints,
   };
 }
@@ -77,7 +105,7 @@ function createNetworkWebsocket(debuggerWebsocket: WebSocketServer) {
           // If its a response body, write it to the global storage
           const { requestId, ...requestInfo } = message.params;
           NETWORK_RESPONSE_STORAGE.set(requestId, requestInfo);
-        } else {
+        } else if (message.method.startsWith('Network.')) {
           // Otherwise, directly re-broadcast the Network events to all connected debuggers
           debuggerWebsocket.clients.forEach((debuggerSocket) => {
             if (debuggerSocket.readyState === debuggerSocket.OPEN) {
