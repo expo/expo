@@ -368,6 +368,11 @@ export type GoogleMapsViewProps = {
      */
     contentPadding?: GoogleMapsContentPadding;
     /**
+     * The ID of the currently selected marker.
+     * Setting this will programmatically show the info window for that marker.
+     */
+    selectedId?: string | null;
+    /**
      * Lambda invoked when the map is loaded.
      */
     onMapLoaded?: () => void;
@@ -416,6 +421,10 @@ export type GoogleMapsViewProps = {
         tilt: number;
         bearing: number;
     }) => void;
+    /**
+     * Lambda invoked when a marker is deselected (e.g., by tapping elsewhere on the map).
+     */
+    onDeselect?: () => void;
 };
 /**
  * @platform android
@@ -435,6 +444,20 @@ export type GoogleMapsViewType = {
      * @param config New camera position config.
      */
     setCameraPosition: (config?: SetCameraPositionConfig) => void;
+    /**
+     * Programmatically select a marker by its ID.
+     * This will show the info window for the marker.
+     * Pass `null` to clear the selection and hide all info windows.
+     *
+     * @param id The ID of the marker to select, or `null` to clear selection.
+     * @param options Optional configuration for the selection.
+     * @param options.zoom The zoom level to use when animating to the selected marker.
+     * @param options.moveCamera Whether to animate the camera to the selected marker. When `false`, the camera will not move at all. Defaults to `true`.
+     */
+    select: (id: string | null, options?: {
+        zoom?: number;
+        moveCamera?: boolean;
+    }) => void;
 };
 /**
  * @platform android

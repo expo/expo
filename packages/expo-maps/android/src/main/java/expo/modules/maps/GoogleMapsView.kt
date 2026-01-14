@@ -56,7 +56,8 @@ data class GoogleMapsViewProps(
   val properties: MutableState<MapPropertiesRecord> = mutableStateOf(MapPropertiesRecord()),
   val colorScheme: MutableState<MapColorSchemeEnum> = mutableStateOf(MapColorSchemeEnum.FOLLOW_SYSTEM),
   val contentPadding: MutableState<MapContentPaddingRecord> = mutableStateOf(MapContentPaddingRecord()),
-  val mapOptions: MutableState<MapOptionsRecord> = mutableStateOf(MapOptionsRecord())
+  val mapOptions: MutableState<MapOptionsRecord> = mutableStateOf(MapOptionsRecord()),
+  val selectedId: MutableState<String?> = mutableStateOf(null)
 ) : ComposeProps
 
 @SuppressLint("ViewConstructor")
@@ -75,11 +76,17 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   private val onCircleClick by EventDispatcher<CircleRecord>()
 
   private val onCameraMove by EventDispatcher<CameraMoveEvent>()
+  private val onDeselect by EventDispatcher<Unit>()
 
   private var wasLoaded = mutableStateOf(false)
 
   private lateinit var cameraState: CameraPositionState
   private var manualCameraControl = false
+
+  // Selection state management
+  private val markerStatesById = mutableMapOf<String, MarkerState>()
+  private var pendingSelectOptions: SelectOptionsRecord? = null
+  private var selectTriggeredFromRef = false
 
   @Composable
   override fun ComposableScope.Content() {
@@ -105,6 +112,11 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
         wasLoaded.value = true
       },
       onMapClick = { latLng ->
+        // If there was a selected marker, fire onDeselect
+        if (props.selectedId.value != null) {
+          props.selectedId.value = null
+          onDeselect(Unit)
+        }
         onMapClick(
           MapClickEvent(
             Coordinates(latLng.latitude, latLng.longitude)
@@ -182,6 +194,8 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
           zIndex = marker.zIndex,
           icon = icon,
           onClick = {
+            // Track the selected marker so onDeselect can be fired later
+            props.selectedId.value = marker.id
             onMarkerClick(
               // We can't send icon to js, because it's not serializable
               // So we need to remove it from the marker record
@@ -195,6 +209,55 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
             !marker.showCallout
           }
         )
+      }
+    }
+
+    // Handle programmatic selection changes (only from ref.select())
+    LaunchedEffect(props.selectedId.value) {
+      val selectedId = props.selectedId.value
+      val options = pendingSelectOptions
+      val fromRef = selectTriggeredFromRef
+      pendingSelectOptions = null
+      selectTriggeredFromRef = false
+
+      // Only process if triggered from ref.select()
+      if (!fromRef) {
+        return@LaunchedEffect
+      }
+
+      // Hide all info windows first
+      markerStatesById.values.forEach { it.hideInfoWindow() }
+
+      // Show info window for selected marker and animate camera
+      if (selectedId != null) {
+        val markerState = markerStatesById[selectedId]
+        val marker = props.markers.value.find { it.id == selectedId }
+
+        if (markerState != null && marker != null) {
+          markerState.showInfoWindow()
+
+          // Fire onMarkerClick event
+          onMarkerClick(
+            MarkerRecord(
+              id = marker.id,
+              title = marker.title,
+              snippet = marker.snippet,
+              coordinates = marker.coordinates
+            )
+          )
+
+          // Only move camera if moveCamera is true (default)
+          val moveCamera = options?.moveCamera ?: true
+          if (moveCamera) {
+            val zoom = options?.zoom
+            val cameraUpdate = if (zoom != null) {
+              CameraUpdateFactory.newLatLngZoom(markerState.position, zoom)
+            } else {
+              CameraUpdateFactory.newLatLng(markerState.position)
+            }
+            cameraState.animate(cameraUpdate)
+          }
+        }
       }
     }
   }
@@ -266,8 +329,18 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   private fun markerStateFromProps() =
     remember {
       derivedStateOf {
+        val currentMarkerIds = props.markers.value.map { it.id }.toSet()
+
+        // Clean up stale marker states
+        markerStatesById.keys.removeAll { it !in currentMarkerIds }
+
         props.markers.value.map { marker ->
-          marker to MarkerState(position = marker.coordinates.toLatLng())
+          val state = markerStatesById.getOrPut(marker.id) {
+            MarkerState(position = marker.coordinates.toLatLng())
+          }
+          // Update position if it changed
+          state.position = marker.coordinates.toLatLng()
+          marker to state
         }
       }
     }
@@ -347,6 +420,16 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
     if (config?.coordinates == null) {
       manualCameraControl = false
     }
+  }
+
+  /**
+   * Programmatically select a marker by its ID.
+   * Shows the info window and optionally animates the camera to the marker.
+   */
+  suspend fun select(id: String?, options: SelectOptionsRecord?) {
+    pendingSelectOptions = options
+    selectTriggeredFromRef = true
+    props.selectedId.value = id
   }
 
   private fun getIconDescriptor(marker: MarkerRecord): BitmapDescriptor? {
