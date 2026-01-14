@@ -4,6 +4,7 @@ import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 export type VStackProps = {
+  children: React.ReactNode;
   /**
    * The horizontal alignment of children within the stack.
    */
