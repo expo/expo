@@ -12,15 +12,12 @@ start_simulator
 # [2] Setup native projects (UIKit + SwiftUI)
 $DIR/create-ios-projects.sh $PROJECT_DIR
 
-# [3] Build brownfield artifacts
-# TODO(pmleczek): Build brownfield artifacts
-
-# [4] Build and run native apps consuming the brownfield
+# [3] Build and run native apps consuming the brownfield
 $DIR/install-app-ios.sh $PROJECT_DIR $DEVICE_ID
 
-# [5] Run E2E tests
+# [4] Run E2E tests
 maestro test $DIR/../tests/ios/hello_ios.yml
 
-# [6] Cleanup
+# [5] Cleanup
 # rm -rf $PROJECT_DIR
 # TODO(pmleczek): Stop simulator, etc. (?)
