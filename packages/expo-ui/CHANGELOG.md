@@ -16,6 +16,7 @@
 - [iOS] Replace `onStateChange` event with `onIsExpandedChange` in `DisclosureGroup` ([#41726](https://github.com/expo/expo/pull/41726) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Replace `onValueChange` event with `onSelectionChange` in `ColorPicker`. ([#41725](https://github.com/expo/expo/pull/41725) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Use constructor for `title` prop instead of a custom `Text` in `Section`. Replace `collapsible` prop with `isExpanded` prop ([#41722](https://github.com/expo/expo/pull/41722) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Remove `color` prop and replace `min`, `max`, `label` prop with `minimumValueLabel`, `maximumValueLabel` and `currentValueLabel` in `Guage` ([#42022](https://github.com/expo/expo/pull/42022) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🎉 New features
 

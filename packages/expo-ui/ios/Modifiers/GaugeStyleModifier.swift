@@ -10,6 +10,7 @@ internal enum GaugeStyleType: String, Enumerable {
   case linear
   case linearCapacity
 
+#if !os(tvOS)
   @available(iOS 16.0, *)
   @ViewBuilder
   func apply<Content: View>(to content: Content) -> some View {
@@ -26,6 +27,7 @@ internal enum GaugeStyleType: String, Enumerable {
       content.gaugeStyle(.automatic)
     }
   }
+#endif
 }
 
 internal struct GaugeStyleModifier: ViewModifier, Record {

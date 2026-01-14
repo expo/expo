@@ -18,7 +18,8 @@ export default function GaugeScreen() {
                 setValue(value + 0.5);
               }
             }}
-            label={value >= 1 ? 'Reset' : 'Increase progress'}></Button>
+            label={value >= 1 ? 'Reset' : 'Increase progress'}
+          />
         </Section>
         <Section title="With Labels">
           <Gauge
