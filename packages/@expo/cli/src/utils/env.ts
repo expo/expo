@@ -291,6 +291,11 @@ class Env {
   get EXPO_UNSTABLE_LOG_BOX(): boolean {
     return boolish('EXPO_UNSTABLE_LOG_BOX', false);
   }
+  
+  /** Should the CLI use E2B Sandbox Tunnel */
+  get EXPO_E2B_TUNNEL(): boolean {
+    return boolish('EXPO_E2B_TUNNEL', false);
+  }
 }
 
 export const env = new Env();
