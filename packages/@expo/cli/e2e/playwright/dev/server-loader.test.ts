@@ -59,8 +59,8 @@ test.describe('server loader in development', () => {
 
     // In dev mode, loader data is fetched dynamically, so we just verify the loader result renders
     await page.waitForSelector('[data-testid="loader-result"]');
-    const loaderDataElement = await page.locator('[data-testid="loader-result"]');
-    await expect(loaderDataElement).toHaveText('{"data":"second"}');
+    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
+    expect(JSON.parse(loaderDataContent!)).toEqual({ data: 'second' });
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -82,8 +82,8 @@ test.describe('server loader in development', () => {
       expect.stringContaining('/_expo/loaders/posts/static-post-1')
     );
 
-    const loaderData = page.locator('[data-testid="loader-result"]');
-    await expect(loaderData).toContainText('"postId":"static-post-1"');
+    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
+    expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
   });
 
   test('caches loader data for subsequent navigations', async ({ page }) => {
@@ -148,12 +148,12 @@ test.describe('server loader in development', () => {
     // Start at index route (no loader)
     await page.goto(expoStart.url.href);
 
-    // Navigate to second route (has loader) - this was previously broken
+    // Navigate to second route (has loader)
     await page.click('a[href="/second"]');
     await page.waitForSelector('[data-testid="loader-result"]');
 
-    const loaderData = page.locator('[data-testid="loader-result"]');
-    await expect(loaderData).toHaveText('{"data":"second"}');
+    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
+    expect(JSON.parse(loaderDataContent!)).toEqual({ data: 'second' });
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -168,13 +168,17 @@ test.describe('server loader in development', () => {
     await page.goto(url.toString());
     await page.waitForSelector('[data-testid="loader-result"]');
 
-    await expect(page.locator('[data-testid="loader-result"]')).toHaveText('{"data":"second"}');
+    const secondLoaderDataContent = await page
+      .locator('[data-testid="loader-result"]')
+      .textContent();
+    expect(JSON.parse(secondLoaderDataContent!)).toEqual({ data: 'second' });
 
-    // Navigate to posts route (has loader) - this was previously broken
+    // Navigate to posts route (has loader)
     await page.click('a[href="/posts/static-post-1"]');
-    await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
-      '{"params":{"postId":"static-post-1"}}'
-    );
+    const postsLoaderDataContent = await page
+      .locator('[data-testid="loader-result"]')
+      .textContent();
+    expect(JSON.parse(postsLoaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
 
     expect(pageErrors.all).toEqual([]);
   });

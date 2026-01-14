@@ -72,8 +72,8 @@ test.describe('server loader (SSR) in production', () => {
     expect(loaderDataScript).toBeDefined();
 
     await page.waitForSelector('[data-testid="loader-result"]');
-    const loaderDataElement = await page.locator('[data-testid="loader-result"]');
-    await expect(loaderDataElement).toHaveText('{"data":"second"}');
+    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
+    expect(JSON.parse(loaderDataContent!)).toEqual({ data: 'second' });
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -83,8 +83,8 @@ test.describe('server loader (SSR) in production', () => {
     await page.goto(expoServe.url.href + 'posts/my-dynamic-post');
 
     await page.waitForSelector('[data-testid="loader-result"]');
-    const loaderData = page.locator('[data-testid="loader-result"]');
-    await expect(loaderData).toContainText('"postId":"my-dynamic-post"');
+    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
+    expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'my-dynamic-post' } });
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -106,8 +106,8 @@ test.describe('server loader (SSR) in production', () => {
     await page.waitForSelector('[data-testid="loader-result"]');
     expect(loaderRequests).toContainEqual(expect.stringContaining('/_expo/loaders/posts'));
 
-    const loaderData = page.locator('[data-testid="loader-result"]');
-    await expect(loaderData).toContainText('"postId":"static-post-1"');
+    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
+    expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
   });
 
   test('navigates from route without loader to route with loader', async ({ page }) => {
@@ -120,8 +120,8 @@ test.describe('server loader (SSR) in production', () => {
     await page.click('a[href="/second"]');
     await page.waitForSelector('[data-testid="loader-result"]');
 
-    const loaderData = page.locator('[data-testid="loader-result"]');
-    await expect(loaderData).toHaveText('{"data":"second"}');
+    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
+    expect(JSON.parse(loaderDataContent!)).toEqual({ data: 'second' });
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -194,13 +194,15 @@ test.describe('server loader (SSR) in production', () => {
     await page.goto(url.toString());
     await page.waitForSelector('[data-testid="loader-result"]');
 
-    await expect(page.locator('[data-testid="loader-result"]')).toHaveText('{"data":"second"}');
+    const secondLoaderDataContent = await page
+      .locator('[data-testid="loader-result"]')
+      .textContent();
+    expect(JSON.parse(secondLoaderDataContent!)).toEqual({ data: 'second' });
 
     // Navigate to posts route (has loader)
     await page.click('a[href="/posts/static-post-1"]');
-    await expect(page.locator('[data-testid="loader-result"]')).toContainText(
-      '"postId":"static-post-1"'
-    );
+    const postsLoaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
+    expect(JSON.parse(postsLoaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
 
     expect(pageErrors.all).toEqual([]);
   });
