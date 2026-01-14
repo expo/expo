@@ -54,6 +54,20 @@ it('renders a Link with a slot', () => {
   `);
 });
 
+it('renders a Link with a slot and array style', () => {
+  expect(() =>
+    render(
+      <Link asChild href="/foo">
+        <View testID="pressable" style={[{ padding: 10 }, { margin: 5 }]}>
+          <Text testID="inner-text">Button</Text>
+        </View>
+      </Link>
+    )
+  ).toThrow(
+    '[expo-router]: You are passing an array of styles to a child of <Slot>. Consider flattening the styles with StyleSheet.flatten before passing them to the child component.'
+  );
+});
+
 it('supports target blank', () => {
   const { getByTestId } = render(
     <Link href="/foo" testID="link" style={{ color: 'red' }} className="xxx">

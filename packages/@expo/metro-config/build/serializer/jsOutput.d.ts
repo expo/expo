@@ -27,6 +27,7 @@ export type JsOutput = {
         readonly reactServerReference?: string;
         readonly reactClientReference?: string;
         readonly expoDomComponentReference?: string;
+        readonly loaderReference?: string;
     };
     type: JSFileType;
 };

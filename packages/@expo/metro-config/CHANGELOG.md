@@ -9,6 +9,7 @@
 - Enable unstable worker threads for transformer by default ([#41714](https://github.com/expo/expo/pull/41714) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `toString()` to image assets on web (excluding RSC) for easier asset resolution. ([#40895](https://github.com/expo/expo/pull/40895) by [@EvanBacon](https://github.com/EvanBacon))
 - Ensure `loader()` functions are stripped from client bundles ([#40670](https://github.com/expo/expo/pull/40670) by [@hassankhan](https://github.com/hassankhan))
+- Add support for server data loaders in server export mode ([#41934](https://github.com/expo/expo/pull/41934) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
@@ -17,6 +18,7 @@
 
 ### 💡 Others
 
+- Defer loading metro export sources on basic config loading. ([#42053](https://github.com/expo/expo/pull/42053) by [@EvanBacon](https://github.com/EvanBacon))
 - Bump to `@expo/metro@54.2.0` and `metro@0.83.3` ([#41142](https://github.com/expo/expo/pull/41142) by [@kitten](https://github.com/kitten))
 
 ## 54.0.10 - 2025-12-04

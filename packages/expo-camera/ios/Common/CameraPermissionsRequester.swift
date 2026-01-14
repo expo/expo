@@ -19,7 +19,7 @@ extension BaseCameraRequester {
     if description != nil {
       systemStatus = AVCaptureDevice.authorizationStatus(for: mediaType)
     } else {
-      EXFatal(EXErrorWithMessage("""
+      RCTFatal(RCTErrorWithMessage("""
       This app is missing \(key),
       so \(service) services will fail. Add this entry to your bundle's Info.plist.
       """))
@@ -87,7 +87,7 @@ class CameraPermissionRequester: NSObject, EXPermissionsRequester, BaseCameraReq
     if let cameraUsuageDescription, let microphoneUsuageDescription {
       systemStatus = AVCaptureDevice.authorizationStatus(for: mediaType)
     } else {
-      EXFatal(EXErrorWithMessage("""
+      RCTFatal(RCTErrorWithMessage("""
       This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription,
       so audio/video services will fail. Add one of these entries to
       your bundle's Info.plist

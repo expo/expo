@@ -26,8 +26,10 @@
 - [iOS] Added `appDelegateWillBeginInitialization` function to AppDelegate subscribers. ([#41456](https://github.com/expo/expo/pull/41456) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added `RNHost` to improve RN component layout inside SwiftUI views ([#40938](https://github.com/expo/expo/pull/40938) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `ignoreSafeAreaKeyboardInsets` to `SwiftUIHostingView`. ([#41302](https://github.com/expo/expo/pull/41302) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added support for `ArrayBuffer`s. ([#41548](https://github.com/expo/expo/pull/41548) by [@barthap](https://github.com/barthap))
 - [iOS] JSI runtime is now accessed from public `RCTHostRuntimeDelegate` instead of unofficial `bridge.runtime`. ([#41311](https://github.com/expo/expo/pull/41311) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Introduced global `JavaScriptActor` to isolate code requiring running on the JavaScript thread. ([#41793](https://github.com/expo/expo/pull/41793) by [@tsapeta](https://github.com/tsapeta))
+- [iOs] Add experimental formatters API. ([#42023](https://github.com/expo/expo/pull/42023) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
@@ -60,6 +62,7 @@
 - [iOS] Create wrapper for `RCTHost`. ([#41632](https://github.com/expo/expo/pull/41632) by [@alanjhughes](https://github.com/alanjhughes))
 - Removed unnecessary warning in the legacy `NativeViewManagerAdapter`. ([#41804](https://github.com/expo/expo/pull/41804) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Removed legacy `EXReactNativeEventEmitter` class. ([#41915](https://github.com/expo/expo/pull/41915) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Removed legacy log handler. ([#41916](https://github.com/expo/expo/pull/41916) by [@tsapeta](https://github.com/tsapeta))
 
 ## 3.0.28 - 2025-12-05
 

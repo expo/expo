@@ -37,6 +37,6 @@ import { MaybeNotificationResponse, NotificationResponse } from './Notifications
  * ```
  * @header listen
  */
-export default function useLastNotificationResponse(): MaybeNotificationResponse;
+export declare function useLastNotificationResponse(): MaybeNotificationResponse;
 export declare const determineNextResponse: (prevResponse: MaybeNotificationResponse, newResponse: NotificationResponse | null) => NotificationResponse | null;
 //# sourceMappingURL=useLastNotificationResponse.d.ts.map

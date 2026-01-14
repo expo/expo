@@ -19,7 +19,8 @@ plugins {
   alias libs.plugins.android.library
   alias libs.plugins.kotlin.android
   alias libs.plugins.download
-  id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
+  id("org.jetbrains.kotlin.plugin.compose") version "2.2.21"
+  id("org.jetbrains.kotlin.plugin.serialization") version "2.2.21" // Use your Kotlin version
 }
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
@@ -48,6 +49,7 @@ repositories {
 
 
 apply plugin: 'com.facebook.react'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 react {
   /* Autolinking */
@@ -59,7 +61,8 @@ android {
   namespace "host.exp.expoview"
 
   buildFeatures {
-    buildConfig = true
+    buildConfig true
+    compose true
   }
 
   composeOptions {
@@ -165,7 +168,15 @@ dependencies {
   implementation 'io.coil-kt.coil3:coil-network-okhttp:3.2.0'
   implementation 'androidx.compose.material3:material3:1.4.0-alpha10'
   implementation 'androidx.core:core-splashscreen:1.0.1'
-
+  implementation 'io.coil-kt:coil-compose:2.6.0'
+  implementation "androidx.navigation:navigation-compose:2.8.5"
+  implementation "androidx.compose.ui:ui:1.7.6"
+  implementation "androidx.compose.runtime:runtime-saveable:1.7.6"
+  implementation "androidx.compose.material3:material3:1.3.1"
+  implementation "androidx.compose.animation:animation:1.7.6"
+  implementation "androidx.compose.foundation:foundation:1.7.6"
+  implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7"
+  implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7"
 
   testImplementation 'junit:junit:4.13.2'
 
@@ -218,6 +229,7 @@ dependencies {
   api 'com.google.firebase:firebase-crashlytics-ndk:19.3.0'
   api "androidx.room:room-runtime:2.1.0"
   implementation 'com.google.android.material:material:1.3.0'
+  implementation 'com.google.code.gson:gson:2.13.2'
 
   api(expoLibs.fresco.animated.gif)
   api(expoLibs.fresco.animated.webp)
@@ -268,7 +280,8 @@ dependencies {
   implementation "androidx.camera:camera-video:${camerax_version}"
   implementation "androidx.camera:camera-view:${camerax_version}"
   implementation "androidx.camera:camera-extensions:${camerax_version}"
-  implementation "com.google.mlkit:barcode-scanning:17.2.0"
+  implementation "com.google.android.gms:play-services-code-scanner:16.1.0"
+  implementation "com.google.mlkit:barcode-scanning:17.3.0"
   implementation 'androidx.camera:camera-mlkit-vision:1.4.0-alpha02'
 
   // expo-store-review

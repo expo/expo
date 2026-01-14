@@ -261,6 +261,7 @@ public final class ImageModule: Module {
 
   static func registerCoders() {
     SDImageCodersManager.shared.addCoder(WebPCoder.shared)
+    SDImageCodersManager.shared.addCoder(PSDCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageAVIFCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageSVGCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageHEICCoder.shared)

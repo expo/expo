@@ -9,7 +9,10 @@ RCT_EXPORT_MODULE()
   return std::make_shared<facebook::react::NativeBenchmarkingTurboModuleSpecJSI>(params);
 }
 
-- (void)nothing {}
+- (NSNumber *)nothing
+{
+  return 0;
+}
 
 - (NSNumber *)addNumbers:(double)a b:(double)b
 {

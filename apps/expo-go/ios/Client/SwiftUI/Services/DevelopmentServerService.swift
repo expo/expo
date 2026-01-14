@@ -11,6 +11,9 @@ class DevelopmentServerService: ObservableObject {
   private var discoveryCancellables = Set<AnyCancellable>()
   private let discoveryInterval: TimeInterval = 2.0
   private let remoteRefreshInterval: TimeInterval = 10.0
+  private let remoteCacheKey = "expo-dev-sessions-cache"
+  private var remoteFailureCount = 0
+  private var nextRemoteFetchAllowedAt: Date = .distantPast
   private var localServers: [DevelopmentServer] = []
   private var remoteServers: [DevelopmentServer] = []
   private var sessionSecret: String?
@@ -18,6 +21,7 @@ class DevelopmentServerService: ObservableObject {
   func startDiscovery() {
     stopDiscovery()
     discoverDevelopmentServers()
+    loadCachedRemoteSessions()
     refreshRemoteSessions()
 
     Timer.publish(every: discoveryInterval, on: .main, in: .common)
@@ -182,6 +186,10 @@ class DevelopmentServerService: ObservableObject {
   }
 
   private func fetchRemoteSessions() async {
+    guard Date() >= nextRemoteFetchAllowedAt else {
+      return
+    }
+
     guard let sessionSecret, !sessionSecret.isEmpty else {
       await MainActor.run {
         self.remoteServers = []
@@ -204,6 +212,7 @@ class DevelopmentServerService: ObservableObject {
       let (data, response) = try await URLSession.shared.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse,
             (200..<300).contains(httpResponse.statusCode) else {
+        applyRemoteFailureBackoff()
         return
       }
 
@@ -214,6 +223,7 @@ class DevelopmentServerService: ObservableObject {
       } else if let directSessions = try? decoder.decode([DevSession].self, from: data) {
         sessions = directSessions
       } else {
+        applyRemoteFailureBackoff()
         return
       }
 
@@ -231,6 +241,9 @@ class DevelopmentServerService: ObservableObject {
         self.remoteServers = mappedServers
         self.updateDevelopmentServers()
       }
+      cacheRemoteSessions(sessions)
+      remoteFailureCount = 0
+      nextRemoteFetchAllowedAt = .distantPast
     } catch {}
   }
 
@@ -249,7 +262,7 @@ class DevelopmentServerService: ObservableObject {
 
   private func dedupeKey(for server: DevelopmentServer) -> String {
     if !server.description.isEmpty && server.description != server.url {
-      return server.description.lowercased()
+      return normalizeDescriptionKey(server.description).lowercased()
     }
     return normalizeUrl(server.url).lowercased()
   }
@@ -263,13 +276,65 @@ class DevelopmentServerService: ObservableObject {
     }
     return existing
   }
-  
+
+  private func normalizeDescriptionKey(_ description: String) -> String {
+    if let range = description.range(of: " on ", options: .backwards) {
+      let prefix = String(description[..<range.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines)
+      let suffix = String(description[range.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
+      if !prefix.isEmpty && !suffix.isEmpty && !suffix.contains("/") {
+        return prefix
+      }
+    }
+    return description
+  }
+
   private func isLocalhostURL(_ url: String) -> Bool {
     guard let components = URLComponents(string: url),
           let host = components.host?.lowercased() else {
       return false
     }
     return host == "localhost" || host == "127.0.0.1"
+  }
+
+  private func cacheRemoteSessions(_ sessions: [DevSession]) {
+    let cache = DevSessionsCache(
+      timestamp: Date(),
+      sessions: sessions
+    )
+    let encoder = JSONEncoder()
+    encoder.dateEncodingStrategy = .iso8601
+    if let data = try? encoder.encode(cache) {
+      UserDefaults.standard.set(data, forKey: remoteCacheKey)
+    }
+  }
+
+  private func loadCachedRemoteSessions() {
+    guard let data = UserDefaults.standard.data(forKey: remoteCacheKey) else {
+      return
+    }
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .iso8601
+    guard let cache = try? decoder.decode(DevSessionsCache.self, from: data) else {
+      return
+    }
+    let mappedServers = cache.sessions.map { session in
+      DevelopmentServer(
+        url: session.url,
+        description: session.description,
+        source: session.source,
+        isRunning: true,
+        iconUrl: session.iconUrl
+      )
+    }
+    remoteServers = mappedServers
+    updateDevelopmentServers()
+  }
+
+  private func applyRemoteFailureBackoff() {
+    remoteFailureCount += 1
+    let cappedFailures = min(remoteFailureCount, 5)
+    let delay = min(pow(2.0, Double(cappedFailures)) * 2.0, 60.0)
+    nextRemoteFetchAllowedAt = Date().addingTimeInterval(delay)
   }
 
   private func absoluteIconUrl(_ iconUrl: String, baseUrl: String) -> String? {
@@ -284,13 +349,18 @@ class DevelopmentServerService: ObservableObject {
   }
 }
 
-private struct DevSessionsResponse: Decodable {
+private struct DevSessionsResponse: Codable {
   let data: [DevSession]
 }
 
-private struct DevSession: Decodable {
+private struct DevSession: Codable {
   let description: String
   let url: String
   let source: String
   let iconUrl: String?
+}
+
+private struct DevSessionsCache: Codable {
+  let timestamp: Date
+  let sessions: [DevSession]
 }
