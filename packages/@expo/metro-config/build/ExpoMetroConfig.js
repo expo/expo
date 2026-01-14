@@ -4,17 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = exports.internal_supervisingTransformerPath = exports.unstable_transformerPath = void 0;
-exports.resolveInlineModules = resolveInlineModules;
 exports.createStableModuleIdFactory = createStableModuleIdFactory;
 exports.getDefaultConfig = getDefaultConfig;
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
-const inline_modules_1 = require("@expo/inline-modules");
 const json_file_1 = __importDefault(require("@expo/json-file"));
 const metro_cache_1 = require("@expo/metro/metro-cache");
 const chalk_1 = __importDefault(require("chalk"));
-const fs_1 = __importDefault(require("fs"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
@@ -91,33 +88,6 @@ function memoize(fn) {
 function asMetroConfigInput(config) {
     return config;
 }
-function resolveInlineModules(projectRoot, directoryToPackage, context, moduleName, platform) {
-    const inlineModulesModulesPath = path_1.default.resolve(projectRoot, './.expo/inlineModules/modules');
-    let inlineModuleFileExtension = null;
-    if (moduleName.endsWith('.module')) {
-        inlineModuleFileExtension = '.module.js';
-    }
-    else if (moduleName.endsWith('.view')) {
-        inlineModuleFileExtension = '.view.js';
-    }
-    if (inlineModuleFileExtension) {
-        const originModuleDirname = path_1.default.dirname(context.originModulePath);
-        let modulePackageRoot = directoryToPackage.get(originModuleDirname);
-        if (!modulePackageRoot) {
-            modulePackageRoot = (0, inline_modules_1.findUpPackageJsonDirectoryCached)(path_1.default.dirname(context.originModulePath), directoryToPackage);
-        }
-        if (!modulePackageRoot) {
-            return { type: 'empty' };
-        }
-        const modulePathRelativeToItsPackageRoot = path_1.default.relative(modulePackageRoot, fs_1.default.realpathSync(path_1.default.dirname(context.originModulePath)));
-        const modulePath = path_1.default.resolve(inlineModulesModulesPath, modulePathRelativeToItsPackageRoot, moduleName.substring(0, moduleName.lastIndexOf('.')) + inlineModuleFileExtension);
-        return {
-            filePath: modulePath,
-            type: 'sourceFile',
-        };
-    }
-    return context.resolveRequest(context, moduleName, platform);
-}
 function createStableModuleIdFactory(root) {
     const getModulePath = (modulePath, scope) => {
         // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
@@ -175,8 +145,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     const sourceExts = (0, paths_1.getBareExtensions)([], sourceExtsConfig);
     // Add support for cjs (without platform extensions).
     sourceExts.push('cjs');
-    sourceExts.push('kt');
-    sourceExts.push('swift');
     const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
     const workletsVersion = getPkgVersion(projectRoot, 'react-native-worklets');
     const babelRuntimeVersion = getPkgVersion(projectRoot, '@babel/runtime');
@@ -223,13 +191,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         root: path_1.default.join(os_1.default.tmpdir(), 'metro-cache'),
     });
     const serverRoot = (0, paths_1.getMetroServerRoot)(projectRoot);
-    const expoConfig = (0, config_1.getConfig)(projectRoot, { skipSDKVersionRequirement: true });
-    const directoryToPackage = new Map();
-    const resolveInlineModulesWithAdditionalConfig = (context, moduleName, platform) => {
-        return resolveInlineModules(projectRoot, directoryToPackage, context, moduleName, platform);
-    };
-    const contextResolveRequest = (context, moduleName, platform) => context.resolveRequest(context, moduleName, platform);
-    const defaultResolveRequest = metroDefaultValues.resolver.resolveRequest ?? contextResolveRequest;
     const routerPackageRoot = resolve_from_1.default.silent(projectRoot, 'expo-router');
     const expoMetroConfig = asMetroConfigInput({
         reporter: {
@@ -258,9 +219,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
                 .filter((assetExt) => !sourceExts.includes(assetExt)),
             sourceExts,
             nodeModulesPaths,
-            resolveRequest: expoConfig.exp.experiments?.inlineModules
-                ? resolveInlineModulesWithAdditionalConfig
-                : defaultResolveRequest,
             blockList: [
                 // .expo/types contains generated declaration files which are not and should not be processed by Metro.
                 // This prevents unwanted fast refresh on the declaration files changes.

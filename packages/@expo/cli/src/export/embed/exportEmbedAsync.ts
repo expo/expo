@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
-import { generateMirrorDirectories } from '@expo/inline-modules';
 import Server from '@expo/metro/metro/Server';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
 import * as output from '@expo/metro/metro/shared/output/bundle';
@@ -368,10 +367,6 @@ export async function createMetroServerAndBundleRequestAsync(
     unstable_transformProfile: (options.unstableTransformProfile ||
       (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
   };
-
-  if (exp.experiments?.inlineModules) {
-    await generateMirrorDirectories(projectRoot);
-  }
 
   const server = new Server(config, {
     watch: false,
