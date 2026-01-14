@@ -36,7 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.unstable_navigationEvents = exports.VectorIcon = exports.Label = exports.Icon = exports.Badge = exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.useIsPreview = exports.router = exports.useLoaderData = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
+exports.unstable_navigationEvents = exports.VectorIcon = exports.Label = exports.Icon = exports.Badge = exports.useFocusEffect = exports.useNavigation = exports.SplashScreen = exports.ErrorBoundary = exports.useSitemap = exports.Sitemap = exports.Unmatched = exports.ExpoRoot = exports.Slot = exports.Navigator = exports.withLayoutContext = exports.useIsPreview = exports.usePreventZoomTransitionDismissal = exports.router = exports.useLoaderData = exports.useRootNavigationState = exports.useRootNavigation = exports.useSegments = exports.useLocalSearchParams = exports.useGlobalSearchParams = exports.useNavigationContainerRef = exports.usePathname = exports.useUnstableGlobalHref = exports.useRouter = void 0;
 // Expo Router API
 const Navigator_1 = require("./views/Navigator");
 Object.defineProperty(exports, "Navigator", { enumerable: true, get: function () { return Navigator_1.Navigator; } });
@@ -56,6 +56,8 @@ var imperative_api_1 = require("./imperative-api");
 Object.defineProperty(exports, "router", { enumerable: true, get: function () { return imperative_api_1.router; } });
 __exportStar(require("./link/Link"), exports);
 __exportStar(require("./link/elements"), exports);
+var usePreventZoomTransitionDismissal_1 = require("./link/zoom/usePreventZoomTransitionDismissal");
+Object.defineProperty(exports, "usePreventZoomTransitionDismissal", { enumerable: true, get: function () { return usePreventZoomTransitionDismissal_1.usePreventZoomTransitionDismissal; } });
 var PreviewRouteContext_1 = require("./link/preview/PreviewRouteContext");
 Object.defineProperty(exports, "useIsPreview", { enumerable: true, get: function () { return PreviewRouteContext_1.useIsPreview; } });
 var withLayoutContext_1 = require("./layouts/withLayoutContext");

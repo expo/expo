@@ -265,14 +265,25 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
   }
 
   if (loaderEntries.length) {
+    const loadersWithoutSourcemaps = loaderEntries.filter((entry) => !entry[0].endsWith('.map'));
     Log.log('');
-    Log.log(chalk.bold`${BLT} Loader outputs (${loaderEntries.length}):`);
+    Log.log(chalk.bold`${BLT} Loaders (${loadersWithoutSourcemaps.length}):`);
 
-    for (const [loaderFilename, assets] of loaderEntries.sort(
+    for (const [loaderFilename, assets] of loadersWithoutSourcemaps.sort(
       (a, b) => a[0].length - b[0].length
     )) {
       const id = assets.loaderId!;
-      Log.log(id === '/' ? '/ ' + chalk.gray('(index)') : id, sizeStr(assets.contents));
+      const hasSourceMap = loaderEntries.find(
+        ([filename, entry]) =>
+          filename !== loaderFilename &&
+          entry.loaderId === assets.loaderId &&
+          filename.endsWith('.map')
+      );
+      Log.log(
+        id === '/' ? '/ ' + chalk.gray('(index)') : id,
+        sizeStr(assets.contents),
+        hasSourceMap ? chalk.gray(`(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
+      );
     }
   }
 

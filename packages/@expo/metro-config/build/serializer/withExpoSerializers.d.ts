@@ -7,7 +7,7 @@
 import type { MetroConfig } from '@expo/metro/metro';
 import type { Module, ReadOnlyGraph, MixedOutput } from '@expo/metro/metro/DeltaBundler';
 import type { ConfigT, InputConfigT } from '@expo/metro/metro-config';
-import { ExpoSerializerOptions } from './fork/baseJSBundle';
+import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { SerialAsset } from './serializerAssets';
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 export type SerializerParameters = [

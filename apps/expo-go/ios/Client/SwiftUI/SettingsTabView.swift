@@ -2,13 +2,17 @@
 
 import SwiftUI
 import AuthenticationServices
+import AppTrackingTransparency
 
 struct SettingsTabView: View {
+  @Binding var selectedTab: HomeTab
   @EnvironmentObject var viewModel: HomeViewModel
-  @State private var allowAnalytics = false
+  @State private var shouldShowTrackingSection = false
+  @State private var isTrackingRequestInFlight = false
   @State private var isDeleting = false
   @State private var deletionError: String?
-  @State private var context: AuthPresentationContextProvider?
+  @State private var authSession: ASWebAuthenticationSession?
+  private let context = AuthPresentationContextProvider()
 
   var body: some View {
     ScrollView {
@@ -76,14 +80,15 @@ struct SettingsTabView: View {
             .foregroundColor(.secondary)
         }
 
-        VStack(alignment: .leading, spacing: 16) {
+        if shouldShowTrackingSection {
+          VStack(alignment: .leading, spacing: 16) {
           Text("Tracking")
             .font(.headline)
             .foregroundColor(.primary)
 
           VStack(spacing: 0) {
             Button {
-              allowAnalytics.toggle()
+              requestTrackingPermission()
             } label: {
               HStack {
                 Text("Allow access to app-related data for tracking")
@@ -93,13 +98,13 @@ struct SettingsTabView: View {
 
                 Spacer()
 
-                if allowAnalytics {
-                  Image(systemName: "checkmark")
-                    .foregroundColor(.expoBlue)
+                if isTrackingRequestInFlight {
+                  ProgressView()
                 }
               }
               .padding()
             }
+            .disabled(isTrackingRequestInFlight)
             .buttonStyle(PlainButtonStyle())
           }
           .background(Color.expoSecondarySystemBackground)
@@ -110,6 +115,7 @@ struct SettingsTabView: View {
               .font(.caption)
               .foregroundColor(.expoBlue)
           }
+        }
         }
         VStack(alignment: .leading, spacing: 16) {
           Text("App Info")
@@ -129,7 +135,7 @@ struct SettingsTabView: View {
           }
           .frame(maxWidth: .infinity)
           .padding()
-          .background(Color(.secondarySystemBackground))
+          .background(Color.expoSecondarySystemBackground)
           .foregroundColor(.primary)
           .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
         }
@@ -191,6 +197,9 @@ struct SettingsTabView: View {
     .background(Color.expoSystemBackground)
     .navigationTitle("Settings")
     .navigationBarTitleDisplayMode(.inline)
+    .task {
+      await refreshTrackingStatus()
+    }
   }
 
   private func getExpoSDKVersion() -> String {
@@ -222,6 +231,7 @@ struct SettingsTabView: View {
     }
 
     let session = ASWebAuthenticationSession(url: url, callbackURLScheme: "expauth") { [self] callbackURL, error in
+      authSession = nil
       isDeleting = false
 
       if let error {
@@ -234,12 +244,33 @@ struct SettingsTabView: View {
 
       if callbackURL != nil {
         viewModel.signOut()
+        selectedTab = .home
       }
     }
 
     session.presentationContextProvider = context
     session.prefersEphemeralWebBrowserSession = false
+    authSession = session
     session.start()
+  }
+
+  private func refreshTrackingStatus() async {
+    let status = ATTrackingManager.trackingAuthorizationStatus
+    await MainActor.run {
+      shouldShowTrackingSection = (status == .notDetermined)
+    }
+  }
+
+  private func requestTrackingPermission() {
+    guard !isTrackingRequestInFlight else { return }
+    isTrackingRequestInFlight = true
+
+    ATTrackingManager.requestTrackingAuthorization { status in
+      DispatchQueue.main.async {
+        isTrackingRequestInFlight = false
+        shouldShowTrackingSection = (status == .notDetermined)
+      }
+    }
   }
 }
 

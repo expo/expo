@@ -314,6 +314,53 @@ describe('getHtml', () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith('SSR render error:', renderError);
     consoleErrorSpy.mockRestore();
   });
+
+  it('executes loader and passes data to SSR renderer', async () => {
+    const loaderData = { message: 'Hello from loader' };
+    const loaderModule = { loader: jest.fn().mockResolvedValue(loaderData) };
+    const mockSSRModule = createMockSSRModule();
+    const input = createMockInput({
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+        assets: { css: [], js: ['/app.js'] },
+        htmlRoutes: [
+          {
+            file: './index.tsx',
+            page: '/index',
+            namedRegex: '^/(?:/)?$',
+            loader: '_expo/loaders/index.js',
+          },
+        ],
+      },
+      modules: {
+        '_expo/server/render.js': mockSSRModule,
+        '_expo/loaders/index.js': loaderModule,
+      },
+    });
+    const env = createEnvironment(input);
+
+    await env.getHtml(
+      new Request('http://localhost/'),
+      createMockRoute({
+        file: './index.tsx',
+        page: '/index',
+        namedRegex: new RegExp('^/(?:/)?$'),
+        loader: '_expo/loaders/index.js',
+      })
+    );
+
+    expect(input.loadModule).toHaveBeenCalledWith('_expo/loaders/index.js');
+    expect(loaderModule.loader).toHaveBeenCalledWith({
+      params: {},
+      request: expect.any(Request),
+    });
+    expect(mockSSRModule.getStaticContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        loader: { data: loaderData },
+      })
+    );
+  });
 });
 
 describe('getApiRoute', () => {
@@ -390,6 +437,93 @@ describe('getMiddleware', () => {
     const middleware = await env.getMiddleware({ file: middlewareFile });
 
     expect(middleware).toBeNull();
+  });
+});
+
+describe('getLoaderData', () => {
+  it('returns loader data when route has loader', async () => {
+    const loaderData = { userId: 123 };
+    const loaderModule = { loader: jest.fn().mockResolvedValue(loaderData) };
+    const input = createMockInput({
+      modules: { '_expo/loaders/user.js': loaderModule },
+    });
+    const env = createEnvironment(input);
+
+    const result = await env.getLoaderData(
+      new Request('http://localhost/user'),
+      createMockRoute({
+        file: './user.tsx',
+        page: '/user',
+        namedRegex: new RegExp('^/user(?:/)?$'),
+        loader: '_expo/loaders/user.js',
+      })
+    );
+
+    expect(result).toEqual(loaderData);
+    expect(loaderModule.loader).toHaveBeenCalledWith({
+      params: {},
+      request: expect.any(Request),
+    });
+  });
+
+  it('returns null when route has no loader', async () => {
+    const input = createMockInput();
+    const env = createEnvironment(input);
+
+    const result = await env.getLoaderData(
+      new Request('http://localhost/about'),
+      createMockRoute({
+        file: './about.tsx',
+        page: '/about',
+        namedRegex: new RegExp('^/about(?:/)?$'),
+      })
+    );
+
+    expect(result).toBeNull();
+  });
+
+  it('returns null when loader module has no loader function', async () => {
+    const loaderModule = { someOtherExport: 'value' };
+    const input = createMockInput({
+      modules: { '_expo/loaders/broken.js': loaderModule },
+    });
+    const env = createEnvironment(input);
+
+    const result = await env.getLoaderData(
+      new Request('http://localhost/broken'),
+      createMockRoute({
+        file: './broken.tsx',
+        page: '/broken',
+        namedRegex: new RegExp('^/broken(?:/)?$'),
+        loader: '_expo/loaders/broken.js',
+      })
+    );
+
+    expect(result).toBeNull();
+  });
+
+  it('parses params correctly for dynamic routes', async () => {
+    const loaderModule = { loader: jest.fn().mockResolvedValue({ found: true }) };
+    const input = createMockInput({
+      modules: { '_expo/loaders/posts/[id].js': loaderModule },
+    });
+    const env = createEnvironment(input);
+
+    await env.getLoaderData(
+      new Request('http://localhost/posts/123'),
+      createMockRoute({
+        file: './posts/[id].tsx',
+        page: '/posts/[id]',
+        namedRegex: new RegExp('^/posts/(?<id>[^/]+?)(?:/)?$'),
+        routeKeys: { id: 'id' },
+        loader: '_expo/loaders/posts/[id].js',
+      })
+    );
+
+    expect(loaderModule.loader).toHaveBeenCalledWith({
+      params: { id: '123' },
+      request: expect.any(Request),
+    });
   });
 });
 

@@ -14,7 +14,6 @@ import {
 import {
   background,
   clipShape,
-  disabled,
   frame,
   headerProminence,
   padding,
@@ -64,7 +63,6 @@ export default function ListScreen() {
   const [editModeEnabled, setEditModeEnabled] = React.useState<boolean>(false);
   const [scrollDismissesKeyboardIndex, setScrollDismissesKeyboardIndex] = React.useState<number>(0);
   const [increasedHeader, setIncreasedHeader] = React.useState(false);
-  const [collapsible, setCollapsible] = React.useState<boolean>(false);
   const [customHeaderFooter, setCustomHeaderFooter] = React.useState<{
     header: boolean;
     footer: boolean;
@@ -110,8 +108,6 @@ export default function ListScreen() {
         deleteEnabled={deleteEnabled}
         selectEnabled={selectEnabled}>
         <Section
-          collapsible={collapsible}
-          title="Collapsible section"
           {...(customHeaderFooter.header && {
             header: (
               <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
@@ -123,37 +119,19 @@ export default function ListScreen() {
                 </HStack>
               </HStack>
             ),
-          })}
-          footer={
-            <>
-              {customHeaderFooter.footer && (
-                <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
-                  <Text size={16} color="white" modifiers={[padding({ all: 8 })]}>
-                    Custom Footer
-                  </Text>
-                </HStack>
-              )}
-            </>
-          }>
+          })}>
           <Toggle
             label="Use increased section header"
             isOn={increasedHeader}
             onIsOnChange={setIncreasedHeader}
           />
-          <Toggle label="Collapsible" isOn={collapsible} onIsOnChange={setCollapsible} />
           <Toggle
             label="Custom header"
             isOn={customHeaderFooter.header}
             onIsOnChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, header: v }))}
           />
-          <Toggle
-            label="Custom footer"
-            isOn={customHeaderFooter.footer}
-            onIsOnChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, footer: v }))}
-            modifiers={[disabled(collapsible)]}
-          />
         </Section>
-        <Section title="Controls" collapsible>
+        <Section title="Controls">
           <Button onPress={() => setEditModeEnabled(!editModeEnabled)} label="Toggle Edit" />
           <Toggle isOn={selectEnabled} label="Select enabled" onIsOnChange={setSelectEnabled} />
           <Toggle isOn={deleteEnabled} label="Delete enabled" onIsOnChange={setDeleteEnabled} />
@@ -172,7 +150,7 @@ export default function ListScreen() {
             label="Item icon color"
             selection={color}
             supportsOpacity
-            onValueChanged={setColor}
+            onSelectionChange={setColor}
           />
           <Picker
             label="Scroll dismisses keyboard"

@@ -12,30 +12,31 @@ class Paginator<Data>(
   private val fetch: Query<Data>
 ) {
   private val _data = MutableStateFlow<List<Data>>(emptyList())
-
   val data: StateFlow<List<Data>> = _data.asStateFlow()
+
+  private val _isLastPage = MutableStateFlow(false)
+  val isLastPage: StateFlow<Boolean> = _isLastPage.asStateFlow()
+
+  private val _isFetching = MutableStateFlow(false)
+  val isFetching: StateFlow<Boolean> = _isFetching.asStateFlow()
+
   private var currentOffset = 0
 
-  var isLastPage = false
-    private set
-  var isFetching = false
-    private set
-
   suspend fun loadMore() {
-    if (isFetching || isLastPage) {
+    if (_isFetching.value || _isLastPage.value) {
       return
     }
 
-    isFetching = true
+    _isFetching.value = true
     val data = fetch(defaultLimit, currentOffset)
+
     currentOffset += data.size
 
     if (data.size < defaultLimit || data.isEmpty()) {
-      isLastPage = true
+      _isLastPage.value = true
     }
 
-    currentOffset += data.size
     _data.update { oldData -> oldData + data }
-    isFetching = false
+    _isFetching.value = false
   }
 }

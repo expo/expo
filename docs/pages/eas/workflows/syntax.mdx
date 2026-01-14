@@ -1706,3 +1706,67 @@ jobs:
     steps:
       - run: echo ${{ needs.job_1.outputs.variable_1 }} # prints: Variable 1
 ```
+
+### `set-env`
+
+Sets an environment variable that is available to subsequent steps within the same job. Environment variables exported using `export` in one step's command are not automatically exposed to other steps. To share an environment variable with other steps, use the `set-env` executable.
+
+```bash
+set-env <name> <value>
+```
+
+`set-env` expects to be called with two arguments: the environment variable's name and value. For example, `set-env NPM_TOKEN "abcdef"` will expose the `$NPM_TOKEN` variable with the value `abcdef` to subsequent steps.
+
+> **Note:** Variables shared with `set-env` are not automatically exported locally. You need to call `export` yourself if you want to use the variable in the current step.
+
+Example usage for sharing an environment variable with another step:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - name: Set environment variables
+        run: |
+          # Using export only makes it available in the current step
+          export LOCAL_VAR="only in this step"
+
+          # Using set-env makes it available in subsequent steps
+          # @info #
+          set-env SHARED_VAR "available in next steps"
+          # @end #
+
+          # SHARED_VAR is not yet available in current step's environment
+          echo "LOCAL_VAR: $LOCAL_VAR"     # prints: only in this step
+          echo "SHARED_VAR: $SHARED_VAR"   # prints: (empty)
+      - name: Use shared variable
+        run: |
+          # SHARED_VAR is now available
+          # @info #
+          echo "SHARED_VAR: $SHARED_VAR"   # prints: available in next steps
+          # @end #
+```
+
+#### Sharing environment variables between jobs
+
+The `set-env` function only shares environment variables with other steps **within the same job**. To share values between different jobs, use the job's [`outputs`](#jobsjob_idoutputs) with `set-output` and pass them via the [`env`](#jobsjob_idenv) property on the receiving job:
+
+```yaml
+jobs:
+  job_1:
+    # @info Define outputs to expose values to other jobs #
+    outputs:
+      my_value: ${{ steps.step_1.outputs.my_value }}
+    # @end #
+    steps:
+      - id: step_1
+        run: set-output my_value "value from job_1"
+
+  job_2:
+    needs: [job_1]
+    # @info Use env to set environment variables from upstream job outputs #
+    env:
+      MY_VALUE: ${{ needs.job_1.outputs.my_value }}
+    # @end #
+    steps:
+      - run: echo "MY_VALUE: $MY_VALUE"  # prints: value from job_1
+```

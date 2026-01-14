@@ -273,7 +273,7 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
 
 class LinkZoomTransitionEnabler: LinkZoomExpoView {
   var zoomTransitionSourceIdentifier: String = ""
-  var isPreventingInteractiveDismissal: Bool = false
+  var dismissalBoundsRect: DismissalBoundsRect?
 
   override func didMoveToSuperview() {
     super.didMoveToSuperview()
@@ -318,8 +318,18 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
           }
           return rect
         }
-        options.interactiveDismissShouldBegin = { _ in
-          !self.isPreventingInteractiveDismissal
+        options.interactiveDismissShouldBegin = { context in
+          // Check dismissal bounds rect if provided
+          if let rect = self.dismissalBoundsRect {
+              let location = context.location
+              // Check each optional bound independently
+              if let minX = rect.minX, location.x < minX { return false }
+              if let maxX = rect.maxX, location.x > maxX { return false }
+              if let minY = rect.minY, location.y < minY { return false }
+              if let maxY = rect.maxY, location.y > maxY { return false }
+          }
+
+          return true
         }
         controller.preferredTransition = .zoom(options: options) { _ in
           let sourceInfo = self.sourceRepository?.getSource(

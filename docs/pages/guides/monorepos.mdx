@@ -5,7 +5,6 @@ description: Learn about setting up Expo projects in a monorepo with workspaces.
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
-import { Tab, Tabs } from '~/ui/components/Tabs';
 
 Monorepos, or _"monolithic repositories"_, are single repositories containing multiple apps or packages. They can help speed up development for larger projects, make it easier to share code, and act as a single source of truth. This guide will set up a simple monorepo with an Expo project. Expo has first-class support for monorepos managed with package managers supporting workspaces: [Bun](https://bun.sh/docs/install/workspaces), [npm](https://docs.npmjs.com/cli/using-npm/workspaces), [pnpm](https://pnpm.io/workspaces), and [Yarn](https://yarnpkg.com/features/workspaces) (v1 Classic and Berry). Expo automatically detects monorepos and configures new app projects added to a monorepo. The detection is based on the workspace configuration in your project.
 
@@ -98,20 +97,14 @@ Now that you have the basic monorepo structure set up, add your first app.
 
 Before you create your app, you have to create the **apps** directory. This directory contains all separate apps or websites that belong to this monorepo. Inside this **apps** directory, you can create a sub-directory that contains the Expo app.
 
-<Tabs>
-  <Tab label="npm">
-    <Terminal cmd={['$ npx create-expo-app@latest apps/cool-app']} />
-  </Tab>
-  <Tab label="Yarn">
-    <Terminal cmd={['$ yarn create expo-app apps/cool-app']} />
-  </Tab>
-  <Tab label="pnpm">
-    <Terminal cmd={['$ pnpm create expo-app apps/cool-app']} />
-  </Tab>
-  <Tab label="Bun">
-    <Terminal cmd={['$ bun create expo apps/cool-app']} />
-  </Tab>
-</Tabs>
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest apps/cool-app'],
+    yarn: ['$ yarn create expo-app apps/cool-app'],
+    pnpm: ['$ pnpm create expo-app apps/cool-app'],
+    bun: ['$ bun create expo apps/cool-app'],
+  }}
+/>
 
 > If you have an existing app, you can copy all those files into a directory inside **apps**.
 
@@ -123,60 +116,14 @@ Monorepos can help us group code in a single repository. That includes apps but 
 
 Let's go back to the root and create the **packages** directory. This directory can contain all the separate packages that you want to make. Once you are inside this directory, we need to add a new sub-directory. The sub-directory is a separate package that we can use inside our app. In the example below, we named it **cool-package**.
 
-<Tabs>
-  <Tab label="npm">
-    <Terminal
-      cmd={[
-        '# Create your new package directory',
-        '$ mkdir -p packages/cool-package',
-        '$ cd packages/cool-package',
-        '',
-        '# And create the new package',
-        '$ npm init',
-      ]}
-      cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && npm init"
-    />
-  </Tab>
-  <Tab label="Yarn">
-    <Terminal
-      cmd={[
-        '# Create your new package directory',
-        '$ mkdir -p packages/cool-package',
-        '$ cd packages/cool-package',
-        '',
-        '# And create the new package',
-        '$ yarn init',
-      ]}
-      cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && yarn init"
-    />
-  </Tab>
-  <Tab label="pnpm">
-    <Terminal
-      cmd={[
-        '# Create your new package directory',
-        '$ mkdir -p packages/cool-package',
-        '$ cd packages/cool-package',
-        '',
-        '# And create the new package',
-        '$ pnpm init',
-      ]}
-      cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && pnpm init"
-    />
-  </Tab>
-  <Tab label="Bun">
-    <Terminal
-      cmd={[
-        '# Create your new package directory',
-        '$ mkdir -p packages/cool-package',
-        '$ cd packages/cool-package',
-        '',
-        '# And create the new package',
-        '$ bun init --minimal',
-      ]}
-      cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && bun init --minimal"
-    />
-  </Tab>
-</Tabs>
+<Terminal
+  cmd={{
+    npm: ['$ mkdir -p packages/cool-package && cd packages/cool-package && npm init'],
+    yarn: ['$ mkdir -p packages/cool-package && cd packages/cool-package && yarn init'],
+    pnpm: ['$ mkdir -p packages/cool-package && cd packages/cool-package && pnpm init'],
+    bun: ['$ mkdir -p packages/cool-package && cd packages/cool-package && bun init --minimal'],
+  }}
+/>
 
 We won't go into too much detail in creating a package. If you are not familiar with this, consider using a simple app without monorepos. But, to make the example complete, let's add an **index.js** file with the following content:
 
@@ -261,20 +208,14 @@ Expo has improved support for more complete **node_modules** patterns, such as i
 
 You can check if your monorepo has multiple versions of a package, for example, `react-native`, and why they're installed through the package manager you use.
 
-<Tabs>
-  <Tab label="npm">
-    <Terminal cmd={['$ npm why react-native']} />
-  </Tab>
-  <Tab label="Yarn">
-    <Terminal cmd={['$ yarn why react-native']} />
-  </Tab>
-  <Tab label="pnpm">
-    <Terminal cmd={['$ pnpm why --depth=10 react-native']} />
-  </Tab>
-  <Tab label="Bun">
-    <Terminal cmd={['$ bun pm why react-native']} />
-  </Tab>
-</Tabs>
+<Terminal
+  cmd={{
+    npm: ['$ npm why react-native'],
+    yarn: ['$ yarn why react-native'],
+    pnpm: ['$ pnpm why --depth=10 react-native'],
+    bun: ['$ bun pm why react-native'],
+  }}
+/>
 
 The output of these commands will be very different from one package manager to another, but you can spot duplicate packages in any of their outputs by looking for multiple versions of the package, for example `react-native@0.79.5` and `react-native@0.81.0`.
 **npm**,

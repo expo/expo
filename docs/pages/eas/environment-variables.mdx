@@ -22,7 +22,7 @@ This guide describes how to use and manage environment variables in EAS with key
 
 <Collapsible summary="Environments in EAS">
 
-Currently, EAS supports three environments for environment variables: `development`, `preview` and `production`. Environments are independent sets of environment variables that can be used to customize your app in different contexts. For example, you might want to use different API keys for development and production, or different bundle identifiers for different App Store releases. Environments allows you to do so. Every EAS Build and Workflows job runs using environment variables from one of the available environments. You can also use environments for updates, allowing you to use the same set of environment variables for your build jobs. You can do this when publishing an update by providing the `--environment` flag.
+By default, all projects have three environments for environment variables: `development`, `preview` and `production`. On **Production** and **Enterprise** plans, you can also create custom environments to better organize your environment variables for complex workflows. Environments are independent sets of environment variables that can be used to customize your app in different contexts. For example, you might want to use different API keys for development and production, or different bundle identifiers for different App Store releases. Environments allows you to do so. Every EAS Build and Workflows job runs using environment variables from one of the available environments. You can also use environments for updates, allowing you to use the same set of environment variables for your build jobs. You can do this when publishing an update by providing the `--environment` flag.
 
 Environment variables can be assigned to multiple environments and have the same value across all of them, or be created for a single environment, so that you can set a specific value for a single environment.
 
@@ -157,6 +157,8 @@ To create environment variables on EAS servers, you can use the [environment var
 
 In the form, you can specify the name, value, environment(s) and visibility for the variable.
 
+> **info** On **Production** and **Enterprise** plans, you can create custom environments by clicking the plus (`+`) icon next to Environments when creating an environment variable. Custom environment names can contain letters, digits, underscores and hyphens, and must be between 3-100 characters. Once created, custom environments will be available for all subsequent environment variables in your project.
+
 <ContentSpotlight
   alt="Create an environment variable form"
   src="/static/images/env-vars/add.png"
@@ -284,7 +286,7 @@ For example, it can be useful when uploading source maps to Sentry using a [`SEN
 
 #### Setting the environment for your builds
 
-To set the environment for your EAS Build jobs, you can use the `environment` option in **eas.json** and set it to one of the available environments: `development`, `preview` or `production`.
+To set the environment for your EAS Build jobs, you can use the `environment` option in **eas.json** and set it to one of the available environments. By default, projects have `development`, `preview`, and `production` environments. On **Production** and **Enterprise** plans, you can also use custom environments that you've created.
 
 ```json eas.json
 {
@@ -445,6 +447,7 @@ To ensure that you can use the same environment variables in your updates as you
 <Collapsible summary="Are there any limitations to using environment variables in EAS?  ">
 
 - Environment variable value size is limited to 32 KiB for environment variables with secret visibility and 4 KiB for other visibility types.
-- You can create up to 100 account-wide environment variables for each Expo account and 100 project-specific environment variables for each app.
+- You can create up to 150 account-wide environment variables per environment and 200 project-specific environment variables per environment.
+- Custom environments (available on **Production** and **Enterprise** plans) are limited to 10 per project. Custom environment names can contain letters, digits, underscores and hyphens, and must be between 3-100 characters.
 
 </Collapsible>

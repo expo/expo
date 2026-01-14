@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import EXNotifications
+import ExpoNotifications
 
 public final class ExpoGoNotificationsHandlerModule: HandlerModule {
   private let scopeKey: String

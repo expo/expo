@@ -5,6 +5,7 @@
 #import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 #import <ExpoModulesJSI/EXRawJavaScriptFunction.h>
 #import <ExpoModulesJSI/EXJavaScriptTypedArray.h>
+#import <ExpoModulesJSI/EXRawJavaScriptArrayBuffer.h>
 #import <ExpoModulesJSI/TypedArray.h>
 
 @implementation EXJavaScriptValue {
@@ -86,6 +87,15 @@
   return false;
 }
 
+- (BOOL)isArrayBuffer
+{
+  if (_value.isObject()) {
+    jsi::Runtime *runtime = [_runtime get];
+    return _value.getObject(*runtime).isArrayBuffer(*runtime);
+  }
+  return false;
+}
+
 #pragma mark - Type casting
 
 - (nullable id)getRaw
@@ -156,6 +166,16 @@
   jsi::Runtime *runtime = [_runtime get];
   std::shared_ptr<jsi::Object> objectPtr = std::make_shared<jsi::Object>(_value.asObject(*runtime));
   return [[EXJavaScriptTypedArray alloc] initWith:objectPtr runtime:_runtime];
+}
+
+- (nullable EXJavaScriptArrayBuffer *)getArrayBuffer
+{
+  if (![self isArrayBuffer]) {
+    return nil;
+  }
+  jsi::Runtime *runtime = [_runtime get];
+  std::shared_ptr<jsi::Object> objectPtr = std::make_shared<jsi::Object>(_value.asObject(*runtime));
+  return [[EXJavaScriptArrayBuffer alloc] initWith:objectPtr runtime:_runtime];
 }
 
 #pragma mark - Helpers
