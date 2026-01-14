@@ -61,7 +61,7 @@ test.describe('server loader (SSR) in production', () => {
     expect(pageErrors.all).toEqual([]);
   });
 
-  test('SSR injects loader data into initial HTML', async ({ page }) => {
+  test('loads and renders a route with a loader', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
     await page.goto(expoServe.url.href + 'second');
 
@@ -78,7 +78,7 @@ test.describe('server loader (SSR) in production', () => {
     expect(pageErrors.all).toEqual([]);
   });
 
-  test('SSR renders dynamic route with params', async ({ page }) => {
+  test('loads and renders a dynamic params route with a loader', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
     await page.goto(expoServe.url.href + 'posts/my-dynamic-post');
 
@@ -89,7 +89,7 @@ test.describe('server loader (SSR) in production', () => {
     expect(pageErrors.all).toEqual([]);
   });
 
-  test('client-side navigation fetches loader data', async ({ page }) => {
+  test('loads loader data modules on client-side navigation', async ({ page }) => {
     const loaderRequests: string[] = [];
     page.on('request', (request) => {
       if (request.url().includes('/_expo/loaders/')) {
@@ -108,22 +108,6 @@ test.describe('server loader (SSR) in production', () => {
 
     const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
     expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
-  });
-
-  test('navigates from route without loader to route with loader', async ({ page }) => {
-    const pageErrors = pageCollectErrors(page);
-
-    // Start at index route (no loader)
-    await page.goto(expoServe.url.href);
-
-    // Navigate to second route (has loader)
-    await page.click('a[href="/second"]');
-    await page.waitForSelector('[data-testid="loader-result"]');
-
-    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
-    expect(JSON.parse(loaderDataContent!)).toEqual({ data: 'second' });
-
-    expect(pageErrors.all).toEqual([]);
   });
 
   test('caches loader data for subsequent navigations', async ({ page }) => {
@@ -182,6 +166,22 @@ test.describe('server loader (SSR) in production', () => {
     await expect(loaderResult).not.toBeVisible({ timeout: 100 });
 
     await expect(loaderResult).toBeVisible({ timeout: 1000 });
+  });
+
+  test('navigates from route without loader to route with loader', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+
+    // Start at index route (no loader)
+    await page.goto(expoServe.url.href);
+
+    // Navigate to second route (has loader)
+    await page.click('a[href="/second"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+
+    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
+    expect(JSON.parse(loaderDataContent!)).toEqual({ data: 'second' });
+
+    expect(pageErrors.all).toEqual([]);
   });
 
   test('navigates from route with loader to another route with loader', async ({ page }) => {
