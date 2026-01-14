@@ -15,7 +15,7 @@ export interface RenderOptions {
 }
 /** Module exported from loader bundle, typically `_expo/loaders/[ROUTE].js` */
 export interface LoaderModule {
-    loader?(args: {
+    loader(args: {
         params: Record<string, string>;
         request: Request;
     }): Promise<unknown> | unknown;
