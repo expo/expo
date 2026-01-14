@@ -1,0 +1,24 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'expo.modules.brownfield'
+version = '0.1.0'
+
+expoModule {
+  canBePublished false
+}
+
+android {
+  namespace "expo.modules.brownfield"
+  defaultConfig {
+    versionCode 1
+    versionName '0.1.0'
+  }
+}
+
+dependencies {
+  compileOnly "androidx.activity:activity-ktx:1.8.0"
+  compileOnly "androidx.core:core-ktx:1.12.0"
+}

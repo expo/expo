@@ -6,5 +6,5 @@ import { NotificationChannel } from './NotificationChannelManager.types';
  * @platform android
  * @header channels
  */
-export default function getNotificationChannelsAsync(): Promise<NotificationChannel[]>;
+export declare function getNotificationChannelsAsync(): Promise<NotificationChannel[]>;
 //# sourceMappingURL=getNotificationChannelsAsync.d.ts.map

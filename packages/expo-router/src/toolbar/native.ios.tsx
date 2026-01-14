@@ -29,6 +29,7 @@ const RouterToolbarItemView: React.ComponentType<
     identifier: string;
     title?: string;
     systemImageName?: SFSymbol;
+    image?: number;
     type?: string;
     titleStyle?: {
       fontFamily?: string;
@@ -39,6 +40,15 @@ const RouterToolbarItemView: React.ComponentType<
     tintColor?: ColorValue;
   }
 > = requireNativeView('ExpoRouterToolbarModule', 'RouterToolbarItemView');
+
 export function RouterToolbarItem(props: RouterToolbarItemProps) {
-  return <RouterToolbarItemView {...props} />;
+  // Needed to pass shared object ID to native side
+  const imageObjectId = (
+    props.image as
+      | {
+          __expo_shared_object_id__: number;
+        }
+      | undefined
+  )?.__expo_shared_object_id__;
+  return <RouterToolbarItemView {...props} image={imageObjectId} />;
 }

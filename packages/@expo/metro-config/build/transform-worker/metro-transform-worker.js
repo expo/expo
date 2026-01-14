@@ -418,6 +418,7 @@ async function transformJS(file, { config, options }) {
                 reactServerReference: file.reactServerReference,
                 reactClientReference: file.reactClientReference,
                 expoDomComponentReference: file.expoDomComponentReference,
+                loaderReference: file.loaderReference,
                 ...(possibleReconcile
                     ? {
                         ast: wrappedAst,
@@ -486,6 +487,7 @@ async function transformJSWithBabel(file, context) {
         reactServerReference: transformResult.metadata?.reactServerReference,
         reactClientReference: transformResult.metadata?.reactClientReference,
         expoDomComponentReference: transformResult.metadata?.expoDomComponentReference,
+        loaderReference: transformResult.metadata?.loaderReference,
         performConstantFolding: transformResult.metadata?.performConstantFolding,
     };
     return await transformJS(jsFile, context);

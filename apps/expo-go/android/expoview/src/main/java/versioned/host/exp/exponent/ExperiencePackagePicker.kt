@@ -6,6 +6,7 @@ import expo.modules.audio.AudioModule
 import expo.modules.backgroundfetch.BackgroundFetchModule
 import expo.modules.backgroundtask.BackgroundTaskModule
 import expo.modules.battery.BatteryModule
+import expo.modules.blob.BlobModule
 import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
 import expo.modules.calendar.CalendarModule
@@ -17,6 +18,7 @@ import expo.modules.constants.ConstantsService
 import expo.modules.contacts.ContactsModule
 import expo.modules.core.interfaces.Package
 import expo.modules.crypto.CryptoModule
+import expo.modules.crypto.aes.AesCryptoModule
 import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
@@ -131,9 +133,11 @@ object ExperiencePackagePicker : ModulesProvider {
     NotificationChannelGroupManagerModule::class.java to null,
     ExpoBackgroundNotificationTasksModule::class.java to null,
     // End of Notifications
+    AesCryptoModule::class.java to null,
     BatteryModule::class.java to null,
     BackgroundFetchModule::class.java to null,
     BackgroundTaskModule::class.java to null,
+    BlobModule::class.java to null,
     BlurModule::class.java to null,
     CalendarModule::class.java to null,
     CameraViewModule::class.java to null,

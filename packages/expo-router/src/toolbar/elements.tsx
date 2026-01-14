@@ -1,5 +1,6 @@
+import type { ImageRef } from 'expo-image';
 import { Children, isValidElement, useId, type ReactNode } from 'react';
-import { StyleSheet, type ColorValue, type StyleProp } from 'react-native';
+import { Platform, StyleSheet, type ColorValue, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { RouterToolbarHost, RouterToolbarItem } from './native';
@@ -241,6 +242,25 @@ export interface ToolbarButtonProps {
   icon?: SFSymbol;
 
   /**
+   * Custom image loaded using expo-image's `useImage` hook.
+   * Takes priority over `icon` (SF Symbol) when both are provided.
+   *
+   * @example
+   * ```tsx
+   * import { useImage } from 'expo-image';
+   * import { Toolbar } from 'expo-router/unstable-toolbar';
+   *
+   * const customIcon = useImage('https://example.com/icon.png', {
+   *   maxWidth: 44,
+   *   maxHeight: 44,
+   * });
+   *
+   * <Toolbar.Button image={customIcon} onPress={() => {}} />
+   * ```
+   */
+  image?: ImageRef | null;
+
+  /**
    * Callback function when the button is pressed.
    */
   onPress?: () => void;
@@ -329,6 +349,7 @@ export const ToolbarButton = (props: ToolbarButtonProps) => {
       hidden={props.hidden}
       hidesSharedBackground={props.hidesSharedBackground}
       identifier={id}
+      image={props.image}
       onSelected={props.onPress}
       possibleTitles={props.possibleTitles}
       selected={props.selected}
@@ -401,6 +422,77 @@ export const ToolbarSpacer = (props: ToolbarSpacerProps) => {
       sharesBackground={props.sharesBackground}
       type={props.width ? 'fixedSpacer' : 'fluidSpacer'}
       width={props.width}
+    />
+  );
+};
+
+export interface ToolbarSearchBarPreferredSlotProps {
+  /**
+   * Whether to hide the shared background when `sharesBackground` is enabled.
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/hidessharedbackground) for more information.
+   *
+   * @platform iOS 26+
+   */
+  hidesSharedBackground?: boolean;
+  /**
+   * Whether the search bar placed in the toolbar should be hidden.
+   *
+   * @default false
+   */
+  hidden?: boolean;
+  /**
+   * Whether the search bar shares the background with adjacent toolbar items.
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/sharesbackground) for more information.
+   *
+   * @platform iOS 26+
+   * @default false
+   */
+  sharesBackground?: boolean;
+}
+
+/**
+ * Declares the position of a search bar within the toolbar.
+ * It should only be used as a child of `Toolbar`.
+ *
+ * > **Note**: On iOS 26+, this component specifies where in the toolbar the search bar
+ * > (configured via `Stack.SearchBar`) should appear. On iOS 18 and earlier, the search bar
+ * > will be shown in the header instead.
+ *
+ * > **Important**: You must use `Stack.SearchBar` to configure and display the actual
+ * > search bar. This component only declares its position in the toolbar.
+ *
+ * @example
+ * ```tsx
+ * <Stack.SearchBar placeholder="Search..." />
+ * <Toolbar>
+ *   <Toolbar.SearchBarPreferredSlot />
+ *   <Toolbar.Spacer />
+ *   <Toolbar.Button icon="mic" />
+ * </Toolbar>
+ * ```
+ *
+ * @platform ios 26+
+ */
+export const ToolbarSearchBarPreferredSlot = ({
+  hidesSharedBackground,
+  hidden,
+  sharesBackground,
+}: ToolbarSearchBarPreferredSlotProps) => {
+  const id = useId();
+  if (process.env.EXPO_OS !== 'ios' || parseInt(String(Platform.Version).split('.')[0], 10) < 26) {
+    return null;
+  }
+  if (hidden) {
+    return null;
+  }
+  return (
+    <RouterToolbarItem
+      hidesSharedBackground={hidesSharedBackground}
+      identifier={id}
+      sharesBackground={sharesBackground}
+      type="searchBar"
     />
   );
 };

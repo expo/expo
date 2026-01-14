@@ -51,6 +51,7 @@ internal class ExpoBridgelessDevSupportManager(
   }
 
   override fun onNewReactContextCreated(reactContext: ReactContext) {
+    super.onNewReactContextCreated(reactContext)
     perfController.onContextCreated(reactContext)
     if (devSettings.isFpsDebugEnabled) {
       perfController.enable(reactContext)

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ToolbarHost = exports.ToolbarView = exports.ToolbarSpacer = exports.ToolbarButton = exports.ToolbarMenuAction = exports.ToolbarMenu = void 0;
+exports.ToolbarHost = exports.ToolbarView = exports.ToolbarSearchBarPreferredSlot = exports.ToolbarSpacer = exports.ToolbarButton = exports.ToolbarMenuAction = exports.ToolbarMenu = void 0;
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const native_1 = require("./native");
@@ -83,7 +83,7 @@ const ToolbarButton = (props) => {
     const icon = props.icon ??
         (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
     const sf = typeof icon === 'string' ? icon : undefined;
-    return (<native_1.RouterToolbarItem accessibilityHint={props.accessibilityHint} accessibilityLabel={props.accessibilityLabel} barButtonItemStyle={props.variant === 'done' ? 'prominent' : props.variant} disabled={props.disabled} hidden={props.hidden} hidesSharedBackground={props.hidesSharedBackground} identifier={id} onSelected={props.onPress} possibleTitles={props.possibleTitles} selected={props.selected} sharesBackground={!props.separateBackground} systemImageName={sf} title={label} tintColor={props.tintColor} titleStyle={react_native_1.StyleSheet.flatten(props.style)}/>);
+    return (<native_1.RouterToolbarItem accessibilityHint={props.accessibilityHint} accessibilityLabel={props.accessibilityLabel} barButtonItemStyle={props.variant === 'done' ? 'prominent' : props.variant} disabled={props.disabled} hidden={props.hidden} hidesSharedBackground={props.hidesSharedBackground} identifier={id} image={props.image} onSelected={props.onPress} possibleTitles={props.possibleTitles} selected={props.selected} sharesBackground={!props.separateBackground} systemImageName={sf} title={label} tintColor={props.tintColor} titleStyle={react_native_1.StyleSheet.flatten(props.style)}/>);
 };
 exports.ToolbarButton = ToolbarButton;
 /**
@@ -110,6 +110,40 @@ const ToolbarSpacer = (props) => {
     return (<native_1.RouterToolbarItem hidesSharedBackground={props.hidesSharedBackground} hidden={props.hidden} identifier={id} sharesBackground={props.sharesBackground} type={props.width ? 'fixedSpacer' : 'fluidSpacer'} width={props.width}/>);
 };
 exports.ToolbarSpacer = ToolbarSpacer;
+/**
+ * Declares the position of a search bar within the toolbar.
+ * It should only be used as a child of `Toolbar`.
+ *
+ * > **Note**: On iOS 26+, this component specifies where in the toolbar the search bar
+ * > (configured via `Stack.SearchBar`) should appear. On iOS 18 and earlier, the search bar
+ * > will be shown in the header instead.
+ *
+ * > **Important**: You must use `Stack.SearchBar` to configure and display the actual
+ * > search bar. This component only declares its position in the toolbar.
+ *
+ * @example
+ * ```tsx
+ * <Stack.SearchBar placeholder="Search..." />
+ * <Toolbar>
+ *   <Toolbar.SearchBarPreferredSlot />
+ *   <Toolbar.Spacer />
+ *   <Toolbar.Button icon="mic" />
+ * </Toolbar>
+ * ```
+ *
+ * @platform ios 26+
+ */
+const ToolbarSearchBarPreferredSlot = ({ hidesSharedBackground, hidden, sharesBackground, }) => {
+    const id = (0, react_1.useId)();
+    if (process.env.EXPO_OS !== 'ios' || parseInt(String(react_native_1.Platform.Version).split('.')[0], 10) < 26) {
+        return null;
+    }
+    if (hidden) {
+        return null;
+    }
+    return (<native_1.RouterToolbarItem hidesSharedBackground={hidesSharedBackground} identifier={id} sharesBackground={sharesBackground} type="searchBar"/>);
+};
+exports.ToolbarSearchBarPreferredSlot = ToolbarSearchBarPreferredSlot;
 /**
  * A custom view component for the toolbar that can contain any React elements.
  * Useful for embedding custom components.

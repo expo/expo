@@ -10,6 +10,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
 
 Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away. This guide will walk you through the process of setting up EAS Update in a new or existing project.
 
@@ -49,7 +50,7 @@ If the command fails, refer to the [Installing Expo modules](/bare/installing-ex
 
 </Collapsible>
 
-<Collapsible summary="Your project must use the registerRootComponent function instead of registerComponent">
+<Collapsible summary={<>Your project must use the <CODE>registerRootComponent</CODE> function instead of <CODE>registerComponent</CODE></>}>
 
 If you created your project with `npx create-expo-app`, or you don't call `registerRootComponent` in your app at all (for example, it's handled by Expo Router), then you are all set. The following applies to projects created with other tools, such as React Native Community CLI.
 

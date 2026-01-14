@@ -9,6 +9,8 @@
 #import <UMAppLoader/UMAppLoaderProvider.h>
 #import <UMAppLoader/UMAppRecordInterface.h>
 
+#import <React/RCTLog.h>
+
 @interface EXTaskService ()
 
 // Array of task requests that are being executed.
@@ -624,7 +626,7 @@
                                   consumerClass:consumerClass
                                         options:taskConfig[@"options"]];
           } else {
-            EXLogWarn(
+            RCTLogWarn(
                       @"EXTaskService: Task consumer '%@' has version '%d' that is not compatible with the saved version '%d'.",
                       consumerClassName,
                       currentConsumerVersion,
@@ -633,7 +635,7 @@
             [self _removeTaskFromConfig:taskName appId:appId];
           }
         } else {
-          EXLogWarn(@"EXTaskService: Cannot restore task '%@' because consumer class doesn't exist.", taskName);
+          RCTLogWarn(@"EXTaskService: Cannot restore task '%@' because consumer class doesn't exist.", taskName);
           [self _removeTaskFromConfig:taskName appId:appId];
         }
       }

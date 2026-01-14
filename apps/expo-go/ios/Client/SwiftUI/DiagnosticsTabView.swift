@@ -11,8 +11,7 @@ struct DiagnosticsTabView: View {
         NavigationLink(destination: AudioDiagnosticsView()) {
           DiagnosticCard(
             title: "Audio",
-            description: "On iOS you can play audio in the foreground and background, choose whether it plays when the device is on silent, and set how the audio interacts with audio from other apps. This diagnostic allows you to see the available options.",
-            action: {}
+            description: "On iOS you can play audio in the foreground and background, choose whether it plays when the device is on silent, and set how the audio interacts with audio from other apps. This diagnostic allows you to see the available options."
           )
         }
         .buttonStyle(PlainButtonStyle())
@@ -20,8 +19,7 @@ struct DiagnosticsTabView: View {
         NavigationLink(destination: LocationDiagnosticsView()) {
           DiagnosticCard(
             title: "Background location",
-            description: "On iOS it's possible to track your location when an app is foregrounded, backgrounded, or even closed. This diagnostic allows you to see what options are available, see the output, and test the functionality on your device. None of the location data will leave your device.",
-            action: {}
+            description: "On iOS it's possible to track your location when an app is foregrounded, backgrounded, or even closed. This diagnostic allows you to see what options are available, see the output, and test the functionality on your device. None of the location data will leave your device."
           )
         }
         .buttonStyle(PlainButtonStyle())
@@ -29,8 +27,7 @@ struct DiagnosticsTabView: View {
         NavigationLink(destination: GeofencingDiagnosticsView()) {
           DiagnosticCard(
             title: "Geofencing",
-            description: "You can fire actions when your device enters specific geographical regions represented by a longitude, latitude, and a radius. This diagnostic lets you experiment with Geofencing using regions that you specify and shows you the data that is made available. None of the data will leave your device.",
-            action: {}
+            description: "You can fire actions when your device enters specific geographical regions represented by a longitude, latitude, and a radius. This diagnostic lets you experiment with Geofencing using regions that you specify and shows you the data that is made available. None of the data will leave your device."
           )
         }
         .buttonStyle(PlainButtonStyle())
@@ -46,7 +43,6 @@ struct DiagnosticsTabView: View {
 struct DiagnosticCard: View {
   let title: String
   let description: String
-  let action: () -> Void
 
   var body: some View {
     HStack(alignment: .top) {

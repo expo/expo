@@ -4,6 +4,7 @@ import {
   ToolbarMenuAction,
   ToolbarButton,
   ToolbarSpacer,
+  ToolbarSearchBarPreferredSlot,
   ToolbarView,
 } from './elements';
 
@@ -42,10 +43,18 @@ export const Toolbar = Object.assign(ToolbarHost, {
   MenuAction: ToolbarMenuAction,
   Button: ToolbarButton,
   Spacer: ToolbarSpacer,
+  SearchBarPreferredSlot: ToolbarSearchBarPreferredSlot,
   View: ToolbarView,
 });
 
-export { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarView };
+export {
+  ToolbarMenu,
+  ToolbarMenuAction,
+  ToolbarButton,
+  ToolbarSpacer,
+  ToolbarSearchBarPreferredSlot,
+  ToolbarView,
+};
 
 export type {
   ToolbarProps,
@@ -53,5 +62,6 @@ export type {
   ToolbarMenuActionProps,
   ToolbarButtonProps,
   ToolbarSpacerProps,
+  ToolbarSearchBarPreferredSlotProps,
   ToolbarViewProps as ToolbarCustomViewProps,
 } from './elements';

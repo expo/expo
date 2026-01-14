@@ -1,4 +1,6 @@
-import { type EventMapBase, type NavigationState, type ParamListBase, type RouteProp, type ScreenListeners } from '@react-navigation/native';
+import type { BottomTabNavigationEventMap } from '@react-navigation/bottom-tabs';
+import { type EventMapBase, type NavigationProp, type NavigationState, type ParamListBase, type RouteProp, type ScreenListeners } from '@react-navigation/native';
+import type { NativeStackNavigationEventMap } from '@react-navigation/native-stack';
 import React from 'react';
 import { RouteNode } from './Route';
 import { UnknownOutputParams } from './types';
@@ -31,7 +33,12 @@ export type SingularOptions = boolean | ((name: string, params: UnknownOutputPar
 export declare function useSortedScreens(order: ScreenProps[], protectedScreens: Set<string>, useOnlyUserDefinedScreens?: boolean): React.ReactNode[];
 /** Wrap the component with various enhancements and add access to child routes. */
 export declare function getQualifiedRouteComponent(value: RouteNode): React.ComponentType<any> | {
-    ({ route, navigation, ...props }: any): React.JSX.Element;
+    ({ route, navigation, ...props }: {
+        route?: RouteProp<ParamListBase, string>;
+        navigation: Omit<NavigationProp<ParamListBase, string, undefined, NavigationState, object, NativeStackNavigationEventMap | BottomTabNavigationEventMap>, "getState"> & {
+            getState(): NavigationState | undefined;
+        };
+    }): React.JSX.Element;
     displayName: string;
 };
 export declare function screenOptionsFactory(route: RouteNode, options?: ScreenProps['options']): ScreenProps['options'];

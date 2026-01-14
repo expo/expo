@@ -4,6 +4,7 @@
 #import <CoreMotion/CoreMotion.h>
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXUtilities.h>
+#import <React/RCTLog.h>
 
 @implementation EXMotionPermissionRequester
 
@@ -21,7 +22,7 @@
     // Related: NSFallDetectionUsageDescription
     if (!(motionUsageDescription)) {
       // TODO: Make aware of plugins, FYI link.
-      EXFatal(EXErrorWithMessage(@"This app is missing the 'NSMotionUsageDescription' so CMPedometer services will fail. Ensure this key exist in the app's Info.plist."));
+      RCTFatal(RCTErrorWithMessage(@"This app is missing the 'NSMotionUsageDescription' so CMPedometer services will fail. Ensure this key exist in the app's Info.plist."));
       status = EXPermissionStatusDenied;
     } else {
       switch ([CMPedometer authorizationStatus]) {

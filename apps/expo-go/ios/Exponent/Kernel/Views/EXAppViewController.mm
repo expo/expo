@@ -368,7 +368,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        options:EXSplashScreenDefault
                                successCallback:^(BOOL hasEffect){}
                                failureCallback:^(NSString * _Nonnull message) {
-        EXLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
+        RCTLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
       }];
     });
   };
@@ -380,7 +380,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      options:EXSplashScreenDefault
                     splashScreenViewProvider:provider
                              successCallback:hideRootViewControllerSplashScreen
-                             failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
+                             failureCallback:^(NSString *message){ RCTLogWarn(@"%@", message); }];
   });
 }
 
@@ -400,7 +400,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      options:EXSplashScreenDefault
                       splashScreenController:self.managedSplashScreenController
                              successCallback:^{}
-                             failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
+                             failureCallback:^(NSString *message){ RCTLogWarn(@"%@", message); }];
   });
 
 }
