@@ -179,8 +179,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroServer | null = null;
   private hmrServer: MetroHmrServer<MetroHmrClient> | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
-  private inlineModulesFilesWatched = new Set<string>();
-  private directoryToPackage = new Map<string, string>();
   isReactServerComponentsEnabled?: boolean;
   isReactServerRoutesEnabled?: boolean;
 
@@ -1220,12 +1218,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
     }
 
-    // Need to generate the inline modules import files before creating metro instance
-    // so that these files are watched and there are no race conditions.
-    if (exp.experiments?.inlineModules) {
-      await this.inlineModulesGeneration();
-    }
-
     const instanceMetroOptions = {
       isExporting: !!options.isExporting,
       baseUrl,
@@ -1661,31 +1653,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       metro: this.metro,
       projectRoot: this.projectRoot,
     });
-  }
-
-  private async inlineModulesGeneration(): Promise<void> {
-    await generateMirrorDirectories(
-      this.projectRoot,
-      this.inlineModulesFilesWatched,
-      this.directoryToPackage
-    );
-  }
-
-  private async inlineModulesWatcherSetup(): Promise<void> {
-    const { projectRoot, metro } = this;
-    return startInlineModulesMetroWatcherAsync(
-      { projectRoot, metro },
-      this.inlineModulesFilesWatched,
-      this.directoryToPackage
-    );
-  }
-
-  protected async postStartAsync(options: BundlerStartOptions): Promise<void> {
-    await super.postStartAsync(options);
-    const { exp } = getConfig(this.projectRoot);
-    if (exp.experiments?.inlineModules) {
-      return this.inlineModulesWatcherSetup();
-    }
   }
 
   protected getConfigModuleIds(): string[] {

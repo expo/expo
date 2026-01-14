@@ -1,6 +1,5 @@
 import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
-import { CustomResolutionContext, Resolution } from '@expo/metro/metro-resolver/types';
 import { INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { FileStore } from './file-store';
 export interface DefaultConfigOptions {
@@ -25,7 +24,6 @@ export interface DefaultConfigOptions {
         debugId?: string;
     }) => Module[])[];
 }
-export declare function resolveInlineModules(projectRoot: string, directoryToPackage: Map<string, string>, context: CustomResolutionContext, moduleName: string, platform: string | null): Resolution;
 export declare function createStableModuleIdFactory(root: string): (path: string, context?: {
     platform: string;
     environment?: string | null;
@@ -46,7 +44,6 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
         assetExts: string[];
         sourceExts: string[];
         nodeModulesPaths: string[];
-        resolveRequest: import("@expo/metro/metro-resolver/types").CustomResolver;
         blockList: RegExp[];
     };
     cacheStores: FileStore<any>[];

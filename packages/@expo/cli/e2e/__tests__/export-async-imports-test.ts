@@ -27,11 +27,7 @@ afterAll(() => {
 it('runs `npx expo export -p web`', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync(
     'expo-28016-export-async-imports',
-    'with-circular-async-imports',
-    {
-      // TODO(@HubertBer): remove @expo/inline-modules after publishing
-      linkExpoPackages: ['@expo/inline-modules'],
-    }
+    'with-circular-async-imports'
   );
 
   // `npx expo export:web`
