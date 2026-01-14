@@ -235,29 +235,22 @@ const HMRClient: HMRClientNativeInterface = {
       }
     });
 
-    client.on('close', (closeEvent: { code: number; reason: string }) => {
+    client.on('close', (closeEvent?: { code: number; reason: string }) => {
       hideLoading();
-
+      const reason = closeEvent?.reason;
+      const code = closeEvent?.code || 1000;
       // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1
       // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.5
-      const isNormalOrUnsetCloseReason =
-        closeEvent == null ||
-        closeEvent.code === 1000 ||
-        closeEvent.code === 1005 ||
-        closeEvent.code == null;
-
-      setHMRUnavailableReason(
-        `${
-          isNormalOrUnsetCloseReason
-            ? 'Disconnected from Metro.'
-            : `Disconnected from Metro (${closeEvent.code}: "${closeEvent.reason}").`
-        }
-
-To reconnect:
-- Ensure that Metro is running and available on the same network
-- Reload this app (will trigger further help if Metro cannot be connected to)
-      `
-      );
+      const title =
+        reason && code !== 1000 && code !== 1001 && code !== 1005
+          ? `Disconnected from Metro (${code}: "${reason}")`
+          : `Disconnected from Metro (${code})`;
+      const message =
+        title +
+        '\nTo reconnect:' +
+        '\n- Ensure that Metro is running and available on the same network' +
+        '\n- Reload this app (will trigger further help if Metro cannot be connected to)';
+      setHMRUnavailableReason(message);
     });
 
     if (isEnabled) {
@@ -283,8 +276,13 @@ function setHMRUnavailableReason(reason: string) {
   // previously managed to connect successfully. We don't want to show
   // the warning to native engineers who use cached bundles without Metro.
   if (hmrClient.isEnabled() && didConnect) {
-    console.warn(reason);
-    // (Not using the `warning` module to prevent a Buck cycle.)
+    // NOTE(@kitten): The timeout works around a Firefox quirk
+    // In Firefox, unlike in Chrome, WebSockets fire a `close` event when a tab refreshes/navigates/closes, since this closes the WebSocket
+    // However, there's no good way to detect that this is happening or that the client initiated the `close` event
+    // To work around this, we schedule a timeout for our warning for 500ms which is long enough for this timer to never trigger
+    setTimeout(() => {
+      console.warn(reason);
+    }, 500);
   }
 }
 

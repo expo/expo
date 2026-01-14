@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent Firefox from showing Metro HMR disconnection warning on page refresh ([#41971](https://github.com/expo/expo/pull/41971) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 54.0.31 — 2026-01-06
