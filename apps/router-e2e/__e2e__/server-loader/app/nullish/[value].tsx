@@ -1,8 +1,10 @@
 import { useLoaderData, useLocalSearchParams, usePathname } from 'expo-router';
 import { ImmutableRequest } from 'expo-router/server';
-import { Container } from '../../components/Container';
-import { Table, TableRow } from '../../components/Table';
+import { Suspense } from 'react';
+
+import { Loading } from '../../components/Loading';
 import { SiteLinks, SiteLink } from '../../components/SiteLink';
+import { Table, TableRow } from '../../components/Table';
 
 export async function generateStaticParams(): Promise<Record<string, string>[]> {
   return [{ value: 'null' }, { value: 'undefined' }];
@@ -18,7 +20,15 @@ export async function loader(_: ImmutableRequest, params: { value: string }) {
   return { value: params.value };
 }
 
-export default function Nullish() {
+export default function NullishRoute() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <NullishScreen />
+    </Suspense>
+  );
+}
+
+const NullishScreen = () => {
   const pathname = usePathname();
   const { value } = useLocalSearchParams<{ value: string }>();
   const data = useLoaderData<typeof loader>();
@@ -27,7 +37,7 @@ export default function Nullish() {
   const displayType = data === null ? 'null' : typeof data;
 
   return (
-    <Container>
+    <>
       <Table>
         <TableRow label="Pathname" value={pathname} testID="pathname-result" />
         <TableRow label="Param Value" value={value} testID="param-result" />
@@ -39,6 +49,6 @@ export default function Nullish() {
         <SiteLink href="/nullish/null">Test Null</SiteLink>
         <SiteLink href="/nullish/undefined">Test Undefined</SiteLink>
       </SiteLinks>
-    </Container>
+    </>
   );
 }

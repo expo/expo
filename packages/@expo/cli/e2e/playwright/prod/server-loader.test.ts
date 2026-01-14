@@ -101,7 +101,7 @@ test.describe('server loader (SSR) in production', () => {
     await page.goto(expoServe.url.href);
     expect(loaderRequests).toHaveLength(0);
 
-    // Navigate to a route with loader - should fetch loader data
+    // Navigate to a route with loader
     await page.click('a[href="/posts/static-post-1"]');
     await page.waitForSelector('[data-testid="loader-result"]');
     expect(loaderRequests).toContainEqual(expect.stringContaining('/_expo/loaders/posts'));
@@ -159,13 +159,11 @@ test.describe('server loader (SSR) in production', () => {
 
     await page.click('a[href="/posts/static-post-1"]');
 
-    const loaderResult = page.locator('[data-testid="loader-result"]');
+    const suspenseFallback = await page.locator('[data-testid="suspense-fallback"]');
+    await expect(suspenseFallback).toBeVisible();
 
-    // In production, `<SuspenseFallback>` returns null, but we can verify the Suspense boundary is
-    // working by checking that content is not rendered during loading
-    await expect(loaderResult).not.toBeVisible({ timeout: 100 });
-
-    await expect(loaderResult).toBeVisible({ timeout: 1000 });
+    await page.waitForSelector('[data-testid="loader-result"]');
+    await expect(suspenseFallback).not.toBeVisible();
   });
 
   test('navigates from route without loader to route with loader', async ({ page }) => {

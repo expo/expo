@@ -135,7 +135,7 @@ test.describe('server loader in development', () => {
 
     await page.click('a[href="/posts/static-post-1"]');
 
-    const suspenseFallback = await page.locator('text=Bundling...');
+    const suspenseFallback = await page.locator('[data-testid="suspense-fallback"]');
     await expect(suspenseFallback).toBeVisible();
 
     await page.waitForSelector('[data-testid="loader-result"]');
