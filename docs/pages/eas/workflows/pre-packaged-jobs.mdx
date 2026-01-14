@@ -1095,8 +1095,9 @@ jobs:
     name: Send Test Results
     needs: [maestro_test]
     type: slack
+    environment: production
     params:
-      webhook_url: https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }} # make sure to set it up in the right environment (see "environment: ..." above)
       message: 'Tests complete: ${{ needs.maestro_test.outputs.successful_flows_count }}/${{ needs.maestro_test.outputs.total_flows_count }} passed'
 ```
 
