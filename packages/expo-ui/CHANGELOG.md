@@ -18,6 +18,7 @@
 - [iOS] Use constructor for `title` prop instead of a custom `Text` in `Section`. Replace `collapsible` prop with `isExpanded` prop ([#41722](https://github.com/expo/expo/pull/41722) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Remove `scrollEnabled` prop from Form. Use `scrollDisabled` modifier instead. ([#41728](https://github.com/expo/expo/pull/41728) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] - Replace `Progress` with `ProgressView` ([#42019](https://github.com/expo/expo/pull/42019) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Remove `Menu` specific APIs from `ContextMenu` ([#42027](https://github.com/expo/expo/pull/42027) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🎉 New features
 
