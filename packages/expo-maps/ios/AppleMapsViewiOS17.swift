@@ -31,6 +31,9 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
     state.lookAroundPresented = true
   }
 
+  // Selection is only available on iOS 18+
+  func setSelection(config: SelectionConfig) {}
+
   var body: some View {
     let properties = props.properties
     let uiSettings = props.uiSettings

@@ -48,6 +48,18 @@ struct CameraPosition: Record, Equatable {
   }
 }
 
+struct SelectOptions: Record {
+  @Field var zoom: Double?
+  @Field var moveCamera: Bool = true
+}
+
+struct SelectionConfig {
+  let mapItem: MKMapItem?
+  let coordinate: CLLocationCoordinate2D?
+  let zoom: Double?
+  let moveCamera: Bool
+}
+
 struct MapAnnotation: Record, Identifiable {
   @Field var id: String = UUID().uuidString
   @Field var coordinates: Coordinate
@@ -62,6 +74,14 @@ struct MapAnnotation: Record, Identifiable {
       latitude: coordinates.latitude,
       longitude: coordinates.longitude
     )
+  }
+
+  var mkPlacemark: MKPlacemark {
+    MKPlacemark(coordinate: clLocationCoordinate2D)
+  }
+
+  var mapItem: MKMapItem {
+    MKMapItem(placemark: mkPlacemark)
   }
 }
 
