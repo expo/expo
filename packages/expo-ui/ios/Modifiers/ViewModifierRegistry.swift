@@ -1768,5 +1768,21 @@ extension ViewModifierRegistry {
     register("gaugeStyle") { params, appContext, _ in
       return try GaugeStyleModifier(from: params, appContext: appContext)
     }
+
+    register("presentationDetents") { params, appContext, _ in
+      return try PresentationDetentsModifier(from: params, appContext: appContext)
+    }
+
+    register("presentationDragIndicator") { params, appContext, _ in
+      return try PresentationDragIndicatorModifier(from: params, appContext: appContext)
+    }
+
+    register("presentationBackgroundInteraction") { params, appContext, _ in
+      return try PresentationBackgroundInteractionModifier(from: params, appContext: appContext)
+    }
+
+    register("interactiveDismissDisabled") { params, appContext, _ in
+      return try InteractiveDismissDisabledModifier(from: params, appContext: appContext)
+    }
   }
 }
