@@ -66,14 +66,15 @@ function createEnvironment(input) {
     }
     async function executeLoader(request, route) {
         if (!route.loader) {
-            return null;
+            return undefined;
         }
         const loaderModule = (await input.loadModule(route.loader));
         if (!loaderModule?.loader) {
-            return null;
+            return undefined;
         }
         const params = (0, matchers_1.parseParams)(request, route);
-        return loaderModule.loader({ params, request });
+        const data = await loaderModule.loader({ params, request });
+        return { data: data === undefined ? {} : data };
     }
     return {
         async getRoutesManifest() {
@@ -85,16 +86,10 @@ function createEnvironment(input) {
             if (renderer) {
                 let renderOptions;
                 try {
-                    const data = await executeLoader(request, route);
-                    if (data !== null) {
-                        renderOptions = { loader: { data } };
+                    const loaderResult = await executeLoader(request, route);
+                    if (loaderResult) {
+                        renderOptions = { loader: { data: loaderResult.data } };
                     }
-                }
-                catch (error) {
-                    console.error('Loader error:', error);
-                    throw error;
-                }
-                try {
                     return await renderer(request, renderOptions);
                 }
                 catch (error) {

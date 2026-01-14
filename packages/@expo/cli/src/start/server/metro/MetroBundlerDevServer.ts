@@ -470,7 +470,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       route: RouteNode,
       opts?: GetStaticContentOptions
     ) => Promise<string>;
-    executeLoaderAsync: (path: string, route: RouteNode) => Promise<any>;
+    executeLoaderAsync: (path: string, route: RouteNode) => Promise<{ data: unknown } | undefined>;
   }> {
     const { routerRoot } = this.instanceMetroOptions;
     assert(
@@ -522,7 +522,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           return undefined;
         }
 
-        return await this.executeServerDataLoaderAsync(location, resolvedLoaderRoute);
+        return this.executeServerDataLoaderAsync(location, resolvedLoaderRoute);
       },
     };
   }
@@ -629,8 +629,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         return await getStaticContent(location);
       }
 
-      const data = await this.executeServerDataLoaderAsync(location, resolvedLoaderRoute);
-      return await getStaticContent(location, { loader: { data } });
+      const loaderResult = await this.executeServerDataLoaderAsync(location, resolvedLoaderRoute);
+      if (!loaderResult) {
+        return await getStaticContent(location);
+      }
+      return await getStaticContent(location, { loader: { data: loaderResult.data } });
     };
 
     const [{ artifacts: resources }, staticHtml] = await Promise.all([
@@ -1694,7 +1697,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async executeServerDataLoaderAsync(
     location: URL,
     route: ResolvedLoaderRoute
-  ): Promise<Record<string, any> | undefined> {
+  ): Promise<{ data: unknown } | undefined> {
     const { exp } = getConfig(this.projectRoot);
     const { unstable_useServerDataLoaders } = exp.extra?.router;
 
@@ -1710,7 +1713,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       routerRoot != null,
       'The server must be started before calling executeRouteLoaderAsync.'
     );
-    let loaderData: Record<string, any> | undefined;
 
     try {
       debug(`Matched ${location.pathname} to file: ${route.file}`);
@@ -1731,21 +1733,25 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // Register this module for loader HMR
         this.setupLoaderHmr(modulePath);
 
-        loaderData = await routeModule.loader({
+        const data = await routeModule.loader({
           params: route.params,
           // NOTE(@hassankhan): The `request` object is only available when using SSR
           request: null,
         });
+
+        const normalizedData = data === undefined ? {} : data;
+        debug('Loader data:', normalizedData, ' for location:', location.pathname);
+        return { data: normalizedData };
       }
+
+      debug('No loader found for location:', location.pathname);
+      return undefined;
     } catch (error: any) {
       throw new CommandError(
         'LOADER_EXECUTION_FAILED',
         `Failed to execute loader for route "${location.pathname}": ${error.message}`
       );
     }
-
-    debug('Loader data:', loaderData, ' for location:', location.pathname);
-    return loaderData;
   }
 
   /**

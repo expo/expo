@@ -17,7 +17,10 @@ export class DataLoaderModuleMiddleware extends ExpoMiddleware {
   constructor(
     protected projectRoot: string,
     protected appDir: string,
-    private executeServerDataLoaderAsync: (url: URL, route: RouteInfo<RegExp>) => Promise<any>,
+    private executeServerDataLoaderAsync: (
+      url: URL,
+      route: RouteInfo<RegExp>
+    ) => Promise<{ data: unknown } | undefined>,
     private getDevServerUrl: () => string
   ) {
     super(projectRoot, [LOADER_MODULE_ENDPOINT]);
@@ -69,19 +72,25 @@ export class DataLoaderModuleMiddleware extends ExpoMiddleware {
         throw new Error(`No matching route for ${routePath}`);
       }
 
-      const loaderData = await this.executeServerDataLoaderAsync(
+      const loaderResult = await this.executeServerDataLoaderAsync(
         new URL(routePath, this.getDevServerUrl()),
         matchingRoute
       );
 
-      res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+      if (!loaderResult) {
+        res.statusCode = 404;
+        res.end();
+        return;
+      }
+
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
       res.setHeader('Cache-Control', 'no-cache');
       res.statusCode = 200;
-      res.end(JSON.stringify(loaderData ?? {}));
+      res.end(JSON.stringify(loaderResult.data));
     } catch (error) {
       console.error(`Failed to generate loader module for ${pathname}:`, error);
       res.statusCode = 500;
-      res.end(`{}`);
+      res.end();
     }
   }
 }
