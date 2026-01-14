@@ -20,6 +20,7 @@ import {
   presentationBackgroundInteraction,
   interactiveDismissDisabled,
   tag,
+  foregroundStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import type { PresentationDetent } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
@@ -82,7 +83,9 @@ export default function BottomSheetScreen() {
         </Section>
 
         <Section title="Fits Content">
-          <Text color="secondaryLabel">Sheet automatically sizes to fit its content</Text>
+          <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+            Sheet automatically sizes to fit its content
+          </Text>
           <Button label="Open Fits Content Sheet" onPress={() => setShowFitsContent(true)} />
         </Section>
 
@@ -115,7 +118,9 @@ export default function BottomSheetScreen() {
         </Section>
 
         <Section title="React Native Content">
-          <Text color="secondaryLabel">Sheet with React Native views inside</Text>
+          <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+            Sheet with React Native views inside
+          </Text>
           <Button label="Open RN Content Sheet" onPress={() => setShowRNContent(true)} />
         </Section>
         <Section title="React Native Content with flex 1 children">
@@ -131,7 +136,9 @@ export default function BottomSheetScreen() {
         <Group modifiers={[presentationDetents(['medium', 'large'])]}>
           <VStack modifiers={[padding({ all: 20 })]}>
             <Text>Basic Bottom Sheet</Text>
-            <Text color="secondaryLabel">Swipe down or tap outside to dismiss</Text>
+            <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+              Swipe down or tap outside to dismiss
+            </Text>
             <Button label="Close" onPress={() => setShowBasic(false)} />
           </VStack>
         </Group>
@@ -145,7 +152,9 @@ export default function BottomSheetScreen() {
         <Group>
           <VStack modifiers={[padding({ all: 20 })]}>
             <Text>Fits Content Sheet</Text>
-            <Text color="secondaryLabel">This sheet sizes to fit its content automatically</Text>
+            <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+              This sheet sizes to fit its content automatically
+            </Text>
             <Button label="Close" onPress={() => setShowFitsContent(false)} />
           </VStack>
         </Group>
@@ -156,14 +165,18 @@ export default function BottomSheetScreen() {
         <Group modifiers={configuredModifiers}>
           <VStack modifiers={[padding({ all: 20 }), frame({ minHeight: 200 })]}>
             <Text>Configured Sheet</Text>
-            <Text color="secondaryLabel">
+            <Text modifiers={[foregroundStyle('secondaryLabel')]}>
               Detents: {configuredDetents.map(formatDetent).join(', ')}
             </Text>
-            <Text color="secondaryLabel">Drag Indicator: {dragIndicator}</Text>
-            <Text color="secondaryLabel">
+            <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+              Drag Indicator: {dragIndicator}
+            </Text>
+            <Text modifiers={[foregroundStyle('secondaryLabel')]}>
               Background Interaction: {backgroundInteractionEnabled ? 'enabled' : 'disabled'}
             </Text>
-            <Text color="secondaryLabel">Dismiss: {dismissDisabled ? 'disabled' : 'enabled'}</Text>
+            <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+              Dismiss: {dismissDisabled ? 'disabled' : 'enabled'}
+            </Text>
             <Button label="Close" onPress={() => setShowConfigured(false)} />
           </VStack>
         </Group>
