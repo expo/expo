@@ -55,8 +55,7 @@ import ExpoModulesCore
 
 #if !os(macOS)
     navigationController?.setNavigationBarHidden(true, animated: false)
-#endif
     hostingController.didMove(toParent: self)
-
+#endif
   }
 }
