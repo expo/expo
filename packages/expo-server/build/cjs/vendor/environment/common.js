@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createEnvironment = createEnvironment;
+const ImmutableRequest_1 = require("../../ImmutableRequest");
 const matchers_1 = require("../../utils/matchers");
 function initManifestRegExp(manifest) {
     return {
@@ -73,7 +74,7 @@ function createEnvironment(input) {
             throw new Error(`Loader module not found at: ${route.loader}`);
         }
         const params = (0, matchers_1.parseParams)(request, route);
-        const data = await loaderModule.loader({ params, request });
+        const data = await loaderModule.loader({ params, request: new ImmutableRequest_1.ImmutableRequest(request) });
         return { data: data === undefined ? {} : data };
     }
     return {

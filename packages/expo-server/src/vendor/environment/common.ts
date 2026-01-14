@@ -1,3 +1,4 @@
+import { ImmutableRequest } from '../../ImmutableRequest';
 import type { Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
 import type { LoaderModule, RenderOptions, ServerRenderModule, SsrRenderFn } from '../../rendering';
 import { parseParams } from '../../utils/matchers';
@@ -94,7 +95,7 @@ export function createEnvironment(input: EnvironmentInput) {
     }
 
     const params = parseParams(request, route);
-    const data = await loaderModule.loader({ params, request });
+    const data = await loaderModule.loader({ params, request: new ImmutableRequest(request) });
     return { data: data === undefined ? {} : data };
   }
 
