@@ -1,7 +1,7 @@
 import { type CommonViewModifierProps } from '../types';
 export interface ForEachProps<T> extends CommonViewModifierProps {
     /**
-     * Render function that receives each item and its index.
+     * The children elements to be rendered inside the foreach.
      */
     children: React.ReactNode;
     /**
@@ -18,8 +18,7 @@ export interface ForEachProps<T> extends CommonViewModifierProps {
     onMove?: (sourceIndices: number[], destination: number) => void;
 }
 /**
- * A component that creates views from a collection of data, supporting delete, move, and selection operations.
- * Use this inside a `List` component to enable swipe-to-delete, drag-to-reorder, and multi-selection.
+ * A component that renders its children using a native SwiftUI ForEach.
  */
 export declare function ForEach<T>({ children, onDelete, onMove, ...props }: ForEachProps<T>): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

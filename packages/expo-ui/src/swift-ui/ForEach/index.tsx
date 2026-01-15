@@ -25,7 +25,7 @@ type NativeForEachProps = CommonViewModifierProps &
 
 export interface ForEachProps<T> extends CommonViewModifierProps {
   /**
-   * Render function that receives each item and its index.
+   * The children elements to be rendered inside the foreach.
    */
   children: React.ReactNode;
 
@@ -45,8 +45,7 @@ export interface ForEachProps<T> extends CommonViewModifierProps {
 }
 
 /**
- * A component that creates views from a collection of data, supporting delete, move, and selection operations.
- * Use this inside a `List` component to enable swipe-to-delete, drag-to-reorder, and multi-selection.
+ * A component that renders its children using a native SwiftUI ForEach.
  */
 export function ForEach<T>({ children, onDelete, onMove, ...props }: ForEachProps<T>) {
   return (
