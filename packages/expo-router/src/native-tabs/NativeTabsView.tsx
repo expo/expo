@@ -4,7 +4,6 @@ import { View, type ColorValue } from 'react-native';
 import {
   BottomTabs,
   BottomTabsScreen,
-  featureFlags,
   type BottomTabsProps,
   type BottomTabsScreenAppearance,
 } from 'react-native-screens';
@@ -29,10 +28,6 @@ import {
 } from './utils/icon';
 import { getFirstChildOfType } from '../utils/children';
 import { useBottomAccessoryFunctionFromBottomAccessories } from './utils/bottomAccessory';
-
-// We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
-// Otherwise user may see glitches when switching between tabs.
-featureFlags.experiment.controlledBottomTabs = false;
 
 export function NativeTabsView(props: NativeTabsViewProps) {
   const {
