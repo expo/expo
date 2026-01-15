@@ -98,8 +98,8 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
                     // NOTE(@hassankhan): Relocate the request rewriting logic from here
                     url.pathname = matchedPath;
                     const loaderRequest = new Request(url, request);
-                    const data = await getLoaderData(loaderRequest, route);
-                    return createResponse('api', route, JSON.stringify(data), {
+                    const loaderResult = await getLoaderData(loaderRequest, route);
+                    return createResponse('api', route, JSON.stringify(loaderResult?.data), {
                         status: 200,
                         headers: new Headers({
                             'Content-Type': 'application/json',

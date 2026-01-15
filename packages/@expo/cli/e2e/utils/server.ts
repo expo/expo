@@ -14,7 +14,13 @@ import {
   waitForProcessReady,
 } from './process';
 
-export type BackgroundServerOptions = SpawnOptions & {
+// SpawnOptions requires a complete `env` object if provided.
+// This allows passing only specific env vars (like PORT) without needing to include NODE_ENV.
+interface ExpoSpawnOptions extends Omit<SpawnOptions, 'env'> {
+  env?: Partial<NodeJS.ProcessEnv>;
+}
+
+export type BackgroundServerOptions = ExpoSpawnOptions & {
   /**
    * The command to spawn as background process.
    * You can also provide a function that receives the configured port.
@@ -44,7 +50,7 @@ export type BackgroundServerOptions = SpawnOptions & {
 };
 
 export type BackgroundServer = {
-  options: SpawnOptions;
+  options: ExpoSpawnOptions;
   readonly process: ChildProcess;
   readonly url: URL;
   /** Fetch using URL pathnames from the server, the full URL of the server will be added */

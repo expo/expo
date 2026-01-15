@@ -15,6 +15,7 @@ const server :Workerd.Worker = (
     (name = "_expo/loaders/env.js", commonJsModule = embed "_expo/loaders/env.js"),
     (name = "_expo/loaders/second.js", commonJsModule = embed "_expo/loaders/second.js"),
     (name = "_expo/loaders/posts/[postId].js", commonJsModule = embed "_expo/loaders/posts/[postId].js"),
+    (name = "_expo/loaders/nullish/[value].js", commonJsModule = embed "_expo/loaders/nullish/[value].js"),
   ],
   bindings = [
     (name = "TEST_SECRET_KEY", text = "test-secret-key"),

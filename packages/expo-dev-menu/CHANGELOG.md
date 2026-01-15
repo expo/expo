@@ -17,6 +17,8 @@
 - [iOS] remove unnecessary `unregisterKeyCommand` for cmd+r ([#41449](https://github.com/expo/expo/pull/41449) by [@vonovak](https://github.com/vonovak))
 - [Android] Prevent some debug only artifacts from being included in release builds. ([#41378](https://github.com/expo/expo/pull/41378) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Fix menu is not showing on launch when `ReactContext` was initialized. ([#42123](https://github.com/expo/expo/pull/42123) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix bottom sheet expanding to full height when closing onboarding. ([#42173](https://github.com/expo/expo/pull/42173) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix three finger long press gesture not opening the dev menu. ([#42179](https://github.com/expo/expo/pull/42179) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
