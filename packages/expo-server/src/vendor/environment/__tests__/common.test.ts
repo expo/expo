@@ -459,14 +459,14 @@ describe('getLoaderData', () => {
       })
     );
 
-    expect(result).toEqual(loaderData);
+    expect(result).toEqual({ data: loaderData });
     expect(loaderModule.loader).toHaveBeenCalledWith({
       params: {},
       request: expect.any(Request),
     });
   });
 
-  it('returns null when route has no loader', async () => {
+  it('returns `undefined` when route has no loader', async () => {
     const input = createMockInput();
     const env = createEnvironment(input);
 
@@ -479,10 +479,10 @@ describe('getLoaderData', () => {
       })
     );
 
-    expect(result).toBeNull();
+    expect(result).toBeUndefined();
   });
 
-  it('returns null when loader module has no loader function', async () => {
+  it('returns `undefined` when loader module has no loader function', async () => {
     const loaderModule = { someOtherExport: 'value' };
     const input = createMockInput({
       modules: { '_expo/loaders/broken.js': loaderModule },
@@ -499,7 +499,7 @@ describe('getLoaderData', () => {
       })
     );
 
-    expect(result).toBeNull();
+    expect(result).toBeUndefined();
   });
 
   it('parses params correctly for dynamic routes', async () => {
@@ -524,6 +524,46 @@ describe('getLoaderData', () => {
       params: { id: '123' },
       request: expect.any(Request),
     });
+  });
+
+  it('normalizes `undefined` loader result to `{}`', async () => {
+    const loaderModule = { loader: jest.fn().mockResolvedValue(undefined) };
+    const input = createMockInput({
+      modules: { '_expo/loaders/undefined-route.js': loaderModule },
+    });
+    const env = createEnvironment(input);
+
+    const result = await env.getLoaderData(
+      new Request('http://localhost/undefined-route'),
+      createMockRoute({
+        file: './undefined-route.tsx',
+        page: '/undefined-route',
+        namedRegex: new RegExp('^/undefined-route(?:/)?$'),
+        loader: '_expo/loaders/undefined-route.js',
+      })
+    );
+
+    expect(result).toEqual({ data: {} });
+  });
+
+  it('passes through `null` loader result as `null`', async () => {
+    const loaderModule = { loader: jest.fn().mockResolvedValue(null) };
+    const input = createMockInput({
+      modules: { '_expo/loaders/null-route.js': loaderModule },
+    });
+    const env = createEnvironment(input);
+
+    const result = await env.getLoaderData(
+      new Request('http://localhost/null-route'),
+      createMockRoute({
+        file: './null-route.tsx',
+        page: '/null-route',
+        namedRegex: new RegExp('^/null-route(?:/)?$'),
+        loader: '_expo/loaders/null-route.js',
+      })
+    );
+
+    expect(result).toEqual({ data: null });
   });
 });
 

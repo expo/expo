@@ -344,6 +344,8 @@ PODS:
     - ExpoModulesCore
   - ExpoBrightness (14.0.7):
     - ExpoModulesCore
+  - ExpoBrownfield (0.0.1):
+    - ExpoModulesCore
   - ExpoCalendar (15.0.7):
     - ExpoModulesCore
   - ExpoCamera (17.0.8):
@@ -3131,6 +3133,7 @@ DEPENDENCIES:
   - ExpoBlob (from `../../../packages/expo-blob/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoBrightness (from `../../../packages/expo-brightness/ios`)
+  - ExpoBrownfield (from `../../../packages/expo-brownfield/ios`)
   - ExpoCalendar (from `../../../packages/expo-calendar/ios`)
   - ExpoCamera (from `../../../packages/expo-camera/ios`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
@@ -3374,6 +3377,9 @@ EXTERNAL SOURCES:
   ExpoBrightness:
     inhibit_warnings: false
     :path: "../../../packages/expo-brightness/ios"
+  ExpoBrownfield:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-brownfield/ios"
   ExpoCalendar:
     inhibit_warnings: false
     :path: "../../../packages/expo-calendar/ios"
@@ -3759,6 +3765,7 @@ SPEC CHECKSUMS:
   ExpoBlob: e49626a466984cca4ee809628e171041c2d89bc0
   ExpoBlur: b5b7a26572b3c33a11f0b2aa2f95c17c4c393b76
   ExpoBrightness: 7c3c86da46b847aadf44401bd28fb6d67050f324
+  ExpoBrownfield: 555f04c0a3ad45ffdb7da4a02ada4598768deffb
   ExpoCalendar: 46ad51c48d2cb1a95439c2215b182428919a0c3d
   ExpoCamera: 442bbbbd75d73d17f3a972b269efe7595b9b6933
   ExpoCellular: 539c6092e755f7b2c37d80f18d9c1f3d7f09e4ab

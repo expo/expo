@@ -10,6 +10,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.HMRClient
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.devmenu.DevMenuSettings
 import expo.modules.devmenu.api.DevMenuApi
 import expo.modules.devmenu.compose.DevMenuAction
 import expo.modules.devmenu.websockets.DevMenuMetroClient
@@ -62,7 +63,9 @@ class DevMenuDevToolsDelegate(
     val devSettings = devSettings ?: return
     val context = context ?: return
 
-    requestOverlaysPermission(context)
+    if (DevMenuSettings.performanceMonitorNeedsOverlayPermission) {
+      requestOverlaysPermission(context)
+    }
     devSupportManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
   }
 
