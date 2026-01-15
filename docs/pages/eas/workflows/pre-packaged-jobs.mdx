@@ -1016,6 +1016,21 @@ You can pass the following parameters into the `params` list:
 
 > **important** You need to either set `maestro_api_key` parameter or `MAESTRO_CLOUD_API_KEY` environment variable in the job environment. Go to "Settings" on [Maestro Cloud](https://app.maestro.dev/) to generate an API key and then to [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) to add it to your project.
 
+#### Outputs
+
+You can reference the following outputs in subsequent jobs:
+
+| Output                      | Type   | Description                                                                  |
+| --------------------------- | ------ | ---------------------------------------------------------------------------- |
+| maestro_cloud_url           | string | URL to the Maestro Cloud upload results page.                                |
+| total_flows_count           | number | Total number of flows that were executed.                                    |
+| successful_flows_count      | number | Number of flows that completed successfully (status SUCCESS or WARNING).     |
+| failed_flows_count          | number | Number of flows that failed (status ERROR or STOPPED).                       |
+| successful_flow_names_json  | string | JSON array containing the names of successful flows.                         |
+| failed_flow_names_json      | string | JSON array containing the names of failed flows.                             |
+
+> **Note:** When using `async: true` mode, only the `maestro_cloud_url` output is guaranteed to be valid. Other outputs (flow counts and flow names) may be invalid or empty because the job does not wait for the upload to complete and the flows have not been executed yet.
+
 ### Examples
 
 Here are some practical examples of using the Maestro job:
@@ -1057,6 +1072,35 @@ jobs:
       build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
       maestro_project_id: proj_01jw6hxgmdffrbye9fqn0pyzm0
       flows: ./maestro/flows
+```
+
+</Collapsible>
+
+<Collapsible summary="Using Maestro Cloud outputs in subsequent jobs">
+
+This workflow runs Maestro Cloud tests and then uses the test results in a Slack notification.
+
+```yaml .eas/workflows/maestro-with-notification.yml
+name: Maestro Cloud with Notification
+
+jobs:
+  maestro_test:
+    name: Run Maestro Cloud Tests
+    type: maestro-cloud
+    environment: preview
+    params:
+      build_id: ${{ needs.build.outputs.build_id }}
+      maestro_project_id: proj_xyz
+      flows: ./maestro/flows
+
+  notify:
+    name: Send Test Results
+    after: [maestro_test]
+    type: slack
+    environment: production
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }} # make sure to set it up in the right environment (see "environment: ..." above)
+      message: 'Tests complete: ${{ after.maestro_test.outputs.successful_flows_count }}/${{ after.maestro_test.outputs.total_flows_count }} passed'
 ```
 
 </Collapsible>
