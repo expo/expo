@@ -1,4 +1,4 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import { validate, type JSONSchema } from '@expo/schema-utils';
 import semver from 'semver';
 
 /**
@@ -595,7 +595,8 @@ export interface PluginConfigTypeAndroidQueriesData {
   mimeType?: string;
 }
 
-const schema: JSONSchemaType<PluginConfigType> = {
+const schema: JSONSchema<PluginConfigType> = {
+  title: 'expo-build-properties',
   type: 'object',
   properties: {
     buildReactNativeFromSource: { type: 'boolean', nullable: true },
@@ -843,7 +844,6 @@ function maybeThrowInvalidVersions(config: PluginConfigType) {
  * @ignore
  */
 export function validateConfig(config: any): PluginConfigType {
-  const validate = new Ajv({ allowUnionTypes: true }).compile(schema);
   // handle deprecated enableProguardInReleaseBuilds
   if (
     config.android?.enableProguardInReleaseBuilds !== undefined &&
@@ -851,10 +851,8 @@ export function validateConfig(config: any): PluginConfigType {
   ) {
     config.android.enableMinifyInReleaseBuilds = config.android.enableProguardInReleaseBuilds;
   }
-  if (!validate(config)) {
-    throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
-  }
 
+  validate(schema, config);
   maybeThrowInvalidVersions(config);
 
   if (
