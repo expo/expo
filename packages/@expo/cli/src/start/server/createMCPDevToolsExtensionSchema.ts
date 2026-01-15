@@ -101,6 +101,14 @@ export function createMCPDevToolsExtensionSchema(plugin: DevToolsPlugin) {
   const schema = z
     .object({
       command: z.enum(commandNames).describe(commandDescription),
+      appId: z
+        .string()
+        .optional()
+        .describe(
+          'Optional. The application ID to target (e.g. "dev.expo.myapp"). ' +
+            'Use the expo-cli-apps tool to list connected apps and their appId values. ' +
+            'If not provided, the first connected app is used.'
+        ),
       ...allParameters,
     })
     .strict(); // .strict() adds additionalProperties: false
