@@ -282,9 +282,6 @@ class ContactRepository(val contentResolver: ContentResolver) {
     contactId: ContactId
   ): RawContactId? = withContext(Dispatchers.IO) {
     val selectionBuilder = StringBuilder("${ContactsContract.RawContacts.CONTACT_ID}=?")
-    // Currently only modifying a local account is supported
-    selectionBuilder.append(" AND ${ContactsContract.RawContacts.ACCOUNT_TYPE} IS NULL")
-    selectionBuilder.append(" AND ${ContactsContract.RawContacts.ACCOUNT_NAME} IS NULL")
 
     contentResolver.queryOne(
       uri = ContactsContract.RawContacts.CONTENT_URI,

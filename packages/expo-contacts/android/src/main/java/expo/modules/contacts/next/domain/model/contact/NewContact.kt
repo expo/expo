@@ -12,9 +12,7 @@ data class NewContact(
   fun toInsertOperations() = buildList {
     add(
       ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
-        .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
-        .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
-        .withValue(ContactsContract.RawContacts.STARRED, starred)
+        .withValue(ContactsContract.RawContacts.STARRED, starred.value)
         .build()
     )
     addAll(modelsToInsert.map { it.toInsertOperation() })
