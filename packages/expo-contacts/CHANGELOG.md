@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix updating contact with existing image ([#42133](https://github.com/expo/expo/pull/42133) by [@Wenszel](https://github.com/wenszel))
+
 ### 💡 Others
 
 - Added contact image uri validation. ([#39658](https://github.com/expo/expo/pull/39658) by [@hryhoriiK97](https://github.com/hryhoriiK97))
