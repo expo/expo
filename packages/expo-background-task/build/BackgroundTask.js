@@ -1,4 +1,5 @@
 import { isRunningInExpoGo } from 'expo';
+import { startCliListenerAsync } from 'expo/devtools';
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 import * as TaskManager from 'expo-task-manager';
 import { BackgroundTaskStatus } from './BackgroundTask.types';
@@ -136,6 +137,34 @@ export function addExpirationListener(listener) {
     }
     return ExpoBackgroundTaskModule.addListener('onTasksExpired', listener);
 }
+const PLUGIN_NAME = 'expo-background-task-cli-extension';
+const GET_REGISTERED_TASKS = 'getRegisteredBackgroundTasks';
+const TRIGGER_TASKS = 'triggerBackgroundTasks';
+startCliListenerAsync(PLUGIN_NAME)
+    .then(({ addMessageListener }) => {
+    // Handle the trigger background tasks request
+    addMessageListener(TRIGGER_TASKS, async ({ sendResponseAsync }) => {
+        const tasks = await TaskManager.getRegisteredTasksAsync();
+        if (tasks.length === 0) {
+            await sendResponseAsync('No background tasks registered to trigger.');
+            return;
+        }
+        // Trigger the background tasks
+        await triggerTaskWorkerForTestingAsync();
+        await sendResponseAsync(`${tasks.length} tasks triggered successfully.`);
+    });
+    // Handle the get registered tasks request
+    addMessageListener(GET_REGISTERED_TASKS, async ({ sendResponseAsync }) => {
+        const tasks = await TaskManager.getRegisteredTasksAsync();
+        const message = tasks.length === 0
+            ? 'No background tasks registered.'
+            : `${tasks.length} task(s): ${tasks.map((task) => `"${task.taskName}"`).join(', ')}.`;
+        await sendResponseAsync(message);
+    });
+})
+    .catch((error) => {
+    console.error('Failed to start app listeners for expo-backgroundtask-devtools-plugin:', error);
+});
 // Export types
 export { BackgroundTaskStatus, BackgroundTaskResult, } from './BackgroundTask.types';
 //# sourceMappingURL=BackgroundTask.js.map
