@@ -1,0 +1,64 @@
+import { requireNativeView } from 'expo';
+
+import { type ViewEvent } from '../../types';
+import { type CommonViewModifierProps } from '../types';
+
+const ForEachNativeView: React.ComponentType<NativeForEachProps> =
+  requireNativeView<NativeForEachProps>('ExpoUI', 'ForEachView');
+
+/**
+ * Event triggered when items are deleted from the list.
+ */
+type DeleteEvent = ViewEvent<'onDelete', { indices: number[] }>;
+
+/**
+ * Event triggered when items are moved within the list.
+ */
+type MoveEvent = ViewEvent<'onMove', { sourceIndices: number[]; destination: number }>;
+
+type NativeForEachProps = CommonViewModifierProps &
+  DeleteEvent &
+  MoveEvent & {
+    ids?: string[];
+    children: React.ReactNode;
+  };
+
+export interface ForEachProps<T> extends CommonViewModifierProps {
+  /**
+   * Render function that receives each item and its index.
+   */
+  children: React.ReactNode;
+
+  /**
+   * Callback triggered when items are deleted.
+   * Receives an array of indices that were deleted.
+   * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/dynamicviewcontent/ondelete(perform:)).
+   */
+  onDelete?: (indices: number[]) => void;
+
+  /**
+   * Callback triggered when items are moved.
+   * Receives the source indices and destination index.
+   * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/dynamicviewcontent/onmove(perform:)).
+   */
+  onMove?: (sourceIndices: number[], destination: number) => void;
+}
+
+/**
+ * A component that creates views from a collection of data, supporting delete, move, and selection operations.
+ * Use this inside a `List` component to enable swipe-to-delete, drag-to-reorder, and multi-selection.
+ */
+export function ForEach<T>({ children, onDelete, onMove, ...props }: ForEachProps<T>) {
+  return (
+    <ForEachNativeView
+      {...props}
+      onDelete={onDelete ? ({ nativeEvent }) => onDelete(nativeEvent.indices) : undefined}
+      onMove={
+        onMove
+          ? ({ nativeEvent }) => onMove(nativeEvent.sourceIndices, nativeEvent.destination)
+          : undefined
+      }>
+      {children}
+    </ForEachNativeView>
+  );
+}

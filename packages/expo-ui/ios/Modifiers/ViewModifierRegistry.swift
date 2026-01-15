@@ -1768,5 +1768,13 @@ extension ViewModifierRegistry {
     register("listStyle") { params, appContext, _ in
       return try ListStyleModifier(from: params, appContext: appContext)
     }
+
+    register("moveDisabled") { params, appContext, _ in
+      return try MoveDisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("deleteDisabled") { params, appContext, _ in
+      return try DeleteDisabledModifier(from: params, appContext: appContext)
+    }
   }
 }

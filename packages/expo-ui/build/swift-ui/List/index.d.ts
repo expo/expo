@@ -1,21 +1,6 @@
 import { type CommonViewModifierProps } from '../types';
 export interface ListProps extends CommonViewModifierProps {
     /**
-     * Allows the selection of list items.
-     * @default false
-     */
-    selectEnabled?: boolean;
-    /**
-     * Enables reordering of list items.
-     * @default false
-     */
-    moveEnabled?: boolean;
-    /**
-     * Allows the deletion of list items.
-     * @default false
-     */
-    deleteEnabled?: boolean;
-    /**
      * Enables SwiftUI edit mode.
      * @default false
      */
@@ -24,14 +9,6 @@ export interface ListProps extends CommonViewModifierProps {
      * The children elements to be rendered inside the list.
      */
     children: React.ReactNode;
-    /**
-     * Callback triggered when an item is deleted from the list.
-     */
-    onDeleteItem?: (index: number) => void;
-    /**
-     * Callback triggered when an item is moved in the list.
-     */
-    onMoveItem?: (from: number, to: number) => void;
     /**
      * Callback triggered when the selection changes in a list.
      */

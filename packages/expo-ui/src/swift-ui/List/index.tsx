@@ -15,31 +15,11 @@ function transformListProps(props: Omit<ListProps, 'children'>): Omit<NativeList
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
-    onDeleteItem: ({ nativeEvent: { index } }) => props?.onDeleteItem?.(index),
-    onMoveItem: ({ nativeEvent: { from, to } }) => props?.onMoveItem?.(from, to),
     onSelectionChange: ({ nativeEvent: { selection } }) => props?.onSelectionChange?.(selection),
   };
 }
 
 export interface ListProps extends CommonViewModifierProps {
-  /**
-   * Allows the selection of list items.
-   * @default false
-   */
-  selectEnabled?: boolean;
-
-  /**
-   * Enables reordering of list items.
-   * @default false
-   */
-  moveEnabled?: boolean;
-
-  /**
-   * Allows the deletion of list items.
-   * @default false
-   */
-  deleteEnabled?: boolean;
-
   /**
    * Enables SwiftUI edit mode.
    * @default false
@@ -52,37 +32,17 @@ export interface ListProps extends CommonViewModifierProps {
   children: React.ReactNode;
 
   /**
-   * Callback triggered when an item is deleted from the list.
-   */
-  onDeleteItem?: (index: number) => void;
-
-  /**
-   * Callback triggered when an item is moved in the list.
-   */
-  onMoveItem?: (from: number, to: number) => void;
-
-  /**
    * Callback triggered when the selection changes in a list.
    */
   onSelectionChange?: (selection: number[]) => void;
 }
 
 /**
- * DeleteItemEvent represents an event triggered when an item is deleted from the list.
- */
-type DeleteItemEvent = ViewEvent<'onDeleteItem', { index: number }>;
-/**
- * MoveItemEvent represents an event triggered when an item is moved in the list.
- */
-type MoveItemEvent = ViewEvent<'onMoveItem', { from: number; to: number }>;
-/**
  * SelectItemEvent represents an event triggered when the selection changes in a list.
  */
 type SelectItemEvent = ViewEvent<'onSelectionChange', { selection: number[] }>;
 
-type NativeListProps = Omit<ListProps, 'onDeleteItem' | 'onMoveItem' | 'onSelectionChange'> &
-  DeleteItemEvent &
-  MoveItemEvent &
+type NativeListProps = Omit<ListProps, 'onSelectionChange'> &
   SelectItemEvent & {
     children: React.ReactNode;
   };
