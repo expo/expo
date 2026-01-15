@@ -159,23 +159,23 @@ export async function loadMetroConfigAsync(
   if (env.EXPO_METRO_CACHE_STORES_DIR) {
     const { FileStore } = require('@expo/metro-config/file-store');
 
-    // Resolve relative paths to absolute paths based on current working directory
+    // Resolve relative paths to absolute paths based on project root
     const cacheStoresDir = path.isAbsolute(env.EXPO_METRO_CACHE_STORES_DIR)
       ? env.EXPO_METRO_CACHE_STORES_DIR
-      : path.resolve(process.cwd(), env.EXPO_METRO_CACHE_STORES_DIR);
+      : path.resolve(projectRoot, env.EXPO_METRO_CACHE_STORES_DIR);
 
     // Create the directory if it doesn't exist
     try {
       await fs.promises.mkdir(cacheStoresDir, { recursive: true });
     } catch (error: any) {
       if (error.code !== 'EEXIST') {
+        Log.error(`Provided EXPO_METRO_CACHE_STORES_DIR="${cacheStoresDir} is not a directory. Use new or existing directory path.`)
         throw error;
       }
     }
 
     // Check if user has custom cacheStores in their metro.config.js
-    const userHasCustomCacheStores =
-      !resolvedConfig.isEmpty && resolvedConfig.config.cacheStores !== undefined;
+    const userHasCustomCacheStores = config.cacheStores
 
     if (userHasCustomCacheStores) {
       Log.warn(
