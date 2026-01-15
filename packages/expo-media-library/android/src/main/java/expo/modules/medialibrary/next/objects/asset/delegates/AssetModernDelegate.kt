@@ -21,10 +21,12 @@ import expo.modules.medialibrary.next.extensions.resolver.queryAssetDateModified
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDateTaken
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetMediaStoreItem
 import expo.modules.medialibrary.next.extensions.resolver.updateRelativePath
+import expo.modules.medialibrary.next.extensions.resolver.updateRelativePathAndName
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.asset.EXIF_TAGS
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
+import expo.modules.medialibrary.next.objects.asset.factories.buildUniqueDisplayName
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import expo.modules.medialibrary.next.permissions.MediaStorePermissionsDelegate
@@ -170,14 +172,55 @@ class AssetModernDelegate(
 
   override suspend fun move(relativePath: RelativePath) {
     mediaStorePermissionsDelegate.requestMediaLibraryWritePermission(listOf(contentUri))
-    contentResolver.updateRelativePath(contentUri, relativePath)
+
+    try {
+      contentResolver.updateRelativePath(contentUri, relativePath)
+    } catch (e: Exception) {
+      if (e.message?.contains("Failed to build unique file", ignoreCase = true) == true) {
+        val uniqueName = buildUniqueDisplayName(getUri())
+        contentResolver.updateRelativePathAndName(contentUri, relativePath, uniqueName)
+      } else {
+        throw e
+      }
+    }
   }
 
-  override suspend fun copy(relativePath: RelativePath): Asset = withContext(Dispatchers.IO) {
-    val newAssetUri = contentResolver.insertPendingAsset(getFilename(), getMimeType(), relativePath)
-    contentResolver.copyUriContent(contentUri, newAssetUri)
-    contentResolver.publishPendingAsset(newAssetUri)
-    val newAssetDelegate = AssetModernDelegate(newAssetUri, assetDeleter, mediaStorePermissionsDelegate, contextRef.getOrThrow())
-    return@withContext Asset(newAssetDelegate)
+  override suspend fun copy(relativePath: RelativePath): Asset =
+    copyInternal(relativePath, forceUniqueName = false)
+
+  private suspend fun copyInternal(relativePath: RelativePath, forceUniqueName: Boolean): Asset = withContext(Dispatchers.IO) {
+    val displayName = if (forceUniqueName) {
+      buildUniqueDisplayName(getUri())
+    } else {
+      getUri().toString()
+    }
+    var newAssetUri: Uri? = null
+
+    try {
+      newAssetUri = contentResolver.insertPendingAsset(displayName, getMimeType(), relativePath)
+      ensureActive()
+      contentResolver.copyUriContent(contentUri, newAssetUri)
+      ensureActive()
+      contentResolver.publishPendingAsset(newAssetUri)
+
+      val newAssetDelegate = AssetModernDelegate(
+        newAssetUri,
+        assetDeleter,
+        mediaStorePermissionsDelegate,
+        contextRef.getOrThrow()
+      )
+      return@withContext Asset(newAssetDelegate)
+    } catch (e: Exception) {
+      newAssetUri?.let {
+        contentResolver.delete(it, null, null)
+      }
+      // It occurs when trying to create too many assets with the same filename in the same album.
+      // By default, the Content Resolver can resolve this issue for up to 32 assets, but then it throws this exception.
+      val isCollisionError = e.message?.contains("Failed to build unique file", ignoreCase = true) == true
+      if (isCollisionError && !forceUniqueName) {
+        return@withContext copyInternal(relativePath, forceUniqueName = true)
+      }
+      throw e
+    }
   }
 }
