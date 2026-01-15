@@ -157,6 +157,7 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
           state.hasInitializedCamera = true
         }
       }
+      .background(UserInterfaceStyleApplier(style: props.userInterfaceStyle.toUIUserInterfaceStyle()))
     }
   }
 }

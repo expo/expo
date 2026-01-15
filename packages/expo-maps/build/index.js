@@ -23,6 +23,7 @@ export var AppleMaps;
     AppleMaps.View = AppleMapsView;
     AppleMaps.MapType = AppleTypes.AppleMapsMapType;
     AppleMaps.MapStyleElevation = AppleTypes.AppleMapsMapStyleElevation;
+    AppleMaps.UserInterfaceStyle = AppleTypes.AppleMapsUserInterfaceStyle;
 })(AppleMaps || (AppleMaps = {}));
 export const requestPermissionsAsync = ExpoMaps.requestPermissionsAsync;
 export const getPermissionsAsync = ExpoMaps.getPermissionsAsync;

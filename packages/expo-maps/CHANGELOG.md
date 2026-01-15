@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `userInterfaceStyle` prop to control map appearance (light/dark mode) independently from the app's color scheme. ([#42199](https://github.com/expo/expo/pull/42199) by [@huextrat](https://github.com/huextrat))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

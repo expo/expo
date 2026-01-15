@@ -42,6 +42,9 @@ export namespace AppleMaps {
   export const MapStyleElevation = AppleTypes.AppleMapsMapStyleElevation;
   export type MapStyleElevation = AppleTypes.AppleMapsMapStyleElevation;
 
+  export const UserInterfaceStyle = AppleTypes.AppleMapsUserInterfaceStyle;
+  export type UserInterfaceStyle = AppleTypes.AppleMapsUserInterfaceStyle;
+
   export type Marker = AppleTypes.AppleMapsMarker;
   export type MapUISettings = AppleTypes.AppleMapsUISettings;
   export type MapProperties = AppleTypes.AppleMapsProperties;
