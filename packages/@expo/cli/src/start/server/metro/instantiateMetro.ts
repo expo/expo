@@ -154,6 +154,31 @@ export async function loadMetroConfigAsync(
     },
   };
 
+  // Handle EXPO_METRO_CACHE_STORES_DIR environment variable override
+  if (env.EXPO_METRO_CACHE_STORES_DIR) {
+    const { FileStore } = require('@expo/metro-config/file-store');
+
+    // Check if user has custom cacheStores in their metro.config.js
+    const userHasCustomCacheStores =
+      !resolvedConfig.isEmpty && resolvedConfig.config.cacheStores !== undefined;
+
+    if (userHasCustomCacheStores) {
+      Log.warn(
+        `Using EXPO_METRO_CACHE_STORES_DIR="${env.EXPO_METRO_CACHE_STORES_DIR}" which overrides cacheStores from metro.config.js`
+      );
+    }
+
+    // Override cacheStores with the env-specified directory
+    config = {
+      ...config,
+      cacheStores: [
+        new FileStore({
+          root: env.EXPO_METRO_CACHE_STORES_DIR,
+        }),
+      ],
+    };
+  }
+
   globalThis.__requireCycleIgnorePatterns = config.resolver?.requireCycleIgnorePatterns;
 
   if (isExporting) {
