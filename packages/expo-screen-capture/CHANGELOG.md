@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix main thread violation warnings on app startup.
+
 ### 💡 Others
 
 - Remove warning about iOS screenshot limitations. ([#40115](https://github.com/expo/expo/pull/40115) by [@hryhoriiK97](https://github.com/hryhoriiK97))
