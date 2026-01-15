@@ -441,7 +441,7 @@ export type GoogleMapsViewProps = {
 
   /**
    * The ID of the currently selected marker.
-   * Setting this will programmatically show the info window for that marker.
+   * Setting this will programmatically show the information window for that marker.
    */
   selectedId?: string | null;
 
@@ -497,7 +497,7 @@ export type GoogleMapsViewProps = {
   }) => void;
 
   /**
-   * Lambda invoked when a marker is deselected (e.g., by tapping elsewhere on the map).
+   * Lambda invoked when a marker is deselected (for example, by tapping elsewhere on the map).
    */
   onDeselect?: () => void;
 };
@@ -524,8 +524,8 @@ export type GoogleMapsViewType = {
 
   /**
    * Programmatically select a marker by its ID.
-   * This will show the info window for the marker.
-   * Pass `null` to clear the selection and hide all info windows.
+   * This will show the information window for the marker.
+   * Pass `null` to clear the selection and hide all information windows.
    *
    * @param id The ID of the marker to select, or `null` to clear selection.
    * @param options Optional configuration for the selection.
