@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add `EXPO_METRO_CACHE_STORES_DIR` to configure Metro cache directory ([#42210](https://github.com/expo/expo/pull/42210) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 🐛 Bug fixes
 
 - Include `protocol` and `port` when dynamically deriving manifest URLs from request headers (`host`, `x-forwarded-proto`) to support serving through proxies and custom tunnels. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@krystofwoldrich](https://github.com/krystofwoldrich))
