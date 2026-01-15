@@ -5,7 +5,7 @@ let onScreenshotEventName = "onScreenshot"
 public final class ScreenCaptureModule: Module {
   private var isBeingObserved = false
   private var isListening = false
-  private var blockView: UIView? = nil
+  private var blockView: UIView?
   private var protectionTextField: UITextField?
   private var originalParent: CALayer?
   private var blurEffectView: AnimatedBlurEffectView?
@@ -110,7 +110,7 @@ public final class ScreenCaptureModule: Module {
   }
 
   private func getOrCreateBlockView() -> UIView {
-    guard let blockView = blockView else {
+    guard let blockView else {
       let view = UIView()
       let boundLength = max(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
       view.frame = CGRect(x: 0, y: 0, width: boundLength, height: boundLength)

@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix main thread violation warnings on app startup.
+- [iOS] Fix main thread violation warnings on app startup. ([#42204](https://github.com/expo/expo/pull/42204) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
