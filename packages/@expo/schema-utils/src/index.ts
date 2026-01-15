@@ -39,10 +39,10 @@ const toErrorMessage = (errors: BaseValidationError[], name: string) => {
   return message;
 };
 
-export class ValidationError extends Error {
-  schema: JSONSchema;
+export class ValidationError<T> extends Error {
+  schema: JSONSchema<T>;
   errors: BaseValidationError[];
-  constructor(result: ValidationResult, schema: JSONSchema) {
+  constructor(result: ValidationResult, schema: JSONSchema<T>) {
     const errors = flattenValidationResults(result);
     super(toErrorMessage(errors, typeof schema.title === 'string' ? schema.title : 'Value'));
     this.name = 'ValidationError';
@@ -63,11 +63,11 @@ const derefSchemaCache = (schema: JSONSchema): SchemaCacheData => {
   return derefed!;
 };
 
-export function derefSchema(schema: JSONSchema): JSONSchema {
+export function derefSchema<T>(schema: JSONSchema<T>): JSONSchema<T> {
   return derefSchemaCache(schema).schema;
 }
 
-export function validate(schema: JSONSchema, value: unknown) {
+export function validate<T>(schema: JSONSchema<T>, value: unknown): asserts value is T {
   const data = derefSchemaCache(schema);
   let result: ValidationResult | null | undefined;
   if (
