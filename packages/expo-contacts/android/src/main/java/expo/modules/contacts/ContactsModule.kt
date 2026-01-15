@@ -394,7 +394,8 @@ class ContactsModule : Module() {
         if (uri != null &&
           !uri.startsWith("file://") &&
           !uri.startsWith("content://") &&
-          !uri.startsWith("android.resource://")) {
+          !uri.startsWith("android.resource://")
+        ) {
           throw RemoteImageUriException(uri)
         }
         contact.photoUri = uri
