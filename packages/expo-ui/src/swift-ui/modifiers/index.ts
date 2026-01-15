@@ -522,8 +522,9 @@ export const scrollDisabled = (disabled: boolean = true) =>
 
 /**
  * Disables the move action for a view in a list.
- * Apply to items within a ForEach to prevent them from being moved.
- * @param disabled - Whether moving should be disabled (default: true).
+ * Apply to items within a `ForEach` to prevent them from being moved.
+ * @param disabled - Whether moving should be disabled
+ * @default true
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/movedisabled(_:)).
  */
 export const moveDisabled = (disabled: boolean = true) =>
@@ -531,8 +532,9 @@ export const moveDisabled = (disabled: boolean = true) =>
 
 /**
  * Disables the delete action for a view in a list.
- * Apply to items within a ForEach to prevent them from being deleted.
- * @param disabled - Whether deletion should be disabled (default: true).
+ * Apply to items within a `ForEach` to prevent them from being deleted.
+ * @param disabled - Whether deletion should be disabled
+ * @default true
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/deletedisabled(_:)).
  */
 export const deleteDisabled = (disabled: boolean = true) =>

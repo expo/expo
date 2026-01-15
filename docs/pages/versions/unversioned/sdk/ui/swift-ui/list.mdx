@@ -64,7 +64,7 @@ export default function ListWithLabelsExample() {
 
 ### List styles
 
-Use the `listStyle` modifier to change the list's appearance. Available styles are: `automatic`, `plain`, `inset`, `insetGrouped`, `grouped`, and `sidebar`.
+Use the [`listStyle`](modifiers/#liststylestyle) modifier to change the list's appearance.
 
 > **Note:** The `inset`, `insetGrouped`, and `sidebar` styles are not available on tvOS.
 
@@ -105,63 +105,58 @@ export default function ListStylesExample() {
 }
 ```
 
-### Collapsible sections
-
-Use the `collapsible` prop on `Section` to make it expandable/collapsible.
-
-```tsx CollapsibleSectionExample.tsx
-import { Host, List, Text, Section } from '@expo/ui/swift-ui';
-import { listStyle } from '@expo/ui/swift-ui/modifiers';
-
-export default function CollapsibleSectionExample() {
-  return (
-    <Host style={{ flex: 1 }}>
-      <List modifiers={[listStyle('sidebar')]}>
-        <Section title="Notifications" collapsible>
-          <Text>Push Notifications</Text>
-          <Text>Email Alerts</Text>
-          <Text>SMS Alerts</Text>
-        </Section>
-        <Section title="Privacy" collapsible>
-          <Text>Location Services</Text>
-          <Text>Tracking</Text>
-          <Text>Analytics</Text>
-        </Section>
-      </List>
-    </Host>
-  );
-}
-```
-
 ### Selection and edit mode
 
-Enable selection, deletion, and reordering of list items using the `selectEnabled`, `deleteEnabled`, `moveEnabled`, and `editModeEnabled` props.
+Enable selection, deletion, and reordering of list items using the `ForEach` component with `onDelete` and `onMove` props. Use the [`environment`](modifiers/#environmentkey-value) modifier to enable edit mode, the [`tag`](modifiers/#tagtag) modifier to identify items, and the [`selection`](#selection) prop to control selected items. Use [`moveDisabled`](modifiers/#movedisableddisabled) and [`deleteDisabled`](modifiers/#deletedisableddisabled) modifiers to disable these actions on individual items.
 
 ```tsx EditableListExample.tsx
 import { useState } from 'react';
-import { Host, List, Text, Section, Button } from '@expo/ui/swift-ui';
+import { Host, List, Label, Section, Button, Toggle, ForEach } from '@expo/ui/swift-ui';
+import { environment, EnvironmentKey, tag } from '@expo/ui/swift-ui/modifiers';
+
+type Task = { id: string; title: string };
+
+const INITIAL_TASKS: Task[] = [
+  { id: '1', title: 'Task 1' },
+  { id: '2', title: 'Task 2' },
+  { id: '3', title: 'Task 3' },
+  { id: '4', title: 'Task 4' },
+];
 
 export default function EditableListExample() {
+  const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editMode, setEditMode] = useState(false);
+
+  const handleDelete = (indices: number[]) => {
+    setTasks(prev => prev.filter((_, i) => !indices.includes(i)));
+  };
+
+  const handleMove = (sourceIndices: number[], destination: number) => {
+    setTasks(prev => {
+      const newTasks = [...prev];
+      const [removed] = newTasks.splice(sourceIndices[0], 1);
+      const adjustedDest = sourceIndices[0] < destination ? destination - 1 : destination;
+      newTasks.splice(adjustedDest, 0, removed);
+      return newTasks;
+    });
+  };
 
   return (
     <Host style={{ flex: 1 }}>
       <List
-        editModeEnabled={editMode}
-        selectEnabled
-        deleteEnabled
-        moveEnabled
-        onSelectionChange={indices => console.log('Selected:', indices)}
-        onDeleteItem={index => console.log('Deleted:', index)}
-        onMoveItem={(from, to) => console.log('Moved from', from, 'to', to)}>
-        <Section title="Tasks">
-          <Button label={editMode ? 'Done' : 'Edit'} onPress={() => setEditMode(!editMode)} />
+        selection={selectedIds}
+        onSelectionChange={ids => setSelectedIds(ids.map(String))}
+        modifiers={[environment(EnvironmentKey.editMode, editMode ? 'active' : 'inactive')]}>
+        <Section title="Settings">
+          <Toggle label="Edit Mode" isOn={editMode} onIsOnChange={setEditMode} />
         </Section>
-        <Section title="Items">
-          <Text>Task 1</Text>
-          <Text>Task 2</Text>
-          <Text>Task 3</Text>
-          <Text>Task 4</Text>
+        <Section title="Tasks">
+          <ForEach onDelete={handleDelete} onMove={handleMove}>
+            {tasks.map(task => (
+              <Label key={task.id} title={task.title} modifiers={[tag(task.id)]} />
+            ))}
+          </ForEach>
         </Section>
       </List>
     </Host>
@@ -171,7 +166,7 @@ export default function EditableListExample() {
 
 ### Pull to refresh
 
-Use the `refreshable` modifier to enable pull-to-refresh functionality.
+Use the [`refreshable`](modifiers/#refreshablehandler) modifier to enable pull-to-refresh functionality.
 
 ```tsx RefreshableListExample.tsx
 import { useState } from 'react';
@@ -200,38 +195,9 @@ export default function RefreshableListExample() {
 }
 ```
 
-### Custom section header and footer
-
-Use the `header` and `footer` props on `Section` for custom content.
-
-```tsx CustomHeaderFooterExample.tsx
-import { Host, List, Text, Section, HStack, Image } from '@expo/ui/swift-ui';
-import { background, padding, clipShape } from '@expo/ui/swift-ui/modifiers';
-
-export default function CustomHeaderFooterExample() {
-  return (
-    <Host style={{ flex: 1 }}>
-      <List>
-        <Section
-          header={
-            <HStack modifiers={[padding({ vertical: 4 })]}>
-              <Image systemName="star.fill" color="orange" size={16} />
-              <Text color="orange">FEATURED</Text>
-            </HStack>
-          }
-          footer={<Text color="secondaryLabel">Updated daily</Text>}>
-          <Text>Featured Item 1</Text>
-          <Text>Featured Item 2</Text>
-        </Section>
-      </List>
-    </Host>
-  );
-}
-```
-
 ### Row styling
 
-Use `listRowBackground`, `listRowSeparator`, and `listRowInsets` modifiers to customize individual rows.
+Use [`listRowBackground`](modifiers/#listrowbackgroundcolor), [`listRowSeparator`](modifiers/#listrowseparatorvisibility-edges), and [`listRowInsets`](modifiers/#listrowinsetsparams) modifiers to customize individual rows.
 
 ```tsx RowStylingExample.tsx
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
@@ -253,30 +219,9 @@ export default function RowStylingExample() {
 }
 ```
 
-### Badges
-
-Use the `badge` modifier to add badges to list rows.
-
-```tsx BadgesExample.tsx
-import { Host, List, Label, Section } from '@expo/ui/swift-ui';
-import { badge } from '@expo/ui/swift-ui/modifiers';
-
-export default function BadgesExample() {
-  return (
-    <Host style={{ flex: 1 }}>
-      <List>
-        <Label title="Primary" systemImage="tray" modifiers={[badge('5')]} />
-        <Label title="Social" systemImage="person.2" modifiers={[badge('12')]} />
-        <Label title="Updates" systemImage="bell" modifiers={[badge('3')]} />
-      </List>
-    </Host>
-  );
-}
-```
-
 ### Keyboard dismiss behavior
 
-Use the `scrollDismissesKeyboard` modifier to control how the keyboard is dismissed when scrolling. Available modes are: `automatic`, `never`, `interactively`, and `immediately`.
+Use the [`scrollDismissesKeyboard`](modifiers/#scrolldismisseskeyboardmode) modifier to control how the keyboard is dismissed when scrolling.
 
 ```tsx KeyboardDismissExample.tsx
 import { Host, List, Section, TextField } from '@expo/ui/swift-ui';
@@ -299,7 +244,7 @@ export default function KeyboardDismissExample() {
 
 ### Header prominence
 
-Use the `headerProminence` modifier to adjust the visual prominence of section headers. Available values are: `standard` and `increased`.
+Use the [`headerProminence`](modifiers/#headerprominenceprominence) modifier to adjust the visual prominence of section headers.
 
 ```tsx HeaderProminenceExample.tsx
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
