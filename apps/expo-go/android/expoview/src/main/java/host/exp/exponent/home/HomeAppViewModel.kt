@@ -54,6 +54,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.util.Date
 import kotlin.reflect.typeOf
 import kotlin.time.DurationUnit
@@ -76,12 +77,27 @@ data class DevSession(
   val source: DevSessionSource,
   val hostname: String? = null,
   val config: Map<String, Any>? = null,
-  val platform: DevSessionPlatform? = null
+  val platform: DevSessionPlatform? = null,
+  val iconUrl: String? = null
 )
 
 data class DevSessionResponse(
   val data: List<DevSession>
 )
+
+private data class ManifestResponse(
+  val extra: ManifestExtra?
+)
+
+private data class ManifestExtra(
+  val expoClient: ManifestExpoClient?
+)
+
+private data class ManifestExpoClient(
+  val name: String?,
+  val iconUrl: String?
+)
+
 
 private const val USER_REVIEW_INFO_PREFS_KEY = "userReviewInfo"
 
@@ -204,7 +220,56 @@ class HomeAppViewModel(
 
   val feedbackState = MutableStateFlow(FeedbackState())
 
-  val developmentServers: StateFlow<List<DevSession>> = flow {
+  private suspend fun checkDevelopmentServer(host: String, port: String): DevSession? {
+    return withContext(Dispatchers.IO) {
+      try {
+        val request = Request.Builder().url("http://$host:$port/status").build()
+        client.newCall(request).execute().use { response ->
+          if (response.isSuccessful && response.body?.string()?.contains("packager-status:running") == true) {
+            val manifestInfo = fetchLocalManifestInfo("http://$host:$port")
+            return@withContext DevSession(
+              url = "exp://$host:$port",
+              description = manifestInfo?.extra?.expoClient?.name ?: "exp://$host:$port",
+              source = DevSessionSource.Desktop,
+              hostname = "exp://$host:$port",
+              platform = DevSessionPlatform.Native,
+              config = null,
+              iconUrl = manifestInfo?.extra?.expoClient?.iconUrl
+            )
+          }
+        }
+      } catch (e: Exception) {
+        // Ignore connection errors, server is likely not running on this port
+      }
+      null
+    }
+  }
+
+  private suspend fun fetchLocalManifestInfo(baseUrl: String): ManifestResponse? {
+    return withContext(Dispatchers.IO) {
+      val manifestUrl = "$baseUrl/manifest"
+      val request = Request.Builder()
+        .url(manifestUrl)
+        .addHeader("Accept", "application/expo+json,application/json")
+        .addHeader("Expo-Platform", "android")
+        .build()
+
+      try {
+        client.newCall(request).execute().use { response ->
+          if (response.isSuccessful) {
+            response.body?.string()?.let {
+              return@withContext gson.fromJson(it, ManifestResponse::class.java)
+            }
+          }
+        }
+      } catch (e: Exception) {
+        // Ignore errors
+      }
+      null
+    }
+  }
+
+  private val remoteDevelopmentServers: StateFlow<List<DevSession>> = flow {
     while (true) {
       try {
         val sessions = restClient.sendAuthenticatedApiV2Request<DevSessionResponse>(
@@ -215,13 +280,64 @@ class HomeAppViewModel(
       } catch (_: Exception) {
         emit(emptyList())
       }
-      delay(3000)
+      delay(10000)
     }
   }.stateIn(
     scope = viewModelScope,
     started = SharingStarted.WhileSubscribed(5000),
     initialValue = emptyList()
   )
+
+  private val localDevelopmentServers: StateFlow<List<DevSession>> = flow {
+    val portsToCheck = listOf(8081, 8082, 8083, 19000, 19001, 19002)
+    val baseAddress = if (isDevice) "localhost" else "10.0.2.2"
+    while (true) {
+      val discoveredServers = mutableListOf<DevSession>()
+      withContext(Dispatchers.IO) {
+          portsToCheck.map { port ->
+            launch {
+              checkDevelopmentServer(baseAddress, "$port")?.let {
+                synchronized(discoveredServers) {
+                  discoveredServers.add(it)
+                }
+              }
+            }
+          }.forEach { it.join() }
+        }
+      emit(discoveredServers)
+      delay(2000)
+    }
+  }.stateIn(
+    scope = viewModelScope,
+    started = SharingStarted.WhileSubscribed(5000),
+    initialValue = emptyList()
+  )
+
+  val developmentServers: StateFlow<List<DevSession>> =
+    combine(
+      localDevelopmentServers,
+      remoteDevelopmentServers
+    ) { local, remote ->
+      val merged = mutableMapOf<String, DevSession>()
+
+      // Add all local servers first
+      for (server in local) {
+        val key = normalizeUrl(server.url).lowercase()
+        merged[key] = server
+      }
+
+      // Add remote servers, preferring them over local ones if a conflict exists
+      for (server in remote) {
+        val key = normalizeUrl(server.url).lowercase()
+        merged[key] = server
+      }
+      merged.values.sortedBy { it.url }
+    }
+      .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+      )
 
   fun branch(branchName: String, appId: String): RefreshableFlow<BranchDetailsQuery.ById?> {
     return refreshableFlow(scope = viewModelScope, fetcher = {
