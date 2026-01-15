@@ -164,6 +164,14 @@ class Env {
     return boolish('EXPO_METRO_UNSTABLE_ERRORS', true);
   }
 
+  /**
+   * Override the Metro cache stores directory. When set, this takes precedence over
+   * any `cacheStores` configuration in metro.config.js.
+   */
+  get EXPO_METRO_CACHE_STORES_DIR(): string {
+    return string('EXPO_METRO_CACHE_STORES_DIR', '');
+  }
+
   /** Enable the experimental sticky resolver for Metro (Uses Expo Autolinking results and applies them to Metro's resolution)
    * @deprecated Replaced by `exp.experiments.autolinkingModuleResolution`
    */
