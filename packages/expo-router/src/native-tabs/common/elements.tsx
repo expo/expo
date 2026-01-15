@@ -58,7 +58,7 @@ export interface SrcIcon {
    * - `template` (default): Icon is rendered as a template image, allowing iOS to apply the selected/unselected tint color.
    * - `original`: Icon is rendered with its original colors preserved, useful for icons with gradients or multiple colors.
    *
-   * @platform iOS
+   * @platform ios
    * @default "template"
    */
   renderingMode?: "template" | "original";
