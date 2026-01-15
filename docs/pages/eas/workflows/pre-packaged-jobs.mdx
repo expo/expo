@@ -1020,14 +1020,14 @@ You can pass the following parameters into the `params` list:
 
 You can reference the following outputs in subsequent jobs:
 
-| Output                      | Type   | Description                                                                  |
-| --------------------------- | ------ | ---------------------------------------------------------------------------- |
-| maestro_cloud_url           | string | URL to the Maestro Cloud upload results page.                                |
-| total_flows_count           | number | Total number of flows that were executed.                                    |
-| successful_flows_count      | number | Number of flows that completed successfully (status SUCCESS or WARNING).     |
-| failed_flows_count          | number | Number of flows that failed (status ERROR or STOPPED).                       |
-| successful_flow_names_json  | string | JSON array containing the names of successful flows.                         |
-| failed_flow_names_json      | string | JSON array containing the names of failed flows.                             |
+| Output                     | Type   | Description                                                              |
+| -------------------------- | ------ | ------------------------------------------------------------------------ |
+| maestro_cloud_url          | string | URL to the Maestro Cloud upload results page.                            |
+| total_flows_count          | number | Total number of flows that were executed.                                |
+| successful_flows_count     | number | Number of flows that completed successfully (status SUCCESS or WARNING). |
+| failed_flows_count         | number | Number of flows that failed (status ERROR or STOPPED).                   |
+| successful_flow_names_json | string | JSON array containing the names of successful flows.                     |
+| failed_flow_names_json     | string | JSON array containing the names of failed flows.                         |
 
 > **Note:** When using `async: true` mode, only the `maestro_cloud_url` output is guaranteed to be valid. Other outputs (flow counts and flow names) may be invalid or empty because the job does not wait for the upload to complete and the flows have not been executed yet.
 
