@@ -1,7 +1,7 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
-    "modules": ["ContactsModule", "ContactAccessButtonModule"]
+    "modules": ["ContactsModule", "ContactAccessButtonModule", "ContactsNextModule"]
   },
   "android": {
     "modules": [
