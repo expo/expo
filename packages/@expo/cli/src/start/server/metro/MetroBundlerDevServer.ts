@@ -80,7 +80,6 @@ import {
 } from './resolveLoader';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
-import { DataLoaderModuleMiddleware } from '../middleware/DataLoaderModuleMiddleware';
 import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware';
 import { createDomComponentsMiddleware } from '../middleware/DomComponentsMiddleware';
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
@@ -1289,23 +1288,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       // Append support for redirecting unhandled requests to the index.html page on web.
       if (this.isTargetingWeb()) {
-        if (exp.extra?.router?.unstable_useServerDataLoaders) {
-          const loaderModuleMiddleware = new DataLoaderModuleMiddleware(
-            this.projectRoot,
-            appDir,
-            async (location, route, request) => {
-              const resolvedLoaderRoute = fromServerManifestRoute(location.pathname, route);
-              if (!resolvedLoaderRoute) {
-                return;
-              }
-              return this.executeServerDataLoaderAsync(location, resolvedLoaderRoute, request);
-            },
-            () => this.getDevServerUrlOrAssert()
-          );
-          // This MUST be before ServeStaticMiddleware so it doesn't treat the loader files as static assets
-          middleware.use(loaderModuleMiddleware.getHandler());
-        }
-
         // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
         middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
@@ -1387,6 +1369,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               ...config.exp.extra?.router,
               bundleApiRoute: (functionFilePath) =>
                 this.ssrImportApiRoute(functionFilePath, { platform: 'web' }),
+              executeLoaderAsync: async (route, request) => {
+                const url = new URL(request.url);
+                const resolvedLoaderRoute = fromServerManifestRoute(url.pathname, route);
+                if (!resolvedLoaderRoute) {
+                  return undefined;
+                }
+                // Only pass the request in SSR mode (server output with SSR enabled).
+                // In static mode, loaders should not receive request data.
+                const isSSREnabled =
+                  exp.web?.output === 'server' &&
+                  exp.extra?.router?.unstable_useServerRendering === true;
+                return this.executeServerDataLoaderAsync(
+                  url,
+                  resolvedLoaderRoute,
+                  isSSREnabled ? request : undefined
+                );
+              },
               getStaticPageAsync: async (pathname, route, request) => {
                 // TODO: Add server rendering when RSC is enabled.
                 if (isReactServerComponentsEnabled) {

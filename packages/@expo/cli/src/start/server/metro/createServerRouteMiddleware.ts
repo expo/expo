@@ -36,6 +36,10 @@ export function createRouteHandlerMiddleware(
     bundleApiRoute: (
       functionFilePath: string
     ) => Promise<null | Record<string, Function> | Response>;
+    executeLoaderAsync: (
+      route: RouteInfo<RegExp>,
+      request: Request
+    ) => Promise<{ data: unknown } | undefined>;
     config: ProjectConfig;
     headers: Record<string, string | string[]>;
   } & import('@expo/router-server/build/routes-manifest').Options
@@ -52,6 +56,19 @@ export function createRouteHandlerMiddleware(
       async getRoutesManifest() {
         const manifest = await fetchManifest(projectRoot, options);
         debug('manifest', manifest);
+
+        const { exp } = options.config;
+
+        if (manifest && exp.extra?.router?.unstable_useServerDataLoaders === true) {
+          // In development, set `loader` property on all HTML routes. We can't know which routes
+          // have loaders without bundling via Metro to detect exports. In production, this is
+          // populated by `exportStaticAsync.ts` after bundling.
+          // At runtime, `getLoaderData()` returns `undefined` if no loader exists.
+          for (const route of manifest.htmlRoutes) {
+            route.loader = `_expo/loaders${route.page}.js`;
+          }
+        }
+
         // NOTE: no app dir if null
         // TODO: Redirect to 404 page
         return (
@@ -214,6 +231,9 @@ export function createRouteHandlerMiddleware(
             }
           );
         }
+      },
+      async getLoaderData(request, route) {
+        return options.executeLoaderAsync(route, request);
       },
     }
   );
