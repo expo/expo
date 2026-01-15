@@ -89,7 +89,7 @@ export type SymbolOrImageSource =
       src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
       /**
        * Controls how the icon is rendered on iOS.
-       * @platform iOS
+       * @platform ios
        * @default 'template'
        */
       renderingMode?: 'template' | 'original';
