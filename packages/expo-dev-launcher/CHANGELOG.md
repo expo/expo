@@ -33,6 +33,7 @@
 - [Android] Remove `ReactHostWrapper` ([#40295](https://github.com/expo/expo/pull/40295) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Remove custom `ReactNativeFactory`. ([#41084](https://github.com/expo/expo/pull/41084) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Remove unused reactNativeFactory. ([#41286](https://github.com/expo/expo/pull/41286) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Switch from `ajv` to `@expo/schema-utils` ([#42221](https://github.com/expo/expo/pull/42221) by [@kitten](https://github.com/kitten))
 
 ## 6.0.20 - 2025-12-05
 
