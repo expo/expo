@@ -17,7 +17,6 @@ import {
   listStyle,
   pickerStyle,
   refreshable,
-  EnvironmentKey,
   tag,
   environment,
 } from '@expo/ui/swift-ui/modifiers';
@@ -84,7 +83,7 @@ export default function ListScreen() {
           listStyle(LIST_STYLES[listStyleIndex]),
           refreshable(handleRefresh),
           animation(Animation.default, editMode),
-          environment(EnvironmentKey.editMode, editMode ? 'active' : 'inactive'),
+          environment('editMode', editMode ? 'active' : 'inactive'),
         ]}>
         <Section title="Settings">
           <Toggle label="Edit Mode" isOn={editMode} onIsOnChange={setEditMode} />

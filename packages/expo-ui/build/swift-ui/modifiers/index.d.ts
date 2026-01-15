@@ -7,8 +7,8 @@ import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
-import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
+import { environment } from './environment';
 import { progressViewStyle } from './progressViewStyle';
 import type { Color } from './types';
 /**
@@ -417,17 +417,15 @@ export declare const scrollDismissesKeyboard: (mode: "automatic" | "never" | "in
 export declare const scrollDisabled: (disabled?: boolean) => ModifierConfig;
 /**
  * Disables the move action for a view in a list.
- * Apply to items within a `ForEach` to prevent them from being moved.
- * @param disabled - Whether moving should be disabled
- * @default true
+ * Apply to items within a ForEach to prevent them from being moved.
+ * @param disabled - Whether moving should be disabled (default: true).
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/movedisabled(_:)).
  */
 export declare const moveDisabled: (disabled?: boolean) => ModifierConfig;
 /**
  * Disables the delete action for a view in a list.
- * Apply to items within a `ForEach` to prevent them from being deleted.
- * @param disabled - Whether deletion should be disabled
- * @default true
+ * Apply to items within a ForEach to prevent them from being deleted.
+ * @param disabled - Whether deletion should be disabled (default: true).
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/deletedisabled(_:)).
  */
 export declare const deleteDisabled: (disabled?: boolean) => ModifierConfig;

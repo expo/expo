@@ -19,12 +19,12 @@ Expo UI ForEach matches the official SwiftUI [ForEach API](https://developer.app
 
 ### Delete and move support
 
-Use `onDelete` to enable delete and `onMove` to enable drag-to-reorder. The [`environment`](modifiers/#environment-modifier) modifier with `EnvironmentKey.editMode` set to `'active'` is required for move and selection functionality.
+Use `onDelete` to enable delete and `onMove` to enable drag-to-reorder. The [`environment`](modifiers/#environment) modifier with `'editMode'` set to `'active'` is required for move and selection functionality.
 
 ```tsx ForEachExample.tsx
 import { useState } from 'react';
 import { Host, List, Section, Label, ForEach } from '@expo/ui/swift-ui';
-import { environment, EnvironmentKey, tag } from '@expo/ui/swift-ui/modifiers';
+import { environment, tag } from '@expo/ui/swift-ui/modifiers';
 
 export default function ForEachExample() {
   const [items, setItems] = useState(['Apple', 'Banana', 'Orange', 'Mango']);
@@ -45,7 +45,7 @@ export default function ForEachExample() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <List modifiers={[environment(EnvironmentKey.editMode, 'active')]}>
+      <List modifiers={[environment('editMode', 'active')]}>
         <Section title="Fruits">
           <ForEach onDelete={handleDelete} onMove={handleMove}>
             {items.map((item, index) => (
@@ -65,28 +65,18 @@ Use [`moveDisabled`](modifiers/#movedisableddisabled) and [`deleteDisabled`](mod
 
 ```tsx DisabledExample.tsx
 import { Host, List, Section, Label, ForEach } from '@expo/ui/swift-ui';
-import {
-  environment,
-  EnvironmentKey,
-  tag,
-  moveDisabled,
-  deleteDisabled,
-} from '@expo/ui/swift-ui/modifiers';
+import { environment, tag, moveDisabled, deleteDisabled } from '@expo/ui/swift-ui/modifiers';
 
 export default function DisabledExample() {
   return (
     <Host style={{ flex: 1 }}>
-      <List modifiers={[environment(EnvironmentKey.editMode, 'active')]}>
+      <List modifiers={[environment('editMode', 'active')]}>
         <Section title="Items">
           <ForEach
             onDelete={indices => console.log('Delete:', indices)}
             onMove={(from, to) => console.log('Move:', from, to)}>
             <Label title="Can't move" systemImage="lock" modifiers={[tag('1'), moveDisabled()]} />
-            <Label
-              title="Can't delete"
-              systemImage="lock"
-              modifiers={[tag('2'), deleteDisabled()]}
-            />
+            <Label title="Can't delete" systemImage="lock" modifiers={[tag('2'), deleteDisabled()]} />
             <Label title="Normal item" systemImage="circle" modifiers={[tag('3')]} />
           </ForEach>
         </Section>
