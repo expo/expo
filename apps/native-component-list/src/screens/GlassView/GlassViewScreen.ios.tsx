@@ -2,6 +2,7 @@ import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import Checkbox from 'expo-checkbox';
 import {
   GlassStyle,
+  GlassEffectStyleConfig,
   GlassView,
   GlassContainer,
   isLiquidGlassAvailable,
@@ -21,6 +22,7 @@ const colorOptions = [
 ];
 
 const glassStyles: GlassStyle[] = ['clear', 'regular'];
+const animationDurations = [0.3, 0.5, 1.0, 2.0];
 
 const AnimatedGlassView = Animated.createAnimatedComponent(GlassView);
 
@@ -29,6 +31,16 @@ export default function GlassViewScreen() {
   const [isInteractive, setIsInteractive] = React.useState(false);
   const [tintColor, setTintColor] = React.useState<string | undefined>(undefined);
   const [spacing, setSpacing] = React.useState(20);
+
+  const [isGlassVisible, setIsGlassVisible] = React.useState(true);
+  const [animationDuration, setAnimationDuration] = React.useState(0.5);
+  const [animateTransition, setAnimateTransition] = React.useState(true);
+
+  const animatedStyleConfig: GlassEffectStyleConfig = {
+    style: isGlassVisible ? selectedStyle : 'none',
+    animate: animateTransition,
+    animationDuration,
+  };
 
   const translateX = useSharedValue(100);
   const translateY = useSharedValue(100);
@@ -148,6 +160,56 @@ export default function GlassViewScreen() {
             setSpacing(parseInt(event.nativeEvent.value, 10));
           }}
         />
+        <Text style={styles.title}>Glass Animation Demo (iOS 26+)</Text>
+        <Text style={styles.description}>
+          Demonstrates materialize/dematerialize animations using the glassEffectStyle config
+          object.
+        </Text>
+
+        <View style={styles.backgroundContainer}>
+          <Image
+            style={styles.backgroundImage}
+            source={{
+              uri: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop',
+            }}
+          />
+          <GlassView style={styles.animationDemoGlass} glassEffectStyle={animatedStyleConfig}>
+            <View style={styles.glassContent}>
+              <Text style={styles.glassLabel}>
+                {isGlassVisible ? 'Glass Visible' : 'Glass Hidden'}
+              </Text>
+            </View>
+          </GlassView>
+        </View>
+
+        <TouchableOpacity
+          style={styles.toggleButton}
+          onPress={() => setIsGlassVisible(!isGlassVisible)}>
+          <Text style={styles.toggleButtonText}>
+            {isGlassVisible ? 'Hide Glass (Dematerialize)' : 'Show Glass (Materialize)'}
+          </Text>
+        </TouchableOpacity>
+
+        <Text style={styles.sectionTitle}>Animation Duration</Text>
+        <SegmentedControl
+          values={animationDurations.map((d) => `${d}s`)}
+          selectedIndex={animationDurations.indexOf(animationDuration)}
+          onChange={(event) => {
+            const value = parseFloat(event.nativeEvent.value.replace('s', ''));
+            setAnimationDuration(value);
+          }}
+        />
+
+        <TouchableOpacity
+          style={styles.checkboxRow}
+          onPress={() => setAnimateTransition(!animateTransition)}>
+          <Checkbox
+            value={animateTransition}
+            onValueChange={setAnimateTransition}
+            color="#007AFF"
+          />
+          <Text style={styles.checkboxLabel}>Animate Transitions</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -303,5 +365,25 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     lineHeight: 20,
+  },
+  animationDemoGlass: {
+    position: 'absolute',
+    top: 80,
+    left: 80,
+    width: 180,
+    height: 120,
+    borderRadius: 20,
+  },
+  toggleButton: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  toggleButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
