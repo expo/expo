@@ -3,9 +3,10 @@ package expo.modules.contacts.next.domain.model.contact
 import android.content.ContentProviderOperation
 import android.provider.ContactsContract
 import expo.modules.contacts.next.domain.model.Insertable
+import expo.modules.contacts.next.domain.model.headers.starred.Starred
 
 data class NewContact(
-  val starred: Boolean,
+  val starred: Starred,
   val modelsToInsert: List<Insertable>
 ) {
   fun toInsertOperations() = buildList {

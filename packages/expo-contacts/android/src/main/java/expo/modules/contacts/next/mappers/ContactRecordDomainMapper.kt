@@ -11,6 +11,7 @@ import expo.modules.contacts.next.domain.model.headers.PhotoThumbnailUriField
 import expo.modules.contacts.next.domain.model.headers.PhotoUriField
 import expo.modules.contacts.next.domain.model.headers.starred.ExistingStarred
 import expo.modules.contacts.next.domain.model.headers.starred.PatchStarred
+import expo.modules.contacts.next.domain.model.headers.starred.Starred
 import expo.modules.contacts.next.domain.model.headers.starred.StarredField
 import expo.modules.contacts.next.domain.model.nickname.NicknameField
 import expo.modules.contacts.next.domain.model.nickname.operations.ExistingNickname
@@ -151,7 +152,10 @@ class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter
       record.relations?.let { addAll(it.map(RelationMapper::toNew)) }
       record.urlAddresses?.let { addAll(it.map(WebsiteMapper::toNew)) }
     }
-    return NewContact(record.isFavourite, modelsToInsert)
+    return NewContact(
+      Starred(if (record.isFavourite) 1 else 0),
+      modelsToInsert
+    )
   }
 
   fun toUpdateContact(
