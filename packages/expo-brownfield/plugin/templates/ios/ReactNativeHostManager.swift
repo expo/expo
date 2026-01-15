@@ -9,10 +9,11 @@ public class ReactNativeHostManager {
 
   private var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   private var reactNativeFactory: RCTReactNativeFactory?
-  public private(set) var expoDelegateWrapper: ExpoAppDelegateWrapper?
 
-  /// Initializes the React Native host manager shared instance.
-  /// Prevents multiple initializations of the React Native host manager shared instance.
+  /**
+   * Initializes ReactNativeHostManager instance
+   * Instance can be initialized only once
+   */
   public func initialize() {
     // Prevent multiple initializations
     guard reactNativeDelegate == nil else {
@@ -26,26 +27,25 @@ public class ReactNativeHostManager {
     reactNativeDelegate = delegate
     reactNativeFactory = factory
 
-    expoDelegateWrapper = ExpoAppDelegateWrapper(factory: factory)
-
     // Ensure this won't get stripped by the Swift compiler
     _ = ExpoModulesProvider()
   }
 
-  /// Loads and presents the React Native view.
+  /**
+   * Creates the React Native view using RCTReactNativeFactory
+   */
   public func loadView(
     moduleName: String,
     initialProps: [AnyHashable: Any]?,
     launchOptions: [AnyHashable: Any]?
   ) throws -> UIView {
-    guard let expoDelegateWrapper else {
-      fatalError("Trying to load view without ExpoAppDelegateWrapper initialized")
+    guard let reactNativeFactory else {
+      fatalError("Trying to load view without initializing reactNativeFactory")
     }
 
-    return expoDelegateWrapper.recreateRootView(
-      withBundleURL: nil,
-      moduleName: moduleName,
-      initialProps: initialProps,
+    return reactNativeFactory.rootViewFactory.view(
+      withModuleName: moduleName,
+      initialProperties: initialProps,
       launchOptions: launchOptions
     )
   }

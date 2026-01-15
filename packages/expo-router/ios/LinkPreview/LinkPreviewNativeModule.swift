@@ -58,6 +58,9 @@ public class LinkPreviewNativeModule: Module {
       Prop("icon") { (view: LinkPreviewNativeActionView, icon: String?) in
         view.icon = icon
       }
+      Prop("image") { (view: LinkPreviewNativeActionView, image: SharedRef<UIImage>?) in
+        view.customImage = image
+      }
       Prop("disabled") { (view: LinkPreviewNativeActionView, disabled: Bool?) in
         view.disabled = disabled ?? false
       }
@@ -145,8 +148,8 @@ public class LinkPreviewNativeModule: Module {
         // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
       }
 
-      Prop("preventInteractiveDismissal") { (view: LinkZoomTransitionEnabler, prevent: Bool) in
-        view.isPreventingInteractiveDismissal = prevent
+      Prop("dismissalBoundsRect") { (view: LinkZoomTransitionEnabler, rect: DismissalBoundsRect?) in
+        view.dismissalBoundsRect = rect
       }
     }
 
@@ -201,4 +204,11 @@ enum MenuElementSize: String, Enumerable {
       }
     }
   }
+}
+
+struct DismissalBoundsRect: Record {
+  @Field var minX: Double?
+  @Field var maxX: Double?
+  @Field var minY: Double?
+  @Field var maxY: Double?
 }
