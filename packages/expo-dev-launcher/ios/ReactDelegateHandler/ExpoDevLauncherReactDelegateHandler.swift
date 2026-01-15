@@ -18,7 +18,9 @@ private class DevLauncherWrapperView: UIView {
     }
 
     let isSwiftUIController = NSStringFromClass(type(of: rootViewController)).contains("UIHostingController")
-    if !isSwiftUIController && devLauncherViewController.parent != rootViewController {
+    // TODO(pmleczek): Revisit this for a more reliable solution
+    let isBrownfield = NSStringFromClass(type(of: rootViewController)).contains("UINavigationController")
+    if !isSwiftUIController && !isBrownfield && devLauncherViewController.parent != rootViewController {
       rootViewController.addChild(devLauncherViewController)
       devLauncherViewController.didMove(toParent: rootViewController)
       devLauncherViewController.view.setNeedsLayout()
