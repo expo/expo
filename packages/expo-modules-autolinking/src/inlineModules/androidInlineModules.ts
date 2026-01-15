@@ -36,12 +36,15 @@ export async function generateInlineModulesListFile(
   const inlineModulesObject = await getMirrorStateObject(watchedDirectories);
   const fileContent = `package inline.modules;
 
-import java.util.Arrays;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import expo.modules.kotlin.ModulesProvider;
 import expo.modules.kotlin.modules.Module;
+import expo.modules.kotlin.services.Service;
 
 public class ExpoInlineModulesList implements ModulesProvider {
 
@@ -52,6 +55,10 @@ ${inlineModulesObject.kotlinClasses.map((moduleClass) => `      ${moduleClass}.c
     );
   }
 
+  @Override
+  public List<Class<? extends @NotNull Service>> getServices() {
+    return new ArrayList<>();
+  }
 }
 
 `;
