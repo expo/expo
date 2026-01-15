@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added helper-API for creating cli extensions with communication between the Expo CLI and running apps. ([#42201](https://github.com/expo/expo/pull/42201) by [@chrfalch](https://github.com/chrfalch))
+- Added helper-API for creating cli extensions with communication between the Expo CLI and running apps. ([#42201](https://github.com/expo/expo/pull/42201) by [@chrfalch](https://github.com/chrfalch))
 - Changed module type to `module` in `package.json` for expo/devtools. ([#42194](https://github.com/expo/expo/pull/42194) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.2 — 2026-01-26
