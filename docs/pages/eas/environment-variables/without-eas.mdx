@@ -20,7 +20,7 @@ If you want to manage environment variables without EAS, you can use tools like 
 
 After creating **.env** file, you need to ensure that the file is committed to your project's Version Control System and is not listed inside **.gitignore** file. A **.env** file committed to your project, is picked by EAS commands like `eas build`, `eas update`, and so on.
 
-The **.env** files load according to the standard .env file resolution and then replaces all references in your code to `process.env.EXPO_PUBLIC_[VARIABLE_NAME]` with the corresponding value set in the .env files. Code inside **node_modules** directory is not affected for security purposes.
+The **.env** files load according to the [standard **.env** file](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use) resolution and then replaces all references in your code to `process.env.EXPO_PUBLIC_[VARIABLE_NAME]` with the corresponding value set in the .env files. Code inside **node_modules** directory is not affected for security purposes.
 
 <BoxLink
   title="Reading environment variables from .env files"
