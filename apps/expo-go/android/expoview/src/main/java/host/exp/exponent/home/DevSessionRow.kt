@@ -24,12 +24,13 @@ fun DevSessionRow(session: DevSession) {
     icon = {
       if (session.iconUrl != null) {
         AsyncImage(
-          session.iconUrl, contentDescription = "Icon", modifier = Modifier
+          session.iconUrl,
+          contentDescription = "Icon",
+          modifier = Modifier
             .size(24.dp)
             .clip(shape = RoundedCornerShape(4.dp))
         )
       } else {
-
         Image(
           painter = if (session.source == DevSessionSource.Desktop) {
             painterResource(id = R.drawable.cli)

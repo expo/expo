@@ -11,8 +11,6 @@ import java.io.IOException
 import kotlin.reflect.KType
 import kotlin.reflect.javaType
 
-
-
 class RESTApiClient(private val sessionRepository: SessionRepository) {
   private val client = OkHttpClient()
   private val gson = Gson()

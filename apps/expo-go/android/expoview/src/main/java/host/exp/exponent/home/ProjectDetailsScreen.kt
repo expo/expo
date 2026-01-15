@@ -16,7 +16,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -39,7 +38,6 @@ import kotlinx.coroutines.flow.Flow
   ExperimentalCoroutinesApi::class,
   ExperimentalMaterial3ExpressiveApi::class
 )
-
 private fun shareProjectUrl(context: Context, fullName: String, projectName: String?) {
   // Construct the URL in the format: exp://expo.dev/@user/project-slug
   val projectUrl = "exp://${RESTApiClient.HOST}/$fullName"
@@ -50,7 +48,6 @@ private fun shareProjectUrl(context: Context, fullName: String, projectName: Str
   }
   context.startActivity(Intent.createChooser(intent, "Share Project"))
 }
-
 
 @Composable
 fun ProjectDetailsScreen(
@@ -72,7 +69,6 @@ fun ProjectDetailsScreen(
   // Filter the branches to only include those that have updates.
   val branchesToRender = branches?.filter { it.updates.isNotEmpty() }
 
-
   Scaffold(
     topBar = {
       TopAppBarWithBackIcon(
@@ -81,7 +77,7 @@ fun ProjectDetailsScreen(
         actions = {
           IconButton(onClick = {
             val app = app
-            if(app != null) {
+            if (app != null) {
               shareProjectUrl(context, app.fullName, app.name)
             }
           }) {
@@ -96,8 +92,8 @@ fun ProjectDetailsScreen(
     bottomBar = bottomBar
   ) { padding ->
 
-    if(app == null) {
-      return@Scaffold  Box(
+    if (app == null) {
+      return@Scaffold Box(
         modifier = Modifier
           .fillMaxWidth()
           .padding(16.dp),

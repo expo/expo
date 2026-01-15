@@ -98,7 +98,6 @@ private data class ManifestExpoClient(
   val iconUrl: String?
 )
 
-
 private const val USER_REVIEW_INFO_PREFS_KEY = "userReviewInfo"
 
 data class UserReviewState(
@@ -294,16 +293,16 @@ class HomeAppViewModel(
     while (true) {
       val discoveredServers = mutableListOf<DevSession>()
       withContext(Dispatchers.IO) {
-          portsToCheck.map { port ->
-            launch {
-              checkDevelopmentServer(baseAddress, "$port")?.let {
-                synchronized(discoveredServers) {
-                  discoveredServers.add(it)
-                }
+        portsToCheck.map { port ->
+          launch {
+            checkDevelopmentServer(baseAddress, "$port")?.let {
+              synchronized(discoveredServers) {
+                discoveredServers.add(it)
               }
             }
-          }.forEach { it.join() }
-        }
+          }
+        }.forEach { it.join() }
+      }
       emit(discoveredServers)
       delay(3000)
     }
