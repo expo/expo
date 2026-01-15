@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix memory corruption when offset typed array was provided to `digest()` or `getRandomValues()`.
+- [Android] Fix memory corruption when offset typed array was provided to `digest()` or `getRandomValues()`. ([#42186](https://github.com/expo/expo/pull/42186) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
