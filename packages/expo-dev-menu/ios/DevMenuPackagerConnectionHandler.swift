@@ -17,21 +17,20 @@ class DevMenuPackagerConnectionHandler {
 #if DEBUG
     self.swizzleRCTDevMenuShow()
 
-    RCTPackagerConnection
-      .shared()
-      .addNotificationHandler(
-        self.sendDevCommandNotificationHandler,
-        queue: DispatchQueue.main,
-        forMethod: "sendDevCommand"
-      )
+    let devSettings = self.manager?.currentBridge?.module(forName: "DevSettings") as? RCTDevSettings
+    let packagerConnection = devSettings?.packagerConnection
 
-    RCTPackagerConnection
-      .shared()
-      .addNotificationHandler(
-        self.devMenuNotificationHanlder,
-        queue: DispatchQueue.main,
-        forMethod: "devMenu"
-      )
+    packagerConnection?.addNotificationHandler(
+      self.sendDevCommandNotificationHandler,
+      queue: DispatchQueue.main,
+      forMethod: "sendDevCommand"
+    )
+
+    packagerConnection?.addNotificationHandler(
+      self.devMenuNotificationHanlder,
+      queue: DispatchQueue.main,
+      forMethod: "devMenu"
+    )
 #endif
   }
 
