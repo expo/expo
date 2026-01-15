@@ -7,6 +7,7 @@ import expo.modules.kotlin.typedarray.TypedArray
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.util.UUID
+import kotlin.math.min
 
 class CryptoModule : Module() {
   private val secureRandom by lazy { SecureRandom() }
@@ -45,7 +46,8 @@ class CryptoModule : Module() {
     val messageDigest = MessageDigest.getInstance(algorithm.value).apply { update(data.toDirectBuffer()) }
 
     val digest: ByteArray = messageDigest.digest()
-    output.write(digest, 0, output.byteLength)
+    val outputLength = min(digest.size, output.byteLength)
+    output.write(digest, 0, outputLength)
   }
 
   private fun getRandomValues(typedArray: TypedArray) {
