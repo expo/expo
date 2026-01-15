@@ -20,6 +20,7 @@ import {
   type LoadOptions,
 } from '@expo/metro-config';
 import chalk from 'chalk';
+import fs from 'fs';
 import http from 'http';
 import path from 'path';
 
@@ -158,14 +159,30 @@ export async function loadMetroConfigAsync(
   if (env.EXPO_METRO_CACHE_STORES_DIR) {
     const { FileStore } = require('@expo/metro-config/file-store');
 
+    // Resolve relative paths to absolute paths based on current working directory
+    const cacheStoresDir = path.isAbsolute(env.EXPO_METRO_CACHE_STORES_DIR)
+      ? env.EXPO_METRO_CACHE_STORES_DIR
+      : path.resolve(process.cwd(), env.EXPO_METRO_CACHE_STORES_DIR);
+
+    // Create the directory if it doesn't exist
+    try {
+      await fs.promises.mkdir(cacheStoresDir, { recursive: true });
+    } catch (error: any) {
+      if (error.code !== 'EEXIST') {
+        throw error;
+      }
+    }
+
     // Check if user has custom cacheStores in their metro.config.js
     const userHasCustomCacheStores =
       !resolvedConfig.isEmpty && resolvedConfig.config.cacheStores !== undefined;
 
     if (userHasCustomCacheStores) {
       Log.warn(
-        `Using EXPO_METRO_CACHE_STORES_DIR="${env.EXPO_METRO_CACHE_STORES_DIR}" which overrides cacheStores from metro.config.js`
+        `Using EXPO_METRO_CACHE_STORES_DIR="${cacheStoresDir}" which overrides cacheStores from metro.config.js`
       );
+    } else {
+      Log.log(chalk.gray(`Using Metro cache directory: ${cacheStoresDir}`));
     }
 
     // Override cacheStores with the env-specified directory
@@ -173,7 +190,7 @@ export async function loadMetroConfigAsync(
       ...config,
       cacheStores: [
         new FileStore({
-          root: env.EXPO_METRO_CACHE_STORES_DIR,
+          root: cacheStoresDir,
         }),
       ],
     };
