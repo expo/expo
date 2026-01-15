@@ -8,9 +8,12 @@
 
 ### 🐛 Bug fixes
 
+- [file-system] Fix package exports for Typescript projects ([#39543](https://github.com/expo/expo/pull/39543) by [@smoores-dev](https://github.com/smoores-dev))
+
 ### 💡 Others
 
-- [Android] Add `android:maxSdkVersion` annotation to  `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
+- [Android] Add `android:maxSdkVersion` annotation to `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
+- [Android] Removed references to legacy native modules API. ([#41791](https://github.com/expo/expo/pull/41791) by [@lukmccall](https://github.com/lukmccall))
 
 ## 19.0.20 - 2025-12-05
 

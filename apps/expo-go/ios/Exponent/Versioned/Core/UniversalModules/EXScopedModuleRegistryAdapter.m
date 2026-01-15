@@ -5,11 +5,8 @@
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXSensorsManagerBinding.h"
 #import "EXConstantsBinding.h"
-#import "EXUnversioned.h"
-#import "EXScopedFontLoader.h"
 #import "EXScopedSecureStore.h"
 #import "EXScopedPermissions.h"
-#import "EXScopedLocalAuthentication.h"
 #import "EXScopedErrorRecoveryModule.h"
 
 #import "EXScopedReactNativeAdapter.h"
@@ -49,7 +46,7 @@ if (params[@"fileSystemDirectories"]) {
   EXScopedReactNativeAdapter *reactNativeAdapter = [[EXScopedReactNativeAdapter alloc] init];
   [moduleRegistry registerInternalModule:reactNativeAdapter];
 
-  EXExpoUserNotificationCenterProxy *userNotificationCenter = [[EXExpoUserNotificationCenterProxy alloc] initWithUserNotificationCenter:kernelServices[EX_UNVERSIONED(@"EXUserNotificationCenter")]];
+  EXExpoUserNotificationCenterProxy *userNotificationCenter = [[EXExpoUserNotificationCenterProxy alloc] initWithUserNotificationCenter:kernelServices[@"EXUserNotificationCenter"]];
   [moduleRegistry registerInternalModule:userNotificationCenter];
 
 #if __has_include(<ExpoModulesCore/EXPermissionsService.h>)

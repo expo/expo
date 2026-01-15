@@ -11,6 +11,7 @@
 
 #import <ExpoModulesJSI/EXJSIConversions.h>
 
+#import <React/RCTComponentViewFactory.h>
 #import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 
 using namespace expo;
@@ -196,6 +197,19 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
     _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue));
 #endif
   }
+}
+
+#pragma mark - Component registration
+
++ (void)registerComponent:(nonnull EXViewModuleWrapper *)viewModule appContext:(nonnull EXAppContext *)appContext
+{
+  Class wrappedViewModuleClass = [EXViewModuleWrapper createViewModuleWrapperClassWithModule:viewModule appId:appContext.appIdentifier];
+  Class viewClass = [ExpoFabricView makeViewClassForAppContext:appContext
+                                                    moduleName:[viewModule moduleName]
+                                                      viewName:[viewModule viewName]
+                                                     className:NSStringFromClass(wrappedViewModuleClass)];
+
+  [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
 }
 
 @end

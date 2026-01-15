@@ -14,15 +14,6 @@ const fileContentsUtils_1 = require("./fileContentsUtils");
 const { createBuildGradlePropsConfigPlugin } = config_plugins_1.AndroidConfig.BuildProperties;
 exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     {
-        propName: 'newArchEnabled',
-        propValueGetter: (config) => {
-            if (config.android?.newArchEnabled !== undefined) {
-                config_plugins_1.WarningAggregator.addWarningAndroid('withAndroidBuildProperties', 'android.newArchEnabled is deprecated, use app config `newArchEnabled` instead.', 'https://docs.expo.dev/versions/latest/config/app/#newarchenabled');
-            }
-            return config.android?.newArchEnabled?.toString();
-        },
-    },
-    {
         propName: 'android.minSdkVersion',
         propValueGetter: (config) => config.android?.minSdkVersion?.toString(),
     },
@@ -109,6 +100,15 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     {
         propName: 'exclusiveEnterpriseRepository',
         propValueGetter: (config) => config.android?.exclusiveMavenMirror,
+    },
+    {
+        propName: 'hermesV1Enabled',
+        propValueGetter: (config) => {
+            if (config.android?.useHermesV1 && config.android?.buildReactNativeFromSource !== true) {
+                config_plugins_1.WarningAggregator.addWarningAndroid('withAndroidBuildProperties', 'Hermes V1 requires building React Native from source. Set `buildReactNativeFromSource` to `true` to enable it.');
+            }
+            return config.android?.useHermesV1?.toString();
+        },
     },
 ], 'withAndroidBuildProperties');
 /**

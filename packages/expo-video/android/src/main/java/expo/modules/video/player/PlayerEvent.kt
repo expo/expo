@@ -7,6 +7,7 @@ import androidx.media3.common.util.UnstableApi
 import expo.modules.video.VideoView
 import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
+import expo.modules.video.listeners.VideoPlayerListener
 import expo.modules.video.records.AudioTrack
 import expo.modules.video.records.AvailableSubtitleTracksChangedEventPayload
 import expo.modules.video.records.AvailableAudioTracksChangedEventPayload

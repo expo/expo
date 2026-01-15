@@ -1,8 +1,9 @@
 import type { ColorValue, ImageSourcePropType } from 'react-native';
+import type { StackHeaderBadgeProps, StackHeaderIconProps, StackHeaderLabelProps, StackHeaderMenuActionProps, StackHeaderMenuProps } from '../layouts/stack-utils';
 import type { LinkMenuActionProps, LinkMenuProps } from '../link/elements';
 import type { NativeTabsTriggerBadgeProps, NativeTabsTriggerIconProps, NativeTabsTriggerLabelProps } from '../native-tabs';
-export type BadgeProps = NativeTabsTriggerBadgeProps;
-export type IconProps = NativeTabsTriggerIconProps;
+export type BadgeProps = NativeTabsTriggerBadgeProps | StackHeaderBadgeProps;
+export type IconProps = NativeTabsTriggerIconProps | StackHeaderIconProps;
 export interface VectorIconProps<NameT extends string> {
     /**
      * The family of the vector icon.
@@ -20,7 +21,7 @@ export interface VectorIconProps<NameT extends string> {
      */
     name: NameT;
 }
-export type LabelProps = NativeTabsTriggerLabelProps;
-export type MenuActionProps = LinkMenuActionProps;
-export type MenuProps = LinkMenuProps;
+export type LabelProps = NativeTabsTriggerLabelProps | StackHeaderLabelProps;
+export type MenuActionProps = LinkMenuActionProps | StackHeaderMenuActionProps;
+export type MenuProps = LinkMenuProps | StackHeaderMenuProps;
 //# sourceMappingURL=types.d.ts.map

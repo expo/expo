@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import type { ViewProps } from 'react-native';
+import { type ColorValue, type TextStyle, type ViewProps } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { RouterToolbarHostProps, RouterToolbarItemProps } from './native.types';
@@ -25,8 +25,30 @@ export function RouterToolbarHost(props: RouterToolbarHostProps) {
 }
 
 const RouterToolbarItemView: React.ComponentType<
-  ViewProps & { identifier: string; title?: string; systemImageName?: SFSymbol; type?: string }
+  ViewProps & {
+    identifier: string;
+    title?: string;
+    systemImageName?: SFSymbol;
+    image?: number;
+    type?: string;
+    titleStyle?: {
+      fontFamily?: string;
+      fontSize?: number;
+      fontWeight?: TextStyle['fontWeight'];
+      color?: ColorValue;
+    };
+    tintColor?: ColorValue;
+  }
 > = requireNativeView('ExpoRouterToolbarModule', 'RouterToolbarItemView');
+
 export function RouterToolbarItem(props: RouterToolbarItemProps) {
-  return <RouterToolbarItemView {...props} />;
+  // Needed to pass shared object ID to native side
+  const imageObjectId = (
+    props.image as
+      | {
+          __expo_shared_object_id__: number;
+        }
+      | undefined
+  )?.__expo_shared_object_id__;
+  return <RouterToolbarItemView {...props} image={imageObjectId} />;
 }

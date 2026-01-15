@@ -9,6 +9,9 @@ function SplitViewColumn(props) {
       <react_native_safe_area_context_1.SafeAreaProvider>{props.children}</react_native_safe_area_context_1.SafeAreaProvider>
     </experimental_1.SplitViewScreen.Column>);
 }
+/**
+ * @platform iOS 26+
+ */
 function SplitViewInspector(props) {
     return <experimental_1.SplitViewScreen.Inspector>{props.children}</experimental_1.SplitViewScreen.Inspector>;
 }

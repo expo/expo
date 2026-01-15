@@ -1,17 +1,31 @@
+import type { ImageRef } from 'expo-image';
 import { type PropsWithChildren } from 'react';
-import { type ViewProps } from 'react-native';
+import { type ViewProps, type ColorValue } from 'react-native';
+import type { BasicTextStyle } from '../../utils/font';
 export interface NativeLinkPreviewActionProps {
     identifier: string;
     title: string;
     icon?: string;
+    image?: ImageRef | null;
     children?: React.ReactNode;
     disabled?: boolean;
     destructive?: boolean;
+    discoverabilityLabel?: string;
+    subtitle?: string;
+    accessibilityLabel?: string;
+    accessibilityHint?: string;
     displayAsPalette?: boolean;
     displayInline?: boolean;
+    preferredElementSize?: 'auto' | 'small' | 'medium' | 'large';
     isOn?: boolean;
     keepPresented?: boolean;
+    hidden?: boolean;
+    tintColor?: ColorValue;
+    barButtonItemStyle?: 'plain' | 'prominent';
+    sharesBackground?: boolean;
+    hidesSharedBackground?: boolean;
     onSelected: () => void;
+    titleStyle?: BasicTextStyle;
 }
 export declare function NativeLinkPreviewAction(props: NativeLinkPreviewActionProps): import("react").JSX.Element | null;
 export interface TabPath {
@@ -40,9 +54,15 @@ export interface NativeLinkPreviewContentProps extends ViewProps {
     };
 }
 export declare function NativeLinkPreviewContent(props: NativeLinkPreviewContentProps): import("react").JSX.Element | null;
+interface DismissalBoundsRect {
+    minX?: number;
+    maxX?: number;
+    minY?: number;
+    maxY?: number;
+}
 export declare function LinkZoomTransitionEnabler(props: {
     zoomTransitionSourceIdentifier: string;
-    preventInteractiveDismissal?: boolean;
+    dismissalBoundsRect?: DismissalBoundsRect | null;
 }): import("react").JSX.Element | null;
 interface LinkSourceAlignmentRect {
     x: number;
@@ -50,10 +70,12 @@ interface LinkSourceAlignmentRect {
     width: number;
     height: number;
 }
-export declare function LinkZoomTransitionSource(props: PropsWithChildren<{
+interface LinkZoomTransitionSourceProps extends PropsWithChildren {
     identifier: string;
     alignment?: LinkSourceAlignmentRect;
-}>): import("react").JSX.Element | null;
+    animateAspectRatioChange?: boolean;
+}
+export declare function LinkZoomTransitionSource(props: LinkZoomTransitionSourceProps): import("react").JSX.Element | null;
 export declare function LinkZoomTransitionAlignmentRectDetector(props: {
     identifier: string;
     children: React.ReactNode;

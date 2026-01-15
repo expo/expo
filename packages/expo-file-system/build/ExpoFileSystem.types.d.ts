@@ -316,7 +316,8 @@ export type FileInfo = {
      */
     exists: boolean;
     /**
-     * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
+     * A URI pointing to the file. This is the same as the `fileUri` input parameter
+     * and preserves its scheme (for example, `file://` or `content://`).
      */
     uri?: string;
     /**

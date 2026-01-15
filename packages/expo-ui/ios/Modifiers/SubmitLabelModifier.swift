@@ -13,7 +13,7 @@ internal enum SubmitLabelType: String, Enumerable {
   case route = "route"
   case search = "search"
   case send = "send"
-    
+
   var toSubmitLabel: SubmitLabel {
     switch self {
     case .return: return .`return`

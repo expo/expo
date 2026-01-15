@@ -12,13 +12,13 @@ import com.google.common.truth.Truth
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.ModuleRegistry
-import expo.modules.kotlin.RuntimeContext
 import expo.modules.kotlin.defaultmodules.CoreModule
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.jni.tests.RuntimeHolder
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.modules.ModuleDefinitionBuilder
+import expo.modules.kotlin.runtime.MainRuntime
 import expo.modules.kotlin.sharedobjects.ClassRegistry
 import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import expo.modules.kotlin.weak
@@ -29,15 +29,16 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 
-private fun defaultAppContextMock(): Pair<AppContext, RuntimeContext> {
+private fun defaultAppContextMock(): Pair<AppContext, MainRuntime> {
   val appContextMock = mockk<AppContext>()
-  val runtimeContext = mockk<RuntimeContext>()
+  val runtimeContext = mockk<MainRuntime>()
   val classRegistry = ClassRegistry()
 
   every { runtimeContext.classRegistry } answers { classRegistry }
   every { runtimeContext.appContext } answers { appContextMock }
   every { appContextMock.findView<View>(capture(slot())) } answers { mockk() }
   every { appContextMock.hostingRuntimeContext } answers { runtimeContext }
+  every { appContextMock.runtime } answers { runtimeContext }
 
   return appContextMock to runtimeContext
 }
@@ -96,27 +97,32 @@ internal inline fun withJSIInterop(
         register(it, null)
       }
     }
-    val sharedObjectRegistry = SharedObjectRegistry(appContextMock.hostingRuntimeContext)
+    val sharedObjectRegistry = SharedObjectRegistry(appContextMock.runtime)
     every { appContextMock.registry } answers { registry }
     every { runtimeContext.sharedObjectRegistry } answers { sharedObjectRegistry }
 
+    val runtimeHolder = RuntimeHolder()
+    val runtimePtr = runtimeHolder.createRuntime()
+    val callInvokerHolder = runtimeHolder.createCallInvoker()
+
+    every { runtimeContext.deallocator } answers { jniDeallocator }
+
+    val jsiContext = MainRuntimeInstaller(runtimeContext)
+      .install(
+        runtimePtr,
+        callInvokerHolder
+      )
+
+    every { runtimeContext.jsiContext } answers { jsiContext }
+
+    jniDeallocator.use {
+      block(jsiContext, methodQueue)
+    }
+
     // We aim to closely replicate the lifecycle of each part as it functions in the real app.
     // That’s why the JSIContext outlives the JS runtime.
-    JSIContext().use { jsiContext ->
-      every { runtimeContext.jniDeallocator } answers { jniDeallocator }
-      every { runtimeContext.jsiContext } answers { jsiContext }
-
-      RuntimeHolder().use { runtimeHolder ->
-        val runtimePtr = runtimeHolder.createRuntime()
-        val callInvokerHolder = runtimeHolder.createCallInvoker()
-
-        jsiContext.installJSI(runtimeContext, runtimePtr, callInvokerHolder)
-
-        jniDeallocator.use {
-          block(jsiContext, methodQueue)
-        }
-      }
-    }
+    runtimeHolder.close()
+    jsiContext.close()
   }
   Truth.assertWithMessage("Memory leak detected").that(jniDeallocator.inspectMemory()).isEmpty()
 }
@@ -163,9 +169,10 @@ class SingleTestContext(
     return jsiInterop.evaluateScript("(new $moduleRef.$className()).$functionName($args)")
   }
 
-  fun callClassStatic(className: String, functionName: String, args: String = "") = jsiInterop.evaluateScript(
-    "$moduleRef.$className.$functionName($args)"
-  )
+  fun callClassStatic(className: String, functionName: String, args: String = "") =
+    jsiInterop.evaluateScript(
+      "$moduleRef.$className.$functionName($args)"
+    )
 
   fun callClassStaticAsync(className: String, functionName: String, args: String = "", shouldBeResolved: Boolean = true) =
     jsiInterop.waitForAsyncFunction(
@@ -210,7 +217,8 @@ internal inline fun withSingleModule(
     module,
     numberOfReloads = numberOfReloads,
     block = { methodQueue ->
-      val appContext = runtimeContextHolder.get()?.appContext ?: throw IllegalStateException("AppContext is not available")
+      val appContext = runtimeHolder.get()?.appContext
+        ?: throw IllegalStateException("AppContext is not available")
       val moduleList = appContext.registry.registry.toList()
       if (moduleList.size != 1) {
         throw IllegalStateException("Module list should contain only one module")

@@ -172,11 +172,11 @@ div.tippy-box {
 }
 
 .diff-gutter-col {
-  @apply w-10 bg-element;
+  @apply w-6 bg-element;
 }
 
 .diff-gutter {
-  @apply px-2 text-3xs;
+  @apply px-1 text-3xs;
   text-align: right;
   user-select: none;
 }

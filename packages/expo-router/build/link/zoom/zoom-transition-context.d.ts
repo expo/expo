@@ -1,14 +1,37 @@
-import { type PropsWithChildren } from 'react';
 export type ZoomTransitionSourceContextValueType = {
     identifier: string;
+    hasZoomSource: boolean;
     addSource: () => void;
     removeSource: () => void;
 } | undefined;
 export declare const ZoomTransitionSourceContext: import("react").Context<ZoomTransitionSourceContextValueType>;
-export declare const ZoomTransitionTargetContext: import("react").Context<{
+/**
+ * Defines the screen bounds where interactive dismissal gestures are allowed for zoom transitions.
+ *
+ * @platform ios
+ */
+export interface DismissalBoundsRect {
+    /**
+     * Minimum X coordinate (left edge) where dismissal gestures are allowed.
+     */
+    minX?: number;
+    /**
+     * Maximum X coordinate (right edge) where dismissal gestures are allowed.
+     */
+    maxX?: number;
+    /**
+     * Minimum Y coordinate (top edge) where dismissal gestures are allowed.
+     */
+    minY?: number;
+    /**
+     * Maximum Y coordinate (bottom edge) where dismissal gestures are allowed.
+     */
+    maxY?: number;
+}
+export interface ZoomTransitionTargetContextValueType {
     identifier: string | null;
-}>;
-export declare function ZoomTransitionTargetContextProvider({ route, children, }: PropsWithChildren<{
-    route: unknown;
-}>): string | number | bigint | boolean | Iterable<import("react").ReactNode> | Promise<string | number | bigint | boolean | import("react").ReactPortal | import("react").ReactElement<unknown, string | import("react").JSXElementConstructor<any>> | Iterable<import("react").ReactNode> | null | undefined> | import("react").JSX.Element | null | undefined;
+    dismissalBoundsRect?: DismissalBoundsRect | null;
+    setDismissalBoundsRect?: (rect: DismissalBoundsRect | null) => void;
+}
+export declare const ZoomTransitionTargetContext: import("react").Context<ZoomTransitionTargetContextValueType>;
 //# sourceMappingURL=zoom-transition-context.d.ts.map

@@ -31,11 +31,10 @@
   ],
   "dependencies": {
     "@xmldom/xmldom": "^0.8.8",
-    "base64-js": "^1.2.3",
+    "base64-js": "^1.5.1",
     "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
-    "@types/base64-js": "^1.2.5",
     "expo-module-scripts": "^5.0.7"
   },
   "publishConfig": {

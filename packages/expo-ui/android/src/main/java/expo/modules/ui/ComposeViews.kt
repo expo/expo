@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import androidx.core.view.size
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
@@ -195,20 +194,5 @@ class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextP
         fontWeight = props.fontWeight.value.toComposeFontWeight()
       )
     )
-  }
-}
-
-class HostView(context: Context, appContext: AppContext) :
-  ExpoComposeView<ComposeProps>(context, appContext, withHostingView = true) {
-  @Composable
-  override fun ComposableScope.Content() {
-    for (index in 0..<this@HostView.size) {
-      val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
-      with(this) {
-        with(child) {
-          Content()
-        }
-      }
-    }
   }
 }

@@ -13,7 +13,7 @@ export default function AlertDialogScreen() {
   return (
     <ScrollPage>
       <Section title="Alert Dialog">
-        <Host>
+        <Host matchContents>
           <Button onPress={() => setLargeDialogVisible(true)}>Open Large Alert Dialog</Button>
 
           <AlertDialog
@@ -29,7 +29,7 @@ export default function AlertDialogScreen() {
       </Section>
 
       <Section title="Small Alert Dialog">
-        <Host>
+        <Host matchContents>
           <Button onPress={() => setSmallDialogVisible(true)}>Open Small Alert Dialog</Button>
 
           <AlertDialog

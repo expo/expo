@@ -26,66 +26,66 @@ export default function ProgressScreen() {
     <Page>
       <ScrollView>
         <Section title="Indeterminate progress" gap={16}>
-          <Host style={{ width: 30, height: 30 }}>
+          <Host matchContents>
             <CircularProgress />
           </Host>
-          <Host>
+          <Host matchContents={{ vertical: true }}>
             <LinearProgress />
           </Host>
         </Section>
         <Section title="Determinate progress" gap={16}>
-          <Host style={{ width: 30, height: 30 }}>
+          <Host matchContents>
             <CircularProgress progress={progress} />
           </Host>
-          <Host>
+          <Host matchContents={{ vertical: true }}>
             <LinearProgress progress={progress} />
           </Host>
         </Section>
         <Section title="Color" gap={16}>
-          <Host style={{ width: 30, height: 30 }}>
+          <Host matchContents>
             <CircularProgress progress={progress} color="red" />
           </Host>
-          <Host>
+          <Host matchContents={{ vertical: true }}>
             <LinearProgress progress={progress} color="red" />
           </Host>
         </Section>
         <Section title="Track color" gap={16}>
-          <Host style={{ width: 30, height: 30 }}>
+          <Host matchContents>
             <CircularProgress elementColors={{ trackColor: '#cccccc' }} />
           </Host>
-          <Host>
+          <Host matchContents={{ vertical: true }}>
             <LinearProgress elementColors={{ trackColor: '#cccccc' }} />
           </Host>
         </Section>
         <Section title="Wavy - Indeterminate progress" gap={16}>
-          <Host style={{ width: 30, height: 30 }}>
+          <Host matchContents>
             <CircularWavyProgress />
           </Host>
-          <Host>
+          <Host matchContents={{ vertical: true }}>
             <LinearWavyProgress />
           </Host>
         </Section>
         <Section title="Wavy - Determinate progress" gap={16}>
-          <Host style={{ width: 30, height: 30 }}>
+          <Host matchContents>
             <CircularWavyProgress progress={progress} />
           </Host>
-          <Host>
+          <Host matchContents={{ vertical: true }}>
             <LinearWavyProgress progress={progress} />
           </Host>
         </Section>
         <Section title="Wavy - Color" gap={16}>
-          <Host style={{ width: 30, height: 30 }}>
+          <Host matchContents>
             <CircularWavyProgress progress={progress} color="red" />
           </Host>
-          <Host>
+          <Host matchContents={{ vertical: true }}>
             <LinearWavyProgress progress={progress} color="red" />
           </Host>
         </Section>
         <Section title="Wavy - Track color" gap={16}>
-          <Host style={{ width: 30, height: 30 }}>
+          <Host matchContents>
             <CircularWavyProgress elementColors={{ trackColor: '#cccccc' }} />
           </Host>
-          <Host>
+          <Host matchContents={{ vertical: true }}>
             <LinearWavyProgress elementColors={{ trackColor: '#cccccc' }} />
           </Host>
         </Section>

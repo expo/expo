@@ -1,5 +1,7 @@
+import type { ImageRef } from 'expo-image';
 import type { ColorValue } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
+import type { BasicTextStyle } from '../utils/font';
 export interface RouterToolbarHostProps {
     children?: React.ReactNode;
 }
@@ -8,7 +10,8 @@ export interface RouterToolbarItemProps {
     identifier: string;
     title?: string;
     systemImageName?: SFSymbol;
-    type?: 'normal' | 'fixedSpacer' | 'fluidSpacer';
+    image?: ImageRef | null;
+    type?: 'normal' | 'fixedSpacer' | 'fluidSpacer' | 'searchBar';
     tintColor?: ColorValue;
     hidesSharedBackground?: boolean;
     sharesBackground?: boolean;
@@ -20,11 +23,11 @@ export interface RouterToolbarItemProps {
     badgeConfiguration?: {
         value?: string;
         backgroundColor?: ColorValue;
-        color?: ColorValue;
-        fontFamily?: string;
-        fontSize?: number;
-        fontWeight?: string;
-    };
+    } & BasicTextStyle;
+    titleStyle?: BasicTextStyle;
+    accessibilityLabel?: string;
+    accessibilityHint?: string;
+    disabled?: boolean;
     onSelected?: () => void;
 }
 //# sourceMappingURL=native.types.d.ts.map

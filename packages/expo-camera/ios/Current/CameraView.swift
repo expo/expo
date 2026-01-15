@@ -58,6 +58,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   }
 
   internal var videoBitrate: Int?
+  var videoStabilizationMode: VideoStabilizationMode = .auto
 
   var presetCamera = AVCaptureDevice.Position.back {
     didSet {

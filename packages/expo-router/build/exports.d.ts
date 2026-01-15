@@ -3,6 +3,9 @@ export { useRouter, useUnstableGlobalHref, usePathname, useNavigationContainerRe
 export { router, Router } from './imperative-api';
 export * from './link/Link';
 export * from './link/elements';
+export { usePreventZoomTransitionDismissal } from './link/zoom/usePreventZoomTransitionDismissal';
+export { type UsePreventZoomTransitionDismissalOptions } from './link/zoom/usePreventZoomTransitionDismissal.types';
+export type { DismissalBoundsRect } from './link/zoom/zoom-transition-context';
 export { useIsPreview } from './link/preview/PreviewRouteContext';
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };
@@ -25,4 +28,6 @@ export type { SingularOptions } from './useScreens';
 export type * from './types';
 export * from './color';
 export { Badge, BadgeProps, Icon, IconProps, Label, LabelProps, VectorIcon, VectorIconProps, } from './primitives';
+export * from './layouts/stack-utils';
+export { unstable_navigationEvents } from './navigationEvents';
 //# sourceMappingURL=exports.d.ts.map

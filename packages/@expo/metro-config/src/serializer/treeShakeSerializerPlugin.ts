@@ -149,7 +149,6 @@ function populateModuleWithImportUsage(value: Module<AdvancedMixedOutput>) {
     assert(reconcile, 'reconcile settings are required in the module graph for post transform.');
 
     const deps = collectDependenciesForShaking(
-      // @ts-expect-error
       ast,
       reconcile.collectDependenciesOptions
     ).dependencies;

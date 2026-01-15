@@ -20,6 +20,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.io.use
 
 internal fun createOutputFile(cacheDir: File, extension: String): File {
   val filePath = FileUtilities.generateOutputPath(cacheDir, ImagePickerConstants.CACHE_DIR_NAME, extension)
@@ -30,10 +31,30 @@ internal fun createOutputFile(cacheDir: File, extension: String): File {
   }
 }
 
-internal fun getType(contentResolver: ContentResolver, uri: Uri): String =
-  contentResolver.getType(uri)
+internal fun getType(contentResolver: ContentResolver, uri: Uri): String? {
+  val mimeFromCursor: () -> String? = {
+    contentResolver
+      .query(
+        uri,
+        listOf(DocumentsContract.Document.COLUMN_MIME_TYPE).toTypedArray(),
+        null,
+        null,
+        null
+      ).use { cursor ->
+        if (cursor?.moveToFirst() == true) {
+          val columnIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE)
+          if (columnIndex != -1 && !cursor.isNull(columnIndex)) {
+            cursor.getString(columnIndex)
+          }
+        }
+        null
+      }
+  }
+
+  return contentResolver.getType(uri)
+    ?: mimeFromCursor()
     ?: getTypeFromFileUrl(uri.toString())
-    ?: throw FailedToDeduceTypeException()
+}
 
 private fun getTypeFromFileUrl(url: String): String? {
   val extension = MimeTypeMap.getFileExtensionFromUrl(url)
@@ -76,12 +97,12 @@ internal fun String.toImageFileExtension(): String = when {
   else -> ".jpeg"
 }
 
-internal fun Uri.toMediaType(contentResolver: ContentResolver): MediaType {
+internal fun Uri.toMediaType(contentResolver: ContentResolver): MediaType? {
   val type = getType(contentResolver, this)
   return when {
-    type.contains("image/") -> MediaType.IMAGE
-    type.contains("video/") -> MediaType.VIDEO
-    else -> throw FailedToDeduceTypeException()
+    type?.contains("image/") == true -> MediaType.IMAGE
+    type?.contains("video/") == true -> MediaType.VIDEO
+    else -> null
   }
 }
 

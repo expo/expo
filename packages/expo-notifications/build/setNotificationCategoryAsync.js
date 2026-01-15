@@ -12,7 +12,7 @@ import NotificationCategoriesModule from './NotificationCategoriesModule';
  * @platform ios
  * @header categories
  */
-export default async function setNotificationCategoryAsync(identifier, actions, options) {
+export async function setNotificationCategoryAsync(identifier, actions, options) {
     if (!NotificationCategoriesModule.setNotificationCategoryAsync) {
         throw new UnavailabilityError('Notifications', 'setNotificationCategoryAsync');
     }

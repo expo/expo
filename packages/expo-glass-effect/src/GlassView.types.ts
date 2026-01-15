@@ -1,6 +1,9 @@
-import { ViewProps } from 'react-native';
+import { type Ref } from 'react';
+import { View, type ViewProps } from 'react-native';
 
 export type GlassStyle = 'clear' | 'regular';
+
+export type GlassColorScheme = 'auto' | 'light' | 'dark';
 
 export type GlassViewProps = {
   /**
@@ -17,4 +20,11 @@ export type GlassViewProps = {
    * @default false
    */
   isInteractive?: boolean;
+  /**
+   * The color scheme for the glass effect appearance.
+   * Use this to override the system appearance when your app has its own theme toggle.
+   * @default 'auto'
+   */
+  colorScheme?: GlassColorScheme;
+  ref?: Ref<View>;
 } & ViewProps;

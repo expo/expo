@@ -85,7 +85,15 @@ export interface DrawableIcon {
   drawable?: string;
 }
 
+/**
+ * Material icon name for Android native tabs.
+ *
+ * @platform android
+ */
 export interface MaterialIcon {
+  /**
+   * Material icon glyph name. See the [Material icons for the complete catalog](https://fonts.google.com/icons).
+   */
   md: AndroidSymbol;
 }
 

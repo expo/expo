@@ -2,7 +2,7 @@ import { Button } from '@expo/styleguide';
 import { captureMessage } from '@sentry/browser';
 import { useEffect, useState } from 'react';
 
-import { getRedirectPath } from '~/common/error-utilities';
+import { getRedirectPath } from '~/common/client-redirects';
 import DocumentationHead from '~/components/DocumentationHead';
 import { NotFoundImage, RedirectImage, ServerErrorImage } from '~/ui/components/ErrorPage';
 import { Layout } from '~/ui/components/Layout';

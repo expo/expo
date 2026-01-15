@@ -80,7 +80,7 @@ try {                             \
   throwNewJavaException(                                       \
     UnexpectedException::create(                               \
       "[" + this->info.name + "] Cannot convert '" + stringRepresentation + \
-      "' to a Kotlin type.").get()                             \
+      "' to a Kotlin type. " + exception.what()).get()                             \
   );                              \
 }
 

@@ -109,7 +109,13 @@ class ExpoUIModule : Module() {
     View(BoxView::class)
     View(RowView::class)
     View(ColumnView::class)
-    View(HostView::class)
+    View(HostView::class) {
+      Events("onLayoutContent")
+
+      OnViewDidUpdateProps { view ->
+        view.onViewDidUpdateProps()
+      }
+    }
     View(TextView::class)
     View(CarouselView::class)
 

@@ -26,9 +26,9 @@ export type PointStyle = 'circle' | 'square' | 'diamond';
  */
 export type ChartDataPoint = {
   /**
-   * X-axis value (label).
+   * X-axis value (can be a label string or numeric value).
    */
-  x: string;
+  x: string | number;
   /**
    * Y-axis value (numeric).
    */
@@ -214,11 +214,13 @@ export function Chart({
   style,
   data,
   modifiers,
+  referenceLines,
   ...props
 }: ChartProps & { style?: StyleProp<ViewStyle> }) {
   return (
     <ChartNativeView
       data={data}
+      referenceLines={referenceLines}
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...props}

@@ -8,6 +8,7 @@ protocol CameraVideoRecordingDelegate: AnyObject {
   var mirror: Bool { get }
   var appContext: AppContext? { get }
   var videoBitrate: Int? { get }
+  var videoStabilizationMode: VideoStabilizationMode { get }
 }
 
 class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
@@ -28,7 +29,7 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
     }
 
     if let connection = videoFileOutput.connection(with: .video) {
-      let orientation = delegate?.responsiveWhenOrientationLocked == true ?
+      let orientation = await delegate?.responsiveWhenOrientationLocked == true ?
         delegate?.physicalOrientation ?? .unknown : UIDevice.current.orientation
       connection.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
       await setVideoOptions(options: options, for: connection, videoFileOutput: videoFileOutput, promise: promise)
@@ -81,6 +82,11 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
 
     if let maxFileSize = options.maxFileSize {
       videoFileOutput.maxRecordedFileSize = Int64(maxFileSize)
+    }
+
+    let avMode = (delegate?.videoStabilizationMode ?? .auto).toAVCaptureVideoStabilizationMode()
+    if connection.isVideoStabilizationSupported {
+      connection.preferredVideoStabilizationMode = avMode
     }
 
     if let codec = options.codec {

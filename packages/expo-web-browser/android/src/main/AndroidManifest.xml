@@ -5,4 +5,13 @@
       <action android:name="android.support.customtabs.action.CustomTabsService" />
     </intent>
   </queries>
+
+  <application>
+    <activity
+        android:name=".BrowserProxyActivity"
+        android:taskAffinity=".webContainer"
+        android:launchMode="singleTop"
+        android:theme="@android:style/Theme.Translucent.NoTitleBar"
+        android:exported="false"/>
+  </application>
 </manifest>

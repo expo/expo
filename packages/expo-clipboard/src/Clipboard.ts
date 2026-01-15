@@ -2,28 +2,15 @@ import { type EventSubscription, UnavailabilityError, Platform } from 'expo-modu
 
 import type {
   ClipboardImage,
-  ContentType,
+  ClipboardEvent,
   GetImageOptions,
   GetStringOptions,
   SetStringOptions,
 } from './Clipboard.types';
 import { ClipboardPasteButton } from './ClipboardPasteButton';
-import ExpoClipboard from './ExpoClipboard';
+import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
 
-const onClipboardEventName = 'onClipboardChanged';
-
-type ClipboardEvent = {
-  /**
-   * @deprecated Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
-   */
-  content: string;
-  /**
-   * An array of content types that are available on the clipboard.
-   */
-  contentTypes: ContentType[];
-};
-
-export { EventSubscription as Subscription, ClipboardEvent };
+export { EventSubscription as Subscription };
 
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
@@ -220,20 +207,7 @@ export async function hasImageAsync(): Promise<boolean> {
  * ```
  */
 export function addClipboardListener(listener: (event: ClipboardEvent) => void): EventSubscription {
-  // TODO: Get rid of this wrapper once we remove deprecated `content` property (not before SDK47)
-  const listenerWrapper = (event: ClipboardEvent) => {
-    const wrappedEvent: ClipboardEvent = {
-      ...event,
-      get content(): string {
-        console.warn(
-          "The 'content' property of the clipboard event is deprecated. Use 'getStringAsync()' instead to get clipboard content"
-        );
-        return '';
-      },
-    };
-    listener(wrappedEvent);
-  };
-  return ExpoClipboard.addListener(onClipboardEventName, listenerWrapper);
+  return ExpoClipboard.addListener(clipboardEventName, listener);
 }
 
 /**

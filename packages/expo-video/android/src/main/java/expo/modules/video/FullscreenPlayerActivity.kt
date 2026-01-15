@@ -22,6 +22,7 @@ import expo.modules.video.utils.applyPiPParams
 import expo.modules.video.utils.applyRectHint
 import expo.modules.video.utils.calculatePiPAspectRatio
 import expo.modules.video.utils.calculateRectHint
+import expo.modules.video.managers.VideoManager
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class FullscreenPlayerActivity : Activity() {

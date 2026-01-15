@@ -493,6 +493,8 @@ export type AppleMapsViewProps = {
    */
   onCameraMove?: (event: {
     coordinates: Coordinates;
+    latitudeDelta: number;
+    longitudeDelta: number;
     zoom: number;
     tilt: number;
     bearing: number;

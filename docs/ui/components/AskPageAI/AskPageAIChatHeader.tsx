@@ -4,13 +4,10 @@ import { Minimize02Icon } from '@expo/styleguide-icons/outline/Minimize02Icon';
 import { RefreshCcw02Icon } from '@expo/styleguide-icons/outline/RefreshCcw02Icon';
 import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 import { SwitchHorizontal01Icon } from '@expo/styleguide-icons/outline/SwitchHorizontal01Icon';
-import { ThumbsDownIcon } from '@expo/styleguide-icons/outline/ThumbsDownIcon';
-import { ThumbsUpIcon } from '@expo/styleguide-icons/outline/ThumbsUpIcon';
 import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
-import type { Reaction } from '@kapaai/react-sdk';
 import { useMemo, type CSSProperties } from 'react';
 
-import type { ContextScope, FeedbackTarget } from './AskPageAIChat.types';
+import type { ContextScope } from './AskPageAIChat.types';
 import { FOOTNOTE } from '../Text';
 
 type AskPageAIChatHeaderProps = {
@@ -21,8 +18,6 @@ type AskPageAIChatHeaderProps = {
   onSwitchToPageContext?: () => void;
   onReset: () => void;
   onClose: () => void;
-  feedbackTarget: FeedbackTarget;
-  onFeedback: (reaction: Reaction) => void;
 };
 
 export function AskPageAIChatHeader({
@@ -33,8 +28,6 @@ export function AskPageAIChatHeader({
   onSwitchToPageContext,
   onReset,
   onClose,
-  feedbackTarget,
-  onFeedback,
 }: AskPageAIChatHeaderProps) {
   const closeButtonThemeOverrides = useMemo(
     () =>
@@ -47,11 +40,6 @@ export function AskPageAIChatHeader({
   );
 
   const headerAccentBackground = useMemo(() => ({ backgroundColor: 'rgba(255,255,255,0.1)' }), []);
-
-  const activeFeedbackBackground = useMemo(
-    () => ({ backgroundColor: 'rgba(255,255,255,0.12)' }),
-    []
-  );
 
   return (
     <div className="flex flex-col gap-3 border-b border-default bg-palette-black px-4 py-2.5 text-palette-white">
@@ -69,40 +57,6 @@ export function AskPageAIChatHeader({
           </span>
         </div>
         <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            aria-label="Provide positive feedback"
-            theme="quaternary"
-            size="xs"
-            className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
-            style={{
-              ...closeButtonThemeOverrides,
-              ...(feedbackTarget?.reaction === 'upvote' ? activeFeedbackBackground : {}),
-            }}
-            aria-pressed={feedbackTarget?.reaction === 'upvote'}
-            disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
-            onClick={() => {
-              onFeedback('upvote');
-            }}>
-            <ThumbsUpIcon className="icon-xs text-palette-white" />
-          </Button>
-          <Button
-            type="button"
-            aria-label="Provide negative feedback"
-            theme="quaternary"
-            size="xs"
-            className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
-            style={{
-              ...closeButtonThemeOverrides,
-              ...(feedbackTarget?.reaction === 'downvote' ? activeFeedbackBackground : {}),
-            }}
-            aria-pressed={feedbackTarget?.reaction === 'downvote'}
-            disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
-            onClick={() => {
-              onFeedback('downvote');
-            }}>
-            <ThumbsDownIcon className="icon-xs text-palette-white" />
-          </Button>
           {onToggleExpand ? (
             <Button
               type="button"

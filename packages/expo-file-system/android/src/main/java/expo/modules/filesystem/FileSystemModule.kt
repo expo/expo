@@ -21,7 +21,6 @@ import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URI
-import java.util.EnumSet
 
 class FileSystemModule : Module() {
   private val context: Context
@@ -100,7 +99,9 @@ class FileSystemModule : Module() {
     }
 
     AsyncFunction("pickDirectoryAsync") Coroutine { initialUri: Uri? ->
-      val result = filePickerLauncher.launch(FilePickerContractOptions(initialUri, null, PickerType.DIRECTORY))
+      val result = filePickerLauncher.launch(
+        FilePickerContractOptions(initialUri, null, PickerType.DIRECTORY)
+      )
       when (result) {
         is FilePickerContractResult.Success -> result.path as FileSystemDirectory
         is FilePickerContractResult.Cancelled -> throw PickerCancelledException()
@@ -108,7 +109,9 @@ class FileSystemModule : Module() {
     }
 
     AsyncFunction("pickFileAsync") Coroutine { initialUri: Uri?, mimeType: String? ->
-      val result = filePickerLauncher.launch(FilePickerContractOptions(initialUri, mimeType, PickerType.FILE))
+      val result = filePickerLauncher.launch(
+        FilePickerContractOptions(initialUri, mimeType, PickerType.FILE)
+      )
       when (result) {
         is FilePickerContractResult.Success -> result.path as FileSystemFile
         is FilePickerContractResult.Cancelled -> throw PickerCancelledException()
@@ -117,8 +120,12 @@ class FileSystemModule : Module() {
 
     Function("info") { url: URI ->
       val file = File(url)
-      val permissions = appContext.filePermission?.getPathPermissions(appContext.reactContext, file.path)
-        ?: EnumSet.noneOf(Permission::class.java)
+      val permissions = appContext
+        .filePermission
+        .getPathPermissions(
+          appContext.reactContext ?: throw Exceptions.ReactContextLost(),
+          file.path
+        )
       if (permissions.contains(Permission.READ) && file.exists()) {
         PathInfo(exists = file.exists(), isDirectory = file.isDirectory)
       } else {

@@ -6,11 +6,16 @@
 
 ### 🎉 New features
 
+- [iOS] Add `latitudeDelta` and `longitudeDelta` to `onCameraMove` event payload. ([#41655](https://github.com/expo/expo/pull/41655) by [@matinzd](https://github.com/matinzd))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix MapKit built-in buttons not responding ([#41151](https://github.com/expo/expo/pull/41151) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix Map resets camera position on navigation tab switch. ([#41639](https://github.com/expo/expo/pull/41639) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
+
+- [iOS] Export `MapStyleElevation` enum. ([#42148](https://github.com/expo/expo/pull/42148) by [@gustavoharff](https://github.com/gustavoharff))
 
 ## 0.12.9 - 2025-12-05
 

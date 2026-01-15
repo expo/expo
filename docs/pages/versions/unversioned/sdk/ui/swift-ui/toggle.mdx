@@ -1,0 +1,168 @@
+---
+title: Toggle
+description: A SwiftUI Toggle component for displaying native toggles.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Toggle matches the official SwiftUI [Toggle API](https://developer.apple.com/documentation/swiftui/toggle) and supports styling via the [`toggleStyle`](modifiers/#togglestylestyle) modifier.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic toggle
+
+```tsx BasicToggleExample.tsx
+import { useState } from 'react';
+import { Host, Toggle } from '@expo/ui/swift-ui';
+
+export default function BasicToggleExample() {
+  const [isOn, setIsOn] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Toggle isOn={isOn} onIsOnChange={setIsOn} label="Enable Feature" />
+    </Host>
+  );
+}
+```
+
+### Toggle with system image
+
+```tsx ToggleWithImageExample.tsx
+import { useState } from 'react';
+import { Host, Toggle } from '@expo/ui/swift-ui';
+
+export default function ToggleWithImageExample() {
+  const [airplaneMode, setAirplaneMode] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Toggle
+        isOn={airplaneMode}
+        onIsOnChange={setAirplaneMode}
+        label="Airplane Mode"
+        systemImage="airplane"
+      />
+    </Host>
+  );
+}
+```
+
+### Toggle styles
+
+Use the `toggleStyle` modifier to change the toggle's appearance. Available styles are: `automatic`, `switch`, and `button`.
+
+> **Note:** The `button` style is not available on tvOS.
+
+```tsx ToggleStylesExample.tsx
+import { useState } from 'react';
+import { Host, Toggle, VStack } from '@expo/ui/swift-ui';
+import { toggleStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function ToggleStylesExample() {
+  const [isOn, setIsOn] = useState(false);
+
+  return (
+    <Host matchContents>
+      <VStack spacing={8}>
+        <Toggle
+          isOn={isOn}
+          onIsOnChange={setIsOn}
+          label="Switch Style"
+          modifiers={[toggleStyle('switch')]}
+        />
+        <Toggle
+          isOn={isOn}
+          onIsOnChange={setIsOn}
+          label="Button Style"
+          modifiers={[toggleStyle('button')]}
+        />
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Tinted toggle
+
+Use the `tint` modifier to change the toggle's color.
+
+```tsx TintedToggleExample.tsx
+import { useState } from 'react';
+import { Host, Toggle } from '@expo/ui/swift-ui';
+import { tint } from '@expo/ui/swift-ui/modifiers';
+
+export default function TintedToggleExample() {
+  const [isOn, setIsOn] = useState(true);
+
+  return (
+    <Host matchContents>
+      <Toggle
+        isOn={isOn}
+        onIsOnChange={setIsOn}
+        label="Custom Color"
+        modifiers={[tint('#FF9500')]}
+      />
+    </Host>
+  );
+}
+```
+
+### Custom label content
+
+You can pass custom components as `children` for more complex toggle labels. Use multiple `Text` views where the first represents the title and the second represents the subtitle.
+
+```tsx CustomLabelExample.tsx
+import { useState } from 'react';
+import { Host, Toggle, Text } from '@expo/ui/swift-ui';
+
+export default function CustomLabelExample() {
+  const [vibrateOnRing, setVibrateOnRing] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Toggle isOn={vibrateOnRing} onIsOnChange={setVibrateOnRing}>
+        <Text>Vibrate on Ring</Text>
+        <Text>Enable vibration when the phone rings</Text>
+      </Toggle>
+    </Host>
+  );
+}
+```
+
+### Hidden label
+
+Use the [`labelsHidden`](modifiers/#labelshidden) modifier to hide the label while keeping it for accessibility.
+
+```tsx HiddenLabelExample.tsx
+import { useState } from 'react';
+import { Host, Toggle } from '@expo/ui/swift-ui';
+import { labelsHidden } from '@expo/ui/swift-ui/modifiers';
+
+export default function HiddenLabelExample() {
+  const [isOn, setIsOn] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Toggle
+        isOn={isOn}
+        onIsOnChange={setIsOn}
+        label="Hidden Label"
+        modifiers={[labelsHidden()]}
+      />
+    </Host>
+  );
+}
+```
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/toggle" apiName="Toggle" />

@@ -54,8 +54,7 @@ internal struct LabeledContentView: ExpoSwiftUI.View {
   private var contentChildren: some View {
     if let content = props.children?
       .compactMap({ $0.childView as? LabeledContentContent })
-      .first
-    {
+      .first {
       content
     }
   }
@@ -64,8 +63,7 @@ internal struct LabeledContentView: ExpoSwiftUI.View {
   private var customLabelContent: some View {
     if let labelContent = props.children?
       .compactMap({ $0.childView as? LabeledContentLabel })
-      .first
-    {
+      .first {
       labelContent
     }
   }

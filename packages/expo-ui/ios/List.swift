@@ -28,10 +28,10 @@ struct ListView: ExpoSwiftUI.View {
   var body: some View {
     let list = List(selection: props.selectEnabled ? $selection : nil) {
       Children()
-      .onDelete(perform: handleDelete)
-      .onMove(perform: handleMove)
-      .deleteDisabled(!props.deleteEnabled)
-      .moveDisabled(!props.moveEnabled)
+        .onDelete(perform: handleDelete)
+        .onMove(perform: handleMove)
+        .deleteDisabled(!props.deleteEnabled)
+        .moveDisabled(!props.moveEnabled)
     }
       .modifier(ListStyleModifer(style: props.listStyle))
       .onAppear {
@@ -45,7 +45,6 @@ struct ListView: ExpoSwiftUI.View {
       .onChange(of: selection) { selection in
         handleSelectionChange(selection: selection)
       }
-      .modifier(ScrollDisabledModifier(scrollEnabled: props.scrollEnabled))
       .environment(\.editMode, $editModeEnabled)
     if #available(iOS 16.0, tvOS 16.0, *) {
       list.scrollDisabled(!props.scrollEnabled)
@@ -84,35 +83,24 @@ struct ListStyleModifer: ViewModifier {
     switch style {
     case "grouped":
       content.listStyle(.grouped)
-    case "insetGrouped":
-    #if !os(tvOS)
-      content.listStyle(.insetGrouped)
-    #endif
-    case "inset":
-    #if !os(tvOS)
-      content.listStyle(.inset)
-    #endif
     case "plain":
       content.listStyle(.plain)
-    case "sidebar":
-    #if !os(tvOS)
-      content.listStyle(.sidebar)
-    #endif
     case "automatic":
       content.listStyle(.automatic)
+
+    case "insetGrouped":
+#if !os(tvOS) // fallthrough to default
+      content.listStyle(.insetGrouped)
+#endif
+    case "inset":
+#if !os(tvOS) // fallthrough to default
+      content.listStyle(.inset)
+#endif
+    case "sidebar":
+#if !os(tvOS) // fallthrough to default
+      content.listStyle(.sidebar)
+#endif
     default:
-      content
-    }
-  }
-}
-
-struct ScrollDisabledModifier: ViewModifier {
-  let scrollEnabled: Bool
-
-  func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      content.scrollDisabled(!scrollEnabled)
-    } else {
       content
     }
   }

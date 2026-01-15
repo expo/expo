@@ -10,6 +10,7 @@ public class AppleMapsViewiOS18State: ObservableObject {
   @Published var selection: MapSelection<MKMapItem>?
   @Published var lookAroundScene: MKLookAroundScene?
   @Published var lookAroundPresented: Bool = false
+  var hasInitializedCamera: Bool = false
 }
 
 @available(iOS 17.0, *)
@@ -17,4 +18,5 @@ public class AppleMapsViewiOS17State: ObservableObject {
   @Published var mapCameraPosition: MapCameraPosition = .automatic
   @Published var lookAroundScene: MKLookAroundScene?
   @Published var lookAroundPresented: Bool = false
+  var hasInitializedCamera: Bool = false
 }

@@ -1,6 +1,6 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import NotificationChannelManager from './NotificationChannelManager';
-export default async function deleteNotificationChannelAsync(channelId) {
+export async function deleteNotificationChannelAsync(channelId) {
     if (!NotificationChannelManager.deleteNotificationChannelAsync) {
         throw new UnavailabilityError('Notifications', 'deleteNotificationChannelAsync');
     }

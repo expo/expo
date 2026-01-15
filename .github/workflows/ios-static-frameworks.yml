@@ -42,7 +42,8 @@ jobs:
       - name: 🍏 Build iOS Project
         working-directory: ./apps/bare-expo
         run: |
-          jq '.["ios.useFrameworks"] = "static"' ios/Podfile.properties.json > temp.json && mv temp.json ios/Podfile.properties.json
+          set -o pipefail
+          jq '.["ios.useFrameworks"] = "static" | .["ios.buildReactNativeFromSource"] = "true"' ios/Podfile.properties.json > temp.json && mv temp.json ios/Podfile.properties.json
           pod install --project-directory=ios
           xcodebuild -workspace ios/BareExpo.xcworkspace -scheme BareExpo -configuration Release -sdk iphonesimulator -derivedDataPath "ios/build" | xcpretty
       - name: 🔔 Notify on Slack

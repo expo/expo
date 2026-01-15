@@ -9,13 +9,12 @@ import {
   type ListStyle,
   Picker,
   Section,
-  Switch,
+  Toggle,
   Text,
 } from '@expo/ui/swift-ui';
 import {
   background,
   clipShape,
-  disabled,
   frame,
   headerProminence,
   padding,
@@ -25,6 +24,7 @@ import {
   foregroundStyle,
   shapes,
   tag,
+  font,
 } from '@expo/ui/swift-ui/modifiers';
 import { useNavigation } from '@react-navigation/native';
 import type { SFSymbol } from 'expo-symbols';
@@ -62,7 +62,6 @@ export default function ListScreen() {
   const [editModeEnabled, setEditModeEnabled] = React.useState<boolean>(false);
   const [scrollDismissesKeyboardIndex, setScrollDismissesKeyboardIndex] = React.useState<number>(0);
   const [increasedHeader, setIncreasedHeader] = React.useState(false);
-  const [collapsible, setCollapsible] = React.useState<boolean>(false);
   const [customHeaderFooter, setCustomHeaderFooter] = React.useState<{
     header: boolean;
     footer: boolean;
@@ -108,61 +107,46 @@ export default function ListScreen() {
         deleteEnabled={deleteEnabled}
         selectEnabled={selectEnabled}>
         <Section
-          collapsible={collapsible}
-          title="Collapsible section"
           {...(customHeaderFooter.header && {
             header: (
               <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
                 <HStack modifiers={[padding({ all: 8 })]}>
                   <Image systemName="list.bullet" color="white" size={22} />
-                  <Text color="white" size={16}>
+                  <Text
+                    modifiers={[
+                      foregroundStyle({ type: 'color', color: 'white' }),
+                      font({ size: 16 }),
+                    ]}>
                     Custom header
                   </Text>
                 </HStack>
               </HStack>
             ),
-          })}
-          footer={
-            <>
-              {customHeaderFooter.footer && (
-                <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
-                  <Text size={16} color="white" modifiers={[padding({ all: 8 })]}>
-                    Custom Footer
-                  </Text>
-                </HStack>
-              )}
-            </>
-          }>
-          <Switch
+          })}>
+          <Toggle
             label="Use increased section header"
-            value={increasedHeader}
-            onValueChange={setIncreasedHeader}
+            isOn={increasedHeader}
+            onIsOnChange={setIncreasedHeader}
           />
-          <Switch label="Collapsible" value={collapsible} onValueChange={setCollapsible} />
-          <Switch
+          <Toggle
             label="Custom header"
-            value={customHeaderFooter.header}
-            onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, header: v }))}
-          />
-          <Switch
-            label="Custom footer"
-            value={customHeaderFooter.footer}
-            onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, footer: v }))}
-            modifiers={[disabled(collapsible)]}
+            isOn={customHeaderFooter.header}
+            onIsOnChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, header: v }))}
           />
         </Section>
-        <Section title="Controls" collapsible>
-          <Button onPress={() => setEditModeEnabled(!editModeEnabled)}>Toggle Edit</Button>
-          <Switch value={selectEnabled} label="Select enabled" onValueChange={setSelectEnabled} />
-          <Switch value={deleteEnabled} label="Delete enabled" onValueChange={setDeleteEnabled} />
-          <Switch value={moveEnabled} label="Move enabled" onValueChange={setMoveEnabled} />
-          <Switch
-            value={refreshEnabled}
+        <Section title="Controls">
+          <Button onPress={() => setEditModeEnabled(!editModeEnabled)} label="Toggle Edit" />
+          <Toggle isOn={selectEnabled} label="Select enabled" onIsOnChange={setSelectEnabled} />
+          <Toggle isOn={deleteEnabled} label="Delete enabled" onIsOnChange={setDeleteEnabled} />
+          <Toggle isOn={moveEnabled} label="Move enabled" onIsOnChange={setMoveEnabled} />
+          <Toggle
+            isOn={refreshEnabled}
             label="Refreshable enabled"
-            onValueChange={setRefreshEnabled}
+            onIsOnChange={setRefreshEnabled}
           />
           {lastRefresh && (
-            <Text size={12} color="gray">
+            <Text
+              modifiers={[foregroundStyle({ type: 'color', color: 'gray' }), font({ size: 12 })]}>
               Last refresh: {lastRefresh.toLocaleTimeString()}
             </Text>
           )}
@@ -170,15 +154,13 @@ export default function ListScreen() {
             label="Item icon color"
             selection={color}
             supportsOpacity
-            onValueChanged={setColor}
+            onSelectionChange={setColor}
           />
           <Picker
             label="Scroll dismisses keyboard"
             modifiers={[pickerStyle('menu')]}
             selection={scrollDismissesKeyboardIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setScrollDismissesKeyboardIndex(selection as number);
-            }}>
+            onSelectionChange={setScrollDismissesKeyboardIndex}>
             {scrollDismissesKeyboardOptions.map((option, index) => (
               <Text key={index} modifiers={[tag(index)]}>
                 {option}
@@ -189,9 +171,7 @@ export default function ListScreen() {
             label="List style"
             modifiers={[pickerStyle('menu')]}
             selection={selectedIndex}
-            onSelectionChange={({ nativeEvent: { selection } }) => {
-              setSelectedIndex(selection as number);
-            }}>
+            onSelectionChange={setSelectedIndex}>
             {listStyleOptions.map((option, index) => (
               <Text key={index} modifiers={[tag(index)]}>
                 {option}

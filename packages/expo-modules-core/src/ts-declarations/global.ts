@@ -100,6 +100,12 @@ declare namespace ExpoGlobal {
    * Reloads the app.
    */
   export function reloadAppAsync(reason: string): Promise<void>;
+
+  /**
+   * Installs Expo Modules inside the Reanimated UI worklet runtime.
+   * @platform android
+   */
+  export function installOnUIRuntime(): void;
 }
 
 /* eslint-disable no-var */

@@ -2,15 +2,14 @@ import ExpoModulesCore
 import RNScreens
 import UIKit
 
-class RouterToolbarHostView: ExpoView, LinkPreviewMenuUpdatable {
+class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
   // Mutable map of toolbar items
   var toolbarItemsArray: [String] = []
   var toolbarItemsMap: [String: RouterToolbarItemView] = [:]
   var menuItemsMap: [String: LinkPreviewNativeActionView] = [:]
 
-  required init(appContext: AppContext? = nil) {
-    super.init(appContext: appContext)
-  }
+  // Batching state for toolbar updates
+  private var hasPendingToolbarUpdate = false
 
   private func addRouterToolbarItemAtIndex(
     _ item: RouterToolbarItemView,
@@ -49,48 +48,99 @@ class RouterToolbarHostView: ExpoView, LinkPreviewMenuUpdatable {
   }
 
   func updateToolbarItems() {
+    // If update already scheduled, skip - the pending async block will handle it
+    if hasPendingToolbarUpdate {
+      return
+    }
+
+    hasPendingToolbarUpdate = true
+
+    // Defer actual update to next run loop iteration
+    DispatchQueue.main.async { [weak self] in
+      guard let self = self else { return }
+      self.hasPendingToolbarUpdate = false
+      self.performToolbarUpdate()
+    }
+  }
+
+  private func performToolbarUpdate() {
     if let controller = self.findViewController() {
       if #available(iOS 18.0, *) {
-        controller.setToolbarItems(
-          toolbarItemsArray.compactMap {
-            if let item = toolbarItemsMap[$0] {
-              return item.barButtonItem
+        let items = toolbarItemsArray.compactMap { identifier -> UIBarButtonItem? in
+          if let item = toolbarItemsMap[identifier] {
+            if item.routerHidden {
+              return nil
             }
-            if let menu = menuItemsMap[$0] {
-              return UIBarButtonItem(
-                title: menu.title,
-                image: menu.icon.flatMap { UIImage(systemName: $0) },
-                primaryAction: nil,
-                menu: menu.uiAction as? UIMenu
-              )
+            return item.barButtonItem
+          }
+          // TODO: Extract this logic to separate function
+          if let menu = menuItemsMap[identifier] {
+            if menu.routerHidden {
+              return nil
             }
-            print(
-              "[expo-router] Warning: Could not find toolbar item or menu for identifier \($0)"
+            let item = UIBarButtonItem(
+              title: menu.title,
+              image: menu.icon.flatMap { UIImage(systemName: $0) },
+              primaryAction: nil,
+              menu: menu.uiAction as? UIMenu
             )
-            return nil
-          }, animated: true)
+            // Otherwise, the menu items will be reversed in the toolbar
+            item.preferredMenuElementOrder = .fixed
+            if #available(iOS 26.0, *) {
+              if let hidesSharedBackground = menu.hidesSharedBackground {
+                item.hidesSharedBackground = hidesSharedBackground
+              }
+              if let sharesBackground = menu.sharesBackground {
+                item.sharesBackground = sharesBackground
+              }
+            }
+            if let titleStyle = menu.titleStyle {
+              RouterFontUtils.setTitleStyle(fromConfig: titleStyle, for: item)
+            }
+            item.isEnabled = !menu.disabled
+            if let accessibilityLabel = menu.accessibilityLabelForMenu {
+              item.accessibilityLabel = accessibilityLabel
+            } else {
+              item.accessibilityLabel = menu.title
+            }
+            if let accessibilityHint = menu.accessibilityHintForMenu {
+              item.accessibilityHint = accessibilityHint
+            }
+            item.tintColor = menu.customTintColor
+            if let style = menu.barButtonItemStyle {
+              item.style = style
+            }
+            return item
+          }
+          logger?.warn(
+            "[expo-router] Warning: Could not find toolbar item or menu for identifier \(identifier). This is most likely a bug in expo-router."
+          )
+          return nil
+        }
+
+        controller.setToolbarItems(items, animated: true)
         controller.navigationController?.setToolbarHidden(
           false, animated: true)
         return
       }
-    } else {
-      print(
-        "[expo-router] Warning: Could not find owning UIViewController for RouterToolbarHostView")
     }
   }
 
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
     if let toolbarItem = childComponentView as? RouterToolbarItemView {
       if toolbarItem.identifier.isEmpty {
-        print("[expo-router] RouterToolbarItemView identifier is empty")
+        logger?.warn(
+          "[expo-router] RouterToolbarItemView identifier is empty. This is most likely a bug in expo-router."
+        )
         return
       }
       addRouterToolbarItemAtIndex(toolbarItem, index: index)
     } else if let menu = childComponentView as? LinkPreviewNativeActionView {
+      menu.parentMenuUpdatable = self
       addMenuToolbarItemAtIndex(menu, index: index)
     } else {
-      print(
-        "ExpoRouter: Unknown child component view (\(childComponentView)) mounted to RouterToolbarHost"
+      logger?.warn(
+        "[expo-router] Unknown child component view (\(childComponentView)) mounted to RouterToolbarHost. This is most likely a bug in expo-router."
       )
     }
     updateToolbarItems()
@@ -99,19 +149,22 @@ class RouterToolbarHostView: ExpoView, LinkPreviewMenuUpdatable {
   override func unmountChildComponentView(_ childComponentView: UIView, index: Int) {
     if let toolbarItem = childComponentView as? RouterToolbarItemView {
       if toolbarItem.identifier.isEmpty {
-        print("[expo-router] RouterToolbarItemView identifier is empty")
+        logger?.warn(
+          "[expo-router] RouterToolbarItemView identifier is empty. This is most likely a bug in expo-router."
+        )
         return
       }
       removeToolbarItemWithId(toolbarItem.identifier)
     } else if let menu = childComponentView as? LinkPreviewNativeActionView {
       if menu.identifier.isEmpty {
-        print("[expo-router] Menu identifier is empty")
+        logger?.warn(
+          "[expo-router] Menu identifier is empty. This is most likely a bug in expo-router.")
         return
       }
       removeToolbarItemWithId(menu.identifier)
     } else {
-      print(
-        "ExpoRouter: Unknown child component view (\(childComponentView)) unmounted from RouterToolbarHost"
+      logger?.warn(
+        "[expo-router] Unknown child component view (\(childComponentView)) unmounted from RouterToolbarHost. This is most likely a bug in expo-router."
       )
     }
     updateToolbarItems()
@@ -127,7 +180,7 @@ class RouterToolbarHostView: ExpoView, LinkPreviewMenuUpdatable {
     updateToolbarItems()
   }
 
-  private func findViewController() -> RNSScreen? {
+  func findViewController() -> RNSScreen? {
     var responder: UIResponder? = self
     while let r = responder {
       if let r = r as? RNSScreen {

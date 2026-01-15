@@ -6,6 +6,13 @@ internal let GLOBAL_EVENT_NAME = "onGlobalEvent"
 
 extension ExpoSwiftUI {
   /**
+   Protocol for view props that support controlling safe area behavior of SwiftUI content. Used by HostView
+   */
+  public protocol SafeAreaControllable {
+    var ignoreSafeAreaKeyboardInsets: Bool { get set }
+  }
+
+  /**
    Base implementation of the view props object for SwiftUI views.
    It's a record that can be observed by SwiftUI to re-render on its changes.
    */

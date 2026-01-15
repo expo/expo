@@ -6,7 +6,7 @@ import { Page, Section } from '../../components/Page';
 
 function Button(props: React.ComponentProps<typeof JetpackButton>) {
   return (
-    <Host>
+    <Host matchContents>
       <JetpackButton {...props} />
     </Host>
   );

@@ -9,6 +9,9 @@ import { animation } from './animation/index';
 import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
+import { datePickerStyle } from './datePickerStyle';
+import { gaugeStyle } from './gaugeStyle';
+import { progressViewStyle } from './progressViewStyle';
 import type { Color } from './types';
 
 const ExpoUI = requireNativeModule('ExpoUI');
@@ -350,6 +353,20 @@ export const foregroundStyle = (
 };
 
 /**
+ * Makes text bold.
+ * When applied to `Text`, it works on all iOS/tvOS versions. When used on regular views, it requires iOS 16.0+/tvOS 16.0+.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/text/bold()).
+ */
+export const bold = () => createModifier('bold', {});
+
+/**
+ * Makes text italic.
+ * When applied to `Text`, it works on all iOS/tvOS versions. When used on regular views, it requires iOS 16.0+/tvOS 16.0+.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/text/italic()).
+ */
+export const italic = () => createModifier('italic', {});
+
+/**
  * Sets the tint color of a view.
  * @param color - The tint color (hex string). For example, `#FF0000`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/tint(_:)).
@@ -444,6 +461,36 @@ export const buttonStyle = (
 ) => createModifier('buttonStyle', { style });
 
 /**
+ * Sets the style for toggles within this view.
+ * @param style - The toggle style.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/togglestyle(_:)).
+ */
+export const toggleStyle = (style: 'automatic' | 'switch' | 'button') =>
+  createModifier('toggleStyle', { style });
+
+/**
+ * Sets the size of controls within this view.
+ * @param size - The control size.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/controlsize(_:)).
+ */
+export const controlSize = (size: 'mini' | 'small' | 'regular' | 'large' | 'extraLarge') =>
+  createModifier('controlSize', { size });
+
+/**
+ * Sets the style for labels within this view.
+ * @param style - The label style.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/labelstyle(_:)).
+ */
+export const labelStyle = (style: 'automatic' | 'iconOnly' | 'titleAndIcon' | 'titleOnly') =>
+  createModifier('labelStyle', { style });
+
+/**
+ * Hides the labels of any controls contained within this view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/labelshidden()).
+ */
+export const labelsHidden = () => createModifier('labelsHidden', {});
+
+/**
  * Sets the text field style for text field views.
  * @param style - The text field style.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/textfieldstyle(_:)).
@@ -461,6 +508,16 @@ export const textFieldStyle = (style: 'automatic' | 'plain' | 'roundedBorder') =
 export const scrollDismissesKeyboard = (
   mode: 'automatic' | 'never' | 'interactively' | 'immediately'
 ) => createModifier('scrollDismissesKeyboard', { mode });
+
+/**
+ * Disables or enables scrolling in scrollable views.
+ * @param disabled - Whether scrolling should be disabled (default: true).
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolldisabled(_:)).
+ */
+export const scrollDisabled = (disabled: boolean = true) =>
+  createModifier('scrollDisabled', { disabled });
 
 /**
  * Controls the dismissal behavior of menu actions.
@@ -666,6 +723,12 @@ export const textSelection = (value: boolean) => createModifier('textSelection',
  */
 export const lineSpacing = (value: number) => createModifier('lineSpacing', { value });
 /**
+ * Sets the maximum number of lines that text can occupy in the view.
+ * @param limit - The maximum number of lines.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/linelimit(_:)).
+ */
+export const lineLimit = (limit?: number) => createModifier('lineLimit', { limit });
+/**
  * Sets the header prominence for this view.
  * @param prominence - The prominence to apply.
  */
@@ -856,6 +919,8 @@ export type BuiltInModifier =
   | ReturnType<typeof offset>
   | ReturnType<typeof foregroundColor>
   | ReturnType<typeof foregroundStyle>
+  | ReturnType<typeof bold>
+  | ReturnType<typeof italic>
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
   | ReturnType<typeof disabled>
@@ -868,6 +933,10 @@ export type BuiltInModifier =
   | ReturnType<typeof colorInvert>
   | ReturnType<typeof grayscale>
   | ReturnType<typeof buttonStyle>
+  | ReturnType<typeof toggleStyle>
+  | ReturnType<typeof controlSize>
+  | ReturnType<typeof labelStyle>
+  | ReturnType<typeof labelsHidden>
   | ReturnType<typeof textFieldStyle>
   | ReturnType<typeof menuActionDismissBehavior>
   | ReturnType<typeof accessibilityLabel>
@@ -884,6 +953,7 @@ export type BuiltInModifier =
   | ReturnType<typeof animation>
   | ReturnType<typeof containerShape>
   | ReturnType<typeof scrollContentBackground>
+  | ReturnType<typeof scrollDisabled>
   | ReturnType<typeof listRowBackground>
   | ReturnType<typeof listRowSeparator>
   | ReturnType<typeof truncationMode>
@@ -895,6 +965,7 @@ export type BuiltInModifier =
   | ReturnType<typeof multilineTextAlignment>
   | ReturnType<typeof textSelection>
   | ReturnType<typeof lineSpacing>
+  | ReturnType<typeof lineLimit>
   | ReturnType<typeof headerProminence>
   | ReturnType<typeof listRowInsets>
   | ReturnType<typeof badgeProminence>
@@ -904,7 +975,11 @@ export type BuiltInModifier =
   | ReturnType<typeof gridCellUnsizedAxes>
   | ReturnType<typeof gridCellColumns>
   | ReturnType<typeof gridColumnAlignment>
-  | ReturnType<typeof gridCellAnchor>;
+  | ReturnType<typeof gridCellAnchor>
+  | ReturnType<typeof submitLabel>
+  | ReturnType<typeof datePickerStyle>
+  | ReturnType<typeof progressViewStyle>
+  | ReturnType<typeof gaugeStyle>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -953,3 +1028,7 @@ export * from './background';
 export type * from './types';
 export * from './tag';
 export * from './pickerStyle';
+export * from './datePickerStyle';
+export * from './progressViewStyle';
+export * from './gaugeStyle';
+export * from './presentationModifiers';

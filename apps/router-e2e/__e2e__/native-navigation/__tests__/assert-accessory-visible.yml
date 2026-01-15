@@ -1,0 +1,4 @@
+appId: com.expo.routere2e
+---
+- assertVisible: "Bad Habits"
+- assertVisible: "Ed Sheeran"

@@ -17,6 +17,11 @@
 
 @implementation EXScopedPermissions
 
++ (const NSArray<Protocol *> *)exportedInterfaces
+{
+  return @[@protocol(EXPermissionsInterface)];
+}
+
 - (instancetype)initWithScopeKey:(NSString *)scopeKey andConstantsBinding:(EXConstantsBinding *)constantsBinding
 {
   if (self = [super init]) {

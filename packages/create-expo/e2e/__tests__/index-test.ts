@@ -104,7 +104,6 @@ it('uses pnpm', async () => {
   expectFileNotExists(projectName, 'node_modules');
 
   // Check if `pnpm` node linker is set
-  expectFileExists(projectName, '.npmrc');
   const { stdout } = expectExecutePassing(
     await spawnAsync('pnpm', ['config', 'get', 'node-linker'], { cwd: getTestPath(projectName) })
   );

@@ -1,7 +1,4 @@
-import MIcons from '@expo/vector-icons/MaterialIcons';
 import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { VectorIcon } from 'expo-router';
-import { enableZoomTransition } from 'expo-router/internal/utils';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
 import { Appearance, Platform, useColorScheme } from 'react-native';
@@ -11,8 +8,6 @@ import { MiniPlayer } from '../components/mini-player';
 if (process.env.EXPO_OS !== 'web') {
   Appearance.setColorScheme('unspecified');
 }
-
-enableZoomTransition();
 
 export default function Layout() {
   const [isPlaying, setIsPlaying] = useState(false);

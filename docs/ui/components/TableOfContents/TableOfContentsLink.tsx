@@ -1,4 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
+import { BracketsEllipsesDuotoneIcon } from '@expo/styleguide-icons/duotone/BracketsEllipsesDuotoneIcon';
 import Link from 'next/link';
 import { forwardRef, useState, type MouseEvent } from 'react';
 
@@ -25,6 +26,7 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
     const TitleElement = isCodeOrFilePath ? MONOSPACE : CALLOUT;
     const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
     const isDeprecated = tags && tags.length > 0 ? tags.find(tag => tag === 'deprecated') : null;
+    const hasOverloads = tags && tags.length > 0 ? tags.find(tag => tag === 'overload') : null;
 
     function onMouseOver(event: MouseEvent<HTMLAnchorElement>) {
       setTooltipVisible(isOverflowing(event.currentTarget));
@@ -56,6 +58,12 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
                 isDeprecated && 'line-through opacity-80'
               )}>
               {displayTitle}
+              {hasOverloads && (
+                <>
+                  <BracketsEllipsesDuotoneIcon className="icon-xs ml-1 inline text-icon-secondary" />
+                  <span className="sr-only">Has overloads</span>
+                </>
+              )}
               {isDeprecated && <span className="sr-only">Deprecated section</span>}
             </TitleElement>
           </Link>

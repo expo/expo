@@ -7,7 +7,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
-import { Terminal } from '~/ui/components/Snippet';
+import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 
 See more information about **metro.config.js** in the [customizing Metro guide](/guides/customizing-metro/).
 
@@ -127,11 +127,7 @@ In Expo, CSS Modules are defined by creating a file with the `.module.css` exten
 
 CSS Modules support platform extensions to allow you to define different styles for different platforms. For example, you can define a `module.ios.css` and `module.android.css` file to define styles for Android and iOS respectively. You'll need to import without the extension, for example:
 
-```diff App.js
-// Importing `./App.module.ios.css`:
-- import styles from './App.module.css';
-+ import styles from './App.module';
-```
+<DiffBlock source="/static/diffs/config/metro-unversioned/css-modules-import.diff" />
 
 Flipping the extension, for example, `App.ios.module.css` will not work and result in a universal module named `App.ios.module`.
 
@@ -563,7 +559,7 @@ export async function GET(req: Request) {
 
 ## Web workers
 
-> **important** This feature is experimental and subject to breaking changes.
+> **important** This feature is in alpha and subject to breaking changes.
 
 ```ts
 new Worker(new URL('./worker', window.location.href));
@@ -651,15 +647,7 @@ module.exports = config;
 
 The Android **app/build.gradle** must be configured to use Expo CLI for production bundling. Modify the `react` config object:
 
-```diff android/app/build.gradle
-react {
-  ...
-+     // Use Expo CLI to bundle the app, this ensures the Metro config
-+     // works correctly with Expo projects.
-+     cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim())
-+     bundleCommand = "export:embed"
-}
-```
+<DiffBlock source="/static/diffs/config/metro-unversioned/android-use-expo-cli-bundling.diff" />
 
 ### `ios/<Project>.xcodeproj/project.pbxproj`
 
@@ -669,67 +657,15 @@ In your **ios/&lt;Project&gt;.xcodeproj/project.pbxproj** file, replace the foll
 
 Remove the **"Start Packager"** script. The dev server must be started with `npx expo` before/after running the app.
 
-```diff Start Packager
--    FD10A7F022414F080027D42C /* Start Packager */ = {
--			isa = PBXShellScriptBuildPhase;
--			alwaysOutOfDate = 1;
--			buildActionMask = 2147483647;
--			files = (
--			);
--			inputFileListPaths = (
--			);
--			inputPaths = (
--			);
--			name = "Start Packager";
--			outputFileListPaths = (
--			);
--			outputPaths = (
--			);
--			runOnlyForDeploymentPostprocessing = 0;
--			shellPath = /bin/sh;
--			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.updates\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.updates\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\nexport RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > `$NODE_BINARY --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/.packager.env'\"`\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open `$NODE_BINARY --print \"require('path').dirname(require.resolve('expo/package.json')) + '/scripts/launchPackager.command'\"` || echo \"Can't start packager automatically\"\n  fi\nfi\n";
--			showEnvVarsInLog = 0;
--		};
-```
+<DiffBlock source="/static/diffs/config/metro-unversioned/ios-remove-start-packager.diff" />
 
 #### "Bundle React Native code and images" script
 
-```diff Bundle React Native code and images
-+			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli')\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
-```
+<DiffBlock source="/static/diffs/config/metro-unversioned/ios-bundle-script.diff" />
 
 Alternatively, in the Xcode project, select the **"Bundle React Native code and images"** build phase and add the following modifications:
 
-```diff Bundle React Native code and images
-if [[ -f "$PODS_ROOT/../.xcode.env" ]]; then
-  source "$PODS_ROOT/../.xcode.env"
-fi
-if [[ -f "$PODS_ROOT/../.xcode.env.local" ]]; then
-  source "$PODS_ROOT/../.xcode.env.local"
-fi
-
-# The project root by default is one level up from the ios directory
-export PROJECT_ROOT="$PROJECT_DIR"/..
-
-if [[ "$CONFIGURATION" = *Debug* ]]; then
-  export SKIP_BUNDLING=1
-fi
-+ if [[ -z "$ENTRY_FILE" ]]; then
-+   # Set the entry JS file using the bundler's entry resolution.
-+   export ENTRY_FILE="$("$NODE_BINARY" -e "require('expo/scripts/resolveAppEntry')" "$PROJECT_ROOT" ios absolute | tail -n 1)"
-+ fi
-
-+ if [[ -z "$CLI_PATH" ]]; then
-+   # Use Expo CLI
-+   export CLI_PATH="$("$NODE_BINARY" --print "require.resolve('@expo/cli')")"
-+ fi
-+ if [[ -z "$BUNDLE_COMMAND" ]]; then
-+   # Default Expo CLI command for bundling
-+   export BUNDLE_COMMAND="export:embed"
-+ fi
-
-`"$NODE_BINARY" --print "require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'"`
-```
+<DiffBlock source="/static/diffs/config/metro-unversioned/ios-bundle-script-inline.diff" />
 
 > You can set `CLI_PATH`, `BUNDLE_COMMAND`, and `ENTRY_FILE` environment variables to overwrite these defaults.
 
@@ -741,40 +677,16 @@ By default, React Native only supports using a root `index.js` file as the entry
 
 Development mode entry files can be enabled by using the [`expo-dev-client`](../sdk/dev-client/) package. Alternatively you can add the following configuration:
 
-```diff ios/<Project>/AppDelegate.mm
-- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
-{
-#if DEBUG
--  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
-+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
-#else
-  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-#endif
-}
-```
+<DiffBlock source="/static/diffs/config/metro-unversioned/ios-appdelegate-entry.diff" />
 
-```diff android/app/src/main/java/<Project>/MainApplication.java
-@Override
-protected String getJSMainModuleName() {
--  return "index";
-+  return ".expo/.virtual-metro-entry";
-}
-```
+<DiffBlock source="/static/diffs/config/metro-unversioned/android-mainapplication-entry.diff" />
 
 #### Production
 
 In your **ios/&lt;Project&gt;.xcodeproj/project.pbxproj** file, replace the **"Bundle React Native code and images"** script to set `$ENTRY_FILE` according using Metro:
 
-```diff ios/<Project>/project.pbxproj
-+			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli')\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
-```
+<DiffBlock source="/static/diffs/config/metro-unversioned/ios-bundle-script.diff" />
 
 The Android **app/build.gradle** must be configured to use Metro module resolution to find the root entry file. Modify the `react` config object:
 
-```diff app/build.gradle
-+ def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
-
-react {
-+    entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
-}
-```
+<DiffBlock source="/static/diffs/config/metro-unversioned/android-entry-file.diff" />

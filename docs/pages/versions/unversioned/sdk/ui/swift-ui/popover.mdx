@@ -1,0 +1,160 @@
+---
+title: Popover
+description: A SwiftUI Popover component for displaying content in a floating overlay.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Popover matches the official SwiftUI [Popover API](<https://developer.apple.com/documentation/swiftui/view/popover(ispresented:attachmentanchor:arrowedge:content:)>) and provides a way to present content in a floating overlay anchored to a trigger element.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic popover
+
+```tsx BasicPopoverExample.tsx
+import { useState } from 'react';
+import { Host, Button, Popover, Text, VStack } from '@expo/ui/swift-ui';
+import { padding } from '@expo/ui/swift-ui/modifiers';
+
+export default function BasicPopoverExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Popover
+        isPresented={isPresented}
+        onStateChange={({ isPresented }) => setIsPresented(isPresented)}>
+        <Popover.Trigger>
+          <Button onPress={() => setIsPresented(true)}>Show Popover</Button>
+        </Popover.Trigger>
+        <Popover.Content>
+          <VStack modifiers={[padding({ all: 16 })]}>
+            <Text>Hello from Popover!</Text>
+          </VStack>
+        </Popover.Content>
+      </Popover>
+    </Host>
+  );
+}
+```
+
+### With attachment anchor
+
+The `attachmentAnchor` prop controls where the popover attaches to the trigger element. Available options are: `center`, `leading`, `trailing`, `top`, and `bottom`.
+
+```tsx AttachmentAnchorExample.tsx
+import { useState } from 'react';
+import { Host, Button, Popover, Text, VStack } from '@expo/ui/swift-ui';
+import { padding } from '@expo/ui/swift-ui/modifiers';
+
+export default function AttachmentAnchorExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Popover
+        isPresented={isPresented}
+        onStateChange={({ isPresented }) => setIsPresented(isPresented)}
+        attachmentAnchor="trailing">
+        <Popover.Trigger>
+          <Button onPress={() => setIsPresented(true)}>Show Popover</Button>
+        </Popover.Trigger>
+        <Popover.Content>
+          <VStack modifiers={[padding({ all: 16 })]}>
+            <Text>Attached to trailing edge</Text>
+          </VStack>
+        </Popover.Content>
+      </Popover>
+    </Host>
+  );
+}
+```
+
+### With arrow edge
+
+The `arrowEdge` prop controls which edge of the popover displays the arrow. Available options are: `none`, `leading`, `trailing`, `top`, and `bottom`.
+
+```tsx ArrowEdgeExample.tsx
+import { useState } from 'react';
+import { Host, Button, Popover, Text, VStack } from '@expo/ui/swift-ui';
+import { padding } from '@expo/ui/swift-ui/modifiers';
+
+export default function ArrowEdgeExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Popover
+        isPresented={isPresented}
+        onStateChange={({ isPresented }) => setIsPresented(isPresented)}
+        arrowEdge="top">
+        <Popover.Trigger>
+          <Button onPress={() => setIsPresented(true)}>Show Popover</Button>
+        </Popover.Trigger>
+        <Popover.Content>
+          <VStack modifiers={[padding({ all: 16 })]}>
+            <Text>Arrow on top edge</Text>
+          </VStack>
+        </Popover.Content>
+      </Popover>
+    </Host>
+  );
+}
+```
+
+### With React Native content
+
+You can use `RNHostView` to embed React Native components inside the popover content.
+
+```tsx RNContentPopoverExample.tsx
+import { useState } from 'react';
+import { Pressable, Text as RNText, View } from 'react-native';
+import { Host, Button, Popover, RNHostView } from '@expo/ui/swift-ui';
+
+export default function RNContentPopoverExample() {
+  const [isPresented, setIsPresented] = useState(false);
+  const [counter, setCounter] = useState(0);
+
+  return (
+    <Host matchContents>
+      <Popover
+        isPresented={isPresented}
+        onStateChange={({ isPresented }) => setIsPresented(isPresented)}>
+        <Popover.Trigger>
+          <Button onPress={() => setIsPresented(true)}>Show RN Popover</Button>
+        </Popover.Trigger>
+        <Popover.Content>
+          <RNHostView matchContents>
+            <View style={{ padding: 16 }}>
+              <RNText style={{ fontSize: 16, fontWeight: 'bold' }}>React Native Content</RNText>
+              <RNText style={{ color: '#666', marginVertical: 8 }}>Counter: {counter}</RNText>
+              <Pressable
+                style={{
+                  backgroundColor: '#007AFF',
+                  padding: 12,
+                  borderRadius: 8,
+                  alignItems: 'center',
+                }}
+                onPress={() => setCounter(counter + 1)}>
+                <RNText style={{ color: 'white' }}>Increment</RNText>
+              </Pressable>
+            </View>
+          </RNHostView>
+        </Popover.Content>
+      </Popover>
+    </Host>
+  );
+}
+```
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/popover" apiName="Popover" />

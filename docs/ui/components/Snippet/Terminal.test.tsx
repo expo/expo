@@ -60,6 +60,51 @@ describe(Terminal, () => {
     expect(screen.queryByText('Copy')).toBe(null);
   });
 
+  it('renders package manager tabs and switches commands with correct copy', async () => {
+    render(
+      <>
+        <Terminal
+          cmd={{
+            npm: ['$ npm install expo'],
+            yarn: ['$ yarn add expo'],
+            pnpm: ['$ pnpm add expo'],
+            bun: ['$ bun add expo'],
+          }}
+        />
+        <textarea />
+      </>
+    );
+
+    const user = userEvent.setup();
+
+    expect(screen.getByRole('tab', { name: /^npm$/i })).toHaveAttribute('aria-selected', 'true');
+    const npmLine = screen.getAllByText((_, node) => {
+      const text = node?.textContent ?? '';
+      return !!(text.includes('npm install expo') && node?.tagName.toLowerCase() === 'code');
+    })[0];
+    expect(npmLine).toBeVisible();
+
+    await user.click(screen.getByRole('tab', { name: /^yarn$/i }));
+    expect(screen.getByRole('tab', { name: /^yarn$/i })).toHaveAttribute('aria-selected', 'true');
+    expect(
+      screen.queryByText((_, node) => {
+        const text = node?.textContent ?? '';
+        return !!(text.includes('npm install expo') && node?.tagName.toLowerCase() === 'code');
+      })
+    ).toBeNull();
+    const yarnLine = screen.getAllByText((_, node) => {
+      const text = node?.textContent ?? '';
+      return !!(text.includes('yarn add expo') && node?.tagName.toLowerCase() === 'code');
+    })[0];
+    expect(yarnLine).toBeVisible();
+
+    await user.click(screen.getByText('Copy'));
+    await user.click(screen.getByRole('textbox'));
+    await user.paste();
+
+    expect(screen.getByRole<HTMLTextAreaElement>('textbox').value).toBe('yarn add expo');
+  });
+
   it('renders browser action when provided', async () => {
     const originalWindowOpen = window.open;
     const openMock = jest.fn();

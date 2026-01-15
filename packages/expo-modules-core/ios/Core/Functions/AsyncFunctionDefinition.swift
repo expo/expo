@@ -67,7 +67,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
     by owner: AnyObject?,
     withArguments args: [Any],
     appContext: AppContext,
-    callback: @Sendable @escaping (FunctionCallResult) -> ()
+    callback: @Sendable @escaping (FunctionCallResult) -> Void
   ) {
     let promise = Promise(appContext: appContext) { value in
       callback(.success(Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: ~ReturnType.self)))
@@ -158,6 +158,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
 
   // MARK: - JavaScriptObjectBuilder
 
+  @JavaScriptActor
   func build(appContext: AppContext) throws -> JavaScriptObject {
     // It seems to be safe to capture a strong reference to `self` here. This is needed for detached functions, that are not part of the module definition.
     // Module definitions are held in memory anyway, but detached definitions (returned by other functions) are not, so we need to capture them here.

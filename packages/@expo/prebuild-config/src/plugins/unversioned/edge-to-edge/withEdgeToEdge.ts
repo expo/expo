@@ -18,25 +18,15 @@ export type GradlePropertiesConfig = ExportedConfigWithProps<
   AndroidConfig.Properties.PropertiesItem[]
 >;
 
-export const withEdgeToEdge: ConfigPlugin<{ projectRoot: string }> = (config, { projectRoot }) => {
-  return applyEdgeToEdge(config, projectRoot);
+export const withEdgeToEdge: ConfigPlugin = (config) => {
+  return applyEdgeToEdge(config);
 };
 
-export function applyEdgeToEdge(config: ExpoConfig, projectRoot: string): ExpoConfig {
-  if (config.android?.edgeToEdgeEnabled === false) {
-    WarningAggregator.addWarningAndroid(
-      TAG,
-      '`edgeToEdgeEnabled` field is explicitly set to false in the project app config. In Android 16+ (targetSdkVersion 36) it is no longer be possible to disable edge-to-edge. Learn more:',
-      'https://expo.fyi/edge-to-edge-rollout'
-    );
-  }
-
-  const edgeToEdgeEnabled = config.android?.edgeToEdgeEnabled !== false;
-
-  config = withEdgeToEdgeEnabledGradleProperties(config, { edgeToEdgeEnabled });
+export function applyEdgeToEdge(config: ExpoConfig): ExpoConfig {
+  config = withEdgeToEdgeEnabledGradleProperties(config, { edgeToEdgeEnabled: true });
   // Enable/disable edge-to-edge enforcement
   config = withConfigureEdgeToEdgeEnforcement(config, {
-    disableEdgeToEdgeEnforcement: !edgeToEdgeEnabled,
+    disableEdgeToEdgeEnforcement: false,
   });
 
   config = withEnforceNavigationBarContrast(

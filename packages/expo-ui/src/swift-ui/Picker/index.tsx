@@ -1,10 +1,12 @@
 import { requireNativeView } from 'expo';
+import type { NativeSyntheticEvent } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type PickerProps = {
+type SelectionValueType = string | number | null;
+export type PickerProps<T extends SelectionValueType = any> = {
   /**
    * The name of the system image (SF Symbol).
    * For example: 'photo', 'heart.fill', 'star.circle'
@@ -17,12 +19,12 @@ export type PickerProps = {
   /**
    * The selected option's `tag` modifier value.
    */
-  selection?: string | number | null;
+  selection?: T;
   /**
    * Callback function that is called when an option is selected.
    * Gets called with the selected `tag` value.
    */
-  onSelectionChange?: (event: { nativeEvent: { selection: string | number } }) => void;
+  onSelectionChange?: (selection: T) => void;
 
   /**
    * The content of the picker. You can use `Text` components with `tag` modifiers to display the options.
@@ -30,29 +32,37 @@ export type PickerProps = {
   children?: React.ReactNode;
 } & CommonViewModifierProps;
 
-const PickerNativeView: React.ComponentType<PickerProps> = requireNativeView(
+type NativePickerProps = Omit<PickerProps, 'onSelectionChange'> & {
+  onSelectionChange?: (event: NativeSyntheticEvent<{ selection: SelectionValueType }>) => void;
+  children?: React.ReactNode;
+};
+
+const PickerNativeView: React.ComponentType<NativePickerProps> = requireNativeView(
   'ExpoUI',
   'PickerView'
 );
 
-const PickerContentNativeView: React.ComponentType<PickerProps> = requireNativeView(
-  'ExpoUI',
-  'PickerContentView'
-);
+const PickerContentNativeView: React.ComponentType<{ children: React.ReactNode }> =
+  requireNativeView('ExpoUI', 'PickerContentView');
 
-const PickerLabelNativeView: React.ComponentType<PickerProps> = requireNativeView(
+const PickerLabelNativeView: React.ComponentType<{ children: React.ReactNode }> = requireNativeView(
   'ExpoUI',
   'PickerLabelView'
 );
 
-type NativePickerProps = PickerProps;
-
-function transformPickerProps(props: PickerProps): NativePickerProps {
-  const { modifiers, ...restProps } = props;
+function transformPickerProps<T extends SelectionValueType>(
+  props: PickerProps<T>
+): NativePickerProps {
+  const { modifiers, onSelectionChange, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
+    onSelectionChange: onSelectionChange
+      ? ({ nativeEvent: { selection } }) => {
+          onSelectionChange(selection as T);
+        }
+      : undefined,
   };
 }
 
@@ -66,7 +76,7 @@ function transformPickerProps(props: PickerProps): NativePickerProps {
  * </Picker>
  * ```
  */
-export function Picker(props: PickerProps) {
+export function Picker<T extends SelectionValueType>(props: PickerProps<T>) {
   const { label, children, ...restProps } = transformPickerProps(props);
   if (typeof label === 'string') {
     return (

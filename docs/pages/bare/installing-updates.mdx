@@ -47,20 +47,23 @@ Modify the `expo` section of **app.json**. If you created your project using `np
 
 If you want to set up a [custom `expo-updates` server](https://github.com/expo/custom-expo-updates-server) instead, add your URL to `updates.url` in **app.json**.
 
-```diff app.json
- {
-   "name": "MyApp",
-   "displayName": "MyApp",
+<DiffBlock
+  raw={`diff --git a/app.json b/app.json
+index 0000000..1111111 100644
+--- a/app.json
++++ b/app.json
+@@ -1,7 +1,7 @@
    "expo": {
      "name": "MyApp",
-      ...
-     "updates": {
+-    "updates": {
 -      "url": "https://u.expo.dev/[your-project-id]"
+-    }
++    "updates": {
 +      "url": "http://localhost:3000/api/manifest"
-     }
++    }
    }
- }
-```
+ }`}
+/>
 
 ### Android
 
@@ -74,21 +77,7 @@ Modify **android/app/src/main/AndroidManifest.xml** to add the `expo-updates` co
 
 If using the updates server URL (a custom non-HTTPS update server running on the same machine), you will need to modify **android/app/src/main/AndroidManifest.xml** to add the update server URL and enable `usesCleartextTraffic`:
 
-```diff android/app/src/main/AndroidManifest.xml
- <application
-  android:name=".MainApplication"
-  android:label="@string/app_name"
-  android:icon="@mipmap/ic_launcher"
-  android:roundIcon="@mipmap/ic_launcher_round"
-  android:allowBackup="false"
-  android:theme="@style/AppTheme"
-+ android:usesCleartextTraffic="true"
- >
-
-- <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://u.expo.dev/[your-project-id]"/>
-+ <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="http://localhost:3000/api/manifest"/>
- </application>
-```
+<DiffBlock source="/static/diffs/expo-updates-android-manifest-cleartext.diff" />
 
 Add the Expo runtime version string key to **android/app/src/main/res/values/strings.xml**:
 

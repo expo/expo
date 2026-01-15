@@ -68,25 +68,49 @@ export interface ColorType {
 
 const iosColor = new Proxy({} as ColorType['ios'], {
   get(_, prop: string) {
-    return PlatformColor(prop);
+    if (process.env.EXPO_OS === 'ios') {
+      return PlatformColor(prop);
+    }
+    console.warn(
+      `Color.ios.${prop} is not available on ${process.env.EXPO_OS}. Consider using a different color for this platform.`
+    );
+    return null;
   },
 });
 
 const androidAttrColor = new Proxy({} as ColorType['android']['attr'], {
   get(_, prop: string) {
-    return PlatformColor('?attr/' + prop);
+    if (process.env.EXPO_OS === 'android') {
+      return PlatformColor('?attr/' + prop);
+    }
+    console.warn(
+      `Color.android.attr.${prop} is not available on ${process.env.EXPO_OS}. Consider using a different color for this platform.`
+    );
+    return null;
   },
 });
 
 const androidMaterialColor = new Proxy({} as ColorType['android']['material'], {
   get(_, prop: string) {
-    return Material3Color(prop);
+    if (process.env.EXPO_OS === 'android') {
+      return Material3Color(prop);
+    }
+    console.warn(
+      `Color.android.material.${prop} is not available on ${process.env.EXPO_OS}. Consider using a different color for this platform.`
+    );
+    return null;
   },
 });
 
 const androidDynamicColor = new Proxy({} as ColorType['android']['dynamic'], {
   get(_, prop: string) {
-    return Material3DynamicColor(prop);
+    if (process.env.EXPO_OS === 'android') {
+      return Material3DynamicColor(prop);
+    }
+    console.warn(
+      `Color.android.dynamic.${prop} is not available on ${process.env.EXPO_OS}. Consider using a different color for this platform.`
+    );
+    return null;
   },
 });
 
@@ -107,11 +131,61 @@ const androidColor = new Proxy(
       if (prop in target) {
         return target[prop];
       }
-      return PlatformColor('@android:color/' + prop);
+      if (process.env.EXPO_OS === 'android') {
+        return PlatformColor('@android:color/' + prop);
+      }
+      console.warn(
+        `Color.android.${prop} is not available on ${process.env.EXPO_OS}. Consider using a different color for this platform.`
+      );
+      return null;
     },
   }
 );
 
+/**
+ * Color utility to access platform-specific colors easily.
+ *
+ * On **Android**, it provides access to:
+ * - System colors, as a type-safe wrapper over `PlatformColor`. For example, `Color.android.background`.
+ * - Attribute colors, as a type-safe wrapper over `PlatformColor`. For example, `Color.android.attr.colorPrimary`.
+ * - [Material Design 3 static colors](https://m3.material.io/styles/color/static/baseline). For example, `Color.android.material.primary`.
+ * - [Material Design 3 dynamic colors](https://m3.material.io/styles/color/dynamic/user-generated-source). For example, `Color.android.dynamic.primary`.
+ *
+ * On **iOS**, it is a type-safe wrapper over `PlatformColor`, providing access to system colors. For example, `Color.ios.label`.
+ *
+ * > **Note**: To ensure the colors align with the system theme on Android, make sure they are used within a component that responds to theme changes, such as by using the `useColorScheme` hook from React Native.
+ *
+ * @example
+ * ```tsx
+ * import { Color } from 'expo-router';
+ *
+ * Color.ios.label; // Access iOS system color
+ * Color.android.background; // Access Android system color
+ * Color.android.attr.colorPrimary; // Access Android attribute color
+ * Color.android.material.primary; // Access Android Material Design 3 static color
+ * Color.android.dynamic.primary; // Access Android Material Design 3 dynamic color
+ * ```
+ *
+ * @example
+ * ```tsx
+ * import { Color } from 'expo-router';
+ * import { View, Text, useColorScheme } from 'react-native';
+ *
+ * export default function MyComponent() {
+ *   useColorScheme(); // Ensure the app responds to system theme changes
+ *   return (
+ *     <View style={{ flex: 1, backgroundColor: Color.android.dynamic.primary }}>
+ *       <Text style={{ color: Color.android.dynamic.onPrimary }}>
+ *         Hello, World!
+ *       </Text>
+ *     </View>
+ *   );
+ * }
+ * ```
+ *
+ * @platform android
+ * @platform ios
+ */
 export const Color: ColorType = {
   get ios() {
     return iosColor;

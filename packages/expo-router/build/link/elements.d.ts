@@ -1,15 +1,18 @@
-import React, { type PropsWithChildren, type ReactElement } from 'react';
+import type { ImageRef } from 'expo-image';
+import React, { type PropsWithChildren, type ReactNode } from 'react';
 import type { ViewStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 export interface LinkMenuActionProps {
     /**
      * The title of the menu item.
      */
-    title: string;
+    children?: ReactNode;
     /**
-     * Optional SF Symbol displayed alongside the menu item.
+     * If `true`, the menu item will be displayed as destructive.
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive) for more information.
      */
-    icon?: SFSymbol;
+    destructive?: boolean;
     /**
      * If `true`, the menu item will be disabled and not selectable.
      *
@@ -17,11 +20,57 @@ export interface LinkMenuActionProps {
      */
     disabled?: boolean;
     /**
-     * If `true`, the menu item will be displayed as destructive.
-     *
-     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive) for more information.
+     * An elaborated title that explains the purpose of the action.
      */
-    destructive?: boolean;
+    discoverabilityLabel?: string;
+    /**
+     * Whether the menu element should be hidden.
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/hidden) for more information.
+     *
+     * @default false
+     */
+    hidden?: boolean;
+    /**
+     * SF Symbol displayed alongside the menu item.
+     */
+    icon?: SFSymbol;
+    /**
+     * Custom image loaded using `useImage()` hook from `expo-image`.
+     * Takes priority over `icon` (SF Symbol) when both are provided.
+     *
+     * @example
+     * ```tsx
+     * import { useImage } from 'expo-image';
+     * import { Link } from 'expo-router';
+     *
+     * const customIcon = useImage('https://simpleicons.org/icons/expo.svg', {
+     *   maxWidth: 24,
+     *   maxHeight: 24,
+     * });
+     *
+     * <Link.Menu title="Menu">
+     *   <Link.MenuAction image={customIcon} title="Action" onPress={() => {}} />
+     * </Link.Menu>
+     * ```
+     */
+    image?: ImageRef | null;
+    /**
+     * If `true`, the menu item will be displayed as selected.
+     */
+    isOn?: boolean;
+    onPress?: () => void;
+    /**
+     * An optional subtitle for the menu item.
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/subtitle) for more information.
+     */
+    subtitle?: string;
+    /**
+     * The title of the menu item.
+     * @deprecated Use `children` prop instead.
+     */
+    title?: string;
     /**
      * If `true`, the menu will be kept presented after the action is selected.
      *
@@ -31,11 +80,6 @@ export interface LinkMenuActionProps {
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/keepsmenupresented) for more information.
      */
     unstable_keepPresented?: boolean;
-    /**
-     * If `true`, the menu item will be displayed as selected.
-     */
-    isOn?: boolean;
-    onPress: () => void;
 }
 /**
  * This component renders a context menu action for a link.
@@ -52,12 +96,41 @@ export interface LinkMenuProps {
      */
     title?: string;
     /**
+     * An optional subtitle for the submenu. Does not appear on `inline` menus.
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/subtitle) for more information.
+     */
+    subtitle?: string;
+    /**
      * Optional SF Symbol displayed alongside the menu item.
      */
-    icon?: string;
+    icon?: SFSymbol;
+    /**
+     * Custom image loaded using `useImage()` hook from `expo-image`.
+     * Takes priority over `icon` (SF Symbol) when both are provided.
+     *
+     * @example
+     * ```tsx
+     * import { useImage } from 'expo-image';
+     * import { Link } from 'expo-router';
+     *
+     * const customIcon = useImage('https://simpleicons.org/icons/expo.svg', {
+     *   maxWidth: 24,
+     *   maxHeight: 24,
+     * });
+     *
+     * <Link.Menu image={customIcon} title="Menu">
+     *   <Link.MenuAction title="Action" onPress={() => {}} />
+     * </Link.Menu>
+     * ```
+     */
+    image?: ImageRef | null;
     /**
      * If `true`, the menu will be displayed as a palette.
-     * This means that the menu will be displayed as one row
+     * This means that the menu will be displayed as one row.
+     * The `elementSize` property is ignored when palette is used, all items will be `elementSize="small"`. Use `elementSize="medium"` instead of `palette` to display actions with titles horizontally.
+     *
+     * > **Note**: Palette menus are only supported in submenus.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette) for more information.
      */
@@ -83,7 +156,16 @@ export interface LinkMenuProps {
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/destructive) for more information.
      */
     destructive?: boolean;
-    children: ReactElement<LinkMenuActionProps> | ReactElement<LinkMenuActionProps>[];
+    /**
+     * The preferred size of the menu elements.
+     * `elementSize` property is ignored when `palette` is used.
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/preferredelementsize) for more information.
+     *
+     * @platform iOS 16.0+
+     */
+    elementSize?: 'small' | 'medium' | 'large' | 'auto';
+    children?: React.ReactNode;
 }
 /**
  * Groups context menu actions for a link.

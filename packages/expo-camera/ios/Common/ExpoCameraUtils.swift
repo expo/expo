@@ -249,8 +249,8 @@ struct ExpoCameraUtils {
     }
 
     result["url"] = fileUrl.absoluteString
-    result["width"] = image.cgImage?.width ?? 0
-    result["height"] = image.cgImage?.height ?? 0
+    result["width"] = image.size.width
+    result["height"] = image.size.height
     result["base64"] = options.base64 ? data.base64EncodedString() : nil
 
     do {

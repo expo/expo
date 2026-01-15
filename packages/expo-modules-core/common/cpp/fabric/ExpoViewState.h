@@ -46,10 +46,12 @@ public:
 
 #ifdef ANDROID
   ExpoViewState(ExpoViewState const &previousState, folly::dynamic data)
-  : _width((float)data["width"].getDouble()),
-    _height((float)data["height"].getDouble()),
-    _styleWidth(data.count("styleWidth") ? (float)data["styleWidth"].getDouble() : std::numeric_limits<float>::quiet_NaN()),
-    _styleHeight(data.count("styleHeight") ? (float)data["styleHeight"].getDouble() : std::numeric_limits<float>::quiet_NaN()){};
+  : _width(isNonnullProperty(data, "width") ? (float)data["width"].getDouble() : std::numeric_limits<float>::quiet_NaN()),
+    _height(isNonnullProperty(data, "height") ? (float)data["height"].getDouble() : std::numeric_limits<float>::quiet_NaN()),
+    _styleWidth(isNonnullProperty(data, "styleWidth") ? (float)data["styleWidth"].getDouble() : std::numeric_limits<float>::quiet_NaN()),
+    _styleHeight(isNonnullProperty(data, "styleHeight") ? (float)data["styleHeight"].getDouble() : std::numeric_limits<float>::quiet_NaN()) {
+  }
+
   folly::dynamic getDynamic() const {
     return {};
   };
@@ -57,6 +59,10 @@ public:
   facebook::react::MapBuffer getMapBuffer() const {
     return facebook::react::MapBufferBuilder::EMPTY();
   };
+
+  static inline bool isNonnullProperty(const folly::dynamic &value, const std::string &name) {
+    return value.count(name) && !value[name].isNull();
+  }
 #endif
   
   float _width = std::numeric_limits<float>::quiet_NaN();

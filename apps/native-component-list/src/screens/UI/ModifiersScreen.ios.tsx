@@ -58,6 +58,7 @@ import {
   pickerStyle,
   tag,
   font,
+  lineLimit,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
@@ -126,9 +127,7 @@ export default function ModifiersScreen() {
               label="Select dabge type"
               modifiers={[pickerStyle('menu')]}
               selection={badgeIndex}
-              onSelectionChange={({ nativeEvent: { selection } }) => {
-                setBadgeIndex(selection as number);
-              }}>
+              onSelectionChange={setBadgeIndex}>
               {badgeType.map((type, index) => (
                 <Text key={index} modifiers={[tag(index)]}>
                   {type}
@@ -206,9 +205,9 @@ export default function ModifiersScreen() {
           {/* Text modifiers */}
           <Section title="Text modifier">
             <Text
-              color={color ?? 'primary'}
-              lineLimit={1}
               modifiers={[
+                foregroundStyle({ type: 'color', color: color ?? 'primary' }),
+                lineLimit(1),
                 font({ size: 16 }),
                 allowsTightening(allowTightening),
                 truncationMode(
@@ -222,9 +221,7 @@ export default function ModifiersScreen() {
               label="Select mode"
               modifiers={[pickerStyle('menu')]}
               selection={truncationModeIndex}
-              onSelectionChange={({ nativeEvent: { selection } }) => {
-                setTruncationMode(selection as number);
-              }}>
+              onSelectionChange={setTruncationMode}>
               {truncationModeOptions.map((option, index) => (
                 <Text key={index} modifiers={[tag(index)]}>
                   {option}
@@ -328,9 +325,7 @@ export default function ModifiersScreen() {
                 label="Select alignment"
                 modifiers={[pickerStyle('menu')]}
                 selection={multilineTextAlignmentIndex}
-                onSelectionChange={({ nativeEvent: { selection } }) => {
-                  setMultilineTextAlignment(selection as number);
-                }}>
+                onSelectionChange={setMultilineTextAlignment}>
                 {multilineTextAlignmentOptions.map((option, index) => (
                   <Text key={index} modifiers={[tag(index)]}>
                     {option}
@@ -358,8 +353,11 @@ export default function ModifiersScreen() {
                 onValueChange={setEnabledSelection}
               />
               <Text
-                color={enabledSelection ? 'black' : 'gray'}
-                modifiers={[font({ size: 14 }), textSelection(enabledSelection)]}>
+                modifiers={[
+                  foregroundStyle({ type: 'color', color: enabledSelection ? 'black' : 'gray' }),
+                  font({ size: 14 }),
+                  textSelection(enabledSelection),
+                ]}>
                 This is selected text
               </Text>
             </VStack>
@@ -398,13 +396,13 @@ export default function ModifiersScreen() {
               label="Select a row color"
               selection={rowColor}
               supportsOpacity
-              onValueChanged={setRowColor}
+              onSelectionChange={setRowColor}
             />
             <ColorPicker
               label="Select a background color"
               selection={backgroundFormColor}
               supportsOpacity
-              onValueChanged={setBackgroundFormColor}
+              onSelectionChange={setBackgroundFormColor}
             />
           </Section>
 
@@ -429,13 +427,17 @@ export default function ModifiersScreen() {
                 endPoint: { x: 1, y: 1 },
               }),
             ]}>
-            <Text color={color ?? 'primary'} modifiers={[font({ size: 12 })]}>
+            <Text
+              modifiers={[
+                foregroundStyle({ type: 'color', color: color ?? 'primary' }),
+                font({ size: 12 }),
+              ]}>
               Hello world, I don't react on foregroundStyle
             </Text>
             <ColorPicker
               label="Select a color"
               selection={color}
-              onValueChanged={setColor}
+              onSelectionChange={setColor}
               // primary is a named color in SwiftUI
               modifiers={[foregroundStyle({ type: 'color', color: 'primary' })]}
             />
@@ -609,7 +611,7 @@ export default function ModifiersScreen() {
               />
               <Picker
                 selection={1}
-                onSelectionChange={({ nativeEvent: { selection } }) => {
+                onSelectionChange={(selection) => {
                   console.log('Picker option selected:', selection);
                 }}
                 modifiers={[
@@ -742,7 +744,7 @@ function AppearSection() {
   return (
     <Section title={`Appear(${appearCount}) Disappear(${disappearCount})`}>
       <DisclosureGroup
-        onStateChange={setDisclosureGroupExpanded}
+        onIsExpandedChange={setDisclosureGroupExpanded}
         isExpanded={disclosureGroupExpanded}
         label="Show rectangle">
         <Rectangle

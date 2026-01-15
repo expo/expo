@@ -1,6 +1,5 @@
 'use client';
 
-import Constants from 'expo-constants';
 import React, { Children, isValidElement } from 'react';
 
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
@@ -8,24 +7,25 @@ import { LinkWithPreview } from './LinkWithPreview';
 import { LinkMenu, LinkPreview } from './elements';
 import { useIsPreview } from './preview/PreviewRouteContext';
 import { LinkProps } from './useLinkHooks';
-import { useZoomTransitionPrimitives } from './zoom/useZoomTransitionPrimitives';
+import { useZoomHref } from './zoom/useZoomHref';
 import { shouldLinkExternally } from '../utils/url';
-import { ZoomTransitionSourceContext } from './zoom/zoom-transition-context';
+import { ZoomTransitionSourceContextProvider } from './zoom/zoom-transition-context-providers';
 
 export function ExpoLink(props: LinkProps) {
+  return (
+    <ZoomTransitionSourceContextProvider linkProps={props}>
+      <ExpoLinkImpl {...props} />
+    </ZoomTransitionSourceContextProvider>
+  );
+}
+
+function ExpoLinkImpl(props: LinkProps) {
   const isPreview = useIsPreview();
-  const { zoomTransitionSourceContextValue, href } = useZoomTransitionPrimitives(props);
+  const href = useZoomHref(props);
   const shouldUseLinkWithPreview =
-    process.env.EXPO_OS === 'ios' &&
-    isLinkWithPreview(props) &&
-    !isPreview &&
-    Constants?.expoConfig?.newArchEnabled !== false;
+    process.env.EXPO_OS === 'ios' && isLinkWithPreview(props) && !isPreview;
   if (shouldUseLinkWithPreview) {
-    return (
-      <ZoomTransitionSourceContext value={zoomTransitionSourceContextValue}>
-        <LinkWithPreview {...props} href={href} hrefForPreviewNavigation={props.href} />
-      </ZoomTransitionSourceContext>
-    );
+    return <LinkWithPreview {...props} href={href} hrefForPreviewNavigation={props.href} />;
   }
   let children = props.children;
   if (React.Children.count(props.children) > 1) {
@@ -35,11 +35,7 @@ export function ExpoLink(props: LinkProps) {
     children = arrayChildren.length === 1 ? arrayChildren[0] : props.children;
   }
 
-  return (
-    <ZoomTransitionSourceContext value={zoomTransitionSourceContextValue}>
-      <BaseExpoRouterLink {...props} href={href} children={children} />
-    </ZoomTransitionSourceContext>
-  );
+  return <BaseExpoRouterLink {...props} href={href} children={children} />;
 }
 
 function isLinkWithPreview(props: LinkProps): boolean {

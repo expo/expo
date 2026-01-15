@@ -2,8 +2,6 @@ package expo.modules.ui
 
 import android.content.Context
 import android.graphics.Color
-import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.ExpoComposeView
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
@@ -15,8 +13,10 @@ import androidx.compose.ui.Modifier
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.ExpoComposeView
 
 class SliderColors : Record {
   @Field
@@ -56,23 +56,22 @@ class SliderView(context: Context, appContext: AppContext) :
     val (max) = props.max
     val (steps) = props.steps
     val (colors) = props.elementColors
-    DynamicTheme {
-      Slider(
-        value = value.coerceAtLeast(min).coerceAtMost(max),
-        valueRange = min..max,
-        steps = steps,
-        onValueChange = {
-          onValueChanged(mapOf("value" to it))
-        },
-        colors = SliderDefaults.colors(
-          thumbColor = colors.thumbColor.compose,
-          activeTrackColor = colors.activeTrackColor.compose,
-          inactiveTrackColor = colors.inactiveTrackColor.compose,
-          activeTickColor = colors.activeTickColor.compose,
-          inactiveTickColor = colors.inactiveTickColor.compose
-        ),
-        modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
-      )
-    }
+
+    Slider(
+      value = value.coerceAtLeast(min).coerceAtMost(max),
+      valueRange = min..max,
+      steps = steps,
+      onValueChange = {
+        onValueChanged(mapOf("value" to it))
+      },
+      colors = SliderDefaults.colors(
+        thumbColor = colors.thumbColor.compose,
+        activeTrackColor = colors.activeTrackColor.compose,
+        inactiveTrackColor = colors.inactiveTrackColor.compose,
+        activeTickColor = colors.activeTickColor.compose,
+        inactiveTickColor = colors.inactiveTickColor.compose
+      ),
+      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
+    )
   }
 }

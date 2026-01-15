@@ -1,0 +1,10 @@
+diff --git a/AppDelegate.swift b/AppDelegate.swift
+index c218a0f7c3c..10afd38c64a 100644
+--- a/AppDelegate.swift
++++ b/AppDelegate.swift
+@@ -1,2 +1,4 @@
++import Expo
++
+ @main
+-public class AppDelegate: NSObject, UIApplicationDelegate {
++public class AppDelegate: ExpoAppDelegate {

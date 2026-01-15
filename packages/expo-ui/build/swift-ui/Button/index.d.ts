@@ -1,6 +1,4 @@
-import type { ColorValue } from 'react-native';
 import { type SFSymbol } from 'sf-symbols-typescript';
-import { type ViewEvent } from '../../types';
 import { type CommonViewModifierProps } from '../types';
 /**
  * The role of the button.
@@ -9,35 +7,6 @@ import { type CommonViewModifierProps } from '../types';
  * - `destructive` - A button that deletes data or performs a destructive action.
  */
 export type ButtonRole = 'default' | 'cancel' | 'destructive';
-/**
- * Sets the size for controls within this view.
- * - `mini` - A control version that is minimally sized.
- * - `small` - A control version that is proportionally smaller size for space-constrained views.
- * - `regular` - A control version that is the default size.
- * - `large` - A control version that is prominently sized.
- * - `extraLarge` - A control version that is substantially sized. The largest control size. Resolves to ControlSize.large on platforms other than visionOS.
- */
-export type ButtonControlSize = 'mini' | 'small' | 'regular' | 'large' | 'extraLarge';
-/**
- * The built-in button styles available on iOS.
- *
- * Common styles:
- * - `default` - The default system button style.
- * - `bordered` - A button with a light fill.
- * - `borderless` - A button with no background or border
- * - `borderedProminent` - A bordered button with a prominent appearance.
- * - `plain` - A button with no border or background and a less prominent text.
- * - `glass` – A liquid glass button effect (available only from iOS 26, when built with Xcode 26).
- * - `glassProminent` – A liquid glass button effect – (available only from iOS 26, when built with Xcode 26)
- * macOS-only styles:
- *  - `accessoryBar` - A button style for accessory bars.
- * - `accessoryBarAction` - A button style for accessory bar actions.
- * - `card` - A button style for cards.
- * - `link` - A button style for links.
- *
- * > **warning** The `borderless` variant is unavailable on Apple TV.
- */
-export type ButtonVariant = 'default' | 'bordered' | 'plain' | 'glass' | 'glassProminent' | 'borderedProminent' | 'borderless' | 'accessoryBar' | 'accessoryBarAction' | 'card' | 'link';
 export type ButtonProps = {
     /**
      * A callback that is called when the button is pressed.
@@ -45,51 +14,43 @@ export type ButtonProps = {
     onPress?: () => void;
     /**
      * A string describing the system image to display in the button.
-     * This is only used if `children` is a string.
-     * Uses SF Symbols.
+     * Only used when `label` is provided.
      */
     systemImage?: SFSymbol;
     /**
-     * Indicated the role of the button.
+     * Indicates the role of the button.
      */
     role?: ButtonRole;
     /**
-     * The size for controls within this view.
+     * The text label for the button. Use this for simple text buttons.
      */
-    controlSize?: ButtonControlSize;
+    label?: string;
     /**
-     * The button variant.
+     * Custom content for the button label. Use this for custom label views.
+     * Only nested elements are supported, not plain strings.
      */
-    variant?: ButtonVariant;
-    /**
-     * The text or React node to display inside the button.
-     */
-    children?: string | React.ReactNode;
-    /**
-     * Button color.
-     */
-    color?: ColorValue;
-    /**
-     * Disabled state of the button.
-     */
-    disabled?: boolean;
+    children?: React.ReactElement | React.ReactElement[];
 } & CommonViewModifierProps;
 /**
- * exposed for ContextMenu
- * @hidden
- */
-export type NativeButtonProps = Omit<ButtonProps, 'role' | 'onPress' | 'children' | 'systemImage' | 'controlSize'> & {
-    buttonRole?: ButtonRole;
-    text: string | undefined;
-    systemImage?: SFSymbol;
-} & ViewEvent<'onButtonPressed', void>;
-/**
- * exposed for ContextMenu
- * @hidden
- */
-export declare function transformButtonProps(props: Omit<ButtonProps, 'children'>, text: string | undefined): NativeButtonProps;
-/**
  * Displays a native button component.
+ *
+ * @example
+ * ```tsx
+ * import { Button } from '@expo/ui/swift-ui';
+ * import { buttonStyle, controlSize, tint, disabled } from '@expo/ui/swift-ui/modifiers';
+ *
+ * <Button
+ *   role="destructive"
+ *   onPress={handlePress}
+ *   label="Delete"
+ *   modifiers={[
+ *     buttonStyle('bordered'),
+ *     controlSize('large'),
+ *     tint('#FF0000'),
+ *     disabled(true)
+ *   ]}
+ * />
+ * ```
  */
 export declare function Button(props: ButtonProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

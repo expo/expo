@@ -355,11 +355,10 @@ export async function setIsAudioActiveAsync(active) {
  * ```tsx
  * import { setAudioModeAsync } from 'expo-audio';
  *
- * // Configure audio for background playback
+ * // Configure audio for background playback with mixing
  * await setAudioModeAsync({
  *   playsInSilentMode: true,
  *   shouldPlayInBackground: true,
- *   interruptionModeAndroid: 'duckOthers',
  *   interruptionMode: 'mixWithOthers'
  * });
  *
@@ -376,7 +375,7 @@ export async function setAudioModeAsync(mode) {
         : {
             shouldPlayInBackground: mode.shouldPlayInBackground,
             shouldRouteThroughEarpiece: mode.shouldRouteThroughEarpiece,
-            interruptionMode: mode.interruptionModeAndroid,
+            interruptionMode: mode.interruptionMode ?? mode.interruptionModeAndroid,
             allowsBackgroundRecording: mode.allowsBackgroundRecording,
         };
     return await AudioModule.setAudioModeAsync(audioMode);

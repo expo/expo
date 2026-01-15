@@ -8,7 +8,7 @@ export default function SwitchScreen() {
   return (
     <Page>
       <Section title="Switch">
-        <Host>
+        <Host matchContents>
           <Switch
             value={checked}
             onValueChange={setChecked}
@@ -19,7 +19,7 @@ export default function SwitchScreen() {
         </Host>
       </Section>
       <Section title="Checkbox Switch">
-        <Host>
+        <Host matchContents>
           <Switch
             value={checked}
             onValueChange={setChecked}
@@ -30,7 +30,7 @@ export default function SwitchScreen() {
         </Host>
       </Section>
       <Section title="Button Switch">
-        <Host>
+        <Host matchContents>
           <Switch
             value={checked}
             onValueChange={setChecked}

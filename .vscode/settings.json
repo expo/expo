@@ -2,6 +2,5 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "eslint.workingDirectories": [
     { "pattern": "*" },
-  ],
-  "editor.formatOnSave": true
+  ]
 }

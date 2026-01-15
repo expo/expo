@@ -68,15 +68,43 @@ internal class CustomTabsActivitiesHelper(
   /**
    * @throws CurrentActivityNotFoundException
    */
-  fun startCustomTabs(tabsIntent: CustomTabsIntent) {
-    tabsIntent.intent.data?.let {
-      tabsIntent.launchUrl(currentActivity, it)
-    } ?: throw NoUrlProvidedException()
+  fun startCustomTabs(tabsIntent: CustomTabsIntent, options: OpenBrowserOptions) {
+    val url = tabsIntent.intent.data ?: throw NoUrlProvidedException()
+
+    if (!options.shouldCreateTask) {
+      tabsIntent.launchUrl(currentActivity, url)
+      return
+    }
+
+    // Use the proxy activity only when creating a new task AND useProxyActivity is enabled
+    // This prevents the Custom Tab from being destroyed when the main activity
+    // has singleTask launch mode
+    if (options.useProxyActivity) {
+      val proxyIntent = Intent(currentActivity, BrowserProxyActivity::class.java).apply {
+        putExtra(BrowserProxyActivity.EXTRA_URL, url.toString())
+        putExtra(BrowserProxyActivity.EXTRA_CUSTOM_TABS_INTENT_DATA, tabsIntent.intent)
+
+        // The proxy activity will be in a different task due to its taskAffinity
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+      }
+
+      currentActivity.startActivity(proxyIntent)
+      return
+    }
+
+    // Launcher Custom Tab without proxy activity
+    tabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    if (!options.showInRecents) {
+      tabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+      tabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+    }
+
+    tabsIntent.launchUrl(currentActivity, url)
   }
 
-  // endregion
+// endregion
 
-  // region Private helpers
+// region Private helpers
 
   /**
    * @throws CurrentActivityNotFoundException
@@ -99,7 +127,7 @@ internal class CustomTabsActivitiesHelper(
   private val currentActivity: Activity
     get() = appContext.throwingActivity
 
-  // endregion
+// endregion
 }
 
 private inline fun <T, R> Collection<T>.mapToDistinctArrayList(mapper: (T) -> R): ArrayList<R> {

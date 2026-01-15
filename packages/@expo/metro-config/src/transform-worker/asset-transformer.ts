@@ -82,6 +82,7 @@ export async function transform(
   ) {
     return {
       ast: {
+        comments: null,
         ...t.file(
           t.program([
             buildClientReferenceRequire({
@@ -132,6 +133,7 @@ export async function transform(
 
       return {
         ast: {
+          comments: null,
           ...t.file(t.program([creatorFunction(options)])),
           errors: [],
         },
@@ -143,6 +145,7 @@ export async function transform(
     // module.exports = "/foo/bar.png";
     return {
       ast: {
+        comments: null,
         ...t.file(t.program([buildStringRef({ FILE_PATH: JSON.stringify(assetPath) })])),
         errors: [],
       },
@@ -152,6 +155,7 @@ export async function transform(
 
   return {
     ast: {
+      comments: null,
       ...generateAssetCodeFileAst(assetRegistryPath, data),
       errors: [],
     },

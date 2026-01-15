@@ -59,9 +59,7 @@
   _type = type;
   NSString *appOwnerName = @"the requested app";
   if (_appRecord) {
-    if (_appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord) {
-      appOwnerName = @"Expo";
-    } else if (_appRecord.appLoader.manifest && _appRecord.appLoader.manifest.name) {
+    if (_appRecord.appLoader.manifest && _appRecord.appLoader.manifest.name) {
       appOwnerName = [NSString stringWithFormat:@"\"%@\"", _appRecord.appLoader.manifest.name];
     }
   }
@@ -175,9 +173,8 @@
 
 - (void)_resetUIState
 {
-  EXKernelAppRecord *homeRecord = [EXKernel sharedInstance].appRegistry.homeAppRecord;
-  _btnBack.hidden = (!homeRecord || _appRecord == homeRecord);
-  _lblUrl.hidden = !homeRecord;
+  _btnBack.hidden = NO;
+  _lblUrl.hidden = NO;
   _lblUrl.text = _appRecord.appLoader.manifestUrl.absoluteString;
   // TODO: maybe hide retry (see BrowserErrorView)
   [self setNeedsLayout];

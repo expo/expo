@@ -8,7 +8,8 @@
     ],
     "paths": {
       "ThemeProvider": ["../common/ThemeProvider"],
-      "benchmarking": ["./modules/benchmarking"]
+      "benchmarking": ["./modules/benchmarking"],
+      "worklets-tester": ["./modules/worklets-tester/src/index"]
     }
   }
 }

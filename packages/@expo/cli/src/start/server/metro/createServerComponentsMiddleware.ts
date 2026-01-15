@@ -35,7 +35,7 @@ type SSRLoadModuleArtifactsFunc = (
 ) => Promise<{ artifacts: SerialAsset[]; src: string }>;
 
 type SSRLoadModuleFunc = <T extends Record<string, any>>(
-  filePath: string,
+  filePath: string | null,
   specificOptions?: Partial<ExpoMetroOptions>,
   extras?: { hot?: boolean }
 ) => Promise<T>;
@@ -446,16 +446,13 @@ export function createServerComponentsMiddleware(
     typeof import('@expo/router-server/build/rsc/rsc-renderer')
   >();
 
-  let ensurePromise: Promise<any> | null = null;
+  let ensurePromise: Promise<unknown> | null = null;
   async function ensureSSRReady() {
     // TODO: Extract CSS Modules / Assets from the bundler process
-    const runtime = await ssrLoadModule<
-      typeof import('@expo/router-server/build/rsc/rsc-renderer')
-    >('metro-runtime/src/modules/empty-module.js', {
+    await ssrLoadModule(null, {
       environment: 'react-server',
       platform: 'web',
     });
-    return runtime;
   }
   const ensureMemo = () => {
     ensurePromise ??= ensureSSRReady();

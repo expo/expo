@@ -3,14 +3,14 @@ import {
   Host,
   HStack,
   Image,
-  LinearProgress,
+  ProgressView,
   Picker,
   Slider,
   Switch,
   Text,
   VStack,
 } from '@expo/ui/swift-ui';
-import { frame, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+import { frame, pickerStyle, progressViewStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
 import { ScrollPage, Section } from '../../components/Page';
@@ -62,15 +62,9 @@ export default function RTLTestScreen() {
           matchContents={{ vertical: true }}
           layoutDirection={isRTL ? 'rightToLeft' : 'leftToRight'}>
           <HStack spacing={12}>
-            <Button variant="default" systemImage="house">
-              בית
-            </Button>
-            <Button variant="glass" systemImage="arrow.forward.square">
-              קדימה
-            </Button>
-            <Button variant="borderedProminent" systemImage="delete.forward" role="destructive">
-              حذف
-            </Button>
+            <Button systemImage="house" label="בית" />
+            <Button systemImage="arrow.forward.square" label="קדימה" />
+            <Button systemImage="delete.forward" role="destructive" label="حذف" />
           </HStack>
         </Host>
       </Section>
@@ -81,7 +75,7 @@ export default function RTLTestScreen() {
             <Picker
               modifiers={[pickerStyle('segmented')]}
               selection={pickerSelection}
-              onSelectionChange={({ nativeEvent: { selection } }) => setPickerSelection(selection)}>
+              onSelectionChange={setPickerSelection}>
               {options.map((option, index) => (
                 <Text key={index} modifiers={[tag(index)]}>
                   {option}
@@ -91,7 +85,7 @@ export default function RTLTestScreen() {
             <Picker
               modifiers={[pickerStyle('menu')]}
               selection={pickerSelection}
-              onSelectionChange={({ nativeEvent: { selection } }) => setPickerSelection(selection)}>
+              onSelectionChange={setPickerSelection}>
               {options.map((option, index) => (
                 <Text key={index} modifiers={[tag(index)]}>
                   {option}
@@ -116,7 +110,7 @@ export default function RTLTestScreen() {
         <Host matchContents layoutDirection={isRTL ? 'rightToLeft' : 'leftToRight'}>
           <HStack spacing={8}>
             <Text>20%</Text>
-            <LinearProgress progress={0.2} />
+            <ProgressView value={0.2} modifiers={[progressViewStyle('linear')]} />
           </HStack>
         </Host>
       </Section>
