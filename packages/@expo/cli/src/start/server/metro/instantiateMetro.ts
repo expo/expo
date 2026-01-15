@@ -7,18 +7,14 @@ import MetroHmrServer, { Client as MetroHmrClient } from '@expo/metro/metro/HmrS
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
-import {
-  mergeConfig,
-  resolveConfig,
-  type InputConfigT,
-  type ConfigT,
-} from '@expo/metro/metro-config';
+import { mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
 import { Terminal } from '@expo/metro/metro-core';
 import {
   createStableModuleIdFactory,
   getDefaultConfig,
   type LoadOptions,
 } from '@expo/metro-config';
+import { FileStore } from '@expo/metro-config/file-store';
 import chalk from 'chalk';
 import fs from 'fs';
 import http from 'http';
@@ -155,46 +151,7 @@ export async function loadMetroConfigAsync(
     },
   };
 
-  // Handle EXPO_METRO_CACHE_STORES_DIR environment variable override
-  if (env.EXPO_METRO_CACHE_STORES_DIR) {
-    const { FileStore } = require('@expo/metro-config/file-store');
-
-    // Resolve relative paths to absolute paths based on project root
-    const cacheStoresDir = path.isAbsolute(env.EXPO_METRO_CACHE_STORES_DIR)
-      ? env.EXPO_METRO_CACHE_STORES_DIR
-      : path.resolve(projectRoot, env.EXPO_METRO_CACHE_STORES_DIR);
-
-    // Create the directory if it doesn't exist
-    try {
-      await fs.promises.mkdir(cacheStoresDir, { recursive: true });
-    } catch (error: any) {
-      if (error.code !== 'EEXIST') {
-        Log.error(`Provided EXPO_METRO_CACHE_STORES_DIR="${cacheStoresDir} is not a directory. Use new or existing directory path.`)
-        throw error;
-      }
-    }
-
-    // Check if user has custom cacheStores in their metro.config.js
-    const userHasCustomCacheStores = config.cacheStores
-
-    if (userHasCustomCacheStores) {
-      Log.warn(
-        `Using EXPO_METRO_CACHE_STORES_DIR="${cacheStoresDir}" which overrides cacheStores from metro.config.js`
-      );
-    } else {
-      Log.log(chalk.gray(`Using Metro cache directory: ${cacheStoresDir}`));
-    }
-
-    // Override cacheStores with the env-specified directory
-    config = {
-      ...config,
-      cacheStores: [
-        new FileStore({
-          root: cacheStoresDir,
-        }),
-      ],
-    };
-  }
+  overrideExpoMetroCacheStores(config, { projectRoot });
 
   globalThis.__requireCycleIgnorePatterns = config.resolver?.requireCycleIgnorePatterns;
 
@@ -560,4 +517,51 @@ export function isWatchEnabled() {
   }
 
   return !env.CI;
+}
+
+/**
+ * Override the Metro cache stores directory using the EXPO_METRO_CACHE_STORES_DIR environment variable.
+ * Exposed for testing.
+ */
+export async function overrideExpoMetroCacheStores(
+  config: ConfigT,
+  { projectRoot }: { projectRoot: string }
+) {
+  if (!env.EXPO_METRO_CACHE_STORES_DIR) {
+    return;
+  }
+
+  // Resolve relative paths to absolute paths based on project root
+  const cacheStoresDir = path.isAbsolute(env.EXPO_METRO_CACHE_STORES_DIR)
+    ? env.EXPO_METRO_CACHE_STORES_DIR
+    : path.resolve(projectRoot, env.EXPO_METRO_CACHE_STORES_DIR);
+
+  // Create the directory if it doesn't exist
+  try {
+    await fs.promises.mkdir(cacheStoresDir, { recursive: true });
+  } catch (error: any) {
+    if (error.code !== 'EEXIST') {
+      Log.error(
+        `Provided EXPO_METRO_CACHE_STORES_DIR="${cacheStoresDir}" is not a directory. Use new or existing directory path.`
+      );
+      throw error;
+    }
+  }
+
+  // Check if user has custom cacheStores in their metro.config.js
+  if (config.cacheStores?.length) {
+    Log.warn(
+      `Using EXPO_METRO_CACHE_STORES_DIR="${cacheStoresDir}" which overrides cacheStores from metro.config.js`
+    );
+  } else {
+    Log.log(chalk.gray(`Using Metro cache directory: ${cacheStoresDir}`));
+  }
+
+  // Override cacheStores with the env-specified directory
+  // @ts-expect-error - cacheStores is a read-only property
+  config.cacheStores = [
+    new FileStore({
+      root: cacheStoresDir,
+    }),
+  ];
 }
