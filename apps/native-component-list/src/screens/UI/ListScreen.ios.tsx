@@ -18,7 +18,6 @@ import {
   pickerStyle,
   refreshable,
   tag,
-  deleteDisabled,
 } from '@expo/ui/swift-ui/modifiers';
 import type { SFSymbol } from 'expo-symbols';
 import * as React from 'react';
@@ -50,7 +49,7 @@ export default function ListScreen() {
   const [items, setItems] = React.useState<ListItem[]>(INITIAL_ITEMS);
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
   const [editMode, setEditMode] = React.useState(false);
-  const [listStyleIndex, setListStyleIndex] = React.useState(3);
+  const [listStyleIndex, setListStyleIndex] = React.useState(0);
 
   const handleDelete = (indices: number[]) => {
     setItems((prev) => prev.filter((_, i) => !indices.includes(i)));
