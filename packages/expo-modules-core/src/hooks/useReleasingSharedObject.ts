@@ -26,8 +26,8 @@ export function useReleasingSharedObject<TSharedObject extends SharedObject>(
       previousDependencies.current?.length === dependencies.length &&
       dependencies.every((value, index) => value === previousDependencies.current[index]);
 
-    // If the dependencies have changed, release the previous object and create a new one, otherwise this has been called
-    // because of an unrelated fast refresh, and we don't want to release the object.
+    // If the dependencies have changed, schedule the previous object for release and create a new one,
+    // otherwise this has been called because of an unrelated fast refresh, and we don't want to release the object.
     if (!newObject || !dependenciesAreEqual) {
       objectRefToRelease.current = objectRef.current;
       newObject = factory();
