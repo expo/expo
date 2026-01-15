@@ -280,7 +280,7 @@ class HomeAppViewModel(
       } catch (_: Exception) {
         emit(emptyList())
       }
-      delay(10000)
+      delay(3000)
     }
   }.stateIn(
     scope = viewModelScope,
@@ -305,7 +305,7 @@ class HomeAppViewModel(
           }.forEach { it.join() }
         }
       emit(discoveredServers)
-      delay(2000)
+      delay(3000)
     }
   }.stateIn(
     scope = viewModelScope,
