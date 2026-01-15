@@ -31,23 +31,30 @@ const flattenValidationResults = (
   return output;
 };
 
-const toErrorMessage = (errors: BaseValidationError[], name: string) => {
-  let message = `Invalid options object. ${name} has been initialized using an options object that does not match the API schema.`;
-  for (const error of errors) {
-    message += `\n - options${error.path} (${error.keyword}): ${error.message}`;
-  }
-  return message;
-};
+const toErrorsMessages = (errors: BaseValidationError[]) =>
+  errors.map((error) => {
+    return `\n - options${error.path} (${error.keyword}): ${error.message}`;
+  });
 
 export class ValidationError<T> extends Error {
   schema: JSONSchema<T>;
   errors: BaseValidationError[];
   constructor(result: ValidationResult, schema: JSONSchema<T>) {
     const errors = flattenValidationResults(result);
-    super(toErrorMessage(errors, typeof schema.title === 'string' ? schema.title : 'Value'));
+    const title = typeof schema.title === 'string' ? schema.title : 'Value';
+    super(
+      `Invalid options object. ${title} options object does not match the defined schema.\n` +
+        toErrorsMessages(errors)
+          .map((line) => ` - options${line}`)
+          .join('\n')
+    );
     this.name = 'ValidationError';
     this.errors = errors;
     this.schema = schema;
+  }
+
+  toErrorsMessage(): string[] {
+    return toErrorsMessages(this.errors);
   }
 }
 
