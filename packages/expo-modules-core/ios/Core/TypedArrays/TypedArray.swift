@@ -60,7 +60,8 @@ public class TypedArray: AnyTypedArray {
   public lazy var length: Int = jsTypedArray.getProperty("length").getInt()
 
   /**
-   The unsafe mutable raw pointer to the start of the array buffer.
+   The unsafe mutable raw pointer to the start of the typed array.
+   It is the beignning of the underlying ArrayBuffer, with this array's `byteOffset` applied.
    */
   public lazy var rawPointer: UnsafeMutableRawPointer = jsTypedArray.getUnsafeMutableRawPointer()
 
