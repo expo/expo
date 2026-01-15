@@ -11,7 +11,7 @@
 
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
-#import <GoogleMaps/GoogleMaps.h>
+
 
 
 @interface ExpoKit ()
@@ -81,17 +81,6 @@
 {
   [DDLog addLogger:[DDOSLogger sharedInstance]];
   RCTSetFatalHandler(handleFatalReactError);
-
-  NSString *standaloneGMSKey = [[NSBundle mainBundle].infoDictionary objectForKey:@"GMSApiKey"];
-  if (standaloneGMSKey && standaloneGMSKey.length) {
-    [GMSServices provideAPIKey:standaloneGMSKey];
-  } else {
-    if (_applicationKeys[@"GOOGLE_MAPS_IOS_API_KEY"]) {// we may define this as empty
-      if ([_applicationKeys[@"GOOGLE_MAPS_IOS_API_KEY"] length]) {
-        [GMSServices provideAPIKey:_applicationKeys[@"GOOGLE_MAPS_IOS_API_KEY"]];
-      }
-    }
-  }
 
   _launchOptions = launchOptions;
 }
