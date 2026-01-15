@@ -14,9 +14,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
-import de.greenrobot.event.EventBus
 import host.exp.exponent.di.NativeModuleDepsProvider
-import host.exp.exponent.experience.ReactNativeActivity.ExperienceDoneLoadingEvent
 import host.exp.exponent.home.HomeActivityEvent
 import host.exp.exponent.home.HomeAppViewModel
 import host.exp.exponent.home.HomeAppViewModelFactory
