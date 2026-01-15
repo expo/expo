@@ -49,7 +49,7 @@ const LIST_STYLES: ListStyle[] = [
 
 export default function ListScreen() {
   const [items, setItems] = React.useState<ListItem[]>(INITIAL_ITEMS);
-  const [selectedIds, setSelectedIds] = React.useState<string[]>(['1']);
+  const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
   const [editMode, setEditMode] = React.useState(false);
   const [listStyleIndex, setListStyleIndex] = React.useState(0);
 
