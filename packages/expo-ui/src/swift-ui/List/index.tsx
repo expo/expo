@@ -26,6 +26,11 @@ export interface ListProps extends CommonViewModifierProps {
   children: React.ReactNode;
 
   /**
+   * The currently selected item tags.
+   */
+  selection?: (string | number)[];
+
+  /**
    * Callback triggered when the selection changes in a list.
    * Returns an array of selected item tags.
    */

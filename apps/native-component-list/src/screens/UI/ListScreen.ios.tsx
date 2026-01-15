@@ -49,7 +49,7 @@ const LIST_STYLES: ListStyle[] = [
 
 export default function ListScreen() {
   const [items, setItems] = React.useState<ListItem[]>(INITIAL_ITEMS);
-  const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
+  const [selectedIds, setSelectedIds] = React.useState<string[]>(['1']);
   const [editMode, setEditMode] = React.useState(false);
   const [listStyleIndex, setListStyleIndex] = React.useState(0);
 
@@ -73,11 +73,13 @@ export default function ListScreen() {
   };
 
   const resetItems = () => setItems(INITIAL_ITEMS);
+  const clearSelection = () => setSelectedIds([]);
 
   return (
     <Host style={{ flex: 1 }}>
       <List
-        onSelectionChange={(ids) => setSelectedIds(new Set(ids.map((id) => id.toString())))}
+        selection={selectedIds}
+        onSelectionChange={(ids) => setSelectedIds(ids.map((id) => id.toString()))}
         modifiers={[
           listStyle(LIST_STYLES[listStyleIndex]),
           refreshable(handleRefresh),
@@ -98,16 +100,15 @@ export default function ListScreen() {
             ))}
           </Picker>
           <Button label="Reset Items" onPress={resetItems} />
+          <Button label="Clear Selection" onPress={clearSelection} />
         </Section>
 
         <Section title="Info">
           <Label title={`${items.length} items`} systemImage="number" />
           <Label
-            title={
-              selectedIds.size > 0 ? `Selected: ${[...selectedIds].join(', ')}` : 'None selected'
-            }
+            title={selectedIds.length > 0 ? `Selected: ${selectedIds.join(', ')}` : 'None selected'}
             systemImage="checkmark.circle"
-            modifiers={[foregroundStyle(selectedIds.size > 0 ? 'blue' : 'gray')]}
+            modifiers={[foregroundStyle(selectedIds.length > 0 ? 'blue' : 'gray')]}
           />
         </Section>
 
