@@ -1,0 +1,146 @@
+---
+title: Expo CLI extensions
+sidebar_title: Expo CLI extensions
+description: Learn about using Expo CLI extension plugins in your Expo libraries.
+---
+
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
+
+Expo CLI extensions are plugins distributed as npm packages that add features to the [Expo CLI](/more/expo-cli/), such as inspecting or debugging your project.
+
+Each extension is a Node.js app defined in the **expo-modules.config.json** file of your package.
+
+The `expo/devtools` package provides APIs to enable communication between CLI extensions and running Expo apps.
+
+## Creating a CLI extension
+
+A CLI extension is part of your Expo package, located in the **cli** directory and declared in the **expo-modules.config.json** file of your package. You can create your CLI extension by following these steps:
+
+- Create or edit the file **expo-modules.config.json** file in the package root and declare your CLI extension's commands.
+- Implement the CLI extension app under the **cli** directory of your package.
+- Use the `expo/devtools` API to communicate between your CLI extension and running Expo projects.
+
+### Declaring your CLI extension
+
+To declare your CLI extension, add an entry to the `cliExtensions` array in the **expo-modules.config.json** file of your package:
+
+```json expo-modules.config.json
+{
+  "platforms": [ "apple", "android", "devtools" ],
+  "devtools": {
+    "cliExtensions": {
+      "description": "Expo: manage background tasks",
+      "commands": [
+        { "name": "list", "title": "List registered background tasks", "environments": [ "cli"] },
+        { "name": "trigger-test", "title": "Trigger background tasks", "environments": [ "cli" ] }
+      ],
+      "entryPoint": "cli/build/index.js"
+    }
+  }
+}
+```
+
+### Implementing your CLI extension
+
+Create a **cli** directory in the root of your package, and implement your CLI extension app in that directory. The entry point of your CLI extension app should match the `entryPoint` field you specified in the **expo-modules.config.json** file and will typically be the index file in the **cli** directory.
+
+### Using the `expo/devtools` API
+
+You can use the `expo/devtools` API to communicate between your CLI extension and running Expo apps.
+
+<PaddedAPIBox header="runCliExtension">
+
+The effective way to get started is to use the `runCliExtension` function in your CLI extension app:
+
+```ts cli/index.ts
+import { runCliExtension } from '@expo/devtools';
+
+runCliExtension<{
+  list: Record<string, never>;
+}>(async ({ command }, console) => {
+  console.log(`Running command: ${command}`);
+});
+```
+
+</PaddedAPIBox>
+
+You can now restart the Expo CLI by running `npx expo start` and test your CLI extension by pressing the <kbd>shift</kbd> + <kbd>m</kbd> keys in the Expo CLI to bring up the CLI devtools menu.
+
+> **Note:** The `expo/devtools` package re-exports `@expo/devtools`. CLI extensions (which run in a Node.js context) should import directly from `@expo/devtools`, while app-side code should use `expo/devtools`.
+
+### Add communication between your CLI extension and your Expo app
+
+To add communication between your CLI extension and your Expo app, you can use the `sendCliMessageAsync` function from the `expo/devtools` package. This function allows you to send messages from your CLI extension to the running Expo app and receive responses.
+
+```ts  cli/index.ts
+import { runCliExtension, sendCliMessageAsync, queryAllInspectorAppsAsync } from '@expo/devtools';
+
+const PLUGIN_NAME = 'expo-background-task';
+const GET_REGISTERED_TASKS = 'get-registered-tasks';
+
+runCliExtension<{
+  list: Record<string, never>;
+}>(async ({ command, metroServerOrigin }, console) => {
+  // Query connected apps
+  const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
+  if (apps.length === 0) {
+    console.error(`No connected apps found at ${metroServerOrigin}`);
+    return;
+  }
+
+  if (command === 'list') {
+    try {
+      // Send message to the app
+      const response = await sendCliMessageAsync(GET_REGISTERED_TASKS, PLUGIN_NAME, apps);
+      // Handle response from the running apps (there may be multiple)
+      Object.keys(response).forEach(appId => {
+        const app = apps.find(a => a.id === appId);
+        console.info(`${chalk.blue(app?.title ?? appId)}: ${response[appId] ?? ''}`);
+      });
+    } catch (error) {
+      // Catch and rethrow error with more context
+      throw new Error('An error occured connecting to the app.', { cause: error });
+    }
+  }
+});
+```
+
+### Handling CLI messages in your app
+
+To receive and respond to messages from your CLI extension, use the `startCliListenerAsync` function in your app code. This will typically be added to your package main module to ensure it runs when your app starts.
+
+```ts src/MyPackageMainModule.ts
+import { startCliListenerAsync } from 'expo/devtools';
+
+const PLUGIN_NAME = 'expo-background-task';
+const GET_REGISTERED_TASKS = 'get-registered-tasks';
+
+startCliListenerAsync(PLUGIN_NAME)
+  .then(({ addMessageListener }) => {
+    addMessageListener(GET_REGISTERED_TASKS, async ({ sendResponseAsync }) => {
+      // Perform your logic here
+      const result = 'Your response message';
+      await sendResponseAsync(result);
+    });
+  })
+  .catch(error => {
+    console.error('Failed to start CLI listener:', error);
+  });
+```
+
+> **Note:** The `startCliListenerAsync` function only runs in development mode (`__DEV__ === true`). Make sure the `PLUGIN_NAME` matches between your CLI extension and app-side listener.
+
+## Testing your CLI extension
+
+You can test your CLI extension by following these steps:
+
+- Restart your Expo CLI to load the new extension using `npx expo start`
+- Reload your app
+- Test your CLI extension by pressing the <kbd>shift</kbd> + <kbd>m</kbd> keys in the Expo CLI to bring up the CLI devtools menu
+
+## Exposing your extension to the Expo MCP server
+
+> **important** The Expo MCP server is an experimental feature and is subject to change.
+
+If you'd like your CLI extension to be discoverable by the [Expo MCP (Model Context Protocol)](/eas/ai/mcp/) server, you can add the `mcp` value to the `environments` field in your package's **expo-modules.config.json** file.
+This will allow users to find and install your CLI extension using the Expo CLI.

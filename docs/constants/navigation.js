@@ -126,6 +126,7 @@ export const home = [
         makePage('debugging/tools.mdx'),
         makePage('debugging/devtools-plugins.mdx'),
         makePage('debugging/create-devtools-plugins.mdx'),
+        makePage('debugging/cli-extensions.mdx'),
       ],
       { expanded: false }
     ),
