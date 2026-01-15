@@ -52,7 +52,7 @@
     "@expo/metro": "~54.2.0",
     "@expo/metro-config": "~54.0.13",
     "@expo/osascript": "^2.3.8",
-    "@expo/package-manager": "^1.9.9",
+    "@expo/package-manager": "^1.9.10",
     "@expo/plist": "^0.4.8",
     "@expo/prebuild-config": "^54.0.8",
     "@expo/schema-utils": "^0.1.8",
