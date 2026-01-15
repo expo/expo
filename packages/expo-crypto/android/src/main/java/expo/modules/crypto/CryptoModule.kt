@@ -45,12 +45,12 @@ class CryptoModule : Module() {
     val messageDigest = MessageDigest.getInstance(algorithm.value).apply { update(data.toDirectBuffer()) }
 
     val digest: ByteArray = messageDigest.digest()
-    output.write(digest, output.byteOffset, output.byteLength)
+    output.write(digest, 0, output.byteLength)
   }
 
   private fun getRandomValues(typedArray: TypedArray) {
     val array = ByteArray(typedArray.byteLength)
     secureRandom.nextBytes(array)
-    typedArray.write(array, typedArray.byteOffset, typedArray.byteLength)
+    typedArray.write(array, 0, typedArray.byteLength)
   }
 }
