@@ -81,6 +81,7 @@ function convertRequest(req, res) {
     }
     return new Request(url.href, init);
 }
+// NOTE(@hassankhan): This doesn't seem to be used anywhere and is likely safe to remove
 function convertHeaders(requestHeaders) {
     const headers = new Headers();
     for (const [key, values] of Object.entries(requestHeaders)) {
