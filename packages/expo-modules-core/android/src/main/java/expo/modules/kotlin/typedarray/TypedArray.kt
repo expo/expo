@@ -43,6 +43,7 @@ interface TypedArray {
    * @param size number of bytes to read
    */
   fun read(buffer: ByteArray, position: Int, size: Int)
+
   /**
    * Writes content of [buffer] into the typed array.
    *
