@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `EXPO_METRO_CACHE_STORES_DIR` to configure Metro cache directory ([#42210](https://github.com/expo/expo/pull/42210) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 🐛 Bug fixes
 
 - Fix response streaming from dev server (remove compression) ([#41955](https://github.com/expo/expo/pull/41955) by [@krystofwoldrich](https://github.com/krystofwoldrich))
