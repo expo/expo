@@ -21,9 +21,9 @@
 - [iOS] Remove `Menu` specific APIs from `ContextMenu` ([#42027](https://github.com/expo/expo/pull/42027) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Remove `color` prop and replace `min`, `max`, `label` prop with `minimumValueLabel`, `maximumValueLabel` and `currentValueLabel` in `Guage` ([#42022](https://github.com/expo/expo/pull/42022) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Remove `onPress` and `backgroundColor` from `HStack`, `VStack` and `Group`. Use modifiers instead ([#42055](https://github.com/expo/expo/pull/42055) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Remove `editModeEnabled` prop from `List`. Use `environment` modifier instead. Add `ForEach` component with `onDelete` and `onMove` support. Add `selection` prop to `List`. Add `environment`, `moveDisabled` and `deleteDisabled` modifiers ([#42011](https://github.com/expo/expo/pull/42011) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 🎉 New features
-
 - [iOS] - Add range and custom label support in `DatePicker` ([#41546](https://github.com/expo/expo/pull/41546) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Added `matchContents` support to `Host`. ([#41553](https://github.com/expo/expo/pull/41553) by [@kudo](https://github.com/kudo))
 - [iOS] Add `timerInterval` to `Progress` component. ([#41598](https://github.com/expo/expo/pull/41598) by [@jakex7](https://github.com/jakex7))
