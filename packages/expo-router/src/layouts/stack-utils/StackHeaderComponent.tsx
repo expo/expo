@@ -1,27 +1,13 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import { Children, isValidElement, useMemo, type ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { StyleSheet, type ColorValue, type StyleProp } from 'react-native';
 import type { ScreenStackHeaderConfigProps } from 'react-native-screens';
 
-import {
-  appendStackHeaderBackButtonPropsToOptions,
-  StackHeaderBackButton,
-} from './StackHeaderBackButton';
-import {
-  appendStackHeaderLeftPropsToOptions,
-  appendStackHeaderRightPropsToOptions,
-  StackHeaderLeft,
-  StackHeaderRight,
-} from './StackHeaderLeftRight';
-import { appendStackHeaderTitlePropsToOptions, StackHeaderTitle } from './StackHeaderTitle';
-import { appendStackSearchBarPropsToOptions, StackSearchBar } from './StackSearchBar';
-import { isChildOfType } from '../../utils/children';
 import { Screen } from '../../views/Screen';
 
 export interface StackHeaderProps {
   /**
-   * Child elements to compose the header. Can include Stack.Header.Title, Stack.Header.Left,
-   * Stack.Header.Right, Stack.Header.BackButton, and Stack.Header.SearchBar components.
+   * Child elements for custom header when `asChild` is true.
    */
   children?: ReactNode;
   /**
@@ -69,35 +55,30 @@ export interface StackHeaderProps {
 }
 
 /**
- * The component used to configure the whole stack header.
+ * The component used to configure header styling for a stack screen.
  *
- * When used inside a screen, it allows you to customize the header dynamically by composing
- * header subcomponents (title, left/right areas, back button, search bar, etc.).
+ * Use this component to set header appearance properties like blur effect, background color,
+ * and shadow visibility.
  *
+ * @example
  * ```tsx
  * import { Stack } from 'expo-router';
  *
  * export default function Page() {
  *   return (
  *     <>
- *       <Stack.Header>
- *         <Stack.Header.Title>Page title</Stack.Header.Title>
- *         <Stack.Header.Left>
- *           <Stack.Header.Button onPress={() => alert('Left pressed')} />
- *         </Stack.Header.Left>
- *         <Stack.Header.Right>
- *           <Stack.Header.Button onPress={() => alert('Right pressed')} />
- *         </Stack.Header.Right>
- *       </Stack.Header>
+ *       <Stack.Header
+ *         blurEffect="systemMaterial"
+ *         style={{ backgroundColor: '#fff' }}
+ *       />
  *       <ScreenContent />
  *     </>
  *   );
  * }
  * ```
  *
- * When used inside a layout, it needs to be wrapped in `Stack.Screen` to take effect.
- *
- * Example (inside a layout):
+ * @example
+ * When used inside a layout with Stack.Screen:
  * ```tsx
  * import { Stack } from 'expo-router';
  *
@@ -105,12 +86,7 @@ export interface StackHeaderProps {
  *   return (
  *     <Stack>
  *       <Stack.Screen name="index">
- *         <Stack.Header>
- *           <Stack.Header.Title>Layout title</Stack.Header.Title>
- *           <Stack.Header.Right>
- *             <Stack.Header.Button onPress={() => alert('Right pressed')} />
- *           </Stack.Header.Right>
- *         </Stack.Header>
+ *         <Stack.Header blurEffect="systemMaterial" />
  *       </Stack.Screen>
  *     </Stack>
  *   );
@@ -139,7 +115,11 @@ export function appendStackHeaderPropsToOptions(
     return { ...options, header: () => props.children };
   }
 
-  let updatedOptions: NativeStackNavigationOptions = {
+  if (props.children && !props.asChild) {
+    console.warn(`To render a custom header, set the 'asChild' prop to true on Stack.Header.`);
+  }
+
+  return {
     ...options,
     headerShown: !props.hidden,
     headerBlurEffect: props.blurEffect,
@@ -152,32 +132,4 @@ export function appendStackHeaderPropsToOptions(
     headerShadowVisible: flattenedStyle?.shadowColor !== 'transparent',
     headerLargeTitleShadowVisible: flattenedLargeStyle?.shadowColor !== 'transparent',
   };
-
-  function appendChildOptions(child: React.ReactElement, options: NativeStackNavigationOptions) {
-    let updatedOptions = options;
-    if (isChildOfType(child, StackHeaderTitle)) {
-      updatedOptions = appendStackHeaderTitlePropsToOptions(updatedOptions, child.props);
-    } else if (isChildOfType(child, StackHeaderLeft)) {
-      updatedOptions = appendStackHeaderLeftPropsToOptions(updatedOptions, child.props);
-    } else if (isChildOfType(child, StackHeaderRight)) {
-      updatedOptions = appendStackHeaderRightPropsToOptions(updatedOptions, child.props);
-    } else if (isChildOfType(child, StackHeaderBackButton)) {
-      updatedOptions = appendStackHeaderBackButtonPropsToOptions(updatedOptions, child.props);
-    } else if (isChildOfType(child, StackSearchBar)) {
-      updatedOptions = appendStackSearchBarPropsToOptions(updatedOptions, child.props);
-    } else {
-      console.warn(
-        `Warning: Unknown child element passed to Stack.Header: ${(child.type as { name: string }).name ?? child.type}`
-      );
-    }
-    return updatedOptions;
-  }
-
-  Children.forEach(props.children, (child) => {
-    if (isValidElement(child)) {
-      updatedOptions = appendChildOptions(child, updatedOptions);
-    }
-  });
-
-  return updatedOptions;
 }

@@ -1,11 +1,11 @@
 import type { ColorValue, ImageSourcePropType } from 'react-native';
 
 import type {
-  StackHeaderBadgeProps,
-  StackHeaderIconProps,
-  StackHeaderLabelProps,
-  StackHeaderMenuActionProps,
-  StackHeaderMenuProps,
+  StackToolbarBadgeProps,
+  StackToolbarIconProps,
+  StackToolbarLabelProps,
+  StackToolbarMenuActionProps,
+  StackToolbarMenuProps,
 } from '../layouts/stack-utils';
 import type { LinkMenuActionProps, LinkMenuProps } from '../link/elements';
 import type {
@@ -14,9 +14,9 @@ import type {
   NativeTabsTriggerLabelProps,
 } from '../native-tabs';
 
-export type BadgeProps = NativeTabsTriggerBadgeProps | StackHeaderBadgeProps;
+export type BadgeProps = NativeTabsTriggerBadgeProps | StackToolbarBadgeProps;
 
-export type IconProps = NativeTabsTriggerIconProps | StackHeaderIconProps;
+export type IconProps = NativeTabsTriggerIconProps | StackToolbarIconProps;
 
 export interface VectorIconProps<NameT extends string> {
   /**
@@ -40,8 +40,8 @@ export interface VectorIconProps<NameT extends string> {
   name: NameT;
 }
 
-export type LabelProps = NativeTabsTriggerLabelProps | StackHeaderLabelProps;
+export type LabelProps = NativeTabsTriggerLabelProps | StackToolbarLabelProps;
 
-export type MenuActionProps = LinkMenuActionProps | StackHeaderMenuActionProps;
+export type MenuActionProps = LinkMenuActionProps | StackToolbarMenuActionProps;
 
-export type MenuProps = LinkMenuProps | StackHeaderMenuProps;
+export type MenuProps = LinkMenuProps | StackToolbarMenuProps;
