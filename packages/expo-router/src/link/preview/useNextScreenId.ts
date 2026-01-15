@@ -45,7 +45,9 @@ export function useNextScreenId(): [
     (href: Href): void => {
       // Resetting the nextScreenId to undefined
       internalSetNextScreenId(undefined);
-      router.prefetch(href);
+      router.prefetch(href, {
+        __internal__isLinkPreviewPrefetch: true,
+      });
       currentHref.current = href;
     },
     [router.prefetch]

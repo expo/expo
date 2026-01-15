@@ -38,7 +38,9 @@ function useNextScreenId() {
     const prefetch = (0, react_1.useCallback)((href) => {
         // Resetting the nextScreenId to undefined
         internalSetNextScreenId(undefined);
-        router.prefetch(href);
+        router.prefetch(href, {
+            __internal__isLinkPreviewPrefetch: true,
+        });
         currentHref.current = href;
     }, [router.prefetch]);
     return [{ nextScreenId: internalNextScreenId, tabPath }, prefetch];

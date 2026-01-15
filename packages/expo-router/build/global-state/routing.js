@@ -91,7 +91,7 @@ exports.routingQueue = {
             if (ref.current) {
                 if (action.type === 'ROUTER_LINK') {
                     const { payload: { href, options }, } = action;
-                    action = getNavigateAction(href, options, options.event, options.withAnchor, options.dangerouslySingular, !!options.__internal__PreviewKey);
+                    action = getNavigateAction(href, options, options.event, options.withAnchor, options.dangerouslySingular, !!options.__internal__PreviewKey || !!options.__internal__isLinkPreviewPrefetch);
                     if (action) {
                         ref.current.dispatch(action);
                     }

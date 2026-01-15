@@ -54,6 +54,7 @@ export type LinkToOptions = {
      */
     dangerouslySingular?: SingularOptions;
     __internal__PreviewKey?: string;
+    __internal__isLinkPreviewPrefetch?: boolean;
 };
 export declare function linkTo(originalHref: Href, options?: LinkToOptions): void;
 /**

@@ -7,6 +7,10 @@ import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
+import {
+  INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
+} from '../navigationParams';
 
 it('prefetch a sibling route', () => {
   renderRouter({
@@ -784,4 +788,217 @@ it('can still use <Screen /> while prefetching in tabs', () => {
     'Should only change after focus',
     'index',
   ]);
+});
+
+describe('prefetch with param routes', () => {
+  it('regular prefetch creates preloaded route without internal params', () => {
+    renderRouter({
+      _layout: () => <Stack />,
+      index: () => null,
+      '[id]': () => null,
+    });
+
+    // Navigate to param route first
+    act(() => {
+      router.push('/123');
+    });
+
+    expect(screen).toHavePathname('/123');
+
+    // Regular prefetch for a DIFFERENT param value
+    act(() => {
+      router.prefetch('/456');
+    });
+
+    // A new preloaded route is created WITHOUT internal preview params
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root', '+not-found', '_sitemap'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: undefined,
+          state: {
+            index: 1,
+            key: expect.any(String),
+            preloadedRoutes: [
+              {
+                key: expect.any(String),
+                name: '[id]',
+                params: { id: '456' },
+              },
+            ],
+            routeNames: ['index', '[id]'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: 'index',
+                params: undefined,
+                path: '/',
+              },
+              {
+                key: expect.any(String),
+                name: '[id]',
+                params: { id: '123' },
+                path: undefined,
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+  });
+
+  it('prefetch with __internal__isLinkPreviewPrefetch creates new preloaded route even with existing param route', () => {
+    renderRouter({
+      _layout: () => <Stack />,
+      index: () => null,
+      '[id]': () => null,
+    });
+
+    // Navigate to param route first
+    act(() => {
+      router.push('/123');
+    });
+
+    expect(screen).toHavePathname('/123');
+
+    // Prefetch with link preview flag for different param value
+    act(() => {
+      router.prefetch('/456', { __internal__isLinkPreviewPrefetch: true });
+    });
+
+    // Should have created a NEW preloaded route while preserving existing route
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root', '+not-found', '_sitemap'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: undefined,
+          state: {
+            index: 1,
+            key: expect.any(String),
+            preloadedRoutes: [
+              {
+                key: expect.any(String),
+                name: '[id]',
+                params: {
+                  id: '456',
+                  [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
+                  [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
+                  params: {
+                    [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
+                    [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
+                  },
+                },
+              },
+            ],
+            routeNames: ['index', '[id]'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: 'index',
+                params: undefined,
+                path: '/',
+              },
+              {
+                key: expect.any(String),
+                name: '[id]',
+                params: { id: '123' }, // Original params preserved
+                path: undefined,
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+  });
+
+  it('prefetch with __internal__isLinkPreviewPrefetch creates new preloaded route for same param value', () => {
+    renderRouter({
+      _layout: () => <Stack />,
+      index: () => null,
+      '[id]': () => null,
+    });
+
+    // Navigate to param route first
+    act(() => {
+      router.push('/123');
+    });
+
+    expect(screen).toHavePathname('/123');
+
+    // Prefetch with link preview flag for SAME param value
+    act(() => {
+      router.prefetch('/123', { __internal__isLinkPreviewPrefetch: true });
+    });
+
+    // Should have created a NEW preloaded route even for same param value
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      preloadedRoutes: [],
+      routeNames: ['__root', '+not-found', '_sitemap'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: undefined,
+          state: {
+            index: 1,
+            key: expect.any(String),
+            preloadedRoutes: [
+              {
+                key: expect.any(String),
+                name: '[id]',
+                params: {
+                  id: '123',
+                  [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
+                  [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
+                  params: {
+                    [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
+                    [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
+                  },
+                },
+              },
+            ],
+            routeNames: ['index', '[id]'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: 'index',
+                params: undefined,
+                path: '/',
+              },
+              {
+                key: expect.any(String),
+                name: '[id]',
+                params: { id: '123' }, // Original params preserved
+                path: undefined,
+              },
+            ],
+            stale: false,
+            type: 'stack',
+          },
+        },
+      ],
+      stale: false,
+      type: 'stack',
+    });
+  });
 });

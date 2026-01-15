@@ -400,7 +400,12 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
 
           let route: Route<string> | undefined;
 
-          if (id !== undefined) {
+          // START FORK
+          // Only search for existing route if NOT a preview action
+          // Preview actions should always create a new preloaded route
+          if (id !== undefined && !isPreviewAction(action)) {
+            // if (id !== undefined) {
+            // END FORK
             route = state.routes.find(
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })

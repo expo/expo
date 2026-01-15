@@ -93,7 +93,7 @@ export type Router = {
   /**
    * Prefetch a screen in the background before navigating to it
    */
-  prefetch: (name: Href) => void;
+  prefetch: (name: Href, options?: NavigationOptions) => void;
 };
 
 /**

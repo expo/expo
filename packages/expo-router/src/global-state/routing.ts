@@ -85,7 +85,7 @@ export const routingQueue = {
             options.event,
             options.withAnchor,
             options.dangerouslySingular,
-            !!options.__internal__PreviewKey
+            !!options.__internal__PreviewKey || !!options.__internal__isLinkPreviewPrefetch
           );
           if (action) {
             ref.current.dispatch(action);
@@ -218,6 +218,7 @@ export type LinkToOptions = {
   dangerouslySingular?: SingularOptions;
 
   __internal__PreviewKey?: string;
+  __internal__isLinkPreviewPrefetch?: boolean;
 };
 
 export function linkTo(originalHref: Href, options: LinkToOptions = {}) {

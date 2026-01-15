@@ -65,6 +65,7 @@
 - fix PlatformColor not available when using Color on web ([#41801](https://github.com/expo/expo/pull/41801) by [@Ubax](https://github.com/Ubax))
 - Fix unknown key in link preview ([#41756](https://github.com/expo/expo/pull/41756) by [@Ubax](https://github.com/Ubax))
 - add replace action handling to headless tabs ([#41815](https://github.com/expo/expo/pull/41815) by [@Ubax](https://github.com/Ubax))
+- [ios] fix link preview navigation from param route to the param route with same param name ([#42223](https://github.com/expo/expo/pull/42223) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 

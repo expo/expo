@@ -293,7 +293,12 @@ const stackRouterOverride = (original) => {
                     const getId = options.routeGetIdList[action.payload.name];
                     const id = getId?.({ params: action.payload.params });
                     let route;
-                    if (id !== undefined) {
+                    // START FORK
+                    // Only search for existing route if NOT a preview action
+                    // Preview actions should always create a new preloaded route
+                    if (id !== undefined && !isPreviewAction(action)) {
+                        // if (id !== undefined) {
+                        // END FORK
                         route = state.routes.find((route) => route.name === action.payload.name && id === getId?.({ params: route.params }));
                     }
                     if (route) {
