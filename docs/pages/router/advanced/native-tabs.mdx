@@ -133,6 +133,34 @@ export default function TabLayout() {
 }
 ```
 
+#### Icon rendering mode
+
+When using the `src` prop for custom images on iOS, you can control how the icon is rendered with the `renderingMode` prop:
+
+- **`template` (default)**: The icon is rendered as a template image, allowing iOS to apply the tint color. This is ideal for single-color icons that should match your app's color scheme.
+- **`original`**: The icon is rendered with its original colors preserved. This is useful for icons with gradients or multiple colors.
+
+```tsx app/_layout.tsx
+import { NativeTabs, Icon } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      {/* Icon with original colors preserved (e.g., for gradient or multi-color icons) */}
+      <NativeTabs.Trigger name="colorful">
+        <Icon src={require('../../../assets/colorful_icon.png')} renderingMode="original" />
+      </NativeTabs.Trigger>
+      {/* Icon rendered as a template (default behavior) */}
+      <NativeTabs.Trigger name="simple">
+        <Icon src={require('../../../assets/simple_icon.png')} renderingMode="template" />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+> **info** The `renderingMode` prop only affects iOS. On Android, all image icons are rendered with their original colors.
+
 Liquid glass on iOS automatically changes colors based on if the background color is light or dark. There is no callback for this, so you need to use a `PlatformColor` to set the color of the icon.
 
 ```tsx app/_layout.tsx
