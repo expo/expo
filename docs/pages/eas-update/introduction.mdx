@@ -12,6 +12,7 @@ import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon'
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
 import { Terminal } from '~/ui/components/Snippet';
 
 **EAS Update** is a cloud service from EAS (Expo Application Services) that serves updates for projects using the [`expo-updates`](/versions/latest/sdk/updates/) library.
@@ -68,28 +69,23 @@ If an update isn't performing as expected, you can [republish](/eas-update/eas-c
 
 ## When to use EAS Update
 
-Use EAS Update when you want to:
+| Scenario                                                                                   | Recommendation |
+| ------------------------------------------------------------------------------------------ | -------------- |
+| Fix a bug or crash in JavaScript code and deploy updates in minutes                        | <YesIcon />    |
+| Update copy, translations, UI styling, or screen layouts                                   | <YesIcon />    |
+| Roll out changes to a percentage of users using [rollouts](/eas-update/rollouts/)          | <YesIcon />    |
+| Publish updates from [CI or automated workflows](/eas/workflows/pre-packaged-jobs/#update) | <YesIcon />    |
+| Test updates with internal teams before production release                                 | <YesIcon />    |
+| Change to native code or native dependencies                                               | <NoIcon />     |
+| Change to app permissions (camera, location, and others)                                   | <NoIcon />     |
+| Update the Expo SDK version                                                                | <NoIcon />     |
+| Anything that requires a new app binary version                                            | <NoIcon />     |
 
-- Fix a bug or crash in JavaScript code and deploy updates in minutes
-- Update copy, translations, UI styling, or screen layouts
-- Roll out changes to a percentage of users using [rollouts](/eas-update/rollouts/)
-- Publish updates from [CI or automated workflows](/eas/workflows/pre-packaged-jobs/#update)
-- Test updates with internal teams before production release
-
-## When not to use EAS Update
-
-You may not need EAS Update when you want to:
-
-- Change to native code or native dependencies
-- Change to app permissions (camera, location, and others)
-- Update the Expo SDK version
-- Anything that requires a new app binary version
-
-In these cases, use [EAS Build](/build/introduction/) to create and submit a new app binary.
+For scenarios marked with <NoIcon />, use [EAS Build](/build/introduction/) to create and submit a new app binary.
 
 ## Frequently asked questions (FAQ)
 
-<Collapsible summary="What guidelines must I follow when publishing updates?">
+<Collapsible summary="What guidelines must I follow when publishing updates?" open>
 
 One of the rules of EAS Update is that you need to follow the rules of the platforms and app stores you are building for. This means your updates need to follow the App Store and Play Store guidelines, including the content of the updates and how you use them. This usually means changes to your app's behavior need to be reviewed.
 
