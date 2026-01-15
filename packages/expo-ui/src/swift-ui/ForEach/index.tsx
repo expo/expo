@@ -19,7 +19,6 @@ type MoveEvent = ViewEvent<'onMove', { sourceIndices: number[]; destination: num
 type NativeForEachProps = CommonViewModifierProps &
   DeleteEvent &
   MoveEvent & {
-    ids?: string[];
     children: React.ReactNode;
   };
 
