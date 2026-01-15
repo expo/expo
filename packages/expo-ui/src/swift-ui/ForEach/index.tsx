@@ -6,14 +6,8 @@ import { type CommonViewModifierProps } from '../types';
 const ForEachNativeView: React.ComponentType<NativeForEachProps> =
   requireNativeView<NativeForEachProps>('ExpoUI', 'ForEachView');
 
-/**
- * Event triggered when items are deleted from the list.
- */
 type DeleteEvent = ViewEvent<'onDelete', { indices: number[] }>;
 
-/**
- * Event triggered when items are moved within the list.
- */
 type MoveEvent = ViewEvent<'onMove', { sourceIndices: number[]; destination: number }>;
 
 type NativeForEachProps = CommonViewModifierProps &
@@ -24,7 +18,7 @@ type NativeForEachProps = CommonViewModifierProps &
 
 export type ForEachProps = {
   /**
-   * The children elements to be rendered inside the foreach.
+   * The children elements to be rendered inside the `ForEach`.
    */
   children: React.ReactNode;
 

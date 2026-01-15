@@ -1,7 +1,7 @@
 import { type CommonViewModifierProps } from '../types';
 export type ForEachProps = {
     /**
-     * The children elements to be rendered inside the foreach.
+     * The children elements to be rendered inside the `ForEach`.
      */
     children: React.ReactNode;
     /**

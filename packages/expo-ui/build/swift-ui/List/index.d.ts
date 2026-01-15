@@ -15,7 +15,7 @@ export interface ListProps extends CommonViewModifierProps {
     onSelectionChange?: (selection: (string | number)[]) => void;
 }
 /**
- * A list component that renders its children using a native SwiftUI list.
+ * A list component that renders its children using a native SwiftUI `List`.
  */
 export declare function List(props: ListProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

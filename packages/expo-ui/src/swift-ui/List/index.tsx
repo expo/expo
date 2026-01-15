@@ -48,7 +48,7 @@ type NativeListProps = Omit<ListProps, 'onSelectionChange'> &
   };
 
 /**
- * A list component that renders its children using a native SwiftUI list.
+ * A list component that renders its children using a native SwiftUI `List`.
  */
 export function List(props: ListProps) {
   const { children, ...nativeProps } = props;

@@ -76,7 +76,11 @@ export default function DisabledExample() {
             onDelete={indices => console.log('Delete:', indices)}
             onMove={(from, to) => console.log('Move:', from, to)}>
             <Label title="Can't move" systemImage="lock" modifiers={[tag('1'), moveDisabled()]} />
-            <Label title="Can't delete" systemImage="lock" modifiers={[tag('2'), deleteDisabled()]} />
+            <Label
+              title="Can't delete"
+              systemImage="lock"
+              modifiers={[tag('2'), deleteDisabled()]}
+            />
             <Label title="Normal item" systemImage="circle" modifiers={[tag('3')]} />
           </ForEach>
         </Section>
