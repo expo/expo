@@ -840,18 +840,29 @@ function maybeThrowInvalidVersions(config: PluginConfigType) {
   }
 }
 
+/** Handle deprecated enableProguardInReleaseBuilds */
+const fixupDeprecatedEnableProguardInReleaseBuilds = (config: unknown) => {
+  if (
+    config &&
+    typeof config === 'object' &&
+    'android' in config &&
+    config.android &&
+    typeof config.android === 'object'
+  ) {
+    const androidConfig = config.android as PluginConfigTypeAndroid & Record<string, unknown>;
+    if (androidConfig.enableProguardInReleaseBuilds != null) {
+      if (androidConfig.enableMinifyInReleaseBuilds === undefined) {
+        androidConfig.enableMinifyInReleaseBuilds = !!androidConfig.enableProguardInReleaseBuilds;
+      }
+    }
+  }
+};
+
 /**
  * @ignore
  */
-export function validateConfig(config: any): PluginConfigType {
-  // handle deprecated enableProguardInReleaseBuilds
-  if (
-    config.android?.enableProguardInReleaseBuilds !== undefined &&
-    config.android?.enableMinifyInReleaseBuilds === undefined
-  ) {
-    config.android.enableMinifyInReleaseBuilds = config.android.enableProguardInReleaseBuilds;
-  }
-
+export function validateConfig(config: unknown): PluginConfigType {
+  fixupDeprecatedEnableProguardInReleaseBuilds(config);
   validate(schema, config);
   maybeThrowInvalidVersions(config);
 
