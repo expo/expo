@@ -23,7 +23,7 @@ type NativeForEachProps = CommonViewModifierProps &
     children: React.ReactNode;
   };
 
-export interface ForEachProps<T> extends CommonViewModifierProps {
+export type ForEachProps = {
   /**
    * The children elements to be rendered inside the foreach.
    */
@@ -42,12 +42,12 @@ export interface ForEachProps<T> extends CommonViewModifierProps {
    * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/dynamicviewcontent/onmove(perform:)).
    */
   onMove?: (sourceIndices: number[], destination: number) => void;
-}
+} & CommonViewModifierProps;
 
 /**
  * A component that renders its children using a native SwiftUI ForEach.
  */
-export function ForEach<T>({ children, onDelete, onMove, ...props }: ForEachProps<T>) {
+export function ForEach({ children, onDelete, onMove, ...props }: ForEachProps) {
   return (
     <ForEachNativeView
       {...props}
