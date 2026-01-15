@@ -107,7 +107,11 @@ export default function ListStylesExample() {
 
 ### Selection and edit mode
 
-Enable selection, deletion, and reordering of list items using the `ForEach` component with `onDelete` and `onMove` props. Use the [`environment`](modifiers/#environmentkey-value) modifier to enable edit mode, the [`tag`](modifiers/#tagtag) modifier to identify items, and the [`selection`](#selection) prop to control selected items. Use [`moveDisabled`](modifiers/#movedisableddisabled) and [`deleteDisabled`](modifiers/#deletedisableddisabled) modifiers to disable these actions on individual items.
+Enable selection, deletion, and reordering of list items using the `ForEach` component with `onDelete` and `onMove` props. 
+- Use the [`environment`](modifiers/#environmentkey-value) modifier to enable edit mode
+- Use the [`tag`](modifiers/#tagtag) modifier to identify items
+- Use the [`selection`](#selection) prop to control selected items 
+- Use [`moveDisabled`](modifiers/#movedisableddisabled) and [`deleteDisabled`](modifiers/#deletedisableddisabled) modifiers to disable these actions on individual items
 
 ```tsx EditableListExample.tsx
 import { useState } from 'react';

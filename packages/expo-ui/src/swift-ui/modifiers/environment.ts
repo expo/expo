@@ -32,7 +32,7 @@ type ColorSchemeType = (typeof ColorScheme)[keyof typeof ColorScheme];
 /**
  * Sets a SwiftUI environment value.
  * @param key - The environment key (use EnvironmentKey constants).
- * @param value - The value to set (use EditMode or ColorScheme constants).
+ * @param value - The value to set (use `EditMode` or `ColorScheme` constants).
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/environment(_:_:)).
  */
 export const environment = (key: EnvironmentKeyType, value: EditModeType | ColorSchemeType) =>

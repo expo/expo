@@ -45,7 +45,7 @@ export type ForEachProps = {
 } & CommonViewModifierProps;
 
 /**
- * A component that renders its children using a native SwiftUI ForEach.
+ * A component that renders its children using a native SwiftUI `ForEach`.
  */
 export function ForEach({ children, onDelete, onMove, ...props }: ForEachProps) {
   return (
