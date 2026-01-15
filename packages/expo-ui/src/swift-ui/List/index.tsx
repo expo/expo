@@ -21,26 +21,21 @@ function transformListProps(props: Omit<ListProps, 'children'>): Omit<NativeList
 
 export interface ListProps extends CommonViewModifierProps {
   /**
-   * Enables SwiftUI edit mode.
-   * @default false
-   */
-  editModeEnabled?: boolean;
-
-  /**
    * The children elements to be rendered inside the list.
    */
   children: React.ReactNode;
 
   /**
    * Callback triggered when the selection changes in a list.
+   * Returns an array of selected item tags.
    */
-  onSelectionChange?: (selection: number[]) => void;
+  onSelectionChange?: (selection: (string | number)[]) => void;
 }
 
 /**
  * SelectItemEvent represents an event triggered when the selection changes in a list.
  */
-type SelectItemEvent = ViewEvent<'onSelectionChange', { selection: number[] }>;
+type SelectItemEvent = ViewEvent<'onSelectionChange', { selection: (string | number)[] }>;
 
 type NativeListProps = Omit<ListProps, 'onSelectionChange'> &
   SelectItemEvent & {
@@ -49,8 +44,6 @@ type NativeListProps = Omit<ListProps, 'onSelectionChange'> &
 
 /**
  * A list component that renders its children using a native SwiftUI list.
- * @param {ListProps} props - The properties for the list component.
- * @returns {JSX.Element | null} The rendered list with its children or null if the platform is unsupported.
  */
 export function List(props: ListProps) {
   const { children, ...nativeProps } = props;

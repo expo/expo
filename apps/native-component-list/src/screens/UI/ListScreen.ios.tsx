@@ -17,7 +17,9 @@ import {
   listStyle,
   pickerStyle,
   refreshable,
+  EnvironmentKey,
   tag,
+  environment,
 } from '@expo/ui/swift-ui/modifiers';
 import type { SFSymbol } from 'expo-symbols';
 import * as React from 'react';
@@ -75,9 +77,13 @@ export default function ListScreen() {
   return (
     <Host style={{ flex: 1 }}>
       <List
-        editModeEnabled={editMode}
         onSelectionChange={(ids) => setSelectedIds(new Set(ids.map((id) => id.toString())))}
-        modifiers={[listStyle(LIST_STYLES[listStyleIndex]), refreshable(handleRefresh)]}>
+        modifiers={[
+          listStyle(LIST_STYLES[listStyleIndex]),
+          refreshable(handleRefresh),
+          animation(Animation.default, editMode),
+          environment(EnvironmentKey.editMode, editMode ? 'active' : 'inactive'),
+        ]}>
         <Section title="Settings">
           <Toggle label="Edit Mode" isOn={editMode} onIsOnChange={setEditMode} />
           <Picker

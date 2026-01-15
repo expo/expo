@@ -1776,5 +1776,9 @@ extension ViewModifierRegistry {
     register("deleteDisabled") { params, appContext, _ in
       return try DeleteDisabledModifier(from: params, appContext: appContext)
     }
+
+    register("environment") { params, appContext, _ in
+      return try EnvironmentModifier(from: params, appContext: appContext)
+    }
   }
 }

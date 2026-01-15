@@ -10,6 +10,7 @@ import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
+import { environment } from './environment';
 import { progressViewStyle } from './progressViewStyle';
 import type { Color } from './types';
 
@@ -959,6 +960,7 @@ export type BuiltInModifier =
   | ReturnType<typeof scrollDisabled>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
+  | ReturnType<typeof environment>
   | ReturnType<typeof listRowBackground>
   | ReturnType<typeof listRowSeparator>
   | ReturnType<typeof truncationMode>
@@ -1034,3 +1036,4 @@ export * from './tag';
 export * from './pickerStyle';
 export * from './datePickerStyle';
 export * from './progressViewStyle';
+export * from './environment';
