@@ -22,11 +22,13 @@ import ExpoModulesCore
   }
 
   @objc public func resetHostingController() {
+#if !os(macOS)
     if let hostingController {
       hostingController.willMove(toParent: nil)
       hostingController.view.removeFromSuperview()
       hostingController.removeFromParent()
     }
+#endif
     hostingController = nil
     if isViewLoaded {
       addHostingController()
