@@ -42,18 +42,25 @@ describe.each(
     expect(files).toContain('_expo/routes.json');
 
     // HTML routes should NOT be pre-rendered in SSR mode
+    expect(files).not.toContain('env.html');
     expect(files).not.toContain('index.html');
+    expect(files).not.toContain('request.html');
+    expect(files).not.toContain('response.html');
     expect(files).not.toContain('second.html');
+    expect(files).not.toContain('nullish/[value].html');
+    expect(files).not.toContain('nullish/null.html');
+    expect(files).not.toContain('nullish/undefined.html');
     expect(files).not.toContain('posts/[postId].html');
     expect(files).not.toContain('posts/static-post-1.html');
     expect(files).not.toContain('posts/static-post-2.html');
 
     // Loader bundles should exist
     expect(files).toContain('_expo/loaders/env.js');
-    expect(files).toContain('_expo/loaders/second.js');
-    expect(files).toContain('_expo/loaders/posts/[postId].js');
-    expect(files).toContain('_expo/loaders/nullish/[value].js');
+    expect(files).toContain('_expo/loaders/request.js');
     expect(files).toContain('_expo/loaders/response.js');
+    expect(files).toContain('_expo/loaders/second.js');
+    expect(files).toContain('_expo/loaders/nullish/[value].js');
+    expect(files).toContain('_expo/loaders/posts/[postId].js');
   });
 
   (server.isExpoStart ? it.skip : it)('routes.json has loader paths', async () => {

@@ -36,20 +36,29 @@ describe.each(
     expect(files).toContain('+not-found.html');
 
     // Normal routes - static mode pre-renders HTML
+    expect(files).toContain('env.html');
     expect(files).toContain('index.html');
+    expect(files).toContain('request.html');
+    expect(files).toContain('response.html');
     expect(files).toContain('second.html');
+    expect(files).toContain('nullish/[value].html');
+    expect(files).toContain('nullish/null.html');
+    expect(files).toContain('nullish/undefined.html');
     expect(files).toContain('posts/[postId].html');
     expect(files).toContain('posts/static-post-1.html');
     expect(files).toContain('posts/static-post-2.html');
 
     // Loader outputs - pre-generated JSON files (no extension in static mode)
+    expect(files).toContain('_expo/loaders/env');
+    expect(files).toContain('_expo/loaders/request');
+    expect(files).toContain('_expo/loaders/response');
     expect(files).toContain('_expo/loaders/second');
+    expect(files).toContain('_expo/loaders/nullish/[value]');
+    expect(files).toContain('_expo/loaders/nullish/null');
+    expect(files).toContain('_expo/loaders/nullish/undefined');
     expect(files).toContain('_expo/loaders/posts/[postId]');
     expect(files).toContain('_expo/loaders/posts/static-post-1');
     expect(files).toContain('_expo/loaders/posts/static-post-2');
-    expect(files).toContain('_expo/loaders/nullish/undefined');
-    expect(files).toContain('_expo/loaders/nullish/null');
-    expect(files).toContain('_expo/loaders/response');
   });
 
   it('loader endpoint returns JSON', async () => {
