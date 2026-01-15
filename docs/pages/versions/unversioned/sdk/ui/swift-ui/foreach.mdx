@@ -1,0 +1,101 @@
+---
+title: ForEach
+description: A SwiftUI ForEach component for rendering dynamic content with delete and move support.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI ForEach matches the official SwiftUI [ForEach API](https://developer.apple.com/documentation/swiftui/foreach) and is used within [`List`](list) components to enable delete and move (reorder) functionality for dynamic content.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Delete and move support
+
+Use `onDelete` to enable delete and `onMove` to enable drag-to-reorder. The [`environment`](modifiers/#environment-modifier) modifier with `EnvironmentKey.editMode` set to `'active'` is required for move and selection functionality.
+
+```tsx ForEachExample.tsx
+import { useState } from 'react';
+import { Host, List, Section, Label, ForEach } from '@expo/ui/swift-ui';
+import { environment, EnvironmentKey, tag } from '@expo/ui/swift-ui/modifiers';
+
+export default function ForEachExample() {
+  const [items, setItems] = useState(['Apple', 'Banana', 'Orange', 'Mango']);
+
+  const handleDelete = (indices: number[]) => {
+    setItems(prev => prev.filter((_, i) => !indices.includes(i)));
+  };
+
+  const handleMove = (sourceIndices: number[], destination: number) => {
+    setItems(prev => {
+      const newItems = [...prev];
+      const [removed] = newItems.splice(sourceIndices[0], 1);
+      const adjustedDest = sourceIndices[0] < destination ? destination - 1 : destination;
+      newItems.splice(adjustedDest, 0, removed);
+      return newItems;
+    });
+  };
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <List modifiers={[environment(EnvironmentKey.editMode, 'active')]}>
+        <Section title="Fruits">
+          <ForEach onDelete={handleDelete} onMove={handleMove}>
+            {items.map((item, index) => (
+              <Label key={item} title={item} systemImage="leaf" modifiers={[tag(index)]} />
+            ))}
+          </ForEach>
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+### Disabling actions on individual items
+
+Use [`moveDisabled`](modifiers/#movedisableddisabled) and [`deleteDisabled`](modifiers/#deletedisableddisabled) modifiers to disable these actions on individual items.
+
+```tsx DisabledExample.tsx
+import { Host, List, Section, Label, ForEach } from '@expo/ui/swift-ui';
+import {
+  environment,
+  EnvironmentKey,
+  tag,
+  moveDisabled,
+  deleteDisabled,
+} from '@expo/ui/swift-ui/modifiers';
+
+export default function DisabledExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List modifiers={[environment(EnvironmentKey.editMode, 'active')]}>
+        <Section title="Items">
+          <ForEach
+            onDelete={indices => console.log('Delete:', indices)}
+            onMove={(from, to) => console.log('Move:', from, to)}>
+            <Label title="Can't move" systemImage="lock" modifiers={[tag('1'), moveDisabled()]} />
+            <Label
+              title="Can't delete"
+              systemImage="lock"
+              modifiers={[tag('2'), deleteDisabled()]}
+            />
+            <Label title="Normal item" systemImage="circle" modifiers={[tag('3')]} />
+          </ForEach>
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+## API
+
+<APISection packageName="expo-ui/swift-ui/foreach" apiName="ForEach" />

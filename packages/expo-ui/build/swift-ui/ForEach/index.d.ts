@@ -18,7 +18,7 @@ export type ForEachProps = {
     onMove?: (sourceIndices: number[], destination: number) => void;
 } & CommonViewModifierProps;
 /**
- * A component that renders its children using a native SwiftUI ForEach.
+ * A component that renders its children using a native SwiftUI `ForEach`.
  */
 export declare function ForEach({ children, onDelete, onMove, ...props }: ForEachProps): import("react").JSX.Element;
 //# sourceMappingURL=index.d.ts.map
