@@ -1,8 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXEnvironment.h"
-#import "EXErrorRecoveryManager.h"
 #import "EXFileDownloader.h"
+
+#import "Expo_Go-Swift.h"
 #import "EXKernel.h"
 #import "EXAppFetcher.h"
 #import "EXAbstractLoader.h"
@@ -34,11 +35,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   return nil;
 }
 
-- (void)fetchManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior success:(void (^)(EXManifestsManifest * _Nonnull))success failure:(void (^)(NSError * _Nonnull))failure
-{
-  [self doesNotRecognizeSelector:_cmd];
-}
-
 - (void)request
 {
   [self doesNotRecognizeSelector:_cmd];
@@ -58,11 +54,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 {
   [self doesNotRecognizeSelector:_cmd];
   return NO;
-}
-
-- (void)writeManifestToCache
-{
-  [self doesNotRecognizeSelector:_cmd];
 }
 
 #pragma mark -

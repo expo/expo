@@ -2,10 +2,9 @@
 
 #import "EXEnvironment.h"
 #import "EXFileDownloader.h"
-#import "EXSession.h"
-#import "EXVersions.h"
 #import "EXKernelUtil.h"
-#import "EXClientReleaseType.h"
+
+#import "Expo_Go-Swift.h"
 
 #import <React/RCTUtils.h>
 

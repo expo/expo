@@ -128,7 +128,7 @@ class DevelopmentServerService: ObservableObject {
       request.setValue("application/expo+json,application/json", forHTTPHeaderField: "Accept")
       request.setValue("ios", forHTTPHeaderField: "Expo-Platform")
       request.setValue("client", forHTTPHeaderField: "Expo-Client-Environment")
-      request.setValue(EXVersions.sharedInstance().sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
+      request.setValue(Versions.sharedInstance.sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
 
       do {
         let (data, response) = try await URLSession.shared.data(for: request)
@@ -206,7 +206,7 @@ class DevelopmentServerService: ObservableObject {
     request.httpMethod = "GET"
     request.setValue(sessionSecret, forHTTPHeaderField: "Expo-Session")
     request.setValue("ios", forHTTPHeaderField: "Expo-Platform")
-    request.setValue(EXVersions.sharedInstance().sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
+    request.setValue(Versions.sharedInstance.sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
 
     do {
       let (data, response) = try await URLSession.shared.data(for: request)
@@ -266,7 +266,7 @@ class DevelopmentServerService: ObservableObject {
     }
     return normalizeUrl(server.url).lowercased()
   }
-  
+
   private func preferredServer(existing: DevelopmentServer, candidate: DevelopmentServer) -> DevelopmentServer {
     if isLocalhostURL(existing.url) && !isLocalhostURL(candidate.url) {
       return candidate

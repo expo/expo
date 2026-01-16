@@ -8,12 +8,10 @@
 #import "EXAppLoadingCancelView.h"
 #import "Expo_Go-Swift.h"
 #import "EXEnvironment.h"
-#import "EXErrorRecoveryManager.h"
 #import "EXErrorView.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXReactAppManager.h"
-#import "EXVersions.h"
 #import "EXUpdatesManager.h"
 #import "EXUtil.h"
 
@@ -69,8 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * SplashScreenViewProvider that is used only in managed workflow app.
- * Managed app does not need any specific SplashScreenViewProvider as it uses generic one povided by the SplashScreen module.
- * See also EXHomeAppSplashScreenViewProvider in self.viewDidLoad
+ * Managed app does not need any specific SplashScreenViewProvider as it uses generic one provided by the SplashScreen module.
  */
 @property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewProvider *managedAppSplashScreenViewProvider;
 @property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewController *managedSplashScreenController;
