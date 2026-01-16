@@ -1,5 +1,3 @@
-// import type { ExpoGlobal } from 'expo-modules-core';
-
 declare module 'expo-modules-core' {
   namespace ExpoGlobal {
     /**
