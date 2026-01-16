@@ -67,10 +67,10 @@ jobs:
           echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
       - name: 🍏 Build iOS Project
         run: |
-          pod install --project-directory=ios
-          xcodebuild -workspace ios/testnightlies.xcworkspace -scheme testnightlies -configuration $CONFIGURATION -sdk iphonesimulator -destination "id=$DEVICE_ID" -derivedDataPath "ios/build" | xcpretty
+          pod install
+          xcodebuild -workspace testnightlies.xcworkspace -scheme testnightlies -configuration $CONFIGURATION -sdk iphonesimulator -destination "id=$DEVICE_ID" -derivedDataPath "build" | xcpretty
         shell: bash
-        working-directory: ${{ runner.temp }}/test-nightlies
+        working-directory: ${{ runner.temp }}/test-nightlies/ios
         env:
           NODE_ENV: production
           CONFIGURATION: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
