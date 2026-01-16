@@ -70,6 +70,13 @@ jobs:
       - name: 👷 Build Create Expo CLI
         run: yarn workspace create-expo build:prod
 
+      - name: 👷 Build Expo Brownfield
+        run: yarn workspace expo-brownfield prepare
+
+      - name: 📦 Generate expo-brownfield tarball
+        run: npm pack --json
+        working-directory: packages/expo-brownfield
+
       - name: 📦 Generate expo-template-default tarball
         run: npm pack --json
         working-directory: templates/expo-template-default

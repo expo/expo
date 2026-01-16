@@ -25,7 +25,7 @@ export const createTempProject = async (
 
   try {
     // Create a project using locally linked create-expo and templates
-    const templatePath = path.join(__dirname, '../../../../../templates/expo-template-default');
+    const templatePath = path.join(__dirname, '../../../../templates/expo-template-default');
     if (!fs.existsSync(templatePath)) {
       throw new Error(`Template directory not found at: ${templatePath}`);
     }

@@ -43,5 +43,5 @@ Options:
   --verbose                     output all subcommands output to the terminal
   --library, -l                 name of the brownfield library`,
   },
-  Version: require(path.resolve(__dirname, '../../../package.json')).version,
+  Version: require(path.resolve(__dirname, '../../package.json')).version,
 } as const;
