@@ -18,4 +18,7 @@ export interface ListProps extends CommonViewModifierProps {
  * A list component that renders its children using a native SwiftUI `List`.
  */
 export declare function List(props: ListProps): import("react").JSX.Element;
+export declare namespace List {
+    var ForEach: typeof import("../ForEach").ForEach;
+}
 //# sourceMappingURL=index.d.ts.map

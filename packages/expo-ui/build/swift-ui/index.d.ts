@@ -7,7 +7,6 @@ export * from './ContextMenu';
 export * from './DatePicker';
 export * from './Divider';
 export * from './DisclosureGroup';
-export * from './ForEach';
 export * from './Form';
 export * from './Gauge';
 export * from './Host';

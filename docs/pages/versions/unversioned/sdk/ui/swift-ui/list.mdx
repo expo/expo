@@ -107,7 +107,7 @@ export default function ListStylesExample() {
 
 ### Selection and edit mode
 
-Enable selection, deletion, and reordering of list items using the `ForEach` component with `onDelete` and `onMove` props.
+Enable selection, deletion, and reordering of list items using the `List.ForEach` compound component with `onDelete` and `onMove` props.
 
 - Use the [`environment`](modifiers/#environment) modifier to enable edit mode
 - Use the [`tag`](modifiers/#tagtag) modifier to identify items
@@ -116,7 +116,7 @@ Enable selection, deletion, and reordering of list items using the `ForEach` com
 
 ```tsx EditableListExample.tsx
 import { useState } from 'react';
-import { Host, List, Label, Section, Button, Toggle, ForEach } from '@expo/ui/swift-ui';
+import { Host, List, Label, Section, Button, Toggle } from '@expo/ui/swift-ui';
 import { environment, tag } from '@expo/ui/swift-ui/modifiers';
 
 type Task = { id: string; title: string };
@@ -157,11 +157,11 @@ export default function EditableListExample() {
           <Toggle label="Edit Mode" isOn={editMode} onIsOnChange={setEditMode} />
         </Section>
         <Section title="Tasks">
-          <ForEach onDelete={handleDelete} onMove={handleMove}>
+          <List.ForEach onDelete={handleDelete} onMove={handleMove}>
             {tasks.map(task => (
               <Label key={task.id} title={task.title} modifiers={[tag(task.id)]} />
             ))}
-          </ForEach>
+          </List.ForEach>
         </Section>
       </List>
     </Host>

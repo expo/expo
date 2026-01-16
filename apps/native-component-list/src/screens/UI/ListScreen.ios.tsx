@@ -1,14 +1,4 @@
-import {
-  Button,
-  ForEach,
-  Host,
-  Label,
-  List,
-  Picker,
-  Section,
-  Text,
-  Toggle,
-} from '@expo/ui/swift-ui';
+import { Button, Host, Label, List, Picker, Section, Text, Toggle } from '@expo/ui/swift-ui';
 import {
   animation,
   foregroundStyle,
@@ -112,7 +102,7 @@ export default function ListScreen() {
         </Section>
 
         <Section title="Items" footer={<Text>Swipe to delete, drag to reorder</Text>}>
-          <ForEach
+          <List.ForEach
             onDelete={handleDelete}
             onMove={handleMove}
             modifiers={[animation(Animation.default, editMode)]}>
@@ -124,7 +114,7 @@ export default function ListScreen() {
                 modifiers={[tag(item.id)]}
               />
             ))}
-          </ForEach>
+          </List.ForEach>
         </Section>
       </List>
     </Host>
