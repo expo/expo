@@ -31,7 +31,7 @@ export declare class Container {
     getName(): Promise<string | null>;
     /**
      * Retrieves the type of the container.
-     * @returns a promise resolving to the {@link ContainerType} (for example, 'cardDAV', 'exchange') or `null`.
+     * @returns a promise resolving to the [`ContainerType`](#containertype) (for example, 'cardDAV', 'exchange') or `null`.
      * @platform ios
      * @example
      * ```ts
@@ -41,7 +41,7 @@ export declare class Container {
     getType(): Promise<ContainerType | null>;
     /**
      * Retrieves all groups associated with this container.
-     * @returns a promise resolving to an array of {@link Group} instances within this container.
+     * @returns a promise resolving to an array of [`Group`](#group) instances within this container.
      * @platform ios
      * @example
      * ```ts
@@ -51,7 +51,7 @@ export declare class Container {
     getGroups(): Promise<Group[]>;
     /**
      * Retrieves all contacts stored in this container.
-     * @returns a promise resolving to an array of {@link Contact} instances within this container.
+     * @returns a promise resolving to an array of [`Contact`](#contact) instances within this container.
      * @platform ios
      * @example
      * ```ts

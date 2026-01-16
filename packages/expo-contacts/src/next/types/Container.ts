@@ -36,7 +36,7 @@ export declare class Container {
 
   /**
    * Retrieves the type of the container.
-   * @returns a promise resolving to the {@link ContainerType} (for example, 'cardDAV', 'exchange') or `null`.
+   * @returns a promise resolving to the [`ContainerType`](#containertype) (for example, 'cardDAV', 'exchange') or `null`.
    * @platform ios
    * @example
    * ```ts
@@ -47,7 +47,7 @@ export declare class Container {
 
   /**
    * Retrieves all groups associated with this container.
-   * @returns a promise resolving to an array of {@link Group} instances within this container.
+   * @returns a promise resolving to an array of [`Group`](#group) instances within this container.
    * @platform ios
    * @example
    * ```ts
@@ -58,7 +58,7 @@ export declare class Container {
 
   /**
    * Retrieves all contacts stored in this container.
-   * @returns a promise resolving to an array of {@link Contact} instances within this container.
+   * @returns a promise resolving to an array of [`Contact`](#contact) instances within this container.
    * @platform ios
    * @example
    * ```ts
