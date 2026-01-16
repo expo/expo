@@ -6,10 +6,8 @@ export default function Screen() {
   const params = useLocalSearchParams();
   useEffect(() => {
     console.log(
-      'globalThis.expo.router.navigationEvents',
-      // @ts-expect-error
+      'globalThis.expo.router',
       globalThis.expo?.router?.currentPathname,
-      // @ts-expect-error
       globalThis.expo?.router?.currentParams
     );
   }, []);

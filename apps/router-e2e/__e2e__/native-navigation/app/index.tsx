@@ -7,10 +7,8 @@ const HomeIndex = () => {
 
   useEffect(() => {
     console.log(
-      'globalThis.expo.router.navigationEvents',
-      // @ts-expect-error
+      'globalThis.expo.router',
       globalThis.expo?.router?.currentPathname,
-      // @ts-expect-error
       globalThis.expo?.router?.currentParams
     );
   }, []);

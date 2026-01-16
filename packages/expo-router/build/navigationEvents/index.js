@@ -62,25 +62,27 @@ exports.unstable_navigationEvents = {
 };
 if (globalThis.expo) {
     globalThis.expo.router = globalThis.expo.router || {};
-    Object.defineProperties(globalThis.expo.router, {
-        navigationEvents: {
-            get() {
-                return exports.unstable_navigationEvents;
+    if (!('navigationEvents' in globalThis.expo.router)) {
+        Object.defineProperties(globalThis.expo.router, {
+            navigationEvents: {
+                get() {
+                    return exports.unstable_navigationEvents;
+                },
+                enumerable: true,
             },
-            enumerable: true,
-        },
-        currentPathname: {
-            get() {
-                return currentPathname;
+            currentPathname: {
+                get() {
+                    return currentPathname;
+                },
+                enumerable: true,
             },
-            enumerable: true,
-        },
-        currentParams: {
-            get() {
-                return currentParams;
+            currentParams: {
+                get() {
+                    return currentParams;
+                },
+                enumerable: true,
             },
-            enumerable: true,
-        },
-    });
+        });
+    }
 }
 //# sourceMappingURL=index.js.map
