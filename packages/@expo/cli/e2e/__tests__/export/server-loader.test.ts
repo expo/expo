@@ -10,7 +10,7 @@ import {
   RUNTIME_WORKERD,
   setupServer,
 } from '../../utils/runtime';
-import { findProjectFiles } from '../utils';
+import { findProjectFiles, getHtml } from '../utils';
 
 runExportSideEffects();
 
@@ -113,10 +113,26 @@ describe.each(
     expect(data).toBeNull();
   });
 
-  it('receives `Request` object', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/request');
+  it.each([
+    {
+      name: 'loader endpoint',
+      url: '/_expo/loaders/request',
+      getData: (response: Response) => {
+        return response.json();
+      },
+    },
+    {
+      name: 'page',
+      url: '/request',
+      getData: async (response: Response) => {
+        const html = getHtml(await response.text());
+        return JSON.parse(html.querySelector('[data-testid="loader-result"]')!.textContent);
+      },
+    },
+  ])('$name $url does not receive `Request` object', async ({ getData, url }) => {
+    const response = await server.fetchAsync(url);
     expect(response.status).toBe(200);
-    const data = await response.json();
+    const data = await getData(response);
 
     expect(new URL(data.url).pathname).toBe('/request');
     expect(data.method).toBe('GET');
