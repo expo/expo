@@ -44,7 +44,7 @@
         <action android:name="androidx.media3.session.MediaSessionService"/>
       </intent-filter>
     </service>
-    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:theme="@style/Theme.App.SplashScreen" android:windowSoftInputMode="adjustResize" android:exported="true" android:supportsPictureInPicture="true">
+    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize" android:launchMode="singleTask" android:theme="@style/Theme.App.SplashScreen" android:windowSoftInputMode="adjustResize" android:exported="true" android:supportsPictureInPicture="true">
       <intent-filter>
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>

@@ -86,6 +86,13 @@ export default function ToolbarScreen() {
       console.error(error);
     },
   });
+  const image2 = useImage(require('../../../assets/sad-expo.svg'), {
+    maxWidth: 24,
+    maxHeight: 24,
+    onError(error) {
+      console.error(error);
+    },
+  });
 
   return (
     <>
@@ -298,7 +305,7 @@ export default function ToolbarScreen() {
         )}
 
         {/* Custom view with TextInput */}
-        <Toolbar.View style={{ width: 200 }} hidden={!showCustomView}>
+        <Toolbar.View hidden={!showCustomView}>
           <TextInput
             ref={searchInputRef}
             testID="toolbar-search-input"
@@ -331,7 +338,7 @@ export default function ToolbarScreen() {
         )}
 
         {/* Custom view with custom component */}
-        <Toolbar.View separateBackground style={{ width: 32, height: 32 }}>
+        <Toolbar.View separateBackground>
           <Pressable
             testID="custom-plus-button"
             onPress={() => Alert.alert('Custom Button', 'Plus button pressed!')}
@@ -353,85 +360,76 @@ export default function ToolbarScreen() {
         {showMenu && (
           <Toolbar.Menu icon="ellipsis.circle" title="Actions" tintColor={Color.ios.systemBrown}>
             {/* Simple actions */}
-            <Toolbar.MenuAction icon="paperplane" title="Send email" onPress={handleSendEmail} />
-            <Toolbar.MenuAction
-              icon="trash"
-              title="Delete email"
-              destructive
-              onPress={handleDeleteEmail}
-            />
+            <Toolbar.MenuAction icon="paperplane" onPress={handleSendEmail}>
+              Send email
+            </Toolbar.MenuAction>
+            <Toolbar.MenuAction icon="trash" destructive onPress={handleDeleteEmail}>
+              Delete email
+            </Toolbar.MenuAction>
 
             {/* Toggle action with isOn state */}
             <Toolbar.MenuAction
               icon={emailsArchived ? 'tray.full' : 'tray'}
-              title={emailsArchived ? 'Unarchive emails' : 'Archive emails'}
               isOn={emailsArchived}
-              onPress={handleArchiveToggle}
-            />
+              onPress={handleArchiveToggle}>
+              {emailsArchived ? 'Unarchive emails' : 'Archive emails'}
+            </Toolbar.MenuAction>
 
             {/* Nested inline menu */}
             <Toolbar.Menu inline title="Organize">
               <Toolbar.MenuAction
                 icon="folder"
-                title="Move to folder"
-                onPress={() => Alert.alert('Move', 'Moving to folder...')}
-              />
-              <Toolbar.MenuAction
-                icon="tag"
-                title="Add tag"
-                onPress={() => Alert.alert('Tag', 'Adding tag...')}
-              />
+                onPress={() => Alert.alert('Move', 'Moving to folder...')}>
+                Move to folder
+              </Toolbar.MenuAction>
+              <Toolbar.MenuAction icon="tag" onPress={() => Alert.alert('Tag', 'Adding tag...')}>
+                Add tag
+              </Toolbar.MenuAction>
             </Toolbar.Menu>
 
             {/* Nested menu with state-based selections */}
-            <Toolbar.Menu title="Preferences">
+            <Toolbar.Menu title="Preferences" image={image2}>
               <Toolbar.MenuAction
                 icon="bell"
-                title={notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
                 isOn={notificationsEnabled}
-                onPress={handleNotificationsToggle}
-              />
+                onPress={handleNotificationsToggle}>
+                {notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
+              </Toolbar.MenuAction>
 
               {/* Color selection submenu */}
               <Toolbar.Menu inline title="Favorite Color">
                 <Toolbar.MenuAction
                   icon="circle.fill"
-                  title="Red"
                   isOn={favoriteColors.includes('red')}
-                  onPress={() => handleColorSelect('red')}
-                />
+                  onPress={() => handleColorSelect('red')}>
+                  Red
+                </Toolbar.MenuAction>
                 <Toolbar.MenuAction
                   icon="circle.fill"
-                  title="Blue"
                   isOn={favoriteColors.includes('blue')}
-                  onPress={() => handleColorSelect('blue')}
-                />
+                  onPress={() => handleColorSelect('blue')}>
+                  Blue
+                </Toolbar.MenuAction>
                 <Toolbar.MenuAction
                   icon="circle.fill"
-                  title="Green"
                   isOn={favoriteColors.includes('green')}
-                  onPress={() => handleColorSelect('green')}
-                />
+                  onPress={() => handleColorSelect('green')}>
+                  Green
+                </Toolbar.MenuAction>
               </Toolbar.Menu>
             </Toolbar.Menu>
 
             {/* Palette menu example (small icons only) */}
             <Toolbar.Menu palette inline title="Palette Actions">
-              <Toolbar.MenuAction
-                icon="star"
-                title="Star-palette"
-                onPress={() => Alert.alert('Star')}
-              />
-              <Toolbar.MenuAction
-                icon="flag"
-                title="Flag-palette"
-                onPress={() => Alert.alert('Flag')}
-              />
-              <Toolbar.MenuAction
-                icon="pin"
-                title="Pin-palette"
-                onPress={() => Alert.alert('Pin')}
-              />
+              <Toolbar.MenuAction icon="star" onPress={() => Alert.alert('Star')}>
+                Star-palette
+              </Toolbar.MenuAction>
+              <Toolbar.MenuAction icon="flag" onPress={() => Alert.alert('Flag')}>
+                Flag-palette
+              </Toolbar.MenuAction>
+              <Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
+                Pin-palette
+              </Toolbar.MenuAction>
             </Toolbar.Menu>
 
             <Toolbar.Menu inline elementSize="small" title="Small Actions">
@@ -448,35 +446,31 @@ export default function ToolbarScreen() {
 
             {/* elementSize="medium" displays actions horizontally with titles (iOS 16+) */}
             <Toolbar.Menu inline elementSize="medium" title="Medium Size">
-              <Toolbar.MenuAction
-                icon="arrow.clockwise"
-                title="Refresh"
-                onPress={() => Alert.alert('Refreshing')}
-              />
-              <Toolbar.MenuAction
-                icon="arrow.2.circlepath"
-                title="Resume"
-                onPress={() => Alert.alert('Resuming')}
-              />
-              <Toolbar.MenuAction icon="pin" title="Pin" onPress={() => Alert.alert('Pin')} />
+              <Toolbar.MenuAction icon="arrow.clockwise" onPress={() => Alert.alert('Refreshing')}>
+                Refresh
+              </Toolbar.MenuAction>
+              <Toolbar.MenuAction icon="arrow.2.circlepath" onPress={() => Alert.alert('Resuming')}>
+                Resume
+              </Toolbar.MenuAction>
+              <Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
+                Pin
+              </Toolbar.MenuAction>
             </Toolbar.Menu>
 
             {/* elementSize="large" displays actions with larger icons and titles */}
             <Toolbar.Menu inline elementSize="large" title="Large Size">
-              <Toolbar.MenuAction
-                icon="square.and.arrow.up"
-                title="Share"
-                onPress={() => Alert.alert('Sharing')}
-              />
-              <Toolbar.MenuAction
-                icon="doc.on.doc"
-                title="Copy"
-                onPress={() => Alert.alert('Copying')}
-              />
+              <Toolbar.MenuAction icon="square.and.arrow.up" onPress={() => Alert.alert('Sharing')}>
+                Share
+              </Toolbar.MenuAction>
+              <Toolbar.MenuAction icon="doc.on.doc" onPress={() => Alert.alert('Copying')}>
+                Copy
+              </Toolbar.MenuAction>
             </Toolbar.Menu>
 
             {/* Disabled action */}
-            <Toolbar.MenuAction icon="lock" title="Locked action" disabled onPress={() => {}} />
+            <Toolbar.MenuAction icon="lock" disabled onPress={() => {}}>
+              Locked action
+            </Toolbar.MenuAction>
           </Toolbar.Menu>
         )}
 
@@ -534,11 +528,14 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     fontSize: 16,
+    width: 200,
+    height: 32,
+    paddingLeft: 8,
     color: Color.ios.label,
   },
   customButton: {
-    width: '100%',
-    height: '100%',
+    width: 32,
+    height: 32,
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -38,8 +38,6 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
     createFileFromTemplate('ReactNativeView.swift', groupPath);
     // Create the UIKit brownfield view controller based on the template
     createFileFromTemplate('ReactNativeViewController.swift', groupPath);
-    // Create the ExpoAppDelegateWrapper based on the template
-    createFileFromTemplate('ExpoAppDelegateWrapper.swift', groupPath);
     // Create the BrownfieldAppDelegate based on the template
     createFileFromTemplate('BrownfieldAppDelegate.swift', groupPath);
     // Create the ReactNativeDelegate based on the template
@@ -51,7 +49,6 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
       'Messaging.swift',
       'ReactNativeView.swift',
       'ReactNativeViewController.swift',
-      'ExpoAppDelegateWrapper.swift',
       'BrownfieldAppDelegate.swift',
       'ReactNativeDelegate.swift',
     ]);
@@ -72,14 +69,13 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
     // - Add custom script for patching ExpoModulesProvider
     // - Add 'ReactNativeHostManager.swift', 'ReactNativeView.swift',
     //   'Messaging.swift', 'ReactNativeViewController.swift' and
-    //   'ExpoAppDelegateWrapper.swift' and 'BrownfieldAppDelegate.swift'
+    //   'BrownfieldAppDelegate.swift'
     //   to the compile sources phase
     configureBuildPhases(xcodeProject, target, pluginConfig.targetName, projectName, [
       `${pluginConfig.targetName}/ReactNativeHostManager.swift`,
       `${pluginConfig.targetName}/Messaging.swift`,
       `${pluginConfig.targetName}/ReactNativeView.swift`,
       `${pluginConfig.targetName}/ReactNativeViewController.swift`,
-      `${pluginConfig.targetName}/ExpoAppDelegateWrapper.swift`,
       `${pluginConfig.targetName}/BrownfieldAppDelegate.swift`,
       `${pluginConfig.targetName}/ReactNativeDelegate.swift`,
     ]);

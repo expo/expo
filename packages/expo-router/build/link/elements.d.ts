@@ -1,3 +1,4 @@
+import type { ImageRef } from 'expo-image';
 import React, { type PropsWithChildren, type ReactNode } from 'react';
 import type { ViewStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
@@ -34,6 +35,26 @@ export interface LinkMenuActionProps {
      * SF Symbol displayed alongside the menu item.
      */
     icon?: SFSymbol;
+    /**
+     * Custom image loaded using `useImage()` hook from `expo-image`.
+     * Takes priority over `icon` (SF Symbol) when both are provided.
+     *
+     * @example
+     * ```tsx
+     * import { useImage } from 'expo-image';
+     * import { Link } from 'expo-router';
+     *
+     * const customIcon = useImage('https://simpleicons.org/icons/expo.svg', {
+     *   maxWidth: 24,
+     *   maxHeight: 24,
+     * });
+     *
+     * <Link.Menu title="Menu">
+     *   <Link.MenuAction image={customIcon} title="Action" onPress={() => {}} />
+     * </Link.Menu>
+     * ```
+     */
+    image?: ImageRef | null;
     /**
      * If `true`, the menu item will be displayed as selected.
      */
@@ -84,6 +105,26 @@ export interface LinkMenuProps {
      * Optional SF Symbol displayed alongside the menu item.
      */
     icon?: SFSymbol;
+    /**
+     * Custom image loaded using `useImage()` hook from `expo-image`.
+     * Takes priority over `icon` (SF Symbol) when both are provided.
+     *
+     * @example
+     * ```tsx
+     * import { useImage } from 'expo-image';
+     * import { Link } from 'expo-router';
+     *
+     * const customIcon = useImage('https://simpleicons.org/icons/expo.svg', {
+     *   maxWidth: 24,
+     *   maxHeight: 24,
+     * });
+     *
+     * <Link.Menu image={customIcon} title="Menu">
+     *   <Link.MenuAction title="Action" onPress={() => {}} />
+     * </Link.Menu>
+     * ```
+     */
+    image?: ImageRef | null;
     /**
      * If `true`, the menu will be displayed as a palette.
      * This means that the menu will be displayed as one row.

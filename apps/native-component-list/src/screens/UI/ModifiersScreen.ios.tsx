@@ -58,6 +58,7 @@ import {
   pickerStyle,
   tag,
   font,
+  lineLimit,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
@@ -204,9 +205,9 @@ export default function ModifiersScreen() {
           {/* Text modifiers */}
           <Section title="Text modifier">
             <Text
-              color={color ?? 'primary'}
-              lineLimit={1}
               modifiers={[
+                foregroundStyle({ type: 'color', color: color ?? 'primary' }),
+                lineLimit(1),
                 font({ size: 16 }),
                 allowsTightening(allowTightening),
                 truncationMode(
@@ -352,8 +353,11 @@ export default function ModifiersScreen() {
                 onValueChange={setEnabledSelection}
               />
               <Text
-                color={enabledSelection ? 'black' : 'gray'}
-                modifiers={[font({ size: 14 }), textSelection(enabledSelection)]}>
+                modifiers={[
+                  foregroundStyle({ type: 'color', color: enabledSelection ? 'black' : 'gray' }),
+                  font({ size: 14 }),
+                  textSelection(enabledSelection),
+                ]}>
                 This is selected text
               </Text>
             </VStack>
@@ -423,7 +427,11 @@ export default function ModifiersScreen() {
                 endPoint: { x: 1, y: 1 },
               }),
             ]}>
-            <Text color={color ?? 'primary'} modifiers={[font({ size: 12 })]}>
+            <Text
+              modifiers={[
+                foregroundStyle({ type: 'color', color: color ?? 'primary' }),
+                font({ size: 12 }),
+              ]}>
               Hello world, I don't react on foregroundStyle
             </Text>
             <ColorPicker

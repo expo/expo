@@ -218,7 +218,7 @@ exceptions:
   # Standalone Expo UI component names
   - '^(?:BottomSheet|Button|Chip|CircularProgress|ColorPicker|ContextMenu|DatePicker|DateTimePicker|DisclosureGroup|Divider|Form|Gauge|Host|LinearProgress|List|Menu|Modifiers|Namespace|Picker|Popover|ProgressView|Section|Slider|Switch|TextField|TextInput|Toggle)(?:\s*\([^)]+\))?$'
   # Component, service and product names that are proper nouns
-  - '^(?:TinyBase|LiveStore|LaunchDarkly|OneSignal|CleverTap|LogRocket|Vexo|BugSnag|Meta|Vercel|TabTrigger|TabList|Tabs|Drawer|TextEncoder|TextDecoder|AudioPlayer|VideoPlayer)(?:\s*\([^)]+\))?$'
+  - '^(?:TinyBase|LiveStore|LaunchDarkly|OneSignal|CleverTap|LogRocket|Vexo|BugSnag|Meta|Vercel|TabTrigger|TabList|Tabs|Drawer|TextEncoder|TextDecoder|AudioPlayer|VideoPlayer|Popover|HStack|VStack)(?:\s*\([^)]+\))?$'
   # Specific edge cases
   - two-factor
   - (deprecated)

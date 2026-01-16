@@ -168,8 +168,8 @@
           "type": "boolean",
           "default": false
         },
-        "unstable_splitView": {
-          "description": "Enable experimental SplitView support on ios",
+        "disableSynchronousScreensUpdates": {
+          "description": "Disable synchronous layout updates for native screens.",
           "type": "boolean",
           "default": false
         }
