@@ -22,6 +22,7 @@
     "lint:fix": "expo-module lint --fix && expo-module lint plugin --fix && expo-module lint cli --fix",
     "test": "expo-module test",
     "prepare": "expo-module prepare",
+    "prepack": "cp -L plugin/templates/ios/ExpoAppDelegate.swift plugin/templates/ios/ExpoAppDelegate.swift.tmp && mv plugin/templates/ios/ExpoAppDelegate.swift.tmp plugin/templates/ios/ExpoAppDelegate.swift",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
