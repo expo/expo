@@ -6,6 +6,7 @@ import React
 
 private class DevLauncherWrapperView: UIView {
   weak var devLauncherViewController: UIViewController?
+  var isBrownfield: Bool = false
 
 #if !os(macOS)
   override func didMoveToWindow() {
@@ -18,8 +19,6 @@ private class DevLauncherWrapperView: UIView {
     }
 
     let isSwiftUIController = NSStringFromClass(type(of: rootViewController)).contains("UIHostingController")
-    // TODO(pmleczek): Revisit this for a more reliable solution
-    let isBrownfield = NSStringFromClass(type(of: rootViewController)).contains("UINavigationController")
     if !isSwiftUIController && !isBrownfield && devLauncherViewController.parent != rootViewController {
       rootViewController.addChild(devLauncherViewController)
       devLauncherViewController.didMove(toParent: rootViewController)
@@ -77,6 +76,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     // We need to create a wrapper View because React Native Factory will reassign rootViewController later
     let wrapperView = DevLauncherWrapperView()
     wrapperView.devLauncherViewController = viewController
+    wrapperView.isBrownfield = launchOptions?[UIApplication.LaunchOptionsKey(rawValue: "_isBrownfield")] != nil
     wrapperView.addSubview(viewController.view)
     viewController.view.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([
