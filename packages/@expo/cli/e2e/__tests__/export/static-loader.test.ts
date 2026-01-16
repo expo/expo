@@ -86,6 +86,13 @@ describe.each(
 
   it.each([
     {
+      name: 'loader endpoint',
+      url: '/_expo/loaders/request',
+      getData: (response: Response) => {
+        return response.json();
+      },
+    },
+    {
       name: 'page',
       url: '/request',
       getData: async (response: Response) => {
@@ -93,23 +100,13 @@ describe.each(
         return JSON.parse(html.querySelector('[data-testid="loader-result"]')!.textContent);
       },
     },
-    {
-      name: 'loader endpoint',
-      url: '/_expo/loaders/request',
-      getData: (response: Response) => {
-        return response.json();
-      },
-    },
-  ])(
-    '$name $url does not receive `Request` object',
-    async ({ getData, url }) => {
-      const response = await server.fetchAsync(url);
-      expect(response.status).toBe(200);
-      const data = await getData(response);
+  ])('$name $url does not receive `Request` object', async ({ getData, url }) => {
+    const response = await server.fetchAsync(url);
+    expect(response.status).toBe(200);
+    const data = await getData(response);
 
-      expect(data.url).toBeNull();
-      expect(data.method).toBeNull();
-      expect(data.headers).toBeNull();
-    }
-  );
+    expect(data.url).toBeNull();
+    expect(data.method).toBeNull();
+    expect(data.headers).toBeNull();
+  });
 });
