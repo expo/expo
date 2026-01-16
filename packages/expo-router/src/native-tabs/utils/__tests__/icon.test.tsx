@@ -127,8 +127,14 @@ describe(convertOptionsIconToRNScreensPropsIcon, () => {
 
     it('returns imageSource for Android regardless of renderingMode', () => {
       const src = { uri: 'https://example.com/icon.png' };
-      const resultTemplate = convertOptionsIconToRNScreensPropsIcon({ src, renderingMode: 'template' });
-      const resultOriginal = convertOptionsIconToRNScreensPropsIcon({ src, renderingMode: 'original' });
+      const resultTemplate = convertOptionsIconToRNScreensPropsIcon({
+        src,
+        renderingMode: 'template',
+      });
+      const resultOriginal = convertOptionsIconToRNScreensPropsIcon({
+        src,
+        renderingMode: 'original',
+      });
       // Android always uses imageSource
       expect(resultTemplate?.android).toEqual({ type: 'imageSource', imageSource: src });
       expect(resultOriginal?.android).toEqual({ type: 'imageSource', imageSource: src });

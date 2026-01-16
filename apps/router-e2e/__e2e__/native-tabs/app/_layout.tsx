@@ -37,7 +37,7 @@ export default function Layout() {
         </NativeTabs.Trigger>
         <NativeTabs.Trigger name="icon-test">
           <NativeTabs.Trigger.Icon
-            src={require('../../../assets/icon.png')}
+            src={require('../../../assets/explore_orange.png')}
             renderingMode="original"
           />
           <NativeTabs.Trigger.Label>Original Icon</NativeTabs.Trigger.Label>

@@ -224,8 +224,10 @@ function convertIconSrcToIconOption(
         : { defaultIcon: icon.src };
 
     const options: Pick<NativeTabOptions, 'icon' | 'selectedIcon'> = {};
-    options.icon = convertSrcOrComponentToSrc(defaultIcon, icon.renderingMode);
-    options.selectedIcon = convertSrcOrComponentToSrc(selected, icon.renderingMode);
+    options.icon = convertSrcOrComponentToSrc(defaultIcon, { renderingMode: icon.renderingMode });
+    options.selectedIcon = convertSrcOrComponentToSrc(selected, {
+      renderingMode: icon.renderingMode,
+    });
     return options;
   }
 
@@ -234,13 +236,15 @@ function convertIconSrcToIconOption(
 
 function convertSrcOrComponentToSrc(
   src: ImageSourcePropType | ReactElement | undefined,
-  renderingMode?: 'template' | 'original'
+  options: {
+    renderingMode: 'template' | 'original' | undefined;
+  }
 ) {
   if (src) {
     if (isValidElement(src)) {
       return convertComponentSrcToImageSource(src);
     } else {
-      return { src, renderingMode };
+      return { src, renderingMode: options.renderingMode };
     }
   }
   return undefined;

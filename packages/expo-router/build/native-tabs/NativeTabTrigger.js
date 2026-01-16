@@ -190,19 +190,21 @@ function convertIconSrcToIconOption(icon) {
             ? { defaultIcon: icon.src.default, selected: icon.src.selected }
             : { defaultIcon: icon.src };
         const options = {};
-        options.icon = convertSrcOrComponentToSrc(defaultIcon, icon.renderingMode);
-        options.selectedIcon = convertSrcOrComponentToSrc(selected, icon.renderingMode);
+        options.icon = convertSrcOrComponentToSrc(defaultIcon, { renderingMode: icon.renderingMode });
+        options.selectedIcon = convertSrcOrComponentToSrc(selected, {
+            renderingMode: icon.renderingMode,
+        });
         return options;
     }
     return undefined;
 }
-function convertSrcOrComponentToSrc(src, renderingMode) {
+function convertSrcOrComponentToSrc(src, options) {
     if (src) {
         if ((0, react_1.isValidElement)(src)) {
             return (0, icon_1.convertComponentSrcToImageSource)(src);
         }
         else {
-            return { src, renderingMode };
+            return { src, renderingMode: options.renderingMode };
         }
     }
     return undefined;
