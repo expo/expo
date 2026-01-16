@@ -69,8 +69,8 @@ function createEnvironment(input) {
             return undefined;
         }
         const loaderModule = (await input.loadModule(route.loader));
-        if (!loaderModule?.loader) {
-            return undefined;
+        if (!loaderModule) {
+            throw new Error(`Loader module not found at: ${route.loader}`);
         }
         const params = (0, matchers_1.parseParams)(request, route);
         const data = await loaderModule.loader({ params, request });
