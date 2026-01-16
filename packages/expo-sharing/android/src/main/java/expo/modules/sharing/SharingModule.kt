@@ -57,6 +57,26 @@ class SharingModule : Module() {
       }
     }
 
+    Function("getSharedData") {
+      val intent = SharingSingleton.intent
+      if (intent == null) {
+        return@Function emptyList<SharePayload>()
+      }
+      return@Function SimpleShareIntentDataParser.parse(context, intent)
+    }
+
+    AsyncFunction("getResolvedSharedDataAsync") {
+      val intent = SharingSingleton.intent
+      if (intent == null) {
+        return@AsyncFunction emptyList<ResolvedSharePayload>()
+      }
+      return@AsyncFunction ResolvingShareIntentDataParser.parse(context, intent)
+    }
+
+    Function("clearSharedData") {
+      SharingSingleton.intent = null
+    }
+
     OnActivityResult { _, (requestCode) ->
       if (requestCode == REQUEST_CODE && pendingPromise != null) {
         pendingPromise?.resolve(null)
