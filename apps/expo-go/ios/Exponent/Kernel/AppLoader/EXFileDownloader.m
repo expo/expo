@@ -2,7 +2,6 @@
 
 #import "EXEnvironment.h"
 #import "EXFileDownloader.h"
-#import "EXKernelUtil.h"
 
 #import "Expo_Go-Swift.h"
 
