@@ -22,7 +22,7 @@ data class CreateContactRecord(
   @Field val company: String? = null,
   @Field val department: String? = null,
   @Field val jobTitle: String? = null,
-  @Field val phoneticOrganizationName: String? = null,
+  @Field val phoneticCompanyName: String? = null,
   @Field val note: String? = null,
   @Field val isFavourite: Boolean = false,
   @Field val image: String? = null,

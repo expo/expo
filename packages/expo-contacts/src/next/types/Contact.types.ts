@@ -739,6 +739,11 @@ export type ContactDetails = {
    */
   image: string | null;
   /**
+   * URI of the contact's thumbnail.
+   * @example "file:///path/to/image.jpg"
+   */
+  thumbnail: string | null;
+  /**
    * Birthday of the contact.
    * @platform ios
    */

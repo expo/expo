@@ -17,10 +17,12 @@ export declare enum ContactField {
     PHONETIC_MIDDLE_NAME = "phoneticMiddleName",
     PHONETIC_FAMILY_NAME = "phoneticFamilyName",
     COMPANY = "company",
+    PHONETIC_COMPANY_NAME = "phoneticCompanyName",
     DEPARTMENT = "department",
     JOB_TITLE = "jobTitle",
     NOTE = "note",
     IMAGE = "image",
+    THUMBNAIL = "thumbnail",
     BIRTHDAY = "birthday",
     NON_GREGORIAN_BIRTHDAY = "nonGregorianBirthday",
     EMAILS = "emails",
@@ -112,10 +114,12 @@ export type ContactFieldKey = {
     [ContactField.PHONETIC_MIDDLE_NAME]: 'phoneticMiddleName';
     [ContactField.PHONETIC_FAMILY_NAME]: 'phoneticFamilyName';
     [ContactField.COMPANY]: 'company';
+    [ContactField.PHONETIC_COMPANY_NAME]: 'phoneticCompanyName';
     [ContactField.DEPARTMENT]: 'department';
     [ContactField.JOB_TITLE]: 'jobTitle';
     [ContactField.NOTE]: 'note';
     [ContactField.IMAGE]: 'image';
+    [ContactField.THUMBNAIL]: 'thumbnail';
     [ContactField.BIRTHDAY]: 'birthday';
     [ContactField.NON_GREGORIAN_BIRTHDAY]: 'nonGregorianBirthday';
     [ContactField.EMAILS]: 'emails';

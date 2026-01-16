@@ -23,7 +23,7 @@ class CreateContactMapper {
     contact.organizationName = record.company ?? ""
     contact.jobTitle = record.jobTitle ?? ""
     contact.departmentName = record.department ?? ""
-    contact.phoneticOrganizationName = record.phoneticOrganizationName ?? ""
+    contact.phoneticOrganizationName = record.phoneticCompanyName ?? ""
     contact.note = record.note ?? ""
 
     if let imageUri = record.image {

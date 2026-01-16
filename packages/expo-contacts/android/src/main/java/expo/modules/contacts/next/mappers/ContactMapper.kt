@@ -115,7 +115,7 @@ class ContactMapper(val imageByteArrayConverter: ImageByteArrayConverter) {
       company = record.company,
       department = record.department,
       jobTitle = record.jobTitle,
-      phoneticName = record.phoneticOrganizationName
+      phoneticName = record.phoneticCompanyName
     )
 
   fun toAppendableOrganization(record: PatchContactRecord, rawContactId: RawContactId) =
@@ -133,7 +133,7 @@ class ContactMapper(val imageByteArrayConverter: ImageByteArrayConverter) {
       company = record.company,
       department = record.department,
       jobTitle = record.jobTitle,
-      phoneticName = record.phoneticOrganizationName
+      phoneticName = record.phoneticCompanyName
     )
 
   fun toPatchOrganization(record: PatchContactRecord, organizationDataId: DataId) =
