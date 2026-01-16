@@ -103,7 +103,8 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
       fatalError("recreateRootView: Missing RCTReactNativeFactoryDelegate")
     }
 
-    if RCTIsNewArchEnabled() {
+    let isBrownfield = launchOptions?["_isBrownfield"] != nil
+    if !isBrownfield && RCTIsNewArchEnabled() {
       // chrfalch: rootViewFactory.reactHost is not available here in swift due to the underlying RCTHost type of the property. (todo: check)
       assert(self.rootViewFactory.value(forKey: "reactHost") == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
     } else {

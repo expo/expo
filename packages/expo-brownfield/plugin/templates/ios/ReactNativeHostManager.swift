@@ -9,6 +9,7 @@ public class ReactNativeHostManager {
 
   private var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   private var reactNativeFactory: RCTReactNativeFactory?
+  private var firstViewLoad: Bool = true
 
   /**
    * Initializes ReactNativeHostManager instance
@@ -43,10 +44,23 @@ public class ReactNativeHostManager {
       fatalError("Trying to load view without initializing reactNativeFactory")
     }
 
+    // Needed to set up delegates (e.g. for expo-dev-menu)
+    if firstViewLoad {
+      firstViewLoad = false
+      reactNativeFactory.startReactNative(
+        withModuleName: moduleName,
+        in: nil,
+        launchOptions: nil
+      )
+    }
+
+    var launchOptionsCopy = launchOptions ?? [:]
+    launchOptionsCopy["_isBrownfield"] = true
+
     return reactNativeFactory.rootViewFactory.view(
       withModuleName: moduleName,
       initialProperties: initialProps,
-      launchOptions: launchOptions
+      launchOptions: launchOptionsCopy
     )
   }
 }
