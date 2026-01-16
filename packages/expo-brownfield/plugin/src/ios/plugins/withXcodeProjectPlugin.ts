@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import type { PluginConfig } from '../types';
 import {
+  applyPatchToFile,
   configureBuildPhases,
   configureBuildSettings,
   createFileFromTemplate,
@@ -40,14 +41,17 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
       'ReactNativeView.swift',
       // UIKit brownfield view controller
       'ReactNativeViewController.swift',
-      // BrownfieldAppDelegate
-      'BrownfieldAppDelegate.swift',
+      // ExpoAppDelegate symlinked and reexported from the main Expo package
+      'ExpoAppDelegate.swift',
       // ReactNativeDelegate
       'ReactNativeDelegate.swift',
     ];
 
     // Create files from templates
     templateFiles.forEach((templateFile) => createFileFromTemplate(templateFile, groupPath));
+
+    // Apply patch to ExpoAppDelegate.swift to make it compatible with the brownfield framework
+    applyPatchToFile('ExpoAppDelegate.patch', path.join(groupPath, 'ExpoAppDelegate.swift'));
 
     // Create and properly add a new group for the framework
     createGroup(xcodeProject, pluginConfig.targetName, groupPath, templateFiles);

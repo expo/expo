@@ -25,13 +25,15 @@ const withXcodeProjectPlugin = (config, pluginConfig) => {
             'ReactNativeView.swift',
             // UIKit brownfield view controller
             'ReactNativeViewController.swift',
-            // BrownfieldAppDelegate
-            'BrownfieldAppDelegate.swift',
+            // ExpoAppDelegate symlinked and reexported from the main Expo package
+            'ExpoAppDelegate.swift',
             // ReactNativeDelegate
             'ReactNativeDelegate.swift',
         ];
         // Create files from templates
         templateFiles.forEach((templateFile) => (0, utils_1.createFileFromTemplate)(templateFile, groupPath));
+        // Apply patch to ExpoAppDelegate.swift to make it compatible with the brownfield framework
+        (0, utils_1.applyPatchToFile)('ExpoAppDelegate.patch', node_path_1.default.join(groupPath, 'ExpoAppDelegate.swift'));
         // Create and properly add a new group for the framework
         (0, utils_1.createGroup)(xcodeProject, pluginConfig.targetName, groupPath, templateFiles);
         // Create 'Info.plist' and '<target-name>.entitlements' based on the templates
