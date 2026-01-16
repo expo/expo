@@ -109,7 +109,9 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     self.reactNativeFactory = reactDelegate.reactNativeFactory as? RCTReactNativeFactory
 
     // Reset rctAppDelegate so we can relaunch the app
-    if RCTIsNewArchEnabled() {
+    // with exception for brownfield setup
+    let isBrownfield = developmentClientController.getLaunchOptions()["_isBrownfield"] != nil
+    if !isBrownfield && RCTIsNewArchEnabled() {
       self.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
     } else {
       self.reactNativeFactory?.bridge = nil
