@@ -4,5 +4,6 @@ module.exports = {
   displayName: require('../../package').name,
   rootDir: __dirname,
   roots: ['.'],
-  testTimeout: 300000,
+  // E2E tests can take some time to run
+  testTimeout: 600000,
 };
