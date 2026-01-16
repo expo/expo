@@ -42,9 +42,11 @@ const getIosConfig = async (args) => {
 };
 exports.getIosConfig = getIosConfig;
 const getTasksAndroidConfig = async (args) => {
+    const commonConfig = (0, exports.getCommonConfig)(args);
+    const libraryName = !commonConfig.help ? args['--library'] || (await (0, infer_1.inferAndroidLibrary)()) : '';
     return {
-        ...(0, exports.getCommonConfig)(args),
-        libraryName: args['--library'] || (await (0, infer_1.inferAndroidLibrary)()),
+        ...commonConfig,
+        libraryName,
     };
 };
 exports.getTasksAndroidConfig = getTasksAndroidConfig;

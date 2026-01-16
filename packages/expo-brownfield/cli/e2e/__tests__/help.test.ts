@@ -1,15 +1,6 @@
-import { executeCLIASync, stripAnsi } from '../utils/process';
+import { ExpectedOutput } from '../utils/output';
+import { executeCLIASync } from '../utils/process';
 import { createTempProject, cleanUpProject } from '../utils/project';
-
-const FULL_HELP_MESSAGE = `Usage: expo-brownfield <command>  [<options>]\n
-Options:
-  --version, -v                 output the version number
-  --help, -h                    display help for command\n
-Commands:
-  build-android [<options>]     build and publish Android brownfield artifacts
-  build-ios [<options>]         build iOS brownfield artifacts
-  tasks-android [<options>]     list available publishing tasks and repositories for android`;
-const HELP_MESSAGE_HEADER = `Usage: expo-brownfield <command>  [<options>]`;
 
 let TEMP_DIR: string;
 
@@ -33,7 +24,7 @@ describe('--help option', () => {
   it('should return the correct help message', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--help']);
     expect(exitCode).toBe(0);
-    expect(stripAnsi(stdout.trim())).toContain(FULL_HELP_MESSAGE);
+    expect(stdout).toContain(ExpectedOutput.GeneralHelp.Full);
   });
 
   /**
@@ -43,7 +34,7 @@ describe('--help option', () => {
   it('should support the `-h` shorthand', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['-h']);
     expect(exitCode).toBe(0);
-    expect(stripAnsi(stdout.trim())).toContain(HELP_MESSAGE_HEADER);
+    expect(stdout).toContain(ExpectedOutput.GeneralHelp.Header);
   });
 
   /**
@@ -54,7 +45,7 @@ describe('--help option', () => {
     const { stdout } = await executeCLIASync(TEMP_DIR, ['tasks-android', '--help'], {
       ignoreErrors: true,
     });
-    expect(stripAnsi(stdout.trim())).not.toContain(HELP_MESSAGE_HEADER);
+    expect(stdout).not.toContain(ExpectedOutput.GeneralHelp.Header);
   });
 
   /**
@@ -64,7 +55,7 @@ describe('--help option', () => {
   it('should take precedence over `--version`', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--version', '--help']);
     expect(exitCode).toBe(0);
-    expect(stripAnsi(stdout.trim())).toContain(HELP_MESSAGE_HEADER);
+    expect(stdout).toContain(ExpectedOutput.GeneralHelp.Header);
   });
 
   /**
@@ -74,7 +65,7 @@ describe('--help option', () => {
   it('should take precedence over the command', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--help', 'tasks-android']);
     expect(exitCode).toBe(0);
-    expect(stripAnsi(stdout.trim())).toContain(HELP_MESSAGE_HEADER);
+    expect(stdout).toContain(ExpectedOutput.GeneralHelp.Header);
   });
 
   /**
@@ -84,6 +75,6 @@ describe('--help option', () => {
   it("shouldn't break when option is passed multiple times", async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--help', '-h', '--help']);
     expect(exitCode).toBe(0);
-    expect(stripAnsi(stdout.trim())).toContain(HELP_MESSAGE_HEADER);
+    expect(stdout).toContain(ExpectedOutput.GeneralHelp.Header);
   });
 });

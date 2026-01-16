@@ -1,11 +1,9 @@
-import { executeCLIASync, stripAnsi } from '../utils/process';
+import { ExpectedOutput } from '../utils/output';
+import { executeCLIASync } from '../utils/process';
 import { createTempProject, cleanUpProject } from '../utils/project';
 
 const HELP_MESSAGE_HEADER = `Usage: expo-brownfield <command>  [<options>]`;
-const TASKS_ANDROID_ERROR = `Error: Value of Android library name could not be inferred from the project`;
-const UNKNOWN_FLAG_ERROR = `Error: unknown or unexpected option: --unknown-flag`;
-const UNKOWN_MESSAGE_ERROR = `Error: unknown command
-Supported commands: build-android, build-ios, tasks-android`;
+const TASKS_ANDROID_ERROR = `Error: Value of Android library name: ENOENT: no such file or directory`;
 
 let TEMP_DIR: string;
 
@@ -32,7 +30,7 @@ describe('basic cli tests', () => {
     });
     // Expect error because we haven't run prebuild
     expect(exitCode).not.toBe(0);
-    expect(stripAnsi(stderr.trim())).toContain(TASKS_ANDROID_ERROR);
+    expect(stderr).toContain(TASKS_ANDROID_ERROR);
   });
 
   /**
@@ -42,18 +40,17 @@ describe('basic cli tests', () => {
   it('should correctly parse passed flags', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--version', '--help']);
     expect(exitCode).toBe(0);
-    expect(stripAnsi(stdout.trim())).toContain(HELP_MESSAGE_HEADER);
+    expect(stdout).toContain(HELP_MESSAGE_HEADER);
   });
 
   /**
    * Command: npx expo-brownfield
    * Expected behavior: The CLI should display general help message
    */
-  // TODO(pmleczek): Fix this in the CLI
   it('should display help message if no arguments are provided', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, [], { ignoreErrors: true });
     expect(exitCode).toBe(0);
-    expect(stripAnsi(stdout.trim())).toContain(HELP_MESSAGE_HEADER);
+    expect(stdout).toContain(HELP_MESSAGE_HEADER);
   });
 
   /**
@@ -65,7 +62,7 @@ describe('basic cli tests', () => {
       ignoreErrors: true,
     });
     expect(exitCode).not.toBe(0);
-    expect(stripAnsi(stderr.trim())).toContain(UNKOWN_MESSAGE_ERROR);
+    expect(stderr).toContain(ExpectedOutput.Error.UnknownCommand());
   });
 
   /**
@@ -77,7 +74,7 @@ describe('basic cli tests', () => {
       ignoreErrors: true,
     });
     expect(exitCode).not.toBe(0);
-    expect(stripAnsi(stderr.trim())).toContain(UNKNOWN_FLAG_ERROR);
+    expect(stderr).toContain(ExpectedOutput.Error.UnknownOption('--unknown-flag'));
   });
 
   // TODO(pmleczek): Test for passing more than one command

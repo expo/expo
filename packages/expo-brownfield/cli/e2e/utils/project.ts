@@ -1,12 +1,13 @@
 import spawnAsync from '@expo/spawn-async';
+import { glob } from 'glob';
 import fs from 'node:fs';
 import path from 'node:path';
 import tempDir from 'temp-dir';
 
 import { createPackageTarball } from './package';
+import { executeCreateExpoCLIAsync, executeExpoCLIAsync, sleep } from './process';
 
 const PROJECT_NAME = 'testapp';
-
 const TEMP_DIR = process.env.EXPO_E2E_TEMP_DIR
   ? path.resolve(process.env.EXPO_E2E_TEMP_DIR)
   : tempDir;
@@ -14,18 +15,29 @@ const TEMP_DIR = process.env.EXPO_E2E_TEMP_DIR
 /**
  * Create a temporary project for testing
  */
-export const createTempProject = async (suffix: string = ''): Promise<string> => {
+export const createTempProject = async (
+  suffix: string,
+  prebuild: boolean = false
+): Promise<string> => {
   // Create a temporary directory & initialize a new Expo project
   const projectRoot = path.join(TEMP_DIR, PROJECT_NAME + suffix);
+  await removeProject(projectRoot);
 
   try {
-    if (fs.existsSync(projectRoot)) {
-      await fs.promises.rm(projectRoot, { recursive: true, force: true });
+    // Create a project using locally linked create-expo and templates
+    const templatePath = path.join(__dirname, '../../../../../templates/expo-template-default');
+    if (!fs.existsSync(templatePath)) {
+      throw new Error(`Template directory not found at: ${templatePath}`);
     }
-    await spawnAsync('npx', ['create-expo-app', PROJECT_NAME + suffix], {
-      cwd: TEMP_DIR,
-      stdio: 'pipe',
-    });
+    const tarballs = await glob('*.tgz', { cwd: templatePath });
+    if (tarballs.length === 0) {
+      throw new Error(`No tarballs found in template directory: ${templatePath}`);
+    }
+    await executeCreateExpoCLIAsync(TEMP_DIR, [
+      PROJECT_NAME + suffix,
+      '--template',
+      path.join(templatePath, tarballs[0]),
+    ]);
 
     // Create and install the package tarball
     const packageTarball = await createPackageTarball(projectRoot);
@@ -33,6 +45,12 @@ export const createTempProject = async (suffix: string = ''): Promise<string> =>
       throw new Error(`Package tarball not found: ${packageTarball}`);
     }
     await spawnAsync('npm', ['install', packageTarball], { cwd: projectRoot, stdio: 'pipe' });
+
+    // Maybe prebuild the project
+    if (prebuild) {
+      await addPlugin(projectRoot);
+      await executeExpoCLIAsync(projectRoot, ['prebuild', '--clean']);
+    }
   } catch (error) {
     console.error(error);
     throw error;
@@ -46,7 +64,41 @@ export const createTempProject = async (suffix: string = ''): Promise<string> =>
  */
 export const cleanUpProject = async (suffix: string = ''): Promise<void> => {
   const projectRoot = path.join(TEMP_DIR, PROJECT_NAME + suffix);
-  if (fs.existsSync(projectRoot)) {
+  await removeProject(projectRoot);
+};
+
+/**
+ * Add the Expo Brownfield plugin to the project
+ */
+const addPlugin = async (projectRoot: string) => {
+  const appJsonPath = path.join(projectRoot, 'app.json');
+  if (!fs.existsSync(appJsonPath)) {
+    throw new Error(`App.json not found: ${appJsonPath}`);
+  }
+
+  const appConfig = JSON.parse(await fs.promises.readFile(appJsonPath, 'utf8'));
+  appConfig.expo.plugins = appConfig?.expo?.plugins
+    ? [...appConfig.expo.plugins, 'expo-brownfield']
+    : ['expo-brownfield'];
+  await fs.promises.writeFile(appJsonPath, JSON.stringify(appConfig, null, 2));
+};
+
+/**
+ * Remove the Expo Brownfield plugin from the project
+ * Retry if we get node ENOENT error
+ */
+const removeProject = async (projectRoot: string) => {
+  if (!fs.existsSync(projectRoot)) {
+    return;
+  }
+
+  try {
     await fs.promises.rm(projectRoot, { recursive: true, force: true });
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      await sleep(2500);
+      await fs.promises.rm(projectRoot, { recursive: true, force: true });
+    }
+    throw error;
   }
 };

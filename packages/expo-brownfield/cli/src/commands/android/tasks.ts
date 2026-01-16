@@ -1,14 +1,22 @@
 import chalk from 'chalk';
 import path from 'path';
 
-import { Args, Help } from '../../constants';
-import { getTasksAndroidConfig, parseArgs, runCommand, withSpinner } from '../../utils';
+import { Args, Errors, Help } from '../../constants';
+import { getCommand, getTasksAndroidConfig, parseArgs, runCommand, withSpinner } from '../../utils';
 
 const action = async () => {
   const args = parseArgs({
     spec: Args.TasksAndroid,
-    argv: process.argv.slice(2),
+    // Skip first three args:
+    // <node-path> expo-brownfield tasks-android
+    argv: process.argv.slice(3),
+    stopAtPositional: true,
   });
+
+  if (getCommand(args)) {
+    return Errors.additionalCommand('tasks-android');
+  }
+
   const config = await getTasksAndroidConfig(args);
 
   if (config.help) {

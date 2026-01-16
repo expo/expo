@@ -47,9 +47,12 @@ export const getIosConfig = async (args: Result<Spec>): Promise<BuildConfigIos> 
 };
 
 export const getTasksAndroidConfig = async (args: Result<Spec>) => {
+  const commonConfig = getCommonConfig(args);
+  const libraryName = !commonConfig.help ? args['--library'] || (await inferAndroidLibrary()) : '';
+
   return {
-    ...getCommonConfig(args),
-    libraryName: args['--library'] || (await inferAndroidLibrary()),
+    ...commonConfig,
+    libraryName,
   };
 };
 

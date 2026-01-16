@@ -1,29 +1,40 @@
 import fs from 'node:fs/promises';
 import path from 'path';
 
-import { Defaults, Errors } from '../constants';
+import { Errors } from '../constants';
 
 export const inferAndroidLibrary = async (): Promise<string> => {
   const files = ['ReactNativeFragment.kt', 'ReactNativeHostManager.kt'];
 
   try {
-    const android = await fs.readdir('android', { withFileTypes: true });
+    const androidPath = path.join(process.cwd(), 'android');
+    await fs.access(androidPath);
+
+    const android = await fs.readdir(androidPath, { withFileTypes: true });
     const directories = android.filter((item) => item.isDirectory());
+    if (directories.length === 0) {
+      throw new Error('No directories found in android/ folder');
+    }
+
     for (const directory of directories) {
-      const contents = await fs.readdir(`android/${directory.name}`, {
-        recursive: true,
-      });
-
-      const hasAllFiles = files.every((file) => contents.find((item) => item.includes(file)));
-
-      if (hasAllFiles) {
-        return directory.name;
+      const libraryPath = path.join(androidPath, directory.name);
+      try {
+        const contents = await fs.readdir(libraryPath, {
+          recursive: true,
+        });
+        const hasAllFiles = files.every((file) => contents.some((item) => item.includes(file)));
+        if (hasAllFiles) {
+          return directory.name;
+        }
+      } catch (readError) {
+        continue;
       }
     }
 
-    throw new Error();
+    throw new Error('');
   } catch (error) {
-    return Errors.inference('Android library name');
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return Errors.inference('Android library name: ' + message);
   }
 };
 
