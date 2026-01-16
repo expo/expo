@@ -12,7 +12,7 @@ export const createPackageTarball = async (packDestination: string): Promise<str
     stdio: 'pipe',
   });
 
-  const tarballs = await glob('*.tgz', { cwd: packageRoot });
+  const tarballs = await glob('*.tgz', { cwd: packDestination });
   if (tarballs.length !== 1) {
     throw new Error(`Expected a single tarball to be created, received: ${tarballs.length}`);
   }
