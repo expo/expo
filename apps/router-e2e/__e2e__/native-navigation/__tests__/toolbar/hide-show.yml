@@ -7,19 +7,13 @@ name: Toolbar hide-show
 - assertVisible: "Toolbar E2E Test Screen"
 - tapOn:
     id: "toggle-search-button"
-- tapOn: "undefined"
+- tapOn: "Search"
 - assertVisible: "Searching for: empty"
 - tapOn: "OK"
 - tapOn:
     id: "toggle-mic-button"
-- assertVisible: "undefined"
-- assertVisible: "undefined"
-- assertVisible:
-    text: "undefined"
-    index: 0
-- assertVisible:
-    text: "undefined"
-    index: 1
+- assertVisible: "microphone"
+- assertVisible: "search"
 - tapOn:
     id: "toggle-custom-view"
 - assertVisible:

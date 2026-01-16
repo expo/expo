@@ -13,11 +13,8 @@ import {
   StackHeaderLeft,
   StackHeaderRight,
 } from './StackHeaderLeftRight';
-import {
-  appendStackHeaderSearchBarPropsToOptions,
-  StackHeaderSearchBar,
-} from './StackHeaderSearchBar';
 import { appendStackHeaderTitlePropsToOptions, StackHeaderTitle } from './StackHeaderTitle';
+import { appendStackSearchBarPropsToOptions, StackSearchBar } from './StackSearchBar';
 import { isChildOfType } from '../../utils/children';
 import { Screen } from '../../views/Screen';
 
@@ -166,8 +163,8 @@ export function appendStackHeaderPropsToOptions(
       updatedOptions = appendStackHeaderRightPropsToOptions(updatedOptions, child.props);
     } else if (isChildOfType(child, StackHeaderBackButton)) {
       updatedOptions = appendStackHeaderBackButtonPropsToOptions(updatedOptions, child.props);
-    } else if (isChildOfType(child, StackHeaderSearchBar)) {
-      updatedOptions = appendStackHeaderSearchBarPropsToOptions(updatedOptions, child.props);
+    } else if (isChildOfType(child, StackSearchBar)) {
+      updatedOptions = appendStackSearchBarPropsToOptions(updatedOptions, child.props);
     } else {
       console.warn(
         `Warning: Unknown child element passed to Stack.Header: ${(child.type as { name: string }).name ?? child.type}`

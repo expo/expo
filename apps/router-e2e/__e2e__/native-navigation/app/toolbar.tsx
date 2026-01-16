@@ -1,4 +1,5 @@
-import { Color, useLocalSearchParams } from 'expo-router';
+import { useImage } from 'expo-image';
+import { Color, Stack, useLocalSearchParams } from 'expo-router';
 import { Toolbar } from 'expo-router/unstable-toolbar';
 import { SymbolView } from 'expo-symbols';
 import { useState, useRef } from 'react';
@@ -16,6 +17,9 @@ import {
 export default function ToolbarScreen() {
   const params = useLocalSearchParams();
   // State for controlling toolbar items visibility
+  const [showSearchBar, setShowSearchBar] = useState(!!params.searchBar);
+  const [sharesBackgroundSearchBar, setSharesBackgroundSearchBar] = useState(true);
+  const [hidesSharedBackgroundSearchBar, setHidesSharedBackgroundSearchBar] = useState(false);
   const [showSearchButton, setShowSearchButton] = useState(!!params.searchButton);
   const [sharesBackgroundSearchButton, setSharesBackgroundSearchButton] = useState(true);
   const [hidesSharedBackgroundSearchButton, setHidesSharedBackgroundSearchButton] = useState(false);
@@ -75,6 +79,21 @@ export default function ToolbarScreen() {
     Alert.alert('Color Selected', `You selected ${color}`);
   };
 
+  const image = useImage('https://simpleicons.org/icons/expo.svg', {
+    maxWidth: 24,
+    maxHeight: 24,
+    onError(error) {
+      console.error(error);
+    },
+  });
+  const image2 = useImage(require('../../../assets/sad-expo.svg'), {
+    maxWidth: 24,
+    maxHeight: 24,
+    onError(error) {
+      console.error(error);
+    },
+  });
+
   return (
     <>
       <ScrollView
@@ -82,9 +101,48 @@ export default function ToolbarScreen() {
         contentContainerStyle={styles.contentContainer}
         contentInsetAdjustmentBehavior="automatic">
         <Text style={styles.title}>Toolbar E2E Test Screen</Text>
+        <Stack.Header />
+        <Stack.SearchBar
+          onFocus={() => setIsSearchFocused(true)}
+          onBlur={() => setIsSearchFocused(false)}
+          onChangeText={(e) => setSearchText(e.nativeEvent.text)}
+          placement="integratedButton"
+          placeholder="This is toolbar searchbar"
+        />
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Toolbar Items Visibility</Text>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Search Bar</Text>
+            <Switch
+              testID="toggle-search-bar"
+              value={showSearchBar}
+              onValueChange={setShowSearchBar}
+            />
+          </View>
+
+          {showSearchBar && (
+            <>
+              <View style={styles.switchRow}>
+                <Text style={styles.label}>Search Bar Shares Background</Text>
+                <Switch
+                  testID="toggle-search-bar-share-background"
+                  value={sharesBackgroundSearchBar}
+                  onValueChange={setSharesBackgroundSearchBar}
+                />
+              </View>
+
+              <View style={styles.switchRow}>
+                <Text style={styles.label}>Search Bar Hides Shared Background</Text>
+                <Switch
+                  testID="toggle-search-bar-hide-shared-background"
+                  value={hidesSharedBackgroundSearchBar}
+                  onValueChange={setHidesSharedBackgroundSearchBar}
+                />
+              </View>
+            </>
+          )}
 
           <View style={styles.switchRow}>
             <Text style={styles.label}>Show Search Button</Text>
@@ -217,6 +275,13 @@ export default function ToolbarScreen() {
         {/* Flexible spacer at the start */}
         <Toolbar.Spacer />
 
+        {/* Search bar */}
+        <Toolbar.SearchBarPreferredSlot
+          hidden={!showSearchBar}
+          sharesBackground={sharesBackgroundSearchBar}
+          hidesSharedBackground={hidesSharedBackgroundSearchBar}
+        />
+
         {/* Search button */}
         <Toolbar.Button
           hidden={!showSearchButton}
@@ -226,6 +291,8 @@ export default function ToolbarScreen() {
           separateBackground={!sharesBackgroundSearchButton}
           hidesSharedBackground={hidesSharedBackgroundSearchButton}
         />
+
+        <Toolbar.Button image={image} />
 
         {/* Fixed width spacer */}
         {showFixedSpacer && (
@@ -238,7 +305,7 @@ export default function ToolbarScreen() {
         )}
 
         {/* Custom view with TextInput */}
-        <Toolbar.View style={{ width: 200 }} hidden={!showCustomView}>
+        <Toolbar.View hidden={!showCustomView}>
           <TextInput
             ref={searchInputRef}
             testID="toolbar-search-input"
@@ -271,7 +338,7 @@ export default function ToolbarScreen() {
         )}
 
         {/* Custom view with custom component */}
-        <Toolbar.View separateBackground style={{ width: 32, height: 32 }}>
+        <Toolbar.View separateBackground>
           <Pressable
             testID="custom-plus-button"
             onPress={() => Alert.alert('Custom Button', 'Plus button pressed!')}
@@ -293,85 +360,76 @@ export default function ToolbarScreen() {
         {showMenu && (
           <Toolbar.Menu icon="ellipsis.circle" title="Actions" tintColor={Color.ios.systemBrown}>
             {/* Simple actions */}
-            <Toolbar.MenuAction icon="paperplane" title="Send email" onPress={handleSendEmail} />
-            <Toolbar.MenuAction
-              icon="trash"
-              title="Delete email"
-              destructive
-              onPress={handleDeleteEmail}
-            />
+            <Toolbar.MenuAction icon="paperplane" onPress={handleSendEmail}>
+              Send email
+            </Toolbar.MenuAction>
+            <Toolbar.MenuAction icon="trash" destructive onPress={handleDeleteEmail}>
+              Delete email
+            </Toolbar.MenuAction>
 
             {/* Toggle action with isOn state */}
             <Toolbar.MenuAction
               icon={emailsArchived ? 'tray.full' : 'tray'}
-              title={emailsArchived ? 'Unarchive emails' : 'Archive emails'}
               isOn={emailsArchived}
-              onPress={handleArchiveToggle}
-            />
+              onPress={handleArchiveToggle}>
+              {emailsArchived ? 'Unarchive emails' : 'Archive emails'}
+            </Toolbar.MenuAction>
 
             {/* Nested inline menu */}
             <Toolbar.Menu inline title="Organize">
               <Toolbar.MenuAction
                 icon="folder"
-                title="Move to folder"
-                onPress={() => Alert.alert('Move', 'Moving to folder...')}
-              />
-              <Toolbar.MenuAction
-                icon="tag"
-                title="Add tag"
-                onPress={() => Alert.alert('Tag', 'Adding tag...')}
-              />
+                onPress={() => Alert.alert('Move', 'Moving to folder...')}>
+                Move to folder
+              </Toolbar.MenuAction>
+              <Toolbar.MenuAction icon="tag" onPress={() => Alert.alert('Tag', 'Adding tag...')}>
+                Add tag
+              </Toolbar.MenuAction>
             </Toolbar.Menu>
 
             {/* Nested menu with state-based selections */}
-            <Toolbar.Menu title="Preferences">
+            <Toolbar.Menu title="Preferences" image={image2}>
               <Toolbar.MenuAction
                 icon="bell"
-                title={notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
                 isOn={notificationsEnabled}
-                onPress={handleNotificationsToggle}
-              />
+                onPress={handleNotificationsToggle}>
+                {notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
+              </Toolbar.MenuAction>
 
               {/* Color selection submenu */}
               <Toolbar.Menu inline title="Favorite Color">
                 <Toolbar.MenuAction
                   icon="circle.fill"
-                  title="Red"
                   isOn={favoriteColors.includes('red')}
-                  onPress={() => handleColorSelect('red')}
-                />
+                  onPress={() => handleColorSelect('red')}>
+                  Red
+                </Toolbar.MenuAction>
                 <Toolbar.MenuAction
                   icon="circle.fill"
-                  title="Blue"
                   isOn={favoriteColors.includes('blue')}
-                  onPress={() => handleColorSelect('blue')}
-                />
+                  onPress={() => handleColorSelect('blue')}>
+                  Blue
+                </Toolbar.MenuAction>
                 <Toolbar.MenuAction
                   icon="circle.fill"
-                  title="Green"
                   isOn={favoriteColors.includes('green')}
-                  onPress={() => handleColorSelect('green')}
-                />
+                  onPress={() => handleColorSelect('green')}>
+                  Green
+                </Toolbar.MenuAction>
               </Toolbar.Menu>
             </Toolbar.Menu>
 
             {/* Palette menu example (small icons only) */}
             <Toolbar.Menu palette inline title="Palette Actions">
-              <Toolbar.MenuAction
-                icon="star"
-                title="Star-palette"
-                onPress={() => Alert.alert('Star')}
-              />
-              <Toolbar.MenuAction
-                icon="flag"
-                title="Flag-palette"
-                onPress={() => Alert.alert('Flag')}
-              />
-              <Toolbar.MenuAction
-                icon="pin"
-                title="Pin-palette"
-                onPress={() => Alert.alert('Pin')}
-              />
+              <Toolbar.MenuAction icon="star" onPress={() => Alert.alert('Star')}>
+                Star-palette
+              </Toolbar.MenuAction>
+              <Toolbar.MenuAction icon="flag" onPress={() => Alert.alert('Flag')}>
+                Flag-palette
+              </Toolbar.MenuAction>
+              <Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
+                Pin-palette
+              </Toolbar.MenuAction>
             </Toolbar.Menu>
 
             <Toolbar.Menu inline elementSize="small" title="Small Actions">
@@ -388,35 +446,31 @@ export default function ToolbarScreen() {
 
             {/* elementSize="medium" displays actions horizontally with titles (iOS 16+) */}
             <Toolbar.Menu inline elementSize="medium" title="Medium Size">
-              <Toolbar.MenuAction
-                icon="arrow.clockwise"
-                title="Refresh"
-                onPress={() => Alert.alert('Refreshing')}
-              />
-              <Toolbar.MenuAction
-                icon="arrow.2.circlepath"
-                title="Resume"
-                onPress={() => Alert.alert('Resuming')}
-              />
-              <Toolbar.MenuAction icon="pin" title="Pin" onPress={() => Alert.alert('Pin')} />
+              <Toolbar.MenuAction icon="arrow.clockwise" onPress={() => Alert.alert('Refreshing')}>
+                Refresh
+              </Toolbar.MenuAction>
+              <Toolbar.MenuAction icon="arrow.2.circlepath" onPress={() => Alert.alert('Resuming')}>
+                Resume
+              </Toolbar.MenuAction>
+              <Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
+                Pin
+              </Toolbar.MenuAction>
             </Toolbar.Menu>
 
             {/* elementSize="large" displays actions with larger icons and titles */}
             <Toolbar.Menu inline elementSize="large" title="Large Size">
-              <Toolbar.MenuAction
-                icon="square.and.arrow.up"
-                title="Share"
-                onPress={() => Alert.alert('Sharing')}
-              />
-              <Toolbar.MenuAction
-                icon="doc.on.doc"
-                title="Copy"
-                onPress={() => Alert.alert('Copying')}
-              />
+              <Toolbar.MenuAction icon="square.and.arrow.up" onPress={() => Alert.alert('Sharing')}>
+                Share
+              </Toolbar.MenuAction>
+              <Toolbar.MenuAction icon="doc.on.doc" onPress={() => Alert.alert('Copying')}>
+                Copy
+              </Toolbar.MenuAction>
             </Toolbar.Menu>
 
             {/* Disabled action */}
-            <Toolbar.MenuAction icon="lock" title="Locked action" disabled onPress={() => {}} />
+            <Toolbar.MenuAction icon="lock" disabled onPress={() => {}}>
+              Locked action
+            </Toolbar.MenuAction>
           </Toolbar.Menu>
         )}
 
@@ -474,11 +528,14 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     fontSize: 16,
+    width: 200,
+    height: 32,
+    paddingLeft: 8,
     color: Color.ios.label,
   },
   customButton: {
-    width: '100%',
-    height: '100%',
+    width: 32,
+    height: 32,
     justifyContent: 'center',
     alignItems: 'center',
   },

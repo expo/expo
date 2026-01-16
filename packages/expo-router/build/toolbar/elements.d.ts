@@ -1,3 +1,4 @@
+import type { ImageRef } from 'expo-image';
 import { type ReactNode } from 'react';
 import { type ColorValue, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
@@ -35,6 +36,26 @@ export interface ToolbarMenuProps {
      * Optional SF Symbol displayed alongside the menu item.
      */
     icon?: SFSymbol;
+    /**
+     * Custom image loaded using `useImage()` hook from `expo-image`.
+     * Takes priority over `icon` (SF Symbol) when both are provided.
+     *
+     * @example
+     * ```tsx
+     * import { useImage } from 'expo-image';
+     * import { Toolbar } from 'expo-router/unstable-toolbar';
+     *
+     * const customIcon = useImage('https://simpleicons.org/icons/expo.svg', {
+     *   maxWidth: 24,
+     *   maxHeight: 24,
+     * });
+     *
+     * <Toolbar.Menu image={customIcon} title="Menu">
+     *   <Toolbar.MenuAction title="Action" onPress={() => {}} />
+     * </Toolbar.Menu>
+     * ```
+     */
+    image?: ImageRef | null;
     /**
      * If `true`, the menu will be displayed inline.
      * This means that the menu will not be collapsed
@@ -169,6 +190,24 @@ export interface ToolbarButtonProps {
      */
     icon?: SFSymbol;
     /**
+     * Custom image loaded using `useImage()` hook from `expo-image`.
+     * Takes priority over `icon` (SF Symbol) when both are provided.
+     *
+     * @example
+     * ```tsx
+     * import { useImage } from 'expo-image';
+     * import { Toolbar } from 'expo-router/unstable-toolbar';
+     *
+     * const customIcon = useImage('https://simpleicons.org/icons/expo.svg', {
+     *   maxWidth: 24,
+     *   maxHeight: 24,
+     * });
+     *
+     * <Toolbar.Button image={customIcon} onPress={() => {}} />
+     * ```
+     */
+    image?: ImageRef | null;
+    /**
      * Callback function when the button is pressed.
      */
     onPress?: () => void;
@@ -277,6 +316,55 @@ export type ToolbarSpacerProps = {
  * @platform ios
  */
 export declare const ToolbarSpacer: (props: ToolbarSpacerProps) => import("react").JSX.Element;
+export interface ToolbarSearchBarPreferredSlotProps {
+    /**
+     * Whether to hide the shared background when `sharesBackground` is enabled.
+     *
+     * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/hidessharedbackground) for more information.
+     *
+     * @platform iOS 26+
+     */
+    hidesSharedBackground?: boolean;
+    /**
+     * Whether the search bar placed in the toolbar should be hidden.
+     *
+     * @default false
+     */
+    hidden?: boolean;
+    /**
+     * Whether the search bar shares the background with adjacent toolbar items.
+     *
+     * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/sharesbackground) for more information.
+     *
+     * @platform iOS 26+
+     * @default false
+     */
+    sharesBackground?: boolean;
+}
+/**
+ * Declares the position of a search bar within the toolbar.
+ * It should only be used as a child of `Toolbar`.
+ *
+ * > **Note**: On iOS 26+, this component specifies where in the toolbar the search bar
+ * > (configured via `Stack.SearchBar`) should appear. On iOS 18 and earlier, the search bar
+ * > will be shown in the header instead.
+ *
+ * > **Important**: You must use `Stack.SearchBar` to configure and display the actual
+ * > search bar. This component only declares its position in the toolbar.
+ *
+ * @example
+ * ```tsx
+ * <Stack.SearchBar placeholder="Search..." />
+ * <Toolbar>
+ *   <Toolbar.SearchBarPreferredSlot />
+ *   <Toolbar.Spacer />
+ *   <Toolbar.Button icon="mic" />
+ * </Toolbar>
+ * ```
+ *
+ * @platform ios 26+
+ */
+export declare const ToolbarSearchBarPreferredSlot: ({ hidesSharedBackground, hidden, sharesBackground, }: ToolbarSearchBarPreferredSlotProps) => import("react").JSX.Element | null;
 /**
  * Props for the ToolbarView component.
  *

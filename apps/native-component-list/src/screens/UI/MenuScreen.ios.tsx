@@ -1,5 +1,11 @@
 import { Button, Host, Menu, Text, List, Section, Divider, Picker } from '@expo/ui/swift-ui';
-import { buttonStyle, labelStyle, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+import {
+  buttonStyle,
+  foregroundStyle,
+  labelStyle,
+  pickerStyle,
+  tag,
+} from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
 export default function MenuScreen() {
@@ -31,7 +37,7 @@ export default function MenuScreen() {
         </Section>
 
         <Section title="Custom label">
-          <Menu label={<Text color="accentColor">Custom Label</Text>}>
+          <Menu label={<Text modifiers={[foregroundStyle('accentColor')]}>Custom Label</Text>}>
             <Button onPress={() => console.log('Action 1')} label="Action 1" />
             <Button onPress={() => console.log('Action 2')} label="Action 2" />
           </Menu>

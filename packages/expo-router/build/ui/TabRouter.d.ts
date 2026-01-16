@@ -1,9 +1,12 @@
-import { CommonNavigationAction, ParamListBase, Router, TabActionType as RNTabActionType, TabNavigationState, TabRouterOptions as RNTabRouterOptions } from '@react-navigation/native';
+import { CommonNavigationAction, ParamListBase, Router, TabActionType as RNTabActionType, TabNavigationState, TabRouterOptions as RNTabRouterOptions, type StackActionType } from '@react-navigation/native';
 import { TriggerMap } from './common';
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
     triggerMap: TriggerMap;
 };
-export type ExpoTabActionType = RNTabActionType | CommonNavigationAction | {
+type ReplaceAction = Extract<StackActionType, {
+    type: 'REPLACE';
+}>;
+export type ExpoTabActionType = RNTabActionType | CommonNavigationAction | ReplaceAction | {
     type: 'JUMP_TO';
     source?: string;
     target?: string;
@@ -91,6 +94,14 @@ export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<Tab
     source?: string;
     target?: string;
 } | RNTabActionType | {
+    type: "REPLACE";
+    payload: {
+        name: string;
+        params?: object;
+    };
+    source?: string;
+    target?: string;
+} | {
     type: "JUMP_TO";
     source?: string;
     target?: string;
@@ -100,4 +111,5 @@ export declare function ExpoTabRouter(options: ExpoTabRouterOptions): Router<Tab
         params?: object;
     };
 }>;
+export {};
 //# sourceMappingURL=TabRouter.d.ts.map

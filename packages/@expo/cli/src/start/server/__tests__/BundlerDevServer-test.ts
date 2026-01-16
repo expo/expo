@@ -15,6 +15,7 @@ jest.mock(`../../../log`);
 jest.mock('../AsyncNgrok');
 jest.mock('../AsyncWsTunnel');
 jest.mock('../DevelopmentSession');
+jest.mock('../Bonjour');
 jest.mock('../../platforms/ios/ApplePlatformManager', () => {
   class ApplePlatformManager {
     openAsync = jest.fn(async () => ({ url: 'mock-apple-url' }));

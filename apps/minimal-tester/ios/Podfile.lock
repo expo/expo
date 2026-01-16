@@ -224,7 +224,7 @@ PODS:
     - ExpoModulesCore
   - ExpoBlur (15.0.7):
     - ExpoModulesCore
-  - ExpoBrownfieldModule (1.0.0):
+  - ExpoBrownfield (0.0.1):
     - ExpoModulesCore
   - ExpoCamera (17.0.8):
     - ExpoModulesCore
@@ -2824,7 +2824,7 @@ DEPENDENCIES:
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
-  - ExpoBrownfieldModule (from `../../../packages/expo-brownfield/ios`)
+  - ExpoBrownfield (from `../../../packages/expo-brownfield/ios`)
   - ExpoCamera (from `../../../packages/expo-camera/ios`)
   - "ExpoDomWebView (from `../../../packages/@expo/dom-webview/ios`)"
   - ExpoFileSystem (from `../../../packages/expo-file-system/ios`)
@@ -2960,7 +2960,7 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-asset/ios"
   ExpoBlur:
     :path: "../../../packages/expo-blur/ios"
-  ExpoBrownfieldModule:
+  ExpoBrownfield:
     :path: "../../../packages/expo-brownfield/ios"
   ExpoCamera:
     :path: "../../../packages/expo-camera/ios"
@@ -3159,7 +3159,7 @@ SPEC CHECKSUMS:
   ExpoAppleAuthentication: 414e4316f8e25a2afbc3943cf725579c910f24b8
   ExpoAsset: 4375a46b45b12bbfcf6efac8c8a33aebdb8ba12b
   ExpoBlur: b5b7a26572b3c33a11f0b2aa2f95c17c4c393b76
-  ExpoBrownfieldModule: 9398859fd864068a86a96e79e26454bda7b8d420
+  ExpoBrownfield: 555f04c0a3ad45ffdb7da4a02ada4598768deffb
   ExpoCamera: 442bbbbd75d73d17f3a972b269efe7595b9b6933
   ExpoDomWebView: f8d74b970eede6e02ca2f215742812472f046817
   ExpoFileSystem: adffad7d1f57f768ca7a5e3bf450312fb9ebd27a
@@ -3261,6 +3261,6 @@ SPEC CHECKSUMS:
   Yoga: 33b53536a0500d039f2cd78caf1d5d68712d3af7
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 5acf66a07d5fb4365e6ab08eacb79553ab6ec9f0
+PODFILE CHECKSUM: f6c2b8d9247eed5b29814e78f681e2bb91d17222
 
 COCOAPODS: 1.16.2
