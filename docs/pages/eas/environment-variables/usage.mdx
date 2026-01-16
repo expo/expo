@@ -46,13 +46,37 @@ To have a full control over the environments used for your builds, you can speci
 
 All of the environment variables from the selected environment will be used during the build process. Plain text and sensitive variables will be available when resolving build configuration based on the dynamic app config in EAS CLI as well.
 
+If you don't set the `environment` option, we will set the environment automatically based on your build's configuration:
+
+- `production` when `distribution` is set to `store`
+- `development` when `developmentClient` is `true`
+- `preview` for everything else
+
+<Collapsible summary="Built-in environment variables">
+
+The following environment variables are additional system environment variables exposed to each job and can be used within any build step. They are not a part of any project environment and are not available when evaluating **app.config.js** locally:
+
+- `CI=1`: Indicates this is a CI environment
+- `EAS_BUILD=true`: Indicates this is an EAS Build environment
+- `EAS_BUILD_PLATFORM`: Either `android` or `ios`
+- `EAS_BUILD_RUNNER`: Either `eas-build` for EAS Build cloud builds or `local-build-plugin` for [local builds](/build-reference/local-builds/)
+- `EAS_BUILD_ID`: The build ID, for example, `f51831f0-ea30-406a-8c5f-f8e1cc57d39c`
+- `EAS_BUILD_PROFILE`: The name of the build profile from **eas.json**, for example, `production`
+- `EAS_BUILD_PROJECT_ID`: the EAS project ID, for example, `bd2f7e21-1ee7-47f2-8357-d7c4b50622fb`
+- `EAS_BUILD_GIT_COMMIT_HASH`: The hash of the Git commit, for example, `88f28ab5ea39108ade978de2d0d1adeedf0ece76`
+- `EAS_BUILD_NPM_CACHE_URL`: The URL of npm cache ([learn more](/build-reference/private-npm-packages))
+- `EAS_BUILD_MAVEN_CACHE_URL`: The URL of Maven cache ([learn more](/build-reference/caching/#android-dependencies))
+- `EAS_BUILD_COCOAPODS_CACHE_URL`: The URL of CocoaPods cache ([learn more](/build-reference/caching/#ios-dependencies))
+- `EAS_BUILD_USERNAME`: The username of the user initiating the build (it's undefined for bot users)
+- `EAS_BUILD_WORKINGDIR`: The remote directory path with your project
+
+</Collapsible>
+
 > **info** The environment variables of secret type are not available during build configuration resolution in EAS CLI as they are not readable outside of the EAS servers.
 
-In this example app, all of the environment variables except `GOOGLE_SERVICES_JSON` (which is secret) will be available during build configuration resolution in EAS CLI.
-
-It's especially important in this context to have the correct visibility set for the `APP_VARIANT` variable so that the variable available in EAS CLI and is able to generate credentials for the correct package name and bundle identifier.
-
 ## Using environment variables with EAS Update
+
+By default, EAS Update uses environment variables from the local **.env** files present in your project directory when you omit the `--environment` flag with `eas update` command.
 
 The most convenient way to use EAS environment variables with EAS Update is to run the `eas update` command with the `--environment` flag specified:
 
@@ -115,53 +139,49 @@ For example, it can be useful when uploading source maps to Sentry using a [`SEN
 
 ## Using environment variables in EAS Workflows
 
-### Setting the environment for your builds
+### Setting EAS environment for workflow jobs
 
-To set the environment for your EAS Build jobs, you can use the `environment` option in **eas.json** and set it to one of the available environments: `development`, `preview` or `production`.
+- **Build jobs**: The environment comes from the build profile in **eas.json** (`build.<profile>.environment`). If that field is missing, the automatic defaults described above apply. [Using environment variables with EAS Build](#using-environment-variables-with-eas-build).
+- **Other jobs** (for example, update, submit, fingerprint, Maestro, and custom jobs): Set [`jobs.<job_id>.environment`](/eas/workflows/syntax/#jobsjob_idenvironment). If you omit it, `production` is used. Setting it explicitly helps keep the job in sync with the build profile you used earlier in the workflow.
 
-```json eas.json
-{
-  "build": {
-    "development": {
-      "environment": "development"
-    },
-    "preview": {
-      "environment": "preview"
-    },
-    "production": {
-      "environment": "production"
-    },
-    "my-profile": {
-      "environment": "production"
-  }
-}
+In the following example, a build job is configured to use the `preview` profile, then an update job is configured to use the same EAS environment.
+
+```yaml .eas/workflows/publish-preview.yml
+name: Publish preview build and update
+
+jobs:
+  build_preview:
+    type: build
+    params:
+      platform: ios
+      profile: preview # uses environment from eas.json's build.preview.environment
+
+  publish_preview_update:
+    needs: [build_preview]
+    type: update
+    environment: preview # pulls variables from the preview environment
+    params:
+      branch: preview
 ```
 
-If you don't set the `environment` option, we will set the environment automatically based on your build's configuration:
+In the following example, a fingerprint job is configured to use the `production` environment, then a build job is configured to use the same EAS environment.
 
-- `development`: for development client build
-- `preview`: for other configurations
-- `production`: for app store build
+```yaml .eas/workflows/fingerprint-and-build.yml
+name: Fingerprint and build
 
-<Collapsible summary="Built-in environment variables">
+jobs:
+  fingerprint:
+    type: fingerprint
+    environment: production # defaults to production, but set explicitly to match the build
+  build_ios:
+    needs: [fingerprint]
+    type: build
+    params:
+      platform: ios
+      profile: production # uses environment from eas.json's build.production.environment
+```
 
-The following environment variables are additional system environment variables exposed to each job and can be used within any build step. They are not a part of any project environment and are not available when evaluating **app.config.js** locally:
-
-- `CI=1`: Indicates this is a CI environment
-- `EAS_BUILD=true`: Indicates this is an EAS Build environment
-- `EAS_BUILD_PLATFORM`: Either `android` or `ios`
-- `EAS_BUILD_RUNNER`: Either `eas-build` for EAS Build cloud builds or `local-build-plugin` for [local builds](/build-reference/local-builds/)
-- `EAS_BUILD_ID`: The build ID, for example, `f51831f0-ea30-406a-8c5f-f8e1cc57d39c`
-- `EAS_BUILD_PROFILE`: The name of the build profile from **eas.json**, for example, `production`
-- `EAS_BUILD_PROJECT_ID`: the EAS project ID, for example, `bd2f7e21-1ee7-47f2-8357-d7c4b50622fb`
-- `EAS_BUILD_GIT_COMMIT_HASH`: The hash of the Git commit, for example, `88f28ab5ea39108ade978de2d0d1adeedf0ece76`
-- `EAS_BUILD_NPM_CACHE_URL`: The URL of npm cache ([learn more](/build-reference/private-npm-packages))
-- `EAS_BUILD_MAVEN_CACHE_URL`: The URL of Maven cache ([learn more](/build-reference/caching/#android-dependencies))
-- `EAS_BUILD_COCOAPODS_CACHE_URL`: The URL of CocoaPods cache ([learn more](/build-reference/caching/#ios-dependencies))
-- `EAS_BUILD_USERNAME`: The username of the user initiating the build (it's undefined for bot users)
-- `EAS_BUILD_WORKINGDIR`: The remote directory path with your project
-
-</Collapsible>
+Keep the job environment value in sync with the build profile to avoid mismatched secrets. For example, fingerprint/update jobs should usually match the build's profile environment.
 
 ### Dynamically setting environment variables during the job execution
 
