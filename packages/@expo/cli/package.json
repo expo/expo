@@ -74,6 +74,7 @@
     "compression": "^1.7.4",
     "connect": "^3.7.0",
     "debug": "^4.3.4",
+    "dnssd-advertise": "^1.0.8",
     "env-editor": "^0.4.1",
     "expo-server": "^1.0.0",
     "freeport-async": "^2.0.0",

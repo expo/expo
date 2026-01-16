@@ -421,11 +421,23 @@ open class DevMenuManager: NSObject {
   }
 
   func togglePerformanceMonitor() {
+    if let delegate = hostDelegate,
+       delegate.responds(to: #selector(DevMenuHostDelegate.devMenuTogglePerformanceMonitor)) {
+      delegate.devMenuTogglePerformanceMonitor?()
+      return
+    }
+
     let devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.togglePerformanceMonitor()
   }
 
   func toggleInspector() {
+    if let delegate = hostDelegate,
+       delegate.responds(to: #selector(DevMenuHostDelegate.devMenuToggleElementInspector)) {
+      delegate.devMenuToggleElementInspector?()
+      return
+    }
+
     let devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.toggleElementInsector()
   }

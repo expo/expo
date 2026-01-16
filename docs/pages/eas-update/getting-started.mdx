@@ -261,9 +261,13 @@ Publishing an update allows:
 - Fixing bugs and quickly updating non-native parts of a project instead of creating a new build
 - [Sharing a preview version of an app](/review/overview/) using internal distribution
 
-To publish an update with changes from your project, use the `eas update` command, and specify a name for the channel and a `message` to describe the update:
+To publish an update with changes from your project, use the `eas update` command, and specify a name for the channel, a `message` to describe the update and if using [EAS environment variables](/eas/environment-variables/), the environment pull variables from (leave unspecified to use the **.env** files present in your project directory):
 
-<Terminal cmd={['$ eas update --channel [channel-name] --message "[message]"']} />
+<Terminal
+  cmd={[
+    '$ eas update --channel [channel-name] --message "[message]" --environment [environment-name]',
+  ]}
+/>
 
 <Collapsible summary="How does publishing an update work?">
 

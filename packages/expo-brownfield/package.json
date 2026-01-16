@@ -4,7 +4,7 @@
   "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
-  "bin": "./cli/build/index.js",
+  "bin": "./bin/cli.js",
   "exports": {
     ".": {
       "source": "./src/index.ts",

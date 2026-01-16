@@ -65,13 +65,23 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       // swiftlint:disable:next closure_body_length
       Map(position: $state.mapCameraPosition, selection: $state.selection) {
         ForEach(props.markers) { marker in
-          Marker(
-            marker.title,
-            systemImage: marker.systemImage,
-            coordinate: marker.clLocationCoordinate2D
-          )
-          .tint(marker.tintColor)
-          .tag(MapSelection(marker.mapItem))
+          if marker.hasMonogram {
+            Marker(
+              marker.title,
+              monogram: Text(marker.monogram),
+              coordinate: marker.clLocationCoordinate2D
+            )
+            .tint(marker.tintColor)
+            .tag(MapSelection(marker.mapItem))
+          } else {
+            Marker(
+              marker.title,
+              systemImage: marker.systemImage,
+              coordinate: marker.clLocationCoordinate2D
+            )
+            .tint(marker.tintColor)
+            .tag(MapSelection(marker.mapItem))
+          }
         }
 
         ForEach(props.polylines) { polyline in
@@ -250,6 +260,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         "title": marker.title,
         "tintColor": marker.tintColor,
         "systemImage": marker.systemImage,
+        "monogram": marker.monogram,
         "coordinates": [
           "latitude": marker.coordinates.latitude,
           "longitude": marker.coordinates.longitude

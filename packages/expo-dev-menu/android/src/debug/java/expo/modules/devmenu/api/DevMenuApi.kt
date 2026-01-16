@@ -12,6 +12,7 @@ import expo.modules.devmenu.AppInfoProvider
 import expo.modules.devmenu.DevMenuDefaultPreferences
 import expo.modules.devmenu.DevMenuFragment
 import expo.modules.devmenu.DevMenuPreferences
+import expo.modules.devmenu.DevMenuSettings
 import expo.modules.devmenu.GoHomeAction
 import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
 import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
@@ -34,6 +35,12 @@ object DevMenuApi {
     activityProvider,
     mapper = { it.viewModel }
   )
+
+  fun configure(
+    performanceMonitorNeedsOverlayPermission: Boolean = true
+  ) {
+    DevMenuSettings.performanceMonitorNeedsOverlayPermission = performanceMonitorNeedsOverlayPermission
+  }
 
   fun createFragmentHost(
     activity: Activity,

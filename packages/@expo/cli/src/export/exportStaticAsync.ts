@@ -250,18 +250,18 @@ export async function exportFromServerAsync(
       let renderOpts;
 
       if (useServerLoaders) {
-        const loaderData = await executeLoaderAsync(normalizedPathname, route);
+        const loaderResult = await executeLoaderAsync(normalizedPathname, route);
 
-        if (loaderData != null) {
+        if (loaderResult !== undefined) {
           const loaderPath = getLoaderModulePath(normalizedPathname);
           const fileSystemPath = loaderPath.startsWith('/') ? loaderPath.slice(1) : loaderPath;
           files.set(fileSystemPath, {
-            contents: JSON.stringify(loaderData, null, 2),
+            contents: JSON.stringify(loaderResult.data, null, 2),
             targetDomain: 'client',
             loaderId: normalizedPathname,
           });
 
-          renderOpts = { loader: { data: loaderData } };
+          renderOpts = { loader: { data: loaderResult.data } };
         }
       }
 
