@@ -1,4 +1,5 @@
-import { GetStaticContentOptions } from './manifest';
+import { type ImmutableRequest } from './ImmutableRequest';
+import { type GetStaticContentOptions } from './manifest';
 /**
  * The SSR render module exported from `_expo/server/render.js`.
  *
@@ -17,7 +18,7 @@ export interface RenderOptions {
 export interface LoaderModule {
     loader(args: {
         params: Record<string, string>;
-        request: Request;
+        request: ImmutableRequest;
     }): Promise<unknown> | unknown;
 }
 export type SsrRenderFn = (request: Request, options?: RenderOptions) => Promise<string>;

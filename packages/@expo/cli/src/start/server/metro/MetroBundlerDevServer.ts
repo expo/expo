@@ -32,7 +32,7 @@ import type { GetStaticContentOptions } from '@expo/router-server/build/static/r
 import assert from 'assert';
 import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
-import { type RouteInfo, type RoutesManifest } from 'expo-server/private';
+import { type RouteInfo, type RoutesManifest, type ImmutableRequest } from 'expo-server/private';
 import path from 'path';
 
 import {
@@ -573,7 +573,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   /**
    * This function is invoked when running in development via `expo start`
    */
-  private async getStaticPageAsync(pathname: string, route: RouteInfo<RegExp>, request?: Request) {
+  private async getStaticPageAsync(
+    pathname: string,
+    route: RouteInfo<RegExp>,
+    request?: ImmutableRequest
+  ) {
     const { exp } = getConfig(this.projectRoot);
     const { mode, isExporting, clientBoundaries, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
@@ -1701,7 +1705,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     location: URL,
     route: ResolvedLoaderRoute,
     // The `request` object is only available when using SSR
-    request?: Request
+    request?: ImmutableRequest
   ): Promise<{ data: unknown } | undefined> {
     const { exp } = getConfig(this.projectRoot);
     const { unstable_useServerDataLoaders } = exp.extra?.router;

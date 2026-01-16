@@ -1,3 +1,4 @@
+import { ImmutableRequest } from '../../../ImmutableRequest';
 import type {
   AssetInfo,
   MiddlewareInfo,
@@ -352,7 +353,7 @@ describe('getHtml', () => {
     expect(input.loadModule).toHaveBeenCalledWith('_expo/loaders/index.js');
     expect(loaderModule.loader).toHaveBeenCalledWith({
       params: {},
-      request: expect.any(Request),
+      request: expect.any(ImmutableRequest),
     });
     expect(mockSSRModule.getStaticContent).toHaveBeenCalledWith(
       expect.any(URL),
@@ -462,7 +463,7 @@ describe('getLoaderData', () => {
     expect(result).toEqual({ data: loaderData });
     expect(loaderModule.loader).toHaveBeenCalledWith({
       params: {},
-      request: expect.any(Request),
+      request: expect.any(ImmutableRequest),
     });
   });
 
@@ -519,7 +520,7 @@ describe('getLoaderData', () => {
 
     expect(loaderModule.loader).toHaveBeenCalledWith({
       params: { id: '123' },
-      request: expect.any(Request),
+      request: expect.any(ImmutableRequest),
     });
   });
 
