@@ -29,7 +29,7 @@ internal struct ContainerRelativeFrameModifier: ViewModifier, Record {
 
   @ViewBuilder
   func body(content: Content) -> some View {
-    if #available(iOS 17.0, *) {
+    if #available(iOS 17.0, tvOS 17.0, *) {
       if count > 0 {
         content.containerRelativeFrame(axes.toAxis(), count: count, span: span, spacing: spacing, alignment: alignment.toAlignment())
       } else {
