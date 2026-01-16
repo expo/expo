@@ -279,10 +279,9 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll 
     });
 
     it('Contacts.writeContactToFileAsync() returns uri', async () => {
-      createdContacts.map(async ({ id }) => {
-        const localUri = await Contacts.writeContactToFileAsync({ id });
-        expect(typeof localUri).toBe('string');
-      });
+      const contactId = await createSimpleContact('Write', 'ToFile');
+      const localUri = await Contacts.writeContactToFileAsync({ id: contactId });
+      expect(typeof localUri).toBe('string');
     });
 
     it("Contacts.getContactByIdAsync() returns undefined when contact doesn't exist", async () => {

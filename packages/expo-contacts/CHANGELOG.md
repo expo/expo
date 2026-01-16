@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix updating contact with existing image ([#42133](https://github.com/expo/expo/pull/42133) by [@Wenszel](https://github.com/wenszel))
+- [Android] Fix adding contact when default account is set to cloud ([#42203](https://github.com/expo/expo/pull/42203) by [@Wenszel](https://github.com/Wenszel))
 
 ### 💡 Others
 

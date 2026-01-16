@@ -1,6 +1,5 @@
 package host.exp.exponent.home
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -85,10 +84,6 @@ fun RootNavigation(
   viewModel: HomeAppViewModel
 ) {
   val navController = rememberNavController()
-
-  BackHandler(enabled = true) {
-    navController.popBackStack()
-  }
 
   val themeSetting by viewModel.selectedTheme.collectAsStateWithLifecycle()
 

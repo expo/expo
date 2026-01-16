@@ -12,12 +12,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.apollo.Paginator
+import host.exp.exponent.experience.DevMenuSharedPreferencesAdapter
 import host.exp.exponent.graphql.BranchDetailsQuery
 import host.exp.exponent.graphql.BranchesForProjectQuery
 import host.exp.exponent.graphql.Home_AccountAppsQuery
@@ -141,7 +141,6 @@ class HomeAppViewModel(
   homeActivityEvents: MutableSharedFlow<HomeActivityEvent>,
   private val authLauncher: ActivityResultLauncher<AuthRequestType>
 ) : AndroidViewModel(application) {
-
   val userReviewState = MutableStateFlow(UserReviewState())
 
   private val userReviewPrefs = application.getSharedPreferences(
@@ -149,8 +148,12 @@ class HomeAppViewModel(
     Context.MODE_PRIVATE
   )
 
-  private val gson: Gson =
-    GsonBuilder().create()
+  val devMenuPreferencesAdapter = DevMenuSharedPreferencesAdapter(
+    application,
+    exponentHistoryService.exponentSharedPreferences
+  )
+
+  private val gson = Gson()
 
   private var lastCrashDate: Long? = null
 

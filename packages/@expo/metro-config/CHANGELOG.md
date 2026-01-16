@@ -20,6 +20,7 @@
 
 - Defer loading metro export sources on basic config loading. ([#42053](https://github.com/expo/expo/pull/42053) by [@EvanBacon](https://github.com/EvanBacon))
 - Bump to `@expo/metro@54.2.0` and `metro@0.83.3` ([#41142](https://github.com/expo/expo/pull/41142) by [@kitten](https://github.com/kitten))
+- Suppress `browserslist` output ([#42071](https://github.com/expo/expo/pull/42071) by [@hassankhan](https://github.com/hassankhan))
 
 ## 54.0.10 - 2025-12-04
 

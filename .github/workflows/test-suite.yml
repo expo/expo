@@ -176,6 +176,11 @@ jobs:
         env:
           MAESTRO_CLI_NO_ANALYTICS: 1
         timeout-minutes: 40
+      - name: 📦 Prepare testing artifacts
+        if: always()
+        run: |
+          # Rename .maestro to maestroArtifacts so it's not a hidden folder when downloaded locally
+          mv ~/.maestro ~/maestroArtifacts
       - name: 📸 Store testing artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -183,10 +188,9 @@ jobs:
         with:
           name: bare-expo-artifacts-ios
           path: |
-            ~/.maestro/tests/**/*
+            ~/maestroArtifacts/tests/**/*
             ~/Library/Logs/maestro/**/*
           overwrite: true
-          include-hidden-files: true # .maestro is skipped otherwise
       - name: 🔗 Artifacts download URL
         if: always()
         run: |
@@ -342,6 +346,11 @@ jobs:
             # Run the actual tests
             ./scripts/start-android-e2e-test.ts --test
           working-directory: ./apps/bare-expo
+      - name: 📦 Prepare testing artifacts
+        if: always()
+        run: |
+          # Rename .maestro to maestroArtifacts so it's not a hidden folder when downloaded locally
+          mv ~/.maestro ~/maestroArtifacts
       - name: 📸 Store testing artifacts
         if: always()
         id: upload-artifacts
@@ -349,7 +358,7 @@ jobs:
         with:
           name: bare-expo-artifacts-android
           path: |
-            ~/.maestro/tests/**/*
+            ~/maestroArtifacts/tests/**/*
           overwrite: true
       - name: 🔗 Artifacts download URL
         if: always()

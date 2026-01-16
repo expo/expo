@@ -7,9 +7,7 @@ private let EVENT_DOWNLOAD_PROGRESS = "expo-file-system.downloadProgress"
 private let EVENT_UPLOAD_PROGRESS = "expo-file-system.uploadProgress"
 
 public final class FileSystemLegacyModule: Module {
-  private lazy var sessionTaskDispatcher = EXSessionTaskDispatcher(
-    sessionHandler: ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)
-  )
+  private var sessionTaskDispatcher: EXSessionTaskDispatcher!
   private lazy var taskHandlersManager = EXTaskHandlersManager()
   private lazy var resourceManager = PHAssetResourceManager()
 
@@ -40,6 +38,14 @@ public final class FileSystemLegacyModule: Module {
     }
 
     Events(EVENT_DOWNLOAD_PROGRESS, EVENT_UPLOAD_PROGRESS)
+    
+    OnCreate {
+      Task { @MainActor in
+        sessionTaskDispatcher = EXSessionTaskDispatcher(
+          sessionHandler: ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)
+        )
+      }
+    }
 
     AsyncFunction("getInfoAsync") { (url: URL, options: InfoOptions, promise: Promise) in
       let optionsDict = options.toDictionary(appContext: appContext)

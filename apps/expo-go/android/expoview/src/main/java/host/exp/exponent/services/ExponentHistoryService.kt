@@ -1,9 +1,9 @@
 package host.exp.exponent.services
 
-import com.google.gson.Gson
+import android.util.Log
+import com.google.gson.FormattingStyle
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import expo.modules.manifests.core.EmbeddedManifest
-import expo.modules.manifests.core.ExpoUpdatesManifest
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.storage.ExponentSharedPreferences
@@ -14,44 +14,31 @@ import javax.inject.Singleton
 
 data class HistoryItem(
   val manifestUrl: String,
-  val embeddedManifest: EmbeddedManifest? = null,
-  val updatesManifest: ExpoUpdatesManifest? = null,
+  val name: String,
+  val iconUrl: String?,
   val timestamp: Long = Date().time
 ) {
-  val manifest: Manifest?
-    get() = updatesManifest ?: embeddedManifest
+  constructor(manifestUrl: String, manifest: Manifest) : this(
+    manifestUrl = manifestUrl,
+    name = manifest.getName() ?: manifestUrl,
+    iconUrl = manifest.getIconUrl(),
+    timestamp = Date().time
+  )
 }
 
 @Singleton
 class ExponentHistoryService(
   val exponentSharedPreferences: ExponentSharedPreferences
 ) {
-  private val _history = MutableStateFlow<List<HistoryItem>>(emptyList())
+  private val gson = GsonBuilder()
+    .setFormattingStyle(FormattingStyle.COMPACT)
+    .create()
+
+  private val _history = MutableStateFlow(restoreHistory())
   val history = _history.asStateFlow()
-
-  private val gson = Gson()
-
-  init {
-    loadHistory()
-  }
 
   fun getLastCrashDate(): Long {
     return exponentSharedPreferences.getLong(ExponentSharedPreferences.ExponentSharedPreferencesKey.LAST_FATAL_ERROR_DATE_KEY)
-  }
-
-  private fun loadHistory() {
-    val jsonString =
-      exponentSharedPreferences.getString(ExponentSharedPreferences.ExponentSharedPreferencesKey.HISTORY)
-    if (jsonString?.isNotBlank() == true) {
-      try {
-        val listType = object : TypeToken<List<HistoryItem>>() {}.type
-        val items: List<HistoryItem> = gson.fromJson(jsonString, listType)
-        _history.value = items.sortedByDescending { it.timestamp }
-      } catch (e: Exception) {
-        EXL.e(TAG, "Error parsing history from SharedPreferences: ${e.message}")
-        clearHistory()
-      }
-    }
   }
 
   fun addHistoryItem(item: HistoryItem) {
@@ -63,16 +50,33 @@ class ExponentHistoryService(
   }
 
   private fun saveHistory(history: List<HistoryItem>) {
-    try {
-      // Use Gson to serialize the list
+    runCatching {
       val jsonString = gson.toJson(history)
       exponentSharedPreferences.setString(
         ExponentSharedPreferences.ExponentSharedPreferencesKey.HISTORY,
         jsonString
       )
-    } catch (e: Exception) {
-      EXL.e(TAG, "Error saving history to SharedPreferences with : ${e.message}")
+    }.onFailure {
+      EXL.e(TAG, "Error saving history to SharedPreferences with: ${it.message}")
     }
+  }
+
+  private fun restoreHistory(): List<HistoryItem> {
+    val savedHistory = exponentSharedPreferences.getString(
+      ExponentSharedPreferences.ExponentSharedPreferencesKey.HISTORY
+    ) ?: return emptyList()
+
+    return runCatching {
+      gson.fromJson(
+        savedHistory,
+        object : TypeToken<List<HistoryItem>>() {}
+      )
+    }.onFailure {
+      Log.e(TAG, "Error restoring history from SharedPreferences with: ${it.message}")
+      exponentSharedPreferences.delete(
+        ExponentSharedPreferences.ExponentSharedPreferencesKey.HISTORY
+      )
+    }.getOrNull() ?: emptyList()
   }
 
   fun clearHistory() {

@@ -8,6 +8,9 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
   var toolbarItemsMap: [String: RouterToolbarItemView] = [:]
   var menuItemsMap: [String: LinkPreviewNativeActionView] = [:]
 
+  // Batching state for toolbar updates
+  private var hasPendingToolbarUpdate = false
+
   private func addRouterToolbarItemAtIndex(
     _ item: RouterToolbarItemView,
     index: Int
@@ -45,55 +48,77 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
   }
 
   func updateToolbarItems() {
+    // If update already scheduled, skip - the pending async block will handle it
+    if hasPendingToolbarUpdate {
+      return
+    }
+
+    hasPendingToolbarUpdate = true
+
+    // Defer actual update to next run loop iteration
+    DispatchQueue.main.async { [weak self] in
+      guard let self = self else { return }
+      self.hasPendingToolbarUpdate = false
+      self.performToolbarUpdate()
+    }
+  }
+
+  private func performToolbarUpdate() {
     if let controller = self.findViewController() {
       if #available(iOS 18.0, *) {
-        controller.setToolbarItems(
-          toolbarItemsArray.compactMap {
-            if let item = toolbarItemsMap[$0] {
-              return item.barButtonItem
+        let items = toolbarItemsArray.compactMap { identifier -> UIBarButtonItem? in
+          if let item = toolbarItemsMap[identifier] {
+            if item.routerHidden {
+              return nil
             }
-            // TODO: Extract this logic to separate function
-            if let menu = menuItemsMap[$0] {
-              let item = UIBarButtonItem(
-                title: menu.title,
-                image: menu.icon.flatMap { UIImage(systemName: $0) },
-                primaryAction: nil,
-                menu: menu.uiAction as? UIMenu
-              )
-              // Otherwise, the menu items will be reversed in the toolbar
-              item.preferredMenuElementOrder = .fixed
-              if #available(iOS 26.0, *) {
-                if let hidesSharedBackground = menu.hidesSharedBackground {
-                  item.hidesSharedBackground = hidesSharedBackground
-                }
-                if let sharesBackground = menu.sharesBackground {
-                  item.sharesBackground = sharesBackground
-                }
-              }
-              if let titleStyle = menu.titleStyle {
-                RouterFontUtils.setTitleStyle(fromConfig: titleStyle, for: item)
-              }
-              item.isHidden = menu.routerHidden
-              item.isEnabled = !menu.disabled
-              if let accessibilityLabel = menu.accessibilityLabelForMenu {
-                item.accessibilityLabel = accessibilityLabel
-              } else {
-                item.accessibilityLabel = menu.title
-              }
-              if let accessibilityHint = menu.accessibilityHintForMenu {
-                item.accessibilityHint = accessibilityHint
-              }
-              item.tintColor = menu.customTintColor
-              if let style = menu.barButtonItemStyle {
-                item.style = style
-              }
-              return item
+            return item.barButtonItem
+          }
+          // TODO: Extract this logic to separate function
+          if let menu = menuItemsMap[identifier] {
+            if menu.routerHidden {
+              return nil
             }
-            logger?.warn(
-              "[expo-router] Warning: Could not find toolbar item or menu for identifier \($0). This is most likely a bug in expo-router."
+            let item = UIBarButtonItem(
+              title: menu.title,
+              image: menu.icon.flatMap { UIImage(systemName: $0) },
+              primaryAction: nil,
+              menu: menu.uiAction as? UIMenu
             )
-            return nil
-          }, animated: true)
+            // Otherwise, the menu items will be reversed in the toolbar
+            item.preferredMenuElementOrder = .fixed
+            if #available(iOS 26.0, *) {
+              if let hidesSharedBackground = menu.hidesSharedBackground {
+                item.hidesSharedBackground = hidesSharedBackground
+              }
+              if let sharesBackground = menu.sharesBackground {
+                item.sharesBackground = sharesBackground
+              }
+            }
+            if let titleStyle = menu.titleStyle {
+              RouterFontUtils.setTitleStyle(fromConfig: titleStyle, for: item)
+            }
+            item.isEnabled = !menu.disabled
+            if let accessibilityLabel = menu.accessibilityLabelForMenu {
+              item.accessibilityLabel = accessibilityLabel
+            } else {
+              item.accessibilityLabel = menu.title
+            }
+            if let accessibilityHint = menu.accessibilityHintForMenu {
+              item.accessibilityHint = accessibilityHint
+            }
+            item.tintColor = menu.customTintColor
+            if let style = menu.barButtonItemStyle {
+              item.style = style
+            }
+            return item
+          }
+          logger?.warn(
+            "[expo-router] Warning: Could not find toolbar item or menu for identifier \(identifier). This is most likely a bug in expo-router."
+          )
+          return nil
+        }
+
+        controller.setToolbarItems(items, animated: true)
         controller.navigationController?.setToolbarHidden(
           false, animated: true)
         return
