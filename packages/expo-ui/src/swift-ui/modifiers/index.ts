@@ -98,6 +98,28 @@ export const frame = (params: {
 }) => createModifier('frame', params);
 
 /**
+ * Positions this view within an invisible frame with a size relative to the nearest container.
+ * @param params - The content relative frame parameters: `axes`, `count`, `span`, `spacing` and `alignment`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/containerRelativeFrame(_:alignment:)).
+ */
+export const containerRelativeFrame = (params: {
+  axes: 'horizontal' | 'vertical' | 'both';
+  count?: number;
+  span?: number;
+  spacing?: number;
+  alignment?:
+    | 'center'
+    | 'leading'
+    | 'trailing'
+    | 'top'
+    | 'bottom'
+    | 'topLeading'
+    | 'topTrailing'
+    | 'bottomLeading'
+    | 'bottomTrailing';
+}) => createModifier('containerRelativeFrame', params);
+
+/**
  * Sets padding on a view.
  * Supports individual edges or shorthand properties.
  * @param params - The padding parameters: `top`, `bottom`, `leading`, `trailing`, `horizontal`, `vertical` and `all`.
@@ -952,6 +974,7 @@ export type BuiltInModifier =
   | ReturnType<typeof glassEffectId>
   | ReturnType<typeof animation>
   | ReturnType<typeof containerShape>
+  | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
   | ReturnType<typeof listRowBackground>
