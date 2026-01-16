@@ -26,8 +26,16 @@ const withExpoHeadIos: ConfigPlugin = (config) => {
 const withGammaScreens: ConfigPlugin = (config) => {
   return withPodfile(config, (config) => {
     if (!config.modResults.contents.includes('RNS_GAMMA_ENABLED')) {
-      config.modResults.contents = `# Set by expo-router. This enables Fabric-only features from react-native-screens\nENV['RNS_GAMMA_ENABLED'] ||= '1'\n${config.modResults.contents}`;
+      const rnsGammaEnv =
+        "# Set by expo-router. This enables Fabric-only features from react-native-screens\nENV['RNS_GAMMA_ENABLED'] ||= '1'";
+      if (config.modResults.contents.includes('# Environment variables set by config plugins')) {
+        config.modResults.contents = config.modResults.contents.replace(
+          '# Environment variables set by config plugins',
+          `# Environment variables set by config plugins\n${rnsGammaEnv}`
+        );
+      } else config.modResults.contents = `${rnsGammaEnv}\n${config.modResults.contents}`;
     }
+
     return config;
   });
 };
