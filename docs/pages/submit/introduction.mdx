@@ -10,6 +10,7 @@ import { Settings01Icon } from '@expo/styleguide-icons/outline/Settings01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Terminal } from '~/ui/components/Snippet';
 
 **EAS Submit** is a hosted service from EAS (Expo Application Services) for submitting Android and iOS binaries directly to the Google Play Store and Apple App Store without using Google Play Console, App Store Connect or Transporter.
@@ -54,23 +55,15 @@ Build and submit in one step:
 
 ## When to use EAS Submit
 
-Use EAS Submit when you want to:
-
-- Upload Android binaries to [Google Play Console](https://play.google.com/console/about/)
-- Upload iOS binaries to [Apple App Store](https://developer.apple.com/app-store-connect/)
-- Avoid manual uploads through Play Console, App Store Connect or Transporter
-- Submit builds from [CI or automated workflows](/eas/workflows/pre-packaged-jobs/#submit)
-- Standardize release processes via [eas.json](/eas/json/) config file
-- Reduce human errors during submission
-
-## When not to use EAS Submit
-
-You may not need EAS Submit when:
-
-- You are testing locally and not ready for a store submission
-- You do not have a store listing configured yet
-
-Set up your store listing first before using EAS Submit.
+| Scenario                                                                                                                                                   | Recommendation |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| Upload app binaries to [Google Play Console](https://play.google.com/console/about/) and [Apple App Store](https://developer.apple.com/app-store-connect/) | <YesIcon />    |
+| Avoid manual uploads through Play Console, App Store Connect or Transporter                                                                                | <YesIcon />    |
+| Submit builds from [CI or automated workflows](/eas/workflows/pre-packaged-jobs/#submit)                                                                   | <YesIcon />    |
+| Standardize release processes via [eas.json](/eas/json/) config file                                                                                       | <YesIcon />    |
+| Reduce human errors during submission                                                                                                                      | <YesIcon />    |
+| Testing locally and not ready for a store submission                                                                                                       | <NoIcon />     |
+| Do not have a store listing configured yet for Google Play Store                                                                                           | <NoIcon />     |
 
 ## Frequently asked questions (FAQ)
 
