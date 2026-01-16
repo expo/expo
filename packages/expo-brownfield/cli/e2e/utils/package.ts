@@ -6,9 +6,9 @@ import path from 'node:path';
  * Create a tarball from `expo-brownfield` package
  */
 export const createPackageTarball = async (packDestination: string): Promise<string> => {
-  const packageRoot = path.join(__dirname, '../../..');
+  const brownfieldPackagePath = path.join(__dirname, '../../..');
   await spawnAsync('npm', ['pack', '--pack-destination', packDestination], {
-    cwd: packageRoot,
+    cwd: brownfieldPackagePath,
     stdio: 'pipe',
   });
 

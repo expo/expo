@@ -41,7 +41,7 @@ export const createTempProject = async (
 
     // Create and install the package tarball
     const packageTarball = await createPackageTarball(projectRoot);
-    if (!fs.existsSync(packageTarball)) {
+    if (!fs.existsSync(path.join(projectRoot, packageTarball))) {
       throw new Error(`Package tarball not found: ${packageTarball}`);
     }
     await spawnAsync('npm', ['install', packageTarball], { cwd: projectRoot, stdio: 'pipe' });
