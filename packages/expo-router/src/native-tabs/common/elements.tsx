@@ -61,7 +61,7 @@ export interface SrcIcon {
    * @platform ios
    * @default "template"
    */
-  renderingMode?: "template" | "original";
+  renderingMode?: 'template' | 'original';
 }
 
 export interface SFSymbolIcon {
