@@ -1,28 +1,6 @@
-interface BasePageEvent {
-  pathname: string;
-  screenId: string;
-}
+import { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';
 
-/**
- * The rendering of the page started
- *
- * This can happen if screen is to be focused for the first time or when the screen is preloaded
- */
-export interface PageWillRender extends BasePageEvent {
-  type: 'pageWillRender';
-}
-
-export interface PageFocusedEvent extends BasePageEvent {
-  type: 'pageFocused';
-}
-
-export interface PageBlurredEvent extends BasePageEvent {
-  type: 'pageBlurred';
-}
-
-export interface PageRemoved extends BasePageEvent {
-  type: 'pageRemoved';
-}
+export { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved };
 
 export type AnalyticsEvent = PageWillRender | PageFocusedEvent | PageBlurredEvent | PageRemoved;
 
@@ -32,9 +10,6 @@ const availableEvents: AnalyticsEvent['type'][] = [
   'pageBlurred',
   'pageRemoved',
 ];
-
-let isAfterInitialRender = false;
-let hasListener = false;
 
 type EventTypeName = AnalyticsEvent['type'];
 type Payload<T extends EventTypeName> = Omit<Extract<AnalyticsEvent, { type: T }>, 'type'>;
@@ -47,16 +22,9 @@ function addListener<EventType extends EventTypeName>(
   eventType: EventType,
   callback: (event: Payload<EventType>) => void
 ) {
-  if (isAfterInitialRender) {
-    console.warn(
-      '[expo-router] unstable_analytics.addListener was called after the initial render. Analytics listeners should be added in the global scope before first render of your app, preferably in a root _layout.tsx'
-    );
-    return () => {};
-  }
   if (!availableEvents.includes(eventType)) {
     throw new Error(`Unsupported event type: ${eventType}`);
   }
-  hasListener = true;
   if (!subscribers[eventType]) {
     subscribers[eventType] = new Set() as (typeof subscribers)[EventType];
   }
@@ -66,7 +34,6 @@ function addListener<EventType extends EventTypeName>(
     if (subscribers[eventType]!.size === 0) {
       delete subscribers[eventType];
     }
-    hasListener = Object.keys(subscribers).length > 0;
   };
 }
 
@@ -79,13 +46,57 @@ export function emit<EventType extends EventTypeName>(type: EventType, event: Pa
   }
 }
 
+let enabled = false;
+
+let currentPathname: string | undefined = undefined;
+let currentParams: Record<string, string> | undefined = undefined;
+let currentPathnameListener: ReturnType<typeof addListener> | undefined = undefined;
+
 export const unstable_navigationEvents = {
   addListener,
   emit,
-  hasAnyListener() {
-    return hasListener;
+  enable: () => {
+    enabled = true;
   },
-  markInitialRender() {
-    isAfterInitialRender = true;
+  isEnabled: () => {
+    return enabled;
+  },
+  saveCurrentPathname: () => {
+    if (!enabled || currentPathnameListener) return;
+    currentPathnameListener = addListener('pageFocused', (event) => {
+      currentPathname = event.pathname;
+      currentParams = event.params;
+    });
+  },
+  get currentPathname() {
+    return currentPathname;
+  },
+  get currentParams() {
+    return currentParams;
   },
 };
+
+if (globalThis.expo) {
+  globalThis.expo.router = globalThis.expo.router || {};
+
+  Object.defineProperties(globalThis.expo.router, {
+    navigationEvents: {
+      get() {
+        return unstable_navigationEvents;
+      },
+      enumerable: true,
+    },
+    currentPathname: {
+      get() {
+        return currentPathname;
+      },
+      enumerable: true,
+    },
+    currentParams: {
+      get() {
+        return currentParams;
+      },
+      enumerable: true,
+    },
+  });
+}
