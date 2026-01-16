@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 import { stripAnsi } from './ansi';
 import { env } from './env';
@@ -13,6 +13,7 @@ function getOutputFilePath(): string | null {
   if (typeof value === 'string') {
     try {
       fs.mkdirSync(path.dirname(value), { recursive: true });
+      fs.writeFileSync(value, '');
     } catch (error) {
       // Silently ignore, the process will error on write if the directory does not exist
     }
