@@ -71,10 +71,7 @@ class UpdatesStateMachine(
   private fun processEvent(event: UpdatesStateEvent) {
     if (transition(event)) {
       context = reduceContext(context, event)
-      // Don't log downloadProgress events as they are high-frequency and would flood the log
-      if (event.type != UpdatesStateEventType.DownloadProgress) {
-        logger.info("Updates state change: ${event.type}, context = ${context.json}")
-      }
+      logger.info("Updates state change: ${event.type}, context = ${context.json}")
       sendContextToJS()
     }
   }
