@@ -10,7 +10,7 @@ import {
   RUNTIME_WORKERD,
   setupServer,
 } from '../../utils/runtime';
-import { findProjectFiles, getHtml } from '../utils';
+import { findProjectFiles, getPageAndLoaderData } from '../utils';
 
 runExportSideEffects();
 
@@ -110,7 +110,7 @@ describe.each(
       expect(data).toHaveProperty('TEST_SECRET_RUNTIME_KEY', 'runtime-secret-value');
     }
   );
-  
+
   it('loader endpoint returns `Response` with headers', async () => {
     const response = await server.fetchAsync('/_expo/loaders/response');
     expect(response.status).toBe(200);
@@ -129,69 +129,57 @@ describe.each(
     expect(data).toHaveProperty('TEST_SECRET_KEY', 'test-secret-key');
   });
 
-  it('returns `null` for `undefined` loader data', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/nullish/undefined');
-    expect(response.status).toBe(200);
-    const data = await response.json();
-    expect(data).toBeNull();
-  });
+  it.each(getPageAndLoaderData('/nullish/undefined'))(
+    'returns `null` for `undefined` loader data for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      const data = await getData(response);
+      expect(data).toBeNull();
+    }
+  );
 
-  it('returns `null` for `null` loader data', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/nullish/null');
-    expect(response.status).toBe(200);
-    const data = await response.json();
-    expect(data).toBeNull();
-  });
+  it.each(getPageAndLoaderData('/nullish/null'))(
+    'returns `null` for `null` loader data for $url ($name)',
+    async ({ getData, name, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      const data = await getData(response);
 
-  it.each([
-    {
-      name: 'loader endpoint',
-      url: '/_expo/loaders/request',
-      getData: (response: Response) => {
-        return response.json();
-      },
-    },
-    {
-      name: 'page',
-      url: '/request',
-      getData: async (response: Response) => {
-        const html = getHtml(await response.text());
-        return JSON.parse(html.querySelector('[data-testid="loader-result"]')!.textContent);
-      },
-    },
-  ])('$name $url receives `Request` object', async ({ getData, url }) => {
-    const response = await server.fetchAsync(url);
-    expect(response.status).toBe(200);
-    const data = await getData(response);
+      // NOTE(@hassankhan): For HTML pages, the fixture component converts `null` to the
+      // string `NULL` for display (see `nullish/[value].tsx`). The loader endpoint
+      // returns the raw `null` value.
+      if (name === 'page') {
+        expect(data).toEqual('NULL');
+      } else {
+        expect(data).toBeNull();
+      }
+    }
+  );
 
-    expect(new URL(data.url).pathname).toBe('/request');
-    expect(data.method).toBe('GET');
-    expect(Array.isArray(data.headers)).toBe(true);
-  });
+  it.each(getPageAndLoaderData('/request'))(
+    'receives `Request` object for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      const data = await getData(response);
 
-  it.each([
-    {
-      name: 'page',
-      url: '/request?foo=bar',
-      getData: async (response: Response) => {
-        const html = getHtml(await response.text());
-        return JSON.parse(html.querySelector('[data-testid="loader-result"]')!.textContent);
-      },
-    },
-    {
-      name: 'loader endpoint',
-      url: '/_expo/loaders/request?foo=bar',
-      getData: (response: Response) => {
-        return response.json();
-      },
-    },
-  ])('$name $url receives search params', async ({ getData, url }) => {
-    const response = await server.fetchAsync(url);
-    expect(response.status).toBe(200);
-    const data = await getData(response);
+      expect(new URL(data.url).pathname).toBe('/request');
+      expect(data.method).toBe('GET');
+      expect(Array.isArray(data.headers)).toBe(true);
+    }
+  );
 
-    expect(data.url).toContain('/request?foo=bar');
-    expect(data.method).toBe('GET');
-    expect(Array.isArray(data.headers)).toBe(true);
-  });
+  it.each(getPageAndLoaderData('/request?foo=bar'))(
+    '$name $url receives search params',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      const data = await getData(response);
+
+      expect(data.url).toContain('/request?foo=bar');
+      expect(data.method).toBe('GET');
+      expect(Array.isArray(data.headers)).toBe(true);
+    }
+  );
 });

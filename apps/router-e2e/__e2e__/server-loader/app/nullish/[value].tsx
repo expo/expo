@@ -33,7 +33,7 @@ const NullishScreen = () => {
   const { value } = useLocalSearchParams<{ value: string }>();
   const data = useLoaderData<typeof loader>();
 
-  const displayData = data === null ? 'NULL' : data === undefined ? 'UNDEFINED' : data;
+  const displayData = data === null ? 'NULL' : data;
   const displayType = data === null ? 'null' : typeof data;
 
   return (
