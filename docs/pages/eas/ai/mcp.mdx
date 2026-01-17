@@ -109,6 +109,26 @@ Click the following link to install the MCP server for Cursor:
 
 </Collapsible>
 
+<Collapsible summary="Codex setup">
+
+Codex stores MCP config in `~/.codex/config.toml` (shared by CLI and IDE).
+
+```
+[mcp_servers.expo]
+url = "https://mcp.expo.dev/mcp"
+```
+
+Then authenticate with OAuth:
+
+<Terminal cmd={['$ codex mcp login expo']} />
+
+**Notes:**
+
+- **Server type**: Streamable HTTP
+- **Authentication**: OAuth
+
+</Collapsible>
+
 </Step>
 
 <Step label="2">
