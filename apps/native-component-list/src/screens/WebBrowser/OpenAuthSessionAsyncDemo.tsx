@@ -18,7 +18,7 @@ const FUNCTION_DESCRIPTION: FunctionDescription = {
       type: 'object',
       properties: [
         { name: 'createTask', type: 'boolean', initial: true },
-        { name: 'preferEphemeralSession', type: 'boolean', initial: false },
+        { name: 'preferEphemeralSession', type: 'boolean', platforms: ['android', 'ios'], initial: false },
       ],
     },
   ],
