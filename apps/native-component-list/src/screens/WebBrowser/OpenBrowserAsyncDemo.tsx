@@ -154,17 +154,23 @@ const FUNCTIONS_DESCRIPTION: FunctionDescription = {
     },
   ],
   actions: [
-    {
-      name: 'Set Cookie',
-      action: (_url: string, openOptions: WebBrowser.WebBrowserOpenOptions) =>
-        WebBrowser.openBrowserAsync('https://httpbingo.org/cookies/set?expo=1', openOptions),
-    },
-    {
-      name: 'Check Cookie',
-      action: (_url: string, openOptions: WebBrowser.WebBrowserOpenOptions) =>
-        WebBrowser.openBrowserAsync('https://httpbingo.org/cookies', openOptions),
-    },
     { name: 'Open', action: WebBrowser.openBrowserAsync },
+    {
+      name: 'Open and dismiss',
+      action: (url: string, openOptions: WebBrowser.WebBrowserOpenOptions) => {
+        const openBrowserPromise = WebBrowser.openBrowserAsync(url, openOptions);
+        WebBrowser.dismissBrowser();
+        return openBrowserPromise;
+      },
+    },
+    {
+      name: 'Open twice',
+      action: (url: string, openOptions: WebBrowser.WebBrowserOpenOptions) => {
+        WebBrowser.openBrowserAsync(url, openOptions);
+        return WebBrowser.openBrowserAsync(url, openOptions);
+      },
+    },
+    { name: 'Dismiss (no-op)', action: async () => WebBrowser.dismissBrowser() },
   ],
 };
 
