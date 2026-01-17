@@ -82,6 +82,16 @@ describe.each(
     expect(indexRoute?.loader).toBeUndefined();
   });
 
+  it('returns 404 for loader endpoint when route has no loader', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/index');
+    expect(response.status).toBe(404);
+  });
+
+  it('returns 404 for loader endpoint when route does not exist', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/nonexistent');
+    expect(response.status).toBe(404);
+  });
+
   it('loader endpoint returns JSON', async () => {
     const response = await server.fetchAsync('/_expo/loaders/second');
     expect(response.status).toBe(200);
