@@ -39,7 +39,7 @@ const FUNCTION_DESCRIPTION: FunctionDescription = {
       type: 'object',
       properties: [
         { name: 'createTask', type: 'boolean', initial: true },
-        { name: 'preferEphemeralSession', type: 'boolean', platforms: ['ios'], initial: false },
+        { name: 'preferEphemeralSession', type: 'boolean', initial: false },
       ],
     },
   ],
@@ -47,8 +47,51 @@ const FUNCTION_DESCRIPTION: FunctionDescription = {
   actions: [
     {
       name: 'GitHub',
-      action: (_: string, redirectUrl: string, options: WebBrowser.WebBrowserOpenOptions) => {
+      action: (
+        _: string,
+        redirectUrl: string,
+        options: WebBrowser.WebBrowserOpenOptions,
+        _shouldPrompt: boolean
+      ) => {
         const url = buildGithubAuthUrl(redirectUrl);
+        return WebBrowser.openAuthSessionAsync(url, redirectUrl, options);
+      },
+    },
+    {
+      name: 'Set Cookie',
+      action: (
+        _url: string,
+        redirectUrl: string,
+        options: WebBrowser.WebBrowserOpenOptions,
+        _shouldPrompt: boolean
+      ) => {
+        const url = 'https://httpbingo.org/cookies/set?expo=1';
+        return WebBrowser.openAuthSessionAsync(url, redirectUrl, options);
+      },
+    },
+    {
+      name: 'Check Cookie',
+      action: (
+        _url: string,
+        redirectUrl: string,
+        options: WebBrowser.WebBrowserOpenOptions,
+        _shouldPrompt: boolean
+      ) => {
+        const url = 'https://httpbingo.org/cookies';
+        return WebBrowser.openAuthSessionAsync(url, redirectUrl, options);
+      },
+    },
+    {
+      name: 'Open',
+      action: (
+        _url: string,
+        redirectUrl: string,
+        options: WebBrowser.WebBrowserOpenOptions,
+        shouldPrompt: boolean
+      ) => {
+        const url = `https://fake-auth.netlify.com?state=faker&redirect_uri=${encodeURIComponent(
+          redirectUrl
+        )}&prompt=${shouldPrompt ? 'consent' : 'none'}`;
         return WebBrowser.openAuthSessionAsync(url, redirectUrl, options);
       },
     },
