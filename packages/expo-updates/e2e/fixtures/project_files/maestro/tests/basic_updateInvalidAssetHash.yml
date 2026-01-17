@@ -20,7 +20,7 @@ onFlowStart:
     condition: ${maestro.copiedText == "test"}
     label: Assert update string is from embedded bundle
 - assertTrue:
-    condition:  ${output.api.staticFileCount() == 4}
+    condition: ${output.api.staticFileCount() == 4}
     label: Assert that exactly 4 static files were requested
 - stopApp
 - launchApp
