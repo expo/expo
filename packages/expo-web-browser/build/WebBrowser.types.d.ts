@@ -61,17 +61,6 @@ export type WebBrowserOpenOptions = {
      */
     useProxyActivity?: boolean;
     /**
-     * Request an ephemeral Custom Tabs session. When supported, the browser should not
-     * share cookies or other browsing data with the user's regular session.
-     * Requires Android 16 (API 36+) and `androidx.browser:browser:1.9.0` or newer.
-     * This is a best-effort hint; support depends on the browser and may be gated
-     * behind flags (e.g. Chrome `#cct-ephemeral-mode` on some builds).
-     *
-     * @default false
-     * @platform android
-     */
-    preferEphemeralSession?: boolean;
-    /**
      * Tint color for controls in SKSafariViewController. Supports React Native [color formats](https://reactnative.dev/docs/colors).
      * @platform ios
      */
@@ -114,8 +103,11 @@ export type AuthSessionOpenOptions = WebBrowserOpenOptions & {
      * Set this to `true` to request that the browser doesn’t share cookies or other browsing data between the authentication session and the user’s normal browser session.
      * Whether the request is honored depends on the user’s default web browser.
      *
+     * On Android, it requires API level 36+ and `androidx.browser:browser:1.9.0` or newer.
+     * This is a best-effort hint; support depends on the browser and may be gated
+     * behind flags (e.g. Chrome `#cct-ephemeral-mode` on some builds).
+     *
      * @default false
-     * @platform ios
      */
     preferEphemeralSession?: boolean;
 };
