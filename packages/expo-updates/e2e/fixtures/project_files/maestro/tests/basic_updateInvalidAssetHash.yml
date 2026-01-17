@@ -5,7 +5,7 @@ onFlowStart:
 ---
 # update with bad asset hash yields expected log entry, and does not run
 - evalScript:
-    script:  ${output.api.serveManifest('test-update-with-invalid-asset-hash', MAESTRO_PLATFORM)}
+    script: ${output.api.serveManifest('test-update-with-invalid-asset-hash', MAESTRO_PLATFORM)}
     label: Setup updates server to serve an update with invalid asset hash
     env:
       MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
@@ -22,9 +22,6 @@ onFlowStart:
 - assertTrue:
     condition:  ${output.api.staticFileCount() == 4}
     label: Assert that exactly 4 static files were requested
-- evalScript:
-    script: ${output.api.delay(5000)}
-    label: Wait for async log queue to drain
 - stopApp
 - launchApp
 - copyTextFrom:
