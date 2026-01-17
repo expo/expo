@@ -22,6 +22,9 @@ onFlowStart:
 - assertTrue:
     condition:  ${output.api.staticFileCount() == 4}
     label: Assert that exactly 4 static files were requested
+- evalScript:
+    script: ${output.api.delay(5000)}
+    label: Wait for async log queue to drain
 - stopApp
 - launchApp
 - copyTextFrom:
