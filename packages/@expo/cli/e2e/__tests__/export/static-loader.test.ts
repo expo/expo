@@ -20,6 +20,11 @@ describe.each(
         TEST_SECRET_KEY: 'test-secret-key',
       },
     },
+    serve: {
+      env: {
+        TEST_SECRET_RUNTIME_KEY: 'runtime-secret-value',
+      },
+    },
   })
 )('static loader - $name', (config) => {
   const server = setupServer(config);
@@ -80,12 +85,16 @@ describe.each(
     expect(data.params).toHaveProperty('postId', 'static-post-1');
   });
 
-  it('loader can access server environment variables during build time', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/env');
-    expect(response.status).toBe(200);
-    const data = await response.json();
-    expect(data).toHaveProperty('TEST_SECRET_KEY', 'test-secret-key');
-  });
+  (server.isExpoStart ? it.skip : it)(
+    'loader can access server environment variables',
+    async () => {
+      const response = await server.fetchAsync('/_expo/loaders/env');
+      expect(response.status).toBe(200);
+      const data = await response.json();
+      expect(data).toHaveProperty('TEST_SECRET_KEY', 'test-secret-key');
+      expect(data).not.toHaveProperty('TEST_SECRET_RUNTIME_KEY', 'runtime-secret-value');
+    }
+  );
 
   it('loader endpoint returns `Response` body', async () => {
     const response = await server.fetchAsync('/_expo/loaders/response');

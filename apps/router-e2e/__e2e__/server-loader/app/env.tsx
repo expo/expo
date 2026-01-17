@@ -7,7 +7,8 @@ import { Table, TableRow } from '../components/Table';
 
 export async function loader() {
   return Promise.resolve({
-    ...process.env,
+    TEST_SECRET_KEY: process.env.TEST_SECRET_KEY,
+    TEST_SECRET_RUNTIME_KEY: process.env.TEST_SECRET_RUNTIME_KEY,
   });
 }
 
