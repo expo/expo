@@ -112,6 +112,12 @@ const FUNCTIONS_DESCRIPTION: FunctionDescription = {
           initial: false,
         },
         {
+          type: 'boolean',
+          name: 'preferEphemeralSession',
+          platforms: ['android'],
+          initial: false,
+        },
+        {
           name: 'presentationStyle',
           type: 'enum',
           platforms: ['ios'],
