@@ -35,7 +35,7 @@ describe.each(
     expect(files).toContain('_sitemap.html');
     expect(files).toContain('+not-found.html');
 
-    // Normal routes - static mode pre-renders HTML
+    // HTML routes should be pre-rendered in SSR mode
     expect(files).toContain('env.html');
     expect(files).toContain('index.html');
     expect(files).toContain('request.html');
@@ -48,7 +48,7 @@ describe.each(
     expect(files).toContain('posts/static-post-1.html');
     expect(files).toContain('posts/static-post-2.html');
 
-    // Loader outputs - pre-generated JSON files (no extension in static mode)
+    // Loader outputs are pre-generated JSON files
     expect(files).toContain('_expo/loaders/env');
     expect(files).toContain('_expo/loaders/request');
     expect(files).toContain('_expo/loaders/response');
@@ -78,6 +78,13 @@ describe.each(
 
     const data = await response.json();
     expect(data.params).toHaveProperty('postId', 'static-post-1');
+  });
+
+  it('loader can access server environment variables during build time', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/env');
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data).toHaveProperty('TEST_SECRET_KEY', 'test-secret-key');
   });
 
   it('loader endpoint returns `Response` body', async () => {

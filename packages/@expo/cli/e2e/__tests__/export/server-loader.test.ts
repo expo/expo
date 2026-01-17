@@ -100,6 +100,13 @@ describe.each(
     expect(data.params).toHaveProperty('postId', 'my-test-post');
   });
 
+  it('loader can access server environment variables during runtime', async () => {
+     const response = await server.fetchAsync('/_expo/loaders/env');
+     expect(response.status).toBe(200);
+     const data = await response.json();
+     expect(data).toHaveProperty('TEST_SECRET_KEY', 'test-secret-key');
+  });
+  
   it('loader endpoint returns `Response` with headers', async () => {
     const response = await server.fetchAsync('/_expo/loaders/response');
     expect(response.status).toBe(200);
@@ -148,7 +155,7 @@ describe.each(
         return JSON.parse(html.querySelector('[data-testid="loader-result"]')!.textContent);
       },
     },
-  ])('$name $url does not receive `Request` object', async ({ getData, url }) => {
+  ])('$name $url receives `Request` object', async ({ getData, url }) => {
     const response = await server.fetchAsync(url);
     expect(response.status).toBe(200);
     const data = await getData(response);
