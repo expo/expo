@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add `preferEphemeralSession` support to `openBrowserAsync` to request an ephemeral Custom Tabs session. This requires Android 16 (API 36+) and `androidx.browser:browser:1.9.0` or newer, and is honored on a best-effort basis depending on the browser (some Chrome builds gate it behind `chrome://flags/#cct-ephemeral-mode`).
+
 ### 🐛 Bug fixes
 
 - [Android] Fix the browser closing after the app is backgrounded by adding a new option to use a proxy activity to launch custom tabs. ([#41457](https://github.com/expo/expo/pull/41457) by [@lukmccall](https://github.com/lukmccall))
