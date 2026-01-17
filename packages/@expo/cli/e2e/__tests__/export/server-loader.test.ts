@@ -182,4 +182,16 @@ describe.each(
       expect(Array.isArray(data.headers)).toBe(true);
     }
   );
+
+  it.each(getPageAndLoaderData('/request?immutable=true'))(
+    'request is immutable for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      const data = await getData(response);
+
+      expect(data.immutable).toBe(true);
+      expect(data.error).toContain('This operation is not allowed');
+    }
+  );
 });

@@ -12,6 +12,17 @@ export const loader: LoaderFunction = (request, params) => {
     return { headers: null, url: null, method: null };
   }
 
+  const url = new URL(request.url);
+
+  if (url.searchParams.get('immutable') === 'true') {
+    try {
+      request.headers.set('X-Test', 'value');
+      return { immutable: false, error: null }; // Should not reach here
+    } catch (error) {
+      return { immutable: true, error: (error as Error).message };
+    }
+  }
+
   let headers: { key: string; value: string }[] = [];
   request.headers.forEach((value, key) => {
     headers.push({ key, value });
