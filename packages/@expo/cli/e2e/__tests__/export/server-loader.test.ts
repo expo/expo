@@ -204,4 +204,15 @@ describe.each(
       expect(data.error).toContain('This operation is not allowed');
     }
   );
+
+  it('sets custom headers on `Response` using `setResponseHeaders()`', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/response?setresponseheaders=true');
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('application/json');
+    expect(response.headers.get('Cache-Control')).toBe('public, max-age=3600');
+    expect(response.headers.get('X-Custom-Header')).toBe('set-via-setResponseHeaders');
+
+    const data = await response.json();
+    expect(data).toEqual({ foo: 'bar' });
+  });
 });
