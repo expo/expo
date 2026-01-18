@@ -43,4 +43,4 @@ private:
   };
 };
 
-} // expo
+} // namespace expo

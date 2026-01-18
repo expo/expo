@@ -102,4 +102,4 @@ void AndroidExpoViewComponentDescriptor::adopt(react::ShadowNode &shadowNode) co
   props.statePropsDiff = nullptr;
 }
 
-} // expo
+} // namespace expo

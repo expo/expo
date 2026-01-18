@@ -19,4 +19,4 @@ AndroidExpoViewProps::~AndroidExpoViewProps() {
   }
 }
 
-} // expo
+} // namespace expo
