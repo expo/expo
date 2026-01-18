@@ -3,8 +3,12 @@
 #import <ExpoModulesCore/EXWorkletRuntime.h>
 
 @implementation EXWorkletRuntime {
+#if WORKLETS_ENABLED
   std::weak_ptr<worklets::WorkletRuntime> _workletRuntime;
+#endif
 }
+
+#if WORKLETS_ENABLED
 
 - (nonnull instancetype)initWithWorkletRuntime:(std::shared_ptr<worklets::WorkletRuntime> &)workletRuntime
                                    callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker
@@ -20,5 +24,7 @@
 {
   return _workletRuntime.lock();
 }
+
+#endif
 
 @end
