@@ -26,4 +26,4 @@ public:
   mutable jni::global_ref <jni::JMap<jstring, jobject>> statePropsDiff;
 };
 
-} // expo
+} // namespace expo
