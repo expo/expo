@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 
-import { type ViewEvent } from '../../types';
 import { ListForEach, type ListForEachProps } from './ListForEach';
+import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
