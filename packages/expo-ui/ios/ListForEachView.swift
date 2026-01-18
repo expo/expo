@@ -3,15 +3,15 @@
 import ExpoModulesCore
 import SwiftUI
 
-final class ForEachProps: UIBaseViewProps {
+final class ListForEachProps: UIBaseViewProps {
   var onDelete = EventDispatcher()
   var onMove = EventDispatcher()
 }
 
-struct ForEachView: ExpoSwiftUI.View {
-  @ObservedObject var props: ForEachProps
+struct ListForEachView: ExpoSwiftUI.View {
+  @ObservedObject var props: ListForEachProps
 
-  init(props: ForEachProps) {
+  init(props: ListForEachProps) {
     self.props = props
   }
 

@@ -1,3 +1,4 @@
+import { ListForEach, type ListForEachProps } from './ListForEach';
 import { type CommonViewModifierProps } from '../types';
 export interface ListProps extends CommonViewModifierProps {
     /**
@@ -19,6 +20,7 @@ export interface ListProps extends CommonViewModifierProps {
  */
 export declare function List(props: ListProps): import("react").JSX.Element;
 export declare namespace List {
-    var ForEach: typeof import("../ForEach").ForEach;
+    var ForEach: typeof ListForEach;
 }
+export { ListForEach, ListForEachProps };
 //# sourceMappingURL=index.d.ts.map

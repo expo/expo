@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 
 import { type ViewEvent } from '../../types';
-import { ForEach } from '../ForEach';
+import { ListForEach, type ListForEachProps } from './ListForEach';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -56,4 +56,6 @@ export function List(props: ListProps) {
   return <ListNativeView {...transformListProps(nativeProps)}>{children}</ListNativeView>;
 }
 
-List.ForEach = ForEach;
+List.ForEach = ListForEach;
+
+export { ListForEach, ListForEachProps };

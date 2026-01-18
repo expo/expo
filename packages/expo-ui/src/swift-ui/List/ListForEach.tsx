@@ -3,22 +3,22 @@ import { requireNativeView } from 'expo';
 import { type ViewEvent } from '../../types';
 import { type CommonViewModifierProps } from '../types';
 
-const ForEachNativeView: React.ComponentType<NativeForEachProps> =
-  requireNativeView<NativeForEachProps>('ExpoUI', 'ForEachView');
+const ListForEachNativeView: React.ComponentType<NativeListForEachProps> =
+  requireNativeView<NativeListForEachProps>('ExpoUI', 'ListForEachView');
 
 type DeleteEvent = ViewEvent<'onDelete', { indices: number[] }>;
 
 type MoveEvent = ViewEvent<'onMove', { sourceIndices: number[]; destination: number }>;
 
-type NativeForEachProps = CommonViewModifierProps &
+type NativeListForEachProps = CommonViewModifierProps &
   DeleteEvent &
   MoveEvent & {
     children: React.ReactNode;
   };
 
-export type ForEachProps = {
+export type ListForEachProps = {
   /**
-   * The children elements to be rendered inside the `ForEach`.
+   * The children elements to be rendered inside the `List.ForEach`.
    */
   children: React.ReactNode;
 
@@ -38,11 +38,12 @@ export type ForEachProps = {
 } & CommonViewModifierProps;
 
 /**
- * A component that renders its children using a native SwiftUI `ForEach`.
+ * A compound component of `List` that enables item deletion and reordering.
+ * This component must be used as a child of `List` (as `List.ForEach`).
  */
-export function ForEach({ children, onDelete, onMove, ...props }: ForEachProps) {
+export function ListForEach({ children, onDelete, onMove, ...props }: ListForEachProps) {
   return (
-    <ForEachNativeView
+    <ListForEachNativeView
       {...props}
       onDelete={onDelete ? ({ nativeEvent }) => onDelete(nativeEvent.indices) : undefined}
       onMove={
@@ -51,6 +52,6 @@ export function ForEach({ children, onDelete, onMove, ...props }: ForEachProps) 
           : undefined
       }>
       {children}
-    </ForEachNativeView>
+    </ListForEachNativeView>
   );
 }
