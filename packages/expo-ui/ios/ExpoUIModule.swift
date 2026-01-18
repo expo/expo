@@ -102,7 +102,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ImageView.self)
     ExpoUIView(LabelView.self)
     ExpoUIView(ListView.self)
-    ExpoUIView(ForEachView.self)
+    ExpoUIView(ListForEachView.self)
 
     // Picker
     ExpoUIView(PickerView.self)
