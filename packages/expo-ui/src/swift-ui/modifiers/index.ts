@@ -10,6 +10,8 @@ import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
+import { gaugeStyle } from './gaugeStyle';
+import { progressViewStyle } from './progressViewStyle';
 import type { Color } from './types';
 
 const ExpoUI = requireNativeModule('ExpoUI');
@@ -351,6 +353,20 @@ export const foregroundStyle = (
 };
 
 /**
+ * Makes text bold.
+ * When applied to `Text`, it works on all iOS/tvOS versions. When used on regular views, it requires iOS 16.0+/tvOS 16.0+.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/text/bold()).
+ */
+export const bold = () => createModifier('bold', {});
+
+/**
+ * Makes text italic.
+ * When applied to `Text`, it works on all iOS/tvOS versions. When used on regular views, it requires iOS 16.0+/tvOS 16.0+.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/text/italic()).
+ */
+export const italic = () => createModifier('italic', {});
+
+/**
  * Sets the tint color of a view.
  * @param color - The tint color (hex string). For example, `#FF0000`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/tint(_:)).
@@ -492,6 +508,16 @@ export const textFieldStyle = (style: 'automatic' | 'plain' | 'roundedBorder') =
 export const scrollDismissesKeyboard = (
   mode: 'automatic' | 'never' | 'interactively' | 'immediately'
 ) => createModifier('scrollDismissesKeyboard', { mode });
+
+/**
+ * Disables or enables scrolling in scrollable views.
+ * @param disabled - Whether scrolling should be disabled (default: true).
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolldisabled(_:)).
+ */
+export const scrollDisabled = (disabled: boolean = true) =>
+  createModifier('scrollDisabled', { disabled });
 
 /**
  * Controls the dismissal behavior of menu actions.
@@ -697,6 +723,12 @@ export const textSelection = (value: boolean) => createModifier('textSelection',
  */
 export const lineSpacing = (value: number) => createModifier('lineSpacing', { value });
 /**
+ * Sets the maximum number of lines that text can occupy in the view.
+ * @param limit - The maximum number of lines.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/linelimit(_:)).
+ */
+export const lineLimit = (limit?: number) => createModifier('lineLimit', { limit });
+/**
  * Sets the header prominence for this view.
  * @param prominence - The prominence to apply.
  */
@@ -887,6 +919,8 @@ export type BuiltInModifier =
   | ReturnType<typeof offset>
   | ReturnType<typeof foregroundColor>
   | ReturnType<typeof foregroundStyle>
+  | ReturnType<typeof bold>
+  | ReturnType<typeof italic>
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
   | ReturnType<typeof disabled>
@@ -919,6 +953,7 @@ export type BuiltInModifier =
   | ReturnType<typeof animation>
   | ReturnType<typeof containerShape>
   | ReturnType<typeof scrollContentBackground>
+  | ReturnType<typeof scrollDisabled>
   | ReturnType<typeof listRowBackground>
   | ReturnType<typeof listRowSeparator>
   | ReturnType<typeof truncationMode>
@@ -930,6 +965,7 @@ export type BuiltInModifier =
   | ReturnType<typeof multilineTextAlignment>
   | ReturnType<typeof textSelection>
   | ReturnType<typeof lineSpacing>
+  | ReturnType<typeof lineLimit>
   | ReturnType<typeof headerProminence>
   | ReturnType<typeof listRowInsets>
   | ReturnType<typeof badgeProminence>
@@ -941,7 +977,9 @@ export type BuiltInModifier =
   | ReturnType<typeof gridColumnAlignment>
   | ReturnType<typeof gridCellAnchor>
   | ReturnType<typeof submitLabel>
-  | ReturnType<typeof datePickerStyle>;
+  | ReturnType<typeof datePickerStyle>
+  | ReturnType<typeof progressViewStyle>
+  | ReturnType<typeof gaugeStyle>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -991,3 +1029,6 @@ export type * from './types';
 export * from './tag';
 export * from './pickerStyle';
 export * from './datePickerStyle';
+export * from './progressViewStyle';
+export * from './gaugeStyle';
+export * from './presentationModifiers';

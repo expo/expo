@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Binder
 import android.os.Build
@@ -88,8 +89,24 @@ class LocationTaskService : Service() {
       builder.setContentIntent(contentIntent)
     }
 
+    val iconsResId = try {
+      val packageManager = mParentContext.packageManager
+      val ai = packageManager.getApplicationInfo(
+        mParentContext.packageName,
+        android.content.pm.PackageManager.GET_META_DATA
+      )
+      if (ai.metaData?.containsKey(META_DATA_FOREGROUND_SERVICE_ICON_KEY) == true) {
+        ai.metaData.getInt(META_DATA_FOREGROUND_SERVICE_ICON_KEY)
+      } else {
+        applicationInfo.icon
+      }
+    } catch (e: Exception) {
+      android.util.Log.e("expo-location", "Could not fetch default notification icon.", e)
+      applicationInfo.icon
+    }
+
     return builder.setCategory(Notification.CATEGORY_SERVICE)
-      .setSmallIcon(applicationInfo.icon)
+      .setSmallIcon(iconsResId)
       .build()
   }
 
@@ -116,5 +133,7 @@ class LocationTaskService : Service() {
 
   companion object {
     private var sServiceId = 481756
+    const val META_DATA_FOREGROUND_SERVICE_ICON_KEY: String =
+      "expo.modules.location.foreground_service_icon"
   }
 }

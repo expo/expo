@@ -1,5 +1,5 @@
 import { Button } from '@expo/styleguide';
-import { Send03Icon } from '@expo/styleguide-icons/outline/Send03Icon';
+import { ArrowCircleUpDuotoneIcon } from '@expo/styleguide-icons/duotone/ArrowCircleUpDuotoneIcon';
 import type { FormEvent } from 'react';
 
 type AskPageAIChatInputProps = {
@@ -25,8 +25,9 @@ export function AskPageAIChatInput({
         aria-label="Ask AI form">
         <textarea
           aria-label="Ask AI about this page"
-          className="min-h-[72px] flex-1 resize-none rounded-md border border-transparent bg-subtle p-2 text-sm leading-relaxed outline-none focus:!shadow-none focus:!outline-none focus:ring-0 focus-visible:!shadow-none focus-visible:!outline-none focus-visible:ring-0"
-          rows={3}
+          placeholder="Ask about this page (Shift+Enter for newline)"
+          className="max-h-[160px] min-h-[64px] flex-1 resize-none overflow-y-auto rounded-md border border-transparent bg-subtle px-3 py-2 text-sm leading-relaxed outline-none placeholder:text-tertiary focus:!shadow-none focus:!outline-none focus:ring-0 focus-visible:!shadow-none focus-visible:!outline-none focus-visible:ring-0"
+          rows={2}
           value={question}
           onChange={event => {
             onQuestionChange(event.target.value);
@@ -45,7 +46,7 @@ export function AskPageAIChatInput({
           size="sm"
           className="flex size-6 items-center justify-center rounded-full !p-0"
           disabled={isBusy || question.trim().length === 0}>
-          <Send03Icon className="icon-xs text-icon-default" />
+          <ArrowCircleUpDuotoneIcon className="icon-md text-icon-default" />
         </Button>
       </form>
     </div>

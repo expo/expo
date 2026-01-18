@@ -39,7 +39,7 @@ dependencies {
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
 
   // release notes in https://firebase.google.com/support/release-notes/android - cmd + f "Cloud Messaging version"
-  implementation 'com.google.firebase:firebase-messaging:24.0.1'
+  implementation 'com.google.firebase:firebase-messaging:25.0.1'
 
   implementation 'me.leolin:ShortcutBadger:1.1.22@aar'
 

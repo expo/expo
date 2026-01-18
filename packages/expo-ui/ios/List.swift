@@ -45,7 +45,6 @@ struct ListView: ExpoSwiftUI.View {
       .onChange(of: selection) { selection in
         handleSelectionChange(selection: selection)
       }
-      .modifier(ScrollDisabledModifier(scrollEnabled: props.scrollEnabled))
       .environment(\.editMode, $editModeEnabled)
     if #available(iOS 16.0, tvOS 16.0, *) {
       list.scrollDisabled(!props.scrollEnabled)
@@ -102,18 +101,6 @@ struct ListStyleModifer: ViewModifier {
       content.listStyle(.sidebar)
 #endif
     default:
-      content
-    }
-  }
-}
-
-struct ScrollDisabledModifier: ViewModifier {
-  let scrollEnabled: Bool
-
-  func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      content.scrollDisabled(!scrollEnabled)
-    } else {
       content
     }
   }

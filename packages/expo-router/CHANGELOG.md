@@ -10,6 +10,8 @@
 
 ### 🎉 New features
 
+- Add `elementSize` support for `Toolbar.Menu` and `Link.Menu`. ([#41885](https://github.com/expo/expo/pull/41885) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `subtitle` support for `Toolbar.Menu` and `Link.Menu`. ([#41853](https://github.com/expo/expo/pull/41853) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for server data loaders in development ([#39570](https://github.com/expo/expo/pull/39570) by [@hassankhan](https://github.com/hassankhan))
 - Add environmental variable to enable experimental web modal implementation ([#40231](https://github.com/expo/expo/pull/40231) by [@Ubax](https://github.com/Ubax))
 - Use the new error overlay UI from `@expo/log-box` ([#39958](https://github.com/expo/expo/pull/39958) by [@krystofwoldrich](https://github.com/krystofwoldrich))
@@ -35,6 +37,15 @@
 - add header items components API ([#40842](https://github.com/expo/expo/pull/40842) by [@Ubax](https://github.com/Ubax))
 - allow for standalone usage of Stack.Header and Stack.Header.Left/Right ([#41649](https://github.com/expo/expo/pull/41649) by [@Ubax](https://github.com/Ubax))
 - Unify the API between Toolbar, Header items and Link preview ([#41679](https://github.com/expo/expo/pull/41679) by [@Ubax](https://github.com/Ubax))
+- [android] Add Material 3 dynamic color defaults for NativeTabs ([#41869](https://github.com/expo/expo/pull/41869) by [@Ubax](https://github.com/Ubax))
+- [iOS] enable zoom transition by default ([#41891](https://github.com/expo/expo/pull/41891) by [@Ubax](https://github.com/Ubax))
+- Improve SSR support ([#41477](https://github.com/expo/expo/pull/41477) by [@hassankhan](https://github.com/hassankhan))
+- [iOS] expose image prop from Toolbar.Button ([#41882](https://github.com/expo/expo/pull/41882) by [@Ubax](https://github.com/Ubax))
+- [iOS] add Toolbar.SearchBarPreferredSlot ([#41863](https://github.com/expo/expo/pull/41863) by [@Ubax](https://github.com/Ubax))
+- [iOS] add usePreventZoomTransitionDismissal ([#41893](https://github.com/expo/expo/pull/41893) by [@Ubax](https://github.com/Ubax))
+- [iOS] expose image prop from Link.Menu and Toolbar.Menu ([#41883](https://github.com/expo/expo/pull/41883) by [@Ubax](https://github.com/Ubax))
+- use screen's synchronous layout updates by default in router ([#42154](https://github.com/expo/expo/pull/42154) by [@Ubax](https://github.com/Ubax))
+- Add support for `renderingMode` prop on native tabs icon ([#41788](https://github.com/expo/expo/pull/41788) by [@b-bot](https://github.com/b-bot))
 
 ### 🐛 Bug fixes
 
@@ -53,6 +64,9 @@
 - [ios] fix zoom transition with custom params in href ([#41508](https://github.com/expo/expo/pull/41508) by [@Ubax](https://github.com/Ubax))
 - [ios] fix zoom transition issues with external links and preview ([#41507](https://github.com/expo/expo/pull/41507) by [@Ubax](https://github.com/Ubax))
 - fix PlatformColor not available when using Color on web ([#41801](https://github.com/expo/expo/pull/41801) by [@Ubax](https://github.com/Ubax))
+- Fix unknown key in link preview ([#41756](https://github.com/expo/expo/pull/41756) by [@Ubax](https://github.com/Ubax))
+- add replace action handling to headless tabs ([#41815](https://github.com/expo/expo/pull/41815) by [@Ubax](https://github.com/Ubax))
+- [ios] fix build error 'Logger' is ambiguous ([#42229](https://github.com/expo/expo/pull/42229) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
@@ -86,6 +100,13 @@
 - Add unstable_navigationEvents to expose global navigation events ([#41706](https://github.com/expo/expo/pull/41706) by [@Ubax](https://github.com/Ubax))
 - [ios] replace print with jsLog in native components ([#41757](https://github.com/expo/expo/pull/41757) by [@Ubax](https://github.com/Ubax))
 - [ios] add NativeActionProp to reduce repetition in LinkPreviewNativeActionView ([#41763](https://github.com/expo/expo/pull/41763) by [@Ubax](https://github.com/Ubax))
+- [docs] update Toolbar.View to reflect up to date props ([#41888](https://github.com/expo/expo/pull/41888) by [@Ubax](https://github.com/Ubax))
+- remove new arch checks ([#41766](https://github.com/expo/expo/pull/41766) by [@Ubax](https://github.com/Ubax))
+- add types to BaseRoute props ([#41765](https://github.com/expo/expo/pull/41765) by [@Ubax](https://github.com/Ubax))
+- throw error when array style is passed to Slot ([#41901](https://github.com/expo/expo/pull/41901) by [@Ubax](https://github.com/Ubax))
+- [ios] remove unstable_splitView and enable split view by default ([#42128](https://github.com/expo/expo/pull/42128) by [@Ubax](https://github.com/Ubax))
+- [iOS] reduce number of times UIBarButtonItem is recreated ([#41900](https://github.com/expo/expo/pull/41900) by [@Ubax](https://github.com/Ubax))
+- [ios] add comment to ENV['RNS_GAMMA_ENABLED'] set by config plugin ([#42231](https://github.com/expo/expo/pull/42231) by [@Ubax](https://github.com/Ubax))
 
 ## 6.0.17 - 2025-12-05
 
@@ -124,7 +145,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Allow specifying user-defined headers for all routes ([#40173](https://github.com/expo/expo/pull/40173) by [@hassankhan](https://github.com/hassankhan))
-- Add support for customizing icon and title of search tab  ([#40139](https://github.com/expo/expo/pull/40139) by [@Ubax](https://github.com/Ubax))
+- Add support for customizing icon and title of search tab ([#40139](https://github.com/expo/expo/pull/40139) by [@Ubax](https://github.com/Ubax))
 - Add icon component to declare sf and androidSrc at the same time ([#40151](https://github.com/expo/expo/pull/40151) by [@Ubax](https://github.com/Ubax))
 - popToTop when tapping active bottom tab on web ([#40174](https://github.com/expo/expo/pull/40174) by [@juliesaia](https://github.com/juliesaia))
 

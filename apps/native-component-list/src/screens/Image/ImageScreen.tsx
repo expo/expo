@@ -189,6 +189,16 @@ if (Platform.OS === 'ios') {
   );
 }
 
+if (Platform.OS === 'web') {
+  ImageScreens.push({
+    name: 'Lazy loading images',
+    route: 'image/lazy-loading',
+    getComponent() {
+      return optionalRequire(() => require('./ImageLazyLoadingScreen'));
+    },
+  });
+}
+
 export default function ImageScreen() {
   const apis = componentScreensToListElements(ImageScreens);
   return <ComponentListScreen apis={apis} sort={false} />;

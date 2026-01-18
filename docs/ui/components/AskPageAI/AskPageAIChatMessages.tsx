@@ -1,5 +1,8 @@
-import { Button } from '@expo/styleguide';
+import { Button, mergeClasses } from '@expo/styleguide';
 import { FileSearch02Icon } from '@expo/styleguide-icons/outline/FileSearch02Icon';
+import { ThumbsDownIcon } from '@expo/styleguide-icons/outline/ThumbsDownIcon';
+import { ThumbsUpIcon } from '@expo/styleguide-icons/outline/ThumbsUpIcon';
+import type { Reaction } from '@kapaai/react-sdk';
 import type { MouseEvent } from 'react';
 import type { Components } from 'react-markdown';
 import ReactMarkdown from 'react-markdown';
@@ -14,6 +17,7 @@ type ConversationEntry = {
   question: string;
   answer: string;
   sources?: { source_url: string; title?: string }[];
+  reaction: Reaction | null;
   isFeedbackSubmissionEnabled?: boolean;
 };
 
@@ -31,6 +35,7 @@ type AskPageAIChatMessagesProps = {
   onSearchAcrossDocs: (question: string) => void;
   extractUserQuestion: (prompt: string, fallback: string) => string;
   onNavigate: (event?: MouseEvent<HTMLAnchorElement>) => void;
+  onFeedback: (qaId: string, currentReaction: Reaction | null, reaction: Reaction) => void;
 };
 
 export function AskPageAIChatMessages({
@@ -47,6 +52,7 @@ export function AskPageAIChatMessages({
   onSearchAcrossDocs,
   extractUserQuestion,
   onNavigate,
+  onFeedback,
 }: AskPageAIChatMessagesProps) {
   if (conversation.length === 0) {
     return (
@@ -85,6 +91,11 @@ export function AskPageAIChatMessages({
         const showSwitchingNotice = Boolean(switchStatus);
         const switchNoticeText =
           switchStatus === 'pending' ? 'Switching to Expo docs.' : 'Switched to Expo docs.';
+        const canSubmitFeedback = Boolean(qa.id && qa.isFeedbackSubmissionEnabled);
+        const isUpvoted = qa.reaction === 'upvote';
+        const isDownvoted = qa.reaction === 'downvote';
+        const disableUpvote = !canSubmitFeedback || isDownvoted;
+        const disableDownvote = !canSubmitFeedback || isUpvoted;
 
         return (
           <div key={qa.id ?? `${qa.question}-${index}`} className="space-y-2">
@@ -136,6 +147,55 @@ export function AskPageAIChatMessages({
                       {switchNoticeText}
                     </FOOTNOTE>
                   ) : null}
+                </div>
+              ) : null}
+              {canSubmitFeedback ? (
+                <div className="mt-3 flex items-center gap-1 text-xs text-secondary">
+                  <span className="text-secondary">Was this helpful?</span>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      theme="quaternary"
+                      size="xs"
+                      className="px-2 !text-secondary hover:!text-default focus:!text-default disabled:cursor-not-allowed disabled:opacity-60"
+                      aria-label="Upvote answer"
+                      aria-pressed={isUpvoted}
+                      disabled={disableUpvote}
+                      onClick={() => {
+                        if (!qa.id) {
+                          return;
+                        }
+                        onFeedback(qa.id, qa.reaction ?? null, 'upvote');
+                      }}>
+                      <ThumbsUpIcon
+                        className={mergeClasses(
+                          'icon-xs',
+                          isUpvoted ? 'text-icon-success' : 'text-icon-default'
+                        )}
+                      />
+                    </Button>
+                    <Button
+                      type="button"
+                      theme="quaternary"
+                      size="xs"
+                      className="px-2 !text-secondary hover:!text-default focus:!text-default disabled:cursor-not-allowed disabled:opacity-60"
+                      aria-label="Downvote answer"
+                      aria-pressed={isDownvoted}
+                      disabled={disableDownvote}
+                      onClick={() => {
+                        if (!qa.id) {
+                          return;
+                        }
+                        onFeedback(qa.id, qa.reaction ?? null, 'downvote');
+                      }}>
+                      <ThumbsDownIcon
+                        className={mergeClasses(
+                          'icon-xs',
+                          isDownvoted ? 'text-icon-danger' : 'text-icon-default'
+                        )}
+                      />
+                    </Button>
+                  </div>
                 </div>
               ) : null}
             </div>

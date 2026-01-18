@@ -84,7 +84,7 @@ function addGoogleMapsAppDelegateImport(src) {
     tag: 'react-native-maps-import',
     src,
     newSrc: newSrc.join('\n'),
-    anchor: /@UIApplicationMain/,
+    anchor: /(@main|@UIApplicationMain)/,
     offset: 0,
     comment: '//'
   });

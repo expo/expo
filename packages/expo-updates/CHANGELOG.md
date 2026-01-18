@@ -19,6 +19,7 @@
 - [android] Remove references to reactNativeHost ([#40182](https://github.com/expo/expo/pull/40182) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Reverted "Removed Detox testing workaround code on Android." ([#41204](https://github.com/expo/expo/pull/41204) by [@kudo](https://github.com/kudo))
 - Remove unused `js-yaml` dependency. ([#41202](https://github.com/expo/expo/pull/41202) by [@kudo](https://github.com/kudo))
+- Bump to `@expo/code-signing-certificates@^0.0.6` ([#41965](https://github.com/expo/expo/pull/41965) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 

@@ -1,4 +1,3 @@
-import Constants from 'expo-constants';
 import React, { createContext, isValidElement, use, type ReactNode } from 'react';
 import {
   SplitViewHost,
@@ -27,12 +26,6 @@ function SplitViewNavigator({ children, ...splitViewHostProps }: SplitViewProps)
   // TODO: Add better way of detecting if SplitView is rendered inside Native navigator.
   if (use(IsWithinLayoutContext)) {
     throw new Error('SplitView cannot be used inside another navigator, except for Slot.');
-  }
-
-  if (!Constants.expoConfig?.extra?.router?.unstable_splitView) {
-    throw new Error(
-      'SplitView is not enabled. Make sure to enable it in your expo-router configuration with "unstable_splitView": true. After enabling, make sure to prebuild your app.'
-    );
   }
 
   if (process.env.EXPO_OS !== 'ios') {

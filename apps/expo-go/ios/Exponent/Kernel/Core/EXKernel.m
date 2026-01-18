@@ -300,6 +300,14 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   [self switchTasks];
 }
 
+- (void)devMenuTogglePerformanceMonitor {
+  [[self visibleApp].appManager togglePerformanceMonitor];
+}
+
+- (void)devMenuToggleElementInspector {
+  [[self visibleApp].appManager toggleElementInspector];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

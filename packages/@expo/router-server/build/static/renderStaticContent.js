@@ -83,7 +83,7 @@ async function getStaticContent(location, options) {
     // This MUST be run before `ReactDOMServer.renderToString` to prevent
     // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
     resetReactNavigationContexts();
-    const loadedData = options?.loader?.data ? { [location.pathname]: options.loader.data } : null;
+    const loadedData = options?.loader?.data !== undefined ? { [location.pathname]: options.loader.data } : null;
     const html = server_node_1.default.renderToString(<head_1.default.Provider context={headContext}>
       <static_1.InnerRoot loadedData={loadedData}>{element}</static_1.InnerRoot>
     </head_1.default.Provider>);
@@ -99,6 +99,30 @@ async function getStaticContent(location, options) {
     if (loadedData) {
         const loaderDataScript = server_node_1.default.renderToStaticMarkup(<html_1.PreloadedDataScript data={loadedData}/>);
         output = output.replace('</head>', `${loaderDataScript}</head>`);
+    }
+    // Inject hydration assets (JS/CSS bundles). Used in SSR mode
+    if (options?.assets) {
+        if (options.assets.css.length > 0) {
+            /**
+             * For each CSS file, inject two link elements; one for preloading and one as the actual
+             * stylesheet. This matches what we do for SSG
+             *
+             * @see @expo/cli/src/start/server/metro/serializeHtml.ts
+             */
+            const injectedCSS = options.assets.css
+                .flatMap((href) => [
+                `<link rel="preload" href="${href}" as="style">`,
+                `<link rel="stylesheet" href="${href}">`,
+            ])
+                .join('\n');
+            output = output.replace('</head>', `${injectedCSS}\n</head>`);
+        }
+        if (options.assets.js.length > 0) {
+            const injectedJS = options.assets.js
+                .map((src) => `<script src="${src}" defer></script>`)
+                .join('\n');
+            output = output.replace('</body>', `${injectedJS}\n</body>`);
+        }
     }
     return '<!DOCTYPE html>' + output;
 }

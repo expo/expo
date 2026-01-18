@@ -13,7 +13,11 @@ class AuthenticationService: ObservableObject {
 
   private let sessionKey = "expo-session-secret"
   private let selectedAccountKey = "expo-selected-account-id"
-  private let presentationContext = ExpoGoAuthPresentationContext()
+  private let presentationContext = AuthPresentationContextProvider()
+
+  var sessionSecret: String? {
+    UserDefaults.standard.string(forKey: sessionKey)
+  }
 
   var selectedAccount: Account? {
     guard let userData = user,
@@ -157,7 +161,7 @@ class AuthenticationService: ObservableObject {
   }
 }
 
-private class ExpoGoAuthPresentationContext: NSObject, ASWebAuthenticationPresentationContextProviding {
+private class AuthPresentationContextProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
   func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
     let window = UIApplication.shared.connectedScenes
       .compactMap { $0 as? UIWindowScene }

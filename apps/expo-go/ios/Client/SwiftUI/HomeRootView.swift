@@ -3,16 +3,23 @@
 import SwiftUI
 import UIKit
 
+enum HomeTab: Hashable {
+  case home
+  case diagnostics
+  case settings
+}
+
 public struct HomeRootView: View {
   @ObservedObject var viewModel: HomeViewModel
   @State private var showingUserProfile = false
+  @State private var selectedTab: HomeTab = .home
 
   init(viewModel: HomeViewModel) {
     self.viewModel = viewModel
   }
 
   public var body: some View {
-    TabView {
+    TabView(selection: $selectedTab) {
       NavigationView {
         HomeTabView()
       }
@@ -20,7 +27,7 @@ public struct HomeRootView: View {
         Image(systemName: "house.fill")
         Text("Home")
       }
-      .navigationBarHidden(true)
+      .tag(HomeTab.home)
 
       NavigationView {
         DiagnosticsTabView()
@@ -29,12 +36,14 @@ public struct HomeRootView: View {
         Image(systemName: "stethoscope")
         Text("Diagnostics")
       }
+      .tag(HomeTab.diagnostics)
 
-      SettingsTabView()
+      SettingsTabView(selectedTab: $selectedTab)
         .tabItem {
           Image(systemName: "gearshape")
           Text("Settings")
         }
+        .tag(HomeTab.settings)
     }
     .environmentObject(viewModel)
     .environmentObject(ExpoGoNavigation(showingUserProfile: $showingUserProfile))
@@ -42,17 +51,12 @@ public struct HomeRootView: View {
       AccountSheet()
         .environmentObject(viewModel)
     }
-    .alert("Error", isPresented: Binding(
-      get: { viewModel.errorToShow != nil },
-      set: { if !$0 { viewModel.clearError() } }
-    )) {
-      Button("OK") {
-        viewModel.clearError()
-      }
-    } message: {
-      if let error = viewModel.errorToShow {
-        Text(error.message)
-      }
+    .alert(item: $viewModel.errorToShow) { error in
+      Alert(
+        title: Text("Error"),
+        message: Text(error.message),
+        dismissButton: .default(Text("OK"))
+      )
     }
   }
 }

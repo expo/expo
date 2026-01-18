@@ -1,4 +1,4 @@
-import { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarView } from './elements';
+import { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarSearchBarPreferredSlot, ToolbarView } from './elements';
 /**
  * A component that provides a [bottom toolbar](https://developer.apple.com/design/human-interface-guidelines/toolbars).
  *
@@ -13,8 +13,8 @@ import { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarVi
  *       <Toolbar>
  *         <Toolbar.Spacer />
  *         <Toolbar.Button icon="magnifyingglass" tintColor={Color.ios.placeholderText} />
- *         <Toolbar.View style={{ width: 200 }}>
- *           <TextInput placeholder="Search" />
+ *         <Toolbar.View>
+ *           <TextInput style={{ width: 200 }} placeholder="Search" />
  *         </Toolbar.View>
  *         <Toolbar.Menu icon="ellipsis">
  *           <Toolbar.MenuAction icon="mail" title="Send email" onPress={() => {}} />
@@ -34,8 +34,9 @@ export declare const Toolbar: ((props: import("./elements").ToolbarProps) => imp
     MenuAction: typeof import("..").LinkMenuAction;
     Button: (props: import("./elements").ToolbarButtonProps) => import("react").JSX.Element;
     Spacer: (props: import("./elements").ToolbarSpacerProps) => import("react").JSX.Element;
+    SearchBarPreferredSlot: ({ hidesSharedBackground, hidden, sharesBackground, }: import("./elements").ToolbarSearchBarPreferredSlotProps) => import("react").JSX.Element | null;
     View: ({ children, hidden, hidesSharedBackground, separateBackground, }: import("./elements").ToolbarViewProps) => import("react").JSX.Element;
 };
-export { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarView };
-export type { ToolbarProps, ToolbarMenuProps, ToolbarMenuActionProps, ToolbarButtonProps, ToolbarSpacerProps, ToolbarViewProps as ToolbarCustomViewProps, } from './elements';
+export { ToolbarMenu, ToolbarMenuAction, ToolbarButton, ToolbarSpacer, ToolbarSearchBarPreferredSlot, ToolbarView, };
+export type { ToolbarProps, ToolbarMenuProps, ToolbarMenuActionProps, ToolbarButtonProps, ToolbarSpacerProps, ToolbarSearchBarPreferredSlotProps, ToolbarViewProps as ToolbarCustomViewProps, } from './elements';
 //# sourceMappingURL=index.d.ts.map

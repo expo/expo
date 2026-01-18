@@ -137,6 +137,7 @@ function convertStackHeaderSubmenuMenuPropsToRNHeaderItem(props) {
     if (props.destructive !== undefined) {
         item.destructive = props.destructive;
     }
+    // TODO: Add elementSize to react-native-screens
     if (sharedProps.icon) {
         // Only SF Symbols are supported in submenu icons
         if (sharedProps.icon.type === 'sfSymbol') {

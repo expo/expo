@@ -35,8 +35,10 @@ export async function getBuildTimeServerManifestAsync(
     throw new Error('No routes found');
   }
 
-  // Evaluate all static params
-  await loadStaticParamsAsync(routeTree);
+  // Evaluate all static params; skip for SSR mode where routes are matched at runtime
+  if (!options.skipStaticParams) {
+    await loadStaticParamsAsync(routeTree);
+  }
 
   return getServerManifest(routeTree, options);
 }

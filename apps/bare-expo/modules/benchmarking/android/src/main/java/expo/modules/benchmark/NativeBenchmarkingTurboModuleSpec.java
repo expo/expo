@@ -22,7 +22,7 @@ public abstract class NativeBenchmarkingTurboModuleSpec extends ReactContextBase
 
   @ReactMethod
   @DoNotStrip
-  public abstract void nothing();
+  public abstract double nothing();
 
   @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip

@@ -1,6 +1,6 @@
 import * as DevicePushTokenAutoRegistration from '../DevicePushTokenAutoRegistration.fx';
 import { DevicePushToken } from '../Tokens.types';
-import getDevicePushTokenAsync from '../getDevicePushTokenAsync';
+import { getDevicePushTokenAsync } from '../getDevicePushTokenAsync';
 import { updateDevicePushTokenAsync } from '../utils/updateDevicePushTokenAsync';
 
 const ENABLED_REGISTRATION_FIXTURE: DevicePushTokenAutoRegistration.DevicePushTokenRegistration = {

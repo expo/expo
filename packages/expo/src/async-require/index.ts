@@ -7,4 +7,4 @@
 import { buildAsyncRequire } from './buildAsyncRequire';
 
 // @ts-ignore: ignore the global which may not always be defined in jest environments.
-global[`${global.__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`] = buildAsyncRequire();
+globalThis[`${globalThis.__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`] = buildAsyncRequire();
