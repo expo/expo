@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import { Deferred } from './Deferred';
-import { serialize, deserialize } from './SyncSerializer';
+import { serialize, deserialize, serializeError, deserializeError } from './SyncSerializer';
 import {
   type SQLiteWorkerMessageType,
   type MessageTypeMap,
@@ -40,14 +40,15 @@ export function sendWorkerResult({
     const resultJson = error != null ? serialize({ error }) : serialize({ result });
     const resultBytes = new TextEncoder().encode(resultJson);
     const length = resultBytes.length;
-    resultArray.set(new Uint32Array([length]), 0);
+    const lengthView = new Uint32Array(resultBuffer, 0, 1);
+    lengthView[0] = length;
     resultArray.set(resultBytes, 4);
     Atomics.store(lock, 0, RESOLVED);
   } else {
     if (result) {
       self.postMessage({ id, result });
     } else {
-      self.postMessage({ id, error });
+      self.postMessage({ id, error: error ? serializeError(error) : null });
     }
   }
 }
@@ -61,7 +62,7 @@ export function workerMessageHandler(event: MessageEvent) {
     const deferred = deferredMap.get(id);
     if (deferred) {
       if (error) {
-        deferred.reject(new Error(error));
+        deferred.reject(deserializeError(error));
       } else {
         deferred.resolve(result);
       }
@@ -141,7 +142,7 @@ export function invokeWorkerSync<T extends SQLiteWorkerMessageType & keyof Resul
   const resultCopy = new Uint8Array(length);
   resultCopy.set(new Uint8Array(resultArray.buffer, 4, length));
   const resultJson = new TextDecoder().decode(resultCopy);
-  const { result, error } = deserialize<{ result: ResultTypeMap[T]; error?: string }>(resultJson);
-  if (error) throw new Error(error);
+  const { result, error } = deserialize<{ result: ResultTypeMap[T]; error?: Error }>(resultJson);
+  if (error) throw error;
   return result;
 }
