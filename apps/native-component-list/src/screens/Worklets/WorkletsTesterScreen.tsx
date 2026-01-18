@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { runOnJS } from 'react-native-worklets';
 import 'react-native-reanimated';
-
 import { WorkletsTester } from 'worklets-tester';
 
 installOnUIRuntime();

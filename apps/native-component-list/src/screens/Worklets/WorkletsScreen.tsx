@@ -1,6 +1,7 @@
+import { WorkletsTester } from 'worklets-tester';
+
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
-import { WorkletsTester } from 'worklets-tester';
 
 export const WorkletsScreens = [
   {
