@@ -1,5 +1,6 @@
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
+import { WorkletsTester } from 'worklets-tester';
 
 export const WorkletsScreens = [
   {
@@ -10,6 +11,16 @@ export const WorkletsScreens = [
     },
   },
 ];
+
+if (WorkletsTester.isAvailable()) {
+  WorkletsScreens.push({
+    name: 'Worklets Tester Screen',
+    route: 'worklets/tester-screen',
+    getComponent() {
+      return optionalRequire(() => require('./WorkletsTesterScreen'));
+    },
+  });
+}
 
 export default function WorkletsScreen() {
   const apis = apiScreensToListElements(WorkletsScreens);

@@ -96,7 +96,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
   }
 
   @objc
-  public var _uiRuntime: ExpoRuntime? {
+  public var _uiRuntime: WorkletRuntime? {
     didSet {
       if _uiRuntime != oldValue {
         MainActor.assumeIsolated {
@@ -106,7 +106,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
-  public var uiRuntime: ExpoRuntime {
+  public var uiRuntime: WorkletRuntime {
     get throws {
       if let uiRuntime = _uiRuntime {
         return uiRuntime
@@ -595,7 +595,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
     if let providerClass = NSClassFromString(providerName) as? ModulesProvider.Type {
       return providerClass.init()
     }
-    
+
     // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
     for bundle in Bundle.allFrameworks {
       guard let bundleName = bundle.infoDictionary?["CFBundleName"] as? String else { continue }

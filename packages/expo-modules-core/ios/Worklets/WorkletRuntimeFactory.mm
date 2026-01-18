@@ -11,15 +11,16 @@
 
 @implementation WorkletRuntimeFactory
 
-+ (nonnull EXRuntime *)createWorkletRuntime:(nonnull EXAppContext *)appContext fromPointer:(nullable void *)pointer
++ (nonnull EXWorkletRuntime *)createWorkletRuntime:(nonnull EXAppContext *)appContext fromPointer:(nullable void *)pointer
 {
 #if WORKLETS_ENABLED
   jsi::Runtime* jsRuntime = reinterpret_cast<jsi::Runtime *>(pointer);
 
-  auto workletRuntime = worklets::WorkletRuntime::getWeakRuntimeFromJSIRuntime(*jsRuntime);
+  auto weakWorkletRuntime = worklets::WorkletRuntime::getWeakRuntimeFromJSIRuntime(*jsRuntime);
+  auto workletRuntime = weakWorkletRuntime.lock();
 
-  return [[EXRuntime alloc] initWithRuntime:*jsRuntime
-                                callInvoker:std::make_shared<expo::WorkletJSCallInvoker>(workletRuntime)];
+  return [[EXWorkletRuntime alloc] initWithWorkletRuntime:workletRuntime
+                                              callInvoker:std::make_shared<expo::WorkletJSCallInvoker>(weakWorkletRuntime)];
 #else
   @throw [NSException exceptionWithName:@"WorkletException"
                                  reason:@"Worklets integration is disabled"
