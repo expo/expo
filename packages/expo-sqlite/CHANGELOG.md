@@ -13,6 +13,8 @@
 ### 🐛 Bug fixes
 
 - Fixed `serializeAsync` / `serializeSync` errors from memory database on web. ([#40899](https://github.com/expo/expo/pull/40899) by [@kudo](https://github.com/kudo))
+- [web] Fixed error serialization displaying "[Object object]" instead of actual error messages. ([#42265](https://github.com/expo/expo/pull/42265) by [@chrisamador](https://github.com/chrisamador))
+- [web] Fixed buffer length encoding causing truncated or corrupted error messages. ([#42265](https://github.com/expo/expo/pull/42265) by [@chrisamador](https://github.com/chrisamador))
 
 ### 💡 Others
 
