@@ -13,6 +13,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix Symbol serialization error when using React Compiler with tree shaking enabled. ([#39431](https://github.com/expo/expo/issues/39431) by [@aman-dahiya](https://github.com/aman-dahiya))
 - Fix output typings to remove unreachable transitive dependencies from them ([#41676](https://github.com/expo/expo/pull/41676) by [@kitten](https://github.com/kitten))
 - Fix `minifierPath` resolution for cache key generation for strict isolated installations ([#41686](https://github.com/expo/expo/pull/41686) by [@kitten](https://github.com/kitten))
 - Avoid module ID collision between loader and render bundles ([#42245](https://github.com/expo/expo/pull/42245) by [@hassankhan](https://github.com/hassankhan))
