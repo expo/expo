@@ -60,6 +60,8 @@ export declare const frame: (params: {
  * Positions this view within an invisible frame with a size relative to the nearest container.
  * @param params - The content relative frame parameters: `axes`, `count`, `span`, `spacing` and `alignment`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/containerRelativeFrame(_:alignment:)).
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
  */
 export declare const containerRelativeFrame: (params: {
     axes: "horizontal" | "vertical" | "both";
