@@ -1705,6 +1705,10 @@ extension ViewModifierRegistry {
       return try ContainerShapeModifier(from: params, appContext: appContext)
     }
 
+    register("containerRelativeFrame") { params, appContext, _ in
+      return try ContainerRelativeFrameModifier(from: params, appContext: appContext)
+    }
+
     register("buttonStyle") { params, appContext, _ in
       return try ButtonStyleModifier(from: params, appContext: appContext)
     }

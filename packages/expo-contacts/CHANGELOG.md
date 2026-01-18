@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix adding contact when default account is set to cloud ([#42203](https://github.com/expo/expo/pull/42203) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
 
 - Added contact image uri validation. ([#39658](https://github.com/expo/expo/pull/39658) by [@hryhoriiK97](https://github.com/hryhoriiK97))

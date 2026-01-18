@@ -8,7 +8,7 @@
 import type { ProjectConfig } from '@expo/config';
 import type { MiddlewareSettings } from 'expo-server';
 import { createRequestHandler } from 'expo-server/adapter/http';
-import { type RouteInfo } from 'expo-server/private';
+import { ImmutableRequest, type RouteInfo } from 'expo-server/private';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -31,14 +31,14 @@ export function createRouteHandlerMiddleware(
     getStaticPageAsync: (
       pathname: string,
       route: RouteInfo<RegExp>,
-      request?: Request
+      request?: ImmutableRequest
     ) => Promise<{ content: string }>;
     bundleApiRoute: (
       functionFilePath: string
     ) => Promise<null | Record<string, Function> | Response>;
     executeLoaderAsync: (
       route: RouteInfo<RegExp>,
-      request: Request
+      request: ImmutableRequest
     ) => Promise<{ data: unknown } | undefined>;
     config: ProjectConfig;
     headers: Record<string, string | string[]>;
@@ -98,7 +98,7 @@ export function createRouteHandlerMiddleware(
           const { content } = await options.getStaticPageAsync(
             request.url,
             route,
-            isSSREnabled ? request : undefined
+            isSSREnabled ? new ImmutableRequest(request) : undefined
           );
           return content;
         } catch (error: any) {
@@ -233,7 +233,7 @@ export function createRouteHandlerMiddleware(
         }
       },
       async getLoaderData(request, route) {
-        return options.executeLoaderAsync(route, request);
+        return options.executeLoaderAsync(route, new ImmutableRequest(request));
       },
     }
   );

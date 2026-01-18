@@ -32,6 +32,7 @@
 - [iOS] - Add `Menu` component ([#41664](https://github.com/expo/expo/pull/41664) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Remove presentation props from `BottomSheet` and add equivalent modifiers ([#42029](https://github.com/expo/expo/pull/42029) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] - Nested `Text` support ([#41707](https://github.com/expo/expo/pull/41707) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Add containerRelativeFrame modifier. ([#42237](https://github.com/expo/expo/pull/42237) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 

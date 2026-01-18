@@ -1,3 +1,4 @@
+import { ImmutableRequest } from '../../ImmutableRequest';
 import { parseParams } from '../../utils/matchers';
 function initManifestRegExp(manifest) {
     return {
@@ -66,11 +67,11 @@ export function createEnvironment(input) {
             return undefined;
         }
         const loaderModule = (await input.loadModule(route.loader));
-        if (!loaderModule?.loader) {
-            return undefined;
+        if (!loaderModule) {
+            throw new Error(`Loader module not found at: ${route.loader}`);
         }
         const params = parseParams(request, route);
-        const data = await loaderModule.loader({ params, request });
+        const data = await loaderModule.loader({ params, request: new ImmutableRequest(request) });
         return { data: data === undefined ? {} : data };
     }
     return {

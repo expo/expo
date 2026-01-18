@@ -33,6 +33,7 @@ type AwaitedIcon =
     }
   | {
       src?: ImageSourcePropType;
+      renderingMode?: 'template' | 'original';
     };
 
 export function useAwaitedScreensIcon(icon: NativeTabOptions['icon']) {
@@ -85,6 +86,9 @@ export function convertOptionsIconToIOSPropsIcon(
     };
   }
   if (icon && 'src' in icon && icon.src) {
+    if (icon.renderingMode === 'original') {
+      return { type: 'imageSource', imageSource: icon.src };
+    }
     return { type: 'templateSource', templateSource: icon.src };
   }
   return undefined;

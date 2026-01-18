@@ -1,3 +1,4 @@
+import { ImmutableRequest } from '../../ImmutableRequest';
 import type { Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
 import type { LoaderModule, RenderOptions, ServerRenderModule, SsrRenderFn } from '../../rendering';
 import { parseParams } from '../../utils/matchers';
@@ -87,12 +88,14 @@ export function createEnvironment(input: EnvironmentInput) {
     if (!route.loader) {
       return undefined;
     }
+
     const loaderModule = (await input.loadModule(route.loader)) as LoaderModule | null;
-    if (!loaderModule?.loader) {
-      return undefined;
+    if (!loaderModule) {
+      throw new Error(`Loader module not found at: ${route.loader}`);
     }
+
     const params = parseParams(request, route);
-    const data = await loaderModule.loader({ params, request });
+    const data = await loaderModule.loader({ params, request: new ImmutableRequest(request) });
     return { data: data === undefined ? {} : data };
   }
 

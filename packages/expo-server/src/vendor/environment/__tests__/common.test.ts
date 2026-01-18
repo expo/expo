@@ -1,3 +1,4 @@
+import { ImmutableRequest } from '../../../ImmutableRequest';
 import type {
   AssetInfo,
   MiddlewareInfo,
@@ -352,7 +353,7 @@ describe('getHtml', () => {
     expect(input.loadModule).toHaveBeenCalledWith('_expo/loaders/index.js');
     expect(loaderModule.loader).toHaveBeenCalledWith({
       params: {},
-      request: expect.any(Request),
+      request: expect.any(ImmutableRequest),
     });
     expect(mockSSRModule.getStaticContent).toHaveBeenCalledWith(
       expect.any(URL),
@@ -462,7 +463,7 @@ describe('getLoaderData', () => {
     expect(result).toEqual({ data: loaderData });
     expect(loaderModule.loader).toHaveBeenCalledWith({
       params: {},
-      request: expect.any(Request),
+      request: expect.any(ImmutableRequest),
     });
   });
 
@@ -482,24 +483,21 @@ describe('getLoaderData', () => {
     expect(result).toBeUndefined();
   });
 
-  it('returns `undefined` when loader module has no loader function', async () => {
-    const loaderModule = { someOtherExport: 'value' };
-    const input = createMockInput({
-      modules: { '_expo/loaders/broken.js': loaderModule },
-    });
+  it('throws when loader module fails to load', async () => {
+    const input = createMockInput();
     const env = createEnvironment(input);
 
-    const result = await env.getLoaderData(
-      new Request('http://localhost/broken'),
-      createMockRoute({
-        file: './broken.tsx',
-        page: '/broken',
-        namedRegex: new RegExp('^/broken(?:/)?$'),
-        loader: '_expo/loaders/broken.js',
-      })
-    );
-
-    expect(result).toBeUndefined();
+    await expect(
+      env.getLoaderData(
+        new Request('http://localhost/broken'),
+        createMockRoute({
+          file: './broken.tsx',
+          page: '/broken',
+          namedRegex: new RegExp('^/broken(?:/)?$'),
+          loader: '_expo/loaders/broken.js',
+        })
+      )
+    ).rejects.toThrow(/Loader module not found/);
   });
 
   it('parses params correctly for dynamic routes', async () => {
@@ -522,7 +520,7 @@ describe('getLoaderData', () => {
 
     expect(loaderModule.loader).toHaveBeenCalledWith({
       params: { id: '123' },
-      request: expect.any(Request),
+      request: expect.any(ImmutableRequest),
     });
   });
 
