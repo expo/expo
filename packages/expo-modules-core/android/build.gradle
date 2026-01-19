@@ -41,6 +41,12 @@ def isExpoModulesCoreTests = {
   return false
 }.call()
 
+def isTests = {
+  Gradle gradle = getGradle()
+  String tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
+  return tskReqStr =~ /connected\w*AndroidTest/
+}.call()
+
 def expoModuleExtension = project.extensions.getByType(ExpoModuleExtension)
 
 def reactNativeArchitectures() {
@@ -57,7 +63,7 @@ USE_HERMES = USE_HERMES && isExpoModulesCoreTests
 
 def shouldTurnWarningsIntoErrors = findProperty("EXPO_TURN_WARNINGS_INTO_ERRORS") == "true"
 
-def enableWorkletsIntegration = !isExpoModulesCoreTests
+def enableWorkletsIntegration = !isTests
 def workletsProject = enableWorkletsIntegration ? findProject(":react-native-worklets") : null
 
 if (workletsProject != null) {
