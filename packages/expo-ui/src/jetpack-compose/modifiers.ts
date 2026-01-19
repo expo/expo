@@ -1,3 +1,5 @@
+import { type ColorValue } from 'react-native';
+
 import { parseJSXShape, ShapeJSXElement } from './Shape';
 
 /**
@@ -102,14 +104,14 @@ export const offset = (x: number, y: number): ModifierConfig => ({ $type: 'offse
  * Sets the background color.
  * @param color - Color string (hex, e.g., '#FF0000').
  */
-export const background = (color: string): ModifierConfig => ({ $type: 'background', color });
+export const background = (color: ColorValue): ModifierConfig => ({ $type: 'background', color });
 
 /**
  * Adds a border around the view.
  * @param borderWidth - Border width in dp.
  * @param borderColor - Border color string (hex).
  */
-export const border = (borderWidth: number, borderColor: string): ModifierConfig => ({
+export const border = (borderWidth: number, borderColor: ColorValue): ModifierConfig => ({
   $type: 'border',
   borderWidth,
   borderColor,

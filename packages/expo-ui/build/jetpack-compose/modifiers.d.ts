@@ -1,3 +1,4 @@
+import { type ColorValue } from 'react-native';
 import { ShapeJSXElement } from './Shape';
 /**
  * Modifier configuration for Jetpack Compose views.
@@ -59,13 +60,13 @@ export declare const offset: (x: number, y: number) => ModifierConfig;
  * Sets the background color.
  * @param color - Color string (hex, e.g., '#FF0000').
  */
-export declare const background: (color: string) => ModifierConfig;
+export declare const background: (color: ColorValue) => ModifierConfig;
 /**
  * Adds a border around the view.
  * @param borderWidth - Border width in dp.
  * @param borderColor - Border color string (hex).
  */
-export declare const border: (borderWidth: number, borderColor: string) => ModifierConfig;
+export declare const border: (borderWidth: number, borderColor: ColorValue) => ModifierConfig;
 /**
  * Adds a shadow/elevation effect.
  * @param elevation - Shadow elevation in dp.
