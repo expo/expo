@@ -208,6 +208,168 @@ export const unstable_settings = {
 
 In the above example, the `anchor: 'index'` tells the Expo Router that it should maintain the specified anchor route in the background when presenting a modal.
 
+## FormSheet presentation
+
+FormSheet presents a modal as a bottom sheet that users can drag between different heights (called detents). This is useful for content that needs partial screen coverage with interactive sizing.
+
+### Basic usage
+
+To use formSheet, set the `presentation` option to `formSheet` on your modal screen:
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="modal"
+        options={{
+          /* @info Set the <CODE>presentation</CODE> mode to <CODE>formSheet</CODE>. */
+          presentation: 'formSheet',
+          /* @end */
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+### Configuring sheet detents
+
+Detents define the heights where the sheet can rest. Use `sheetAllowedDetents` to configure them:
+
+- **Numeric array** (`number[]`): Specify snap positions as fractions of the screen height between 0 and 1. For example, `[0.25, 0.5, 1]` creates three snap points at 25%, 50%, and full screen height. Values must be sorted in ascending order.
+
+- **Fit to contents** (`'fitToContents'`): The sheet automatically sizes itself based on its content. When using this option, you must provide explicit content sizing &mdash; `flex: 1` is not supported because the sheet needs to know the content's actual size to determine its height.
+
+> **info** Android supports a maximum of 3 detents. iOS accepts any number of detents.
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="modal"
+        options={{
+          presentation: 'formSheet',
+          /* @info Specify detent positions as fractions of the screen height. */
+          sheetAllowedDetents: [0.25, 0.5, 1],
+          /* @end */
+          /* @info Index of detent to open at (0 = smallest). */
+          sheetInitialDetentIndex: 1,
+          /* @end */
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+### Additional sheet options
+
+| Option                            | Type                         | Description                                              |
+| --------------------------------- | ---------------------------- | -------------------------------------------------------- |
+| `sheetInitialDetentIndex`         | `number \| 'last'`           | Index of the detent where the sheet opens (default: `0`) |
+| `sheetGrabberVisible`             | `boolean`                    | Shows a grabber handle at top of the sheet (iOS only)    |
+| `sheetCornerRadius`               | `number`                     | Corner radius of the sheet in pixels                     |
+| `sheetLargestUndimmedDetentIndex` | `number \| 'none' \| 'last'` | Largest detent index that keeps the background undimmed  |
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="modal"
+        options={{
+          presentation: 'formSheet',
+          sheetAllowedDetents: [0.25, 0.5, 1],
+          sheetInitialDetentIndex: 0,
+          /* @info Shows the grabber handle at the top of the sheet (iOS only). */
+          sheetGrabberVisible: true,
+          /* @end */
+          /* @info Sets the corner radius of the sheet. */
+          sheetCornerRadius: 24,
+          /* @end */
+          /* @info Background stays undimmed until sheet exceeds the detent at index 1. */
+          sheetLargestUndimmedDetentIndex: 1,
+          /* @end */
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+### Sheet footer (Android)
+
+> **info** `unstable_sheetFooter` is an Android-only experimental feature that may change in future releases.
+
+You can add a footer to the sheet that stays visible at all detent positions:
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+import { View, Button } from 'react-native';
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="modal"
+        options={{
+          presentation: 'formSheet',
+          sheetAllowedDetents: [0.5, 1],
+          /* @info Returns a React component that renders as a footer at the bottom of the sheet. */
+          unstable_sheetFooter: () => (
+            <View style={{ padding: 16, backgroundColor: 'white' }}>
+              <Button title="Confirm" onPress={() => {}} />
+            </View>
+          ),
+          /* @end */
+        }}
+      />
+    </Stack>
+  );
+}
+```
+
+### Using flex: 1 with custom detents
+
+> **info** In SDK 55 and later, `flex: 1` works correctly on iOS when using custom numeric detents. This does not work with `fitToContents` where you must provide explicit content sizing.
+
+When using numeric detents, your modal content can use `flex: 1` to fill the available space within the sheet:
+
+```tsx app/modal.tsx
+import { StyleSheet, Text, View } from 'react-native';
+
+export default function Modal() {
+  return (
+    /* @info Using <CODE>flex: 1</CODE> fills the available space within the sheet. */
+    <View style={styles.container}>
+      /* @end */
+      <Text>Modal content</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+  },
+});
+```
+
 ## Additional information
 
 ### Presentation options
@@ -222,4 +384,4 @@ There are different options to present a modal screen using the `presentation` o
 | `containedModal`            | On Android, fallbacks to `modal`. On iOS, uses [`UIModalPresentationCurrentContext`](https://developer.apple.com/documentation/uikit/uimodalpresentationstyle/uimodalpresentationcurrentcontext) modal style.                    |
 | `containedTransparentModal` | On Android, fallbacks to `transparentModal`. On iOS, uses [`UIModalPresentationOverCurrentContext`](https://developer.apple.com/documentation/uikit/uimodalpresentationstyle/uimodalpresentationovercurrentcontext) modal style. |
 | `fullScreenModal`           | On Android, fallbacks to `modal`. On iOS, uses [`UIModalPresentationFullScreen`](https://developer.apple.com/documentation/uikit/uimodalpresentationstyle/uimodalpresentationfullscreen) modal style.                            |
-| `formSheet`                 | On Android, fallbacks to `modal`. On iOS, uses [`UIModalPresentationFormSheet`](https://developer.apple.com/documentation/uikit/uimodalpresentationstyle/uimodalpresentationformsheet) modal style.                              |
+| `formSheet`                 | Presents a bottom sheet with configurable detents. See [FormSheet presentation](#formsheet-presentation) for details.                                                                                                            |

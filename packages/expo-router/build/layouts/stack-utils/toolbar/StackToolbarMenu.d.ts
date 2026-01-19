@@ -30,7 +30,7 @@ export interface StackToolbarMenuProps {
     /**
      * Image to display for the menu item.
      *
-     * > **Note**: This prop is only supported in `Stack.Toolbar.Bottom`.
+     * > **Note**: This prop is only supported in toolbar with `placement="bottom"`.
      */
     image?: ImageRef;
     /**
@@ -51,6 +51,8 @@ export interface StackToolbarMenuProps {
      * Icon for the menu item.
      *
      * Can be an SF Symbol name or an image source.
+     *
+     * > **Note**: When used in placement="bottom", only string SFSymbols are supported. Use the `image` prop to provide custom images.
      */
     icon?: StackHeaderItemSharedProps['icon'];
     /**

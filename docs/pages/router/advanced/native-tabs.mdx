@@ -7,6 +7,7 @@ hasVideoLink: true
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 import { DiffBlock } from '~/ui/components/Snippet';
@@ -479,6 +480,47 @@ By default, when the keyboard is displayed on Android, the native tabs automatic
 }
 ```
 
+### Safe area handling
+
+> **info** This feature is available in SDK 55 and later.
+
+Native tabs automatically handle safe area insets, with platform-specific behavior:
+
+- **iOS**: The first `ScrollView` nested inside a native tabs screen has [automatic content inset adjustment](https://reactnative.dev/docs/scrollview#contentinsetadjustmentbehavior-ios) enabled. This ensures content scrolls correctly behind the tab bar.
+- **Android**: Screen content is automatically wrapped in a `SafeAreaView` that applies the **bottom** inset for the tab bar. Other insets (top, left, right) must be handled manually.
+
+#### Disabling automatic content insets
+
+If you need full control over safe area handling, you can disable automatic content inset adjustment using the `disableAutomaticContentInsets` prop on `NativeTabs.Trigger`:
+
+```tsx app/_layout.tsx
+import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index" disableAutomaticContentInsets>
+        <Label>Home</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+When `disableAutomaticContentInsets` is set to `true`, you must manage safe area insets manually. You can use `SafeAreaView` from `react-native-screens/experimental`:
+
+```tsx app/index.tsx
+import { SafeAreaView } from 'react-native-screens/experimental';
+
+export default function HomeScreen() {
+  return (
+    <SafeAreaView edges={{ bottom: true }} style={{ flex: 1 }}>
+      {/* Screen content */}
+    </SafeAreaView>
+  );
+}
+```
+
 ## Migrating from JavaScript tabs
 
 Native tabs are not designed to be a drop-in replacement for [JavaScript tabs](/router/advanced/tabs/). The native tabs are constrained to the native platform behavior, whereas the JavaScript tabs can be customized more freely. If you aren't interested in the native platform behavior, you can continue using the JavaScript tabs.
@@ -499,19 +541,25 @@ The JavaScript `<Tabs />` have a mock stack header which is not present in the n
 
 ## Known limitations
 
-### A limit of 5 tabs on Android
+<Collapsible summary="A limit of 5 tabs on Android">
 
 On Android, there is a limitation of having a maximum of 5 tabs in the tab bar. This restriction comes from the platform's Material Tabs component.
 
-### Cannot measure the tab bar height
+</Collapsible>
+
+<Collapsible summary="Cannot measure the tab bar height">
 
 The tabs move around, sometimes being on top of the screen when rendering on iPad, sometimes on the side of the screen when running on Apple Vision Pro, and so on. We're working on a layout function to provide more detailed layout info in the future.
 
-### No support for nested native tabs
+</Collapsible>
+
+<Collapsible summary="No support for nested native tabs">
 
 Native tabs cannot be nested inside other native tabs. You can still nest [JavaScript tabs](/router/advanced/tabs/) inside native tabs.
 
-### Limited support for FlatList
+</Collapsible>
+
+<Collapsible summary="Limited support for FlatList">
 
 [FlatList](https://reactnative.dev/docs/flatlist) integration with native tabs has limitations. Features like scroll-to-top and minimize-on-scroll aren't supported. Additionally, detecting scroll edges may fail, causing the tab bar to appear transparent. To fix this, use the [`disableTransparentOnScrollEdge`](/versions/latest/sdk/router-native-tabs/#disabletransparentonscrolledge) prop.
 
@@ -528,3 +576,11 @@ export default function TabLayout() {
   );
 }
 ```
+
+</Collapsible>
+
+<Collapsible summary="No support for dynamically adding or removing tabs">
+
+Dynamically adding or removing tabs at runtime is not supported. Tabs should be defined statically in your layout file and remain consistent throughout the app's lifecycle. This aligns with platform guidelines from [Apple's Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/tab-bars#Best-practices) which recommend keeping tab bar content stable to help users build a mental model of your app's navigation structure. If you dynamically add or remove tabs, the content will be remounted and the state will be lost.
+
+</Collapsible>

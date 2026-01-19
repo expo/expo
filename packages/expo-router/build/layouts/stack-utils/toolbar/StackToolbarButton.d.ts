@@ -65,12 +65,14 @@ export interface StackToolbarButtonProps {
      * Icon to display in the button.
      *
      * Can be a string representing an SFSymbol or an image source.
+     *
+     * > **Note**: When used in placement="bottom", only string SFSymbols are supported. Use the `image` prop to provide custom images.
      */
     icon?: StackHeaderItemSharedProps['icon'];
     /**
      * Image to display in the button.
      *
-     * > **Note**: This prop is only supported in `Stack.Toolbar.Bottom`.
+     * > **Note**: This prop is only supported in toolbar with `placement="bottom"`.
      */
     image?: ImageRef;
     onPress?: () => void;

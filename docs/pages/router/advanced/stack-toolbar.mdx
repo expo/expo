@@ -1,0 +1,336 @@
+---
+title: Stack Toolbar
+description: Learn how to use the iOS toolbar in Stack navigation with Expo Router.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+
+> **important** `Stack.Toolbar` is an alpha API available on **iOS only** starting from **SDK 55**. The API may change without notice.
+
+[`Stack.Toolbar`](/versions/unversioned/sdk/router/#stacktoolbar) lets you add native iOS toolbar items to your Stack screens. You can place buttons, menus, and custom views in the header (left or right side) or in the bottom toolbar area.
+
+## Adding header buttons
+
+Use [`Stack.Toolbar.Button`](/versions/unversioned/sdk/router/#stacktoolbarbutton) within `Stack.Toolbar` with `placement="right"` or `placement="left"` to add buttons to the navigation header. This is useful for actions like favoriting, sharing, or editing content.
+
+```tsx app/notes/[id].tsx
+import { useState } from 'react';
+import { Stack } from 'expo-router';
+import { View, Text, Alert } from 'react-native';
+
+export default function NoteScreen() {
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  return (
+    <>
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          icon={isFavorite ? 'star.fill' : 'star'}
+          onPress={() => setIsFavorite(!isFavorite)}
+        />
+        <Stack.Toolbar.Button icon="square.and.arrow.up" onPress={() => Alert.alert('Share')} />
+      </Stack.Toolbar>
+      <Stack.Toolbar placement="left">
+        <Stack.Toolbar.Button icon="sidebar.left" onPress={() => Alert.alert('Sidebar')} />
+      </Stack.Toolbar>
+
+      <View style={{ flex: 1, padding: 16 }}>
+        <Text>Note content...</Text>
+      </View>
+    </>
+  );
+}
+```
+
+## Icons
+
+Toolbar buttons support two types of icons: SF Symbols and custom images.
+
+### SF Symbols
+
+The easiest way to add icons is using [SF Symbols](https://developer.apple.com/sf-symbols/), Apple's built-in icon library. Pass the symbol name directly to the `icon` prop:
+
+```tsx
+<Stack.Toolbar.Button icon="star.fill" onPress={() => {}} />
+<Stack.Toolbar.Button icon="square.and.arrow.up" onPress={() => {}} />
+<Stack.Toolbar.Menu icon="ellipsis.circle">{/* ... */}</Stack.Toolbar.Menu>
+```
+
+You can browse available symbols in Apple's SF Symbols app.
+
+### Custom images
+
+You can also use custom images. In header toolbars (`placement="left"` or `placement="right"`), pass an image source directly to the `icon` prop:
+
+```tsx
+import { Stack } from 'expo-router';
+
+export default function Page() {
+  return (
+    <>
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button icon={require('./assets/expo.png')} onPress={() => {}} />
+      </Stack.Toolbar>
+      {/* Screen content */}
+    </>
+  );
+}
+```
+
+In the bottom toolbar, use the `useImage` hook from `expo-image` and pass the result to the `image` prop:
+
+```tsx
+import { Stack } from 'expo-router';
+import { useImage } from 'expo-image';
+
+export default function Page() {
+  const customIcon = useImage('https://simpleicons.org/icons/expo.svg', {
+    maxWidth: 24,
+    maxHeight: 24,
+  });
+
+  return (
+    <>
+      <Stack.Toolbar>
+        <Stack.Toolbar.Button image={customIcon} onPress={() => {}} />
+      </Stack.Toolbar>
+      {/* Screen content */}
+    </>
+  );
+}
+```
+
+> **info** The `useImage` + `image` prop pattern for bottom toolbar custom images is a temporary API and may change in future releases.
+
+## Building action menus
+
+For screens with multiple actions, use [`Stack.Toolbar.Menu`](/versions/unversioned/sdk/router/#stacktoolbarmenu) to group them into a dropdown menu:
+
+```tsx app/mail/[id].tsx
+import { useState } from 'react';
+import { Stack } from 'expo-router';
+import { Alert } from 'react-native';
+
+export default function EmailScreen() {
+  const [isArchived, setIsArchived] = useState(false);
+
+  return (
+    <>
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Menu icon="ellipsis.circle">
+          <Stack.Toolbar.MenuAction
+            icon="arrowshape.turn.up.left"
+            onPress={() => Alert.alert('Reply')}>
+            Reply
+          </Stack.Toolbar.MenuAction>
+
+          <Stack.Toolbar.MenuAction
+            icon="arrowshape.turn.up.right"
+            onPress={() => Alert.alert('Forward')}>
+            Forward
+          </Stack.Toolbar.MenuAction>
+
+          <Stack.Toolbar.MenuAction
+            icon={isArchived ? 'tray.full' : 'archivebox'}
+            isOn={isArchived}
+            onPress={() => setIsArchived(!isArchived)}>
+            {isArchived ? 'Unarchive' : 'Archive'}
+          </Stack.Toolbar.MenuAction>
+
+          <Stack.Toolbar.MenuAction icon="trash" destructive onPress={() => Alert.alert('Delete')}>
+            Delete
+          </Stack.Toolbar.MenuAction>
+        </Stack.Toolbar.Menu>
+      </Stack.Toolbar>
+      {/* Email content */}
+    </>
+  );
+}
+```
+
+The `isOn` prop on [`Stack.Toolbar.MenuAction`](/versions/unversioned/sdk/router/#stacktoolbarmenuaction) shows a checkmark next to the action, useful for toggle states. The `destructive` prop styles the action in red to indicate a dangerous operation.
+
+### Nested submenus
+
+For more complex menus, nest `Stack.Toolbar.Menu` inside another menu. Use the `inline` prop to display submenu items directly without collapsing:
+
+```tsx
+import { useState } from 'react';
+import { Stack } from 'expo-router';
+
+export default function EmailScreen() {
+  const [sortBy, setSortBy] = useState<'name' | 'date' | 'size'>('name');
+  const [showHiddenFiles, setShowHiddenFiles] = useState(false);
+
+  return (
+    <>
+      <Stack.Toolbar>
+        <Stack.Toolbar.Menu icon="ellipsis.circle">
+          {/* Inline submenu - options appear directly in the menu */}
+          <Stack.Toolbar.Menu inline title="Sort By">
+            <Stack.Toolbar.MenuAction isOn={sortBy === 'name'} onPress={() => setSortBy('name')}>
+              Name
+            </Stack.Toolbar.MenuAction>
+            <Stack.Toolbar.MenuAction isOn={sortBy === 'date'} onPress={() => setSortBy('date')}>
+              Date
+            </Stack.Toolbar.MenuAction>
+            <Stack.Toolbar.MenuAction isOn={sortBy === 'size'} onPress={() => setSortBy('size')}>
+              Size
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
+
+          {/* Nested submenu - opens as a separate menu */}
+          <Stack.Toolbar.Menu title="Preferences">
+            <Stack.Toolbar.MenuAction
+              isOn={showHiddenFiles}
+              onPress={() => setShowHiddenFiles(!showHiddenFiles)}>
+              Show Hidden Files
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
+        </Stack.Toolbar.Menu>
+      </Stack.Toolbar>
+      {/* Email content */}
+    </>
+  );
+}
+```
+
+## Using the bottom toolbar
+
+iOS apps commonly have a bottom toolbar for primary actions. To add one, use `Stack.Toolbar` without a placement prop (it defaults to `"bottom"`):
+
+```tsx app/photos/index.tsx
+import { Stack } from 'expo-router';
+import { Alert } from 'react-native';
+
+export default function PhotosScreen() {
+  return (
+    <>
+      <Stack.Toolbar>
+        <Stack.Toolbar.Button icon="photo.on.rectangle" onPress={() => Alert.alert('Select')}>
+          Select
+        </Stack.Toolbar.Button>
+        <Stack.Toolbar.Spacer />
+        <Stack.Toolbar.Button icon="plus" onPress={() => Alert.alert('Add')}>
+          Add
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
+    </>
+  );
+}
+```
+
+[`Stack.Toolbar.Spacer`](/versions/unversioned/sdk/router/#stacktoolbarspacer) creates flexible space between items, pushing them to opposite sides. This is how you achieve layouts like having buttons on both ends of the toolbar.
+
+> **info** Bottom toolbars can only be used inside page components, not in layout files.
+
+## Adding badges to buttons
+
+In header toolbars, you can add badges to indicate counts or status. Use [`Stack.Toolbar.Icon`](/versions/unversioned/sdk/router/#stacktoolbaricon), [`Stack.Toolbar.Label`](/versions/unversioned/sdk/router/#stacktoolbarlabel), and [`Stack.Toolbar.Badge`](/versions/unversioned/sdk/router/#stacktoolbarbadge) to compose the button content:
+
+```tsx app/inbox.tsx
+import { Stack } from 'expo-router';
+
+export default function InboxScreen() {
+  const unreadCount = 5;
+
+  return (
+    <>
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button onPress={() => {}}>
+          <Stack.Toolbar.Icon sf="bell" />
+          <Stack.Toolbar.Label>Notifications</Stack.Toolbar.Label>
+          {unreadCount > 0 && <Stack.Toolbar.Badge>{String(unreadCount)}</Stack.Toolbar.Badge>}
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
+      {/* Screen content */}
+    </>
+  );
+}
+```
+
+> **info** Badges only work in header placements (`left` or `right`), not in the bottom toolbar.
+
+## Embedding custom views
+
+When you need something beyond buttons and menus, use [`Stack.Toolbar.View`](/versions/unversioned/sdk/router/#stacktoolbarview) to embed any React Native component:
+
+```tsx app/search.tsx
+import { Stack } from 'expo-router';
+import { Pressable, Alert } from 'react-native';
+import { SymbolView } from 'expo-symbols';
+
+export default function SearchScreen() {
+  return (
+    <>
+      <Stack.Toolbar>
+        <Stack.Toolbar.View>
+          <Pressable
+            style={{ width: 32, height: 32, justifyContent: 'center', alignItems: 'center' }}
+            onPress={() => {
+              Alert.alert('Filter pressed');
+            }}>
+            <SymbolView name="line.3.horizontal.decrease.circle" size={24} />
+          </Pressable>
+        </Stack.Toolbar.View>
+      </Stack.Toolbar>
+      {/* Screen content */}
+    </>
+  );
+}
+```
+
+## Showing and hiding items dynamically
+
+Use the `hidden` prop to toggle toolbar items based on state:
+
+```tsx app/document.tsx
+import { useState } from 'react';
+import { Stack } from 'expo-router';
+
+export default function DocumentScreen() {
+  const [isEditing, setIsEditing] = useState(false);
+
+  return (
+    <>
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button hidden={isEditing} icon="pencil" onPress={() => setIsEditing(true)} />
+        <Stack.Toolbar.Button hidden={!isEditing} onPress={() => setIsEditing(false)}>
+          Done
+        </Stack.Toolbar.Button>
+      </Stack.Toolbar>
+      {/* Document content */}
+    </>
+  );
+}
+```
+
+## Known limitations
+
+<Collapsible summary="iOS only">
+
+`Stack.Toolbar` is only available on iOS. On Android and web, the component will not render.
+
+</Collapsible>
+
+<Collapsible summary="Bottom toolbar only in page components">
+
+The bottom toolbar can only be used inside page components, not in layout files. This is because the bottom toolbar needs to be associated with a specific screen's content.
+
+</Collapsible>
+
+<Collapsible summary="Cannot nest toolbars">
+
+You cannot nest `Stack.Toolbar` components inside each other.
+
+</Collapsible>
+
+<Collapsible summary="Badge only in header placements">
+
+`Stack.Toolbar.Badge` is only supported when using `placement="left"` or `placement="right"`. Badges are not displayed in the bottom toolbar.
+
+</Collapsible>
+
+## Learn more
+
+For complete API documentation including all available props, see the [Stack.Toolbar API reference](/versions/unversioned/sdk/router/#stacktoolbar).
