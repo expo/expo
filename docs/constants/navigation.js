@@ -177,7 +177,7 @@ export const general = [
       { expanded: false }
     ),
     makeGroup(
-      'Compile locally',
+      'Build locally',
       [
         makePage('guides/local-app-overview.mdx'),
         makePage('guides/local-app-development.mdx'),
