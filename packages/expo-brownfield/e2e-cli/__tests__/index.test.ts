@@ -2,7 +2,6 @@ import { ExpectedOutput } from '../utils/output';
 import { executeCLIASync } from '../utils/process';
 import { createTempProject, cleanUpProject } from '../utils/project';
 
-const HELP_MESSAGE_HEADER = `Usage: expo-brownfield <command>  [<options>]`;
 const TASKS_ANDROID_ERROR = `Error: Value of Android library name: ENOENT: no such file or directory`;
 
 let TEMP_DIR: string;
@@ -40,7 +39,7 @@ describe('basic cli tests', () => {
   it('should correctly parse passed flags', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--version', '--help']);
     expect(exitCode).toBe(0);
-    expect(stdout).toContain(HELP_MESSAGE_HEADER);
+    expect(stdout).toContain(ExpectedOutput.GeneralHelp.Header);
   });
 
   /**
@@ -50,7 +49,7 @@ describe('basic cli tests', () => {
   it('should display help message if no arguments are provided', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, [], { ignoreErrors: true });
     expect(exitCode).toBe(0);
-    expect(stdout).toContain(HELP_MESSAGE_HEADER);
+    expect(stdout).toContain(ExpectedOutput.GeneralHelp.Header);
   });
 
   /**

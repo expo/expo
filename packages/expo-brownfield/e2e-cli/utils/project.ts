@@ -4,7 +4,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import tempDir from 'temp-dir';
 
-import { createPackageTarball } from './package';
 import { executeCreateExpoCLIAsync, executeExpoCLIAsync, sleep } from './process';
 
 const PROJECT_NAME = 'testapp';
@@ -19,34 +18,12 @@ export const createTempProject = async (
   suffix: string,
   prebuild: boolean = false
 ): Promise<string> => {
-  // Create a temporary directory & initialize a new Expo project
   const projectRoot = path.join(TEMP_DIR, PROJECT_NAME + suffix);
   await removeProject(projectRoot);
 
   try {
-    // Create a project using locally linked create-expo and templates
-    const templatePath = path.join(__dirname, '../../../../templates/expo-template-default');
-    if (!fs.existsSync(templatePath)) {
-      throw new Error(`Template directory not found at: ${templatePath}`);
-    }
-    const tarballs = await glob('*.tgz', { cwd: templatePath });
-    if (tarballs.length === 0) {
-      throw new Error(`No tarballs found in template directory: ${templatePath}`);
-    }
-    await executeCreateExpoCLIAsync(TEMP_DIR, [
-      PROJECT_NAME + suffix,
-      '--template',
-      path.join(templatePath, tarballs[0]),
-    ]);
-
-    // Create and install the package tarball
-    const packageTarball = await createPackageTarball(projectRoot);
-    if (!fs.existsSync(path.join(projectRoot, packageTarball))) {
-      throw new Error(`Package tarball not found: ${packageTarball}`);
-    }
-    await spawnAsync('npm', ['install', packageTarball], { cwd: projectRoot, stdio: 'pipe' });
-
-    // Maybe prebuild the project
+    await createProjectWithTemplate(TEMP_DIR, PROJECT_NAME + suffix);
+    await installPackage(projectRoot);
     if (prebuild) {
       await addPlugin(projectRoot);
       await executeExpoCLIAsync(projectRoot, ['prebuild', '--clean']);
@@ -101,4 +78,48 @@ const removeProject = async (projectRoot: string) => {
     }
     throw error;
   }
+};
+
+/**
+ * Create a project with a template and specified name
+ * Uses local versions of Create Expo and expo-default-template
+ */
+const createProjectWithTemplate = async (at: string, projectName: string) => {
+  const templatePath = path.join(__dirname, '../../../../templates/expo-template-default');
+  if (!fs.existsSync(templatePath)) {
+    throw new Error(`Template directory not found at: ${templatePath}`);
+  }
+
+  const tarballs = await glob('*.tgz', { cwd: templatePath });
+  if (tarballs.length === 0) {
+    throw new Error(`No tarballs found in template directory: ${templatePath}`);
+  }
+
+  await executeCreateExpoCLIAsync(at, [
+    projectName,
+    '--template',
+    path.join(templatePath, tarballs[0]),
+  ]);
+};
+
+/**
+ * Install `expo-brownfield` package from a tarball
+ */
+const installPackage = async (projectRoot: string) => {
+  const packageRoot = path.join(__dirname, '../..');
+  const tarballs = await glob('*.tgz', { cwd: packageRoot });
+  if (tarballs.length !== 1) {
+    throw new Error(
+      `Expected a single tarball to be created for 'expo-brownfield', received: ${tarballs.length}`
+    );
+  }
+
+  const packageTarball = tarballs[0];
+  const packageTarballPath = path.join(packageRoot, packageTarball);
+  await fs.promises.cp(packageTarballPath, path.join(projectRoot, packageTarball), {
+    recursive: true,
+    force: true,
+  });
+
+  await spawnAsync('npm', ['install', packageTarball], { cwd: projectRoot, stdio: 'pipe' });
 };

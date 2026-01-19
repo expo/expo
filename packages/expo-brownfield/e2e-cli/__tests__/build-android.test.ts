@@ -1,5 +1,364 @@
-describe('basic cli tests', () => {
-  it('mock', async () => {
-    expect(2 + 2).toEqual(4);
+import { ExpectedOutput } from '../utils/output';
+import { executeCommandAsync } from '../utils/process';
+import { cleanUpProject, createTempProject } from '../utils/project';
+import { buildAndroidTest, expectPrebuild } from '../utils/test';
+
+let TEMP_DIR: string;
+let TEMP_DIR_PREBUILD: string;
+
+/**
+ * Tests the `build-android` command
+ * npx expo-brownfield build-android
+ */
+describe('build-android command', () => {
+  /**
+   * Part of the cases doesn't and shouldn't require prebuild to be done
+   */
+  describe('without prebuild', () => {
+    beforeAll(async () => {
+      TEMP_DIR = await createTempProject('buildandroidnopb');
+    }, 600000);
+
+    afterAll(async () => {
+      await cleanUpProject('buildandroidnopb');
+    }, 600000);
+
+    /**
+     * Command: npx expo-brownfield build-android --help/-h
+     * Expected behavior: The CLI should display the full help message
+     */
+    it('should display help message for --help/-h option', async () => {
+      // Help message display shouldn't require prebuild
+      await buildAndroidTest(TEMP_DIR, ['build-android', '--help'], true, [
+        ExpectedOutput.BuildAndroidHelp.Full,
+      ]);
+      await buildAndroidTest(TEMP_DIR, ['build-android', '-h'], true, [
+        ExpectedOutput.BuildAndroidHelp.Full,
+      ]);
+    });
+
+    /**
+     * Command: npx expo-brownfield build-android --invalid-flag
+     * Expected behavior: The CLI should display the error message
+     */
+    it('should handle incorrect options', async () => {
+      await buildAndroidTest(
+        TEMP_DIR,
+        ['build-android', '--invalid-flag'],
+        false,
+        [],
+        [ExpectedOutput.Error.UnknownOption('--invalid-flag')]
+      );
+    });
+
+    /**
+     * Command: npx expo-brownfield build-android build-ios
+     * Expected behavior: The CLI should display the error message
+     */
+    it("shouldn't allow passing another command", async () => {
+      await buildAndroidTest(
+        TEMP_DIR,
+        ['build-android', 'build-ios'],
+        false,
+        [],
+        [ExpectedOutput.Error.AdditionalCommand('build-android')]
+      );
+    });
+
+    /**
+     * Command: npx expo-brownfield build-android
+     * Expected behavior: The CLI should validate and ask for prebuild
+     */
+    it('should validate and ask for prebuild', async () => {
+      // The command fails, because `expo-brownfield` is not added to app.json
+      // But the prebuild should succeed
+      const { exitCode, stdout, stderr } = await executeCommandAsync(
+        TEMP_DIR,
+        'bash',
+        ['-c', 'yes | npx expo-brownfield build-android'],
+        { ignoreErrors: true }
+      );
+      expect(exitCode).not.toBe(0);
+      expect(stdout).toContain(ExpectedOutput.Prebuild.Warning('android'));
+      expect(stdout).toContain(ExpectedOutput.Prebuild.Prompt);
+      expect(stderr).toContain(ExpectedOutput.Android.InferenceError);
+
+      // The android directory should be created and not empty
+      await expectPrebuild(TEMP_DIR, 'android');
+    });
+
+    // TODO(pmleczek): Verify failure if prebuild is not done
+  });
+
+  /**
+   * Part of the cases should require prebuild to be done
+   */
+  describe('with prebuild', () => {
+    beforeAll(async () => {
+      TEMP_DIR_PREBUILD = await createTempProject('buildandroidpb', true);
+    }, 600000);
+
+    afterAll(async () => {
+      await cleanUpProject('buildandroidpb');
+    }, 600000);
+
+    /**
+     * Command: npx expo-brownfield build-android --task someGradleTask --dry-run
+     * Expected behavior: The CLI should print the task it would execute
+     */
+    it('should build the project', async () => {
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--task', 'someGradleTask', '--dry-run'],
+        true,
+        ['./gradlew someGradleTask']
+      );
+    });
+
+    /**
+     * Command: npx expo-brownfield build-android --task someGradleTask --dry-run
+     * Expected behavior: The CLI should print the inferred build configuration
+     */
+    it('should infer and print build configuration', async () => {
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--task', 'someGradleTask', '--dry-run'],
+        true,
+        [ExpectedOutput.BuildAndroid.Configuration]
+      );
+    });
+
+    /**
+     * Command: npx expo-brownfield build-android --task someGradleTask --dry-run --verbose
+     * Expected behavior: The CLI should print the verbose configuration
+     */
+    it('should properly handle --verbose option', async () => {
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--task', 'someGradleTask', '--dry-run', '--verbose'],
+        true,
+        [ExpectedOutput.BuildAndroid.VerboseConfig]
+      );
+    });
+
+    /**
+     * Command: npx expo-brownfield build-android --repo MavenLocal --dry-run --debug/-d
+     * Expected behavior: The CLI should print the debug configuration and execute correct tasks
+     */
+    it('should properly handle --debug option', async () => {
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--repo', 'MavenLocal', '--dry-run', '--debug'],
+        true,
+        [
+          ExpectedOutput.BuildAndroid.DebugConfig,
+          `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
+        ]
+      );
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--repo', 'MavenLocal', '--dry-run', '--debug'],
+        true,
+        [
+          ExpectedOutput.BuildAndroid.DebugConfig,
+          `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
+        ]
+      );
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--repo', 'MavenLocal', '--dry-run', '-d'],
+        true,
+        [
+          ExpectedOutput.BuildAndroid.DebugConfig,
+          `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
+        ]
+      );
+    });
+
+    /**
+     * Command: npx expo-brownfield build-android --repo MavenLocal --dry-run --release/-r     * Command: npx expo-brownfield build-android --repo MavenLocal --dry-run --release/-r
+     * Expected behavior: The CLI should print the release configuration and execute correct tasks
+     */
+    it('should properly handle --release option', async () => {
+      // Full version: --release
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--repo', 'MavenLocal', '--dry-run', '--release'],
+        true,
+        [
+          ExpectedOutput.BuildAndroid.ReleaseConfig,
+          `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
+        ]
+      );
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--repo', 'MavenLocal', '--dry-run', '-r'],
+        true,
+        [
+          ExpectedOutput.BuildAndroid.ReleaseConfig,
+          `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
+        ]
+      );
+      // Short version: -r
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--repo', 'MavenLocal', '--dry-run', '-r'],
+        true,
+        [
+          ExpectedOutput.BuildAndroid.ReleaseConfig,
+          `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
+        ]
+      );
+    });
+
+    /**
+     * Command: npx expo-brownfield build-android --repo MavenLocal --dry-run --all/-a
+     *  (or --release/-r + --debug/-d)
+     * Expected behavior: The CLI should print the all configuration and execute correct tasks
+     */
+    it('should properly handle --all option', async () => {
+      // Full version: --all
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--repo', 'MavenLocal', '--dry-run', '--all'],
+        true,
+        [
+          ExpectedOutput.BuildAndroid.AllConfig,
+          `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
+        ]
+      );
+
+      // Short version: -a
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--repo', 'MavenLocal', '--dry-run', '-a'],
+        true,
+        [
+          ExpectedOutput.BuildAndroid.AllConfig,
+          `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
+        ]
+      );
+
+      // Combination of the two flags: --release/-r + --debug/-d
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--repo', 'MavenLocal', '--dry-run', '--release', '-d'],
+        true,
+        [
+          ExpectedOutput.BuildAndroid.AllConfig,
+          `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
+        ]
+      );
+    });
+
+    /**
+     * Command: npx expo-brownfield build-android --repo MavenLocal --dry-run --library/-l brownfieldlib
+     * Expected behavior: The CLI should print the library configuration and execute correct tasks
+     */
+    it('should properly handle --library option', async () => {
+      // Full version: --library
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--repo', 'MavenLocal', '--dry-run', '--library', 'brownfieldlib'],
+        true,
+        [
+          ExpectedOutput.BuildAndroid.LibraryConfig,
+          `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
+        ]
+      );
+
+      // Short version: -l
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--repo', 'MavenLocal', '--dry-run', '-l', 'brownfieldlib'],
+        true,
+        [
+          ExpectedOutput.BuildAndroid.LibraryConfig,
+          `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
+        ]
+      );
+    });
+
+    /**
+     * Command: npx expo-brownfield build-android --task/t task (multiple can be passed)
+     * Expected behavior: The CLI should print the tasks configuration and execute correct tasks
+     */
+    it('should properly handle --task/-t option(s)', async () => {
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--task', 'task1', '-t', 'task2', '--task', 'task3', '--dry-run'],
+        true,
+        [
+          ExpectedOutput.BuildAndroid.TasksConfig,
+          `./gradlew task1`,
+          `./gradlew task2`,
+          `./gradlew task3`,
+        ]
+      );
+    });
+
+    /**
+     * Command: npx expo-brownfield build-android --repo MavenLocal --repository CustomLocal --dry-run
+     * Expected behavior: The CLI should print the repositories configuration and execute correct tasks
+     */
+    it('should properly handle --repo/--repository option(s)', async () => {
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--repo', 'MavenLocal', '--repository', 'CustomLocal', '--dry-run'],
+        true,
+        [
+          ExpectedOutput.BuildAndroid.RepositoriesConfig,
+          `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
+          `./gradlew publishBrownfieldAllPublicationToCustomLocalRepository`,
+        ]
+      );
+    });
+
+    /**
+     * Command: npx expo-brownfield build-android --repo MavenLocal --task task1 --dry-run
+     * Expected behavior: Tasks should take precedence over repositories. Correct task should be executed
+     */
+    it('tasks should take precedence over repositories', async () => {
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--repo', 'MavenLocal', '--task', 'task1', '--dry-run'],
+        true,
+        [ExpectedOutput.BuildAndroid.TaskConfig, `./gradlew task1`]
+      );
+    });
+
+    /**
+     * Command: npx expo-brownfield build-android <various configurations> --dry-run
+     * Expected behavior: Correct tasks should be constructed and executed
+     */
+    it('should properly construct and execute tasks for various configurations', async () => {
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        ['build-android', '--repo', 'MavenLocal', '--debug', '--dry-run'],
+        true,
+        [
+          ExpectedOutput.BuildAndroid.DebugConfig,
+          `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
+        ]
+      );
+      await buildAndroidTest(
+        TEMP_DIR_PREBUILD,
+        [
+          'build-android',
+          '--repo',
+          'CustomDir',
+          '--repository',
+          'CustomLocal',
+          '--release',
+          '--dry-run',
+        ],
+        true,
+        [
+          ExpectedOutput.BuildAndroid.ReleaseConfig,
+          `./gradlew publishBrownfieldReleasePublicationToCustomDirRepository`,
+          `./gradlew publishBrownfieldReleasePublicationToCustomLocalRepository`,
+        ]
+      );
+    });
   });
 });

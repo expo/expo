@@ -87,6 +87,33 @@ export const executeCreateExpoCLIAsync = async (
 };
 
 /**
+ * Execute any command
+ */
+export const executeCommandAsync = async (
+  cwd: string,
+  command: string,
+  args: string[],
+  options: ExecuteCLIOptions = { ignoreErrors: false }
+) => {
+  try {
+    const { stdout, stderr, status } = await spawnAsync(command, args, {
+      cwd,
+      stdio: 'pipe',
+    });
+
+    return processOutput({ stdout, stderr, status });
+  } catch (error) {
+    if (!options.ignoreErrors) {
+      console.error(error);
+      throw error;
+    }
+
+    const { stdout, stderr, status } = error;
+    return processOutput({ stdout, stderr, status });
+  }
+};
+
+/**
  * Strip ANSI escape characters from a string
  */
 export const stripAnsi = (str: string): string => {

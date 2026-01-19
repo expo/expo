@@ -31,6 +31,7 @@ describe('tasks-android command', () => {
       let result = await executeCLIASync(TEMP_DIR, ['tasks-android', '--help']);
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toContain(ExpectedOutput.TasksAndroidHelp.Full);
+
       result = await executeCLIASync(TEMP_DIR, ['tasks-android', '-h']);
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toContain(ExpectedOutput.TasksAndroidHelp.Full);

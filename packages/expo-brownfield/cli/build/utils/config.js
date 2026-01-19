@@ -9,6 +9,7 @@ const constants_1 = require("../constants");
 const infer_1 = require("./infer");
 const getCommonConfig = (args) => {
     return {
+        dryRun: !!args['--dry-run'],
         help: !!args['--help'],
         verbose: !!args['--verbose'],
     };

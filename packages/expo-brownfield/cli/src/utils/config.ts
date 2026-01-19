@@ -13,6 +13,7 @@ import { inferAndroidLibrary, inferScheme, inferXCWorkspace } from './infer';
 
 export const getCommonConfig = (args: Result<Spec>): BuildConfigCommon => {
   return {
+    dryRun: !!args['--dry-run'],
     help: !!args['--help'],
     verbose: !!args['--verbose'],
   };
