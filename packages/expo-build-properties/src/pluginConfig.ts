@@ -881,9 +881,7 @@ export function validateConfig(config: any): PluginConfigType {
   const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1');
   const iosBuildFromSource = resolveConfigValue(config, 'ios', 'buildReactNativeFromSource');
   if (iosUseHermesV1 === true && iosBuildFromSource !== true) {
-    throw new Error(
-      '`useHermesV1` requires `buildReactNativeFromSource` to be `true` for iOS.'
-    );
+    throw new Error('`useHermesV1` requires `buildReactNativeFromSource` to be `true` for iOS.');
   }
 
   return config;

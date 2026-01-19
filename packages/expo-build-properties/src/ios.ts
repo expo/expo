@@ -47,8 +47,7 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
     },
     {
       propName: 'expo.useHermesV1',
-      propValueGetter: (config) =>
-        resolveConfigValue(config, 'ios', 'useHermesV1')?.toString(),
+      propValueGetter: (config) => resolveConfigValue(config, 'ios', 'useHermesV1')?.toString(),
     },
   ],
   'withIosBuildProperties'

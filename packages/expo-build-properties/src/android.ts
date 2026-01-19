@@ -108,8 +108,7 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
     },
     {
       propName: 'hermesV1Enabled',
-      propValueGetter: (config) =>
-        resolveConfigValue(config, 'android', 'useHermesV1')?.toString(),
+      propValueGetter: (config) => resolveConfigValue(config, 'android', 'useHermesV1')?.toString(),
     },
   ],
   'withAndroidBuildProperties'
