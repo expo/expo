@@ -4,7 +4,7 @@ import SwiftUI
 import ExpoModulesCore
 
 public final class TextViewProps: UIBaseViewProps {
-  @Field var text: String = ""
+  @Field public var text: String = ""
 
   // Override default frame alignment for text views
   override var defaultFrameAlignment: Alignment { .leading }
