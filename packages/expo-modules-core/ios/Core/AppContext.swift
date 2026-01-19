@@ -595,7 +595,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
     if let providerClass = NSClassFromString(providerName) as? ModulesProvider.Type {
       return providerClass.init()
     }
-    
+
     // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
     for bundle in Bundle.allFrameworks {
       guard let bundleName = bundle.infoDictionary?["CFBundleName"] as? String else { continue }
@@ -609,7 +609,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
   }
 
   public func reloadAppAsync(_ reason: String = "Reload from appContext") {
-    if(moduleRegistry.has(moduleWithName: "ExpoGo")) {
+    if moduleRegistry.has(moduleWithName: "ExpoGo") {
       NotificationCenter.default.post(name: NSNotification.Name(rawValue: "EXReloadActiveAppRequest"), object: nil)
     } else {
       DispatchQueue.main.async {
