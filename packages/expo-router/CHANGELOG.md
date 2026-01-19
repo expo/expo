@@ -65,6 +65,7 @@ _This version does not introduce any user-facing changes._
 - use screen's synchronous layout updates by default in router ([#42154](https://github.com/expo/expo/pull/42154) by [@Ubax](https://github.com/Ubax))
 - Add support for `renderingMode` prop on native tabs icon ([#41788](https://github.com/expo/expo/pull/41788) by [@b-bot](https://github.com/b-bot))
 - unify <Toolbar> and <Stack.Header> into <Stack.Toolbar> ([#42192](https://github.com/expo/expo/pull/42192) by [@Ubax](https://github.com/Ubax))
+- add listeners and screenListeners to NativeTabs ([#42285](https://github.com/expo/expo/pull/42285) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
