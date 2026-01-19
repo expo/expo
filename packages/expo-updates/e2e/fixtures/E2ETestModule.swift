@@ -33,11 +33,11 @@ public final class E2ETestModule: Module, UpdatesStateChangeListener {
       }
     }
 
-    OnStartObserving {
+    OnStartObserving(e2eEventName) {
       hasListener = true
     }
 
-    OnStopObserving {
+    OnStopObserving(e2eEventName) {
       hasListener = false
     }
 
