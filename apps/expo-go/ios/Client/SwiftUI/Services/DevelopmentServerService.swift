@@ -1,14 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
-import Combine
 import UIKit
 
 @MainActor
 class DevelopmentServerService: ObservableObject {
   @Published var developmentServers: [DevelopmentServer] = []
 
-  private var discoveryCancellables = Set<AnyCancellable>()
   private let discoveryInterval: TimeInterval = 2.0
   private let remoteRefreshInterval: TimeInterval = 10.0
   private let remoteCacheKey = "expo-dev-sessions-cache"
@@ -17,71 +15,84 @@ class DevelopmentServerService: ObservableObject {
   private var localServers: [DevelopmentServer] = []
   private var remoteServers: [DevelopmentServer] = []
   private var sessionSecret: String?
+  private var discoveryTask: Task<Void, Never>?
+  private var remoteRefreshTask: Task<Void, Never>?
+  private var isDiscovering = false
+  private var isFetchingRemote = false
 
   func startDiscovery() {
     stopDiscovery()
-    discoverDevelopmentServers()
     loadCachedRemoteSessions()
-    refreshRemoteSessions()
-
-    Timer.publish(every: discoveryInterval, on: .main, in: .common)
-      .autoconnect()
-      .receive(on: DispatchQueue.global(qos: .background))
-      .sink { [weak self] _ in
-        self?.discoverDevelopmentServers()
-      }
-      .store(in: &discoveryCancellables)
-
-    Timer.publish(every: remoteRefreshInterval, on: .main, in: .common)
-      .autoconnect()
-      .receive(on: DispatchQueue.global(qos: .background))
-      .sink { [weak self] _ in
-        self?.refreshRemoteSessions()
-      }
-      .store(in: &discoveryCancellables)
+    startDiscoveryLoop()
+    startRemoteRefreshLoop()
   }
 
   func stopDiscovery() {
-    discoveryCancellables.removeAll()
+    discoveryTask?.cancel()
+    remoteRefreshTask?.cancel()
+    discoveryTask = nil
+    remoteRefreshTask = nil
   }
 
   func setSessionSecret(_ sessionSecret: String?) {
     self.sessionSecret = sessionSecret
-    refreshRemoteSessions()
+    startRemoteRefreshLoop()
   }
 
-  func discoverDevelopmentServers() {
-    Task {
-      var discoveredServers: [DevelopmentServer] = []
-      // swiftlint:disable number_separator
-      let portsToCheck = [8081, 8082, 8083, 8084, 8085, 19000, 19001, 19002]
-      // swiftlint:enable number_separator
-      let baseAddress = "http://localhost"
+  func refreshRemoteSessions() async {
+    await fetchRemoteSessions()
+  }
 
-      await withTaskGroup(of: DevelopmentServer?.self) { group in
-        for port in portsToCheck {
-          group.addTask {
-            await self.checkDevelopmentServer(url: "\(baseAddress):\(port)")
-          }
-        }
+  func discoverDevelopmentServers() async {
+    guard !isDiscovering else {
+      return
+    }
+    isDiscovering = true
+    defer { isDiscovering = false }
 
-        for await server in group {
-          if let server = server {
-            discoveredServers.append(server)
-          }
+    var discoveredServers: [DevelopmentServer] = []
+    // swiftlint:disable number_separator
+    let portsToCheck = [8081, 8082, 8083, 8084, 8085, 19000, 19001, 19002]
+    // swiftlint:enable number_separator
+    let baseAddress = "http://localhost"
+
+    await withTaskGroup(of: DevelopmentServer?.self) { group in
+      for port in portsToCheck {
+        group.addTask {
+          await self.checkDevelopmentServer(url: "\(baseAddress):\(port)")
         }
       }
 
-      await MainActor.run {
-        self.localServers = discoveredServers
-        self.updateDevelopmentServers()
+      for await server in group {
+        if let server = server {
+          discoveredServers.append(server)
+        }
+      }
+    }
+
+    localServers = discoveredServers
+    updateDevelopmentServers()
+  }
+
+  private func startDiscoveryLoop() {
+    discoveryTask?.cancel()
+    discoveryTask = Task { [weak self] in
+      guard let self else { return }
+      while !Task.isCancelled {
+        await self.discoverDevelopmentServers()
+        try? await Task.sleep(nanoseconds: UInt64(self.discoveryInterval * 1_000_000_000))
       }
     }
   }
 
-  func refreshRemoteSessions() {
-    Task {
-      await fetchRemoteSessions()
+  private func startRemoteRefreshLoop() {
+    remoteRefreshTask?.cancel()
+    remoteRefreshTask = Task { [weak self] in
+      guard let self else { return }
+      while !Task.isCancelled {
+        await self.fetchRemoteSessions()
+        try? await Task.sleep(nanoseconds: UInt64(self.remoteRefreshInterval * 1_000_000_000))
+      }
     }
   }
 
@@ -186,15 +197,19 @@ class DevelopmentServerService: ObservableObject {
   }
 
   private func fetchRemoteSessions() async {
+    guard !isFetchingRemote else {
+      return
+    }
+    isFetchingRemote = true
+    defer { isFetchingRemote = false }
+
     guard Date() >= nextRemoteFetchAllowedAt else {
       return
     }
 
     guard let sessionSecret, !sessionSecret.isEmpty else {
-      await MainActor.run {
-        self.remoteServers = []
-        self.updateDevelopmentServers()
-      }
+      self.remoteServers = []
+      self.updateDevelopmentServers()
       return
     }
 
@@ -237,10 +252,8 @@ class DevelopmentServerService: ObservableObject {
         )
       }
 
-      await MainActor.run {
-        self.remoteServers = mappedServers
-        self.updateDevelopmentServers()
-      }
+      self.remoteServers = mappedServers
+      self.updateDevelopmentServers()
       cacheRemoteSessions(sessions)
       remoteFailureCount = 0
       nextRemoteFetchAllowedAt = .distantPast

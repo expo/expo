@@ -53,7 +53,7 @@ class SettingsManager: ObservableObject {
     buildInfo = [
       "appName": Bundle.main.infoDictionary?["CFBundleDisplayName"] ?? "Expo Go",
       "appVersion": getFormattedAppVersion(),
-      "expoRuntimeVersion": buildConstants.expoRuntimeVersion ?? "Unknown",
+      "expoRuntimeVersion": buildConstants.expoRuntimeVersion,
       "supportedExpoSdks": versions.sdkVersion,
       "appIcon": getAppIcon()
     ]
