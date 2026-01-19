@@ -84,11 +84,12 @@ export function AskPageAIChatMessages({
         const trimmedAnswer = normalizedAnswer?.trim();
         const trimmedLower = trimmedAnswer?.toLowerCase() ?? '';
         const fallbackLower = fallbackResponse.toLowerCase();
+        const hasSources = Array.isArray(qa.sources) && qa.sources.length > 0;
         const isOffPageAnswer =
           contextScope === 'page' &&
-          Boolean(qa.sources?.length) &&
-          qa.sources.some(source => !source.source_url.includes(basePath));
-        const sourcesForDisplay = isOffPageAnswer ? [] : qa.sources;
+          hasSources &&
+          (qa.sources?.some(source => !source.source_url.includes(basePath)) ?? false);
+        const sourcesForDisplay = isOffPageAnswer ? [] : qa.sources ?? [];
         const isFallbackAnswer =
           trimmedAnswer === fallbackResponse ||
           trimmedLower.startsWith(fallbackLower) ||
