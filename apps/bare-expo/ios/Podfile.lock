@@ -3098,6 +3098,29 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - UMAppLoader (6.0.7)
+  - WorkletsTester (0.0.1):
+    - ExpoModulesCore
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - Yoga (0.0.0)
   - ZXingObjC/Core (3.6.9)
   - ZXingObjC/OneD (3.6.9):
@@ -3295,6 +3318,7 @@ DEPENDENCIES:
   - RNSVG (from `../../../node_modules/react-native-svg`)
   - RNWorklets (from `../../../node_modules/react-native-worklets`)
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
+  - WorkletsTester (from `../modules/worklets-tester/ios`)
   - Yoga (from `../../../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -3741,6 +3765,9 @@ EXTERNAL SOURCES:
   UMAppLoader:
     inhibit_warnings: false
     :path: "../../../packages/unimodules-app-loader/ios"
+  WorkletsTester:
+    inhibit_warnings: false
+    :path: "../modules/worklets-tester/ios"
   Yoga:
     :path: "../../../node_modules/react-native/ReactCommon/yoga"
 
@@ -3930,6 +3957,7 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   UMAppLoader: b649e542381c8abe788ffb13893e632d598910a5
+  WorkletsTester: f76956000cdf163c71f8eb20fe09f1bfa21acbaf
   Yoga: 35d573dff66536d48493acb65a519482f8219fe8
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 

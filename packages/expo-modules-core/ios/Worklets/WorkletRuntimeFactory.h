@@ -2,12 +2,13 @@
 
 #import <ExpoModulesCore/EXRuntime.h>
 #import <ExpoModulesJSI/EXJavaScriptValue.h>
+#import <ExpoModulesCore/EXWorkletRuntime.h>
 
 @class EXAppContext;
 
 @interface WorkletRuntimeFactory : NSObject
 
-+ (nonnull EXRuntime *)createWorkletRuntime:(nonnull EXAppContext *)appContext fromPointer:(nullable void *)pointer;
++ (nonnull EXWorkletRuntime *)createWorkletRuntime:(nonnull EXAppContext *)appContext fromPointer:(nullable void *)pointer;
 
 + (nullable void *)extractRuntimePointer:(nonnull EXJavaScriptValue *)jsValue runtime:(nonnull EXJavaScriptRuntime *)runtime;
 
