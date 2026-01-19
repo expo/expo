@@ -1,0 +1,98 @@
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
+
+import { clearSharedPayloads, getResolvedSharedPayloadsAsync, getSharedPayloads } from './Sharing';
+import { ResolvedSharePayload, SharePayload } from './Sharing.types';
+
+function sharePayloadsAreEqual(a: SharePayload[], b: SharePayload[]): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  const counts = new Map<string, number>();
+  const getKey = (item: SharePayload) => `${item.value}|${item.mimeType}|${item.shareType}`;
+
+  for (const item of a) {
+    const key = getKey(item);
+    counts.set(key, (counts.get(key) || 0) + 1);
+  }
+
+  for (const item of b) {
+    const key = getKey(item);
+    const count = counts.get(key);
+
+    if (!count) {
+      return false;
+    }
+
+    counts.set(key, count - 1);
+  }
+
+  return true;
+}
+
+/**
+ * TODO: Docs
+ */
+export function useIncomingShare() {
+  const [sharedPayloads, setSharedPayloads] = useState<SharePayload[]>([]);
+  const [resolvedSharedPayloads, setResolvedSharedPayloads] = useState<ResolvedSharePayload[]>([]);
+  const [isResolving, setIsResolving] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  const currentSharedDataRef = useRef<SharePayload[]>([]);
+
+  const refreshSharePayloads = useCallback(async () => {
+    try {
+      const newSharedData: SharePayload[] = getSharedPayloads() || [];
+
+      // Do not run `getResolvedSharedDataAsync` if the data hasn't changed to reduce network usage
+      if (sharePayloadsAreEqual(newSharedData, currentSharedDataRef.current)) {
+        return;
+      }
+
+      currentSharedDataRef.current = newSharedData;
+      setSharedPayloads(newSharedData);
+      setResolvedSharedPayloads([]);
+      setError(null);
+
+      if (newSharedData.length > 0) {
+        setIsResolving(true);
+        try {
+          const resolved = await getResolvedSharedPayloadsAsync();
+          setResolvedSharedPayloads(resolved);
+        } catch (e) {
+          setError(
+            e instanceof Error ? e : new Error('Unknown error during shared payload resolution')
+          );
+        } finally {
+          setIsResolving(false);
+        }
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e : new Error('Failed to resolve data'));
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshSharePayloads();
+
+    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+      if (nextAppState === 'active') {
+        refreshSharePayloads();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [refreshSharePayloads]);
+
+  return {
+    sharedPayloads,
+    resolvedSharedPayloads,
+    clearSharedPayloads,
+    isResolving,
+    error,
+    refreshSharePayloads,
+  };
+}

@@ -18,4 +18,13 @@ export default {
       throw new UnavailabilityError('navigator', 'share');
     }
   },
+  getSharedPayloads() {
+    throw new Error('Receiving share payloads is not supported on web.');
+  },
+  async getResolvedSharedPayloadsAsync() {
+    throw new Error('Receiving share payloads is not supported on web.');
+  },
+  clearSharedPayloads() {
+    throw new Error('Receiving share payloads is not supported on web.');
+  },
 };

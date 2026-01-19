@@ -1,37 +1,7 @@
 import { UnavailabilityError } from 'expo-modules-core';
 
-import Sharing from './ExpoSharing';
-
-// @needsAudit
-export type SharingOptions = {
-  /**
-   * Sets `mimeType` for `Intent`.
-   * @platform android
-   */
-  mimeType?: string;
-  /**
-   * [Uniform Type Identifier](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_conc/understand_utis_conc.html)
-   *  - the type of the target file.
-   * @platform ios
-   */
-  UTI?: string;
-  /**
-   * Sets share dialog title.
-   * @platform android
-   * @platform web
-   */
-  dialogTitle?: string;
-  /**
-   * set the anchor point for iPad
-   * @platform ios
-   */
-  anchor?: {
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-  };
-};
+import { ResolvedSharePayload, SharePayload, SharingOptions } from './Sharing.types';
+import SharingNativeModule from './SharingNativeModule';
 
 // @needsAudit
 /**
@@ -39,9 +9,9 @@ export type SharingOptions = {
  * @return A promise that fulfills with `true` if the sharing API can be used, and `false` otherwise.
  */
 export async function isAvailableAsync(): Promise<boolean> {
-  if (Sharing) {
-    if (Sharing.isAvailableAsync) {
-      return await Sharing.isAvailableAsync();
+  if (SharingNativeModule) {
+    if (SharingNativeModule.isAvailableAsync) {
+      return await SharingNativeModule.isAvailableAsync();
     }
     return true;
   }
@@ -56,8 +26,29 @@ export async function isAvailableAsync(): Promise<boolean> {
  * @param options A map of share options.
  */
 export async function shareAsync(url: string, options: SharingOptions = {}): Promise<void> {
-  if (!Sharing || !Sharing.shareAsync) {
+  if (!SharingNativeModule || !SharingNativeModule.shareAsync) {
     throw new UnavailabilityError('Sharing', 'shareAsync');
   }
-  return await Sharing.shareAsync(url, options);
+  return await SharingNativeModule.shareAsync(url, options);
+}
+
+/**
+ * TODO: Docs
+ */
+export function getSharedPayloads(): SharePayload[] {
+  return SharingNativeModule.getSharedPayloads();
+}
+
+/**
+ * TODO: Docs
+ */
+export async function getResolvedSharedPayloadsAsync(): Promise<ResolvedSharePayload[]> {
+  return await SharingNativeModule.getResolvedSharedPayloadsAsync();
+}
+
+/**
+ * Clears the data shared with the app.
+ */
+export function clearSharedPayloads(): void {
+  SharingNativeModule.clearSharedPayloads();
 }
