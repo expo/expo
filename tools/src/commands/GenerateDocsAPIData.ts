@@ -221,6 +221,7 @@ const executeCommand = async (
       '@deprecated',
       '@docsMissing',
       '@header',
+      '@hideType',
       '@needsAudit',
       '@platform',
     ],
