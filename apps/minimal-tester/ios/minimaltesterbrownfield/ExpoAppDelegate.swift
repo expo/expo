@@ -1,5 +1,5 @@
-import Foundation
-import ExpoModulesCore
+import UIKit
+internal import ExpoModulesCore
 
 /**
  Allows classes extending `ExpoAppDelegateSubscriber` to hook into project's app delegate
@@ -7,8 +7,8 @@ import ExpoModulesCore
 
  Keep functions and markers in sync with https://developer.apple.com/documentation/uikit/uiapplicationdelegate
  */
-@objc(EXExpoAppDelegate)
-open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
+@objc
+open class ExpoBrownfieldAppDelegate: UIResponder, UIApplicationDelegate {
   override public init() {
     // The subscribers are initializing and registering before the main code starts executing.
     // Here we're letting them know when the `AppDelegate` is being created,
