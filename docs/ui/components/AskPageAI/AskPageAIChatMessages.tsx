@@ -26,6 +26,7 @@ type AskPageAIChatMessagesProps = {
   askedQuestions: string[];
   fallbackResponse: string;
   contextScope: ContextScope;
+  basePath: string;
   globalSearchRequests: Record<string, boolean>;
   globalSwitchNotices: Record<string, GlobalSwitchStatus>;
   pendingGlobalQuestionKey: string | null;
@@ -43,6 +44,7 @@ export function AskPageAIChatMessages({
   askedQuestions,
   fallbackResponse,
   contextScope,
+  basePath,
   globalSearchRequests,
   globalSwitchNotices,
   pendingGlobalQuestionKey,
@@ -80,7 +82,20 @@ export function AskPageAIChatMessages({
           ?.replace(/<br\s*\/?>((\n)?)/gi, '\n')
           ?.replace(/<sup[^>]*>(.*?)<\/sup>/gi, '$1');
         const trimmedAnswer = normalizedAnswer?.trim();
-        const isFallbackAnswer = trimmedAnswer === fallbackResponse;
+        const trimmedLower = trimmedAnswer?.toLowerCase() ?? '';
+        const fallbackLower = fallbackResponse.toLowerCase();
+        const isOffPageAnswer =
+          contextScope === 'page' &&
+          Boolean(qa.sources?.length) &&
+          qa.sources.some(source => !source.source_url.includes(basePath));
+        const sourcesForDisplay = isOffPageAnswer ? [] : qa.sources;
+        const isFallbackAnswer =
+          trimmedAnswer === fallbackResponse ||
+          trimmedLower.startsWith(fallbackLower) ||
+          trimmedLower.includes(fallbackLower) ||
+          trimmedLower.includes('search all expo docs') ||
+          isOffPageAnswer;
+        const answerForDisplay = isOffPageAnswer ? fallbackResponse : normalizedAnswer;
         const hasTriggeredGlobalSearch = Boolean(globalSearchRequests[normalizedQuestion]);
         const isPendingGlobal = pendingGlobalQuestionKey === normalizedQuestion;
         const isFinalAnswer =
@@ -116,9 +131,9 @@ export function AskPageAIChatMessages({
             <div className="px-0">
               <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
               <div className="mt-1 space-y-3 text-xs text-secondary">
-                {normalizedAnswer ? (
+                {answerForDisplay ? (
                   <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-                    {normalizedAnswer}
+                    {answerForDisplay}
                   </ReactMarkdown>
                 ) : (
                   <FOOTNOTE theme="secondary">
@@ -199,10 +214,10 @@ export function AskPageAIChatMessages({
                 </div>
               ) : null}
             </div>
-            {qa.sources?.length ? (
+            {sourcesForDisplay?.length ? (
               <FOOTNOTE theme="secondary" className="ml-1 text-xs">
                 Sources:{' '}
-                {qa.sources.map((source, sourceIdx, sources) => (
+                {sourcesForDisplay.map((source, sourceIdx, sources) => (
                   <span key={source.source_url}>
                     <a
                       className="text-link"

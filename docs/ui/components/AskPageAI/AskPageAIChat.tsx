@@ -268,10 +268,9 @@ export function AskPageAIChat({
       return [
         'You are ExpoDocsExpert, an assistant that should base answers on the supplied Expo SDK documentation context from this page.',
         `The user is reading the Expo docs page titled "${contextLabel}" at ${origin || 'the latest Expo SDK docs'}.`,
-        'Use only information from this page as your source; do not invent facts outside it.',
-        'If the context answers part of the question, answer those parts and state clearly where more information is needed.',
-        'When the question needs details beyond this page, invite the user to "Search all Expo docs" rather than refusing.',
-        `If the question is unrelated to the provided context and you cannot answer with this page alone, respond exactly with: "${fallbackResponse}" Do not explain or apologize.`,
+        'Use only information from this page as your source; do not rely on other pages, memory, or general knowledge.',
+        'If the page supports part of the question, answer that part and state clearly which parts are not covered by this page. Do not add unsupported details.',
+        `If this page provides zero relevant information (or the question is unrelated), respond exactly with: "${fallbackResponse}" followed by " To find this, choose “Search all Expo docs.”" Do not add anything else.`,
         'Prefer concise explanations, reference relevant APIs or headings, and format instructions as short steps or bullet lists when helpful.',
         'Whenever you share code or configuration examples, return complete, ready-to-run snippets with all required imports and setup so the user can copy and paste them into their app without additional context.',
         'Mention the Expo SDK version when relevant (this context represents the "latest" docs).',
@@ -431,6 +430,7 @@ export function AskPageAIChat({
           markersByIndex={markersByIndex}
           isBusy={isBusy}
           markdownComponents={markdownComponents}
+          basePath={basePath}
           onSearchAcrossDocs={handleSearchAcrossDocs}
           extractUserQuestion={extractUserQuestion}
           onNavigate={handleNavigation}
