@@ -1,4 +1,4 @@
-import { ExpectedOutput } from '../utils/output';
+import { HELP_MESSAGE } from '../utils/output';
 import { executeCLIASync } from '../utils/process';
 import { createTempProject, cleanUpProject } from '../utils/project';
 
@@ -24,7 +24,7 @@ describe('--help option', () => {
   it('should return the correct help message', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--help']);
     expect(exitCode).toBe(0);
-    expect(stdout).toContain(ExpectedOutput.GeneralHelp.Full);
+    expect(stdout).toContain(HELP_MESSAGE.GENERAL);
   });
 
   /**
@@ -34,7 +34,7 @@ describe('--help option', () => {
   it('should support the `-h` shorthand', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['-h']);
     expect(exitCode).toBe(0);
-    expect(stdout).toContain(ExpectedOutput.GeneralHelp.Header);
+    expect(stdout).toContain(HELP_MESSAGE.GENERAL_HEADER);
   });
 
   /**
@@ -45,7 +45,7 @@ describe('--help option', () => {
     const { stdout } = await executeCLIASync(TEMP_DIR, ['tasks-android', '--help'], {
       ignoreErrors: true,
     });
-    expect(stdout).not.toContain(ExpectedOutput.GeneralHelp.Header);
+    expect(stdout).not.toContain(HELP_MESSAGE.GENERAL_HEADER);
   });
 
   /**
@@ -55,7 +55,7 @@ describe('--help option', () => {
   it('should take precedence over `--version`', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--version', '--help']);
     expect(exitCode).toBe(0);
-    expect(stdout).toContain(ExpectedOutput.GeneralHelp.Header);
+    expect(stdout).toContain(HELP_MESSAGE.GENERAL_HEADER);
   });
 
   /**
@@ -65,7 +65,7 @@ describe('--help option', () => {
   it('should take precedence over the command', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--help', 'tasks-android']);
     expect(exitCode).toBe(0);
-    expect(stdout).toContain(ExpectedOutput.GeneralHelp.Header);
+    expect(stdout).toContain(HELP_MESSAGE.GENERAL_HEADER);
   });
 
   /**
@@ -75,6 +75,6 @@ describe('--help option', () => {
   it("shouldn't break when option is passed multiple times", async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--help', '-h', '--help']);
     expect(exitCode).toBe(0);
-    expect(stdout).toContain(ExpectedOutput.GeneralHelp.Header);
+    expect(stdout).toContain(HELP_MESSAGE.GENERAL_HEADER);
   });
 });

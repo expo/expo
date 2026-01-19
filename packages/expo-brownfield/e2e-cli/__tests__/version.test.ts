@@ -1,4 +1,4 @@
-import { ExpectedOutput } from '../utils/output';
+import { VERSION } from '../utils/output';
 import { executeCLIASync } from '../utils/process';
 import { createTempProject, cleanUpProject } from '../utils/project';
 
@@ -24,7 +24,7 @@ describe('--version option', () => {
   it('should return correct version', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--version']);
     expect(exitCode).toBe(0);
-    expect(stdout).toBe(ExpectedOutput.Version);
+    expect(stdout).toBe(VERSION);
   });
 
   /**
@@ -34,7 +34,7 @@ describe('--version option', () => {
   it('should support `-v` shorthand', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['-v']);
     expect(exitCode).toBe(0);
-    expect(stdout).toBe(ExpectedOutput.Version);
+    expect(stdout).toBe(VERSION);
   });
 
   /**
@@ -56,7 +56,7 @@ describe('--version option', () => {
   it('should take precedence over the command', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--version', 'tasks-android']);
     expect(exitCode).toBe(0);
-    expect(stdout).toBe(ExpectedOutput.Version);
+    expect(stdout).toBe(VERSION);
   });
 
   /**
@@ -66,6 +66,6 @@ describe('--version option', () => {
   it("shouldn't break when option is passed multiple times", async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--version', '-v', '--version']);
     expect(exitCode).toBe(0);
-    expect(stdout).toBe(ExpectedOutput.Version);
+    expect(stdout).toBe(VERSION);
   });
 });

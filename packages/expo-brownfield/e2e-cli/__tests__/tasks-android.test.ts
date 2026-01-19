@@ -1,4 +1,4 @@
-import { ExpectedOutput } from '../utils/output';
+import { ERROR, HELP_MESSAGE, TASKS_ANDROID } from '../utils/output';
 import { executeCLIASync } from '../utils/process';
 import { createTempProject, cleanUpProject } from '../utils/project';
 
@@ -30,11 +30,11 @@ describe('tasks-android command', () => {
       // Help message display shouldn't require prebuild
       let result = await executeCLIASync(TEMP_DIR, ['tasks-android', '--help']);
       expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain(ExpectedOutput.TasksAndroidHelp.Full);
+      expect(result.stdout).toContain(HELP_MESSAGE.TASKS_ANDROID);
 
       result = await executeCLIASync(TEMP_DIR, ['tasks-android', '-h']);
       expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain(ExpectedOutput.TasksAndroidHelp.Full);
+      expect(result.stdout).toContain(HELP_MESSAGE.TASKS_ANDROID);
     });
 
     /**
@@ -48,7 +48,7 @@ describe('tasks-android command', () => {
         { ignoreErrors: true }
       );
       expect(exitCode).toBe(1);
-      expect(stderr).toContain(ExpectedOutput.Error.UnknownOption('--invalid-flag'));
+      expect(stderr).toContain(ERROR.UNKNOWN_OPTION('--invalid-flag'));
     });
 
     /**
@@ -62,7 +62,7 @@ describe('tasks-android command', () => {
         { ignoreErrors: true }
       );
       expect(exitCode).toBe(1);
-      expect(stderr).toContain(ExpectedOutput.Error.AdditionalCommand('tasks-android'));
+      expect(stderr).toContain(ERROR.ADDITIONAL_COMMAND('tasks-android'));
     });
   });
 
@@ -85,7 +85,7 @@ describe('tasks-android command', () => {
     it('should properly list available tasks', async () => {
       const { stdout, exitCode } = await executeCLIASync(TEMP_DIR_PREBUILD, ['tasks-android']);
       expect(exitCode).toBe(0);
-      ExpectedOutput.TasksAndroid.Result.forEach((fragment) => {
+      TASKS_ANDROID.RESULT.forEach((fragment) => {
         expect(stdout).toContain(fragment);
       });
     });
@@ -101,13 +101,13 @@ describe('tasks-android command', () => {
         'brownfield',
       ]);
       expect(result.exitCode).toBe(0);
-      ExpectedOutput.TasksAndroid.Result.forEach((fragment) => {
+      TASKS_ANDROID.RESULT.forEach((fragment) => {
         expect(result.stdout).toContain(fragment);
       });
 
       result = await executeCLIASync(TEMP_DIR_PREBUILD, ['tasks-android', '-l', 'brownfield']);
       expect(result.exitCode).toBe(0);
-      ExpectedOutput.TasksAndroid.Result.forEach((fragment) => {
+      TASKS_ANDROID.RESULT.forEach((fragment) => {
         expect(result.stdout).toContain(fragment);
       });
 
@@ -117,7 +117,7 @@ describe('tasks-android command', () => {
         { ignoreErrors: true }
       );
       expect(result.exitCode).not.toBe(0);
-      ExpectedOutput.TasksAndroid.Result.forEach((fragment) => {
+      TASKS_ANDROID.RESULT.forEach((fragment) => {
         expect(result.stdout).not.toContain(fragment);
       });
     });
@@ -129,7 +129,7 @@ describe('tasks-android command', () => {
     it("shouldn't print verbose output by default", async () => {
       const { stdout, exitCode } = await executeCLIASync(TEMP_DIR_PREBUILD, ['tasks-android']);
       expect(exitCode).toBe(0);
-      ExpectedOutput.TasksAndroid.Verbose.forEach((fragment) => {
+      TASKS_ANDROID.VERBOSE.forEach((fragment) => {
         expect(stdout).not.toContain(fragment);
       });
     });
@@ -144,7 +144,7 @@ describe('tasks-android command', () => {
         '--verbose',
       ]);
       expect(exitCode).toBe(0);
-      ExpectedOutput.TasksAndroid.Verbose.forEach((fragment) => {
+      TASKS_ANDROID.VERBOSE.forEach((fragment) => {
         expect(stdout).toContain(fragment);
       });
     });

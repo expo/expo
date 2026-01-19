@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { ExpectedOutput } from '../utils/output';
+import { BUILD, BUILD_IOS, ERROR, HELP_MESSAGE } from '../utils/output';
 import { executeCommandAsync } from '../utils/process';
 import { cleanUpProject, createTempProject } from '../utils/project';
 import { buildIosTest, expectPrebuild } from '../utils/test';
@@ -32,8 +32,8 @@ describe('build-ios command', () => {
      */
     it('should display help message for --help/-h option', async () => {
       // Help message display shouldn't require prebuild
-      await buildIosTest(TEMP_DIR, ['--help'], true, [ExpectedOutput.BuildIosHelp]);
-      await buildIosTest(TEMP_DIR, ['-h'], true, [ExpectedOutput.BuildIosHelp]);
+      await buildIosTest(TEMP_DIR, ['--help'], true, [HELP_MESSAGE.BUILD_IOS]);
+      await buildIosTest(TEMP_DIR, ['-h'], true, [HELP_MESSAGE.BUILD_IOS]);
     });
 
     /**
@@ -46,7 +46,7 @@ describe('build-ios command', () => {
         ['--invalid-flag'],
         false,
         [],
-        [ExpectedOutput.Error.UnknownOption('--invalid-flag')]
+        [ERROR.UNKNOWN_OPTION('--invalid-flag')]
       );
     });
 
@@ -60,7 +60,7 @@ describe('build-ios command', () => {
         ['build-android'],
         false,
         [],
-        [ExpectedOutput.Error.AdditionalCommand('build-ios')]
+        [ERROR.ADDITIONAL_COMMAND('build-ios')]
       );
     });
 
@@ -78,8 +78,8 @@ describe('build-ios command', () => {
         { ignoreErrors: true }
       );
       expect(exitCode).not.toBe(0);
-      expect(stdout).toContain(ExpectedOutput.Prebuild.Warning('ios'));
-      expect(stdout).toContain(ExpectedOutput.Prebuild.Prompt);
+      expect(stdout).toContain(BUILD.PREBUILD_WARNING('ios'));
+      expect(stdout).toContain(BUILD.PREBUILD_PROMPT);
       // TODO(pmleczek): Refactor CLI error handling
       expect(stderr).toContain(`Error: Value of iOS Scheme`);
       expect(stderr).toContain(`could not be inferred from the project`);
@@ -109,18 +109,10 @@ describe('build-ios command', () => {
      */
     it('should build the project', async () => {
       await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run'], true, [
-        ExpectedOutput.BuildIos.Cleanup,
-        ...ExpectedOutput.BuildIos.BuildCommand(
-          TEMP_DIR_PREBUILD,
-          PREBUILD_WORKSPACE_NAME,
-          'Release'
-        ),
-        ...ExpectedOutput.BuildIos.PackageCommand(
-          TEMP_DIR_PREBUILD,
-          PREBUILD_WORKSPACE_NAME,
-          'Release'
-        ),
-        ExpectedOutput.BuildIos.HermesCopy,
+        BUILD_IOS.ARTIFACT_CLEANUP,
+        ...BUILD_IOS.BUILD_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
+        ...BUILD_IOS.PACKAGE_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
+        BUILD_IOS.HERMES_COPYING,
       ]);
     });
 
@@ -130,7 +122,7 @@ describe('build-ios command', () => {
      */
     it('should infer and print build configuration', async () => {
       await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run'], true, [
-        ExpectedOutput.BuildIos.Configuration(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME),
+        BUILD_IOS.CONFIGURATION(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME),
       ]);
     });
 
@@ -139,9 +131,7 @@ describe('build-ios command', () => {
      * Expected behavior: The CLI should print the verbose configuration
      */
     it('should properly handle --verbose option', async () => {
-      await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run', '--verbose'], true, [
-        ExpectedOutput.BuildAndroid.VerboseConfig,
-      ]);
+      await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run', '--verbose'], true, [BUILD.VERBOSE]);
     });
 
     /**
@@ -150,17 +140,9 @@ describe('build-ios command', () => {
      */
     it('should properly handle --debug option', async () => {
       const expectedOutput = [
-        ...ExpectedOutput.BuildIos.BuildCommand(
-          TEMP_DIR_PREBUILD,
-          PREBUILD_WORKSPACE_NAME,
-          'Debug'
-        ),
-        ...ExpectedOutput.BuildIos.PackageCommand(
-          TEMP_DIR_PREBUILD,
-          PREBUILD_WORKSPACE_NAME,
-          'Debug'
-        ),
-        ExpectedOutput.BuildAndroid.DebugConfig,
+        ...BUILD_IOS.BUILD_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Debug'),
+        ...BUILD_IOS.PACKAGE_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Debug'),
+        BUILD.BUILD_TYPE_DEBUG,
       ];
       await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run', '--debug'], true, expectedOutput);
       await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run', '-d'], true, expectedOutput);
@@ -173,17 +155,9 @@ describe('build-ios command', () => {
      */
     it('should properly handle --release option', async () => {
       const expectedOutput = [
-        ...ExpectedOutput.BuildIos.BuildCommand(
-          TEMP_DIR_PREBUILD,
-          PREBUILD_WORKSPACE_NAME,
-          'Release'
-        ),
-        ...ExpectedOutput.BuildIos.PackageCommand(
-          TEMP_DIR_PREBUILD,
-          PREBUILD_WORKSPACE_NAME,
-          'Release'
-        ),
-        ExpectedOutput.BuildAndroid.ReleaseConfig,
+        ...BUILD_IOS.BUILD_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
+        ...BUILD_IOS.PACKAGE_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
+        BUILD.BUILD_TYPE_RELEASE,
       ];
       await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run', '--release'], true, expectedOutput);
       await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run', '-r'], true, expectedOutput);
@@ -195,12 +169,8 @@ describe('build-ios command', () => {
      */
     it('--release option should take precedence over --debug option', async () => {
       const expectedOutput = [
-        ...ExpectedOutput.BuildIos.BuildCommand(
-          TEMP_DIR_PREBUILD,
-          PREBUILD_WORKSPACE_NAME,
-          'Release'
-        ),
-        ExpectedOutput.BuildAndroid.ReleaseConfig,
+        ...BUILD_IOS.BUILD_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
+        BUILD.BUILD_TYPE_RELEASE,
       ];
       await buildIosTest(
         TEMP_DIR_PREBUILD,

@@ -1,4 +1,4 @@
-import { ExpectedOutput } from '../utils/output';
+import { ERROR, HELP_MESSAGE } from '../utils/output';
 import { executeCLIASync } from '../utils/process';
 import { createTempProject, cleanUpProject } from '../utils/project';
 
@@ -39,7 +39,7 @@ describe('basic cli tests', () => {
   it('should correctly parse passed flags', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--version', '--help']);
     expect(exitCode).toBe(0);
-    expect(stdout).toContain(ExpectedOutput.GeneralHelp.Header);
+    expect(stdout).toContain(HELP_MESSAGE.GENERAL_HEADER);
   });
 
   /**
@@ -49,7 +49,7 @@ describe('basic cli tests', () => {
   it('should display help message if no arguments are provided', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, [], { ignoreErrors: true });
     expect(exitCode).toBe(0);
-    expect(stdout).toContain(ExpectedOutput.GeneralHelp.Header);
+    expect(stdout).toContain(HELP_MESSAGE.GENERAL_HEADER);
   });
 
   /**
@@ -61,7 +61,7 @@ describe('basic cli tests', () => {
       ignoreErrors: true,
     });
     expect(exitCode).not.toBe(0);
-    expect(stderr).toContain(ExpectedOutput.Error.UnknownCommand());
+    expect(stderr).toContain(ERROR.UNKNOWN_COMMAND());
   });
 
   /**
@@ -73,7 +73,7 @@ describe('basic cli tests', () => {
       ignoreErrors: true,
     });
     expect(exitCode).not.toBe(0);
-    expect(stderr).toContain(ExpectedOutput.Error.UnknownOption('--unknown-flag'));
+    expect(stderr).toContain(ERROR.UNKNOWN_OPTION('--unknown-flag'));
   });
 
   // TODO(pmleczek): Test for passing more than one command
