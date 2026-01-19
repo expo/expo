@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Add internal `EXPO_OVERRIDE_METRO_CONFIG` environment variable ([#42082](https://github.com/expo/expo/pull/42082) by [@kitten](https://github.com/kitten))
+
 ## 54.0.21 — 2026-01-06
 
 ### 🐛 Bug fixes

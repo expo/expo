@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Remove unused `LoadOptions` type export ([#42082](https://github.com/expo/expo/pull/42082) by [@kitten](https://github.com/kitten))
+
 ## 54.0.13 — 2026-01-06
 
 ### 🐛 Bug fixes
