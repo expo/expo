@@ -273,6 +273,7 @@ export const general = [
     makeGroup('Web', [
       makePage('router/web/api-routes.mdx'),
       makePage('router/web/middleware.mdx'),
+      makePage('router/web/server-headers.mdx'),
       makePage('router/web/static-rendering.mdx'),
       makePage('router/web/async-routes.mdx'),
     ]),
