@@ -3,7 +3,7 @@ import { Children, type ReactNode } from 'react';
 import { type ColorValue, type ImageSourcePropType, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { StackHeaderBadge, StackHeaderIcon, StackHeaderLabel } from './common-primitives';
+import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './common-primitives';
 import { getFirstChildOfType } from '../../utils/children';
 import { convertTextStyleToRNTextStyle, type BasicTextStyle } from '../../utils/font';
 
@@ -48,15 +48,15 @@ export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
   const stringChildren = Children.toArray(children)
     .filter((child) => typeof child === 'string')
     .join('');
-  const label = getFirstChildOfType(children, StackHeaderLabel);
+  const label = getFirstChildOfType(children, StackToolbarLabel);
   const iconPropConvertedToIcon = props.icon
     ? typeof props.icon === 'string'
       ? { sf: props.icon }
       : { src: props.icon }
     : undefined;
   const iconComponentProps =
-    getFirstChildOfType(children, StackHeaderIcon)?.props ?? iconPropConvertedToIcon;
-  const badgeComponent = getFirstChildOfType(children, StackHeaderBadge);
+    getFirstChildOfType(children, StackToolbarIcon)?.props ?? iconPropConvertedToIcon;
+  const badgeComponent = getFirstChildOfType(children, StackToolbarBadge);
   const rnsIcon: NativeStackHeaderItemButton['icon'] = (() => {
     if (!iconComponentProps) {
       return undefined;

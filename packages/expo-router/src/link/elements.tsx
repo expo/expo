@@ -6,6 +6,7 @@ import type { ViewStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { InternalLinkPreviewContext } from './InternalLinkPreviewContext';
+import { NativeMenuContext } from './NativeMenuContext';
 import { Icon, Label } from '../primitives';
 import { HrefPreview } from './preview/HrefPreview';
 import { useIsPreview } from './preview/PreviewRouteContext';
@@ -105,7 +106,7 @@ export interface LinkMenuActionProps {
  */
 export function LinkMenuAction(props: LinkMenuActionProps) {
   const identifier = useId();
-  if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
+  if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(NativeMenuContext)) {
     return null;
   }
   const { unstable_keepPresented, onPress, children, title, ...rest } = props;
@@ -229,7 +230,7 @@ export interface LinkMenuProps {
  */
 export const LinkMenu: React.FC<LinkMenuProps> = (props) => {
   const identifier = useId();
-  if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(InternalLinkPreviewContext)) {
+  if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(NativeMenuContext)) {
     return null;
   }
   const children = React.Children.toArray(props.children).filter(

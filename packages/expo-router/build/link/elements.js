@@ -40,6 +40,7 @@ exports.LinkPreview = LinkPreview;
 exports.LinkTrigger = LinkTrigger;
 const react_1 = __importStar(require("react"));
 const InternalLinkPreviewContext_1 = require("./InternalLinkPreviewContext");
+const NativeMenuContext_1 = require("./NativeMenuContext");
 const primitives_1 = require("../primitives");
 const HrefPreview_1 = require("./preview/HrefPreview");
 const PreviewRouteContext_1 = require("./preview/PreviewRouteContext");
@@ -57,7 +58,7 @@ const children_1 = require("../utils/children");
  */
 function LinkMenuAction(props) {
     const identifier = (0, react_1.useId)();
-    if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(InternalLinkPreviewContext_1.InternalLinkPreviewContext)) {
+    if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(NativeMenuContext_1.NativeMenuContext)) {
         return null;
     }
     const { unstable_keepPresented, onPress, children, title, ...rest } = props;
@@ -91,7 +92,7 @@ function LinkMenuAction(props) {
  */
 const LinkMenu = (props) => {
     const identifier = (0, react_1.useId)();
-    if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(InternalLinkPreviewContext_1.InternalLinkPreviewContext)) {
+    if ((0, PreviewRouteContext_1.useIsPreview)() || process.env.EXPO_OS !== 'ios' || !(0, react_1.use)(NativeMenuContext_1.NativeMenuContext)) {
         return null;
     }
     const children = react_1.default.Children.toArray(props.children).filter((child) => (0, react_1.isValidElement)(child) && (child.type === LinkMenuAction || child.type === exports.LinkMenu));
