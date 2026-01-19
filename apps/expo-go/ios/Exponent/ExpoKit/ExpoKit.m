@@ -2,15 +2,9 @@
 
 #import "ExpoKit.h"
 #import "EXViewController.h"
-#import "EXEnvironment.h"
-
-#import "Expo_Go-Swift.h"
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
-#import "EXKernelLinkingManager.h"
 #import "EXReactAppExceptionHandler.h"
-
-#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 
 
@@ -21,7 +15,6 @@
 }
 
 @property (nonatomic, nullable, strong) EXViewController *rootViewController;
-@property (nonatomic, strong) NSDictionary *launchOptions;
 
 @end
 
@@ -43,7 +36,6 @@
 {
   if (self = [super init]) {
     _rootViewControllerClass = [EXViewController class];
-    [self _initDefaultKeys];
   }
   return self;
 }
@@ -78,23 +70,10 @@
   return controller;
 }
 
-- (void)prepareWithLaunchOptions:(nullable NSDictionary *)launchOptions
+- (void)prepare
 {
   [DDLog addLogger:[DDOSLogger sharedInstance]];
   RCTSetFatalHandler(handleFatalReactError);
-
-  _launchOptions = launchOptions;
-}
-
-#pragma mark - internal
-
-- (void)_initDefaultKeys
-{
-  // these are provided in the expo/expo open source repo as defaults; they can all be overridden by setting
-  // the `applicationKeys` property on ExpoKit.
-  if ([EXBuildConstants sharedInstance].defaultApiKeys) {
-    self.applicationKeys = [EXBuildConstants sharedInstance].defaultApiKeys;
-  }
 }
 
 @end

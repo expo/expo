@@ -133,13 +133,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   [[NSNotificationCenter defaultCenter] postNotificationName:name object:nil];
 }
 
-#pragma mark - App props
-
-- (nullable NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions
-{
-  return nil;
-}
-
 #pragma mark - App State
 
 - (EXKernelAppRecord *)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps

@@ -182,7 +182,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     @"testEnvironment": @([EXEnvironment sharedEnvironment].testEnvironment),
     @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
     @"singletonModules": [EXModuleRegistryProvider singletonModules],
-    @"moduleRegistryDelegateClass": RCTNullIfNil([self moduleRegistryDelegateClass]),
     @"fileSystemDirectories": @{
         @"documentDirectory": [self scopedDocumentDirectory],
         @"cachesDirectory": [self scopedCachesDirectory]
@@ -526,16 +525,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 }
 
 #pragma mark - RN configuration
-
-- (NSDictionary *)launchOptionsForHost
-{
-  return @{};
-}
-
-- (Class)moduleRegistryDelegateClass
-{
-  return nil;
-}
 
 - (NSString *)applicationKeyForRootView
 {
