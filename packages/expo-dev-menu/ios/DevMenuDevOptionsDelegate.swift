@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import React
+import ExpoModulesCore
 
 class DevMenuDevOptionsDelegate {
   internal private(set) weak var bridge: RCTBridge?
@@ -25,7 +26,8 @@ class DevMenuDevOptionsDelegate {
     DevMenuManager.shared.hideMenu()
 
     DispatchQueue.main.async {
-      RCTTriggerReloadCommandListeners("Dev menu - reload")
+      let emc = self.bridge?.moduleRegistry.module(forName: "ExpoModulesCore") as? ExpoBridgeModule
+      emc?.appContext?.reloadAppAsync()
     }
   }
 

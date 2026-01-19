@@ -607,6 +607,16 @@ public final class AppContext: NSObject, @unchecked Sendable {
     // [3] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
     return ModulesProvider()
   }
+
+  public func reloadAppAsync(_ reason: String = "Reload from appContext") {
+    if(moduleRegistry.has(moduleWithName: "ExpoGo")) {
+      NotificationCenter.default.post(name: NSNotification.Name(rawValue: "EXReloadActiveAppRequest"), object: nil)
+    } else {
+      DispatchQueue.main.async {
+        RCTTriggerReloadCommandListeners(reason)
+      }
+    }
+  }
 }
 
 // MARK: - Public exceptions
