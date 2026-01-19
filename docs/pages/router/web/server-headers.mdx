@@ -3,14 +3,16 @@ title: Server headers
 description: Learn how to set custom HTTP headers for all server route responses in Expo Router.
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-> **important** Server headers are available in SDK 54 and later.
+> **important** Server headers are available in SDK 54 and later, and requires [`expo-server`](/versions/latest/sdk/server/) to serve your exported application.
 
-Server headers in Expo Router allow you to set custom HTTP headers on all route responses from your server. This feature works with both `static` and `server` output modes, making it useful for security headers, caching policies, cookies, and custom metadata.
+Server headers in Expo Router allow you to set custom HTTP headers for security, caching, cookies, and custom metadata on route responses. Headers **only** apply to HTML and API route responses, and are not applicable to static assets such as images, fonts, or JavaScript bundles.
 
 ## Setup
 
@@ -126,6 +128,30 @@ Add common security headers to protect your application:
 
 </Collapsible>
 
+<Collapsible summary="Cross-Origin headers for SharedArrayBuffer">
+
+Some web APIs like [`SharedArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer) require specific Cross-Origin headers. This is required for features like [`expo-sqlite` on web](/versions/latest/sdk/sqlite/#web-setup).
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "headers": {
+            "Cross-Origin-Embedder-Policy": "credentialless",
+            "Cross-Origin-Opener-Policy": "same-origin"
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+</Collapsible>
+
 <Collapsible summary="Cache-Control headers">
 
 Set caching policies for your responses:
@@ -139,32 +165,6 @@ Set caching policies for your responses:
         {
           "headers": {
             "Cache-Control": "public, max-age=3600, s-maxage=86400"
-          }
-        }
-      ]
-    ]
-  }
-}
-```
-
-</Collapsible>
-
-<Collapsible summary="Setting cookies">
-
-Set cookies on all responses using the array syntax:
-
-```json app.json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-router",
-        {
-          "headers": {
-            "Set-Cookie": [
-              "session=abc123; HttpOnly; Secure; SameSite=Strict",
-              "preferences=dark; Path=/; Max-Age=31536000"
-            ]
           }
         }
       ]
@@ -205,7 +205,7 @@ Add custom headers with metadata about your app:
 
 Server headers work with both output modes configured in your app config:
 
-- **`static`**: Headers are applied when serving pre-rendered HTML files with `expo-server`
+- **`static`**: Headers are applied when serving pre-rendered HTML files with [`expo-server`](/versions/latest/sdk/server/)
 - **`server`**: Headers are applied to dynamically rendered responses
 
 ### Header precedence
@@ -217,7 +217,7 @@ For example, if you configure `Cache-Control: public, max-age=3600` globally, bu
 ## Known limitations
 
 - **Redirects**: Headers do not apply to redirect responses
-- **Static assets**: Headers are only applied to HTML and API route responses, not to static assets like images, fonts, or JavaScript bundles.
+- **Static assets**: Headers are only applied to HTML and API route responses, not to static assets like images, fonts, or JavaScript bundles
 
 ## Related
 
@@ -225,10 +225,12 @@ For example, if you configure `Cache-Control: public, max-age=3600` globally, bu
   title="API Routes"
   description="Learn how to create server endpoints with Expo Router."
   href="/router/web/api-routes"
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
   title="Server middleware"
   description="Learn how to create middleware that runs for every request to the server."
   href="/router/web/middleware"
+  Icon={BookOpen02Icon}
 />
