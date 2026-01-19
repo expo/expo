@@ -1,5 +1,5 @@
 import { useMemo, type ReactElement } from 'react';
-import type { BottomAccessoryFn } from 'react-native-screens';
+import type { TabAccessoryComponentFactory } from 'react-native-screens';
 
 import type { NativeTabsBottomAccessoryProps } from '../common/elements';
 import { BottomAccessoryPlacementContext } from '../hooks';
@@ -12,8 +12,8 @@ export function useBottomAccessoryFunctionFromBottomAccessories(
   bottomAccessory:
     | ReactElement<NativeTabsBottomAccessoryProps, string | React.JSXElementConstructor<any>>
     | undefined
-): BottomAccessoryFn | undefined {
-  return useMemo<BottomAccessoryFn | undefined>(
+): TabAccessoryComponentFactory | undefined {
+  return useMemo<TabAccessoryComponentFactory | undefined>(
     () =>
       bottomAccessory
         ? (environment) => (
