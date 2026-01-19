@@ -21,8 +21,7 @@ const renderConstant = (
   sdkVersion: string,
   apiName?: string
 ) => {
-  const hideType =
-    Boolean(getTagData('hideType', comment)) || Boolean(getTagData('hideTypes', comment));
+  const hideType = Boolean(getTagData('hideType', comment));
 
   return (
     <div key={`constant-definition-${name}`} className={STYLES_APIBOX}>
