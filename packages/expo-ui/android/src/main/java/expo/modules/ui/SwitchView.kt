@@ -1,22 +1,16 @@
 package expo.modules.ui
 
-import android.content.Context
 import android.graphics.Color
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.ExpoViewComposableScope
 import java.io.Serializable
 
 open class ValueChangeEvent(
@@ -56,10 +50,10 @@ class SwitchColors : Record {
 }
 
 data class SwitchProps(
-  val value: MutableState<Boolean> = mutableStateOf(false),
-  val variant: MutableState<String> = mutableStateOf("switch"),
-  val elementColors: MutableState<SwitchColors> = mutableStateOf(SwitchColors()),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+  val value: Boolean = false,
+  val variant: String = "switch",
+  val elementColors: SwitchColors = SwitchColors(),
+  val modifiers: List<ModifierConfig> = emptyList()
 ) : ComposeProps
 
 @Composable
@@ -113,22 +107,16 @@ fun ThemedHybridSwitch(
   }
 }
 
-class SwitchView(context: Context, appContext: AppContext) :
-  ExpoComposeView<SwitchProps>(context, appContext) {
-  override val props = SwitchProps()
-  private val onValueChange by EventDispatcher<ValueChangeEvent>()
-
-  @Composable
-  override fun ComposableScope.Content() {
-    val (checked) = props.value
-    val (variant) = props.variant
-    val (colors) = props.elementColors
-    val onCheckedChange = { checked: Boolean ->
-      onValueChange(ValueChangeEvent(checked))
-    }
-
-    ThemedHybridSwitch(variant, checked, onCheckedChange, colors,
-      Modifier.fromExpoModifiers(props.modifiers.value,
-        this@Content))
-  }
+@Composable
+fun ExpoViewComposableScope.SwitchContent(
+  props: SwitchProps,
+  onValueChange: (ValueChangeEvent) -> Unit
+) {
+  ThemedHybridSwitch(
+    props.variant,
+    props.value,
+    { newChecked -> onValueChange(ValueChangeEvent(newChecked)) },
+    props.elementColors,
+    ModifierRegistry.applyModifiers(props.modifiers)
+  )
 }

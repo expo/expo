@@ -6,15 +6,16 @@ import { runExportSideEffects } from './export-side-effects';
 import {
   prepareServers,
   RUNTIME_EXPO_SERVE,
+  RUNTIME_EXPO_START,
   RUNTIME_WORKERD,
   setupServer,
 } from '../../utils/runtime';
-import { findProjectFiles } from '../utils';
+import { findProjectFiles, getHtml } from '../utils';
 
 runExportSideEffects();
 
 describe.each(
-  prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_WORKERD], {
+  prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START, RUNTIME_WORKERD], {
     fixtureName: 'server-loader',
     export: {
       env: {
@@ -33,7 +34,7 @@ describe.each(
 )('server loader - $name', (config) => {
   const server = setupServer(config);
 
-  it('has expected files', async () => {
+  (server.isExpoStart ? it.skip : it)('has expected files', async () => {
     const files = findProjectFiles(path.join(server.outputDir, 'server'));
 
     // SSR mode should have `server/` directory with render module
@@ -54,7 +55,7 @@ describe.each(
     expect(files).toContain('_expo/loaders/nullish/[value].js');
   });
 
-  it('routes.json has loader paths', async () => {
+  (server.isExpoStart ? it.skip : it)('routes.json has loader paths', async () => {
     const routesJson = JSON.parse(
       fs.readFileSync(path.join(server.outputDir, 'server/_expo/routes.json'), 'utf8')
     );
@@ -110,5 +111,31 @@ describe.each(
     expect(response.status).toBe(200);
     const data = await response.json();
     expect(data).toBeNull();
+  });
+
+  it.each([
+    {
+      name: 'loader endpoint',
+      url: '/_expo/loaders/request',
+      getData: (response: Response) => {
+        return response.json();
+      },
+    },
+    {
+      name: 'page',
+      url: '/request',
+      getData: async (response: Response) => {
+        const html = getHtml(await response.text());
+        return JSON.parse(html.querySelector('[data-testid="loader-result"]')!.textContent);
+      },
+    },
+  ])('$name $url does not receive `Request` object', async ({ getData, url }) => {
+    const response = await server.fetchAsync(url);
+    expect(response.status).toBe(200);
+    const data = await getData(response);
+
+    expect(new URL(data.url).pathname).toBe('/request');
+    expect(data.method).toBe('GET');
+    expect(Array.isArray(data.headers)).toBe(true);
   });
 });

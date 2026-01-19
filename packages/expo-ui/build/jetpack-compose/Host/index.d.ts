@@ -21,9 +21,26 @@ export type HostProps = {
         };
     }) => void;
     /**
+     * When true and no explicit size is provided, the host will use the viewport size as the proposed size for Compose layout.
+     * This is particularly useful for views that need to fill their available space.
+     * @default false
+     */
+    useViewportSizeMeasurement?: boolean;
+    /**
      * The color scheme of the host view.
      */
     colorScheme?: ColorSchemeName;
+    /**
+     * The layout direction for the content.
+     * Defaults to the current locale direction from I18nManager.
+     */
+    layoutDirection?: 'leftToRight' | 'rightToLeft';
+    /**
+     * When `true`, the Compose content will not perform keyboard avoidance behaviour when keyboard is shown.
+     * Can be only set once on mount.
+     * @default false
+     */
+    ignoreSafeAreaKeyboardInsets?: boolean;
     children: React.ReactNode;
     style?: StyleProp<ViewStyle>;
 } & PrimitiveBaseProps;

@@ -57,7 +57,8 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
   private var image: UIImage? {
     if let customImage = customImage {
       return customImage.ref
-    } else if let icon = icon {
+    }
+    if let icon = icon {
       return UIImage(systemName: icon)
     }
     return nil

@@ -21,6 +21,7 @@
 - Improve SSR support ([#41477](https://github.com/expo/expo/pull/41477) by [@hassankhan](https://github.com/hassankhan))
 - Add support for server data loaders in server export mode ([#41934](https://github.com/expo/expo/pull/41934) by [@hassankhan](https://github.com/hassankhan))
 - Add `EXPO_UNSTABLE_BONJOUR` to activate Bonjour advertising ([#42138](https://github.com/expo/expo/pull/42138) by [@kitten](https://github.com/kitten))
+- Respect `web.output` configuration in dev server for loaders ([#42147](https://github.com/expo/expo/pull/42147) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
@@ -36,6 +37,8 @@
 - Restore `resetCache`, `maxWorkers`, and `port` override args when instantiating Metro ([#41854](https://github.com/expo/expo/pull/41854) by [@shottah](https://github.com/shottah))
 - Fix response streaming from dev server (remove compression) ([#41955](https://github.com/expo/expo/pull/41955) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Restrict debugger (`/inspector/network`) and devtools (`/expo-dev-plugins/broadcast`) sockets to local connections ([#42156](https://github.com/expo/expo/pull/42156) by [@kitten](https://github.com/kitten))
+- Use `ImmutableRequest` for loader functions ([#42149](https://github.com/expo/expo/pull/42149) by [@hassankhan](https://github.com/hassankhan))
+- Avoid module ID collision between loader and render bundles ([#42245](https://github.com/expo/expo/pull/42245) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
