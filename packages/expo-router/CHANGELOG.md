@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] fix shadow color in native tabs ([#42125](https://github.com/expo/expo/pull/42125) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 6.0.21 — 2025-12-18

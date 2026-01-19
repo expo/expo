@@ -46,7 +46,7 @@ const linking_1 = require("../../link/linking");
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
 const defaultBackBehavior = 'initialRoute';
 exports.NativeTabsContext = react_1.default.createContext(false);
-function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, ...rest }) {
+function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, shadowColor, ...rest }) {
     if ((0, react_1.use)(exports.NativeTabsContext)) {
         throw new Error('Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.');
     }
@@ -59,6 +59,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, ...
             disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
             selectedLabelStyle,
             selectedIconColor,
+            shadowColor,
         },
     });
     const { state, descriptors, NavigationContent } = builder;

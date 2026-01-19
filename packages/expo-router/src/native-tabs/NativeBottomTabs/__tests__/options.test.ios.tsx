@@ -97,6 +97,7 @@ it('when no options are passed, default ones are used', () => {
     iconResourceName: undefined,
     icon: undefined,
     selectedIcon: undefined,
+    shadowColor: undefined,
     freezeContents: false,
   } as NativeTabOptions);
 });

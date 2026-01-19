@@ -29,6 +29,7 @@ export const NativeTabsContext = React.createContext<boolean>(false);
 export function NativeTabsNavigator({
   children,
   backBehavior = defaultBackBehavior,
+  shadowColor,
   ...rest
 }: NativeTabsProps) {
   if (use(NativeTabsContext)) {
@@ -51,6 +52,7 @@ export function NativeTabsNavigator({
       disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
       selectedLabelStyle,
       selectedIconColor,
+      shadowColor,
     },
   });
 
