@@ -55,10 +55,6 @@ Headers are automatically applied to all HTML and API route responses.
 
 Headers are configured as an object where keys are header names and values are either strings or arrays of strings.
 
-### Single-value headers
-
-Use a string value for headers that have a single value:
-
 ```json app.json
 {
   "expo": {
@@ -68,27 +64,7 @@ Use a string value for headers that have a single value:
         {
           "headers": {
             "X-Frame-Options": "DENY",
-            "X-Content-Type-Options": "nosniff"
-          }
-        }
-      ]
-    ]
-  }
-}
-```
-
-### Multi-value headers
-
-Use an array of strings for headers that can have multiple values, such as `Set-Cookie`:
-
-```json app.json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-router",
-        {
-          "headers": {
+            "X-Content-Type-Options": "nosniff",
             "Set-Cookie": ["session=abc123; HttpOnly", "preference=dark; Path=/"]
           }
         }
@@ -97,8 +73,6 @@ Use an array of strings for headers that can have multiple values, such as `Set-
   }
 }
 ```
-
-When using arrays, each value is appended to the response headers using the `append()` method, which is required for headers like `Set-Cookie` that can appear multiple times.
 
 ## Examples
 
