@@ -100,6 +100,18 @@ fun ContentResolver.updateRelativePath(contentUri: Uri, newRelativePath: Relativ
   update(contentUri, contentValues, null, null)
 }
 
+fun ContentResolver.updateRelativePathAndName(
+  contentUri: Uri,
+  newRelativePath: RelativePath,
+  displayName: String
+) {
+  val contentValues = ContentValues().apply {
+    put(MediaStore.MediaColumns.RELATIVE_PATH, newRelativePath.value)
+    put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
+  }
+  update(contentUri, contentValues, null, null)
+}
+
 fun ContentResolver.deleteBy(assetPath: String) {
   delete(
     EXTERNAL_CONTENT_URI,
