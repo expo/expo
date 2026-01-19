@@ -41,10 +41,10 @@ Options:
 - Artifacts directory: ${projectRoot}/artifacts
 - Build type: Release
 - Xcode Scheme: testapp${workspace}brownfield
-- Xcode Workspace: ios/testapp${workspace}.xcworkspace`,
+- Xcode Workspace: ${projectRoot}/ios/testapp${workspace}.xcworkspace`,
     BuildCommand: (projectRoot: string, workspace: string, configuration: 'Debug' | 'Release') => [
       `xcodebuild`,
-      `-workspace ios/testapp${workspace}.xcworkspace`,
+      `-workspace ${projectRoot}/ios/testapp${workspace}.xcworkspace`,
       `-scheme testapp${workspace}brownfield`,
       `-derivedDataPath ${projectRoot}/ios/build`,
       `-destination generic/platform=iphoneos`,

@@ -42,7 +42,8 @@ const inferAndroidLibrary = async () => {
 exports.inferAndroidLibrary = inferAndroidLibrary;
 const inferXCWorkspace = async () => {
     try {
-        const xcworkspace = (await promises_1.default.readdir('ios', { withFileTypes: true })).find((item) => item.name.endsWith('.xcworkspace'));
+        const iosPath = path_1.default.join(process.cwd(), 'ios');
+        const xcworkspace = (await promises_1.default.readdir(iosPath, { withFileTypes: true })).find((item) => item.name.endsWith('.xcworkspace'));
         if (xcworkspace) {
             return path_1.default.join(xcworkspace.parentPath, xcworkspace.name);
         }
@@ -55,10 +56,11 @@ const inferXCWorkspace = async () => {
 exports.inferXCWorkspace = inferXCWorkspace;
 const inferScheme = async () => {
     try {
-        const subDirs = (await promises_1.default.readdir('ios', { withFileTypes: true })).filter((item) => item.isDirectory());
+        const iosPath = path_1.default.join(process.cwd(), 'ios');
+        const subDirs = (await promises_1.default.readdir(iosPath, { withFileTypes: true })).filter((item) => item.isDirectory());
         let scheme = undefined;
         for (const subDir of subDirs) {
-            if ((await promises_1.default.readdir(`ios/${subDir.name}`)).includes('ReactNativeHostManager.swift')) {
+            if ((await promises_1.default.readdir(`${iosPath}/${subDir.name}`)).includes('ReactNativeHostManager.swift')) {
                 scheme = subDir.name;
             }
         }
