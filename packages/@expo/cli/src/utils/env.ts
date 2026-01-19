@@ -63,7 +63,7 @@ class Env {
 
   /** Skip warning users about a dirty git status */
   get EXPO_NO_GIT_STATUS() {
-    return boolish('EXPO_NO_GIT_STATUS', false);
+    return boolish('EXPO_NO_GIT_STATUS', true);
   }
   /** Disable auto web setup */
   get EXPO_NO_WEB_SETUP() {
@@ -290,6 +290,13 @@ class Env {
   /** Enable Expo Log Box for iOS and Android (Web is enabled by default) */
   get EXPO_UNSTABLE_LOG_BOX(): boolean {
     return boolish('EXPO_UNSTABLE_LOG_BOX', false);
+  }
+
+  /**
+   * Enable Bonjour advertising of the Expo CLI on local networks
+   */
+  get EXPO_UNSTABLE_BONJOUR(): boolean {
+    return boolish('EXPO_UNSTABLE_BONJOUR', false);
   }
 }
 

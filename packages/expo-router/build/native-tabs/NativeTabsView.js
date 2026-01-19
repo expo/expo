@@ -46,9 +46,6 @@ const types_1 = require("./types");
 const icon_1 = require("./utils/icon");
 const children_1 = require("../utils/children");
 const bottomAccessory_1 = require("./utils/bottomAccessory");
-// We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
-// Otherwise user may see glitches when switching between tabs.
-react_native_screens_1.featureFlags.experiment.controlledBottomTabs = false;
 function NativeTabsView(props) {
     const { minimizeBehavior, disableIndicator, focusedIndex, tabs, sidebarAdaptable, nonTriggerChildren, } = props;
     const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);

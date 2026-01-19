@@ -23,12 +23,12 @@ test.describe('server loader in development', () => {
     },
   });
 
-  test.beforeEach(async () => {
+  test.beforeAll(async () => {
     console.time('expo start');
     await expoStart.startAsync();
     console.timeEnd('expo start');
   });
-  test.afterEach(async () => {
+  test.afterAll(async () => {
     await expoStart.stopAsync();
   });
 

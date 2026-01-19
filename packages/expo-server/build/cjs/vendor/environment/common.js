@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createEnvironment = createEnvironment;
+const ImmutableRequest_1 = require("../../ImmutableRequest");
+const matchers_1 = require("../../utils/matchers");
 function initManifestRegExp(manifest) {
     return {
         ...manifest,
@@ -63,6 +65,18 @@ function createEnvironment(input) {
         };
         return ssrRenderer;
     }
+    async function executeLoader(request, route) {
+        if (!route.loader) {
+            return undefined;
+        }
+        const loaderModule = (await input.loadModule(route.loader));
+        if (!loaderModule) {
+            throw new Error(`Loader module not found at: ${route.loader}`);
+        }
+        const params = (0, matchers_1.parseParams)(request, route);
+        const data = await loaderModule.loader({ params, request: new ImmutableRequest_1.ImmutableRequest(request) });
+        return { data: data === undefined ? {} : data };
+    }
     return {
         async getRoutesManifest() {
             return getCachedRoutesManifest();
@@ -71,8 +85,13 @@ function createEnvironment(input) {
             // SSR path: Render at runtime if SSR module is available
             const renderer = await getServerRenderer();
             if (renderer) {
+                let renderOptions;
                 try {
-                    return await renderer(request);
+                    const loaderResult = await executeLoader(request, route);
+                    if (loaderResult) {
+                        renderOptions = { loader: { data: loaderResult.data } };
+                    }
+                    return await renderer(request, renderOptions);
                 }
                 catch (error) {
                     console.error('SSR render error:', error);
@@ -104,6 +123,9 @@ function createEnvironment(input) {
                 return null;
             }
             return mod;
+        },
+        async getLoaderData(request, route) {
+            return executeLoader(request, route);
         },
     };
 }

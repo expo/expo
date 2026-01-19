@@ -250,15 +250,20 @@ export async function instantiateMetroAsync(
   const { middleware, messagesSocket, eventsSocket, websocketEndpoints } =
     createMetroMiddleware(metroConfig);
 
+  // Get local URL to Metro bundler server (typically configured as 127.0.0.1:8081)
+  const serverBaseUrl = metroBundler
+    .getUrlCreator()
+    .constructUrl({ scheme: 'http', hostType: 'localhost' });
+
   if (!isExporting) {
     // Enable correct CORS headers for Expo Router features
     prependMiddleware(middleware, createCorsMiddleware(exp));
 
     // Enable debug middleware for CDP-related debugging
-    const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(
-      metroBundler,
-      reporter
-    );
+    const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware({
+      serverBaseUrl,
+      reporter,
+    });
     Object.assign(websocketEndpoints, debugWebsocketEndpoints);
     middleware.use(debugMiddleware);
     middleware.use('/_expo/debugger', createJsInspectorMiddleware());
@@ -276,6 +281,9 @@ export async function instantiateMetroAsync(
       }
       return middleware.use(metroMiddleware);
     };
+
+    const devtoolsWebsocketEndpoints = createDevToolsPluginWebsocketEndpoint({ serverBaseUrl });
+    Object.assign(websocketEndpoints, devtoolsWebsocketEndpoints);
   }
 
   // Attach Expo Atlas if enabled
@@ -293,10 +301,7 @@ export async function instantiateMetroAsync(
     metroBundler,
     metroConfig,
     {
-      websocketEndpoints: {
-        ...websocketEndpoints,
-        ...createDevToolsPluginWebsocketEndpoint(),
-      },
+      websocketEndpoints,
       watch: !isExporting && isWatchEnabled(),
     },
     {
@@ -472,8 +477,8 @@ function pruneCustomTransformOptions(
     // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
     const isRouterModule = /\/expo-router\/build\//.test(filePath);
     // Any page/router inside the expo-router app folder may access the `routerRoot` option to determine whether it's in the app folder
-    const isRouterRoute =
-      path.isAbsolute(filePath) && filePath.startsWith(path.resolve(projectRoot, routerRoot));
+    const resolvedRouterRoot = path.resolve(projectRoot, routerRoot).split(path.sep).join('/');
+    const isRouterRoute = path.isAbsolute(filePath) && filePath.startsWith(resolvedRouterRoot);
 
     // In any other file than the above, we enforce that we mustn't use `routerRoot`, and set it to an arbitrary value here (the default)
     // to ensure that the cache never invalidates when this value is changed

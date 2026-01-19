@@ -11,6 +11,8 @@ import {
   Switch,
   Rectangle,
   Slider,
+  Capsule,
+  Stepper,
 } from '@expo/ui/swift-ui';
 import {
   background,
@@ -23,6 +25,7 @@ import {
   brightness,
   saturation,
   scaleEffect,
+  containerRelativeFrame,
   rotationEffect,
   offset,
   listRowSeparator,
@@ -58,6 +61,7 @@ import {
   pickerStyle,
   tag,
   font,
+  lineLimit,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
@@ -105,6 +109,8 @@ export default function ModifiersScreen() {
 
   const badgeType = ['standard', 'increased', 'decreased'] as const;
   const [badgeIndex, setBadgeIndex] = useState(0);
+
+  const [containerRelativeFrameCount, setContainerRelativeFrameCount] = useState(1);
 
   return (
     <ScrollView>
@@ -204,9 +210,9 @@ export default function ModifiersScreen() {
           {/* Text modifiers */}
           <Section title="Text modifier">
             <Text
-              color={color ?? 'primary'}
-              lineLimit={1}
               modifiers={[
+                foregroundStyle({ type: 'color', color: color ?? 'primary' }),
+                lineLimit(1),
                 font({ size: 16 }),
                 allowsTightening(allowTightening),
                 truncationMode(
@@ -352,8 +358,11 @@ export default function ModifiersScreen() {
                 onValueChange={setEnabledSelection}
               />
               <Text
-                color={enabledSelection ? 'black' : 'gray'}
-                modifiers={[font({ size: 14 }), textSelection(enabledSelection)]}>
+                modifiers={[
+                  foregroundStyle({ type: 'color', color: enabledSelection ? 'black' : 'gray' }),
+                  font({ size: 14 }),
+                  textSelection(enabledSelection),
+                ]}>
                 This is selected text
               </Text>
             </VStack>
@@ -392,13 +401,13 @@ export default function ModifiersScreen() {
               label="Select a row color"
               selection={rowColor}
               supportsOpacity
-              onValueChanged={setRowColor}
+              onSelectionChange={setRowColor}
             />
             <ColorPicker
               label="Select a background color"
               selection={backgroundFormColor}
               supportsOpacity
-              onValueChanged={setBackgroundFormColor}
+              onSelectionChange={setBackgroundFormColor}
             />
           </Section>
 
@@ -423,13 +432,17 @@ export default function ModifiersScreen() {
                 endPoint: { x: 1, y: 1 },
               }),
             ]}>
-            <Text color={color ?? 'primary'} modifiers={[font({ size: 12 })]}>
+            <Text
+              modifiers={[
+                foregroundStyle({ type: 'color', color: color ?? 'primary' }),
+                font({ size: 12 }),
+              ]}>
               Hello world, I don't react on foregroundStyle
             </Text>
             <ColorPicker
               label="Select a color"
               selection={color}
-              onValueChanged={setColor}
+              onSelectionChange={setColor}
               // primary is a named color in SwiftUI
               modifiers={[foregroundStyle({ type: 'color', color: 'primary' })]}
             />
@@ -623,6 +636,40 @@ export default function ModifiersScreen() {
             </VStack>
           </Section>
 
+          {/* Container Relative Frame Modifier */}
+          <Section title="Container Relative Frame Modifier">
+            <Capsule
+              modifiers={[
+                containerRelativeFrame({
+                  axes: 'horizontal',
+                  count: containerRelativeFrameCount,
+                  span: 1,
+                }),
+                foregroundStyle('#3498DB'),
+              ]}
+            />
+            <HStack>
+              {new Array(containerRelativeFrameCount).fill(null).map((_, i) => (
+                <Capsule
+                  key={i}
+                  modifiers={[
+                    containerRelativeFrame({
+                      axes: 'horizontal',
+                      count: containerRelativeFrameCount,
+                      span: 1,
+                    }),
+                    foregroundStyle('#3498DB'),
+                  ]}
+                />
+              ))}
+            </HStack>
+            <Stepper
+              onValueChanged={setContainerRelativeFrameCount}
+              defaultValue={containerRelativeFrameCount}
+              label={`Items count: ${containerRelativeFrameCount}`}
+            />
+          </Section>
+
           <AppearSection />
 
           <Section title="Misc">
@@ -736,7 +783,7 @@ function AppearSection() {
   return (
     <Section title={`Appear(${appearCount}) Disappear(${disappearCount})`}>
       <DisclosureGroup
-        onStateChange={setDisclosureGroupExpanded}
+        onIsExpandedChange={setDisclosureGroupExpanded}
         isExpanded={disclosureGroupExpanded}
         label="Show rectangle">
         <Rectangle

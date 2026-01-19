@@ -8,4 +8,14 @@ public protocol DevMenuHostDelegate: NSObjectProtocol {
    Optional function to navigate the host application to its home screen.
    */
   @objc optional func devMenuNavigateHome()
+
+  /**
+   Optional function to toggle the performance monitor.
+   */
+  @objc optional func devMenuTogglePerformanceMonitor()
+
+  /**
+   Optional function to toggle the element inspector.
+   */
+  @objc optional func devMenuToggleElementInspector()
 }

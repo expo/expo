@@ -118,7 +118,7 @@ struct Branch: Codable {
   let updates: [AppUpdate]
 }
 
-struct AppUpdate: Codable {
+struct AppUpdate: Identifiable, Codable {
   let id: String
   let group: String?
   let message: String?
@@ -177,6 +177,43 @@ struct ProjectDetail: Codable {
   let fullName: String
   let ownerAccount: OwnerAccount
   let updateBranches: [BranchDetail]
+}
+
+struct BranchesListResponse: Codable {
+  let data: BranchesListData
+}
+
+struct BranchesListData: Codable {
+  let app: BranchesListApp
+}
+
+struct BranchesListApp: Codable {
+  let byId: BranchesListProject
+}
+
+struct BranchesListProject: Codable {
+  let id: String
+  let name: String
+  let updateBranches: [BranchDetail]
+  let updateBranchesCount: Int
+}
+
+struct BranchDetailsResponse: Codable {
+  let data: BranchDetailsData
+}
+
+struct BranchDetailsData: Codable {
+  let app: BranchDetailsApp
+}
+
+struct BranchDetailsApp: Codable {
+  let byId: BranchDetailsProject
+}
+
+struct BranchDetailsProject: Codable {
+  let id: String
+  let name: String
+  let updateBranchByName: BranchDetail?
 }
 
 struct BranchDetail: Identifiable, Codable {

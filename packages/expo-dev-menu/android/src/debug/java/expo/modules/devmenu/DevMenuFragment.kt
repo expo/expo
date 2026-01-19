@@ -9,9 +9,9 @@ import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.compose.ui.platform.ComposeView
@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactInstanceEventListener
 import com.facebook.react.bridge.ReactContext
@@ -29,6 +30,7 @@ import expo.modules.devmenu.compose.newtheme.AppTheme
 import expo.modules.devmenu.compose.ui.DevMenuBottomSheet
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
+import expo.modules.devmenu.detectors.TouchInterceptingWindowCallback
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import expo.modules.devmenu.fab.MovableFloatingActionButton
 import expo.modules.devmenu.helpers.isAcceptingText
@@ -52,8 +54,8 @@ class DevMenuFragment(
       goToHomeAction
     )
   }
-  private val threeFingerLongPressDetector = ThreeFingerLongPressDetector(::onThreeFingerLongPressDetected)
   private val shakeDetector = ShakeDetector(this::onShakeDetected)
+  private var originalWindowCallback: Window.Callback? = null
 
   private val reactHost: ReactHost?
     get() = reactHostHolder.get()
@@ -63,19 +65,32 @@ class DevMenuFragment(
 
     val shouldShowAtLaunch = preferences.showsAtLaunch || !preferences.isOnboardingFinished
     if (shouldShowAtLaunch) {
-      val onReactContext = object : ReactInstanceEventListener {
-        override fun onReactContextInitialized(context: ReactContext) {
-          val boundedContext = reactHost?.currentReactContext
-          // We check if that listener is called for the same context that is currently set in the host.
-          if (boundedContext != null && boundedContext == context) {
-            viewModel.onAction(DevMenuAction.Open)
-          }
-          reactHost?.removeReactInstanceEventListener(this)
-        }
-      }
-
-      reactHost?.addReactInstanceEventListener(onReactContext)
+      showMenuAtLaunch()
     }
+  }
+
+  private fun showMenuAtLaunch() {
+    val reactHost = reactHostHolder.get() ?: return
+
+    // If the React Context is already initialized, we can open the menu right away.
+    if (reactHost.currentReactContext != null) {
+      viewModel.onAction(DevMenuAction.Open)
+      return
+    }
+
+    // Otherwise, we add a listener to be notified when the context is ready.
+    val onReactContext = object : ReactInstanceEventListener {
+      override fun onReactContextInitialized(context: ReactContext) {
+        val boundedContext = reactHost.currentReactContext
+        // We check if that listener is called for the same context that is currently set in the host.
+        if (boundedContext != null && boundedContext == context) {
+          viewModel.onAction(DevMenuAction.Open)
+        }
+        reactHost.removeReactInstanceEventListener(this)
+      }
+    }
+
+    reactHost.addReactInstanceEventListener(onReactContext)
   }
 
   override fun onStart() {
@@ -98,11 +113,38 @@ class DevMenuFragment(
     shakeDetector.start(
       requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
     )
+
+    // Wrap window callback to intercept touch events at the window level
+    activity?.window?.let { window ->
+      val detector = ThreeFingerLongPressDetector(
+        lifecycleScope,
+        ::onThreeFingerLongPressDetected
+      )
+
+      val currentCallback = window.callback
+      // Avoid wrapping multiple times
+      if (currentCallback !is TouchInterceptingWindowCallback) {
+        originalWindowCallback = currentCallback
+        window.callback =
+          TouchInterceptingWindowCallback(
+            currentCallback,
+            detector
+          )
+      } else {
+        // When user reloads the app, the fragment is restarted but the window callback remains the same
+        currentCallback.updateDetector(detector)
+      }
+    }
   }
 
   override fun onStop() {
     super.onStop()
     shakeDetector.stop()
+
+    originalWindowCallback?.let { original ->
+      activity?.window?.callback = original
+      originalWindowCallback = null
+    }
   }
 
   override fun onResume() {
@@ -115,7 +157,11 @@ class DevMenuFragment(
     updatePictureInPictureState()
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
     val context = requireContext()
     return LinearLayout(context).apply {
       z = Float.MAX_VALUE
@@ -216,24 +262,14 @@ class DevMenuFragment(
       goToHomeAction: GoHomeAction?,
       appInfoProvider: AppInfoProvider
     ): ViewGroup {
-      var fragmentHolder = WeakReference<DevMenuFragment>(null)
-      val interceptTouchEventCallback: (event: MotionEvent?) -> Unit = { event ->
-        fragmentHolder.get()?.threeFingerLongPressDetector?.onTouchEvent(event)
-      }
-
       val layout = object : FrameLayout(activity) {
         init {
           // To add the fragment, the container needs to have an id
           id = generateViewId()
         }
-
-        override fun onInterceptTouchEvent(event: MotionEvent?): Boolean {
-          interceptTouchEventCallback(event)
-          return false
-        }
       }
 
-      val fragment = createAndCommit(
+      createAndCommit(
         activity,
         layout,
         reactHostHolder,
@@ -241,7 +277,6 @@ class DevMenuFragment(
         goToHomeAction,
         appInfoProvider
       )
-      fragmentHolder = fragment.weak()
 
       return layout
     }
@@ -253,7 +288,7 @@ class DevMenuFragment(
       preferences: DevMenuPreferences,
       goToHomeAction: GoHomeAction?,
       appInfoProvider: AppInfoProvider
-    ): DevMenuFragment {
+    ) {
       val fragmentManager = (activity as FragmentActivity).supportFragmentManager
 
       val fragment = DevMenuFragment(
@@ -267,8 +302,6 @@ class DevMenuFragment(
         setReorderingAllowed(true)
         add(container, fragment, TAG)
       }
-
-      return fragment
     }
 
     internal fun findIn(activity: Activity?): DevMenuFragment? {

@@ -8,10 +8,8 @@ platforms: ['ios']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A gauge component for displaying values within a range using visual indicators like circular or linear gauges.
+Expo UI Gauge matches the official SwiftUI [Gauge API](https://developer.apple.com/documentation/swiftui/gauge) and supports styling via the [`gaugeStyle`](modifiers/#gaugestylestyle) modifier.
 
 ## Installation
 
@@ -19,39 +17,111 @@ A gauge component for displaying values within a range using visual indicators l
 
 ## Usage
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="Gauge component on iOS."
-      src="/static/images/expo-ui/gauge/ios.png"
-      className="max-w-[240px]"
-    />
-  </Tab>
+### Basic gauge
 
-  <Tab label="Code">
-    ```tsx
-    import { Gauge, Host } from "@expo/ui/swift-ui";
+```tsx BasicGaugeExample.tsx
+import { Host, Gauge } from '@expo/ui/swift-ui';
 
+export default function BasicGaugeExample() {
+  return (
+    <Host matchContents>
+      <Gauge value={0.5} />
+    </Host>
+  );
+}
+```
+
+### With label
+
+You can pass custom components as `children` to provide a label for the gauge.
+
+```tsx LabelExample.tsx
+import { Host, Gauge, Text } from '@expo/ui/swift-ui';
+
+export default function LabelExample() {
+  return (
+    <Host matchContents>
+      <Gauge value={0.7}>
+        <Text>Progress</Text>
+      </Gauge>
+    </Host>
+  );
+}
+```
+
+### With value labels
+
+Use the `currentValueLabel`, `minimumValueLabel`, and `maximumValueLabel` props to display value information.
+
+```tsx ValueLabelsExample.tsx
+import { Host, Gauge, Text } from '@expo/ui/swift-ui';
+
+export default function ValueLabelsExample() {
+  return (
     <Host matchContents>
       <Gauge
-        max={{ value: 1, label: '1' }}
-        min={{ value: 0, label: '0' }}
-        current={{ value: 0.5 }}
-        color={[
-          PlatformColor('systemRed'),
-          PlatformColor('systemOrange'),
-          PlatformColor('systemYellow'),
-          PlatformColor('systemGreen'),
-        ]}
-        type="circularCapacity"
-      />
+        value={50}
+        min={0}
+        max={100}
+        currentValueLabel={<Text>50%</Text>}
+        minimumValueLabel={<Text>0</Text>}
+        maximumValueLabel={<Text>100</Text>}>
+        <Text>Usage</Text>
+      </Gauge>
     </Host>
-    ```
+  );
+}
+```
 
-  </Tab>
-</Tabs>
+### Gauge styles
 
-> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/gauge) for more information.
+Use the `gaugeStyle` modifier to change the gauge's appearance. Available styles are: `automatic`, `circular`, `circularCapacity`, `linear`, and `linearCapacity`.
+
+```tsx GaugeStylesExample.tsx
+import { Host, Gauge, Text, VStack } from '@expo/ui/swift-ui';
+import { gaugeStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function GaugeStylesExample() {
+  return (
+    <Host matchContents>
+      <VStack spacing={16}>
+        <Gauge value={0.5} modifiers={[gaugeStyle('circular')]}>
+          <Text>Circular</Text>
+        </Gauge>
+        <Gauge value={0.5} modifiers={[gaugeStyle('circularCapacity')]}>
+          <Text>Circular Capacity</Text>
+        </Gauge>
+        <Gauge value={0.5} modifiers={[gaugeStyle('linear')]}>
+          <Text>Linear</Text>
+        </Gauge>
+        <Gauge value={0.5} modifiers={[gaugeStyle('linearCapacity')]}>
+          <Text>Linear Capacity</Text>
+        </Gauge>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Tinted gauge
+
+Use the `tint` modifier to change the gauge's color.
+
+```tsx TintedGaugeExample.tsx
+import { Host, Gauge, VStack } from '@expo/ui/swift-ui';
+import { gaugeStyle, tint } from '@expo/ui/swift-ui/modifiers';
+
+export default function TintedGaugeExample() {
+  return (
+    <Host matchContents>
+      <VStack spacing={16}>
+        <Gauge value={0.7} modifiers={[gaugeStyle('circular'), tint('green')]} />
+        <Gauge value={0.3} modifiers={[gaugeStyle('linear'), tint('red')]} />
+      </VStack>
+    </Host>
+  );
+}
+```
 
 ## API
 

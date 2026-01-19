@@ -6,53 +6,39 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { ConfigAPI, PluginObj, NodePath, types as t } from '@babel/core';
-
-/**
- * Checks if the given identifier is an ES module import
- * @param  {babelNode} identifierNodePath The node to check
- * @return {boolean} Indicates if the provided node is an import specifier or references one
- */
-const isImportIdentifier = (
-  identifierNodePath: NodePath<t.Identifier | t.JSXIdentifier>
-): boolean => {
-  if (
-    identifierNodePath.container &&
-    !Array.isArray(identifierNodePath.container) &&
-    'type' in identifierNodePath.container
-  ) {
-    return (
-      identifierNodePath.container.type === 'ImportDefaultSpecifier' ||
-      identifierNodePath.container.type === 'ImportSpecifier'
-    );
-  }
-
-  return false;
-};
-
-const memberExpressionComparator = (nodePath: NodePath, value: string): boolean =>
-  nodePath.matchesPattern(value);
-const identifierComparator = (nodePath: NodePath, value: string): boolean =>
-  'name' in nodePath.node && nodePath.node.name === value;
-const unaryExpressionComparator = (nodePath: NodePath, value: string): boolean => {
-  if ('argument' in nodePath.node && nodePath.node.argument && 'name' in nodePath.node?.argument) {
-    return nodePath.node.argument.name === value;
-  }
-  return false;
-};
+import type { ConfigAPI, PluginObj, PluginPass, NodePath, types as t } from '@babel/core';
 
 const TYPEOF_PREFIX = 'typeof ';
 
-function definePlugin({ types: t }: ConfigAPI & typeof import('@babel/core')): PluginObj {
+interface ProcessedReplacements {
+  /** Identifier name -> replacement value (e.g., "__DEV__" -> false) */
+  identifiers: Map<string, unknown>;
+  /** Member expression pattern -> replacement value (e.g., "process.env.NODE_ENV" -> "production") */
+  memberPatterns: [string, unknown][];
+  /** typeof argument name -> replacement value (e.g., "window" -> "object") */
+  typeofValues: Map<string, unknown>;
+  /** Set of root object names from member patterns for quick filtering (e.g., "process", "Platform") */
+  memberRoots: Set<string>;
+}
+
+interface DefinePluginState extends PluginPass {
+  processed?: ProcessedReplacements;
+}
+
+function definePlugin({
+  types: t,
+}: ConfigAPI & typeof import('@babel/core')): PluginObj<
+  PluginPass & { opts: Record<string, null | boolean | string> }
+> {
   /**
    * Replace a node with a given value. If the replacement results in a BinaryExpression, it will be
    * evaluated. For example, if the result of the replacement is `var x = "production" === "production"`
    * The evaluation will make a second replacement resulting in `var x = true`
    */
-  function replaceAndEvaluateNode(nodePath: NodePath, replacement: string) {
+  function replaceAndEvaluateNode(nodePath: NodePath, replacement: unknown) {
     nodePath.replaceWith(t.valueToNode(replacement));
 
-    if (nodePath.parentPath && nodePath.parentPath.isBinaryExpression()) {
+    if (nodePath.parentPath?.isBinaryExpression()) {
       const result = nodePath.parentPath.evaluate();
 
       if (result.confident) {
@@ -61,93 +47,128 @@ function definePlugin({ types: t }: ConfigAPI & typeof import('@babel/core')): P
     }
   }
 
-  const isLeftHandSideOfAssignmentExpression = (node: t.MemberExpression, parent: t.Node) =>
-    t.isAssignmentExpression(parent) && parent.left === node;
-
-  const processNode = (
-    replacements: Record<string, string>,
-    nodePath: NodePath,
-    comparator: (nodePath: NodePath, value: string) => boolean
-  ): void => {
-    const replacementKey = Object.keys(replacements).find((value) => comparator(nodePath, value));
-    if (
-      typeof replacementKey === 'string' &&
-      replacements != null &&
-      replacementKey in replacements
-    ) {
-      replaceAndEvaluateNode(nodePath, replacements[replacementKey]);
+  /** Get the root identifier name from a member expression (e.g., "process" from "process.env.NODE_ENV") */
+  function getMemberExpressionRoot(node: t.MemberExpression): string | null {
+    let current: t.Expression = node;
+    while (t.isMemberExpression(current)) {
+      current = current.object;
     }
-  };
+    return t.isIdentifier(current) ? current.name : null;
+  }
 
   return {
     name: 'expo-define-globals',
+
+    pre() {
+      // Pre-process replacements once per file
+      const identifiers = new Map<string, unknown>();
+      const memberPatterns: [string, unknown][] = [];
+      const typeofValues = new Map<string, unknown>();
+      const memberRoots = new Set<string>();
+
+      for (const key of Object.keys(this.opts)) {
+        const value = (this.opts as Record<string, unknown>)[key];
+
+        if (key.startsWith(TYPEOF_PREFIX)) {
+          // "typeof window" -> typeofValues["window"]
+          typeofValues.set(key.slice(TYPEOF_PREFIX.length), value);
+        } else if (key.includes('.')) {
+          // "process.env.NODE_ENV" -> memberPatterns, extract "process" as root
+          memberPatterns.push([key, value]);
+          const root = key.split('.')[0];
+          memberRoots.add(root);
+        } else {
+          // "__DEV__" -> identifiers
+          identifiers.set(key, value);
+        }
+      }
+
+      (this as DefinePluginState).processed = {
+        identifiers,
+        memberPatterns,
+        typeofValues,
+        memberRoots,
+      };
+    },
+
     visitor: {
       // process.env.NODE_ENV;
-      MemberExpression(nodePath, state): void {
-        if (
-          // Prevent rewriting if the member expression is on the left-hand side of an assignment
-          isLeftHandSideOfAssignmentExpression(nodePath.node, nodePath.parent)
-        ) {
+      MemberExpression(nodePath, state: DefinePluginState): void {
+        // Prevent rewriting if the member expression is on the left-hand side of an assignment
+        if (t.isAssignmentExpression(nodePath.parent) && nodePath.parent.left === nodePath.node) {
           return;
         }
-        const replacements = state.opts;
-        assertOptions(replacements);
-        processNode(replacements, nodePath, memberExpressionComparator);
+
+        const { memberPatterns, memberRoots } = state.processed!;
+        if (memberPatterns.length === 0) return;
+
+        // Quick filter: check if root matches any known pattern root
+        const root = getMemberExpressionRoot(nodePath.node);
+        if (!root || !memberRoots.has(root)) return;
+
+        // Check against patterns
+        for (const [pattern, replacement] of memberPatterns) {
+          if (nodePath.matchesPattern(pattern)) {
+            replaceAndEvaluateNode(nodePath, replacement);
+            return;
+          }
+        }
       },
 
       // const x = { version: VERSION };
-      ReferencedIdentifier(nodePath, state) {
-        const binding = nodePath.scope?.getBinding(nodePath.node.name);
+      ReferencedIdentifier(nodePath, state: DefinePluginState) {
+        const { identifiers } = state.processed!;
+        if (identifiers.size === 0) return;
 
+        const name = nodePath.node.name;
+
+        // Quick check: is this identifier in our replacements?
+        if (!identifiers.has(name)) return;
+
+        // Check for binding (locally defined variable shadows replacement)
+        if (nodePath.scope?.getBinding(name)) return;
+
+        // Don't transform import identifiers (mimics webpack's DefinePlugin behavior)
+        const container = nodePath.container;
         if (
-          binding ||
-          // Don't transform import identifiers. This is meant to mimic webpack's
-          // DefinePlugin behavior.
-          isImportIdentifier(nodePath) ||
-          // Do not transform Object keys / properties unless they are computed like {[key]: value}
-          (nodePath.key === 'key' &&
-            nodePath.parent &&
-            'computed' in nodePath.parent &&
-            nodePath.parent.computed === false) ||
-          (nodePath.key === 'property' &&
-            nodePath.parent &&
-            'computed' in nodePath.parent &&
-            nodePath.parent.computed === false)
+          container &&
+          !Array.isArray(container) &&
+          'type' in container &&
+          (container.type === 'ImportDefaultSpecifier' || container.type === 'ImportSpecifier')
         ) {
           return;
         }
-        const replacements = state.opts;
-        assertOptions(replacements);
-        processNode(replacements, nodePath, identifierComparator);
-      },
 
-      // typeof window
-      UnaryExpression(nodePath, state) {
-        if (nodePath.node.operator !== 'typeof') {
+        // Do not transform Object keys / properties unless they are computed like {[key]: value}
+        if (
+          (nodePath.key === 'key' || nodePath.key === 'property') &&
+          nodePath.parent &&
+          'computed' in nodePath.parent &&
+          nodePath.parent.computed === false
+        ) {
           return;
         }
 
-        const replacements = state.opts;
-        assertOptions(replacements);
+        replaceAndEvaluateNode(nodePath, identifiers.get(name));
+      },
 
-        const typeofValues: { [key: string]: any } = {};
+      // typeof window
+      UnaryExpression(nodePath, state: DefinePluginState) {
+        if (nodePath.node.operator !== 'typeof') return;
 
-        Object.keys(replacements).forEach((key) => {
-          if (key.substring(0, TYPEOF_PREFIX.length) === TYPEOF_PREFIX) {
-            typeofValues[key.substring(TYPEOF_PREFIX.length)] = replacements[key];
-          }
-        });
+        const { typeofValues } = state.processed!;
+        if (typeofValues.size === 0) return;
 
-        processNode(typeofValues, nodePath, unaryExpressionComparator);
+        const argument = nodePath.node.argument;
+        if (!t.isIdentifier(argument)) return;
+
+        const replacement = typeofValues.get(argument.name);
+        if (replacement !== undefined) {
+          replaceAndEvaluateNode(nodePath, replacement);
+        }
       },
     },
   };
-}
-
-function assertOptions(opts: any): asserts opts is Record<string, string> {
-  if (opts == null || typeof opts !== 'object') {
-    throw new Error('define plugin expects an object as options');
-  }
 }
 
 export default definePlugin;

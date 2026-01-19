@@ -1,3 +1,4 @@
+import type { ImageRef } from 'expo-image';
 import { type PropsWithChildren } from 'react';
 import { type ViewProps, type ColorValue } from 'react-native';
 import type { BasicTextStyle } from '../../utils/font';
@@ -5,6 +6,7 @@ export interface NativeLinkPreviewActionProps {
     identifier: string;
     title: string;
     icon?: string;
+    image?: ImageRef | null;
     children?: React.ReactNode;
     disabled?: boolean;
     destructive?: boolean;
@@ -52,9 +54,15 @@ export interface NativeLinkPreviewContentProps extends ViewProps {
     };
 }
 export declare function NativeLinkPreviewContent(props: NativeLinkPreviewContentProps): import("react").JSX.Element | null;
+interface DismissalBoundsRect {
+    minX?: number;
+    maxX?: number;
+    minY?: number;
+    maxY?: number;
+}
 export declare function LinkZoomTransitionEnabler(props: {
     zoomTransitionSourceIdentifier: string;
-    preventInteractiveDismissal?: boolean;
+    dismissalBoundsRect?: DismissalBoundsRect | null;
 }): import("react").JSX.Element | null;
 interface LinkSourceAlignmentRect {
     x: number;

@@ -2,52 +2,56 @@
 package versioned.host.exp.exponent.modules.universal
 
 import android.content.Context
-import javax.inject.Inject
-import host.exp.exponent.storage.ExponentSharedPreferences
-import host.exp.exponent.kernel.ExpoViewKernel
 import expo.modules.constants.ConstantsService
-import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.di.NativeModuleDepsProvider
+import host.exp.exponent.kernel.ExpoViewKernel
+import host.exp.exponent.storage.ExponentSharedPreferences
 import org.json.JSONException
+import javax.inject.Inject
 
 class ConstantsBinding(
   context: Context,
   private val experienceProperties: Map<String, Any?>,
   private val manifest: Manifest
-) : ConstantsService(context), ConstantsInterface {
+) : ConstantsService(context) {
   @Inject
   lateinit var exponentSharedPreferences: ExponentSharedPreferences
 
-  override fun getConstants(): Map<String, Any?> {
-    return super.getConstants().toMutableMap().apply {
-      this["expoVersion"] = ExpoViewKernel.instance.versionName
-      this["manifest"] = manifest.toString()
-      this["nativeAppVersion"] = ExpoViewKernel.instance.versionName
-      this["nativeBuildVersion"] = Constants.ANDROID_VERSION_CODE
-      this["supportedExpoSdks"] = listOf(Constants.SDK_VERSION)
-      this["appOwnership"] = "expo"
-      this["executionEnvironment"] = executionEnvironment.string
+  override val constants: Map<String, Any?>
+    get() {
+      return super
+        .constants
+        .toMutableMap()
+        .apply {
+          this["expoVersion"] = ExpoViewKernel.instance.versionName
+          this["manifest"] = manifest.toString()
+          this["nativeAppVersion"] = ExpoViewKernel.instance.versionName
+          this["nativeBuildVersion"] = Constants.ANDROID_VERSION_CODE
+          this["supportedExpoSdks"] = listOf(Constants.SDK_VERSION)
+          this["appOwnership"] = "expo"
+          this["executionEnvironment"] = executionEnvironment.string
 
-      this.putAll(experienceProperties)
+          this.putAll(experienceProperties)
 
-      this["platform"] = mapOf(
-        "android" to mapOf(
-          "versionCode" to null
-        )
-      )
-      this["isDetached"] = false
+          this["platform"] = mapOf(
+            "android" to mapOf(
+              "versionCode" to null
+            )
+          )
+          this["isDetached"] = false
+        }
     }
-  }
 
-  override fun getAppScopeKey(): String? {
-    return try {
-      manifest.getScopeKey()
-    } catch (e: JSONException) {
-      null
+  override val appScopeKey: String?
+    get() {
+      return try {
+        manifest.getScopeKey()
+      } catch (_: JSONException) {
+        null
+      }
     }
-  }
 
   private val executionEnvironment: ExecutionEnvironment
     get() = ExecutionEnvironment.STORE_CLIENT

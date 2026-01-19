@@ -1,5 +1,7 @@
+import { ImmutableRequest } from '../../ImmutableRequest';
 import type { Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
-import type { ServerRenderModule, SsrRenderFn } from '../../rendering';
+import type { LoaderModule, RenderOptions, ServerRenderModule, SsrRenderFn } from '../../rendering';
+import { parseParams } from '../../utils/matchers';
 
 function initManifestRegExp(manifest: RawManifest): Manifest {
   return {
@@ -79,6 +81,24 @@ export function createEnvironment(input: EnvironmentInput) {
     return ssrRenderer;
   }
 
+  async function executeLoader(
+    request: Request,
+    route: Route
+  ): Promise<{ data: unknown } | undefined> {
+    if (!route.loader) {
+      return undefined;
+    }
+
+    const loaderModule = (await input.loadModule(route.loader)) as LoaderModule | null;
+    if (!loaderModule) {
+      throw new Error(`Loader module not found at: ${route.loader}`);
+    }
+
+    const params = parseParams(request, route);
+    const data = await loaderModule.loader({ params, request: new ImmutableRequest(request) });
+    return { data: data === undefined ? {} : data };
+  }
+
   return {
     async getRoutesManifest(): Promise<Manifest> {
       return getCachedRoutesManifest();
@@ -88,8 +108,14 @@ export function createEnvironment(input: EnvironmentInput) {
       // SSR path: Render at runtime if SSR module is available
       const renderer = await getServerRenderer();
       if (renderer) {
+        let renderOptions: RenderOptions | undefined;
+
         try {
-          return await renderer(request);
+          const loaderResult = await executeLoader(request, route);
+          if (loaderResult) {
+            renderOptions = { loader: { data: loaderResult.data } };
+          }
+          return await renderer(request, renderOptions);
         } catch (error) {
           console.error('SSR render error:', error);
           throw error;
@@ -123,6 +149,10 @@ export function createEnvironment(input: EnvironmentInput) {
         return null;
       }
       return mod;
+    },
+
+    async getLoaderData(request: Request, route: Route): Promise<{ data: unknown } | undefined> {
+      return executeLoader(request, route);
     },
   };
 }

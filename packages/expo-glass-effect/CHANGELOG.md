@@ -9,6 +9,8 @@
 ### 🎉 New features
 
 - Add `isGlassEffectAPIAvailable` API to prevent some iOS 26 beta version crashes ([#40992](https://github.com/expo/expo/pull/40992) by [@nishan](https://github.com/intergalacticspacehighway))
+- Add `tvOS` support ([#41962](https://github.com/expo/expo/pull/41962) by [@nishan](https://github.com/intergalacticspacehighway))
+- Add `colorScheme` prop to override user interface style of `GlassView` ([#42164](https://github.com/expo/expo/pull/42164) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 

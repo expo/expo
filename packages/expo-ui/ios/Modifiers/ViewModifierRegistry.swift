@@ -157,6 +157,22 @@ internal struct ForegroundColorModifier: ViewModifier, Record {
   }
 }
 
+internal struct BoldModifier: ViewModifier, Record {
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, tvOS 16.0, *) {
+      content.bold()
+    }
+  }
+}
+
+internal struct ItalicModifier: ViewModifier, Record {
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, tvOS 16.0, *) {
+      content.italic()
+    }
+  }
+}
+
 internal enum ForegroundStyleType: String, Enumerable {
   case color
   case hierarchical
@@ -1053,6 +1069,14 @@ internal struct LineSpacing: ViewModifier, Record {
   }
 }
 
+internal struct LineLimitModifier: ViewModifier, Record {
+  @Field var limit: Int?
+
+  func body(content: Content) -> some View {
+    content.lineLimit(limit)
+  }
+}
+
 internal enum Prominence: String, Enumerable {
   case standard
   case increased
@@ -1327,6 +1351,54 @@ internal class ViewModifierRegistry {
   }
 
   /**
+    * Applies `Text returning modifiers. Useful for Text concatenation in TextView.
+   */
+  func applyTextModifier(
+    _ type: String,
+    to text: Text,
+    appContext: AppContext,
+    params: [String: Any]
+  ) -> Text {
+    switch type {
+    case "bold":
+      return text.bold()
+    case "italic":
+      return text.italic()
+    case "font":
+      guard let modifier = try? FontModifier(from: params, appContext: appContext) else { return text }
+      if let family = modifier.family {
+        return text.font(Font.custom(family, size: modifier.size ?? 17))
+      }
+      return text.font(.system(
+        size: modifier.size ?? 17,
+        weight: modifier.weight?.toSwiftUI() ?? .regular,
+        design: modifier.design?.toSwiftUI() ?? .default
+      ))
+    case "foregroundColor":
+      guard let modifier = try? ForegroundColorModifier(from: params, appContext: appContext),
+            let color = modifier.color else { return text }
+      return text.foregroundColor(color)
+    case "foregroundStyle":
+      guard let modifier = try? ForegroundStyleModifier(from: params, appContext: appContext) else { return text }
+      if modifier.styleType == .color, let color = modifier.color {
+        if #available(iOS 17.0, tvOS 17.0, *) {
+          return text.foregroundStyle(color)
+        } else {
+          // Fallback for earlier version
+          return text.foregroundColor(color)
+        }
+      }
+      return text
+    default:
+      #if DEBUG
+      return Text(" ['\(type)' not supported for nested Text]").foregroundColor(.red)
+      #else
+      return text
+      #endif
+    }
+  }
+
+  /**
    * Checks if a modifier type is registered.
    */
   func hasModifier(_ type: String) -> Bool {
@@ -1485,6 +1557,14 @@ extension ViewModifierRegistry {
       return try ForegroundStyleModifier(from: params, appContext: appContext)
     }
 
+    register("bold") { params, appContext, _ in
+      return try BoldModifier(from: params, appContext: appContext)
+    }
+
+    register("italic") { params, appContext, _ in
+      return try ItalicModifier(from: params, appContext: appContext)
+    }
+
     register("tint") { params, appContext, _ in
       return try TintModifier(from: params, appContext: appContext)
     }
@@ -1625,6 +1705,10 @@ extension ViewModifierRegistry {
       return try ContainerShapeModifier(from: params, appContext: appContext)
     }
 
+    register("containerRelativeFrame") { params, appContext, _ in
+      return try ContainerRelativeFrameModifier(from: params, appContext: appContext)
+    }
+
     register("buttonStyle") { params, appContext, _ in
       return try ButtonStyleModifier(from: params, appContext: appContext)
     }
@@ -1693,6 +1777,10 @@ extension ViewModifierRegistry {
       return try LineSpacing(from: params, appContext: appContext)
     }
 
+    register("lineLimit") { params, appContext, _ in
+      return try LineLimitModifier(from: params, appContext: appContext)
+    }
+
     register("listRowInsets") { params, appContext, _ in
       return try ListRowInsets(from: params, appContext: appContext)
     }
@@ -1755,6 +1843,34 @@ extension ViewModifierRegistry {
 
     register("datePickerStyle") { params, appContext, _ in
       return try DatePickerStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollDisabled") { params, appContext, _ in
+      return try ScrollDisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("progressViewStyle") { params, appContext, _ in
+      return try ProgressViewStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("gaugeStyle") { params, appContext, _ in
+      return try GaugeStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("presentationDetents") { params, appContext, _ in
+      return try PresentationDetentsModifier(from: params, appContext: appContext)
+    }
+
+    register("presentationDragIndicator") { params, appContext, _ in
+      return try PresentationDragIndicatorModifier(from: params, appContext: appContext)
+    }
+
+    register("presentationBackgroundInteraction") { params, appContext, _ in
+      return try PresentationBackgroundInteractionModifier(from: params, appContext: appContext)
+    }
+
+    register("interactiveDismissDisabled") { params, appContext, _ in
+      return try InteractiveDismissDisabledModifier(from: params, appContext: appContext)
     }
   }
 }

@@ -20,5 +20,5 @@ import { NotificationChannel, NotificationChannelInput } from './NotificationCha
  * @platform android
  * @header channels
  */
-export default function setNotificationChannelAsync(channelId: string, channel: NotificationChannelInput): Promise<NotificationChannel | null>;
+export declare function setNotificationChannelAsync(channelId: string, channel: NotificationChannelInput): Promise<NotificationChannel | null>;
 //# sourceMappingURL=setNotificationChannelAsync.d.ts.map

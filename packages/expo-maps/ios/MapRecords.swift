@@ -13,6 +13,7 @@ struct MapMarker: Identifiable, Record {
   @Field var id: String = UUID().uuidString
   @Field var coordinates: Coordinate
   @Field var systemImage: String = ""
+  @Field var monogram: String = ""
   @Field var tintColor: Color = .red
   @Field var title: String = ""
 
@@ -29,6 +30,11 @@ struct MapMarker: Identifiable, Record {
 
   var mapItem: MKMapItem {
     MKMapItem(placemark: mkPlacemark)
+  }
+
+  /// Returns true if the marker should display a monogram instead of a system image
+  var hasMonogram: Bool {
+    !monogram.isEmpty && systemImage.isEmpty
   }
 }
 

@@ -130,10 +130,10 @@ class ConstantEncoder: Encodable {
     case nil:
       try container.encodeNil(forKey: .value)
       try container.encode("null", forKey: .type)
-    case let value as Dictionary<String, Any>:
+    case let value as [String: Any]:
       try container.encodeNil(forKey: .value)
       try container.encode("object", forKey: .type)
-    case let value as Array<Any>:
+    case let value as [Any]:
       try container.encodeNil(forKey: .value)
       try container.encode("array", forKey: .type)
     default:
