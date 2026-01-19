@@ -81,7 +81,8 @@ describe('build-android command', () => {
       expect(exitCode).not.toBe(0);
       expect(stdout).toContain(ExpectedOutput.Prebuild.Warning('android'));
       expect(stdout).toContain(ExpectedOutput.Prebuild.Prompt);
-      expect(stderr).toContain(ExpectedOutput.Android.InferenceError);
+      expect(stderr).toContain(`Error: Value of Android library name`);
+      expect(stderr).toContain(`could not be inferred from the project`);
 
       // The android directory should be created and not empty
       await expectPrebuild(TEMP_DIR, 'android');
