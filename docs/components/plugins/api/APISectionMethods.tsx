@@ -152,6 +152,7 @@ export const renderMethod = (
             parameters,
             typeParameter
           )}
+          comment={method?.comment ?? comment}
           platforms={platforms.length > 0 ? platforms : parentPlatforms}
           baseNestingLevel={baseNestingLevel}
           // only show first overload in sidebar to avoid duplicates
