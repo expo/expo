@@ -1,9 +1,9 @@
 import type { DefaultRouterOptions } from '@react-navigation/native';
 import type { PropsWithChildren } from 'react';
 import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle, ViewStyle } from 'react-native';
-import type { BottomTabsScreenProps } from 'react-native-screens';
+import type { TabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
-export type NativeScreenProps = Partial<Omit<BottomTabsScreenProps, 'tabKey' | 'isFocused'>>;
+export type NativeScreenProps = Partial<Omit<TabsScreenProps, 'tabKey' | 'isFocused'>>;
 export interface NativeTabOptions extends DefaultRouterOptions {
     icon?: SymbolOrImageSource;
     selectedIcon?: SymbolOrImageSource;
@@ -31,7 +31,7 @@ export interface NativeTabOptions extends DefaultRouterOptions {
     };
     indicatorColor?: ColorValue;
     hidden?: boolean;
-    specialEffects?: BottomTabsScreenProps['specialEffects'];
+    specialEffects?: TabsScreenProps['specialEffects'];
     nativeProps?: NativeScreenProps;
     disableAutomaticContentInsets?: boolean;
     contentStyle?: Pick<ViewStyle, 'backgroundColor' | 'experimental_backgroundImage' | 'padding' | 'paddingTop' | 'paddingBottom' | 'paddingLeft' | 'paddingRight' | 'paddingBlock' | 'paddingBlockEnd' | 'paddingBlockStart' | 'paddingInline' | 'paddingInlineEnd' | 'paddingInlineStart' | 'paddingEnd' | 'paddingHorizontal' | 'paddingVertical' | 'paddingStart' | 'alignContent' | 'alignItems' | 'justifyContent' | 'flexDirection' | 'gap'>;

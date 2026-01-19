@@ -1,12 +1,7 @@
 import { useTheme } from '@react-navigation/native';
 import React, { useDeferredValue, useMemo } from 'react';
 import { View, type ColorValue } from 'react-native';
-import {
-  BottomTabs,
-  BottomTabsScreen,
-  type BottomTabsProps,
-  type BottomTabsScreenAppearance,
-} from 'react-native-screens';
+import { Tabs, type TabsHostProps, type TabsScreenAppearance } from 'react-native-screens';
 import { SafeAreaView } from 'react-native-screens/experimental';
 
 import {
@@ -80,7 +75,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   });
 
   const currentTabAppearance = appearances[inBoundsDeferredFocusedIndex]?.standardAppearance;
-  const tabBarControllerMode: BottomTabsProps['tabBarControllerMode'] = sidebarAdaptable
+  const tabBarControllerMode: TabsHostProps['tabBarControllerMode'] = sidebarAdaptable
     ? 'tabSidebar'
     : sidebarAdaptable === false
       ? 'tabBar'
@@ -100,7 +95,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       : undefined;
 
   return (
-    <BottomTabsWrapper
+    <TabsHostWrapper
       // #region android props
       tabBarItemTitleFontColor={
         currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor ??
@@ -148,7 +143,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         props.onTabChange(tabKey);
       }}>
       {children}
-    </BottomTabsWrapper>
+    </TabsHostWrapper>
   );
 }
 
@@ -157,8 +152,8 @@ function Screen(props: {
   name: string;
   isFocused: boolean;
   options: NativeTabOptions;
-  standardAppearance: BottomTabsScreenAppearance;
-  scrollEdgeAppearance: BottomTabsScreenAppearance;
+  standardAppearance: TabsScreenAppearance;
+  scrollEdgeAppearance: TabsScreenAppearance;
   badgeTextColor: ColorValue | undefined;
   contentRenderer: () => React.ReactNode;
 }) {
@@ -205,7 +200,7 @@ function Screen(props: {
     );
 
   return (
-    <BottomTabsScreen
+    <Tabs.Screen
       {...options}
       overrideScrollViewContentInsetAdjustmentBehavior={!options.disableAutomaticContentInsets}
       tabBarItemBadgeBackgroundColor={
@@ -223,7 +218,7 @@ function Screen(props: {
       tabKey={routeKey}
       isFocused={isFocused}>
       {wrappedContent}
-    </BottomTabsScreen>
+    </Tabs.Screen>
   );
 }
 
@@ -232,7 +227,7 @@ const supportedTabBarItemLabelVisibilityModesSet = new Set<string>(
   SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES
 );
 
-function BottomTabsWrapper(props: BottomTabsProps) {
+function TabsHostWrapper(props: TabsHostProps) {
   let { tabBarMinimizeBehavior, tabBarItemLabelVisibilityMode, ...rest } = props;
   if (tabBarMinimizeBehavior && !supportedTabBarMinimizeBehaviorsSet.has(tabBarMinimizeBehavior)) {
     console.warn(
@@ -251,7 +246,7 @@ function BottomTabsWrapper(props: BottomTabsProps) {
   }
 
   return (
-    <BottomTabs
+    <Tabs.Host
       tabBarItemLabelVisibilityMode={tabBarItemLabelVisibilityMode}
       tabBarMinimizeBehavior={tabBarMinimizeBehavior}
       {...rest}
