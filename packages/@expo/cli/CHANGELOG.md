@@ -10,6 +10,7 @@
 
 - Fix response streaming from dev server (remove compression) ([#41955](https://github.com/expo/expo/pull/41955) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Restrict debugger (`/inspector/network`) and devtools (`/expo-dev-plugins/broadcast`) sockets to local connections ([#42156](https://github.com/expo/expo/pull/42156) by [@kitten](https://github.com/kitten))
+- Include `protocol` and `port` when dynamically deriving manifest URLs from request headers (`host`, `x-forwarded-proto`) to support serving through proxies and custom tunnels. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### 💡 Others
 
