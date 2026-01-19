@@ -1872,5 +1872,21 @@ extension ViewModifierRegistry {
     register("interactiveDismissDisabled") { params, appContext, _ in
       return try InteractiveDismissDisabledModifier(from: params, appContext: appContext)
     }
+
+    register("listStyle") { params, appContext, _ in
+      return try ListStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("moveDisabled") { params, appContext, _ in
+      return try MoveDisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("deleteDisabled") { params, appContext, _ in
+      return try DeleteDisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("environment") { params, appContext, _ in
+      return try EnvironmentModifier(from: params, appContext: appContext)
+    }
   }
 }
