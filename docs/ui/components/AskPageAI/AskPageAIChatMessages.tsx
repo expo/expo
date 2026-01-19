@@ -88,8 +88,8 @@ export function AskPageAIChatMessages({
         const isOffPageAnswer =
           contextScope === 'page' &&
           hasSources &&
-          (qa.sources?.some(source => !source.source_url.includes(basePath)) ?? false);
-        const sourcesForDisplay = isOffPageAnswer ? [] : qa.sources ?? [];
+          qa.sources!.some(source => !source.source_url.includes(basePath));
+        const sourcesForDisplay = isOffPageAnswer ? [] : (qa.sources ?? []);
         const isFallbackAnswer =
           trimmedAnswer === fallbackResponse ||
           trimmedLower.startsWith(fallbackLower) ||
