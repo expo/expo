@@ -1,5 +1,5 @@
 import { ImmutableRequest } from '../../ImmutableRequest';
-import { parseParams } from '../../utils/matchers';
+import { isResponse, parseParams } from '../../utils/matchers';
 function initManifestRegExp(manifest) {
     return {
         ...manifest,
@@ -71,8 +71,7 @@ export function createEnvironment(input) {
             throw new Error(`Loader module not found at: ${route.loader}`);
         }
         const params = parseParams(request, route);
-        const data = await loaderModule.loader({ params, request: new ImmutableRequest(request) });
-        return { data: data === undefined ? {} : data };
+        return loaderModule.loader({ params, request: new ImmutableRequest(request) });
     }
     return {
         async getRoutesManifest() {
@@ -84,9 +83,11 @@ export function createEnvironment(input) {
             if (renderer) {
                 let renderOptions;
                 try {
-                    const loaderResult = await executeLoader(request, route);
-                    if (loaderResult) {
-                        renderOptions = { loader: { data: loaderResult.data } };
+                    const result = await executeLoader(request, route);
+                    if (result !== undefined) {
+                        const data = isResponse(result) ? await result.json() : result;
+                        const normalizedData = data === undefined ? {} : data;
+                        renderOptions = { loader: { data: normalizedData } };
                     }
                     return await renderer(request, renderOptions);
                 }
@@ -122,7 +123,12 @@ export function createEnvironment(input) {
             return mod;
         },
         async getLoaderData(request, route) {
-            return executeLoader(request, route);
+            const result = await executeLoader(request, route);
+            if (isResponse(result)) {
+                return result;
+            }
+            const data = result === undefined ? {} : result;
+            return Response.json(data);
         },
     };
 }
