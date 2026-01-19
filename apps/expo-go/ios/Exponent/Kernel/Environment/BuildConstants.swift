@@ -7,7 +7,6 @@ import Foundation
 public final class BuildConstants: NSObject {
   public static let sharedInstance = BuildConstants()
 
-  public private(set) var defaultApiKeys: NSDictionary?
   public private(set) var apiServerEndpoint: URL?
   public var sdkVersion: String?
   public var expoRuntimeVersion: String = ""
@@ -31,10 +30,6 @@ public final class BuildConstants: NSObject {
 
     if let runtimeVersion = config["EXPO_RUNTIME_VERSION"] as? String {
       expoRuntimeVersion = runtimeVersion
-    }
-
-    if let apiKeys = config["DEFAULT_API_KEYS"] as? NSDictionary {
-      defaultApiKeys = apiKeys
     }
   }
 }
