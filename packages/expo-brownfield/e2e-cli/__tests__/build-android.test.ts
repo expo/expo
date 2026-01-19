@@ -29,12 +29,8 @@ describe('build-android command', () => {
      */
     it('should display help message for --help/-h option', async () => {
       // Help message display shouldn't require prebuild
-      await buildAndroidTest(TEMP_DIR, ['build-android', '--help'], true, [
-        ExpectedOutput.BuildAndroidHelp.Full,
-      ]);
-      await buildAndroidTest(TEMP_DIR, ['build-android', '-h'], true, [
-        ExpectedOutput.BuildAndroidHelp.Full,
-      ]);
+      await buildAndroidTest(TEMP_DIR, ['--help'], true, [ExpectedOutput.BuildAndroidHelp]);
+      await buildAndroidTest(TEMP_DIR, ['-h'], true, [ExpectedOutput.BuildAndroidHelp]);
     });
 
     /**
@@ -44,7 +40,7 @@ describe('build-android command', () => {
     it('should handle incorrect options', async () => {
       await buildAndroidTest(
         TEMP_DIR,
-        ['build-android', '--invalid-flag'],
+        ['--invalid-flag'],
         false,
         [],
         [ExpectedOutput.Error.UnknownOption('--invalid-flag')]
@@ -58,7 +54,7 @@ describe('build-android command', () => {
     it("shouldn't allow passing another command", async () => {
       await buildAndroidTest(
         TEMP_DIR,
-        ['build-android', 'build-ios'],
+        ['build-ios'],
         false,
         [],
         [ExpectedOutput.Error.AdditionalCommand('build-android')]
@@ -81,6 +77,7 @@ describe('build-android command', () => {
       expect(exitCode).not.toBe(0);
       expect(stdout).toContain(ExpectedOutput.Prebuild.Warning('android'));
       expect(stdout).toContain(ExpectedOutput.Prebuild.Prompt);
+      // TODO(pmleczek): Refactor CLI error handling
       expect(stderr).toContain(`Error: Value of Android library name`);
       expect(stderr).toContain(`could not be inferred from the project`);
 
@@ -108,12 +105,9 @@ describe('build-android command', () => {
      * Expected behavior: The CLI should print the task it would execute
      */
     it('should build the project', async () => {
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['build-android', '--task', 'someGradleTask', '--dry-run'],
-        true,
-        ['./gradlew someGradleTask']
-      );
+      await buildAndroidTest(TEMP_DIR_PREBUILD, ['--task', 'someGradleTask', '--dry-run'], true, [
+        './gradlew someGradleTask',
+      ]);
     });
 
     /**
@@ -121,12 +115,9 @@ describe('build-android command', () => {
      * Expected behavior: The CLI should print the inferred build configuration
      */
     it('should infer and print build configuration', async () => {
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['build-android', '--task', 'someGradleTask', '--dry-run'],
-        true,
-        [ExpectedOutput.BuildAndroid.Configuration]
-      );
+      await buildAndroidTest(TEMP_DIR_PREBUILD, ['--task', 'someGradleTask', '--dry-run'], true, [
+        ExpectedOutput.BuildAndroid.Configuration,
+      ]);
     });
 
     /**
@@ -136,7 +127,7 @@ describe('build-android command', () => {
     it('should properly handle --verbose option', async () => {
       await buildAndroidTest(
         TEMP_DIR_PREBUILD,
-        ['build-android', '--task', 'someGradleTask', '--dry-run', '--verbose'],
+        ['--task', 'someGradleTask', '--dry-run', '--verbose'],
         true,
         [ExpectedOutput.BuildAndroid.VerboseConfig]
       );
@@ -149,7 +140,7 @@ describe('build-android command', () => {
     it('should properly handle --debug option', async () => {
       await buildAndroidTest(
         TEMP_DIR_PREBUILD,
-        ['build-android', '--repo', 'MavenLocal', '--dry-run', '--debug'],
+        ['--repo', 'MavenLocal', '--dry-run', '--debug'],
         true,
         [
           ExpectedOutput.BuildAndroid.DebugConfig,
@@ -158,22 +149,17 @@ describe('build-android command', () => {
       );
       await buildAndroidTest(
         TEMP_DIR_PREBUILD,
-        ['build-android', '--repo', 'MavenLocal', '--dry-run', '--debug'],
+        ['--repo', 'MavenLocal', '--dry-run', '--debug'],
         true,
         [
           ExpectedOutput.BuildAndroid.DebugConfig,
           `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
         ]
       );
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['build-android', '--repo', 'MavenLocal', '--dry-run', '-d'],
-        true,
-        [
-          ExpectedOutput.BuildAndroid.DebugConfig,
-          `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
-        ]
-      );
+      await buildAndroidTest(TEMP_DIR_PREBUILD, ['--repo', 'MavenLocal', '--dry-run', '-d'], true, [
+        ExpectedOutput.BuildAndroid.DebugConfig,
+        `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
+      ]);
     });
 
     /**
@@ -184,32 +170,22 @@ describe('build-android command', () => {
       // Full version: --release
       await buildAndroidTest(
         TEMP_DIR_PREBUILD,
-        ['build-android', '--repo', 'MavenLocal', '--dry-run', '--release'],
+        ['--repo', 'MavenLocal', '--dry-run', '--release'],
         true,
         [
           ExpectedOutput.BuildAndroid.ReleaseConfig,
           `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
         ]
       );
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['build-android', '--repo', 'MavenLocal', '--dry-run', '-r'],
-        true,
-        [
-          ExpectedOutput.BuildAndroid.ReleaseConfig,
-          `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
-        ]
-      );
+      await buildAndroidTest(TEMP_DIR_PREBUILD, ['--repo', 'MavenLocal', '--dry-run', '-r'], true, [
+        ExpectedOutput.BuildAndroid.ReleaseConfig,
+        `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
+      ]);
       // Short version: -r
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['build-android', '--repo', 'MavenLocal', '--dry-run', '-r'],
-        true,
-        [
-          ExpectedOutput.BuildAndroid.ReleaseConfig,
-          `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
-        ]
-      );
+      await buildAndroidTest(TEMP_DIR_PREBUILD, ['--repo', 'MavenLocal', '--dry-run', '-r'], true, [
+        ExpectedOutput.BuildAndroid.ReleaseConfig,
+        `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
+      ]);
     });
 
     /**
@@ -221,7 +197,7 @@ describe('build-android command', () => {
       // Full version: --all
       await buildAndroidTest(
         TEMP_DIR_PREBUILD,
-        ['build-android', '--repo', 'MavenLocal', '--dry-run', '--all'],
+        ['--repo', 'MavenLocal', '--dry-run', '--all'],
         true,
         [
           ExpectedOutput.BuildAndroid.AllConfig,
@@ -230,20 +206,15 @@ describe('build-android command', () => {
       );
 
       // Short version: -a
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['build-android', '--repo', 'MavenLocal', '--dry-run', '-a'],
-        true,
-        [
-          ExpectedOutput.BuildAndroid.AllConfig,
-          `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
-        ]
-      );
+      await buildAndroidTest(TEMP_DIR_PREBUILD, ['--repo', 'MavenLocal', '--dry-run', '-a'], true, [
+        ExpectedOutput.BuildAndroid.AllConfig,
+        `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
+      ]);
 
       // Combination of the two flags: --release/-r + --debug/-d
       await buildAndroidTest(
         TEMP_DIR_PREBUILD,
-        ['build-android', '--repo', 'MavenLocal', '--dry-run', '--release', '-d'],
+        ['--repo', 'MavenLocal', '--dry-run', '--release', '-d'],
         true,
         [
           ExpectedOutput.BuildAndroid.AllConfig,
@@ -260,7 +231,7 @@ describe('build-android command', () => {
       // Full version: --library
       await buildAndroidTest(
         TEMP_DIR_PREBUILD,
-        ['build-android', '--repo', 'MavenLocal', '--dry-run', '--library', 'brownfieldlib'],
+        ['--repo', 'MavenLocal', '--dry-run', '--library', 'brownfieldlib'],
         true,
         [
           ExpectedOutput.BuildAndroid.LibraryConfig,
@@ -271,7 +242,7 @@ describe('build-android command', () => {
       // Short version: -l
       await buildAndroidTest(
         TEMP_DIR_PREBUILD,
-        ['build-android', '--repo', 'MavenLocal', '--dry-run', '-l', 'brownfieldlib'],
+        ['--repo', 'MavenLocal', '--dry-run', '-l', 'brownfieldlib'],
         true,
         [
           ExpectedOutput.BuildAndroid.LibraryConfig,
@@ -287,7 +258,7 @@ describe('build-android command', () => {
     it('should properly handle --task/-t option(s)', async () => {
       await buildAndroidTest(
         TEMP_DIR_PREBUILD,
-        ['build-android', '--task', 'task1', '-t', 'task2', '--task', 'task3', '--dry-run'],
+        ['--task', 'task1', '-t', 'task2', '--task', 'task3', '--dry-run'],
         true,
         [
           ExpectedOutput.BuildAndroid.TasksConfig,
@@ -305,7 +276,7 @@ describe('build-android command', () => {
     it('should properly handle --repo/--repository option(s)', async () => {
       await buildAndroidTest(
         TEMP_DIR_PREBUILD,
-        ['build-android', '--repo', 'MavenLocal', '--repository', 'CustomLocal', '--dry-run'],
+        ['--repo', 'MavenLocal', '--repository', 'CustomLocal', '--dry-run'],
         true,
         [
           ExpectedOutput.BuildAndroid.RepositoriesConfig,
@@ -322,7 +293,7 @@ describe('build-android command', () => {
     it('tasks should take precedence over repositories', async () => {
       await buildAndroidTest(
         TEMP_DIR_PREBUILD,
-        ['build-android', '--repo', 'MavenLocal', '--task', 'task1', '--dry-run'],
+        ['--repo', 'MavenLocal', '--task', 'task1', '--dry-run'],
         true,
         [ExpectedOutput.BuildAndroid.TaskConfig, `./gradlew task1`]
       );
@@ -335,7 +306,7 @@ describe('build-android command', () => {
     it('should properly construct and execute tasks for various configurations', async () => {
       await buildAndroidTest(
         TEMP_DIR_PREBUILD,
-        ['build-android', '--repo', 'MavenLocal', '--debug', '--dry-run'],
+        ['--repo', 'MavenLocal', '--debug', '--dry-run'],
         true,
         [
           ExpectedOutput.BuildAndroid.DebugConfig,
@@ -344,15 +315,7 @@ describe('build-android command', () => {
       );
       await buildAndroidTest(
         TEMP_DIR_PREBUILD,
-        [
-          'build-android',
-          '--repo',
-          'CustomDir',
-          '--repository',
-          'CustomLocal',
-          '--release',
-          '--dry-run',
-        ],
+        ['--repo', 'CustomDir', '--repository', 'CustomLocal', '--release', '--dry-run'],
         true,
         [
           ExpectedOutput.BuildAndroid.ReleaseConfig,

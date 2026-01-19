@@ -43,7 +43,7 @@ export const getIosConfig = async (args: Result<Spec>): Promise<BuildConfigIos> 
     simulator: path.join(buildProductsPath, `${buildType}-iphonesimulator`),
     hermesFrameworkPath: args['--hermes-framework'] || Defaults.hermesFrameworkPath,
     scheme: args['--scheme'] || (await inferScheme()),
-    workspace: args['--workspace'] || (await inferXCWorkspace()),
+    workspace: args['--xcworkspace'] || (await inferXCWorkspace()),
   };
 };
 

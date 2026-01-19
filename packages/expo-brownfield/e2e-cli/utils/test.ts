@@ -13,7 +13,36 @@ export const buildAndroidTest = async (
   stdout: string[] = [],
   stderr: string[] = []
 ) => {
-  const result = await executeCLIASync(directory, args, { ignoreErrors: !successExit });
+  await buildTestCommon(directory, 'build-android', args, successExit, stdout, stderr);
+};
+
+/**
+ * Runs a build-ios test scenario and validates results
+ */
+export const buildIosTest = async (
+  directory: string,
+  args: string[],
+  successExit: boolean,
+  stdout: string[] = [],
+  stderr: string[] = []
+) => {
+  await buildTestCommon(directory, 'build-ios', args, successExit, stdout, stderr);
+};
+
+/**
+ * Common logic for build-android and build-ios tests
+ */
+export const buildTestCommon = async (
+  directory: string,
+  command: string,
+  args: string[],
+  successExit: boolean,
+  stdout: string[] = [],
+  stderr: string[] = []
+) => {
+  const result = await executeCLIASync(directory, [command, ...args], {
+    ignoreErrors: !successExit,
+  });
 
   if (successExit) {
     expect(result.exitCode).toBe(0);
