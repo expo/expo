@@ -86,14 +86,16 @@ class ResolvingShareIntentDataParser {
     }
 
     private fun getFileName(resolver: ContentResolver, uri: Uri): String? {
-      var name: String? = null
       val cursor = resolver.query(uri, null, null, null, null)
-      cursor?.use {
-        if (it.moveToFirst()) {
-          val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-          if (nameIndex != -1) {
-            name = it.getString(nameIndex)
-          }
+      val name = cursor?.use { cursor ->
+        val nameIndex = cursor
+          .takeIf { it.moveToFirst() }
+          ?.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+
+        if (nameIndex != null && nameIndex != -1) {
+          cursor.getString(nameIndex)
+        } else {
+          null
         }
       }
 
@@ -102,15 +104,19 @@ class ResolvingShareIntentDataParser {
 
     private fun getFileSize(resolver: ContentResolver, uri: Uri): Long? {
       val cursor = resolver.query(uri, null, null, null, null)
-      cursor?.use {
-        if (it.moveToFirst()) {
-          val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
-          if (sizeIndex != -1) {
-            return it.getLong(sizeIndex)
-          }
+        ?: return null
+
+      return cursor.use { cursor ->
+        val sizeIndex = cursor
+          .takeIf { it.moveToFirst() }
+          ?.getColumnIndex(OpenableColumns.SIZE)
+
+        if (sizeIndex != null && sizeIndex != -1) {
+          cursor.getLong(sizeIndex)
+        } else {
+          null
         }
       }
-      return null
     }
 
     private fun resolveUrlContext(urlString: String): ResolvedSharePayload {

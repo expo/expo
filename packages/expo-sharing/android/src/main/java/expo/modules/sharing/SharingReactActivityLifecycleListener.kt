@@ -10,9 +10,13 @@ import java.lang.ref.WeakReference
 
 class SharingReactActivityLifecycleListener(activityContext: Context) :
   ReactActivityLifecycleListener {
+  private val activityContext: WeakReference<ReactActivity>
 
-  private val activityContext: WeakReference<ReactActivity> =
-    WeakReference(activityContext as? ReactActivity)
+  init {
+    val reactActivity = activityContext as? ReactActivity
+      ?: throw IllegalArgumentException("The `activityContext` argument of SharingReactActivityLifecycleListener must be a ReactActivity")
+    this.activityContext = WeakReference(reactActivity)
+  }
 
   override fun onCreate(activity: Activity?, misavedInstanceState: Bundle?) {
     if (activity?.intent != null && isShareIntent(activity.intent)) {

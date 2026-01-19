@@ -47,39 +47,19 @@ enum class ContentType(val value: String) : Enumerable {
   }
 }
 
-class SharePayload : Record {
-  @Field
-  var value: String = ""
+internal data class SharePayload(
+  @Field var value: String = "",
+  @Field var shareType: ShareType = ShareType.Text,
+  @Field var mimeType: String = "text/plain"
+) : Record
 
-  @Field
-  var shareType: ShareType = ShareType.Text
-
-  @Field
-  var mimeType: String = "text/plain"
-}
-
-class ResolvedSharePayload : Record {
-  @Field
-  var value: String = ""
-
-  @Field
-  var shareType: ShareType = ShareType.Text
-
-  @Field
-  var mimeType: String = "text/plain"
-
-  @Field
-  var contentUri: String? = null
-
-  @Field
-  var contentType: ContentType? = null
-
-  @Field
-  var contentSize: Long? = null
-
-  @Field
-  var contentMimeType: String? = null
-
-  @Field
-  var originalName: String? = null
-}
+data class ResolvedSharePayload(
+  @Field var value: String = "",
+  @Field var shareType: ShareType = ShareType.Text,
+  @Field var mimeType: String = "text/plain",
+  @Field var contentUri: String? = null,
+  @Field var contentType: ContentType? = null,
+  @Field var contentSize: Long? = null,
+  @Field var contentMimeType: String? = null,
+  @Field var originalName: String? = null
+) : Record
