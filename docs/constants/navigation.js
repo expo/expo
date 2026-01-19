@@ -274,6 +274,7 @@ export const general = [
       makePage('router/web/api-routes.mdx'),
       makePage('router/web/middleware.mdx'),
       makePage('router/web/static-rendering.mdx'),
+      makePage('router/web/server-rendering.mdx'),
       makePage('router/web/async-routes.mdx'),
     ]),
     makeGroup('Reference', [
