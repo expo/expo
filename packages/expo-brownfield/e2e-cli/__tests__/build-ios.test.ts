@@ -13,7 +13,7 @@ const PREBUILD_WORKSPACE_NAME = 'buildiospb';
  * Tests the `build-ios` command
  * npx expo-brownfield build-ios
  */
-describe('build-android command', () => {
+describe('build-ios command', () => {
   /**
    * Part of the cases doesn't and shouldn't require prebuild to be done
    */

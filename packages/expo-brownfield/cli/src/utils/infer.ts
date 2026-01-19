@@ -64,17 +64,17 @@ export const inferScheme = async (): Promise<string> => {
     const subDirs = (await fs.readdir(iosPath, { withFileTypes: true })).filter((item) =>
       item.isDirectory()
     );
-    let scheme: string | undefined = undefined;
-    for (const subDir of subDirs) {
-      if (
-        (await fs.readdir(`${iosPath}/${subDir.name}`)).includes('ReactNativeHostManager.swift')
-      ) {
-        scheme = subDir.name;
-      }
-    }
 
-    if (scheme) {
-      return scheme;
+    for (const subDir of subDirs) {
+      try {
+        const subDirPath = path.join(iosPath, subDir.name);
+        const contents = await fs.readdir(subDirPath);
+        if (contents.includes('ReactNativeHostManager.swift')) {
+          return subDir.name;
+        }
+      } catch (readError) {
+        continue;
+      }
     }
 
     throw new Error();

@@ -60,14 +60,17 @@ const inferScheme = async () => {
         const iosPath = path_1.default.join(process.cwd(), 'ios');
         await promises_1.default.access(iosPath);
         const subDirs = (await promises_1.default.readdir(iosPath, { withFileTypes: true })).filter((item) => item.isDirectory());
-        let scheme = undefined;
         for (const subDir of subDirs) {
-            if ((await promises_1.default.readdir(`${iosPath}/${subDir.name}`)).includes('ReactNativeHostManager.swift')) {
-                scheme = subDir.name;
+            try {
+                const subDirPath = path_1.default.join(iosPath, subDir.name);
+                const contents = await promises_1.default.readdir(subDirPath);
+                if (contents.includes('ReactNativeHostManager.swift')) {
+                    return subDir.name;
+                }
             }
-        }
-        if (scheme) {
-            return scheme;
+            catch (readError) {
+                continue;
+            }
         }
         throw new Error();
     }
