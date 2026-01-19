@@ -21,7 +21,6 @@ const replacer = (key, value) => {
     }
 };
 export const serialize = (entry) => {
-    const json = JSON.stringify(entry, replacer);
-    return json;
+    return JSON.stringify(entry, replacer);
 };
 //# sourceMappingURL=serializer.js.map

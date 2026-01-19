@@ -5,4 +5,3 @@ public struct WidgetsTimelineEntry: WidgetKit.TimelineEntry {
   public let source: String
   public let node: [String: Any]?
 }
-

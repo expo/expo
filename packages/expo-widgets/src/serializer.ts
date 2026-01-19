@@ -8,6 +8,7 @@ const getName = (value: string | Function) => {
   }
   return value;
 };
+
 const replacer = (key: string, value: any) => {
   switch (key) {
     case 'type':
@@ -25,6 +26,5 @@ const replacer = (key: string, value: any) => {
 export const serialize = (
   entry: Record<WidgetFamily, ExpoTimelineEntry[]> | ExpoLiveActivityEntry
 ) => {
-  const json = JSON.stringify(entry, replacer);
-  return json;
+  return JSON.stringify(entry, replacer);
 };

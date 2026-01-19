@@ -4,9 +4,9 @@ public enum WidgetsEventType: String {
 
 public class WidgetsEvents {
   public static let shared = WidgetsEvents()
-  
+
   private init() {}
-  
+
   public func sendNotification(type: WidgetsEventType, data: [String: Any]) {
     var eventData = data
     eventData["type"] = type.rawValue

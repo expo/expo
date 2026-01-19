@@ -12,9 +12,9 @@ struct LiveActivityAttributes: ActivityAttributes {
 @available(iOS 16.1, *)
 public struct WidgetLiveActivity: Widget {
   let widgetContext: AppContext = AppContext()
-  
+
   public init() {}
-  
+
   public var body: some WidgetConfiguration {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
       let nodes = getLiveActivityNodes(forName: context.state.name)
@@ -33,7 +33,7 @@ public struct WidgetLiveActivity: Widget {
       .widgetURL(getLiveActivityUrl(forName: context.state.name))
     }
   }
-  
+
   @DynamicIslandExpandedContentBuilder
   private func expandedContent(source: String, nodes: [String: Any]?) -> DynamicIslandExpandedContent<some View> {
     DynamicIslandExpandedRegion(.center) {
@@ -49,7 +49,7 @@ public struct WidgetLiveActivity: Widget {
       liveActivitySection("expandedBottom", source: source, nodes: nodes)
     }
   }
-  
+
   private func liveActivitySection(_ sectionName: String, source: String, nodes: [String: Any]?) -> some View {
     guard let node = nodes?[sectionName] as? [String: Any] else {
       return AnyView(EmptyView())
@@ -57,4 +57,3 @@ public struct WidgetLiveActivity: Widget {
     return AnyView(WidgetsDynamicView(source: source, kind: .liveActivity, node: node))
   }
 }
-

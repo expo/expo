@@ -2,10 +2,12 @@ import SwiftUI
 import ExpoModulesCore
 import ExpoUI
 
-// FIXME: Hack to satisfy ExpoSwiftUI.AnyChild with random UUID value
+// TODO(@jakex7): Hack to satisfy ExpoSwiftUI.AnyChild with random UUID value
 class NodeIdentityWrapper {
   let id: UUID
-  init(id: UUID) { self.id = id }
+  init(id: UUID) {
+    self.id = id
+  }
 }
 extension ObjectIdentifier: @retroactive Encodable {
   public func encode(to encoder: Encoder) throws {
@@ -23,8 +25,8 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   public var id: ObjectIdentifier {
     ObjectIdentifier(uuid)
   }
-  
-  public init(source: String, kind: WidgetsKind, node: [String : Any]) {
+
+  public init(source: String, kind: WidgetsKind, node: [String: Any]) {
     self.source = source
     self.kind = kind
     self.node = node
@@ -98,6 +100,7 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   @ViewBuilder
   private func render<P, V>(_ viewType: V.Type, _ propsType: P.Type, updateProps: ((_ initialProps: P) throws -> Void)? = nil) -> some View
   where P: UIBaseViewProps, V: ExpoSwiftUI.View, V.Props == P {
+    // immediately invoked closure {}() here because we can't use 'do-catch' inside @ViewBuilder
     {
       do {
         if let rawProps = node["props"] as? [String: Any] {
@@ -111,10 +114,10 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       }
     }()
   }
-  
+
   // MARK: - Function that sets children as DynamicView
-  
-  private func updateChildren<P>(_ initialProps: P) throws -> Void
+
+  private func updateChildren<P>(_ initialProps: P) throws
   where P: UIBaseViewProps {
     if let props = node["props"] as? [String: Any] {
       if let children = props["children"] as? [[String: Any]] {
@@ -125,4 +128,3 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
     }
   }
 }
-
