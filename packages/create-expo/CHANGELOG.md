@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Auto-add missing android/ios npm scripts when they're likely missing ([#41964](https://github.com/expo/expo/pull/41964) by [@kitten](https://github.com/kitten))
+
 ## 3.5.10 - 2025-12-04
 
 ### 💡 Others
