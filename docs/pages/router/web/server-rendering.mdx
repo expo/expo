@@ -169,7 +169,7 @@ export default function Root({ children }: PropsWithChildren) {
 }
 ```
 
-The **+html.tsx** file is only used by the server-renderer and never by client code. This means:
+The **+html.tsx** file is only used by the server renderer and never by client code. This means:
 
 - It will be run by `expo-server` during server rendering
 - It is not rehydrated on the client, and hence shouldn't use React hooks
@@ -239,18 +239,26 @@ EAS Hosting supports server rendering out of the box. Export your app and deploy
 
 ## Common questions
 
-### Can I use data loaders with server rendering?
+<Collapsible summary="Can I use data loaders with server rendering?">
 
 Yes. Server rendering works with [data loaders](/router/web/data-loaders) to fetch data on the server before rendering.
 
-### Can I mix server and static rendering?
+</Collapsible>
+
+<Collapsible summary="Can I mix server and static rendering?">
 
 Currently, Expo Router does not support mixing server and static rendering in the same project. Choose a single output mode based on your requirements.
 
-### How do I cache server-rendered responses?
+</Collapsible>
+
+<Collapsible summary="How do I cache server-rendered responses?">
 
 Caching is handled at the server or CDN level. Configure your deployment platform to cache responses based on URL patterns or cache headers.
 
-### Does server rendering work with API routes?
+</Collapsible>
+
+<Collapsible summary="Does server rendering work with API routes?">
 
 Yes. [API routes](/router/web/api-routes/) work independently of the rendering mode. They are always executed on the server.
+
+</Collapsible>
