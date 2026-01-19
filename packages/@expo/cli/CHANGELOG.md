@@ -2,6 +2,7 @@
 
 ## Unpublished
 
+- call projects metro reporter update ([#41310](https://github.com/expo/expo/pull/41310) by [@bmatusiak](https://github.com/bmatusiak))
 - Clarify Expo Go instructions for scanning QR Code. ([#34811](https://github.com/expo/expo/pull/34811) by [@betomoedano](https://github.com/betomoedano))
 
 ### 🛠 Breaking changes
