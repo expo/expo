@@ -115,7 +115,7 @@ The above command starts a local server that renders pages on each request, simu
 
 ## Dynamic routes
 
-With server rendering, dynamic routes work automatically without needing [`generateStaticParams()`](/router/web/static-rendering/#generatestaticparams). The route is rendered at request time with the actual parameters from the URL.
+With server rendering, dynamic routes are rendered on the fly, and the [`generateStaticParams()`](/router/web/static-rendering/#generatestaticparams) export is redundant and should not be added. The route is rendered at request time with the actual parameters from the URL.
 
 ```tsx app/blog/[id].tsx
 import { Text } from 'react-native';
@@ -168,12 +168,14 @@ export default function Root({ children }: PropsWithChildren) {
 }
 ```
 
-The **+html.tsx** file:
+The **+html.tsx** file is only used by the server-renderer and never by client code. This means:
 
-- Runs only in Node.js during server rendering
-- Cannot import global CSS (use the [Root Layout](/router/basics/layout/#root-layout) for styles)
-- Cannot access browser APIs like `window` or `document`
-- Receives pre-rendered content via the `children` prop
+- It will be run by `expo-server` during server rendering
+- It is not rehydrated on the client, and hence shouldn't use React hooks
+- You may not import global CSS in `+html.tsx` (use the [Root Layout](/router/basics/layout/#root-layout) for styles)
+- You may not call browser APIs like `window` or `document` in your `+html.tsx`
+
+All `+html.tsx` components are expected to render the `children` prop they receive in their JSX content.
 
 ## Meta tags
 
@@ -196,11 +198,11 @@ export default function Page() {
 }
 ```
 
-In server rendering mode, `<Head>` elements are rendered server-side and included in the initial HTML response, improving search engine optimization (SEO).
+During server-side rendering, `<Head>` elements are extracted and included in the initial HTML response, modifying the `<head>` element sent to the client, and improving search engine optimization (SEO).
 
 ## Deployment
 
-Server rendering requires a runtime server to render pages on each request. You **cannot** deploy to static hosting services like GitHub Pages.
+Server-side rendering requires a runtime server to render pages on each request. Server-side rendered Expo apps **cannot** be deployed to static hosting services like GitHub Pages.
 
 ### Supported platforms
 
@@ -248,4 +250,4 @@ Caching is handled at the server or CDN level. Configure your deployment platfor
 
 ### Does server rendering work with API routes?
 
-Yes. API routes (files in **app/+api.ts**) work independently of the rendering mode. They are always executed on the server.
+Yes. [API routes](/router/web/api-routes/) work independently of the rendering mode. They are always executed on the server.
