@@ -221,50 +221,49 @@ class HomeAppViewModel(
 
   private suspend fun checkDevelopmentServer(host: String, port: String): DevSession? {
     return withContext(Dispatchers.IO) {
-      try {
-        val request = Request.Builder().url("http://$host:$port/status").build()
-        client.newCall(request).execute().use { response ->
-          if (response.isSuccessful && response.body?.string()?.contains("packager-status:running") == true) {
-            val manifestInfo = fetchLocalManifestInfo("http://$host:$port")
-            return@withContext DevSession(
-              url = "exp://$host:$port",
-              description = manifestInfo?.extra?.expoClient?.name ?: "exp://$host:$port",
-              source = DevSessionSource.Desktop,
-              hostname = "exp://$host:$port",
-              platform = DevSessionPlatform.Native,
-              config = null,
-              iconUrl = manifestInfo?.extra?.expoClient?.iconUrl
-            )
-          }
+      runCatching {
+        val url = "http://$host:$port"
+        val request = Request.Builder().url("$url/status").build()
+        val response = client.newCall(request).execute()
+
+        if (!response.isSuccessful || response.body?.string()?.contains("packager-status:running") != true) {
+          return@runCatching null
         }
-      } catch (e: Exception) {
-        // Ignore connection errors, server is likely not running on this port
-      }
-      null
+
+        val manifestInfo = fetchLocalManifestInfo(url)
+        DevSession(
+          url = "exp://$host:$port",
+          description = manifestInfo?.extra?.expoClient?.name ?: "exp://$host:$port",
+          source = DevSessionSource.Desktop,
+          hostname = "exp://$host:$port",
+          platform = DevSessionPlatform.Native,
+          config = null,
+          iconUrl = manifestInfo?.extra?.expoClient?.iconUrl
+        )
+      }.getOrNull()
     }
   }
 
   private suspend fun fetchLocalManifestInfo(baseUrl: String): ManifestResponse? {
     return withContext(Dispatchers.IO) {
-      val manifestUrl = "$baseUrl/manifest"
-      val request = Request.Builder()
-        .url(manifestUrl)
-        .addHeader("Accept", "application/expo+json,application/json")
-        .addHeader("Expo-Platform", "android")
-        .build()
+      runCatching {
+        val manifestUrl = "$baseUrl/manifest"
+        val request = Request.Builder()
+          .url(manifestUrl)
+          .addHeader("Accept", "application/expo+json,application/json")
+          .addHeader("Expo-Platform", "android")
+          .build()
 
-      try {
         client.newCall(request).execute().use { response ->
           if (response.isSuccessful) {
             response.body?.string()?.let {
-              return@withContext gson.fromJson(it, ManifestResponse::class.java)
+              gson.fromJson(it, ManifestResponse::class.java)
             }
+          } else {
+            null
           }
         }
-      } catch (e: Exception) {
-        // Ignore errors
-      }
-      null
+      }.getOrNull()
     }
   }
 

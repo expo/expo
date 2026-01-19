@@ -76,9 +76,8 @@ fun ProjectDetailsScreen(
         onGoBack = onGoBack,
         actions = {
           IconButton(onClick = {
-            val app = app
-            if (app != null) {
-              shareProjectUrl(context, app.fullName, app.name)
+            app?.let {
+              shareProjectUrl(context, it.fullName, it.name)
             }
           }) {
             Icon(

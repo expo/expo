@@ -32,11 +32,13 @@ fun DevSessionRow(session: DevSession) {
         )
       } else {
         Image(
-          painter = if (session.source == DevSessionSource.Desktop) {
-            painterResource(id = R.drawable.cli)
-          } else {
-            painterResource(id = R.drawable.snack)
-          },
+          painter = painterResource(
+            id = if (session.source == DevSessionSource.Desktop) {
+              R.drawable.cli
+            } else {
+              R.drawable.snack
+            }
+          ),
           contentDescription = "Icon",
           modifier = Modifier
             .size(24.dp)
