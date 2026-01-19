@@ -68,11 +68,12 @@ export class DevServerManagerActions {
           );
         }
       } catch (error) {
-        console.log('err', error);
         // @ts-ignore: If there is no development build scheme, then skip the QR code.
         if (error.code !== 'NO_DEV_CLIENT_SCHEME') {
+          console.error('Failed to print QR code:', error);
           throw error;
         } else {
+          console.error('No development build scheme found:', error);
           const serverUrl = devServer.getDevServerUrl();
           Log.log(printItem(chalk`Metro waiting on {underline ${serverUrl}}`));
           Log.log(printItem(`Linking is disabled because the client scheme cannot be resolved.`));

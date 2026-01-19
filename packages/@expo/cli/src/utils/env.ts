@@ -301,6 +301,23 @@ class Env {
     }
     return value;
   }
+
+  /**
+   * Enable JSONL output mode for machine-readable output
+   * If set to a string, it will be used as a path for the JSONL output.
+   * If set to a boolish value, it will be used as a flag
+   * to enable/disable JSONL output in stdout.
+   */
+  get EXPO_UNSTABLE_JSONL_OUTPUT(): boolean | string {
+    const value = string('EXPO_UNSTABLE_JSONL_OUTPUT', '');
+    const valueNormalized = value.toLowerCase();
+    if (['0', 'false', ''].includes(valueNormalized)) {
+      return false;
+    } else if (['1', 'true'].includes(valueNormalized)) {
+      return true;
+    }
+    return value;
+  }
 }
 
 export const env = new Env();
