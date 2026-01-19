@@ -67,7 +67,15 @@ def enableWorkletsIntegration = !isTests
 def workletsProject = enableWorkletsIntegration ? findProject(":react-native-worklets") : null
 
 if (workletsProject != null) {
-  evaluationDependsOn(":react-native-worklets")
+  evaluationDependsOn(workletsProject.path)
+
+  afterEvaluate {
+    println("Linking react-native-worklets native libs into expo-modules-core build tasks")
+    println(workletsProject.tasks.getByName("mergeDebugNativeLibs"))
+    println(workletsProject.tasks.getByName("mergeReleaseNativeLibs"))
+    tasks.getByName("buildCMakeDebug").dependsOn(workletsProject.tasks.getByName("mergeDebugNativeLibs"))
+    tasks.getByName("buildCMakeRelWithDebInfo").dependsOn(workletsProject.tasks.getByName("mergeReleaseNativeLibs"))
+  }
 }
 
 def reactNativeWorkletsRootDir = workletsProject?.projectDir?.parentFile
@@ -218,6 +226,10 @@ dependencies {
 
   compileOnly 'com.facebook.fbjni:fbjni:0.5.1'
 
+  if (workletsProject != null) {
+    implementation workletsProject
+  }
+
   testImplementation 'androidx.test:core:1.7.0'
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'io.mockk:mockk:1.13.10'
@@ -302,11 +314,4 @@ def generatePCHTask = tasks.register("generatePCH") {
 // This task will run on the IDE project sync, ensuring the PCH file is generated early enough
 tasks.register("prepareKotlinBuildScriptModel") {
   dependsOn(generatePCHTask)
-}
-
-if (workletsProject != null) {
-  afterEvaluate {
-    tasks.getByName("externalNativeBuildDebug").dependsOn(findProject(":react-native-worklets").tasks.getByName("externalNativeBuildDebug"))
-    tasks.getByName("externalNativeBuildRelease").dependsOn(findProject(":react-native-worklets").tasks.getByName("externalNativeBuildRelease"))
-  }
 }
