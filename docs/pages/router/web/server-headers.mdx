@@ -8,7 +8,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-> **important** Server headers are available in SDK 55 and later.
+> **important** Server headers are available in SDK 54 and later.
 
 Server headers in Expo Router allow you to set custom HTTP headers on all route responses from your server. This feature works with both `static` and `server` output modes, making it useful for security headers, caching policies, cookies, and custom metadata.
 
@@ -205,7 +205,7 @@ Add custom headers with metadata about your app:
 
 Server headers work with both output modes configured in your app config:
 
-- **`static`**: Headers are applied when serving pre-rendered HTML files
+- **`static`**: Headers are applied when serving pre-rendered HTML files with `expo-server`
 - **`server`**: Headers are applied to dynamically rendered responses
 
 ### Header precedence
@@ -216,7 +216,7 @@ For example, if you configure `Cache-Control: public, max-age=3600` globally, bu
 
 ## Known limitations
 
-- **Redirects**: Headers do not apply to redirect responses. This is a limitation of the [Fetch API's](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) [`Response.redirect()`](https://developer.mozilla.org/en-US/docs/Web/API/Response/redirect_static) method, which does not support passing extra headers.
+- **Redirects**: Headers do not apply to redirect responses
 - **Static assets**: Headers are only applied to HTML and API route responses, not to static assets like images, fonts, or JavaScript bundles.
 
 ## Related
