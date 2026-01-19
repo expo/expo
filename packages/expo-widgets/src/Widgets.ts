@@ -32,7 +32,8 @@ export const updateWidgetTimeline = <T extends object>(
   name: string,
   dates: Date[],
   widget: (p: WidgetProps<T>) => React.JSX.Element,
-  props?: T
+  props?: T,
+  updateFunction?: string
 ) => {
   const fakeProps = Object.keys(props || {}).reduce(
     (acc, key) => {
@@ -58,7 +59,7 @@ export const updateWidgetTimeline = <T extends object>(
       {} as Record<WidgetFamily, ExpoTimelineEntry[]>
     );
 
-  ExpoWidgetModule.updateWidget(name, serialize(data), props);
+  ExpoWidgetModule.updateWidget(name, serialize(data), props, updateFunction);
 
   ExpoWidgetModule.reloadWidget();
 };
@@ -66,9 +67,10 @@ export const updateWidgetTimeline = <T extends object>(
 export const updateWidgetSnapshot = <T extends object>(
   name: string,
   widget: (p: WidgetProps<T>) => React.JSX.Element,
-  props?: T
+  props?: T,
+  updateFunction?: string // (target: string, props: T) => T
 ) => {
-  updateWidgetTimeline(name, [new Date()], widget, props || ({} as T));
+  updateWidgetTimeline(name, [new Date()], widget, props || ({} as T), updateFunction);
 };
 
 export const addEventListener: typeof ExpoWidgetModule.addListener = ExpoWidgetModule.addListener;

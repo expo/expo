@@ -23,6 +23,24 @@ struct WidgetUserInteraction: AppIntent {
     guard let source else {
       return .result()
     }
+    let props = WidgetsStorage.getDictionary(forKey: "__expo_widgets_\(source)_props")
+    let updateFunction = WidgetsStorage.getString(forKey: "__expo_widgets_\(source)_updateFunction")
+
+    guard let props, let updateFunction else {
+      return .result()
+    }
+    if let context = JSContext() {
+      context.setObject(target, forKeyedSubscript: "target" as NSString)
+      context.setObject(props, forKeyedSubscript: "prevProps" as NSString)
+      let jsCode = "var updateFunction = \(String(describing: updateFunction)); updateFunction(target, prevProps);"
+      let resultValue = context.evaluateScript(jsCode)
+      
+      if let resultDict = resultValue?.toObject() as? [String: Any] {
+        WidgetsStorage.set(resultDict, forKey: "__expo_widgets_\(source)_props")
+      } else {
+        return .result()
+      }
+    }
 
     WidgetsEvents.shared.sendNotification(type: .userEvent, data: [
       "source": source as Any,

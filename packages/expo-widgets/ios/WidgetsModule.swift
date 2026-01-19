@@ -42,6 +42,9 @@ public final class WidgetsModule: Module {
       if let props {
         WidgetsStorage.set(props, forKey: "__expo_widgets_\(name)_props")
       }
+      if let updateFunction {
+        WidgetsStorage.set(updateFunction, forKey: "__expo_widgets_\(name)_updateFunction")
+      }
     }
 
     Function("startLiveActivity") { (name: String, nodes: String, url: URL?) throws -> String in

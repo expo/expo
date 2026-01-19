@@ -9,7 +9,7 @@ export const updateLiveActivity = (id, name, liveActivity) => {
     const text = serialize(liveActivity());
     ExpoWidgetModule.updateLiveActivity(id, name, text);
 };
-export const updateWidgetTimeline = (name, dates, widget, props) => {
+export const updateWidgetTimeline = (name, dates, widget, props, updateFunction) => {
     const fakeProps = Object.keys(props || {}).reduce((acc, key) => {
         acc[key] = `{{${key}}}`;
         return acc;
@@ -26,11 +26,12 @@ export const updateWidgetTimeline = (name, dates, widget, props) => {
         acc[family] = entries;
         return acc;
     }, {});
-    ExpoWidgetModule.updateWidget(name, serialize(data), props);
+    ExpoWidgetModule.updateWidget(name, serialize(data), props, updateFunction);
     ExpoWidgetModule.reloadWidget();
 };
-export const updateWidgetSnapshot = (name, widget, props) => {
-    updateWidgetTimeline(name, [new Date()], widget, props || {});
+export const updateWidgetSnapshot = (name, widget, props, updateFunction // (target: string, props: T) => T
+) => {
+    updateWidgetTimeline(name, [new Date()], widget, props || {}, updateFunction);
 };
 export const addEventListener = ExpoWidgetModule.addListener;
 //# sourceMappingURL=Widgets.js.map
