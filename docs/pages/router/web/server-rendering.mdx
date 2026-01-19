@@ -12,8 +12,7 @@ import { Step } from '~/ui/components/Step';
 
 > **important** Server rendering is in alpha and is available in SDK 55 and later. It requires a [deployed server](/router/web/api-routes/#deployment) for production use.
 
-Server-side rendering (SSR) generates HTML dynamically on each request, as opposed to [static rendering](/router/web/static-rendering) which pre-renders HTML at build time.
-This guide will walk you through the process of enabling server rendering for your Expo Router app.
+Server-side rendering (SSR) generates HTML dynamically on each request, as opposed to [static rendering](/router/web/static-rendering), which pre-renders HTML at build time. This guide walks you through enabling server rendering for your Expo Router app.
 
 ## Setup
 
@@ -94,7 +93,7 @@ To export your app for production, run the universal export command:
 
 <Terminal cmd={['$ npx expo export --platform web']} />
 
-This creates a **dist** directory with your server-rendered application. Unlike static rendering, no HTML files are pre-generated. Instead, the output includes:
+This creates a **dist** directory with your server-rendered application. Unlike static rendering, no HTML files are pre-generated. Instead, the output includes a similar directory structure as shown below:
 
 <FileTree
   files={[
@@ -105,14 +104,15 @@ This creates a **dist** directory with your server-rendered application. Unlike 
   ]}
 />
 
-- **client/**: Contains JavaScript and CSS bundles for client-side hydration
-- **server/**: Contains the routes manifest and server rendering module
+In output above includes the following directories inside **dist** directory:
+- **client** directory: Contains JavaScript and CSS bundles for client-side hydration
+- **server** directory: Contains the routes manifest and server rendering module
 
 You can test the production build locally by running the following command and opening the linked URL in your browser:
 
 <Terminal cmd={['$ npx expo serve']} />
 
-This starts a local server that renders pages on each request, simulating a production environment.
+The above command starts a local server that renders pages on each request, simulating a production environment.
 
 ## Dynamic routes
 
@@ -131,7 +131,7 @@ export default function Page() {
 }
 ```
 
-When a user visits `/blog/my-post`, the page is rendered on the server with `id` set to `"my-post"`.
+In the above example, when the app user visits `/blog/my-post`, the page is rendered on the server with `id` set to `"my-post"`.
 
 > **info** If your route file exports `generateStaticParams()`, those routes are excluded and are now handled dynamically. Remove `generateStaticParams()` exports when using server rendering.
 
@@ -156,7 +156,7 @@ export default function Root({ children }: PropsWithChildren) {
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
         {/*
-          Disable body scrolling on web. This makes ScrollView components work closer to how they do on native.
+          Disable body scrolling on web. This makes ScrollView components work closer to how they do on native platforms.
           However, body scrolling is often nice to have for mobile web. If you want to enable it, remove this line.
         */}
         <ScrollViewStyleReset />
@@ -214,11 +214,11 @@ Server rendering requires a runtime server to render pages on each request. You 
 | Netlify Edge Functions                    | `expo-server/adapter/netlify` |
 | Bun                                       | `expo-server/adapter/bun`     |
 
-<Collapsible summary="Example: Deploying to EAS Hosting">
+<Collapsible summary="Example: Deployment with EAS Hosting">
 
 EAS Hosting supports server rendering out of the box. Export your app and deploy with:
 
-<Terminal cmd={['$ npx expo export --platform web', '$ npx eas-cli hosting:deploy dist']} />
+<Terminal cmd={['$ npx expo export --platform web', '', '$ npx eas-cli@latest hosting:deploy dist']} />
 
 </Collapsible>
 
