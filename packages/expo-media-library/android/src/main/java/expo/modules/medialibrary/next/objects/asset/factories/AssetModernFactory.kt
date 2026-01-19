@@ -66,25 +66,23 @@ class AssetModernFactory(
     }
     val path = relativePath ?: RelativePath.create(mimeType)
 
-    var pendingUri: Uri? = null
-    try {
-      pendingUri = contentResolver.insertPendingAsset(displayName, mimeType, path)
+    val pendingUri = contentResolver.insertPendingAsset(displayName, mimeType, path)
+    return@withContext try {
       ensureActive()
       contentResolver.copyUriContent(filePath, pendingUri)
       ensureActive()
       contentResolver.publishPendingAsset(pendingUri)
-      return@withContext create(pendingUri)
-    } catch (e: Exception) {
-      pendingUri?.let {
-        contentResolver.delete(it, null, null)
-      }
+      create(pendingUri)
+    } catch (e: IllegalStateException) {
+      contentResolver.delete(pendingUri, null, null)
       // It occurs when trying to create too many assets with the same filename in the same album.
       // By default, the Content Resolver can resolve this issue for up to 32 assets, but then it throws this exception.
       val isCollisionError = e.message?.contains("Failed to build unique file", ignoreCase = true) == true
       if (isCollisionError && !forceUniqueName) {
-        return@withContext createAssetInternal(filePath, relativePath, forceUniqueName = true)
+        createAssetInternal(filePath, relativePath, forceUniqueName = true)
+      } else {
+        throw e
       }
-      throw e
     }
   }
 }

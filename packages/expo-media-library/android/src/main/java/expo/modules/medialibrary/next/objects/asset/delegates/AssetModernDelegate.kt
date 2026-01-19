@@ -175,7 +175,7 @@ class AssetModernDelegate(
 
     try {
       contentResolver.updateRelativePath(contentUri, relativePath)
-    } catch (e: Exception) {
+    } catch (e: IllegalStateException) {
       if (e.message?.contains("Failed to build unique file", ignoreCase = true) == true) {
         val uniqueName = buildUniqueDisplayName(getUri())
         contentResolver.updateRelativePathAndName(contentUri, relativePath, uniqueName)
@@ -194,33 +194,33 @@ class AssetModernDelegate(
     } else {
       getUri().toString()
     }
-    var newAssetUri: Uri? = null
-
-    try {
-      newAssetUri = contentResolver.insertPendingAsset(displayName, getMimeType(), relativePath)
+    val newAssetUri = contentResolver.insertPendingAsset(
+      displayName,
+      getMimeType(),
+      relativePath
+    )
+    return@withContext try {
       ensureActive()
       contentResolver.copyUriContent(contentUri, newAssetUri)
       ensureActive()
       contentResolver.publishPendingAsset(newAssetUri)
-
       val newAssetDelegate = AssetModernDelegate(
         newAssetUri,
         assetDeleter,
         mediaStorePermissionsDelegate,
         contextRef.getOrThrow()
       )
-      return@withContext Asset(newAssetDelegate)
-    } catch (e: Exception) {
-      newAssetUri?.let {
-        contentResolver.delete(it, null, null)
-      }
+      Asset(newAssetDelegate)
+    } catch (e: IllegalStateException) {
+      contentResolver.delete(newAssetUri, null, null)
       // It occurs when trying to create too many assets with the same filename in the same album.
       // By default, the Content Resolver can resolve this issue for up to 32 assets, but then it throws this exception.
       val isCollisionError = e.message?.contains("Failed to build unique file", ignoreCase = true) == true
       if (isCollisionError && !forceUniqueName) {
-        return@withContext copyInternal(relativePath, forceUniqueName = true)
+        copyInternal(relativePath, forceUniqueName = true)
+      } else {
+        throw e
       }
-      throw e
     }
   }
 }
