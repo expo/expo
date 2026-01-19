@@ -79,6 +79,8 @@ export interface ManifestRequestInfo {
   hostname?: string | null;
   /** The protocol used to request the manifest */
   protocol?: 'http' | 'https';
+  /** The port used to request the manifest */
+  port?: string | null;
 }
 
 /** Project related info. */
@@ -128,9 +130,10 @@ export abstract class ManifestMiddleware<
     platform,
     hostname,
     protocol,
+    port,
   }: Pick<
     TManifestRequestInfo,
-    'hostname' | 'platform' | 'protocol'
+    'hostname' | 'platform' | 'protocol' | 'port'
   >): Promise<ResponseProjectSettings> {
     // Read the config
     const projectConfig = getConfig(this.projectRoot);
@@ -147,9 +150,14 @@ export abstract class ManifestMiddleware<
     const expoGoConfig = this.getExpoGoConfig({
       mainModuleName,
       hostname,
+      port,
     });
 
-    const hostUri = this.options.constructUrl({ scheme: '', hostname });
+    const hostUri = this.options.constructUrl({
+      scheme: protocol,
+      hostname,
+      port,
+    });
 
     const bundleUrl = this._getBundleUrl({
       platform,
@@ -165,6 +173,7 @@ export abstract class ManifestMiddleware<
       routerRoot: getRouterDirectoryModuleIdWithManifest(this.projectRoot, projectConfig.exp),
       protocol,
       reactCompiler: !!projectConfig.exp.experiments?.reactCompiler,
+      port,
     });
 
     // Resolve all assets and set them on the manifest as URLs
@@ -222,6 +231,7 @@ export abstract class ManifestMiddleware<
     routerRoot,
     protocol,
     reactCompiler,
+    port,
   }: {
     platform: string;
     hostname?: string | null;
@@ -233,6 +243,7 @@ export abstract class ManifestMiddleware<
     routerRoot: string;
     protocol?: 'http' | 'https';
     reactCompiler: boolean;
+    port?: string | null;
   }): string {
     const path = createBundleUrlPath({
       mode: this.options.mode ?? 'development',
@@ -254,6 +265,7 @@ export abstract class ManifestMiddleware<
         scheme: protocol ?? 'http',
         // hostType: this.options.location.hostType,
         hostname,
+        port,
       }) + path
     );
   }
@@ -268,13 +280,15 @@ export abstract class ManifestMiddleware<
   private getExpoGoConfig({
     mainModuleName,
     hostname,
+    port,
   }: {
     mainModuleName: string;
     hostname?: string | null;
+    port?: string | null;
   }): ExpoGoConfig {
     return {
       // localhost:8081
-      debuggerHost: this.options.constructUrl({ scheme: '', hostname }),
+      debuggerHost: this.options.constructUrl({ scheme: '', hostname, port }),
       // Required for Expo Go to function.
       developer: {
         tool: DEVELOPER_TOOL,

@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Include `protocol` and `port` when dynamically deriving manifest URLs from request headers (`host`, `x-forwarded-proto`) to support serving through proxies and custom tunnels. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
 ### 💡 Others
 
 - Bump `@expo/xcpretty` ([#42485](https://github.com/expo/expo/pull/42485) by [@kitten](https://github.com/kitten))
