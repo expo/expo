@@ -53,9 +53,17 @@ internal final class CoreModule: Module {
         throw WorkletUIRuntimePointerExtractionException()
       }
 
-      DispatchQueue.main.sync {
+      let block = {
         let workletRuntime = WorkletRuntimeFactory.createWorkletRuntime(appContext, fromPointer: uiRuntimePointer)
         appContext._uiRuntime = workletRuntime
+      }
+
+      if Thread.isMainThread {
+        block()
+      } else {
+        DispatchQueue.main.sync {
+          block()
+        }
       }
     }
 
