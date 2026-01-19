@@ -104,6 +104,7 @@ This creates a **dist** directory with your server-rendered application. Unlike 
 />
 
 In output above includes the following directories inside **dist** directory:
+
 - **client** directory: Contains JavaScript and CSS bundles for client-side hydration
 - **server** directory: Contains the routes manifest and server rendering module
 
@@ -219,7 +220,9 @@ Server-side rendering requires a runtime server to render pages on each request.
 
 EAS Hosting supports server rendering out of the box. Export your app and deploy with:
 
-<Terminal cmd={['$ npx expo export --platform web', '', '$ npx eas-cli@latest hosting:deploy dist']} />
+<Terminal
+  cmd={['$ npx expo export --platform web', '', '$ npx eas-cli@latest hosting:deploy dist']}
+/>
 
 </Collapsible>
 
