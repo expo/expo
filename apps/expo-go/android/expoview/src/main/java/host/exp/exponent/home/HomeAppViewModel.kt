@@ -3,6 +3,7 @@ package host.exp.exponent.home
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
@@ -184,8 +185,24 @@ class HomeAppViewModel(
 
   val expoVersion = expoViewKernel.versionName
 
-  val isDevice =
-    !(android.os.Build.MODEL.contains("google_sdk") || android.os.Build.MODEL.contains("Emulator"))
+  val isDevice = !(
+    (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) ||
+      Build.FINGERPRINT.startsWith("generic") ||
+      Build.FINGERPRINT.startsWith("unknown") ||
+      Build.HARDWARE.contains("goldfish") ||
+      Build.HARDWARE.contains("ranchu") ||
+      Build.MODEL.contains("google_sdk") ||
+      Build.MODEL.contains("Emulator") ||
+      Build.MODEL.contains("Android SDK built for x86") ||
+      Build.MANUFACTURER.contains("Genymotion") ||
+      Build.PRODUCT.contains("sdk_google") ||
+      Build.PRODUCT.contains("google_sdk") ||
+      Build.PRODUCT.contains("sdk") ||
+      Build.PRODUCT.contains("sdk_x86") ||
+      Build.PRODUCT.contains("vbox86p") ||
+      Build.PRODUCT.contains("emulator") ||
+      Build.PRODUCT.contains("simulator")
+    )
 
   val service = ApolloClientService(client, sessionRepository)
   private val restClient =
