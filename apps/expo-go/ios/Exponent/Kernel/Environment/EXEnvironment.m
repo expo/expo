@@ -1,9 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXBuildConstants.h"
 #import "EXKernelUtil.h"
 #import "ExpoKit.h"
 #import "EXEnvironment.h"
+
+#import "Expo_Go-Swift.h"
 
 #import <React/RCTUtils.h>
 

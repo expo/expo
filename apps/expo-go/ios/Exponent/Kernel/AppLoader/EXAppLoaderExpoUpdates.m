@@ -2,16 +2,12 @@
 
 #import "EXAppFetcher.h"
 #import "EXAppLoaderExpoUpdates.h"
-#import "EXClientReleaseType.h"
 #import "EXEnvironment.h"
-#import "EXErrorRecoveryManager.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXKernelLinkingManager.h"
 #import "EXManifestResource.h"
-#import "EXSession.h"
 #import "EXUpdatesDatabaseManager.h"
-#import "EXVersions.h"
 
 #import "Expo_Go-Swift.h"
 
