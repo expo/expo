@@ -116,7 +116,7 @@ The above command starts a local server that renders pages on each request, simu
 
 ## Dynamic routes
 
-With server rendering, dynamic routes are rendered on the fly, and the [`generateStaticParams()`](/router/web/static-rendering/#generatestaticparams) export is redundant and should not be added. The route is rendered at request time with the actual parameters from the URL.
+With server rendering, dynamic routes are rendered on the fly, and the [`generateStaticParams`](/router/web/static-rendering/#generatestaticparams) export is not needed and should be removed. If your route file exports `generateStaticParams`, those routes will be handled dynamically instead. The route is rendered at request time with the actual parameters from the URL.
 
 ```tsx app/blog/[id].tsx
 import { Text } from 'react-native';
@@ -132,8 +132,6 @@ export default function Page() {
 ```
 
 In the above example, when the app user visits `/blog/my-post`, the page is rendered on the server with `id` set to `"my-post"`.
-
-> **info** If your route file exports `generateStaticParams()`, those routes are excluded and are now handled dynamically. Remove `generateStaticParams()` exports when using server rendering.
 
 ## Root HTML
 
@@ -228,14 +226,14 @@ EAS Hosting supports server rendering out of the box. Export your app and deploy
 
 ## Comparison with static rendering
 
-| Feature            | Static Rendering                                                                        | Server Rendering              |
-| ------------------ | --------------------------------------------------------------------------------------- | ----------------------------- |
-| HTML generation    | Build time                                                                              | Request time                  |
-| Configuration      | `web.output: 'static'`                                                                  | `web.output: 'server'`        |
-| Dynamic routes     | Requires [`generateStaticParams()`](/router/web/static-rendering/#generatestaticparams) | Works automatically           |
-| Server required    | No                                                                                      | Yes                           |
-| Time to First Byte | Fastest (cached)                                                                        | Slower (rendered per request) |
-| Hosting            | Any static host                                                                         | Server runtime required       |
+| Feature            |     | Static Rendering                                                                      | Server Rendering              |
+| ------------------ | :-- | ------------------------------------------------------------------------------------- | ----------------------------- |
+| HTML generation    |     | Build time                                                                            | Request time                  |
+| Configuration      |     | `web.output: 'static'`                                                                | `web.output: 'server'`        |
+| Dynamic routes     |     | Requires [`generateStaticParams`](/router/web/static-rendering/#generatestaticparams) | Works automatically           |
+| Server required    |     | No                                                                                    | Yes                           |
+| Time to First Byte |     | Fastest (cached)                                                                      | Slower (rendered per request) |
+| Hosting            |     | Any static host                                                                       | Server runtime required       |
 
 ## Common questions
 
