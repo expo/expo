@@ -39,6 +39,5 @@ struct SnackSkeletonRow: View {
     .padding()
     .background(Color.expoSecondarySystemBackground)
     .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
-    .redacted(reason: .placeholder)
   }
 }

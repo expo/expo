@@ -202,7 +202,9 @@ it('runs `npx expo install expo@<version> --fix`', async () => {
 });
 
 it('validates when with `EXPO_NO_DEPENDENCY_VALIDATION=1 npx expo install --check`', async () => {
-  const env = { EXPO_NO_DEPENDENCY_VALIDATION: '1' };
+  const env = {
+    EXPO_NO_DEPENDENCY_VALIDATION: '1',
+  } as Partial<NodeJS.ProcessEnv> as NodeJS.ProcessEnv;
   const projectRoot = await setupTestProjectWithOptionsAsync(
     'install-check-no-validation',
     'with-blank',

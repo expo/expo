@@ -30,6 +30,7 @@ export class ExpoAndroidProjectConfig {
     public name: string,
     public path: string,
     public modules?: ExpoAndroidModuleConfig[],
+    public services?: string[],
     public publication?: AndroidPublication,
     public gradleAarProjects?: AndroidGradleAarProjectDescriptor[],
     public shouldUsePublicationScriptPath?: string,
@@ -138,6 +139,7 @@ export class ExpoModuleConfig {
             ? new ExpoAndroidModuleConfig(module, null)
             : new ExpoAndroidModuleConfig(module.class, module.name)
         ),
+        this.rawConfig.android?.services,
         this.rawConfig.android?.publication,
         this.rawConfig.android?.gradleAarProjects,
         this.rawConfig.android?.shouldUsePublicationScriptPath,
@@ -155,6 +157,7 @@ export class ExpoModuleConfig {
               ? new ExpoAndroidModuleConfig(module, null)
               : new ExpoAndroidModuleConfig(module.class, module.name)
           ),
+          project.services,
           project.publication,
           project.gradleAarProjects,
           project.shouldUsePublicationScriptPath

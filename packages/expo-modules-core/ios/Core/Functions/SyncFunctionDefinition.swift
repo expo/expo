@@ -61,7 +61,7 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
 
   var takesOwner: Bool = false
 
-  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
+  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> Void) {
     do {
       let result = try call(by: owner, withArguments: args, appContext: appContext)
       callback(.success(Conversions.convertFunctionResult(result, appContext: appContext, dynamicType: ~ReturnType.self)))

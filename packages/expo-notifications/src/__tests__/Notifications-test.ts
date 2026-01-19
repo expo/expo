@@ -2,7 +2,7 @@ import { fail } from 'assert';
 
 import NotificationScheduler from '../NotificationScheduler';
 import { SchedulableTriggerInputTypes, NotificationTriggerInput } from '../Notifications.types';
-import scheduleNotificationAsync from '../scheduleNotificationAsync';
+import { scheduleNotificationAsync } from '../scheduleNotificationAsync';
 
 const notificationTriggerInputTest = {
   identifier: 'test_id',

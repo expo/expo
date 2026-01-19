@@ -5,5 +5,5 @@
  * @platform android
  * @header channels
  */
-export default function deleteNotificationChannelAsync(channelId: string): Promise<void>;
+export declare function deleteNotificationChannelAsync(channelId: string): Promise<void>;
 //# sourceMappingURL=deleteNotificationChannelAsync.d.ts.map

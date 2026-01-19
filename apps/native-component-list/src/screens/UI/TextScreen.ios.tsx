@@ -1,5 +1,5 @@
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
-import { font } from '@expo/ui/swift-ui/modifiers';
+import { bold, font, foregroundStyle, italic, lineLimit } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
 export default function TextScreen() {
@@ -15,12 +15,30 @@ export default function TextScreen() {
           <Text>{textNumber}</Text>
         </Section>
         <Section title="Interpolated string">
+          <Text>Hello world {123}</Text>
+        </Section>
+
+        <Section title="Nested Text">
           <Text>
-            {/* eslint-disable-next-line */}
-            Hello {'world'} {123}
+            Hello <Text modifiers={[bold(), foregroundStyle('red')]}>world</Text>!
+          </Text>
+          <Text>
+            Normal, <Text modifiers={[italic()]}>italic</Text>,{' '}
+            <Text modifiers={[bold()]}>bold</Text>
           </Text>
         </Section>
 
+        <Section title="Unsupported modifiers show warning in debug mode">
+          <Text>
+            Hello <Text modifiers={[bold(), lineLimit(2)]}>world</Text>!
+          </Text>
+        </Section>
+
+        <Section title="Nested Text inheritance">
+          <Text modifiers={[font({ size: 24 }), foregroundStyle('red')]}>
+            Hello <Text modifiers={[bold(), foregroundStyle('blue')]}>world</Text>!
+          </Text>
+        </Section>
         <Section title="Custom Font Families">
           <Text modifiers={[font({ family: 'Inter-Bold', size: 18 })]}>Inter Bold Font</Text>
           <Text modifiers={[font({ family: 'Inter-Medium', size: 16 })]}>Inter Medium Font</Text>

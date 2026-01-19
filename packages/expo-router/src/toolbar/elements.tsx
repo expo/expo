@@ -1,5 +1,6 @@
+import type { ImageRef } from 'expo-image';
 import { Children, isValidElement, useId, type ReactNode } from 'react';
-import { StyleSheet, type ColorValue, type StyleProp } from 'react-native';
+import { Platform, StyleSheet, type ColorValue, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { RouterToolbarHost, RouterToolbarItem } from './native';
@@ -14,6 +15,12 @@ export interface ToolbarMenuProps {
   accessibilityLabel?: string;
   accessibilityHint?: string;
   children?: React.ReactNode;
+  /**
+   * An optional subtitle for the menu. Does not appear on `inline` menus.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/subtitle) for more information.
+   */
+  subtitle?: string;
   /**
    * If `true`, the menu item will be displayed as destructive.
    *
@@ -37,6 +44,26 @@ export interface ToolbarMenuProps {
    */
   icon?: SFSymbol;
   /**
+   * Custom image loaded using `useImage()` hook from `expo-image`.
+   * Takes priority over `icon` (SF Symbol) when both are provided.
+   *
+   * @example
+   * ```tsx
+   * import { useImage } from 'expo-image';
+   * import { Toolbar } from 'expo-router/unstable-toolbar';
+   *
+   * const customIcon = useImage('https://simpleicons.org/icons/expo.svg', {
+   *   maxWidth: 24,
+   *   maxHeight: 24,
+   * });
+   *
+   * <Toolbar.Menu image={customIcon} title="Menu">
+   *   <Toolbar.MenuAction title="Action" onPress={() => {}} />
+   * </Toolbar.Menu>
+   * ```
+   */
+  image?: ImageRef | null;
+  /**
    * If `true`, the menu will be displayed inline.
    * This means that the menu will not be collapsed
    *
@@ -47,7 +74,8 @@ export interface ToolbarMenuProps {
   inline?: boolean;
   /**
    * If `true`, the menu will be displayed as a palette.
-   * This means that the menu will be displayed as one row
+   * This means that the menu will be displayed as one row.
+   * The `elementSize` property is ignored when palette is used, all items will be `elementSize="small"`. Use `elementSize="medium"` instead of `palette` to display actions with titles horizontally.
    *
    * > **Note**: Palette menus are only supported in submenus.
    *
@@ -88,6 +116,15 @@ export interface ToolbarMenuProps {
    * @default 'plain'
    */
   variant?: 'plain' | 'done' | 'prominent';
+  /**
+   * The preferred size of the menu elements.
+   * `elementSize` property is ignored when `palette` is used.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/preferredelementsize) for more information.
+   *
+   * @platform iOS 16.0+
+   */
+  elementSize?: 'auto' | 'small' | 'medium' | 'large';
 }
 
 /**
@@ -113,13 +150,16 @@ export const ToolbarMenu: React.FC<ToolbarMenuProps> = ({
   palette,
   inline,
   hidden,
+  subtitle,
   title,
   destructive,
   children,
   icon,
+  image,
   tintColor,
   variant,
   style,
+  elementSize,
 }) => {
   const identifier = useId();
   const validChildren = Children.toArray(children).filter(
@@ -141,11 +181,14 @@ export const ToolbarMenu: React.FC<ToolbarMenuProps> = ({
       hidesSharedBackground={hidesSharedBackground}
       hidden={hidden}
       icon={sf}
+      image={image}
       destructive={destructive}
+      subtitle={subtitle}
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
       displayAsPalette={palette}
       displayInline={inline}
+      preferredElementSize={elementSize}
       tintColor={tintColor}
       titleStyle={titleStyle}
       barButtonItemStyle={variant === 'done' ? 'prominent' : variant}
@@ -219,6 +262,25 @@ export interface ToolbarButtonProps {
    * For a list of available symbols, see [SF Symbols](https://developer.apple.com/sf-symbols/).
    */
   icon?: SFSymbol;
+
+  /**
+   * Custom image loaded using `useImage()` hook from `expo-image`.
+   * Takes priority over `icon` (SF Symbol) when both are provided.
+   *
+   * @example
+   * ```tsx
+   * import { useImage } from 'expo-image';
+   * import { Toolbar } from 'expo-router/unstable-toolbar';
+   *
+   * const customIcon = useImage('https://simpleicons.org/icons/expo.svg', {
+   *   maxWidth: 24,
+   *   maxHeight: 24,
+   * });
+   *
+   * <Toolbar.Button image={customIcon} onPress={() => {}} />
+   * ```
+   */
+  image?: ImageRef | null;
 
   /**
    * Callback function when the button is pressed.
@@ -309,6 +371,7 @@ export const ToolbarButton = (props: ToolbarButtonProps) => {
       hidden={props.hidden}
       hidesSharedBackground={props.hidesSharedBackground}
       identifier={id}
+      image={props.image}
       onSelected={props.onPress}
       possibleTitles={props.possibleTitles}
       selected={props.selected}
@@ -385,6 +448,77 @@ export const ToolbarSpacer = (props: ToolbarSpacerProps) => {
   );
 };
 
+export interface ToolbarSearchBarPreferredSlotProps {
+  /**
+   * Whether to hide the shared background when `sharesBackground` is enabled.
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/hidessharedbackground) for more information.
+   *
+   * @platform iOS 26+
+   */
+  hidesSharedBackground?: boolean;
+  /**
+   * Whether the search bar placed in the toolbar should be hidden.
+   *
+   * @default false
+   */
+  hidden?: boolean;
+  /**
+   * Whether the search bar shares the background with adjacent toolbar items.
+   *
+   * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/sharesbackground) for more information.
+   *
+   * @platform iOS 26+
+   * @default false
+   */
+  sharesBackground?: boolean;
+}
+
+/**
+ * Declares the position of a search bar within the toolbar.
+ * It should only be used as a child of `Toolbar`.
+ *
+ * > **Note**: On iOS 26+, this component specifies where in the toolbar the search bar
+ * > (configured via `Stack.SearchBar`) should appear. On iOS 18 and earlier, the search bar
+ * > will be shown in the header instead.
+ *
+ * > **Important**: You must use `Stack.SearchBar` to configure and display the actual
+ * > search bar. This component only declares its position in the toolbar.
+ *
+ * @example
+ * ```tsx
+ * <Stack.SearchBar placeholder="Search..." />
+ * <Toolbar>
+ *   <Toolbar.SearchBarPreferredSlot />
+ *   <Toolbar.Spacer />
+ *   <Toolbar.Button icon="mic" />
+ * </Toolbar>
+ * ```
+ *
+ * @platform ios 26+
+ */
+export const ToolbarSearchBarPreferredSlot = ({
+  hidesSharedBackground,
+  hidden,
+  sharesBackground,
+}: ToolbarSearchBarPreferredSlotProps) => {
+  const id = useId();
+  if (process.env.EXPO_OS !== 'ios' || parseInt(String(Platform.Version).split('.')[0], 10) < 26) {
+    return null;
+  }
+  if (hidden) {
+    return null;
+  }
+  return (
+    <RouterToolbarItem
+      hidesSharedBackground={hidesSharedBackground}
+      identifier={id}
+      sharesBackground={sharesBackground}
+      type="searchBar"
+    />
+  );
+};
+
 /**
  * Props for the ToolbarView component.
  *
@@ -440,8 +574,8 @@ export interface ToolbarViewProps {
  *       placeholderTextColor={Color.ios.placeholderText}
  *     />
  *   </Toolbar.View>
- *   <Toolbar.View separateBackground style={{ width: 32, height: 32 }}>
- *     <Pressable onPress={handlePress}>
+ *   <Toolbar.View separateBackground>
+ *     <Pressable style={{ width: 32, height: 32 }} onPress={handlePress}>
  *       <SymbolView name="plus" size={22} />
  *     </Pressable>
  *   </Toolbar.View>

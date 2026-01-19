@@ -3,6 +3,7 @@ import resolveFrom from 'resolve-from';
 
 import { AsyncNgrok } from './AsyncNgrok';
 import { AsyncWsTunnel } from './AsyncWsTunnel';
+import { Bonjour } from './Bonjour';
 import DevToolsPluginManager from './DevToolsPluginManager';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
@@ -95,6 +96,8 @@ export abstract class BundlerDevServer {
   protected tunnel: AsyncNgrok | AsyncWsTunnel | null = null;
   /** Interfaces with the Expo 'Development Session' API. */
   protected devSession: DevelopmentSession | null = null;
+  /** Announces dev server via Bonjour */
+  protected bonjour: Bonjour | null = null;
   /** Http server and related info. */
   protected instance: DevServerInstance | null = null;
   /** Native platform interfaces for opening projects.  */
@@ -232,7 +235,7 @@ export abstract class BundlerDevServer {
     }
 
     if (!options.isExporting) {
-      await this.startDevSessionAsync();
+      await Promise.all([this.startDevSessionAsync(), this.startBonjourAsync()]);
       this.watchConfig();
     }
   }
@@ -273,6 +276,16 @@ export abstract class BundlerDevServer {
     });
   }
 
+  protected async startBonjourAsync() {
+    // This is used to make Expo Go open the project in either Expo Go, or the web browser.
+    // Must come after ngrok (`startTunnelAsync`) setup.
+    if (!this.bonjour) {
+      this.bonjour = new Bonjour(this.projectRoot, this.getInstance()?.location.port);
+    }
+
+    await this.bonjour.announceAsync({});
+  }
+
   public isTargetingNative() {
     // Temporary hack while we implement multi-bundler dev server proxy.
     return true;
@@ -306,8 +319,12 @@ export abstract class BundlerDevServer {
     // Stop file watching.
     this.notifier?.stopObserving();
 
-    // Stop the dev session timer and tell Expo API to remove dev session.
-    await this.devSession?.closeAsync();
+    await Promise.all([
+      // Stop the bonjour advertiser
+      this.bonjour?.closeAsync(),
+      // Stop the dev session timer and tell Expo API to remove dev session.
+      this.devSession?.closeAsync(),
+    ]);
 
     // Stop tunnel if running.
     await this.tunnel?.stopAsync().catch((e) => {

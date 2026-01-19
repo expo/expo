@@ -103,12 +103,15 @@ function withExpoLocalizationAndroid(config, data) {
         return config;
     });
 }
-function withExpoLocalization(config, data = {
-    allowDynamicLocaleChangesAndroid: true,
-}) {
+function withExpoLocalization(config, data = {}) {
+    // Ensure allowDynamicLocaleChangesAndroid defaults to true
+    const normalizedData = {
+        ...data,
+        allowDynamicLocaleChangesAndroid: data.allowDynamicLocaleChangesAndroid ?? true,
+    };
     return (0, config_plugins_1.withPlugins)(config, [
-        [withExpoLocalizationIos, data],
-        [withExpoLocalizationAndroid, data],
+        [withExpoLocalizationIos, normalizedData],
+        [withExpoLocalizationAndroid, normalizedData],
     ]);
 }
 exports.default = withExpoLocalization;

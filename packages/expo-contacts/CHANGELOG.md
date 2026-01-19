@@ -10,9 +10,12 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix adding contact when default account is set to cloud ([#42203](https://github.com/expo/expo/pull/42203) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
 
 - Added contact image uri validation. ([#39658](https://github.com/expo/expo/pull/39658) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- [ios] create `CNContactStore` lazily ([#42096](https://github.com/expo/expo/pull/42096) by [@vonovak](https://github.com/vonovak))
 - [Android] Removed unused `androidx.annotation:annotation` dependency ([#39761](https://github.com/expo/expo/pull/39761) by [@lukmccall](https://github.com/lukmccall))
 
 ## 15.0.11 - 2025-12-05

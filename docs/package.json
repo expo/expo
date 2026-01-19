@@ -23,6 +23,7 @@
     "permissions-sync-android": "npx scrape-permissions-json@latest components/plugins/permissions/data --android",
     "versions-schema-sync": "node ./scripts/fetch-versions-schema.js",
     "react-navigation-docs-sync": "node ./scripts/fetch-react-navigation-options.js",
+    "eas-cli-sync": "node ./ui/components/EASCLIReference/eas-cli-rerference.js",
     "postinstall": "yarn copy-latest && yarn generate-static-resources"
   },
   "packageManager": "yarn@4.9.1",

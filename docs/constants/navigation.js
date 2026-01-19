@@ -345,6 +345,8 @@ export const general = [
       makePage('guides/using-vexo.mdx'),
     ]),
     makeGroup('Authentication', [
+      makePage('guides/using-authentication.mdx'),
+      makePage('guides/using-clerk.mdx'),
       makePage('guides/facebook-authentication.mdx'),
       makePage('guides/google-authentication.mdx'),
     ]),
@@ -403,6 +405,7 @@ export const eas = [
     [
       makePage('eas/index.mdx'),
       makePage('eas/json.mdx'),
+      makePage('eas/cli.mdx'),
       makePage('eas/environment-variables.mdx'),
     ],
     {

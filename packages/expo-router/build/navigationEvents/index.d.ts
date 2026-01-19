@@ -1,24 +1,5 @@
-interface BasePageEvent {
-    pathname: string;
-    screenId: string;
-}
-/**
- * The rendering of the page started
- *
- * This can happen if screen is to be focused for the first time or when the screen is preloaded
- */
-export interface PageWillRender extends BasePageEvent {
-    type: 'pageWillRender';
-}
-export interface PageFocusedEvent extends BasePageEvent {
-    type: 'pageFocused';
-}
-export interface PageBlurredEvent extends BasePageEvent {
-    type: 'pageBlurred';
-}
-export interface PageRemoved extends BasePageEvent {
-    type: 'pageRemoved';
-}
+import { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';
+export { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved };
 export type AnalyticsEvent = PageWillRender | PageFocusedEvent | PageBlurredEvent | PageRemoved;
 type EventTypeName = AnalyticsEvent['type'];
 type Payload<T extends EventTypeName> = Omit<Extract<AnalyticsEvent, {
@@ -29,8 +10,10 @@ export declare function emit<EventType extends EventTypeName>(type: EventType, e
 export declare const unstable_navigationEvents: {
     addListener: typeof addListener;
     emit: typeof emit;
-    hasAnyListener(): boolean;
-    markInitialRender(): void;
+    enable: () => void;
+    isEnabled: () => boolean;
+    saveCurrentPathname: () => void;
+    readonly currentPathname: string | undefined;
+    readonly currentParams: Record<string, string> | undefined;
 };
-export {};
 //# sourceMappingURL=index.d.ts.map

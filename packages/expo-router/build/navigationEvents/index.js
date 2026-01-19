@@ -8,18 +8,11 @@ const availableEvents = [
     'pageBlurred',
     'pageRemoved',
 ];
-let isAfterInitialRender = false;
-let hasListener = false;
 const subscribers = {};
 function addListener(eventType, callback) {
-    if (isAfterInitialRender) {
-        console.warn('[expo-router] unstable_analytics.addListener was called after the initial render. Analytics listeners should be added in the global scope before first render of your app, preferably in a root _layout.tsx');
-        return () => { };
-    }
     if (!availableEvents.includes(eventType)) {
         throw new Error(`Unsupported event type: ${eventType}`);
     }
-    hasListener = true;
     if (!subscribers[eventType]) {
         subscribers[eventType] = new Set();
     }
@@ -29,7 +22,6 @@ function addListener(eventType, callback) {
         if (subscribers[eventType].size === 0) {
             delete subscribers[eventType];
         }
-        hasListener = Object.keys(subscribers).length > 0;
     };
 }
 function emit(type, event) {
@@ -40,14 +32,57 @@ function emit(type, event) {
         }
     }
 }
+let enabled = false;
+let currentPathname = undefined;
+let currentParams = undefined;
+let currentPathnameListener = undefined;
 exports.unstable_navigationEvents = {
     addListener,
     emit,
-    hasAnyListener() {
-        return hasListener;
+    enable: () => {
+        enabled = true;
     },
-    markInitialRender() {
-        isAfterInitialRender = true;
+    isEnabled: () => {
+        return enabled;
+    },
+    saveCurrentPathname: () => {
+        if (!enabled || currentPathnameListener)
+            return;
+        currentPathnameListener = addListener('pageFocused', (event) => {
+            currentPathname = event.pathname;
+            currentParams = event.params;
+        });
+    },
+    get currentPathname() {
+        return currentPathname;
+    },
+    get currentParams() {
+        return currentParams;
     },
 };
+if (globalThis.expo) {
+    globalThis.expo.router = globalThis.expo.router || {};
+    if (!('navigationEvents' in globalThis.expo.router)) {
+        Object.defineProperties(globalThis.expo.router, {
+            navigationEvents: {
+                get() {
+                    return exports.unstable_navigationEvents;
+                },
+                enumerable: true,
+            },
+            currentPathname: {
+                get() {
+                    return currentPathname;
+                },
+                enumerable: true,
+            },
+            currentParams: {
+                get() {
+                    return currentParams;
+                },
+                enumerable: true,
+            },
+        });
+    }
+}
 //# sourceMappingURL=index.js.map

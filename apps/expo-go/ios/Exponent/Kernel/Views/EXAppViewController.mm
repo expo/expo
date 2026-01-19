@@ -57,7 +57,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSDate *dtmLastFatalErrorShown;
 @property (nonatomic, strong) NSMutableArray<UIViewController *> *backgroundedControllers;
 
-@property (nonatomic, assign) BOOL isHomeApp;
 @property (nonatomic, assign) UIInterfaceOrientation previousInterfaceOrientation;
 
 /*
@@ -110,9 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  _isHomeApp = NO;
 
-  
   self.appLoadingCancelView = [EXAppLoadingCancelView new];
   self.appLoadingCancelView.delegate = self;
   [self.view addSubview:self.appLoadingCancelView];
@@ -237,15 +234,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appStateDidBecomeActive
 {
-  if (_isHomeApp) {
-      [EXTextDirectionController setRTLPreferences:false :false];
-  } else if(_appRecord.appLoader.manifest != nil) {
-      BOOL supportsRTL = [self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest];
-      BOOL forceRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
-      [EXTextDirectionController setRTLPreferences:supportsRTL :forceRTL];
+  if (_appRecord.appLoader.manifest != nil) {
+    BOOL supportsRTL = [self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest];
+    BOOL forceRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
+    [EXTextDirectionController setRTLPreferences:supportsRTL :forceRTL];
   }
   dispatch_async(dispatch_get_main_queue(), ^{
-    // Reset the root view background color and window color if we switch between Expo home and project
     [self _setBackgroundColor];
   });
 }
@@ -303,13 +297,9 @@ NS_ASSUME_NONNULL_BEGIN
  * - actual one served when app is fetched.
  * For each of them we should show SplashScreen,
  * therefore for any consecutive SplashScreen.show call we just reconfigure what's already visible.
- * In HomeApp or standalone apps this function is no-op as SplashScreen is managed differently.
  */
 - (void)_showOrReconfigureManagedAppSplashScreen:(EXManifestsManifest *)manifest
 {
-  if (_isHomeApp) {
-    return;
-  }
   if (!_managedAppSplashScreenViewProvider) {
     _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWith:manifest];
 
@@ -321,10 +311,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_showCachedExperienceAlert
 {
-  if (self.isHomeApp) {
-    return;
-  }
-
   dispatch_async(dispatch_get_main_queue(), ^{
     UIAlertController *alert = [UIAlertController
                                 alertControllerWithTitle:@"Using a cached project"
@@ -368,7 +354,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        options:EXSplashScreenDefault
                                successCallback:^(BOOL hasEffect){}
                                failureCallback:^(NSString * _Nonnull message) {
-        EXLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
+        RCTLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
       }];
     });
   };
@@ -380,7 +366,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      options:EXSplashScreenDefault
                     splashScreenViewProvider:provider
                              successCallback:hideRootViewControllerSplashScreen
-                             failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
+                             failureCallback:^(NSString *message){ RCTLogWarn(@"%@", message); }];
   });
 }
 
@@ -400,7 +386,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      options:EXSplashScreenDefault
                       splashScreenController:self.managedSplashScreenController
                              successCallback:^{}
-                             failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
+                             failureCallback:^(NSString *message){ RCTLogWarn(@"%@", message); }];
   });
 
 }
@@ -443,11 +429,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoader:(EXAbstractLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
-  if (!_isHomeApp) {
-    BOOL supportsRTL = [self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest];
-    BOOL forceRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
-    [EXTextDirectionController setRTLPreferences:supportsRTL :forceRTL];
-  }
+  BOOL supportsRTL = [self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest];
+  BOOL forceRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
+  [EXTextDirectionController setRTLPreferences:supportsRTL :forceRTL];
   [self _rebuildHost];
   if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [self->_appRecord.appManager appLoaderFinished];
@@ -543,7 +527,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super supportedInterfaceOrientations];
   }
 
-  if ([ScreenOrientationRegistry.shared requiredOrientationMask] > 0 && !self.isHomeApp) {
+  if ([ScreenOrientationRegistry.shared requiredOrientationMask] > 0) {
     return [ScreenOrientationRegistry.shared requiredOrientationMask];
   }
 

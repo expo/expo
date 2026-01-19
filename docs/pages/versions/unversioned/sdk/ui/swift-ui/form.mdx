@@ -9,7 +9,7 @@ platforms: ['ios', 'tvos']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-A container for grouping controls used for data entry, such as in settings or inspection panes.
+Expo UI Form matches the official SwiftUI [Form API](https://developer.apple.com/documentation/swiftui/form). It provides a container for grouping controls used for data entry, such as in settings or inspection panes.
 
 ## Installation
 
@@ -17,11 +17,32 @@ A container for grouping controls used for data entry, such as in settings or in
 
 ## Usage
 
-```tsx
-import { useState } from 'react';
-import { Form, Host, Section, TextField, Switch, Button } from '@expo/ui/swift-ui';
+### Basic form
 
-function FormExample() {
+```tsx BasicFormExample.tsx
+import { useState } from 'react';
+import { Host, Form, TextField } from '@expo/ui/swift-ui';
+
+export default function BasicFormExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Form>
+        <TextField placeholder="Enter your name" />
+      </Form>
+    </Host>
+  );
+}
+```
+
+### Form with sections
+
+Use the [`Section`](section) component to group related controls within a form.
+
+```tsx FormWithSectionsExample.tsx
+import { useState } from 'react';
+import { Host, Form, Section, TextField, Toggle, Button } from '@expo/ui/swift-ui';
+
+export default function FormWithSectionsExample() {
   const [notifications, setNotifications] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
@@ -29,21 +50,21 @@ function FormExample() {
     <Host style={{ flex: 1 }}>
       <Form>
         <Section title="Profile">
-          <TextField placeholder="Name" onChangeText={() => {}} />
-          <TextField placeholder="Enter your email" />
+          <TextField placeholder="Name" />
+          <TextField placeholder="Email" />
         </Section>
 
         <Section title="Preferences">
-          <Switch
+          <Toggle
             label="Enable notifications"
-            value={notifications}
-            onValueChange={setNotifications}
+            isOn={notifications}
+            onIsOnChange={setNotifications}
           />
-          <Switch label="Dark mode" value={darkMode} onValueChange={setDarkMode} />
+          <Toggle label="Dark mode" isOn={darkMode} onIsOnChange={setDarkMode} />
         </Section>
 
         <Section>
-          <Button>Save Changes</Button>
+          <Button label="Save Changes" onPress={() => console.log('Saved!')} />
         </Section>
       </Form>
     </Host>
@@ -51,7 +72,83 @@ function FormExample() {
 }
 ```
 
-> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/form) for more information.
+### Form with custom background
+
+Use the `scrollContentBackground` modifier to customize or hide the form's background.
+
+```tsx FormBackgroundExample.tsx
+import { useState } from 'react';
+import { Host, Form, Section, TextField } from '@expo/ui/swift-ui';
+import { scrollContentBackground, background } from '@expo/ui/swift-ui/modifiers';
+
+export default function FormBackgroundExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Form modifiers={[scrollContentBackground('hidden'), background('#F0F0F0')]}>
+        <Section title="Custom Background">
+          <TextField placeholder="Enter text" />
+        </Section>
+      </Form>
+    </Host>
+  );
+}
+```
+
+### Non-scrollable form
+
+Use the [`scrollDisabled`](modifiers/#scrolldisableddisabled) modifier to prevent the form from scrolling.
+
+> **Note:** The `scrollDisabled` modifier is only available on iOS 16+ and tvOS 16+.
+
+```tsx NonScrollableFormExample.tsx
+import { useState } from 'react';
+import { Host, Form, Section, TextField, Toggle } from '@expo/ui/swift-ui';
+import { scrollDisabled } from '@expo/ui/swift-ui/modifiers';
+
+export default function NonScrollableFormExample() {
+  const [isOn, setIsOn] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Form modifiers={[scrollDisabled()]}>
+        <Section title="Settings">
+          <Toggle label="Enable feature" isOn={isOn} onIsOnChange={setIsOn} />
+        </Section>
+      </Form>
+    </Host>
+  );
+}
+```
+
+### Pull-to-refresh form
+
+Use the `refreshable` modifier to add pull-to-refresh functionality.
+
+```tsx RefreshableFormExample.tsx
+import { useState, useCallback } from 'react';
+import { Host, Form, Section, Text } from '@expo/ui/swift-ui';
+import { refreshable } from '@expo/ui/swift-ui/modifiers';
+
+export default function RefreshableFormExample() {
+  const [lastRefresh, setLastRefresh] = useState(new Date());
+
+  const handleRefresh = useCallback(async () => {
+    // Simulate network request
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setLastRefresh(new Date());
+  }, []);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Form modifiers={[refreshable(handleRefresh)]}>
+        <Section title="Pull to Refresh">
+          <Text>Last refreshed: {lastRefresh.toLocaleTimeString()}</Text>
+        </Section>
+      </Form>
+    </Host>
+  );
+}
+```
 
 ## API
 

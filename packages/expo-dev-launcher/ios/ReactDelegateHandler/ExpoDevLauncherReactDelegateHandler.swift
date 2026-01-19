@@ -18,7 +18,9 @@ private class DevLauncherWrapperView: UIView {
     }
 
     let isSwiftUIController = NSStringFromClass(type(of: rootViewController)).contains("UIHostingController")
-    if !isSwiftUIController && devLauncherViewController.parent != rootViewController {
+    // TODO(pmleczek): Revisit this for a more reliable solution
+    let isBrownfield = NSStringFromClass(type(of: rootViewController)).contains("UINavigationController")
+    if !isSwiftUIController && !isBrownfield && devLauncherViewController.parent != rootViewController {
       rootViewController.addChild(devLauncherViewController)
       devLauncherViewController.didMove(toParent: rootViewController)
       devLauncherViewController.view.setNeedsLayout()
@@ -57,12 +59,14 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
 
     self.reactDelegate = reactDelegate
     self.launchOptions = launchOptions
-    EXDevLauncherController.sharedInstance().start(self, launchOptions: launchOptions)
+
     if let sharedController = UpdatesControllerRegistry.sharedInstance.controller {
       // for some reason the swift compiler and bridge are having issues here
       EXDevLauncherController.sharedInstance().updatesInterface = sharedController
       sharedController.updatesExternalInterfaceDelegate = EXDevLauncherController.sharedInstance()
     }
+
+    EXDevLauncherController.sharedInstance().start(self, launchOptions: launchOptions)
 
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties

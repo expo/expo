@@ -8,7 +8,7 @@
 import type { ProjectConfig } from '@expo/config';
 import type { MiddlewareSettings } from 'expo-server';
 import { createRequestHandler } from 'expo-server/adapter/http';
-import { type RouteInfo } from 'expo-server/private';
+import { ImmutableRequest, type RouteInfo } from 'expo-server/private';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -30,11 +30,16 @@ export function createRouteHandlerMiddleware(
     routerRoot: string;
     getStaticPageAsync: (
       pathname: string,
-      route: RouteInfo<RegExp>
+      route: RouteInfo<RegExp>,
+      request?: ImmutableRequest
     ) => Promise<{ content: string }>;
     bundleApiRoute: (
       functionFilePath: string
     ) => Promise<null | Record<string, Function> | Response>;
+    executeLoaderAsync: (
+      route: RouteInfo<RegExp>,
+      request: ImmutableRequest
+    ) => Promise<{ data: unknown } | undefined>;
     config: ProjectConfig;
     headers: Record<string, string | string[]>;
   } & import('@expo/router-server/build/routes-manifest').Options
@@ -51,6 +56,19 @@ export function createRouteHandlerMiddleware(
       async getRoutesManifest() {
         const manifest = await fetchManifest(projectRoot, options);
         debug('manifest', manifest);
+
+        const { exp } = options.config;
+
+        if (manifest && exp.extra?.router?.unstable_useServerDataLoaders === true) {
+          // In development, set `loader` property on all HTML routes. We can't know which routes
+          // have loaders without bundling via Metro to detect exports. In production, this is
+          // populated by `exportStaticAsync.ts` after bundling.
+          // At runtime, `getLoaderData()` returns `undefined` if no loader exists.
+          for (const route of manifest.htmlRoutes) {
+            route.loader = `_expo/loaders${route.page}.js`;
+          }
+        }
+
         // NOTE: no app dir if null
         // TODO: Redirect to 404 page
         return (
@@ -73,7 +91,15 @@ export function createRouteHandlerMiddleware(
       },
       async getHtml(request, route) {
         try {
-          const { content } = await options.getStaticPageAsync(request.url, route);
+          const { exp } = options.config;
+          const isSSREnabled =
+            exp.web?.output === 'server' && exp.extra?.router?.unstable_useServerRendering === true;
+
+          const { content } = await options.getStaticPageAsync(
+            request.url,
+            route,
+            isSSREnabled ? new ImmutableRequest(request) : undefined
+          );
           return content;
         } catch (error: any) {
           // Forward the Metro server response as-is. It won't be pretty, but at least it will be accurate.
@@ -205,6 +231,9 @@ export function createRouteHandlerMiddleware(
             }
           );
         }
+      },
+      async getLoaderData(request, route) {
+        return options.executeLoaderAsync(route, new ImmutableRequest(request));
       },
     }
   );

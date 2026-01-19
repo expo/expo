@@ -11,7 +11,6 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.services.ServicesProvider
 import io.mockk.mockk
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -74,8 +73,7 @@ class KotlinInteropModuleRegistryTest {
   private val interopModuleRegistry = KotlinInteropModuleRegistry(
     provider,
     mockk(relaxed = true),
-    WeakReference(mockk(relaxed = true)),
-    ServicesProvider(mockk(relaxed = true))
+    WeakReference(mockk(relaxed = true))
   )
 
   @Test
