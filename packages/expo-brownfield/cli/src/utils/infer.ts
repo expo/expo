@@ -41,11 +41,13 @@ export const inferAndroidLibrary = async (): Promise<string> => {
 export const inferXCWorkspace = async (): Promise<string> => {
   try {
     const iosPath = path.join(process.cwd(), 'ios');
+    await fs.access(iosPath);
+
     const xcworkspace = (await fs.readdir(iosPath, { withFileTypes: true })).find((item) =>
       item.name.endsWith('.xcworkspace')
     );
     if (xcworkspace) {
-      return path.join(xcworkspace.parentPath, xcworkspace.name);
+      return path.join(iosPath, xcworkspace.name);
     }
 
     throw new Error();
@@ -57,6 +59,8 @@ export const inferXCWorkspace = async (): Promise<string> => {
 export const inferScheme = async (): Promise<string> => {
   try {
     const iosPath = path.join(process.cwd(), 'ios');
+    await fs.access(iosPath);
+
     const subDirs = (await fs.readdir(iosPath, { withFileTypes: true })).filter((item) =>
       item.isDirectory()
     );
