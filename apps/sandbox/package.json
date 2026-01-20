@@ -12,7 +12,7 @@
     "@react-navigation/native": "^7.1.6",
     "expo": "~54.0.31",
     "expo-linking": "~8.0.11",
-    "expo-router": "^6.0.21",
+    "expo-router": "^6.0.22",
     "expo-splash-screen": "~31.0.13",
     "react": "19.1.0",
     "react-native": "0.81.5",
@@ -20,7 +20,7 @@
     "react-native-screens": "4.11.1-nightly-20250611-8b82e081e"
   },
   "devDependencies": {
-    "babel-preset-expo": "~54.0.9"
+    "babel-preset-expo": "~54.0.10"
   },
   "private": true
 }

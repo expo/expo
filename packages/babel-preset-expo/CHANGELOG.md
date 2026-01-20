@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 54.0.10 — 2026-01-20
+
+### 🐛 Bug fixes
+
 - Resolve app root for each file to support bun monorepos. ([#42315](https://github.com/expo/expo/pull/42315) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others

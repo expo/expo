@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 54.0.14 — 2026-01-20
+
+### 🐛 Bug fixes
+
 - Use `unstable_createWorker` helper to instantiate `Worker`s, allowing worker support to bypass CORP/COEP errors ([#42340](https://github.com/expo/expo/pull/42340) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others

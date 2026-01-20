@@ -403,7 +403,7 @@ PODS:
     - ExpoModulesCore
   - ExpoFileSystem (19.0.21):
     - ExpoModulesCore
-  - ExpoFont (14.0.10):
+  - ExpoFont (14.0.11):
     - ExpoModulesCore
   - ExpoGL (16.0.9):
     - ExpoModulesCore
@@ -3616,7 +3616,7 @@ SPEC CHECKSUMS:
   ExpoDocumentPicker: 774b0d1f41468f79148e8201afd094ca852e9e42
   ExpoDomWebView: 1feccb9bfbb3337d40465737b5c228edff51451b
   ExpoFileSystem: aefcd337b94b874f88752ebefc52813b84992fad
-  ExpoFont: 26bbea90749b8dd0b69effc9fab54248e684f290
+  ExpoFont: c625dbd97ed57e9089b172b2a7bb99003d074664
   ExpoGL: 17a1f4d71a8b106b61105050ea41ecbadeecf9d7
   ExpoGlassEffect: 387b1124a00166283d9c762c4dc895e84fdb60e8
   ExpoHaptics: 7240781406f4563c3f4eb1e72864302a8c643fd0
