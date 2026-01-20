@@ -4,9 +4,13 @@
   "description": "The Expo inline modules",
   "main": "build/index.js",
   "scripts": {
-    "build": "tsc",
-    "test": "node node_modules/.bin/jest",
-    "clean": "expo-module clean"
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
   },
   "files": [
     "build"
