@@ -61,22 +61,28 @@ The [`Background Tasks`](https://developer.apple.com/documentation/backgroundtas
 
 <APIInstallSection />
 
-## Configuration&ensp;<PlatformTags platforms={['ios']} />
+## Configuration in app config&ensp;<PlatformTags platforms={['ios']} />
 
-To be able to run background tasks on iOS, you need to add the `processing` value to the `UIBackgroundModes` array in your app's **Info.plist** file. This is required for background fetch to work properly.
+To be able to run background tasks on iOS, you need to add the following to your app's **Info.plist** file:
 
-**If you're using [CNG](/workflow/continuous-native-generation/)**, the required `UIBackgroundModes` configuration will be applied automatically by prebuild.
+- The `processing` value to the `UIBackgroundModes` array. This enables the background processing capability.
+- The `BGTaskSchedulerPermittedIdentifiers` array with the `com.expo.modules.backgroundtask.processing` identifier. This registers the permitted background task identifier.
 
-<Collapsible summary="Configure UIBackgroundModes manually on iOS">
+**If you're using [CNG](/workflow/continuous-native-generation/)**, both the required `UIBackgroundModes` and `BGTaskSchedulerPermittedIdentifiers` configurations will be applied automatically by prebuild.
+
+<Collapsible summary="Configure Info.plist manually on iOS">
 
 If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)), then you'll need to add the following to your **Info.plist** file:
 
 ```xml ios/project-name/Supporting/Info.plist
 <key>UIBackgroundModes</key>
-  <array>
-    <string>processing</string>
-  </array>
-</key>
+<array>
+  <string>processing</string>
+</array>
+<key>BGTaskSchedulerPermittedIdentifiers</key>
+<array>
+  <string>com.expo.modules.backgroundtask.processing</string>
+</array>
 ```
 
 </Collapsible>
