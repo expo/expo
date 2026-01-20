@@ -22,11 +22,14 @@ AndroidExpoViewComponentDescriptor::Unique concreteExpoComponentDescriptorConstr
     react::RawPropsParser(/*useRawPropsJsiValue=*/true)
   );
 
-  descriptor->setStateProps(
-    statePropMap.at(
-      std::static_pointer_cast<std::string const>(parameters.flavor)
-    )
-  );
+  if (statePropMap.contains(std::static_pointer_cast<std::string const>(parameters.flavor))) {
+    descriptor->setStateProps(
+      statePropMap.at(
+        std::static_pointer_cast<std::string const>(parameters.flavor)
+      )
+    );
+  }
+
   return descriptor;
 }
 
@@ -51,8 +54,6 @@ void FabricComponentsRegistry::registerComponentsRegistry(
   jni::alias_ref<jni::JArrayClass<jni::JArrayClass<jni::JString>>> statePropNames,
   jni::alias_ref<jni::JArrayClass<jni::JArrayClass<ExpectedType>>> statePropTypes
 ) {
-  statePropMap.clear();
-
   // Inject the component to the CoreComponentsRegistry because we don't want to touch the MainApplicationReactNativeHost
   auto providerRegistry = react::CoreComponentsRegistry::sharedProviderRegistry();
 
@@ -79,7 +80,7 @@ void FabricComponentsRegistry::registerComponentsRegistry(
       propMap.emplace(propName, converter);
     }
 
-    statePropMap.emplace(
+    statePropMap.insert_or_assign(
       flavor,
       propMap
     );
