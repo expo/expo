@@ -1,5 +1,5 @@
-import { requireNativeView } from 'expo';
 import { type CommonViewModifierProps } from '@expo/ui/swift-ui';
+import { requireNativeView } from 'expo';
 
 export interface MyCustomViewProps extends CommonViewModifierProps {
   title: string;
