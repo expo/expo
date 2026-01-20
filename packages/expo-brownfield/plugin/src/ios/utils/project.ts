@@ -63,15 +63,6 @@ export const configureBuildPhases = (
   );
   destTarget.buildPhases = [...destTarget.buildPhases, bundlePhase];
 
-  const script = readFromTemplate('patch-expo.sh', { targetName, projectName });
-  project.addBuildPhase(
-    [],
-    Constants.BuildPhase.Script,
-    Constants.BuildPhase.PatchExpoPhase,
-    target.uuid,
-    { shellPath: '/bin/sh', shellScript: script }
-  );
-
   project.addBuildPhase(
     files,
     Constants.BuildPhase.Sources,

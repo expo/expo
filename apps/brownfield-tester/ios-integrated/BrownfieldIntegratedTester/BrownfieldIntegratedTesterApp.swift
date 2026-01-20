@@ -3,7 +3,7 @@ import minimaltesterbrownfield
 
 @main
 struct BrownfieldIntegratedTesterApp: App {
-    @UIApplicationDelegateAdaptor var delegate: BrownfieldAppDelegate
+    @UIApplicationDelegateAdaptor var delegate: ExpoBrownfieldAppDelegate
 
     init() {
       ReactNativeHostManager.shared.initialize()
