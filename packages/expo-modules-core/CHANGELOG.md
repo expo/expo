@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Add `reloadAppAsync` method to AppContext. ([#42295](https://github.com/expo/expo/pull/42295) by [@aleqsio](https://github.com/aleqsio))
 - Add `map` to `ValueOrUndefined`. ([#40593](https://github.com/expo/expo/pull/40593) by [@Wenszel](https://github.com/Wenszel))
 - Add types for `process.env.EXPO_DOM_HOST_OS`. ([#40382](https://github.com/expo/expo/pull/40382) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Add `ComposableScope` for compose Content functions. ([#39155](https://github.com/expo/expo/pull/39155) by [@aleqsio](https://github.com/aleqsio))
