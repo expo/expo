@@ -380,14 +380,14 @@ Assets imported in API routes are processed with the following behavior:
 
 - **Automatic collection**: Assets are detected and bundled during the export process without additional configuration.
 - **Fingerprinted filenames**: Assets are exported with content-based hash filenames (for example, `logo.d41d8cd98f.png`) enabling long-term caching.
-- **Client directory output**: Assets are placed in `dist/client/assets/` making them publicly accessible and cacheable by CDNs.
+- **Client directory output**: Assets are placed in  **dist/client/assets/** directory, making them publicly accessible and cacheable by CDNs.
 - **Shared with client**: If the same asset is imported by both client and server code, it is deduplicated in the output.
 
-> **warning** Assets imported in API routes are placed in the public `client/` directory and are publicly accessible. Do not import sensitive files (such as private keys or credentials) using the asset import syntax. For sensitive data, use external storage solutions (such as environment variables, databases, or cloud storage like Cloudflare KV/R2) and access them via `fetch()` or appropriate SDKs.
+> **warning** Assets imported in API routes are placed in the public **client** directory and are publicly accessible. Do not import sensitive files (such as private keys or credentials) using the asset import syntax. For sensitive data, use external storage solutions (such as environment variables, databases, or cloud storage like Cloudflare KV/R2) and access them via `fetch()` or appropriate SDKs.
 
 #### Example: Dynamic Open Graph images
 
-A common use case for assets in API routes is generating dynamic Open Graph images. This example uses [Satori](https://github.com/vercel/satori) to render React components as SVG images, with fonts imported directly:
+A common use case for assets in API routes is generating dynamic Open Graph images. The following example uses [Satori](https://github.com/vercel/satori) to render React components as SVG images, with fonts imported directly:
 
 ```tsx app/og/[title]+api.tsx
 import satori from 'satori';
@@ -426,7 +426,7 @@ export async function GET(req: Request, { title }: { title: string }) {
 }
 ```
 
-The font is imported as an asset, which ensures it is bundled and exported with your application. At runtime, `fetch()` retrieves the font data from the bundled asset URL.
+In the above example, the font is imported as an asset, which ensures it is bundled and exported with your application. At runtime, `fetch()` retrieves the font data from the bundled asset URL.
 
 {/* TODO: SSR, redirects, middleware, and so on. */}
 
