@@ -1311,14 +1311,31 @@ internal struct GridCellAnchor: ViewModifier, Record {
  * Registry for SwiftUI view modifiers that can be applied from React Native.
  * This system uses ViewModifier structs for better performance than AnyView wrapping.
  */
-internal class ViewModifierRegistry {
+public class ViewModifierRegistry {
   static let shared = ViewModifierRegistry()
 
-  internal typealias ModiferFactory = ([String: Any], AppContext, EventDispatcher) throws -> any ViewModifier
+  public typealias ModiferFactory = ([String: Any], AppContext, EventDispatcher) throws -> any ViewModifier
   private(set) internal var modifierFactories: [String: ModiferFactory] = [:]
 
   private init() {
     registerBuiltInModifiers()
+  }
+
+  /**
+   * Public API to register a custom modifier with the given type name.
+   */
+  public static func register(
+    _ type: String,
+    factory: @escaping ModiferFactory
+  ) {
+    shared.register(type, factory: factory)
+  }
+
+  /**
+   * Public API to unregister a custom modifier by type name.
+   */
+  public static func unregister(_ type: String) {
+    shared.unregister(type)
   }
 
   /**
@@ -1330,6 +1347,13 @@ internal class ViewModifierRegistry {
     factory: @escaping ModiferFactory
   ) {
     modifierFactories[type] = factory
+  }
+
+  /**
+   * Unregisters a modifier by type name.
+   */
+  func unregister(_ type: String) {
+    modifierFactories.removeValue(forKey: type)
   }
 
   /**
