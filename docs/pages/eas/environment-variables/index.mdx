@@ -11,13 +11,13 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-This guide explains how to use Environment Variables in Expo Application Services (EAS) &mdash; Build, Updates, Workflows, and Hosting. For general information on how environment variables work with the Expo framework, refer to [Environment variables in Expo](/guides/environment-variables).
+This guide explains how to use Environment Variables in Expo Application Services (EAS): Build, Updates, Workflows, and Hosting. For general information on how environment variables work with the Expo framework, refer to [Environment variables in Expo](/guides/environment-variables).
 
 During a local development, environment variables are loaded from your local **.env** or **.env.local** files. These files are generally excluded from the project's version control (that is, if they are listed in the **.gitignore** file or not committed) so they are not available for jobs that run on a remote server, for example, EAS Build and EAS Workflows. Additionally, most projects have multiple app variants and require multiple sets of environment variables (for instance Development and Production).
 
 ## Why use EAS environment variables
 
-To summarize, you need to:
+You might want to use EAS Environment Variable if you need to:
 
 - Keep configuration in one place for cloud builds, updates, and workflows without committing **.env** files.
 - Separate values by environment (`development`, `preview`, `production`) while reusing names.
@@ -118,11 +118,13 @@ There are three different visibility settings available for each environment var
 
 | Visibility | Description                                                                                                                                  |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Plain text | Visible on the website, in EAS CLI, and in logs.                                                                                             |
+| Plain&nbsp;text | Visible on the website, in EAS CLI, and in logs.                                                                                             |
 | Sensitive  | Obfuscated in EAS Build and Workflows job logs. You can use a toggle to make them visible on the website. They are also readable in EAS CLI. |
 | Secret     | Not readable outside of the EAS servers, including on the website and in EAS CLI. They are obfuscated in EAS Build and Workflows job logs.   |
 
-> **warning** Anything that is included in your client side code should be considered public and readable to any individual that can run your app. **Secret** type environment variables are intended to provide values to an EAS Build or Workflows job so that they may be used to alter how a job runs. For example, setting an `NPM_TOKEN` to install private packages from npm, or a setting a Sentry API key to create a release and upload your source maps. Secrets do not provide any additional security for values that you end up embedding in your application itself.
+> **warning** Note that **anything that is included in your client side code should be considered public and readable to any individual that can run your app**.
+
+> **warning** **Secret type environment variables** are intended to provide values to an EAS Build or Workflows job so that they may be used to alter how a job runs. For example, setting an `NPM_TOKEN` to install private packages from npm, or a setting a Sentry API key to create a release and upload your source maps. Secrets do not provide any additional security for values that you end up embedding in your application itself.
 
 ## Where to go next
 

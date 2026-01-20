@@ -44,9 +44,9 @@ Created variables appear in the list with their scope, visibility, and environme
 
 In the above example list:
 
-- The `SENTRY_AUTH_TOKEN` variable is treated as as a sensitive environment variable. It is used to authenticate Sentry to upload source maps after builds and updates, and has to be accessible outside of EAS servers.
-- The `GOOGLE_SERVICES_JSON` variable is treated as a secret environment variable and uses an uploaded file. It is used to authenticate Google to access the Google Services JSON file, and has to be stored securely on EAS servers. This uploaded JSON file is typically added to your project's **.gitignore**.
-- All other variables, such as `APP_VARIANT` and `EXPO_PUBLIC_API_URL`, are treated as plain text environment variables.
+- The `SENTRY_AUTH_TOKEN` variable is a sensitive environment variable. It is used to authenticate Sentry to upload source maps after builds and updates, and has to be accessible outside of EAS servers.
+- The `GOOGLE_SERVICES_JSON` variable is a secret environment variable and uses an uploaded file. It is used to authenticate Google to access the Google Services JSON file, and has to be stored securely on EAS servers. This uploaded JSON file is typically added to your project's **.gitignore**.
+- All other variables, such as `APP_VARIANT` and `EXPO_PUBLIC_API_URL`, are plain text environment variables.
 
 ### Create variables with EAS CLI
 
