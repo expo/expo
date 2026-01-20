@@ -899,6 +899,98 @@ The implementation for three Either types is currently provided out of the box, 
 - `EitherOfFour<FirstType, SecondType, ThirdType, FourthType>` — A container for one of four types.
 
 </PaddedAPIBox>
+
+<PaddedAPIBox header="ValueOrUndefined">
+
+> **important** **This feature is experimental.**
+
+`ValueOrUndefined` is a wrapper type that allows you to distinguish between a JavaScript `undefined` value and an actual value.
+
+With regular optional types, both `undefined` and `null` from JavaScript are converted to `null` on the native side, making it impossible to tell them apart. `ValueOrUndefined` solves this by preserving the distinction.
+
+#### Properties
+
+- **isUndefined**: `Bool` — Returns `true` if the JavaScript value was `undefined`, `false` otherwise.
+- **optional**: `InnerType?` — Returns the unwrapped value if present, or `null` if the value was `undefined`.
+
+<CodeBlocksTable>
+
+```swift
+Function("configure") { (timeout: ValueOrUndefined<Int>) in
+  if timeout.isUndefined {
+    // Argument was not provided, use default behavior
+  } else if let value = timeout.optional {
+    // Argument was provided with a value
+  }
+}
+```
+
+```kotlin
+Function("configure") { timeout: ValueOrUndefined<Int> ->
+  if (timeout.isUndefined) {
+    // Argument was not provided, use default behavior
+  } else {
+    timeout.optional?.let { value ->
+      // Argument was provided with a value
+    }
+  }
+}
+```
+
+</CodeBlocksTable>
+
+#### Distinguishing `undefined` from `null`
+
+When using `ValueOrUndefined` with an optional inner type, you can distinguish between three states:
+
+<CodeBlocksTable>
+
+```swift
+Function("setName") { (name: ValueOrUndefined<String?>) in
+  switch name {
+  case .undefined:
+    // name argument was not provided
+    break
+  case .value(let unwrapped) where unwrapped == nil:
+    // name was explicitly set to null
+    break
+  case .value(let unwrapped):
+    // name was set to a string value
+    print("Name: \(unwrapped!)")
+  }
+}
+```
+
+```kotlin
+Function("setName") { name: ValueOrUndefined<String?> ->
+  when {
+    name.isUndefined -> {
+      // name argument was not provided
+    }
+    name.optional == null -> {
+      // name was explicitly set to null
+    }
+    else -> {
+      // name was set to a string value
+      println("Name: ${name.optional}")
+    }
+  }
+}
+```
+
+</CodeBlocksTable>
+
+```js JavaScript
+import { requireNativeModule } from 'expo-modules-core';
+
+const MyModule = requireNativeModule('MyModule');
+
+MyModule.setName('Alice'); // name is a value
+MyModule.setName(null); // name is null (but not undefined)
+MyModule.setName(undefined); // name is undefined
+```
+
+</PaddedAPIBox>
 <PaddedAPIBox header="JavaScript values">
 
 It's also possible to use a `JavaScriptValue` type which is a holder for any value that can be represented in JavaScript.
