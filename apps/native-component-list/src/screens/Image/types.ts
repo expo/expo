@@ -15,11 +15,9 @@ export type ImageTestProps = any;
 
 export type ImageTestPropsFn = (input: ImageTestPropsFnInput) => ImageTestProps;
 
-export type ImageTestComponent =
-  | React.ComponentType<ImageProps>
-  | React.ComponentType<RNImageProps>
-  | Animated.AnimatedComponent<typeof Image>
-  | Animated.AnimatedComponent<typeof RNImage>;
+// Use React.ElementType to avoid "union type too complex" errors
+// when ImageProps includes large union types like sf:${SFSymbol}
+export type ImageTestComponent = React.ElementType;
 
 export interface ImageTest {
   name: string;
