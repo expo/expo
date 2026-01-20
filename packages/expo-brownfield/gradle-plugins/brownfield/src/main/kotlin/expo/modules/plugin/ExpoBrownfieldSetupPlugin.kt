@@ -264,7 +264,10 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
   }
 
   /**
+   * Add explicit dependency between the `sourceDebugJar` and `generateServiceApolloSources`
+   * tasks in `expo-dev-launcher` project.
    * 
+   * @param brownfieldProject The brownfield project
    */
   private fun wireDevLauncherTasks(brownfieldProject: Project) {
     try {
