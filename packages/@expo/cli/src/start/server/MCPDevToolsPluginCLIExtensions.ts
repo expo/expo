@@ -1,6 +1,7 @@
 import { DevServerManager } from './DevServerManager';
 import { DevToolsPluginOutputSchema } from './DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from './DevToolsPluginCliExtensionExecutor';
+import { DevToolsPluginCliExtensionResults } from './DevToolsPluginCliExtensionResults';
 import { McpServer } from './MCP';
 import { createMCPDevToolsExtensionSchema } from './createMCPDevToolsExtensionSchema';
 import { Log } from '../../log';
@@ -42,15 +43,14 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
 
             const results = await new DevToolsPluginCliExtensionExecutor(
               plugin,
-              devServerManager.projectRoot
+              devServerManager.projectRoot,
+              false // disable tty color for MCP clients
             ).execute({ command, args, metroServerOrigin });
 
             const parsedResults = DevToolsPluginOutputSchema.safeParse(results);
             if (parsedResults.success === false) {
               throw new Error(
-                `Invalid output from CLI command: ${parsedResults.error.issues
-                  .map((issue) => issue.message)
-                  .join(', ')}`
+                `Invalid output from CLI command: ${DevToolsPluginCliExtensionResults.formatZodError(parsedResults.error)}`
               );
             }
             return {
