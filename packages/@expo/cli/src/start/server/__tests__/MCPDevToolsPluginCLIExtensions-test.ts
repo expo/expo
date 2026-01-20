@@ -79,9 +79,9 @@ describe(addMcpCapabilities, () => {
     const mcpServer = { registerTool } as unknown as McpServer;
 
     const pluginOutput = [
-      { type: 'text', text: 'Run complete', level: 'info', url: 'https://example.com' },
-      { type: 'image', url: 'https://example.com/image.png', text: 'Screenshot' },
-      { type: 'audio', url: 'https://example.com/sound.mp3' },
+      { type: 'text', text: 'Run complete', level: 'info', uri: 'https://example.com' },
+      { type: 'uri', uri: 'https://example.com/image.png', text: 'Screenshot' },
+      { type: 'uri', uri: 'https://example.com/sound.mp3' },
     ] as const;
     executeMock.mockResolvedValue(pluginOutput);
 
@@ -109,15 +109,15 @@ describe(addMcpCapabilities, () => {
           type: 'text',
           text: 'Run complete',
           level: 'info',
-          url: 'https://example.com',
+          uri: 'https://example.com',
         },
         {
           type: 'text',
-          text: 'image resource: https://example.com/image.png (Screenshot)',
+          text: 'Resource: https://example.com/image.png (Screenshot)',
         },
         {
           type: 'text',
-          text: 'audio resource: https://example.com/sound.mp3',
+          text: 'Resource: https://example.com/sound.mp3',
         },
       ],
     });
