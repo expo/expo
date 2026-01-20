@@ -83,6 +83,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-blur': ['index.ts'],
   'expo-blob': ['ExpoBlob.types.ts'],
   'expo-brightness': ['Brightness.ts'],
+  'expo-brownfield': ['index.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
   'expo-calendar': ['Calendar.ts'],
   'expo-calendar-next': ['next/Calendar.ts', 'expo-calendar'],
