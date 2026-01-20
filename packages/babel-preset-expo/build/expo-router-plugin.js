@@ -9,14 +9,15 @@ exports.expoRouterBabelPlugin = expoRouterBabelPlugin;
  */
 const core_1 = require("@babel/core");
 const node_path_1 = __importDefault(require("node:path"));
-const resolve_from_1 = __importDefault(require("resolve-from"));
 const common_1 = require("./common");
 const debug = require('debug')('expo:babel:router');
-function getExpoRouterAppRoot(projectRoot, appFolder) {
-    // TODO: We should have cache invalidation if the expo-router/entry file location changes.
-    const routerEntry = (0, resolve_from_1.default)(projectRoot, 'expo-router/entry');
-    const appRoot = node_path_1.default.relative(node_path_1.default.dirname(routerEntry), appFolder);
-    debug('routerEntry', routerEntry, appFolder, appRoot);
+function getExpoRouterAppRoot(currentFile, projectRoot, appFolder) {
+    // FIXME(@kitten): This is only defaulting to `projectRoot` for the backport. `projectRoot` is wrong here,
+    // but was previously used instead of the filename to compute the relative path. We're still keeping it here
+    // to avoid a new breaking error/invariant in case the `filename` is missing
+    const fromPath = (currentFile && node_path_1.default.dirname(currentFile)) || projectRoot;
+    const appRoot = node_path_1.default.relative(fromPath, appFolder);
+    debug('getExpoRouterAppRoot', currentFile, appFolder, appRoot);
     return appRoot;
 }
 /**
@@ -58,7 +59,8 @@ function expoRouterBabelPlugin(api) {
                                 path.replaceWith(t.stringLiteral(routerAbsoluteRoot));
                             }
                             else if (key.value.startsWith('EXPO_ROUTER_APP_ROOT')) {
-                                path.replaceWith(t.stringLiteral(getExpoRouterAppRoot(projectRoot, routerAbsoluteRoot)));
+                                const filename = state.filename || state.file.opts.filename;
+                                path.replaceWith(t.stringLiteral(getExpoRouterAppRoot(filename, projectRoot, routerAbsoluteRoot)));
                             }
                         }
                     }
