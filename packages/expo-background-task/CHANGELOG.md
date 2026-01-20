@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added CLI extension exposing some simple devtools for the CLI and MCP server ([#42202](https://github.com/expo/expo/pull/42202) by [@chrfalch](https://github.com/chrfalch))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
