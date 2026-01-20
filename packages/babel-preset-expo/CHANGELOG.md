@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Improve performance of Expo Router babel plugins. ([#41693](https://github.com/expo/expo/pull/41693) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 54.0.9 — 2025-12-18
 
 ### 💡 Others
