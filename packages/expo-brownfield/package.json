@@ -21,8 +21,8 @@
     "lint": "expo-module lint && expo-module lint plugin && expo-module lint cli",
     "lint:fix": "expo-module lint --fix && expo-module lint plugin --fix && expo-module lint cli --fix",
     "test": "expo-module test",
-    "test:e2e-cli": "yarn prepare && expo-module test --config e2e-cli/jest.config.js",
     "prepare": "expo-module prepare",
+    "prepack": "cp -L plugin/templates/ios/ExpoAppDelegate.swift plugin/templates/ios/ExpoAppDelegate.swift.tmp && mv plugin/templates/ios/ExpoAppDelegate.swift.tmp plugin/templates/ios/ExpoAppDelegate.swift",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -48,11 +48,13 @@
   "dependencies": {
     "arg": "^5.0.2",
     "chalk": "^4.1.2",
+    "diff": "^5.2.0",
     "expo-build-properties": "~1.0.8",
     "ora": "^5.4.1",
     "prompts": "^2.4.2"
   },
   "devDependencies": {
+    "@types/diff": "^5.2.0",
     "expo-module-scripts": "^5.0.7"
   },
   "peerDependencies": {
