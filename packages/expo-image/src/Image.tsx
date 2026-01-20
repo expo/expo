@@ -2,7 +2,7 @@
 
 import { Platform, createSnapshotFriendlyRef } from 'expo-modules-core';
 import React from 'react';
-import { StyleSheet, type View } from 'react-native';
+import { StyleSheet, type ImageStyle, type TextStyle, type View } from 'react-native';
 
 import ExpoImage from './ExpoImage';
 import {
@@ -269,7 +269,7 @@ export class Image extends React.PureComponent<ImageProps> {
       resizeMode: resizeModeStyle,
       fontWeight: fontWeightStyle,
       ...restStyle
-    } = (StyleSheet.flatten(style) as any) || {};
+    } = (StyleSheet.flatten(style) as ImageStyle & TextStyle) || {};
     const resizeMode = resizeModeProp ?? resizeModeStyle;
 
     if ((defaultSource || loadingIndicatorSource) && !loggedDefaultSourceDeprecationWarning) {
@@ -300,7 +300,13 @@ export class Image extends React.PureComponent<ImageProps> {
         contentPosition={resolveContentPosition(contentPosition)}
         transition={resolveTransition(transition, fadeDuration)}
         sfEffect={resolveSfEffect(sfEffect)}
-        symbolWeight={isSFSymbol ? fontWeightStyle : null}
+        symbolWeight={
+          isSFSymbol
+            ? typeof fontWeightStyle === 'number'
+              ? String(fontWeightStyle)
+              : fontWeightStyle
+            : null
+        }
         nativeViewRef={this.nativeViewRef}
         containerViewRef={this.containerViewRef}
       />
