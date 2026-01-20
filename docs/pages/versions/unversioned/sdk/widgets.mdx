@@ -1,0 +1,163 @@
+---
+title: Widgets
+description: A config plugin that enables iOS home screen widgets and Live Activities in Expo apps.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-widgets'
+packageName: 'expo-widgets'
+platforms: ['ios']
+---
+
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+
+`expo-widgets` is a [config plugin](/config-plugins/introduction/) that enables iOS home screen widgets and Live Activities in your Expo app. It configures the necessary native project settings during [Prebuild](/workflow/prebuild), including creating the widget extension target, setting up app groups for data sharing between your app and widgets, and configuring entitlements.
+
+> **info** This config plugin configures how the [Prebuild command](/workflow/prebuild) generates the native **ios** directory and therefore cannot be used with projects that don't run `npx expo prebuild` (bare projects).
+
+## Installation
+
+<APIInstallSection />
+
+## Configuration in app config
+
+You can configure `expo-widgets` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-widgets",
+        {
+          "widgets": [
+            {
+              "name": "MyWidget",
+              "displayName": "My Widget",
+              "description": "A sample home screen widget",
+              "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
+            }
+          ]
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'bundleIdentifier',
+      description:
+        'The bundle identifier for the widget extension target. If not specified, defaults to `<main app bundle identifier>.ExpoWidgetsTarget`.',
+      default: '"<app bundle identifier>.ExpoWidgetsTarget"',
+    },
+    {
+      name: 'groupIdentifier',
+      description:
+        'The app group identifier used for communication and data sharing between the main app and widgets. This is required for sharing data via `UserDefaults` or the file system. If not specified, defaults to `group.<main app bundle identifier>`.',
+      default: '"group.<app bundle identifier>"',
+    },
+    {
+      name: 'enablePushNotifications',
+      description:
+        'Whether to enable push notifications for Live Activities. When enabled, this adds the `aps-environment` entitlement and sets `ExpoLiveActivity_EnablePushNotifications` in the Info.plist.',
+      default: 'false',
+    },
+    {
+      name: 'frequentUpdates',
+      description:
+        'Whether to enable frequent updates for widgets and Live Activities. When enabled, this sets `NSSupportsLiveActivitiesFrequentUpdates` to `true` in the Info.plist, allowing your widgets to update more frequently.',
+      default: 'false',
+    },
+    {
+      name: 'widgets',
+      description:
+        'An array of widget configurations. Each widget in the array will be generated as a separate widget kind in your widget extension.',
+      properties: [
+        {
+          name: 'name',
+          description:
+            'The internal name (identifier) of the widget. This is used as the Swift struct name and should be a valid Swift identifier (no spaces or special characters).',
+        },
+        {
+          name: 'displayName',
+          description:
+            'The user-facing name of the widget that appears in the widget gallery when users add widgets to their home screen.',
+        },
+        {
+          name: 'description',
+          description:
+            'A brief description of what the widget does. This appears in the widget gallery to help users understand the widget\'s purpose.',
+        },
+        {
+          name: 'supportedFamilies',
+          description: [
+            'An array of widget sizes that this widget supports. Available options:',
+            '* `systemSmall` - Small square widget (2x2 grid)',
+            '* `systemMedium` - Medium rectangular widget (4x2 grid)',
+            '* `systemLarge` - Large square widget (4x4 grid)',
+            '* `systemExtraLarge` - Extra large widget (iPad only, 6x4 grid)',
+            '* `accessoryCircular` - Circular widget for Lock Screen and Apple Watch',
+            '* `accessoryRectangular` - Rectangular widget for Lock Screen and Apple Watch',
+            '* `accessoryInline` - Inline text widget for Lock Screen complications',
+          ].join('\n'),
+        },
+      ],
+    },
+  ]}
+/>
+
+### Full example with all options
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-widgets",
+        {
+          "bundleIdentifier": "com.example.myapp.widgets",
+          "groupIdentifier": "group.com.example.myapp",
+          "enablePushNotifications": true,
+          "frequentUpdates": true,
+          "widgets": [
+            {
+              "name": "StatusWidget",
+              "displayName": "Status",
+              "description": "Shows your current status at a glance",
+              "supportedFamilies": ["systemSmall", "systemMedium"]
+            },
+            {
+              "name": "DetailWidget",
+              "displayName": "Details",
+              "description": "Shows detailed information",
+              "supportedFamilies": ["systemMedium", "systemLarge"]
+            },
+            {
+              "name": "LockScreenWidget",
+              "displayName": "Quick View",
+              "description": "View info on your Lock Screen",
+              "supportedFamilies": ["accessoryCircular", "accessoryRectangular", "accessoryInline"]
+            }
+          ]
+        }
+      ]
+    ]
+  }
+}
+```
+
+## Data sharing between app and widgets
+
+Widgets run in a separate process from your main app, so you need to use app groups to share data between them. The `groupIdentifier` property configures the app group that both your main app and widget extension can access.
+
+You can share data using:
+
+- **UserDefaults**: Store small amounts of data (preferences, simple state) using the shared app group suite
+- **File system**: Store larger data or files in the shared app group container
+
+Make sure to use the same `groupIdentifier` value when accessing shared data from both your main app and widget code.
