@@ -26,13 +26,13 @@ To declare your CLI extension, add an entry to the `cliExtensions` array in the 
 
 ```json expo-modules.config.json
 {
-  "platforms": [ "apple", "android", "devtools" ],
+  "platforms": ["apple", "android", "devtools"],
   "devtools": {
     "cliExtensions": {
       "description": "Expo: manage background tasks",
       "commands": [
-        { "name": "list", "title": "List registered background tasks", "environments": [ "cli"] },
-        { "name": "trigger-test", "title": "Trigger background tasks", "environments": [ "cli" ] }
+        { "name": "list", "title": "List registered background tasks", "environments": ["cli"] },
+        { "name": "trigger-test", "title": "Trigger background tasks", "environments": ["cli"] }
       ],
       "entryPoint": "cli/build/index.js"
     }
@@ -72,7 +72,7 @@ You can now restart the Expo CLI by running `npx expo start` and test your CLI e
 
 To add communication between your CLI extension and your Expo app, you can use the `sendCliMessageAsync` function from the `expo/devtools` package. This function allows you to send messages from your CLI extension to the running Expo app and receive responses.
 
-```ts  cli/index.ts
+```ts cli/index.ts
 import { runCliExtension, sendCliMessageAsync, queryAllInspectorAppsAsync } from '@expo/devtools';
 
 const PLUGIN_NAME = 'expo-background-task';
