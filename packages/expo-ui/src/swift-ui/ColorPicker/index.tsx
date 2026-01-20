@@ -17,19 +17,19 @@ export type ColorPickerProps = {
   /**
    * Callback function that is called when a new color is selected.
    */
-  onValueChanged?: (value: string) => void;
+  onSelectionChange?: (value: string) => void;
   /**
    * Whether the color picker should support opacity.
    */
   supportsOpacity?: boolean;
 } & CommonViewModifierProps;
 
-type OnValueChangedEvent = NativeSyntheticEvent<{ value: string }>;
+type onSelectionChangeEvent = NativeSyntheticEvent<{ value: string }>;
 
 const ColorPickerNativeView: React.ComponentType<
-  Omit<ColorPickerProps, 'selection' | 'onValueChanged'> & {
+  Omit<ColorPickerProps, 'selection' | 'onSelectionChange'> & {
     selection: ReturnType<typeof processColor>;
-    onValueChanged: (event: OnValueChangedEvent) => void;
+    onSelectionChange: (event: onSelectionChangeEvent) => void;
   }
 > = requireNativeView('ExpoUI', 'ColorPickerView');
 
@@ -39,22 +39,22 @@ const ColorPickerNativeView: React.ComponentType<
  */
 export function ColorPicker({
   selection,
-  onValueChanged,
+  onSelectionChange,
   modifiers,
   ...restProps
 }: ColorPickerProps) {
   const onNativeValueChanged = useCallback(
-    (event: OnValueChangedEvent) => {
-      onValueChanged?.(event.nativeEvent.value);
+    (event: onSelectionChangeEvent) => {
+      onSelectionChange?.(event.nativeEvent.value);
     },
-    [onValueChanged]
+    [onSelectionChange]
   );
   return (
     <ColorPickerNativeView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       selection={processColor(selection || '')}
-      onValueChanged={onNativeValueChanged}
+      onSelectionChange={onNativeValueChanged}
       {...restProps}
     />
   );

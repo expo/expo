@@ -8,8 +8,6 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **important** Zoom transition is currently in [alpha](/more/release-statuses/#alpha) and available in [canary releases](/versions/latest/#using-pre-release-versions) of `expo-router`.
 
-> **info** **Tip:** To enable zoom transitions, run `enableZoomTransition()` in your **app/\_layout.tsx`** file.
-
 <ContentSpotlight
   alt="A video presenting simple gallery with zoom transitions."
   file="expo-router/zoom-transition.mp4"
@@ -23,18 +21,7 @@ To implement zoom transitions, you need to use the `Link.AppleZoom` component to
 
 ### Basic example
 
-Here's a basic example showing how to create a zoom transition from an image to a preview screen. Start by enabling `enableZoomTransition()` in your root app layout file (**app/\_layout.tsx**):
-
-```tsx app/_layout.tsx
-import { enableZoomTransition } from 'expo-router/internal/utils';
-
-enableZoomTransition();
-export default function Layout() {
-  ... // your layout code
-}
-```
-
-Add `Link.AppleZoom` to wrap the source element (`Image`) in your screen component that you want to zoom from:
+To activate zoom transition for a link, wrap the source (`Image`) element with `Link.AppleZoom` in your screen:
 
 ```tsx app/index.tsx
 import { View, Text, StyleSheet, Pressable } from 'react-native';

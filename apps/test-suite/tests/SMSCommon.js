@@ -15,6 +15,10 @@ async function loadAndSaveFile(fileInfo, expect) {
   await assertExists(fileInfo, false, expect);
   const { md5, headers } = await FS.downloadAsync(fileInfo.remoteUri, fileInfo.localUri, {
     md5: true,
+    headers: {
+      'User-Agent':
+        'ExpoTestSuite/1.0 (https://github.com/expo/expo; expo@expo.dev) expo-file-system/1.0',
+    },
   });
   expect(md5).toBe(fileInfo.md5);
   await assertExists(fileInfo, true, expect);

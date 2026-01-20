@@ -1,0 +1,62 @@
+import { requireNativeView } from 'expo';
+
+import { createViewModifierEventListener } from '../modifiers/utils';
+import { type CommonViewModifierProps } from '../types';
+
+export type ClosedRangeDate = { lower: Date; upper: Date };
+
+export type ProgressViewProps = {
+  /**
+   * The current progress value. A value between `0` and `1`.
+   * When `undefined`, the progress view displays an indeterminate indicator.
+   */
+  value?: number | null;
+  /**
+   * The lower and upper bounds for automatic timer progress.
+   * @platform ios 16.0+
+   * @platform tvos 16.0+
+   */
+  timerInterval?: ClosedRangeDate;
+  /**
+   * A Boolean value that determines whether the view empties or fills as time passes. If `true`, which is the default, the view empties.
+   * @default true
+   * @platform ios 16.0+
+   * @platform tvos 16.0+
+   */
+  countsDown?: boolean;
+  /**
+   * A label describing the progress view's purpose.
+   */
+  children?: React.ReactNode;
+} & CommonViewModifierProps;
+
+type NativeProgressViewProps = Omit<ProgressViewProps, 'timerInterval'> & {
+  timerInterval?: { lower: number; upper: number };
+};
+
+const NativeProgressView: React.ComponentType<NativeProgressViewProps> = requireNativeView(
+  'ExpoUI',
+  'ProgressView'
+);
+
+/**
+ * Renders a SwiftUI `ProgressView` component.
+ */
+export function ProgressView(props: ProgressViewProps) {
+  const { modifiers, timerInterval, ...restProps } = props;
+  return (
+    <NativeProgressView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      timerInterval={
+        timerInterval
+          ? {
+              lower: timerInterval.lower.getTime(),
+              upper: timerInterval.upper.getTime(),
+            }
+          : undefined
+      }
+    />
+  );
+}

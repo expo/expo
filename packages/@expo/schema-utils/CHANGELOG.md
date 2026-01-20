@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add `JSONSchema` generic to carry shadow type for validated schema ([#42215](https://github.com/expo/expo/pull/42215) by [@kitten](https://github.com/kitten))
+
 ## 0.1.8 - 2025-12-04
 
 _This version does not introduce any user-facing changes._

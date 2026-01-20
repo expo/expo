@@ -20,8 +20,8 @@ type DependencyMapPaths = { [moduleID: number | string]: unknown } | null;
 declare let __METRO_GLOBAL_PREFIX__: string;
 
 function maybeLoadBundle(moduleID: number, paths: DependencyMapPaths): void | Promise<void> {
-  const loadBundle: (bundlePath: unknown) => Promise<void> = (global as any)[
-    `${__METRO_GLOBAL_PREFIX__}__loadBundleAsync`
+  const loadBundle: (bundlePath: unknown) => Promise<void> = (globalThis as any)[
+    `${__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`
   ];
 
   if (loadBundle != null) {

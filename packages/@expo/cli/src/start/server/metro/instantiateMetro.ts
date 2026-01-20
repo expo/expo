@@ -1,5 +1,6 @@
 import { type ExpoConfig, getConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
+import type { Reporter } from '@expo/metro/metro';
 import type Bundler from '@expo/metro/metro/Bundler';
 import type { ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
 import type { TransformOptions } from '@expo/metro/metro/DeltaBundler/Worker';
@@ -7,18 +8,9 @@ import MetroHmrServer, { Client as MetroHmrClient } from '@expo/metro/metro/HmrS
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
-import {
-  mergeConfig,
-  resolveConfig,
-  type InputConfigT,
-  type ConfigT,
-} from '@expo/metro/metro-config';
+import { mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
 import { Terminal } from '@expo/metro/metro-core';
-import {
-  createStableModuleIdFactory,
-  getDefaultConfig,
-  type LoadOptions,
-} from '@expo/metro-config';
+import { createStableModuleIdFactory, getDefaultConfig } from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
 import path from 'path';
@@ -87,9 +79,16 @@ class LogRespectingTerminal extends Terminal {
 // Share one instance of Terminal for all instances of Metro.
 const terminal = new LogRespectingTerminal(process.stdout);
 
+interface LoadMetroConfigOptions {
+  maxWorkers?: number;
+  port?: number;
+  reporter?: Reporter;
+  resetCache?: boolean;
+}
+
 export async function loadMetroConfigAsync(
   projectRoot: string,
-  options: LoadOptions,
+  options: LoadMetroConfigOptions,
   {
     exp,
     isExporting,
@@ -120,8 +119,10 @@ export async function loadMetroConfigAsync(
   const serverRoot = getMetroServerRoot(projectRoot);
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
+  // NOTE: Allow external tools to override the metro config. This is considered internal and unstable
+  const configPath = env.EXPO_OVERRIDE_METRO_CONFIG ?? undefined;
+  const resolvedConfig = await resolveConfig(configPath, projectRoot);
   const defaultConfig = getDefaultConfig(projectRoot);
-  const resolvedConfig = await resolveConfig(options.config, projectRoot);
 
   let config: ConfigT = resolvedConfig.isEmpty
     ? defaultConfig
@@ -218,7 +219,7 @@ export async function loadMetroConfigAsync(
 /** The most generic possible setup for Metro bundler. */
 export async function instantiateMetroAsync(
   metroBundler: MetroBundlerDevServer,
-  options: Omit<LoadOptions, 'logger'>,
+  options: LoadMetroConfigOptions,
   {
     isExporting,
     exp = getConfig(metroBundler.projectRoot, {
@@ -250,15 +251,20 @@ export async function instantiateMetroAsync(
   const { middleware, messagesSocket, eventsSocket, websocketEndpoints } =
     createMetroMiddleware(metroConfig);
 
+  // Get local URL to Metro bundler server (typically configured as 127.0.0.1:8081)
+  const serverBaseUrl = metroBundler
+    .getUrlCreator()
+    .constructUrl({ scheme: 'http', hostType: 'localhost' });
+
   if (!isExporting) {
     // Enable correct CORS headers for Expo Router features
     prependMiddleware(middleware, createCorsMiddleware(exp));
 
     // Enable debug middleware for CDP-related debugging
-    const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware(
-      metroBundler,
-      reporter
-    );
+    const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware({
+      serverBaseUrl,
+      reporter,
+    });
     Object.assign(websocketEndpoints, debugWebsocketEndpoints);
     middleware.use(debugMiddleware);
     middleware.use('/_expo/debugger', createJsInspectorMiddleware());
@@ -276,6 +282,9 @@ export async function instantiateMetroAsync(
       }
       return middleware.use(metroMiddleware);
     };
+
+    const devtoolsWebsocketEndpoints = createDevToolsPluginWebsocketEndpoint({ serverBaseUrl });
+    Object.assign(websocketEndpoints, devtoolsWebsocketEndpoints);
   }
 
   // Attach Expo Atlas if enabled
@@ -293,10 +302,7 @@ export async function instantiateMetroAsync(
     metroBundler,
     metroConfig,
     {
-      websocketEndpoints: {
-        ...websocketEndpoints,
-        ...createDevToolsPluginWebsocketEndpoint(),
-      },
+      websocketEndpoints,
       watch: !isExporting && isWatchEnabled(),
     },
     {
@@ -472,8 +478,8 @@ function pruneCustomTransformOptions(
     // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
     const isRouterModule = /\/expo-router\/build\//.test(filePath);
     // Any page/router inside the expo-router app folder may access the `routerRoot` option to determine whether it's in the app folder
-    const isRouterRoute =
-      path.isAbsolute(filePath) && filePath.startsWith(path.resolve(projectRoot, routerRoot));
+    const resolvedRouterRoot = path.resolve(projectRoot, routerRoot).split(path.sep).join('/');
+    const isRouterRoute = path.isAbsolute(filePath) && filePath.startsWith(resolvedRouterRoot);
 
     // In any other file than the above, we enforce that we mustn't use `routerRoot`, and set it to an arbitrary value here (the default)
     // to ensure that the cache never invalidates when this value is changed

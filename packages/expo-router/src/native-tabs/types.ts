@@ -7,10 +7,10 @@ import type {
   TextStyle,
   ViewStyle,
 } from 'react-native';
-import type { BottomTabsScreenProps } from 'react-native-screens';
+import type { TabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-export type NativeScreenProps = Partial<Omit<BottomTabsScreenProps, 'tabKey' | 'isFocused'>>;
+export type NativeScreenProps = Partial<Omit<TabsScreenProps, 'tabKey' | 'isFocused'>>;
 
 export interface NativeTabOptions extends DefaultRouterOptions {
   icon?: SymbolOrImageSource;
@@ -39,7 +39,7 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   };
   indicatorColor?: ColorValue;
   hidden?: boolean;
-  specialEffects?: BottomTabsScreenProps['specialEffects'];
+  specialEffects?: TabsScreenProps['specialEffects'];
   nativeProps?: NativeScreenProps;
   disableAutomaticContentInsets?: boolean;
   contentStyle?: Pick<
@@ -87,6 +87,12 @@ export type SymbolOrImageSource =
        * The image source to use as an icon.
        */
       src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
+      /**
+       * Controls how the icon is rendered on iOS.
+       * @platform ios
+       * @default 'template'
+       */
+      renderingMode?: 'template' | 'original';
     };
 
 export type NativeTabsLabelStyle = Pick<

@@ -148,15 +148,15 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
   });
 }
 
-function withExpoLocalization(
-  config: ExpoConfig,
-  data: ConfigPluginProps = {
-    allowDynamicLocaleChangesAndroid: true,
-  }
-) {
+function withExpoLocalization(config: ExpoConfig, data: ConfigPluginProps = {}) {
+  // Ensure allowDynamicLocaleChangesAndroid defaults to true
+  const normalizedData = {
+    ...data,
+    allowDynamicLocaleChangesAndroid: data.allowDynamicLocaleChangesAndroid ?? true,
+  };
   return withPlugins(config, [
-    [withExpoLocalizationIos, data],
-    [withExpoLocalizationAndroid, data],
+    [withExpoLocalizationIos, normalizedData],
+    [withExpoLocalizationAndroid, normalizedData],
   ]);
 }
 

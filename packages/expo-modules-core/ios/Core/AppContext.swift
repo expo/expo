@@ -95,6 +95,26 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
+  @objc
+  public var _uiRuntime: WorkletRuntime? {
+    didSet {
+      if _uiRuntime != oldValue {
+        MainActor.assumeIsolated {
+          try? prepareUIRuntime()
+        }
+      }
+    }
+  }
+
+  public var uiRuntime: WorkletRuntime {
+    get throws {
+      if let uiRuntime = _uiRuntime {
+        return uiRuntime
+      }
+      throw Exceptions.UIRuntimeLost()
+    }
+  }
+
   /**
    The application identifier that is used to distinguish between different `RCTHost`.
    It might be equal to `nil`, meaning we couldn't obtain the Id for the current app.
@@ -166,7 +186,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   // MARK: - UI
 
-  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {    
+  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
     return hostWrapper?.findView(withTag: viewTag) as? ViewType
   }
 
@@ -201,9 +221,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
       throw JavaScriptClassNotFoundException()
     }
     let prototype = try jsClass.getProperty("prototype").asObject()
-    let object = try runtime.createObject(withPrototype: prototype)
-
-    return object
+    return try runtime.createObject(withPrototype: prototype)
   }
 
   // MARK: - Legacy modules
@@ -212,7 +230,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
    Returns a legacy module implementing given protocol/interface.
    */
   public func legacyModule<ModuleProtocol>(implementing moduleProtocol: Protocol) -> ModuleProtocol? {
-    return legacyModuleRegistry?.getModuleImplementingProtocol(moduleProtocol) as? ModuleProtocol
+    return legacyModuleRegistry?.getModuleImplementingProtocol(moduleProtocol) as? ModuleProtocol ?? moduleRegistry.getModule(implementing: ModuleProtocol.self)
   }
 
   /**
@@ -251,8 +269,10 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
   /**
    Provides an event emitter that is compatible with the legacy interface.
+   - Deprecated as of Expo SDK 55. May be removed in the future releases.
    */
-  public var eventEmitter: EXEventEmitterService? {
+  @available(*, deprecated, message: "Use `sendEvent` directly on the module instance instead")
+  public var eventEmitter: LegacyEventEmitterCompat? {
     return LegacyEventEmitterCompat(appContext: self)
   }
 
@@ -496,7 +516,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
     EXJavaScriptRuntimeManager.installSharedObjectClass(runtime) { [weak sharedObjectRegistry] objectId in
       sharedObjectRegistry?.delete(objectId)
     }
-    
+
     // Install `global.expo.SharedRef`.
     EXJavaScriptRuntimeManager.installSharedRefClass(runtime)
 
@@ -505,6 +525,21 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
     // Install the modules host object as the `global.expo.modules`.
     EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
+  }
+
+  @MainActor
+  internal func prepareUIRuntime() throws {
+    let uiRuntime = try uiRuntime
+    let coreObject = uiRuntime.createObject()
+
+    // Initialize `global.expo`.
+    uiRuntime.global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: .enumerable)
+
+    // Install `global.expo.EventEmitter`.
+    EXJavaScriptRuntimeManager.installEventEmitterClass(uiRuntime)
+
+    // Install `global.expo.NativeModule`.
+    EXJavaScriptRuntimeManager.installNativeModuleClass(uiRuntime)
   }
 
   /**
@@ -535,7 +570,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
       moduleRegistry.post(event: .appContextDestroys)
     }
   }
-  
+
   @objc
   public func setHostWrapper(_ wrapper: ExpoHostWrapper) {
     self.hostWrapper = wrapper
@@ -561,7 +596,15 @@ public final class AppContext: NSObject, @unchecked Sendable {
       return providerClass.init()
     }
 
-    // [2] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
+    // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
+    for bundle in Bundle.allFrameworks {
+      guard let bundleName = bundle.infoDictionary?["CFBundleName"] as? String else { continue }
+      if let providerClass = NSClassFromString("\(bundleName).\(providerName)") as? ModulesProvider.Type {
+        return providerClass.init()
+      }
+    }
+
+    // [3] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
     return ModulesProvider()
   }
 }

@@ -273,7 +273,9 @@ export const general = [
     makeGroup('Web', [
       makePage('router/web/api-routes.mdx'),
       makePage('router/web/middleware.mdx'),
+      makePage('router/web/server-headers.mdx'),
       makePage('router/web/static-rendering.mdx'),
+      makePage('router/web/server-rendering.mdx'),
       makePage('router/web/async-routes.mdx'),
     ]),
     makeGroup('Reference', [
@@ -345,6 +347,8 @@ export const general = [
       makePage('guides/using-vexo.mdx'),
     ]),
     makeGroup('Authentication', [
+      makePage('guides/using-authentication.mdx'),
+      makePage('guides/using-clerk.mdx'),
       makePage('guides/facebook-authentication.mdx'),
       makePage('guides/google-authentication.mdx'),
     ]),

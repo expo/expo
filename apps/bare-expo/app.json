@@ -65,7 +65,8 @@
         "expo-location",
         {
           "isAndroidBackgroundLocationEnabled": true,
-          "isIosBackgroundLocationEnabled": true
+          "isIosBackgroundLocationEnabled": true,
+          "androidForegroundServiceIcon": "./assets/location_service_icon.png"
         }
       ],
       [

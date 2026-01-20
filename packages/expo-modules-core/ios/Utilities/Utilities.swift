@@ -21,7 +21,7 @@ internal func toNSError(_ error: Error) -> NSError {
     return NSError(domain: "dev.expo.modules", code: 0, userInfo: [
       "name": error.name,
       "code": error.code,
-      "message": error.debugDescription,
+      "message": error.debugDescription
     ])
   }
   return error as NSError

@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createEnvironment = createEnvironment;
+const ImmutableRequest_1 = require("../../ImmutableRequest");
+const matchers_1 = require("../../utils/matchers");
 function initManifestRegExp(manifest) {
     return {
         ...manifest,
@@ -27,12 +29,77 @@ function initManifestRegExp(manifest) {
     };
 }
 function createEnvironment(input) {
+    // Cached manifest and SSR renderer, initialized on first request
+    let cachedManifest = null;
+    let ssrRenderer = null;
+    async function getCachedRoutesManifest() {
+        if (!cachedManifest) {
+            const json = await input.readJson('_expo/routes.json');
+            cachedManifest = initManifestRegExp(json);
+        }
+        return cachedManifest;
+    }
+    async function getServerRenderer() {
+        if (ssrRenderer) {
+            return ssrRenderer;
+        }
+        const manifest = await getCachedRoutesManifest();
+        if (manifest.rendering?.mode !== 'ssr') {
+            return null;
+        }
+        // If `manifest.rendering.mode === 'ssr'`, we always expect the SSR rendering module to be
+        // available
+        const ssrModule = (await input.loadModule(manifest.rendering.file));
+        if (!ssrModule) {
+            throw new Error(`SSR module not found at: ${manifest.rendering.file}`);
+        }
+        const assets = manifest.assets;
+        ssrRenderer = async (request, options) => {
+            const url = new URL(request.url);
+            const location = new URL(url.pathname + url.search, url.origin);
+            return ssrModule.getStaticContent(location, {
+                loader: options?.loader,
+                request,
+                assets,
+            });
+        };
+        return ssrRenderer;
+    }
+    async function executeLoader(request, route) {
+        if (!route.loader) {
+            return undefined;
+        }
+        const loaderModule = (await input.loadModule(route.loader));
+        if (!loaderModule) {
+            throw new Error(`Loader module not found at: ${route.loader}`);
+        }
+        const params = (0, matchers_1.parseParams)(request, route);
+        return loaderModule.loader({ params, request: new ImmutableRequest_1.ImmutableRequest(request) });
+    }
     return {
         async getRoutesManifest() {
-            const json = await input.readJson('_expo/routes.json');
-            return initManifestRegExp(json);
+            return getCachedRoutesManifest();
         },
-        async getHtml(_request, route) {
+        async getHtml(request, route) {
+            // SSR path: Render at runtime if SSR module is available
+            const renderer = await getServerRenderer();
+            if (renderer) {
+                let renderOptions;
+                try {
+                    const result = await executeLoader(request, route);
+                    if (result !== undefined) {
+                        const data = (0, matchers_1.isResponse)(result) ? await result.json() : result;
+                        const normalizedData = data === undefined ? {} : data;
+                        renderOptions = { loader: { data: normalizedData } };
+                    }
+                    return await renderer(request, renderOptions);
+                }
+                catch (error) {
+                    console.error('SSR render error:', error);
+                    throw error;
+                }
+            }
+            // SSG fallback: Read pre-rendered HTML from disk
             let html;
             if ((html = await input.readText(route.page + '.html')) != null) {
                 return html;
@@ -57,6 +124,14 @@ function createEnvironment(input) {
                 return null;
             }
             return mod;
+        },
+        async getLoaderData(request, route) {
+            const result = await executeLoader(request, route);
+            if ((0, matchers_1.isResponse)(result)) {
+                return result;
+            }
+            const data = result === undefined ? {} : result;
+            return Response.json(data);
         },
     };
 }

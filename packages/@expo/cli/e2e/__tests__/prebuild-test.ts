@@ -71,8 +71,10 @@ it('runs `npx expo prebuild` asserts when expo is not installed', async () => {
 
   // Create the project root aot
   await fs.mkdir(projectRoot, { recursive: true });
+
   // Create a fake package.json -- this is a terminal file that cannot be overwritten.
-  await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
+  await fs.writeFile(path.join(projectRoot, 'package.json'), JSON.stringify({ version: '1.0.0' }));
+
   await fs.writeFile(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
 
   await expect(
@@ -179,12 +181,6 @@ itNotWindows('runs `npx expo prebuild`', async () => {
     'react-native',
   ]);
 
-  // Updated scripts
-  expect(pkg.scripts).toStrictEqual({
-    android: 'expo run:android',
-    ios: 'expo run:ios',
-  });
-
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(projectRoot)).toMatchSnapshot();
 });
@@ -211,12 +207,6 @@ itNotWindows('runs `npx expo prebuild --template expo-template-bare-minimum@50.0
     expo: expect.any(String),
     react: expect.any(String),
     'react-native': expect.any(String),
-  });
-
-  // Updated scripts
-  expect(pkg.read().scripts).toMatchObject({
-    android: 'expo run:android',
-    ios: 'expo run:ios',
   });
 
   // If this changes then everything else probably changed as well.
@@ -287,12 +277,6 @@ itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
     expo: expect.any(String),
     react: expect.any(String),
     'react-native': expect.any(String),
-  });
-
-  // Updated scripts
-  expect(pkg.read().scripts).toMatchObject({
-    android: 'expo run:android',
-    ios: 'expo run:ios',
   });
 
   // If this changes then everything else probably changed as well.

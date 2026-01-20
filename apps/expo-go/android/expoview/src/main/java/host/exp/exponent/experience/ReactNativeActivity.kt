@@ -11,14 +11,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Process
-import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.contains
-import com.facebook.infer.annotation.Assertions
 import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext.RCTDeviceEventEmitter
 import com.facebook.react.devsupport.DefaultDevLoadingViewImplementation
@@ -239,23 +237,6 @@ abstract class ReactNativeActivity :
     }
   }
   // endregion
-
-  override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-    devSupportManager?.let { devSupportManager ->
-      if (!isCrashed && devSupportManager.devSupportEnabled) {
-        val didDoubleTapR = currentFocus?.let {
-          Assertions.assertNotNull(doubleTapReloadRecognizer)
-            .didDoubleTapR(keyCode, it)
-        }
-        if (didDoubleTapR == true) {
-          devSupportManager.reloadExpoApp()
-          return true
-        }
-      }
-    }
-
-    return super.onKeyUp(keyCode, event)
-  }
 
   override fun onBackPressed() {
     if (!isCrashed) {

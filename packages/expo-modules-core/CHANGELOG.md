@@ -26,11 +26,15 @@
 - [iOS] Added `appDelegateWillBeginInitialization` function to AppDelegate subscribers. ([#41456](https://github.com/expo/expo/pull/41456) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added `RNHost` to improve RN component layout inside SwiftUI views ([#40938](https://github.com/expo/expo/pull/40938) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `ignoreSafeAreaKeyboardInsets` to `SwiftUIHostingView`. ([#41302](https://github.com/expo/expo/pull/41302) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added support for `ArrayBuffer`s. ([#41548](https://github.com/expo/expo/pull/41548) by [@barthap](https://github.com/barthap))
 - [iOS] JSI runtime is now accessed from public `RCTHostRuntimeDelegate` instead of unofficial `bridge.runtime`. ([#41311](https://github.com/expo/expo/pull/41311) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Introduced global `JavaScriptActor` to isolate code requiring running on the JavaScript thread. ([#41793](https://github.com/expo/expo/pull/41793) by [@tsapeta](https://github.com/tsapeta))
+- [iOs] Add experimental formatters API. ([#42023](https://github.com/expo/expo/pull/42023) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed DSL view props using stale state when updating. ([#41622](https://github.com/expo/expo/pull/41622) by [@kimchi-developer](https://github.com/kimchi-developer))
+- [core] Fixed `useReleasingSharedObject` to defer releasing until after render.
 - [android] Fix source sets for events for functional view definitions. ([#41685](https://github.com/expo/expo/pull/41685) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix throwing `InvalidArgsNumberException` when declaring `AsyncFunction` with optional arguments and `Promise`. ([#41054](https://github.com/expo/expo/pull/41054) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] fix queue assertion crash ([#41296](https://github.com/expo/expo/pull/41296) by [@vonovak](https://github.com/vonovak))
@@ -42,6 +46,8 @@
 - [iOS] Improve RN component layout when hosted in SwiftUI ([#40794](https://github.com/expo/expo/pull/40794) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fixed `null` not being correctly converted to `ValueOrUndefined` in `Record`. ([#41005](https://github.com/expo/expo/pull/41005) by [@lukmccall](https://github.com/lukmccall))
 - Fixed `NativeModule` extending `Record<string, any>`, which made it not type-safe. ([#41320](https://github.com/expo/expo/pull/41320) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix missing headers when using static frameworks ([#41970](https://github.com/expo/expo/pull/41970) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Add shallow equality check before triggering view prop setters to avoid unnecessary calls. ([#39331](https://github.com/expo/expo/pull/39331) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
@@ -58,6 +64,8 @@
 - Added `ShadowNodeProxy.setStyleSize()` for Jetpack Compose integration. ([#41553](https://github.com/expo/expo/pull/41553) by [@kudo](https://github.com/kudo))
 - [iOS] Create wrapper for `RCTHost`. ([#41632](https://github.com/expo/expo/pull/41632) by [@alanjhughes](https://github.com/alanjhughes))
 - Removed unnecessary warning in the legacy `NativeViewManagerAdapter`. ([#41804](https://github.com/expo/expo/pull/41804) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Removed legacy `EXReactNativeEventEmitter` class. ([#41915](https://github.com/expo/expo/pull/41915) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Removed legacy log handler. ([#41916](https://github.com/expo/expo/pull/41916) by [@tsapeta](https://github.com/tsapeta))
 
 ## 3.0.28 - 2025-12-05
 

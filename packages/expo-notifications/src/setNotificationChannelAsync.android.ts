@@ -7,7 +7,7 @@ import {
   AndroidImportance,
 } from './NotificationChannelManager.types';
 
-export default async function setNotificationChannelAsync(
+export async function setNotificationChannelAsync(
   channelId: string,
   channel: NotificationChannelInput
 ): Promise<NotificationChannel | null> {

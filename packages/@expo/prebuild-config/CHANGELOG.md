@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- remove expo-notifications from auto plugins; the `notification` entry in app.json is no longer valid ([#40787](https://github.com/expo/expo/pull/40787) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

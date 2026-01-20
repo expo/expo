@@ -46,7 +46,6 @@ export function formatProperty(property: [string, Property], parent?: string): F
     description: createDescription(property),
     type: _getType(propertyValue),
     example: propertyValue.example,
-    expoKit: propertyValue?.meta?.expoKit,
     bareWorkflow: propertyValue?.meta?.bareWorkflow,
     subproperties,
     parent,

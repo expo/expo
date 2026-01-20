@@ -78,7 +78,7 @@ import { hasValidTriggerObject } from './hasValidTriggerObject';
  * ```
  * @header schedule
  */
-export default async function scheduleNotificationAsync(
+export async function scheduleNotificationAsync(
   request: NotificationRequestInput
 ): Promise<string> {
   if (!NotificationScheduler.scheduleNotificationAsync) {

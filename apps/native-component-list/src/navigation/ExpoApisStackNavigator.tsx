@@ -13,9 +13,11 @@ import { CalendarsNextScreens } from '../screens/CalendarsNextScreen';
 import { CalendarsScreens } from '../screens/CalendarsScreen';
 import { apiScreensToListElements } from '../screens/ComponentListScreen';
 import { ContactsScreens } from '../screens/Contacts/ContactsScreen';
+import { CryptoScreens } from '../screens/Crypto/CryptoScreen';
 import ExpoApis from '../screens/ExpoApisScreen';
 import { MediaLibraryScreens } from '../screens/MediaLibrary@Next/MediaLibraryScreens';
 import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
+import { WorkletsScreens } from '../screens/Worklets/WorkletsScreen';
 import { type ScreenConfig } from '../types/ScreenConfig';
 
 const Stack = createNativeStackNavigator();
@@ -305,7 +307,7 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/CryptoScreen'));
+      return optionalRequire(() => require('../screens/Crypto/CryptoScreen'));
     },
     name: 'Crypto',
   },
@@ -447,6 +449,13 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Worklets/WorkletsScreen'));
+    },
+    name: 'Worklets integration',
+    route: 'worklets',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/WebBrowser/WebBrowserScreen'));
     },
     name: 'WebBrowser',
@@ -474,6 +483,8 @@ export const Screens: ScreenConfig[] = [
   ...ContactsScreens,
   ...CalendarsScreens,
   ...CalendarsNextScreens,
+  ...CryptoScreens,
+  ...WorkletsScreens,
 ];
 
 export const screenApiItems = apiScreensToListElements(ScreensList);

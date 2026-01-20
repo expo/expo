@@ -22,7 +22,7 @@ public final class GlassEffectModule: Module {
 
     Constant("isGlassEffectAPIAvailable") {
       #if compiler(>=6.2)
-      if #available(iOS 26.0, *) {
+      if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {
         guard let glassEffectClass = NSClassFromString("UIGlassEffect") as? NSObject.Type else {
           return false
         }
@@ -44,6 +44,10 @@ public final class GlassEffectModule: Module {
 
       Prop("isInteractive") { (view, interactive: Bool) in
         view.setInteractive(interactive)
+      }
+
+      Prop("colorScheme", .auto) { (view, colorScheme: GlassColorScheme) in
+        view.setColorScheme(colorScheme)
       }
 
       Prop("borderRadius") { (view, border: CGFloat?) in
