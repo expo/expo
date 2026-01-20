@@ -35,7 +35,7 @@ export function mirrorKotlinInlineModulesCommand(cli: commander.CommanderStatic)
         );
       }
 
-      fs.rmSync(kotlinFilesMirrorDirectory, { recursive: true, force: true });
+      await fs.promises.rm(kotlinFilesMirrorDirectory, { recursive: true, force: true });
       await createSymlinksToKotlinFiles(kotlinFilesMirrorDirectory, watchedDirectories);
       await generateInlineModulesListFile(inlineModulesListPath, watchedDirectories);
     }
