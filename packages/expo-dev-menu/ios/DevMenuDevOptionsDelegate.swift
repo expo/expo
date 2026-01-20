@@ -25,10 +25,8 @@ class DevMenuDevOptionsDelegate {
     // No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.
     DevMenuManager.shared.hideMenu()
 
-    DispatchQueue.main.async {
-      let emc = self.bridge?.moduleRegistry.module(forName: "ExpoModulesCore") as? ExpoBridgeModule
-      emc?.appContext?.reloadAppAsync()
-    }
+    let emc = self.bridge?.moduleRegistry.module(forName: "ExpoModulesCore") as? ExpoBridgeModule
+    emc?.appContext?.reloadAppAsync()
   }
 
   internal func toggleElementInsector() {
