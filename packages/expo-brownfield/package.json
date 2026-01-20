@@ -21,6 +21,7 @@
     "lint": "expo-module lint && expo-module lint plugin && expo-module lint cli",
     "lint:fix": "expo-module lint --fix && expo-module lint plugin --fix && expo-module lint cli --fix",
     "test": "expo-module test",
+    "test:e2e-cli": "expo-module test --config e2e-cli/jest.config.js",
     "prepare": "expo-module prepare",
     "prepack": "cp -L plugin/templates/ios/ExpoAppDelegate.swift plugin/templates/ios/ExpoAppDelegate.swift.tmp && mv plugin/templates/ios/ExpoAppDelegate.swift.tmp plugin/templates/ios/ExpoAppDelegate.swift",
     "prepublishOnly": "expo-module prepublishOnly",
