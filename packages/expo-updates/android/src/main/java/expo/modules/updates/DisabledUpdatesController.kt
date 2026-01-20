@@ -19,6 +19,7 @@ import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import expo.modules.updatesinterface.UpdatesInterface
 import expo.modules.updatesinterface.UpdatesStateChangeListener
+import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -202,11 +203,9 @@ class DisabledUpdatesController(
 
   override val updateUrl: Uri? = null
 
-  override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): String {
-    return ""
+  override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): UpdatesStateChangeSubscription {
+    return DisabledUpdatesStateChangeSubscription()
   }
-
-  override fun unsubscribeFromUpdatesStateChanges(subscriptionId: String) {}
 
   companion object {
     private val TAG = DisabledUpdatesController::class.java.simpleName

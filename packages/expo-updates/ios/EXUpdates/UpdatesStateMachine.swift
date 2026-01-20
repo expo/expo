@@ -92,8 +92,6 @@ internal enum UpdatesStateEvent {
       return ["type": "checkCompleteWithUpdate", "manifest": manifest]
     case .downloadCompleteWithUpdate(manifest: let manifest):
       return ["type": "downloadCompleteWithUpdate", "manifest": manifest]
-    case .checkCompleteWithRollback(rollbackCommitTime: _):
-      return ["type": "checkCompleteWithRollback"]
     case .checkError(errorMessage: let errorMessage):
       return ["type": type, "errorMessage": errorMessage]
     case .downloadError(errorMessage: let errorMessage):

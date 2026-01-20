@@ -33,6 +33,7 @@ import expo.modules.updates.statemachine.UpdatesStateMachine
 import expo.modules.updates.statemachine.UpdatesStateValue
 import expo.modules.updatesinterface.UpdatesInterface
 import expo.modules.updatesinterface.UpdatesStateChangeListener
+import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -337,13 +338,13 @@ class EnabledUpdatesController(
   override val embeddedUpdateId: UUID?
     get() = getEmbeddedUpdate()?.id
 
-  override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): String {
+  override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): UpdatesStateChangeSubscription {
     val subscriptionId = UUID.randomUUID().toString()
     stateChangeListenerMap[subscriptionId] = listener
-    return subscriptionId
+    return EnabledUpdatesStateChangeSubscription(subscriptionId = subscriptionId)
   }
 
-  override fun unsubscribeFromUpdatesStateChanges(subscriptionId: String) {
+  fun unsubscribeFromUpdatesStateChanges(subscriptionId: String) {
     if (stateChangeListenerMap.containsKey(subscriptionId)) {
       stateChangeListenerMap.remove(subscriptionId)
     }

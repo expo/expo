@@ -9,7 +9,7 @@ public final class E2ETestModule: Module, UpdatesStateChangeListener {
   private let methodQueue = DispatchQueue(label: "expo.modules.EXUpdatesQueue")
   private var updatesController: (any UpdatesInterface)?
   private var hasListener: Bool = false
-  private var subscriptionId: String? = nil
+  private var subscription: UpdatesStateChangeSubscription?
 
   public func updatesStateDidChange(_ event: [String : Any]) {
     if (hasListener) {
@@ -29,7 +29,7 @@ public final class E2ETestModule: Module, UpdatesStateChangeListener {
     OnCreate {
       if let controller = UpdatesControllerRegistry.sharedInstance.controller {
         updatesController = controller
-        subscriptionId = controller.subscribeToUpdatesStateChanges(self)
+        subscription = controller.subscribeToUpdatesStateChanges(self)
       }
     }
 
@@ -42,11 +42,9 @@ public final class E2ETestModule: Module, UpdatesStateChangeListener {
     }
 
     OnDestroy {
-      if let subscriptionId,
-         let updatesController {
-        updatesController.unsubscribeFromUpdatesStateChanges(subscriptionId)
-      }
+      subscription?.remove()
       updatesController = nil
+      subscription = nil
     }
 
     Function("getLaunchedUpdateId") {
