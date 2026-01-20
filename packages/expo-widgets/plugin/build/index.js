@@ -27,10 +27,7 @@ const withWidgets = (config, props) => {
         groupIdentifier = `group.${config.ios.bundleIdentifier}`;
         console.log(`No groupIdentifier provided, fallback to: ${groupIdentifier}`);
     }
-    let widgets = props.widgets;
-    if (!widgets) {
-        widgets = [];
-    }
+    const widgets = props.widgets ?? [];
     const enablePushNotifications = props.enablePushNotifications ?? false;
     const frequentUpdates = props.frequentUpdates ?? false;
     let sharedFiles = [];

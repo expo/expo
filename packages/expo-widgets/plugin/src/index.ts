@@ -43,11 +43,7 @@ const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps> = (config, props) 
     console.log(`No groupIdentifier provided, fallback to: ${groupIdentifier}`);
   }
 
-  let widgets = props.widgets;
-  if (!widgets) {
-    widgets = [];
-  }
-
+  const widgets = props.widgets ?? [];
   const enablePushNotifications = props.enablePushNotifications ?? false;
   const frequentUpdates = props.frequentUpdates ?? false;
 
