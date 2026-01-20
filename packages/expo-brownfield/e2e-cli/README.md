@@ -12,7 +12,7 @@ Note: The tests use local versions of Expo CLI, Create Expo and expo-default-tem
 
 ## CI/CD
 
-The tests should be automatically executed anytime changes are made to `packages/expo-brownfield/cli` through [test-suite-brownfield-cli.yml](/.github/workflows/test-suite-brownfield-cli) workflow
+The tests should be automatically executed anytime changes are made to `packages/expo-brownfield/cli` through [brownfield.yml](/.github/workflows/brownfield.yml) workflow
 
 ## Running manually
 
