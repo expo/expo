@@ -556,7 +556,7 @@ it('push should also add anchor routes', () => {
                   {
                     key: expect.any(String),
                     name: 'orange',
-                    params: {},
+                    params: { initial: false },
                     path: undefined,
                   },
                 ],

@@ -162,7 +162,7 @@ it('push should include (group)/index as an anchor route when using withAnchor',
                   {
                     key: expect.any(String),
                     name: 'orange',
-                    params: {},
+                    params: { initial: false },
                     path: undefined,
                   },
                 ],

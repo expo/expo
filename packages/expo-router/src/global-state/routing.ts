@@ -296,7 +296,7 @@ function getNavigateAction(
     type = 'JUMP_TO';
   }
 
-  if (withAnchor !== undefined) {
+  if (withAnchor) {
     if (rootPayload.params.initial) {
       if (process.env.NODE_ENV !== 'production') {
         console.warn(`The parameter 'initial' is a reserved parameter name in React Navigation`);
@@ -311,7 +311,12 @@ function getNavigateAction(
      *   True: You want the initialRouteName to load.
      *   False: You do not want the initialRouteName to load.
      */
-    rootPayload.params.initial = !withAnchor;
+    // Set initial on root and all nested params so anchors are loaded at every level
+    let currentParams = rootPayload.params;
+    while (currentParams) {
+      currentParams.initial = !withAnchor;
+      currentParams = currentParams.params;
+    }
   }
 
   const expoParams: InternalExpoRouterParams = isPreviewNavigation
