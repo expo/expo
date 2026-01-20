@@ -261,7 +261,10 @@ class DevelopmentServerService: ObservableObject {
         merged[key] = server
       }
     }
-    developmentServers = merged.values.sorted { $0.url < $1.url }
+    let newServers = merged.values.sorted { $0.url < $1.url }
+    if newServers != developmentServers {
+      developmentServers = newServers
+    }
   }
 
   private func dedupeKey(for server: DevelopmentServer) -> String {
