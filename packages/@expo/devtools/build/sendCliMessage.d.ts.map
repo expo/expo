@@ -1,0 +1,1 @@
+{"version":3,"file":"sendCliMessage.d.ts","sourceRoot":"","sources":["../src/sendCliMessage.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,uBAAuB,EAAE,MAAM,yBAAyB,CAAC;AAOlE;;;;;;;GAOG;AACH,wBAAsB,mBAAmB,CACvC,OAAO,EAAE,MAAM,EACf,UAAU,EAAE,MAAM,EAClB,IAAI,EAAE,uBAAuB,EAAE,EAC/B,SAAS,SAAqB,GAC7B,OAAO,CAAC,MAAM,CAAC,MAAM,EAAE,MAAM,GAAG,IAAI,CAAC,CAAC,CA+GxC"}
