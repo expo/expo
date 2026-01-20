@@ -8,7 +8,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import expo.modules.kotlin.AppContext
@@ -31,10 +30,9 @@ data class TextInputProps(
   val keyboardType: MutableState<String> = mutableStateOf("default"),
   val autocorrection: MutableState<Boolean> = mutableStateOf(true),
   val autoCapitalize: MutableState<String> = mutableStateOf("none"),
-  val modifiers: MutableState<List<ModifierConfig>> = mutableStateOf(emptyList())
+  val modifiers: MutableState<List<ModifierConfig>> = mutableStateOf(emptyList()),
   val variant: MutableState<TextInputViewVariant> = mutableStateOf(TextInputViewVariant.FILLED),
   val label: MutableState<String> = mutableStateOf(""),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 private fun String.keyboardType(): KeyboardType {
