@@ -30,38 +30,40 @@ export async function getAppRoot(): Promise<string> {
 
 const nativeExtensions = ['.kt', '.swift'];
 
-function isValidLocalModuleFileName(fileName: string): boolean {
-  let numberOfDots = 0;
-  for (const character of fileName) {
-    if (character === '.') {
-      numberOfDots += 1;
-    }
+function isValidInlineModuleFileName(fileName: string): boolean {
+  const ext = path.extname(fileName);
+  if (!nativeExtensions.includes(ext)) {
+    return false;
   }
 
-  let hasNativeExtension: boolean = false;
-  for (const extension of nativeExtensions) {
-    if (fileName.endsWith(extension)) {
-      hasNativeExtension = true;
-      break;
-    }
-  }
-
-  return hasNativeExtension && numberOfDots === 1;
+  const baseName = path.basename(fileName, ext);
+  return !baseName.includes('.');
 }
 
 function trimExtension(fileName: string) {
   return fileName.substring(0, fileName.lastIndexOf('.'));
 }
 
-function getKotlinFileNameWithItsPackage(absoluteFilePath: string): string {
-  const pacakgeRegex = /^package\s+/;
-  const lines = fs.readFileSync(absoluteFilePath).toString().split('\n');
-  const packageLine = lines.findIndex((line) => pacakgeRegex.test(line));
-  if (packageLine < 0) {
-    return '';
+async function getKotlinFileNameWithItsPackage(absoluteFilePath: string): Promise<string> {
+  const HEADER_SIZE = 512;
+  const buffer = Buffer.alloc(HEADER_SIZE);
+
+  const fileHandle = await fs.promises.open(absoluteFilePath, 'r');
+  try {
+    const { bytesRead } = await fileHandle.read(buffer, 0, HEADER_SIZE, 0);
+    const header = buffer.toString('utf8', 0, bytesRead);
+
+    // We want to find `package some.package` and capture the `some.package` from it.
+    const pacakgeRegex = /^package\s+([\w.]+)/m;
+    const packageMatch = header.match(pacakgeRegex);
+    if (!packageMatch) {
+      return '';
+    }
+
+    return `${packageMatch[1]}.${trimExtension(path.basename(absoluteFilePath))}`;
+  } finally {
+    await fileHandle.close();
   }
-  const packageName = lines[packageLine].substring('package '.length);
-  return `${packageName}.${trimExtension(path.basename(absoluteFilePath))}`;
 }
 
 function getSwiftModuleClassName(absoluteFilePath: string): string {
@@ -79,18 +81,18 @@ export async function getMirrorStateObject(
   };
 
   const recursivelyScanDirectory = async (absoluteDirPath: string, watchedDirRoot: string) => {
-    const dir = fs.opendirSync(absoluteDirPath);
+    const dir = await fs.promises.opendir(absoluteDirPath);
     for await (const dirent of dir) {
       const absoluteDirentPath = path.resolve(absoluteDirPath, dirent.name);
       if (dirent.isDirectory()) {
         await recursivelyScanDirectory(absoluteDirentPath, watchedDirRoot);
       }
-      if (!dirent.isFile() || !isValidLocalModuleFileName(dirent.name)) {
+      if (!dirent.isFile() || !isValidInlineModuleFileName(dirent.name)) {
         continue;
       }
 
       if (/\.(kt)$/.test(dirent.name)) {
-        const kotlinFileWithPackage = getKotlinFileNameWithItsPackage(absoluteDirentPath);
+        const kotlinFileWithPackage = await getKotlinFileNameWithItsPackage(absoluteDirentPath);
         inlineModulesMirror.kotlinClasses.push(kotlinFileWithPackage);
         inlineModulesMirror.files.push({ filePath: absoluteDirentPath, watchedDirRoot });
       } else if (/\.(swift)$/.test(dirent.name)) {

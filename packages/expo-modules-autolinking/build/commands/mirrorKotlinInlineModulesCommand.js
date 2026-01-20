@@ -21,7 +21,7 @@ function mirrorKotlinInlineModulesCommand(cli) {
         if (!path_1.default.isAbsolute(kotlinFilesMirrorDirectory) || !path_1.default.isAbsolute(inlineModulesListPath)) {
             throw new Error('Need to provide the absolute path to both the local modules src mirror and generated mirror directory!');
         }
-        fs_1.default.rmSync(kotlinFilesMirrorDirectory, { recursive: true, force: true });
+        await fs_1.default.promises.rm(kotlinFilesMirrorDirectory, { recursive: true, force: true });
         await (0, androidInlineModules_1.createSymlinksToKotlinFiles)(kotlinFilesMirrorDirectory, watchedDirectories);
         await (0, androidInlineModules_1.generateInlineModulesListFile)(inlineModulesListPath, watchedDirectories);
     });
