@@ -4,16 +4,12 @@ import SwiftUI
 import ExpoModulesCore
 import ExpoUI
 
-public final class TestGroupViewProps: UIBaseViewProps {}
+final class TestGroupViewProps: UIBaseViewProps {}
 
-public struct TestGroupView: ExpoSwiftUI.View {
+struct TestGroupView: ExpoSwiftUI.View {
   @ObservedObject public var props: TestGroupViewProps
 
-  public init(props: TestGroupViewProps) {
-    self.props = props
-  }
-
-  public var body: some View {
+  var body: some View {
     Group {
       Children()
     }
