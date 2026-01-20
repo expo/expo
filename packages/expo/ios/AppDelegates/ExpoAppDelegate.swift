@@ -1,7 +1,5 @@
-import Dispatch
 import Foundation
 import ExpoModulesCore
-import ReactAppDependencyProvider
 
 /**
  Allows classes extending `ExpoAppDelegateSubscriber` to hook into project's app delegate
@@ -109,7 +107,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
 #endif
 
   // MARK: - Responding to Environment Changes
-  
+
 #if os(iOS) || os(tvOS)
 
   open func applicationDidReceiveMemoryWarning(_ application: UIApplication) {

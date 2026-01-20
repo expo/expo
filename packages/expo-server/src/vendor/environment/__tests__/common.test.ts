@@ -1,3 +1,4 @@
+import { ImmutableRequest } from '../../../ImmutableRequest';
 import type {
   AssetInfo,
   MiddlewareInfo,
@@ -103,7 +104,7 @@ describe('getHtml', () => {
     expect(input.loadModule).not.toHaveBeenCalled();
   });
 
-  it('returns null when static file not found', async () => {
+  it('returns `null` when static file not found', async () => {
     const route = {
       file: './missing.tsx',
       page: '/missing',
@@ -352,7 +353,7 @@ describe('getHtml', () => {
     expect(input.loadModule).toHaveBeenCalledWith('_expo/loaders/index.js');
     expect(loaderModule.loader).toHaveBeenCalledWith({
       params: {},
-      request: expect.any(Request),
+      request: expect.any(ImmutableRequest),
     });
     expect(mockSSRModule.getStaticContent).toHaveBeenCalledWith(
       expect.any(URL),
@@ -409,7 +410,7 @@ describe('getMiddleware', () => {
     expect(middleware).toBe(middlewareModule);
   });
 
-  it('returns null when default export is not a function', async () => {
+  it('returns `null` when default export is not a function', async () => {
     const middlewareModule = { default: 'not a function' };
     const input = createMockInput({
       modules: {
@@ -424,7 +425,7 @@ describe('getMiddleware', () => {
     expect(middleware).toBeNull();
   });
 
-  it('returns null when module has no default export', async () => {
+  it('returns `null` when module has no default export', async () => {
     const middlewareModule = { named: jest.fn() };
     const input = createMockInput({
       modules: {
@@ -441,7 +442,7 @@ describe('getMiddleware', () => {
 });
 
 describe('getLoaderData', () => {
-  it('returns loader data when route has loader', async () => {
+  it('returns `Response` with loader data when route has loader', async () => {
     const loaderData = { userId: 123 };
     const loaderModule = { loader: jest.fn().mockResolvedValue(loaderData) };
     const input = createMockInput({
@@ -459,14 +460,15 @@ describe('getLoaderData', () => {
       })
     );
 
-    expect(result).toEqual({ data: loaderData });
+    expect(result).toBeInstanceOf(Response);
+    expect(await result.json()).toEqual(loaderData);
     expect(loaderModule.loader).toHaveBeenCalledWith({
       params: {},
-      request: expect.any(Request),
+      request: expect.any(ImmutableRequest),
     });
   });
 
-  it('returns `undefined` when route has no loader', async () => {
+  it('returns `Response` with `{}` body when route has no loader', async () => {
     const input = createMockInput();
     const env = createEnvironment(input);
 
@@ -479,27 +481,25 @@ describe('getLoaderData', () => {
       })
     );
 
-    expect(result).toBeUndefined();
+    expect(result).toBeInstanceOf(Response);
+    expect(await result.json()).toEqual({});
   });
 
-  it('returns `undefined` when loader module has no loader function', async () => {
-    const loaderModule = { someOtherExport: 'value' };
-    const input = createMockInput({
-      modules: { '_expo/loaders/broken.js': loaderModule },
-    });
+  it('throws when loader module fails to load', async () => {
+    const input = createMockInput();
     const env = createEnvironment(input);
 
-    const result = await env.getLoaderData(
-      new Request('http://localhost/broken'),
-      createMockRoute({
-        file: './broken.tsx',
-        page: '/broken',
-        namedRegex: new RegExp('^/broken(?:/)?$'),
-        loader: '_expo/loaders/broken.js',
-      })
-    );
-
-    expect(result).toBeUndefined();
+    await expect(
+      env.getLoaderData(
+        new Request('http://localhost/broken'),
+        createMockRoute({
+          file: './broken.tsx',
+          page: '/broken',
+          namedRegex: new RegExp('^/broken(?:/)?$'),
+          loader: '_expo/loaders/broken.js',
+        })
+      )
+    ).rejects.toThrow(/Loader module not found/);
   });
 
   it('parses params correctly for dynamic routes', async () => {
@@ -522,7 +522,7 @@ describe('getLoaderData', () => {
 
     expect(loaderModule.loader).toHaveBeenCalledWith({
       params: { id: '123' },
-      request: expect.any(Request),
+      request: expect.any(ImmutableRequest),
     });
   });
 
@@ -543,7 +543,8 @@ describe('getLoaderData', () => {
       })
     );
 
-    expect(result).toEqual({ data: {} });
+    expect(result).toBeInstanceOf(Response);
+    expect(await result.json()).toEqual({});
   });
 
   it('passes through `null` loader result as `null`', async () => {
@@ -563,7 +564,34 @@ describe('getLoaderData', () => {
       })
     );
 
-    expect(result).toEqual({ data: null });
+    expect(result).toBeInstanceOf(Response);
+    expect(await result.json()).toBeNull();
+  });
+
+  it('returns `Response` directly when loader returns `Response`', async () => {
+    const responseData = { test: 'response' };
+    const loaderResponse = Response.json(responseData, {
+      headers: { 'X-Custom': 'value' },
+    });
+    const loaderModule = { loader: jest.fn().mockResolvedValue(loaderResponse) };
+    const input = createMockInput({
+      modules: { '_expo/loaders/response-route.js': loaderModule },
+    });
+    const env = createEnvironment(input);
+
+    const result = await env.getLoaderData(
+      new Request('http://localhost/response-route'),
+      createMockRoute({
+        file: './response-route.tsx',
+        page: '/response-route',
+        namedRegex: new RegExp('^/response-route(?:/)?$'),
+        loader: '_expo/loaders/response-route.js',
+      })
+    );
+
+    expect(result).toBeInstanceOf(Response);
+    expect(result.headers.get('X-Custom')).toBe('value');
+    expect(await result.json()).toEqual(responseData);
   });
 });
 

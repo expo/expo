@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createEnvironment = createEnvironment;
+const ImmutableRequest_1 = require("../../ImmutableRequest");
 const matchers_1 = require("../../utils/matchers");
 function initManifestRegExp(manifest) {
     return {
@@ -69,12 +70,11 @@ function createEnvironment(input) {
             return undefined;
         }
         const loaderModule = (await input.loadModule(route.loader));
-        if (!loaderModule?.loader) {
-            return undefined;
+        if (!loaderModule) {
+            throw new Error(`Loader module not found at: ${route.loader}`);
         }
         const params = (0, matchers_1.parseParams)(request, route);
-        const data = await loaderModule.loader({ params, request });
-        return { data: data === undefined ? {} : data };
+        return loaderModule.loader({ params, request: new ImmutableRequest_1.ImmutableRequest(request) });
     }
     return {
         async getRoutesManifest() {
@@ -86,9 +86,11 @@ function createEnvironment(input) {
             if (renderer) {
                 let renderOptions;
                 try {
-                    const loaderResult = await executeLoader(request, route);
-                    if (loaderResult) {
-                        renderOptions = { loader: { data: loaderResult.data } };
+                    const result = await executeLoader(request, route);
+                    if (result !== undefined) {
+                        const data = (0, matchers_1.isResponse)(result) ? await result.json() : result;
+                        const normalizedData = data === undefined ? {} : data;
+                        renderOptions = { loader: { data: normalizedData } };
                     }
                     return await renderer(request, renderOptions);
                 }
@@ -124,7 +126,12 @@ function createEnvironment(input) {
             return mod;
         },
         async getLoaderData(request, route) {
-            return executeLoader(request, route);
+            const result = await executeLoader(request, route);
+            if ((0, matchers_1.isResponse)(result)) {
+                return result;
+            }
+            const data = result === undefined ? {} : result;
+            return Response.json(data);
         },
     };
 }

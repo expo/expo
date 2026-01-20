@@ -15,7 +15,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "ajv": "^8.11.0",
+    "@expo/schema-utils": "^0.1.7",
     "expo-dev-menu": "7.0.11",
     "expo-manifests": "~1.0.8"
   },

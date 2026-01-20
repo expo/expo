@@ -224,20 +224,27 @@ function convertIconSrcToIconOption(
         : { defaultIcon: icon.src };
 
     const options: Pick<NativeTabOptions, 'icon' | 'selectedIcon'> = {};
-    options.icon = convertSrcOrComponentToSrc(defaultIcon);
-    options.selectedIcon = convertSrcOrComponentToSrc(selected);
+    options.icon = convertSrcOrComponentToSrc(defaultIcon, { renderingMode: icon.renderingMode });
+    options.selectedIcon = convertSrcOrComponentToSrc(selected, {
+      renderingMode: icon.renderingMode,
+    });
     return options;
   }
 
   return undefined;
 }
 
-function convertSrcOrComponentToSrc(src: ImageSourcePropType | ReactElement | undefined) {
+function convertSrcOrComponentToSrc(
+  src: ImageSourcePropType | ReactElement | undefined,
+  options: {
+    renderingMode: 'template' | 'original' | undefined;
+  }
+) {
   if (src) {
     if (isValidElement(src)) {
       return convertComponentSrcToImageSource(src);
     } else {
-      return { src };
+      return { src, renderingMode: options.renderingMode };
     }
   }
   return undefined;

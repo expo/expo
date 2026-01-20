@@ -11,6 +11,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const androidQueryUtils_1 = require("./androidQueryUtils");
 const fileContentsUtils_1 = require("./fileContentsUtils");
+const pluginConfig_1 = require("./pluginConfig");
 const { createBuildGradlePropsConfigPlugin } = config_plugins_1.AndroidConfig.BuildProperties;
 exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     {
@@ -67,7 +68,7 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     },
     {
         propName: 'reactNativeReleaseLevel',
-        propValueGetter: (config) => config.android?.reactNativeReleaseLevel,
+        propValueGetter: (config) => (0, pluginConfig_1.resolveConfigValue)(config, 'android', 'reactNativeReleaseLevel'),
     },
     {
         propName: 'expo.useLegacyPackaging',
@@ -103,12 +104,7 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     },
     {
         propName: 'hermesV1Enabled',
-        propValueGetter: (config) => {
-            if (config.android?.useHermesV1 && config.android?.buildReactNativeFromSource !== true) {
-                config_plugins_1.WarningAggregator.addWarningAndroid('withAndroidBuildProperties', 'Hermes V1 requires building React Native from source. Set `buildReactNativeFromSource` to `true` to enable it.');
-            }
-            return config.android?.useHermesV1?.toString();
-        },
+        propValueGetter: (config) => (0, pluginConfig_1.resolveConfigValue)(config, 'android', 'useHermesV1')?.toString(),
     },
 ], 'withAndroidBuildProperties');
 /**
@@ -262,9 +258,12 @@ const withAndroidDayNightTheme = (config, props) => {
 exports.withAndroidDayNightTheme = withAndroidDayNightTheme;
 const withAndroidSettingsGradle = (config, props) => {
     return (0, config_plugins_1.withSettingsGradle)(config, (config) => {
+        // Resolution order: android.buildReactNativeFromSource > top-level > deprecated android.buildFromSource
+        const buildFromSource = (0, pluginConfig_1.resolveConfigValue)(props, 'android', 'buildReactNativeFromSource') ??
+            props.android?.buildFromSource; // Deprecated fallback (last resort)
         config.modResults.contents = updateAndroidSettingsGradle({
             contents: config.modResults.contents,
-            buildFromSource: props.android?.buildReactNativeFromSource ?? props.android?.buildFromSource,
+            buildFromSource,
         });
         return config;
     });

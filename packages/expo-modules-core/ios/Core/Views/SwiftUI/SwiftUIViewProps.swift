@@ -19,6 +19,11 @@ extension ExpoSwiftUI {
   open class ViewProps: ObservableObject, Record {
     public required init() {}
 
+    public required init(rawProps: [String: Any], context: AppContext) throws {
+      appContext = context
+      try updateRawProps(rawProps, appContext: context)
+    }
+
     /**
      An array of views passed by React as children.
      */

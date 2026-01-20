@@ -8,10 +8,8 @@ platforms: ['ios', 'tvos']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A list component for displaying scrollable lists with support for selection, editing, and reordering.
+Expo UI List matches the official SwiftUI [List API](https://developer.apple.com/documentation/swiftui/list) and supports styling via the [`listStyle`](modifiers/#liststylestyle) modifier, various row/section modifiers, as well as selection, reordering, and editing capabilities.
 
 ## Installation
 
@@ -19,40 +17,259 @@ A list component for displaying scrollable lists with support for selection, edi
 
 ## Usage
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="List component on iOS."
-      src="/static/images/expo-ui/list/ios.png"
-      className="max-w-[380px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { Host, List } from '@expo/ui/swift-ui';
+### Basic list
 
+```tsx BasicListExample.tsx
+import { Host, List, Text, Section } from '@expo/ui/swift-ui';
+
+export default function BasicListExample() {
+  return (
     <Host style={{ flex: 1 }}>
-      <List
-        scrollEnabled={false}
-        editModeEnabled={editModeEnabled}
-        onSelectionChange={(items) => alert(`indexes of selected items: ${items.join(', ')}`)}
-        moveEnabled={moveEnabled}
-        onMoveItem={(from, to) => alert(`moved item at index ${from} to index ${to}`)}
-        onDeleteItem={(item) => alert(`deleted item at index: ${item}`)}
-        listStyle='automatic'
-        deleteEnabled={deleteEnabled}
-        selectEnabled={selectEnabled}>
-        {data.map((item, index) => (
-          <LabelPrimitive key={index} title={item.text} systemImage={item.systemImage} color={color} />
-        ))}
+      <List>
+        <Section title="Fruits">
+          <Text>Apple</Text>
+          <Text>Banana</Text>
+          <Text>Orange</Text>
+        </Section>
+        <Section title="Vegetables">
+          <Text>Carrot</Text>
+          <Text>Broccoli</Text>
+          <Text>Spinach</Text>
+        </Section>
       </List>
     </Host>
-    ```
+  );
+}
+```
 
-  </Tab>
-</Tabs>
+### List with labels and icons
 
-> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/list) for more information.
+```tsx ListWithLabelsExample.tsx
+import { Host, List, Label, Section } from '@expo/ui/swift-ui';
+
+export default function ListWithLabelsExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List>
+        <Section title="Settings">
+          <Label title="Wi-Fi" systemImage="wifi" />
+          <Label title="Bluetooth" systemImage="antenna.radiowaves.left.and.right" />
+          <Label title="Cellular" systemImage="antenna.radiowaves.left.and.right.circle" />
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+### List styles
+
+Use the [`listStyle`](modifiers/#liststylestyle) modifier to change the list's appearance.
+
+> **Note:** The `inset`, `insetGrouped`, and `sidebar` styles are not available on tvOS.
+
+```tsx ListStylesExample.tsx
+import { useState } from 'react';
+import { Host, List, Text, Section, Picker } from '@expo/ui/swift-ui';
+import { listStyle, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+
+const styles = ['automatic', 'plain', 'inset', 'insetGrouped', 'grouped', 'sidebar'] as const;
+
+export default function ListStylesExample() {
+  const [styleIndex, setStyleIndex] = useState(0);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <List modifiers={[listStyle(styles[styleIndex])]}>
+        <Section title="Style Picker">
+          <Picker
+            label="List Style"
+            selection={styleIndex}
+            onSelectionChange={setStyleIndex}
+            modifiers={[pickerStyle('menu')]}>
+            {styles.map((style, index) => (
+              <Text key={style} modifiers={[tag(index)]}>
+                {style}
+              </Text>
+            ))}
+          </Picker>
+        </Section>
+        <Section title="Sample Items">
+          <Text>Item 1</Text>
+          <Text>Item 2</Text>
+          <Text>Item 3</Text>
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+### Selection and edit mode
+
+Enable selection, deletion, and reordering of list items using the [`List.ForEach`](#listforeach) compound component with `onDelete` and `onMove` props.
+
+- Use the [`environment`](modifiers/#environment) modifier to enable edit mode
+- Use the [`tag`](modifiers/#tagtag) modifier to identify items
+- Use the [`selection`](#selection) prop to control selected items
+- Use [`moveDisabled`](modifiers/#movedisableddisabled) and [`deleteDisabled`](modifiers/#deletedisableddisabled) modifiers to disable these actions on individual items
+
+```tsx EditableListExample.tsx
+import { useState } from 'react';
+import { Host, List, Label, Section, Button, Toggle } from '@expo/ui/swift-ui';
+import { environment, tag } from '@expo/ui/swift-ui/modifiers';
+
+type Task = { id: string; title: string };
+
+const INITIAL_TASKS: Task[] = [
+  { id: '1', title: 'Task 1' },
+  { id: '2', title: 'Task 2' },
+  { id: '3', title: 'Task 3' },
+  { id: '4', title: 'Task 4' },
+];
+
+export default function EditableListExample() {
+  const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [editMode, setEditMode] = useState(false);
+
+  const handleDelete = (indices: number[]) => {
+    setTasks(prev => prev.filter((_, i) => !indices.includes(i)));
+  };
+
+  const handleMove = (sourceIndices: number[], destination: number) => {
+    setTasks(prev => {
+      const newTasks = [...prev];
+      const [removed] = newTasks.splice(sourceIndices[0], 1);
+      const adjustedDest = sourceIndices[0] < destination ? destination - 1 : destination;
+      newTasks.splice(adjustedDest, 0, removed);
+      return newTasks;
+    });
+  };
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <List
+        selection={selectedIds}
+        onSelectionChange={ids => setSelectedIds(ids.map(String))}
+        modifiers={[environment('editMode', editMode ? 'active' : 'inactive')]}>
+        <Section title="Settings">
+          <Toggle label="Edit Mode" isOn={editMode} onIsOnChange={setEditMode} />
+        </Section>
+        <Section title="Tasks">
+          <List.ForEach onDelete={handleDelete} onMove={handleMove}>
+            {tasks.map(task => (
+              <Label key={task.id} title={task.title} modifiers={[tag(task.id)]} />
+            ))}
+          </List.ForEach>
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+### Pull to refresh
+
+Use the [`refreshable`](modifiers/#refreshablehandler) modifier to enable pull-to-refresh functionality.
+
+```tsx RefreshableListExample.tsx
+import { useState } from 'react';
+import { Host, List, Text, Section } from '@expo/ui/swift-ui';
+import { refreshable } from '@expo/ui/swift-ui/modifiers';
+
+export default function RefreshableListExample() {
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+
+  const handleRefresh = async () => {
+    // Simulate async data fetching
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setLastRefresh(new Date());
+  };
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <List modifiers={[refreshable(handleRefresh)]}>
+        <Section title="Data">
+          <Text>Pull down to refresh</Text>
+          {lastRefresh && <Text>Last refresh: {lastRefresh.toLocaleTimeString()}</Text>}
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+### Row styling
+
+Use [`listRowBackground`](modifiers/#listrowbackgroundcolor), [`listRowSeparator`](modifiers/#listrowseparatorvisibility-edges), and [`listRowInsets`](modifiers/#listrowinsetsparams) modifiers to customize individual rows.
+
+```tsx RowStylingExample.tsx
+import { Host, List, Text, Section } from '@expo/ui/swift-ui';
+import { listRowBackground, listRowSeparator, listRowInsets } from '@expo/ui/swift-ui/modifiers';
+
+export default function RowStylingExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List>
+        <Section title="Styled Rows">
+          <Text modifiers={[listRowBackground('blue')]}>Blue background</Text>
+          <Text modifiers={[listRowSeparator('hidden')]}>Hidden separator</Text>
+          <Text modifiers={[listRowInsets({ leading: 40 })]}>Extra leading inset</Text>
+          <Text modifiers={[listRowInsets({ leading: 0, trailing: 0 })]}>No horizontal insets</Text>
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+### Keyboard dismiss behavior
+
+Use the [`scrollDismissesKeyboard`](modifiers/#scrolldismisseskeyboardmode) modifier to control how the keyboard is dismissed when scrolling.
+
+```tsx KeyboardDismissExample.tsx
+import { Host, List, Section, TextField } from '@expo/ui/swift-ui';
+import { scrollDismissesKeyboard } from '@expo/ui/swift-ui/modifiers';
+
+export default function KeyboardDismissExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List modifiers={[scrollDismissesKeyboard('interactively')]}>
+        <Section title="Form">
+          <TextField placeholder="Name" />
+          <TextField placeholder="Email" />
+          <TextField placeholder="Phone" />
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
+
+### Header prominence
+
+Use the [`headerProminence`](modifiers/#headerprominenceprominence) modifier to adjust the visual prominence of section headers.
+
+```tsx HeaderProminenceExample.tsx
+import { Host, List, Text, Section } from '@expo/ui/swift-ui';
+import { headerProminence } from '@expo/ui/swift-ui/modifiers';
+
+export default function HeaderProminenceExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List modifiers={[headerProminence('increased')]}>
+        <Section title="Important Section">
+          <Text>This section has increased header prominence</Text>
+        </Section>
+        <Section title="Another Section">
+          <Text>Headers are more prominent</Text>
+        </Section>
+      </List>
+    </Host>
+  );
+}
+```
 
 ## API
 

@@ -119,11 +119,11 @@ class HomeViewModel: ObservableObject {
   func refreshData() async {
     guard let account = selectedAccount else { return }
 
-    async let task = dataService.fetchProjectsAndData(accountName: account.name)
-    serverService.discoverDevelopmentServers()
-    serverService.refreshRemoteSessions()
+    async let fetchTask: Void = dataService.fetchProjectsAndData(accountName: account.name)
+    async let discoveryTask: Void = serverService.discoverDevelopmentServers()
+    async let remoteTask: Void = serverService.refreshRemoteSessions()
 
-    await task
+    _ = await (fetchTask, discoveryTask, remoteTask)
   }
 
   func addToRecentlyOpened(url: String, name: String, iconUrl: String? = nil) {

@@ -1,8 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAppViewController.h"
-#import "EXErrorRecoveryManager.h"
 #import "EXKernel.h"
+
+#import "Expo_Go-Swift.h"
 #import "EXKernelAppRecord.h"
 #import "EXReactAppManager.h"
 #import "EXReactAppExceptionHandler.h"
