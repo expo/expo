@@ -12,6 +12,7 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
       updateMenu()
     }
   }
+  @NativeActionProp(updateAction: true, updateMenu: true) var imageRenderingMode: ImageRenderingMode?
   @NativeActionProp(updateAction: true, updateMenu: true) var destructive: Bool?
   @NativeActionProp(updateAction: true, updateMenu: true) var disabled: Bool = false
 
@@ -57,7 +58,8 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
 
   private var image: UIImage? {
     if let customImage = customImage {
-      return customImage.ref
+      let renderingMode: UIImage.RenderingMode = imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
+      return customImage.ref.withRenderingMode(renderingMode)
     }
     if let icon = icon {
       return UIImage(systemName: icon)

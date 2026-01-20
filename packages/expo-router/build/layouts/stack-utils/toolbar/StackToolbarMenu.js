@@ -81,7 +81,7 @@ const StackToolbarMenu = ({ children, ...props }) => {
         }
     }
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    return (<bottom_toolbar_native_elements_1.NativeToolbarMenu {...props} image={props.image} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
+    return (<bottom_toolbar_native_elements_1.NativeToolbarMenu {...props} image={props.image} imageRenderingMode={props.iconRenderingMode} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
 };
 exports.StackToolbarMenu = StackToolbarMenu;
 function convertStackToolbarMenuPropsToRNHeaderItem(props) {
@@ -184,7 +184,7 @@ const StackToolbarMenuAction = (props) => {
     if (placement === 'bottom') {
         // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
         const icon = typeof props.icon === 'string' ? props.icon : undefined;
-        return <bottom_toolbar_native_elements_1.NativeToolbarMenuAction {...props} icon={icon} image={props.image}/>;
+        return (<bottom_toolbar_native_elements_1.NativeToolbarMenuAction {...props} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
     }
     return <menu_1.MenuAction {...props}/>;
 };

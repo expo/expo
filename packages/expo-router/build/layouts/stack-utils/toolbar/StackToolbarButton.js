@@ -47,9 +47,10 @@ const shared_1 = require("../shared");
 const StackToolbarButton = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
     if (placement === 'bottom') {
+        const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props);
         // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-        const icon = typeof props.icon === 'string' ? props.icon : undefined;
-        return <bottom_toolbar_native_elements_1.NativeToolbarButton {...props} icon={icon} image={props.image}/>;
+        const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
+        return (<bottom_toolbar_native_elements_1.NativeToolbarButton {...sharedProps} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
     }
     return null;
 };
