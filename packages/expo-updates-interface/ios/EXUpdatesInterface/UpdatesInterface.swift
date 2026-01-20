@@ -38,8 +38,7 @@ public protocol UpdatesInterface {
    * User code or third party modules can add a listener that will be called
    * on updates state machine transitions (only when updates is enabled)
    */
-  @objc func subscribeToUpdatesStateChanges(_ listener: any UpdatesStateChangeListener) -> String
-  @objc func unsubscribeFromUpdatesStateChanges(_ subscriptionId: String)
+  @objc func subscribeToUpdatesStateChanges(_ listener: any UpdatesStateChangeListener) -> UpdatesStateChangeSubscription
 }
 
 /**
@@ -77,4 +76,12 @@ public protocol UpdatesExternalInterfaceDelegate {
 @objc(EXUpdatesStateChangeListener)
 public protocol UpdatesStateChangeListener {
   func updatesStateDidChange(_ event: [String: Any])
+}
+
+@objc(EXUpdatesStateChangeSubscription)
+public protocol UpdatesStateChangeSubscription {
+  /*
+   * Call this to remove the subscription and stop receiving state change events
+   */
+  func remove()
 }

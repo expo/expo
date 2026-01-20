@@ -8,11 +8,12 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesInterface
 import expo.modules.updatesinterface.UpdatesStateChangeListener
+import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 
 class UpdatesE2ETestModule : Module(), UpdatesStateChangeListener {
   private var hasListener: Boolean = false
   private var updatesController: UpdatesInterface? = null
-  private var subscriptionId: String? = null
+  private var subscription: UpdatesStateChangeSubscription? = null
 
   override fun definition() = ModuleDefinition {
     Name("ExpoUpdatesE2ETest")
@@ -21,10 +22,8 @@ class UpdatesE2ETestModule : Module(), UpdatesStateChangeListener {
 
     OnCreate {
       UpdatesControllerRegistry.controller?.get()?.let {
-        if (it is UpdatesInterface) {
-          subscriptionId = it.subscribeToUpdatesStateChanges(this@UpdatesE2ETestModule)
-          updatesController = it
-        }
+        subscription = it.subscribeToUpdatesStateChanges(this@UpdatesE2ETestModule)
+        updatesController = it
       }
     }
 
@@ -37,12 +36,9 @@ class UpdatesE2ETestModule : Module(), UpdatesStateChangeListener {
     }
 
     OnDestroy {
-      UpdatesControllerRegistry.controller?.get()?.let {
-        if (it is UpdatesInterface) {
-          it.unsubscribeFromUpdatesStateChanges(subscriptionId ?: "")
-          updatesController = null
-        }
-      }
+      subscription?.remove()
+      subscription = null
+      updatesController = null
     }
 
     Function("getLaunchedUpdateId") {

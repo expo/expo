@@ -33,8 +33,7 @@ interface UpdatesInterface {
    * User code or third party modules can add a listener that will be called
    * on updates state machine transitions (only when updates is enabled)
    */
-  fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): String
-  fun unsubscribeFromUpdatesStateChanges(subscriptionId: String)
+  fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): UpdatesStateChangeSubscription
 }
 
 /**
@@ -72,4 +71,11 @@ interface UpdatesInterfaceCallbacks {
 
 interface UpdatesStateChangeListener {
   fun updatesStateDidChange(event: Map<String, Any>)
+}
+
+interface UpdatesStateChangeSubscription {
+  /*
+   * Call this to remove the subscription and stop receiving state change events
+   */
+  fun remove()
 }

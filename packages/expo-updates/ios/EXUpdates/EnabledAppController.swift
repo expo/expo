@@ -4,6 +4,20 @@ import SwiftUI
 import ExpoModulesCore
 import EXUpdatesInterface
 
+internal class EnabledUpdatesStateChangeSubscription: UpdatesStateChangeSubscription {
+  private let subscriptionId: String
+
+  required init(_ subscriptionId: String) {
+    self.subscriptionId = subscriptionId
+  }
+
+  func remove() {
+    if let updatesController = AppController.sharedInstance as? EnabledAppController {
+      updatesController.unsubscribeFromUpdatesStateChanges(subscriptionId)
+    }
+  }
+}
+
 /**
  * Updates controller for applications that have updates enabled and properly-configured.
  */
@@ -160,15 +174,17 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
 
   // MARK: - UpdatesInterface
 
-  internal var stateChangeListeners: [String:any UpdatesStateChangeListener] = [:]
+  internal var stateChangeListeners: [String: any UpdatesStateChangeListener] = [:]
 
-  public func subscribeToUpdatesStateChanges(_ listener: any UpdatesStateChangeListener) -> String {
+  public func subscribeToUpdatesStateChanges(_ listener: any UpdatesStateChangeListener) -> UpdatesStateChangeSubscription {
     let subscriptionId = UUID().uuidString
+    let subscription = EnabledUpdatesStateChangeSubscription(subscriptionId)
+
     stateChangeListeners[subscriptionId] = listener
-    return subscriptionId
+    return subscription
   }
 
-  public func unsubscribeFromUpdatesStateChanges(_ subscriptionId: String) {
+  internal func unsubscribeFromUpdatesStateChanges(_ subscriptionId: String) {
     if stateChangeListeners[subscriptionId] != nil {
       stateChangeListeners.removeValue(forKey: subscriptionId)
     }

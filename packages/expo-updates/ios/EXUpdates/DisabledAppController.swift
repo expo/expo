@@ -3,6 +3,10 @@
 import ExpoModulesCore
 import EXUpdatesInterface
 
+internal class DisabledUpdatesStateChangeSubscription: UpdatesStateChangeSubscription {
+  func remove() {}
+}
+
 /**
  * Updates controller for applications that either disable updates explicitly or have an error
  * during initialization. Errors that may occur include but are not limited to:
@@ -11,15 +15,13 @@ import EXUpdatesInterface
  * - Configuration errors (missing required configuration)
  */
 public class DisabledAppController: InternalAppControllerInterface, UpdatesInterface {
-  public func subscribeToUpdatesStateChanges(_ listener: any UpdatesStateChangeListener) -> String {
-    return ""
+  public func subscribeToUpdatesStateChanges(_ listener: any UpdatesStateChangeListener) -> UpdatesStateChangeSubscription {
+    return DisabledUpdatesStateChangeSubscription()
   }
 
-  public func unsubscribeFromUpdatesStateChanges(_ subscriptionId: String) {}
+  public var launchedUpdateId: UUID?
 
-  public var launchedUpdateId: UUID? = nil
-
-  public var embeddedUpdateId: UUID? = nil
+  public var embeddedUpdateId: UUID?
 
   public var reloadScreenManager: Reloadable?
 
