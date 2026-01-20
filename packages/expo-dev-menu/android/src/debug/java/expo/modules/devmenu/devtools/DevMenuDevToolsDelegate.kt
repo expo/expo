@@ -50,7 +50,8 @@ class DevMenuDevToolsDelegate(
       ?.onAction(DevMenuAction.Close)
 
     UiThreadUtil.runOnUiThread {
-      devSupportManager?.handleReloadJS()
+      val reloadAction = viewModel?.reloadAction ?: { devSupportManager?.reloadExpoApp() }
+      reloadAction()
     }
   }
 

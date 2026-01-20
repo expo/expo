@@ -45,13 +45,15 @@ class DevMenuFragment(
   private val reactHostHolder: WeakReference<ReactHost>,
   private val preferences: DevMenuPreferences,
   private val goToHomeAction: GoHomeAction?,
+  private val reloadAction: (() -> Unit)?,
   private val appInfoProvider: AppInfoProvider
 ) : Fragment() {
   val viewModel by viewModels<DevMenuViewModel> {
     DevMenuViewModel.Factory(
       reactHostHolder,
       preferences,
-      goToHomeAction
+      goToHomeAction,
+      reloadAction
     )
   }
   private val shakeDetector = ShakeDetector(this::onShakeDetected)
@@ -260,6 +262,7 @@ class DevMenuFragment(
       reactHostHolder: WeakReference<ReactHost>,
       preferences: DevMenuPreferences,
       goToHomeAction: GoHomeAction?,
+      reloadAction: (() -> Unit)?,
       appInfoProvider: AppInfoProvider
     ): ViewGroup {
       val layout = object : FrameLayout(activity) {
@@ -275,6 +278,7 @@ class DevMenuFragment(
         reactHostHolder,
         preferences,
         goToHomeAction,
+        reloadAction,
         appInfoProvider
       )
 
@@ -287,6 +291,7 @@ class DevMenuFragment(
       reactHostHolder: WeakReference<ReactHost>,
       preferences: DevMenuPreferences,
       goToHomeAction: GoHomeAction?,
+      reloadAction: (() -> Unit)?,
       appInfoProvider: AppInfoProvider
     ) {
       val fragmentManager = (activity as FragmentActivity).supportFragmentManager
@@ -295,6 +300,7 @@ class DevMenuFragment(
         reactHostHolder,
         preferences,
         goToHomeAction,
+        reloadAction,
         appInfoProvider
       )
 

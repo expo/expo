@@ -47,6 +47,7 @@ object DevMenuApi {
     reactHostHolder: WeakReference<ReactHost>,
     preferences: DevMenuPreferences = DevMenuDefaultPreferences(activity.application),
     goToHomeAction: GoHomeAction? = null,
+    reloadAction: (() -> Unit)? = null,
     appInfoProvider: AppInfoProvider = { application, reactHost -> AppInfo.getAppInfo(application, reactHost) }
   ): ViewGroup {
     return DevMenuFragment.createFragmentHost(
@@ -54,6 +55,7 @@ object DevMenuApi {
       reactHostHolder,
       preferences,
       goToHomeAction,
+      reloadAction,
       appInfoProvider
     )
   }
