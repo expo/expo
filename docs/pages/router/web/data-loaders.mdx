@@ -1,0 +1,396 @@
+---
+title: Data loaders
+description: Learn how to fetch data on the server using data loaders in Expo Router.
+isAlpha: true
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+> **important** Data loaders are in alpha and are available in SDK 55 and later. They require either [static rendering](/router/web/static-rendering) or [server rendering](/router/web/server-rendering).
+
+Data loaders enable server-side data fetching for your routes. By exporting a `loader` function from a route file, you can fetch data on the server and access it in your component using the [`useLoaderData`](/versions/unversioned/sdk/router/#useloaderdata) hook. This approach keeps sensitive data and API keys on the server while providing your components with the data they need.
+
+## Setup
+
+<Step label="1">
+
+Enable data loaders in your project's [app config](/versions/latest/config/app/) by adding the `unstable_useServerDataLoaders` option to the `expo-router` plugin:
+
+```json app.json
+{
+  "expo": {
+    /* @hide ... */
+    /* @end */
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "unstable_useServerDataLoaders": true,
+          /* @info Required for server rendering */
+          "unstable_useServerRendering": true
+          /* @end */
+        }
+      ]
+    ]
+  }
+}
+```
+
+</Step>
+
+<Step label="2">
+
+Configure your web output mode. Data loaders work with both [static rendering](/router/web/static-rendering) (`web.output: 'static'`) and [server rendering](/router/web/server-rendering) (`web.output: 'server'`):
+
+```json app.json
+{
+  "expo": {
+    /* @hide ... */
+    /* @end */
+    "web": {
+      /* @hide ... */
+      /* @end */
+      /* @info Choose 'static' or 'server' */
+      "output": "server"
+      /* @end */
+    }
+  }
+}
+```
+
+</Step>
+
+<Step label="3">
+
+Start the development server:
+
+<Terminal cmd={['$ npx expo start']} />
+
+</Step>
+
+## Basic example
+
+Export a `loader` function from your route file and use the [`useLoaderData`](/versions/unversioned/sdk/router/#useloaderdata) hook to access the data in your component:
+
+```tsx app/index.tsx
+import { Text, View } from 'react-native';
+import { useLoaderData } from 'expo-router';
+
+export async function loader() {
+  // Fetch data from an API, database, or any server-side source
+  const response = await fetch('https://api.example.com/data');
+  return response.json();
+}
+
+export default function Home() {
+  const data = useLoaderData<typeof loader>();
+
+  return (
+    <View>
+      <Text>Data: {JSON.stringify(data)}</Text>
+    </View>
+  );
+}
+```
+
+The `loader` function executes on the server, and its return value is serialized and passed to your component. This means you can safely use server-side secrets, database connections, and other resources that should not be exposed to the client.
+
+### Using Suspense
+
+[`useLoaderData`](/versions/unversioned/sdk/router/#useloaderdata) does not need to be called at the top level of your route component.
+
+```tsx app/index.tsx
+import { Suspense } from 'react';
+import { Text, View } from 'react-native';
+import { useLoaderData } from 'expo-router';
+
+export async function loader() {
+  const response = await fetch('https://api.example.com/data');
+  return response.json();
+}
+
+export default function Home() {
+  return (
+    <View>
+      <Text>Welcome</Text>
+      <Suspense fallback={<Text>Loading...</Text>}>
+        <DataSection />
+      </Suspense>
+    </View>
+  );
+}
+
+function DataSection() {
+  const data = useLoaderData<typeof loader>();
+  return <Text>{data.title}</Text>;
+}
+```
+
+In the above example, [`useLoaderData`](/versions/unversioned/sdk/router/#useloaderdata) is lower in the component tree and wrapped it with `<Suspense>` to show a loading state.
+
+## Dynamic routes
+
+Loaders receive route parameters as the second argument:
+
+```tsx app/posts/[postId].tsx
+import { Text, View } from 'react-native';
+import { useLoaderData } from 'expo-router';
+
+export async function loader(request, params) {
+  const response = await fetch(`https://api.example.com/posts/${params.postId}`);
+  return response.json();
+}
+
+export default function Post() {
+  const data = useLoaderData<typeof loader>();
+
+  return (
+    <View>
+      <Text>{data.title}</Text>
+      <Text>{data.content}</Text>
+    </View>
+  );
+}
+```
+
+## Accessing the request
+
+> **warning** The `request` parameter is `undefined` when using static rendering because there is no HTTP request at build-time.
+
+When using [server rendering](/router/web/server-rendering), loaders receive the incoming HTTP request as the first argument. This allows you to access headers, cookies, and other request information:
+
+```tsx app/profile.tsx
+import { Text, View } from 'react-native';
+import { useLoaderData } from 'expo-router';
+
+export async function loader(request) {
+  // Access authorization header
+  const authToken = request?.headers.get('Authorization');
+
+  if (!authToken) {
+    return { user: null };
+  }
+
+  // Fetch user data using the token
+  const response = await fetch('https://api.example.com/user', {
+    headers: { Authorization: authToken },
+  });
+
+  return { user: await response.json() };
+}
+
+export default function Profile() {
+  const { user } = useLoaderData<typeof loader>();
+
+  if (!user) {
+    return <Text>Please log in</Text>;
+  }
+
+  return (
+    <View>
+      <Text>Welcome, {user.name}</Text>
+    </View>
+  );
+}
+```
+
+## Returning data
+
+Loaders can return data in several ways:
+
+### Plain objects
+
+The simplest approach is to return a plain JavaScript object, which is easily serialized to JSON:
+
+```tsx app/index.tsx
+export async function loader() {
+  const response = await fetch('https://api.example.com/data');
+  return response.json();
+}
+```
+
+If your loader returns `undefined`, it is normalized to an empty object (`{}`). If it returns `null`, the value is preserved as `null`.
+
+### Response objects
+
+> **warning** Response headers are only preserved in server rendering. In static rendering, only the response body is extracted and serialized since there is no HTTP response at build-time.
+
+You can also return a `Response` object when you need to set custom headers or status codes. This is useful for caching and other HTTP-level controls:
+
+```tsx app/cached-data.tsx
+export async function loader() {
+  const data = await fetchExpensiveData();
+
+  return Response.json(data, {
+    headers: {
+      'Cache-Control': 'public, max-age=3600',
+    },
+  });
+}
+```
+
+Response headers only apply to client-side navigation requests, not initial page renders.
+
+## Runtime API
+
+Data loaders have full access to the [Runtime API](/router/web/api-routes/#runtime-api) from `expo-server`. This includes utilities for setting response headers, throwing HTTP errors, and running background tasks:
+
+```tsx app/example.tsx
+import { setResponseHeaders, StatusError } from 'expo-server';
+
+export async function loader(request) {
+  const authToken = request?.headers.get('Authorization');
+
+  if (!authToken) {
+    throw new StatusError(401, 'Unauthorized');
+  }
+
+  setResponseHeaders({ 'Cache-Control': 'private, max-age=60' });
+
+  return { user: 'authenticated' };
+}
+```
+
+See the [Runtime API documentation](/router/web/api-routes/#runtime-api) for a full list of available functions.
+
+## Environment variables
+
+Loaders run on the server and have access to `process.env`. Environment variables used in loaders are never exposed to the client bundle. This is useful for accessing API keys and other secrets:
+
+```tsx app/api-data.tsx
+import { Text, View } from 'react-native';
+import { useLoaderData } from 'expo-router';
+
+export async function loader() {
+  /* @info Access server-side environment variables */
+  const apiKey = process.env.API_SECRET_KEY;
+  /* @end */
+
+  const response = await fetch('https://api.example.com/data', {
+    headers: { 'X-API-Key': apiKey },
+  });
+
+  return response.json();
+}
+
+export default function ApiData() {
+  const data = useLoaderData<typeof loader>();
+
+  return (
+    <View>
+      <Text>{JSON.stringify(data)}</Text>
+    </View>
+  );
+}
+```
+
+## Static rendering vs server rendering
+
+Data loaders behave differently depending on your [`web.output`](/versions/latest/config/app/#output) configuration:
+
+| Aspect              | Static Rendering                      | Server Rendering                                                    |
+| ------------------- | ------------------------------------- | ------------------------------------------------------------------- |
+| Loader execution    | Build time                            | Request time                                                        |
+| `request` parameter | `undefined`                           | [`ImmutableRequest`](/versions/latest/sdk/server/#immutablerequest) |
+| `Response` returns  | Body extracted, headers ignored       | Full `Response` preserved                                           |
+| Best for            | Blogs, marketing pages, documentation | Personalized content, authentication-dependent pages                |
+
+### Static rendering
+
+With static rendering, loaders execute during when exporting your app with `npx expo export`. The data is embedded in the generated HTML and JSON files. This means:
+
+- Data is determined at build-time and does not change until the next build
+- The `request` parameter is `undefined` because there is no HTTP request during the build
+- Ideal for content that does not change frequently
+
+### Server rendering
+
+With server rendering, loaders execute on every request. This means:
+
+- The `request` parameter contains an immutable version of the incoming HTTP request
+- Requires [`expo-server`](/versions/latest/sdk/server/) for production deployment
+
+## Typed loader functions
+
+For improved type safety, you can import the `LoaderFunction` type from `expo-router`:
+
+```tsx app/posts/[postId].tsx
+import { Text, View } from 'react-native';
+import { useLoaderData } from 'expo-router';
+import { type LoaderFunction } from 'expo-router/server';
+
+type PostData = {
+  title: string;
+  content: string;
+};
+
+export const loader: LoaderFunction<PostData> = async (request, params) => {
+  const response = await fetch(`https://api.example.com/posts/${params.postId}`);
+  return response.json();
+};
+
+export default function Post() {
+  const data = useLoaderData<typeof loader>();
+
+  return (
+    <View>
+      <Text>{data.title}</Text>
+      <Text>{data.content}</Text>
+    </View>
+  );
+}
+```
+
+## Known limitations
+
+- Loaders **must** return JSON-serializable data. Streaming responses are currently not supported. This will be addressed in a future release.
+- Loader data is cached on the client during navigation. There is currently no built-in way to invalidate this cache. This will be addressed in a future release.
+- Data loaders are a web-specific feature for static and server rendering. They do not run on native platforms.
+- The `request` parameter passed to loaders in server rendering is an [ImmutableRequest](/versions/latest/sdk/server/#immutablerequest). You cannot modify the request object.
+- Returning a `Response` object loses type safety for `useLoaderData`. Use [`setResponseHeaders`](/router/web/api-routes/#runtime-api) instead to preserve types when setting response headers.
+
+## Common questions
+
+<Collapsible summary="Can I use data loaders without server rendering?">
+
+Yes. Data loaders work with both static rendering (`web.output: 'static'`) and server rendering (`web.output: 'server'`).
+
+</Collapsible>
+
+<Collapsible summary="What happens if my loader returns undefined or null?">
+
+If your loader returns `undefined`, it is normalized to an empty object (`{}`). If your loader returns `null`, it is preserved as `null`.
+
+</Collapsible>
+
+<Collapsible summary="Can I access the request in static rendering mode?">
+
+No. In static rendering mode, the `request` parameter is `undefined` because loaders execute at build-time when there is no HTTP request. If you need access to request headers, cookies, or other request data, use server rendering instead.
+
+</Collapsible>
+
+<Collapsible summary="How do I handle errors in loaders?">
+
+Throw an error in your loader to trigger error boundaries. You can also return error data and handle it in your component.
+
+```tsx
+export async function loader() {
+  const response = await fetch('https://api.example.com/data');
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch data');
+  }
+
+  return response.json();
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Are loaders included in the client bundle?">
+
+No. Loader functions are automatically stripped from the client bundle. This means your server-side code, API keys, and database connections remain on the server.
+
+</Collapsible>

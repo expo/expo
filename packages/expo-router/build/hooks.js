@@ -256,12 +256,11 @@ const loaderErrorCache = new Map();
  * import { useLoaderData } from 'expo-router';
  *
  * export function loader() {
- *   return Promise.resolve({ foo: 'bar' }}
+ *   return Promise.resolve({ foo: 'bar' }};
  * }
  *
  * export default function Route() {
- *  // { foo: 'bar' }
- *  const data = useLoaderData<typeof loader>();
+ *  const data = useLoaderData<typeof loader>(); // { foo: 'bar' }
  *
  *  return <Text>Data: {JSON.stringify(data)}</Text>;
  * }
