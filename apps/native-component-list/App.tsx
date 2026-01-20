@@ -5,8 +5,6 @@ import { Platform, StatusBar } from 'react-native';
 
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
-import { Group, customBorder } from './modules/test-expo-ui';
-import { Host, Text } from '@expo/ui/swift-ui';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -41,13 +39,5 @@ export default function App() {
     await loadAssetsAsync();
   });
 
-  return <ThemeProvider>{isLoadingCompleted ? <Test /> : null}</ThemeProvider>;
-}
-
-const Test = () => {
-  return   <Host style={{flex: 1}}>
-    <Group modifiers={[customBorder({color: 'red', width: 1})]}>
-      <Text>Hello</Text>
-    </Group>
-  </Host>
+  return <ThemeProvider>{isLoadingCompleted ? <RootNavigation /> : null}</ThemeProvider>;
 }

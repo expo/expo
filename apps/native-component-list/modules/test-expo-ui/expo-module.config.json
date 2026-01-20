@@ -1,6 +1,0 @@
-{
-  "platforms": ["apple"],
-  "apple": {
-    "modules": ["TestExpoUiModule"]
-  }
-}
