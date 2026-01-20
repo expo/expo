@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use `unstable_createWorker` helper to instantiate `Worker`s, allowing worker support to bypass CORP/COEP errors ([#42340](https://github.com/expo/expo/pull/42340) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - Remove unused `LoadOptions` type export ([#42082](https://github.com/expo/expo/pull/42082) by [@kitten](https://github.com/kitten))

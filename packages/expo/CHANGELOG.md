@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Add `unstable_createWorker` helper method to `async-require` module ([#42340](https://github.com/expo/expo/pull/42340) by [@kitten](https://github.com/kitten))
+
 ## 54.0.31 — 2026-01-06
 
 _This version does not introduce any user-facing changes._

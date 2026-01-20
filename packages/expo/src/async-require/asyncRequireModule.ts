@@ -17,7 +17,31 @@ type MetroRequire = {
 
 type DependencyMapPaths = { [moduleID: number | string]: unknown } | null;
 
+declare const crossOriginIsolated: boolean | undefined;
 declare let __METRO_GLOBAL_PREFIX__: string;
+
+// Shim script that wraps around a given worker entrypoint and:
+// - Remaps `fetch` to the base URL given
+// - Remaps `importScripts` to the base URL given
+// This doesn't cover all cases and won't fix that:
+// - self.location will be set to a blob URL
+// - new URL won't relatively resolve
+// - XMLHttpRequest, WebSocket, etc won't relatively resolve
+function makeWorkerContent(url: string): string {
+  return `
+    const ASYNC_WORKER_BASE = ${JSON.stringify(url)};
+    const IMPORT_SCRIPTS = importScripts;
+    const FETCH = fetch;
+    const fromBaseURL = (input) => new URL(input, ASYNC_WORKER_BASE).href;
+    self.fetch = function(input, init) {
+      return FETCH(typeof input === 'string' ? fromBaseURL(input) : input, init);
+    };
+    self.importScripts = function(...urls) {
+      return IMPORT_SCRIPTS.apply(self, urls.map(fromBaseURL));
+    };
+    importScripts(ASYNC_WORKER_BASE);
+  `;
+}
 
 function maybeLoadBundle(moduleID: number, paths: DependencyMapPaths): void | Promise<void> {
   const loadBundle: (bundlePath: unknown) => Promise<void> = (global as any)[
@@ -89,6 +113,26 @@ asyncRequire.unstable_resolve = function unstable_resolve(
     throw new Error('Worker import is missing from split bundle paths: ' + id);
   }
   return id;
+};
+
+// Wraps around `new Worker` and if `crossOriginIsolated` is truthy, indicating CORP/COEP is active,
+// instantiates the worker with an inline script instead, which works around the CORS error. This is
+// necessary if the worker script won't have the same CORP/COEP headers as the document
+asyncRequire.unstable_createWorker = function unstable_createWorker(
+  workerUrl: string,
+  workerOpts?: WorkerOptions
+) {
+  if (typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated) {
+    try {
+      const content = makeWorkerContent(workerUrl);
+      workerUrl = URL.createObjectURL(new Blob([content], { type: 'text/javascript' }));
+      return new Worker(workerUrl, workerOpts);
+    } finally {
+      URL.revokeObjectURL(workerUrl);
+    }
+  } else {
+    return new Worker(workerUrl, workerOpts);
+  }
 };
 
 // TODO(@kitten): Missing metro type definitions
