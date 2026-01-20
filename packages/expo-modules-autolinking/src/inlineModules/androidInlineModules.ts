@@ -16,8 +16,8 @@ export async function createSymlinksToKotlinFiles(
     const filePathRelativeToWatchedDirRoot = path.relative(watchedDirRoot, filePath);
     const targetPath = path.resolve(mirrorPath, filePathRelativeToWatchedDirRoot);
 
-    fs.mkdirSync(path.dirname(targetPath), { recursive: true });
-    fs.symlinkSync(filePath, targetPath);
+    await fs.promises.mkdir(path.dirname(targetPath), { recursive: true });
+    await fs.promises.symlink(filePath, targetPath);
   }
 }
 
@@ -63,6 +63,9 @@ ${inlineModulesObject.kotlinClasses.map((moduleClass) => `      ${moduleClass}.c
 
 `;
 
-  fs.mkdirSync(inlineModulesListPath, { recursive: true });
-  fs.writeFileSync(path.resolve(inlineModulesListPath, 'ExpoInlineModulesList.java'), fileContent);
+  await fs.promises.mkdir(inlineModulesListPath, { recursive: true });
+  await fs.promises.writeFile(
+    path.resolve(inlineModulesListPath, 'ExpoInlineModulesList.java'),
+    fileContent
+  );
 }

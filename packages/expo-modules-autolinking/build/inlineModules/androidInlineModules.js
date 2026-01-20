@@ -16,8 +16,8 @@ async function createSymlinksToKotlinFiles(mirrorPath, watchedDirectories) {
         }
         const filePathRelativeToWatchedDirRoot = path_1.default.relative(watchedDirRoot, filePath);
         const targetPath = path_1.default.resolve(mirrorPath, filePathRelativeToWatchedDirRoot);
-        fs_1.default.mkdirSync(path_1.default.dirname(targetPath), { recursive: true });
-        fs_1.default.symlinkSync(filePath, targetPath);
+        await fs_1.default.promises.mkdir(path_1.default.dirname(targetPath), { recursive: true });
+        await fs_1.default.promises.symlink(filePath, targetPath);
     }
 }
 function getClassName(classNameWithPackage) {
@@ -57,7 +57,7 @@ ${inlineModulesObject.kotlinClasses.map((moduleClass) => `      ${moduleClass}.c
 }
 
 `;
-    fs_1.default.mkdirSync(inlineModulesListPath, { recursive: true });
-    fs_1.default.writeFileSync(path_1.default.resolve(inlineModulesListPath, 'ExpoInlineModulesList.java'), fileContent);
+    await fs_1.default.promises.mkdir(inlineModulesListPath, { recursive: true });
+    await fs_1.default.promises.writeFile(path_1.default.resolve(inlineModulesListPath, 'ExpoInlineModulesList.java'), fileContent);
 }
 //# sourceMappingURL=androidInlineModules.js.map
