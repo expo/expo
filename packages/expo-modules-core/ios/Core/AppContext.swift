@@ -95,6 +95,26 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
+  @objc
+  public var _uiRuntime: WorkletRuntime? {
+    didSet {
+      if _uiRuntime != oldValue {
+        MainActor.assumeIsolated {
+          try? prepareUIRuntime()
+        }
+      }
+    }
+  }
+
+  public var uiRuntime: WorkletRuntime {
+    get throws {
+      if let uiRuntime = _uiRuntime {
+        return uiRuntime
+      }
+      throw Exceptions.UIRuntimeLost()
+    }
+  }
+
   /**
    The application identifier that is used to distinguish between different `RCTHost`.
    It might be equal to `nil`, meaning we couldn't obtain the Id for the current app.
@@ -507,6 +527,21 @@ public final class AppContext: NSObject, @unchecked Sendable {
     EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
   }
 
+  @MainActor
+  internal func prepareUIRuntime() throws {
+    let uiRuntime = try uiRuntime
+    let coreObject = uiRuntime.createObject()
+
+    // Initialize `global.expo`.
+    uiRuntime.global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: .enumerable)
+
+    // Install `global.expo.EventEmitter`.
+    EXJavaScriptRuntimeManager.installEventEmitterClass(uiRuntime)
+
+    // Install `global.expo.NativeModule`.
+    EXJavaScriptRuntimeManager.installNativeModuleClass(uiRuntime)
+  }
+
   /**
    Unsets runtime objects that we hold for each module.
    */
@@ -560,7 +595,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
     if let providerClass = NSClassFromString(providerName) as? ModulesProvider.Type {
       return providerClass.init()
     }
-    
+
     // [2] Fallback to search for `ExpoModulesProvider` in frameworks (brownfield use case)
     for bundle in Bundle.allFrameworks {
       guard let bundleName = bundle.infoDictionary?["CFBundleName"] as? String else { continue }

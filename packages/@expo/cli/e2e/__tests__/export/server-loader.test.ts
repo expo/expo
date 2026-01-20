@@ -10,7 +10,7 @@ import {
   RUNTIME_WORKERD,
   setupServer,
 } from '../../utils/runtime';
-import { findProjectFiles } from '../utils';
+import { findProjectFiles, getHtml } from '../utils';
 
 runExportSideEffects();
 
@@ -53,6 +53,7 @@ describe.each(
     expect(files).toContain('_expo/loaders/second.js');
     expect(files).toContain('_expo/loaders/posts/[postId].js');
     expect(files).toContain('_expo/loaders/nullish/[value].js');
+    expect(files).toContain('_expo/loaders/response.js');
   });
 
   (server.isExpoStart ? it.skip : it)('routes.json has loader paths', async () => {
@@ -92,6 +93,17 @@ describe.each(
     expect(data.params).toHaveProperty('postId', 'my-test-post');
   });
 
+  it('loader endpoint returns `Response` with headers', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/response');
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('application/json');
+    expect(response.headers.get('cache-control')).toBe('public, max-age=3600');
+    expect(response.headers.get('x-custom-header')).toBe('test-value');
+
+    const data = await response.json();
+    expect(data).toEqual({ foo: 'bar' });
+  });
+
   it('loader can access server environment variables', async () => {
     const response = await server.fetchAsync('/_expo/loaders/env');
     expect(response.status).toBe(200);
@@ -113,12 +125,54 @@ describe.each(
     expect(data).toBeNull();
   });
 
-  it('receives `Request` object', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/request');
+  it.each([
+    {
+      name: 'loader endpoint',
+      url: '/_expo/loaders/request',
+      getData: (response: Response) => {
+        return response.json();
+      },
+    },
+    {
+      name: 'page',
+      url: '/request',
+      getData: async (response: Response) => {
+        const html = getHtml(await response.text());
+        return JSON.parse(html.querySelector('[data-testid="loader-result"]')!.textContent);
+      },
+    },
+  ])('$name $url does not receive `Request` object', async ({ getData, url }) => {
+    const response = await server.fetchAsync(url);
     expect(response.status).toBe(200);
-    const data = await response.json();
+    const data = await getData(response);
 
     expect(new URL(data.url).pathname).toBe('/request');
+    expect(data.method).toBe('GET');
+    expect(Array.isArray(data.headers)).toBe(true);
+  });
+
+  it.each([
+    {
+      name: 'page',
+      url: '/request?foo=bar',
+      getData: async (response: Response) => {
+        const html = getHtml(await response.text());
+        return JSON.parse(html.querySelector('[data-testid="loader-result"]')!.textContent);
+      },
+    },
+    {
+      name: 'loader endpoint',
+      url: '/_expo/loaders/request?foo=bar',
+      getData: (response: Response) => {
+        return response.json();
+      },
+    },
+  ])('$name $url receives search params', async ({ getData, url }) => {
+    const response = await server.fetchAsync(url);
+    expect(response.status).toBe(200);
+    const data = await getData(response);
+
+    expect(data.url).toContain('/request?foo=bar');
     expect(data.method).toBe('GET');
     expect(Array.isArray(data.headers)).toBe(true);
   });

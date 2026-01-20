@@ -4,8 +4,7 @@ import { type ColorValue, type StyleProp } from 'react-native';
 import type { ScreenStackHeaderConfigProps } from 'react-native-screens';
 export interface StackHeaderProps {
     /**
-     * Child elements to compose the header. Can include Stack.Header.Title, Stack.Header.Left,
-     * Stack.Header.Right, Stack.Header.BackButton, and Stack.Header.SearchBar components.
+     * Child elements for custom header when `asChild` is true.
      */
     children?: ReactNode;
     /**
@@ -52,35 +51,30 @@ export interface StackHeaderProps {
     }>;
 }
 /**
- * The component used to configure the whole stack header.
+ * The component used to configure header styling for a stack screen.
  *
- * When used inside a screen, it allows you to customize the header dynamically by composing
- * header subcomponents (title, left/right areas, back button, search bar, etc.).
+ * Use this component to set header appearance properties like blur effect, background color,
+ * and shadow visibility.
  *
+ * @example
  * ```tsx
  * import { Stack } from 'expo-router';
  *
  * export default function Page() {
  *   return (
  *     <>
- *       <Stack.Header>
- *         <Stack.Header.Title>Page title</Stack.Header.Title>
- *         <Stack.Header.Left>
- *           <Stack.Header.Button onPress={() => alert('Left pressed')} />
- *         </Stack.Header.Left>
- *         <Stack.Header.Right>
- *           <Stack.Header.Button onPress={() => alert('Right pressed')} />
- *         </Stack.Header.Right>
- *       </Stack.Header>
+ *       <Stack.Header
+ *         blurEffect="systemMaterial"
+ *         style={{ backgroundColor: '#fff' }}
+ *       />
  *       <ScreenContent />
  *     </>
  *   );
  * }
  * ```
  *
- * When used inside a layout, it needs to be wrapped in `Stack.Screen` to take effect.
- *
- * Example (inside a layout):
+ * @example
+ * When used inside a layout with Stack.Screen:
  * ```tsx
  * import { Stack } from 'expo-router';
  *
@@ -88,12 +82,7 @@ export interface StackHeaderProps {
  *   return (
  *     <Stack>
  *       <Stack.Screen name="index">
- *         <Stack.Header>
- *           <Stack.Header.Title>Layout title</Stack.Header.Title>
- *           <Stack.Header.Right>
- *             <Stack.Header.Button onPress={() => alert('Right pressed')} />
- *           </Stack.Header.Right>
- *         </Stack.Header>
+ *         <Stack.Header blurEffect="systemMaterial" />
  *       </Stack.Screen>
  *     </Stack>
  *   );

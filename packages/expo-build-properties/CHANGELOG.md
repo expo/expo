@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Add support for enabling Hermes V1 ([#41715](https://github.com/expo/expo/pull/41715) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add top-level `buildReactNativeFromSource`, `reactNativeReleaseLevel`, and `useHermesV1` config fields that apply to both platforms, with platform-specific values taking precedence. ([#42302](https://github.com/expo/expo/pull/42302) by [@brentvatne](https://github.com/brentvatne))
 
 ### 🐛 Bug fixes
 

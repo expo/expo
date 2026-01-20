@@ -10,7 +10,7 @@ export interface ImmutableRequest extends _ImmutableRequest {
 
 /**
  * Middleware function type. Middleware run for every request in your app, or on
- * specified conditonally matched methods and path patterns, as per {@link MiddlewareMatcher}.
+ * specified conditionally matched methods and path patterns, as per {@link MiddlewareMatcher}.
  * @param request - An `ImmutableRequest` with read-only headers and no body access
  * @example
  * ```ts

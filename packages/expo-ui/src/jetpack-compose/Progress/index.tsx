@@ -67,50 +67,26 @@ const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNati
  * Renders a `CircularProgress` component.
  */
 export function CircularProgress(props: CircularProgressProps) {
-  return (
-    <NativeProgressView
-      {...props} // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-      variant="circular"
-    />
-  );
+  return <NativeProgressView {...props} variant="circular" />;
 }
 
 /**
  * Renders a `LinearProgress` component.
  */
 export function LinearProgress(props: LinearProgressProps) {
-  return (
-    <NativeProgressView
-      {...props} // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-      variant="linear"
-    />
-  );
+  return <NativeProgressView {...props} variant="linear" />;
 }
 
 /**
  * Renders a `CircularWavyProgress` component with wavy animation.
  */
 export function CircularWavyProgress(props: CircularProgressProps) {
-  return (
-    <NativeProgressView
-      {...props} // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-      variant="circularWavy"
-    />
-  );
+  return <NativeProgressView {...props} variant="circularWavy" />;
 }
 
 /**
  * Renders a `LinearWavyProgress` component with wavy animation.
  */
 export function LinearWavyProgress(props: LinearProgressProps) {
-  return (
-    <NativeProgressView
-      {...props} // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-      variant="linearWavy"
-    />
-  );
+  return <NativeProgressView {...props} variant="linearWavy" />;
 }

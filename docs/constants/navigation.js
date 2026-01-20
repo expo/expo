@@ -177,7 +177,7 @@ export const general = [
       { expanded: false }
     ),
     makeGroup(
-      'Compile locally',
+      'Build locally',
       [
         makePage('guides/local-app-overview.mdx'),
         makePage('guides/local-app-development.mdx'),
@@ -273,7 +273,9 @@ export const general = [
     makeGroup('Web', [
       makePage('router/web/api-routes.mdx'),
       makePage('router/web/middleware.mdx'),
+      makePage('router/web/server-headers.mdx'),
       makePage('router/web/static-rendering.mdx'),
+      makePage('router/web/server-rendering.mdx'),
       makePage('router/web/async-routes.mdx'),
     ]),
     makeGroup('Reference', [
@@ -406,7 +408,17 @@ export const eas = [
       makePage('eas/index.mdx'),
       makePage('eas/json.mdx'),
       makePage('eas/cli.mdx'),
-      makePage('eas/environment-variables.mdx'),
+      makeGroup(
+        'Environment variables',
+        [
+          makePage('eas/environment-variables/index.mdx'),
+          makePage('eas/environment-variables/manage.mdx'),
+          makePage('eas/environment-variables/usage.mdx'),
+          makePage('eas/environment-variables/without-eas.mdx'),
+          makePage('eas/environment-variables/faq.mdx'),
+        ],
+        { expanded: false }
+      ),
     ],
     {
       expanded: true,
@@ -497,7 +509,6 @@ export const eas = [
     makePage('eas/hosting/introduction.mdx'),
     makePage('eas/hosting/get-started.mdx'),
     makePage('eas/hosting/deployments-and-aliases.mdx'),
-    makePage('eas/hosting/environment-variables.mdx'),
     makePage('eas/hosting/custom-domain.mdx'),
     makePage('eas/hosting/api-routes.mdx'),
     makePage('eas/hosting/workflows.mdx'),

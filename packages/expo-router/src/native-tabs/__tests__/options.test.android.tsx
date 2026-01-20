@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react-native';
 import React from 'react';
 import { View } from 'react-native';
-import { BottomTabsScreen as _BottomTabsScreen } from 'react-native-screens';
+import { Tabs } from 'react-native-screens';
 
 import { renderRouter } from '../../testing-library';
 import { appendIconOptions } from '../NativeTabTrigger';
@@ -11,14 +11,20 @@ import type { NativeTabOptions } from '../types';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  const actualModule = jest.requireActual(
+    'react-native-screens'
+  ) as typeof import('react-native-screens');
   return {
-    ...(jest.requireActual('react-native-screens') as typeof import('react-native-screens')),
-    BottomTabs: jest.fn(({ children }) => <View testID="BottomTabs">{children}</View>),
-    BottomTabsScreen: jest.fn(({ children }) => <View testID="BottomTabsScreen">{children}</View>),
+    ...actualModule,
+    Tabs: {
+      ...actualModule.Tabs,
+      Host: jest.fn(({ children }) => <View testID="TabsHost">{children}</View>),
+      Screen: jest.fn(({ children }) => <View testID="TabsScreen">{children}</View>),
+    },
   };
 });
 
-const BottomTabsScreen = _BottomTabsScreen as jest.MockedFunction<typeof _BottomTabsScreen>;
+const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
 
 describe('Icons', () => {
   it('passes iconResourceName when using Icon drawable on Android', () => {
@@ -34,10 +40,10 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0].icon.android.type).toBe('drawableResource');
-    if (BottomTabsScreen.mock.calls[0][0].icon.android.type === 'drawableResource') {
-      expect(BottomTabsScreen.mock.calls[0][0].icon.android.name).toBe('stairs');
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].icon.android.type).toBe('drawableResource');
+    if (TabsScreen.mock.calls[0][0].icon.android.type === 'drawableResource') {
+      expect(TabsScreen.mock.calls[0][0].icon.android.name).toBe('stairs');
     }
   });
 
@@ -56,10 +62,10 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0].icon.android.type).toBe('drawableResource');
-    if (BottomTabsScreen.mock.calls[0][0].icon.android.type === 'drawableResource') {
-      expect(BottomTabsScreen.mock.calls[0][0].icon.android.name).toBe('last');
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].icon.android.type).toBe('drawableResource');
+    if (TabsScreen.mock.calls[0][0].icon.android.type === 'drawableResource') {
+      expect(TabsScreen.mock.calls[0][0].icon.android.name).toBe('last');
     }
   });
 
@@ -74,8 +80,8 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0].icon).toBeUndefined();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].icon).toBeUndefined();
   });
 
   // Currently not needed. Screens does not forbid this, as Icon does not work on Android yet.
@@ -108,11 +114,11 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
-    expect(BottomTabsScreen.mock.calls[0][0].icon.android.type).toBe('drawableResource');
-    if (BottomTabsScreen.mock.calls[0][0].icon.android.type === 'drawableResource') {
-      expect(BottomTabsScreen.mock.calls[0][0].icon.android.name).toBe('stairs');
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0][0].icon.android.type).toBe('drawableResource');
+    if (TabsScreen.mock.calls[0][0].icon.android.type === 'drawableResource') {
+      expect(TabsScreen.mock.calls[0][0].icon.android.name).toBe('stairs');
     }
   });
 
@@ -132,11 +138,11 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
-    expect(BottomTabsScreen.mock.calls[0][0].icon.android.type).toBe('drawableResource');
-    if (BottomTabsScreen.mock.calls[0][0].icon.android.type === 'drawableResource') {
-      expect(BottomTabsScreen.mock.calls[0][0].icon.android.name).toBe('stairs');
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0][0].icon.android.type).toBe('drawableResource');
+    if (TabsScreen.mock.calls[0][0].icon.android.type === 'drawableResource') {
+      expect(TabsScreen.mock.calls[0][0].icon.android.name).toBe('stairs');
     }
   });
 });

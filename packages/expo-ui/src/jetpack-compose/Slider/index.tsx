@@ -86,8 +86,6 @@ export function transformSliderProps(props: SliderProps): NativeSliderProps {
           }
         : undefined,
     color: props.color,
-    // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 
