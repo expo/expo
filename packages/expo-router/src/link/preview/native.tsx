@@ -16,6 +16,7 @@ export interface NativeLinkPreviewActionProps {
   title: string;
   icon?: string;
   image?: ImageRef | null;
+  imageRenderingMode?: 'template' | 'original';
   children?: React.ReactNode;
   disabled?: boolean;
   destructive?: boolean;

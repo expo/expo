@@ -16,6 +16,7 @@ class RouterToolbarItemView: RouterViewWithLogger {
     }
   }
   @ReactiveProp var customTintColor: UIColor?
+  @ReactiveProp var imageRenderingMode: ImageRenderingMode?
   @ReactiveProp var hidesSharedBackground: Bool = false
   @ReactiveProp var sharesBackground: Bool = true
   @ReactiveProp var barButtonItemStyle: UIBarButtonItem.Style?
@@ -136,7 +137,8 @@ class RouterToolbarItemView: RouterViewWithLogger {
       item.possibleTitles = possibleTitles
       if let customImage {
         // Use the UIImage from the SharedRef
-        item.image = customImage.ref.withRenderingMode(.alwaysOriginal)
+        let renderingMode: UIImage.RenderingMode = imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
+        item.image = customImage.ref.withRenderingMode(renderingMode)
       } else if let systemImageName {
         // Fallback to SF Symbol
         item.image = UIImage(systemName: systemImageName)

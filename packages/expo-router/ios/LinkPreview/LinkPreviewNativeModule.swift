@@ -61,6 +61,9 @@ public class LinkPreviewNativeModule: Module {
       Prop("image") { (view: LinkPreviewNativeActionView, image: SharedRef<UIImage>?) in
         view.customImage = image
       }
+      Prop("imageRenderingMode") { (view: LinkPreviewNativeActionView, mode: ImageRenderingMode?) in
+        view.imageRenderingMode = mode
+      }
       Prop("disabled") { (view: LinkPreviewNativeActionView, disabled: Bool?) in
         view.disabled = disabled ?? false
       }

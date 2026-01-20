@@ -18,6 +18,7 @@ export interface NativeToolbarMenuProps {
      * Image to display for the menu item.
      */
     image?: ImageRef;
+    imageRenderingMode?: 'template' | 'original';
     inline?: boolean;
     palette?: boolean;
     separateBackground?: boolean;
@@ -45,6 +46,7 @@ export interface NativeToolbarButtonProps {
     hidesSharedBackground?: boolean;
     icon?: SFSymbol;
     image?: ImageRef;
+    imageRenderingMode?: 'template' | 'original';
     onPress?: () => void;
     possibleTitles?: string[];
     selected?: boolean;
