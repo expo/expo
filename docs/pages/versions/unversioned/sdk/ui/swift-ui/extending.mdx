@@ -10,8 +10,6 @@ platforms: ['ios', 'tvos']
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { Tab, Tabs } from '~/ui/components/Tabs';
-import { CODE } from '~/ui/components/Text';
 
 This guide explains how to create custom SwiftUI components and modifiers that integrate seamlessly with Expo UI.
 
@@ -141,12 +139,7 @@ export default function App() {
     <Host style={{ flex: 1 }}>
       <MyCustomView
         title="Hello World"
-        modifiers={[
-          padding({ all: 16 }),
-          cornerRadius(12),
-          background('#f0f0f0'),
-        ]}
-      >
+        modifiers={[padding({ all: 16 }), cornerRadius(12), background('#f0f0f0')]}>
         <Text>Child content</Text>
       </MyCustomView>
     </Host>
@@ -226,11 +219,8 @@ Create a TypeScript function that generates the modifier config:
 ```ts src/modifiers.ts
 import { createModifier } from '@expo/ui/swift-ui/modifiers';
 
-export const customBorder = (params: {
-  color?: string;
-  width?: number;
-  cornerRadius?: number;
-}) => createModifier('customBorder', params);
+export const customBorder = (params: { color?: string; width?: number; cornerRadius?: number }) =>
+  createModifier('customBorder', params);
 ```
 
 </Step>
@@ -258,10 +248,11 @@ import { customBorder } from './modules/my-ui';
 export default function App() {
   return (
     <Host style={{ flex: 1 }}>
-      <VStack modifiers={[
-        padding({ all: 20 }),
-        customBorder({ color: '#FF6B35', width: 3, cornerRadius: 8 }),
-      ]}>
+      <VStack
+        modifiers={[
+          padding({ all: 20 }),
+          customBorder({ color: '#FF6B35', width: 3, cornerRadius: 8 }),
+        ]}>
         <Text>This has a custom border!</Text>
       </VStack>
     </Host>
