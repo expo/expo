@@ -152,6 +152,9 @@
       "autoprefixer": {}
     }
   },
+  "resolutions": {
+    "baseline-browser-mapping": "2.9.15"
+  },
   "volta": {
     "node": "22.13.1"
   }
