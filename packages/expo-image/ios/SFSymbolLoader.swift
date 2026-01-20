@@ -17,7 +17,7 @@ class SFSymbolLoader: NSObject, SDImageLoader {
     progress progressBlock: SDImageLoaderProgressBlock?,
     completed completedBlock: SDImageLoaderCompletedBlock? = nil
   ) -> SDWebImageOperation? {
-    guard let url = url else {
+    guard let url else {
       let error = makeNSError(description: "URL provided to SFSymbolLoader is missing")
       completedBlock?(nil, nil, error, false)
       return nil
