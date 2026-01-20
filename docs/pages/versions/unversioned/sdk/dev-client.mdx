@@ -66,6 +66,40 @@ You can configure development client launcher using its built-in [config plugin]
       ].join('\n'),
       default: 'true',
     },
+    {
+      name: 'android',
+      description: [
+        'Android-specific configuration options.',
+      ].join('\n'),
+      properties: [
+        {
+          name: 'launchMode',
+          description: [
+            'Determines whether to launch the most recently opened project or navigate to the launcher screen on Android. Overrides the top-level `launchMode` setting for Android only.',
+            '* `most-recent` - Attempt to launch directly into a previously opened project and if unable to connect, fall back to the launcher screen.',
+            '* `launcher` - Opens the launcher screen.',
+          ].join('\n'),
+          default: '"most-recent"',
+        },
+      ],
+    },
+    {
+      name: 'ios',
+      description: [
+        'iOS-specific configuration options.',
+      ].join('\n'),
+      properties: [
+        {
+          name: 'launchMode',
+          description: [
+            'Determines whether to launch the most recently opened project or navigate to the launcher screen on iOS. Overrides the top-level `launchMode` setting for iOS only.',
+            '* `most-recent` - Attempt to launch directly into a previously opened project and if unable to connect, fall back to the launcher screen.',
+            '* `launcher` - Opens the launcher screen.',
+          ].join('\n'),
+          default: '"most-recent"',
+        },
+      ],
+    },
   ]}
 />
 
