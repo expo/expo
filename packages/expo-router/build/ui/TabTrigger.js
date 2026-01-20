@@ -114,7 +114,9 @@ function useTabTrigger(options) {
         });
         if (!(0, useLinkToPathProps_1.shouldHandleMouseEvent)(event))
             return;
-        switchTab(name, { reset: reset !== 'onLongPress' ? reset : undefined });
+        if (!trigger.isFocused) {
+            switchTab(name, { reset: reset !== 'onLongPress' ? reset : undefined });
+        }
     }, [onPress, name, reset, trigger]);
     const handleOnLongPress = (0, react_1.useCallback)((event) => {
         onLongPress?.(event);
@@ -128,9 +130,11 @@ function useTabTrigger(options) {
         });
         if (!(0, useLinkToPathProps_1.shouldHandleMouseEvent)(event))
             return;
-        switchTab(name, {
-            reset: reset === 'onLongPress' ? 'always' : reset,
-        });
+        if (!trigger.isFocused) {
+            switchTab(name, {
+                reset: reset !== 'onLongPress' ? reset : undefined,
+            });
+        }
     }, [onLongPress, name, reset, trigger]);
     const triggerProps = {
         isFocused: Boolean(trigger?.isFocused),

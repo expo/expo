@@ -205,7 +205,9 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
       if (!shouldHandleMouseEvent(event)) return;
 
-      switchTab(name, { reset: reset !== 'onLongPress' ? reset : undefined });
+      if (!trigger.isFocused) {
+        switchTab(name, { reset: reset !== 'onLongPress' ? reset : undefined });
+      }
     },
     [onPress, name, reset, trigger]
   );
@@ -223,9 +225,11 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
       if (!shouldHandleMouseEvent(event)) return;
 
-      switchTab(name, {
-        reset: reset === 'onLongPress' ? 'always' : reset,
-      });
+      if (!trigger.isFocused) {
+        switchTab(name, {
+          reset: reset !== 'onLongPress' ? reset : undefined,
+        });
+      }
     },
     [onLongPress, name, reset, trigger]
   );
