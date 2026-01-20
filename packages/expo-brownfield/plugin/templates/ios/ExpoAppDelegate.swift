@@ -1,1 +1,1 @@
-/Users/gabriel/Workspace/expo/expo/packages/expo/ios/AppDelegates/ExpoAppDelegate.swift
+../../../../expo/ios/AppDelegates/ExpoAppDelegate.swift
