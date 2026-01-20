@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Add `reloadAppAsync` method to AppContext. ([#42295](https://github.com/expo/expo/pull/42295) by [@aleqsio](https://github.com/aleqsio))
 - Add `map` to `ValueOrUndefined`. ([#40593](https://github.com/expo/expo/pull/40593) by [@Wenszel](https://github.com/Wenszel))
 - Add types for `process.env.EXPO_DOM_HOST_OS`. ([#40382](https://github.com/expo/expo/pull/40382) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Add `ComposableScope` for compose Content functions. ([#39155](https://github.com/expo/expo/pull/39155) by [@aleqsio](https://github.com/aleqsio))
@@ -34,7 +35,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed DSL view props using stale state when updating. ([#41622](https://github.com/expo/expo/pull/41622) by [@kimchi-developer](https://github.com/kimchi-developer))
-- [core] Fixed `useReleasingSharedObject` to defer releasing until after render.
+  - [core] Fixed `useReleasingSharedObject` to defer releasing until after render.
 - [android] Fix source sets for events for functional view definitions. ([#41685](https://github.com/expo/expo/pull/41685) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix throwing `InvalidArgsNumberException` when declaring `AsyncFunction` with optional arguments and `Promise`. ([#41054](https://github.com/expo/expo/pull/41054) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] fix queue assertion crash ([#41296](https://github.com/expo/expo/pull/41296) by [@vonovak](https://github.com/vonovak))
