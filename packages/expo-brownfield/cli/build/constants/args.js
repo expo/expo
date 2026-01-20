@@ -22,6 +22,7 @@ const generalArgs = {
 const buildCommonArgs = {
     // Types
     '--debug': arg_1.default.COUNT,
+    '--dry-run': arg_1.default.COUNT,
     '--help': arg_1.default.COUNT,
     '--release': arg_1.default.COUNT,
     '--verbose': arg_1.default.COUNT,

@@ -9,6 +9,7 @@ const constants_1 = require("../constants");
 const infer_1 = require("./infer");
 const getCommonConfig = (args) => {
     return {
+        dryRun: !!args['--dry-run'],
         help: !!args['--help'],
         verbose: !!args['--verbose'],
     };
@@ -37,14 +38,16 @@ const getIosConfig = async (args) => {
         simulator: path_1.default.join(buildProductsPath, `${buildType}-iphonesimulator`),
         hermesFrameworkPath: args['--hermes-framework'] || constants_1.Defaults.hermesFrameworkPath,
         scheme: args['--scheme'] || (await (0, infer_1.inferScheme)()),
-        workspace: args['--workspace'] || (await (0, infer_1.inferXCWorkspace)()),
+        workspace: args['--xcworkspace'] || (await (0, infer_1.inferXCWorkspace)()),
     };
 };
 exports.getIosConfig = getIosConfig;
 const getTasksAndroidConfig = async (args) => {
+    const commonConfig = (0, exports.getCommonConfig)(args);
+    const libraryName = !commonConfig.help ? args['--library'] || (await (0, infer_1.inferAndroidLibrary)()) : '';
     return {
-        ...(0, exports.getCommonConfig)(args),
-        libraryName: args['--library'] || (await (0, infer_1.inferAndroidLibrary)()),
+        ...commonConfig,
+        libraryName,
     };
 };
 exports.getTasksAndroidConfig = getTasksAndroidConfig;
