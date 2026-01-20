@@ -21,6 +21,7 @@
 - Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
 - Unify nullish value handling for data loaders ([#42070](https://github.com/expo/expo/pull/42070) by [@hassankhan](https://github.com/hassankhan))
 - Throw an error when loader module is not found in production ([#42166](https://github.com/expo/expo/pull/42166) by [@hassankhan](https://github.com/hassankhan))
+- Change loader function signature to `(request, params)` ([#42318](https://github.com/expo/expo/pull/42318) by [@hassankhan](https://github.com/hassankhan))
 
 ## 1.0.5 - 2025-12-04
 

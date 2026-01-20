@@ -1744,10 +1744,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // Register this module for loader HMR
         this.setupLoaderHmr(modulePath);
 
-        const maybeResponse = await routeModule.loader({
-          params: route.params,
-          request,
-        });
+        const maybeResponse = await routeModule.loader(request, route.params);
 
         let data: unknown;
         if (maybeResponse instanceof Response) {

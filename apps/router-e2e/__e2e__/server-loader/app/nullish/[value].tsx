@@ -7,7 +7,7 @@ export async function generateStaticParams(): Promise<Record<string, string>[]> 
   return [{ value: 'null' }, { value: 'undefined' }];
 }
 
-export async function loader({ params }: { params: { value: string } }) {
+export async function loader(_: Request, params: { value: string }) {
   if (params.value === 'null') {
     return null;
   }
