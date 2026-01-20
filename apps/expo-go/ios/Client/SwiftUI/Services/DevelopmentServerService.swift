@@ -7,7 +7,7 @@ import UIKit
 class DevelopmentServerService: ObservableObject {
   @Published var developmentServers: [DevelopmentServer] = []
 
-  private let discoveryInterval: TimeInterval = 2.0
+  private let discoveryInterval: TimeInterval = 3.0
   private let remoteRefreshInterval: TimeInterval = 10.0
   private let remoteCacheKey = "expo-dev-sessions-cache"
   private var remoteFailureCount = 0
@@ -35,8 +35,8 @@ class DevelopmentServerService: ObservableObject {
   }
 
   func setSessionSecret(_ sessionSecret: String?) {
+    guard self.sessionSecret != sessionSecret else { return }
     self.sessionSecret = sessionSecret
-    startRemoteRefreshLoop()
   }
 
   func refreshRemoteSessions() async {
@@ -125,36 +125,27 @@ class DevelopmentServerService: ObservableObject {
   }
 
   private func fetchLocalManifestInfo(url: String) async -> (name: String?, iconUrl: String?)? {
-    let manifestPaths = [
-      "\(url)/manifest",
-      "\(url)/manifest?platform=ios"
-    ]
+    guard let manifestURL = URL(string: "\(url)/manifest?platform=ios") else {
+      return nil
+    }
 
-    for manifestPath in manifestPaths {
-      guard let manifestURL = URL(string: manifestPath) else {
-        continue
+    var request = URLRequest(url: manifestURL)
+    request.setValue("application/expo+json,application/json", forHTTPHeaderField: "Accept")
+    request.setValue("ios", forHTTPHeaderField: "Expo-Platform")
+    request.setValue("client", forHTTPHeaderField: "Expo-Client-Environment")
+    request.setValue(Versions.sharedInstance.sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
+
+    do {
+      let (data, response) = try await URLSession.shared.data(for: request)
+      guard let httpResponse = response as? HTTPURLResponse,
+            (200..<300).contains(httpResponse.statusCode) else {
+        return nil
       }
 
-      var request = URLRequest(url: manifestURL)
-      request.setValue("application/expo+json,application/json", forHTTPHeaderField: "Accept")
-      request.setValue("ios", forHTTPHeaderField: "Expo-Platform")
-      request.setValue("client", forHTTPHeaderField: "Expo-Client-Environment")
-      request.setValue(Versions.sharedInstance.sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
-
-      do {
-        let (data, response) = try await URLSession.shared.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse,
-              (200..<300).contains(httpResponse.statusCode) else {
-          continue
-        }
-
-        if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-          if let parsed = parseManifestInfo(json: json, baseUrl: url) {
-            return parsed
-          }
-        }
-      } catch {}
-    }
+      if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+        return parseManifestInfo(json: json, baseUrl: url)
+      }
+    } catch {}
 
     return nil
   }
