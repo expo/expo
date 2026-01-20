@@ -70,7 +70,7 @@ public final class SharingModule: Module {
       let rawPayloads = try getSharePayloads(appGroupId: appGroupId)
 
       return try await withThrowingTaskGroup(of: (Int, ExpoResolvedSharePayload).self) { [weak self] group in
-        guard self != nil else {
+        guard let self else {
           return []
         }
 

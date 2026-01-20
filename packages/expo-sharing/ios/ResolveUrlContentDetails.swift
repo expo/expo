@@ -26,10 +26,10 @@ internal func resolveUrlContentDetails(url: URL) async throws -> ContentDetails 
 
   let mimeType = httpResponse.mimeType ?? "text/plain"
   let expoContentType = ExpoContentType.from(mimeType: mimeType)
-  var contentSize = Int(httpResponse.expectedContentLength)
-
-  if let contentLengthString = httpResponse.allHeaderFields["Content-Length"] as? String, let contentLength = Int(contentLengthString) {
-    contentSize = contentLength
+  let contentSize = if let contentLengthString = httpResponse.allHeaderFields["Content-Length"] as? String, let contentLength = Int(contentLengthString) {
+    contentLength
+  } else {
+    Int(httpResponse.expectedContentLength)
   }
 
   return ContentDetails(
