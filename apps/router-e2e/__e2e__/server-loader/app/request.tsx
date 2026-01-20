@@ -3,8 +3,8 @@ import { Container } from '../components/Container';
 import { Table, TableRow } from '../components/Table';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
 
-export const loader: LoaderFunction = ({ request }) => {
-  // In SSG, request is unavailable since there's no HTTP request at build time
+export const loader: LoaderFunction = (request, params) => {
+  // In SSG, request is undefined since there's no HTTP request at build-time
   if (!request) {
     return { headers: null, url: null, method: null };
   }
@@ -18,7 +18,7 @@ export const loader: LoaderFunction = ({ request }) => {
     url: request.url,
     method: request.method,
   };
-}
+};
 
 export default function RequestRoute() {
   const pathname = usePathname();

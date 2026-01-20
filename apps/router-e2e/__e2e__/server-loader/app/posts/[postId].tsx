@@ -16,7 +16,7 @@ export async function generateStaticParams(params: {
   ];
 }
 
-export async function loader({ params }) {
+export async function loader(_: Request, params: Record<string, string | string[]>) {
   return Promise.resolve({
     params,
   });

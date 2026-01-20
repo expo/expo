@@ -71,7 +71,7 @@ export function createEnvironment(input) {
             throw new Error(`Loader module not found at: ${route.loader}`);
         }
         const params = parseParams(request, route);
-        return loaderModule.loader({ params, request: new ImmutableRequest(request) });
+        return loaderModule.loader(new ImmutableRequest(request), params);
     }
     return {
         async getRoutesManifest() {

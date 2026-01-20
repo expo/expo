@@ -92,7 +92,7 @@ export function createEnvironment(input: EnvironmentInput) {
     }
 
     const params = parseParams(request, route);
-    return loaderModule.loader({ params, request: new ImmutableRequest(request) });
+    return loaderModule.loader(new ImmutableRequest(request), params);
   }
 
   return {

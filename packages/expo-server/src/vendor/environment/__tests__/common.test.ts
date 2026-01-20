@@ -351,10 +351,7 @@ describe('getHtml', () => {
     );
 
     expect(input.loadModule).toHaveBeenCalledWith('_expo/loaders/index.js');
-    expect(loaderModule.loader).toHaveBeenCalledWith({
-      params: {},
-      request: expect.any(ImmutableRequest),
-    });
+    expect(loaderModule.loader).toHaveBeenCalledWith(expect.any(ImmutableRequest), {});
     expect(mockSSRModule.getStaticContent).toHaveBeenCalledWith(
       expect.any(URL),
       expect.objectContaining({
@@ -462,10 +459,7 @@ describe('getLoaderData', () => {
 
     expect(result).toBeInstanceOf(Response);
     expect(await result.json()).toEqual(loaderData);
-    expect(loaderModule.loader).toHaveBeenCalledWith({
-      params: {},
-      request: expect.any(ImmutableRequest),
-    });
+    expect(loaderModule.loader).toHaveBeenCalledWith(expect.any(ImmutableRequest), {});
   });
 
   it('returns `Response` with `{}` body when route has no loader', async () => {
@@ -520,10 +514,7 @@ describe('getLoaderData', () => {
       })
     );
 
-    expect(loaderModule.loader).toHaveBeenCalledWith({
-      params: { id: '123' },
-      request: expect.any(ImmutableRequest),
-    });
+    expect(loaderModule.loader).toHaveBeenCalledWith(expect.any(ImmutableRequest), { id: '123' });
   });
 
   it('normalizes `undefined` loader result to `{}`', async () => {
