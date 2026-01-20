@@ -74,7 +74,7 @@ export interface StackToolbarButtonProps {
    *
    * Can be a string representing an SFSymbol or an image source.
    *
-   * > **Note**: When used in placement="bottom", only string SFSymbols are supported. Use the `image` prop to provide custom images.
+   * > **Note**: When used in `placement="bottom"`, only string SFSymbols are supported. Use the `image` prop to provide custom images.
    */
   icon?: StackHeaderItemSharedProps['icon'];
   // TODO(@ubax): Add useImage support in a follow-up PR.

@@ -486,8 +486,8 @@ By default, when the keyboard is displayed on Android, the native tabs automatic
 
 Native tabs automatically handle safe area insets, with platform-specific behavior:
 
-- **iOS**: The first `ScrollView` nested inside a native tabs screen has [automatic content inset adjustment](https://reactnative.dev/docs/scrollview#contentinsetadjustmentbehavior-ios) enabled. This ensures content scrolls correctly behind the tab bar.
 - **Android**: Screen content is automatically wrapped in a `SafeAreaView` that applies the **bottom** inset for the tab bar. Other insets (top, left, right) must be handled manually.
+- **iOS**: The first `ScrollView` nested inside a native tabs screen has [automatic content inset adjustment](https://reactnative.dev/docs/scrollview#contentinsetadjustmentbehavior-ios) enabled. This ensures content scrolls correctly behind the tab bar.
 
 #### Disabling automatic content insets
 

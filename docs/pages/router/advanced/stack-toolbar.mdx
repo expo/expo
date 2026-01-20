@@ -5,7 +5,7 @@ description: Learn how to use the iOS toolbar in Stack navigation with Expo Rout
 
 import { Collapsible } from '~/ui/components/Collapsible';
 
-> **important** `Stack.Toolbar` is an alpha API available on **iOS only** starting from **SDK 55**. The API may change without notice.
+> **important** `Stack.Toolbar` is an alpha API available on **iOS only** in **Expo SDK 55** and later. The API is subject to breaking changes.
 
 [`Stack.Toolbar`](/versions/unversioned/sdk/router/#stacktoolbar) lets you add native iOS toolbar items to your Stack screens. You can place buttons, menus, and custom views in the header (left or right side) or in the bottom toolbar area.
 
@@ -100,7 +100,7 @@ export default function Page() {
 }
 ```
 
-> **info** The `useImage` + `image` prop pattern for bottom toolbar custom images is a temporary API and may change in future releases.
+> **info** The `useImage` and `image` prop pattern for bottom toolbar custom images is a temporary API and may change in future releases.
 
 ## Building action menus
 
@@ -333,4 +333,4 @@ You cannot nest `Stack.Toolbar` components inside each other.
 
 ## Learn more
 
-For complete API documentation including all available props, see the [Stack.Toolbar API reference](/versions/unversioned/sdk/router/#stacktoolbar).
+For complete API documentation, including all available props, see the [`Stack.Toolba`r API reference](/versions/unversioned/sdk/router/#stacktoolbar).
