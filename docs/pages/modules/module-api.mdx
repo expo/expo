@@ -910,8 +910,19 @@ With regular optional types, both `undefined` and `null` from JavaScript are con
 
 #### Properties
 
-- **isUndefined**: `Bool` — Returns `true` if the JavaScript value was `undefined`, `false` otherwise.
-- **optional**: `InnerType?` — Returns the unwrapped value if present, or `null` if the value was `undefined`.
+<APIMethod
+  name="isUndefined"
+  comment="Returns `true` if the JavaScript value was `undefined`, `false` otherwise."
+  returnTypeName="Bool"
+  isProperty
+/>
+
+<APIMethod
+  name="optional"
+  comment="Returns the unwrapped value if present, or `null` if the value was `undefined`."
+  returnTypeName="InnerType?"
+  isProperty
+/>
 
 <CodeBlocksTable>
 
