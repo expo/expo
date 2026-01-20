@@ -4,7 +4,7 @@ import SwiftUI
 import ExpoModulesCore
 import ExpoUI
 
-internal struct CustomBorderModifier: ViewModifier, Record {
+struct CustomBorderModifier: ViewModifier, Record {
   @Field var color: Color = .red
   @Field var width: CGFloat = 2
   @Field var cornerRadius: CGFloat = 0

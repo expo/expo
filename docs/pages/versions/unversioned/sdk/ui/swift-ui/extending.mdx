@@ -189,7 +189,7 @@ import SwiftUI
 import ExpoModulesCore
 import ExpoUI
 
-internal struct CustomBorderModifier: ViewModifier, Record {
+struct CustomBorderModifier: ViewModifier, Record {
   @Field var color: Color = .red
   @Field var width: CGFloat = 2
   @Field var cornerRadius: CGFloat = 0
@@ -289,7 +289,6 @@ Congratulations! You've learned how to extend Expo UI with custom SwiftUI compon
 
 Here are some ideas for what to build next:
 
-- Create reusable UI components for your design system
 - Build custom modifiers for app-specific styling patterns
 - Wrap third-party SwiftUI libraries for use in React Native
 - Share your components as an npm package for others to use
