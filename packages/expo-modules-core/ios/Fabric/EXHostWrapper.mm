@@ -19,6 +19,12 @@
   return self;
 }
 
+- (id)findModuleWithName:(const char *)name lazilyLoadIfNecessary:(BOOL)lazilyLoadIfNecessary
+{
+  RCTModuleRegistry *moduleRegistry = _host.moduleRegistry;
+  return [moduleRegistry moduleForName:name lazilyLoadIfNecessary:lazilyLoadIfNecessary];
+}
+
 - (nullable UIView *)findViewWithTag:(NSInteger)tag
 {
   RCTComponentViewRegistry *componentViewRegistry = _host.surfacePresenter.mountingManager.componentViewRegistry;

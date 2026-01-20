@@ -18,5 +18,7 @@ NS_SWIFT_NAME(ExpoHostWrapper)
 
 - (nullable UIView *)findViewWithTag:(NSInteger)tag;
 
+- (id)findModuleWithName:(const char *)name lazilyLoadIfNecessary:(BOOL)lazilyLoadIfNecessary;
+
 @end
 

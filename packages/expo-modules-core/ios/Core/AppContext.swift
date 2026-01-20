@@ -254,12 +254,11 @@ public final class AppContext: NSObject, @unchecked Sendable {
    Provides access to the image loader from legacy module registry.
    */
   public var imageLoader: EXImageLoaderInterface? {
-    guard let bridge = reactBridge else {
-      // TODO: Find a way to do this without a bridge
-      log.warn("Unable to get the image loader because the bridge is not available.")
+    guard let loader = hostWrapper?.findModule(withName: "RCTImageLoader", lazilyLoadIfNecessary: true) as? RCTImageLoader else {
+      log.warn("Unable to get the RCTImageLoader module.")
       return nil
     }
-    return ImageLoader(bridge: bridge)
+    return ImageLoader(rctImageLoader: loader)
   }
 
   /**

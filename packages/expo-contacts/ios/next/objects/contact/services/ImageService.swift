@@ -21,7 +21,7 @@ class ImageService {
     guard let url = URL(string: url), url.isFileURL else {
       throw RemoteImageUriException(url)
     }
-    guard FileSystemUtilities.permissions(appContext, for: url.standardized).contains(.read) && FileManager.default.isReadableFile(atPath: url.path) else {
+    guard FileSystemUtilities.isReadableFile(appContext, url.standardized) else {
       throw FailedToOpenImageException()
     }
     guard let image = UIImage(contentsOfFile: url.path) else {
