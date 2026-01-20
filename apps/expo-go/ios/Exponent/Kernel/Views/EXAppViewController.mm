@@ -192,10 +192,6 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_main_queue(), ^{
       [self _showErrorWithType:kEXFatalErrorTypeLoading error:error];
     });
-  } else if ([domain isEqualToString:@"JSServer"] && [_appRecord.appManager enablesDeveloperTools]) {
-    // RCTRedBox already handled this
-  } else if ([domain rangeOfString:RCTErrorDomain].length > 0 && [_appRecord.appManager enablesDeveloperTools]) {
-    // RCTRedBox already handled this
   } else {
     dispatch_async(dispatch_get_main_queue(), ^{
       [self _showErrorWithType:kEXFatalErrorTypeException error:error];

@@ -207,12 +207,12 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
         [appStateModule setState:@"active"];
       }
       _visibleApp = appRecord;
+      [self _unregisterUnusedAppRecords];
     } else {
       _visibleApp = nil;
-    }
-    
-    if (_visibleApp != nil) {
-      [self _unregisterUnusedAppRecords];
+      if (appRecordPreviouslyVisible) {
+        [_appRegistry unregisterAppWithRecord:appRecordPreviouslyVisible];
+      }
     }
   }
 }
