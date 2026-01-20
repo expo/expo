@@ -1,7 +1,7 @@
 import { getConfig } from '@expo/config';
 import { IOSConfig } from '@expo/config-plugins';
-import * as fs from 'fs';
-import * as path from 'path';
+import fs from 'fs';
+import path from 'path';
 
 export async function updateXCodeProject(projectRoot: string): Promise<void> {
   const pbxProject = IOSConfig.XcodeUtils.getPbxproj(projectRoot);
