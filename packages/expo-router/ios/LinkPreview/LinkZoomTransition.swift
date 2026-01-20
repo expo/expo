@@ -18,9 +18,9 @@ class LinkZoomTransitionsSourceRepository {
   private var sources: [String: LinkSourceInfo] = [:]
   private let lock = NSLock()
 
-  private weak var logger: Logger?
+  private weak var logger: ExpoModulesCore.Logger?
 
-  init(logger: Logger?) {
+  init(logger: ExpoModulesCore.Logger?) {
     self.logger = logger
   }
 

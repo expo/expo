@@ -8,12 +8,12 @@ import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
-import de.greenrobot.event.EventBus
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.home.HomeActivityEvent
 import host.exp.exponent.home.HomeAppViewModel
@@ -21,16 +21,19 @@ import host.exp.exponent.home.HomeAppViewModelFactory
 import host.exp.exponent.home.RootNavigation
 import host.exp.exponent.home.auth.AuthActivity
 import host.exp.exponent.home.auth.AuthResult
-import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.ExpoViewKernel
+import host.exp.exponent.kernel.Kernel
 import host.exp.exponent.services.ThemeSetting
 import host.exp.exponent.utils.ExperienceRTLManager
 import host.exp.exponent.utils.currentDeviceIsAPhone
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
-import org.json.JSONException
+import javax.inject.Inject
 
-open class HomeActivity : BaseExperienceActivity() {
+open class HomeActivity : AppCompatActivity() {
+  @Inject
+  protected lateinit var kernel: Kernel
+
   val homeActivityEvents = MutableSharedFlow<HomeActivityEvent>()
 
   val authLauncher = registerForActivityResult(AuthActivity.Contract()) { result ->
@@ -54,7 +57,7 @@ open class HomeActivity : BaseExperienceActivity() {
 
   //region Activity Lifecycle
   override fun onCreate(savedInstanceState: Bundle?) {
-    usesComposeNavigation = true
+    NativeModuleDepsProvider.instance.inject(HomeActivity::class.java, this)
 
     enableEdgeToEdge()
 
@@ -66,18 +69,7 @@ open class HomeActivity : BaseExperienceActivity() {
 
     super.onCreate(savedInstanceState)
 
-    NativeModuleDepsProvider.instance.inject(HomeActivity::class.java, this)
-
-    manifest = exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest
-    experienceKey = try {
-      ExperienceKey.fromManifest(manifest!!)
-    } catch (_: JSONException) {
-      ExperienceKey("")
-    }
-
     updateStatusBarForTheme(viewModel.selectedTheme.value)
-
-    EventBus.getDefault().registerSticky(this)
 
     ExperienceRTLManager.setRTLPreferences(this, allowRTL = false, forceRTL = false)
 
@@ -112,11 +104,6 @@ open class HomeActivity : BaseExperienceActivity() {
     updateStatusBarForTheme(viewModel.selectedTheme.value)
   }
   //endregion Activity Lifecycle
-
-  override fun onError(intent: Intent) {
-    intent.putExtra(ErrorActivity.IS_HOME_KEY, true)
-    kernel.setHasError()
-  }
 
   override fun onConfigurationChanged(newConfig: Configuration) {
     super.onConfigurationChanged(newConfig)

@@ -254,13 +254,6 @@ NS_ASSUME_NONNULL_BEGIN
                                            iconUrl:iconUrl];
 }
 
-- (void)getHistoryUrlForScopeKey:(NSString *)scopeKey completion:(void (^)(NSString *))completion
-{
-  if (completion) {
-    completion(nil);
-  }
-}
-
 - (void)setIsNuxFinished:(BOOL)isFinished
 {
   [[NSUserDefaults standardUserDefaults] setBool:isFinished forKey:kEXHomeIsNuxFinishedDefaultsKey];

@@ -3,16 +3,16 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { Badge, Icon, Label } from '../../primitives';
 
-export interface StackHeaderLabelProps {
+export interface StackToolbarLabelProps {
   /**
    * The text to display as the label for the tab.
    */
   children?: string;
 }
 
-export const StackHeaderLabel: React.FC<StackHeaderLabelProps> = Label;
+export const StackToolbarLabel: React.FC<StackToolbarLabelProps> = Label;
 
-export type StackHeaderIconProps =
+export type StackToolbarIconProps =
   | {
       // TODO: add support for vector icons
       src: ImageSourcePropType;
@@ -21,9 +21,9 @@ export type StackHeaderIconProps =
       sf: SFSymbol;
     };
 
-export const StackHeaderIcon: React.FC<StackHeaderIconProps> = Icon;
+export const StackToolbarIcon: React.FC<StackToolbarIconProps> = Icon;
 
-export interface StackHeaderBadgeProps {
+export interface StackToolbarBadgeProps {
   /**
    * The text to display as the badge
    */
@@ -34,4 +34,4 @@ export interface StackHeaderBadgeProps {
   >;
 }
 
-export const StackHeaderBadge: React.FC<StackHeaderBadgeProps> = Badge;
+export const StackToolbarBadge: React.FC<StackToolbarBadgeProps> = Badge;

@@ -10,6 +10,7 @@ import { background } from './background';
 import { containerShape } from './containerShape';
 import { createModifier, ModifierConfig } from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
+import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
 import type { Color } from './types';
@@ -96,6 +97,30 @@ export const frame = (params: {
     | 'bottomLeading'
     | 'bottomTrailing';
 }) => createModifier('frame', params);
+
+/**
+ * Positions this view within an invisible frame with a size relative to the nearest container.
+ * @param params - The content relative frame parameters: `axes`, `count`, `span`, `spacing` and `alignment`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/containerRelativeFrame(_:alignment:)).
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ */
+export const containerRelativeFrame = (params: {
+  axes: 'horizontal' | 'vertical' | 'both';
+  count?: number;
+  span?: number;
+  spacing?: number;
+  alignment?:
+    | 'center'
+    | 'leading'
+    | 'trailing'
+    | 'top'
+    | 'bottom'
+    | 'topLeading'
+    | 'topTrailing'
+    | 'bottomLeading'
+    | 'bottomTrailing';
+}) => createModifier('containerRelativeFrame', params);
 
 /**
  * Sets padding on a view.
@@ -520,6 +545,26 @@ export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
 
 /**
+ * Disables the move action for a view in a list.
+ * Apply to items within a `ForEach` to prevent them from being moved.
+ * @param disabled - Whether moving should be disabled
+ * @default true
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/movedisabled(_:)).
+ */
+export const moveDisabled = (disabled: boolean = true) =>
+  createModifier('moveDisabled', { disabled });
+
+/**
+ * Disables the delete action for a view in a list.
+ * Apply to items within a `ForEach` to prevent them from being deleted.
+ * @param disabled - Whether deletion should be disabled
+ * @default true
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/deletedisabled(_:)).
+ */
+export const deleteDisabled = (disabled: boolean = true) =>
+  createModifier('deleteDisabled', { disabled });
+
+/**
  * Controls the dismissal behavior of menu actions.
  * @param behavior - The menu action dismiss behavior.
  * @platform ios 16.4+
@@ -889,6 +934,14 @@ export const submitLabel = (
   submitLabel: 'continue' | 'done' | 'go' | 'join' | 'next' | 'return' | 'route' | 'search' | 'send'
 ) => createModifier('submitLabel', { submitLabel });
 
+export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
+/**
+ * Sets the style for a List view.
+ * @param style - The list style to apply.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/liststyle(_:)).
+ */
+export const listStyle = (style: ListStyle) => createModifier('listStyle', { style });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -952,8 +1005,12 @@ export type BuiltInModifier =
   | ReturnType<typeof glassEffectId>
   | ReturnType<typeof animation>
   | ReturnType<typeof containerShape>
+  | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
+  | ReturnType<typeof moveDisabled>
+  | ReturnType<typeof deleteDisabled>
+  | ReturnType<typeof environment>
   | ReturnType<typeof listRowBackground>
   | ReturnType<typeof listRowSeparator>
   | ReturnType<typeof truncationMode>
@@ -979,7 +1036,8 @@ export type BuiltInModifier =
   | ReturnType<typeof submitLabel>
   | ReturnType<typeof datePickerStyle>
   | ReturnType<typeof progressViewStyle>
-  | ReturnType<typeof gaugeStyle>;
+  | ReturnType<typeof gaugeStyle>
+  | ReturnType<typeof listStyle>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -1032,3 +1090,4 @@ export * from './datePickerStyle';
 export * from './progressViewStyle';
 export * from './gaugeStyle';
 export * from './presentationModifiers';
+export * from './environment';

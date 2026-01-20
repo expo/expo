@@ -39,6 +39,7 @@ export function NativeTabsNavigator({
   badgeBackgroundColor,
   indicatorColor,
   badgeTextColor,
+  shadowColor,
   ...rest
 }: InternalNativeTabsProps) {
   if (use(NativeTabsContext)) {
@@ -79,6 +80,7 @@ export function NativeTabsNavigator({
       badgeBackgroundColor,
       indicatorColor,
       badgeTextColor,
+      shadowColor,
     },
   });
 

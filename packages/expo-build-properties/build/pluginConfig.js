@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.resolveConfigValue = resolveConfigValue;
 exports.validateConfig = validateConfig;
 const ajv_1 = __importDefault(require("ajv"));
 const semver_1 = __importDefault(require("semver"));
@@ -21,9 +22,23 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
         deploymentTarget: '15.1',
     },
 };
+/**
+ * Resolves a shared config value with platform-specific override.
+ * Platform-specific values take precedence over top-level values.
+ */
+function resolveConfigValue(config, platform, key) {
+    return config[platform]?.[key] ?? config[key];
+}
 const schema = {
     type: 'object',
     properties: {
+        buildReactNativeFromSource: { type: 'boolean', nullable: true },
+        reactNativeReleaseLevel: {
+            type: 'string',
+            enum: ['stable', 'canary', 'experimental'],
+            nullable: true,
+        },
+        useHermesV1: { type: 'boolean', nullable: true },
         android: {
             type: 'object',
             properties: {
@@ -258,6 +273,19 @@ function validateConfig(config) {
     if (config.android?.enableShrinkResourcesInReleaseBuilds === true &&
         config.android?.enableMinifyInReleaseBuilds !== true) {
         throw new Error('`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableMinifyInReleaseBuilds` to be enabled.');
+    }
+    // Validate useHermesV1 requires buildReactNativeFromSource for Android
+    const androidUseHermesV1 = resolveConfigValue(config, 'android', 'useHermesV1');
+    const androidBuildFromSource = resolveConfigValue(config, 'android', 'buildReactNativeFromSource') ??
+        config.android?.buildFromSource; // Deprecated fallback
+    if (androidUseHermesV1 === true && androidBuildFromSource !== true) {
+        throw new Error('`useHermesV1` requires `buildReactNativeFromSource` to be `true` for Android.');
+    }
+    // Validate useHermesV1 requires buildReactNativeFromSource for iOS
+    const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1');
+    const iosBuildFromSource = resolveConfigValue(config, 'ios', 'buildReactNativeFromSource');
+    if (iosUseHermesV1 === true && iosBuildFromSource !== true) {
+        throw new Error('`useHermesV1` requires `buildReactNativeFromSource` to be `true` for iOS.');
     }
     return config;
 }

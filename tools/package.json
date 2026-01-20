@@ -37,7 +37,7 @@
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "cwait": "^1.1.2",
-    "diff": "^5.1.0",
+    "diff": "^8.0.3",
     "folder-hash": "^4.0.4",
     "fs-extra": "^11.2.0",
     "getenv": "^2.0.0",
@@ -60,7 +60,7 @@
     "recursive-omit-by": "^2.0.0",
     "semver": "^7.6.3",
     "strip-ansi": "^6.0.0",
-    "tar": "^7.4.3",
+    "tar": "^7.5.3",
     "terminal-link": "^2.1.1",
     "typedoc": "^0.28.15",
     "uuid": "^9.0.0"
