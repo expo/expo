@@ -5,12 +5,21 @@ import UniformTypeIdentifiers
 import AVFoundation
 
 class ShareIntoViewController: SLComposeServiceViewController {
-  private var hostAppScheme: String? {
-    return Bundle.main.object(forInfoDictionaryKey: "MainTargetUrlScheme") as? String
+  // Only the following two properties cause a hard-crash of the share extension, because the failure originates from
+  // plugin misconfiguration. Other errors should be handled in the view controller and preferrably print a message, because it
+  // is not possible for our users to handle them at runtime.
+  private var hostAppScheme: String {
+    guard let _hostAppScheme = Bundle.main.object(forInfoDictionaryKey: "MainTargetUrlScheme") as? String else {
+      fatalError("Expo-sharing has failed to to load the app scheme from `Info.plist`. Make sure the `expo-sharing` config plugin is configured correctly.")
+    }
+    return _hostAppScheme
   }
 
-  private var appGroupId: String? {
-    return Bundle.main.object(forInfoDictionaryKey: "AppGroupId") as? String
+  private var appGroupId: String {
+    guard let _appGroupId = Bundle.main.object(forInfoDictionaryKey: "AppGroupId") as? String else {
+      fatalError("Expo-sharing has failed to load the app group ID from `Info.plist`. Make sure the `expo-sharing` config plugin is configured correctly.")
+    }
+    return _appGroupId
   }
 
   // MARK: - Lifecycle
@@ -68,44 +77,41 @@ class ShareIntoViewController: SLComposeServiceViewController {
 
   private func saveToUserDefaults(_ payload: [SharePayload]) {
     guard let userDefaults = UserDefaults(suiteName: appGroupId) else {
-      print("Error: Expo-sharing could not initialize UserDefaults with group: \(appGroupId ?? "unresolved group id")")
+      print("Error: Expo-sharing could not initialize UserDefaults with group: \(appGroupId)")
       return
     }
 
     if let encoded = try? JSONEncoder().encode(payload) {
       userDefaults.set(encoded, forKey: SHARE_INTO_DEFAULTS_KEY)
       userDefaults.synchronize()
+    } else {
+      print("Error: Expo-sharing has failed to serialize shared data to JSON")
     }
   }
 
   // MARK: - Provider Parsing
 
   private func parseProvider(_ provider: NSItemProvider) async -> SharePayload? {
-    guard let appGroupId else {
-      print("Error: Expo-sharing has failed to resolve the appGroupId, the shared data cannot be processed")
-      return nil
-    }
-
     if provider.hasItemConformingToTypeIdentifier(UTType.url.identifier) &&
     !provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
       return await handleWebURL(provider)
     }
 
     if provider.hasItemConformingToTypeIdentifier(UTType.audio.identifier) {
-      return await handleFile(provider, type: .audio, utType: .audio, appGroupId: appGroupId)
+      return await handleFile(provider, type: .audio, utType: .audio)
     }
 
     if provider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-      return await handleFile(provider, type: .video, utType: .movie, appGroupId: appGroupId)
+      return await handleFile(provider, type: .video, utType: .movie)
     }
 
     if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-      return await handleFile(provider, type: .image, utType: .image, appGroupId: appGroupId)
+      return await handleFile(provider, type: .image, utType: .image)
     }
 
     if provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) ||
     provider.hasItemConformingToTypeIdentifier(UTType.pdf.identifier) {
-      return await handleFile(provider, type: .file, utType: .data, appGroupId: appGroupId)
+      return await handleFile(provider, type: .file, utType: .data)
     }
 
     if provider.hasItemConformingToTypeIdentifier(UTType.text.identifier) {
@@ -155,7 +161,7 @@ class ShareIntoViewController: SLComposeServiceViewController {
     }
   }
 
-  private func handleFile(_ provider: NSItemProvider, type: ShareType, utType: UTType, appGroupId: String) async -> SharePayload? {
+  private func handleFile(_ provider: NSItemProvider, type: ShareType, utType: UTType) async -> SharePayload? {
     return await withCheckedContinuation { continuation in
       let identifier = provider.registeredTypeIdentifiers.first { providerIdentifier in
         UTType(providerIdentifier)?.conforms(to: utType) ?? false
@@ -163,20 +169,18 @@ class ShareIntoViewController: SLComposeServiceViewController {
 
       provider.loadItem(forTypeIdentifier: identifier, options: nil) { item, _ in
         if let url = item as? URL {
-          let result = self.copyAndProcessFile(url: url, type: type, appGroupId: appGroupId)
+          let result = self.copyAndProcessFile(url: url, type: type)
           continuation.resume(returning: result)
           return
         }
 
         if let data = item as? Data {
-          let ext = UTType(identifier)?.preferredFilenameExtension ?? "dat"
-          let fileName = UUID().uuidString + "." + ext
+          let fileName = UUID().randomFilename(forTypeIdentifier: identifier)
           let result = self.saveDataToAppGroup(
             data: data,
             fileName: fileName,
             type: type,
-            mimeType: UTType(identifier)?.preferredMIMEType,
-            appGroupId: appGroupId
+            mimeType: UTType(identifier)?.preferredMIMEType
           )
           continuation.resume(returning: result)
           return
@@ -184,7 +188,7 @@ class ShareIntoViewController: SLComposeServiceViewController {
 
         if type == .image, let image = item as? UIImage, let data = image.pngData() {
           let fileName = UUID().uuidString + ".png"
-          let result = self.saveDataToAppGroup(data: data, fileName: fileName, type: .image, mimeType: "image/png", appGroupId: appGroupId)
+          let result = self.saveDataToAppGroup(data: data, fileName: fileName, type: .image, mimeType: "image/png")
           continuation.resume(returning: result)
           return
         }
@@ -196,7 +200,7 @@ class ShareIntoViewController: SLComposeServiceViewController {
 
   // MARK: - File Management
 
-  private func copyAndProcessFile(url: URL, type: ShareType, appGroupId: String) -> SharePayload? {
+  private func copyAndProcessFile(url: URL, type: ShareType) -> SharePayload? {
     guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupId) else {
       return nil
     }
@@ -214,7 +218,7 @@ class ShareIntoViewController: SLComposeServiceViewController {
       return nil
     }
 
-    let size = (try? FileManager.default.attributesOfItem(atPath: destinationURL.path)[.size] as? Int)
+    let size = try? FileManager.default.attributesOfItem(atPath: destinationURL.path)[.size] as? Int
     let fileExt = destinationURL.pathExtension
     let mimeType = UTType(filenameExtension: fileExt)?.preferredMIMEType ?? "application/octet-stream"
 
@@ -231,7 +235,7 @@ class ShareIntoViewController: SLComposeServiceViewController {
     )
   }
 
-  private func saveDataToAppGroup(data: Data, fileName: String, type: ShareType, mimeType: String?, appGroupId: String) -> SharePayload? {
+  private func saveDataToAppGroup(data: Data, fileName: String, type: ShareType, mimeType: String?) -> SharePayload? {
     guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupId) else {
       return nil
     }
@@ -255,14 +259,8 @@ class ShareIntoViewController: SLComposeServiceViewController {
 
   @MainActor
   func openParentApp() {
-    guard let hostAppScheme else {
-      print("Error: Expo-sharing has failed to fetch the host app scheme. Cancelling the share request.")
-      self.close()
-      return
-    }
-
     guard let url = URL(string: "\(hostAppScheme)://expo-sharing") else {
-      return
+      fatalError("The app scheme \(hostAppScheme) is invalid - it is not possible to create a valid deep link URL with it")
     }
 
     openURL(url)
@@ -270,8 +268,8 @@ class ShareIntoViewController: SLComposeServiceViewController {
   }
 
   // This is a hack that allows us to open the main app target from a share-extension target. Technically this is really
-  // discouraged by apple, but I've found that multiple apps exist that use this method and pass the App Store review
-  // (TikTok for example). We should be good, as long as we mention this as a possible future instability in the docs.
+  // discouraged by apple, but I've found that multiple apps exist that use this method and pass the App Store review.
+  // We should mention this as a possible future issue in the docs.
   private func openURL(_ url: URL) {
     var responder: UIResponder? = self
     while responder != nil {
@@ -284,5 +282,15 @@ class ShareIntoViewController: SLComposeServiceViewController {
 
   private func close() {
     self.extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
+  }
+}
+
+private extension UUID {
+  func randomFilename(forTypeIdentifier identifier: String) -> String {
+    var ext = ""
+    if let preferredExtension = UTType(identifier)?.preferredFilenameExtension {
+      ext = ".\(preferredExtension)"
+    }
+    return UUID().uuidString + ext
   }
 }
