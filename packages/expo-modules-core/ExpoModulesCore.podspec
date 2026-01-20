@@ -108,7 +108,20 @@ Pod::Spec.new do |s|
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsitooling/JSITooling.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-jserrorhandler/React_jserrorhandler.framework/Headers"',
     ])
+
+    if shouldEnableWorkletsIntegration
+      pods_root = Pod::Config.instance.project_pods_root
+      react_native_worklets_node_modules_dir = File.join(File.dirname(`cd "#{Pod::Config.instance.installation_root.to_s}" && node --print "require.resolve('react-native-worklets/package.json')"`), '..')
+      react_native_worklets_dir_absolute = File.join(react_native_worklets_node_modules_dir, 'react-native-worklets')
+      workletsPath = Pathname.new(react_native_worklets_dir_absolute).relative_path_from(pods_root).to_s
+
+      header_search_paths.concat([
+        "\"$(PODS_ROOT)/#{workletsPath}/apple\"",
+        "\"$(PODS_ROOT)/#{workletsPath}/Common/cpp\"",
+      ])
+    end
   end
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'USE_HEADERMAP' => 'YES',
