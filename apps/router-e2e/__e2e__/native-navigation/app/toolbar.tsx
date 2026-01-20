@@ -283,7 +283,7 @@ export default function ToolbarScreen() {
         {/* Search button */}
         <Stack.Toolbar.Button
           hidden={!showSearchButton}
-          icon="magnifyingglass"
+          icon="sf:magnifyingglass"
           tintColor={Color.ios.systemBlue}
           onPress={handleSearch}
           separateBackground={!sharesBackgroundSearchButton}
@@ -321,7 +321,7 @@ export default function ToolbarScreen() {
         {!isSearchFocused && (
           <Stack.Toolbar.Button
             hidden={!showMicButton}
-            icon="mic"
+            icon="sf:mic"
             tintColor={Color.ios.systemGreen}
             onPress={handleMic}
           />
@@ -329,7 +329,7 @@ export default function ToolbarScreen() {
 
         {isSearchFocused && (
           <Stack.Toolbar.Button
-            icon="xmark.circle.fill"
+            icon="sf:xmark.circle.fill"
             tintColor={Color.ios.systemRed}
             onPress={handleClearSearch}
           />
@@ -357,14 +357,14 @@ export default function ToolbarScreen() {
         {/* Nested menu with dynamic content */}
         {showMenu && (
           <Stack.Toolbar.Menu
-            icon="ellipsis.circle"
+            icon="sf:ellipsis.circle"
             title="Actions"
             tintColor={Color.ios.systemBrown}>
             {/* Simple actions */}
-            <Stack.Toolbar.MenuAction icon="paperplane" onPress={handleSendEmail}>
+            <Stack.Toolbar.MenuAction icon="sf:paperplane" onPress={handleSendEmail}>
               Send email
             </Stack.Toolbar.MenuAction>
-            <Stack.Toolbar.MenuAction icon="trash" destructive onPress={handleDeleteEmail}>
+            <Stack.Toolbar.MenuAction icon="sf:trash" destructive onPress={handleDeleteEmail}>
               Delete email
             </Stack.Toolbar.MenuAction>
 
@@ -379,12 +379,12 @@ export default function ToolbarScreen() {
             {/* Nested inline menu */}
             <Stack.Toolbar.Menu inline title="Organize">
               <Stack.Toolbar.MenuAction
-                icon="folder"
+                icon="sf:folder"
                 onPress={() => Alert.alert('Move', 'Moving to folder...')}>
                 Move to folder
               </Stack.Toolbar.MenuAction>
               <Stack.Toolbar.MenuAction
-                icon="tag"
+                icon="sf:tag"
                 onPress={() => Alert.alert('Tag', 'Adding tag...')}>
                 Add tag
               </Stack.Toolbar.MenuAction>
@@ -393,7 +393,7 @@ export default function ToolbarScreen() {
             {/* Nested menu with state-based selections */}
             <Stack.Toolbar.Menu title="Preferences" image={image2}>
               <Stack.Toolbar.MenuAction
-                icon="bell"
+                icon="sf:bell"
                 isOn={notificationsEnabled}
                 onPress={handleNotificationsToggle}>
                 {notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
@@ -402,19 +402,19 @@ export default function ToolbarScreen() {
               {/* Color selection submenu */}
               <Stack.Toolbar.Menu inline title="Favorite Color">
                 <Stack.Toolbar.MenuAction
-                  icon="circle.fill"
+                  icon="sf:circle.fill"
                   isOn={favoriteColors.includes('red')}
                   onPress={() => handleColorSelect('red')}>
                   Red
                 </Stack.Toolbar.MenuAction>
                 <Stack.Toolbar.MenuAction
-                  icon="circle.fill"
+                  icon="sf:circle.fill"
                   isOn={favoriteColors.includes('blue')}
                   onPress={() => handleColorSelect('blue')}>
                   Blue
                 </Stack.Toolbar.MenuAction>
                 <Stack.Toolbar.MenuAction
-                  icon="circle.fill"
+                  icon="sf:circle.fill"
                   isOn={favoriteColors.includes('green')}
                   onPress={() => handleColorSelect('green')}>
                   Green
@@ -424,25 +424,25 @@ export default function ToolbarScreen() {
 
             {/* Palette menu example (small icons only) */}
             <Stack.Toolbar.Menu palette inline title="Palette Actions">
-              <Stack.Toolbar.MenuAction icon="star" onPress={() => Alert.alert('Star')}>
+              <Stack.Toolbar.MenuAction icon="sf:star" onPress={() => Alert.alert('Star')}>
                 Star-palette
               </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction icon="flag" onPress={() => Alert.alert('Flag')}>
+              <Stack.Toolbar.MenuAction icon="sf:flag" onPress={() => Alert.alert('Flag')}>
                 Flag-palette
               </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
+              <Stack.Toolbar.MenuAction icon="sf:pin" onPress={() => Alert.alert('Pin')}>
                 Pin-palette
               </Stack.Toolbar.MenuAction>
             </Stack.Toolbar.Menu>
 
             <Stack.Toolbar.Menu inline elementSize="small" title="Small Actions">
-              <Stack.Toolbar.MenuAction icon="star.fill" onPress={() => Alert.alert('Star')}>
+              <Stack.Toolbar.MenuAction icon="sf:star.fill" onPress={() => Alert.alert('Star')}>
                 Star
               </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction icon="flag.fill" onPress={() => Alert.alert('Flag')}>
+              <Stack.Toolbar.MenuAction icon="sf:flag.fill" onPress={() => Alert.alert('Flag')}>
                 Flag
               </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction icon="pin.fill" onPress={() => Alert.alert('Pin')}>
+              <Stack.Toolbar.MenuAction icon="sf:pin.fill" onPress={() => Alert.alert('Pin')}>
                 Pin
               </Stack.Toolbar.MenuAction>
             </Stack.Toolbar.Menu>
@@ -450,16 +450,16 @@ export default function ToolbarScreen() {
             {/* elementSize="medium" displays actions horizontally with titles (iOS 16+) */}
             <Stack.Toolbar.Menu inline elementSize="medium" title="Medium Size">
               <Stack.Toolbar.MenuAction
-                icon="arrow.clockwise"
+                icon="sf:arrow.clockwise"
                 onPress={() => Alert.alert('Refreshing')}>
                 Refresh
               </Stack.Toolbar.MenuAction>
               <Stack.Toolbar.MenuAction
-                icon="arrow.2.circlepath"
+                icon="sf:arrow.2.circlepath"
                 onPress={() => Alert.alert('Resuming')}>
                 Resume
               </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
+              <Stack.Toolbar.MenuAction icon="sf:pin" onPress={() => Alert.alert('Pin')}>
                 Pin
               </Stack.Toolbar.MenuAction>
             </Stack.Toolbar.Menu>
@@ -467,17 +467,17 @@ export default function ToolbarScreen() {
             {/* elementSize="large" displays actions with larger icons and titles */}
             <Stack.Toolbar.Menu inline elementSize="large" title="Large Size">
               <Stack.Toolbar.MenuAction
-                icon="square.and.arrow.up"
+                icon="sf:square.and.arrow.up"
                 onPress={() => Alert.alert('Sharing')}>
                 Share
               </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction icon="doc.on.doc" onPress={() => Alert.alert('Copying')}>
+              <Stack.Toolbar.MenuAction icon="sf:doc.on.doc" onPress={() => Alert.alert('Copying')}>
                 Copy
               </Stack.Toolbar.MenuAction>
             </Stack.Toolbar.Menu>
 
             {/* Disabled action */}
-            <Stack.Toolbar.MenuAction icon="lock" disabled onPress={() => {}}>
+            <Stack.Toolbar.MenuAction icon="sf:lock" disabled onPress={() => {}}>
               Locked action
             </Stack.Toolbar.MenuAction>
           </Stack.Toolbar.Menu>

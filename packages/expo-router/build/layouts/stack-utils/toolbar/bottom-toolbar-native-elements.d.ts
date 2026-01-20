@@ -14,9 +14,6 @@ export interface NativeToolbarMenuProps {
     hidden?: boolean;
     hidesSharedBackground?: boolean;
     icon?: SFSymbol | ImageSourcePropType;
-    /**
-     * Image to display for the menu item.
-     */
     image?: ImageRef;
     imageRenderingMode?: 'template' | 'original';
     inline?: boolean;

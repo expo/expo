@@ -23,9 +23,7 @@ const NativeToolbarMenu = ({ accessibilityHint, accessibilityLabel, separateBack
     const sf = typeof computedIcon === 'string' ? computedIcon : undefined;
     const titleStyle = react_native_1.StyleSheet.flatten(style);
     const renderingMode = imageRenderingMode ?? (tintColor !== undefined ? 'template' : 'original');
-    return (<native_1.NativeLinkPreviewAction sharesBackground={!separateBackground} hidesSharedBackground={hidesSharedBackground} hidden={hidden} icon={sf} 
-    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    image={image} imageRenderingMode={renderingMode} destructive={destructive} subtitle={subtitle} accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint} displayAsPalette={palette} displayInline={inline} preferredElementSize={elementSize} tintColor={tintColor} titleStyle={titleStyle} barButtonItemStyle={variant === 'done' ? 'prominent' : variant} title={computedTitle} onSelected={() => { }} children={children} identifier={identifier}/>);
+    return (<native_1.NativeLinkPreviewAction sharesBackground={!separateBackground} hidesSharedBackground={hidesSharedBackground} hidden={hidden} icon={image ? undefined : sf} image={image} imageRenderingMode={renderingMode} destructive={destructive} subtitle={subtitle} accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint} displayAsPalette={palette} displayInline={inline} preferredElementSize={elementSize} tintColor={tintColor} titleStyle={titleStyle} barButtonItemStyle={variant === 'done' ? 'prominent' : variant} title={computedTitle} onSelected={() => { }} children={children} identifier={identifier}/>);
 };
 exports.NativeToolbarMenu = NativeToolbarMenu;
 // #endregion

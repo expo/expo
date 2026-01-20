@@ -1,3 +1,4 @@
+import { useImage as _useImage } from 'expo-image';
 import React from 'react';
 import { Text, View } from 'react-native';
 import { ScreenStackItem as _ScreenStackItem } from 'react-native-screens';
@@ -24,8 +25,13 @@ jest.mock('../../../toolbar/native', () => {
   };
 });
 
+jest.mock('expo-image', () => ({
+  useImage: jest.fn(() => null),
+}));
+
 const ScreenStackItem = _ScreenStackItem as jest.MockedFunction<typeof _ScreenStackItem>;
 const MockedRouterToolbarItem = RouterToolbarItem as jest.MockedFunction<typeof RouterToolbarItem>;
+const useImage = _useImage as jest.MockedFunction<typeof _useImage>;
 
 let consoleWarnMock: jest.SpyInstance;
 beforeEach(() => {
@@ -214,7 +220,7 @@ describe('Stack.Toolbar unified API', () => {
           <Stack>
             <Stack.Screen name="index">
               <Stack.Toolbar placement="left">
-                <Stack.Toolbar.Button icon="sidebar.left" onPress={() => {}} />
+                <Stack.Toolbar.Button icon="sf:sidebar.left" onPress={() => {}} />
               </Stack.Toolbar>
             </Stack.Screen>
           </Stack>
@@ -237,9 +243,9 @@ describe('Stack.Toolbar unified API', () => {
           <Stack>
             <Stack.Screen name="index">
               <Stack.Toolbar placement="left">
-                <Stack.Toolbar.Button icon="star" onPress={() => {}} />
+                <Stack.Toolbar.Button icon="sf:star" onPress={() => {}} />
                 <Stack.Toolbar.Spacer width={8} />
-                <Stack.Toolbar.Button icon="heart" onPress={() => {}} />
+                <Stack.Toolbar.Button icon="sf:heart" onPress={() => {}} />
               </Stack.Toolbar>
             </Stack.Screen>
           </Stack>
@@ -263,7 +269,7 @@ describe('Stack.Toolbar unified API', () => {
         index: () => (
           <>
             <Stack.Toolbar placement="left">
-              <Stack.Toolbar.Button icon="star" onPress={() => {}} />
+              <Stack.Toolbar.Button icon="sf:star" onPress={() => {}} />
             </Stack.Toolbar>
             <Text testID="index">index</Text>
           </>
@@ -391,7 +397,7 @@ describe('Stack.Toolbar unified API', () => {
           <Stack>
             <Stack.Screen name="index">
               <Stack.Toolbar placement="right">
-                <Stack.Toolbar.Menu icon="ellipsis.circle">
+                <Stack.Toolbar.Menu icon="sf:ellipsis.circle">
                   <Stack.Toolbar.MenuAction onPress={() => {}}>Action 1</Stack.Toolbar.MenuAction>
                 </Stack.Toolbar.Menu>
               </Stack.Toolbar>
@@ -444,7 +450,7 @@ describe('Stack.Toolbar unified API', () => {
         index: () => (
           <>
             <Stack.Toolbar placement="right">
-              <Stack.Toolbar.Button icon="plus" onPress={() => {}} />
+              <Stack.Toolbar.Button icon="sf:plus" onPress={() => {}} />
             </Stack.Toolbar>
             <Text testID="index">index</Text>
           </>
@@ -575,7 +581,7 @@ describe('Stack.Toolbar unified API', () => {
           <>
             <Stack.Toolbar>
               <Stack.Toolbar.Spacer />
-              <Stack.Toolbar.Button icon="magnifyingglass" onPress={() => {}} />
+              <Stack.Toolbar.Button icon="sf:magnifyingglass" onPress={() => {}} />
               <Stack.Toolbar.Spacer />
             </Stack.Toolbar>
             <Text testID="index">index</Text>
@@ -595,9 +601,9 @@ describe('Stack.Toolbar unified API', () => {
         index: () => (
           <>
             <Stack.Toolbar>
-              <Stack.Toolbar.Button icon="star" onPress={() => {}} />
+              <Stack.Toolbar.Button icon="sf:star" onPress={() => {}} />
               <Stack.Toolbar.Spacer /> {/* flexible - no width */}
-              <Stack.Toolbar.Button icon="heart" onPress={() => {}} />
+              <Stack.Toolbar.Button icon="sf:heart" onPress={() => {}} />
             </Stack.Toolbar>
             <Text testID="index">index</Text>
           </>
@@ -616,7 +622,7 @@ describe('Stack.Toolbar unified API', () => {
             <Stack>
               <Stack.Screen name="index">
                 <Stack.Toolbar>
-                  <Stack.Toolbar.Button icon="star" onPress={() => {}} />
+                  <Stack.Toolbar.Button icon="sf:star" onPress={() => {}} />
                 </Stack.Toolbar>
               </Stack.Screen>
             </Stack>
@@ -635,7 +641,7 @@ describe('Stack.Toolbar unified API', () => {
           <>
             <Stack.Toolbar>
               <Stack.Toolbar.Spacer />
-              <Stack.Toolbar.Button icon="magnifyingglass" onPress={() => {}} />
+              <Stack.Toolbar.Button icon="sf:magnifyingglass" onPress={() => {}} />
               <Stack.Toolbar.Spacer />
             </Stack.Toolbar>
             <Text testID="index">index</Text>
@@ -655,7 +661,11 @@ describe('Stack.Toolbar unified API', () => {
           index: () => (
             <>
               <Stack.Toolbar>
-                <Stack.Toolbar.Button icon="star" iconRenderingMode="template" onPress={() => {}} />
+                <Stack.Toolbar.Button
+                  icon="sf:star"
+                  iconRenderingMode="template"
+                  onPress={() => {}}
+                />
               </Stack.Toolbar>
               <Text testID="index">index</Text>
             </>
@@ -663,13 +673,9 @@ describe('Stack.Toolbar unified API', () => {
         });
 
         expect(screen.getByTestId('index')).toBeVisible();
-        expect(MockedRouterToolbarItem).toHaveBeenCalled();
-        // Find the call with the button props (not the spacer)
-        const buttonCall = MockedRouterToolbarItem.mock.calls.find(
-          (call) => call[0].systemImageName === 'star'
-        );
-        expect(buttonCall).toBeDefined();
-        expect(buttonCall![0].imageRenderingMode).toBe('template');
+        expect(MockedRouterToolbarItem).toHaveBeenCalledTimes(1);
+        expect(useImage).toHaveBeenCalledWith('sf:star', { maxWidth: 24, maxHeight: 24 });
+        expect(MockedRouterToolbarItem.mock.calls[0][0].imageRenderingMode).toBe('template');
       });
 
       it('passes imageRenderingMode="original" to RouterToolbarItem', () => {
@@ -678,7 +684,11 @@ describe('Stack.Toolbar unified API', () => {
           index: () => (
             <>
               <Stack.Toolbar>
-                <Stack.Toolbar.Button icon="star" iconRenderingMode="original" onPress={() => {}} />
+                <Stack.Toolbar.Button
+                  icon="sf:star"
+                  iconRenderingMode="original"
+                  onPress={() => {}}
+                />
               </Stack.Toolbar>
               <Text testID="index">index</Text>
             </>
@@ -686,12 +696,9 @@ describe('Stack.Toolbar unified API', () => {
         });
 
         expect(screen.getByTestId('index')).toBeVisible();
-        expect(MockedRouterToolbarItem).toHaveBeenCalled();
-        const buttonCall = MockedRouterToolbarItem.mock.calls.find(
-          (call) => call[0].systemImageName === 'star'
-        );
-        expect(buttonCall).toBeDefined();
-        expect(buttonCall![0].imageRenderingMode).toBe('original');
+        expect(MockedRouterToolbarItem).toHaveBeenCalledTimes(1);
+        expect(useImage).toHaveBeenCalledWith('sf:star', { maxWidth: 24, maxHeight: 24 });
+        expect(MockedRouterToolbarItem.mock.calls[0][0].imageRenderingMode).toBe('original');
       });
 
       it('defaults to template when tintColor is set', () => {
@@ -700,7 +707,7 @@ describe('Stack.Toolbar unified API', () => {
           index: () => (
             <>
               <Stack.Toolbar>
-                <Stack.Toolbar.Button icon="star" tintColor="green" onPress={() => {}} />
+                <Stack.Toolbar.Button icon="sf:star" tintColor="green" onPress={() => {}} />
               </Stack.Toolbar>
               <Text testID="index">index</Text>
             </>
@@ -708,12 +715,9 @@ describe('Stack.Toolbar unified API', () => {
         });
 
         expect(screen.getByTestId('index')).toBeVisible();
-        expect(MockedRouterToolbarItem).toHaveBeenCalled();
-        const buttonCall = MockedRouterToolbarItem.mock.calls.find(
-          (call) => call[0].systemImageName === 'star'
-        );
-        expect(buttonCall).toBeDefined();
-        expect(buttonCall![0].imageRenderingMode).toBe('template');
+        expect(MockedRouterToolbarItem).toHaveBeenCalledTimes(1);
+        expect(useImage).toHaveBeenCalledWith('sf:star', { maxWidth: 24, maxHeight: 24 });
+        expect(MockedRouterToolbarItem.mock.calls[0][0].imageRenderingMode).toBe('template');
       });
 
       it('defaults to original when no tintColor', () => {
@@ -722,7 +726,7 @@ describe('Stack.Toolbar unified API', () => {
           index: () => (
             <>
               <Stack.Toolbar>
-                <Stack.Toolbar.Button icon="star" onPress={() => {}} />
+                <Stack.Toolbar.Button icon="sf:star" onPress={() => {}} />
               </Stack.Toolbar>
               <Text testID="index">index</Text>
             </>
@@ -730,12 +734,9 @@ describe('Stack.Toolbar unified API', () => {
         });
 
         expect(screen.getByTestId('index')).toBeVisible();
-        expect(MockedRouterToolbarItem).toHaveBeenCalled();
-        const buttonCall = MockedRouterToolbarItem.mock.calls.find(
-          (call) => call[0].systemImageName === 'star'
-        );
-        expect(buttonCall).toBeDefined();
-        expect(buttonCall![0].imageRenderingMode).toBe('original');
+        expect(MockedRouterToolbarItem).toHaveBeenCalledTimes(1);
+        expect(useImage).toHaveBeenCalledWith('sf:star', { maxWidth: 24, maxHeight: 24 });
+        expect(MockedRouterToolbarItem.mock.calls[0][0].imageRenderingMode).toBe('original');
       });
     });
   });
@@ -750,11 +751,11 @@ describe('Stack.Toolbar unified API', () => {
               <Stack.Header blurEffect="systemMaterial" />
 
               <Stack.Toolbar placement="left">
-                <Stack.Toolbar.Button icon="sidebar.left" onPress={() => {}} />
+                <Stack.Toolbar.Button icon="sf:sidebar.left" onPress={() => {}} />
               </Stack.Toolbar>
 
               <Stack.Toolbar placement="right">
-                <Stack.Toolbar.Menu icon="ellipsis.circle">
+                <Stack.Toolbar.Menu icon="sf:ellipsis.circle">
                   <Stack.Toolbar.MenuAction onPress={() => {}}>Settings</Stack.Toolbar.MenuAction>
                 </Stack.Toolbar.Menu>
               </Stack.Toolbar>
@@ -765,7 +766,7 @@ describe('Stack.Toolbar unified API', () => {
           <>
             <Stack.Toolbar>
               <Stack.Toolbar.Spacer />
-              <Stack.Toolbar.Button icon="mic" onPress={() => {}} />
+              <Stack.Toolbar.Button icon="sf:mic" onPress={() => {}} />
               <Stack.Toolbar.Spacer />
             </Stack.Toolbar>
             <Text testID="index">index</Text>
@@ -799,10 +800,10 @@ describe('Stack.Toolbar unified API', () => {
           <>
             <Stack.Screen.Title>Dynamic Title</Stack.Screen.Title>
             <Stack.Toolbar placement="right">
-              <Stack.Toolbar.Button icon="plus" onPress={() => {}} />
+              <Stack.Toolbar.Button icon="sf:plus" onPress={() => {}} />
             </Stack.Toolbar>
             <Stack.Toolbar>
-              <Stack.Toolbar.Button icon="star" onPress={() => {}} />
+              <Stack.Toolbar.Button icon="sf:star" onPress={() => {}} />
             </Stack.Toolbar>
             <Text testID="index">index</Text>
           </>
@@ -855,8 +856,8 @@ describe('Stack.Toolbar unified API', () => {
           <Stack>
             <Stack.Screen name="index">
               <Stack.Toolbar placement="right">
-                <Stack.Toolbar.Button hidden icon="star" onPress={() => {}} />
-                <Stack.Toolbar.Button icon="heart" onPress={() => {}} />
+                <Stack.Toolbar.Button hidden icon="sf:star" onPress={() => {}} />
+                <Stack.Toolbar.Button icon="sf:heart" onPress={() => {}} />
               </Stack.Toolbar>
             </Stack.Screen>
           </Stack>
@@ -876,10 +877,10 @@ describe('Stack.Toolbar unified API', () => {
           <Stack>
             <Stack.Screen name="index">
               <Stack.Toolbar placement="right">
-                <Stack.Toolbar.Menu hidden icon="ellipsis.circle">
+                <Stack.Toolbar.Menu hidden icon="sf:ellipsis.circle">
                   <Stack.Toolbar.MenuAction onPress={() => {}}>Hidden</Stack.Toolbar.MenuAction>
                 </Stack.Toolbar.Menu>
-                <Stack.Toolbar.Menu icon="plus.circle">
+                <Stack.Toolbar.Menu icon="sf:plus.circle">
                   <Stack.Toolbar.MenuAction onPress={() => {}}>Visible</Stack.Toolbar.MenuAction>
                 </Stack.Toolbar.Menu>
               </Stack.Toolbar>
@@ -932,7 +933,7 @@ describe('Stack.Toolbar unified API', () => {
           <Stack>
             <Stack.Screen name="index">
               <Stack.Toolbar placement="right">
-                <Stack.Toolbar.Menu icon="ellipsis.circle">
+                <Stack.Toolbar.Menu icon="sf:ellipsis.circle">
                   <Stack.Toolbar.MenuAction onPress={() => {}}>Action 1</Stack.Toolbar.MenuAction>
                   <Stack.Toolbar.Menu inline title="Submenu">
                     <Stack.Toolbar.MenuAction onPress={() => {}}>
@@ -963,10 +964,10 @@ describe('Stack.Toolbar unified API', () => {
           <Stack>
             <Stack.Screen name="index">
               <Stack.Toolbar placement="right">
-                <Stack.Toolbar.Menu icon="ellipsis.circle">
+                <Stack.Toolbar.Menu icon="sf:ellipsis.circle">
                   <Stack.Toolbar.Menu palette title="Quick Actions">
-                    <Stack.Toolbar.MenuAction icon="star" isOn onPress={() => {}} />
-                    <Stack.Toolbar.MenuAction icon="heart" onPress={() => {}} />
+                    <Stack.Toolbar.MenuAction icon="sf:star" isOn onPress={() => {}} />
+                    <Stack.Toolbar.MenuAction icon="sf:heart" onPress={() => {}} />
                   </Stack.Toolbar.Menu>
                 </Stack.Toolbar.Menu>
               </Stack.Toolbar>

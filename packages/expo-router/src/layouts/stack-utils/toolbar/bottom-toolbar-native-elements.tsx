@@ -30,10 +30,7 @@ export interface NativeToolbarMenuProps {
   hidden?: boolean;
   hidesSharedBackground?: boolean;
   icon?: SFSymbol | ImageSourcePropType;
-  // TODO(@ubax): Add useImage support in a follow-up PR.
-  /**
-   * Image to display for the menu item.
-   */
+  // If image is specified, it takes precedence over icon
   image?: ImageRef;
   imageRenderingMode?: 'template' | 'original';
   inline?: boolean;
@@ -86,8 +83,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
       sharesBackground={!separateBackground}
       hidesSharedBackground={hidesSharedBackground}
       hidden={hidden}
-      icon={sf}
-      // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+      icon={image ? undefined : sf}
       image={image}
       imageRenderingMode={renderingMode}
       destructive={destructive}

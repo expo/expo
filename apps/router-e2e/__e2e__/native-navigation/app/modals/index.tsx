@@ -14,12 +14,12 @@ const HomeIndex = () => {
       <Stack.Header style={{ backgroundColor: 'transparent' }} />
       <Stack.Toolbar placement="right">
         <Stack.Toolbar.Button
-          icon="checkmark"
+          icon="sf:checkmark"
           onPress={() => console.log('Index Checkmark pressed')}
         />
       </Stack.Toolbar>
       <Stack.Toolbar placement="left">
-        <Stack.Toolbar.Button icon="xmark" onPress={() => console.log('Index Xmark pressed')} />
+        <Stack.Toolbar.Button icon="sf:xmark" onPress={() => console.log('Index Xmark pressed')} />
       </Stack.Toolbar>
       <View>
         <Text>Modals</Text>

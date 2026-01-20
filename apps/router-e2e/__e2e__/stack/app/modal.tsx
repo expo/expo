@@ -11,7 +11,7 @@ export default function Modal() {
       {/* Toolbar is not visible when presentation is modal */}
       <Stack.Toolbar>
         <Stack.Toolbar.Spacer />
-        <Stack.Toolbar.Button icon="gear" />
+        <Stack.Toolbar.Button icon="sf:gear" />
         <Stack.Toolbar.Spacer />
       </Stack.Toolbar>
     </View>

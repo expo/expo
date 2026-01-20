@@ -21,20 +21,20 @@ const Header = () => (
     <Stack.Screen.BackButton hidden />
     <Stack.Screen.Title>Apple Files</Stack.Screen.Title>
     <Stack.Toolbar placement="left">
-      <Stack.Toolbar.Button icon="arrow.left" />
-      <Stack.Toolbar.Button icon="arrow.right" />
+      <Stack.Toolbar.Button icon="sf:arrow.left" />
+      <Stack.Toolbar.Button icon="sf:arrow.right" />
     </Stack.Toolbar>
     <Stack.Toolbar placement="right">
-      <Stack.Toolbar.Menu icon="ellipsis" separateBackground>
-        <Stack.Toolbar.MenuAction icon="doc.text.viewfinder">
+      <Stack.Toolbar.Menu icon="sf:ellipsis" separateBackground>
+        <Stack.Toolbar.MenuAction icon="sf:doc.text.viewfinder">
           Scan Documents
         </Stack.Toolbar.MenuAction>
-        <Stack.Toolbar.MenuAction icon="network">Connect to Server</Stack.Toolbar.MenuAction>
+        <Stack.Toolbar.MenuAction icon="sf:network">Connect to Server</Stack.Toolbar.MenuAction>
         <Stack.Toolbar.Menu inline>
-          <Stack.Toolbar.MenuAction isOn icon="square.grid.2x2">
+          <Stack.Toolbar.MenuAction isOn icon="sf:square.grid.2x2">
             Icons
           </Stack.Toolbar.MenuAction>
-          <Stack.Toolbar.MenuAction icon="list.bullet">List</Stack.Toolbar.MenuAction>
+          <Stack.Toolbar.MenuAction icon="sf:list.bullet">List</Stack.Toolbar.MenuAction>
         </Stack.Toolbar.Menu>
         <Stack.Toolbar.Menu inline>
           <Stack.Toolbar.MenuAction isOn subtitle="Ascending">
@@ -49,7 +49,7 @@ const Header = () => (
           <Stack.Toolbar.MenuAction>View options</Stack.Toolbar.MenuAction>
         </Stack.Toolbar.Menu>
       </Stack.Toolbar.Menu>
-      <Stack.Toolbar.Button icon="magnifyingglass" />
+      <Stack.Toolbar.Button icon="sf:magnifyingglass" />
     </Stack.Toolbar>
   </>
 );

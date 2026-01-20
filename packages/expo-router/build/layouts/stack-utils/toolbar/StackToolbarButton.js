@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackToolbarButton = void 0;
 exports.convertStackToolbarButtonPropsToRNHeaderItem = convertStackToolbarButtonPropsToRNHeaderItem;
+const expo_image_1 = require("expo-image");
 const bottom_toolbar_native_elements_1 = require("./bottom-toolbar-native-elements");
 const context_1 = require("./context");
 const shared_1 = require("../shared");
@@ -46,11 +47,17 @@ const shared_1 = require("../shared");
  */
 const StackToolbarButton = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
+    const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props);
+    // Add 'sf:' prefix for SF Symbols
+    const processedIcon = sharedProps.icon?.type === 'sfSymbol'
+        ? `sf:${sharedProps.icon.name}`
+        : sharedProps.icon?.source;
+    const loadedImage = (0, expo_image_1.useImage)((0, shared_1.getImageSourceFromIcon)(processedIcon), {
+        maxWidth: 24,
+        maxHeight: 24,
+    });
     if (placement === 'bottom') {
-        const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props);
-        // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-        const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
-        return (<bottom_toolbar_native_elements_1.NativeToolbarButton {...sharedProps} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
+        return (<bottom_toolbar_native_elements_1.NativeToolbarButton {...sharedProps} icon={undefined} image={loadedImage ?? props.image} imageRenderingMode={props.iconRenderingMode}/>);
     }
     return null;
 };

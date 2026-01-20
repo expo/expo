@@ -1,4 +1,5 @@
 import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
+import type { useImage } from 'expo-image';
 import { Children, type ReactNode } from 'react';
 import { type ColorValue, type ImageSourcePropType, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
@@ -16,7 +17,7 @@ export interface StackHeaderItemSharedProps {
   accessibilityHint?: string;
   disabled?: boolean;
   tintColor?: ColorValue;
-  icon?: SFSymbol | ImageSourcePropType;
+  icon?: `sf:${SFSymbol}` | ImageSourcePropType | (string & {});
   /**
    * Controls how image-based icons are rendered on iOS.
    *
@@ -38,6 +39,18 @@ export interface StackHeaderItemSharedProps {
    * @default 'plain'
    */
   variant?: 'plain' | 'done' | 'prominent';
+}
+
+export type UseImageSource = Parameters<typeof useImage>[0];
+
+/**
+ * Helper to compute image source for useImage hook from the new icon type (with sf: prefix).
+ * Returns empty object for SF symbols (they don't need useImage) and passes through other sources.
+ * This avoids complex union type computation that TypeScript can't handle.
+ */
+export function getImageSourceFromIcon(icon: StackHeaderItemSharedProps['icon']): UseImageSource {
+  if (!icon) return {};
+  return icon as UseImageSource;
 }
 
 // We need to pick these properties, as the SharedHeaderItem is not exported by React Navigation
@@ -68,8 +81,10 @@ export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
   const label = getFirstChildOfType(children, StackToolbarLabel);
   const iconPropConvertedToIcon = props.icon
     ? typeof props.icon === 'string'
-      ? { sf: props.icon }
-      : { src: props.icon }
+      ? props.icon.startsWith('sf:')
+        ? { sf: props.icon.slice(3) as SFSymbol } // Remove 'sf:' prefix for RN
+        : { src: { uri: props.icon } } // Wrap plain string as image source
+      : { src: props.icon } // ImageSourcePropType passed as-is
     : undefined;
   const iconComponentProps =
     getFirstChildOfType(children, StackToolbarIcon)?.props ?? iconPropConvertedToIcon;
@@ -78,7 +93,7 @@ export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
     if (!iconComponentProps) {
       return undefined;
     }
-    if ('src' in iconComponentProps) {
+    if ('src' in iconComponentProps && iconComponentProps.src) {
       // Get explicit renderingMode from icon component props, or use iconRenderingMode from shared props
       const explicitRenderingMode =
         'renderingMode' in iconComponentProps ? iconComponentProps.renderingMode : undefined;
@@ -92,10 +107,13 @@ export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
         tinted: effectiveRenderingMode === 'template',
       };
     }
-    return {
-      type: 'sfSymbol',
-      name: iconComponentProps.sf,
-    };
+    if ('sf' in iconComponentProps && iconComponentProps.sf) {
+      return {
+        type: 'sfSymbol',
+        name: iconComponentProps.sf,
+      };
+    }
+    return undefined;
   })();
   const item: RNSharedHeaderItem = {
     ...rest,

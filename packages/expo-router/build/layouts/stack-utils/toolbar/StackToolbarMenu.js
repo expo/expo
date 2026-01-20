@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackToolbarMenuAction = exports.StackToolbarMenu = void 0;
 exports.convertStackToolbarMenuPropsToRNHeaderItem = convertStackToolbarMenuPropsToRNHeaderItem;
 exports.convertStackToolbarMenuActionPropsToRNHeaderItem = convertStackToolbarMenuActionPropsToRNHeaderItem;
+const expo_image_1 = require("expo-image");
 const react_1 = require("react");
 const bottom_toolbar_native_elements_1 = require("./bottom-toolbar-native-elements");
 const context_1 = require("./context");
@@ -43,6 +44,11 @@ const shared_1 = require("../shared");
  */
 const StackToolbarMenu = ({ children, ...props }) => {
     const placement = (0, context_1.useToolbarPlacement)();
+    const { icon } = props;
+    const loadedImage = (0, expo_image_1.useImage)((0, shared_1.getImageSourceFromIcon)(icon), {
+        maxWidth: 24,
+        maxHeight: 24,
+    });
     const allowedChildren = (0, react_1.useMemo)(() => placement === 'bottom'
         ? [exports.StackToolbarMenu, exports.StackToolbarMenuAction, bottom_toolbar_native_elements_1.NativeToolbarMenu, bottom_toolbar_native_elements_1.NativeToolbarMenuAction]
         : [exports.StackToolbarMenu, exports.StackToolbarMenuAction], [placement]);
@@ -54,8 +60,8 @@ const StackToolbarMenu = ({ children, ...props }) => {
         }
     }
     if (placement === 'bottom') {
-        // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-        return (<bottom_toolbar_native_elements_1.NativeToolbarMenu {...props} image={props.image} imageRenderingMode={props.iconRenderingMode} children={validChildren}/>);
+        const { icon, image, ...rest } = props;
+        return (<bottom_toolbar_native_elements_1.NativeToolbarMenu {...rest} image={image ?? loadedImage ?? undefined} imageRenderingMode={props.iconRenderingMode} children={validChildren}/>);
     }
     return <primitives_1.Menu {...props} children={validChildren}/>;
 };
@@ -154,10 +160,14 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
  */
 const StackToolbarMenuAction = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
+    const { icon } = props;
+    const loadedImage = (0, expo_image_1.useImage)((0, shared_1.getImageSourceFromIcon)(icon), {
+        maxWidth: 24,
+        maxHeight: 24,
+    });
     if (placement === 'bottom') {
-        // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-        const icon = typeof props.icon === 'string' ? props.icon : undefined;
-        return (<bottom_toolbar_native_elements_1.NativeToolbarMenuAction {...props} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
+        const { icon, image, ...rest } = props;
+        return (<bottom_toolbar_native_elements_1.NativeToolbarMenuAction {...rest} image={image ?? loadedImage} imageRenderingMode={props.iconRenderingMode}/>);
     }
     return <primitives_1.MenuAction {...props}/>;
 };

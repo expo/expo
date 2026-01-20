@@ -1,8 +1,6 @@
 import type { NativeStackHeaderItemMenu, NativeStackHeaderItemMenuAction } from '@react-navigation/native-stack';
-import type { ImageRef } from 'expo-image';
+import { type ImageRef } from 'expo-image';
 import { type ReactNode } from 'react';
-import type { ImageSourcePropType } from 'react-native';
-import type { SFSymbol } from 'sf-symbols-typescript';
 import { type StackHeaderItemSharedProps } from '../shared';
 export interface StackToolbarMenuProps {
     accessibilityLabel?: string;
@@ -28,31 +26,19 @@ export interface StackToolbarMenuProps {
     destructive?: boolean;
     disabled?: boolean;
     /**
-     * Image to display for the menu item.
-     *
-     * > **Note**: This prop is only supported in `Stack.Toolbar.Bottom`.
-     */
-    image?: ImageRef;
-    /**
-     * Whether to hide the shared background.
-     *
-     * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/hidessharedbackground) for more information.
-     *
-     * @platform iOS 26+
-     */
-    hidesSharedBackground?: boolean;
-    /**
-     * Whether the menu should be hidden.
-     *
-     * @default false
-     */
-    hidden?: boolean;
-    /**
      * Icon for the menu item.
      *
-     * Can be an SF Symbol name or an image source.
+     * Can be a string representing an SFSymbol (prefixed with 'sf:'), url or an image source.
      */
     icon?: StackHeaderItemSharedProps['icon'];
+    /**
+     * Image to display for the menu item.
+     *
+     * > **Note**: If both `icon` and `image` are provided, `image` takes precedence.
+     *
+     * > **Note**: This prop is only supported in `Stack.Toolbar` with `placement="bottom"`.
+     */
+    image?: ImageRef;
     /**
      * Controls how image-based icons are rendered on iOS.
      *
@@ -70,6 +56,20 @@ export interface StackToolbarMenuProps {
      * @platform ios
      */
     iconRenderingMode?: 'template' | 'original';
+    /**
+     * Whether to hide the shared background.
+     *
+     * @see [Official Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/hidessharedbackground) for more information.
+     *
+     * @platform iOS 26+
+     */
+    hidesSharedBackground?: boolean;
+    /**
+     * Whether the menu should be hidden.
+     *
+     * @default false
+     */
+    hidden?: boolean;
     /**
      * If `true`, the menu will be displayed inline.
      * This means that the menu will not be collapsed
@@ -167,11 +167,18 @@ export interface StackToolbarMenuActionProps {
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/disabled) for more information.
      */
     disabled?: boolean;
-    icon?: SFSymbol | ImageSourcePropType;
+    /**
+     * Icon for the menu action.
+     *
+     * Can be a string representing an SFSymbol (prefixed with 'sf:'), url or an image source.
+     */
+    icon?: StackHeaderItemSharedProps['icon'];
     /**
      * Image to display for the menu action.
      *
-     * > **Note**: This prop is only supported in `Stack.Toolbar.Bottom`.
+     * > **Note**: If both `icon` and `image` are provided, `image` takes precedence.
+     *
+     * > **Note**: This prop is only supported in `Stack.Toolbar` with `placement="bottom"`.
      */
     image?: ImageRef;
     /**

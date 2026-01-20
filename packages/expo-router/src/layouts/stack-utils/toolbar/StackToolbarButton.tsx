@@ -1,6 +1,6 @@
 'use client';
 import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
-import type { ImageRef } from 'expo-image';
+import { useImage, type ImageRef } from 'expo-image';
 import type { ReactNode } from 'react';
 import type { StyleProp, TextStyle } from 'react-native';
 
@@ -8,6 +8,7 @@ import { NativeToolbarButton } from './bottom-toolbar-native-elements';
 import { useToolbarPlacement } from './context';
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
+  getImageSourceFromIcon,
   type StackHeaderItemSharedProps,
 } from '../shared';
 
@@ -72,14 +73,15 @@ export interface StackToolbarButtonProps {
   /**
    * Icon to display in the button.
    *
-   * Can be a string representing an SFSymbol or an image source.
+   * Can be a string representing an SFSymbol (prefixed with 'sf:'), url or an image source.
    */
   icon?: StackHeaderItemSharedProps['icon'];
-  // TODO(@ubax): Add useImage support in a follow-up PR.
   /**
    * Image to display in the button.
    *
-   * > **Note**: This prop is only supported in `Stack.Toolbar.Bottom`.
+   * > **Note**: If both `icon` and `image` are provided, `image` takes precedence.
+   *
+   * > **Note**: This prop is only supported in `Stack.Toolbar` with `placement="bottom"`.
    */
   image?: ImageRef;
   /**
@@ -168,16 +170,25 @@ export interface StackToolbarButtonProps {
  */
 export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => {
   const placement = useToolbarPlacement();
+  const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
+
+  // Add 'sf:' prefix for SF Symbols
+  const processedIcon =
+    sharedProps.icon?.type === 'sfSymbol'
+      ? (`sf:${sharedProps.icon.name}` as const)
+      : sharedProps.icon?.source;
+
+  const loadedImage = useImage(getImageSourceFromIcon(processedIcon), {
+    maxWidth: 24,
+    maxHeight: 24,
+  });
 
   if (placement === 'bottom') {
-    const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
-    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
     return (
       <NativeToolbarButton
         {...sharedProps}
-        icon={icon}
-        image={props.image}
+        icon={undefined}
+        image={loadedImage ?? props.image}
         imageRenderingMode={props.iconRenderingMode}
       />
     );

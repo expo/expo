@@ -1,5 +1,5 @@
 import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
-import type { ImageRef } from 'expo-image';
+import { type ImageRef } from 'expo-image';
 import type { ReactNode } from 'react';
 import type { StyleProp, TextStyle } from 'react-native';
 import { type StackHeaderItemSharedProps } from '../shared';
@@ -64,13 +64,15 @@ export interface StackToolbarButtonProps {
     /**
      * Icon to display in the button.
      *
-     * Can be a string representing an SFSymbol or an image source.
+     * Can be a string representing an SFSymbol (prefixed with 'sf:'), url or an image source.
      */
     icon?: StackHeaderItemSharedProps['icon'];
     /**
      * Image to display in the button.
      *
-     * > **Note**: This prop is only supported in `Stack.Toolbar.Bottom`.
+     * > **Note**: If both `icon` and `image` are provided, `image` takes precedence.
+     *
+     * > **Note**: This prop is only supported in `Stack.Toolbar` with `placement="bottom"`.
      */
     image?: ImageRef;
     /**

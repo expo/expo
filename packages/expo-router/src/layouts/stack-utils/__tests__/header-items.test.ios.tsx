@@ -1,5 +1,5 @@
 import type { NativeStackHeaderItem } from '@react-navigation/native-stack/lib/typescript/src';
-import { isValidElement } from 'react';
+import React, { isValidElement } from 'react';
 import { Text } from 'react-native';
 import { ScreenStackItem as _ScreenStackItem } from 'react-native-screens';
 
@@ -81,8 +81,8 @@ it('should convert toolbar items children correctly to options', () => {
             <StackToolbar.MenuAction isOn>Sub Action</StackToolbar.MenuAction>
           </StackToolbar.Menu>
           <StackToolbar.Menu palette destructive title="right-palette-menu">
-            <StackToolbar.MenuAction isOn icon="0.circle.ar" />
-            <StackToolbar.MenuAction icon="1.brakesignal" />
+            <StackToolbar.MenuAction isOn icon="sf:0.circle.ar" />
+            <StackToolbar.MenuAction icon="sf:1.brakesignal" />
           </StackToolbar.Menu>
         </StackToolbar.Menu>,
         <StackToolbar.Menu key="2" title="right-menu">

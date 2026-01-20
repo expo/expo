@@ -25,7 +25,7 @@ export default function Modal() {
       <Link href={`/${searchText || 1234}`}>Go to {searchText || 1234}</Link>
       <Stack.Toolbar>
         <Stack.Toolbar.Button
-          icon="map"
+          icon="sf:map"
           onPress={() => router.push('/modal')}
           // barButtonItemStyle="prominent"
           tintColor={Color.ios.systemBlue}
@@ -33,14 +33,14 @@ export default function Modal() {
         <Stack.Toolbar.Spacer />
         <Stack.Toolbar.Button
           hidesSharedBackground
-          icon="safari"
+          icon="sf:safari"
           onPress={() => setIsTrue((p) => !p)}
           selected={isTrue}
         />
         {isTrue && (
           <>
             <Stack.Toolbar.Spacer width={20} />
-            <Stack.Toolbar.Button icon="wave.3.backward" />
+            <Stack.Toolbar.Button icon="sf:wave.3.backward" />
           </>
         )}
       </Stack.Toolbar>

@@ -26,7 +26,7 @@ export default function Layout() {
           <Stack.Toolbar placement="left">
             <Stack.Toolbar.Button
               style={{ color: 'green' }}
-              icon="arrow.left.circle"
+              icon="sf:arrow.left.circle"
               onPress={() => alert('Left button pressed!')}
             />
             <Stack.Toolbar.Button style={{ color: 'green' }} onPress={() => alert('2 pressed!')}>
@@ -43,7 +43,7 @@ export default function Layout() {
               </Stack.Toolbar.MenuAction>
               <Stack.Toolbar.MenuAction
                 isOn
-                icon="star.fill"
+                icon="sf:star.fill"
                 onPress={() => Alert.alert('Action 2 pressed!')}>
                 Action 2
               </Stack.Toolbar.MenuAction>
@@ -51,7 +51,7 @@ export default function Layout() {
             <Stack.Toolbar.Button
               style={{ color: 'green', backgroundColor: 'transparent' }}
               separateBackground
-              icon="arrow.right.circle"
+              icon="sf:arrow.right.circle"
               onPress={() => alert('Left button pressed!')}>
               Right
             </Stack.Toolbar.Button>

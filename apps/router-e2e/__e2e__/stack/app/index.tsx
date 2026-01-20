@@ -54,7 +54,7 @@ const HomeIndex = () => {
       </ScrollView>
       <Stack.Toolbar>
         <Stack.Toolbar.Spacer />
-        <Stack.Toolbar.Button icon="magnifyingglass" tintColor={Color.ios.placeholderText} />
+        <Stack.Toolbar.Button icon="sf:magnifyingglass" tintColor={Color.ios.placeholderText} />
         <Stack.Toolbar.View>
           <TextInput
             style={{ width: width - 250, height: 32 }}
@@ -65,7 +65,7 @@ const HomeIndex = () => {
             placeholder="Search"
           />
         </Stack.Toolbar.View>
-        <Stack.Toolbar.Button icon="mic" tintColor={Color.ios.placeholderText} />
+        <Stack.Toolbar.Button icon="sf:mic" tintColor={Color.ios.placeholderText} />
         {shouldUseCustomXButton ? (
           <Stack.Toolbar.View hidesSharedBackground>
             <Pressable
@@ -93,11 +93,11 @@ const HomeIndex = () => {
           </Stack.Toolbar.View>
         ) : (
           <>
-            <Stack.Toolbar.Button hidden={isSearchFocused} hidesSharedBackground icon="plus" />
+            <Stack.Toolbar.Button hidden={isSearchFocused} hidesSharedBackground icon="sf:plus" />
             <Stack.Toolbar.Button
               hidden={!isSearchFocused}
               hidesSharedBackground
-              icon="xmark"
+              icon="sf:xmark"
               onPress={() => {
                 textInputRef.current?.clear();
                 textInputRef.current?.blur();
