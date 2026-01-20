@@ -11,22 +11,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.community.minimaltester.brownfield.BrownfieldActivity
+import com.community.minimaltester.brownfield.showReactNativeFragment
+import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import dev.expo.brownfieldintegratedtester.ui.theme.BrownfieldIntegratedTesterTheme
 
-class MainActivity : ComponentActivity() {
+class MainActivity : BrownfieldActivity(), DefaultHardwareBackBtnHandler {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            BrownfieldIntegratedTesterTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
-        }
+        showReactNativeFragment()
+    }
+
+    override fun invokeDefaultOnBackPressed() {
+        TODO("Not yet implemented")
     }
 }
 
