@@ -16,7 +16,6 @@ jest.mock('@expo/config', () => ({
   })),
 }));
 
-
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
 }
