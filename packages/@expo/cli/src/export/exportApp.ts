@@ -314,6 +314,8 @@ export async function exportAppAsync(
           platform: 'web',
           apiRoutesOnly: !isWeb,
           templateHtml,
+          outputDir: outputPath,
+          baseUrl,
         });
       }
 
@@ -368,6 +370,8 @@ export async function exportAppAsync(
           files,
           platform: 'web',
           apiRoutesOnly: true,
+          outputDir: outputPath,
+          baseUrl,
         });
 
         // Output a placeholder index.html if one doesn't exist in the public directory.

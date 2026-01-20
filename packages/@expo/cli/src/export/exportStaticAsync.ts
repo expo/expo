@@ -17,7 +17,7 @@ import { inspect } from 'util';
 
 import { getVirtualFaviconAssetsAsync } from './favicon';
 import { persistMetroAssetsAsync } from './persistMetroAssets';
-import { ExportAssetMap, getFilesFromSerialAssets } from './saveAssets';
+import { BundleAssetWithFileHashes, ExportAssetMap, getFilesFromSerialAssets } from './saveAssets';
 import { Log } from '../log';
 import {
   ExpoRouterRuntimeManifest,
@@ -311,7 +311,7 @@ export async function exportFromServerAsync(
   }
 
   if (exportServer) {
-    const apiRoutes = await exportApiRoutesAsync({
+    const { files: apiRouteFiles, assets: apiRouteAssets } = await exportApiRoutesAsync({
       platform: 'web',
       server: devServer,
       manifest: serverManifest,
@@ -320,8 +320,18 @@ export async function exportFromServerAsync(
     });
 
     // Add the api routes to the files to export.
-    for (const [route, contents] of apiRoutes) {
+    for (const [route, contents] of apiRouteFiles) {
       files.set(route, contents);
+    }
+
+    // Persist assets from API routes (images, fonts, etc.)
+    if (apiRouteAssets.length > 0) {
+      await persistMetroAssetsAsync(projectRoot, apiRouteAssets, {
+        files,
+        platform: 'web',
+        outputDirectory: outputDir,
+        baseUrl,
+      });
     }
 
     // Export SSR render module and add SSR configuration to routes manifest
@@ -540,16 +550,22 @@ export async function exportApiRoutesStandaloneAsync(
     platform,
     apiRoutesOnly,
     templateHtml,
+    outputDir,
+    baseUrl,
   }: {
     files?: ExportAssetMap;
     platform: string;
     apiRoutesOnly: boolean;
     templateHtml?: string;
+    /** Output directory for persisting assets. If not provided, assets won't be persisted. */
+    outputDir?: string;
+    /** Base URL for asset paths. */
+    baseUrl?: string;
   }
 ) {
   const { serverManifest, htmlManifest } = await devServer.getServerManifestAsync();
 
-  const apiRoutes = await exportApiRoutesAsync({
+  const { files: apiRouteFiles, assets: apiRouteAssets } = await exportApiRoutesAsync({
     server: devServer,
     manifest: serverManifest,
     // NOTE(kitten): For now, we always output source maps for API route exports
@@ -559,8 +575,18 @@ export async function exportApiRoutesStandaloneAsync(
   });
 
   // Add the api routes to the files to export.
-  for (const [route, contents] of apiRoutes) {
+  for (const [route, contents] of apiRouteFiles) {
     files.set(route, contents);
+  }
+
+  // Persist assets from API routes (images, fonts, etc.)
+  if (apiRouteAssets.length > 0 && outputDir) {
+    await persistMetroAssetsAsync(devServer.projectRoot, apiRouteAssets, {
+      files,
+      platform: 'web',
+      outputDirectory: outputDir,
+      baseUrl: baseUrl ?? '',
+    });
   }
 
   if (templateHtml && devServer.isReactServerComponentsEnabled) {
@@ -595,8 +621,8 @@ async function exportApiRoutesAsync({
   manifest: RoutesManifest<string>;
   platform: string;
   apiRoutesOnly?: boolean;
-}): Promise<ExportAssetMap> {
-  const { manifest, files } = await server.exportExpoRouterApiRoutesAsync({
+}): Promise<{ files: ExportAssetMap; assets: readonly BundleAssetWithFileHashes[] }> {
+  const { manifest, files, assets } = await server.exportExpoRouterApiRoutesAsync({
     outputDir: '_expo/functions',
     prerenderManifest: props.manifest,
     includeSourceMaps,
@@ -614,7 +640,7 @@ async function exportApiRoutesAsync({
     targetDomain: 'server',
   });
 
-  return files;
+  return { files, assets };
 }
 
 function warnPossibleInvalidExportType(appDir: string) {
