@@ -16,6 +16,7 @@
 - Fix output typings to remove unreachable transitive dependencies from them ([#41676](https://github.com/expo/expo/pull/41676) by [@kitten](https://github.com/kitten))
 - Fix `minifierPath` resolution for cache key generation for strict isolated installations ([#41686](https://github.com/expo/expo/pull/41686) by [@kitten](https://github.com/kitten))
 - Avoid module ID collision between loader and render bundles ([#42245](https://github.com/expo/expo/pull/42245) by [@hassankhan](https://github.com/hassankhan))
+- Use `unstable_createWorker` helper to instantiate `Worker`s, allowing worker support to bypass CORP/COEP errors ([#42340](https://github.com/expo/expo/pull/42340) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
