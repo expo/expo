@@ -59,6 +59,7 @@ import expo.modules.notifications.notifications.channels.NotificationChannelMana
 import expo.modules.notifications.permissions.NotificationPermissionsModule
 import expo.modules.notifications.tokens.PushTokenModule
 import expo.modules.print.PrintModule
+import expo.modules.router.ExpoRouterModule
 import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
 import expo.modules.sensors.modules.AccelerometerModule
@@ -154,6 +155,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ExpoFetchModule::class.java to null,
     FontUtilsModule::class.java to null,
     ExpoLinkingModule::class.java to null,
+    ExpoRouterModule::class.java to null,
     FileSystemModule::class.java to null,
     FileSystemLegacyModule::class.java to null,
     FontLoaderModule::class.java to null,
