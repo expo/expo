@@ -1,10 +1,14 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("@expo/config-plugins");
 const parseIntentFilters_1 = require("./android/parseIntentFilters");
 const withAndroidIntentFilters_1 = require("./android/withAndroidIntentFilters");
 const withShareIntoSchemeString_1 = require("./android/withShareIntoSchemeString");
 const withAppGroupId_1 = require("./ios/withAppGroupId");
+const withIosWarning_1 = __importDefault(require("./ios/withIosWarning"));
 const withShareExtensionFiles_1 = require("./ios/withShareExtensionFiles");
 const withShareExtensionXcodeProject_1 = require("./ios/withShareExtensionXcodeProject");
 const withConfig_1 = require("./withConfig");
@@ -24,7 +28,7 @@ const withShareExtension = (config, props) => {
             `${config.ios?.bundleIdentifier}.${EXPO_SHARE_EXTENSION_TARGET_NAME}`;
         const fallbackAppGroupId = `group.${bundleIdentifier}`;
         const appGroupId = props?.ios?.appGroupId ?? fallbackAppGroupId;
-        const urlScheme = (config.scheme ?? bundleIdentifier); // TODO: Fix this type;
+        const urlScheme = config.scheme ?? bundleIdentifier;
         const activationRule = props?.ios?.activationRule ?? {
             supportsText: true,
             supportsWebUrlWithMaxCount: 1,
@@ -33,9 +37,15 @@ const withShareExtension = (config, props) => {
             throw new Error(`Expo sharing: The app doesn't define a scheme or a bundle identifier. Define at least one of those properties in app json`);
         }
         if (!props?.ios?.appGroupId) {
-            console.warn(`Expo sharing: Using the default ${fallbackAppGroupId} app group id. If you are using EAS Build` +
-                ` no further steps are required, otherwise make sure that this app group is registered` +
-                ` with your Apple development team, or set \`ios.appGroupId\` field to an already registered app group.`);
+            plugins.push([
+                withIosWarning_1.default,
+                {
+                    property: 'appGroupId',
+                    warning: `Expo sharing: Using the default ${fallbackAppGroupId} app group id. If you are using EAS Build` +
+                        ` no further steps are required, otherwise make sure that this app group is registered` +
+                        ` with your Apple development team, or set \`ios.appGroupId\` field to an already registered app group.`,
+                },
+            ]);
         }
         const shareExtensionFiles = {};
         plugins = [

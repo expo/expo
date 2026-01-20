@@ -5,6 +5,7 @@ import { withAndroidIntentFilters } from './android/withAndroidIntentFilters';
 import { withShareIntoSchemeString } from './android/withShareIntoSchemeString';
 import { ShareExtensionFiles } from './ios/setupShareExtensionFiles';
 import { withAppGroupId } from './ios/withAppGroupId';
+import withIosWarning from './ios/withIosWarning';
 import { withShareExtensionFiles } from './ios/withShareExtensionFiles';
 import { withShareExtensionXcodeProject } from './ios/withShareExtensionXcodeProject';
 import { ShareExtensionConfigPluginProps } from './sharingPlugin.types';
@@ -33,7 +34,7 @@ const withShareExtension: ShareExtensionConfigPlugin = (config, props?) => {
       `${config.ios?.bundleIdentifier}.${EXPO_SHARE_EXTENSION_TARGET_NAME}`;
     const fallbackAppGroupId = `group.${bundleIdentifier}`;
     const appGroupId = props?.ios?.appGroupId ?? fallbackAppGroupId;
-    const urlScheme = (config.scheme ?? bundleIdentifier) as string; // TODO: Fix this type;
+    const urlScheme = config.scheme ?? bundleIdentifier;
     const activationRule = props?.ios?.activationRule ?? {
       supportsText: true,
       supportsWebUrlWithMaxCount: 1,
@@ -45,11 +46,16 @@ const withShareExtension: ShareExtensionConfigPlugin = (config, props?) => {
       );
     }
     if (!props?.ios?.appGroupId) {
-      console.warn(
-        `Expo sharing: Using the default ${fallbackAppGroupId} app group id. If you are using EAS Build` +
-          ` no further steps are required, otherwise make sure that this app group is registered` +
-          ` with your Apple development team, or set \`ios.appGroupId\` field to an already registered app group.`
-      );
+      plugins.push([
+        withIosWarning,
+        {
+          property: 'appGroupId',
+          warning:
+            `Expo sharing: Using the default ${fallbackAppGroupId} app group id. If you are using EAS Build` +
+            ` no further steps are required, otherwise make sure that this app group is registered` +
+            ` with your Apple development team, or set \`ios.appGroupId\` field to an already registered app group.`,
+        },
+      ]);
     }
 
     const shareExtensionFiles: ShareExtensionFiles = {} as ShareExtensionFiles;
