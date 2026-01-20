@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve app root for each file to support bun monorepos.
+
 ### 💡 Others
 
 - Bump to `@expo/metro@54.2.0` and `metro@0.83.3` ([#41142](https://github.com/expo/expo/pull/41142) by [@kitten](https://github.com/kitten))
