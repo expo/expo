@@ -39,18 +39,28 @@ export type SharingOptions = {
  * - `image`: An image file.
  * - `video`: A video file.
  * - `file`: A generic file.
+ *
+ * @platform android
+ * @platform ios
+ * @experimental
  */
 export type ShareType = 'text' | 'url' | 'audio' | 'image' | 'video' | 'file';
 
 /**
  * Describes the resolved content type.
- * This distinguishes between generic URLs and specific web content,
- * and categorizes files based on their MIME type.
+ *
+ * @platform android
+ * @platform ios
+ * @experimental
  */
 export type ContentType = 'text' | 'audio' | 'image' | 'video' | 'file' | 'website';
 
 /**
- * Represents direct content shared into the app.
+ * Represents raw data shared with the app.
+ *
+ * @platform android
+ * @platform ios
+ * @experimental
  */
 export type SharePayload = {
   /**
@@ -70,7 +80,7 @@ export type SharePayload = {
   shareType: ShareType;
 
   /**
-   * The MIME type of the `value` field.
+   * The MIME type of the contents of the`value` field.
    *
    * @default 'text/plain'
    */
@@ -79,34 +89,38 @@ export type SharePayload = {
 
 export type BaseResolvedSharePayload = SharePayload & {
   /**
-   * Uri, which can be used to access the shared content. When resolving contents of a URL with redirects, will contain the redirect target uri.
-   * Null when resolving for `text` `SharePayload` share type.
+   * Uri which can be used to access the shared content. When resolving contents of a URL with redirects, contains the redirect target uri.
+   * Null when resolving a [SharePayload](#sharepayload) with a `text` [ShareType](#sharetype).
    */
   contentUri: string | null;
 
   /**
-   * Type of the content accessible via the `uri`.
+   * Type of the content accessible via the `contentUri`.
    */
   contentType: ContentType | null;
 
   /**
-   * Mime type of the content accessible via the `uri`.
+   * Mime type of the content accessible via the `contentUri`.
    */
   contentMimeType: string | null;
 
   /**
-   * Value of the `suggestedFilename` HTTP header field or the last path component of the `uri` field.
+   * If applicable, value of the `suggestedFilename` HTTP header field, otherwise the last path component of the `contentUri` field.
    */
   originalName: string | null;
 
   /**
-   * Size of the content accessible via the `uri`
+   * Size of the content accessible via the `contentUri`.
    */
   contentSize: number | null;
 };
 
 /**
- * Information about content for which the data can be fetched through an uri.
+ * Represents a resolved payload, for which the data can be accessed through an uri.
+ *
+ * @platform android
+ * @platform ios
+ * @experimental
  */
 export type UriBasedResolvedSharePayload = BaseResolvedSharePayload & {
   contentType: 'audio' | 'file' | 'video' | 'image' | 'website';
@@ -114,10 +128,55 @@ export type UriBasedResolvedSharePayload = BaseResolvedSharePayload & {
 };
 
 /**
- * Information about shared text.
+ * Represents a resolved payload, where a text was shared with the app.
+ *
+ * @platform android
+ * @platform ios
+ * @experimental
  */
 export type TextBasedResolvedSharePayload = BaseResolvedSharePayload & {
-  contentType?: Exclude<ContentType, 'audio' | 'file' | 'video' | 'image' | 'website'>;
+  contentType?: 'text';
 };
 
+/**
+ * Represents a payload shared with the app, with additional information about the shared contents.
+ *
+ * @platform android
+ * @platform ios
+ * @experimental
+ */
 export type ResolvedSharePayload = UriBasedResolvedSharePayload | TextBasedResolvedSharePayload;
+
+/**
+ * Object returned by [useIncomingShare](#useincomingshare) hook containing information about data shared with the app.
+ *
+ * @platform android
+ * @platform ios
+ * @experimental
+ */
+export type UseIncomingShareResult = {
+  /**
+   * Returns unresolved payloads shared with the app. Synchronous and available immediately after creating the hook.
+   */
+  sharedPayloads: SharePayload[];
+  /**
+   * Contains an array of resolved payloads shared with the app. Returns an empty array if the shared payloads are being resolved or if the resolving has failed.
+   */
+  resolvedSharedPayloads: ResolvedSharePayload[];
+  /**
+   * Clears payloads shared with the app.
+   */
+  clearSharedPayloads: () => void;
+  /**
+   * Boolean indicating whether the current shared payloads are being resolved.
+   */
+  isResolving: boolean;
+  /**
+   * Contains an error encountered while resolving the shared payload. Null on success.
+   */
+  error: Error | null;
+  /**
+   * Forces a refresh of the shared payloads.
+   */
+  refreshSharePayloads: () => void;
+};
