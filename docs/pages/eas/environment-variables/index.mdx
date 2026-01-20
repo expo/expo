@@ -116,11 +116,11 @@ Environment variables can be assigned to multiple environments and have the same
 
 There are three different visibility settings available for each environment variable:
 
-| Visibility | Description                                                                                                                                  |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Visibility      | Description                                                                                                                                  |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | Plain&nbsp;text | Visible on the website, in EAS CLI, and in logs.                                                                                             |
-| Sensitive  | Obfuscated in EAS Build and Workflows job logs. You can use a toggle to make them visible on the website. They are also readable in EAS CLI. |
-| Secret     | Not readable outside of the EAS servers, including on the website and in EAS CLI. They are obfuscated in EAS Build and Workflows job logs.   |
+| Sensitive       | Obfuscated in EAS Build and Workflows job logs. You can use a toggle to make them visible on the website. They are also readable in EAS CLI. |
+| Secret          | Not readable outside of the EAS servers, including on the website and in EAS CLI. They are obfuscated in EAS Build and Workflows job logs.   |
 
 > **warning** Note that **anything that is included in your client side code should be considered public and readable to any individual that can run your app**.
 
