@@ -11,6 +11,7 @@
 
 ### 🎉 New features
 
+- Add support for static asset imports in API routes during export. ([#42353](https://github.com/expo/expo/pull/42353) by [@EvanBacon](https://github.com/EvanBacon))
 - Switch EXPO_NO_GIT_STATUS to default to true. ([#42026](https://github.com/expo/expo/pull/42026) by [@EvanBacon](https://github.com/EvanBacon))
 - Added support for exposing cli command extensions as MCP tools. ([#40826](https://github.com/expo/expo/pull/40826) by [@chrfalch](https://github.com/chrfalch))
 - Added support for cli command extension in expo modules ([#39598](https://github.com/expo/expo/pull/39598) by [@chrfalch](https://github.com/chrfalch))

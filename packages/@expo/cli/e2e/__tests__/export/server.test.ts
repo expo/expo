@@ -233,6 +233,23 @@ describe('server-output', () => {
       });
     });
 
+    // Skip for workerd until we can debug the workerd-specific issue
+    (server.isWorkerd ? it.skip : it)(
+      'supports static asset imports in API routes',
+      async () => {
+        const res = await server.fetchAsync('/api/static-asset');
+        const json = await res.json();
+        // Asset imports return an object that coerces to string when used in URL constructor
+        expect(['string', 'object']).toContain(json.assetType);
+        expect(json.hasAssetPath).toBe(true);
+        // The asset path should be a URL path like /assets/assets/icon.HASH.png
+        expect(json.assetValue).toMatch(/^\/assets\//);
+        // The fetch should succeed since the asset is exported to the client folder
+        expect(json.fetchStatus).toBe('success');
+        expect(json.fetchError).toBeNull();
+      }
+    );
+
     (server.isWorkerd ? it.skip : it)(
       'supports using Node.js externals to read local files',
       async () => {
