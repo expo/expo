@@ -6,9 +6,13 @@ public class TestExpoUiModule: Module {
     Name("TestExpoUi")
 
     OnCreate {
-      ViewModifierRegistry.shared.register("customBorder") { params, appContext, _ in
+      ViewModifierRegistry.register("customBorder") { params, appContext, _ in
         return try CustomBorderModifier(from: params, appContext: appContext)
       }
+    }
+
+    OnDestroy {
+      ViewModifierRegistry.unregister("customBorder")
     }
 
     ExpoUIView(TestGroupView.self)

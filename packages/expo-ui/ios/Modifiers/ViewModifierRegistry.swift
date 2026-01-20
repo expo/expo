@@ -1312,7 +1312,7 @@ internal struct GridCellAnchor: ViewModifier, Record {
  * This system uses ViewModifier structs for better performance than AnyView wrapping.
  */
 public class ViewModifierRegistry {
-  public static let shared = ViewModifierRegistry()
+  static let shared = ViewModifierRegistry()
 
   public typealias ModiferFactory = ([String: Any], AppContext, EventDispatcher) throws -> any ViewModifier
   private(set) internal var modifierFactories: [String: ModiferFactory] = [:]
@@ -1322,14 +1322,38 @@ public class ViewModifierRegistry {
   }
 
   /**
+   * Public API to register a custom modifier with the given type name.
+   */
+  public static func register(
+    _ type: String,
+    factory: @escaping ModiferFactory
+  ) {
+    shared.register(type, factory: factory)
+  }
+
+  /**
+   * Public API to unregister a custom modifier by type name.
+   */
+  public static func unregister(_ type: String) {
+    shared.unregister(type)
+  }
+
+  /**
    * Registers a new modifier with the given type name.
    * The modifier factory creates a ViewModifier from parameters.
    */
-  public func register(
+  func register(
     _ type: String,
     factory: @escaping ModiferFactory
   ) {
     modifierFactories[type] = factory
+  }
+
+  /**
+   * Unregisters a modifier by type name.
+   */
+  func unregister(_ type: String) {
+    modifierFactories.removeValue(forKey: type)
   }
 
   /**

@@ -6,11 +6,7 @@ export interface GroupProps extends CommonViewModifierProps {
   children?: React.ReactNode;
 }
 
-const GroupNativeView: React.ComponentType<GroupProps> = requireNativeView(
+export const Group: React.ComponentType<GroupProps> = requireNativeView(
   'TestExpoUi',
   'TestGroupView'
 );
-
-export function Group(props: GroupProps) {
-  return <GroupNativeView {...props} />;
-}

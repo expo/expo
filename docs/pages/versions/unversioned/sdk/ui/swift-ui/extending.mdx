@@ -92,7 +92,7 @@ struct MyCustomView: ExpoSwiftUI.View {
 
 <Step label="4">
 
-Register the view in your module using `ExpoUIView`:
+Register the view in your module using `ExpoUIView`. This wraps your SwiftUI view with modifier support and makes it available to JavaScript:
 
 ```swift ios/MyUiModule.swift
 import ExpoModulesCore
@@ -113,7 +113,7 @@ public class MyUiModule: Module {
 
 <Step label="5">
 
-Create the TypeScript component that uses your native view:
+Create the TypeScript component that exports your native view:
 
 ```tsx src/MyCustomView.tsx
 import { requireNativeView } from 'expo';
@@ -125,14 +125,10 @@ export interface MyCustomViewProps extends CommonViewModifierProps {
   children?: React.ReactNode;
 }
 
-const MyCustomViewNative: React.ComponentType<MyCustomViewProps> = requireNativeView(
+export const MyCustomViewNative: React.ComponentType<MyCustomViewProps> = requireNativeView(
   'MyUi',
   'MyCustomView'
 );
-
-export function MyCustomView(props: MyCustomViewProps) {
-  return <MyCustomViewNative {...props} />;
-}
 ```
 
 </Step>
@@ -176,7 +172,9 @@ export default function App() {
 
 ## Creating custom modifiers
 
-You can also create custom modifiers that work with any `ExpoUI` component.
+You can also create custom modifiers that work with any Expo UI component.
+
+> **info** Modifiers are SwiftUI's way to configure views - for styling, layout, behavior, and more. Learn more in Apple's [ViewModifier documentation](https://developer.apple.com/documentation/swiftui/viewmodifier).
 
 ### Native modifier implementation
 
@@ -208,7 +206,7 @@ struct CustomBorderModifier: ViewModifier, Record {
 
 <Step label="2">
 
-Register your modifier with `ViewModifierRegistry` in your module's `OnCreate`:
+Register your modifier with `ViewModifierRegistry` in your module definition. Use `OnCreate` to register and `OnDestroy` to unregister for proper cleanup:
 
 ```swift ios/MyUiModule.swift
 import ExpoModulesCore
@@ -219,9 +217,13 @@ public class MyUiModule: Module {
     Name("MyUi")
 
     OnCreate {
-      ViewModifierRegistry.shared.register("customBorder") { params, appContext, _ in
+      ViewModifierRegistry.register("customBorder") { params, appContext, _ in
         return try CustomBorderModifier(from: params, appContext: appContext)
       }
+    }
+
+    OnDestroy {
+      ViewModifierRegistry.unregister("customBorder")
     }
 
     ExpoUIView(MyCustomView.self)
