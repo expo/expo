@@ -95,7 +95,7 @@ export default function Home() {
 }
 ```
 
-The `loader` function executes on the server, and its return value is serialized and passed to your component. This means you can safely use server-side secrets, database connections, and other resources that should not be exposed to the client.
+The `loader` function executes on the server, and its return value is serialized and passed to your component. This means you can safely use server-side secrets, database connections, and other resources that should not be exposed to the client. When using TypeScript, passing `typeof loader` as the generic parameter to [`useLoaderData`](/versions/unversioned/sdk/router/#useloaderdata) allows the hook to infer the return type from your loader function.
 
 > **info** The [`useLoaderData`](/versions/unversioned/sdk/router/#useloaderdata) hook does not need to be called in the route component itself. It can be called in any child component within the route's component tree.
 
