@@ -1,5 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
-import chalk, { green } from 'chalk';
+import chalk from 'chalk';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import inquirer from 'inquirer';
@@ -137,9 +137,9 @@ export const publishAndroidArtifacts = new Task<TaskArgs>(
 
       if (publicationCommands.length === 1) {
         const publicationCommand = publicationCommands[0];
-        batch.log('  ', '  ', `${green(pkg.packageName)}: ${publicationCommand}`);
+        batch.log('  ', '  ', `${chalk.green(pkg.packageName)}: ${publicationCommand}`);
       } else {
-        batch.log('  ', '  ', `${green(pkg.packageName)}:`);
+        batch.log('  ', '  ', `${chalk.green(pkg.packageName)}:`);
         for (const command of publicationCommands) {
           batch.log('  ', '  ', '  ', `${command}`);
         }
