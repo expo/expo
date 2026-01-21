@@ -106,6 +106,10 @@ export function NativeTabsNavigator({
     () => visibleTabs.findIndex((tab) => tab.routeKey === routes[state.index].key),
     [visibleTabs, routes, state.index]
   );
+  const visibleTabsKeys = useMemo(
+    () => visibleTabs.map((tab) => tab.routeKey).join(';'),
+    [visibleTabs]
+  );
 
   if (visibleFocusedTabIndex < 0) {
     if (process.env.NODE_ENV !== 'production') {
@@ -143,6 +147,7 @@ export function NativeTabsNavigator({
       <NativeTabsContext value>
         <NativeTabsView
           {...rest}
+          key={visibleTabsKeys}
           focusedIndex={focusedIndex}
           tabs={visibleTabs}
           onTabChange={onTabChange}
