@@ -77,36 +77,34 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
       name: 'widgets',
       description:
         'An array of widget configurations. Each widget in the array will be generated as a separate widget kind in your widget extension.',
-      properties: [
-        {
-          name: 'name',
-          description:
-            'The internal name (identifier) of the widget. This is used as the Swift struct name and should be a valid Swift identifier (no spaces or special characters).',
-        },
-        {
-          name: 'displayName',
-          description:
-            'The user-facing name of the widget that appears in the widget gallery when users add widgets to their home screen.',
-        },
-        {
-          name: 'description',
-          description:
-            "A brief description of what the widget does. This appears in the widget gallery to help users understand the widget's purpose.",
-        },
-        {
-          name: 'supportedFamilies',
-          description: [
-            'An array of widget sizes that this widget supports. Available options:',
-            '* `systemSmall` - Small square widget (2x2 grid)',
-            '* `systemMedium` - Medium rectangular widget (4x2 grid)',
-            '* `systemLarge` - Large square widget (4x4 grid)',
-            '* `systemExtraLarge` - Extra large widget (iPad only, 6x4 grid)',
-            '* `accessoryCircular` - Circular widget for Lock Screen and Apple Watch',
-            '* `accessoryRectangular` - Rectangular widget for Lock Screen and Apple Watch',
-            '* `accessoryInline` - Inline text widget for Lock Screen complications',
-          ].join('\n'),
-        },
-      ],
+    },
+    {
+      name: 'widgets[].name',
+      description:
+        'The internal name (identifier) of the widget. This is used as the Swift struct name and should be a valid Swift identifier (no spaces or special characters).',
+    },
+    {
+      name: 'widgets[].displayName',
+      description:
+        'The user-facing name of the widget that appears in the widget gallery when users add widgets to their home screen.',
+    },
+    {
+      name: 'widgets[].description',
+      description:
+        "A brief description of what the widget does. This appears in the widget gallery to help users understand the widget's purpose.",
+    },
+    {
+      name: 'widgets[].supportedFamilies',
+      description: [
+        'An array of widget sizes that this widget supports. Available options:',
+        '* `systemSmall` - Small square widget (2x2 grid)',
+        '* `systemMedium` - Medium rectangular widget (4x2 grid)',
+        '* `systemLarge` - Large square widget (4x4 grid)',
+        '* `systemExtraLarge` - Extra large widget (iPad only, 6x4 grid)',
+        '* `accessoryCircular` - Circular widget for Lock Screen and Apple Watch',
+        '* `accessoryRectangular` - Rectangular widget for Lock Screen and Apple Watch',
+        '* `accessoryInline` - Inline text widget for Lock Screen complications',
+      ].join('\n'),
     },
   ]}
 />
