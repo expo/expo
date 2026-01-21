@@ -13,9 +13,9 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Terminal } from '~/ui/components/Snippet';
 
-**EAS Submit** is a hosted service from EAS (Expo Application Services) for submitting Android and iOS binaries directly to the Google Play Store and Apple App Store without using Google Play Console, App Store Connect or Transporter.
+**EAS Submit** is a hosted service from EAS (Expo Application Services) for submitting Android and iOS binaries directly to the Google Play Store and Apple App Store without opening the [Google Play Console](https://play.google.com/console), or downloading the [Transporter app](https://apps.apple.com/us/app/transporter/id1450874784).
 
-EAS Submit automates the final step of mobile app distribution by sending your built binaries to Google and Apple for store review. It removes the need for manual uploads and reduces errors that happen during store submission.
+EAS Submit automates the final step of mobile app distribution by sending your built binaries to Google and Apple for store review. It removes the need for manual uploads and reduces errors that happen during store submission. It also allows developers using Windows and Linux to upload iOS builds, since this is only supported on macOS machines.
 
 EAS Submit works with apps built with [EAS Build](/build/introduction/) or locally and supports multiple submission profiles. You can trigger a submission from a CLI command, after a build is finished, or from a CI/CD service. This gives teams a faster, more consistent release workflow across both platforms.
 
@@ -51,7 +51,7 @@ Build and submit in one step:
 - Where it goes: EAS Submit uploads the build to App Store Connect.
 - What happens then: The build becomes available in TestFlight.
 - Does this mean production? No &mdash; a TestFlight build is not automatically released to the Apple App Store.
-- How production happens: You must log into App Store Connect, choose the build, and submit it for App Review before it can be released to production.
+- How production happens: You must log into App Store Connect, fill in all the metadata, security questionnaire and upload app screenshots, then choose the build, and submit it for App Review before it can be released to production.
 
 ## When to use EAS Submit
 
@@ -130,7 +130,7 @@ For Apple App Store, you can use [EAS Metadata](/eas/metadata/) to automate app 
 
 <Collapsible summary="What credentials do I need?">
 
-For Android, you need a [Google Service Account Key](/submit/android/#creating-a-google-service-account) with access to your app in Google Play Console. Your app must be uploaded manually at least once before API submissions work.
+For Android, you need a [Google Service Account Key](/submit/android/#creating-a-google-service-account) with access to your app in Google Play Console.
 
 For iOS, you need an Apple Developer account. EAS Submit requires your [`ascAppId`](/eas/json/#ascappid) (App Store Connect app ID) and will prompt for your Apple ID credentials or use an App Store Connect API Key if configured.
 
