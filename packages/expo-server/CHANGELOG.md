@@ -14,6 +14,7 @@
 ### 🐛 Bug fixes
 
 - Use `ImmutableRequest` for loader functions ([#42149](https://github.com/expo/expo/pull/42149) by [@hassankhan](https://github.com/hassankhan))
+- Handle `undefined` loader return values in server rendering ([#42367](https://github.com/expo/expo/pull/42367) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
