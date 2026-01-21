@@ -33,7 +33,11 @@ ExpoViewProps::ExpoViewProps(
   const ExpoViewProps &sourceProps,
   const react::RawProps &rawProps,
   const std::function<bool(const std::string &)> &filterObjectKeys
-) : react::ViewProps(context, sourceProps, rawProps, filterObjectKeys),
+) : react::ViewProps(context, sourceProps, rawProps
+#if REACT_NATIVE_TARGET_VERSION >= 83
+    , filterObjectKeys
+#endif
+  ),
     propsMap(propsMapFromProps(sourceProps, rawProps)) {}
 
 } // namespace expo
