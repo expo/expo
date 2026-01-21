@@ -15,12 +15,124 @@ Unit tests live alongside source files in `__tests__` directories. They use Jest
 
 ### Global Mocks
 
-The `jest.setup.ts` file mocks common dependencies by default:
+The `jest.setup.ts` file automatically mocks common dependencies for all unit tests:
 
-- `fs`, `fs/promises`, `node:fs`, `node:fs/promises`
-- `child_process`
-- `@expo/spawn-async`, `@expo/package-manager`
-- `resolve-from`, `ora`, `tar`, etc.
+```ts
+// jest.setup.ts - these are mocked globally
+jest.mock('fs');
+jest.mock('fs/promises');
+jest.mock('node:fs');
+jest.mock('node:fs/promises');
+jest.mock('child_process');
+jest.mock('@expo/spawn-async');
+jest.mock('@expo/package-manager');
+jest.mock('resolve-from');
+jest.mock('ora');
+jest.mock('tar');
+// ... and more
+```
+
+### Mock Directories (`__mocks__`)
+
+Mock implementations live in `__mocks__` directories. Jest automatically uses these when a module is mocked.
+
+#### Root Mocks (`/__mocks__/`)
+
+Global mocks for npm packages and Node.js built-ins:
+
+| Mock | Description |
+|------|-------------|
+| `fs.ts`, `fs/promises.ts` | Uses `memfs` for in-memory filesystem |
+| `os.ts` | Stubs `homedir()` → `/home`, `tmpdir()` → `/tmp` |
+| `child_process.ts` | Empty mock for process spawning |
+| `resolve-from.ts` | Resolves from memfs paths, falls back to real resolver |
+| `ora.ts` | No-op spinner |
+| `@expo/spawn-async.ts` | Returns empty successful result |
+| `@expo/package-manager.ts` | Mock package manager |
+| `@expo/image-utils.ts` | Mock image processing |
+
+#### Source Mocks (`/src/**/__mocks__/`)
+
+Mocks for internal modules, colocated with source:
+
+| Location | Mocks |
+|----------|-------|
+| `src/__mocks__/` | `log.ts` - silences console output |
+| `src/utils/__mocks__/` | `createTempPath.ts`, `downloadExpoGoAsync.ts`, `exit.ts`, `port.ts` |
+| `src/start/server/__mocks__/` | `AsyncNgrok.ts`, `Bonjour.ts`, `DevelopmentSession.ts` |
+| `src/start/platforms/__mocks__/` | Platform launcher mocks |
+| `src/api/user/__mocks__/` | User API mocks |
+
+### Working with the In-Memory Filesystem
+
+Unit tests use `memfs` for filesystem operations. Set up test files with `vol`:
+
+```ts
+import { vol } from 'memfs';
+
+beforeEach(() => {
+  vol.reset();  // Clear filesystem between tests
+});
+
+it('reads a config file', () => {
+  // Create in-memory files
+  vol.fromJSON({
+    '/project/package.json': JSON.stringify({ name: 'test' }),
+    '/project/app.json': JSON.stringify({ expo: { name: 'Test' } }),
+  });
+
+  // Your code using fs will read from memfs
+  const result = readConfig('/project');
+  expect(result.name).toBe('Test');
+});
+```
+
+### Overriding Mocks in Tests
+
+```ts
+// Use real implementation for specific test
+jest.unmock('fs');
+
+// Mock with custom implementation
+jest.mock('../myModule', () => ({
+  myFunction: jest.fn(() => 'mocked value'),
+}));
+
+// Spy on mocked function
+import spawnAsync from '@expo/spawn-async';
+(spawnAsync as jest.Mock).mockResolvedValueOnce({
+  stdout: 'custom output',
+  stderr: '',
+  status: 0,
+});
+```
+
+### Adding New Mocks
+
+1. **For npm packages**: Create `__mocks__/<package-name>.ts` in root `__mocks__/`
+2. **For scoped packages**: Create `__mocks__/@scope/package.ts`
+3. **For internal modules**: Create `__mocks__/module.ts` next to the source file
+4. **Register in `jest.setup.ts`**: Add `jest.mock('<module>')` if it should be global
+
+Example mock structure:
+
+```ts
+// __mocks__/my-package.ts
+
+// Option 1: Simple mock
+export default jest.fn();
+
+// Option 2: Partial mock with real implementation
+const actual = jest.requireActual('my-package');
+module.exports = {
+  ...actual,
+  riskyFunction: jest.fn(),
+};
+
+// Option 3: Full mock with types
+import type { MyType } from 'my-package';
+export const myFunction = jest.fn<MyType, []>(() => ({ /* mock data */ }));
+```
 
 ### Writing Unit Tests
 
