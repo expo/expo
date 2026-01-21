@@ -39,7 +39,14 @@ export default {
         }
         const { windowName = '_blank', windowFeatures } = browserParams;
         const features = getPopupFeaturesString(windowFeatures);
-        window.open(url, windowName, features);
+        const handle = window.open(url, windowName, features);
+        if (!handle || handle.closed) {
+            throw new CodedError('ERR_WEB_BROWSER_BLOCKED', 'Popup window was blocked by the browser or failed to open. This commonly occurs in in-app browsers or when not triggered by a user gesture.');
+        }
+        try {
+            handle.focus();
+        }
+        catch { }
         return { type: WebBrowserResultType.OPENED };
     },
     dismissAuthSession() {
