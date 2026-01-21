@@ -88,6 +88,16 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
          * @platform ios
          */
         fontWeight?: TextStyle['fontWeight'];
+        /**
+         * Sets the tint color of SF symbols. This is an alias for `tintColor` that can be used in styles.
+         * @platform ios
+         */
+        color?: TextStyle['color'];
+        /**
+         * Sets the size (width and height) of SF symbols.
+         * @platform ios
+         */
+        fontSize?: TextStyle['fontSize'];
     }>;
     /**
      * The image source, either a remote URL, a local file resource or a number that is the result of the `require()` function.
@@ -392,6 +402,7 @@ export interface ImageNativeProps extends ImageProps {
     nativeViewRef?: React.RefObject<ExpoImage | null>;
     containerViewRef?: React.RefObject<View | null>;
     symbolWeight?: string | null;
+    symbolSize?: number | null;
 }
 /**
  * A value that represents the relative position of a single axis.

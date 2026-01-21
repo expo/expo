@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [iOS] Add `color` and `fontSize` style props for SF Symbols to set tint color and size. ([#42320](https://github.com/expo/expo/pull/42320) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] Add support for SF Symbols `source="sf:star"`. ([#41907](https://github.com/expo/expo/pull/41907) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Upgrades Glide to `5.0.5`. ([#39713](https://github.com/expo/expo/pull/39713) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Added support for HDR images ([#40242](https://github.com/expo/expo/pull/40242) by [@tsapeta](https://github.com/tsapeta))

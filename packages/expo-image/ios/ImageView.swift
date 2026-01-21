@@ -77,6 +77,8 @@ public final class ImageView: ExpoView {
 
   var symbolWeight: String?
 
+  var symbolSize: Double?
+
   var useAppleWebpCodec: Bool = true
 
   /**
@@ -287,9 +289,10 @@ public final class ImageView: ExpoView {
     // Extract symbol name from URL path (e.g., sf:/star.fill)
     let symbolName = uri.pathComponents.count > 1 ? uri.pathComponents[1] : ""
 
-    // Create symbol with configuration using the symbolWeight prop
+    // Create symbol with configuration using the symbolWeight and symbolSize props
     let weight = parseSymbolWeight(symbolWeight)
-    let configuration = UIImage.SymbolConfiguration(pointSize: 100, weight: weight)
+    let pointSize = symbolSize ?? 100
+    let configuration = UIImage.SymbolConfiguration(pointSize: pointSize, weight: weight)
     guard let image = UIImage(systemName: symbolName, withConfiguration: configuration) else {
       onError(["error": "Unable to create SF Symbol image for '\(symbolName)'"])
       return
