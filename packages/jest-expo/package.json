@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@expo/config": "~55.0.0",
-    "@expo/json-file": "^10.0.7",
+    "@expo/json-file": "^10.0.9",
     "@jest/create-cache-key-function": "^29.2.1",
     "@jest/globals": "^29.2.1",
     "babel-jest": "^29.2.1",

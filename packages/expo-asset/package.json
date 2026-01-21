@@ -48,7 +48,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/image-utils": "^0.8.7",
+    "@expo/image-utils": "^0.8.9",
     "expo-constants": "~55.0.0"
   },
   "devDependencies": {

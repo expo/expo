@@ -60,7 +60,7 @@
     "expo-dev-client": "~55.0.0",
     "expo-image": "~55.0.0",
     "expo-insights": "~55.0.0",
-    "expo-network-addons": "~0.10.7",
+    "expo-network-addons": "~0.10.9",
     "expo-notifications": "~55.0.0",
     "expo-router": "~55.0.0-beta.0",
     "expo-splash-screen": "~55.0.0",

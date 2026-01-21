@@ -50,7 +50,7 @@
     "@bacons/xcode": "1.0.0-alpha.24",
     "@expo/config": "~55.0.0",
     "@expo/config-plugins": "~55.0.0",
-    "@expo/env": "~2.0.7",
+    "@expo/env": "~2.0.9",
     "@expo/spawn-async": "^1.7.2",
     "arg": "5.0.2",
     "chalk": "^4.0.0",
