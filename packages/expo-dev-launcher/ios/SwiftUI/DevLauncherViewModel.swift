@@ -18,7 +18,6 @@ class DevLauncherViewModel: ObservableObject {
   @Published var recentlyOpenedApps: [RecentlyOpenedApp] = []
   @Published var buildInfo: [AnyHashable: Any] = [:]
   @Published var updatesConfig: [AnyHashable: Any] = [:]
-  @Published var devServers: [DevServer] = []
   @Published var currentError: EXDevLauncherAppError?
   @Published var showingCrashReport = false
   @Published var showingErrorAlert = false
@@ -46,8 +45,19 @@ class DevLauncherViewModel: ObservableObject {
   @Published var selectedAccountId: String?
   @Published var isLoadingServer: Bool = false
 
+  @Published var browserDevServers: [DevServer] = [] {
+    didSet { updateDevServers() }
+  }
+
+  @Published var localDevServers: [DevServer] = [] {
+    didSet { updateDevServers() }
+  }
+
+  @Published var devServers: [DevServer] = []
+
   private var browser: NWBrowser?
   private var pingTask: Task<Void, Never>?
+  private var scanTask: Task<Void, Never>?
 
   #if !os(tvOS)
   private let presentationContext = DevLauncherAuthPresentationContext()
@@ -73,6 +83,10 @@ class DevLauncherViewModel: ObservableObject {
     loadData()
     checkAuthenticationStatus()
     checkForStoredCrashes()
+  }
+
+  private func updateDevServers() {
+    devServers = Set(browserDevServers).union(localDevServers).sorted(by: <)
   }
 
   private func loadData() {
@@ -134,6 +148,36 @@ class DevLauncherViewModel: ObservableObject {
 
   func startServerDiscovery() {
     stopServerDiscovery()
+    startDevServerBrowser()
+    startLocalDevServerScanner()
+  }
+
+  func stopServerDiscovery() {
+    pingTask?.cancel()
+    scanTask?.cancel()
+    browser?.cancel()
+    pingTask = nil
+    scanTask = nil
+    browser = nil
+  }
+
+  private func startLocalDevServerScanner() {
+    scanTask?.cancel()
+    scanTask = Task {
+      await scanLocalDevServers()
+      while !Task.isCancelled {
+        try? await Task.sleep(nanoseconds: 2_000_000_000)
+        if Task.isCancelled {
+          break
+        }
+        await scanLocalDevServers()
+      }
+    }
+  }
+
+  private func startDevServerBrowser() {
+    pingTask?.cancel()
+    browser?.cancel()
 
     let params = NWParameters()
     params.includePeerToPeer = true
@@ -164,23 +208,16 @@ class DevLauncherViewModel: ObservableObject {
     browser?.start(queue: .main)
   }
 
-  func stopServerDiscovery() {
-    pingTask?.cancel()
-    pingTask = nil
-    browser?.cancel()
-    browser = nil
-  }
-
-  private func pingDiscoveryResults(_ results: [DiscoveryResult]) async {
+  private func scanLocalDevServers() async {
     guard !Task.isCancelled else {
       return
     }
 
     var discoveredServers: [DevServer] = []
     await withTaskGroup(of: DevServer?.self) { group in
-      for result in results {
+      for result in NetworkUtilities.getLocalEndpointsToScan() {
         group.addTask {
-          return await self.pingDevServer(result)
+          return await self.resolveDevServer(result)
         }
       }
 
@@ -192,11 +229,40 @@ class DevLauncherViewModel: ObservableObject {
     }
 
     await MainActor.run {
-      self.devServers = discoveredServers.sorted { $0.url < $1.url }
+      self.localDevServers = discoveredServers
     }
   }
 
-  private func pingDevServer(_ result: DiscoveryResult) async -> DevServer? {
+  private func pingDiscoveryResults(_ results: [DiscoveryResult]) async {
+    guard !Task.isCancelled else {
+      return
+    }
+
+    var discoveredServers: [DevServer] = []
+    await withTaskGroup(of: DevServer?.self) { group in
+      for result in results {
+        group.addTask {
+          return await self.resolveDevServer(result)
+        }
+      }
+
+      for await server in group {
+        if let server {
+          discoveredServers.append(server)
+        }
+      }
+    }
+
+    guard !Task.isCancelled else {
+      return
+    }
+
+    await MainActor.run {
+      self.browserDevServers = discoveredServers
+    }
+  }
+
+  private func resolveDevServer(_ result: DiscoveryResult) async -> DevServer? {
     do {
       if let host = try await NetworkUtilities.resolveBundlerEndpoint(
         endpoint: result.endpoint,
