@@ -22,7 +22,7 @@
 - (nullable id)findModuleWithName:(nonnull NSString *)name lazilyLoadIfNecessary:(BOOL)lazilyLoadIfNecessary
 {
   RCTModuleRegistry *moduleRegistry = _host.moduleRegistry;
-  return [moduleRegistry moduleForName:name lazilyLoadIfNecessary:lazilyLoadIfNecessary];
+  return [moduleRegistry moduleForName:[name UTF8String] lazilyLoadIfNecessary:lazilyLoadIfNecessary];
 }
 
 - (nullable UIView *)findViewWithTag:(NSInteger)tag
