@@ -3,11 +3,13 @@
 import ExpoModulesCore
 import Foundation
 import AuthenticationServices
+import Network
 
 private let selectedAccountKey = "expo-selected-account-id"
 private let sessionKey = "expo-session-secret"
 
 private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
+private let BONJOUR_TYPE = "_expo._tcp"
 
 @MainActor
 class DevLauncherViewModel: ObservableObject {
@@ -41,7 +43,9 @@ class DevLauncherViewModel: ObservableObject {
   @Published var user: User?
   @Published var selectedAccountId: String?
   @Published var isLoadingServer: Bool = false
-  private var discoveryTask: Task<Void, Never>?
+
+  private var browser: NWBrowser?
+  private var pingTask: Task<Void, Never>?
 
   #if !os(tvOS)
   private let presentationContext = DevLauncherAuthPresentationContext()
@@ -127,43 +131,49 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   func startServerDiscovery() {
-    discoveryTask?.cancel()
-    discoveryTask = Task {
-      await discoverDevServers()
-      while !Task.isCancelled {
-        try? await Task.sleep(nanoseconds: 2_000_000_000)
-        if Task.isCancelled {
-          break
+    stopServerDiscovery()
+
+    let params = NWParameters()
+    params.includePeerToPeer = true
+    params.allowLocalEndpointReuse = true
+
+    browser = NWBrowser(
+      for: NWBrowser.Descriptor.bonjourWithTXTRecord(type: BONJOUR_TYPE, domain: nil),
+      using: params
+    )
+
+    browser?.browseResultsChangedHandler = { [weak self] results, _ in
+      guard let self = self else { return }
+      Task { @MainActor [weak self, results] in
+        guard let self else { return }
+        self.pingTask?.cancel()
+        self.pingTask = Task {
+          defer { self.pingTask = nil }
+          await self.pingDiscoveryResults(results)
         }
-        await discoverDevServers()
       }
     }
+
+    browser?.start(queue: .main)
   }
 
   func stopServerDiscovery() {
-    discoveryTask?.cancel()
-    discoveryTask = nil
+    pingTask?.cancel()
+    pingTask = nil
+    browser?.cancel()
+    browser = nil
   }
 
-  private func discoverDevServers() async {
+  private func pingDiscoveryResults(_ results: Set<NWBrowser.Result>) async {
     guard !Task.isCancelled else {
       return
     }
 
     var discoveredServers: [DevServer] = []
-
-    // swiftlint:disable number_separator
-    let portsToCheck = [8081, 8082, 8_083, 8084, 8085, 19000, 19001, 19002]
-    // swiftlint:enable number_separator
-
-    let ipsToScan = NetworkUtilities.getIPAddressesToScan()
     await withTaskGroup(of: DevServer?.self) { group in
-      for ip in ipsToScan {
-        for port in portsToCheck {
-          group.addTask {
-            let baseAddress = ip == "localhost" ? "http://localhost" : "http://\(ip)"
-            return await self.checkDevServer(url: "\(baseAddress):\(port)")
-          }
+      for result in results {
+        group.addTask {
+          return await self.pingDevServer(endpoint: result.endpoint)
         }
       }
 
@@ -174,33 +184,18 @@ class DevLauncherViewModel: ObservableObject {
       }
     }
 
-    guard !Task.isCancelled else {
-      return
-    }
-
     await MainActor.run {
       self.devServers = discoveredServers.sorted { $0.url < $1.url }
     }
   }
 
-  private func checkDevServer(url: String) async -> DevServer? {
-    guard let statusURL = URL(string: "\(url)/status") else {
-      return nil
-    }
-
+  private func pingDevServer(endpoint: NWEndpoint) async -> DevServer? {
     do {
-      let (data, response) = try await URLSession.shared.data(from: statusURL)
-
-      if let httpResponse = response as? HTTPURLResponse,
-        httpResponse.statusCode == 200 {
-        if let statusString = String(data: data, encoding: .utf8),
-          statusString.contains("packager-status:running") {
-          return DevServer(
-            url: url,
-            description: url,
-            source: "local"
-          )
-        }
+      if let host = try await NetworkUtilities.resolveBundlerEndpoint(
+        endpoint: endpoint,
+        queue: DispatchQueue.main
+      ) {
+        return DevServer(url: host, description: host, source: "local")
       }
     } catch {
       // Server not running or not reachable
