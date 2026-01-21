@@ -5,7 +5,7 @@ import { Container } from '../components/Container';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
 import { Table, TableRow } from '../components/Table';
 
-export const loader: LoaderFunction = ({ request }) => {
+export const loader: LoaderFunction = (request) => {
   // In SSG, request is unavailable since there's no HTTP request at build time
   if (!request) {
     return { foo: null };

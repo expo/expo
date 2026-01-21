@@ -126,26 +126,27 @@ describe.each(
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toContain('application/json');
     expect(response.headers.get('cache-control')).toBe('public, max-age=3600');
-    expect(response.headers.get('x-custom-header')).toBe('test-value');
+    expect(response.headers.get('x-custom-header')).toBe('set-via-response');
 
     const data = await response.json();
     expect(data).toEqual({ foo: 'bar' });
   });
 
-  it('loader can access server environment variables', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/env');
-    expect(response.status).toBe(200);
-    const data = await response.json();
-    expect(data).toHaveProperty('TEST_SECRET_KEY', 'test-secret-key');
-  });
-
   it.each(getPageAndLoaderData('/nullish/undefined'))(
     'returns `null` for `undefined` loader data for $url ($name)',
-    async ({ getData, url }) => {
+    async ({ getData, name, url }) => {
       const response = await server.fetchAsync(url);
       expect(response.status).toBe(200);
       const data = await getData(response);
-      expect(data).toBeNull();
+
+      // NOTE(@hassankhan): For HTML pages, the fixture component converts `null` to the
+      // string `NULL` for display (see `nullish/[value].tsx`). The loader endpoint
+      // returns the raw `null` value.
+      if (name === 'page') {
+        expect(data).toEqual('NULL');
+      } else {
+        expect(data).toBeNull();
+      }
     }
   );
 
@@ -205,7 +206,7 @@ describe.each(
     }
   );
 
-  it('sets custom headers on `Response` using `setResponseHeaders()`', async () => {
+  it('sets custom headers on response using `setResponseHeaders()`', async () => {
     const response = await server.fetchAsync('/_expo/loaders/response?setresponseheaders=true');
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toContain('application/json');

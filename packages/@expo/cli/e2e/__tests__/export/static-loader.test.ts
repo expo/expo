@@ -116,16 +116,24 @@ describe.each(
     expect(response.headers.get('x-custom-header')).not.toBe('test-value');
 
     const data = await response.json();
-    expect(data).toEqual({ foo: 'bar' });
+    expect(data).toEqual({ foo: null });
   });
 
   it.each(getPageAndLoaderData('/nullish/undefined'))(
     'returns `null` for `undefined` loader data for $url ($name)',
-    async ({ getData, url }) => {
+    async ({ getData, name, url }) => {
       const response = await server.fetchAsync(url);
       expect(response.status).toBe(200);
       const data = await getData(response);
-      expect(data).toBeNull();
+
+      // NOTE(@hassankhan): For HTML pages, the fixture component converts `null` to the
+      // string `NULL` for display (see `nullish/[value].tsx`). The loader endpoint
+      // returns the raw `null` value.
+      if (name === 'page') {
+        expect(data).toEqual('NULL');
+      } else {
+        expect(data).toBeNull();
+      }
     }
   );
 
