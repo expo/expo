@@ -30,9 +30,8 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 You can configure `expo-sharing` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
 
-Below you can find an example of a configuration which allows for sharing a single or multiple images on iOS and Android.
-
 <ConfigPluginExample>
+    The following example shows a configuration that allows sharing a single or multiple images on iOS and Android::
   ```json app.json
   {
     "expo": {
@@ -80,7 +79,7 @@ Below you can find an example of a configuration which allows for sharing a sing
     {
       name: 'ios.activationRule',
       description:
-        'Configuration for the `NSExtensionActivationRule` in **Info.plist**. Can be either an object confirming to the [`ActivationRuleOptions`](#activationruleoptions) type to generate a standard predicate or a raw string to specify a custom predicate directly (e.g., `SUBQUERY(...)`).',
+        'Configuration for the `NSExtensionActivationRule` in **Info.plist**. Can be either an object confirming to the [`ActivationRuleOptions`](#activationruleoptions) type to generate a standard predicate or a raw string to specify a custom predicate directly (for example, `SUBQUERY(...)`).',
       default: '{}',
     },
     {
@@ -108,11 +107,11 @@ Below you can find an example of a configuration which allows for sharing a sing
 
 > **important** **Note**: This functionality is currently experimental. On iOS the share extension opens the main target, instead of processing the share in a sharing `ViewController`, which is not oficially supported by Apple and may stop working in a future iOS release.
 
-When a user shares content with your app, the operating system launches your app (or brings it to the foreground). To process this action, you need to configure your navigation to handle the incoming deep link or intent.
+When an app user shares content with your app, the operating system launches your app (also known as the process of bringing it to the foreground). To process this action, you need to configure your navigation to handle the incoming deep link.
 
 ### Expo Router
 
-If you are using [Expo Router](https://docs.expo.dev/router/introduction/), you can use the [`+native-intent.ts`](https://docs.expo.dev/router/advanced/native-intent/) file to handle the incoming share intent. This allows you to inspect the incoming path and redirect to a specific route.
+If you are using [Expo Router](/router/introduction/), you can use the [`+native-intent.ts`](/router/advanced/native-intent/) file to handle the incoming share intent. This allows you to inspect the incoming path and redirect to a specific route.
 
 ```tsx app/+native-intent.ts
 import { getSharedPayloads } from 'expo-sharing';
@@ -133,7 +132,7 @@ export async function redirectSystemPath({ path, initial }: { path: string; init
 
 ### React Navigation
 
-If you are using [React Navigation](https://reactnavigation.org/), you can use the `linking` prop to intercept the deep link. You should check if the incoming URL hostname matches the `expo-sharing` scheme (or your custom configured scheme) and redirect the user to a specific handler screen.
+If you are using [React Navigation](https://reactnavigation.org/), you can use the `linking` prop to intercept the deep link. You should check if the incoming URL hostname matches the `expo-sharing` scheme and redirect the user to a specific handler screen.
 
 ```tsx
 import * as Linking from 'expo-linking';
@@ -197,11 +196,11 @@ export default function App() {
 
 If you are creating a basic app without a navigation library, your main screen is the handler screen. You can move on to the next section.
 
-## Displaying Shared Content
+## Displaying shared content
 
 Once you have redirected the user to a handler screen, you can use the `useIncomingShare` hook to access and display the shared data.
 
-The following example shows a screen that displays shared images.
+The following example shows a screen that displays shared images:
 
 ```tsx
 import { Image } from 'expo-image';

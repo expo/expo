@@ -16,8 +16,9 @@ export type MultiIntentFilter = IntentFilter & {
     action: MultiShareAction;
 };
 /**
- * Describes a configuration for data types possible to share into the application on iOS.
- */
+ * Describes a configuration for data types that are possible to share in the application on iOS.
+ *
+ * @platform ios */
 export type ActivationRuleOptions = {
     /**
      * Whether the app should accept shared text.

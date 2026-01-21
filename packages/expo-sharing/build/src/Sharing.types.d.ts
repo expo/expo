@@ -17,7 +17,7 @@ export type SharingOptions = {
      */
     dialogTitle?: string;
     /**
-     * set the anchor point for iPad
+     * Sets the anchor point for iPad
      * @platform ios
      */
     anchor?: {
@@ -74,14 +74,14 @@ export type SharePayload = {
     /**
      * The MIME type of the contents of the`value` field.
      *
-     * @default `text/plain`
+     * @default 'text/plain'
      */
     mimeType?: string;
 };
 export type BaseResolvedSharePayload = SharePayload & {
     /**
-     * Uri which can be used to access the shared content. When resolving contents of a URL with redirects, contains the redirect target uri.
-     * Null when resolving a [SharePayload](#sharepayload) with a `text` [ShareType](#sharetype).
+     * URI which can be used to access the shared content. When resolving contents of a URL with redirects, contains the redirect target URI.
+     * Null when resolving a [`SharePayload`](#sharepayload) with a `text` [`ShareType`](#sharetype).
      */
     contentUri: string | null;
     /**
@@ -102,8 +102,7 @@ export type BaseResolvedSharePayload = SharePayload & {
     contentSize: number | null;
 };
 /**
- * Represents a resolved payload, for which the data can be accessed through an uri.
- *
+ * Represents a resolved payload, for which the data can be accessed through a URI.
  * @platform android
  * @platform ios
  * @experimental
@@ -131,7 +130,7 @@ export type TextBasedResolvedSharePayload = BaseResolvedSharePayload & {
  */
 export type ResolvedSharePayload = UriBasedResolvedSharePayload | TextBasedResolvedSharePayload;
 /**
- * Object returned by [useIncomingShare](#useincomingshare) hook containing information about data shared with the app.
+ * Object returned by [`useIncomingShare`](#useincomingshare) hook containing information about data shared with the app.
  *
  * @platform android
  * @platform ios
