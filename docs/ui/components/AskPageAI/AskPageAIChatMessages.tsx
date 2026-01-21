@@ -91,8 +91,6 @@ export function AskPageAIChatMessages({
           qa.sources!.some(source => !source.source_url.includes(basePath));
         const sourcesForDisplay = isOffPageAnswer ? [] : (qa.sources ?? []);
         const isFallbackAnswer =
-          trimmedAnswer === fallbackResponse ||
-          trimmedLower.startsWith(fallbackLower) ||
           trimmedLower.includes(fallbackLower) ||
           trimmedLower.includes('search all expo docs') ||
           isOffPageAnswer;
