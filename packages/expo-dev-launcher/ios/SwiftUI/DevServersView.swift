@@ -53,7 +53,7 @@ struct DevServersView: View {
             .padding()
           Divider()
         } else {
-          ForEach(viewModel.devServers, id: \.url) { server in
+          ForEach(viewModel.devServers, id: \.self) { server in
             DevServerRow(server: server) {
               viewModel.openApp(url: server.url)
             }

@@ -1,16 +1,8 @@
 import Network
 
-struct DiscoveryResult: Hashable {
+struct DiscoveryResult {
   let name: String?
   let endpoint: NWEndpoint
-
-  var hashValue: Int {
-    return endpoint.hashValue
-  }
-
-  static func == (lhs: Self, rhs: Self) -> Bool {
-    return lhs.name == rhs.name && lhs.endpoint == rhs.endpoint
-  }
 }
 
 struct BranchWithUpdates {
@@ -20,10 +12,22 @@ struct BranchWithUpdates {
   let hasCompatibleUpdates: Bool
 }
 
-struct DevServer {
+struct DevServer: Hashable {
   let url: String
   let description: String
   let source: String
+
+  var hashValue: Int {
+    return url.hashValue
+  }
+
+  static func == (lhs: Self, rhs: Self) -> Bool {
+    return lhs.url == rhs.url && lhs.description == rhs.description && lhs.source == rhs.source
+  }
+
+  static func < (lhs: Self, rhs: Self) -> Bool {
+    return lhs.url < rhs.url
+  }
 }
 
 struct BuildInfo {
