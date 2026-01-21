@@ -9,7 +9,7 @@ platforms: ['ios']
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 
-`expo-widgets` is a [config plugin](/config-plugins/introduction/) that enables iOS home screen widgets and Live Activities in your Expo app. It configures the necessary native project settings during [Prebuild](/workflow/prebuild), including creating the widget extension target, setting up app groups for data sharing between your app and widgets, and configuring entitlements.
+`expo-widgets` is a [config plugin](/config-plugins/introduction/) that enables iOS home screen widgets and Live Activities in your Expo app. It configures the necessary native project settings during [Prebuild](/workflow/continuous-native-generation/#prebuild), including creating the widget extension target, setting up app groups for data sharing between your app and widgets, and configuring entitlements.
 
 > **info** This config plugin configures how the [Prebuild command](/workflow/prebuild) generates the native **ios** directory and therefore cannot be used with projects that don't run `npx expo prebuild` (bare projects).
 
