@@ -31,6 +31,7 @@
 
 ### 💡 Others
 
+- Changed module type to `module` in `package.json` for expo/devtools. ([#42194](https://github.com/expo/expo/pull/42194) by [@chrfalch](https://github.com/chrfalch))
 - [Types] Fix `transitionDuration` type missing the `number` option for Reanimated V4 compatibility. ([#40793](https://github.com/expo/expo/pull/40793) by [@DelphineBugner](https://github.com/DelphineBugner))
 - [android] Add getDefaultReactHost to ExpoReactHostFactory ([#40086](https://github.com/expo/expo/pull/40086) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [expo/dom] Add `overrideUri` to `DOMProps` to enable pre-bundled DOM Components. ([#40397](https://github.com/expo/expo/pull/40397) by [@krystofwoldrich](https://github.com/krystofwoldrich))
