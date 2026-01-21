@@ -5,6 +5,7 @@ import path from 'node:path';
 import tempDir from 'temp-dir';
 
 import { executeCreateExpoCLIAsync, executeExpoCLIAsync, sleep } from './process';
+import type { PluginProps } from './types';
 
 const PROJECT_NAME = 'testapp';
 const TEMP_DIR = process.env.EXPO_E2E_TEMP_DIR
@@ -47,16 +48,23 @@ export const cleanUpProject = async (suffix: string = ''): Promise<void> => {
 /**
  * Add the Expo Brownfield plugin to the project
  */
-const addPlugin = async (projectRoot: string) => {
+export const addPlugin = async (projectRoot: string, props?: PluginProps) => {
   const appJsonPath = path.join(projectRoot, 'app.json');
   if (!fs.existsSync(appJsonPath)) {
     throw new Error(`App.json not found: ${appJsonPath}`);
   }
 
   const appConfig = JSON.parse(await fs.promises.readFile(appJsonPath, 'utf8'));
-  appConfig.expo.plugins = appConfig?.expo?.plugins
-    ? [...appConfig.expo.plugins, 'expo-brownfield']
-    : ['expo-brownfield'];
+  if (!appConfig?.expo) {
+    throw new Error(`App.json is missing the 'expo' object`);
+  }
+
+  const plugins = filterOutPlugin(appConfig.expo.plugins);
+
+  const expoBrownfieldPlugin = props ? ['expo-brownfield', props] : 'expo-brownfield';
+  plugins.push(expoBrownfieldPlugin);
+
+  appConfig.expo.plugins = plugins;
   await fs.promises.writeFile(appJsonPath, JSON.stringify(appConfig, null, 2));
 };
 
@@ -134,4 +142,19 @@ export const prebuildProject = async (projectRoot: string, platform?: 'android' 
   }
 
   await executeExpoCLIAsync(projectRoot, ['prebuild', '--clean', ...platformArgs]);
+};
+
+/**
+ * Filters out the plugin from the app.json plugins array
+ */
+const filterOutPlugin = (plugins?: (any[] | string)[]) => {
+  if (!plugins || plugins.length === 0) {
+    return [];
+  }
+
+  return plugins.filter(
+    (plugin) =>
+      (Array.isArray(plugin) && plugin[0] !== 'expo-brownfield') ||
+      (!Array.isArray(plugin) && plugin !== 'expo-brownfield')
+  );
 };

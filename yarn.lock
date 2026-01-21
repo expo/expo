@@ -1250,6 +1250,15 @@
     debug "^4.3.4"
     uuid "^8.3.2"
 
+"@bacons/xcode@1.0.0-alpha.29":
+  version "1.0.0-alpha.29"
+  resolved "https://registry.yarnpkg.com/@bacons/xcode/-/xcode-1.0.0-alpha.29.tgz#d85a2a8794ec55d456053dbfe90590ec22b8c0d1"
+  integrity sha512-b2P+Y6ovdlie3A8Tx6QBFlbfQPhXe0vDS83W0DVob6732e3TukgVMbVcE9umn36BaeGzmJVjMFtqEyhWetjRWg==
+  dependencies:
+    "@expo/plist" "^0.0.18"
+    debug "^4.3.4"
+    uuid "^8.3.2"
+
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
@@ -14450,6 +14459,11 @@ sf-symbols-typescript@^2.0.0, sf-symbols-typescript@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/sf-symbols-typescript/-/sf-symbols-typescript-2.1.0.tgz#50a2d7b36edd6809606f0b0a36322fc1fdd7cfde"
   integrity sha512-ezT7gu/SHTPIOEEoG6TF+O0m5eewl0ZDAO4AtdBi5HjsrUI6JdCG17+Q8+aKp0heM06wZKApRCn5olNbs0Wb/A==
+
+sf-symbols-typescript@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/sf-symbols-typescript/-/sf-symbols-typescript-2.2.0.tgz#926d6e0715e3d8784cadf7658431e36581254208"
+  integrity sha512-TPbeg0b7ylrswdGCji8FRGFAKuqbpQlLbL8SOle3j1iHSs5Ob5mhvMAxWN2UItOjgALAB5Zp3fmMfj8mbWvXKw==
 
 shallowequal@^1.1.0:
   version "1.1.0"
