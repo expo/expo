@@ -22,7 +22,7 @@ export interface ImmutableRequest extends _ImmutableRequest {
  *
  * export default middleware;
  * ```
- * @see https://docs.expo.dev/router/reference/middleware/
+ * @see [Server middleware](https://docs.expo.dev/router/web/middleware/) for more information.
  */
 export type MiddlewareFunction = (
   request: ImmutableRequest
