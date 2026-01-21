@@ -246,6 +246,7 @@ class ReadOnlyURLSearchParams extends URLSearchParams {
 }
 const loaderDataCache = new Map();
 const loaderPromiseCache = new Map();
+const loaderErrorCache = new Map();
 /**
  * Returns the result of the `loader` function for the calling route.
  *
@@ -284,6 +285,11 @@ function useLoaderData() {
             return globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath];
         }
     }
+    // Check error cache BEFORE data cache - this prevents infinite retry loops
+    // when a loader fails. We throw the cached error instead of starting a new fetch.
+    if (loaderErrorCache.has(resolvedPath)) {
+        throw loaderErrorCache.get(resolvedPath);
+    }
     // Check cache for route data
     if (loaderDataCache.has(resolvedPath)) {
         return loaderDataCache.get(resolvedPath);
@@ -293,16 +299,17 @@ function useLoaderData() {
         const promise = (0, utils_1.fetchLoaderModule)(resolvedPath)
             .then((data) => {
             loaderDataCache.set(resolvedPath, data);
+            loaderErrorCache.delete(resolvedPath); // Clear any previous error
+            loaderPromiseCache.delete(resolvedPath);
             return data;
         })
             .catch((error) => {
-            console.error(`Failed to load loader data for route: ${resolvedPath}:`, error);
-            throw new Error(`Failed to load loader data for route: ${resolvedPath}`, {
+            const wrappedError = new Error(`Failed to load loader data for route: ${resolvedPath}`, {
                 cause: error,
             });
-        })
-            .finally(() => {
+            loaderErrorCache.set(resolvedPath, wrappedError); // Cache the error
             loaderPromiseCache.delete(resolvedPath);
+            throw wrappedError;
         });
         loaderPromiseCache.set(resolvedPath, promise);
     }
