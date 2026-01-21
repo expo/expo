@@ -413,7 +413,7 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
     const promise = fetchLoaderModule(resolvedPath)
       .then((data) => {
         loaderDataCache.set(resolvedPath, data);
-        loaderErrorCache.delete(resolvedPath); // Clear any previous error
+        loaderErrorCache.delete(resolvedPath);
         loaderPromiseCache.delete(resolvedPath);
         return data;
       })
