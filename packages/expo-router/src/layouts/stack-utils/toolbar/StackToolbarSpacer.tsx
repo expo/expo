@@ -22,14 +22,6 @@ export interface StackToolbarSpacerProps {
   width?: number;
   // TODO(@ubax): implement missing props in react-native-screens
   /**
-   * Whether to hide the shared background.
-   *
-   * Only available in bottom placement.
-   *
-   * @platform iOS 26+
-   */
-  hidesSharedBackground?: boolean;
-  /**
    * Whether this spacer shares background with adjacent items.
    *
    * Only available in bottom placement.
@@ -87,7 +79,7 @@ export const StackToolbarSpacer: React.FC<StackToolbarSpacerProps> = (props) => 
   const placement = useToolbarPlacement();
 
   if (placement === 'bottom') {
-    return <NativeToolbarSpacer {...props} />;
+    return <NativeToolbarSpacer {...props} hidesSharedBackground={!props.sharesBackground} />;
   }
 
   return null;

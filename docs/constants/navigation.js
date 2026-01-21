@@ -269,6 +269,7 @@ export const general = [
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
       makePage('router/advanced/custom-tabs.mdx'),
+      makePage('router/advanced/stack-toolbar.mdx'),
     ]),
     makeGroup('Web', [
       makePage('router/web/api-routes.mdx'),

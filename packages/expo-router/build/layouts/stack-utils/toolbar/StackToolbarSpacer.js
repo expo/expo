@@ -52,7 +52,7 @@ const context_1 = require("./context");
 const StackToolbarSpacer = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
     if (placement === 'bottom') {
-        return <bottom_toolbar_native_elements_1.NativeToolbarSpacer {...props}/>;
+        return <bottom_toolbar_native_elements_1.NativeToolbarSpacer {...props} hidesSharedBackground={!props.sharesBackground}/>;
     }
     return null;
 };
