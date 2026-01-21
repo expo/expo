@@ -31,7 +31,7 @@ PODS:
   - EXNotifications/Tests (0.32.16):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.31):
+  - Expo (54.0.32):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -62,7 +62,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Expo/Tests (54.0.31):
+  - Expo/Tests (54.0.32):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -4315,7 +4315,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 83ef0844fcf06d6099b12a7bdbd7d36fc0e1dd16
   EXNotifications: 2a3feb7af6194828d9aafda72f63a9a03866230a
-  Expo: a5ed19ff022f7ef200b21d157d4482bc955768bf
+  Expo: 5768fe32781472c6404d0c87310eea0a22cca4af
   ExpoAgeRange: 33b53a8e2b12c76c03c12ccfb2acd12f1b3cc742
   ExpoAppleAuthentication: 31bb6cdc57d7169e5d994fff7ec4b97c62423534
   ExpoAsset: d999f3bbd998a750f3b74cb913229848901b926b
