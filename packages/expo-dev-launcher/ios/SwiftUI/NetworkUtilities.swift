@@ -145,26 +145,20 @@ class NetworkUtilities {
     #endif
   }
 
-  static func getIPAddressesToScan() -> [String] {
-    if isSimulator() {
-      return ["localhost"]
+  static func getLocalEndpointsToScan() -> [DiscoveryResult] {
+    let portsToScan = ["8081", "8082", "8083"]
+    if !isSimulator() {
+      return []
     }
-
-    guard let localIP = getLocalIPAddress() else {
-      return ["localhost"]
+    return portsToScan.map { port in
+      DiscoveryResult(
+        name: nil,
+        endpoint: NWEndpoint.hostPort(
+          host: NWEndpoint.Host.init(getLocalIPAddress() ?? "localhost"),
+          port: NWEndpoint.Port.init(port)!
+        )
+      )
     }
-
-    let components = localIP.split(separator: ".")
-    guard components.count == 4 else {
-      return ["localhost"]
-    }
-
-    let subnet = components.prefix(3).joined(separator: ".")
-
-    return [
-      "localhost",
-      "\(subnet).1"
-    ]
   }
 
   static func getNWBrowserResultName(_ result: NWBrowser.Result) -> String? {

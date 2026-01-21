@@ -22,7 +22,7 @@ struct DevServer: Hashable {
   }
 
   static func == (lhs: Self, rhs: Self) -> Bool {
-    return lhs.url == rhs.url && lhs.description == rhs.description && lhs.source == rhs.source
+    return lhs.url == rhs.url
   }
 
   static func < (lhs: Self, rhs: Self) -> Bool {
