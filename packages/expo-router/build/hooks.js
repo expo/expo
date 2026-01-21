@@ -288,7 +288,6 @@ function useLoaderData() {
     // Check error cache first to prevent infinite retry loops when a loader fails.
     // We throw the cached error instead of starting a new fetch.
     if (loaderErrorCache.has(resolvedPath)) {
-        // eslint-disable-next-line no-throw-literal
         throw loaderErrorCache.get(resolvedPath);
     }
     // Check cache for route data
@@ -300,7 +299,7 @@ function useLoaderData() {
         const promise = (0, utils_1.fetchLoaderModule)(resolvedPath)
             .then((data) => {
             loaderDataCache.set(resolvedPath, data);
-            loaderErrorCache.delete(resolvedPath); // Clear any previous error
+            loaderErrorCache.delete(resolvedPath);
             loaderPromiseCache.delete(resolvedPath);
             return data;
         })
@@ -308,7 +307,7 @@ function useLoaderData() {
             const wrappedError = new Error(`Failed to load loader data for route: ${resolvedPath}`, {
                 cause: error,
             });
-            loaderErrorCache.set(resolvedPath, wrappedError); // Cache the error
+            loaderErrorCache.set(resolvedPath, wrappedError);
             loaderPromiseCache.delete(resolvedPath);
             throw wrappedError;
         });
