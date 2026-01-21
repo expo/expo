@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
 - [iOS] Fix crash when storyboard is not present ([#42178](https://github.com/expo/expo/pull/42178) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others

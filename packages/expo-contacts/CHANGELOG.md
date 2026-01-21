@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - Add `Contacts@Next` ([#40886](https://github.com/expo/expo/pull/40886) by [@Wenszel](https://github.com/Wenszel))
 - [Android] Implement `hasContactsAsync` function ([#40756](https://github.com/expo/expo/pull/40756) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 

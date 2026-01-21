@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
 - Remove the `allowsFullscreen` prop. ([#41606](https://github.com/expo/expo/pull/41606) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features

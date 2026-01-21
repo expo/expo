@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - add support for line-height ([#41094](https://github.com/expo/expo/pull/41094) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes

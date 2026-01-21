@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.0 — 2026-01-21
+
+### 💡 Others
+
 - Removed references to legacy native modules API. ([#41657](https://github.com/expo/expo/pull/41657) by [@tsapeta](https://github.com/tsapeta))
 
 ## 15.0.8 - 2025-12-05

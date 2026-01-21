@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - Remove `ExpoAppDelegate` inheritance requirement ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add patch content negotiation headers. ([#40583](https://github.com/expo/expo/pull/40583) by [@alanjhughes](https://github.com/alanjhughes))
 

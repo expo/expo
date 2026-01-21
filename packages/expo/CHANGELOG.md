@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.0-preview.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
 - [iOS] Remove EXAppDelegateWrapper class ([#39778](https://github.com/expo/expo/pull/39778) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [android] Delete ReactNativeHostWrapper class ([#40222](https://github.com/expo/expo/pull/40222) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 

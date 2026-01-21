@@ -6,14 +6,20 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [Android] Add support for MaterialSymbol symbols on Android and Web. ([#39516](https://github.com/expo/expo/pull/39516) by [@aleqsio](https://github.com/aleqsio))
 - [Android] add unstable_getMaterialSymbolSourceAsync ([#41064](https://github.com/expo/expo/pull/41064) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
 - [Android] Add lineHeight to ensure symbols occupy correct square space. ([#41091](https://github.com/expo/expo/pull/41091) by [@aleqsio](https://github.com/aleqsio))
-
-### 💡 Others
 
 ## 1.0.8 - 2025-12-05
 

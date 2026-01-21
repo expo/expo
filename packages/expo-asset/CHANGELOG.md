@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
 - [Android] Fix asset loading when Metro server runs over HTTPS by deriving scheme from `manifestBaseUrl` instead of hardcoding `http://`. ([#42184](https://github.com/expo/expo/pull/42184) by [@ink404](https://github.com/ink404))
 
 ### 💡 Others

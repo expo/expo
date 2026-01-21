@@ -4,16 +4,22 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
 - Remove deprecated `android.newArchEnabled` and `ios.newArchEnabled` properties. ([#41684](https://github.com/expo/expo/pull/41684) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🎉 New features
 
 - Add support for enabling Hermes V1 ([#41715](https://github.com/expo/expo/pull/41715) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add top-level `buildReactNativeFromSource`, `reactNativeReleaseLevel`, and `useHermesV1` config fields that apply to both platforms, with platform-specific values taking precedence. ([#42302](https://github.com/expo/expo/pull/42302) by [@brentvatne](https://github.com/brentvatne))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 1.0.10 - 2025-12-05
 

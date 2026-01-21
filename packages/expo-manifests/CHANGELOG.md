@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.0 — 2026-01-21
+
+### 💡 Others
+
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
 
 ## 1.0.10 - 2025-12-05
