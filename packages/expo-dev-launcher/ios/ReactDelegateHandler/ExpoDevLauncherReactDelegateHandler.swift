@@ -6,7 +6,6 @@ import React
 
 private class DevLauncherWrapperView: UIView {
   weak var devLauncherViewController: UIViewController?
-  var isBrownfield: Bool = false
 
 #if !os(macOS)
   override func didMoveToWindow() {
