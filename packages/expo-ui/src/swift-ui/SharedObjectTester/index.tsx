@@ -1,7 +1,8 @@
-import { requireNativeView, SharedObject } from 'expo';
+import { requireNativeView } from 'expo';
 
 import type { DummySharedObject } from '../../DummySharedObject';
-import type { NativeStateString } from '../../NativeState/NativeStateString';
+import type { NativeStateString } from '../../NativeState';
+import NativeExpoUIModule from '../../NativeExpoUIModule';
 import { type ViewEvent } from '../../types';
 import { type CommonViewModifierProps } from '../types';
 
@@ -31,25 +32,30 @@ type NativeSharedObjectTesterProps = Omit<
 const SharedObjectTesterNativeView: React.ComponentType<NativeSharedObjectTesterProps> =
   requireNativeView('ExpoUI', 'SharedObjectTesterView');
 
-/**
- * Extracts the shared object ID from any SharedObject instance.
- * This is needed because the native bridge expects the ID, not the object itself.
- */
-function getSharedObjectId<T extends SharedObject<any>>(
-  sharedObject: T | undefined
+// Temporary solution to pass the shared object ID instead of the object.
+// We can't really pass it as an object in the old architecture.
+function getDummySharedObjectId(
+  sharedObject: DummySharedObject | number | undefined
 ): number | null {
-  if (!sharedObject) {
-    return null;
-  }
-  if (typeof sharedObject === 'object' && sharedObject !== null) {
-    // @ts-expect-error - __expo_shared_object_id__ is a hidden property on SharedObject instances
-    const id = sharedObject.__expo_shared_object_id__;
-    if (typeof id === 'number') {
-      return id;
-    }
+  if (sharedObject instanceof NativeExpoUIModule.DummySharedObject) {
+    // @ts-expect-error - __expo_shared_object_id__ is a hidden property
+    return sharedObject.__expo_shared_object_id__;
   }
   if (typeof sharedObject === 'number') {
     return sharedObject;
+  }
+  return null;
+}
+
+function getNativeStateStringId(
+  state: NativeStateString | number | undefined
+): number | null {
+  if (state instanceof NativeExpoUIModule.NativeStateString) {
+    // @ts-expect-error - __expo_shared_object_id__ is a hidden property
+    return state.__expo_shared_object_id__;
+  }
+  if (typeof state === 'number') {
+    return state;
   }
   return null;
 }
@@ -81,8 +87,8 @@ function getSharedObjectId<T extends SharedObject<any>>(
  */
 export function SharedObjectTester(props: SharedObjectTesterProps) {
   const { sharedObject, textFieldValue, onValueChange, ...restProps } = props;
-  const sharedObjectId = getSharedObjectId(sharedObject);
-  const textFieldValueId = getSharedObjectId(textFieldValue);
+  const sharedObjectId = getDummySharedObjectId(sharedObject);
+  const textFieldValueId = getNativeStateStringId(textFieldValue);
 
   return (
     <SharedObjectTesterNativeView

@@ -48,6 +48,8 @@ public final class ExpoUIModule: Module {
       }
     }
 
+    // MARK: - NativeState (Primitives)
+
     Class(NativeStateString.self) {
       Constructor { (initialValue: String?) -> NativeStateString in
         let state = NativeStateString()
@@ -61,6 +63,40 @@ public final class ExpoUIModule: Module {
         return state.value
       }
       .set { (state: NativeStateString, value: String) in
+        state.value = value
+      }
+    }
+
+    Class(NativeStateDouble.self) {
+      Constructor { (initialValue: Double?) -> NativeStateDouble in
+        let state = NativeStateDouble()
+        if let initialValue {
+          state.value = initialValue
+        }
+        return state
+      }
+
+      Property("value") { (state: NativeStateDouble) -> Double in
+        return state.value
+      }
+      .set { (state: NativeStateDouble, value: Double) in
+        state.value = value
+      }
+    }
+
+    Class(NativeStateBool.self) {
+      Constructor { (initialValue: Bool?) -> NativeStateBool in
+        let state = NativeStateBool()
+        if let initialValue {
+          state.value = initialValue
+        }
+        return state
+      }
+
+      Property("value") { (state: NativeStateBool) -> Bool in
+        return state.value
+      }
+      .set { (state: NativeStateBool, value: Bool) in
         state.value = value
       }
     }

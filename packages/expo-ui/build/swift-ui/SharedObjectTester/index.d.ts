@@ -1,5 +1,5 @@
 import type { DummySharedObject } from '../../DummySharedObject';
-import type { NativeStateString } from '../../NativeState/NativeStateString';
+import type { NativeStateString } from '../../NativeState';
 import { type CommonViewModifierProps } from '../types';
 export type SharedObjectTesterProps = {
     /**

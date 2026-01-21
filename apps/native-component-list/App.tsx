@@ -7,6 +7,7 @@ import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
 
 import { Host, SharedObjectTester, useDummySharedObject, useNativeStateString } from '@expo/ui/swift-ui';                                                                        
+import { runOnUI, scheduleOnUI } from 'react-native-worklets';
                                                                                                                                                        
  
 SplashScreen.preventAutoHideAsync();
@@ -60,7 +61,10 @@ function MyComponent() {
       textFieldValue={textFieldValue}                                                                                                                 
       onValueChange={(event) => console.log('Counter:', event.counter)}                                                                              
     />
-    <Button label="Change Text" onPress={() => textFieldValue.value = 'World'} />
+    <Button label="Change Text" onPress={() => {
+      console.log("ddjhuh")
+        textFieldValue.value = 'World'
+    }} />
     </Host>                                                                                                                                               
   );                                                                                                                                                 
 }                                                                                                                                                    

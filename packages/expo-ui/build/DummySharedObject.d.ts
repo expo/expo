@@ -4,6 +4,7 @@ import { SharedObject } from 'expo-modules-core';
  * This object contains some simple SwiftUI-related state that can be shared between JS and native.
  */
 export declare class DummySharedObject extends SharedObject<{}> {
+    constructor();
     /**
      * A simple text value stored in the shared object.
      */
