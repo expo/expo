@@ -198,11 +198,7 @@ export default function Profile() {
 
 ## Returning data
 
-Loaders can return data in several ways:
-
-### Plain objects
-
-The simplest approach is to return a plain JavaScript object, which is easily serialized to JSON:
+Loaders can return data as plain JSON, which is easily deserialized using [`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse). This includes objects, arrays or any other primitive that can be serialized with [`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify).
 
 ```tsx app/index.tsx
 export async function loader() {
@@ -213,7 +209,7 @@ export async function loader() {
 
 If your loader returns `undefined`, it is normalized to an empty object (`{}`). If it returns `null`, the value is preserved as `null`.
 
-### Response objects
+### Returning a `Response`
 
 > **warning** Response headers are only preserved in server rendering. In static rendering, only the response body is extracted and serialized since there is no HTTP response at build-time.
 
