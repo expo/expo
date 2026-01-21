@@ -173,8 +173,22 @@ struct DevServerRow: View {
           .fill(Color.green)
           .frame(width: 12, height: 12)
 
-        Text(server.description)
-          .foregroundColor(.primary)
+        if server.description == server.url {
+          Text(server.description)
+            .foregroundColor(.primary)
+            .lineLimit(1)
+        } else {
+          VStack(alignment: .leading) {
+            Text(server.description)
+              .font(.headline)
+              .foregroundColor(.primary)
+              .lineLimit(1)
+            Text(server.url)
+              .font(.caption)
+              .foregroundColor(.secondary)
+              .lineLimit(1)
+          }
+        }
 
         Spacer()
 
