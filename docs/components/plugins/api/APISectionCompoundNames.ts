@@ -173,6 +173,20 @@ export const buildCompoundNameByComponent = (components: GeneratedData[]) => {
     });
   });
 
+  const baseNames = new Set(baseNameByEntry.values());
+  if (baseNames.has('Stack') && baseNames.has('StackScreen')) {
+    const stackScreenAlias = compoundMap.get('StackScreen') ?? 'Stack.Screen';
+    if (!compoundMap.has('StackScreen')) {
+      compoundMap.set('StackScreen', stackScreenAlias);
+    }
+    if (baseNames.has('StackScreenTitle') && !compoundMap.has('StackScreenTitle')) {
+      compoundMap.set('StackScreenTitle', `${stackScreenAlias}.Title`);
+    }
+    if (baseNames.has('StackScreenBackButton') && !compoundMap.has('StackScreenBackButton')) {
+      compoundMap.set('StackScreenBackButton', `${stackScreenAlias}.BackButton`);
+    }
+  }
+
   return compoundMap;
 };
 
