@@ -200,10 +200,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Calculate workspace-relative prefix for source path normalization
       // The static serializer may return paths relative to the workspace root
       // e.g., /apps/router-e2e/__e2e__/... instead of /Users/.../apps/router-e2e/__e2e__/...
-      // Note: path.relative() uses OS-native separators, but source maps use forward slashes
       const workspaceRelativePrefix =
         '/' +
-        path.relative(getMetroServerRoot(this.projectRoot), this.projectRoot).replace(/\\/g, '/');
+        convertPathToModuleSpecifier(
+          path.relative(getMetroServerRoot(this.projectRoot), this.projectRoot)
+        );
 
       const mapData: any = {
         ...descriptor,
@@ -211,7 +212,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           version: parsedMap.version,
           sources: parsedMap.sources.map((source: string) => {
             // Handle absolute paths (default serializer)
-            if (typeof source === 'string' && source.startsWith(this.projectRoot)) {
+            if (typeof source === 'string' && source.startsWith(this.projectRoot + '/')) {
               source = path.relative(this.projectRoot, source);
             }
             // Handle workspace-relative paths (static serializer)
@@ -1644,9 +1645,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   // Bundle the API Route with Metro and return the string contents to be evaluated in the server.
   private async bundleApiRoute(
     filePath: string,
-    { platform }: { platform: string }
+    {
+      platform,
+      serializerOutput,
+      serializerIncludeMaps,
+    }: {
+      platform: string;
+      serializerOutput?: 'static';
+      serializerIncludeMaps?: boolean;
+    }
   ): Promise<SSRModuleContentsResult | null | undefined> {
-    if (this.pendingRouteOperations.has(filePath)) {
+    // Only use caching for runtime bundling (not export)
+    const useCache = !serializerOutput;
+    if (useCache && this.pendingRouteOperations.has(filePath)) {
       return this.pendingRouteOperations.get(filePath);
     }
     const bundleAsync = async (): Promise<SSRModuleContentsResult> => {
@@ -1655,6 +1666,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         return await this.ssrLoadModuleContents(filePath, {
           isExporting: this.instanceMetroOptions.isExporting,
           platform,
+          serializerOutput,
+          serializerIncludeMaps,
         });
       } catch (error: any) {
         const appDir = this.instanceMetroOptions?.routerRoot
@@ -1680,14 +1693,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
     const route = bundleAsync();
 
-    this.pendingRouteOperations.set(filePath, route);
+    if (useCache) {
+      this.pendingRouteOperations.set(filePath, route);
+    }
     return route;
   }
 
   /**
    * Bundle an API route for export with asset collection.
-   * Unlike bundleApiRoute, this method uses serializerOutput: 'static' to collect
-   * any assets (images, fonts, etc.) that the API route imports.
+   * Uses serializerOutput: 'static' to collect any assets (images, fonts, etc.)
+   * that the API route imports.
    */
   private async bundleApiRouteForExport(
     filePath: string,
@@ -1696,38 +1711,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     contents: SSRModuleContentsResult | null;
     assets: readonly BundleAssetWithFileHashes[] | undefined;
   }> {
-    try {
-      debug('Bundle API route for export:', this.instanceMetroOptions.routerRoot, filePath);
-      const results = await this.ssrLoadModuleContents(filePath, {
-        isExporting: this.instanceMetroOptions.isExporting,
-        platform,
-        serializerOutput: 'static',
-        serializerIncludeMaps: true,
-      });
-
-      return {
-        contents: results,
-        assets: results.assets,
-      };
-    } catch (error: any) {
-      const appDir = this.instanceMetroOptions?.routerRoot
-        ? path.join(this.projectRoot, this.instanceMetroOptions!.routerRoot!)
-        : undefined;
-      const relativePath = appDir ? path.relative(appDir, filePath) : filePath;
-
-      // Expected errors: invalid syntax, missing resolutions.
-      // Wrap with command error for better error messages.
-      const err = new CommandError(
-        'API_ROUTE',
-        chalk`Failed to bundle API Route: {bold ${relativePath}}\n\n` + error.message
-      );
-
-      for (const key in error) {
-        err[key] = error[key];
-      }
-
-      throw err;
-    }
+    const result = await this.bundleApiRoute(filePath, {
+      platform,
+      serializerOutput: 'static',
+      serializerIncludeMaps: true,
+    });
+    return {
+      contents: result ?? null,
+      assets: result?.assets,
+    };
   }
 
   private async ssrImportApiRoute(
