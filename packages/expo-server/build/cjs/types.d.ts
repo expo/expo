@@ -73,6 +73,6 @@ export interface MiddlewareSettings {
  *   return { data };
  * };
  * ```
- * @see https://docs.expo.dev/router/web/data-loaders
+ * @see [Data loaders](/router/web/data-loaders) for more information.
  */
 export type LoaderFunction<T = any> = (request: ImmutableRequest | undefined, params: Record<string, string | string[]>) => Promise<T> | T;
