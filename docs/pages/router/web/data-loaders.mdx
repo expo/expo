@@ -391,6 +391,6 @@ export async function loader() {
 
 <Collapsible summary="Are loaders included in the client bundle?">
 
-No. Loader functions are automatically stripped from the client bundle. This means your server-side code, API keys, and database connections remain on the server.
+No, `loader` exports are dropped from the client bundle. However, if another module contains server-side logic and is imported by client-side code outside of the **app** directory, it may be included in your client-side bundle.
 
 </Collapsible>
