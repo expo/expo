@@ -53,27 +53,32 @@ If you are using the [default](/more/create-expo/#--template) template to create
   properties={[
     {
       name: 'root',
-      description: 'Changes the routes directory from `app` to another value. Avoid using this property unless you have a specific need.',
+      description:
+        'Changes the routes directory from `app` to another value. Avoid using this property unless you have a specific need.',
       default: '"app"',
     },
     {
       name: 'origin',
-      description: 'Production origin URL where assets in the public folder are hosted. The fetch function is polyfilled to support relative requests from this origin in production. The development origin is inferred using the Expo CLI development server.',
+      description:
+        'Production origin URL where assets in the public folder are hosted. The fetch function is polyfilled to support relative requests from this origin in production. The development origin is inferred using the Expo CLI development server.',
       default: 'undefined',
     },
     {
       name: 'headOrigin',
-      description: 'A more specific origin URL used in the `expo-router/head` module for iOS handoff. Defaults to `origin`.',
+      description:
+        'A more specific origin URL used in the `expo-router/head` module for iOS handoff. Defaults to `origin`.',
       default: 'undefined',
     },
     {
       name: 'asyncRoutes',
-      description: 'Enable async routes (lazy loading). Can be a boolean, a string (`"development"` or `"production"`), or an object with platform-specific values (`{ android, ios, web, default }`). `production` is currently web-only and will be disabled on native.',
+      description:
+        'Enable async routes (lazy loading). Can be a boolean, a string (`"development"` or `"production"`), or an object with platform-specific values (`{ android, ios, web, default }`). `production` is currently web-only and will be disabled on native.',
       default: 'undefined',
     },
     {
       name: 'platformRoutes',
-      description: 'Enable or disable platform-specific routes (for example, **index.ios.tsx** and **index.android.tsx**).',
+      description:
+        'Enable or disable platform-specific routes (for example, **index.ios.tsx** and **index.android.tsx**).',
       default: 'true',
     },
     {
@@ -83,44 +88,52 @@ If you are using the [default](/more/create-expo/#--template) template to create
     },
     {
       name: 'partialRouteTypes',
-      description: 'Enable partial typed routes generation. This allows TypeScript to provide type checking for routes without requiring all routes to be statically known.',
+      description:
+        'Enable partial typed routes generation. This allows TypeScript to provide type checking for routes without requiring all routes to be statically known.',
       default: 'true',
     },
     {
       name: 'redirects',
-      description: 'An array of static redirect rules. Each rule should have `source`, `destination`, and optionally `permanent` (defaults to `false`) and `methods` (HTTP methods to redirect).',
+      description:
+        'An array of static redirect rules. Each rule should have `source`, `destination`, and optionally `permanent` (defaults to `false`) and `methods` (HTTP methods to redirect).',
       default: 'undefined',
     },
     {
       name: 'rewrites',
-      description: 'An array of static rewrite rules. Each rule should have `source`, `destination`, and optionally `methods` (HTTP methods to rewrite).',
+      description:
+        'An array of static rewrite rules. Each rule should have `source`, `destination`, and optionally `methods` (HTTP methods to rewrite).',
       default: 'undefined',
     },
     {
       name: 'headers',
-      description: 'A list of headers that are set on every route response from the server. The value can be a string or an array of strings.',
+      description:
+        'A list of headers that are set on every route response from the server. The value can be a string or an array of strings.',
       default: 'undefined',
     },
     {
       name: 'disableSynchronousScreensUpdates',
-      description: 'Disable synchronous layout updates for native screens. This can help with performance in some cases.',
+      description:
+        'Disable synchronous layout updates for native screens. This can help with performance in some cases.',
       default: 'false',
     },
     {
       name: 'unstable_useServerMiddleware',
-      description: 'Enable server middleware support with a `+middleware.ts` file. Requires `web.output: "server"` to be set in app config.',
+      description:
+        'Enable server middleware support with a `+middleware.ts` file. Requires `web.output: "server"` to be set in app config.',
       default: 'false',
       experimental: true,
     },
     {
       name: 'unstable_useServerDataLoaders',
-      description: 'Enable data loader support. This is only supported for `web.output: "static"` outputs at the moment.',
+      description:
+        'Enable data loader support. This is only supported for `web.output: "static"` outputs at the moment.',
       default: 'false',
       experimental: true,
     },
     {
       name: 'unstable_useServerRendering',
-      description: 'Enable server-side rendering. When enabled with `web.output: "server"`, HTML is rendered at request time instead of being pre-rendered at build time.',
+      description:
+        'Enable server-side rendering. When enabled with `web.output: "server"`, HTML is rendered at request time instead of being pre-rendered at build time.',
       default: 'false',
       experimental: true,
     },
