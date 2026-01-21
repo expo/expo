@@ -41,3 +41,6 @@ export * from './SharedObjectTester';
 
 // Shared Objects
 export * from '../DummySharedObject';
+
+// Native State (Observable Shared Objects)
+export * from '../NativeState';

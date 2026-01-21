@@ -8,6 +8,11 @@ struct SharedObjectTesterView: ExpoSwiftUI.View {
 
   var body: some View {
     VStack(spacing: 16) {
+      // TextField with NativeStateString binding
+      if let textFieldValue = props.textFieldValue {
+        NativeStateTextFieldView(state: textFieldValue)
+      }
+
       if let sharedObject = props.sharedObject {
         // Use a separate view that can properly observe the shared object
         SharedObjectContentView(sharedObject: sharedObject, onValueChange: props.onValueChange)
@@ -17,6 +22,26 @@ struct SharedObjectTesterView: ExpoSwiftUI.View {
       }
     }
     .padding()
+  }
+}
+
+/// TextField view that binds to a NativeStateString
+private struct NativeStateTextFieldView: View {
+  @ObservedObject var state: NativeStateString
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      Text("TextField with NativeStateString:")
+        .font(.caption)
+        .foregroundColor(.secondary)
+
+      TextField("Enter text...", text: $state.value)
+        .textFieldStyle(.roundedBorder)
+
+      Text("Current value: \(state.value)")
+        .font(.caption)
+        .foregroundColor(.secondary)
+    }
   }
 }
 

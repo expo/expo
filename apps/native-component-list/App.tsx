@@ -1,12 +1,12 @@
 import { ThemeProvider } from 'ThemeProvider';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
-import { Platform, StatusBar } from 'react-native';
-
+import {  Platform, StatusBar } from 'react-native';
+import { Button } from '@expo/ui/swift-ui';
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
 
-import { Host, SharedObjectTester, useDummySharedObject } from '@expo/ui/swift-ui';                                                                        
+import { Host, SharedObjectTester, useDummySharedObject, useNativeStateString } from '@expo/ui/swift-ui';                                                                        
                                                                                                                                                        
  
 SplashScreen.preventAutoHideAsync();
@@ -49,15 +49,18 @@ function MyComponent() {
   const sharedObject = useDummySharedObject((obj) => {                                                                                               
     obj.text = "Custom text";                                                                                                                        
     obj.counter = 10;                                                                                                                                
-  });                                                                                                                                                
+  });
+  const textFieldValue = useNativeStateString('Hello');                                                                                                                                            
                  
   console.log('sharedObject', sharedObject);
   return (                                                                                                                                           
     <Host style={{ flex: 1, alignItems: 'center', }}>
     <SharedObjectTester                                                                                                                              
-      sharedObject={sharedObject}                                                                                                                    
+      sharedObject={sharedObject}   
+      textFieldValue={textFieldValue}                                                                                                                 
       onValueChange={(event) => console.log('Counter:', event.counter)}                                                                              
     />
+    <Button label="Change Text" onPress={() => textFieldValue.value = 'World'} />
     </Host>                                                                                                                                               
   );                                                                                                                                                 
 }                                                                                                                                                    

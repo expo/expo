@@ -5,5 +5,6 @@ import ExpoModulesCore
 
 final class SharedObjectTesterProps: UIBaseViewProps {
   @Field var sharedObject: DummySharedObject?
+  @Field var textFieldValue: NativeStateString?
   var onValueChange = EventDispatcher()
 }

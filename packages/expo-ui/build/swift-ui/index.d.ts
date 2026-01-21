@@ -39,4 +39,5 @@ export * from './Grid';
 export * from './RNHostView';
 export * from './SharedObjectTester';
 export * from '../DummySharedObject';
+export * from '../NativeState';
 //# sourceMappingURL=index.d.ts.map

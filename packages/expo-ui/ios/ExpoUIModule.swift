@@ -48,6 +48,23 @@ public final class ExpoUIModule: Module {
       }
     }
 
+    Class(NativeStateString.self) {
+      Constructor { (initialValue: String?) -> NativeStateString in
+        let state = NativeStateString()
+        if let initialValue {
+          state.value = initialValue
+        }
+        return state
+      }
+
+      Property("value") { (state: NativeStateString) -> String in
+        return state.value
+      }
+      .set { (state: NativeStateString, value: String) in
+        state.value = value
+      }
+    }
+
     // MARK: - Module Functions
 
     AsyncFunction("completeRefresh") { (id: String) in
