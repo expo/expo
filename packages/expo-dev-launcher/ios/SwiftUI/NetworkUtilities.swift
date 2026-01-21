@@ -71,7 +71,7 @@ func connectionReceive(_ connection: NWConnection) async throws -> String {
     var responseData = Data()
     func receiveLoop() {
       connection.receive(minimumIncompleteLength: 1, maximumLength: 4096) { data, _, isComplete, error in
-          if let error {
+        if let error {
           cont.resume(throwing: error)
           return
         }
@@ -159,6 +159,20 @@ class NetworkUtilities {
       "localhost",
       "\(subnet).1"
     ]
+  }
+
+  static func getNWBrowserResultName(_ result: NWBrowser.Result) -> String? {
+    if case .bonjour(let txtRecord) = result.metadata {
+      return txtRecord.getEntry(for: "name").flatMap {
+        if case .string(let value) = $0 {
+          value
+        } else {
+          nil
+        }
+      }
+    } else {
+      return nil
+    }
   }
 
   static func resolveBundlerEndpoint(
