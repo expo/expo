@@ -70,6 +70,7 @@ function convertStackToolbarMenuPropsToRNHeaderItem(props) {
         ...(0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(rest),
         type: 'menu',
         menu: {
+            multiselectable: true,
             items: actions
                 .map((action) => {
                 if ((0, children_1.isChildOfType)(action, exports.StackToolbarMenu)) {
@@ -91,8 +92,6 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
     }
     const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props);
     const actions = react_1.Children.toArray(props.children).filter((child) => (0, children_1.isChildOfType)(child, exports.StackToolbarMenuAction) || (0, children_1.isChildOfType)(child, exports.StackToolbarMenu));
-    // TODO: Remove  Pick<HeaderBarButtonItemSubmenu> when this PR is merged and released in react-navigation:
-    // https://github.com/react-navigation/react-navigation/pull/12895
     const item = {
         type: 'submenu',
         items: actions
@@ -104,12 +103,13 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
         })
             .filter((i) => !!i),
         label: sharedProps.label || props.title || '',
+        multiselectable: true,
     };
     if (props.inline !== undefined) {
-        item.displayInline = props.inline;
+        item.inline = props.inline;
     }
     if (props.palette !== undefined) {
-        item.displayAsPalette = props.palette;
+        item.layout = props.palette ? 'palette' : 'default';
     }
     if (props.destructive !== undefined) {
         item.destructive = props.destructive;

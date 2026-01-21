@@ -151,6 +151,7 @@ it('should convert toolbar items children correctly to options', () => {
         },
       },
       menu: {
+        multiselectable: true,
         items: [
           {
             type: 'action',
@@ -165,7 +166,8 @@ it('should convert toolbar items children correctly to options', () => {
           {
             type: 'submenu',
             label: 'Submenu',
-            displayInline: true,
+            multiselectable: true,
+            inline: true,
             items: [
               {
                 type: 'action',
@@ -178,7 +180,8 @@ it('should convert toolbar items children correctly to options', () => {
           {
             type: 'submenu',
             label: 'right-palette-menu',
-            displayAsPalette: true,
+            multiselectable: true,
+            layout: 'palette',
             destructive: true,
             items: [
               {
@@ -211,6 +214,7 @@ it('should convert toolbar items children correctly to options', () => {
       label: 'Second',
       sharesBackground: true,
       menu: {
+        multiselectable: true,
         items: [],
         title: 'right-menu',
       },
@@ -386,14 +390,18 @@ it('Changes options dynamically when Stack.Toolbar placement="left", placement="
       icon: undefined,
       index: 0,
       menu: {
+        displayAsPalette: false,
         items: [
           {
             onPress: expect.any(Function),
             state: 'off',
+            subtitle: undefined,
             title: 'Action 1',
             type: 'action',
           },
         ],
+        multiselectable: true,
+        singleSelection: false,
       },
       sharesBackground: true,
       title: 'Dynamic Menu',
@@ -481,14 +489,18 @@ it('Changes options dynamically when Stack.Toolbar placement="right" is used in 
       icon: undefined,
       index: 0,
       menu: {
+        displayAsPalette: false,
         items: [
           {
             onPress: expect.any(Function),
             state: 'off',
+            subtitle: undefined,
             title: 'Action 1',
             type: 'action',
           },
         ],
+        multiselectable: true,
+        singleSelection: false,
       },
       sharesBackground: true,
       title: 'Dynamic Menu',
@@ -551,14 +563,18 @@ it('Changes options dynamically when Stack.Toolbar placement="left" and placemen
       icon: undefined,
       index: 0,
       menu: {
+        displayAsPalette: false,
         items: [
           {
             onPress: expect.any(Function),
             state: 'off',
             title: 'Action 1',
+            subtitle: undefined,
             type: 'action',
           },
         ],
+        multiselectable: true,
+        singleSelection: false,
       },
       sharesBackground: true,
       title: 'Dynamic Menu',
