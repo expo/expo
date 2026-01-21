@@ -19,7 +19,7 @@
   return self;
 }
 
-- (id)findModuleWithName:(const char *)name lazilyLoadIfNecessary:(BOOL)lazilyLoadIfNecessary
+- (nullable id)findModuleWithName:(nonnull NSString *)name lazilyLoadIfNecessary:(BOOL)lazilyLoadIfNecessary
 {
   RCTModuleRegistry *moduleRegistry = _host.moduleRegistry;
   return [moduleRegistry moduleForName:name lazilyLoadIfNecessary:lazilyLoadIfNecessary];
