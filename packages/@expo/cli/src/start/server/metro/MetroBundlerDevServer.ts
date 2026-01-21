@@ -200,8 +200,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Calculate workspace-relative prefix for source path normalization
       // The static serializer may return paths relative to the workspace root
       // e.g., /apps/router-e2e/__e2e__/... instead of /Users/.../apps/router-e2e/__e2e__/...
+      // Note: path.relative() uses OS-native separators, but source maps use forward slashes
       const workspaceRelativePrefix =
-        '/' + path.relative(getMetroServerRoot(this.projectRoot), this.projectRoot);
+        '/' +
+        path.relative(getMetroServerRoot(this.projectRoot), this.projectRoot).replace(/\\/g, '/');
 
       const mapData: any = {
         ...descriptor,
