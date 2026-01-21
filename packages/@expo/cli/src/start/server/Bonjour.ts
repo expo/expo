@@ -37,6 +37,7 @@ export class Bonjour {
       protocol: 'tcp',
       hostname: exp.slug,
       port: this.port,
+      stack: 'IPv4',
       txt: {
         name: exp.name?.slice(0, 255),
         slug: exp.slug?.slice(0, 255),
