@@ -365,12 +365,6 @@ If your loader returns `undefined`, it is normalized to an empty object (`{}`). 
 
 </Collapsible>
 
-<Collapsible summary="Can I access the request in static rendering mode?">
-
-No. In static rendering mode, the `request` parameter is `undefined` because loaders execute at build-time when there is no HTTP request. If you need access to request headers, cookies, or other request data, use server rendering instead.
-
-</Collapsible>
-
 <Collapsible summary="How do I handle errors in loaders?">
 
 Throw an error in your loader to trigger error boundaries. You can also return error data and handle it in your component.
