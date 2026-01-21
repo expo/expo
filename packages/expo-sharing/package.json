@@ -2,8 +2,8 @@
   "name": "expo-sharing",
   "version": "14.0.7",
   "description": "Provides a way to share files directly with other compatible applications.",
-  "main": "build/Sharing.js",
-  "types": "build/Sharing.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
@@ -44,6 +44,7 @@
   },
   "peerDependencies": {
     "expo": "*",
+    "react": "*",
     "react-native": "*"
   }
 }

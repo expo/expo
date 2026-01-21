@@ -1,14 +1,14 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import Sharing from './ExpoSharing';
+import SharingNativeModule from './SharingNativeModule';
 // @needsAudit
 /**
  * Determine if the sharing API can be used in this app.
  * @return A promise that fulfills with `true` if the sharing API can be used, and `false` otherwise.
  */
 export async function isAvailableAsync() {
-    if (Sharing) {
-        if (Sharing.isAvailableAsync) {
-            return await Sharing.isAvailableAsync();
+    if (SharingNativeModule) {
+        if (SharingNativeModule.isAvailableAsync) {
+            return await SharingNativeModule.isAvailableAsync();
         }
         return true;
     }
@@ -21,9 +21,27 @@ export async function isAvailableAsync() {
  * @param options A map of share options.
  */
 export async function shareAsync(url, options = {}) {
-    if (!Sharing || !Sharing.shareAsync) {
+    if (!SharingNativeModule || !SharingNativeModule.shareAsync) {
         throw new UnavailabilityError('Sharing', 'shareAsync');
     }
-    return await Sharing.shareAsync(url, options);
+    return await SharingNativeModule.shareAsync(url, options);
+}
+/**
+ * TODO: Docs
+ */
+export function getSharedPayloads() {
+    return SharingNativeModule.getSharedPayloads();
+}
+/**
+ * TODO: Docs
+ */
+export async function getResolvedSharedPayloadsAsync() {
+    return await SharingNativeModule.getResolvedSharedPayloadsAsync();
+}
+/**
+ * Clears the data shared with the app.
+ */
+export function clearSharedPayloads() {
+    SharingNativeModule.clearSharedPayloads();
 }
 //# sourceMappingURL=Sharing.js.map
