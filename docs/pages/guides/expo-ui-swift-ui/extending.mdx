@@ -15,9 +15,9 @@ This guide explains how to create custom SwiftUI components and modifiers that i
 
 Before you begin, make sure you have:
 
-- `@expo/ui` installed in your project
-- A development build of your app (Expo UI is not available in Expo Go)
-- Basic familiarity with [Expo Modules](/modules/overview/) and [SwiftUI](https://developer.apple.com/swiftui/)
+- `@expo/ui` installed in your project. See [Building SwiftUI apps with Expo UI](/expo-ui-swift-ui/) for more information.
+- A [development build](/develop/development-builds/introduction/) of your app (Expo UI is not available in Expo Go)
+- Basic familiarity with [Expo Modules API](/modules/overview/) and [SwiftUI](https://developer.apple.com/swiftui/)
 
 If you haven't installed Expo UI yet:
 
@@ -59,8 +59,8 @@ end
 
 Create your SwiftUI view with two parts:
 
-1. **Props class** - Extends `UIBaseViewProps` from `ExpoUI` to get automatic support for the [`modifiers`](modifiers) prop
-2. **View struct** - Conforms to `ExpoSwiftUI.View` protocol, which requires an `@ObservedObject` props property and a `body`
+1. **Props class**: Extends `UIBaseViewProps` from `ExpoUI` to get automatic support for the [`modifiers`](/versions/unversioned/sdk/ui/swift-ui/modifiers/) prop
+2. **View struct**: Conforms to `ExpoSwiftUI.View` protocol, which requires an `@ObservedObject` props property and a `body`
 
 ```swift ios/MyCustomView.swift
 import SwiftUI
@@ -127,7 +127,7 @@ export const MyCustomView = requireNativeView<MyCustomViewProps>('MyUi', 'MyCust
 
 Your custom component now works with all `ExpoUI` built-in modifiers:
 
-```tsx App.tsx
+```tsx app/index.tsx
 import { Host, Text } from '@expo/ui/swift-ui';
 import { padding, cornerRadius, background } from '@expo/ui/swift-ui/modifiers';
 import { MyCustomView } from './modules/my-ui';
@@ -149,7 +149,7 @@ export default function App() {
 
 You can also create custom modifiers that work with any Expo UI component.
 
-> **info** Modifiers are SwiftUI's way to configure views - for styling, layout, behavior, and more. Learn more in Apple's [ViewModifier documentation](https://developer.apple.com/documentation/swiftui/viewmodifier).
+> **info** Modifiers are SwiftUI's way to configure views for styling, layout, behavior, and more. Learn more in Apple's [ViewModifier documentation](https://developer.apple.com/documentation/swiftui/viewmodifier).
 
 ### Native modifier implementation
 
