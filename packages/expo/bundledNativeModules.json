@@ -62,7 +62,7 @@
   "expo-mcp": "~0.2.1",
   "expo-media-library": "~55.0.0",
   "expo-mesh-gradient": "~55.0.0",
-  "expo-module-template": "~55.0.0",
+  "expo-module-template": "~55.0.1",
   "expo-modules-core": "~55.0.0",
   "expo-navigation-bar": "~55.0.0",
   "expo-network": "~55.0.0",
