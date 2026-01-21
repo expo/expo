@@ -38,7 +38,8 @@ export class Bonjour {
       hostname: exp.slug,
       port: this.port,
       txt: {
-        slug: exp.slug,
+        name: exp.name?.slice(0, 255),
+        slug: exp.slug?.slice(0, 255),
       },
     });
   }
