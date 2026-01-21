@@ -380,6 +380,9 @@ redirects[router/reference/async-routes]=router/web/async-routes
 # After moving FAQ to EAS Update page
 redirects[eas-update/faq]=eas-update/introduction
 
+# After creating EAS environment variables section
+redirects[eas/hosting/environment-variables]=eas/environment-variables/usage/#using-environment-variables-with-eas-hosting
+
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do

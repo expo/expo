@@ -85,7 +85,8 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
  * Replaces `Module.someFunction<T>(arguments: argType)` with `someFunction()`
  */
 function trimCodedTitle(str: string) {
-  if (!str.includes('...')) {
+  const hasParens = str.includes('(');
+  if (!str.includes('...') && hasParens) {
     const dotIdx = str.indexOf('.');
     if (dotIdx > 0) {
       str = str.slice(Math.max(0, dotIdx + 1));

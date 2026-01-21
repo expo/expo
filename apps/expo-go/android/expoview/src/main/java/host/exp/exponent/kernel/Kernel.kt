@@ -26,14 +26,18 @@ import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
 import expo.modules.jsonutils.require
-import expo.modules.manifests.core.EmbeddedManifest
 import expo.modules.manifests.core.ExpoUpdatesManifest
 import expo.modules.manifests.core.Manifest
 import expo.modules.notifications.service.NotificationsService.Companion.getNotificationResponseFromOpenIntent
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
-import host.exp.exponent.*
+import host.exp.exponent.Constants
+import host.exp.exponent.ExpoUpdatesAppLoader
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
+import host.exp.exponent.ExponentManifest
+import host.exp.exponent.LauncherActivity
+import host.exp.exponent.RNObject
+import host.exp.exponent.ReactNativeStaticHelpers
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.exceptions.ExceptionUtils
@@ -71,7 +75,6 @@ import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import java.lang.ref.WeakReference
-import java.util.*
 import javax.inject.Inject
 
 // TOOD: need to figure out when we should reload the kernel js. Do we do it every time you visit
@@ -326,7 +329,11 @@ class Kernel : KernelInterface() {
 
   val surface: ReactSurface
     get() {
-      val surface = ReactSurfaceImpl.createWithView(context, KernelConstants.HOME_MODULE_NAME, kernelLaunchOptions)
+      val surface = ReactSurfaceImpl.createWithView(
+        context,
+        KernelConstants.HOME_MODULE_NAME,
+        kernelLaunchOptions
+      )
       surface.attach(reactHost as ReactHostImpl)
       surface.start()
       return surface
@@ -695,27 +702,12 @@ class Kernel : KernelInterface() {
     if (existingTask == null) {
       sendManifestToExperienceActivity(manifestUrl, manifest, bundleUrl)
     }
-    if (manifest is ExpoUpdatesManifest) {
-      exponentHistoryService.addHistoryItem(HistoryItem(manifestUrl = manifestUrl, updatesManifest = manifest))
-    } else if (manifest is EmbeddedManifest) {
-      exponentHistoryService.addHistoryItem(HistoryItem(manifestUrl = manifestUrl, embeddedManifest = manifest))
-    }
-//    queueEvent(
-//      "ExponentKernel.addHistoryItem",
-//      params,
-//      object : KernelEventCallback {
-//        override fun onEventSuccess(result: ReadableMap) {
-//          EXL.d(TAG, "Successfully called ExponentKernel.addHistoryItem in kernel JS.")
-//        }
-//
-//        override fun onEventFailure(errorMessage: String?) {
-//          EXL.e(
-//            TAG,
-//            "Error calling ExponentKernel.addHistoryItem in kernel JS: $errorMessage"
-//          )
-//        }
-//      }
-//    )
+    exponentHistoryService.addHistoryItem(
+      HistoryItem(
+        manifestUrl = manifestUrl,
+        manifest = manifest
+      )
+    )
     killOrphanedLauncherActivities()
   }
 

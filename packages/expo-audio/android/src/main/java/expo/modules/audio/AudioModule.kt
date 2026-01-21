@@ -51,7 +51,7 @@ class AudioModule : Module() {
 
   private val players = ConcurrentHashMap<String, AudioPlayer>()
   private val recorders = ConcurrentHashMap<String, AudioRecorder>()
-  private var staysActiveInBackground = false
+  private var shouldPlayInBackground = false
   private var audioEnabled = true
   private var shouldRouteThroughEarpiece = false
   private var focusAcquired = false
@@ -182,7 +182,7 @@ class AudioModule : Module() {
     }
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
-      staysActiveInBackground = mode.shouldPlayInBackground
+      shouldPlayInBackground = mode.shouldPlayInBackground
       interruptionMode = mode.interruptionMode
       updatePlaySoundThroughEarpiece(mode.shouldRouteThroughEarpiece ?: false)
       allowsBackgroundRecording = mode.allowsBackgroundRecording
@@ -215,7 +215,7 @@ class AudioModule : Module() {
     }
 
     OnActivityEntersBackground {
-      if (!staysActiveInBackground) {
+      if (!shouldPlayInBackground) {
         releaseAudioFocus()
         players.values.forEach { player ->
           if (player.ref.isPlaying) {
@@ -223,7 +223,8 @@ class AudioModule : Module() {
             player.ref.pause()
           }
         }
-
+      }
+      if (!allowsBackgroundRecording) {
         recorders.values.forEach { recorder ->
           if (recorder.isRecording) {
             recorder.pauseRecording()
@@ -233,7 +234,7 @@ class AudioModule : Module() {
     }
 
     OnActivityEntersForeground {
-      if (!staysActiveInBackground) {
+      if (!shouldPlayInBackground) {
         val hasPlayersToResume = players.values.any { it.isPaused }
         if (hasPlayersToResume) {
           requestAudioFocus()
@@ -245,16 +246,16 @@ class AudioModule : Module() {
             player.ref.play()
           }
         }
-
+      }
+      if (!allowsBackgroundRecording) {
         recorders.values.forEach { recorder ->
           if (recorder.isPaused) {
             recorder.record()
           }
         }
-
-        if (shouldRouteThroughEarpiece) {
-          updatePlaySoundThroughEarpiece(true)
-        }
+      }
+      if (shouldRouteThroughEarpiece) {
+        updatePlaySoundThroughEarpiece(true)
       }
     }
 

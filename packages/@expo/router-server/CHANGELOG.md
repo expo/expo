@@ -12,6 +12,7 @@
 ### 🐛 Bug fixes
 
 - resolve "Illegal invocation" errors in `workerd` runtime ([#41502](https://github.com/expo/expo/pull/41502) by [@hassankhan](https://github.com/hassankhan))
+- Preserve search params for loader data fetches ([#42227](https://github.com/expo/expo/pull/42227) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
@@ -23,3 +24,4 @@
 - Deduplicate shared types across `@expo/cli`, `@expo/router-server`, `expo-server` ([#40614](https://github.com/expo/expo/pull/40614) by [@hassankhan](https://github.com/hassankhan))
 - Use object instead of tuple for `FlatNode` representation ([#40613](https://github.com/expo/expo/pull/40613) by [@hassankhan](https://github.com/hassankhan))
 - Bump and tighten `react-server-dom-webpack` peer range ([#41379](https://github.com/expo/expo/pull/41379) by [@kitten](https://github.com/kitten))
+- Unify nullish value handling for data loaders ([#42070](https://github.com/expo/expo/pull/42070) by [@hassankhan](https://github.com/hassankhan))

@@ -70,12 +70,8 @@ struct HomeTabView: View {
       }
     }
     .onAppear {
-      viewModel.onViewWillAppear()
       reviewManager.recordHomeAppear()
       reviewManager.updateCounts(apps: viewModel.projects.count, snacks: viewModel.snacks.count)
-    }
-    .onDisappear {
-      viewModel.onViewDidDisappear()
     }
     .onChange(of: viewModel.projects.count) { _ in
       reviewManager.updateCounts(apps: viewModel.projects.count, snacks: viewModel.snacks.count)

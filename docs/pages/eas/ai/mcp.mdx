@@ -56,7 +56,7 @@ The complete table of [MCP capabilities](#available-mcp-capabilities) documents 
 Before using Expo MCP Server, ensure you have:
 
 - An Expo account with an EAS paid plan
-- An Expo project with Expo SDK 54 and the latest `expo` package version
+- An Expo project created either with `npx create-expo-app@latest` or has the latest `expo` package version installed
 - AI-assisted tools with remote MCP server support (Claude Code, Cursor, VS Code, and so on)
 
 ## Installation and setup
@@ -109,6 +109,14 @@ Click the following link to install the MCP server for Cursor:
 
 </Collapsible>
 
+<Collapsible summary="Codex setup">
+
+<Terminal cmd={['$ codex mcp add expo-mcp --url https://mcp.expo.dev/mcp']} />
+
+The above command adds the MCP server to your Codex configuration file and prompts you to authenticate with your Expo account.
+
+</Collapsible>
+
 </Step>
 
 <Step label="2">
@@ -121,7 +129,8 @@ After installing the MCP server, you'll need to authenticate using one of two me
 
 Generate a **Personal access token** from your Expo account and use it during the OAuth flow.
 
-To generate an access token, open your EAS dashboard, navigate to **Credentials** > **Access tokens** > **Personal access tokens**, and then click **Create token**.
+- To generate an access token, open [Access tokens](https://expo.dev/accounts/[account]/settings/access-tokens) settings page in EAS dashboard.
+- Under **Personal access tokens**, click **Create token**. Copy the token and use it during the OAuth flow.
 
 #### Credentials
 

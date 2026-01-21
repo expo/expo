@@ -39,12 +39,6 @@ abstract class BaseExperienceActivity : ReactNativeActivity() {
 
   private var onResumeTime: Long = 0
 
-  /**
-   * Flag to indicate that this Activity uses its own navigation handling (e.g., Compose's NavController)
-   * and should bypass the default `onBackPressed` behavior of this base class.
-   */
-  protected open var usesComposeNavigation: Boolean = false
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     isInForeground = true
@@ -104,11 +98,6 @@ abstract class BaseExperienceActivity : ReactNativeActivity() {
 
   @SuppressLint("MissingSuperCall")
   override fun onBackPressed() {
-    if (usesComposeNavigation) {
-      super.onBackPressed()
-      return
-    }
-
     if (!isCrashed) {
       reactHost?.onBackPressed()
     } else {
@@ -117,10 +106,6 @@ abstract class BaseExperienceActivity : ReactNativeActivity() {
   }
 
   override fun invokeDefaultOnBackPressed() {
-    if (usesComposeNavigation) {
-      super.invokeDefaultOnBackPressed()
-      return
-    }
     moveTaskToBack(true)
   }
 
@@ -200,8 +185,6 @@ abstract class BaseExperienceActivity : ReactNativeActivity() {
   }
 
   companion object {
-    private val TAG = BaseExperienceActivity::class.java.simpleName
-
     // TODO: kill. just use Exponent class's activity
     var visibleActivity: BaseExperienceActivity? = null
       private set

@@ -56,7 +56,7 @@ export interface RequestHandlerInput {
   getRoutesManifest(): Promise<Manifest | null>;
   getApiRoute(route: Route): Promise<any>;
   getMiddleware(route: MiddlewareInfo): Promise<MiddlewareModule>;
-  getLoaderData(request: Request, route: Route): Promise<unknown>;
+  getLoaderData(request: Request, route: Route): Promise<Response>;
 }
 
 export function createRequestHandler({
@@ -157,13 +157,7 @@ export function createRequestHandler({
           // NOTE(@hassankhan): Relocate the request rewriting logic from here
           url.pathname = matchedPath;
           const loaderRequest = new Request(url, request);
-          const data = await getLoaderData(loaderRequest, route);
-          return createResponse('api', route, JSON.stringify(data), {
-            status: 200,
-            headers: new Headers({
-              'Content-Type': 'application/json',
-            }),
-          });
+          return createResponseFrom('api', route, await getLoaderData(loaderRequest, route));
         }
 
         const html = await getHtml(request, route);

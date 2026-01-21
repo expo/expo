@@ -1,8 +1,5 @@
 package expo.modules.ui.menu
 
-import android.content.Context
-import android.view.GestureDetector
-import android.view.MotionEvent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,23 +16,28 @@ import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.viewevent.ViewEventCallback
 import expo.modules.kotlin.views.ComposableScope
-import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.ExpoViewComposableScope
+import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.ThemedHybridSwitch
 import expo.modules.ui.compose
 import expo.modules.ui.composeOrNull
 import expo.modules.ui.getImageVector
+
+/**
+ * CompositionLocal that allows child composables (like Button) to trigger ContextMenu expansion.
+ * When a Button is inside a ContextMenu, it can use this to open the menu on click.
+ */
+val LocalContextMenuExpanded = compositionLocalOf<MutableState<Boolean>?> { null }
 
 @Composable
 private fun SectionTitle(text: String) {
@@ -136,50 +138,30 @@ data class ContextMenuDispatchers(
   val switchCheckedChanged: ViewEventCallback<ContextMenuSwitchValueChangeEvent>
 )
 
-class ContextMenu(context: Context, appContext: AppContext) :
-  ExpoComposeView<ContextMenuProps>(context, appContext, withHostingView = true) {
-  override val props = ContextMenuProps()
-  val expanded = mutableStateOf(false)
-  val onContextMenuButtonPressed by EventDispatcher<ContextMenuButtonPressedEvent>()
-  val onContextMenuSwitchValueChanged by EventDispatcher<ContextMenuSwitchValueChangeEvent>()
+@Composable
+fun ExpoViewComposableScope.ContextMenuContent(
+  props: ContextMenuProps,
+  onContextMenuButtonPressed: (ContextMenuButtonPressedEvent) -> Unit,
+  onContextMenuSwitchValueChanged: (ContextMenuSwitchValueChangeEvent) -> Unit,
+  onExpandedChanged: (ExpandedChangedEvent) -> Unit
+) {
+  val expanded = remember { mutableStateOf(false) }
+  val elements = props.elements
+  val color = props.color
 
-  val gestureDetector = GestureDetector(
-    context,
-    object : GestureDetector.SimpleOnGestureListener() {
-      override fun onDown(e: MotionEvent): Boolean {
-        if (props.activationMethod.value == ActivationMethod.SINGLE_PRESS) {
-          expanded.value = !expanded.value
-        }
-        return super.onDown(e)
-      }
+  // Provide expanded state to children via CompositionLocal
+  // This allows Button children to trigger menu expansion
+  CompositionLocalProvider(LocalContextMenuExpanded provides expanded) {
+    Box(modifier = ModifierRegistry.applyModifiers(props.modifiers)) {
+      // Trigger button - Button will automatically expand menu when clicked
+      Children(ComposableScope())
 
-      override fun onLongPress(e: MotionEvent) {
-        if (props.activationMethod.value == ActivationMethod.LONG_PRESS) {
-          expanded.value = !expanded.value
-        }
-        return super.onLongPress(e)
-      }
-    }
-  )
-
-  override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-    ev?.let {
-      gestureDetector.onTouchEvent(ev)
-    }
-    return super.dispatchTouchEvent(ev)
-  }
-
-  @Composable
-  override fun ComposableScope.Content() {
-    var elements by remember { props.elements }
-    val color by remember { props.color }
-
-    return Box {
       DropdownMenu(
         containerColor = color?.composeOrNull ?: MenuDefaults.containerColor,
         expanded = expanded.value,
         onDismissRequest = {
-          expanded.value = !expanded.value
+          expanded.value = false
+          onExpandedChanged(ExpandedChangedEvent(false))
         }
       ) {
         FlatMenu(
@@ -195,3 +177,7 @@ class ContextMenu(context: Context, appContext: AppContext) :
     }
   }
 }
+
+data class ExpandedChangedEvent(
+  @expo.modules.kotlin.records.Field val expanded: Boolean
+) : expo.modules.kotlin.records.Record

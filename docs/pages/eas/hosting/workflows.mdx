@@ -36,3 +36,27 @@ Now, whenever a commit is pushed to `main` or a PR is merged, the workflow will 
 You can also test this workflow by triggering it manually:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/deploy.yml']} />
+
+## Create a PR preview workflow
+
+Add the following file to **.eas/workflows/pr-preview.yml**. This will automatically deploy a preview of your website whenever a pull request is created or updated, and post a comment to the PR with the preview URL.
+
+```yaml .eas/workflows/pr-preview.yml
+name: PR Preview
+
+on:
+  pull_request: {}
+
+jobs:
+  deploy:
+    type: deploy
+    name: Deploy PR Preview
+
+  comment:
+    needs: [deploy]
+    type: github-comment
+    params:
+      message: 'Preview URL: ${{ needs.deploy.outputs.deploy_url }}'
+```
+
+This workflow will run whenever a pull request is opened, reopened, or synchronized. The `comment` job will automatically post the preview URL to the pull request, making it easy for reviewers to test your changes.

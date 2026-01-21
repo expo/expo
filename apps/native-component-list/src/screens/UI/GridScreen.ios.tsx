@@ -16,6 +16,7 @@ import {
 import {
   background,
   clipShape,
+  font,
   foregroundStyle,
   frame,
   gridCellAnchor,
@@ -193,9 +194,7 @@ export default function GridScreen() {
 
           {/* spacing and alignment */}
           <VStack spacing={10} alignment="leading">
-            <Text size={16} weight="bold">
-              Grid settings
-            </Text>
+            <Text modifiers={[font({ size: 16, weight: 'bold' })]}>Grid settings</Text>
             <VStack
               alignment="center"
               modifiers={[background('white'), clipShape('roundedRectangle')]}>
@@ -245,7 +244,7 @@ export default function GridScreen() {
 
           {/* Example small Grid */}
           <VStack alignment="leading" spacing={5}>
-            <Text weight="bold">Anchor</Text>
+            <Text modifiers={[font({ weight: 'bold' })]}>Anchor</Text>
             <VStack
               alignment="leading"
               modifiers={[background('white'), clipShape('roundedRectangle')]}>

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix crash when storyboard is not present ([#42178](https://github.com/expo/expo/pull/42178) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 - [iOS] Remove new architecture checks. ([#41767](https://github.com/expo/expo/pull/41767) by [@alanjhughes](https://github.com/alanjhughes))

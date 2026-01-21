@@ -195,7 +195,7 @@
 
   NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
   BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
-  if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle) {
+  if (_lastOpenedAppUrl != nil && shouldTryToLaunchLastOpenedBundle && [launchOptions objectForKey:@"UIApplicationLaunchOptionsURLKey"] == nil) {
     // When launch to the last opened url, the previous url could be unreachable because of LAN IP changed.
     // We use a shorter timeout to prevent black screen when loading for an unreachable server.
     NSTimeInterval requestTimeout = 10.0;

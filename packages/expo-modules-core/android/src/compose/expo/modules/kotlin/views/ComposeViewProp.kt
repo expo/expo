@@ -17,23 +17,35 @@ class ComposeViewProp(
   anyType: AnyType,
   val property: KProperty1<*, *>
 ) : AnyViewProp(name, anyType) {
+  private var _isStateProp = false
 
   @Suppress("UNCHECKED_CAST")
   override fun set(prop: Dynamic, onView: View, appContext: AppContext?) {
+    setPropDirectly(prop, onView, appContext)
+  }
+
+  override fun set(prop: Any?, onView: View, appContext: AppContext?) {
+    setPropDirectly(prop, onView, appContext)
+  }
+
+  @Suppress("UNCHECKED_CAST")
+  private fun setPropDirectly(prop: Any?, onView: View, appContext: AppContext?) {
     exceptionDecorator({
       PropSetException(name, onView::class, it)
     }) {
       val props = (onView as ExpoComposeView<*>).props ?: return@exceptionDecorator
 
       if (onView is ComposeFunctionHolder<*>) {
-        val copy = props::class.memberFunctions.firstOrNull { it.name == "copy" }
+        // Use current props state, not the initial props instance
+        val currentProps = onView.propsMutableState.value
+        val copy = currentProps::class.memberFunctions.firstOrNull { it.name == "copy" }
         if (copy == null) {
           logger.warn("⚠️ Props are not a data class with default values for all properties, cannot set prop $name dynamically.")
           return@exceptionDecorator
         }
         val instanceParam = copy.instanceParameter!!
         val newPropParam = copy.parameters.firstOrNull { it.name == name } ?: return@exceptionDecorator
-        val result = copy.callBy(mapOf(instanceParam to props, newPropParam to type.convert(prop, appContext)))
+        val result = copy.callBy(mapOf(instanceParam to currentProps, newPropParam to type.convert(prop, appContext)))
         // Set the new props instance back to the onView
         (onView.propsMutableState as MutableState<Any?>).value = result
         return@exceptionDecorator
@@ -48,5 +60,13 @@ class ComposeViewProp(
     }
   }
 
+  fun asStateProp(): ComposeViewProp {
+    _isStateProp = true
+    return this
+  }
+
   override val isNullable: Boolean = anyType.kType.isMarkedNullable
+
+  override val isStateProp: Boolean
+    get() = _isStateProp
 }

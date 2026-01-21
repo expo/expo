@@ -15,9 +15,8 @@ import host.exp.exponent.services.HistoryItem
 fun RecentRow(historyItem: HistoryItem) {
   val uriHandler = LocalUriHandler.current
 
-  val iconUrl = historyItem.manifest?.getIconUrl()
-
-  val name = historyItem.manifest?.getName() ?: historyItem.manifestUrl
+  val iconUrl = historyItem.iconUrl
+  val name = historyItem.name
 
   ClickableItemRow(
     text = name,
