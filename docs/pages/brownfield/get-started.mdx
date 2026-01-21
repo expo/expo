@@ -5,10 +5,7 @@ description: A guide for adding Expo and React Native to existing native apps an
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
-import {
-  ConfigPluginExample,
-  ConfigPluginProperties,
-} from '~/ui/components/ConfigSection';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -564,15 +561,13 @@ The `expo-brownfield` package provides a [config plugin](/config-plugins/introdu
     {
       name: 'android.libraryName',
       platform: 'android',
-      description:
-        'Name of the generated Android library module.',
+      description: 'Name of the generated Android library module.',
       default: '"brownfield"',
     },
     {
       name: 'android.package',
       platform: 'android',
-      description:
-        'Java/Kotlin package name for the generated Android library code.',
+      description: 'Java/Kotlin package name for the generated Android library code.',
       default: '"<android.package>.brownfield" or "com.example.brownfield"',
     },
     {
