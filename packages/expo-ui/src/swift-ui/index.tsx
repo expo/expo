@@ -15,6 +15,8 @@ export * from './Label';
 export * from './LabeledContent';
 export * from './HStack';
 export * from './VStack';
+export * from './LazyHStack';
+export * from './LazyVStack';
 export * from './ZStack';
 export * from './Group';
 export * from './List';
