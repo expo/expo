@@ -235,7 +235,7 @@ Response headers only apply to client-side navigation requests, not initial page
 
 ## Runtime API
 
-Data loaders have full access to the [Runtime API](/router/web/api-routes/#runtime-api) from `expo-server`. This includes utilities for setting response headers, throwing HTTP errors, and running background tasks:
+Data loaders have full access to the [Runtime API](/router/web/api-routes/#runtime-api) from [`expo-server`](/versions/latest/sdk/server/). This includes utilities for setting response headers, throwing HTTP errors, and running background tasks:
 
 ```tsx app/example.tsx
 import { setResponseHeaders, StatusError } from 'expo-server';
@@ -286,7 +286,7 @@ export default function ApiData() {
 }
 ```
 
-## Static rendering vs server rendering
+## Difference between static and server rendering
 
 Data loaders behave differently depending on your [`web.output`](/versions/latest/config/app/#output) configuration:
 
@@ -348,7 +348,7 @@ export default function Post() {
 - Loaders **must** return JSON-serializable data. Streaming responses are currently not supported. This will be addressed in a future release.
 - Loader data is cached on the client during navigation. There is currently no built-in way to invalidate this cache. This will be addressed in a future release.
 - Data loaders are a web-specific feature for static and server rendering. They do not run on native platforms.
-- The `request` parameter passed to loaders in server rendering is an [ImmutableRequest](/versions/latest/sdk/server/#immutablerequest). You cannot modify the request object.
+- The `request` parameter passed to loaders in server rendering is an [`ImmutableRequest`](/versions/latest/sdk/server/#immutablerequest). You cannot modify the request object.
 - Returning a `Response` object loses type safety for `useLoaderData`. Use [`setResponseHeaders`](/router/web/api-routes/#runtime-api) instead to preserve types when setting response headers.
 
 ## Common questions
