@@ -32,7 +32,8 @@ func buildHttpHost(endpoint: NWEndpoint) -> String? {
 
 func connectionStart(
   connection: NWConnection,
-  queue: DispatchQueue
+  queue: DispatchQueue,
+  timeout: TimeInterval = 2,
 ) async throws {
   try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
     connection.stateUpdateHandler = { state in
@@ -49,6 +50,11 @@ func connectionStart(
           connection.stateUpdateHandler = handler
       }
     }
+
+    queue.asyncAfter(deadline: .now() + timeout) {
+      connection.cancel()
+    }
+
     connection.start(queue: queue)
   }
 }
@@ -75,10 +81,10 @@ func connectionReceive(_ connection: NWConnection) async throws -> String {
           cont.resume(throwing: error)
           return
         }
-          if let data {
+        if let data {
           responseData.append(data)
         }
-          if isComplete {
+        if isComplete {
           cont.resume(returning: responseData)
         } else {
           receiveLoop()
