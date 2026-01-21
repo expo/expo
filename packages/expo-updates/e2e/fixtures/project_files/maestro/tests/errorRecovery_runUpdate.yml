@@ -10,6 +10,10 @@ onFlowStart:
     env:
       MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
 - launchApp
+- extendedWaitUntil:
+    visible:
+      id: updateString
+    timeout: 30000
 - evalScript:
     script: ${output.api.delay(10000)}
     label: Delay for 10 seconds
@@ -38,6 +42,10 @@ onFlowStart:
     env:
       MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
 - launchApp
+- extendedWaitUntil:
+    visible:
+      id: updateString
+    timeout: 30000
 - evalScript:
     script: ${output.api.delay(10000)}
     label: Delay for 10 seconds
@@ -52,6 +60,10 @@ onFlowStart:
     label: Assert the current update id is the embedded update id
 - stopApp
 - launchApp
+- extendedWaitUntil:
+    visible:
+      id: updateString
+    timeout: 30000
 - evalScript:
     script: ${output.api.delay(10000)}
     label: Delay for 10 seconds

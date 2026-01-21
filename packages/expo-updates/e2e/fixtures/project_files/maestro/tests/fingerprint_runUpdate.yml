@@ -10,9 +10,10 @@ onFlowStart:
     env:
       MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
 - launchApp
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+- extendedWaitUntil:
+    visible:
+      id: updateString
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from update string
     id: updateString

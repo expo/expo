@@ -5,6 +5,10 @@ onFlowStart:
 ---
 # Test reload
 - launchApp
+- extendedWaitUntil:
+    visible:
+      id: updateString
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from update string
     id: updateString
@@ -23,6 +27,10 @@ onFlowStart:
     label: Assert update string is from embedded bundle
 - stopApp
 - launchApp
+- extendedWaitUntil:
+    visible:
+      id: updateString
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from update string
     id: updateString

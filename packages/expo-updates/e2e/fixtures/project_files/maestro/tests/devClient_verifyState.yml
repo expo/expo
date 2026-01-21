@@ -15,6 +15,10 @@ onFlowStart:
 - tapOn:
     label: Tap on reload
     text: Reload
+- extendedWaitUntil:
+    visible:
+      id: updateString
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from update string
     id: updateString

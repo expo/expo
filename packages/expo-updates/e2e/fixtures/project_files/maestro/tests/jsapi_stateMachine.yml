@@ -7,6 +7,10 @@ onFlowStart:
 #
 # Check state on initial launch with embedded bundle
 - launchApp
+- extendedWaitUntil:
+    visible:
+      id: updateString
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from update string
     id: updateString
@@ -132,6 +136,10 @@ onFlowStart:
     label: Restart updates server
 - stopApp
 - launchApp
+- extendedWaitUntil:
+    visible:
+      id: updateString
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from update string
     id: updateString

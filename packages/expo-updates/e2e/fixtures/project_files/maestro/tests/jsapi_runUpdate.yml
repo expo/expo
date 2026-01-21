@@ -10,6 +10,10 @@ onFlowStart:
     env:
       MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
 - launchApp
+- extendedWaitUntil:
+    visible:
+      id: updateString
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from update string
     id: updateString
@@ -33,6 +37,10 @@ onFlowStart:
     label: Delay for 3 seconds
 - stopApp
 - launchApp
+- extendedWaitUntil:
+    visible:
+      id: updateString
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from update string
     id: updateString
@@ -41,6 +49,10 @@ onFlowStart:
     label: Assert update string is from downloaded bundle
 - stopApp
 - launchApp
+- extendedWaitUntil:
+    visible:
+      id: isEmbeddedLaunch
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from isEmbeddedLaunch
     id: isEmbeddedLaunch
@@ -102,6 +114,10 @@ onFlowStart:
     label: Delay for 3 seconds
 - stopApp
 - launchApp
+- extendedWaitUntil:
+    visible:
+      id: updateID
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from updateID
     id: updateID
