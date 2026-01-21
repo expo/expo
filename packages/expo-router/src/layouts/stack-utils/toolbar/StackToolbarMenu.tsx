@@ -7,7 +7,6 @@ import type {
 import type { ImageRef } from 'expo-image';
 import { Children, useMemo, type ReactNode } from 'react';
 import type { ImageSourcePropType } from 'react-native';
-import type { HeaderBarButtonItemSubmenu } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { NativeToolbarMenu, NativeToolbarMenuAction } from './bottom-toolbar-native-elements';
@@ -205,6 +204,7 @@ export function convertStackToolbarMenuPropsToRNHeaderItem(
     ...convertStackHeaderSharedPropsToRNSharedHeaderItem(rest),
     type: 'menu',
     menu: {
+      multiselectable: true,
       items: actions
         .map((action) => {
           if (isChildOfType(action, StackToolbarMenu)) {
@@ -234,10 +234,7 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(
       isChildOfType(child, StackToolbarMenuAction) || isChildOfType(child, StackToolbarMenu)
   );
 
-  // TODO: Remove  Pick<HeaderBarButtonItemSubmenu> when this PR is merged and released in react-navigation:
-  // https://github.com/react-navigation/react-navigation/pull/12895
-  const item: NativeStackHeaderItemMenuSubmenu &
-    Pick<HeaderBarButtonItemSubmenu, 'displayAsPalette' | 'displayInline' | 'destructive'> = {
+  const item: NativeStackHeaderItemMenuSubmenu = {
     type: 'submenu',
     items: actions
       .map((action) => {
@@ -248,13 +245,14 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(
       })
       .filter((i) => !!i),
     label: sharedProps.label || props.title || '',
+    multiselectable: true,
   };
 
   if (props.inline !== undefined) {
-    item.displayInline = props.inline;
+    item.inline = props.inline;
   }
   if (props.palette !== undefined) {
-    item.displayAsPalette = props.palette;
+    item.layout = props.palette ? 'palette' : 'default';
   }
   if (props.destructive !== undefined) {
     item.destructive = props.destructive;
