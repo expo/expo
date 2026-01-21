@@ -348,7 +348,7 @@ class ReadOnlyURLSearchParams extends URLSearchParams {
 
 const loaderDataCache = new Map<string, any>();
 const loaderPromiseCache = new Map<string, Promise<any>>();
-const loaderErrorCache = new Map<string, Error>();
+const loaderErrorCache = new Map<string, unknown>();
 
 type LoaderFunctionResult<T extends LoaderFunction<any>> =
   T extends LoaderFunction<infer R> ? R : unknown;
@@ -399,8 +399,7 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   // Check error cache first to prevent infinite retry loops when a loader fails.
   // We throw the cached error instead of starting a new fetch.
   if (loaderErrorCache.has(resolvedPath)) {
-    // eslint-disable-next-line no-throw-literal
-    throw loaderErrorCache.get(resolvedPath) as Error;
+    throw loaderErrorCache.get(resolvedPath);
   }
 
   // Check cache for route data
@@ -421,7 +420,7 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
         const wrappedError = new Error(`Failed to load loader data for route: ${resolvedPath}`, {
           cause: error,
         });
-        loaderErrorCache.set(resolvedPath, wrappedError); // Cache the error
+        loaderErrorCache.set(resolvedPath, wrappedError);
         loaderPromiseCache.delete(resolvedPath);
         throw wrappedError;
       });
