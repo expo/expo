@@ -173,7 +173,7 @@ class DevLauncherViewModel: ObservableObject {
     await withTaskGroup(of: DevServer?.self) { group in
       for result in results {
         group.addTask {
-          return await self.pingDevServer(endpoint: result.endpoint)
+          return await self.pingDevServer(result)
         }
       }
 
@@ -189,13 +189,17 @@ class DevLauncherViewModel: ObservableObject {
     }
   }
 
-  private func pingDevServer(endpoint: NWEndpoint) async -> DevServer? {
+  private func pingDevServer(_ result: NWBrowser.Result) async -> DevServer? {
     do {
       if let host = try await NetworkUtilities.resolveBundlerEndpoint(
-        endpoint: endpoint,
+        endpoint: result.endpoint,
         queue: DispatchQueue.main
       ) {
-        return DevServer(url: host, description: host, source: "local")
+        return DevServer(
+          url: host,
+          description: NetworkUtilities.getNWBrowserResultName(result) ?? host,
+          source: "local"
+        )
       }
     } catch {
       // Server not running or not reachable
