@@ -37,4 +37,6 @@ export * from './Shapes';
 export * from './Popover';
 export * from './Grid';
 export * from './RNHostView';
+export * from './SharedObjectTester';
+export * from '../DummySharedObject';
 //# sourceMappingURL=index.d.ts.map

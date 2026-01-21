@@ -37,3 +37,7 @@ export * from './Shapes';
 export * from './Popover';
 export * from './Grid';
 export * from './RNHostView';
+export * from './SharedObjectTester';
+
+// Shared Objects
+export * from '../DummySharedObject';

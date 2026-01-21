@@ -18,6 +18,36 @@ public final class ExpoUIModule: Module {
       }
     }
 
+    // MARK: - Shared Objects
+
+    Class(DummySharedObject.self) {
+      Constructor {
+        return DummySharedObject()
+      }
+
+      Property("text") { (sharedObject: DummySharedObject) -> String in
+        return sharedObject.text
+      }
+      .set { (sharedObject: DummySharedObject, text: String) in
+        sharedObject.text = text
+      }
+
+      Property("counter") { (sharedObject: DummySharedObject) -> Int in
+        return sharedObject.counter
+      }
+      .set { (sharedObject: DummySharedObject, counter: Int) in
+        sharedObject.counter = counter
+      }
+
+      Function("incrementCounter") { (sharedObject: DummySharedObject) -> Int in
+        return sharedObject.incrementCounter()
+      }
+
+      Function("resetCounter") { (sharedObject: DummySharedObject) in
+        sharedObject.resetCounter()
+      }
+    }
+
     // MARK: - Module Functions
 
     AsyncFunction("completeRefresh") { (id: String) in
@@ -133,5 +163,8 @@ public final class ExpoUIModule: Module {
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
     ExpoUIView(GridView.self)
+
+    // MARK: - Shared Object Tester View
+    ExpoUIView(SharedObjectTesterView.self)
   }
 }
