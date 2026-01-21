@@ -656,13 +656,13 @@ public final class ImageView: ExpoView {
       case .none: sdImageView.addSymbolEffect(.breathe, options: options)
       }
     default:
-      if #available(iOS 26.0, *) {
+      if #available(iOS 26.0, tvOS 26.0, *) {
         applySymbolEffectiOS26(effect: effect, scope: scope, options: options)
       }
     }
   }
 
-  @available(iOS 26.0, *)
+  @available(iOS 26.0, tvOS 26.0, *)
   private func applySymbolEffectiOS26(effect: SFSymbolEffectType, scope: SFSymbolEffectScope?, options: SymbolEffectOptions) {
     switch effect {
     case .drawOn:
