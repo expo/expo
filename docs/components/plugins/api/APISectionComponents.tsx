@@ -19,6 +19,7 @@ import {
   getComponentName,
   getPossibleComponentPropsNames,
   getAllTagData,
+  getTagData,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
 import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
@@ -102,6 +103,7 @@ const renderComponent = (
   const baseName = getComponentName(name, children);
   const resolvedName = compoundNameByComponent?.get(baseName) ?? baseName;
   const extractedComment = getComponentComment(comment, resolvedSignatures);
+  const hideType = Boolean(getTagData('hideType', extractedComment));
 
   return (
     <div
@@ -109,7 +111,7 @@ const renderComponent = (
       className={mergeClasses(STYLES_APIBOX, '!shadow-none')}>
       <APISectionDeprecationNote comment={extractedComment} sticky />
       <APIBoxHeader name={resolvedName} comment={extractedComment} />
-      {resolvedType && resolvedTypeParameters && (
+      {resolvedType && resolvedTypeParameters && !hideType && (
         <CALLOUT className={mergeClasses(ELEMENT_SPACING, VERTICAL_SPACING)}>
           <DEMI className={STYLES_SECONDARY}>Type:</DEMI>{' '}
           <CODE>

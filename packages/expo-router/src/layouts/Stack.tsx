@@ -7,6 +7,11 @@ Stack.Screen = StackScreen;
 Stack.Header = StackHeader;
 Stack.Toolbar = StackToolbar;
 
+/**
+ * Renders a native stack navigator.
+ *
+ * @hideType
+ */
 export { Stack };
 
 export default Stack;
