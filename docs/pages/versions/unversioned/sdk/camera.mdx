@@ -4,7 +4,7 @@ description: A React component that renders a preview for the device's front or 
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-camera'
 packageName: 'expo-camera'
 iconUrl: '/static/images/packages/expo-camera.png'
-platforms: ['android*', 'ios*', 'web']
+platforms: ['android*', 'ios*', 'web', 'expo-go']
 ---
 
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
@@ -41,7 +41,8 @@ You can configure `expo-camera` using its built-in [config plugin](/config-plugi
         {
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
-          "recordAudioAndroid": true
+          "recordAudioAndroid": true,
+          "barcodeScannerEnabled": true
         }
       ]
     ]
@@ -70,6 +71,12 @@ You can configure `expo-camera` using its built-in [config plugin](/config-plugi
       platform: 'android',
       description:
         'A boolean that determines whether to enable the `RECORD_AUDIO` permission on Android.',
+      default: 'true',
+    },
+    {
+      name: 'barcodeScannerEnabled',
+      description:
+        'A boolean that determines whether to enable barcode scanning support. Disabling this reduces app size when barcode scanning is not needed.',
       default: 'true',
     },
   ]}

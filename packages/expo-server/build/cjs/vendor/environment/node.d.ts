@@ -8,7 +8,7 @@ export declare function createNodeEnv(params: NodeEnvParams): {
     getHtml(request: Request, route: import("../../manifest").Route): Promise<string | Response | null>;
     getApiRoute(route: import("../../manifest").Route): Promise<unknown>;
     getMiddleware(middleware: import("../../manifest").MiddlewareInfo): Promise<any>;
-    getLoaderData(request: Request, route: import("../../manifest").Route): Promise<unknown>;
+    getLoaderData(request: Request, route: import("../../manifest").Route): Promise<Response>;
 };
 export declare function createNodeRequestScope(scopeDefinition: ScopeDefinition, params: NodeEnvParams): (fn: (request: Request) => Promise<Response>, request: Request) => Promise<Response>;
 export {};

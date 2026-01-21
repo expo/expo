@@ -1,6 +1,4 @@
-#import "EXBuildConstants.h"
 #import "EXEnvironment.h"
-#import "EXErrorRecoveryManager.h"
 #import "EXKernel.h"
 #import "EXAbstractLoader.h"
 #import "EXKernelLinkingManager.h"
@@ -10,7 +8,6 @@
 #import "EXReactAppManager.h"
 #import "EXReactAppManager+Private.h"
 #import "EXVersionManagerObjC.h"
-#import "EXVersions.h"
 #import "EXAppViewController.h"
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <EXConstants/EXConstantsService.h>
@@ -185,7 +182,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     @"testEnvironment": @([EXEnvironment sharedEnvironment].testEnvironment),
     @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
     @"singletonModules": [EXModuleRegistryProvider singletonModules],
-    @"moduleRegistryDelegateClass": RCTNullIfNil([self moduleRegistryDelegateClass]),
     @"fileSystemDirectories": @{
         @"documentDirectory": [self scopedDocumentDirectory],
         @"cachesDirectory": [self scopedCachesDirectory]
@@ -529,16 +525,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 }
 
 #pragma mark - RN configuration
-
-- (NSDictionary *)launchOptionsForHost
-{
-  return @{};
-}
-
-- (Class)moduleRegistryDelegateClass
-{
-  return nil;
-}
 
 - (NSString *)applicationKeyForRootView
 {

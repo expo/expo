@@ -40,6 +40,7 @@ const react_native_1 = require("react-native");
 const hooks_1 = require("../hooks");
 const BaseExpoRouterLink_1 = require("./BaseExpoRouterLink");
 const InternalLinkPreviewContext_1 = require("./InternalLinkPreviewContext");
+const NativeMenuContext_1 = require("./NativeMenuContext");
 const elements_1 = require("./elements");
 const href_1 = require("./href");
 const LinkPreviewContext_1 = require("./preview/LinkPreviewContext");
@@ -121,11 +122,13 @@ function LinkWithPreview({ children, ...rest }) {
                 router.navigate(rest.hrefForPreviewNavigation, { __internal__PreviewKey: nextScreenId });
             }
         }} style={{ display: 'contents' }} disableForceFlatten>
-      <InternalLinkPreviewContext_1.InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.hrefForPreviewNavigation }}>
-        <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref}/>
-        {preview}
-        {menuElement}
-      </InternalLinkPreviewContext_1.InternalLinkPreviewContext>
+      <NativeMenuContext_1.NativeMenuContext value>
+        <InternalLinkPreviewContext_1.InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.hrefForPreviewNavigation }}>
+          <BaseExpoRouterLink_1.BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref}/>
+          {preview}
+          {menuElement}
+        </InternalLinkPreviewContext_1.InternalLinkPreviewContext>
+      </NativeMenuContext_1.NativeMenuContext>
     </native_1.NativeLinkPreview>);
 }
 //# sourceMappingURL=LinkWithPreview.js.map

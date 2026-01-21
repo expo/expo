@@ -380,6 +380,9 @@ redirects[router/reference/async-routes]=router/web/async-routes
 # After moving MetadataFAQ to EAS Metadata page
 redirects[eas/metadata/faq]=eas/metadata
 
+# After creating EAS environment variables section
+redirects[eas/hosting/environment-variables]=eas/environment-variables/usage/#using-environment-variables-with-eas-hosting
+
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do

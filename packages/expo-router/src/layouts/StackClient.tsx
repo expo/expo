@@ -36,6 +36,7 @@ import {
   StackHeader,
   StackScreen,
   StackSearchBar,
+  StackToolbar,
   appendScreenStackPropsToOptions,
 } from './stack-utils';
 import { isChildOfType } from '../utils/children';
@@ -559,9 +560,9 @@ function mapProtectedScreen(props: ProtectedProps): ProtectedProps {
           return null;
         } else {
           if (React.isValidElement(child)) {
-            console.warn(`Warning: Unknown child element passed to Stack: ${child.type}`);
+            console.warn(`Unknown child element passed to Stack: ${child.type}`);
           } else {
-            console.warn(`Warning: Unknown child element passed to Stack: ${child}`);
+            console.warn(`Unknown child element passed to Stack: ${child}`);
           }
         }
         return null;
@@ -622,6 +623,7 @@ const Stack = Object.assign(
     Protected,
     Header: StackHeader,
     SearchBar: StackSearchBar,
+    Toolbar: StackToolbar,
   }
 );
 

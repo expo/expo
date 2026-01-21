@@ -11,18 +11,21 @@ import java.io.IOException
 import kotlin.reflect.KType
 import kotlin.reflect.javaType
 
-const val apiV2BaseUrl = "https://exp.host/--/api/v2/"
-
 class RESTApiClient(private val sessionRepository: SessionRepository) {
   private val client = OkHttpClient()
   private val gson = Gson()
+
+  companion object {
+    const val HOST = "exp.host"
+    const val API_V2_BASE_URL = "https://$HOST/--/api/v2/"
+  }
 
   @OptIn(ExperimentalStdlibApi::class)
   suspend fun <T> sendAuthenticatedApiV2Request(route: String, type: KType): T {
     val sessionSecret = sessionRepository.getSessionSecret()
       ?: throw IllegalStateException("Must be logged in to perform request")
 
-    val url = apiV2BaseUrl + route
+    val url = API_V2_BASE_URL + route
 
     val request = Request.Builder()
       .url(url)
@@ -51,7 +54,7 @@ class RESTApiClient(private val sessionRepository: SessionRepository) {
 
   @OptIn(ExperimentalStdlibApi::class)
   suspend fun <T, B> sendUnauthenticatedApiV2Request(route: String, type: KType, body: B? = null): T {
-    val url = apiV2BaseUrl + route
+    val url = API_V2_BASE_URL + route
 
     val requestBuilder = Request.Builder().url(url)
 

@@ -1,7 +1,7 @@
-internal import Expo
+@_implementationOnly import Expo
 import Network
-internal import React
-internal import ReactAppDependencyProvider
+@_implementationOnly import React
+@_implementationOnly import ReactAppDependencyProvider
 import UIKit
 
 public class ReactNativeHostManager {
@@ -9,10 +9,11 @@ public class ReactNativeHostManager {
 
   private var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   private var reactNativeFactory: RCTReactNativeFactory?
-  public private(set) var expoDelegateWrapper: ExpoAppDelegateWrapper?
 
-  /// Initializes the React Native host manager shared instance.
-  /// Prevents multiple initializations of the React Native host manager shared instance.
+  /**
+   * Initializes ReactNativeHostManager instance
+   * Instance can be initialized only once
+   */
   public func initialize() {
     // Prevent multiple initializations
     guard reactNativeDelegate == nil else {
@@ -26,13 +27,13 @@ public class ReactNativeHostManager {
     reactNativeDelegate = delegate
     reactNativeFactory = factory
 
-    expoDelegateWrapper = ExpoAppDelegateWrapper(factory: factory)
-
     // Ensure this won't get stripped by the Swift compiler
     _ = ExpoModulesProvider()
   }
 
-  /// Loads and presents the React Native view.
+  /**
+   * Creates the React Native view using RCTReactNativeFactory
+   */
   public func loadView(
     moduleName: String,
     initialProps: [AnyHashable: Any]?,

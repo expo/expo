@@ -1,9 +1,9 @@
 import type { ColorValue, ImageSourcePropType } from 'react-native';
-import type { StackHeaderBadgeProps, StackHeaderIconProps, StackHeaderLabelProps, StackHeaderMenuActionProps, StackHeaderMenuProps } from '../layouts/stack-utils';
+import type { StackToolbarBadgeProps, StackToolbarIconProps, StackToolbarLabelProps, StackToolbarMenuActionProps, StackToolbarMenuProps } from '../layouts/stack-utils';
 import type { LinkMenuActionProps, LinkMenuProps } from '../link/elements';
 import type { NativeTabsTriggerBadgeProps, NativeTabsTriggerIconProps, NativeTabsTriggerLabelProps } from '../native-tabs';
-export type BadgeProps = NativeTabsTriggerBadgeProps | StackHeaderBadgeProps;
-export type IconProps = NativeTabsTriggerIconProps | StackHeaderIconProps;
+export type BadgeProps = NativeTabsTriggerBadgeProps | StackToolbarBadgeProps;
+export type IconProps = NativeTabsTriggerIconProps | StackToolbarIconProps;
 export interface VectorIconProps<NameT extends string> {
     /**
      * The family of the vector icon.
@@ -21,7 +21,7 @@ export interface VectorIconProps<NameT extends string> {
      */
     name: NameT;
 }
-export type LabelProps = NativeTabsTriggerLabelProps | StackHeaderLabelProps;
-export type MenuActionProps = LinkMenuActionProps | StackHeaderMenuActionProps;
-export type MenuProps = LinkMenuProps | StackHeaderMenuProps;
+export type LabelProps = NativeTabsTriggerLabelProps | StackToolbarLabelProps;
+export type MenuActionProps = LinkMenuActionProps | StackToolbarMenuActionProps;
+export type MenuProps = LinkMenuProps | StackToolbarMenuProps;
 //# sourceMappingURL=types.d.ts.map

@@ -45,13 +45,7 @@ export function Box(props: BoxProps) {
   if (!BoxNativeView) {
     return null;
   }
-  return (
-    <BoxNativeView
-      {...props}
-      // @ts-ignore
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-    />
-  );
+  return <BoxNativeView {...props} />;
 }
 //#endregion
 
@@ -63,13 +57,7 @@ export function Row(props: RowProps) {
   if (!RowNativeView) {
     return null;
   }
-  return (
-    <RowNativeView
-      {...props}
-      // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-    />
-  );
+  return <RowNativeView {...props} />;
 }
 //#endregion
 
@@ -81,13 +69,7 @@ export function Column(props: ColumnProps) {
   if (!ColumnNativeView) {
     return null;
   }
-  return (
-    <ColumnNativeView
-      {...props}
-      // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-    />
-  );
+  return <ColumnNativeView {...props} />;
 }
 //#endregion
 
@@ -128,20 +110,12 @@ function transformTextProps(props: TextProps): NativeTextProps {
   return {
     ...restProps,
     text: text ?? '',
-    // @ts-ignore
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 export function Text(props: TextProps) {
   if (!TextNativeView) {
     return null;
   }
-  return (
-    <TextNativeView
-      {...transformTextProps(props)}
-      // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-    />
-  );
+  return <TextNativeView {...transformTextProps(props)} />;
 }
 //#endregion

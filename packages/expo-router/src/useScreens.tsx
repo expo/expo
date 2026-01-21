@@ -15,12 +15,12 @@ import type { NativeStackNavigationEventMap } from '@react-navigation/native-sta
 import React, { useEffect, useMemo } from 'react';
 
 import { LoadedRoute, Route, RouteNode, sortRoutesWithInitial, useRouteNode } from './Route';
-import { getPathFromState } from './fork/getPathFromState';
 import { useExpoRouterStore } from './global-state/storeContext';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
 import { unstable_navigationEvents } from './navigationEvents';
+import { generateStringUrlForState, getPathAndParamsFromStringUrl } from './navigationEvents/utils';
 import {
   hasParam,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
@@ -324,7 +324,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     return (
       <Route node={value} params={route?.params}>
-        {isRouteType && hasRouteKey && unstable_navigationEvents.hasAnyListener() && (
+        {unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (
           <AnalyticsListeners navigation={navigation} screenId={route.key} />
         )}
         <ZoomTransitionTargetContextProvider route={route}>
@@ -354,52 +354,67 @@ function AnalyticsListeners({
   navigation,
   screenId,
 }: {
-  navigation: EventConsumer<EventMapBase>;
+  navigation: EventConsumer<EventMapBase> & {
+    isFocused(): boolean;
+  };
   screenId: string;
 }) {
   const stateForPath = useStateForPath();
   const isFirstRenderRef = React.useRef(true);
-
-  const pathname = useMemo(
-    () => (stateForPath ? decodeURIComponent(getPathFromState(stateForPath)) : undefined),
-    [stateForPath]
-  );
+  const hasBlurredRef = React.useRef(true);
+  const stringUrl = useMemo(() => generateStringUrlForState(stateForPath), [stateForPath]);
 
   if (isFirstRenderRef.current) {
     isFirstRenderRef.current = false;
-    if (pathname) {
+    if (stringUrl) {
       unstable_navigationEvents.emit('pageWillRender', {
-        pathname,
+        ...getPathAndParamsFromStringUrl(stringUrl),
         screenId,
       });
     }
   }
 
   useEffect(() => {
-    if (pathname) {
+    if (stringUrl) {
       return () => {
         unstable_navigationEvents.emit('pageRemoved', {
-          pathname,
+          ...getPathAndParamsFromStringUrl(stringUrl),
           screenId,
         });
       };
     }
     return () => {};
-  }, [pathname]);
+  }, [stringUrl, screenId]);
+
+  const isFocused = navigation.isFocused();
+
+  if (isFocused && stringUrl) {
+    unstable_navigationEvents.emit('pageFocused', {
+      ...getPathAndParamsFromStringUrl(stringUrl),
+      screenId,
+    });
+    hasBlurredRef.current = false;
+  }
 
   useEffect(() => {
-    if (pathname) {
+    if (stringUrl) {
       const cleanFocus = navigation.addListener('focus', () => {
-        unstable_navigationEvents.emit('pageFocused', {
-          pathname,
-          screenId,
-        });
+        // If the screen was not blurred, don't emit focused again
+        // hasBlurredRef will be false when the screen was initially focused
+        if (hasBlurredRef.current) {
+          unstable_navigationEvents.emit('pageFocused', {
+            ...getPathAndParamsFromStringUrl(stringUrl),
+            screenId,
+          });
+          hasBlurredRef.current = false;
+        }
       });
       const cleanBlur = navigation.addListener('blur', () => {
         unstable_navigationEvents.emit('pageBlurred', {
-          pathname,
+          ...getPathAndParamsFromStringUrl(stringUrl),
           screenId,
         });
+        hasBlurredRef.current = true;
       });
       return () => {
         cleanFocus();
@@ -407,7 +422,7 @@ function AnalyticsListeners({
       };
     }
     return () => {};
-  }, [navigation, pathname]);
+  }, [navigation, stringUrl, screenId]);
 
   return null;
 }

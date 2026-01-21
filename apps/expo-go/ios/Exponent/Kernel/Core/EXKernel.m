@@ -2,13 +2,13 @@
 
 #import "EXAppState.h"
 #import "EXAppViewController.h"
-#import "EXBuildConstants.h"
 #import "EXKernel.h"
+
+#import "Expo_Go-Swift.h"
 #import "EXAbstractLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
-#import "EXVersions.h"
 #import "EXKernelDevKeyCommands.h"
 
 #import <EXConstants/EXConstantsService.h>
@@ -133,13 +133,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   [[NSNotificationCenter defaultCenter] postNotificationName:name object:nil];
 }
 
-#pragma mark - App props
-
-- (nullable NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions
-{
-  return nil;
-}
-
 #pragma mark - App State
 
 - (EXKernelAppRecord *)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps
@@ -214,12 +207,12 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
         [appStateModule setState:@"active"];
       }
       _visibleApp = appRecord;
+      [self _unregisterUnusedAppRecords];
     } else {
       _visibleApp = nil;
-    }
-    
-    if (_visibleApp != nil) {
-      [self _unregisterUnusedAppRecords];
+      if (appRecordPreviouslyVisible) {
+        [_appRegistry unregisterAppWithRecord:appRecordPreviouslyVisible];
+      }
     }
   }
 }
@@ -298,6 +291,14 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 - (void)devMenuNavigateHome {
   [self switchTasks];
+}
+
+- (void)devMenuTogglePerformanceMonitor {
+  [[self visibleApp].appManager togglePerformanceMonitor];
+}
+
+- (void)devMenuToggleElementInspector {
+  [[self visibleApp].appManager toggleElementInspector];
 }
 
 @end

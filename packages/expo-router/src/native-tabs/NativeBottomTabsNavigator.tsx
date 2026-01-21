@@ -39,6 +39,7 @@ export function NativeTabsNavigator({
   badgeBackgroundColor,
   indicatorColor,
   badgeTextColor,
+  shadowColor,
   ...rest
 }: InternalNativeTabsProps) {
   if (use(NativeTabsContext)) {
@@ -79,6 +80,7 @@ export function NativeTabsNavigator({
       badgeBackgroundColor,
       indicatorColor,
       badgeTextColor,
+      shadowColor,
     },
   });
 
@@ -103,6 +105,10 @@ export function NativeTabsNavigator({
   const visibleFocusedTabIndex = useMemo(
     () => visibleTabs.findIndex((tab) => tab.routeKey === routes[state.index].key),
     [visibleTabs, routes, state.index]
+  );
+  const visibleTabsKeys = useMemo(
+    () => visibleTabs.map((tab) => tab.routeKey).join(';'),
+    [visibleTabs]
   );
 
   if (visibleFocusedTabIndex < 0) {
@@ -141,6 +147,7 @@ export function NativeTabsNavigator({
       <NativeTabsContext value>
         <NativeTabsView
           {...rest}
+          key={visibleTabsKeys}
           focusedIndex={focusedIndex}
           tabs={visibleTabs}
           onTabChange={onTabChange}

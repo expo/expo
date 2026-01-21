@@ -135,7 +135,7 @@ dependencies {
   debugOnly "androidx.compose.ui:ui:$composeVersion"
   debugOnly "androidx.compose.ui:ui-tooling:$composeVersion"
 
-  debugOnly("com.composables:core:1.46.1")
+  debugOnly("com.composables:core:1.49.6")
 
   debugOnlyApi 'io.github.lukmccall:radix-ui-colors:1.0.1'
 

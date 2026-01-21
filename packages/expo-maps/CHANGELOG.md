@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [iOS] Add `monogram` property to `AppleMapsMarker` for displaying initials on markers. ([#42159](https://github.com/expo/expo/pull/42159) by [@huextrat](https://github.com/huextrat))
 - [iOS] Add `latitudeDelta` and `longitudeDelta` to `onCameraMove` event payload. ([#41655](https://github.com/expo/expo/pull/41655) by [@matinzd](https://github.com/matinzd))
 
 ### 🐛 Bug fixes

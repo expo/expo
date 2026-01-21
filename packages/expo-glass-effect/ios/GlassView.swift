@@ -183,6 +183,10 @@ public final class GlassView: ExpoView {
     }
   }
 
+  func setColorScheme(_ colorScheme: GlassColorScheme) {
+    overrideUserInterfaceStyle = colorScheme.toUIUserInterfaceStyle()
+  }
+
   private func updateEffect() {
     guard isGlassEffectAvailable() else {
       return

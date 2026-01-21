@@ -188,5 +188,4 @@ test.describe('static loader in production', () => {
 
     expect(pageErrors.all).toEqual([]);
   });
-
 });

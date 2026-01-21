@@ -69,7 +69,7 @@ describe(createRequestHandler, () => {
       };
 
       const loaderData = { message: 'Hello from loader', count: 42 };
-      const getLoaderData = jest.fn(async () => loaderData);
+      const getLoaderData = jest.fn(async () => Response.json(loaderData));
 
       const handler = createRequestHandler({
         getRoutesManifest: jest.fn(async () => manifest),
@@ -106,7 +106,7 @@ describe(createRequestHandler, () => {
         rewrites: [],
       };
 
-      const getLoaderData = jest.fn(async () => ({}));
+      const getLoaderData = jest.fn(async () => Response.json({}));
 
       const handler = createRequestHandler({
         getRoutesManifest: jest.fn(async () => manifest),
@@ -155,7 +155,7 @@ describe(createRequestHandler, () => {
         rewrites: [],
       };
 
-      const getLoaderData = jest.fn(async () => ({ data: 'loaded' }));
+      const getLoaderData = jest.fn(async () => Response.json('loaded'));
 
       const handler = createRequestHandler({
         getRoutesManifest: jest.fn(async () => manifest),
@@ -232,7 +232,7 @@ describe(createRequestHandler, () => {
       };
 
       const getHtml = jest.fn(async () => '<html>Second Page</html>');
-      const getLoaderData = jest.fn(async () => ({ data: 'loader' }));
+      const getLoaderData = jest.fn(async () => Response.json('loader'));
 
       const handler = createRequestHandler({
         getRoutesManifest: jest.fn(async () => manifest),

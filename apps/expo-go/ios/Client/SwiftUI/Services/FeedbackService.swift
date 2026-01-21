@@ -18,8 +18,8 @@ struct FeedbackService {
       feedback: message,
       email: email,
       metadata: FeedbackMetadata(
-        os: "\(UIDevice.current.systemName) \(UIDevice.current.systemVersion)",
-        model: UIDevice.current.model,
+        os: "\(await UIDevice.current.systemName) \(await UIDevice.current.systemVersion)",
+        model: await UIDevice.current.model,
         expoGoVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
       )
     )

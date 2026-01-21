@@ -46,6 +46,10 @@ public final class GlassEffectModule: Module {
         view.setInteractive(interactive)
       }
 
+      Prop("colorScheme", .auto) { (view, colorScheme: GlassColorScheme) in
+        view.setColorScheme(colorScheme)
+      }
+
       Prop("borderRadius") { (view, border: CGFloat?) in
         view.setBorderRadius(border)
       }

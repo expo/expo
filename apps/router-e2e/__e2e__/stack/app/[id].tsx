@@ -1,5 +1,4 @@
 import { Color, Link, Stack, useRouter } from 'expo-router';
-import { Toolbar } from 'expo-router/unstable-toolbar';
 import { useRef, useState } from 'react';
 import { Button, Text, View } from 'react-native';
 import type { SearchBarCommands } from 'react-native-screens';
@@ -24,27 +23,27 @@ export default function Modal() {
       <Button title="Cancel Search" onPress={() => searchBarRef.current?.cancelSearch()} />
       <Button title="Focus" onPress={() => searchBarRef.current?.focus()} />
       <Link href={`/${searchText || 1234}`}>Go to {searchText || 1234}</Link>
-      <Toolbar>
-        <Toolbar.Button
-          sf="map"
+      <Stack.Toolbar>
+        <Stack.Toolbar.Button
+          icon="map"
           onPress={() => router.push('/modal')}
           // barButtonItemStyle="prominent"
           tintColor={Color.ios.systemBlue}
         />
-        <Toolbar.Spacer />
-        <Toolbar.Button
-          sharesBackground={false}
-          sf="safari"
+        <Stack.Toolbar.Spacer />
+        <Stack.Toolbar.Button
+          hidesSharedBackground
+          icon="safari"
           onPress={() => setIsTrue((p) => !p)}
           selected={isTrue}
         />
         {isTrue && (
           <>
-            <Toolbar.Spacer width={20} />
-            <Toolbar.Button sf="wave.3.backward" />
+            <Stack.Toolbar.Spacer width={20} />
+            <Stack.Toolbar.Button icon="wave.3.backward" />
           </>
         )}
-      </Toolbar>
+      </Stack.Toolbar>
     </View>
   );
 }

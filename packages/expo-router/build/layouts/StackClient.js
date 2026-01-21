@@ -429,10 +429,10 @@ function mapProtectedScreen(props) {
             }
             else {
                 if (react_1.default.isValidElement(child)) {
-                    console.warn(`Warning: Unknown child element passed to Stack: ${child.type}`);
+                    console.warn(`Unknown child element passed to Stack: ${child.type}`);
                 }
                 else {
-                    console.warn(`Warning: Unknown child element passed to Stack: ${child}`);
+                    console.warn(`Unknown child element passed to Stack: ${child}`);
                 }
             }
             return null;
@@ -475,6 +475,7 @@ const Stack = Object.assign((props) => {
     Protected: Protected_1.Protected,
     Header: stack_utils_1.StackHeader,
     SearchBar: stack_utils_1.StackSearchBar,
+    Toolbar: stack_utils_1.StackToolbar,
 });
 function disableAnimationInScreenOptions(options, condition) {
     if (options && typeof options === 'function') {
