@@ -138,7 +138,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-notifications': ['index.ts'],
   'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
   'expo-print': ['Print.ts'],
-  'expo-router': ['exports.ts'],
+  'expo-router': [['exports.ts', 'layouts/Stack.tsx', 'layouts/Tabs.tsx']],
   'expo-router-ui': ['ui/index.ts', 'expo-router'],
   'expo-router-native-tabs': ['native-tabs/index.ts', 'expo-router'],
   'expo-router-split-view': ['split-view/index.ts', 'expo-router'],
