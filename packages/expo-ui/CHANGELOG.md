@@ -3,7 +3,7 @@
 ## Unpublished
 
 - [ios] - Fix modifiers import path in the example ([#41811](https://github.com/expo/expo/pull/41811) by [@pchalupa](https://github.com/pchalupa))
-- [ios] - Add LazyHStack and LazyVStack views by [@wielski](https://github.com/wielski)
+- [ios] Add LazyHStack and LazyVStack views ([#42383](https://github.com/expo/expo/pull/42383) by [@wielski](https://github.com/wielski))
 
 ### 🛠 Breaking changes
 
