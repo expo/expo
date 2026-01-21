@@ -145,7 +145,7 @@ When you want to customize the tab bar item, we recommend using the components A
 
 ### Icon
 
-You can use the `Icon` component to customize the icon displayed in the tab bar item. The `Icon` component accepts a `drawable` prop for Android drawables, a `sf` prop for Apple's SF Symbols icons, or a `src` prop for custom images.
+Use the `NativeTabs.Trigger.Icon` component to customize the icon displayed in the tab bar item. The icon component accepts a `drawable` prop for Android drawables, a `sf` prop for Apple's SF Symbols icons, or a `src` prop for custom images.
 
 Alternatively, you can pass `{default: ..., selected: ...}` to either the `sf` or `src` prop to specify different icons for the default and selected states.
 
@@ -354,7 +354,7 @@ export default function TabLayout() {
 
 ### Label
 
-You can use the `Label` component to customize the label displayed in the tab bar item. The `Label` component accepts a string label passed as a child. If no label is provided, the tab bar item will use the route name as the label.
+Use the `NativeTabs.Trigger.Label` component to customize the label displayed in the tab bar item. The label component accepts a string label passed as a child. If no label is provided, the tab bar item will use the route name as the label.
 
 If you don't want to display a label, you can use the `hidden` prop to hide the label.
 
@@ -406,7 +406,7 @@ export default function TabLayout() {
 
 ### Badge
 
-You can use the `Badge` component to customize the badge displayed for the tab bar item. The badge is an additional mark on top of the tab and useful for showing notification or unread message counts.
+Use the `NativeTabs.Trigger.Badge` component to customize the badge displayed for the tab bar item. The badge is an additional mark on top of the tab and useful for showing notification or unread message counts.
 
 <Tabs>
 
@@ -800,7 +800,7 @@ export default function TabLayout() {
 
 > **info** **Recommended**: Use [SF Symbols on iOS](#icon). They offer a more native platform feeling compared to vector icons.
 
-To use icons from `@expo/vector-icons`, you can use `VectorIcon` component.
+To use icons from `@expo/vector-icons`, you can use the `NativeTabs.Trigger.VectorIcon` component.
 
 <Tabs>
 
