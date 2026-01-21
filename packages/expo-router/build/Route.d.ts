@@ -1,6 +1,6 @@
+import type { LoaderFunction } from 'expo-server';
 import { type ComponentType, type PropsWithChildren } from 'react';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
-import { LoaderFunction } from './types';
 import { type ErrorBoundaryProps } from './views/Try';
 export type DynamicConvention = {
     name: string;

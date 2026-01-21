@@ -1,6 +1,7 @@
 'use client';
 
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import type { LoaderFunction } from 'expo-server';
 import React, { use } from 'react';
 
 import { LocalRouteParamsContext, useRouteNode } from './Route';
@@ -11,7 +12,7 @@ import { resolveHref } from './link/href';
 import { usePreviewInfo } from './link/preview/PreviewRouteContext';
 import { ServerDataLoaderContext } from './loaders/ServerDataLoaderContext';
 import { fetchLoaderModule } from './loaders/utils';
-import { RouteParams, RouteSegments, UnknownOutputParams, Route, LoaderFunction } from './types';
+import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
 
 export { useRouteInfo };
 

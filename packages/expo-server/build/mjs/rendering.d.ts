@@ -14,8 +14,8 @@ export interface RenderOptions {
         data: unknown;
     };
 }
+export type SsrRenderFn = (request: Request, options?: RenderOptions) => Promise<string>;
 /** Module exported from loader bundle, typically `_expo/loaders/[ROUTE].js` */
 export interface LoaderModule {
     loader(request: ImmutableRequest | undefined, params: Record<string, string>): Promise<unknown> | unknown;
 }
-export type SsrRenderFn = (request: Request, options?: RenderOptions) => Promise<string>;
