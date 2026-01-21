@@ -260,8 +260,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const middlewareFilePath = path.isAbsolute(manifest.middleware.file)
       ? manifest.middleware.file
       : path.join(appDir, manifest.middleware.file);
+    // Disable chunk splitting for middleware to ensure all async imports are bundled inline.
+    // Middleware typically needs all code dependencies inlined and doesn't import static assets.
     const { contents, assets } = await this.bundleApiRouteForExport(middlewareFilePath, {
       platform,
+      splitChunks: false,
     });
     const artifactFilename = convertPathToModuleSpecifier(
       path.join(outputDir, path.relative(appDir, middlewareFilePath.replace(/\.[tj]sx?$/, '.js')))
@@ -1649,10 +1652,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       platform,
       serializerOutput,
       serializerIncludeMaps,
+      splitChunks,
     }: {
       platform: string;
       serializerOutput?: 'static';
       serializerIncludeMaps?: boolean;
+      splitChunks?: boolean;
     }
   ): Promise<SSRModuleContentsResult | null | undefined> {
     // Only use caching for runtime bundling (not export)
@@ -1668,6 +1673,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           platform,
           serializerOutput,
           serializerIncludeMaps,
+          splitChunks,
         });
       } catch (error: any) {
         const appDir = this.instanceMetroOptions?.routerRoot
@@ -1703,10 +1709,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
    * Bundle an API route for export with asset collection.
    * Uses serializerOutput: 'static' to collect any assets (images, fonts, etc.)
    * that the API route imports.
+   *
+   * @param splitChunks - Controls chunk splitting. Set to true (default) to enable asset collection.
+   *   Set to false for middleware which needs all async imports bundled inline and typically
+   *   doesn't import static assets.
    */
   private async bundleApiRouteForExport(
     filePath: string,
-    { platform }: { platform: string }
+    { platform, splitChunks = true }: { platform: string; splitChunks?: boolean }
   ): Promise<{
     contents: SSRModuleContentsResult | null;
     assets: readonly BundleAssetWithFileHashes[] | undefined;
@@ -1715,6 +1725,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       platform,
       serializerOutput: 'static',
       serializerIncludeMaps: true,
+      splitChunks,
     });
     return {
       contents: result ?? null,
