@@ -14,9 +14,7 @@ public final class SharingModule: Module {
     Name("ExpoSharing")
 
     AsyncFunction("shareAsync") { (url: URL, options: SharingOptions, promise: Promise) in
-      let grantedPermissions = FileSystemUtilities.permissions(appContext, for: url)
-
-      guard grantedPermissions.contains(.read) && FileManager.default.isReadableFile(atPath: url.path) else {
+      guard FileSystemUtilities.isReadableFile(appContext, url) else {
         throw FilePermissionException()
       }
 
