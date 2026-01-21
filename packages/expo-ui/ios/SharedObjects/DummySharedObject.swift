@@ -2,26 +2,28 @@
 
 import ExpoModulesCore
 import SwiftUI
+import Combine
 
 /**
  A dummy shared object that demonstrates how to pass shared objects as props to SwiftUI views.
- This object contains some simple SwiftUI-related state that can be shared between JS and native.
+ This object conforms to ObservableObject so SwiftUI views can reactively update when properties change.
  */
-public final class DummySharedObject: SharedObject {
+public final class DummySharedObject: SharedObject, ObservableObject {
   /// A simple text value stored in the shared object
-  var text: String = "Hello from SharedObject"
+  @Published var text: String = "Hello from SharedObject"
 
   /// A color value that can be used in SwiftUI views
-  var color: Color = .blue
+  @Published var color: Color = .blue
 
   /// A numeric counter value
-  var counter: Int = 0
+  @Published var counter: Int = 0
 
   public override init() {
     super.init()
   }
 
   /// Increments the counter and returns the new value
+  @discardableResult
   func incrementCounter() -> Int {
     counter += 1
     return counter
