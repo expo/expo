@@ -181,7 +181,6 @@ class NetworkUtilities {
   ) async throws -> String? {
     let params = NWParameters.tcp
     params.includePeerToPeer = true
-    params.allowFastOpen = true
     params.allowLocalEndpointReuse = true
     params.preferNoProxies = true
     params.requiredInterface = endpoint.interface
