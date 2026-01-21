@@ -54,13 +54,10 @@ public class ReactNativeHostManager {
       )
     }
 
-    var launchOptionsCopy = launchOptions ?? [:]
-    launchOptionsCopy["_isBrownfield"] = true
-
     return reactNativeFactory.rootViewFactory.view(
       withModuleName: moduleName,
       initialProperties: initialProps,
-      launchOptions: launchOptionsCopy
+      launchOptions: launchOptions
     )
   }
 }
