@@ -1,6 +1,7 @@
 'use client';
 
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import type { LoaderFunction } from 'expo-server';
 import React, { use } from 'react';
 
 import { LocalRouteParamsContext, useRouteNode } from './Route';
@@ -11,7 +12,7 @@ import { resolveHref } from './link/href';
 import { usePreviewInfo } from './link/preview/PreviewRouteContext';
 import { ServerDataLoaderContext } from './loaders/ServerDataLoaderContext';
 import { fetchLoaderModule } from './loaders/utils';
-import { RouteParams, RouteSegments, UnknownOutputParams, Route, LoaderFunction } from './types';
+import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
 
 export { useRouteInfo };
 
@@ -347,6 +348,7 @@ class ReadOnlyURLSearchParams extends URLSearchParams {
 
 const loaderDataCache = new Map<string, any>();
 const loaderPromiseCache = new Map<string, Promise<any>>();
+const loaderErrorCache = new Map<string, unknown>();
 
 type LoaderFunctionResult<T extends LoaderFunction<any>> =
   T extends LoaderFunction<infer R> ? R : unknown;
@@ -394,6 +396,12 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
     }
   }
 
+  // Check error cache first to prevent infinite retry loops when a loader fails.
+  // We throw the cached error instead of starting a new fetch.
+  if (loaderErrorCache.has(resolvedPath)) {
+    throw loaderErrorCache.get(resolvedPath);
+  }
+
   // Check cache for route data
   if (loaderDataCache.has(resolvedPath)) {
     return loaderDataCache.get(resolvedPath);
@@ -404,16 +412,17 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
     const promise = fetchLoaderModule(resolvedPath)
       .then((data) => {
         loaderDataCache.set(resolvedPath, data);
+        loaderErrorCache.delete(resolvedPath);
+        loaderPromiseCache.delete(resolvedPath);
         return data;
       })
       .catch((error) => {
-        console.error(`Failed to load loader data for route: ${resolvedPath}:`, error);
-        throw new Error(`Failed to load loader data for route: ${resolvedPath}`, {
+        const wrappedError = new Error(`Failed to load loader data for route: ${resolvedPath}`, {
           cause: error,
         });
-      })
-      .finally(() => {
+        loaderErrorCache.set(resolvedPath, wrappedError);
         loaderPromiseCache.delete(resolvedPath);
+        throw wrappedError;
       });
 
     loaderPromiseCache.set(resolvedPath, promise);

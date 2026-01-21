@@ -578,7 +578,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
     let path = url.path
     let standardizedPath = NSString(string: path).standardizingPath
 
-    guard FileSystemUtilities.permissions(appContext, for: url).contains(.read) && FileManager.default.isReadableFile(atPath: url.path) else {
+    guard FileSystemUtilities.isReadableFile(appContext, url) else {
       return nil
     }
 

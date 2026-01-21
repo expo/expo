@@ -15,14 +15,6 @@ export interface StackToolbarSpacerProps {
      */
     width?: number;
     /**
-     * Whether to hide the shared background.
-     *
-     * Only available in bottom placement.
-     *
-     * @platform iOS 26+
-     */
-    hidesSharedBackground?: boolean;
-    /**
      * Whether this spacer shares background with adjacent items.
      *
      * Only available in bottom placement.

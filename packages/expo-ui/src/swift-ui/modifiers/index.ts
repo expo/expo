@@ -1091,3 +1091,9 @@ export * from './progressViewStyle';
 export * from './gaugeStyle';
 export * from './presentationModifiers';
 export * from './environment';
+export type {
+  TimingAnimationParams,
+  SpringAnimationParams,
+  InterpolatingSpringAnimationParams,
+  ChainableAnimationType,
+} from './animation/types';

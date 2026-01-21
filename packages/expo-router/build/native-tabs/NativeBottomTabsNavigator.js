@@ -92,6 +92,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
         contentRenderer: () => descriptors[route.key].render(),
     })), [routes, descriptors]);
     const visibleFocusedTabIndex = (0, react_1.useMemo)(() => visibleTabs.findIndex((tab) => tab.routeKey === routes[state.index].key), [visibleTabs, routes, state.index]);
+    const visibleTabsKeys = (0, react_1.useMemo)(() => visibleTabs.map((tab) => tab.routeKey).join(';'), [visibleTabs]);
     if (visibleFocusedTabIndex < 0) {
         if (process.env.NODE_ENV !== 'production') {
             throw new Error(`The focused tab in NativeTabsView cannot be displayed. Make sure path is correct and the route is not hidden. Path: "${(0, linking_1.getPathFromState)(state)}"`);
@@ -118,7 +119,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
     }, [descriptors, navigation, state.key]);
     return (<NavigationContent>
       <exports.NativeTabsContext value>
-        <NativeTabsView_1.NativeTabsView {...rest} focusedIndex={focusedIndex} tabs={visibleTabs} onTabChange={onTabChange}/>
+        <NativeTabsView_1.NativeTabsView {...rest} key={visibleTabsKeys} focusedIndex={focusedIndex} tabs={visibleTabs} onTabChange={onTabChange}/>
       </exports.NativeTabsContext>
     </NavigationContent>);
 }

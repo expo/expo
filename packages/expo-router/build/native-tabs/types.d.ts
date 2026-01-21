@@ -238,6 +238,8 @@ export interface NativeTabTriggerProps {
      * If true, the tab will be hidden from the tab bar.
      *
      * > **Note**: Marking a tab as `hidden` means it cannot be navigated to in any way.
+     *
+     * > **Note**: Dynamically hiding tabs will remount the navigator and the state will be reset.
      */
     hidden?: boolean;
     /**

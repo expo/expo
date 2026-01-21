@@ -83,8 +83,8 @@ export function createEnvironment(input) {
             if (renderer) {
                 let renderOptions;
                 try {
-                    const result = await executeLoader(request, route);
-                    if (result !== undefined) {
+                    if (route.loader) {
+                        const result = await executeLoader(request, route);
                         const data = isResponse(result) ? await result.json() : result;
                         const normalizedData = data === undefined ? {} : data;
                         renderOptions = { loader: { data: normalizedData } };

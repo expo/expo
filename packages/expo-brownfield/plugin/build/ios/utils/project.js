@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.inferProjectName = exports.configureBuildSettings = exports.configureBuildPhases = exports.createGroup = exports.getGroupByUUID = exports.createFramework = void 0;
 const node_fs_1 = require("node:fs");
-const utils_1 = require("../utils");
 const constants_1 = require("./constants");
 const createFramework = (project, targetName, bundleIdentifier) => {
     return project.addTarget(targetName, constants_1.Constants.Target.Framework, targetName, bundleIdentifier);
@@ -27,8 +26,6 @@ const configureBuildPhases = (project, target, targetName, projectName, files = 
     }
     const destTarget = findNativeTargetSection(project, (target) => target.productType !== constants_1.Constants.Target.ApplicationProductType);
     destTarget.buildPhases = [...destTarget.buildPhases, bundlePhase];
-    const script = (0, utils_1.readFromTemplate)('patch-expo.sh', { targetName, projectName });
-    project.addBuildPhase([], constants_1.Constants.BuildPhase.Script, constants_1.Constants.BuildPhase.PatchExpoPhase, target.uuid, { shellPath: '/bin/sh', shellScript: script });
     project.addBuildPhase(files, constants_1.Constants.BuildPhase.Sources, target.pbxNativeTarget.name, target.uuid, constants_1.Constants.Target.Framework, constants_1.Constants.Utils.XCEmptyString);
 };
 exports.configureBuildPhases = configureBuildPhases;

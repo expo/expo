@@ -71,6 +71,11 @@
 - [ios] fix shadow color in native tabs ([#42125](https://github.com/expo/expo/pull/42125) by [@Ubax](https://github.com/Ubax))
 - Preserve search params for loader data fetches ([#42227](https://github.com/expo/expo/pull/42227) by [@hassankhan](https://github.com/hassankhan))
 - fix withAnchor for deeply nested routes ([#40528](https://github.com/expo/expo/pull/40528) by [@Ubax](https://github.com/Ubax))
+- [ios] fix toolbar updates ([#42338](https://github.com/expo/expo/pull/42338) by [@Ubax](https://github.com/Ubax))
+- unify focused tab navigation behavior between JS and headless tabs ([#42235](https://github.com/expo/expo/pull/42235) by [@Ubax](https://github.com/Ubax))
+- remount native tabs, when visibility is changed ([#42329](https://github.com/expo/expo/pull/42329) by [@Ubax](https://github.com/Ubax))
+- Update react-navigation to latest version ([#42379](https://github.com/expo/expo/pull/42379) by [@Ubax](https://github.com/Ubax))
+- Improve error handling in `useLoaderData()` hook ([#42260](https://github.com/expo/expo/pull/42260) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
@@ -114,6 +119,8 @@
 - add `unstable_navigationEvents` to `globalThis.expo` ([#42238](https://github.com/expo/expo/pull/42238) by [@Ubax](https://github.com/Ubax))
 - Upgrade react-native-screens to 4.20.0 ([#42282](https://github.com/expo/expo/pull/42282) by [@Ubax](https://github.com/Ubax))
 - Change loader function signature to `(request, params)` ([#42318](https://github.com/expo/expo/pull/42318) by [@hassankhan](https://github.com/hassankhan))
+- Remove deprecated `ExpoRequest` and `ExpoResponse` types ([#42363](https://github.com/expo/expo/pull/42363) by [@hassankhan](https://github.com/hassankhan))
+- Migrate `LoaderFunction` type from `expo-router` ([#42362](https://github.com/expo/expo/pull/42362) by [@hassankhan](https://github.com/hassankhan))
 
 ## 6.0.17 - 2025-12-05
 
