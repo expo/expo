@@ -51,7 +51,8 @@ class FileDownloaderAssetDiffTest {
   fun setUp() {
     val config = mapOf<String, Any>(
       "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
-      "runtimeVersion" to "1.0"
+      "runtimeVersion" to "1.0",
+      "enableBsdiffPatchSupport" to true
     )
     configuration = UpdatesConfiguration(null, config)
     logger = UpdatesLogger(temporaryFolder.newFolder("logs"))
