@@ -151,7 +151,12 @@ class DevLauncherViewModel: ObservableObject {
         self.pingTask?.cancel()
         self.pingTask = Task {
           defer { self.pingTask = nil }
-          await self.pingDiscoveryResults(results)
+          await self.pingDiscoveryResults(results.map { result in
+            DiscoveryResult(
+              name: NetworkUtilities.getNWBrowserResultName(result),
+              endpoint: result.endpoint
+            )
+          })
         }
       }
     }
@@ -166,7 +171,7 @@ class DevLauncherViewModel: ObservableObject {
     browser = nil
   }
 
-  private func pingDiscoveryResults(_ results: Set<NWBrowser.Result>) async {
+  private func pingDiscoveryResults(_ results: [DiscoveryResult]) async {
     guard !Task.isCancelled else {
       return
     }
@@ -191,7 +196,7 @@ class DevLauncherViewModel: ObservableObject {
     }
   }
 
-  private func pingDevServer(_ result: NWBrowser.Result) async -> DevServer? {
+  private func pingDevServer(_ result: DiscoveryResult) async -> DevServer? {
     do {
       if let host = try await NetworkUtilities.resolveBundlerEndpoint(
         endpoint: result.endpoint,
@@ -199,7 +204,7 @@ class DevLauncherViewModel: ObservableObject {
       ) {
         return DevServer(
           url: host,
-          description: NetworkUtilities.getNWBrowserResultName(result) ?? host,
+          description: result.name ?? host,
           source: "local"
         )
       }

@@ -1,3 +1,18 @@
+import Network
+
+struct DiscoveryResult: Hashable {
+  let name: String?
+  let endpoint: NWEndpoint
+
+  var hashValue: Int {
+    return endpoint.hashValue
+  }
+
+  static func == (lhs: Self, rhs: Self) -> Bool {
+    return lhs.name == rhs.name && lhs.endpoint == rhs.endpoint
+  }
+}
+
 struct BranchWithUpdates {
   let id: String
   let name: String
