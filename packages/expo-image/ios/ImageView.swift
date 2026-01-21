@@ -659,7 +659,7 @@ public final class ImageView: ExpoView {
     }
   }
 
-  @available(iOS 26.0, *)
+  @available(iOS 26.0, tvOS 17.0, *)
   private func applySymbolEffectiOS26(effect: SFSymbolEffectType, scope: SFSymbolEffectScope?, options: SymbolEffectOptions) {
     switch effect {
     case .drawOn:
