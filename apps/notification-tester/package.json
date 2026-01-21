@@ -20,7 +20,7 @@
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.7.3",
     "@react-navigation/native": "^7.1.28",
-    "expo": "~55.0.0-preview.0",
+    "expo": "~55.0.0-preview.1",
     "expo-font": "55.0.0",
     "expo-linking": "55.0.0",
     "expo-localization": "55.0.0",

@@ -16,7 +16,7 @@
     "@react-navigation/bottom-tabs": "^7.7.3",
     "@react-navigation/elements": "^2.8.1",
     "@react-navigation/native": "^7.1.28",
-    "expo": "~55.0.0-preview.0",
+    "expo": "~55.0.0-preview.1",
     "expo-constants": "~55.0.0",
     "expo-font": "~55.0.0",
     "expo-image": "~55.0.0",

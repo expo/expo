@@ -38,7 +38,7 @@ PODS:
   - EXManifests/Tests (55.0.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.0-preview.0):
+  - Expo (55.0.0-preview.1):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -297,7 +297,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (55.0.0-preview.0):
+  - Expo/Tests (55.0.0-preview.1):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -3778,7 +3778,7 @@ SPEC CHECKSUMS:
   EXConstants: 65fe36b560cfb2ff76add4bc6589ff21630814c0
   EXJSONUtils: 0080c14b673cfa9a6be5e3fe429768ffe3d42dfb
   EXManifests: 57f815598cd5df5a39d5662f27d96bd4aa604c89
-  Expo: 3b4bf231f872229e0cc76ebe9e9cac230eb76f40
+  Expo: cc8904348de7c3b5bcb88548281e555b2295013d
   expo-dev-client: 6f2af592572f4fb88ab459fe0190b0a02ecfd16c
   expo-dev-launcher: a7e675dafbea72dfdda6b35df3021f42f1492226
   expo-dev-menu: d84ccc664eeb82808d11f64b252e1de8da421988

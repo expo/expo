@@ -58,7 +58,7 @@
   "dependencies": {
     "@expo/dom-webview": "55.0.0",
     "@expo/vector-icons": "^15.0.2",
-    "expo": "~55.0.0-preview.0",
+    "expo": "~55.0.0-preview.1",
     "expo-haptics": "~55.0.0",
     "expo-linking": "~55.0.0",
     "expo-router": "^55.0.0-beta.0",
