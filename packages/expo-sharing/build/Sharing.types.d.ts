@@ -17,7 +17,7 @@ export type SharingOptions = {
      */
     dialogTitle?: string;
     /**
-     * set the anchor point for iPad
+     * Sets the anchor point for iPad
      * @platform ios
      */
     anchor?: {
@@ -64,7 +64,7 @@ export type SharePayload = {
     /**
      * The MIME type of the `value` field.
      *
-     * @default `text/plain`
+     * @default 'text/plain'
      */
     mimeType?: string;
 };

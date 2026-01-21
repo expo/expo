@@ -43,7 +43,7 @@ export function useIncomingShare() {
 
   const refreshSharePayloads = useCallback(async () => {
     try {
-      const newSharedData: SharePayload[] = getSharedPayloads() || [];
+      const newSharedData: SharePayload[] = getSharedPayloads();
 
       // Do not run `getResolvedSharedDataAsync` if the data hasn't changed to reduce network usage
       if (sharePayloadsAreEqual(newSharedData, currentSharedDataRef.current)) {
