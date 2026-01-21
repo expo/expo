@@ -10,14 +10,14 @@ function convertStackHeaderSharedPropsToRNSharedHeaderItem(props) {
     const stringChildren = react_1.Children.toArray(children)
         .filter((child) => typeof child === 'string')
         .join('');
-    const label = (0, children_1.getFirstChildOfType)(children, common_primitives_1.StackHeaderLabel);
+    const label = (0, children_1.getFirstChildOfType)(children, common_primitives_1.StackToolbarLabel);
     const iconPropConvertedToIcon = props.icon
         ? typeof props.icon === 'string'
             ? { sf: props.icon }
             : { src: props.icon }
         : undefined;
-    const iconComponentProps = (0, children_1.getFirstChildOfType)(children, common_primitives_1.StackHeaderIcon)?.props ?? iconPropConvertedToIcon;
-    const badgeComponent = (0, children_1.getFirstChildOfType)(children, common_primitives_1.StackHeaderBadge);
+    const iconComponentProps = (0, children_1.getFirstChildOfType)(children, common_primitives_1.StackToolbarIcon)?.props ?? iconPropConvertedToIcon;
+    const badgeComponent = (0, children_1.getFirstChildOfType)(children, common_primitives_1.StackToolbarBadge);
     const rnsIcon = (() => {
         if (!iconComponentProps) {
             return undefined;

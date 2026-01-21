@@ -386,6 +386,11 @@ export const LIVE_STREAMS = [
 
 export const YOUTUBE_VIDEOS = [
   {
+    title: 'How to add Android widgets to Expo apps | Native, Resizable, Configurable widgets',
+    event: 'Expo Tutorials',
+    videoId: 'rCVWq4WkoDA',
+  },
+  {
     title: 'How to add native iOS Widgets to your Expo app',
     event: 'Expo Tutorials',
     videoId: 'UH4ejdz3fko',

@@ -12,6 +12,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] forward `PROJECT_ROOT` env var to create updates resources script ([#41418](https://github.com/expo/expo/pull/41418) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fix `downloadProgress` for update fetching on app startup. ([#41069](https://github.com/expo/expo/pull/41069) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 

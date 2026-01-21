@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add config plugin for receiving data from other apps. ([#42242](https://github.com/expo/expo/pull/42242) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

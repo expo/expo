@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import React
+import ExpoModulesCore
 
 class DevMenuDevOptionsDelegate {
   internal private(set) weak var bridge: RCTBridge?
@@ -24,9 +25,8 @@ class DevMenuDevOptionsDelegate {
     // No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.
     DevMenuManager.shared.hideMenu()
 
-    DispatchQueue.main.async {
-      RCTTriggerReloadCommandListeners("Dev menu - reload")
-    }
+    let emc = self.bridge?.moduleRegistry.module(forName: "ExpoModulesCore") as? ExpoBridgeModule
+    emc?.appContext?.reloadAppAsync()
   }
 
   internal func toggleElementInsector() {

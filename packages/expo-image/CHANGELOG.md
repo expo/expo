@@ -6,12 +6,14 @@
 
 ### 🎉 New features
 
+- [iOS] Add support for SF Symbols `source="sf:star"`. ([#41907](https://github.com/expo/expo/pull/41907) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Upgrades Glide to `5.0.5`. ([#39713](https://github.com/expo/expo/pull/39713) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Added support for HDR images ([#40242](https://github.com/expo/expo/pull/40242) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Adopted Swift 6 ([#40369](https://github.com/expo/expo/pull/40369) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Provide plugin to disable `libdav1d`. ([#40691](https://github.com/expo/expo/pull/40691) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] feat: add `configureCache` option ([#40647](https://github.com/expo/expo/pull/40647) by [@kosmydel](https://github.com/kosmydel))
 - [Web] Add `loading` prop for lazy loading images. ([#41442](https://github.com/expo/expo/pull/41442) by [@mozzius](https://github.com/mozzius))
+- [iOS] Added support for PSD images. ([#42077](https://github.com/expo/expo/pull/42077) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
 

@@ -34,11 +34,15 @@
     },
     "jsEngine": "hermes",
     "plugins": [
-      ["expo-build-properties", {
-        "ios": {
-          "buildReactNativeFromSource": true
+      "expo-brownfield",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "buildReactNativeFromSource": true
+          }
         }
-      }]
+      ]
     ]
   }
 }

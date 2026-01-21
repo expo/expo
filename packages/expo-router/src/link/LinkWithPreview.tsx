@@ -6,6 +6,7 @@ import { Platform } from 'react-native';
 import { useRouter } from '../hooks';
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
 import { InternalLinkPreviewContext } from './InternalLinkPreviewContext';
+import { NativeMenuContext } from './NativeMenuContext';
 import { LinkMenu, LinkPreview, LinkTrigger } from './elements';
 import { resolveHref } from './href';
 import type { Href } from '../types';
@@ -135,12 +136,14 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
       }}
       style={{ display: 'contents' }}
       disableForceFlatten>
-      <InternalLinkPreviewContext
-        value={{ isVisible: isCurrentPreviewOpen, href: rest.hrefForPreviewNavigation }}>
-        <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
-        {preview}
-        {menuElement}
-      </InternalLinkPreviewContext>
+      <NativeMenuContext value>
+        <InternalLinkPreviewContext
+          value={{ isVisible: isCurrentPreviewOpen, href: rest.hrefForPreviewNavigation }}>
+          <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
+          {preview}
+          {menuElement}
+        </InternalLinkPreviewContext>
+      </NativeMenuContext>
     </NativeLinkPreview>
   );
 }

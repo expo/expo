@@ -46,9 +46,6 @@ const types_1 = require("./types");
 const icon_1 = require("./utils/icon");
 const children_1 = require("../utils/children");
 const bottomAccessory_1 = require("./utils/bottomAccessory");
-// We let native tabs to control the changes. This requires freeze to be disabled for tab bar.
-// Otherwise user may see glitches when switching between tabs.
-react_native_screens_1.featureFlags.experiment.controlledBottomTabs = false;
 function NativeTabsView(props) {
     const { minimizeBehavior, disableIndicator, focusedIndex, tabs, sidebarAdaptable, nonTriggerChildren, } = props;
     const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);
@@ -85,7 +82,7 @@ function NativeTabsView(props) {
             indicatorColor: color_1.Color.android.dynamic.secondaryContainer,
         }
         : undefined;
-    return (<BottomTabsWrapper 
+    return (<TabsHostWrapper 
     // #region android props
     tabBarItemTitleFontColor={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontColor ??
             androidMaterialDefaults?.inactiveColor} tabBarItemTitleFontFamily={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontFamily} tabBarItemTitleFontSize={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontSizeActive={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontSize} tabBarItemTitleFontWeight={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontWeight} tabBarItemTitleFontStyle={currentTabAppearance?.stacked?.normal?.tabBarItemTitleFontStyle} tabBarItemIconColor={currentTabAppearance?.stacked?.normal?.tabBarItemIconColor ??
@@ -105,7 +102,7 @@ function NativeTabsView(props) {
             props.onTabChange(tabKey);
         }}>
       {children}
-    </BottomTabsWrapper>);
+    </TabsHostWrapper>);
 }
 function Screen(props) {
     const { routeKey, name, options, isFocused, standardAppearance, scrollEdgeAppearance, badgeTextColor, contentRenderer, } = props;
@@ -128,13 +125,13 @@ function Screen(props) {
     collapsable={false} style={{ flex: 1 }} edges={{ bottom: true }}>
         {content}
       </experimental_1.SafeAreaView>) : (content);
-    return (<react_native_screens_1.BottomTabsScreen {...options} overrideScrollViewContentInsetAdjustmentBehavior={!options.disableAutomaticContentInsets} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} icon={(0, icon_1.convertOptionsIconToRNScreensPropsIcon)(icon)} selectedIcon={(0, icon_1.convertOptionsIconToIOSPropsIcon)(selectedIcon)} title={title} freezeContents={false} systemItem={options.role} {...options.nativeProps} tabKey={routeKey} isFocused={isFocused}>
+    return (<react_native_screens_1.Tabs.Screen {...options} overrideScrollViewContentInsetAdjustmentBehavior={!options.disableAutomaticContentInsets} tabBarItemBadgeBackgroundColor={standardAppearance.stacked?.normal?.tabBarItemBadgeBackgroundColor} tabBarItemBadgeTextColor={badgeTextColor} standardAppearance={standardAppearance} scrollEdgeAppearance={scrollEdgeAppearance} icon={(0, icon_1.convertOptionsIconToRNScreensPropsIcon)(icon)} selectedIcon={(0, icon_1.convertOptionsIconToIOSPropsIcon)(selectedIcon)} title={title} freezeContents={false} systemItem={options.role} {...options.nativeProps} tabKey={routeKey} isFocused={isFocused}>
       {wrappedContent}
-    </react_native_screens_1.BottomTabsScreen>);
+    </react_native_screens_1.Tabs.Screen>);
 }
 const supportedTabBarMinimizeBehaviorsSet = new Set(types_1.SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS);
 const supportedTabBarItemLabelVisibilityModesSet = new Set(types_1.SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES);
-function BottomTabsWrapper(props) {
+function TabsHostWrapper(props) {
     let { tabBarMinimizeBehavior, tabBarItemLabelVisibilityMode, ...rest } = props;
     if (tabBarMinimizeBehavior && !supportedTabBarMinimizeBehaviorsSet.has(tabBarMinimizeBehavior)) {
         console.warn(`Unsupported minimizeBehavior: ${tabBarMinimizeBehavior}. Supported values are: ${types_1.SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS.map((behavior) => `"${behavior}"`).join(', ')}`);
@@ -145,6 +142,6 @@ function BottomTabsWrapper(props) {
         console.warn(`Unsupported labelVisibilityMode: ${tabBarItemLabelVisibilityMode}. Supported values are: ${types_1.SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((mode) => `"${mode}"`).join(', ')}`);
         tabBarItemLabelVisibilityMode = undefined;
     }
-    return (<react_native_screens_1.BottomTabs tabBarItemLabelVisibilityMode={tabBarItemLabelVisibilityMode} tabBarMinimizeBehavior={tabBarMinimizeBehavior} {...rest}/>);
+    return (<react_native_screens_1.Tabs.Host tabBarItemLabelVisibilityMode={tabBarItemLabelVisibilityMode} tabBarMinimizeBehavior={tabBarMinimizeBehavior} {...rest}/>);
 }
 //# sourceMappingURL=NativeTabsView.js.map

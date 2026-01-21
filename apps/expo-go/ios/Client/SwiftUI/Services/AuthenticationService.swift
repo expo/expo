@@ -13,7 +13,7 @@ class AuthenticationService: ObservableObject {
 
   private let sessionKey = "expo-session-secret"
   private let selectedAccountKey = "expo-selected-account-id"
-  private let presentationContext = ExpoGoAuthPresentationContext()
+  private let presentationContext = AuthPresentationContextProvider()
 
   var sessionSecret: String? {
     UserDefaults.standard.string(forKey: sessionKey)
@@ -41,10 +41,10 @@ class AuthenticationService: ObservableObject {
     isAuthenticated = !(sessionSecret?.isEmpty ?? true)
 
     if isAuthenticated {
-      if let sessionSecret {
-        APIClient.shared.setSession(sessionSecret)
-      }
       Task {
+        if let sessionSecret {
+          await APIClient.shared.setSession(sessionSecret)
+        }
         await loadUserInfo()
       }
     } else {
@@ -72,8 +72,10 @@ class AuthenticationService: ObservableObject {
     isAuthenticating = true
     defer { isAuthenticating = false }
 
-    let success = try await performAuthentication(isSignUp: false)
-    if success {
+    if let sessionSecret = try await performAuthentication(isSignUp: false) {
+      UserDefaults.standard.set(sessionSecret, forKey: sessionKey)
+      await APIClient.shared.setSession(sessionSecret)
+      isAuthenticated = true
       await loadUserInfo()
     }
   }
@@ -82,8 +84,10 @@ class AuthenticationService: ObservableObject {
     isAuthenticating = true
     defer { isAuthenticating = false }
 
-    let success = try await performAuthentication(isSignUp: true)
-    if success {
+    if let sessionSecret = try await performAuthentication(isSignUp: true) {
+      UserDefaults.standard.set(sessionSecret, forKey: sessionKey)
+      await APIClient.shared.setSession(sessionSecret)
+      isAuthenticated = true
       await loadUserInfo()
     }
   }
@@ -91,7 +95,9 @@ class AuthenticationService: ObservableObject {
   func signOut() {
     UserDefaults.standard.removeObject(forKey: sessionKey)
     UserDefaults.standard.removeObject(forKey: selectedAccountKey)
-    APIClient.shared.setSession(nil)
+    Task {
+      await APIClient.shared.setSession(nil)
+    }
     user = nil
     selectedAccountId = nil
     isAuthenticated = false
@@ -102,11 +108,11 @@ class AuthenticationService: ObservableObject {
     UserDefaults.standard.set(accountId, forKey: selectedAccountKey)
   }
 
-  private func performAuthentication(isSignUp: Bool) async throws -> Bool {
+  private func performAuthentication(isSignUp: Bool) async throws -> String? {
     let scheme = try getURLScheme()
+    let websiteOrigin = APIClient.shared.websiteOrigin
 
     return try await withCheckedThrowingContinuation { continuation in
-      let websiteOrigin = APIClient.shared.websiteOrigin
       let authType = isSignUp ? "signup" : "login"
       let redirectBase = "\(scheme)://auth"
 
@@ -132,12 +138,7 @@ class AuthenticationService: ObservableObject {
           return
         }
 
-        UserDefaults.standard.set(sessionSecret, forKey: self.sessionKey)
-        APIClient.shared.setSession(sessionSecret)
-        Task { @MainActor in
-          self.isAuthenticated = true
-        }
-        continuation.resume(returning: true)
+        continuation.resume(returning: sessionSecret)
       }
 
       session.presentationContextProvider = presentationContext
@@ -161,7 +162,7 @@ class AuthenticationService: ObservableObject {
   }
 }
 
-private class ExpoGoAuthPresentationContext: NSObject, ASWebAuthenticationPresentationContextProviding {
+private class AuthPresentationContextProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
   func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
     let window = UIApplication.shared.connectedScenes
       .compactMap { $0 as? UIWindowScene }

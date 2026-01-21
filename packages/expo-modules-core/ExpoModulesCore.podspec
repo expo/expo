@@ -42,6 +42,34 @@ if defined?(Expo::PackagesConfig)
   coreFeatures = Expo::PackagesConfig.instance.coreFeatures
 end
 
+# During resolution phase, it will always false as Pod::Config.instance.podfile is not yet set.
+# However, for our use case, we only need to check this value during installation phase.
+def Pod::hasWorklets()
+  begin
+    # Safely access Pod::Config.instance.podfile without initiating it
+    if Pod::Config.instance_variable_defined?(:@instance) && !Pod::Config.instance_variable_get(:@instance).nil?
+      config = Pod::Config.instance
+
+      # Saefly access podfile and its dependencies
+      if config.instance_variable_defined?(:@podfile)
+        podfile = config.instance_variable_get(:@podfile)
+        if podfile && podfile.respond_to?(:dependencies)
+          dependencies = podfile.dependencies.map(&:name)
+          return dependencies.include?('RNWorklets')
+        end
+      end
+    end
+  rescue
+  end
+  return false
+end
+
+shouldEnableWorkletsIntegration = hasWorklets()
+workletsCppFlags = 'WORKLETS_ENABLED=0'
+if shouldEnableWorkletsIntegration
+  workletsCppFlags = "WORKLETS_ENABLED=1 REACT_NATIVE_MINOR_VERSION=#{reactNativeTargetVersion}"
+end
+
 Pod::Spec.new do |s|
   s.name           = 'ExpoModulesCore'
   s.version        = package['version']
@@ -80,7 +108,20 @@ Pod::Spec.new do |s|
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsitooling/JSITooling.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-jserrorhandler/React_jserrorhandler.framework/Headers"',
     ])
+
+    if shouldEnableWorkletsIntegration
+      pods_root = Pod::Config.instance.project_pods_root
+      react_native_worklets_node_modules_dir = File.join(File.dirname(`cd "#{Pod::Config.instance.installation_root.to_s}" && node --print "require.resolve('react-native-worklets/package.json')"`), '..')
+      react_native_worklets_dir_absolute = File.join(react_native_worklets_node_modules_dir, 'react-native-worklets')
+      workletsPath = Pathname.new(react_native_worklets_dir_absolute).relative_path_from(pods_root).to_s
+
+      header_search_paths.concat([
+        "\"$(PODS_ROOT)/#{workletsPath}/apple\"",
+        "\"$(PODS_ROOT)/#{workletsPath}/Common/cpp\"",
+      ])
+    end
   end
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'USE_HEADERMAP' => 'YES',
@@ -89,7 +130,7 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
     'OTHER_SWIFT_FLAGS' => "$(inherited) #{new_arch_enabled ? new_arch_compiler_flags : ''}",
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
-    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) EXPO_MODULES_CORE_VERSION=' + package['version'],
+    'GCC_PREPROCESSOR_DEFINITIONS' => "$(inherited) #{workletsCppFlags} EXPO_MODULES_CORE_VERSION=" + package['version'],
   }
   s.user_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => [
@@ -111,6 +152,10 @@ Pod::Spec.new do |s|
   s.dependency 'ReactCommon/turbomodule/core'
   s.dependency 'React-NativeModulesApple'
   s.dependency 'React-RCTFabric'
+
+  if shouldEnableWorkletsIntegration
+    s.dependency 'RNWorklets'
+  end
 
   install_modules_dependencies(s)
 

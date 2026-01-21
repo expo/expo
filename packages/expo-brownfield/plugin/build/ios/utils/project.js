@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.inferProjectName = exports.configureBuildSettings = exports.configureBuildPhases = exports.createGroup = exports.getGroupByUUID = exports.createFramework = void 0;
 const node_fs_1 = require("node:fs");
-const utils_1 = require("../utils");
 const constants_1 = require("./constants");
 const createFramework = (project, targetName, bundleIdentifier) => {
     return project.addTarget(targetName, constants_1.Constants.Target.Framework, targetName, bundleIdentifier);
@@ -20,19 +19,13 @@ const createGroup = (project, name, path, files = []) => {
 };
 exports.createGroup = createGroup;
 const configureBuildPhases = (project, target, targetName, projectName, files = []) => {
-    const nativeTargetSection = project.pbxNativeTargetSection();
-    const mainTargetKey = Object.keys(nativeTargetSection).find((key) => !key.endsWith('_comment') &&
-        nativeTargetSection[key].productType === constants_1.Constants.Target.ApplicationProductType);
-    const mainTarget = nativeTargetSection[mainTargetKey];
-    // TODO: Fix types
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mainTarget = findNativeTargetSection(project, (target) => target.productType === constants_1.Constants.Target.ApplicationProductType);
     const bundlePhase = mainTarget.buildPhases.find((phase) => phase.comment.includes(constants_1.Constants.BuildPhase.RNBundlePhase));
-    const destTargetKey = Object.keys(nativeTargetSection).find((key) => !key.endsWith('_comment') &&
-        nativeTargetSection[key].productType !== constants_1.Constants.Target.ApplicationProductType);
-    const destTarget = nativeTargetSection[destTargetKey];
+    if (!bundlePhase) {
+        throw new Error(`'${constants_1.Constants.BuildPhase.RNBundlePhase}' build phase cannot be found in main target build phases`);
+    }
+    const destTarget = findNativeTargetSection(project, (target) => target.productType !== constants_1.Constants.Target.ApplicationProductType);
     destTarget.buildPhases = [...destTarget.buildPhases, bundlePhase];
-    const script = (0, utils_1.readFromTemplate)('patch-expo.sh', { targetName, projectName });
-    project.addBuildPhase([], constants_1.Constants.BuildPhase.Script, constants_1.Constants.BuildPhase.PatchExpoPhase, target.uuid, { shellPath: '/bin/sh', shellScript: script });
     project.addBuildPhase(files, constants_1.Constants.BuildPhase.Sources, target.pbxNativeTarget.name, target.uuid, constants_1.Constants.Target.Framework, constants_1.Constants.Utils.XCEmptyString);
 };
 exports.configureBuildPhases = configureBuildPhases;
@@ -115,3 +108,13 @@ const inferProjectName = (platformProjectRoot) => {
     return xcodeproj.replace('.xcodeproj', '');
 };
 exports.inferProjectName = inferProjectName;
+const findNativeTargetSection = (project, predicate) => {
+    const nativeTargetSection = project.pbxNativeTargetSection();
+    const key = Object.keys(nativeTargetSection).find((key) => !key.endsWith('_comment') &&
+        typeof nativeTargetSection[key] !== 'string' &&
+        predicate(nativeTargetSection[key]));
+    if (!key) {
+        throw new Error('Native target key mathching predicate cannot be found in native target section of PBXProj');
+    }
+    return nativeTargetSection[key];
+};

@@ -9,6 +9,6 @@ export declare function createEnvironment(input: EnvironmentInput): {
     getHtml(request: Request, route: Route): Promise<string | Response | null>;
     getApiRoute(route: Route): Promise<unknown>;
     getMiddleware(middleware: MiddlewareInfo): Promise<any>;
-    getLoaderData(request: Request, route: Route): Promise<unknown>;
+    getLoaderData(request: Request, route: Route): Promise<Response>;
 };
 export {};

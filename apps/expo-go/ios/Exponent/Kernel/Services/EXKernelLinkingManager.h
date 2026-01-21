@@ -34,11 +34,6 @@
 + (NSString *)stringByRemovingDeepLink:(NSString *)path;
 
 /**
- *  Determine if an url is hosted by expo
- */
-+ (BOOL)isExpoHostedUrl: (NSURL *)url;
-
-/**
  *  Grab the release channel from the query parameters of a uri
  */
 + (NSString *)releaseChannelWithUrlComponents:(NSURLComponents *)urlComponents;

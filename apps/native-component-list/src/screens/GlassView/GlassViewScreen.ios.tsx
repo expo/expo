@@ -1,6 +1,7 @@
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import Checkbox from 'expo-checkbox';
 import {
+  GlassColorScheme,
   GlassStyle,
   GlassView,
   GlassContainer,
@@ -21,11 +22,13 @@ const colorOptions = [
 ];
 
 const glassStyles: GlassStyle[] = ['clear', 'regular'];
+const colorSchemes: GlassColorScheme[] = ['auto', 'light', 'dark'];
 
 const AnimatedGlassView = Animated.createAnimatedComponent(GlassView);
 
 export default function GlassViewScreen() {
   const [selectedStyle, setSelectedStyle] = React.useState<GlassStyle>('regular');
+  const [colorScheme, setColorScheme] = React.useState<GlassColorScheme>('auto');
   const [isInteractive, setIsInteractive] = React.useState(false);
   const [tintColor, setTintColor] = React.useState<string | undefined>(undefined);
   const [spacing, setSpacing] = React.useState(20);
@@ -70,6 +73,7 @@ export default function GlassViewScreen() {
           <AnimatedGlassView
             style={[styles.glassRect, animatedStyle]}
             glassEffectStyle={selectedStyle}
+            colorScheme={colorScheme}
             tintColor={tintColor}
             isInteractive={isInteractive}
             // known issue: the `isInteractive` prop can only be set once on mount
@@ -85,6 +89,15 @@ export default function GlassViewScreen() {
           selectedIndex={glassStyles.indexOf(selectedStyle)}
           onChange={(event) => {
             setSelectedStyle(event.nativeEvent.value as GlassStyle);
+          }}
+        />
+
+        <Text style={styles.sectionTitle}>Color Scheme</Text>
+        <SegmentedControl
+          values={colorSchemes}
+          selectedIndex={colorSchemes.indexOf(colorScheme)}
+          onChange={(event) => {
+            setColorScheme(event.nativeEvent.value as GlassColorScheme);
           }}
         />
 
@@ -125,16 +138,19 @@ export default function GlassViewScreen() {
             <GlassView
               style={styles.smallGlass1}
               glassEffectStyle={selectedStyle}
+              colorScheme={colorScheme}
               tintColor={tintColor}
             />
             <GlassView
               style={styles.smallGlass2}
               glassEffectStyle={selectedStyle}
+              colorScheme={colorScheme}
               tintColor={tintColor}
             />
             <GlassView
               style={styles.smallGlass3}
               glassEffectStyle={selectedStyle}
+              colorScheme={colorScheme}
               tintColor={tintColor}
             />
           </GlassContainer>

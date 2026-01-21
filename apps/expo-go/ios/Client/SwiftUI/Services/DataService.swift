@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
-import Combine
 
 @MainActor
 class DataService: ObservableObject {
@@ -10,29 +9,24 @@ class DataService: ObservableObject {
   @Published var isLoadingData = false
   @Published var dataError: APIError?
 
-  private var pollingCancellables = Set<AnyCancellable>()
   private let pollingInterval: TimeInterval = 10.0
+  private var pollingTask: Task<Void, Never>?
 
   func startPolling(accountName: String) {
     stopPolling()
 
-    Task {
-      await fetchProjectsAndData(accountName: accountName)
-    }
-
-    Timer.publish(every: pollingInterval, on: .main, in: .common)
-      .autoconnect()
-      .receive(on: DispatchQueue.global(qos: .background))
-      .sink { [weak self] _ in
-        Task {
-          await self?.fetchProjectsAndData(accountName: accountName)
-        }
+    pollingTask = Task { [weak self] in
+      guard let self else { return }
+      while !Task.isCancelled {
+        await self.fetchProjectsAndData(accountName: accountName)
+        try? await Task.sleep(nanoseconds: UInt64(self.pollingInterval * 1_000_000_000))
       }
-      .store(in: &pollingCancellables)
+    }
   }
 
   func stopPolling() {
-    pollingCancellables.removeAll()
+    pollingTask?.cancel()
+    pollingTask = nil
   }
 
   func fetchProjectsAndData(accountName: String) async {
@@ -49,9 +43,24 @@ class DataService: ObservableObject {
         ]
       )
 
-      self.projects = response.data.account.byName.apps.map { $0.toExpoProject() }
-      self.snacks = response.data.account.byName.snacks
-      self.dataError = nil
+      if Task.isCancelled {
+        return
+      }
+
+      let newProjects = response.data.account.byName.apps.map { $0.toExpoProject() }
+      let newSnacks = response.data.account.byName.snacks
+
+      if newProjects != self.projects {
+        self.projects = newProjects
+      }
+      if newSnacks != self.snacks {
+        self.snacks = newSnacks
+      }
+      if self.dataError != nil {
+        self.dataError = nil
+      }
+    } catch is CancellationError {
+      return
     } catch let error as APIError {
       self.dataError = error
     } catch {
