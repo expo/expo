@@ -3815,12 +3815,12 @@
     color "^4.2.3"
     sf-symbols-typescript "^2.1.0"
 
-"@react-navigation/core@7.13.2", "@react-navigation/core@^7.14.0":
-  version "7.13.2"
-  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-7.13.2.tgz#25c67bf578eb4329b8bf6c4ed9ef348871964f95"
-  integrity sha512-A0pFeZlKp+FJob2lVr7otDt3M4rsSJrnAfXWoWR9JVeFtfEXsH/C0s7xtpDCMRUO58kzSBoTF1GYzoMC5DLD4g==
+"@react-navigation/core@7.14.0", "@react-navigation/core@^7.14.0":
+  version "7.14.0"
+  resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-7.14.0.tgz#d24f93d424ab33f645262dc4775e4708aa3d9a8b"
+  integrity sha512-tMpzskBzVp0E7CRNdNtJIdXjk54Kwe/TF9ViXAef+YFM1kSfGv4e/B2ozfXE+YyYgmh4WavTv8fkdJz1CNyu+g==
   dependencies:
-    "@react-navigation/routers" "^7.5.2"
+    "@react-navigation/routers" "^7.5.3"
     escape-string-regexp "^4.0.0"
     fast-deep-equal "^3.1.3"
     nanoid "^3.3.11"
@@ -3839,10 +3839,10 @@
     react-native-drawer-layout "^4.2.0"
     use-latest-callback "^0.2.4"
 
-"@react-navigation/elements@2.8.3", "@react-navigation/elements@^2.8.1", "@react-navigation/elements@^2.8.3", "@react-navigation/elements@^2.9.5":
-  version "2.8.3"
-  resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-2.8.3.tgz#d8f15b3d1ed2a1a5c8bf766a97382505e39851be"
-  integrity sha512-0c5nSDPP3bUFujgkSVqqMShaAup3XIxNe1KTK9LSmwKgWEneyo6OPIjIdiEwPlZvJZKi7ag5hDjacQLGwO0LGA==
+"@react-navigation/elements@2.9.5", "@react-navigation/elements@^2.8.1", "@react-navigation/elements@^2.8.3", "@react-navigation/elements@^2.9.5":
+  version "2.9.5"
+  resolved "https://registry.yarnpkg.com/@react-navigation/elements/-/elements-2.9.5.tgz#29f68c4975351724dcfe1d3bdc76c4d6dc65fc33"
+  integrity sha512-iHZU8rRN1014Upz73AqNVXDvSMZDh5/ktQ1CMe21rdgnOY79RWtHHBp9qOS3VtqlUVYGkuX5GEw5mDt4tKdl0g==
   dependencies:
     color "^4.2.3"
     use-latest-callback "^0.2.4"
@@ -3869,10 +3869,10 @@
     nanoid "^3.3.11"
     use-latest-callback "^0.2.4"
 
-"@react-navigation/routers@7.5.1", "@react-navigation/routers@^7.5.2":
-  version "7.5.1"
-  resolved "https://registry.yarnpkg.com/@react-navigation/routers/-/routers-7.5.1.tgz#b8f6e9b491fdc1bc7164fdac4fa4faa82f397daf"
-  integrity sha512-pxipMW/iEBSUrjxz2cDD7fNwkqR4xoi0E/PcfTQGCcdJwLoaxzab5kSadBLj1MTJyT0YRrOXL9umHpXtp+Dv4w==
+"@react-navigation/routers@7.5.2", "@react-navigation/routers@^7.5.3":
+  version "7.5.2"
+  resolved "https://registry.yarnpkg.com/@react-navigation/routers/-/routers-7.5.2.tgz#c885a66a76286f1c4c94261814ceddad628fbbea"
+  integrity sha512-kymreY5aeTz843E+iPAukrsOtc7nabAH6novtAPREmmGu77dQpfxPB2ZWpKb5nRErIRowp1kYRoN2Ckl+S6JYw==
   dependencies:
     nanoid "^3.3.11"
 
