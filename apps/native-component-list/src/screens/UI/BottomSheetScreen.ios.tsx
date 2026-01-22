@@ -43,6 +43,9 @@ export default function BottomSheetScreen() {
   const [backgroundInteractionEnabled, setBackgroundInteractionEnabled] = React.useState(false);
   const [dismissDisabled, setDismissDisabled] = React.useState(false);
 
+  const [showWithSelection, setShowWithSelection] = React.useState(false);
+  const [selectedDetent, setSelectedDetent] = React.useState<PresentationDetent>('medium');
+
   const [showRNContent, setShowRNContent] = React.useState(false);
   const [showRNContentWithFlex1, setShowRNContentWithFlex1] = React.useState(false);
   const [counter, setCounter] = React.useState(0);
@@ -70,9 +73,9 @@ export default function BottomSheetScreen() {
   })();
 
   const formatDetent = (detent: PresentationDetent): string => {
-    if (typeof detent === 'string') return detent;
-    if ('fraction' in detent) return `${detent.fraction * 100}%`;
-    return `${detent.height}pt`;
+    // if (typeof detent === 'string') return detent;
+    // if ('fraction' in detent) return `${detent.fraction * 100}%`;
+    return `${JSON.stringify(detent)}`;
   };
 
   return (
@@ -115,6 +118,16 @@ export default function BottomSheetScreen() {
             onIsOnChange={setDismissDisabled}
             label="Dismiss Disabled"
           />
+        </Section>
+
+        <Section title="Detent Selection (New API)">
+          <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+            Control and track which detent is selected
+          </Text>
+          <Button label="Open Sheet with Selection" onPress={() => setShowWithSelection(true)} />
+          <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+            Current detent: {formatDetent(selectedDetent)}
+          </Text>
         </Section>
 
         <Section title="React Native Content">
@@ -178,6 +191,35 @@ export default function BottomSheetScreen() {
               Dismiss: {dismissDisabled ? 'disabled' : 'enabled'}
             </Text>
             <Button label="Close" onPress={() => setShowConfigured(false)} />
+          </VStack>
+        </Group>
+      </BottomSheet>
+
+      {/* Detent Selection Sheet */}
+      <BottomSheet
+        isPresented={showWithSelection}
+        onIsPresentedChange={setShowWithSelection}
+        detents={['medium', 'large', { fraction: 0.3 }]}
+        selectedDetent={selectedDetent}
+        onSelectedDetentChange={(detent) => {
+          console.log(`detent changed: ${JSON.stringify(detent)}`);
+          setSelectedDetent(detent);
+        }}>
+        <Group>
+          <VStack modifiers={[padding({ all: 20 }), frame({ minHeight: 200 })]}>
+            <Text>Detent Selection Demo</Text>
+            <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+              Try dragging the sheet to different heights
+            </Text>
+            <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+              Currently selected: {formatDetent(selectedDetent)}
+            </Text>
+            <VStack modifiers={[padding({ vertical: 16 })]}>
+              <Button label="Set to 30%" onPress={() => setSelectedDetent({ fraction: 0.3 })} />
+              <Button label="Set to Medium" onPress={() => setSelectedDetent('medium')} />
+              <Button label="Set to Large" onPress={() => setSelectedDetent('large')} />
+            </VStack>
+            <Button label="Close" onPress={() => setShowWithSelection(false)} />
           </VStack>
         </Group>
       </BottomSheet>
