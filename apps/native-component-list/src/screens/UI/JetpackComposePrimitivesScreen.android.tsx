@@ -127,7 +127,7 @@ export default function JetpackComposePrimitivesScreen() {
             background('#ffdddd'),
             clickable(() => setChecked((c) => !c)),
           ]}>
-          <Box modifiers={[matchParentSize(), background('#ddddff'), paddingAll(30)]} />
+          <Box modifiers={[matchParentSize(), paddingAll(30), background('#ddddff')]} />
         </Box>
       </Column>
     </Host>
