@@ -52,7 +52,7 @@
     "cross-spawn": "^7.0.5",
     "debug": "^4.3.4",
     "ejs": "^3.1.10",
-    "expo-module-scripts": "^55.0.0",
+    "expo-module-scripts": "^55.0.1",
     "getenv": "^2.0.0",
     "ora": "^5.4.1",
     "prompts": "^2.4.2",

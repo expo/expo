@@ -43,7 +43,7 @@
     "date-fns": "^2.28.0",
     "dedent": "^0.7.0",
     "es6-error": "^4.1.1",
-    "expo": "~55.0.0-preview.2",
+    "expo": "~55.0.0-preview.3",
     "expo-application": "~55.0.0",
     "expo-asset": "~55.0.0",
     "expo-blur": "~55.0.0",
@@ -55,11 +55,11 @@
     "expo-linking": "^55.0.0",
     "expo-location": "~55.0.0",
     "expo-notifications": "~55.0.0",
-    "expo-router": "~55.0.0-beta.0",
+    "expo-router": "~55.0.0-beta.1",
     "expo-splash-screen": "~55.0.0",
     "expo-store-review": "~55.0.0",
     "expo-task-manager": "~55.0.0",
-    "expo-updates": "~55.0.1",
+    "expo-updates": "~55.0.2",
     "expo-web-browser": "~55.0.0",
     "graphql": "^15.3.0",
     "immutable": "^4.0.0",
@@ -98,7 +98,7 @@
     "@types/jest": "^29.2.1",
     "@types/react": "~19.2.0",
     "@types/semver": "^7.5.8",
-    "expo-module-scripts": "^55.0.0"
+    "expo-module-scripts": "^55.0.1"
   },
   "expo": {
     "autolinking": {
