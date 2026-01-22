@@ -86,7 +86,9 @@ class UpdatesStateMachine(
   private fun processEvent(event: UpdatesStateEvent) {
     if (transition(event)) {
       context = reduceContext(context, event)
-      logger.info("Updates state change: ${event.type}, context = ${context.json}")
+      if (event !is UpdatesStateEvent.DownloadProgress) {
+        logger.info("Updates state change: ${event.type}, context = ${context.json}")
+      }
       UpdatesControllerRegistry.controller?.get()?.let {
         if (it is EnabledUpdatesController) {
           // Notify the controller state change listener

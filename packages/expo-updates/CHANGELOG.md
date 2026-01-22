@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent logging on download progress events to reduce log size.
+
 ### 💡 Others
 
 ## 55.0.1 — 2026-01-22
