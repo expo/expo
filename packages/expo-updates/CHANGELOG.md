@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Prevent logging on download progress events to reduce log size.
+- Prevent logging on download progress events to reduce log size. ([#42436](https://github.com/expo/expo/pull/42436) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
