@@ -82,6 +82,14 @@ export default function TextScreen() {
           <Text modifiers={[font({ size: 24, weight: 'regular' })]}>24pt Font Size</Text>
         </Section>
 
+        <Section title="Markdown Text">
+          <Text markdownEnabled>Regular text.</Text>
+          <Text markdownEnabled>This is **bold text**, *italic text* and ***text in both bold and italic***.</Text>
+          <Text markdownEnabled>~~Strikethrough text~~</Text>
+          <Text markdownEnabled>`This is monospaced text`</Text>
+          <Text markdownEnabled>Visit the [Expo Docs](https://docs.expo.dev/versions/latest/sdk/ui/) to learn more about Expo UI</Text>
+        </Section>
+
         <Section title="Combined Examples">
           <Text modifiers={[font({ family: 'Inter-ExtraBold', size: 20 })]}>
             Custom Font: Inter Extra Bold 20pt
