@@ -95,7 +95,7 @@ extension JavaScriptValue: AnyJavaScriptValue, AnyArgument {
     throw JavaScriptValueConversionException((kind: kind, target: "Dict"))
   }
 
-  func asObject() throws -> JavaScriptObject {
+  public func asObject() throws -> JavaScriptObject {
     if isObject() {
       return getObject()
     }
