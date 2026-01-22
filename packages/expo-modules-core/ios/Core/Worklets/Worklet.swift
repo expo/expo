@@ -6,7 +6,7 @@
 public class Worklet: AnySerializable {
   internal let serializable: Serializable
 
-  internal init(_ serializable: Serializable) throws {
+  public init(_ serializable: Serializable) throws {
     guard serializable.valueType == .worklet else {
       throw NotWorkletException(serializable.valueType)
     }

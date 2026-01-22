@@ -1,14 +1,31 @@
-import { useId, useMemo } from 'react';
+import { useId, useMemo, useEffect } from 'react';
+import { scheduleOnUI } from 'react-native-worklets';
+
+export type OnChangeSyncCallback = (text: string) => void;
 
 export type NativeStateRef = {
   __nativeStateId: string;
   __initialValue: string;
   get: () => string;
   set: (value: string) => void;
+  registerOnChange: (callback: OnChangeSyncCallback) => void;
 };
 
 export function useNativeState(initialValue: string): NativeStateRef {
   const id = useId();
+
+  useEffect(() => {
+    return () => {
+      scheduleOnUI(() => {
+        'worklet';
+        // @ts-ignore
+        if (global.ExpoNativeStateCallbacks) {
+          // @ts-ignore
+          delete global.ExpoNativeStateCallbacks[id];
+        }
+      });
+    };
+  }, [id]);
 
   const ref = useMemo(
     () => ({
@@ -23,6 +40,18 @@ export function useNativeState(initialValue: string): NativeStateRef {
         'worklet';
         // @ts-ignore
         global.ExpoNativeState?.set(id, value);
+      },
+      registerOnChange: (callback: OnChangeSyncCallback) => {
+        scheduleOnUI(() => {
+          'worklet';
+          // @ts-ignore
+          if (!global.ExpoNativeStateCallbacks) {
+            // @ts-ignore
+            global.ExpoNativeStateCallbacks = {};
+          }
+          // @ts-ignore
+          global.ExpoNativeStateCallbacks[id] = callback;
+        });
       },
     }),
     [id]

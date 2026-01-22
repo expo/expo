@@ -1,8 +1,10 @@
+export type OnChangeSyncCallback = (text: string) => void;
 export type NativeStateRef = {
     __nativeStateId: string;
     __initialValue: string;
     get: () => string;
     set: (value: string) => void;
+    registerOnChange: (callback: OnChangeSyncCallback) => void;
 };
 export declare function useNativeState(initialValue: string): NativeStateRef;
 declare global {

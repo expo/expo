@@ -5,9 +5,9 @@ import Combine
 @MainActor
 public final class NativeState: ObservableObject {
   public let id: String
-  @Published public var value: Any
+  @Published public var value: String
 
-  init(id: String, initialValue: Any) {
+  init(id: String, initialValue: String) {
     self.id = id
     self.value = initialValue
   }
@@ -19,7 +19,7 @@ public final class NativeStateRegistry {
 
   private var states: [String: NativeState] = [:]
 
-  public func createState(id: String, initialValue: Any) {
+  public func createState(id: String, initialValue: String) {
     states[id] = NativeState(id: id, initialValue: initialValue)
   }
 
@@ -27,11 +27,11 @@ public final class NativeStateRegistry {
     return states[id]
   }
 
-  public func getValue(id: String) -> Any? {
+  public func getValue(id: String) -> String? {
     return states[id]?.value
   }
 
-  public func setValue(id: String, value: Any) {
+  public func setValue(id: String, value: String) {
     states[id]?.value = value
   }
 

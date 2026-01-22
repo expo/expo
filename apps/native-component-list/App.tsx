@@ -53,6 +53,15 @@ installOnUIRuntime();
 const MyComponent = () => {
   const textFieldValue = useNativeState('Hello');
 
+  React.useEffect(() => {
+    textFieldValue.registerOnChange((v) => {
+      'worklet';
+      if (v.length > 10) {
+        textFieldValue.set('Hello world');
+      }
+    });
+  }, [textFieldValue]);
+
   return (
     <Host style={{ flex: 1, alignItems: 'center',  }}>
       <VStack>

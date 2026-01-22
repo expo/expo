@@ -44,13 +44,18 @@ private struct BoundTextFieldInner: View {
   }
 
   var body: some View {
-    TextField(placeholder, text: Binding(
-      get: { state.value as? String ?? "" },
-      set: { state.value = $0 }
-    ))
-    .modifier(UIBaseViewModifier(props: props))
-    .onDisappear {
-      NativeStateRegistry.shared.deleteState(id: stateId)
-    }
+    TextField(placeholder, text: $state.value)
+      .modifier(UIBaseViewModifier(props: props))
+      .onChange(of: state.value) { newValue in
+        guard let uiRuntime = try? props.appContext?.uiRuntime else { return }
+        let escaped = newValue.replacingOccurrences(of: "\\", with: "\\\\")
+          .replacingOccurrences(of: "'", with: "\\'")
+          .replacingOccurrences(of: "\n", with: "\\n")
+        let code = "global.ExpoNativeStateCallbacks?.['\(stateId)']?.('\(escaped)')"
+        try? uiRuntime.eval(code)
+      }
+      .onDisappear {
+        NativeStateRegistry.shared.deleteState(id: stateId)
+      }
   }
 }
