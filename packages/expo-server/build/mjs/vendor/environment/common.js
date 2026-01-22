@@ -1,3 +1,5 @@
+import { ImmutableRequest } from '../../ImmutableRequest';
+import { isResponse, parseParams } from '../../utils/matchers';
 function initManifestRegExp(manifest) {
     return {
         ...manifest,
@@ -24,12 +26,76 @@ function initManifestRegExp(manifest) {
     };
 }
 export function createEnvironment(input) {
+    // Cached manifest and SSR renderer, initialized on first request
+    let cachedManifest = null;
+    let ssrRenderer = null;
+    async function getCachedRoutesManifest() {
+        if (!cachedManifest) {
+            const json = await input.readJson('_expo/routes.json');
+            cachedManifest = initManifestRegExp(json);
+        }
+        return cachedManifest;
+    }
+    async function getServerRenderer() {
+        if (ssrRenderer) {
+            return ssrRenderer;
+        }
+        const manifest = await getCachedRoutesManifest();
+        if (manifest.rendering?.mode !== 'ssr') {
+            return null;
+        }
+        // If `manifest.rendering.mode === 'ssr'`, we always expect the SSR rendering module to be
+        // available
+        const ssrModule = (await input.loadModule(manifest.rendering.file));
+        if (!ssrModule) {
+            throw new Error(`SSR module not found at: ${manifest.rendering.file}`);
+        }
+        const assets = manifest.assets;
+        ssrRenderer = async (request, options) => {
+            const url = new URL(request.url);
+            const location = new URL(url.pathname + url.search, url.origin);
+            return ssrModule.getStaticContent(location, {
+                loader: options?.loader,
+                request,
+                assets,
+            });
+        };
+        return ssrRenderer;
+    }
+    async function executeLoader(request, route) {
+        if (!route.loader) {
+            return undefined;
+        }
+        const loaderModule = (await input.loadModule(route.loader));
+        if (!loaderModule) {
+            throw new Error(`Loader module not found at: ${route.loader}`);
+        }
+        const params = parseParams(request, route);
+        return loaderModule.loader(new ImmutableRequest(request), params);
+    }
     return {
         async getRoutesManifest() {
-            const json = await input.readJson('_expo/routes.json');
-            return initManifestRegExp(json);
+            return getCachedRoutesManifest();
         },
-        async getHtml(_request, route) {
+        async getHtml(request, route) {
+            // SSR path: Render at runtime if SSR module is available
+            const renderer = await getServerRenderer();
+            if (renderer) {
+                let renderOptions;
+                try {
+                    if (route.loader) {
+                        const result = await executeLoader(request, route);
+                        const data = isResponse(result) ? await result.json() : result;
+                        renderOptions = { loader: { data: data ?? null } };
+                    }
+                    return await renderer(request, renderOptions);
+                }
+                catch (error) {
+                    console.error('SSR render error:', error);
+                    throw error;
+                }
+            }
+            // SSG fallback: Read pre-rendered HTML from disk
             let html;
             if ((html = await input.readText(route.page + '.html')) != null) {
                 return html;
@@ -54,6 +120,13 @@ export function createEnvironment(input) {
                 return null;
             }
             return mod;
+        },
+        async getLoaderData(request, route) {
+            const result = await executeLoader(request, route);
+            if (isResponse(result)) {
+                return result;
+            }
+            return Response.json(result ?? null);
         },
     };
 }

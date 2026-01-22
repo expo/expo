@@ -8,8 +8,6 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **important** Zoom transition is currently in [alpha](/more/release-statuses/#alpha) and available in [canary releases](/versions/latest/#using-pre-release-versions) of `expo-router`.
 
-> **info** **Tip:** To enable zoom transitions, run `enableZoomTransition()` in your **app/\_layout.tsx`** file.
-
 <ContentSpotlight
   alt="A video presenting simple gallery with zoom transitions."
   file="expo-router/zoom-transition.mp4"
@@ -23,18 +21,7 @@ To implement zoom transitions, you need to use the `Link.AppleZoom` component to
 
 ### Basic example
 
-Here's a basic example showing how to create a zoom transition from an image to a preview screen. Start by enabling `enableZoomTransition()` in your root app layout file (**app/\_layout.tsx**):
-
-```tsx app/_layout.tsx
-import { enableZoomTransition } from 'expo-router/internal/utils';
-
-enableZoomTransition();
-export default function Layout() {
-  ... // your layout code
-}
-```
-
-Add `Link.AppleZoom` to wrap the source element (`Image`) in your screen component that you want to zoom from:
+To activate zoom transition for a link, wrap the source (`Image`) element with `Link.AppleZoom` in your screen:
 
 ```tsx app/index.tsx
 import { View, Text, StyleSheet, Pressable } from 'react-native';
@@ -244,6 +231,70 @@ const styles = StyleSheet.create({
 });
 ```
 
+## Controlling dismissal gestures
+
+The [`usePreventZoomTransitionDismissal`](/versions/unversioned/sdk/router/#usepreventzoomtransitiondismissal_options) hook allows you to control the interactive swipe-to-dismiss gesture on screens using zoom transitions. This is useful when you want to prevent accidental dismissals or restrict dismissal to specific screen areas.
+
+### Disabling dismissal completely
+
+Call the hook without any options to completely disable the swipe-to-dismiss gesture:
+
+```tsx app/detail.tsx
+import { usePreventZoomTransitionDismissal } from 'expo-router';
+
+export default function DetailScreen() {
+  usePreventZoomTransitionDismissal();
+  // Dismissal gesture is now disabled - users must use navigation controls to go back
+  return <View>{/* Content */}</View>;
+}
+```
+
+### Restricting dismissal to a specific area
+
+Use the `unstable_dismissalBoundsRect` option to define a rectangle where dismissal gestures are allowed. This is useful for image viewers where you want dismissal only from the image area:
+
+```tsx app/image.tsx
+import { usePreventZoomTransitionDismissal } from 'expo-router';
+import { View, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
+
+export default function DetailScreen() {
+  // Only allow dismissal gestures that start within this rectangle
+  usePreventZoomTransitionDismissal({
+    unstable_dismissalBoundsRect: { minX: 100, minY: 100, maxX: 300, maxY: 300 },
+  });
+
+  return (
+    <View style={styles.container}>
+      {/* Visual indicator of the dismissal zone (for demonstration) */}
+      <View style={styles.dismissalZone} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  image: {
+    flex: 1,
+  },
+  dismissalZone: {
+    position: 'absolute',
+    left: 100,
+    top: 100,
+    width: 200, // maxX - minX = 300 - 100
+    height: 200, // maxY - minY = 300 - 100
+    borderWidth: 2,
+    borderColor: 'rgba(0, 122, 255, 0.5)',
+    borderStyle: 'dashed',
+    backgroundColor: 'rgba(0, 122, 255, 0.1)',
+  },
+});
+```
+
+> **info** The `unstable_dismissalBoundsRect` option internally relies on the [`interactiveDismissShouldBegin`](https://developer.apple.com/documentation/uikit/uiviewcontroller/transition/zoomoptions/interactivedismissshouldbegin) API.
+
 ## Platform support
 
 Zoom transitions is only available on iOS 18 and later. On older iOS versions or other platforms, the component will render normally without the zoom animation effect.
@@ -300,5 +351,39 @@ If you attempt to use Link with zoom transition to a screen that is not part of 
 <Collapsible summary="iOS 18+ only">
 
 The zoom transition feature requires iOS 18 or later. While the components will render on older versions, the zoom animation will not be applied.
+
+</Collapsible>
+
+<Collapsible summary="Using zoom transition with ScrollView">
+
+When using zoom transitions on screens with a `ScrollView`, the swipe-to-dismiss gesture may conflict with scrolling. To prevent accidental dismissal while scrolling, use the `usePreventZoomTransitionDismissal` hook with `unstable_dismissalBoundsRect`:
+
+```tsx app/image.tsx
+import { Link, usePreventZoomTransitionDismissal } from 'expo-router';
+import { useState } from 'react';
+import { ScrollView } from 'react-native';
+
+export default function Screen() {
+  const [shouldPrevent, setShouldPrevent] = useState(false);
+  usePreventZoomTransitionDismissal(
+    shouldPrevent
+      ? undefined
+      : {
+          unstable_dismissalBoundsRect: { minX: 0, minY: 0 },
+        }
+  );
+  return (
+    <ScrollView
+      style={{ flex: 1 }}
+      onScroll={event => {
+        setShouldPrevent(event.nativeEvent.contentOffset.y > 1);
+      }}>
+      {/* Content */}
+    </ScrollView>
+  );
+}
+```
+
+This approach disables the swipe-to-dismiss gesture when the scroll position is at the top, allowing users to scroll down without accidentally triggering the dismissal animation. Once scrolled, the gesture is re-enabled.
 
 </Collapsible>

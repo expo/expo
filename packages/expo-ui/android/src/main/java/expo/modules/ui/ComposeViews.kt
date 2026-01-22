@@ -1,6 +1,5 @@
 package expo.modules.ui
 
-import android.content.Context
 import android.graphics.Color as AndroidColor
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,19 +7,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ExpoViewComposableScope
 import expo.modules.kotlin.views.with
 
 enum class HorizontalArrangement(val value: String) : Enumerable {
@@ -92,53 +87,41 @@ enum class VerticalAlignment(val value: String) : Enumerable {
 }
 
 data class LayoutProps(
-  val horizontalArrangement: MutableState<HorizontalArrangement> = mutableStateOf(HorizontalArrangement.START),
-  val verticalArrangement: MutableState<VerticalArrangement> = mutableStateOf(VerticalArrangement.TOP),
-  val horizontalAlignment: MutableState<HorizontalAlignment> = mutableStateOf(HorizontalAlignment.START),
-  val verticalAlignment: MutableState<VerticalAlignment> = mutableStateOf(VerticalAlignment.TOP),
-  val modifiers: MutableState<List<ExpoModifier>?> = mutableStateOf(emptyList())
+  val horizontalArrangement: HorizontalArrangement = HorizontalArrangement.START,
+  val verticalArrangement: VerticalArrangement = VerticalArrangement.TOP,
+  val horizontalAlignment: HorizontalAlignment = HorizontalAlignment.START,
+  val verticalAlignment: VerticalAlignment = VerticalAlignment.TOP,
+  val modifiers: List<ModifierConfig>? = emptyList()
 ) : ComposeProps
 
-class RowView(context: Context, appContext: AppContext) : ExpoComposeView<LayoutProps>(context, appContext) {
-  override val props = LayoutProps()
-
-  @Composable
-  override fun ComposableScope.Content() {
-    Row(
-      horizontalArrangement = props.horizontalArrangement.value.toComposeArrangement(),
-      verticalAlignment = props.verticalAlignment.value.toComposeAlignment(),
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
-    ) {
-      Children(this@Content.with(rowScope = this@Row))
-    }
+@Composable
+fun ExpoViewComposableScope.RowContent(props: LayoutProps) {
+  Row(
+    horizontalArrangement = props.horizontalArrangement.toComposeArrangement(),
+    verticalAlignment = props.verticalAlignment.toComposeAlignment(),
+    modifier = ModifierRegistry.applyModifiers(props.modifiers)
+  ) {
+    Children(ComposableScope().with(rowScope = this@Row))
   }
 }
 
-class ColumnView(context: Context, appContext: AppContext) : ExpoComposeView<LayoutProps>(context, appContext) {
-  override val props = LayoutProps()
-
-  @Composable
-  override fun ComposableScope.Content() {
-    Column(
-      verticalArrangement = props.verticalArrangement.value.toComposeArrangement(),
-      horizontalAlignment = props.horizontalAlignment.value.toComposeAlignment(),
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
-    ) {
-      Children(this@Content.with(columnScope = this@Column))
-    }
+@Composable
+fun ExpoViewComposableScope.ColumnContent(props: LayoutProps) {
+  Column(
+    verticalArrangement = props.verticalArrangement.toComposeArrangement(),
+    horizontalAlignment = props.horizontalAlignment.toComposeAlignment(),
+    modifier = ModifierRegistry.applyModifiers(props.modifiers)
+  ) {
+    Children(ComposableScope().with(columnScope = this@Column))
   }
 }
 
-class BoxView(context: Context, appContext: AppContext) : ExpoComposeView<LayoutProps>(context, appContext) {
-  override val props = LayoutProps()
-
-  @Composable
-  override fun ComposableScope.Content() {
-    Box(
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content)
-    ) {
-      Children(this@Content.with(boxScope = this@Box))
-    }
+@Composable
+fun ExpoViewComposableScope.BoxContent(props: LayoutProps) {
+  Box(
+    modifier = ModifierRegistry.applyModifiers(props.modifiers)
+  ) {
+    Children(ComposableScope().with(boxScope = this@Box))
   }
 }
 
@@ -173,26 +156,22 @@ enum class TextFontWeight(val value: String) : Enumerable {
 }
 
 data class TextProps(
-  val text: MutableState<String> = mutableStateOf(""),
-  val color: MutableState<AndroidColor?> = mutableStateOf(null),
-  val fontSize: MutableState<Float> = mutableFloatStateOf(16f),
-  val fontWeight: MutableState<TextFontWeight> = mutableStateOf(TextFontWeight.NORMAL),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+  val text: String = "",
+  val color: AndroidColor? = null,
+  val fontSize: Float = 16f,
+  val fontWeight: TextFontWeight = TextFontWeight.NORMAL,
+  val modifiers: List<ModifierConfig> = emptyList()
 ) : ComposeProps
 
-class TextView(context: Context, appContext: AppContext) : ExpoComposeView<TextProps>(context, appContext) {
-  override val props = TextProps()
-
-  @Composable
-  override fun ComposableScope.Content() {
-    Text(
-      text = props.text.value,
-      modifier = Modifier.fromExpoModifiers(props.modifiers.value, this@Content),
-      color = colorToComposeColor(props.color.value),
-      style = TextStyle(
-        fontSize = props.fontSize.value.sp,
-        fontWeight = props.fontWeight.value.toComposeFontWeight()
-      )
+@Composable
+fun ExpoViewComposableScope.TextContent(props: TextProps) {
+  Text(
+    text = props.text,
+    modifier = ModifierRegistry.applyModifiers(props.modifiers),
+    color = colorToComposeColor(props.color),
+    style = TextStyle(
+      fontSize = props.fontSize.sp,
+      fontWeight = props.fontWeight.toComposeFontWeight()
     )
-  }
+  )
 }

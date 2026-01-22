@@ -1,10 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { ColorValue, ImageSourcePropType } from 'react-native';
-import type {
-  BottomTabsScreenProps,
-  PlatformIconAndroid,
-  PlatformIconIOS,
-} from 'react-native-screens';
+import type { TabsScreenProps, PlatformIconAndroid, PlatformIconIOS } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { isChildOfType } from '../../utils/children';
@@ -33,6 +29,7 @@ type AwaitedIcon =
     }
   | {
       src?: ImageSourcePropType;
+      renderingMode?: 'template' | 'original';
     };
 
 export function useAwaitedScreensIcon(icon: NativeTabOptions['icon']) {
@@ -65,7 +62,7 @@ function isAwaitedIcon(icon: NativeTabOptions['icon']): icon is AwaitedIcon {
 
 export function convertOptionsIconToRNScreensPropsIcon(
   icon: AwaitedIcon | undefined
-): BottomTabsScreenProps['icon'] {
+): TabsScreenProps['icon'] {
   if (!icon) {
     return undefined;
   }
@@ -85,6 +82,9 @@ export function convertOptionsIconToIOSPropsIcon(
     };
   }
   if (icon && 'src' in icon && icon.src) {
+    if (icon.renderingMode === 'original') {
+      return { type: 'imageSource', imageSource: icon.src };
+    }
     return { type: 'templateSource', templateSource: icon.src };
   }
   return undefined;

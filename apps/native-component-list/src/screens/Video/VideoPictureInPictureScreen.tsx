@@ -5,6 +5,7 @@ import { ScrollView, View, Text } from 'react-native';
 import { bigBuckBunnySource } from './videoSources';
 import { styles } from './videoStyles';
 import Button from '../../components/Button';
+import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
 import TitledSwitch from '../../components/TitledSwitch';
 
 export default function VideoPictureInPictureScreen() {
@@ -40,34 +41,44 @@ export default function VideoPictureInPictureScreen() {
 
   return (
     <View style={styles.contentContainer}>
-      <VideoView
-        ref={ref}
-        player={player}
-        onPictureInPictureStart={() => setIsInPiP(true)}
-        onPictureInPictureStop={() => setIsInPiP(false)}
-        allowsPictureInPicture={allowPiP}
-        startsPictureInPictureAutomatically={autoEnterPiP}
-        style={styles.video}
-      />
-      <ScrollView style={styles.controlsContainer}>
-        <Button style={styles.button} title="Enter Picture In Picture" onPress={togglePiP} />
-        <View style={styles.row}>
-          <TitledSwitch
-            title="Allow Picture In Picture"
-            value={allowPiP}
-            setValue={setAllowPiP}
-            style={styles.switch}
-            titleStyle={styles.switchTitle}
+      <E2EViewShotContainer testID="pip-view" screenshotOutputPath="expo-video/screenshots/pip-1">
+        <VideoView
+          testID="pip-video-view"
+          ref={ref}
+          player={player}
+          onPictureInPictureStart={() => setIsInPiP(true)}
+          onPictureInPictureStop={() => setIsInPiP(false)}
+          allowsPictureInPicture={allowPiP}
+          startsPictureInPictureAutomatically={autoEnterPiP}
+          style={styles.video}
+        />
+        <ScrollView style={styles.controlsContainer}>
+          <Button style={styles.button} title="Enter Picture In Picture" onPress={togglePiP} />
+          <View style={styles.row}>
+            <TitledSwitch
+              title="Allow Picture In Picture"
+              value={allowPiP}
+              setValue={setAllowPiP}
+              style={styles.switch}
+              titleStyle={styles.switchTitle}
+            />
+            <TitledSwitch
+              title="Enter Picture In Picture Automatically"
+              value={autoEnterPiP}
+              setValue={setAutoEnterPiP}
+              style={styles.switch}
+              titleStyle={styles.switchTitle}
+            />
+          </View>
+          <Button
+            title="e2e pause"
+            onPress={() => {
+              player.pause();
+              player.currentTime = 10;
+            }}
           />
-          <TitledSwitch
-            title="Enter Picture In Picture Automatically"
-            value={autoEnterPiP}
-            setValue={setAutoEnterPiP}
-            style={styles.switch}
-            titleStyle={styles.switchTitle}
-          />
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </E2EViewShotContainer>
     </View>
   );
 }

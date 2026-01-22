@@ -6,18 +6,53 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Chunk = void 0;
 exports.graphToSerialAssetsAsync = graphToSerialAssetsAsync;
 exports.getSortedModules = getSortedModules;
-const sourceMapString_1 = require("@expo/metro/metro/DeltaBundler/Serializers/sourceMapString");
 const bundleToString_1 = __importDefault(require("@expo/metro/metro/lib/bundleToString"));
 const isResolvedDependency_1 = require("@expo/metro/metro/lib/isResolvedDependency");
 const assert_1 = __importDefault(require("assert"));
 const path_1 = __importDefault(require("path"));
 const debugId_1 = require("./debugId");
-const exportHermes_1 = require("./exportHermes");
 const exportPath_1 = require("./exportPath");
-const baseJSBundle_1 = require("./fork/baseJSBundle");
 const getCssDeps_1 = require("./getCssDeps");
 const getAssets_1 = __importDefault(require("../transform-worker/getAssets"));
 const filePath_1 = require("../utils/filePath");
+// Lazy-loaded to avoid pulling in metro-source-map at startup
+let _buildHermesBundleAsync;
+function getBuildHermesBundleAsync() {
+    if (!_buildHermesBundleAsync) {
+        _buildHermesBundleAsync = require('./exportHermes').buildHermesBundleAsync;
+    }
+    return _buildHermesBundleAsync;
+}
+// Lazy-loaded to avoid pulling in metro's getAppendScripts -> sourceMapString -> @babel/traverse at startup
+let _sourceMapString;
+function getSourceMapString() {
+    if (!_sourceMapString) {
+        _sourceMapString =
+            require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
+    }
+    return _sourceMapString;
+}
+let _baseJSBundleWithDependencies;
+function getBaseJSBundleWithDependencies() {
+    if (!_baseJSBundleWithDependencies) {
+        _baseJSBundleWithDependencies = require('./fork/baseJSBundle').baseJSBundleWithDependencies;
+    }
+    return _baseJSBundleWithDependencies;
+}
+let _getBaseUrlOption;
+function getBaseUrlOption(...args) {
+    if (!_getBaseUrlOption) {
+        _getBaseUrlOption = require('./fork/baseJSBundle').getBaseUrlOption;
+    }
+    return _getBaseUrlOption(...args);
+}
+let _getPlatformOption;
+function getPlatformOption(...args) {
+    if (!_getPlatformOption) {
+        _getPlatformOption = require('./fork/baseJSBundle').getPlatformOption;
+    }
+    return _getPlatformOption(...args);
+}
 // Convert file paths to regex matchers.
 function pathToRegex(path) {
     // Escape regex special characters, except for '*'
@@ -110,9 +145,9 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
     const jsAssets = await serializeChunksAsync(chunks, config.serializer ?? {}, serializeChunkOptions);
     // TODO: Can this be anything besides true?
     const isExporting = true;
-    const baseUrl = (0, baseJSBundle_1.getBaseUrlOption)(graph, { serializerOptions: serializeChunkOptions });
+    const baseUrl = getBaseUrlOption(graph, { serializerOptions: serializeChunkOptions });
     const assetPublicUrl = (baseUrl.replace(/\/+$/, '') ?? '') + '/assets';
-    const platform = (0, baseJSBundle_1.getPlatformOption)(graph, options) ?? 'web';
+    const platform = getPlatformOption(graph, options) ?? 'web';
     const isHosted = platform === 'web' || (graph.transformOptions?.customTransformOptions?.hosted && isExporting);
     const publicPath = isExporting
         ? isHosted
@@ -191,13 +226,13 @@ class Chunk {
         // TODO: Disable all debugId steps when a dev server is enabled. This is an export-only feature.
         const preModules = [...(options.preModules ?? this.preModules).values()];
         const dependencies = [...this.deps];
-        const jsSplitBundle = (0, baseJSBundle_1.baseJSBundleWithDependencies)(entryFile, preModules, dependencies, {
+        const jsSplitBundle = getBaseJSBundleWithDependencies()(entryFile, preModules, dependencies, {
             ...this.options,
             runBeforeMainModule: serializerConfig?.getModulesRunBeforeMainModule?.(path_1.default.relative(this.options.projectRoot, entryFile)) ?? [],
             runModule: this.options.runModule && !this.isVendor && (this.isEntry || !this.isAsync),
             modulesOnly: this.options.modulesOnly || preModules.length === 0,
             platform: this.getPlatform(),
-            baseUrl: (0, baseJSBundle_1.getBaseUrlOption)(this.graph, this.options),
+            baseUrl: getBaseUrlOption(this.graph, this.options),
             splitChunks: !!this.options.serializerOptions?.splitChunks,
             skipWrapping: true,
             computedAsyncModulePaths: null,
@@ -209,7 +244,7 @@ class Chunk {
         return [...this.deps].some((module) => module.path === absolutePath);
     }
     getComputedPathsForAsyncDependencies(serializerConfig, chunks) {
-        const baseUrl = (0, baseJSBundle_1.getBaseUrlOption)(this.graph, this.options);
+        const baseUrl = getBaseUrlOption(this.graph, this.options);
         // Only calculate production paths when all chunks are being exported.
         if (this.options.includeAsyncPaths) {
             return null;
@@ -246,7 +281,7 @@ class Chunk {
         }
         const platform = this.getPlatform();
         const isAbsolute = platform !== 'web';
-        const baseUrl = (0, baseJSBundle_1.getBaseUrlOption)(this.graph, this.options);
+        const baseUrl = getBaseUrlOption(this.graph, this.options);
         const filename = this.getFilenameForConfig(serializerConfig);
         const isAbsoluteBaseUrl = !!baseUrl?.match(/https?:\/\//);
         const pathname = (isAbsoluteBaseUrl ? '' : baseUrl.replace(/\/+$/, '')) +
@@ -358,6 +393,19 @@ class Chunk {
                     })
                         .flat()),
                 ].filter((value) => typeof value === 'string'),
+                loaderReferences: [
+                    ...new Set([...this.deps]
+                        .map((module) => {
+                        return module.output.map((output) => {
+                            if ('loaderReference' in output.data &&
+                                typeof output.data.loaderReference === 'string') {
+                                return output.data.loaderReference;
+                            }
+                            return undefined;
+                        });
+                    })
+                        .flat()),
+                ].filter((value) => typeof value === 'string'),
             },
             source: jsCode.code,
         };
@@ -398,7 +446,7 @@ class Chunk {
                 return module;
             });
             // TODO: We may not need to mutate the original source map with a `debugId` when hermes is enabled since we'll have different source maps.
-            const sourceMap = mutateSourceMapWithDebugId((0, sourceMapString_1.sourceMapString)(modules, {
+            const sourceMap = mutateSourceMapWithDebugId(getSourceMapString()(modules, {
                 excludeSource: false,
                 ...this.options,
             }));
@@ -419,7 +467,7 @@ class Chunk {
                 return '';
             });
             // TODO: Generate hbc for each chunk
-            const hermesBundleOutput = await (0, exportHermes_1.buildHermesBundleAsync)({
+            const hermesBundleOutput = await getBuildHermesBundleAsync()({
                 projectRoot: this.options.projectRoot,
                 filename: this.name,
                 code: adjustedSource,

@@ -40,7 +40,6 @@ async function getExpoConfigSourcesAsync(projectRoot, config, loadedModules, opt
         ...(isIos ? collectIosIcons(expoConfig.ios?.icon) : []),
         isAndroid ? expoConfig.android?.adaptiveIcon?.foregroundImage : undefined,
         isAndroid ? expoConfig.android?.adaptiveIcon?.backgroundImage : undefined,
-        expoConfig.notification?.icon,
         // expo-splash-screen images
         splashScreenPluginProps?.image,
         splashScreenPluginProps?.dark?.image,

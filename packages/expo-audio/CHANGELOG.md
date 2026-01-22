@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [iOS/Android] Add showSeekForward and showSeekBackward options to AudioLockScreenOptions to control visibility of seek buttons on lock screen. ([#40124](https://github.com/expo/expo/pull/40124) by [@chrfalch](https://github.com/chrfalch))
 - [iOS/Android] Add support background recording. ([#41134](https://github.com/expo/expo/pull/41134) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Support `mixWithOthers` interruption mode. ([#41670](https://github.com/expo/expo/pull/41670) by [@alanjhughes](https://github.com/alanjhughes))
@@ -17,6 +25,7 @@
 - [iOS/Android] Aligned Android and iOS pitch correction by changing the default quality on iOS to match Android. `shouldCorrectPitch` now defaults to `true`. ([#40176](https://github.com/expo/expo/pull/40176) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Use correct method to start foreground service on android 14+. ([#41145](https://github.com/expo/expo/pull/41145) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix incorrect notify others on deactivation ([#41196](https://github.com/expo/expo/pull/41196) by [@dylancom](https://github.com/dylancom))
+- [Android] Handle `stop` errors on the `recorder` and return correct timestamp for `currentTime`. ([#41933](https://github.com/expo/expo/pull/41933) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
@@ -59,6 +68,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - [iOS] Fix setting audio quality for recordings. ([#39705](https://github.com/expo/expo/pull/39705) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Removed requiring shouldPlayInBackground to be true for background recording. ([#42134](https://github.com/expo/expo/pull/42134) by [@chrfalch](https://github.com/chrfalch))
 
 ## 1.0.11 — 2025-09-11
 

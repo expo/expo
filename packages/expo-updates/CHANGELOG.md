@@ -6,12 +6,26 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - Remove `ExpoAppDelegate` inheritance requirement ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add patch content negotiation headers. ([#40583](https://github.com/expo/expo/pull/40583) by [@alanjhughes](https://github.com/alanjhughes))
+- Full native interface for updates. ([#41527](https://github.com/expo/expo/pull/41527) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
 - [iOS] forward `PROJECT_ROOT` env var to create updates resources script ([#41418](https://github.com/expo/expo/pull/41418) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fix `downloadProgress` for update fetching on app startup. ([#41069](https://github.com/expo/expo/pull/41069) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
@@ -19,6 +33,7 @@
 - [android] Remove references to reactNativeHost ([#40182](https://github.com/expo/expo/pull/40182) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Reverted "Removed Detox testing workaround code on Android." ([#41204](https://github.com/expo/expo/pull/41204) by [@kudo](https://github.com/kudo))
 - Remove unused `js-yaml` dependency. ([#41202](https://github.com/expo/expo/pull/41202) by [@kudo](https://github.com/kudo))
+- Bump to `@expo/code-signing-certificates@^0.0.6` ([#41965](https://github.com/expo/expo/pull/41965) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 

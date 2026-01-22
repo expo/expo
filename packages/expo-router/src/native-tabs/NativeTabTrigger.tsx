@@ -28,8 +28,7 @@ import { convertMaterialIconNameToImageSource } from './utils/materialIconConver
  * When used in the tab screen, the `name` prop takes no effect.
  *
  * @example
- * ```tsx
- * // In _layout file
+ * ```tsx app/_layout.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function Layout() {
@@ -43,8 +42,7 @@ import { convertMaterialIconNameToImageSource } from './utils/materialIconConver
  * ```
  *
  * @example
- * ```tsx
- * // In a tab screen
+ * ```tsx app/home.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function HomeScreen() {
@@ -58,8 +56,6 @@ import { convertMaterialIconNameToImageSource } from './utils/materialIconConver
  *   );
  * }
  * ```
- *
- * > **Note:** You can use the alias `NativeTabs.Trigger` for this component.
  */
 function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
   const route = useRoute();
@@ -224,20 +220,27 @@ function convertIconSrcToIconOption(
         : { defaultIcon: icon.src };
 
     const options: Pick<NativeTabOptions, 'icon' | 'selectedIcon'> = {};
-    options.icon = convertSrcOrComponentToSrc(defaultIcon);
-    options.selectedIcon = convertSrcOrComponentToSrc(selected);
+    options.icon = convertSrcOrComponentToSrc(defaultIcon, { renderingMode: icon.renderingMode });
+    options.selectedIcon = convertSrcOrComponentToSrc(selected, {
+      renderingMode: icon.renderingMode,
+    });
     return options;
   }
 
   return undefined;
 }
 
-function convertSrcOrComponentToSrc(src: ImageSourcePropType | ReactElement | undefined) {
+function convertSrcOrComponentToSrc(
+  src: ImageSourcePropType | ReactElement | undefined,
+  options: {
+    renderingMode: 'template' | 'original' | undefined;
+  }
+) {
   if (src) {
     if (isValidElement(src)) {
       return convertComponentSrcToImageSource(src);
     } else {
-      return { src };
+      return { src, renderingMode: options.renderingMode };
     }
   }
   return undefined;

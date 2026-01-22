@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- Full native interface for updates. ([#41527](https://github.com/expo/expo/pull/41527) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.0 — 2026-01-21
+
+_This version does not introduce any user-facing changes._
 
 ## 2.0.0 — 2025-08-13
 

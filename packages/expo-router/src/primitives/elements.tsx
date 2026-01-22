@@ -9,7 +9,10 @@ export function Icon(props: IconProps) {
 }
 
 /**
- * Helper component which can be used to load vector icons.
+ * Helper component for loading vector icons.
+ *
+ * Prefer using the `md` and `sf` props on `Icon` rather than using this component directly.
+ * Only use this component when you need to load a specific icon from a vector icon family.
  *
  * @example
  * ```tsx
@@ -17,7 +20,6 @@ export function Icon(props: IconProps) {
  * import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
  *
  * <Icon src={<VectorIcon family={MaterialCommunityIcons} name="home" />} />
- *
  * ```
  */
 export function VectorIcon<const NameT extends string>(props: VectorIconProps<NameT>) {

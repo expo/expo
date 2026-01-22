@@ -1,3 +1,3 @@
 import { NotificationChannelGroup } from './NotificationChannelGroupManager.types';
-export default function getNotificationChannelGroupAsync(groupId: string): Promise<NotificationChannelGroup | null>;
+export declare function getNotificationChannelGroupAsync(groupId: string): Promise<NotificationChannelGroup | null>;
 //# sourceMappingURL=getNotificationChannelGroupAsync.android.d.ts.map

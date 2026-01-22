@@ -13,8 +13,6 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
     )
   }()
 
-  // TODO: Remove check when react-native-macos 0.81 is released
-  #if !os(macOS)
   @objc public override init(delegate: any RCTReactNativeFactoryDelegate) {
     let releaseLevel = (Bundle.main.object(forInfoDictionaryKey: "ReactNativeReleaseLevel") as? String)
       .flatMap { [
@@ -27,7 +25,6 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
 
     super.init(delegate: delegate, releaseLevel: releaseLevel)
   }
-  #endif
 
   @MainActor
   @objc func createRCTRootViewFactory() -> RCTRootViewFactory {
@@ -101,13 +98,6 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
   ) -> UIView {
     guard let delegate = self.delegate else {
       fatalError("recreateRootView: Missing RCTReactNativeFactoryDelegate")
-    }
-
-    if RCTIsNewArchEnabled() {
-      // chrfalch: rootViewFactory.reactHost is not available here in swift due to the underlying RCTHost type of the property. (todo: check)
-      assert(self.rootViewFactory.value(forKey: "reactHost") == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
-    } else {
-      assert(self.rootViewFactory.bridge == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
     }
 
     let configuration = self.rootViewFactory.value(forKey: "_configuration") as? RCTRootViewFactoryConfiguration

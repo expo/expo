@@ -5,7 +5,7 @@ import { type CommonViewModifierProps } from '../types';
 
 export type SectionProps = {
   /**
-   * On iOS, section titles are usually capitalized for consistency with platform conventions.
+   * The title of the section.
    */
   title?: string;
   /**
@@ -16,16 +16,31 @@ export type SectionProps = {
    * Sets a custom header for the section.
    */
   header?: React.ReactNode;
+  /**
+   * The content of the section.
+   */
   children: React.ReactNode;
   /**
-   * Enables or disables collapsible behavior for the section.
+   * Controls whether the section is expanded or collapsed.
+   * When provided, the section becomes collapsible.
    * > **Note**: Available only when the list style is set to `sidebar`.
-   * @default false
+   * @platform ios 17.0+
+   * @platform tvos 17.0+
    */
-  collapsible?: boolean;
+  isExpanded?: boolean;
+  /**
+   * Callback triggered when the section's expanded state changes.
+   * @platform ios 17.0+
+   * @platform tvos 17.0+
+   */
+  onIsExpandedChange?: (isExpanded: boolean) => void;
 } & CommonViewModifierProps;
 
-const SectionNativeView: React.ComponentType<SectionProps> = requireNativeView(
+type SectionNativeProps = Omit<SectionProps, 'onIsExpandedChange'> & {
+  onIsExpandedChange?: (e: { nativeEvent: { isExpanded: boolean } }) => void;
+};
+
+const SectionNativeView: React.ComponentType<SectionNativeProps> = requireNativeView(
   'ExpoUI',
   'SectionView'
 );
@@ -38,14 +53,17 @@ const SectionContent: React.ComponentType<object> = requireNativeView('ExpoUI', 
 
 /**
  * Section component uses the native [Section](https://developer.apple.com/documentation/swiftui/section) component.
- * It has no intrinsic dimensions, so it needs explicit height or flex set to display content (like `<ScrollView>`).
  */
 export function Section(props: SectionProps) {
-  const { modifiers, header, footer, children, ...restProps } = props;
+  const { modifiers, header, footer, children, onIsExpandedChange, ...restProps } = props;
   return (
     <SectionNativeView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...(onIsExpandedChange && {
+        onIsExpandedChange: (e: { nativeEvent: { isExpanded: boolean } }) =>
+          onIsExpandedChange(e.nativeEvent.isExpanded),
+      })}
       {...restProps}>
       {header && <SectionHeader>{header}</SectionHeader>}
       {footer && <SectionFooter>{footer}</SectionFooter>}

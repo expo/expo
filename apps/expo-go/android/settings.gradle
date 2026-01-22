@@ -40,11 +40,11 @@ expoAutolinking.exclude = [
   'expo-maps',
   'expo-network-addons',
   'expo-splash-screen',
-  'expo-blob',
   '@expo/ui',
   'expo-mesh-gradient',
   '@expo/app-integrity',
-  '@expo/home'
+  '@expo/home',
+  'expo-widgets'
 ]
 
 expoAutolinking.useExpoModules()

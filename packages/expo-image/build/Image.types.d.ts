@@ -1,5 +1,6 @@
 import type { NativeModule, SharedRef, SharedRefType } from 'expo';
-import { ImageStyle as RNImageStyle, StyleProp, View, ViewProps, ViewStyle } from 'react-native';
+import { ImageStyle as RNImageStyle, TextStyle, StyleProp, View, ViewProps, ViewStyle } from 'react-native';
+import type { SFSymbol } from 'sf-symbols-typescript';
 import ExpoImage from './ExpoImage';
 export type ImageSource = {
     /**
@@ -81,13 +82,31 @@ export type ImageDecodeFormat = 'argb' | 'rgb';
  */
 export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
     /** @hidden */
-    style?: StyleProp<RNImageStyle>;
+    style?: StyleProp<RNImageStyle & {
+        /**
+         * Specifies stroke weight for SF symbols.
+         * @platform ios
+         */
+        fontWeight?: TextStyle['fontWeight'];
+        /**
+         * Sets the tint color of SF symbols. This is an alias for `tintColor` that can be used in styles.
+         * @platform ios
+         */
+        color?: TextStyle['color'];
+        /**
+         * Sets the size (width and height) of SF symbols.
+         * @platform ios
+         */
+        fontSize?: TextStyle['fontSize'];
+    }>;
     /**
      * The image source, either a remote URL, a local file resource or a number that is the result of the `require()` function.
      * When provided as an array of sources, the source that fits best into the container size and is closest to the screen scale
      * will be chosen. In this case it is important to provide `width`, `height` and `scale` properties.
+     *
+     * For SF Symbols (iOS), use the `sf:` prefix followed by the symbol name, for example, `sf:star.fill`.
      */
-    source?: ImageSource | string | number | ImageSource[] | string[] | SharedRefType<'image'> | null;
+    source?: ImageSource | `sf:${SFSymbol}` | (string & {}) | number | ImageSource[] | string[] | SharedRefType<'image'> | null;
     /**
      * An image to display while loading the proper image and no image has been displayed yet or the source is unset.
      *
@@ -211,6 +230,25 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
      * @platform ios
      */
     autoplay?: boolean;
+    /**
+     * SF Symbol effect animations. Can be a single effect string, an effect object,
+     * or an array of effect strings and/or objects.
+     *
+     * @example
+     * ```tsx
+     * // Single effect as string
+     * sfEffect="bounce"
+     *
+     * // Single effect as object with options
+     * sfEffect={{ effect: "bounce", repeat: -1, scope: "by-layer" }}
+     *
+     * // Array of mixed strings and objects
+     * sfEffect={["bounce", { effect: "pulse", repeat: -1 }]}
+     * ```
+     *
+     * @platform ios 17.0+
+     */
+    sfEffect?: SFSymbolEffect | null;
     /**
      * Called when the image starts to load.
      */
@@ -360,8 +398,11 @@ export interface ImageNativeProps extends ImageProps {
     contentPosition?: ImageContentPositionObject;
     transition?: ImageTransition | null;
     autoplay?: boolean;
+    sfEffect?: SFSymbolEffectObject[] | null;
     nativeViewRef?: React.RefObject<ExpoImage | null>;
     containerViewRef?: React.RefObject<View | null>;
+    symbolWeight?: string | null;
+    symbolSize?: number | null;
 }
 /**
  * A value that represents the relative position of a single axis.
@@ -432,6 +473,76 @@ type OnlyObject<T> = T extends object ? T : never;
  */
 export type ImageContentPositionObject = OnlyObject<ImageContentPosition>;
 /**
+ * The type of SF Symbol effect animation.
+ * @platform ios 17.0+
+ */
+export type SFSymbolEffectType = 'bounce' | 'bounce/up' | 'bounce/down' | 'pulse' | 'variable-color' | 'variable-color/iterative' | 'variable-color/cumulative' | 'scale' | 'scale/up' | 'scale/down' | 'appear' | 'disappear' | 'wiggle' | 'rotate' | 'breathe' | 'draw/on' | 'draw/off';
+/**
+ * An object that describes an SF Symbol effect animation.
+ * @platform ios 17.0+
+ */
+export type SFSymbolEffectObject = {
+    /**
+     * The type of SF Symbol effect animation.
+     *
+     * - `'bounce'` - The symbol bounces.
+     * - `'bounce/up'` / `'bounce/down'` - Directional bounce.
+     * - `'pulse'` - The symbol fades in and out.
+     * - `'variable-color'` - The symbol's color layers animate sequentially.
+     * - `'variable-color/iterative'` / `'variable-color/cumulative'` - Variable color modes.
+     * - `'scale'` - The symbol scales up and down.
+     * - `'scale/up'` / `'scale/down'` - Directional scale.
+     * - `'appear'` - The symbol animates into view.
+     * - `'disappear'` - The symbol animates out of view.
+     *
+     * For iOS 18+:
+     * - `'wiggle'` - The symbol wiggles.
+     * - `'rotate'` - The symbol rotates.
+     * - `'breathe'` - The symbol breathes (pulsing scale effect).
+     *
+     * For iOS 26+:
+     * - `'draw/on'` - The symbol layers animate like being drawn.
+     * - `'draw/off'` - The symbol layers animate like being erased.
+     */
+    effect: SFSymbolEffectType;
+    /**
+     * The number of times to repeat the effect.
+     * - `-1` - Repeat indefinitely
+     * - `0` - No repeat, play once (default)
+     * - `1+` - Repeat the specified number of times
+     *
+     * @default 0
+     */
+    repeat?: number;
+    /**
+     * Controls how the effect animates across symbol layers.
+     * - `'by-layer'` - Animates each layer of the symbol individually.
+     * - `'whole-symbol'` - Animates the entire symbol as one unit.
+     *
+     * @default undefined (uses system default)
+     */
+    scope?: 'by-layer' | 'whole-symbol' | null;
+};
+/**
+ * SF Symbol effect configuration. Can be a single effect string, an effect object,
+ * or an array of effect strings and/or objects.
+ *
+ * @example
+ * ```tsx
+ * // Single effect as string
+ * sfEffect="bounce"
+ *
+ * // Single effect as object with options
+ * sfEffect={{ effect: "bounce", repeat: -1, scope: "by-layer" }}
+ *
+ * // Array of mixed strings and objects
+ * sfEffect={["bounce", { effect: "pulse", repeat: -1 }]}
+ * ```
+ *
+ * @platform ios 17.0+
+ */
+export type SFSymbolEffect = SFSymbolEffectType | SFSymbolEffectObject | (SFSymbolEffectType | SFSymbolEffectObject)[];
+/**
  * An object that describes the smooth transition when switching the image source.
  */
 export type ImageTransition = {
@@ -451,8 +562,17 @@ export type ImageTransition = {
      *
      * On Android, only `'cross-dissolve'` is supported.
      * On Web, `'curl-up'` and `'curl-down'` effects are not supported.
+     *
+     * For SF Symbols (iOS 17+), use the `sf:` effects to animate
+     * when the symbol source changes:
+     * - `'sf:replace'` - The symbol animates when replaced with another symbol.
+     * - `'sf:down-up'` - New symbol slides in from bottom.
+     * - `'sf:up-up'` - New symbol slides in from top.
+     * - `'sf:off-up'` - Cross-dissolve transition between symbols.
+     *
+     * For other SF Symbol animations (bounce, pulse, scale, and so on), use the `sfEffect` prop instead.
      */
-    effect?: 'cross-dissolve' | 'flip-from-top' | 'flip-from-right' | 'flip-from-bottom' | 'flip-from-left' | 'curl-up' | 'curl-down' | null;
+    effect?: 'cross-dissolve' | 'flip-from-top' | 'flip-from-right' | 'flip-from-bottom' | 'flip-from-left' | 'curl-up' | 'curl-down' | 'sf:replace' | 'sf:down-up' | 'sf:up-up' | 'sf:off-up' | null;
 };
 export type ImageLoadEventData = {
     cacheType: 'none' | 'disk' | 'memory';

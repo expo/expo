@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [next] Add `asset.getShape()` ([#40110](https://github.com/expo/expo/pull/40110) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add `asset.getInfo()` ([#40146](https://github.com/expo/expo/pull/40146) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add exif support ([#39992](https://github.com/expo/expo/pull/39992) by [@Wenszel](https://github.com/Wenszel))
@@ -13,6 +21,8 @@
 
 ### 🐛 Bug fixes
 
+- [next][android] Fix Failed To Build Unique File exception ([#42222](https://github.com/expo/expo/pull/42222) by [@Wenszel](https://github.com/Wenszel))
+- [next][android] Fix creating album with name with spaces ([#42220](https://github.com/expo/expo/pull/42220) by [@Wenszel](https://github.com/Wenszel))
 - Fix `endCursor` description in the documentation. ([#39120](https://github.com/expo/expo/pull/39120) by [@Wenszel](https://github.com/Wenszel))
 - [next][iOS] Convert `id` to URI format ([#39920](https://github.com/expo/expo/pull/39920) by [@Wenszel](https://github.com/Wenszel))
 - [next][android] Fix `delete()` throwing security exception ([#39914](https://github.com/expo/expo/pull/39914) by [@Wenszel](https://github.com/Wenszel))

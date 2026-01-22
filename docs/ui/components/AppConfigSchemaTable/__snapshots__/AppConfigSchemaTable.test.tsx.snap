@@ -6,9 +6,9 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     <div
       class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
     >
-      <p
+      <h3
         class="text-default font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-        data-text="true"
+        data-heading="true"
         id="name"
       >
         <code
@@ -49,7 +49,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </span>
         </a>
-      </p>
+      </h3>
       <div
         class="my-3"
         data-text="true"
@@ -75,7 +75,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </p>
       <details
         class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
-        id="bare-workflow"
+        id="existing-react-native-app"
       >
         <summary
           class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
@@ -104,12 +104,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
-            Bare Workflow
+            Existing React Native app?
           </span>
           <a
             aria-label="Permalink"
             class="ml-auto inline rounded-md p-1 hocus:bg-element"
-            href="#bare-workflow"
+            href="#existing-react-native-app"
           >
             <svg
               aria-label="permalink"
@@ -158,9 +158,9 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     <div
       class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
     >
-      <p
+      <h3
         class="text-default font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-        data-text="true"
+        data-heading="true"
         id="androidnavigationbar"
       >
         <code
@@ -201,7 +201,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </span>
         </a>
-      </p>
+      </h3>
       <div
         class="my-3"
         data-text="true"
@@ -227,7 +227,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </p>
       <details
         class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
-        id="expokit"
+        id="existing-react-native-app-1"
       >
         <summary
           class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
@@ -256,93 +256,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
-            ExpoKit
+            Existing React Native app?
           </span>
           <a
             aria-label="Permalink"
             class="ml-auto inline rounded-md p-1 hocus:bg-element"
-            href="#expokit"
-          >
-            <svg
-              aria-label="permalink"
-              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </a>
-          <div />
-        </summary>
-        <div
-          class="overflow-hidden"
-          style="height: 0px;"
-        >
-          <div
-            class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
-          >
-            <p
-              class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
-              data-text="true"
-            >
-              Set this property using AppConstants.java.
-            </p>
-          </div>
-        </div>
-      </details>
-      <details
-        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
-        id="bare-workflow-1"
-      >
-        <summary
-          class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
-        >
-          <div
-            class="ml-1.5 mr-2 mt-[5px] self-baseline"
-          >
-            <svg
-              class="translate-z shrink-0 icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
-              fill="none"
-              role="img"
-              viewBox="0 0 24 24"
-            >
-              <g
-                id="triangle-down-custom-icon"
-              >
-                <path
-                  d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
-                  fill="currentColor"
-                  id="Vector 250"
-                />
-              </g>
-            </svg>
-          </div>
-          <span
-            class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
-            data-text="true"
-          >
-            Bare Workflow
-          </span>
-          <a
-            aria-label="Permalink"
-            class="ml-auto inline rounded-md p-1 hocus:bg-element"
-            href="#bare-workflow-1"
+            href="#existing-react-native-app-1"
           >
             <svg
               aria-label="permalink"
@@ -390,9 +309,9 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <div
         class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
       >
-        <p
+        <h4
           class="text-default font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-          data-text="true"
+          data-heading="true"
           id="visible"
         >
           <code
@@ -433,7 +352,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </span>
           </a>
-        </p>
+        </h4>
         <div
           class="my-3"
           data-text="true"
@@ -471,93 +390,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Determines how and when the navigation bar is shown.
         </p>
-        <details
-          class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
-          id="expokit-1"
-        >
-          <summary
-            class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
-          >
-            <div
-              class="ml-1.5 mr-2 mt-[5px] self-baseline"
-            >
-              <svg
-                class="translate-z shrink-0 icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
-                fill="none"
-                role="img"
-                viewBox="0 0 24 24"
-              >
-                <g
-                  id="triangle-down-custom-icon"
-                >
-                  <path
-                    d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
-                    fill="currentColor"
-                    id="Vector 250"
-                  />
-                </g>
-              </svg>
-            </div>
-            <span
-              class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
-              data-text="true"
-            >
-              ExpoKit
-            </span>
-            <a
-              aria-label="Permalink"
-              class="ml-auto inline rounded-md p-1 hocus:bg-element"
-              href="#expokit-1"
-            >
-              <svg
-                aria-label="permalink"
-                class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </a>
-            <div />
-          </summary>
-          <div
-            class="overflow-hidden"
-            style="height: 0px;"
-          >
-            <div
-              class="px-5 py-4 last:[&>*]:!mb-1 [&_p]:ml-0 [&_pre>pre]:mt-0"
-            >
-              <p
-                class="text-default font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
-                data-text="true"
-              >
-                Set this property using Xcode.
-              </p>
-            </div>
-          </div>
-        </details>
         <div
           class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
         >
-          <p
+          <h5
             class="text-default font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-            data-text="true"
+            data-heading="true"
             id="always"
           >
             <code
@@ -598,7 +436,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 </svg>
               </span>
             </a>
-          </p>
+          </h5>
           <div
             class="my-3"
             data-text="true"
@@ -641,9 +479,9 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <div
         class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
       >
-        <p
+        <h4
           class="text-default font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-          data-text="true"
+          data-heading="true"
           id="backgroundcolor"
         >
           <code
@@ -684,7 +522,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </span>
           </a>
-        </p>
+        </h4>
         <div
           class="my-3"
           data-text="true"
@@ -741,9 +579,9 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     <div
       class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
     >
-      <p
+      <h3
         class="text-default font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-        data-text="true"
+        data-heading="true"
         id="intentfilters"
       >
         <code
@@ -784,7 +622,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </span>
         </a>
-      </p>
+      </h3>
       <div
         class="my-3"
         data-text="true"
@@ -810,7 +648,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </p>
       <details
         class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
-        id="bare-workflow-2"
+        id="existing-react-native-app-2"
       >
         <summary
           class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
@@ -839,12 +677,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="leading-[1.6154] text-default font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
-            Bare Workflow
+            Existing React Native app?
           </span>
           <a
             aria-label="Permalink"
             class="ml-auto inline rounded-md p-1 hocus:bg-element"
-            href="#bare-workflow-2"
+            href="#existing-react-native-app-2"
           >
             <svg
               aria-label="permalink"
@@ -920,9 +758,9 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <div
         class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
       >
-        <p
+        <h4
           class="text-default font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-          data-text="true"
+          data-heading="true"
           id="autoverify"
         >
           <code
@@ -963,7 +801,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </span>
           </a>
-        </p>
+        </h4>
         <div
           class="my-3"
           data-text="true"
@@ -1005,9 +843,9 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <div
         class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
       >
-        <p
+        <h4
           class="text-default font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-          data-text="true"
+          data-heading="true"
           id="data"
         >
           <code
@@ -1048,7 +886,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </span>
           </a>
-        </p>
+        </h4>
         <div
           class="my-3"
           data-text="true"
@@ -1083,9 +921,9 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <div
           class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 !mb-0 !rounded-none !border-b-0 !shadow-none [&]:first-of-type:!rounded-t-md [&]:last-of-type:!rounded-b-md [&]:last-of-type:!border-b [&]:last-of-type:!border-default px-4 py-3 !pb-4 last:[&>*]:!mb-1"
         >
-          <p
+          <h5
             class="text-default font-normal text-base [&_strong]:break-words group flex gap-1 scroll-m-8"
-            data-text="true"
+            data-heading="true"
             id="host"
           >
             <code
@@ -1126,7 +964,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 </svg>
               </span>
             </a>
-          </p>
+          </h5>
           <div
             class="my-3"
             data-text="true"

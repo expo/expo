@@ -10,7 +10,22 @@
 
 ### 💡 Others
 
+## 55.0.1 — 2026-01-22
+
+### 🐛 Bug fixes
+
+- Add `android:maxSdkVersion="32"` to storage permissions in templates. ([#42401](https://github.com/expo/expo/pull/42401) by [@brentvatne](https://github.com/brentvatne))
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- [iOS] Add `locales` support for `Localizable.strings`. ([#39022](https://github.com/expo/expo/pull/39022) by [@desii101](https://github.com/desii101))
+
+### 💡 Others
+
 - Remove `newArchEnabled` option. ([#41684](https://github.com/expo/expo/pull/41684) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated maps config-plugin to support `@main` as the anchor. ([#41868](https://github.com/expo/expo/pull/41868) by [@kudo](https://github.com/kudo))
 
 ## 54.0.3 - 2025-12-04
 

@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Move error overlay UI to `@expo/log-box` package ([#39958](https://github.com/expo/expo/pull/39958) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- Move error overlay UI to `@expo/log-box` package ([#39958](https://github.com/expo/expo/pull/39958) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ### ⚠️ Notices
 

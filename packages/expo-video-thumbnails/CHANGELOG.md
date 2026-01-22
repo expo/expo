@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
 - [Android] Fixed broken thumbnail generation on Android 9 and lower. ([#3854081613](https://github.com/expo/expo/pull/40816) by [@andrejpavlovic](https://github.com/andrejpavlovic))
 
 ### 💡 Others

@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [iOS] Add `shouldDownloadFromNetwork` option to fix iCloud video download ([#40697](https://github.com/expo/expo/pull/40697) by [@kosmydel](https://github.com/kosmydel))
 - [android] support colors configuration ([#40834](https://github.com/expo/expo/pull/40834) by [@kosmydel](https://github.com/kosmydel))
 

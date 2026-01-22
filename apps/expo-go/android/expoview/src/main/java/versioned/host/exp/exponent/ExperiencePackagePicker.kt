@@ -3,12 +3,10 @@ package versioned.host.exp.exponent
 import expo.modules.application.ApplicationModule
 import expo.modules.asset.AssetModule
 import expo.modules.audio.AudioModule
-import expo.modules.av.AVModule
-import expo.modules.av.AVPackage
-import expo.modules.av.video.VideoViewModule
 import expo.modules.backgroundfetch.BackgroundFetchModule
 import expo.modules.backgroundtask.BackgroundTaskModule
 import expo.modules.battery.BatteryModule
+import expo.modules.blob.BlobModule
 import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
 import expo.modules.calendar.CalendarModule
@@ -16,10 +14,12 @@ import expo.modules.camera.CameraViewModule
 import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
-import expo.modules.constants.ConstantsPackage
+import expo.modules.constants.ConstantsService
 import expo.modules.contacts.ContactsModule
+import expo.modules.contacts.next.ContactsNextModule
 import expo.modules.core.interfaces.Package
 import expo.modules.crypto.CryptoModule
+import expo.modules.crypto.aes.AesCryptoModule
 import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
@@ -31,13 +31,14 @@ import expo.modules.font.FontUtilsModule
 import expo.modules.gl.GLModule
 import expo.modules.haptics.HapticsModule
 import expo.modules.image.ExpoImageModule
-import expo.modules.imageloader.ImageLoaderPackage
+import expo.modules.imageloader.ImageLoaderService
 import expo.modules.imagemanipulator.ImageManipulatorModule
 import expo.modules.imagepicker.ImagePickerModule
 import expo.modules.intentlauncher.IntentLauncherModule
 import expo.modules.keepawake.KeepAwakeModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.services.Service
 import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.linking.ExpoLinkingModule
 import expo.modules.linking.ExpoLinkingPackage
@@ -58,6 +59,7 @@ import expo.modules.notifications.notifications.channels.NotificationChannelMana
 import expo.modules.notifications.permissions.NotificationPermissionsModule
 import expo.modules.notifications.tokens.PushTokenModule
 import expo.modules.print.PrintModule
+import expo.modules.router.ExpoRouterModule
 import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
 import expo.modules.sensors.modules.AccelerometerModule
@@ -71,8 +73,6 @@ import expo.modules.sensors.modules.PedometerModule
 import expo.modules.sharing.SharingModule
 import expo.modules.sms.SMSModule
 import expo.modules.speech.SpeechModule
-import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
-import host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage
 import expo.modules.sqlite.SQLiteModule
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIModule
@@ -84,13 +84,12 @@ import expo.modules.updates.UpdatesPackage
 import expo.modules.video.VideoModule
 import expo.modules.videothumbnails.VideoThumbnailsModule
 import expo.modules.webbrowser.WebBrowserModule
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
+import host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage
 
 object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
-    AVPackage(),
-    ConstantsPackage(),
     ExpoLinkingPackage(),
-    ImageLoaderPackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
     SplashScreenPackage(),
@@ -116,7 +115,6 @@ object ExperiencePackagePicker : ModulesProvider {
 
   override fun getModulesMap(): Map<Class<out Module>, String?> = mapOf(
     AudioModule::class.java to null,
-    AVModule::class.java to null,
     ApplicationModule::class.java to null,
     // Sensors
     AccelerometerModule::class.java to null,
@@ -137,9 +135,11 @@ object ExperiencePackagePicker : ModulesProvider {
     NotificationChannelGroupManagerModule::class.java to null,
     ExpoBackgroundNotificationTasksModule::class.java to null,
     // End of Notifications
+    AesCryptoModule::class.java to null,
     BatteryModule::class.java to null,
     BackgroundFetchModule::class.java to null,
     BackgroundTaskModule::class.java to null,
+    BlobModule::class.java to null,
     BlurModule::class.java to null,
     CalendarModule::class.java to null,
     CameraViewModule::class.java to null,
@@ -148,12 +148,14 @@ object ExperiencePackagePicker : ModulesProvider {
     CryptoModule::class.java to null,
     ConstantsModule::class.java to null,
     ContactsModule::class.java to null,
+    ContactsNextModule::class.java to null,
     DeviceModule::class.java to null,
     DocumentPickerModule::class.java to null,
     EASClientModule::class.java to null,
     ExpoFetchModule::class.java to null,
     FontUtilsModule::class.java to null,
     ExpoLinkingModule::class.java to null,
+    ExpoRouterModule::class.java to null,
     FileSystemModule::class.java to null,
     FileSystemLegacyModule::class.java to null,
     FontLoaderModule::class.java to null,
@@ -188,8 +190,14 @@ object ExperiencePackagePicker : ModulesProvider {
     TrackingTransparencyModule::class.java to null,
     VideoThumbnailsModule::class.java to null,
     VideoModule::class.java to null,
-    VideoViewModule::class.java to null,
     WebBrowserModule::class.java to null,
     BrightnessModule::class.java to null
   )
+
+  override fun getServices(): List<Class<out Service>> {
+    return listOf(
+      ConstantsService::class.java,
+      ImageLoaderService::class.java
+    )
+  }
 }

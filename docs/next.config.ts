@@ -22,8 +22,11 @@ import navigation from './public/static/constants/navigation.json';
 import { VERSIONS } from './public/static/constants/versions.json';
 import createSitemap from './scripts/create-sitemap.js';
 
-const betaVersion = 'betaVersion' in packageJson ? (packageJson.betaVersion as string) : undefined;
-const latestVersion = 'version' in packageJson ? packageJson.version : undefined;
+const packageJsonObject: Record<string, unknown> = packageJson;
+const betaVersion =
+  typeof packageJsonObject.betaVersion === 'string' ? packageJsonObject.betaVersion : undefined;
+const latestVersion =
+  typeof packageJsonObject.version === 'string' ? packageJsonObject.version : undefined;
 const newestVersion = betaVersion ?? latestVersion;
 
 if (!newestVersion) {

@@ -47,15 +47,13 @@ afterEach(() => {
 });
 
 describe('when using both composition API and screen options, composition API should take precedence', () => {
-  describe('Stack.Header.Title', () => {
-    it('should set title from Stack.Header.Title over options.title', () => {
+  describe('Stack.Screen.Title', () => {
+    it('should set title from Stack.Screen.Title over options.title', () => {
       renderRouter({
         _layout: () => (
           <Stack>
             <Stack.Screen name="index" options={{ title: 'Options Title' }}>
-              <Stack.Header>
-                <Stack.Header.Title>Composition Title</Stack.Header.Title>
-              </Stack.Header>
+              <Stack.Screen.Title>Composition Title</Stack.Screen.Title>
             </Stack.Screen>
           </Stack>
         ),
@@ -89,18 +87,16 @@ describe('when using both composition API and screen options, composition API sh
       const DEFAULT_FONT_WEIGHT = '600';
       const DEFAULT_COLOR = 'rgb(28, 28, 30)';
 
-      it(`should set styles from Stack.Header.Title over options styles`, () => {
+      it(`should set styles from Stack.Screen.Title over options styles`, () => {
         renderRouter({
           _layout: () => (
             <Stack>
               <Stack.Screen
                 name="index"
                 options={{ title: 'Options Title', headerTitleStyle: otherStyles }}>
-                <Stack.Header>
-                  <Stack.Header.Title style={{ ...expectedStyles }}>
-                    Composition Title
-                  </Stack.Header.Title>
-                </Stack.Header>
+                <Stack.Screen.Title style={{ ...expectedStyles }}>
+                  Composition Title
+                </Stack.Screen.Title>
               </Stack.Screen>
             </Stack>
           ),
@@ -126,133 +122,14 @@ describe('when using both composition API and screen options, composition API sh
           'color' in expectedStyles ? expectedStyles.color : DEFAULT_COLOR
         );
       });
-
-      it(`should set styles from options over Stack.Header.Title used at root level`, () => {
-        renderRouter({
-          _layout: () => (
-            <Stack>
-              <Stack.Header>
-                <Stack.Header.Title style={{ ...otherStyles }}>Root Title</Stack.Header.Title>
-              </Stack.Header>
-              <Stack.Screen
-                name="index"
-                options={{ title: 'Options Title', headerTitleStyle: expectedStyles }}
-              />
-            </Stack>
-          ),
-          index: () => {
-            return <Text testID="index">index</Text>;
-          },
-        });
-
-        expect(screen.getByTestId('index')).toBeVisible();
-        expect(ScreenStackItem).toHaveBeenCalledTimes(1);
-        expect(consoleWarnMock).not.toHaveBeenCalled();
-        expect(ScreenStackItem.mock.calls[0][0].headerConfig.title).toBe('Options Title');
-        expect(ScreenStackItem.mock.calls[0][0].headerConfig.titleFontFamily).toBe(
-          'fontFamily' in expectedStyles ? expectedStyles.fontFamily : DEFAULT_FONT_FAMILY
-        );
-        expect(ScreenStackItem.mock.calls[0][0].headerConfig.titleFontSize).toBe(
-          'fontSize' in expectedStyles ? expectedStyles.fontSize : undefined
-        );
-        expect(ScreenStackItem.mock.calls[0][0].headerConfig.titleFontWeight).toBe(
-          'fontWeight' in expectedStyles ? expectedStyles.fontWeight : DEFAULT_FONT_WEIGHT
-        );
-        expect(ScreenStackItem.mock.calls[0][0].headerConfig.titleColor).toBe(
-          'color' in expectedStyles ? expectedStyles.color : DEFAULT_COLOR
-        );
-      });
-
-      it(`should set styles from Stack.Header.Title over screen options`, () => {
-        renderRouter({
-          _layout: () => (
-            <Stack screenOptions={{ title: 'Title', headerTitleStyle: otherStyles }}>
-              <Stack.Header>
-                <Stack.Header.Title style={{ ...expectedStyles }}>
-                  Composition Title
-                </Stack.Header.Title>
-              </Stack.Header>
-              <Stack.Screen name="index" />
-            </Stack>
-          ),
-          index: () => {
-            return <Text testID="index">index</Text>;
-          },
-        });
-
-        expect(screen.getByTestId('index')).toBeVisible();
-        expect(ScreenStackItem).toHaveBeenCalledTimes(1);
-        expect(consoleWarnMock).not.toHaveBeenCalled();
-        expect(ScreenStackItem.mock.calls[0][0].headerConfig.title).toBe('Composition Title');
-        expect(ScreenStackItem.mock.calls[0][0].headerConfig.titleFontFamily).toBe(
-          'fontFamily' in expectedStyles ? expectedStyles.fontFamily : DEFAULT_FONT_FAMILY
-        );
-        expect(ScreenStackItem.mock.calls[0][0].headerConfig.titleFontSize).toBe(
-          'fontSize' in expectedStyles ? expectedStyles.fontSize : undefined
-        );
-        expect(ScreenStackItem.mock.calls[0][0].headerConfig.titleFontWeight).toBe(
-          'fontWeight' in expectedStyles ? expectedStyles.fontWeight : DEFAULT_FONT_WEIGHT
-        );
-        expect(ScreenStackItem.mock.calls[0][0].headerConfig.titleColor).toBe(
-          'color' in expectedStyles ? expectedStyles.color : DEFAULT_COLOR
-        );
-      });
     });
 
-    it('should set options.title over Stack.Header.Title declared in root scope', () => {
-      renderRouter({
-        _layout: () => (
-          <Stack>
-            <Stack.Header>
-              <Stack.Header.Title>Root Title</Stack.Header.Title>
-            </Stack.Header>
-            <Stack.Screen name="index" options={{ title: 'Options Title' }} />
-          </Stack>
-        ),
-        index: () => {
-          return <Text testID="index">index</Text>;
-        },
-      });
-
-      expect(screen.getByTestId('index')).toBeVisible();
-      expect(ScreenStackItem).toHaveBeenCalledTimes(1);
-      expect(consoleWarnMock).not.toHaveBeenCalled();
-      expect(ScreenStackItem.mock.calls[0][0].headerConfig.title).toBe('Options Title');
-    });
-
-    it('should set screen Stack.Header.Title over Stack.Header.Title declared in root scope', () => {
-      renderRouter({
-        _layout: () => (
-          <Stack>
-            <Stack.Header>
-              <Stack.Header.Title>Root Title</Stack.Header.Title>
-            </Stack.Header>
-            <Stack.Screen name="index" options={{ title: 'Options Title' }}>
-              <Stack.Header>
-                <Stack.Header.Title>Screen Title</Stack.Header.Title>
-              </Stack.Header>
-            </Stack.Screen>
-          </Stack>
-        ),
-        index: () => {
-          return <Text testID="index">index</Text>;
-        },
-      });
-
-      expect(screen.getByTestId('index')).toBeVisible();
-      expect(ScreenStackItem).toHaveBeenCalledTimes(1);
-      expect(consoleWarnMock).not.toHaveBeenCalled();
-      expect(ScreenStackItem.mock.calls[0][0].headerConfig.title).toBe('Screen Title');
-    });
-
-    it('should set screen Stack.Header.Title over screenOptions title', () => {
+    it('should set screen Stack.Toolbar.Title over screenOptions title', () => {
       renderRouter({
         _layout: () => (
           <Stack screenOptions={{ title: 'ScreenOptions Title' }}>
             <Stack.Screen name="index" options={{ title: 'Options Title' }}>
-              <Stack.Header>
-                <Stack.Header.Title>Screen Title</Stack.Header.Title>
-              </Stack.Header>
+              <Stack.Screen.Title>Screen Title</Stack.Screen.Title>
             </Stack.Screen>
           </Stack>
         ),
@@ -282,51 +159,57 @@ it('should set options correctly, using composition without separate components'
         <Stack.Screen name="index">
           <Stack.Header
             style={{ backgroundColor: '#fff' }}
-            largeStyle={{ backgroundColor: '#f00' }}>
-            <Stack.Header.Title>Custom Title</Stack.Header.Title>
-            <Stack.Header.BackButton withMenu={false}>Custom back</Stack.Header.BackButton>
-            <Stack.Header.Right asChild>
-              <CustomHeaderRight />
-            </Stack.Header.Right>
-            <Stack.Header.Left asChild>
-              <CustomHeaderLeft />
-            </Stack.Header.Left>
-            <Stack.Header.SearchBar
-              placeholder="Search"
-              textColor="red"
-              tintColor="orange"
-              placement="integrated"
-              autoCapitalize="sentences"
-            />
-          </Stack.Header>
+            largeStyle={{ backgroundColor: '#f00' }}
+          />
+          <Stack.Screen.Title>Custom Title</Stack.Screen.Title>
+          <Stack.Screen.BackButton withMenu={false}>Custom back</Stack.Screen.BackButton>
+          <Stack.Toolbar placement="right" asChild>
+            <CustomHeaderRight />
+          </Stack.Toolbar>
+          <Stack.Toolbar placement="left" asChild>
+            <CustomHeaderLeft />
+          </Stack.Toolbar>
         </Stack.Screen>
         <Stack.Screen name="a">
-          <Stack.Header style={{ backgroundColor: '#000', shadowColor: 'transparent' }}>
-            <Stack.Header.Title large>Another Title</Stack.Header.Title>
-            <Stack.Header.BackButton withMenu={false}>Back123</Stack.Header.BackButton>
-          </Stack.Header>
+          <Stack.Header style={{ backgroundColor: '#000', shadowColor: 'transparent' }} />
+          <Stack.Screen.Title large>Another Title</Stack.Screen.Title>
+          <Stack.Screen.BackButton withMenu={false}>Back123</Stack.Screen.BackButton>
         </Stack.Screen>
       </Stack>
     ),
     index: () => {
-      return <Text testID="index">index</Text>;
+      return (
+        <>
+          <Stack.SearchBar
+            placeholder="Search"
+            textColor="red"
+            tintColor="orange"
+            placement="integrated"
+            autoCapitalize="sentences"
+          />
+          <Text testID="index">index</Text>
+        </>
+      );
     },
     a: () => <Text testID="a">a</Text>,
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
-  expect(ScreenStackItem).toHaveBeenCalledTimes(1);
+  // 2 calls: one from layout, one from dynamic SearchBar
+  expect(ScreenStackItem).toHaveBeenCalledTimes(2);
   expect(SearchBar).toHaveBeenCalledTimes(1);
-  expect(ScreenStackHeaderLeftView).toHaveBeenCalledTimes(1);
-  expect(ScreenStackHeaderRightView).toHaveBeenCalledTimes(1);
+  // Left/Right views render on each ScreenStackItem call
+  expect(ScreenStackHeaderLeftView).toHaveBeenCalledTimes(2);
+  expect(ScreenStackHeaderRightView).toHaveBeenCalledTimes(2);
   expect(consoleWarnMock).not.toHaveBeenCalled();
+  // First call is from layout
   expect(ScreenStackItem.mock.calls[0][0].headerConfig.title).toBe('Custom Title');
   expect(ScreenStackItem.mock.calls[0][0].headerConfig.backgroundColor).toBe('#fff');
   expect(ScreenStackItem.mock.calls[0][0].headerConfig.largeTitleBackgroundColor).toBe('#f00');
   expect(ScreenStackItem.mock.calls[0][0].headerConfig.disableBackButtonMenu).toBe(true);
   expect(ScreenStackItem.mock.calls[0][0].headerConfig.backTitle).toBe('Custom back');
   expect(ScreenStackItem.mock.calls[0][0].headerConfig.hideShadow).toBe(undefined);
-  expect(ScreenStackItem.mock.calls[0][0].headerConfig.hideShadow).toBe(undefined);
+  // Second call adds SearchBar options
   expect(SearchBar.mock.calls[0][0]).toMatchObject({
     placeholder: 'Search',
     textColor: 'red',
@@ -388,9 +271,9 @@ it('custom components used within composition API should not render', () => {
   expect(customIndexRenderedSpy).not.toHaveBeenCalled();
 });
 
-it('should console warn, when custom component is used within <Stack.Header> or <Stack.Screen>', () => {
+it('should console warn, when custom component is used within <Stack.Screen>', () => {
   function CustomTitle() {
-    return <Stack.Header.Title>Custom Title</Stack.Header.Title>;
+    return <Stack.Screen.Title>Custom Title</Stack.Screen.Title>;
   }
   function CustomIndexHeader() {
     return (
@@ -402,8 +285,8 @@ it('should console warn, when custom component is used within <Stack.Header> or 
   function CustomAHeaderContent() {
     return (
       <>
-        <Stack.Header.Title large>Another Title</Stack.Header.Title>
-        <Stack.Header.BackButton withMenu={false}>Back123</Stack.Header.BackButton>
+        <Stack.Screen.Title large>Another Title</Stack.Screen.Title>
+        <Stack.Screen.BackButton withMenu={false}>Back123</Stack.Screen.BackButton>
       </>
     );
   }
@@ -430,10 +313,10 @@ it('should console warn, when custom component is used within <Stack.Header> or 
   expect(ScreenStackItem).toHaveBeenCalledTimes(1);
   expect(consoleWarnMock).toHaveBeenCalledTimes(2);
   expect(consoleWarnMock.mock.calls[0][0]).toBe(
-    'Warning: Unknown child element passed to Stack.Screen: CustomIndexHeader'
+    'Unknown child element passed to Stack.Screen: CustomIndexHeader'
   );
   expect(consoleWarnMock.mock.calls[1][0]).toBe(
-    'Warning: Unknown child element passed to Stack.Header: CustomAHeaderContent'
+    "To render a custom header, set the 'asChild' prop to true on Stack.Header."
   );
   expect(ScreenStackItem.mock.calls[0][0].headerConfig.title).toBe('index');
   expect(ScreenStackItem.mock.calls[0][0].headerConfig.backgroundColor).toBe('rgb(255, 255, 255)');
@@ -448,6 +331,7 @@ it('should console warn, when custom component is used within <Stack.Header> or 
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.title).toBe('a');
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.backgroundColor).toBe('#000');
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.hideShadow).toBe(true);
+  expect(ScreenStackItem.mock.calls[1][0].headerConfig.disableBackButtonMenu).toBe(false);
 });
 
 it('should set options correctly, when used inside page', () => {
@@ -474,24 +358,24 @@ it('should set options correctly, when used inside page', () => {
           <Stack.Screen>
             <Stack.Header
               style={{ backgroundColor: '#fff' }}
-              largeStyle={{ backgroundColor: '#f00' }}>
-              <Stack.Header.Title>Custom Title</Stack.Header.Title>
-              <Stack.Header.BackButton withMenu={false}>Custom back</Stack.Header.BackButton>
-              <Stack.Header.Right asChild>
-                <CustomHeaderRight />
-              </Stack.Header.Right>
-              <Stack.Header.Left asChild>
-                <CustomHeaderLeft />
-              </Stack.Header.Left>
-              <Stack.Header.SearchBar
-                placeholder="Search"
-                textColor="red"
-                tintColor="orange"
-                placement="integrated"
-                autoCapitalize="sentences"
-              />
-            </Stack.Header>
+              largeStyle={{ backgroundColor: '#f00' }}
+            />
+            <Stack.Screen.Title>Custom Title</Stack.Screen.Title>
+            <Stack.Screen.BackButton withMenu={false}>Custom back</Stack.Screen.BackButton>
+            <Stack.Toolbar placement="right" asChild>
+              <CustomHeaderRight />
+            </Stack.Toolbar>
+            <Stack.Toolbar placement="left" asChild>
+              <CustomHeaderLeft />
+            </Stack.Toolbar>
           </Stack.Screen>
+          <Stack.SearchBar
+            placeholder="Search"
+            textColor="red"
+            tintColor="orange"
+            placement="integrated"
+            autoCapitalize="sentences"
+          />
           <Text testID="index">index</Text>;
         </>
       );
@@ -499,6 +383,7 @@ it('should set options correctly, when used inside page', () => {
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
+  // React batches the Stack.Screen and SearchBar updates
   expect(ScreenStackItem).toHaveBeenCalledTimes(2);
   expect(SearchBar).toHaveBeenCalledTimes(1);
   expect(ScreenStackHeaderLeftView).toHaveBeenCalledTimes(1);
@@ -509,12 +394,12 @@ it('should set options correctly, when used inside page', () => {
   expect(ScreenStackItem.mock.calls[0][0].headerConfig.backgroundColor).toBe('#000');
   expect(ScreenStackItem.mock.calls[0][0].headerConfig.largeTitleBackgroundColor).toBe('#aaa');
 
+  // Second call has the dynamic page options merged
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.title).toBe('Custom Title');
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.backgroundColor).toBe('#fff');
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.largeTitleBackgroundColor).toBe('#f00');
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.disableBackButtonMenu).toBe(true);
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.backTitle).toBe('Custom back');
-  expect(ScreenStackItem.mock.calls[1][0].headerConfig.hideShadow).toBe(undefined);
   expect(ScreenStackItem.mock.calls[1][0].headerConfig.hideShadow).toBe(undefined);
   expect(SearchBar.mock.calls[0][0]).toMatchObject({
     placeholder: 'Search',

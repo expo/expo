@@ -4,12 +4,16 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '14.0.7'
+version = '55.0.0'
 
 android {
   namespace "expo.modules.sharing"
   defaultConfig {
     versionCode 16
-    versionName '14.0.7'
+    versionName '55.0.0'
   }
+}
+
+dependencies {
+  implementation 'com.facebook.react:react-android'
 }
