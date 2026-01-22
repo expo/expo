@@ -3,19 +3,22 @@
  */
 import { ConfigAPI, NodePath, types } from '@babel/core';
 import nodePath from 'node:path';
-import resolveFrom from 'resolve-from';
 
 import { getExpoRouterAbsoluteAppRoot, getPossibleProjectRoot, getAsyncRoutes } from './common';
 
 const debug = require('debug')('expo:babel:router');
 
-function getExpoRouterAppRoot(projectRoot: string, appFolder: string) {
-  // TODO: We should have cache invalidation if the expo-router/entry file location changes.
-  const routerEntry = resolveFrom(projectRoot, 'expo-router/entry');
-
-  const appRoot = nodePath.relative(nodePath.dirname(routerEntry), appFolder);
-
-  debug('routerEntry', routerEntry, appFolder, appRoot);
+function getExpoRouterAppRoot(
+  currentFile: string | undefined,
+  projectRoot: string,
+  appFolder: string
+) {
+  // FIXME(@kitten): This is only defaulting to `projectRoot` for the backport. `projectRoot` is wrong here,
+  // but was previously used instead of the filename to compute the relative path. We're still keeping it here
+  // to avoid a new breaking error/invariant in case the `filename` is missing
+  const fromPath = (currentFile && nodePath.dirname(currentFile)) || projectRoot;
+  const appRoot = nodePath.relative(fromPath, appFolder);
+  debug('getExpoRouterAppRoot', currentFile, appFolder, appRoot);
   return appRoot;
 }
 
@@ -61,8 +64,9 @@ export function expoRouterBabelPlugin(api: ConfigAPI & { types: typeof types }) 
               if (key.value.startsWith('EXPO_ROUTER_ABS_APP_ROOT')) {
                 path.replaceWith(t.stringLiteral(routerAbsoluteRoot));
               } else if (key.value.startsWith('EXPO_ROUTER_APP_ROOT')) {
+                const filename = state.filename || state.file.opts.filename;
                 path.replaceWith(
-                  t.stringLiteral(getExpoRouterAppRoot(projectRoot, routerAbsoluteRoot))
+                  t.stringLiteral(getExpoRouterAppRoot(filename, projectRoot, routerAbsoluteRoot))
                 );
               }
             }
