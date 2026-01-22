@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "expo": "~55.0.0-preview.3",
-    "expo-status-bar": "~55.0.0",
+    "expo-status-bar": "~55.0.1",
     "react": "19.2.0",
     "react-native": "0.83.1"
   },

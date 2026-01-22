@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.0-beta.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.0-beta.0 — 2026-01-21
 
 - [ios] - Fix modifiers import path in the example ([#41811](https://github.com/expo/expo/pull/41811) by [@pchalupa](https://github.com/pchalupa))

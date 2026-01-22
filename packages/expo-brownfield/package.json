@@ -56,7 +56,7 @@
   "devDependencies": {
     "@types/diff": "^5.2.0",
     "expo-module-scripts": "^55.0.1",
-    "jest-expo": "~55.0.1"
+    "jest-expo": "~55.0.2"
   },
   "peerDependencies": {
     "expo": "*"

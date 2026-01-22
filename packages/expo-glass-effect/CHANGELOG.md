@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.0 — 2026-01-21
 
 - Add ref prop type to `GlassContainer` and `GlassView` components ([#41799](https://github.com/expo/expo/pull/41799) by [@pchalupa](https://github.com/pchalupa))

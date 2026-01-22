@@ -37,8 +37,8 @@
     "expo-application": "~55.0.0",
     "expo-constants": "~55.0.0",
     "expo-crypto": "~55.0.0",
-    "expo-linking": "~55.0.0",
-    "expo-web-browser": "~55.0.0",
+    "expo-linking": "~55.0.1",
+    "expo-web-browser": "~55.0.1",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
