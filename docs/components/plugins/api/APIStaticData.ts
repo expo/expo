@@ -52,6 +52,7 @@ export const nonLinkableTypes = [
   'ParsedQs',
   'PartialState',
   'PathUtilities',
+  'PermissionExpiration',
   'PermissionResponse',
   'PermissionHookBehavior',
   'PermissionHookOptions',
