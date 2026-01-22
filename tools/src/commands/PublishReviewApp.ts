@@ -2,7 +2,6 @@ import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import inquirer from 'inquirer';
 import path from 'path';
 import semver from 'semver';
 
@@ -39,22 +38,34 @@ function applyReviewConfig(appJson: any, sdkVersion: string): void {
   appJson.expo.version = sdkVersion;
 }
 
-async function loginToAppleReview(): Promise<void> {
-  logger.info('Logging in to applereview account...');
+async function getCurrentUser(): Promise<string | null> {
+  try {
+    const result = await spawnAsync('eas', ['whoami'], {
+      cwd: NCL_DIR,
+    });
+    return result.stdout.trim();
+  } catch {
+    return null;
+  }
+}
 
-  const { password } = await inquirer.prompt<{ password: string }>([
-    {
-      type: 'password',
-      name: 'password',
-      message: 'Enter password for applereview account:',
-      mask: '*',
-    },
-  ]);
+async function ensureLoggedInAsAppleReview(): Promise<string | null> {
+  const currentUser = await getCurrentUser();
 
-  await spawnAsync('eas', ['login', '--username', 'applereview', '--password', password], {
-    cwd: NCL_DIR,
-    stdio: 'inherit',
-  });
+  if (currentUser === REVIEW_CONFIG.owner) {
+    logger.info(`Already logged in as ${chalk.cyan(REVIEW_CONFIG.owner)}`);
+    return null;
+  }
+
+  if (currentUser) {
+    throw new Error(
+      `You are logged in as ${chalk.cyan(currentUser)}. Please run ${chalk.cyan('eas logout')} and then ${chalk.cyan(`eas login`)} as ${chalk.cyan(REVIEW_CONFIG.owner)} before running this command.`
+    );
+  }
+
+  throw new Error(
+    `You are not logged in. Please run ${chalk.cyan('eas login')} as ${chalk.cyan(REVIEW_CONFIG.owner)} before running this command.`
+  );
 }
 
 async function runEASUpdate(): Promise<void> {
@@ -67,11 +78,17 @@ async function runEASUpdate(): Promise<void> {
 }
 
 async function main(options: ActionOptions): Promise<void> {
+  // Get SDK version
+  const sdkVersion = await getSDKVersion();
+
+  // If not config-only, ensure logged in as applereview before modifying any files
+  if (!options.configOnly) {
+    await ensureLoggedInAsAppleReview();
+  }
+
   // Read current app.json (for backup/revert)
   const originalAppJson = await JsonFile.readAsync(APP_JSON_PATH);
 
-  // Get SDK version
-  const sdkVersion = await getSDKVersion();
   logger.info(`Setting sdkVersion and version to ${chalk.cyan(sdkVersion)}`);
 
   // Deep clone and apply review config
@@ -90,9 +107,6 @@ async function main(options: ActionOptions): Promise<void> {
   }
 
   try {
-    // Login to applereview
-    await loginToAppleReview();
-
     // Run eas update
     await runEASUpdate();
 
