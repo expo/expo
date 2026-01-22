@@ -1761,9 +1761,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           data = maybeResponse;
         }
 
-        const normalizedData = data === undefined ? {} : data;
-        debug('Loader data:', normalizedData, ' for location:', location.pathname);
-        return Response.json(normalizedData);
+        debug('Loader data:', data ?? null, ' for location:', location.pathname);
+        return Response.json(data ?? null);
       }
 
       debug('No loader found for location:', location.pathname);

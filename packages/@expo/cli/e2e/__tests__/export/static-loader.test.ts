@@ -84,11 +84,11 @@ describe.each(
     expect(data).toEqual({ foo: 'bar' });
   });
 
-  it('loader endpoint returns `{}` for `undefined` loader data', async () => {
+  it('loader endpoint returns `null` for `undefined` loader data', async () => {
     const response = await server.fetchAsync('/_expo/loaders/nullish/undefined');
     expect(response.status).toBe(200);
     const data = await response.json();
-    expect(data).toEqual({});
+    expect(data).toBeNull();
   });
 
   it('loader endpoint returns `null` for `null` loader data', async () => {

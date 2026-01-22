@@ -111,11 +111,11 @@ describe.each(
     expect(data).toHaveProperty('TEST_SECRET_KEY', 'test-secret-key');
   });
 
-  it('returns `{}` for `undefined` loader data', async () => {
+  it('returns `null` for `undefined` loader data', async () => {
     const response = await server.fetchAsync('/_expo/loaders/nullish/undefined');
     expect(response.status).toBe(200);
     const data = await response.json();
-    expect(data).toEqual({});
+    expect(data).toBeNull();
   });
 
   it('returns `null` for `null` loader data', async () => {

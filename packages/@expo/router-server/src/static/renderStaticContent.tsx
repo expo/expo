@@ -75,8 +75,7 @@ export async function getStaticContent(
   const loadedData =
     options?.loader !== undefined
       ? {
-          [location.pathname + location.search]:
-            options.loader.data === undefined ? {} : options.loader.data,
+          [location.pathname + location.search]: options.loader.data ?? null,
         }
       : null;
 
