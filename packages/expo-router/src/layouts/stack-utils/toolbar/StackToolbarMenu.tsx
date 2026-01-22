@@ -11,7 +11,7 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { NativeToolbarMenu, NativeToolbarMenuAction } from './bottom-toolbar-native-elements';
 import { useToolbarPlacement } from './context';
-import { Menu, MenuAction } from '../../../primitives';
+import { Menu, MenuAction } from '../../../primitives/menu';
 import { filterAllowedChildrenElements, isChildOfType } from '../../../utils/children';
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,

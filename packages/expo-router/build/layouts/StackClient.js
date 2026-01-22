@@ -440,6 +440,11 @@ function mapProtectedScreen(props) {
             .filter(Boolean),
     };
 }
+/**
+ * Renders a native stack navigator.
+ *
+ * @hideType
+ */
 const Stack = Object.assign((props) => {
     const { isStackAnimationDisabled } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const screenOptionsWithCompositionAPIOptions = (0, react_1.useMemo)(() => {

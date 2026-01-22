@@ -52,8 +52,6 @@ const children_1 = require("../utils/children");
  * This component renders a context menu action for a link.
  * It should only be used as a child of `Link.Menu` or `LinkMenu`.
  *
- * > **Note**: You can use the alias `Link.MenuAction` for this component.
- *
  * @platform ios
  */
 function LinkMenuAction(props) {
@@ -76,7 +74,7 @@ function LinkMenuAction(props) {
  * Groups context menu actions for a link.
  *
  * If multiple `Link.Menu` components are used within a single `Link`, only the first will be rendered.
- * Only `Link.MenuAction` and `LinkMenuAction` components are allowed as children.
+ * Only `Link.MenuAction` and `Link.Menu` components are allowed as children.
  *
  * @example
  * ```tsx
@@ -85,8 +83,6 @@ function LinkMenuAction(props) {
  *   <Link.MenuAction title="Action 2" onPress={() => {}} />
  * </Link.Menu>
  * ```
- *
- * > **Note**: You can use the alias `Link.Menu` for this component.
  *
  * @platform ios
  */
@@ -125,8 +121,6 @@ exports.LinkMenu = LinkMenu;
  *   <Link.Preview />
  * </Link>
  * ```
- *
- * > **Note**: You can use the alias `Link.Preview` for this component.
  *
  * @platform ios
  */
@@ -167,8 +161,6 @@ function LinkPreview(props) {
  *   </Link.Trigger>
  * </Link>
  * ```
- *
- * > **Note**: You can use the alias `Link.Trigger` for this component.
  *
  * @platform ios
  */

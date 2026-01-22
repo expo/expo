@@ -144,6 +144,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   MouseEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent',
+  NativeStackNavigationOptions: 'https://reactnavigation.org/docs/native-stack-navigator#options',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   OrientationChangeListener:
     '/versions/latest/sdk/screen-orientation/#orientationchangelistenerevent',

@@ -100,8 +100,6 @@ export interface LinkMenuActionProps {
  * This component renders a context menu action for a link.
  * It should only be used as a child of `Link.Menu` or `LinkMenu`.
  *
- * > **Note**: You can use the alias `Link.MenuAction` for this component.
- *
  * @platform ios
  */
 export function LinkMenuAction(props: LinkMenuActionProps) {
@@ -214,7 +212,7 @@ export interface LinkMenuProps {
  * Groups context menu actions for a link.
  *
  * If multiple `Link.Menu` components are used within a single `Link`, only the first will be rendered.
- * Only `Link.MenuAction` and `LinkMenuAction` components are allowed as children.
+ * Only `Link.MenuAction` and `Link.Menu` components are allowed as children.
  *
  * @example
  * ```tsx
@@ -223,8 +221,6 @@ export interface LinkMenuProps {
  *   <Link.MenuAction title="Action 2" onPress={() => {}} />
  * </Link.Menu>
  * ```
- *
- * > **Note**: You can use the alias `Link.Menu` for this component.
  *
  * @platform ios
  */
@@ -305,8 +301,6 @@ export interface LinkPreviewProps {
  * </Link>
  * ```
  *
- * > **Note**: You can use the alias `Link.Preview` for this component.
- *
  * @platform ios
  */
 export function LinkPreview(props: LinkPreviewProps) {
@@ -362,8 +356,6 @@ export interface LinkTriggerProps extends PropsWithChildren {
  *   </Link.Trigger>
  * </Link>
  * ```
- *
- * > **Note**: You can use the alias `Link.Trigger` for this component.
  *
  * @platform ios
  */
