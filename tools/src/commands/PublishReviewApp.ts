@@ -66,7 +66,7 @@ async function runEASUpdate(): Promise<void> {
   });
 }
 
-async function main(args: string[], options: ActionOptions): Promise<void> {
+async function main(options: ActionOptions): Promise<void> {
   // Read current app.json (for backup/revert)
   const originalAppJson = await JsonFile.readAsync(APP_JSON_PATH);
 
