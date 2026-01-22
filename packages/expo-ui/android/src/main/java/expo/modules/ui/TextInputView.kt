@@ -1,29 +1,30 @@
 package expo.modules.ui
 
+import android.content.Context
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.views.ExpoComposeView
 
 data class TextInputProps(
-  val defaultValue: String = "",
-  val placeholder: String = "",
-  val multiline: Boolean = false,
-  val numberOfLines: Int? = null,
-  val keyboardType: String = "default",
-  val autocorrection: Boolean = true,
-  val autoCapitalize: String = "none",
-  val modifiers: ModifierList = emptyList()
+  val defaultValue: MutableState<String> = mutableStateOf(""),
+  val placeholder: MutableState<String> = mutableStateOf(""),
+  val multiline: MutableState<Boolean> = mutableStateOf(false),
+  val numberOfLines: MutableState<Int?> = mutableStateOf(null),
+  val keyboardType: MutableState<String> = mutableStateOf("default"),
+  val autocorrection: MutableState<Boolean> = mutableStateOf(true),
+  val autoCapitalize: MutableState<String> = mutableStateOf("none"),
+  val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList())
 ) : ComposeProps
 
 private fun String.keyboardType(): KeyboardType {
@@ -52,41 +53,37 @@ private fun String.autoCapitalize(): KeyboardCapitalization {
   }
 }
 
-data class TextValueChangedEvent(
-  @Field val value: String
-) : Record
+class TextInputView(context: Context, appContext: AppContext) :
+  ExpoComposeView<TextInputProps>(context, appContext) {
+  override val props = TextInputProps()
+  private val onValueChanged by EventDispatcher()
 
-object TextInputFunctions {
-  const val SET_TEXT = "setText"
-}
+  private val textState = mutableStateOf<String?>(null)
 
-@Composable
-fun FunctionalComposableScope.TextInputContent(
-  props: TextInputProps,
-  onValueChanged: (TextValueChangedEvent) -> Unit
-) {
-  var value by remember { mutableStateOf(props.defaultValue) }
+  var text: String?
+    get() = textState.value
+    set(value) {
+      textState.value = value
+      onValueChanged(mapOf("value" to (value ?: "")))
+    }
 
-  // Register imperative handler
-  ImperativeHandler(TextInputFunctions.SET_TEXT) { text: String ->
-    value = text
-    onValueChanged(TextValueChangedEvent(text))
+  @Composable
+  override fun ComposableScope.Content() {
+    TextField(
+      value = requireNotNull(textState.value),
+      onValueChange = {
+        textState.value = it
+        onValueChanged(mapOf("value" to it))
+      },
+      placeholder = { Text(props.placeholder.value) },
+      maxLines = if (props.multiline.value) props.numberOfLines.value ?: Int.MAX_VALUE else 1,
+      singleLine = !props.multiline.value,
+      keyboardOptions = KeyboardOptions.Default.copy(
+        keyboardType = props.keyboardType.value.keyboardType(),
+        autoCorrectEnabled = props.autocorrection.value,
+        capitalization = props.autoCapitalize.value.autoCapitalize()
+      ),
+      modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content)
+    )
   }
-
-  TextField(
-    value = value,
-    onValueChange = {
-      value = it
-      onValueChanged(TextValueChangedEvent(value))
-    },
-    placeholder = { Text(props.placeholder) },
-    maxLines = if (props.multiline) props.numberOfLines ?: Int.MAX_VALUE else 1,
-    singleLine = !props.multiline,
-    keyboardOptions = KeyboardOptions.Default.copy(
-      keyboardType = props.keyboardType.keyboardType(),
-      autoCorrectEnabled = props.autocorrection,
-      capitalization = props.autoCapitalize.autoCapitalize()
-    ),
-    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)
-  )
 }

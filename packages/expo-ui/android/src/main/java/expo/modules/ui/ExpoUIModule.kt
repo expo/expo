@@ -112,19 +112,16 @@ class ExpoUIModule : Module() {
       ProgressContent(props)
     }
 
-    ExpoUIView(
-      "TextInputView",
-      events = {
-        Events("onValueChanged")
-      },
-      functions = {
-        AsyncFunction(TextInputFunctions.SET_TEXT) { text: String ->
-          callImperativeHandler(text)
+    View(TextInputView::class) {
+      Events("onValueChanged")
+      Prop("defaultValue", "") { view: TextInputView, text: String ->
+        if (view.text == null) {
+          view.text = text
         }
       }
-    ) { props: TextInputProps ->
-      val onValueChanged by remember { EventDispatcher<TextValueChangedEvent>() }
-      TextInputContent(props) { onValueChanged(it) }
+      AsyncFunction("setText") { view: TextInputView, text: String ->
+        view.text = text
+      }
     }
 
     ExpoUIView("BoxView") { props: LayoutProps ->

@@ -1,6 +1,5 @@
 package expo.modules.kotlin.views
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
@@ -172,71 +171,8 @@ class FunctionalComposableScope(
   inline fun <reified T> EventDispatcher(noinline coalescingKey: CoalescingKey<T>? = null): ViewEventDelegate<T> {
     return view.EventDispatcher<T>(coalescingKey)
   }
-
-  /**
-   * Registers an imperative handler that can be called from AsyncFunction via delegate().
-   *
-   * Usage:
-   * ```
-   * // In composable:
-   * ImperativeHandler(TextInputFunctions.SET_TEXT) { text: String ->
-   *   textState.value = text
-   * }
-   *
-   * // In ExpoUIModule functions block:
-   * AsyncFunction(TextInputFunctions.SET_TEXT) { text: String ->
-   *   delegate(text)
-   * }
-   * ```
-   */
-  inline fun <reified P0> ImperativeHandler(
-    name: String,
-    noinline handler: (P0) -> Unit
-  ) {
-    view.imperativeHandlers[name] = { args ->
-      @Suppress("UNCHECKED_CAST")
-      handler(args[0] as P0)
-    }
-  }
-
-  /**
-   * Registers an imperative handler with 2 parameters.
-   */
-  inline fun <reified P0, reified P1> ImperativeHandler(
-    name: String,
-    noinline handler: (P0, P1) -> Unit
-  ) {
-    view.imperativeHandlers[name] = { args ->
-      @Suppress("UNCHECKED_CAST")
-      handler(args[0] as P0, args[1] as P1)
-    }
-  }
-
-  /**
-   * Registers an imperative handler with 3 parameters.
-   */
-  inline fun <reified P0, reified P1, reified P2> ImperativeHandler(
-    name: String,
-    noinline handler: (P0, P1, P2) -> Unit
-  ) {
-    view.imperativeHandlers[name] = { args ->
-      @Suppress("UNCHECKED_CAST")
-      handler(args[0] as P0, args[1] as P1, args[2] as P2)
-    }
-  }
-
-  /**
-   * Registers an imperative handler with no parameters.
-   */
-  fun ImperativeHandler(
-    name: String,
-    handler: () -> Unit
-  ) {
-    view.imperativeHandlers[name] = { handler() }
-  }
 }
 
-@SuppressLint("ViewConstructor")
 class ComposeFunctionHolder<Props : ComposeProps>(
   context: Context,
   appContext: AppContext,
@@ -246,52 +182,11 @@ class ComposeFunctionHolder<Props : ComposeProps>(
 ) : ExpoComposeView<Props>(context, appContext), ViewFunctionHolder {
   val propsMutableState = mutableStateOf(props)
 
-  /**
-   * Map of imperative function handlers registered by composables via [ImperativeHandler].
-   * Key is the function name, value is the handler.
-   */
-  @PublishedApi
-  internal val imperativeHandlers = mutableMapOf<String, (Array<out Any?>) -> Any?>()
-
-  /**
-   * Calls an imperative function handler registered by the composable.
-   * Called by AsyncFunction implementations via [AsyncFunctionScope.delegate].
-   */
-  fun callImperative(name: String, vararg args: Any?): Any? {
-    val handler = imperativeHandlers[name]
-      ?: throw IllegalStateException("No imperative handler registered for '$name'. Make sure to use 'ImperativeHandler(\"$name\") { ... }' in your composable.")
-    return handler(args)
-  }
-
   @Composable
   override fun ComposableScope.Content() {
     val props by propsMutableState
     with(FunctionalComposableScope(this@ComposeFunctionHolder, this@Content)) {
       composableContent(props)
     }
-  }
-}
-
-/**
- * Scope for AsyncFunction lambdas that provides access to call the imperative handler.
- * The function name is captured from the AsyncFunction definition.
- *
- * Usage:
- * ```
- * AsyncFunction("setText") { text: String ->
- *   callImperativeHandler(text)
- * }
- * ```
- */
-class AsyncFunctionScope<Props : ComposeProps>(
-  val view: ComposeFunctionHolder<Props>,
-  @PublishedApi internal val functionName: String
-) {
-  /**
-   * Calls the [ImperativeHandler] registered by the composable.
-   * The handler name is automatically derived from the AsyncFunction name.
-   */
-  fun callImperativeHandler(vararg args: Any?): Any? {
-    return view.callImperative(functionName, *args)
   }
 }

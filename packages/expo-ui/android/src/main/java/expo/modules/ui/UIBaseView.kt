@@ -9,8 +9,7 @@ import expo.modules.kotlin.views.ModuleDefinitionBuilderWithCompose
 inline fun <reified Props : ComposeProps> ModuleDefinitionBuilderWithCompose.ExpoUIView(
   name: String,
   events: ComposeViewFunctionDefinitionBuilder<Props>.() -> Unit = {},
-  functions: ComposeViewFunctionDefinitionBuilder<Props>.() -> Unit = {},
   noinline viewFunction: @Composable FunctionalComposableScope.(props: Props) -> Unit
 ) {
-  return View(name, events, functions, viewFunction)
+  return View(name, events, viewFunction)
 }
