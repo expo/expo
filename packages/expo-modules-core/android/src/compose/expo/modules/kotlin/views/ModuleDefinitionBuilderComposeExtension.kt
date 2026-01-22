@@ -3,11 +3,16 @@
 package expo.modules.kotlin.views
 
 import androidx.compose.runtime.Composable
+import expo.modules.kotlin.functions.AsyncFunctionComponent
+import expo.modules.kotlin.functions.Queues
+import expo.modules.kotlin.functions.createAsyncFunctionComponent
 import expo.modules.kotlin.modules.DefinitionMarker
 import expo.modules.kotlin.modules.InternalModuleDefinitionBuilder
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.types.AnyType
 import expo.modules.kotlin.types.LazyKType
+import expo.modules.kotlin.types.enforceType
+import expo.modules.kotlin.types.toArgsArray
 import expo.modules.kotlin.views.decorators.UseCSSProps
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -40,10 +45,12 @@ open class ModuleDefinitionBuilderWithCompose(
   inline fun <reified Props : ComposeProps> View(
     name: String,
     events: ComposeViewFunctionDefinitionBuilder<Props>.() -> Unit = {},
-    noinline viewFunction: @Composable ExpoViewComposableScope.(props: Props) -> Unit
+    functions: ComposeViewFunctionDefinitionBuilder<Props>.() -> Unit = {},
+    noinline viewFunction: @Composable FunctionalComposableScope.(props: Props) -> Unit
   ) {
     val definitionBuilder = ComposeViewFunctionDefinitionBuilder(name, Props::class, viewFunction)
     events.invoke(definitionBuilder)
+    functions.invoke(definitionBuilder)
     registerViewDefinition(definitionBuilder.build())
   }
 }
@@ -51,12 +58,23 @@ open class ModuleDefinitionBuilderWithCompose(
 @DefinitionMarker
 class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps>(
   val name: String,
-  val propsClass: KClass<Props>,
-  val viewFunction: @Composable ExpoViewComposableScope.(props: Props) -> Unit
+  @PublishedApi internal val propsClass: KClass<Props>,
+  val viewFunction: @Composable FunctionalComposableScope.(props: Props) -> Unit
 ) {
   private var callbacksDefinition: CallbacksDefinition? = null
 
+  @PublishedApi
+  internal var asyncFunctions = mutableMapOf<String, AsyncFunctionComponent>()
+
   fun build(): ViewManagerDefinition {
+    val viewType = LazyKType(classifier = ComposeFunctionHolder::class, kTypeProvider = { typeOf<ComposeFunctionHolder<Props>>() })
+
+    asyncFunctions.forEach { (_, function) ->
+      function.runOnQueue(Queues.MAIN)
+      function.ownerType = viewType
+      function.canTakeOwner = true
+    }
+
     return ViewManagerDefinition(
       name = name,
       viewFactory = { context, appContext ->
@@ -72,7 +90,8 @@ class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps>(
       props = propsClass.memberProperties.associate { prop ->
         val kType = prop.returnType
         prop.name to ComposeViewProp(prop.name, AnyType(kType), prop)
-      }
+      },
+      asyncFunctions = asyncFunctions.values.toList()
     )
   }
 
@@ -89,5 +108,71 @@ class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps>(
   @JvmName("EventsWithArray")
   fun Events(callbacks: Array<String>) {
     callbacksDefinition = CallbacksDefinition(callbacks)
+  }
+
+  /**
+   * Creates an async function with a receiver scope that provides access to `callImperativeHandler`.
+   * Use `callImperativeHandler` to call the handler registered by the composable via `ImperativeHandler`.
+   *
+   * Usage in functions block:
+   * ```
+   * AsyncFunction("setText") { text: String ->
+   *   callImperativeHandler(text)
+   * }
+   * ```
+   *
+   * Usage in composable:
+   * ```
+   * ImperativeHandler("setText") { text: String ->
+   *   textState.value = text
+   * }
+   * ```
+   */
+  inline fun <reified R> AsyncFunction(
+    name: String,
+    crossinline body: AsyncFunctionScope<Props>.() -> R
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<ComposeFunctionHolder<Props>>()) { (view) ->
+      enforceType<ComposeFunctionHolder<Props>>(view)
+      AsyncFunctionScope(view, name).body()
+    }.also {
+      asyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0> AsyncFunction(
+    name: String,
+    crossinline body: AsyncFunctionScope<Props>.(p0: P0) -> R
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<ComposeFunctionHolder<Props>, P0>()) { (view, p0) ->
+      enforceType<ComposeFunctionHolder<Props>, P0>(view, p0)
+      AsyncFunctionScope(view, name).body(p0)
+    }.also {
+      asyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1> AsyncFunction(
+    name: String,
+    crossinline body: AsyncFunctionScope<Props>.(p0: P0, p1: P1) -> R
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<ComposeFunctionHolder<Props>, P0, P1>()) { (view, p0, p1) ->
+      enforceType<ComposeFunctionHolder<Props>, P0, P1>(view, p0, p1)
+      AsyncFunctionScope(view, name).body(p0, p1)
+    }.also {
+      asyncFunctions[name] = it
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2> AsyncFunction(
+    name: String,
+    crossinline body: AsyncFunctionScope<Props>.(p0: P0, p1: P1, p2: P2) -> R
+  ): AsyncFunctionComponent {
+    return createAsyncFunctionComponent(name, toArgsArray<ComposeFunctionHolder<Props>, P0, P1, P2>()) { (view, p0, p1, p2) ->
+      enforceType<ComposeFunctionHolder<Props>, P0, P1, P2>(view, p0, p1, p2)
+      AsyncFunctionScope(view, name).body(p0, p1, p2)
+    }.also {
+      asyncFunctions[name] = it
+    }
   }
 }

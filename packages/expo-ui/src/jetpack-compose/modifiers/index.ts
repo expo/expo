@@ -1,6 +1,6 @@
 import { type ColorValue } from 'react-native';
 
-import { parseJSXShape, ShapeJSXElement } from './Shape';
+import { parseJSXShape, ShapeJSXElement } from '../Shape';
 
 /**
  * Modifier configuration for Jetpack Compose views.

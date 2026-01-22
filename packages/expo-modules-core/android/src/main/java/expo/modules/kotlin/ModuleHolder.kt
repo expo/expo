@@ -11,6 +11,7 @@ import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinitionData
 import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.tracing.trace
 import kotlinx.coroutines.launch
@@ -19,7 +20,14 @@ class ModuleHolder<T : Module>(
   val module: T,
   private val _name: String?
 ) {
-  val definition = module.definition()
+  val definition: ModuleDefinitionData
+    get() {
+      try {
+        return module.definition()
+      } catch (e: Exception) {
+        throw e
+      }
+    }
 
   val name get() = _name ?: definition.name
 

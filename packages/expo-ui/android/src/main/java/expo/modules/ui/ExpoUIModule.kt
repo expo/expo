@@ -3,7 +3,6 @@ package expo.modules.ui
 import androidx.compose.runtime.remember
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.viewevent.getValue
 import expo.modules.ui.button.ButtonContent
 import expo.modules.ui.button.ButtonPressedEvent
@@ -20,7 +19,21 @@ class ExpoUIModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoUI")
 
-    View("BottomSheetView", events = {
+    //region Views use expo-modules-core DSL for uncommon features
+
+    View(HostView::class) {
+      Events("onLayoutContent")
+
+      OnViewDidUpdateProps { view ->
+        view.onViewDidUpdateProps()
+      }
+    }
+
+    //endregion Views use expo-modules-core DSL for uncommon features
+
+    //region Expo UI views
+
+    ExpoUIView("BottomSheetView", events = {
       Events("onIsOpenedChange")
     }) { props: BottomSheetProps ->
       val onIsOpenedChange by remember { EventDispatcher<IsOpenedChangeEvent>() }
@@ -28,56 +41,56 @@ class ExpoUIModule : Module() {
     }
 
     // Defines a single view for now – a single choice segmented control
-    View("PickerView", events = {
+    ExpoUIView("PickerView", events = {
       Events("onOptionSelected")
     }) { props: PickerProps ->
       val onOptionSelected by remember { EventDispatcher<PickerOptionSelectedEvent>() }
       PickerContent(props) { onOptionSelected(it) }
     }
 
-    View("SwitchView", events = {
+    ExpoUIView("SwitchView", events = {
       Events("onValueChange")
     }) { props: SwitchProps ->
       val onValueChange by remember { EventDispatcher<ValueChangeEvent>() }
       SwitchContent(props) { onValueChange(it) }
     }
 
-    View("Button", events = {
+    ExpoUIView("Button", events = {
       Events("onButtonPressed")
     }) { props: ButtonProps ->
       val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
       ButtonContent(props) { onButtonPressed(it) }
     }
 
-    View("IconButton", events = {
+    ExpoUIView("IconButton", events = {
       Events("onButtonPressed")
     }) { props: IconButtonProps ->
       val onButtonPressed by remember { EventDispatcher<ButtonPressedEvent>() }
       IconButtonContent(props) { onButtonPressed(it) }
     }
 
-    View("SliderView", events = {
+    ExpoUIView("SliderView", events = {
       Events("onValueChanged")
     }) { props: SliderProps ->
       SliderContent(props)
     }
 
-    View("ShapeView") { props: ShapeProps ->
+    ExpoUIView("ShapeView") { props: ShapeProps ->
       ShapeContent(props)
     }
 
-    View("DividerView") { props: DividerProps ->
+    ExpoUIView("DividerView") { props: DividerProps ->
       DividerContent(props)
     }
 
-    View("DateTimePickerView", events = {
+    ExpoUIView("DateTimePickerView", events = {
       Events("onDateSelected")
     }) { props: DateTimePickerProps ->
       val onDateSelected by remember { EventDispatcher<DatePickerResult>() }
       DateTimePickerContent(props) { onDateSelected(it) }
     }
 
-    View("ContextMenuView", events = {
+    ExpoUIView("ContextMenuView", events = {
       Events(
         "onContextMenuButtonPressed",
         "onContextMenuSwitchValueChanged",
@@ -95,52 +108,46 @@ class ExpoUIModule : Module() {
       )
     }
 
-    View("ProgressView") { props: ProgressProps ->
+    ExpoUIView("ProgressView") { props: ProgressProps ->
       ProgressContent(props)
     }
 
-    View(TextInputView::class) {
-      Events("onValueChanged")
-      Prop("defaultValue", "") { view: TextInputView, text: String ->
-        if (view.text == null) {
-          view.text = text
+    ExpoUIView(
+      "TextInputView",
+      events = {
+        Events("onValueChanged")
+      },
+      functions = {
+        AsyncFunction(TextInputFunctions.SET_TEXT) { text: String ->
+          callImperativeHandler(text)
         }
       }
-      AsyncFunction("setText") { view: TextInputView, text: String ->
-        view.text = text
-      }
+    ) { props: TextInputProps ->
+      val onValueChanged by remember { EventDispatcher<TextValueChangedEvent>() }
+      TextInputContent(props) { onValueChanged(it) }
     }
 
-    View("BoxView") { props: LayoutProps ->
+    ExpoUIView("BoxView") { props: LayoutProps ->
       BoxContent(props)
     }
 
-    View("RowView") { props: LayoutProps ->
+    ExpoUIView("RowView") { props: LayoutProps ->
       RowContent(props)
     }
 
-    View("ColumnView") { props: LayoutProps ->
+    ExpoUIView("ColumnView") { props: LayoutProps ->
       ColumnContent(props)
     }
 
-    // HostView kept as class-based due to OnViewDidUpdateProps callback and custom measure logic
-    View(HostView::class) {
-      Events("onLayoutContent")
-
-      OnViewDidUpdateProps { view ->
-        view.onViewDidUpdateProps()
-      }
-    }
-
-    View("TextView") { props: TextProps ->
+    ExpoUIView("TextView") { props: TextProps ->
       TextContent(props)
     }
 
-    View("CarouselView") { props: CarouselProps ->
+    ExpoUIView("CarouselView") { props: CarouselProps ->
       CarouselContent(props)
     }
 
-    View("AlertDialogView", events = {
+    ExpoUIView("AlertDialogView", events = {
       Events(
         "onDismissPressed",
         "onConfirmPressed"
@@ -155,7 +162,7 @@ class ExpoUIModule : Module() {
       )
     }
 
-    View("ChipView", events = {
+    ExpoUIView("ChipView", events = {
       Events(
         "onPress",
         "onDismiss"
@@ -165,5 +172,7 @@ class ExpoUIModule : Module() {
       val onDismiss by remember { EventDispatcher<ChipPressedEvent>() }
       ChipContent(props, { onPress(it) }, { onDismiss(it) })
     }
+
+    //endregion Expo UI views
   }
 }
