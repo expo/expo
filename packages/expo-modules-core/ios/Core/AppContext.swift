@@ -1,13 +1,27 @@
 @preconcurrency import React
 import Combine
 
+@MainActor
+public protocol AnyNativeState: AnyObject, ObservableObject {
+  var id: String { get }
+  var rawValue: Any? { get set }
+}
 
 @MainActor
-public final class NativeState: ObservableObject {
+public final class NativeState<T>: AnyNativeState {
   public let id: String
-  @Published public var value: String
+  @Published public var value: T
 
-  init(id: String, initialValue: String) {
+  public var rawValue: Any? {
+    get { value }
+    set {
+      if let newValue = newValue as? T {
+        value = newValue
+      }
+    }
+  }
+
+  public init(id: String, initialValue: T) {
     self.id = id
     self.value = initialValue
   }
@@ -17,22 +31,36 @@ public final class NativeState: ObservableObject {
 public final class NativeStateRegistry {
   public static let shared = NativeStateRegistry()
 
-  private var states: [String: NativeState] = [:]
+  private var states: [String: AnyNativeState] = [:]
 
-  public func createState(id: String, initialValue: String) {
-    states[id] = NativeState(id: id, initialValue: initialValue)
+  @discardableResult
+  public func createState<T>(id: String, initialValue: T) -> NativeState<T> {
+    let state = NativeState<T>(id: id, initialValue: initialValue)
+    states[id] = state
+    return state
   }
 
-  public func getState(id: String) -> NativeState? {
+  @discardableResult
+  public func createAnyState(id: String, initialValue: Any?) -> NativeState<Any?> {
+    let state = NativeState<Any?>(id: id, initialValue: initialValue)
+    states[id] = state
+    return state
+  }
+
+  public func getState<T>(id: String) -> NativeState<T>? {
+    return states[id] as? NativeState<T>
+  }
+
+  public func getAnyState(id: String) -> AnyNativeState? {
     return states[id]
   }
 
-  public func getValue(id: String) -> String? {
-    return states[id]?.value
+  public func getValue(id: String) -> Any? {
+    return states[id]?.rawValue
   }
 
-  public func setValue(id: String, value: String) {
-    states[id]?.value = value
+  public func setValue(id: String, value: Any?) {
+    states[id]?.rawValue = value
   }
 
   public func deleteState(id: String) {
@@ -591,8 +619,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
     let createStateFn = uiRuntime.createSyncFunction("create", argsCount: 2) { [weak uiRuntime] _, args in
       guard let uiRuntime, args.count >= 2 else { return .undefined }
       let stateId = args[0].getString()
-      let initialValue = args[1].getString()
-      NativeStateRegistry.shared.createState(id: stateId, initialValue: initialValue)
+      let initialValue = args[1].getRaw()
+      NativeStateRegistry.shared.createAnyState(id: stateId, initialValue: initialValue)
       let stateJsObject = uiRuntime.createObject()
       stateObject.setProperty(stateId, value: stateJsObject)
       return .undefined
@@ -601,14 +629,14 @@ public final class AppContext: NSObject, @unchecked Sendable {
     let getStateFn = uiRuntime.createSyncFunction("get", argsCount: 1) { [weak uiRuntime] _, args in
       guard let uiRuntime else { return .undefined }
       let stateId = args.first?.getString() ?? ""
-      guard let value = NativeStateRegistry.shared.getValue(id: stateId) else { return .undefined }
-      return .string(value, runtime: uiRuntime)
+      let value = NativeStateRegistry.shared.getValue(id: stateId)
+      return .from(value, runtime: uiRuntime)
     }
 
     let setStateFn = uiRuntime.createSyncFunction("set", argsCount: 2) { _, args in
       guard args.count >= 2 else { return .undefined }
       let stateId = args[0].getString()
-      let value = args[1].getString()
+      let value = args[1].getRaw()
       NativeStateRegistry.shared.setValue(id: stateId, value: value)
       return .undefined
     }

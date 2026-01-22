@@ -32,7 +32,7 @@ private struct BoundTextFieldInner: View {
   let initialValue: String
   let placeholder: String
   let props: BoundTextFieldProps
-  @StateObject private var state: NativeState
+  @StateObject private var state: NativeState<String>
 
   init(stateId: String, initialValue: String, placeholder: String, props: BoundTextFieldProps) {
     self.stateId = stateId
@@ -40,12 +40,14 @@ private struct BoundTextFieldInner: View {
     self.placeholder = placeholder
     self.props = props
 
+    let state = NativeStateRegistry.shared.createState(id: stateId, initialValue: initialValue)
+    self._state = StateObject(wrappedValue: state)
+
     if let uiRuntime = try? props.appContext?.uiRuntime,
-       let expoNativeState = try? uiRuntime.global().getProperty("ExpoNativeState").asObject(),
-       let createFn = try? expoNativeState.getProperty("create").asFunction() {
-      createFn.call(withArguments: [stateId, initialValue], thisObject: nil, asConstructor: false)
+       let expoNativeState = try? uiRuntime.global().getProperty("ExpoNativeState").asObject() {
+      let stateJsObject = uiRuntime.createObject()
+      expoNativeState.setProperty(stateId, value: stateJsObject)
     }
-    self._state = StateObject(wrappedValue: NativeStateRegistry.shared.getState(id: stateId)!)
   }
 
   var body: some View {

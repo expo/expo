@@ -1,17 +1,17 @@
 import { useId, useMemo } from 'react';
 import { scheduleOnUI } from 'react-native-worklets';
 
-export type OnChangeSyncCallback = (text: string) => void;
+export type OnChangeSyncCallback<T> = (value: T) => void;
 
-export type NativeStateRef = {
+export type NativeStateRef<T> = {
   __nativeStateId: string;
-  __initialValue: string;
-  get: () => string;
-  set: (value: string) => void;
-  onChange: (callback: OnChangeSyncCallback) => void;
+  __initialValue: T;
+  get: () => T;
+  set: (value: T) => void;
+  onChange: (callback: OnChangeSyncCallback<T>) => void;
 };
 
-export function useNativeState(initialValue: string): NativeStateRef {
+export function useNativeState<T>(initialValue: T): NativeStateRef<T> {
   const id = useId();
 
   const ref = useMemo(
@@ -21,14 +21,14 @@ export function useNativeState(initialValue: string): NativeStateRef {
       get: () => {
         'worklet';
         // @ts-ignore
-        return global.ExpoNativeState?.get(id) ?? '';
+        return global.ExpoNativeState?.get(id) ?? initialValue;
       },
-      set: (value: string) => {
+      set: (value: T) => {
         'worklet';
         // @ts-ignore
         global.ExpoNativeState?.set(id, value);
       },
-      onChange: (callback: OnChangeSyncCallback) => {
+      onChange: (callback: OnChangeSyncCallback<T>) => {
         scheduleOnUI(() => {
           'worklet';
           // @ts-ignore

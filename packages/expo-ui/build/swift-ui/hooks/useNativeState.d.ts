@@ -1,10 +1,10 @@
-export type OnChangeSyncCallback = (text: string) => void;
-export type NativeStateRef = {
+export type OnChangeSyncCallback<T> = (value: T) => void;
+export type NativeStateRef<T> = {
     __nativeStateId: string;
-    __initialValue: string;
-    get: () => string;
-    set: (value: string) => void;
-    onChange: (callback: OnChangeSyncCallback) => void;
+    __initialValue: T;
+    get: () => T;
+    set: (value: T) => void;
+    onChange: (callback: OnChangeSyncCallback<T>) => void;
 };
-export declare function useNativeState(initialValue: string): NativeStateRef;
+export declare function useNativeState<T>(initialValue: T): NativeStateRef<T>;
 //# sourceMappingURL=useNativeState.d.ts.map
