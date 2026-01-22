@@ -82,6 +82,57 @@ function nullthrows(x, message) {
     (0, node_assert_1.default)(x != null, message);
     return x;
 }
+/**
+ * Sanitize AST to remove Symbol() values that cannot be serialized across Metro worker processes.
+ * React Compiler injects Symbol values into the AST that cause serialization errors when
+ * Metro tries to pass the AST between worker processes during tree shaking.
+ * Uses an iterative approach to avoid stack overflow on deep ASTs.
+ * See: https://github.com/expo/expo/issues/39431
+ */
+function sanitizeAstForSerialization(root) {
+    // Fast path: primitives and null pass through unchanged
+    if (root === null || typeof root !== 'object')
+        return root;
+    const stack = [root];
+    const seen = new WeakSet();
+    while (stack.length > 0) {
+        const obj = stack.pop();
+        // Skip already-visited objects (handles circular references)
+        if (seen.has(obj))
+            continue;
+        seen.add(obj);
+        // Separate code paths for arrays vs objects - better branch prediction
+        if (Array.isArray(obj)) {
+            const arr = obj;
+            for (let i = arr.length - 1; i >= 0; i--) {
+                const val = arr[i];
+                const valType = typeof val;
+                if (valType === 'symbol') {
+                    arr[i] = null;
+                }
+                else if (valType === 'object' && val !== null) {
+                    stack.push(val);
+                }
+            }
+        }
+        else {
+            const record = obj;
+            const keys = Object.keys(record);
+            for (let i = keys.length - 1; i >= 0; i--) {
+                const key = keys[i];
+                const val = record[key];
+                const valType = typeof val;
+                if (valType === 'symbol') {
+                    record[key] = null;
+                }
+                else if (valType === 'object' && val !== null) {
+                    stack.push(val);
+                }
+            }
+        }
+    }
+    return root;
+}
 function getDynamicDepsBehavior(inPackages, filename) {
     switch (inPackages) {
         case 'reject':
@@ -421,7 +472,9 @@ async function transformJS(file, { config, options }) {
                 loaderReference: file.loaderReference,
                 ...(possibleReconcile
                     ? {
-                        ast: wrappedAst,
+                        // Sanitize the AST to remove Symbol() values that cannot be serialized across worker processes.
+                        // See: https://github.com/expo/expo/issues/39431
+                        ast: sanitizeAstForSerialization(wrappedAst),
                         // Store settings for the module that will be used to finish transformation after graph-based optimizations
                         // have finished.
                         reconcile: possibleReconcile,
