@@ -9,6 +9,7 @@ import type { ScopeDefinition } from '../../runtime/scope';
 interface NodeEnvParams {
   build: string;
   environment?: string | null;
+  isDevelopment?: boolean;
 }
 
 export function createNodeEnv(params: NodeEnvParams) {
@@ -46,6 +47,7 @@ export function createNodeEnv(params: NodeEnvParams) {
     readText,
     readJson,
     loadModule,
+    isDevelopment: params.isDevelopment ?? false,
   });
 }
 
