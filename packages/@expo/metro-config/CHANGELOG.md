@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix AST serialization for tree shaking with react compiler.
+- Fix AST serialization for tree shaking with react compiler. ([#42445](https://github.com/expo/expo/pull/42445) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
