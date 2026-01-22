@@ -60,7 +60,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     self.reactDelegate = reactDelegate
     self.launchOptions = launchOptions
 
-    if let sharedController = UpdatesControllerRegistry.sharedInstance.controller {
+    if let sharedController = UpdatesControllerRegistry.sharedInstance.controller as? UpdatesDevLauncherInterface {
       // for some reason the swift compiler and bridge are having issues here
       EXDevLauncherController.sharedInstance().updatesInterface = sharedController
       sharedController.updatesExternalInterfaceDelegate = EXDevLauncherController.sharedInstance()
