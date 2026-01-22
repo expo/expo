@@ -3,51 +3,24 @@
 package expo.modules.adapters.react
 
 import com.facebook.jni.HybridData
+import com.facebook.react.uimanager.ViewManager
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.DoNotStrip
-import expo.modules.kotlin.jni.ExpectedType
-import expo.modules.kotlin.views.ViewManagerWrapperDelegate
 
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class FabricComponentsRegistry(viewDelegates: List<ViewManagerWrapperDelegate>) {
+class FabricComponentsRegistry(viewManagerList: List<ViewManager<*, *>>) {
+  private val componentNames: List<String> = viewManagerList.map { it.name }
+
   @DoNotStrip
   private val mHybridData = initHybrid()
 
   init {
-    val componentNames = Array(viewDelegates.size) { i ->
-      viewDelegates[i].viewManagerName
-    }
-
-    val stateProps = viewDelegates.map {
-      it.props.filter { (_, prop) -> prop.isStateProp }.values
-    }
-
-    val statePropNames = Array(componentNames.size) { i ->
-      Array(stateProps[i].size) { j ->
-        stateProps[i].elementAt(j).name
-      }
-    }
-
-    val statePropsType = Array(componentNames.size) { i ->
-      Array(stateProps[i].size) { j ->
-        stateProps[i].elementAt(j).type.getCppRequiredTypes()
-      }
-    }
-
-    registerComponentsRegistry(
-      componentNames,
-      statePropNames,
-      statePropsType
-    )
+    registerComponentsRegistry(componentNames.toTypedArray())
   }
 
   private external fun initHybrid(): HybridData
-  private external fun registerComponentsRegistry(
-    componentNames: Array<String>,
-    statePropNames: Array<Array<String>>,
-    statePropTypes: Array<Array<ExpectedType>>
-  )
+  private external fun registerComponentsRegistry(componentNames: Array<String>)
 
   @Throws(Throwable::class)
   protected fun finalize() {
