@@ -84,12 +84,11 @@ export class DevServerManagerActions {
     Log.log();
 
     if (options.devClient === false) {
-      Log.log(printItem('Scan the QR code below to open the project in Expo Go.'));
+      Log.log(printItem('Scan the QR code to open in Expo Go.'));
     } else {
       Log.log(
         printItem(
-          'Scan the QR code below to open the project in a development build. ' +
-            learnMore('https://expo.fyi/start')
+          'Scan the QR code to open in a development build. ' + learnMore('https://expo.fyi/start')
         )
       );
     }
