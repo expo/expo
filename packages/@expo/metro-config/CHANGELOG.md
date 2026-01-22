@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix AST serialization for tree shaking with react compiler.
+
 ### 💡 Others
 
 ## 55.0.0 — 2026-01-21
