@@ -137,6 +137,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   HTMLInputElement: 'https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement',
   IterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator',
+  ImageSourcePropType: 'https://reactnative.dev/docs/image#imagesource',
   KeepAwakeListener: '/versions/latest/sdk/keep-awake/#keepawakelistenerevent',
   LocationCallback: '/versions/latest/sdk/location/#locationcallbacklocation',
   LocationErrorCallback: '/versions/latest/sdk/location/#locationerrorcallbackreason',
@@ -166,6 +167,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
   SFSymbol: 'https://github.com/nandorojo/sf-symbols-typescript',
   SFSymbols6_0: 'https://github.com/nandorojo/sf-symbols-typescript',
+  SFSymbols7_0: 'https://github.com/nandorojo/sf-symbols-typescript',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
   SpeechSynthesisEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisEvent',
   SpeechSynthesisUtterance:

@@ -10,7 +10,7 @@ export interface StackScreenProps extends PropsWithChildren {
  *
  * Can be used in the `_layout.tsx` files, or directly in page components.
  *
- * When configuring header inside page components, prefer using `Stack.Toolbar`, `Stack.Header` and `Stack.Screen.*` components
+ * When configuring header inside page components, prefer using `Stack.Toolbar`, `Stack.Header` and `Stack.Screen.*` components.
  *
  * @example
  * ```tsx app/_layout.tsx

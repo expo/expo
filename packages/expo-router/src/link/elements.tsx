@@ -224,7 +224,7 @@ export interface LinkMenuProps {
  *
  * @platform ios
  */
-export const LinkMenu: React.FC<LinkMenuProps> = (props) => {
+export const LinkMenu = (props: LinkMenuProps) => {
   const identifier = useId();
   if (useIsPreview() || process.env.EXPO_OS !== 'ios' || !use(NativeMenuContext)) {
     return null;

@@ -181,7 +181,7 @@ export interface LinkMenuProps {
  *
  * @platform ios
  */
-export declare const LinkMenu: React.FC<LinkMenuProps>;
+export declare const LinkMenu: (props: LinkMenuProps) => React.JSX.Element | null;
 export type LinkPreviewStyle = Omit<ViewStyle, 'position' | 'width' | 'height'> & {
     /**
      * Sets the preferred width of the preview.
