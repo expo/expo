@@ -4,7 +4,7 @@ import { NativeStateRef } from '../hooks/useNativeState';
 import { CommonViewModifierProps } from '../types';
 
 export type BoundTextFieldProps = {
-  value: NativeStateRef;
+  value: NativeStateRef<string>;
   placeholder?: string;
 } & CommonViewModifierProps;
 
