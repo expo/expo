@@ -26,9 +26,7 @@ function noopBeforeResponse(responseInit, _route) {
 function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMiddleware, getLoaderData, beforeErrorResponse = noopBeforeResponse, beforeResponse = noopBeforeResponse, beforeHTMLResponse = noopBeforeResponse, beforeAPIResponse = noopBeforeResponse, }) {
     let manifest = null;
     return async function handler(request) {
-        if (!manifest) {
-            manifest = await getRoutesManifest();
-        }
+        manifest = await getRoutesManifest();
         return requestHandler(request, manifest);
     };
     async function requestHandler(incomingRequest, manifest) {
@@ -83,7 +81,7 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
         if (request.method === 'GET' || request.method === 'HEAD') {
             const isLoaderRequest = url.pathname.startsWith('/_expo/loaders/');
             const matchedPath = isLoaderRequest
-                ? url.pathname.replace('/_expo/loaders', '')
+                ? url.pathname.replace('/_expo/loaders', '').replace(/\/index$/, '/')
                 : url.pathname;
             for (const route of manifest.htmlRoutes) {
                 if (!route.namedRegex.test(matchedPath)) {

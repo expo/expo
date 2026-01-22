@@ -10,6 +10,19 @@
 
 ### 💡 Others
 
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- Add `getSharedPayloads`, `getResolvedSharedPayloadsAsync`, `cleanSharedPayloads` functions and `useIncomingShare` hook for receiving data shared from other apps. ([#42284](https://github.com/expo/expo/pull/42284) by [@behenate](https://github.com/behenate))
+- Add config plugin for receiving data from other apps. ([#42242](https://github.com/expo/expo/pull/42242) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
 - [Android] Removed unused `androidx.legacy:legacy-support-v4` dependency. ([#39757](https://github.com/expo/expo/pull/39757) by [@lukmccall](https://github.com/lukmccall))
 
 ## 14.0.8 - 2025-12-05

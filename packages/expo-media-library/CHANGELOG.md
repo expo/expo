@@ -6,6 +6,18 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [next] Add `asset.getShape()` ([#40110](https://github.com/expo/expo/pull/40110) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add `asset.getInfo()` ([#40146](https://github.com/expo/expo/pull/40146) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add exif support ([#39992](https://github.com/expo/expo/pull/39992) by [@Wenszel](https://github.com/Wenszel))

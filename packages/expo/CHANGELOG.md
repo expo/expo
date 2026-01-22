@@ -4,6 +4,30 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.0-preview.3 — 2026-01-22
+
+### 💡 Others
+
+- [macOS] Remove react-native-macos@0.79.0 workarounds ([#42409](https://github.com/expo/expo/pull/42409) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 55.0.0-preview.2 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0-preview.1 — 2026-01-21
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0-preview.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
 - [iOS] Remove EXAppDelegateWrapper class ([#39778](https://github.com/expo/expo/pull/39778) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [android] Delete ReactNativeHostWrapper class ([#40222](https://github.com/expo/expo/pull/40222) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
@@ -40,6 +64,8 @@
 - Update `metro-source-map` import source in `expo/scripts/compose-source-maps` ([#41458](https://github.com/expo/expo/pull/41458) by [@kitten](https://github.com/kitten))
 - [Android] Optimized `response.arrayBuffer` implementation. ([#42086](https://github.com/expo/expo/pull/42086) by [@barthap](https://github.com/barthap))
 - change `global` for `globalThis` to fix failing `auth-session` js tests ([#42083](https://github.com/expo/expo/pull/42083) by [@vonovak](https://github.com/vonovak))
+- Add `unstable_createWorker` helper method to `async-require` module ([#42340](https://github.com/expo/expo/pull/42340) by [@kitten](https://github.com/kitten))
+- Removed the `nil` react host assertion for iOS in ExpoReactNativeFactory [#42234](https://github.com/expo/expo/pull/42234) by [@pmleczek](https://github.com/pmleczek)
 
 ### ⚠️ Notices
 

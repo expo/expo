@@ -6,6 +6,22 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.1 — 2026-01-22
+
+### 🐛 Bug fixes
+
+- Treat both `null` and `undefined` loader responses as `null` ([#42419](https://github.com/expo/expo/pull/42419) by [@hassankhan](https://github.com/hassankhan))
+- Allow busting the cached manifest and SSR renderer during development ([#42411](https://github.com/expo/expo/pull/42411) by [@hassankhan](https://github.com/hassankhan))
+- Normalize loader requests for `/index` routes ([#42414](https://github.com/expo/expo/pull/42414) by [@hassankhan](https://github.com/hassankhan))
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - Improve SSR support ([#41477](https://github.com/expo/expo/pull/41477) by [@hassankhan](https://github.com/hassankhan))
 - Add support for server data loaders in server export mode ([#41934](https://github.com/expo/expo/pull/41934) by [@hassankhan](https://github.com/hassankhan))
 - Respect `web.output` configuration in dev server for loaders ([#42147](https://github.com/expo/expo/pull/42147) by [@hassankhan](https://github.com/hassankhan))
@@ -14,6 +30,7 @@
 ### 🐛 Bug fixes
 
 - Use `ImmutableRequest` for loader functions ([#42149](https://github.com/expo/expo/pull/42149) by [@hassankhan](https://github.com/hassankhan))
+- Handle `undefined` loader return values in server rendering ([#42367](https://github.com/expo/expo/pull/42367) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
@@ -21,6 +38,8 @@
 - Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
 - Unify nullish value handling for data loaders ([#42070](https://github.com/expo/expo/pull/42070) by [@hassankhan](https://github.com/hassankhan))
 - Throw an error when loader module is not found in production ([#42166](https://github.com/expo/expo/pull/42166) by [@hassankhan](https://github.com/hassankhan))
+- Change loader function signature to `(request, params)` ([#42318](https://github.com/expo/expo/pull/42318) by [@hassankhan](https://github.com/hassankhan))
+- Migrate `LoaderFunction` type from `expo-router` ([#42362](https://github.com/expo/expo/pull/42362) by [@hassankhan](https://github.com/hassankhan))
 
 ## 1.0.5 - 2025-12-04
 

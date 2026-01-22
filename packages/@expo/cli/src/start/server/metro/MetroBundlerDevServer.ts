@@ -1744,10 +1744,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // Register this module for loader HMR
         this.setupLoaderHmr(modulePath);
 
-        const maybeResponse = await routeModule.loader({
-          params: route.params,
-          request,
-        });
+        const maybeResponse = await routeModule.loader(request, route.params);
 
         let data: unknown;
         if (maybeResponse instanceof Response) {
@@ -1764,9 +1761,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           data = maybeResponse;
         }
 
-        const normalizedData = data === undefined ? {} : data;
-        debug('Loader data:', normalizedData, ' for location:', location.pathname);
-        return Response.json(normalizedData);
+        debug('Loader data:', data ?? null, ' for location:', location.pathname);
+        return Response.json(data ?? null);
       }
 
       debug('No loader found for location:', location.pathname);

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- BunPackageManager supports text lock file `bun.lock` ([#42049](https://github.com/expo/expo/pull/42049) by [@AbbanMustafa](https://github.com/AbbanMustafa))
-
 ### 💡 Others
+
+## 1.10.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
+- BunPackageManager supports text lock file `bun.lock` ([#42049](https://github.com/expo/expo/pull/42049) by [@AbbanMustafa](https://github.com/AbbanMustafa))
 
 ## 1.9.9 - 2025-12-05
 

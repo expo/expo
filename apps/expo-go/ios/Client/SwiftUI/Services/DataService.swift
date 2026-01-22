@@ -47,9 +47,18 @@ class DataService: ObservableObject {
         return
       }
 
-      self.projects = response.data.account.byName.apps.map { $0.toExpoProject() }
-      self.snacks = response.data.account.byName.snacks
-      self.dataError = nil
+      let newProjects = response.data.account.byName.apps.map { $0.toExpoProject() }
+      let newSnacks = response.data.account.byName.snacks
+
+      if newProjects != self.projects {
+        self.projects = newProjects
+      }
+      if newSnacks != self.snacks {
+        self.snacks = newSnacks
+      }
+      if self.dataError != nil {
+        self.dataError = nil
+      }
     } catch is CancellationError {
       return
     } catch let error as APIError {

@@ -3,9 +3,9 @@ import { Container } from '../components/Container';
 import { Table, TableRow } from '../components/Table';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
 
-export async function loader({ params }) {
+export async function loader() {
   return Promise.resolve({
-    data: 'second'
+    data: 'second',
   });
 }
 

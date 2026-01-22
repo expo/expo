@@ -51,7 +51,7 @@ export function createRouteHandlerMiddleware(
   }
 
   return createRequestHandler(
-    { build: '' },
+    { build: '', isDevelopment: true },
     {
       async getRoutesManifest() {
         const manifest = await fetchManifest(projectRoot, options);

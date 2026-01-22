@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Skip initializing git repo if inside another repo ([#42052](https://github.com/expo/expo/pull/42052) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.6.0 — 2026-01-21
+
+### 🎉 New features
+
+- Skip initializing git repo if inside another repo ([#42052](https://github.com/expo/expo/pull/42052) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

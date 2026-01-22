@@ -290,7 +290,7 @@ public final class UpdatesConfig: NSObject {
     }
 
     let enableExpoUpdatesProtocolV0CompatibilityMode = config.optionalValue(forKey: EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey) ?? false
-    let enableBsdiffPatchSupport = config.optionalValue(forKey: EXUpdatesConfigEnableBsdiffPatchSupportKey) ?? true
+    let enableBsdiffPatchSupport = config.optionalValue(forKey: EXUpdatesConfigEnableBsdiffPatchSupportKey) ?? false
 
     return UpdatesConfig(
       cachedConfigDictionary: config,

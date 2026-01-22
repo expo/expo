@@ -1,10 +1,15 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
+// swiftlint:disable file_length
 // swiftlint:disable force_cast
 // swiftlint:disable function_parameter_count
 // swiftlint:disable implicitly_unwrapped_optional
 // swiftlint:disable identifier_name
 // swiftlint:disable legacy_objc_type
+// swiftlint:disable closure_body_length
+// swiftlint:disable type_body_length
+// swiftlint:disable force_unwrapping
+// swiftlint:disable no_grouping_extension
 
 import Foundation
 import EASClient
@@ -69,7 +74,6 @@ public final class FileDownloader {
   private static let IMHeader = "im"
   private static let ExpoBaseUpdateIdResponseHeader = "expo-base-update-id"
 
-  // swiftlint:disable:next force_unwrapping
   private static let ParameterParserSemicolonDelimiter = ";".utf16.first!
 
   // these can be made non-forced lets when NSObject protocol is removed
@@ -1288,3 +1292,8 @@ extension FileDownloader.DiffError: CustomStringConvertible {
 // swiftlint:enable implicitly_unwrapped_optional
 // swiftlint:enable identifier_name
 // swiftlint:enable legacy_objc_type
+// swiftlint:enable closure_body_length
+// swiftlint:enable type_body_length
+// swiftlint:enable force_unwrapping
+// swiftlint:enable no_grouping_extension
+// swiftlint:enable file_length

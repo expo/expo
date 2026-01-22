@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.2.2 — 2026-01-21
+
+_This version does not introduce any user-facing changes._
+
 ## 0.2.0 — 2025-12-16
 
 ### 🎉 New features

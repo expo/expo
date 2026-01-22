@@ -65,7 +65,7 @@ describe('getRoutesManifest', () => {
     expect(manifest.notFoundRoutes[0].namedRegex).toBeInstanceOf(RegExp);
   });
 
-  it('caches the manifest on subsequent calls', async () => {
+  it('caches the manifest on subsequent calls in production', async () => {
     const input = createMockInput();
     const env = createEnvironment(input);
 
@@ -73,6 +73,16 @@ describe('getRoutesManifest', () => {
     await env.getRoutesManifest();
 
     expect(input.readJson).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not cache the manifest in development', async () => {
+    const input = createMockInput({ isDevelopment: true });
+    const env = createEnvironment(input);
+
+    await env.getRoutesManifest();
+    await env.getRoutesManifest();
+
+    expect(input.readJson).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -222,7 +232,7 @@ describe('getHtml', () => {
     ).rejects.toThrow(/SSR module not found/);
   });
 
-  it('caches SSR renderer on subsequent calls', async () => {
+  it('caches SSR renderer on subsequent calls in production', async () => {
     const mockSSRModule = createMockSSRModule();
     const input = createMockInput({
       manifest: {
@@ -251,6 +261,38 @@ describe('getHtml', () => {
     );
 
     expect(input.loadModule).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not cache SSR renderer in development', async () => {
+    const mockSSRModule = createMockSSRModule();
+    const input = createMockInput({
+      isDevelopment: true,
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+        assets: { css: [], js: ['/app.js'] },
+      },
+      modules: { '_expo/server/render.js': mockSSRModule },
+    });
+    const env = createEnvironment(input);
+
+    await env.getHtml(
+      new Request('http://localhost/'),
+      createMockRoute({
+        file: './index.tsx',
+        page: '/index',
+        namedRegex: new RegExp('^/(?:/)?$'),
+      })
+    );
+    await env.getHtml(
+      new Request('http://localhost/'),
+      createMockRoute({
+        file: './other.tsx',
+        page: '/other',
+        namedRegex: new RegExp('^/other(?:/)?$'),
+      })
+    );
+
+    expect(input.loadModule).toHaveBeenCalledTimes(2);
   });
 
   it('passes location, request, and assets to `getStaticContent()`', async () => {
@@ -351,10 +393,7 @@ describe('getHtml', () => {
     );
 
     expect(input.loadModule).toHaveBeenCalledWith('_expo/loaders/index.js');
-    expect(loaderModule.loader).toHaveBeenCalledWith({
-      params: {},
-      request: expect.any(ImmutableRequest),
-    });
+    expect(loaderModule.loader).toHaveBeenCalledWith(expect.any(ImmutableRequest), {});
     expect(mockSSRModule.getStaticContent).toHaveBeenCalledWith(
       expect.any(URL),
       expect.objectContaining({
@@ -462,13 +501,10 @@ describe('getLoaderData', () => {
 
     expect(result).toBeInstanceOf(Response);
     expect(await result.json()).toEqual(loaderData);
-    expect(loaderModule.loader).toHaveBeenCalledWith({
-      params: {},
-      request: expect.any(ImmutableRequest),
-    });
+    expect(loaderModule.loader).toHaveBeenCalledWith(expect.any(ImmutableRequest), {});
   });
 
-  it('returns `Response` with `{}` body when route has no loader', async () => {
+  it('returns `Response` with `null` body when route has no loader', async () => {
     const input = createMockInput();
     const env = createEnvironment(input);
 
@@ -482,7 +518,7 @@ describe('getLoaderData', () => {
     );
 
     expect(result).toBeInstanceOf(Response);
-    expect(await result.json()).toEqual({});
+    expect(await result.json()).toBeNull();
   });
 
   it('throws when loader module fails to load', async () => {
@@ -520,13 +556,10 @@ describe('getLoaderData', () => {
       })
     );
 
-    expect(loaderModule.loader).toHaveBeenCalledWith({
-      params: { id: '123' },
-      request: expect.any(ImmutableRequest),
-    });
+    expect(loaderModule.loader).toHaveBeenCalledWith(expect.any(ImmutableRequest), { id: '123' });
   });
 
-  it('normalizes `undefined` loader result to `{}`', async () => {
+  it('normalizes `undefined` loader result to `null`', async () => {
     const loaderModule = { loader: jest.fn().mockResolvedValue(undefined) };
     const input = createMockInput({
       modules: { '_expo/loaders/undefined-route.js': loaderModule },
@@ -544,7 +577,7 @@ describe('getLoaderData', () => {
     );
 
     expect(result).toBeInstanceOf(Response);
-    expect(await result.json()).toEqual({});
+    expect(await result.json()).toBeNull();
   });
 
   it('passes through `null` loader result as `null`', async () => {
@@ -628,10 +661,12 @@ function createMockInput({
   files = {},
   modules = {},
   manifest = {},
+  isDevelopment = false,
 }: {
   files?: Record<string, string | null>;
   modules?: Record<string, unknown>;
   manifest?: Parameters<typeof createMockManifest>[0];
+  isDevelopment?: boolean;
 } = {}) {
   return {
     readText: jest.fn().mockImplementation((path: string) => Promise.resolve(files[path] ?? null)),
@@ -639,6 +674,7 @@ function createMockInput({
     loadModule: jest
       .fn()
       .mockImplementation((path: string) => Promise.resolve(modules[path] ?? null)),
+    isDevelopment,
   };
 }
 

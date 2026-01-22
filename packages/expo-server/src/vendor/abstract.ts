@@ -73,9 +73,7 @@ export function createRequestHandler({
   let manifest: Manifest | null = null;
 
   return async function handler(request: Request): Promise<Response> {
-    if (!manifest) {
-      manifest = await getRoutesManifest();
-    }
+    manifest = await getRoutesManifest();
     return requestHandler(request, manifest);
   };
 
@@ -140,7 +138,7 @@ export function createRequestHandler({
     if (request.method === 'GET' || request.method === 'HEAD') {
       const isLoaderRequest = url.pathname.startsWith('/_expo/loaders/');
       const matchedPath = isLoaderRequest
-        ? url.pathname.replace('/_expo/loaders', '')
+        ? url.pathname.replace('/_expo/loaders', '').replace(/\/index$/, '/')
         : url.pathname;
 
       for (const route of manifest.htmlRoutes) {

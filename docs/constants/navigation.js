@@ -269,6 +269,7 @@ export const general = [
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
       makePage('router/advanced/custom-tabs.mdx'),
+      makePage('router/advanced/stack-toolbar.mdx'),
     ]),
     makeGroup('Web', [
       makePage('router/web/api-routes.mdx'),
@@ -408,7 +409,17 @@ export const eas = [
       makePage('eas/index.mdx'),
       makePage('eas/json.mdx'),
       makePage('eas/cli.mdx'),
-      makePage('eas/environment-variables.mdx'),
+      makeGroup(
+        'Environment variables',
+        [
+          makePage('eas/environment-variables/index.mdx'),
+          makePage('eas/environment-variables/manage.mdx'),
+          makePage('eas/environment-variables/usage.mdx'),
+          makePage('eas/environment-variables/without-eas.mdx'),
+          makePage('eas/environment-variables/faq.mdx'),
+        ],
+        { expanded: false }
+      ),
     ],
     {
       expanded: true,
@@ -499,7 +510,6 @@ export const eas = [
     makePage('eas/hosting/introduction.mdx'),
     makePage('eas/hosting/get-started.mdx'),
     makePage('eas/hosting/deployments-and-aliases.mdx'),
-    makePage('eas/hosting/environment-variables.mdx'),
     makePage('eas/hosting/custom-domain.mdx'),
     makePage('eas/hosting/api-routes.mdx'),
     makePage('eas/hosting/workflows.mdx'),

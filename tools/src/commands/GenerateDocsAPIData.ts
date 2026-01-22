@@ -83,6 +83,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-blur': ['index.ts'],
   'expo-blob': ['ExpoBlob.types.ts'],
   'expo-brightness': ['Brightness.ts'],
+  'expo-brownfield': ['index.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
   'expo-calendar': ['Calendar.ts'],
   'expo-calendar-next': ['next/Calendar.ts', 'expo-calendar'],
@@ -164,6 +165,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-age-range': ['index.ts'],
   'expo-app-integrity': ['index.ts'],
   'expo-glass-effect': ['index.ts'],
+  'expo-widgets': ['index.ts'],
   ...uiPackagesMapping,
 };
 
@@ -221,6 +223,7 @@ const executeCommand = async (
       '@deprecated',
       '@docsMissing',
       '@header',
+      '@hideType',
       '@needsAudit',
       '@platform',
     ],

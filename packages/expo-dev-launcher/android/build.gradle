@@ -26,13 +26,13 @@ expoModule {
 }
 
 group = "host.exp.exponent"
-version = "6.0.11"
+version = "55.0.1"
 
 android {
   namespace "expo.modules.devlauncher"
   defaultConfig {
     versionCode 9
-    versionName "6.0.11"
+    versionName "55.0.1"
   }
 
   buildTypes {

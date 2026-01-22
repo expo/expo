@@ -8,6 +8,17 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
+- Fix image manipulator in Expo Go. ([#42347](https://github.com/expo/expo/pull/42347) by [@aleqsio](https://github.com/aleqsio))
 - fix TS build issue ([#41448](https://github.com/expo/expo/pull/41448) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others

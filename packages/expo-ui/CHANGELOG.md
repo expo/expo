@@ -2,6 +2,20 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.0-beta.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0-beta.0 — 2026-01-21
+
 - [ios] - Fix modifiers import path in the example ([#41811](https://github.com/expo/expo/pull/41811) by [@pchalupa](https://github.com/pchalupa))
 
 ### 🛠 Breaking changes
@@ -40,6 +54,7 @@
 - [jetpack-compose] Fixed `Picker` crash when selecting an option. ([#41622](https://github.com/expo/expo/pull/41622) by [@kimchi-developer](https://github.com/kimchi-developer))
 - [jetpack-compose] Fixed `Carousel` not displaying items. ([#41622](https://github.com/expo/expo/pull/41622) by [@kimchi-developer](https://github.com/kimchi-developer))
 - [jetpack-compose] Fixed modifiers not being applied correctly. ([#41622](https://github.com/expo/expo/pull/41622) by [@kimchi-developer](https://github.com/kimchi-developer))
+- [iOS] Skip rendering `label` as `Menu` item.
 
 ### 💡 Others
 

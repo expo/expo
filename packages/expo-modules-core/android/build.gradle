@@ -29,7 +29,7 @@ if (shouldIncludeCompose) {
 }
 
 group = 'host.exp.exponent'
-version = '3.0.16'
+version = '55.0.2'
 
 def isExpoModulesCoreTests = {
   Gradle gradle = getGradle()
@@ -39,6 +39,12 @@ def isExpoModulesCoreTests = {
     return androidTests.exists() && androidTests.isDirectory()
   }
   return false
+}.call()
+
+def isTests = {
+  Gradle gradle = getGradle()
+  String tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
+  return tskReqStr =~ /connected\w*AndroidTest/
 }.call()
 
 def expoModuleExtension = project.extensions.getByType(ExpoModuleExtension)
@@ -57,15 +63,19 @@ USE_HERMES = USE_HERMES && isExpoModulesCoreTests
 
 def shouldTurnWarningsIntoErrors = findProperty("EXPO_TURN_WARNINGS_INTO_ERRORS") == "true"
 
-def enableWorkletsIntegration = !isExpoModulesCoreTests && findProperty("expo.core.worklets") == "true"
+def enableWorkletsIntegration = !isTests
 def workletsProject = enableWorkletsIntegration ? findProject(":react-native-worklets") : null
 
-if (enableWorkletsIntegration && workletsProject == null) {
-  throw new GradleException("The 'expo.core.worklets' property is set to true, but the ':react-native-worklets' project is not found.")
-}
-
 if (workletsProject != null) {
-  evaluationDependsOn(":react-native-worklets")
+  evaluationDependsOn(workletsProject.path)
+
+  afterEvaluate {
+    println("Linking react-native-worklets native libs into expo-modules-core build tasks")
+    println(workletsProject.tasks.getByName("mergeDebugNativeLibs"))
+    println(workletsProject.tasks.getByName("mergeReleaseNativeLibs"))
+    tasks.getByName("buildCMakeDebug").dependsOn(workletsProject.tasks.getByName("mergeDebugNativeLibs"))
+    tasks.getByName("buildCMakeRelWithDebInfo").dependsOn(workletsProject.tasks.getByName("mergeReleaseNativeLibs"))
+  }
 }
 
 def reactNativeWorkletsRootDir = workletsProject?.projectDir?.parentFile
@@ -86,7 +96,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "3.0.16"
+    versionName "55.0.2"
     buildConfigField "String", "EXPO_MODULES_CORE_VERSION", "\"${versionName}\""
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", "true"
 
@@ -216,6 +226,10 @@ dependencies {
 
   compileOnly 'com.facebook.fbjni:fbjni:0.5.1'
 
+  if (workletsProject != null) {
+    implementation workletsProject
+  }
+
   testImplementation 'androidx.test:core:1.7.0'
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'io.mockk:mockk:1.13.10'
@@ -300,11 +314,4 @@ def generatePCHTask = tasks.register("generatePCH") {
 // This task will run on the IDE project sync, ensuring the PCH file is generated early enough
 tasks.register("prepareKotlinBuildScriptModel") {
   dependsOn(generatePCHTask)
-}
-
-if (workletsProject != null) {
-  afterEvaluate {
-    tasks.getByName("externalNativeBuildDebug").dependsOn(findProject(":react-native-worklets").tasks.getByName("externalNativeBuildDebug"))
-    tasks.getByName("externalNativeBuildRelease").dependsOn(findProject(":react-native-worklets").tasks.getByName("externalNativeBuildRelease"))
-  }
 }

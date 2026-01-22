@@ -36,13 +36,14 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   public var body: some View {
     switch node["type"] as? String {
     case "Text":
-      if let rawProps = node["props"] as? [String: Any],
-         let children = rawProps["children"] as? String {
-        render(TextView.self, TextViewProps.self) { props in
-          props.text = children
+      render(TextView.self, TextViewProps.self) { props in
+        if let rawProps = node["props"] as? [String: Any] {
+          if let children = rawProps["children"] as? String {
+            props.text = children
+          } else if let childrenArray = rawProps["children"] as? [String] {
+            props.text = childrenArray.joined(separator: "")
+          }
         }
-      } else {
-        EmptyView()
       }
     case "HStack":
       render(HStackView.self, HStackViewProps.self, updateProps: updateChildren)
@@ -91,7 +92,10 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       }
 
     default:
-      EmptyView()
+      ZStack {
+        Color.red.opacity(0.5)
+        Text("Unable to get the view for: \(node["type"] as? String ?? "undefined")")
+      }
     }
   }
 

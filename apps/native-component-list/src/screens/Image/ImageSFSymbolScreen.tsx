@@ -286,10 +286,10 @@ const styles = StyleSheet.create({
     height: 36,
     tintColor: '#fff',
   },
+  // Using text styles
   largeSymbol: {
-    width: 64,
-    height: 64,
-    tintColor: '#fff',
+    fontSize: 64,
+    color: '#fff',
   },
   effectContainer: {
     alignItems: 'center',

@@ -115,6 +115,10 @@ public final class ImageModule: Module {
         view.symbolWeight = symbolWeight
       }
 
+      Prop("symbolSize") { (view, symbolSize: Double?) in
+        view.symbolSize = symbolSize
+      }
+
       Prop("useAppleWebpCodec", true) { (view, useAppleWebpCodec: Bool) in
         view.useAppleWebpCodec = useAppleWebpCodec
       }
