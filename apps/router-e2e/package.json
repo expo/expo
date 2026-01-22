@@ -56,9 +56,9 @@
     "test:e2e": "./maestro/test.sh"
   },
   "dependencies": {
-    "@expo/dom-webview": "55.0.0",
+    "@expo/dom-webview": "55.0.1",
     "@expo/vector-icons": "^15.0.2",
-    "expo": "~55.0.0-preview.3",
+    "expo": "~55.0.0-preview.4",
     "expo-haptics": "~55.0.1",
     "expo-linking": "~55.0.1",
     "expo-router": "^55.0.0-beta.1",

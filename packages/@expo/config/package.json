@@ -34,9 +34,9 @@
   ],
   "dependencies": {
     "@babel/code-frame": "~7.10.4",
-    "@expo/config-plugins": "~55.0.1",
-    "@expo/config-types": "^55.0.1",
-    "@expo/json-file": "^10.0.9",
+    "@expo/config-plugins": "~55.0.2",
+    "@expo/config-types": "^55.0.2",
+    "@expo/json-file": "^10.0.10",
     "deepmerge": "^4.3.1",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",

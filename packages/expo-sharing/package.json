@@ -35,9 +35,9 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/sharing/",
   "dependencies": {
-    "@expo/plist": "^0.5.0",
-    "@expo/config-plugins": "^55.0.1",
-    "@expo/config-types": "^55.0.1"
+    "@expo/plist": "^0.5.1",
+    "@expo/config-plugins": "^55.0.2",
+    "@expo/config-types": "^55.0.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^55.0.1"
