@@ -102,7 +102,7 @@ extension JavaScriptValue: AnyJavaScriptValue, AnyArgument {
     throw JavaScriptValueConversionException((kind: kind, target: "Object"))
   }
 
-  func asFunction() throws -> RawJavaScriptFunction {
+  public func asFunction() throws -> RawJavaScriptFunction {
     if isFunction() {
       return getFunction()
     }

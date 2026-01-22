@@ -54,10 +54,24 @@ const MyComponent = () => {
   const textFieldValue = useNativeState('Hello');
 
   React.useEffect(() => {
-    textFieldValue.registerOnChange((v) => {
+    textFieldValue.onChange((v) => {
       'worklet';
-      if (v.length > 10) {
-        textFieldValue.set('Hello world');
+      const digits = v.replace(/\D/g, '').slice(0, 10);
+
+      let formatted = '';
+      if (digits.length > 0) {
+        formatted = '(' + digits.slice(0, 3);
+      }
+      if (digits.length >= 3) {
+        formatted += ') ' + digits.slice(3, 6);
+      }
+      if (digits.length >= 6) {
+        formatted += '-' + digits.slice(6, 10);
+      }
+
+      console.log('formatted', formatted);
+      if (formatted !== v) {
+        textFieldValue.set(formatted);
       }
     });
   }, [textFieldValue]);

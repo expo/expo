@@ -39,7 +39,12 @@ private struct BoundTextFieldInner: View {
     self.initialValue = initialValue
     self.placeholder = placeholder
     self.props = props
-    NativeStateRegistry.shared.createState(id: stateId, initialValue: initialValue)
+
+    if let uiRuntime = try? props.appContext?.uiRuntime,
+       let expoNativeState = try? uiRuntime.global().getProperty("ExpoNativeState").asObject(),
+       let createFn = try? expoNativeState.getProperty("create").asFunction() {
+      createFn.call(withArguments: [stateId, initialValue], thisObject: nil, asConstructor: false)
+    }
     self._state = StateObject(wrappedValue: NativeStateRegistry.shared.getState(id: stateId)!)
   }
 
@@ -48,11 +53,11 @@ private struct BoundTextFieldInner: View {
       .modifier(UIBaseViewModifier(props: props))
       .onChange(of: state.value) { newValue in
         guard let uiRuntime = try? props.appContext?.uiRuntime else { return }
-        let escaped = newValue.replacingOccurrences(of: "\\", with: "\\\\")
-          .replacingOccurrences(of: "'", with: "\\'")
-          .replacingOccurrences(of: "\n", with: "\\n")
-        let code = "global.ExpoNativeStateCallbacks?.['\(stateId)']?.('\(escaped)')"
-        try? uiRuntime.eval(code)
+        guard let expoNativeState = try? uiRuntime.global().getProperty("ExpoNativeState").asObject() else { return }
+        guard let stateObj = try? expoNativeState.getProperty(stateId).asObject() else { return }
+        if let onChange = try? stateObj.getProperty("onChange").asFunction() {
+          onChange.call(withArguments: [newValue], thisObject: nil, asConstructor: false)
+        }
       }
       .onDisappear {
         NativeStateRegistry.shared.deleteState(id: stateId)

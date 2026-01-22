@@ -1,4 +1,4 @@
-import { useId, useMemo, useEffect } from 'react';
+import { useId, useMemo } from 'react';
 import { scheduleOnUI } from 'react-native-worklets';
 
 export type OnChangeSyncCallback = (text: string) => void;
@@ -8,24 +8,11 @@ export type NativeStateRef = {
   __initialValue: string;
   get: () => string;
   set: (value: string) => void;
-  registerOnChange: (callback: OnChangeSyncCallback) => void;
+  onChange: (callback: OnChangeSyncCallback) => void;
 };
 
 export function useNativeState(initialValue: string): NativeStateRef {
   const id = useId();
-
-  useEffect(() => {
-    return () => {
-      scheduleOnUI(() => {
-        'worklet';
-        // @ts-ignore
-        if (global.ExpoNativeStateCallbacks) {
-          // @ts-ignore
-          delete global.ExpoNativeStateCallbacks[id];
-        }
-      });
-    };
-  }, [id]);
 
   const ref = useMemo(
     () => ({
@@ -41,16 +28,14 @@ export function useNativeState(initialValue: string): NativeStateRef {
         // @ts-ignore
         global.ExpoNativeState?.set(id, value);
       },
-      registerOnChange: (callback: OnChangeSyncCallback) => {
+      onChange: (callback: OnChangeSyncCallback) => {
         scheduleOnUI(() => {
           'worklet';
           // @ts-ignore
-          if (!global.ExpoNativeStateCallbacks) {
+          if (global.ExpoNativeState?.[id]) {
             // @ts-ignore
-            global.ExpoNativeStateCallbacks = {};
+            global.ExpoNativeState[id].onChange = callback;
           }
-          // @ts-ignore
-          global.ExpoNativeStateCallbacks[id] = callback;
         });
       },
     }),
@@ -58,13 +43,4 @@ export function useNativeState(initialValue: string): NativeStateRef {
   );
 
   return ref;
-}
-
-declare global {
-  var ExpoNativeState: {
-    create: (stateId: string, initialValue: string) => void;
-    get: (stateId: string) => string;
-    set: (stateId: string, value: string) => void;
-    delete: (stateId: string) => void;
-  } | undefined;
 }

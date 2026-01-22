@@ -588,18 +588,20 @@ public final class AppContext: NSObject, @unchecked Sendable {
     // Install native state management on global.ExpoNativeState
     let stateObject = uiRuntime.createObject()
 
-    let createStateFn = uiRuntime.createSyncFunction("create", argsCount: 2) { _, args in
-      guard args.count >= 2 else { return .undefined }
+    let createStateFn = uiRuntime.createSyncFunction("create", argsCount: 2) { [weak uiRuntime] _, args in
+      guard let uiRuntime, args.count >= 2 else { return .undefined }
       let stateId = args[0].getString()
       let initialValue = args[1].getString()
       NativeStateRegistry.shared.createState(id: stateId, initialValue: initialValue)
+      let stateJsObject = uiRuntime.createObject()
+      stateObject.setProperty(stateId, value: stateJsObject)
       return .undefined
     }
 
     let getStateFn = uiRuntime.createSyncFunction("get", argsCount: 1) { [weak uiRuntime] _, args in
       guard let uiRuntime else { return .undefined }
       let stateId = args.first?.getString() ?? ""
-      guard let value = NativeStateRegistry.shared.getValue(id: stateId) as? String else { return .undefined }
+      guard let value = NativeStateRegistry.shared.getValue(id: stateId) else { return .undefined }
       return .string(value, runtime: uiRuntime)
     }
 
@@ -614,6 +616,7 @@ public final class AppContext: NSObject, @unchecked Sendable {
     let deleteStateFn = uiRuntime.createSyncFunction("delete", argsCount: 1) { _, args in
       let stateId = args.first?.getString() ?? ""
       NativeStateRegistry.shared.deleteState(id: stateId)
+      stateObject.setProperty(stateId, value: nil)
       return .undefined
     }
 
