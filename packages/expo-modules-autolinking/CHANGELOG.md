@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+Update ExpoModulesProvider to use internal imports ([#42449](https://github.com/expo/expo/pull/42449) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 55.0.0 — 2026-01-21
 
 ### 🎉 New features
