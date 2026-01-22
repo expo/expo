@@ -12,7 +12,7 @@
 - [iOS] Refactor podspec and fix template ([#42105](https://github.com/expo/expo/pull/42105) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [android] Added support for react-native 0.83 ([#42069](https://github.com/expo/expo/pull/42069) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add `bin/cli.js` entrypoint for CLI ([#42152](https://github.com/expo/expo/pull/42152) by [@kitten](https://github.com/kitten))
-- Removed the `nil` react host assertion for iOS and fixed debug compilation for Android in [#42234](https://github.com/expo/expo/pull/42234) by [@pmleczek](https://github.com/pmleczek)
+- Fixed debug compilation for Android in [#42234](https://github.com/expo/expo/pull/42234) by [@pmleczek](https://github.com/pmleczek)
 
 ### 💡 Others
 
