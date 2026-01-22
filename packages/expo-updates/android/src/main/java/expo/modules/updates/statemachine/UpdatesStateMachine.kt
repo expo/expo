@@ -74,14 +74,6 @@ class UpdatesStateMachine(
       if (event !is UpdatesStateEvent.DownloadProgress) {
         logger.info("Updates state change: ${event.type}, context = ${context.json}")
       }
-      UpdatesControllerRegistry.controller?.get()?.let {
-        if (it is EnabledUpdatesController) {
-          // Notify the controller state change listener
-          it.stateChangeListenerMap.keys.forEach { key ->
-            it.stateChangeListenerMap[key]?.updatesStateDidChange(toMap(event))
-          }
-        }
-      }
       sendContextToJS()
     }
   }

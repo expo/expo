@@ -319,14 +319,6 @@ internal class UpdatesStateMachine {
       if event.type != .downloadProgress {
         logger.info(message: "Updates state change: state = \(state), event = \(event.type), context = \(context)")
       }
-      // Notify the controller state change listener
-      if let controller = UpdatesControllerRegistry.sharedInstance.controller as? EnabledAppController {
-        controller.stateChangeListeners.keys.forEach {subscriptionId in
-          if let listener = controller.stateChangeListeners[subscriptionId] {
-            listener.updatesStateDidChange(event.toMap)
-          }
-        }
-      }
       sendContextToJS()
     }
   }
