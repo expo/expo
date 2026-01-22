@@ -124,14 +124,14 @@ class JSIContext @DoNotStrip internal constructor(
 
   @Throws(Throwable::class)
   protected fun finalize() {
-    deallocate()
-  }
-
-  override fun deallocate() {
-    mHybridData.resetNative()
+    close()
   }
 
   override fun close() {
-    deallocate()
+    mHybridData.resetNative()
+  }
+
+  override fun getHybridDataForJNIDeallocator(): HybridData {
+    return mHybridData
   }
 }
