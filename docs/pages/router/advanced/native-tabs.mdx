@@ -145,7 +145,7 @@ When you want to customize the tab bar item, we recommend using the components A
 
 ### Icon
 
-> **info** `NativeTabs.Trigger.Icon` is available in SDK 55 and later. For SDK 54 use `Icon` imported from `expo-router/unstable-native-tabs`
+> **info** `NativeTabs.Trigger.Icon` is available in SDK 55 and later. For SDK 54, use `Icon` imported from `expo-router/unstable-native-tabs`.
 
 You can use the `Icon` component to customize the icon displayed in the tab bar item. The `Icon` component accepts a `md` prop for Android material symbols, a `sf` prop for Apple's SF Symbols icons, or a `src` prop for custom images.
 
@@ -162,10 +162,7 @@ export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Icon
-          sf={{ default: 'house', selected: 'house.fill' }}
-          md="home"
-        />
+        <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md="home" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <NativeTabs.Trigger.Icon src={require('../../../assets/setting_icon.png')} />
@@ -186,10 +183,7 @@ export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <Icon
-          sf={{ default: 'house', selected: 'house.fill' }}
-          drawable="custom_home_drawable"
-        />
+        <Icon sf={{ default: 'house', selected: 'house.fill' }} drawable="custom_home_drawable" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <Icon src={require('../../../assets/setting_icon.png')} />
@@ -268,10 +262,7 @@ export default function TabLayout() {
         light: 'black',
       })}>
       <NativeTabs.Trigger name="index">
-        <Icon
-          sf={{ default: 'house', selected: 'house.fill' }}
-          drawable="custom_home_drawable"
-        />
+        <Icon sf={{ default: 'house', selected: 'house.fill' }} drawable="custom_home_drawable" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <Icon
@@ -340,17 +331,11 @@ export default function TabLayout() {
     <NativeTabs>
       {/* Icon with original colors preserved (e.g., for gradient or multi-color icons) */}
       <NativeTabs.Trigger name="colorful">
-        <Icon
-          src={require('../../../assets/colorful_icon.png')}
-          renderingMode="original"
-        />
+        <Icon src={require('../../../assets/colorful_icon.png')} renderingMode="original" />
       </NativeTabs.Trigger>
       {/* Icon rendered as a template (default behavior) */}
       <NativeTabs.Trigger name="simple">
-        <Icon
-          src={require('../../../assets/simple_icon.png')}
-          renderingMode="template"
-        />
+        <Icon src={require('../../../assets/simple_icon.png')} renderingMode="template" />
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -479,7 +464,7 @@ Since the native tab layout's appearance varies by platform, the customization o
 
 ### Hiding the Tab bar
 
-> **info** `hidden` property is available from SDK 55.
+> **info** `hidden` property is available in SDK 55 and later.
 
 You can hide the tab bar using `hidden` prop on the `NativeTabs` component. In order to hide tab bar for specific screens, you can use context API to set the `hidden` prop dynamically.
 
@@ -559,7 +544,7 @@ export default function TabLayout() {
 
 ### Dismiss behavior
 
-> **info** Dismiss behavior is available on Android from SDK 55 and later.
+> **info** Dismiss behavior is available on Android in SDK 55 and later.
 
 By default, tapping a tab that is already active closes all screens in that tab's stack and returns to the root screen. You can disable this by setting the `disablePopToTop` prop on the `NativeTabs.Trigger` component.
 
@@ -611,7 +596,7 @@ export default function TabLayout() {
 
 ### Scroll to top
 
-> **info** Scroll to top is available on Android from SDK 55 and later.
+> **info** Scroll to top is available on Android in SDK 55 and later.
 
 By default, tapping a tab that is already active and showing its root screen scrolls the content back to the top. You can disable this by setting the `disableScrollToTop` prop on the `NativeTabs.Trigger` component.
 
@@ -761,7 +746,8 @@ export default function SearchLayout() {
 ```
 
 ```tsx app/search/index.tsx
-import { ScrollView, Stack } from 'react-native';
+import { ScrollView } from 'react-native';
+import { Stack } from 'expo-router';
 
 export default function SearchIndex() {
   return (
