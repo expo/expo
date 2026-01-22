@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix wrong permissions for text() and bytes(). ([#42422](https://github.com/expo/expo/pull/42422)) by [@simoneldevig](https://github.com/simoneldevig))
+
 ### 💡 Others
 
 ## 55.0.0 — 2026-01-21
