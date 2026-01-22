@@ -33,6 +33,7 @@ interface EnvironmentInput {
   readText(request: string): Promise<string | null>;
   readJson(request: string): Promise<unknown>;
   loadModule(request: string): Promise<unknown>;
+  isDevelopment: boolean;
 }
 
 export function createEnvironment(input: EnvironmentInput) {
@@ -41,7 +42,7 @@ export function createEnvironment(input: EnvironmentInput) {
   let ssrRenderer: SsrRenderFn | null = null;
 
   async function getCachedRoutesManifest(): Promise<Manifest> {
-    if (!cachedManifest) {
+    if (!cachedManifest || input.isDevelopment) {
       const json = await input.readJson('_expo/routes.json');
       cachedManifest = initManifestRegExp(json as RawManifest);
     }
@@ -49,7 +50,7 @@ export function createEnvironment(input: EnvironmentInput) {
   }
 
   async function getServerRenderer(): Promise<SsrRenderFn | null> {
-    if (ssrRenderer) {
+    if (ssrRenderer && !input.isDevelopment) {
       return ssrRenderer;
     }
 

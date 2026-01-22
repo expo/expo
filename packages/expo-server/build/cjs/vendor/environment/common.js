@@ -33,14 +33,14 @@ function createEnvironment(input) {
     let cachedManifest = null;
     let ssrRenderer = null;
     async function getCachedRoutesManifest() {
-        if (!cachedManifest) {
+        if (!cachedManifest || input.isDevelopment) {
             const json = await input.readJson('_expo/routes.json');
             cachedManifest = initManifestRegExp(json);
         }
         return cachedManifest;
     }
     async function getServerRenderer() {
-        if (ssrRenderer) {
+        if (ssrRenderer && !input.isDevelopment) {
             return ssrRenderer;
         }
         const manifest = await getCachedRoutesManifest();

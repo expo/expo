@@ -65,7 +65,7 @@ describe('getRoutesManifest', () => {
     expect(manifest.notFoundRoutes[0].namedRegex).toBeInstanceOf(RegExp);
   });
 
-  it('caches the manifest on subsequent calls', async () => {
+  it('caches the manifest on subsequent calls in production', async () => {
     const input = createMockInput();
     const env = createEnvironment(input);
 
@@ -73,6 +73,16 @@ describe('getRoutesManifest', () => {
     await env.getRoutesManifest();
 
     expect(input.readJson).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not cache the manifest in development', async () => {
+    const input = createMockInput({ isDevelopment: true });
+    const env = createEnvironment(input);
+
+    await env.getRoutesManifest();
+    await env.getRoutesManifest();
+
+    expect(input.readJson).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -222,7 +232,7 @@ describe('getHtml', () => {
     ).rejects.toThrow(/SSR module not found/);
   });
 
-  it('caches SSR renderer on subsequent calls', async () => {
+  it('caches SSR renderer on subsequent calls in production', async () => {
     const mockSSRModule = createMockSSRModule();
     const input = createMockInput({
       manifest: {
@@ -251,6 +261,38 @@ describe('getHtml', () => {
     );
 
     expect(input.loadModule).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not cache SSR renderer in development', async () => {
+    const mockSSRModule = createMockSSRModule();
+    const input = createMockInput({
+      isDevelopment: true,
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+        assets: { css: [], js: ['/app.js'] },
+      },
+      modules: { '_expo/server/render.js': mockSSRModule },
+    });
+    const env = createEnvironment(input);
+
+    await env.getHtml(
+      new Request('http://localhost/'),
+      createMockRoute({
+        file: './index.tsx',
+        page: '/index',
+        namedRegex: new RegExp('^/(?:/)?$'),
+      })
+    );
+    await env.getHtml(
+      new Request('http://localhost/'),
+      createMockRoute({
+        file: './other.tsx',
+        page: '/other',
+        namedRegex: new RegExp('^/other(?:/)?$'),
+      })
+    );
+
+    expect(input.loadModule).toHaveBeenCalledTimes(2);
   });
 
   it('passes location, request, and assets to `getStaticContent()`', async () => {
@@ -619,10 +661,12 @@ function createMockInput({
   files = {},
   modules = {},
   manifest = {},
+  isDevelopment = false,
 }: {
   files?: Record<string, string | null>;
   modules?: Record<string, unknown>;
   manifest?: Parameters<typeof createMockManifest>[0];
+  isDevelopment?: boolean;
 } = {}) {
   return {
     readText: jest.fn().mockImplementation((path: string) => Promise.resolve(files[path] ?? null)),
@@ -630,6 +674,7 @@ function createMockInput({
     loadModule: jest
       .fn()
       .mockImplementation((path: string) => Promise.resolve(modules[path] ?? null)),
+    isDevelopment,
   };
 }
 

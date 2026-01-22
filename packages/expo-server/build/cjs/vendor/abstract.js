@@ -26,9 +26,7 @@ function noopBeforeResponse(responseInit, _route) {
 function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMiddleware, getLoaderData, beforeErrorResponse = noopBeforeResponse, beforeResponse = noopBeforeResponse, beforeHTMLResponse = noopBeforeResponse, beforeAPIResponse = noopBeforeResponse, }) {
     let manifest = null;
     return async function handler(request) {
-        if (!manifest) {
-            manifest = await getRoutesManifest();
-        }
+        manifest = await getRoutesManifest();
         return requestHandler(request, manifest);
     };
     async function requestHandler(incomingRequest, manifest) {

@@ -73,9 +73,7 @@ export function createRequestHandler({
   let manifest: Manifest | null = null;
 
   return async function handler(request: Request): Promise<Response> {
-    if (!manifest) {
-      manifest = await getRoutesManifest();
-    }
+    manifest = await getRoutesManifest();
     return requestHandler(request, manifest);
   };
 

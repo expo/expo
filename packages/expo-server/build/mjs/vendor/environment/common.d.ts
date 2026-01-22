@@ -3,6 +3,7 @@ interface EnvironmentInput {
     readText(request: string): Promise<string | null>;
     readJson(request: string): Promise<unknown>;
     loadModule(request: string): Promise<unknown>;
+    isDevelopment: boolean;
 }
 export declare function createEnvironment(input: EnvironmentInput): {
     getRoutesManifest(): Promise<Manifest>;
