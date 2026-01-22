@@ -113,7 +113,7 @@ export const updateWidgetSnapshot = <T extends object>(
 };
 
 /**
- * Adds a listener for widget interaction events (e.g., button taps).
+ * Adds a listener for widget interaction events (for example, button taps).
  * @param listener Callback function to handle user interaction events.
  * @return An event subscription that can be used to remove the listener.
  * @platform ios

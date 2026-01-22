@@ -11,7 +11,9 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 
-`expo-widgets` enables the creation of iOS home screen widgets and Live Activities using Expo UI components - without the need to write native code. It provides a simple API for creating and updating widgets timeline, as well as starting and managing Live Activities. Layout can be built using expo/ui components and modifiers.
+> **important** This library is currently in alpha and subject to breaking changes. It is not available in the Expo Go app, use [development builds](/develop/development-builds/introduction) to try it out.
+
+`expo-widgets` enables the creation of iOS home screen widgets and Live Activities using Expo UI components, without writing native code. It provides a simple API for creating and updating widgets timeline, as well as starting and managing Live Activities. Layout can be built using [`expo/ui`](/versions/latest/sdk/ui/swift-ui/) components and modifiers.
 
 ## Installation
 
@@ -173,7 +175,7 @@ const MyWidget = (props: WidgetBase<MyWidgetProps>) => {
 updateWidgetSnapshot('MyWidget', MyWidget, { count: 5 });
 ```
 
-The widget name (`'MyWidget'`) must match the `name` field in your widget configuration in **app.json**.
+The widget name (`'MyWidget'`) must match the `name` field in your widget configuration in the [app config](/workflow/configuration/).
 
 #### Timeline widget
 
