@@ -8,7 +8,6 @@ import { ReactNode } from 'react';
  * - `accessoryCircular` - Circular accessory widget for the Lock Screen.
  * - `accessoryRectangular` - Rectangular accessory widget for the Lock Screen.
  * - `accessoryInline` - Inline accessory widget for the Lock Screen.
- * @platform ios
  */
 export type WidgetFamily = 'systemSmall' | 'systemMedium' | 'systemLarge' | 'systemExtraLarge' | 'accessoryCircular' | 'accessoryRectangular' | 'accessoryInline';
 /**
@@ -30,7 +29,6 @@ export type ExpoTimelineEntry = {
 };
 /**
  * Defines the layout sections for an iOS Live Activity.
- * @platform ios
  */
 export type ExpoLiveActivityEntry = {
     /**
@@ -68,7 +66,6 @@ export type ExpoLiveActivityEntry = {
 };
 /**
  * A function that returns the layout for a Live Activity.
- * @platform ios
  */
 export type LiveActivityComponent = () => ExpoLiveActivityEntry;
 /**

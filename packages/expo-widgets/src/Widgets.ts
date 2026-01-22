@@ -19,7 +19,6 @@ import { serialize } from './serializer';
  * @param liveActivity A function that returns the Live Activity layout configuration.
  * @param url An optional deep link URL to open when the user taps the Live Activity.
  * @return The unique identifier of the started Live Activity.
- * @platform ios
  */
 export const startLiveActivity = (
   name: string,
@@ -35,7 +34,6 @@ export const startLiveActivity = (
  * @param id The unique identifier of the Live Activity to update (returned from `startLiveActivity`).
  * @param name The name/identifier of the Live Activity.
  * @param liveActivity A function that returns the updated Live Activity layout configuration.
- * @platform ios
  */
 export const updateLiveActivity = (
   id: string,
@@ -55,7 +53,6 @@ export const updateLiveActivity = (
  * @param props Optional custom props to pass to the widget component.
  * @param updateFunction Optional name of a function to call for dynamic updates.
  * @template T The type of custom props passed to the widget.
- * @platform ios
  */
 export const updateWidgetTimeline = <T extends object>(
   name: string,
@@ -101,7 +98,6 @@ export const updateWidgetTimeline = <T extends object>(
  * @param props Optional custom props to pass to the widget component.
  * @param updateFunction Optional name of a function to call for dynamic updates.
  * @template T The type of custom props passed to the widget.
- * @platform ios
  */
 export const updateWidgetSnapshot = <T extends object>(
   name: string,
@@ -116,7 +112,6 @@ export const updateWidgetSnapshot = <T extends object>(
  * Adds a listener for widget interaction events (for example, button taps).
  * @param listener Callback function to handle user interaction events.
  * @return An event subscription that can be used to remove the listener.
- * @platform ios
  */
 export function addUserInteractionListener(
   listener: ExpoWidgetsEvents['onUserInteraction']

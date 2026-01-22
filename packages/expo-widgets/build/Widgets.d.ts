@@ -8,7 +8,6 @@ import { ExpoWidgetsEvents, LiveActivityComponent, WidgetBase } from './Widgets.
  * @param liveActivity A function that returns the Live Activity layout configuration.
  * @param url An optional deep link URL to open when the user taps the Live Activity.
  * @return The unique identifier of the started Live Activity.
- * @platform ios
  */
 export declare const startLiveActivity: (name: string, liveActivity: LiveActivityComponent, url?: string) => string;
 /**
@@ -16,7 +15,6 @@ export declare const startLiveActivity: (name: string, liveActivity: LiveActivit
  * @param id The unique identifier of the Live Activity to update (returned from `startLiveActivity`).
  * @param name The name/identifier of the Live Activity.
  * @param liveActivity A function that returns the updated Live Activity layout configuration.
- * @platform ios
  */
 export declare const updateLiveActivity: (id: string, name: string, liveActivity: LiveActivityComponent) => void;
 /**
@@ -28,7 +26,6 @@ export declare const updateLiveActivity: (id: string, name: string, liveActivity
  * @param props Optional custom props to pass to the widget component.
  * @param updateFunction Optional name of a function to call for dynamic updates.
  * @template T The type of custom props passed to the widget.
- * @platform ios
  */
 export declare const updateWidgetTimeline: <T extends object>(name: string, dates: Date[], widget: (p: WidgetBase<T>) => React.JSX.Element, props?: T, updateFunction?: string) => void;
 /**
@@ -39,14 +36,12 @@ export declare const updateWidgetTimeline: <T extends object>(name: string, date
  * @param props Optional custom props to pass to the widget component.
  * @param updateFunction Optional name of a function to call for dynamic updates.
  * @template T The type of custom props passed to the widget.
- * @platform ios
  */
 export declare const updateWidgetSnapshot: <T extends object>(name: string, widget: (p: WidgetBase<T>) => React.JSX.Element, props?: T, updateFunction?: string) => void;
 /**
- * Adds a listener for widget interaction events (e.g., button taps).
+ * Adds a listener for widget interaction events (for example, button taps).
  * @param listener Callback function to handle user interaction events.
  * @return An event subscription that can be used to remove the listener.
- * @platform ios
  */
 export declare function addUserInteractionListener(listener: ExpoWidgetsEvents['onUserInteraction']): EventSubscription;
 //# sourceMappingURL=Widgets.d.ts.map

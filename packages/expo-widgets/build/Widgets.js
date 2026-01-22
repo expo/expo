@@ -8,7 +8,6 @@ import { serialize } from './serializer';
  * @param liveActivity A function that returns the Live Activity layout configuration.
  * @param url An optional deep link URL to open when the user taps the Live Activity.
  * @return The unique identifier of the started Live Activity.
- * @platform ios
  */
 export const startLiveActivity = (name, liveActivity, url) => {
     const text = serialize(liveActivity());
@@ -19,7 +18,6 @@ export const startLiveActivity = (name, liveActivity, url) => {
  * @param id The unique identifier of the Live Activity to update (returned from `startLiveActivity`).
  * @param name The name/identifier of the Live Activity.
  * @param liveActivity A function that returns the updated Live Activity layout configuration.
- * @platform ios
  */
 export const updateLiveActivity = (id, name, liveActivity) => {
     const text = serialize(liveActivity());
@@ -34,7 +32,6 @@ export const updateLiveActivity = (id, name, liveActivity) => {
  * @param props Optional custom props to pass to the widget component.
  * @param updateFunction Optional name of a function to call for dynamic updates.
  * @template T The type of custom props passed to the widget.
- * @platform ios
  */
 export const updateWidgetTimeline = (name, dates, widget, props, updateFunction) => {
     const fakeProps = Object.keys(props || {}).reduce((acc, key) => {
@@ -64,17 +61,15 @@ export const updateWidgetTimeline = (name, dates, widget, props, updateFunction)
  * @param props Optional custom props to pass to the widget component.
  * @param updateFunction Optional name of a function to call for dynamic updates.
  * @template T The type of custom props passed to the widget.
- * @platform ios
  */
 export const updateWidgetSnapshot = (name, widget, props, updateFunction // (target: string, props: T) => T
 ) => {
     updateWidgetTimeline(name, [new Date()], widget, props || {}, updateFunction);
 };
 /**
- * Adds a listener for widget interaction events (e.g., button taps).
+ * Adds a listener for widget interaction events (for example, button taps).
  * @param listener Callback function to handle user interaction events.
  * @return An event subscription that can be used to remove the listener.
- * @platform ios
  */
 export function addUserInteractionListener(listener) {
     return ExpoWidgetModule.addListener('onUserInteraction', listener);
