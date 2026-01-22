@@ -1,0 +1,346 @@
+---
+title: Widgets
+description: A library that enables creation of iOS home screen widgets and Live Activities using Expo UI components.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-widgets'
+packageName: 'expo-widgets'
+platforms: ['ios']
+isAlpha: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
+
+> **important** This library is currently in alpha and subject to breaking changes. It is not available in the Expo Go app, use [development builds](/develop/development-builds/introduction) to try it out.
+
+`expo-widgets` enables the creation of iOS home screen widgets and Live Activities using Expo UI components, without writing native code. It provides a simple API for creating and updating widgets timeline, as well as starting and managing Live Activities. Layout can be built using [`expo/ui`](/versions/latest/sdk/ui/swift-ui/) components and modifiers.
+
+## Installation
+
+<APIInstallSection />
+
+## Configuration in app config
+
+You can configure `expo-widgets` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-widgets",
+        {
+          "widgets": [
+            {
+              "name": "MyWidget",
+              "displayName": "My Widget",
+              "description": "A sample home screen widget",
+              "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"]
+            }
+          ]
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'bundleIdentifier',
+      description:
+        'The bundle identifier for the widget extension target. If not specified, defaults to `<main app bundle identifier>.ExpoWidgetsTarget`.',
+      default: '"<app bundle identifier>.ExpoWidgetsTarget"',
+    },
+    {
+      name: 'groupIdentifier',
+      description:
+        'The app group identifier used for communication and data sharing between the main app and widgets. This is required for widgets to work properly. If not specified, defaults to `group.<main app bundle identifier>`.',
+      default: '"group.<app bundle identifier>"',
+    },
+    {
+      name: 'enablePushNotifications',
+      description:
+        'Whether to enable push notifications for Live Activities. When enabled, this adds the `aps-environment` entitlement and sets `ExpoLiveActivity_EnablePushNotifications` in the **Info.plist**.',
+      default: 'false',
+    },
+    {
+      name: 'widgets',
+      description:
+        'An array of widget configurations. Each widget in the array will be generated as a separate widget kind in your widget extension.',
+    },
+    {
+      name: 'widgets[].name',
+      description:
+        'The internal name (identifier) of the widget. This is used as the Swift struct name and should be a valid Swift identifier (no spaces or special characters).',
+    },
+    {
+      name: 'widgets[].displayName',
+      description:
+        'The user-facing name of the widget that appears in the widget gallery when users add widgets to their home screen.',
+    },
+    {
+      name: 'widgets[].description',
+      description:
+        "A brief description of what the widget does. This appears in the widget gallery to help users understand the widget's purpose.",
+    },
+    {
+      name: 'widgets[].supportedFamilies',
+      description: [
+        'An array of widget sizes that this widget supports. Available options:',
+        '* `systemSmall` - Small square widget (2x2 grid)',
+        '* `systemMedium` - Medium rectangular widget (4x2 grid)',
+        '* `systemLarge` - Large square widget (4x4 grid)',
+        '* `systemExtraLarge` - Extra large widget (iPad only, 6x4 grid)',
+        '* `accessoryCircular` - Circular widget for Lock Screen',
+        '* `accessoryRectangular` - Rectangular widget for Lock Screen',
+        '* `accessoryInline` - Inline text widget for Lock Screen',
+      ].join('\n'),
+    },
+  ]}
+/>
+
+### Full example with all options
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-widgets",
+        {
+          "bundleIdentifier": "com.example.myapp.widgets",
+          "groupIdentifier": "group.com.example.myapp",
+          "enablePushNotifications": true,
+          "widgets": [
+            {
+              "name": "StatusWidget",
+              "displayName": "Status",
+              "description": "Shows your current status at a glance",
+              "supportedFamilies": ["systemSmall", "systemMedium"]
+            },
+            {
+              "name": "DetailWidget",
+              "displayName": "Details",
+              "description": "Shows detailed information",
+              "supportedFamilies": ["systemMedium", "systemLarge"]
+            },
+            {
+              "name": "LockScreenWidget",
+              "displayName": "Quick View",
+              "description": "View info on your Lock Screen",
+              "supportedFamilies": ["accessoryCircular", "accessoryRectangular", "accessoryInline"]
+            }
+          ]
+        }
+      ]
+    ]
+  }
+}
+```
+
+## Usage
+
+### Widgets
+
+#### Basic widget
+
+The simplest way to create a widget is using `updateWidgetSnapshot`. This creates a widget with a single timeline entry that displays immediately.
+
+```tsx
+import { updateWidgetSnapshot, WidgetBase } from 'expo-widgets';
+import { Text, VStack } from '@expo/ui/swift-ui';
+import { font, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+
+type MyWidgetProps = {
+  count: number;
+};
+
+const MyWidget = (props: WidgetBase<MyWidgetProps>) => {
+  return (
+    <VStack>
+      <Text modifiers={[font({ weight: 'bold', size: 16 }), foregroundStyle('#000000')]}>
+        Count: {props.count}
+      </Text>
+    </VStack>
+  );
+};
+
+// Update the widget
+updateWidgetSnapshot('MyWidget', MyWidget, { count: 5 });
+```
+
+The widget name (`'MyWidget'`) must match the `name` field in your widget configuration in the [app config](/workflow/configuration/).
+
+#### Timeline widget
+
+Use `updateWidgetTimeline` to schedule widget updates at specific time. System will automatically update the widget based on the timeline.
+
+```tsx
+import { updateWidgetTimeline, WidgetProps } from 'expo-widgets';
+import { Text, VStack } from '@expo/ui/swift-ui';
+import { font } from '@expo/ui/swift-ui/modifiers';
+
+const TimeWidget = (props: WidgetProps) => {
+  return (
+    <VStack>
+      <Text>{props.date.toLocaleTimeString()}</Text>
+    </VStack>
+  );
+};
+
+// Schedule updates for the next 3 hours
+const dates = [
+  new Date(),
+  new Date(Date.now() + 3600000), // 1 hour from now
+  new Date(Date.now() + 7200000), // 2 hours from now
+  new Date(Date.now() + 10800000), // 3 hours from now
+];
+
+updateWidgetTimeline('TimeWidget', dates, TimeWidget);
+```
+
+#### Responsive widget
+
+Widget component receives a `family` prop indicating which size is being rendered. Use this to adapt layout for different widget sizes.
+
+```tsx
+import { updateWidgetSnapshot, WidgetProps, WidgetFamily } from 'expo-widgets';
+import { Text, VStack, HStack } from '@expo/ui/swift-ui';
+
+type WeatherWidgetProps = {
+  temperature: number;
+  condition: string;
+};
+
+const WeatherWidget = (props: WidgetProps<WeatherWidgetProps>) => {
+  // Render different layouts based on size
+  if (props.family === 'systemSmall') {
+    return (
+      <VStack>
+        <Text>{props.temperature}°</Text>
+      </VStack>
+    );
+  }
+
+  if (props.family === 'systemMedium') {
+    return (
+      <HStack>
+        <Text>{props.temperature}°</Text>
+        <Text>{props.condition}</Text>
+      </HStack>
+    );
+  }
+
+  // systemLarge and others
+  return (
+    <VStack>
+      <Text>Temperature: {props.temperature}°</Text>
+      <Text>Condition: {props.condition}</Text>
+      <Text>Updated: {props.date.toLocaleTimeString()}</Text>
+    </VStack>
+  );
+};
+
+updateWidgetSnapshot('WeatherWidget', WeatherWidget, {
+  temperature: 72,
+  condition: 'Sunny',
+});
+```
+
+### Live Activities
+
+Live Activities display real-time information on the Lock Screen and in the Dynamic Island on supported devices.
+
+#### Starting a Live Activity
+
+```tsx
+import { startLiveActivity, LiveActivityComponent } from 'expo-widgets';
+import { Text, Image, HStack, VStack } from '@expo/ui/swift-ui';
+import { foregroundStyle, font, padding } from '@expo/ui/swift-ui/modifiers';
+import { Button } from 'react-native';
+
+const DeliveryActivity: LiveActivityComponent = () => ({
+  banner: (
+    <VStack modifiers={[padding(12)]}>
+      <Text modifiers={[font({ weight: 'bold' }), foregroundStyle('#000000')]}>
+        Your delivery is on the way
+      </Text>
+      <Text>Estimated arrival: 15 minutes</Text>
+    </VStack>
+  ),
+  compactLeading: <Image systemName="box.truck.fill" color="#007AFF" />,
+  compactTrailing: <Text>15 min</Text>,
+  minimal: <Image systemName="box.truck.fill" color="#007AFF" />,
+  expandedLeading: (
+    <VStack modifiers={[padding(12)]}>
+      <Image systemName="box.truck.fill" color="#007AFF" />
+      <Text modifiers={[font({ size: 12 })]}>Delivering</Text>
+    </VStack>
+  ),
+  expandedTrailing: (
+    <VStack modifiers={[padding(12)]}>
+      <Text modifiers={[font({ weight: 'bold', size: 20 })]}>15</Text>
+      <Text modifiers={[font({ size: 12 })]}>minutes</Text>
+    </VStack>
+  ),
+  expandedBottom: (
+    <VStack modifiers={[padding(12)]}>
+      <Text>Driver: John Smith</Text>
+      <Text>Order #12345</Text>
+    </VStack>
+  ),
+});
+
+function App() {
+  const startDeliveryTracking = () => {
+    // Start the Live Activity
+    const activityId = startLiveActivity('DeliveryActivity', DeliveryActivity);
+    console.log('Started Live Activity:', activityId);
+
+    // Store activityId for later updates
+  };
+
+  return (
+    <View>
+      <Button title="Start Delivery Tracking" onPress={startDeliveryTracking} />
+    </View>
+  );
+}
+```
+
+#### Updating a Live Activity
+
+```tsx
+import { updateLiveActivity, LiveActivityComponent } from 'expo-widgets';
+
+const UpdatedDeliveryActivity: LiveActivityComponent = () => ({
+  banner: (
+    <VStack modifiers={[padding(12)]}>
+      <Text modifiers={[font({ weight: 'bold' }), foregroundStyle('#00FF00')]}>
+        Delivery arriving soon!
+      </Text>
+      <Text>Estimated arrival: 2 minutes</Text>
+    </VStack>
+  ),
+  compactLeading: <Image systemName="checkmark.circle.fill" color="#00FF00" />,
+  compactTrailing: <Text>2 min</Text>,
+  expandedTrailing: (
+    <VStack modifiers={[padding(12)]}>
+      <Text modifiers={[font({ weight: 'bold', size: 20 })]}>2</Text>
+      <Text modifiers={[font({ size: 12 })]}>minutes</Text>
+    </VStack>
+  ),
+});
+
+function updateDelivery(activityId: string) {
+  updateLiveActivity(activityId, 'DeliveryActivity', UpdatedDeliveryActivity);
+}
+```
+
+<APISection packageName="expo-widgets" />
