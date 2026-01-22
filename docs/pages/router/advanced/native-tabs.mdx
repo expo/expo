@@ -57,18 +57,18 @@ The above file structure produces a layout with a tab bar at the bottom of the s
 You can use the **app/\_layout.tsx** file to define your app's root layout using tabs. This file is the main layout file for the tab bar and each tab. Inside it, you can control how the tab bar and each tab item look and behave.
 
 ```tsx app/_layout.tsx
-import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <Label>Home</Label>
-        <Icon sf="house.fill" drawable="custom_android_drawable" />
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="house.fill" md="home" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
-        <Icon sf="gear" drawable="custom_settings_drawable" />
-        <Label>Settings</Label>
+        <NativeTabs.Trigger.Icon sf="gear" md="settings" />
+        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -111,62 +111,34 @@ When you want to customize the tab bar item, we recommend using the components A
 
 ### Icon
 
-You can use the `Icon` component to customize the icon displayed in the tab bar item. The `Icon` component accepts a `drawable` prop for Android drawables, a `sf` prop for Apple's SF Symbols icons, or a `src` prop for custom images.
+> **info** `NativeTabs.Trigger.Icon` is available in SDK 55 and later. For SDK 54 use `Icon` imported from `expo-router/unstable-native-tabs`
 
-Alternatively, you can pass `{default: ..., selected: ...}` to either the `sf` or `src` prop to specify different icons for the default and selected states.
+You can use the `Icon` component to customize the icon displayed in the tab bar item. The `Icon` component accepts a `md` prop for Android material symbols, a `sf` prop for Apple's SF Symbols icons, or a `src` prop for custom images.
 
-> To use `drawable` props on Android, you can use [built-in drawables](https://developer.android.com/reference/android/R.drawable) or add [custom drawables](https://developer.android.com/studio/write/resource-manager).
+Alternatively, you can pass `{default: ..., selected: ...}` to either the `sf` or `src` prop to specify different icons for the default and selected states (currently not supported on Android).
 
 ```tsx app/_layout.tsx
-import { NativeTabs, Icon } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
   return (
     <NativeTabs>
-      <NativeTabs.Trigger name="index">
-        <Icon sf={{ default: 'house', selected: 'house.fill' }} drawable="custom_home_drawable" />
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="settings">
-        <Icon src={require('../../../assets/setting_icon.png')} />
-      </NativeTabs.Trigger>
+      <NativeTabs.Trigger.Icon name="index">
+        <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md="home" />
+      </NativeTabs.Trigger.Icon>
+      <NativeTabs.Trigger.Icon name="settings">
+        <NativeTabs.Trigger.Icon src={require('../../../assets/setting_icon.png')} />
+      </NativeTabs.Trigger.Icon>
     </NativeTabs>
   );
 }
 ```
 
-#### Icon rendering mode
-
-When using the `src` prop for custom images on iOS, you can control how the icon is rendered with the `renderingMode` prop:
-
-- **`template` (default)**: The icon is rendered as a template image, allowing iOS to apply the tint color. This is ideal for single-color icons that should match your app's color scheme.
-- **`original`**: The icon is rendered with its original colors preserved. This is useful for icons with gradients or multiple colors.
-
-```tsx app/_layout.tsx
-import { NativeTabs, Icon } from 'expo-router/unstable-native-tabs';
-
-export default function TabLayout() {
-  return (
-    <NativeTabs>
-      {/* Icon with original colors preserved (e.g., for gradient or multi-color icons) */}
-      <NativeTabs.Trigger name="colorful">
-        <Icon src={require('../../../assets/colorful_icon.png')} renderingMode="original" />
-      </NativeTabs.Trigger>
-      {/* Icon rendered as a template (default behavior) */}
-      <NativeTabs.Trigger name="simple">
-        <Icon src={require('../../../assets/simple_icon.png')} renderingMode="template" />
-      </NativeTabs.Trigger>
-    </NativeTabs>
-  );
-}
-```
-
-> **info** The `renderingMode` prop only affects iOS. On Android, all image icons are rendered with their original colors.
-
-Liquid glass on iOS automatically changes colors based on if the background color is light or dark. There is no callback for this, so you need to use a `PlatformColor` to set the color of the icon.
+Liquid glass on iOS automatically changes colors based on if the background color is light or dark. There is no callback for this, so you need to use a `PlatformColor` or `DynamicColorIOS` to set the color of the icon.
 
 ```tsx app/_layout.tsx
 import { DynamicColorIOS } from 'react-native';
-import { NativeTabs, Icon } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
   return (
@@ -184,13 +156,13 @@ export default function TabLayout() {
         light: 'black',
       })}>
       <NativeTabs.Trigger name="index">
-        <Icon sf={{ default: 'house', selected: 'house.fill' }} drawable="custom_home_drawable" />
+        <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md="home" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
-        <Icon
+        <NativeTabs.Trigger.Icon
           src={{
-            default: require('../../../assets/setting_icon.png'),
-            selected: require('../../../assets/selected_setting_icon.png'),
+            default: require('../assets/setting_icon.png'),
+            selected: require('../assets/selected_setting_icon.png'),
           }}
         />
       </NativeTabs.Trigger>
@@ -199,6 +171,42 @@ export default function TabLayout() {
 }
 ```
 
+#### Icon rendering mode
+
+> **important** Icon rendering mode is available in SDK 55 and later.
+
+When using the `src` prop for custom images on iOS, you can control how the icon is rendered with the `renderingMode` prop:
+
+- **`template` (default)**: The icon is rendered as a template image, allowing iOS to apply the tint color. This is ideal for single-color icons that should match your app's color scheme.
+- **`original`**: The icon is rendered with its original colors preserved. This is useful for icons with gradients or multiple colors.
+
+```tsx app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      {/* Icon with original colors preserved (e.g., for gradient or multi-color icons) */}
+      <NativeTabs.Trigger.Icon name="colorful">
+        <NativeTabs.Trigger.Icon
+          src={require('../../../assets/colorful_icon.png')}
+          renderingMode="original"
+        />
+      </NativeTabs.Trigger.Icon>
+      {/* Icon rendered as a template (default behavior) */}
+      <NativeTabs.Trigger.Icon name="simple">
+        <NativeTabs.Trigger.Icon
+          src={require('../../../assets/simple_icon.png')}
+          renderingMode="template"
+        />
+      </NativeTabs.Trigger.Icon>
+    </NativeTabs>
+  );
+}
+```
+
+> **info** The `renderingMode` prop only affects iOS. On Android, all image icons are rendered with their original colors.
+
 ### Label
 
 You can use the `Label` component to customize the label displayed in the tab bar item. The `Label` component accepts a string label passed as a child. If no label is provided, the tab bar item will use the route name as the label.
@@ -206,16 +214,16 @@ You can use the `Label` component to customize the label displayed in the tab ba
 If you don't want to display a label, you can use the `hidden` prop to hide the label.
 
 ```tsx app/_layout.tsx
-import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <Label>Home</Label>
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
-        <Label hidden />
+        <NativeTabs.Trigger.Label hidden />
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -227,16 +235,16 @@ export default function TabLayout() {
 You can use the `Badge` component to customize the badge displayed for the tab bar item. The badge is an additional mark on top of the tab and useful for showing notification or unread message counts.
 
 ```tsx app/_layout.tsx
-import { NativeTabs, Badge } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="messages">
-        <Badge>9+</Badge>
+        <NativeTabs.Trigger.Badge>9+</NativeTabs.Trigger.Badge>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
-        <Badge />
+        <NativeTabs.Trigger.Badge />
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -255,7 +263,68 @@ Since the native tab layout's appearance varies by platform, the customization o
 
 ## Advanced
 
-### Hide a tab conditionally
+### Hiding the Tab bar
+
+> **info** `hidden` property is available from SDK 55.
+
+You can hide the tab bar using `hidden` prop on the `NativeTabs` component. In order to hide tab bar for specific screens, you can use context API to set the `hidden` prop dynamically.
+
+```tsx context/TabBarContext.tsx
+import { createContext } from 'react';
+
+export const TabBarContext = createContext<{
+  setIsTabBarHidden: (hidden: boolean) => void;
+}>({
+  setIsTabBarHidden: () => {},
+});
+```
+
+```tsx app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { useState } from 'react';
+
+import { TabBarContext } from '../context/TabBarContext';
+
+export default function TabLayout() {
+  const [isTabBarHidden, setIsTabBarHidden] = useState(false);
+  return (
+    <TabBarContext value={{ setIsTabBarHidden }}>
+      <NativeTabs hidden={isTabBarHidden}>
+        <NativeTabs.Trigger name="index">
+          <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="settings">
+          <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+      </NativeTabs>
+    </TabBarContext>
+  );
+}
+```
+
+```tsx app/index.tsx
+import { useFocusEffect } from 'expo-router';
+import { use } from 'react';
+
+import { TabBarContext } from '../context/TabBarContext';
+
+export default function HomeScreen() {
+  const { setIsTabBarHidden } = use(TabBarContext);
+
+  useFocusEffect(() => {
+    setIsTabBarHidden(true);
+    return () => setIsTabBarHidden(false);
+  });
+
+  return (
+    // Screen content
+  );
+}
+```
+
+### Hiding a tab conditionally
+
+> **warning** Dynamically hiding tabs will remount the navigator and the state will be reset. Change the visibility of the tabs only before the navigator is mounted or when it is not visible to the user.
 
 If you want to hide a tab based on a condition, you can either remove the trigger or pass the `hidden` prop to the `NativeTabs.Trigger` component.
 
@@ -276,21 +345,21 @@ export default function TabLayout() {
 
 ### Dismiss behavior
 
-> **info** Currently this is an iOS-only feature, but we plan to add it to Android in the future.
+> **info** Dismiss behavior is available on Android from SDK 55 and later.
 
 By default, tapping a tab that is already active closes all screens in that tab's stack and returns to the root screen. You can disable this by setting the `disablePopToTop` prop on the `NativeTabs.Trigger` component.
 
 ```tsx app/_layout.tsx
-import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index" disablePopToTop>
-        <Label>Home</Label>
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
-        <Label>Settings</Label>
+        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -299,21 +368,21 @@ export default function TabLayout() {
 
 ### Scroll to top
 
-> **info** Currently this is an iOS-only feature, but we plan to add it to Android in the future.
+> **info** Scroll to top is available on Android from SDK 55 and later.
 
 By default, tapping a tab that is already active and showing its root screen scrolls the content back to the top. You can disable this by setting the `disableScrollToTop` prop on the `NativeTabs.Trigger` component.
 
 ```tsx app/_layout.tsx
-import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index" disableScrollToTop>
-        <Label>Home</Label>
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
-        <Label>Settings</Label>
+        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -335,16 +404,16 @@ export default function TabLayout() {
 To add a separate search tab, assign the `role` with its value set to `search` to the native tab you want to display separately.
 
 ```tsx app/_layout.tsx
-import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <Label>Home</Label>
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="search" role="search">
-        <Label>Search</Label>
+        <NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -366,16 +435,16 @@ To add a search field to the tab bar, wrap the screen in a Stack navigator and c
 />
 
 ```tsx app/_layout.tsx
-import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <Label>Home</Label>
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="search" role="search">
-        <Label>Search</Label>
+        <NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -386,29 +455,21 @@ export default function TabLayout() {
 import { Stack } from 'expo-router';
 
 export default function SearchLayout() {
-  return (
-    <Stack>
-      <Stack.Screen
-        name="index"
-        options={{
-          title: 'Search',
-          headerSearchBarOptions: {
-            placement: 'automatic',
-            placeholder: 'Search',
-            onChangeText: () => {},
-          },
-        }}
-      />
-    </Stack>
-  );
+  return <Stack />;
 }
 ```
 
 ```tsx app/search/index.tsx
-import { ScrollView } from 'react-native';
+import { ScrollView, Stack } from 'react-native';
 
 export default function SearchIndex() {
-  return <ScrollView>{/* Screen content */}</ScrollView>;
+  return (
+    <>
+      <Stack.Screen.Title>Search</Stack.Screen.Title>
+      <Stack.SearchBar placement="automatic" placeholder="Search" onChangeText={() => {}} />
+      <ScrollView>{/* Screen content */}</ScrollView>
+    </>
+  );
 }
 ```
 
@@ -424,42 +485,16 @@ To implement the minimized behavior on the tab bar, you can use
 `NativeTabs`. In the example below, the tab bar is minimized when scrolling down.
 
 ```tsx app/_layout.tsx
-import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
   return (
     <NativeTabs minimizeBehavior="onScrollDown">
       <NativeTabs.Trigger name="index">
-        <Label>Home</Label>
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="tab-1">
-        <Label>Tab 1</Label>
-      </NativeTabs.Trigger>
-    </NativeTabs>
-  );
-}
-```
-
-### Integration with `@expo/vector-icons`
-
-> **info** **Recommended**: Use [SF Symbols on iOS](#icon). They offer a more native platform feeling compared to vector icons.
-
-To use icons from `@expo/vector-icons`, you can use `VectorIcon` component.
-
-```tsx app/_layout.tsx|collapseHeight=480
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { NativeTabs, Icon, VectorIcon } from 'expo-router/unstable-native-tabs';
-import { Platform } from 'react-native';
-
-export default function TabLayout() {
-  return (
-    <NativeTabs minimizeBehavior="onScrollDown">
-      <NativeTabs.Trigger name="index">
-        <Label>Home</Label>
-        {Platform.select({
-          ios: <Icon sf="house.fill" />,
-          android: <Icon src={<VectorIcon family={MaterialIcons} name="home" />} />,
-        })}
+        <NativeTabs.Trigger.Label>Tab 1</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -494,13 +529,13 @@ Native tabs automatically handle safe area insets, with platform-specific behavi
 If you need full control over safe area handling, you can disable automatic content inset adjustment using the `disableAutomaticContentInsets` prop on `NativeTabs.Trigger`:
 
 ```tsx app/_layout.tsx
-import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index" disableAutomaticContentInsets>
-        <Label>Home</Label>
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -539,6 +574,44 @@ Native tabs are not designed to be a drop-in replacement for [JavaScript tabs](/
 
 The JavaScript `<Tabs />` have a mock stack header which is not present in the native tabs. Instead, you should nest a native `<Stack />` layout inside the native tabs to support both headers and pushing screens.
 
+## Common problems
+
+<Collapsible summary="The tab bar is transparent on iOS 18 and earlier">
+
+On iOS 18 and earlier, the native tab bar becomes transparent when scrolling to the end of a scrollable content. This means that it will become transparent when you scroll to the end of a `ScrollView` or when you render a static `View`.
+
+You can use the [`disableTransparentOnScrollEdge`](/versions/latest/sdk/router-native-tabs/#disabletransparentonscrolledge) prop to disable this behavior.
+
+```tsx app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index" disableTransparentOnScrollEdge>
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+When you are using a `ScrollView` and the tab bar is transparent from the start, ensure that the `ScrollView` is a first child of the screen component. If you wrap it with another component make sure to set `collapsable` to `false` on the wrapper component.
+
+```tsx app/index.tsx
+import { ScrollView, View } from 'react-native';
+
+export default function HomeScreen() {
+  return (
+    <View collapsable={false} style={{ flex: 1 }}>
+      <ScrollView>{/* Screen content */}</ScrollView>
+    </View>
+  );
+}
+```
+
+</Collapsible>
+
 ## Known limitations
 
 <Collapsible summary="A limit of 5 tabs on Android">
@@ -564,13 +637,13 @@ Native tabs cannot be nested inside other native tabs. You can still nest [JavaS
 [FlatList](https://reactnative.dev/docs/flatlist) integration with native tabs has limitations. Features like scroll-to-top and minimize-on-scroll aren't supported. Additionally, detecting scroll edges may fail, causing the tab bar to appear transparent. To fix this, use the [`disableTransparentOnScrollEdge`](/versions/latest/sdk/router-native-tabs/#disabletransparentonscrolledge) prop.
 
 ```tsx app/_layout.tsx
-import { NativeTabs, Label } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
   return (
     <NativeTabs disableTransparentOnScrollEdge>
       <NativeTabs.Trigger name="index">
-        <Label>Home</Label>
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
