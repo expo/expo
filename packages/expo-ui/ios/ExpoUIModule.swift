@@ -133,5 +133,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
     ExpoUIView(GridView.self)
+
+    ExpoUIView(BoundTextFieldView.self)
   }
 }

@@ -1,4 +1,48 @@
 @preconcurrency import React
+import Combine
+
+
+@MainActor
+public final class NativeState: ObservableObject {
+  public let id: String
+  @Published public var value: Any
+
+  init(id: String, initialValue: Any) {
+    self.id = id
+    self.value = initialValue
+  }
+}
+
+@MainActor
+public final class NativeStateRegistry {
+  public static let shared = NativeStateRegistry()
+
+  private var states: [String: NativeState] = [:]
+
+  public func createState(id: String, initialValue: Any) {
+    states[id] = NativeState(id: id, initialValue: initialValue)
+  }
+
+  public func getState(id: String) -> NativeState? {
+    return states[id]
+  }
+
+  public func getValue(id: String) -> Any? {
+    return states[id]?.value
+  }
+
+  public func setValue(id: String, value: Any) {
+    states[id]?.value = value
+  }
+
+  public func deleteState(id: String) {
+    states.removeValue(forKey: id)
+  }
+
+  public func clear() {
+    states.removeAll()
+  }
+}
 
 /**
  The app context is an interface to a single Expo app.
@@ -540,6 +584,45 @@ public final class AppContext: NSObject, @unchecked Sendable {
 
     // Install `global.expo.NativeModule`.
     EXJavaScriptRuntimeManager.installNativeModuleClass(uiRuntime)
+
+    // Install native state management on global.ExpoNativeState
+    let stateObject = uiRuntime.createObject()
+
+    let createStateFn = uiRuntime.createSyncFunction("create", argsCount: 2) { _, args in
+      guard args.count >= 2 else { return .undefined }
+      let stateId = args[0].getString()
+      let initialValue = args[1].getString()
+      NativeStateRegistry.shared.createState(id: stateId, initialValue: initialValue)
+      return .undefined
+    }
+
+    let getStateFn = uiRuntime.createSyncFunction("get", argsCount: 1) { [weak uiRuntime] _, args in
+      guard let uiRuntime else { return .undefined }
+      let stateId = args.first?.getString() ?? ""
+      guard let value = NativeStateRegistry.shared.getValue(id: stateId) as? String else { return .undefined }
+      return .string(value, runtime: uiRuntime)
+    }
+
+    let setStateFn = uiRuntime.createSyncFunction("set", argsCount: 2) { _, args in
+      guard args.count >= 2 else { return .undefined }
+      let stateId = args[0].getString()
+      let value = args[1].getString()
+      NativeStateRegistry.shared.setValue(id: stateId, value: value)
+      return .undefined
+    }
+
+    let deleteStateFn = uiRuntime.createSyncFunction("delete", argsCount: 1) { _, args in
+      let stateId = args.first?.getString() ?? ""
+      NativeStateRegistry.shared.deleteState(id: stateId)
+      return .undefined
+    }
+
+    stateObject.setProperty("create", value: createStateFn)
+    stateObject.setProperty("get", value: getStateFn)
+    stateObject.setProperty("set", value: setStateFn)
+    stateObject.setProperty("delete", value: deleteStateFn)
+
+    uiRuntime.global().defineProperty("ExpoNativeState", value: stateObject, options: .enumerable)
   }
 
   /**
