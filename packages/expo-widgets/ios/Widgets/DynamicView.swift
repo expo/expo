@@ -92,7 +92,10 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       }
 
     default:
-      EmptyView()
+      ZStack {
+        Color.red.opacity(0.5)
+        Text("Unable to get the view for: \(node["type"] as? String ?? "undefined")")
+      }
     }
   }
 

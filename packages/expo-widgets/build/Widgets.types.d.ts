@@ -13,7 +13,7 @@ export type WidgetFamily = 'systemSmall' | 'systemMedium' | 'systemLarge' | 'sys
 /**
  * Props passed to a widget component.
  */
-export type WidgetBase<T extends object> = {
+export type WidgetBase<T extends object = object> = {
     /**
      * The date of this timeline entry.
      */
