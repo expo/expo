@@ -28,8 +28,49 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  detect-platform-for-e2e:
+    runs-on: ubuntu-24.04
+    outputs:
+      should_run_ios: ${{ steps.changes.outputs.ios_only_any_changed == 'true' || steps.changes.outputs.common_any_changed == 'true' }}
+      should_run_android: ${{ steps.changes.outputs.android_only_any_changed == 'true' || steps.changes.outputs.common_any_changed == 'true' }}
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none
+      - name: 🧐 Check changes categories
+        id: changes
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47
+        with:
+          files_yaml: |
+            ios_only:
+              - 'packages/**/ios/**'
+              - 'apps/bare-expo/ios/**'
+              - '**/*.{swift,podspec,xcodeproj,xcworkspace,plist,m,mm}'
+              - '!{**.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*}'
+            android_only:
+              - 'packages/**/android/**'
+              - 'apps/bare-expo/android/**'
+              - '**/*.{java,kt,gradle,xml,pro}'
+              - '!{**.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*}'
+            common:
+              - .github/workflows/test-suite.yml
+              - .github/actions/use-android-emulator/action.yml
+              - 'apps/bare-expo/**'
+              - 'apps/test-suite/**'
+              - 'packages/**'
+              - 'yarn.lock'
+              - '!packages/**/{ios,android}/**'
+              - '!apps/bare-expo/{ios,android}/**'
+              - '!**/*.{swift,podspec,xcodeproj,xcworkspace,plist,m,mm}'
+              - '!**/*.{java,kt,gradle,xml,pro}'
+              - '!{**.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*}'
+
   ios-build:
     runs-on: macos-15
+    needs: detect-platform-for-e2e
+    if: needs.detect-platform-for-e2e.outputs.should_run_ios == 'true'
     permissions:
       # REQUIRED: Allow updating fingerprint in action caches
       actions: write
@@ -213,6 +254,8 @@ jobs:
 
   android-build:
     runs-on: ubuntu-24.04
+    needs: detect-platform-for-e2e
+    if: needs.detect-platform-for-e2e.outputs.should_run_android == 'true'
     permissions:
       # REQUIRED: Allow updating fingerprint in action caches
       actions: write
