@@ -32,16 +32,10 @@ export async function shareAsync(url: string, options: SharingOptions = {}): Pro
   return await SharingNativeModule.shareAsync(url, options);
 }
 
-/**
- * TODO: Docs
- */
 export function getSharedPayloads(): SharePayload[] {
   return SharingNativeModule.getSharedPayloads();
 }
 
-/**
- * TODO: Docs
- */
 export async function getResolvedSharedPayloadsAsync(): Promise<ResolvedSharePayload[]> {
   return await SharingNativeModule.getResolvedSharedPayloadsAsync();
 }

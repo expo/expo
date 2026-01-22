@@ -1,8 +1,14 @@
 export const nonLinkableTypes = [
   '_default',
   'AndroidBarcode',
+  'AndroidSymbol',
+  'AndroidSymbolWeight',
   'AnimationObject',
+  'ArrayBufferLike',
   'ArrayBufferView',
+  'AudioTrackChangeEventPayload',
+  'AvailableAudioTracksChangeEventPayload',
+  'AvailableSubtitleTracksChangeEventPayload',
   'B',
   'Buffer',
   'BufferEncoding',
@@ -33,6 +39,7 @@ export const nonLinkableTypes = [
   'ModifierConfig',
   'ModuleType',
   'NamedColor',
+  'NamedExoticComponent',
   'NativeBoundaryEventCallback',
   'NativeSyntheticEvent',
   'NavigationContainerRefWithCurrent',
@@ -45,6 +52,7 @@ export const nonLinkableTypes = [
   'ParsedQs',
   'PartialState',
   'PathUtilities',
+  'PermissionExpiration',
   'PermissionResponse',
   'PermissionHookBehavior',
   'PermissionHookOptions',
@@ -53,6 +61,7 @@ export const nonLinkableTypes = [
   'ProxyNativeModule',
   'React.FC',
   'ReturnType',
+  'ResolvedSharePayload',
   'RequestPermissionMethod',
   'RouteInputParams',
   'RouteOutputParams',
@@ -61,8 +70,11 @@ export const nonLinkableTypes = [
   'RouteSegments',
   'ScreenListeners',
   'ServiceActionResult',
+  'SharingOptions',
+  'SharePayload',
   'SourceSkipsKeys',
   'SubmenuProps',
+  'SQLiteTaggedQueryResult',
   'StyleProp',
   'T',
   'TaskOptions',
@@ -73,9 +85,11 @@ export const nonLinkableTypes = [
   'TInitialValue',
   'TOptions',
   'TParams',
+  'Transaction',
   'TRoute',
   'TSegments',
   'TState',
+  'UpdatesNativeStateMachineContext',
   'UnknownInputParams',
   'UnknownOutputParams',
 ];
@@ -169,6 +183,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   SFSymbols6_0: 'https://github.com/nandorojo/sf-symbols-typescript',
   SFSymbols7_0: 'https://github.com/nandorojo/sf-symbols-typescript',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
+  SpeechEventCallback: '/versions/latest/sdk/speech/#speecheventcallback',
   SpeechSynthesisEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisEvent',
   SpeechSynthesisUtterance:
     'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance',
@@ -203,6 +218,8 @@ export const hardcodedTypeLinks: Record<string, string> = {
   TabRouterOptions: 'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
   TabNavigationState:
     'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
+  TemplateStringsArray:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TemplateStringsArray',
 };
 
 export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
@@ -229,6 +246,17 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     Href: '/versions/v54.0.0/sdk/router/#href-1',
     BufferOptions: '/versions/v54.0.0/sdk/video/#bufferoptions-1',
     CameraPosition: '/versions/v54.0.0/sdk/maps/#cameraposition-2',
+  },
+  'v55.0.0': {
+    EventEmitter: '/versions/unversioned/sdk/expo/#eventemittertype',
+    NativeModule: '/versions/unversioned/sdk/expo/#nativemoduletype',
+    SharedObject: '/versions/unversioned/sdk/expo/#sharedobjecttype',
+    SharedRef: '/versions/unversioned/sdk/expo/#sharedreftype',
+    Href: '/versions/unversioned/sdk/router/#href-1',
+    BufferOptions: '/versions/unversioned/sdk/video/#bufferoptions-1',
+    CameraPosition: '/versions/unversioned/sdk/maps/#cameraposition-2',
+    ScrubbingModeOptions: '/versions/unversioned/sdk/video/#scrubbingmodeoptions-1',
+    SeekTolerance: '/versions/unversioned/sdk/video/#scrubbingmodeoptions-1',
   },
   latest: {
     EventEmitter: '/versions/latest/sdk/expo/#eventemittertype',
