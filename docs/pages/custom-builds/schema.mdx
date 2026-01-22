@@ -1007,12 +1007,12 @@ build:
     # @end #
 ```
 
-| Property         | Type     | Description                                                                                                                                                                                                                                                                    |
-| ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `name`           | -        | The name of the step in the reusable function that shows in the build logs. Defaults to `Restore build cache`.                                                                                                                                                               |
-| `inputs.key`     | `string` | Required. The cache key to restore. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes.                                                                                                                                 |
-| `inputs.restore_keys` | `string` | Optional. A fallback key or prefix to use if the exact key is not found. If provided, the cache system will look for any cache entry that starts with this prefix.                                                                                                            |
-| `inputs.path`    | `string` | Required. The path where the cache should be restored. This should match the path used when saving the cache.                                                                                                                                                                  |
+| Property              | Type     | Description                                                                                                                                                        |
+| --------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`                | -        | The name of the step in the reusable function that shows in the build logs. Defaults to `Restore build cache`.                                                     |
+| `inputs.key`          | `string` | Required. The cache key to restore. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes.              |
+| `inputs.restore_keys` | `string` | Optional. A fallback key or prefix to use if the exact key is not found. If provided, the cache system will look for any cache entry that starts with this prefix. |
+| `inputs.path`         | `string` | Required. The path where the cache should be restored. This should match the path used when saving the cache.                                                      |
 
 <BoxLink
   title="eas/restore_build_cache source code"
@@ -1045,11 +1045,11 @@ build:
     # @end #
 ```
 
-| Property      | Type     | Description                                                                                                                                                                                                                                                                    |
-| ------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `name`        | -        | The name of the step in the reusable function that shows in the build logs. Defaults to `Save build cache`.                                                                                                                                                                  |
-| `inputs.key`  | `string` | Required. The cache key to save the cache under. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes. This should match the key used when restoring the cache.                                                  |
-| `inputs.path` | `string` | Required. The path to the directory or files that should be cached. This should match the path used when restoring the cache.                                                                                                                                                 |
+| Property      | Type     | Description                                                                                                                                                                                                                 |
+| ------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`        | -        | The name of the step in the reusable function that shows in the build logs. Defaults to `Save build cache`.                                                                                                                 |
+| `inputs.key`  | `string` | Required. The cache key to save the cache under. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes. This should match the key used when restoring the cache. |
+| `inputs.path` | `string` | Required. The path to the directory or files that should be cached. This should match the path used when restoring the cache.                                                                                               |
 
 <BoxLink
   title="eas/save_build_cache source code"
