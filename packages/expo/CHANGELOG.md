@@ -55,6 +55,7 @@ _This version does not introduce any user-facing changes._
 - [Android] Optimized `response.arrayBuffer` implementation. ([#42086](https://github.com/expo/expo/pull/42086) by [@barthap](https://github.com/barthap))
 - change `global` for `globalThis` to fix failing `auth-session` js tests ([#42083](https://github.com/expo/expo/pull/42083) by [@vonovak](https://github.com/vonovak))
 - Add `unstable_createWorker` helper method to `async-require` module ([#42340](https://github.com/expo/expo/pull/42340) by [@kitten](https://github.com/kitten))
+- Removed the `nil` react host assertion for iOS in ExpoReactNativeFactory [#42234](https://github.com/expo/expo/pull/42234) by [@pmleczek](https://github.com/pmleczek)
 
 ### ⚠️ Notices
 

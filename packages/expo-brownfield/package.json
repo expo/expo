@@ -41,7 +41,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "TODO: add homepage",
+  "homepage": "https://docs.expo.dev/versions/unversioned/sdk/brownfield/",
   "jest": {
     "preset": "expo-module-scripts"
   },
