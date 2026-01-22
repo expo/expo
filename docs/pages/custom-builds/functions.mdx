@@ -258,12 +258,61 @@ export default myFunction;
 
 </Step>
 
+## Using built-in cache functions
+
+You can combine custom functions with built-in EAS functions to optimize your builds. For example, you can use [`eas/restore_build_cache`](/custom-builds/schema/#easrestore_build_cache) and [`eas/save_build_cache`](/custom-builds/schema/#eassave_build_cache) to speed up builds by caching build artifacts:
+
+```yaml .eas/build/config.yml
+build:
+  name: Build with cache
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    # @info #
+    - eas/restore_build_cache:
+        inputs:
+          key: android-ccache-${{ hashFiles('package-lock.json') }}
+          restore_keys: android
+          path: /home/expo/.cache/ccache
+    # @end #
+    - my_function:
+        inputs:
+          num1: 1
+          num2: 2
+        id: sum_function
+    - run:
+        name: Build Android app
+        command: cd android && ./gradlew assembleRelease
+    # @info #
+    - eas/save_build_cache:
+        inputs:
+          key: android-ccache-${{ hashFiles('package-lock.json') }}
+          path: /home/expo/.cache/ccache
+    # @end #
+
+functions:
+  my_function:
+    name: My function
+    inputs:
+      - name: num1
+        type: number
+      - name: num2
+        type: number
+    outputs:
+      - name: sum
+    path: ./myFunction
+```
+
+This example shows how to restore a cache after prebuild, run your custom function, perform a build, and then save the cache for future builds.
+
 ## Summary
 
 - Writing functions is a great way to extend the functionality of custom builds with your own logic.
 - EAS Build functions are reusable — you can use them in multiple custom build configurations.
 - Using EAS Build functions is a great option for more advanced use cases that are not easy to do by writing shell scripts.
 - Most of the [built-in functions](/custom-builds/schema/#built-in-eas-functions) are open-source and can be forked or used as a reference for writing your own functions.
+- You can combine custom functions with built-in functions like [`eas/restore_build_cache`](/custom-builds/schema/#easrestore_build_cache) and [`eas/save_build_cache`](/custom-builds/schema/#eassave_build_cache) to optimize your build performance.
 
 Check out the **example repository** for more detailed examples:
 

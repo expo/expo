@@ -972,6 +972,92 @@ build:
   href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
 />
 
+#### `eas/restore_build_cache`
+
+Restores a previously saved build cache from a specified key. This is useful for speeding up builds by reusing cached artifacts like compiled dependencies, build tools, or other intermediate build outputs.
+
+```yaml example.yml
+build:
+  name: Build with cache
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    # @info #
+    - eas/restore_build_cache:
+        inputs:
+          key: android-ccache-${{ hashFiles('package-lock.json') }}
+          restore_keys: android
+          path: /home/expo/.cache/ccache
+    # @end #
+```
+
+```yaml example.yml
+build:
+  name: Build with cache
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    # @info #
+    - eas/restore_build_cache:
+        inputs:
+          key: android-ccache-${{ hashFiles('package-lock.json') }}
+          path: /home/expo/.cache/ccache
+    # @end #
+```
+
+| Property         | Type     | Description                                                                                                                                                                                                                                                                    |
+| ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`           | -        | The name of the step in the reusable function that shows in the build logs. Defaults to `Restore build cache`.                                                                                                                                                               |
+| `inputs.key`     | `string` | Required. The cache key to restore. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes.                                                                                                                                 |
+| `inputs.restore_keys` | `string` | Optional. A fallback key or prefix to use if the exact key is not found. If provided, the cache system will look for any cache entry that starts with this prefix.                                                                                                            |
+| `inputs.path`    | `string` | Required. The path where the cache should be restored. This should match the path used when saving the cache.                                                                                                                                                                  |
+
+<BoxLink
+  title="eas/restore_build_cache source code"
+  description="View the source code for the eas/restore_build_cache function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/restoreBuildCache.ts"
+/>
+
+#### `eas/save_build_cache`
+
+Saves a build cache to a specified key. This allows you to persist build artifacts, compiled dependencies, or other intermediate outputs that can be reused in subsequent builds to speed up the build process.
+
+```yaml example.yml
+build:
+  name: Build with cache
+  steps:
+    - eas/checkout
+    - eas/restore_build_cache:
+        inputs:
+          key: android-ccache-${{ hashFiles('package-lock.json') }}
+          path: /home/expo/.cache/ccache
+    - eas/install_node_modules
+    - eas/prebuild
+    - eas/run_gradle
+    # @info #
+    - eas/save_build_cache:
+        inputs:
+          key: android-ccache-${{ hashFiles('package-lock.json') }}
+          path: /home/expo/.cache/ccache
+    # @end #
+```
+
+| Property      | Type     | Description                                                                                                                                                                                                                                                                    |
+| ------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`        | -        | The name of the step in the reusable function that shows in the build logs. Defaults to `Save build cache`.                                                                                                                                                                  |
+| `inputs.key`  | `string` | Required. The cache key to save the cache under. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes. This should match the key used when restoring the cache.                                                  |
+| `inputs.path` | `string` | Required. The path to the directory or files that should be cached. This should match the path used when restoring the cache.                                                                                                                                                 |
+
+<BoxLink
+  title="eas/save_build_cache source code"
+  description="View the source code for the eas/save_build_cache function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/saveBuildCache.ts"
+/>
+
 #### `eas/resolve_build_config`
 
 Resolves and prints the build configuration. If the build has been triggered by the GitHub integration, it will update the current `job` and `metadata` context values. It should be called after installing the dependencies because the config may be influenced by config plugins.
