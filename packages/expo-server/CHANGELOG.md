@@ -10,6 +10,7 @@
 
 - Treat both `null` and `undefined` loader responses as `null` ([#42419](https://github.com/expo/expo/pull/42419) by [@hassankhan](https://github.com/hassankhan))
 - Allow busting the cached manifest and SSR renderer during development ([#42411](https://github.com/expo/expo/pull/42411) by [@hassankhan](https://github.com/hassankhan))
+- Normalize loader requests for `/index` routes ([#42414](https://github.com/expo/expo/pull/42414) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
