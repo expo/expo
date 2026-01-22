@@ -21,8 +21,7 @@ const materialIconConverter_1 = require("./utils/materialIconConverter");
  * When used in the tab screen, the `name` prop takes no effect.
  *
  * @example
- * ```tsx
- * // In _layout file
+ * ```tsx app/_layout.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function Layout() {
@@ -36,8 +35,7 @@ const materialIconConverter_1 = require("./utils/materialIconConverter");
  * ```
  *
  * @example
- * ```tsx
- * // In a tab screen
+ * ```tsx app/home.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function HomeScreen() {
@@ -51,8 +49,6 @@ const materialIconConverter_1 = require("./utils/materialIconConverter");
  *   );
  * }
  * ```
- *
- * > **Note:** You can use the alias `NativeTabs.Trigger` for this component.
  */
 function NativeTabTriggerImpl(props) {
     const route = (0, native_1.useRoute)();
