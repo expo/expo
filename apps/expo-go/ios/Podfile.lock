@@ -20,7 +20,7 @@ PODS:
   - EXManifests/Tests (55.0.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.0-preview.1):
+  - Expo (55.0.0-preview.2):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -113,7 +113,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Expo/Tests (55.0.0-preview.1):
+  - Expo/Tests (55.0.0-preview.2):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -245,7 +245,7 @@ PODS:
     - React-Core
   - ExpoMeshGradient (55.0.0):
     - ExpoModulesCore
-  - ExpoModulesCore (55.0.0):
+  - ExpoModulesCore (55.0.1):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -276,7 +276,7 @@ PODS:
     - RNWorklets
     - SocketRocket
     - Yoga
-  - ExpoModulesCore/Tests (55.0.0):
+  - ExpoModulesCore/Tests (55.0.1):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -308,11 +308,11 @@ PODS:
     - RNWorklets
     - SocketRocket
     - Yoga
-  - ExpoModulesJSI (55.0.0):
+  - ExpoModulesJSI (55.0.1):
     - hermes-engine
     - React-Core
     - ReactCommon
-  - ExpoModulesJSI/Tests (55.0.0):
+  - ExpoModulesJSI/Tests (55.0.1):
     - hermes-engine
     - React-Core
     - ReactCommon
@@ -395,7 +395,7 @@ PODS:
     - ExpoModulesCore
   - EXStructuredHeaders (55.0.0)
   - EXStructuredHeaders/Tests (55.0.0)
-  - EXUpdates (55.0.0):
+  - EXUpdates (55.0.1):
     - boost
     - DoubleConversion
     - EASClient
@@ -429,7 +429,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - EXUpdates/Tests (55.0.0):
+  - EXUpdates/Tests (55.0.1):
     - boost
     - DoubleConversion
     - EASClient
@@ -4642,7 +4642,7 @@ SPEC CHECKSUMS:
   EXConstants: 65fe36b560cfb2ff76add4bc6589ff21630814c0
   EXJSONUtils: 0080c14b673cfa9a6be5e3fe429768ffe3d42dfb
   EXManifests: 57f815598cd5df5a39d5662f27d96bd4aa604c89
-  Expo: 1e4f043c2278d721d4aedbafb0bc0c1fa29e615f
+  Expo: d19d6f379555d2fa49a335eb0f2ed0a0df7d1db1
   expo-dev-menu: df2a3ff5f225a3b97c108a207624df436d67679a
   expo-dev-menu-interface: a98021861ad111a46dc6c9f816b55be01ea03c63
   ExpoAgeRange: 10c1735c6669ac73015d7767ce0a6b8492001c52
@@ -4683,8 +4683,8 @@ SPEC CHECKSUMS:
   ExpoMailComposer: a80ba3056d483d849fad5c627aaf660ec5026deb
   ExpoMediaLibrary: ec981ac3747f2ce04ac94fa7a6c6ce6435dd2cc9
   ExpoMeshGradient: 733bbcbcf8801f646637940da39cabc832ab50a4
-  ExpoModulesCore: 897d81b6873d79cbeaeda42b533684abcc603634
-  ExpoModulesJSI: 3c60e59da596ad296914ca6767e16f57558ba6ea
+  ExpoModulesCore: cd3a641bfe1538154e80e93269dfc6e3635ad1ed
+  ExpoModulesJSI: 3bbc9b9f3bad9da5ccfdf27f8eb0aab5ccbfb33e
   ExpoModulesTestCore: 2d11936a13dd02701ec2d5be6978ad5fd1116a9c
   ExpoNetwork: 1c5271acd933d6ad6f7390ab05f6bed44128b363
   ExpoNotifications: 85e04adb6e4c9dd64c56c09b726e9d2e79929c37
@@ -4707,7 +4707,7 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: 45f0b89086a333b10331613b08b3812654dcbdd3
   ExpoWebBrowser: ec053554718af038909428329fc6d30c51583bdc
   EXStructuredHeaders: aa49a5557fa24aa61dda4ac665f3987bf3e9e35d
-  EXUpdates: 1013086c61ecef81bee6fddcc775a30733c5137c
+  EXUpdates: 41136e5d7aeacfc761290659e039305fc50a266b
   EXUpdatesInterface: 34568cdec00dddd734d30fecf010830d9a17a8b3
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 309703e71d3f2f1ed7dc7889d58309c9d77a95a4
