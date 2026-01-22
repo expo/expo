@@ -230,6 +230,17 @@ export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string 
     BufferOptions: '/versions/v54.0.0/sdk/video/#bufferoptions-1',
     CameraPosition: '/versions/v54.0.0/sdk/maps/#cameraposition-2',
   },
+  'v55.0.0': {
+    EventEmitter: '/versions/unversioned/sdk/expo/#eventemittertype',
+    NativeModule: '/versions/unversioned/sdk/expo/#nativemoduletype',
+    SharedObject: '/versions/unversioned/sdk/expo/#sharedobjecttype',
+    SharedRef: '/versions/unversioned/sdk/expo/#sharedreftype',
+    Href: '/versions/unversioned/sdk/router/#href-1',
+    BufferOptions: '/versions/unversioned/sdk/video/#bufferoptions-1',
+    CameraPosition: '/versions/unversioned/sdk/maps/#cameraposition-2',
+    ScrubbingModeOptions: '/versions/unversioned/sdk/video/#scrubbingmodeoptions-1',
+    SeekTolerance: '/versions/unversioned/sdk/video/#scrubbingmodeoptions-1',
+  },
   latest: {
     EventEmitter: '/versions/latest/sdk/expo/#eventemittertype',
     NativeModule: '/versions/latest/sdk/expo/#nativemoduletype',
