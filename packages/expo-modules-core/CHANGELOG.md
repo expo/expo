@@ -37,6 +37,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - [macos] Remove react-native-macos@0.79.0 workarounds ([#42409](https://github.com/expo/expo/pull/42409) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Improved Jetpack Compose integration for Expo UI. ([#42450](https://github.com/expo/expo/pull/42450) by [@kudo](https://github.com/kudo))
 
 ## 55.0.1 — 2026-01-22
 
