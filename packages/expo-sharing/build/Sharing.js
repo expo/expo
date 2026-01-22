@@ -26,15 +26,9 @@ export async function shareAsync(url, options = {}) {
     }
     return await SharingNativeModule.shareAsync(url, options);
 }
-/**
- * TODO: Docs
- */
 export function getSharedPayloads() {
     return SharingNativeModule.getSharedPayloads();
 }
-/**
- * TODO: Docs
- */
 export async function getResolvedSharedPayloadsAsync() {
     return await SharingNativeModule.getResolvedSharedPayloadsAsync();
 }

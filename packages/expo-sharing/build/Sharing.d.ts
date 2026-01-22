@@ -10,13 +10,7 @@ export declare function isAvailableAsync(): Promise<boolean>;
  * @param options A map of share options.
  */
 export declare function shareAsync(url: string, options?: SharingOptions): Promise<void>;
-/**
- * TODO: Docs
- */
 export declare function getSharedPayloads(): SharePayload[];
-/**
- * TODO: Docs
- */
 export declare function getResolvedSharedPayloadsAsync(): Promise<ResolvedSharePayload[]>;
 /**
  * Clears the data shared with the app.
