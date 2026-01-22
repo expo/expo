@@ -36,6 +36,10 @@ export type ExpoLiveActivityEntry = {
      */
     banner: ReactNode;
     /**
+     * The small banner content displayed in CarPlay and WatchOS. Falls back to `banner` if not provided.
+     */
+    bannerSmall?: ReactNode;
+    /**
      * The leading content in the compact Dynamic Island presentation.
      */
     compactLeading?: ReactNode;
