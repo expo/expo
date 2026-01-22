@@ -26,6 +26,7 @@
   "expo-battery": "~55.0.0",
   "expo-blur": "~55.0.0",
   "expo-brightness": "~55.0.0",
+  "expo-brownfield": "~55.0.0",
   "expo-build-properties": "~55.0.0",
   "expo-calendar": "~55.0.0",
   "expo-camera": "~55.0.0",
