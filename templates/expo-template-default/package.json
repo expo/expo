@@ -19,6 +19,7 @@
     "expo": "~55.0.0-preview.1",
     "expo-constants": "~55.0.0",
     "expo-font": "~55.0.0",
+    "expo-glass-effect": "~55.0.0",
     "expo-image": "~55.0.0",
     "expo-linking": "~55.0.0",
     "expo-router": "~55.0.0-beta.0",
