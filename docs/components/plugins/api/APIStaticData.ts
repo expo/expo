@@ -1,8 +1,14 @@
 export const nonLinkableTypes = [
   '_default',
   'AndroidBarcode',
+  'AndroidSymbol',
+  'AndroidSymbolWeight',
   'AnimationObject',
+  'ArrayBufferLike',
   'ArrayBufferView',
+  'AudioTrackChangeEventPayload',
+  'AvailableAudioTracksChangeEventPayload',
+  'AvailableSubtitleTracksChangeEventPayload',
   'B',
   'Buffer',
   'BufferEncoding',
@@ -33,6 +39,7 @@ export const nonLinkableTypes = [
   'ModifierConfig',
   'ModuleType',
   'NamedColor',
+  'NamedExoticComponent',
   'NativeBoundaryEventCallback',
   'NativeSyntheticEvent',
   'NavigationContainerRefWithCurrent',
@@ -63,6 +70,7 @@ export const nonLinkableTypes = [
   'ServiceActionResult',
   'SourceSkipsKeys',
   'SubmenuProps',
+  'SQLiteTaggedQueryResult',
   'StyleProp',
   'T',
   'TaskOptions',
@@ -73,9 +81,11 @@ export const nonLinkableTypes = [
   'TInitialValue',
   'TOptions',
   'TParams',
+  'Transaction',
   'TRoute',
   'TSegments',
   'TState',
+  'UpdatesNativeStateMachineContext',
   'UnknownInputParams',
   'UnknownOutputParams',
 ];
@@ -169,6 +179,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   SFSymbols6_0: 'https://github.com/nandorojo/sf-symbols-typescript',
   SFSymbols7_0: 'https://github.com/nandorojo/sf-symbols-typescript',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
+  SpeechEventCallback: '/versions/latest/sdk/speech/#speecheventcallback',
   SpeechSynthesisEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisEvent',
   SpeechSynthesisUtterance:
     'https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance',
@@ -203,6 +214,8 @@ export const hardcodedTypeLinks: Record<string, string> = {
   TabRouterOptions: 'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
   TabNavigationState:
     'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
+  TemplateStringsArray:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TemplateStringsArray',
 };
 
 export const sdkVersionHardcodedTypeLinks: Record<string, Record<string, string | null>> = {
