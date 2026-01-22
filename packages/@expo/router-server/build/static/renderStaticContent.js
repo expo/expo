@@ -85,7 +85,7 @@ async function getStaticContent(location, options) {
     resetReactNavigationContexts();
     const loadedData = options?.loader !== undefined
         ? {
-            [location.pathname + location.search]: options.loader.data === undefined ? {} : options.loader.data,
+            [location.pathname + location.search]: options.loader.data ?? null,
         }
         : null;
     const html = server_node_1.default.renderToString(<head_1.default.Provider context={headContext}>

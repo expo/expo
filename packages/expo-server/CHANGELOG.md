@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Treat both `null` and `undefined` loader responses as `null` ([#42419](https://github.com/expo/expo/pull/42419) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
 
 ## 55.0.0 — 2026-01-21

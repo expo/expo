@@ -462,7 +462,7 @@ describe('getLoaderData', () => {
     expect(loaderModule.loader).toHaveBeenCalledWith(expect.any(ImmutableRequest), {});
   });
 
-  it('returns `Response` with `{}` body when route has no loader', async () => {
+  it('returns `Response` with `null` body when route has no loader', async () => {
     const input = createMockInput();
     const env = createEnvironment(input);
 
@@ -476,7 +476,7 @@ describe('getLoaderData', () => {
     );
 
     expect(result).toBeInstanceOf(Response);
-    expect(await result.json()).toEqual({});
+    expect(await result.json()).toBeNull();
   });
 
   it('throws when loader module fails to load', async () => {
@@ -517,7 +517,7 @@ describe('getLoaderData', () => {
     expect(loaderModule.loader).toHaveBeenCalledWith(expect.any(ImmutableRequest), { id: '123' });
   });
 
-  it('normalizes `undefined` loader result to `{}`', async () => {
+  it('normalizes `undefined` loader result to `null`', async () => {
     const loaderModule = { loader: jest.fn().mockResolvedValue(undefined) };
     const input = createMockInput({
       modules: { '_expo/loaders/undefined-route.js': loaderModule },
@@ -535,7 +535,7 @@ describe('getLoaderData', () => {
     );
 
     expect(result).toBeInstanceOf(Response);
-    expect(await result.json()).toEqual({});
+    expect(await result.json()).toBeNull();
   });
 
   it('passes through `null` loader result as `null`', async () => {

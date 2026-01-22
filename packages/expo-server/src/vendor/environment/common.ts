@@ -110,8 +110,7 @@ export function createEnvironment(input: EnvironmentInput) {
           if (route.loader) {
             const result = await executeLoader(request, route);
             const data = isResponse(result) ? await result.json() : result;
-            const normalizedData = data === undefined ? {} : data;
-            renderOptions = { loader: { data: normalizedData } };
+            renderOptions = { loader: { data: data ?? null } };
           }
           return await renderer(request, renderOptions);
         } catch (error) {
@@ -156,8 +155,7 @@ export function createEnvironment(input: EnvironmentInput) {
         return result;
       }
 
-      const data = result === undefined ? {} : result;
-      return Response.json(data);
+      return Response.json(result ?? null);
     },
   };
 }
