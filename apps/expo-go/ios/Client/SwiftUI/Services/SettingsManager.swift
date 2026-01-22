@@ -109,6 +109,7 @@ class SettingsManager: ObservableObject {
 
     UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve) {
       window.overrideUserInterfaceStyle = style
+      window.rootViewController?.setNeedsStatusBarAppearanceUpdate()
     }
   }
 }
