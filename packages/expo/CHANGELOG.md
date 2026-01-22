@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [macos] Remove react-native-macos@0.79.0 workarounds ([#42409](https://github.com/expo/expo/pull/42409) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [macOS] Remove react-native-macos@0.79.0 workarounds ([#42409](https://github.com/expo/expo/pull/42409) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 55.0.0-preview.2 — 2026-01-22
 
