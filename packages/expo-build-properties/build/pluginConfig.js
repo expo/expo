@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveConfigValue = resolveConfigValue;
 exports.validateConfig = validateConfig;
-const ajv_1 = __importDefault(require("ajv"));
+const schema_utils_1 = require("@expo/schema-utils");
 const semver_1 = __importDefault(require("semver"));
 /**
  * The minimal supported versions. These values should align to SDK.
@@ -30,6 +30,7 @@ function resolveConfigValue(config, platform, key) {
     return config[platform]?.[key] ?? config[key];
 }
 const schema = {
+    title: 'expo-build-properties',
     type: 'object',
     properties: {
         buildReactNativeFromSource: { type: 'boolean', nullable: true },
@@ -256,19 +257,27 @@ function maybeThrowInvalidVersions(config) {
         }
     }
 }
+/** Handle deprecated enableProguardInReleaseBuilds */
+const fixupDeprecatedEnableProguardInReleaseBuilds = (config) => {
+    if (config &&
+        typeof config === 'object' &&
+        'android' in config &&
+        config.android &&
+        typeof config.android === 'object') {
+        const androidConfig = config.android;
+        if (androidConfig.enableProguardInReleaseBuilds != null) {
+            if (androidConfig.enableMinifyInReleaseBuilds === undefined) {
+                androidConfig.enableMinifyInReleaseBuilds = !!androidConfig.enableProguardInReleaseBuilds;
+            }
+        }
+    }
+};
 /**
  * @ignore
  */
 function validateConfig(config) {
-    const validate = new ajv_1.default({ allowUnionTypes: true }).compile(schema);
-    // handle deprecated enableProguardInReleaseBuilds
-    if (config.android?.enableProguardInReleaseBuilds !== undefined &&
-        config.android?.enableMinifyInReleaseBuilds === undefined) {
-        config.android.enableMinifyInReleaseBuilds = config.android.enableProguardInReleaseBuilds;
-    }
-    if (!validate(config)) {
-        throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
-    }
+    fixupDeprecatedEnableProguardInReleaseBuilds(config);
+    (0, schema_utils_1.validate)(schema, config);
     maybeThrowInvalidVersions(config);
     if (config.android?.enableShrinkResourcesInReleaseBuilds === true &&
         config.android?.enableMinifyInReleaseBuilds !== true) {
