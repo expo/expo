@@ -211,27 +211,7 @@ export async function loader() {
 }
 ```
 
-If your loader returns `undefined`, it is normalized to an empty object (`{}`). If it returns `null`, the value is preserved as `null`.
-
-### Returning a `Response`
-
-> **warning** Response headers are only preserved in server rendering. In static rendering, only the response body is extracted and serialized since there is no HTTP response at build-time.
-
-You can also return a `Response` object when you need to set custom headers or status codes. This is useful for caching and other HTTP-level controls:
-
-```tsx app/cached-data.tsx
-export async function loader() {
-  const data = await fetchExpensiveData();
-
-  return Response.json(data, {
-    headers: {
-      'Cache-Control': 'public, max-age=3600',
-    },
-  });
-}
-```
-
-Response headers only apply to client-side navigation requests, not initial page renders.
+If your loader returns `undefined` or `null`, the value is normalized to `null`.
 
 ## Runtime API
 
@@ -294,7 +274,6 @@ Data loaders behave differently depending on your [`web.output`](/versions/lates
 | ------------------- | ------------------------------------- | ------------------------------------------------------------------- |
 | Loader execution    | Build time                            | Request time                                                        |
 | `request` parameter | `undefined`                           | [`ImmutableRequest`](/versions/latest/sdk/server/#immutablerequest) |
-| `Response` returns  | Body extracted, headers ignored       | Full `Response` preserved                                           |
 | Best for            | Blogs, marketing pages, documentation | Personalized content, authentication-dependent pages                |
 
 ### Static rendering
@@ -349,19 +328,12 @@ export default function Post() {
 - Loader data is cached on the client during navigation. There is currently no built-in way to invalidate this cache. This will be addressed in a future release.
 - Data loaders are a web-specific feature for static and server rendering. They do not run on native platforms.
 - The `request` parameter passed to loaders in server rendering is an [`ImmutableRequest`](/versions/latest/sdk/server/#immutablerequest). You cannot modify the request object.
-- Returning a `Response` object loses type safety for `useLoaderData`. Use [`setResponseHeaders`](/router/web/api-routes/#runtime-api) instead to preserve types when setting response headers.
 
 ## Common questions
 
 <Collapsible summary="Can I use data loaders without server rendering?">
 
 Yes. Data loaders work with both static rendering (`web.output: 'static'`) and server rendering (`web.output: 'server'`).
-
-</Collapsible>
-
-<Collapsible summary="What happens if my loader returns undefined or null?">
-
-If your loader returns `undefined`, it is normalized to an empty object (`{}`). If your loader returns `null`, it is preserved as `null`.
 
 </Collapsible>
 
