@@ -44,7 +44,7 @@
     "@0no-co/graphql.web": "^1.0.8",
     "@expo/code-signing-certificates": "^0.0.6",
     "@expo/config": "~55.0.0",
-    "@expo/config-plugins": "~55.0.0",
+    "@expo/config-plugins": "~55.0.1",
     "@expo/devcert": "^1.2.1",
     "@expo/env": "~2.0.9",
     "@expo/image-utils": "^0.8.9",

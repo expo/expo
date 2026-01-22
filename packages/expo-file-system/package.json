@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^55.0.0",
-    "jest-expo": "~55.0.0"
+    "jest-expo": "~55.0.1"
   },
   "peerDependencies": {
     "expo": "*",

@@ -41,8 +41,8 @@
   },
   "dependencies": {
     "@expo/config": "~55.0.0",
-    "@expo/config-plugins": "~55.0.0",
-    "@expo/config-types": "^55.0.0",
+    "@expo/config-plugins": "~55.0.1",
+    "@expo/config-types": "^55.0.1",
     "@expo/image-utils": "^0.8.9",
     "@expo/json-file": "^10.0.9",
     "@react-native/normalize-colors": "0.83.1",

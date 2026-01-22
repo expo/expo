@@ -1,6 +1,6 @@
 {
   "name": "expo-brownfield",
-  "version": "55.0.0",
+  "version": "55.0.1",
   "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
@@ -56,7 +56,7 @@
   "devDependencies": {
     "@types/diff": "^5.2.0",
     "expo-module-scripts": "^55.0.0",
-    "jest-expo": "~55.0.0"
+    "jest-expo": "~55.0.1"
   },
   "peerDependencies": {
     "expo": "*"

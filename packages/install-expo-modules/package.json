@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@expo/config": "~55.0.0",
-    "@expo/config-plugins": "~55.0.0",
+    "@expo/config-plugins": "~55.0.1",
     "@expo/package-manager": "^1.10.0",
     "@expo/spawn-async": "^1.7.2",
     "@types/prompts": "^2.0.6",
