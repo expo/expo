@@ -11,9 +11,7 @@ struct RecentlyOpenedAppRow: View {
       onTap()
     } label: {
       HStack(spacing: 12) {
-        if let iconUrl = app.iconUrl, let url = URL(string: iconUrl) {
-          RecentlyOpenedIconView(url: url)
-        }
+        RecentlyOpenedIconView(iconUrl: app.iconUrl)
 
         Text(app.name)
           .font(.body)
@@ -35,7 +33,7 @@ struct RecentlyOpenedAppRow: View {
 }
 
 private struct RecentlyOpenedIconView: View {
-  let url: URL
+  let iconUrl: String?
   private let size: CGFloat = 40
   @State private var image: UIImage?
   @State private var isLoading = false
@@ -49,9 +47,11 @@ private struct RecentlyOpenedIconView: View {
           .frame(width: size, height: size)
           .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
       } else {
-        RoundedRectangle(cornerRadius: BorderRadius.medium)
-          .fill(Color.expoSecondarySystemGroupedBackground)
+        Image("Icon")
+          .resizable()
+          .scaledToFill()
           .frame(width: size, height: size)
+          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
       }
     }
     .task {
@@ -60,7 +60,7 @@ private struct RecentlyOpenedIconView: View {
   }
 
   private func loadImage() async {
-    guard !isLoading else { return }
+    guard let iconUrl, let url = URL(string: iconUrl), !isLoading else { return }
     isLoading = true
 
     do {
