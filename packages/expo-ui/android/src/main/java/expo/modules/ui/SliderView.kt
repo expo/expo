@@ -4,14 +4,12 @@ import android.graphics.Color
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.getValue
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoViewComposableScope
+import expo.modules.kotlin.views.FunctionalComposableScope
 
 class SliderColors : Record {
   @Field
@@ -36,7 +34,7 @@ data class SliderProps(
   val max: Float = 1.0f,
   val steps: Int = 0,
   val elementColors: SliderColors = SliderColors(),
-  val modifiers: List<ModifierConfig> = emptyList()
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 data class SliderValueChangedEvent(
@@ -44,7 +42,7 @@ data class SliderValueChangedEvent(
 ) : Record
 
 @Composable
-fun ExpoViewComposableScope.SliderContent(props: SliderProps) {
+fun FunctionalComposableScope.SliderContent(props: SliderProps) {
   val onValueChanged by remember { this@SliderContent.EventDispatcher<SliderValueChangedEvent>() }
   val colors = props.elementColors
   Slider(
@@ -61,6 +59,6 @@ fun ExpoViewComposableScope.SliderContent(props: SliderProps) {
       activeTickColor = colors.activeTickColor.compose,
       inactiveTickColor = colors.inactiveTickColor.compose
     ),
-    modifier = ModifierRegistry.applyModifiers(props.modifiers)
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)
   )
 }

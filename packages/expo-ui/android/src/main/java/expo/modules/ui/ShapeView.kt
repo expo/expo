@@ -1,31 +1,30 @@
 package expo.modules.ui
 
-import androidx.compose.ui.graphics.Color
-import expo.modules.kotlin.views.ComposeProps
 import androidx.compose.foundation.layout.Box
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
-import androidx.graphics.shapes.RoundedPolygon
-import androidx.graphics.shapes.toPath
-import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.graphics.shapes.CornerRounding
+import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.circle
 import androidx.graphics.shapes.pill
 import androidx.graphics.shapes.pillStar
 import androidx.graphics.shapes.rectangle
 import androidx.graphics.shapes.star
+import androidx.graphics.shapes.toPath
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.views.ExpoViewComposableScope
+import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.FunctionalComposableScope
 import android.graphics.Color as GraphicsColor
 
 enum class ShapeType(val value: String) : Enumerable {
@@ -45,7 +44,7 @@ data class ShapeProps(
   val radius: Float = 0.0f,
   val type: ShapeType = ShapeType.CIRCLE,
   val color: GraphicsColor? = null,
-  val modifiers: List<ModifierConfig> = emptyList()
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 private fun Size.centerX() = this.width / 2
@@ -156,9 +155,9 @@ fun shapeFromShapeRecord(shapeRecord: ShapeRecord?): Shape? {
 }
 
 @Composable
-fun ExpoViewComposableScope.ShapeContent(props: ShapeProps) {
+fun FunctionalComposableScope.ShapeContent(props: ShapeProps) {
   Box(
-    modifier = ModifierRegistry.applyModifiers(props.modifiers)
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)
       .drawWithCache {
         val path = pathFromShapeRecord(
           ShapeRecord(

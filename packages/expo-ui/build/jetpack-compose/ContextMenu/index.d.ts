@@ -1,5 +1,5 @@
 import { ReactElement, ReactNode } from 'react';
-import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import { NativeSyntheticEvent, StyleProp, ViewStyle, type ColorValue } from 'react-native';
 import { SubmenuProps } from './Submenu';
 import { ModifierConfig } from '../../types';
 import { ButtonProps } from '../Button';
@@ -31,7 +31,7 @@ export type ContextMenuProps = {
     /**
      * The color of the container holding the context menu items.
      */
-    color?: string;
+    color?: ColorValue;
     /**
      * Optional styles to apply to the `ContextMenu`.
      */

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Improved Jetpack Compose integration for Expo UI. ([#42450](https://github.com/expo/expo/pull/42450) by [@kudo](https://github.com/kudo))
+
 ## 55.0.0-beta.0 — 2026-01-21
 
 - [ios] - Fix modifiers import path in the example ([#41811](https://github.com/expo/expo/pull/41811) by [@pchalupa](https://github.com/pchalupa))

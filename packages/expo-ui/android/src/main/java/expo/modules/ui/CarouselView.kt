@@ -5,22 +5,21 @@ package expo.modules.ui
 import androidx.compose.foundation.gestures.TargetedFlingBehavior
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.carousel.CarouselDefaults
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
-import androidx.compose.material3.carousel.CarouselDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.core.view.size
 import expo.modules.kotlin.apifeatures.EitherType
-import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Either
-import androidx.core.view.size
-import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoViewComposableScope
+import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.FunctionalComposableScope
 
 enum class CarouselVariant(val value: String) : Enumerable {
   MULTI_BROWSE("multiBrowse"),
@@ -69,14 +68,14 @@ fun paddingValuesFromEither(either: Either<Float, PaddingValuesRecord>?): Paddin
 
 data class CarouselProps(
   val variant: CarouselVariant? = null,
-  val modifiers: List<ModifierConfig>? = null,
   val itemSpacing: Float? = null,
   val contentPadding: Either<Float, PaddingValuesRecord>? = null,
   val minSmallItemWidth: Float? = null,
   val maxSmallItemWidth: Float? = null,
   val flingBehavior: FlingBehaviorType? = null,
   val preferredItemWidth: Float? = null,
-  val itemWidth: Float? = null
+  val itemWidth: Float? = null,
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 const val DEFAULT_MIN_SMALL_ITEM_WIDTH = 40f
@@ -86,7 +85,7 @@ const val DEFAULT_ITEM_WIDTH = 200f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpoViewComposableScope.CarouselContent(props: CarouselProps) {
+fun FunctionalComposableScope.CarouselContent(props: CarouselProps) {
   val variant = props.variant ?: CarouselVariant.MULTI_BROWSE
   val modifiers = props.modifiers ?: emptyList()
   val itemSpacing = (props.itemSpacing ?: 0f).dp
@@ -111,7 +110,7 @@ fun ExpoViewComposableScope.CarouselContent(props: CarouselProps) {
     HorizontalMultiBrowseCarousel(
       state = carouselState,
       preferredItemWidth = preferredItemWidth,
-      modifier = ModifierRegistry.applyModifiers(modifiers),
+      modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope),
       itemSpacing = itemSpacing,
       flingBehavior = flingBehavior,
       minSmallItemWidth = minSmallItemWidth,
@@ -127,7 +126,7 @@ fun ExpoViewComposableScope.CarouselContent(props: CarouselProps) {
     HorizontalUncontainedCarousel(
       state = carouselState,
       itemWidth = itemWidth,
-      modifier = ModifierRegistry.applyModifiers(modifiers),
+      modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope),
       itemSpacing = itemSpacing,
       flingBehavior = flingBehavior,
       contentPadding = contentPadding

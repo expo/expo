@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoViewComposableScope
+import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
 
 open class ValueChangeEvent(
@@ -53,7 +53,7 @@ data class SwitchProps(
   val value: Boolean = false,
   val variant: String = "switch",
   val elementColors: SwitchColors = SwitchColors(),
-  val modifiers: List<ModifierConfig> = emptyList()
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @Composable
@@ -108,7 +108,7 @@ fun ThemedHybridSwitch(
 }
 
 @Composable
-fun ExpoViewComposableScope.SwitchContent(
+fun FunctionalComposableScope.SwitchContent(
   props: SwitchProps,
   onValueChange: (ValueChangeEvent) -> Unit
 ) {
@@ -117,6 +117,6 @@ fun ExpoViewComposableScope.SwitchContent(
     props.value,
     { newChecked -> onValueChange(ValueChangeEvent(newChecked)) },
     props.elementColors,
-    ModifierRegistry.applyModifiers(props.modifiers)
+    ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)
   )
 }

@@ -1,8 +1,20 @@
 package expo.modules.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.InputChip
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -10,7 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoViewComposableScope
+import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
 
 open class ChipPressedEvent : Record, Serializable
@@ -23,12 +35,13 @@ data class ChipProps(
   val iconSize: Int = 18,
   val textStyle: String = "labelSmall",
   val enabled: Boolean = true,
-  val selected: Boolean = false
+  val selected: Boolean = false,
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpoViewComposableScope.ChipContent(
+fun FunctionalComposableScope.ChipContent(
   props: ChipProps,
   onPress: (ChipPressedEvent) -> Unit,
   onDismiss: (ChipPressedEvent) -> Unit
@@ -133,7 +146,7 @@ fun ExpoViewComposableScope.ChipContent(
 @Composable
 private fun ChipText(label: String, textStyle: String = "labelSmall") {
   Box(
-    contentAlignment = Alignment.Center,
+    contentAlignment = Alignment.Center
   ) {
     Text(
       text = label,

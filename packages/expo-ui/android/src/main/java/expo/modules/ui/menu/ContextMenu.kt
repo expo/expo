@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.viewevent.ViewEventCallback
 import expo.modules.kotlin.views.ComposableScope
-import expo.modules.kotlin.views.ExpoViewComposableScope
+import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.ThemedHybridSwitch
 import expo.modules.ui.compose
@@ -139,7 +139,7 @@ data class ContextMenuDispatchers(
 )
 
 @Composable
-fun ExpoViewComposableScope.ContextMenuContent(
+fun FunctionalComposableScope.ContextMenuContent(
   props: ContextMenuProps,
   onContextMenuButtonPressed: (ContextMenuButtonPressedEvent) -> Unit,
   onContextMenuSwitchValueChanged: (ContextMenuSwitchValueChangeEvent) -> Unit,
@@ -152,7 +152,7 @@ fun ExpoViewComposableScope.ContextMenuContent(
   // Provide expanded state to children via CompositionLocal
   // This allows Button children to trigger menu expansion
   CompositionLocalProvider(LocalContextMenuExpanded provides expanded) {
-    Box(modifier = ModifierRegistry.applyModifiers(props.modifiers)) {
+    Box(modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)) {
       // Trigger button - Button will automatically expand menu when clicked
       Children(ComposableScope())
 

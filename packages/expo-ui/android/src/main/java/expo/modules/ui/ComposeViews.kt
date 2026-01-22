@@ -1,6 +1,5 @@
 package expo.modules.ui
 
-import android.graphics.Color as AndroidColor
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,15 +7,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ComposableScope
-import expo.modules.kotlin.views.ExpoViewComposableScope
+import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.views.with
+import android.graphics.Color as AndroidColor
 
 enum class HorizontalArrangement(val value: String) : Enumerable {
   START("start"),
@@ -91,35 +90,35 @@ data class LayoutProps(
   val verticalArrangement: VerticalArrangement = VerticalArrangement.TOP,
   val horizontalAlignment: HorizontalAlignment = HorizontalAlignment.START,
   val verticalAlignment: VerticalAlignment = VerticalAlignment.TOP,
-  val modifiers: List<ModifierConfig>? = emptyList()
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @Composable
-fun ExpoViewComposableScope.RowContent(props: LayoutProps) {
+internal fun FunctionalComposableScope.RowContent(props: LayoutProps) {
   Row(
     horizontalArrangement = props.horizontalArrangement.toComposeArrangement(),
     verticalAlignment = props.verticalAlignment.toComposeAlignment(),
-    modifier = ModifierRegistry.applyModifiers(props.modifiers)
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)
   ) {
     Children(ComposableScope().with(rowScope = this@Row))
   }
 }
 
 @Composable
-fun ExpoViewComposableScope.ColumnContent(props: LayoutProps) {
+internal fun FunctionalComposableScope.ColumnContent(props: LayoutProps) {
   Column(
     verticalArrangement = props.verticalArrangement.toComposeArrangement(),
     horizontalAlignment = props.horizontalAlignment.toComposeAlignment(),
-    modifier = ModifierRegistry.applyModifiers(props.modifiers)
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)
   ) {
     Children(ComposableScope().with(columnScope = this@Column))
   }
 }
 
 @Composable
-fun ExpoViewComposableScope.BoxContent(props: LayoutProps) {
+fun FunctionalComposableScope.BoxContent(props: LayoutProps) {
   Box(
-    modifier = ModifierRegistry.applyModifiers(props.modifiers)
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)
   ) {
     Children(ComposableScope().with(boxScope = this@Box))
   }
@@ -160,14 +159,14 @@ data class TextProps(
   val color: AndroidColor? = null,
   val fontSize: Float = 16f,
   val fontWeight: TextFontWeight = TextFontWeight.NORMAL,
-  val modifiers: List<ModifierConfig> = emptyList()
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @Composable
-fun ExpoViewComposableScope.TextContent(props: TextProps) {
+fun FunctionalComposableScope.TextContent(props: TextProps) {
   Text(
     text = props.text,
-    modifier = ModifierRegistry.applyModifiers(props.modifiers),
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope),
     color = colorToComposeColor(props.color),
     style = TextStyle(
       fontSize = props.fontSize.sp,

@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { type ColorValue } from 'react-native';
 
 import { ExpoModifier } from '../../types';
 
@@ -6,11 +7,11 @@ export type AlertDialogButtonColors = {
   /**
    * The background color of the button.
    */
-  containerColor?: string;
+  containerColor?: ColorValue;
   /**
    * The text color of the button.
    */
-  contentColor?: string;
+  contentColor?: ColorValue;
 };
 
 export type AlertDialogProps = {

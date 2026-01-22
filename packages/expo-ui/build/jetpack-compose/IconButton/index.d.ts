@@ -1,3 +1,4 @@
+import { type ColorValue } from 'react-native';
 import { ExpoModifier, ViewEvent } from '../../types';
 import { ButtonElementColors } from '../Button';
 import { ShapeJSXElement, ShapeRecordProps } from '../Shape';
@@ -28,7 +29,7 @@ export type IconButtonProps = {
     /**
      * Button color.
      */
-    color?: string;
+    color?: ColorValue;
     shape?: ShapeJSXElement;
     /**
      * Disabled state of the button.

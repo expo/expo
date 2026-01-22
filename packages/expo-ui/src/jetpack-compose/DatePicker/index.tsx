@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { type ColorValue } from 'react-native';
 
 import { ExpoModifier, ViewEvent } from '../../types';
 
@@ -36,7 +37,7 @@ export type DateTimePickerProps = {
   /**
    * The tint color to use on the picker elements.
    */
-  color?: string;
+  color?: ColorValue;
   /**
    * Determines what format the clock should be displayed in on Android.
    * @default true

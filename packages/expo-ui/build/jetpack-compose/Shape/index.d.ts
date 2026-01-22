@@ -1,3 +1,4 @@
+import { type ColorValue } from 'react-native';
 import { ExpoModifier } from '../../types';
 type ShapeType = 'star' | 'pillStar' | 'pill' | 'circle' | 'rectangle' | 'polygon';
 export type ShapeProps = {
@@ -27,7 +28,7 @@ export type ShapeProps = {
      */
     radius?: number;
     /** Color of the shape */
-    color?: string;
+    color?: ColorValue;
     /**
      * Modifiers for the component.
      */

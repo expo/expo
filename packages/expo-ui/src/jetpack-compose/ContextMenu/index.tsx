@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 import { Children, ReactElement, ReactNode, useMemo } from 'react';
-import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import { NativeSyntheticEvent, StyleProp, ViewStyle, type ColorValue } from 'react-native';
 
 import { SubmenuProps } from './Submenu';
 import { MenuElement, transformChildrenToElementArray } from './utils';
@@ -50,7 +50,7 @@ export type ContextMenuProps = {
   /**
    * The color of the container holding the context menu items.
    */
-  color?: string;
+  color?: ColorValue;
 
   /**
    * Optional styles to apply to the `ContextMenu`.

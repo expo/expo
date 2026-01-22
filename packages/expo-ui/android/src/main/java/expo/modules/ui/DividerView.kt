@@ -2,16 +2,14 @@ package expo.modules.ui
 
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoViewComposableScope
+import expo.modules.kotlin.views.FunctionalComposableScope
 
 data class DividerProps(
-  val modifiers: List<ModifierConfig> = emptyList()
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @Composable
-fun ExpoViewComposableScope.DividerContent(props: DividerProps) {
-  HorizontalDivider(modifier = ModifierRegistry.applyModifiers(props.modifiers))
+fun FunctionalComposableScope.DividerContent(props: DividerProps) {
+  HorizontalDivider(modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope))
 }
-

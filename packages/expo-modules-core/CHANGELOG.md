@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - [macos] Remove react-native-macos@0.79.0 workarounds ([#42409](https://github.com/expo/expo/pull/42409) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Improved Jetpack Compose integration for Expo UI. ([#42450](https://github.com/expo/expo/pull/42450) by [@kudo](https://github.com/kudo))
 
 ## 55.0.1 — 2026-01-22
 
@@ -51,7 +52,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - [Android] Fixed DSL view props using stale state when updating. ([#41622](https://github.com/expo/expo/pull/41622) by [@kimchi-developer](https://github.com/kimchi-developer))
-- [core] Fixed `useReleasingSharedObject` to defer releasing until after render.
+- [core] Fixed `useReleasingSharedObject` to defer releasing until after render.
 - [android] Fix source sets for events for functional view definitions. ([#41685](https://github.com/expo/expo/pull/41685) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix throwing `InvalidArgsNumberException` when declaring `AsyncFunction` with optional arguments and `Promise`. ([#41054](https://github.com/expo/expo/pull/41054) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] fix queue assertion crash ([#41296](https://github.com/expo/expo/pull/41296) by [@vonovak](https://github.com/vonovak))

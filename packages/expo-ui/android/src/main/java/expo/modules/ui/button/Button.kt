@@ -21,13 +21,13 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoViewComposableScope
-import expo.modules.ui.menu.LocalContextMenuExpanded
-import expo.modules.ui.ModifierConfig
+import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.ShapeRecord
 import expo.modules.ui.compose
 import expo.modules.ui.getImageVector
+import expo.modules.ui.menu.LocalContextMenuExpanded
 import expo.modules.ui.shapeFromShapeRecord
 import java.io.Serializable
 
@@ -62,8 +62,8 @@ data class ButtonProps(
   val leadingIcon: String? = null,
   val trailingIcon: String? = null,
   val disabled: Boolean? = false,
-  val modifiers: List<ModifierConfig>? = emptyList(),
-  val shape: ShapeRecord? = null
+  val shape: ShapeRecord? = null,
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @Composable
@@ -150,7 +150,7 @@ fun StyledButton(
 }
 
 @Composable
-fun ExpoViewComposableScope.ButtonContent(
+fun FunctionalComposableScope.ButtonContent(
   props: ButtonProps,
   onButtonPressed: (ButtonPressedEvent) -> Unit
 ) {
@@ -174,7 +174,7 @@ fun ExpoViewComposableScope.ButtonContent(
       // Also fire the button pressed event
       onButtonPressed(ButtonPressedEvent())
     },
-    modifier = ModifierRegistry.applyModifiers(props.modifiers),
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope),
     shape = shapeFromShapeRecord(props.shape)
   ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
