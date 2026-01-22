@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Move `start` QR code to end of output. ([#42416](https://github.com/expo/expo/pull/42416)) by [@jonsamp](https://github.com/jonsamp)
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
