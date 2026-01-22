@@ -42,7 +42,6 @@ import expo.modules.devlauncher.services.DependencyInjection
 import expo.modules.kotlin.weak
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
-import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -147,7 +146,7 @@ class DevLauncherController private constructor(
       val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl, installationIDHelper.getOrCreateInstallationID(context))
       val appIntent = createAppIntent()
 
-      (updatesInterface as UpdatesDevLauncherInterface).reset()
+      updatesInterface?.reset()
 
       val appLoaderFactory = DevLauncherAppLoaderFactory(
         context,

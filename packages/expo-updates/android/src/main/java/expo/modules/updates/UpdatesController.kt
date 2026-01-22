@@ -87,12 +87,10 @@ object UpdatesController {
 
     singletonInstance = if (updatesConfiguration != null) {
       val enabledUpdatesController = EnabledUpdatesController(context, updatesConfiguration, updatesDirectory)
-      UpdatesControllerRegistry.controller = WeakReference(enabledUpdatesController)
+      UpdatesControllerRegistry.metricsController = WeakReference(enabledUpdatesController)
       enabledUpdatesController
     } else {
-      val disabledUpdatesController = DisabledUpdatesController(context, null)
-      UpdatesControllerRegistry.controller = WeakReference(disabledUpdatesController)
-      disabledUpdatesController
+      DisabledUpdatesController(context, null)
     }
   }
 

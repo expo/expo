@@ -9,7 +9,6 @@ import expo.modules.devlauncher.helpers.createUpdatesConfigurationWithUrl
 import expo.modules.devlauncher.helpers.loadUpdate
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.manifests.core.Manifest
-import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import expo.modules.updatesinterface.UpdatesInterface
 
 class DevLauncherAppLoaderFactory(
@@ -37,7 +36,7 @@ class DevLauncherAppLoaderFactory(
         null
       } else {
         val configurationCandidate = createUpdatesConfigurationWithUrl(url, projectUrl, runtimeVersion, installationIDHelper.getOrCreateInstallationID(context))
-        if ((it as UpdatesDevLauncherInterface).isValidUpdatesConfiguration(configurationCandidate)) {
+        if (it.isValidUpdatesConfiguration(configurationCandidate)) {
           configurationCandidate
         } else {
           null
@@ -52,7 +51,7 @@ class DevLauncherAppLoaderFactory(
       }
       DevLauncherLocalAppLoader(manifest!!, appHost, context, controller)
     } else {
-      val update = (updatesInterface as UpdatesDevLauncherInterface?)!!.loadUpdate(validConfiguration, context) {
+      val update = updatesInterface!!.loadUpdate(validConfiguration, context) {
         manifest = Manifest.fromManifestJson(it) // TODO: might be able to pass actual manifest object in here
         return@loadUpdate !manifest!!.isUsingDeveloperTool()
       }

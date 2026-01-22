@@ -4,4 +4,5 @@ import java.lang.ref.WeakReference
 
 object UpdatesControllerRegistry {
   var controller: WeakReference<UpdatesInterface>? = null
+  var metricsController: WeakReference<UpdatesMetricsInterface>? = null
 }
