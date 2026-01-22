@@ -37,6 +37,7 @@ private struct RecentlyOpenedIconView: View {
   private let size: CGFloat = 40
   @State private var image: UIImage?
   @State private var isLoading = false
+  @Environment(\.colorScheme) private var colorScheme
 
   var body: some View {
     Group {
@@ -47,11 +48,9 @@ private struct RecentlyOpenedIconView: View {
           .frame(width: size, height: size)
           .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
       } else {
-        Image("Icon")
-          .resizable()
-          .scaledToFill()
+        RoundedRectangle(cornerRadius: BorderRadius.medium)
+          .fill(colorScheme == .dark ? Color(white: 0.3) : Color(white: 0.7))
           .frame(width: size, height: size)
-          .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
       }
     }
     .task {
