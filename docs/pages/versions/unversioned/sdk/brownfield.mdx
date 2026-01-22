@@ -142,11 +142,11 @@ The `expo-brownfield` library includes a CLI for building and publishing to Mave
 
 ### Commands
 
-#### `build-android`
+#### `build:android`
 
 Builds and publishes the brownfield library and its dependencies to Maven repositories.
 
-<Terminal cmd={['$ npx expo-brownfield build-android [options]']} />
+<Terminal cmd={['$ npx expo-brownfield build:android [options]']} />
 
 | Option                 | Description                                    |
 | ---------------------- | ---------------------------------------------- |
@@ -158,11 +158,11 @@ Builds and publishes the brownfield library and its dependencies to Maven reposi
 | `-t, --task`           | Specify Gradle publish tasks to run            |
 | `--verbose`            | Include all logs from subprocesses             |
 
-#### `build-ios`
+#### `build:ios`
 
 Builds the brownfield XCFramework and copies the Hermes XCFramework to the artifacts directory.
 
-<Terminal cmd={['$ npx expo-brownfield build-ios [options]']} />
+<Terminal cmd={['$ npx expo-brownfield build:ios [options]']} />
 
 | Option              | Description                                              |
 | ------------------- | -------------------------------------------------------- |
@@ -173,11 +173,11 @@ Builds the brownfield XCFramework and copies the Hermes XCFramework to the artif
 | `-x, --xcworkspace` | Xcode workspace path                                     |
 | `--verbose`         | Include all logs from subprocesses                       |
 
-#### `tasks-android`
+#### `tasks:android`
 
 Lists all available publish tasks and Maven repositories.
 
-<Terminal cmd={['$ npx expo-brownfield tasks-android']} />
+<Terminal cmd={['$ npx expo-brownfield tasks:android']} />
 
 ## API
 
