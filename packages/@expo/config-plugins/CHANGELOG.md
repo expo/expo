@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add `android:maxSdkVersion="32"` to storage permissions in templates. ([#42401](https://github.com/expo/expo/pull/42401) by [@brentvatne](https://github.com/brentvatne))
+
 ### 💡 Others
 
 ## 55.0.0 — 2026-01-21
