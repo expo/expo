@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TrustedDependencyCheck bun fails and provides bun pm trust advice 1`] = `
+"Run the following to trust the package and re-run its postinstall script:
+
+bun pm trust @shopify/react-native-skia"
+`;
+
+exports[`TrustedDependencyCheck pnpm fails and provides correct advice 1`] = `
+"Add the following to "pnpm.onlyBuiltDependencies" in your package.json:
+
+"pnpm": {
+  "onlyBuiltDependencies": [
+    "@shopify/react-native-skia"
+  ]
+}
+
+Then run "pnpm install" to re-run the postinstall script."
+`;
