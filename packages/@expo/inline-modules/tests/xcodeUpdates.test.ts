@@ -17,7 +17,7 @@ describe('updateXCodeProject', () => {
 
   beforeEach(async () => {
     const tempDir = await fs.promises.mkdtemp(path.resolve(os.tmpdir(), 'xcode-updates-test-'));
-    await fs.promises.cp(FIXTURE_PATH, path.join(tempDir, 'ios'), { recursive: true });
+    await fs.promises.cp(FIXTURE_PATH, tempDir, { recursive: true });
     tempProjectRoot = tempDir;
   });
 
@@ -42,8 +42,6 @@ describe('updateXCodeProject', () => {
     expect(tempProjectRoot).toBeTruthy();
     expect(tempProjectRoot).toBeDefined();
     tempProjectRoot = tempProjectRoot as string;
-    const modulePath = path.resolve(tempProjectRoot as string, 'app');
-    await fs.promises.mkdir(modulePath, { recursive: true });
 
     await updateXCodeProject(tempProjectRoot);
 
