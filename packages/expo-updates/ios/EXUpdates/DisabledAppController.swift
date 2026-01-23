@@ -1,11 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import EXUpdatesInterface
-
-internal class DisabledUpdatesStateChangeSubscription: UpdatesStateChangeSubscription {
-  func remove() {}
-}
 
 /**
  * Updates controller for applications that either disable updates explicitly or have an error
@@ -14,15 +9,7 @@ internal class DisabledUpdatesStateChangeSubscription: UpdatesStateChangeSubscri
  * - Internal database initialization errors
  * - Configuration errors (missing required configuration)
  */
-public class DisabledAppController: InternalAppControllerInterface, UpdatesInterface {
-  public func subscribeToUpdatesStateChanges(_ listener: any UpdatesStateChangeListener) -> UpdatesStateChangeSubscription {
-    return DisabledUpdatesStateChangeSubscription()
-  }
-
-  public var launchedUpdateId: UUID?
-
-  public var embeddedUpdateId: UUID?
-
+public class DisabledAppController: InternalAppControllerInterface {
   public var reloadScreenManager: Reloadable?
 
   public let isActiveController = false
@@ -114,14 +101,6 @@ public class DisabledAppController: InternalAppControllerInterface, UpdatesInter
       initialContext: stateMachine.context
     )
   }
-
-  // MARK: UpdatesInterface
-
-  public var runtimeVersion: String?
-
-  public var updateURL: URL?
-
-  public var isEnabled: Bool = false
 
   public func requestRelaunch(
     success successBlockArg: @escaping () -> Void,

@@ -1,6 +1,6 @@
 {
   "name": "@expo/log-box",
-  "version": "55.0.0",
+  "version": "55.0.1",
   "main": "app/index.ts",
   "scripts": {
     "start": "expo start",
@@ -19,14 +19,14 @@
     "export:web": "expo export -p web --no-minify"
   },
   "dependencies": {
-    "@expo/dom-webview": "55.0.0",
+    "@expo/dom-webview": "55.0.1",
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10"
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.7.2",
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "^55.0.1",
+    "expo-module-scripts": "^55.0.2",
     "glob": "^13.0.0",
     "npm-run-all2": "^8.0.4",
     "react": "19.2.0",

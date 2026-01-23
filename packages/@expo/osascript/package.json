@@ -1,6 +1,6 @@
 {
   "name": "@expo/osascript",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "Tools for running an osascripts in Node",
   "license": "MIT",
   "keywords": [
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "^55.0.1"
+    "expo-module-scripts": "^55.0.2"
   },
   "publishConfig": {
     "access": "public"

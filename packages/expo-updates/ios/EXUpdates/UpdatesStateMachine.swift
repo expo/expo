@@ -3,7 +3,6 @@
 // swiftlint:disable no_grouping_extension
 
 import Foundation
-import EXUpdatesInterface
 
 // MARK: - Enums
 
@@ -83,23 +82,6 @@ internal enum UpdatesStateEvent {
       return .downloadError
     case .restart:
       return .restart
-    }
-  }
-
-  var toMap: [String: Any] {
-    switch self {
-    case .checkCompleteWithUpdate(manifest: let manifest):
-      return ["type": "checkCompleteWithUpdate", "manifest": manifest]
-    case .downloadCompleteWithUpdate(manifest: let manifest):
-      return ["type": "downloadCompleteWithUpdate", "manifest": manifest]
-    case .checkError(errorMessage: let errorMessage):
-      return ["type": type, "errorMessage": errorMessage]
-    case .downloadError(errorMessage: let errorMessage):
-      return ["type": type, "errorMessage": errorMessage]
-    case .downloadProgress(progress: let progress):
-      return ["type": type, "progress": progress]
-    default:
-      return ["type": type]
     }
   }
 }
@@ -336,14 +318,6 @@ internal class UpdatesStateMachine {
       context = reducedContext(context, event)
       if event.type != .downloadProgress {
         logger.info(message: "Updates state change: state = \(state), event = \(event.type), context = \(context)")
-      }
-      // Notify the controller state change listener
-      if let controller = UpdatesControllerRegistry.sharedInstance.controller as? EnabledAppController {
-        controller.stateChangeListeners.keys.forEach {subscriptionId in
-          if let listener = controller.stateChangeListeners[subscriptionId] {
-            listener.updatesStateDidChange(event.toMap)
-          }
-        }
       }
       sendContextToJS()
     }

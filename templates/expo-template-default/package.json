@@ -2,7 +2,7 @@
   "name": "expo-template-default",
   "license": "0BSD",
   "main": "expo-router/entry",
-  "version": "55.0.2",
+  "version": "55.0.3",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -16,13 +16,13 @@
     "@react-navigation/bottom-tabs": "^7.7.3",
     "@react-navigation/elements": "^2.8.1",
     "@react-navigation/native": "^7.1.28",
-    "expo": "~55.0.0-preview.3",
-    "expo-constants": "~55.0.0",
+    "expo": "~55.0.0-preview.5",
+    "expo-constants": "~55.0.1",
     "expo-font": "~55.0.1",
     "expo-glass-effect": "~55.0.1",
     "expo-image": "~55.0.1",
-    "expo-linking": "~55.0.1",
-    "expo-router": "~55.0.0-beta.1",
+    "expo-linking": "~55.0.2",
+    "expo-router": "~55.0.0-beta.2",
     "expo-splash-screen": "~55.0.1",
     "expo-status-bar": "~55.0.1",
     "expo-symbols": "~55.0.1",
@@ -39,7 +39,7 @@
     "react-native-web": "~0.21.0"
   },
   "devDependencies": {
-    "@types/react": "~19.1.1",
+    "@types/react": "~19.2.2",
     "typescript": "~5.9.2",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~55.0.0"

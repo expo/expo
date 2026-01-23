@@ -91,8 +91,7 @@ jobs:
           yarn generate-test-update-bundles android test-update-1
       - uses: eas/start_android_emulator
         with:
-          device_name: pixel_6
-          system_image_package: system-images;android-34;default;x86_64
+          device_name: pixel_4
       - name: Build E2E test app (release)
         id: buildrelease
         working_directory: ../../../updates-e2e

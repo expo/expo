@@ -41,7 +41,7 @@
     "@expo-google-fonts/material-symbols": "^0.4.1"
   },
   "devDependencies": {
-    "expo-module-scripts": "^55.0.1",
+    "expo-module-scripts": "^55.0.2",
     "expo-font": "^55.0.1"
   },
   "peerDependencies": {

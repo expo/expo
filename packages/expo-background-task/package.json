@@ -1,6 +1,6 @@
 {
   "name": "expo-background-task",
-  "version": "55.0.0",
+  "version": "55.0.1",
   "description": "Expo Android and iOS module for Background Task APIs",
   "main": "build/BackgroundTask.js",
   "types": "build/BackgroundTask.d.ts",
@@ -35,7 +35,7 @@
     "expo-task-manager": "~55.0.1"
   },
   "devDependencies": {
-    "expo-module-scripts": "^55.0.1"
+    "expo-module-scripts": "^55.0.2"
   },
   "peerDependencies": {
     "expo": "*"
