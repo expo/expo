@@ -215,7 +215,8 @@ User-scoped caches allow for publishing caches that are just accessible to build
 - Caches persist across different branches and builds
 - Each user’s build will have their own isolated cache even when on the same branch
 
-This ensures that builds between teammates will benefit from remote caching with the guarantee that they are isolated and limited to the proper scope. 
+This ensures that builds between teammates will benefit from remote caching with the guarantee that they are isolated and limited to the proper scope.
+
 ## iOS dependencies
 
 EAS Build serves most CocoaPods artifacts from a cache server. This improves the consistency of `pod install` times and generally improves speed. The cache will be bypassed automatically if you provide your own **.netrc** or **.curlrc** files.
