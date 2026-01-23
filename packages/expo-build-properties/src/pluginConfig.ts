@@ -1,4 +1,6 @@
 import { validate, type JSONSchema } from '@expo/schema-utils';
+import fs from 'fs';
+import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
 /**
@@ -16,6 +18,13 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
     deploymentTarget: '15.1',
   },
 };
+
+/**
+ * The hermes-compiler version expected to use hermesV1 compiler version.
+ * Keep this in sync with the expected `react-native` version.
+ * @ignore
+ */
+const HERMES_V1_COMPILER_VERSION = '250829098.0.4';
 
 /**
  * Shared build configuration fields that can be set at the top level
@@ -859,9 +868,30 @@ const fixupDeprecatedEnableProguardInReleaseBuilds = (config: unknown) => {
 };
 
 /**
+ * Reads the hermes-compiler version from node_modules
  * @ignore
  */
-export function validateConfig(config: unknown): PluginConfigType {
+function getHermesCompilerVersion(projectRoot: string): string | null {
+  const hermesCompilerPackageJsonPath = resolveFrom.silent(
+    projectRoot,
+    'hermes-compiler/package.json'
+  );
+  if (!hermesCompilerPackageJsonPath || !fs.existsSync(hermesCompilerPackageJsonPath)) {
+    return null;
+  }
+
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(hermesCompilerPackageJsonPath, 'utf8'));
+    return packageJson.version ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * @ignore
+ */
+export function validateConfig(config: unknown, projectRoot?: string): PluginConfigType {
   fixupDeprecatedEnableProguardInReleaseBuilds(config);
   validate(schema, config);
   maybeThrowInvalidVersions(config);
@@ -875,8 +905,23 @@ export function validateConfig(config: unknown): PluginConfigType {
     );
   }
 
-  // Validate useHermesV1 requires buildReactNativeFromSource for Android
   const androidUseHermesV1 = resolveConfigValue(config, 'android', 'useHermesV1');
+  const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1');
+
+  // Hermes v1 requires a specific hermes-compiler version
+  if ((androidUseHermesV1 || iosUseHermesV1) && projectRoot) {
+    const hermesCompilerVersion = getHermesCompilerVersion(projectRoot);
+    if (hermesCompilerVersion !== HERMES_V1_COMPILER_VERSION) {
+      throw new Error(
+        `\`useHermesV1\` requires setting the hermes-compiler version to ${HERMES_V1_COMPILER_VERSION} through resolutions. ` +
+          (hermesCompilerVersion
+            ? `Found version "${hermesCompilerVersion}" instead.`
+            : 'hermes-compiler dependency not found.')
+      );
+    }
+  }
+
+  // Validate useHermesV1 requires buildReactNativeFromSource for Android
   const androidBuildFromSource =
     resolveConfigValue(config, 'android', 'buildReactNativeFromSource') ??
     config.android?.buildFromSource; // Deprecated fallback
@@ -887,7 +932,6 @@ export function validateConfig(config: unknown): PluginConfigType {
   }
 
   // Validate useHermesV1 requires buildReactNativeFromSource for iOS
-  const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1');
   const iosBuildFromSource = resolveConfigValue(config, 'ios', 'buildReactNativeFromSource');
   if (iosUseHermesV1 === true && iosBuildFromSource !== true) {
     throw new Error('`useHermesV1` requires `buildReactNativeFromSource` to be `true` for iOS.');

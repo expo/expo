@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveConfigValue = resolveConfigValue;
 exports.validateConfig = validateConfig;
 const schema_utils_1 = require("@expo/schema-utils");
+const fs_1 = __importDefault(require("fs"));
+const resolve_from_1 = __importDefault(require("resolve-from"));
 const semver_1 = __importDefault(require("semver"));
 /**
  * The minimal supported versions. These values should align to SDK.
@@ -22,6 +24,12 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
         deploymentTarget: '15.1',
     },
 };
+/**
+ * The hermes-compiler version expected to use hermesV1 compiler version.
+ * Keep this in sync with the expected `react-native` version.
+ * @ignore
+ */
+const HERMES_V1_COMPILER_VERSION = '250829098.0.4';
 /**
  * Resolves a shared config value with platform-specific override.
  * Platform-specific values take precedence over top-level values.
@@ -273,9 +281,26 @@ const fixupDeprecatedEnableProguardInReleaseBuilds = (config) => {
     }
 };
 /**
+ * Reads the hermes-compiler version from node_modules
  * @ignore
  */
-function validateConfig(config) {
+function getHermesCompilerVersion(projectRoot) {
+    const hermesCompilerPackageJsonPath = resolve_from_1.default.silent(projectRoot, 'hermes-compiler/package.json');
+    if (!hermesCompilerPackageJsonPath || !fs_1.default.existsSync(hermesCompilerPackageJsonPath)) {
+        return null;
+    }
+    try {
+        const packageJson = JSON.parse(fs_1.default.readFileSync(hermesCompilerPackageJsonPath, 'utf8'));
+        return packageJson.version ?? null;
+    }
+    catch {
+        return null;
+    }
+}
+/**
+ * @ignore
+ */
+function validateConfig(config, projectRoot) {
     fixupDeprecatedEnableProguardInReleaseBuilds(config);
     (0, schema_utils_1.validate)(schema, config);
     maybeThrowInvalidVersions(config);
@@ -283,15 +308,25 @@ function validateConfig(config) {
         config.android?.enableMinifyInReleaseBuilds !== true) {
         throw new Error('`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableMinifyInReleaseBuilds` to be enabled.');
     }
-    // Validate useHermesV1 requires buildReactNativeFromSource for Android
     const androidUseHermesV1 = resolveConfigValue(config, 'android', 'useHermesV1');
+    const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1');
+    // Hermes v1 requires a specific hermes-compiler version
+    if ((androidUseHermesV1 || iosUseHermesV1) && projectRoot) {
+        const hermesCompilerVersion = getHermesCompilerVersion(projectRoot);
+        if (hermesCompilerVersion !== HERMES_V1_COMPILER_VERSION) {
+            throw new Error(`\`useHermesV1\` requires setting the hermes-compiler version to ${HERMES_V1_COMPILER_VERSION} through resolutions. ` +
+                (hermesCompilerVersion
+                    ? `Found version "${hermesCompilerVersion}" instead.`
+                    : 'hermes-compiler dependency not found.'));
+        }
+    }
+    // Validate useHermesV1 requires buildReactNativeFromSource for Android
     const androidBuildFromSource = resolveConfigValue(config, 'android', 'buildReactNativeFromSource') ??
         config.android?.buildFromSource; // Deprecated fallback
     if (androidUseHermesV1 === true && androidBuildFromSource !== true) {
         throw new Error('`useHermesV1` requires `buildReactNativeFromSource` to be `true` for Android.');
     }
     // Validate useHermesV1 requires buildReactNativeFromSource for iOS
-    const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1');
     const iosBuildFromSource = resolveConfigValue(config, 'ios', 'buildReactNativeFromSource');
     if (iosUseHermesV1 === true && iosBuildFromSource !== true) {
         throw new Error('`useHermesV1` requires `buildReactNativeFromSource` to be `true` for iOS.');
