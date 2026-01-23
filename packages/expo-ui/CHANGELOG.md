@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add Markdown support to the Text component. ([#42448](https://github.com/expo/expo/pull/42448) by [@Pflaumenbaum](https://github.com/Pflaumenbaum))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
