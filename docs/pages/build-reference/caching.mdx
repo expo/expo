@@ -203,11 +203,10 @@ Caches are scoped to the branch where they were created. Workflow runs can resto
 - The current branch
 - The default branch (`main` or `master`)
 
-If a workflow run is triggered for a pull request, it can also restore caches created in the base branch. For example, if a pull request from `feature-b` targets `main`, the workflow can access caches created in the `main` branch.
 
 #### User-scoped caches
 
-User-scoped caches allow for publishing caches that are just accessible to builds or workflow jobs that are ran by that respective user. Allowing for isolation so that modifications to the build and its cache are not unintentionally shared during development. This means:
+When a build is triggered from `eas-cli`, caches are scoped to the user running the build.
 
 - Caches are shared just between the builds and workflows for an account
 - Caches persist across different branches and builds
@@ -218,8 +217,6 @@ This ensures that builds between teammates will benefit from remote caching with
 #### Default branch cache
 
 If a build doesn't restore a user-scoped cache, it will automatically fallback to restoring caches published from GitHub builds triggered on the default branch. This allows builds to benefit from caches created by automated workflows even when no user-scoped cache exists yet, or to only keep publishing caches from a designated job.
-
-This is particularly useful for build tools like ccache, where the compilation cache can be shared across different builds and branches and the performance benefits can be applied broadly.
 
 ## iOS dependencies
 
