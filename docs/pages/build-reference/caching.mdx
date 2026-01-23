@@ -208,12 +208,6 @@ Caches are scoped to the branch where they were created. Workflow runs can resto
 
 When a build is triggered from `eas-cli`, caches are scoped to the user running the build.
 
-- Caches are shared just between the builds and workflows for an account
-- Caches persist across different branches and builds
-- Each user's build will have their own isolated cache even when on the same branch
-
-This ensures that builds between teammates will benefit from remote caching with the guarantee that they are isolated and limited to the proper scope.
-
 #### Default branch cache
 
 If a build doesn't restore a user-scoped cache, it will automatically fallback to restoring caches published from GitHub builds triggered on the default branch. This allows builds to benefit from caches created by automated workflows even when no user-scoped cache exists yet, or to only keep publishing caches from a designated job.
