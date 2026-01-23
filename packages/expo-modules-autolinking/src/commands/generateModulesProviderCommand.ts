@@ -1,4 +1,5 @@
-import commander, { command } from 'commander';
+import commander from 'commander';
+import fs from 'fs';
 
 import {
   AutolinkingCommonArguments,
@@ -16,10 +17,14 @@ interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
   appRoot?: string;
 }
 
+type PartialPodfileProperties = {
+  'expo.inlineModules.watchedDirectories'?: string;
+};
+
 /** Generates a source file listing all packages to link in the runtime */
 export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
   return registerAutolinkingArguments(
-    cli.command('generate-modules-provider <watchedDirectoriesSerialized> [searchPaths...]')
+    cli.command('generate-modules-provider <podfilePropertiesFilePath> [searchPaths...]')
   )
     .option(
       '-t, --target <path>',
@@ -33,7 +38,7 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
     .option('--app-root <path>', 'Path to the app root directory.')
     .action(
       async (
-        watchedDirectoriesSerialized: string,
+        podfilePropertiesFilePath: string,
         searchPaths: string[] | null,
         commandArguments: GenerateModulesProviderArguments
       ) => {
@@ -57,7 +62,18 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
         const filteredModules = expoModulesResolveResults.filter((module) =>
           includeModules.has(module.packageName)
         );
-        const watchedDirectories = JSON.parse(watchedDirectoriesSerialized);
+
+        const podfileProperties: PartialPodfileProperties = await fs.promises
+          .readFile(podfilePropertiesFilePath, {
+            encoding: 'utf8',
+          })
+          .then((file) => JSON.parse(file))
+          .catch(() => ({}));
+
+        const watchedDirectories = JSON.parse(
+          podfileProperties['expo.inlineModules.watchedDirectories'] ?? '[]'
+        );
+
         await generateModulesProviderAsync(
           filteredModules,
           {
