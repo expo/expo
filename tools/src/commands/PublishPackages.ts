@@ -54,6 +54,11 @@ export default (program: Command) => {
       'Restrict publishing to template packages under templates/. Dependencies will not be auto-included.',
       false
     )
+    .option(
+      '--include-expo-module-scripts',
+      'Include expo-module-scripts in publishing (excluded by default).',
+      false
+    )
 
     /* exclusive options */
     .option(
