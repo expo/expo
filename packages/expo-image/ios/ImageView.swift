@@ -77,6 +77,8 @@ public final class ImageView: ExpoView {
 
   var symbolWeight: String?
 
+  var symbolSize: Double?
+
   var useAppleWebpCodec: Bool = true
 
   /**
@@ -287,9 +289,10 @@ public final class ImageView: ExpoView {
     // Extract symbol name from URL path (e.g., sf:/star.fill)
     let symbolName = uri.pathComponents.count > 1 ? uri.pathComponents[1] : ""
 
-    // Create symbol with configuration using the symbolWeight prop
+    // Create symbol with configuration using the symbolWeight and symbolSize props
     let weight = parseSymbolWeight(symbolWeight)
-    let configuration = UIImage.SymbolConfiguration(pointSize: 100, weight: weight)
+    let pointSize = symbolSize ?? 100
+    let configuration = UIImage.SymbolConfiguration(pointSize: pointSize, weight: weight)
     guard let image = UIImage(systemName: symbolName, withConfiguration: configuration) else {
       onError(["error": "Unable to create SF Symbol image for '\(symbolName)'"])
       return
@@ -653,13 +656,13 @@ public final class ImageView: ExpoView {
       case .none: sdImageView.addSymbolEffect(.breathe, options: options)
       }
     default:
-      if #available(iOS 26.0, *) {
+      if #available(iOS 26.0, tvOS 26.0, *) {
         applySymbolEffectiOS26(effect: effect, scope: scope, options: options)
       }
     }
   }
 
-  @available(iOS 26.0, *)
+  @available(iOS 26.0, tvOS 26.0, *)
   private func applySymbolEffectiOS26(effect: SFSymbolEffectType, scope: SFSymbolEffectScope?, options: SymbolEffectOptions) {
     switch effect {
     case .drawOn:

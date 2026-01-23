@@ -50,15 +50,6 @@ struct HomeTabView: View {
               SnacksLoadingSection()
             } else if !viewModel.snacks.isEmpty {
               SnacksSection()
-            } else if !viewModel.isLoadingData {
-              VStack(alignment: .leading, spacing: 12) {
-                SectionHeader(title: "snacks".uppercased())
-                EmptyStateView(
-                  icon: "play.rectangle",
-                  message: "No snacks yet",
-                  description: "Try Snack to experiment with Expo"
-                )
-              }
             }
           }
         }

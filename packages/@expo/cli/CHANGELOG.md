@@ -2,6 +2,27 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.2 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+### 🐛 Bug fixes
+
+- Treat both `null` and `undefined` loader responses as `null` ([#42419](https://github.com/expo/expo/pull/42419) by [@hassankhan](https://github.com/hassankhan))
+- Allow busting the cached manifest and SSR renderer during development ([#42411](https://github.com/expo/expo/pull/42411) by [@hassankhan](https://github.com/hassankhan))
+
+## 55.0.0 — 2026-01-21
+
 - Clarify Expo Go instructions for scanning QR Code. ([#34811](https://github.com/expo/expo/pull/34811) by [@betomoedano](https://github.com/betomoedano))
 
 ### 🛠 Breaking changes
@@ -68,8 +89,6 @@
 
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Added support for React Native 0.83.x. ([#41564](https://github.com/expo/expo/pull/41564) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 📚 3rd party library updates
 
 ## 54.0.18 - 2025-12-05
 

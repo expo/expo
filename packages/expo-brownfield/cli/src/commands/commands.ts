@@ -4,16 +4,16 @@ import { runBuildIos } from './ios';
 import { CommandsMap } from './types';
 
 export const Commands: CommandsMap = {
-  'build-android': {
+  'build:android': {
     run: runBuildAndroid,
   },
-  'build-ios': {
+  'build:ios': {
     run: runBuildIos,
   },
   help: {
     run: runHelp,
   },
-  'tasks-android': {
+  'tasks:android': {
     run: runTasksAndroid,
   },
   version: {

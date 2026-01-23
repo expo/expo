@@ -5,16 +5,16 @@ const android_1 = require("./android");
 const general_1 = require("./general");
 const ios_1 = require("./ios");
 exports.Commands = {
-    'build-android': {
+    'build:android': {
         run: android_1.runBuildAndroid,
     },
-    'build-ios': {
+    'build:ios': {
         run: ios_1.runBuildIos,
     },
     help: {
         run: general_1.runHelp,
     },
-    'tasks-android': {
+    'tasks:android': {
         run: android_1.runTasksAndroid,
     },
     version: {

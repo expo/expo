@@ -59,6 +59,7 @@ function createWorkerdEnv(params) {
         readText,
         readJson,
         loadModule,
+        isDevelopment: params.isDevelopment ?? false,
     });
 }
 function createWorkerdRequestScope(scopeDefinition, params) {

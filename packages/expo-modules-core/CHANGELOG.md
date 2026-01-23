@@ -4,6 +4,32 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.3 — 2026-01-22
+
+### 🐛 Bug fixes
+
+- [Android] Fixed crashes in JavaScriptValue/JavaScriptObject destructor caused by freeing memory after the runtime is destroyed. ([#42440](https://github.com/expo/expo/pull/42440) by [@lukmccall](https://github.com/lukmccall))
+
+## 55.0.2 — 2026-01-22
+
+### 💡 Others
+
+- [macos] Remove react-native-macos@0.79.0 workarounds ([#42409](https://github.com/expo/expo/pull/42409) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
 - [Android] Drop support for legacy architecture.
 
 ### 🎉 New features
@@ -35,7 +61,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed DSL view props using stale state when updating. ([#41622](https://github.com/expo/expo/pull/41622) by [@kimchi-developer](https://github.com/kimchi-developer))
-- [core] Fixed `useReleasingSharedObject` to defer releasing until after render.
+- [core] Fixed `useReleasingSharedObject` to defer releasing until after render.
 - [android] Fix source sets for events for functional view definitions. ([#41685](https://github.com/expo/expo/pull/41685) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix throwing `InvalidArgsNumberException` when declaring `AsyncFunction` with optional arguments and `Promise`. ([#41054](https://github.com/expo/expo/pull/41054) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] fix queue assertion crash ([#41296](https://github.com/expo/expo/pull/41296) by [@vonovak](https://github.com/vonovak))
@@ -49,6 +75,7 @@
 - Fixed `NativeModule` extending `Record<string, any>`, which made it not type-safe. ([#41320](https://github.com/expo/expo/pull/41320) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fix missing headers when using static frameworks ([#41970](https://github.com/expo/expo/pull/41970) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Add shallow equality check before triggering view prop setters to avoid unnecessary calls. ([#39331](https://github.com/expo/expo/pull/39331) by [@nishan](https://github.com/intergalacticspacehighway))
+- Fix react-native-macos 0.81 support ([#42366](https://github.com/expo/expo/pull/42366) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

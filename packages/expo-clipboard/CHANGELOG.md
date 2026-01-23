@@ -4,11 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- Removed deprecated `content` property of the clipboard event listener. Use `getStringAsync()` instead. ([#41739](https://github.com/expo/expo/pull/41739) by [@barthap](https://github.com/barthap))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
+- Removed deprecated `content` property of the clipboard event listener. Use `getStringAsync()` instead. ([#41739](https://github.com/expo/expo/pull/41739) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 

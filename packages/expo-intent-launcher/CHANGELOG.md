@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 💡 Others
+
 - [Android] Removed unused `androidx.annotation:annotation` dependency. ([#39760](https://github.com/expo/expo/pull/39760) by [@lukmccall](https://github.com/lukmccall))
 
 ## 13.0.8 - 2025-12-05

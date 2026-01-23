@@ -1,0 +1,67 @@
+---
+title: ColorPicker
+description: A SwiftUI ColorPicker component for selecting colors.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI ColorPicker matches the official SwiftUI [ColorPicker API](https://developer.apple.com/documentation/swiftui/colorpicker) and allows app users to select colors from a palette.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic color picker
+
+```tsx ColorPickerExample.tsx
+import { useState } from 'react';
+import { Host, ColorPicker } from '@expo/ui/swift-ui';
+
+export default function ColorPickerExample() {
+  const [color, setColor] = useState('#FF6347');
+
+  return (
+    <Host matchContents>
+      <ColorPicker label="Select a color" selection={color} onSelectionChange={setColor} />
+    </Host>
+  );
+}
+```
+
+### Color picker with opacity support
+
+Use the `supportsOpacity` prop to allow users to select colors with alpha transparency.
+
+```tsx ColorPickerOpacityExample.tsx
+import { useState } from 'react';
+import { Host, ColorPicker } from '@expo/ui/swift-ui';
+
+export default function ColorPickerOpacityExample() {
+  const [color, setColor] = useState('#FF634780');
+
+  return (
+    <Host matchContents>
+      <ColorPicker
+        label="Select a color with opacity"
+        selection={color}
+        onSelectionChange={setColor}
+        supportsOpacity
+      />
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { ColorPicker } from '@expo/ui/swift-ui';
+```
+
+<APISection packageName="expo-ui/swift-ui/colorpicker" apiName="ColorPicker" />

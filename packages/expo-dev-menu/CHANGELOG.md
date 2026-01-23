@@ -6,6 +6,18 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [iOS] Add support to SwiftUI apps ([#40542](https://github.com/expo/expo/pull/40542) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Decouple dev menu from dev launcher. ([#40669](https://github.com/expo/expo/pull/40669) by [@alanjhughes](https://github.com/alanjhughes))
 - Add initial macOS support ([#41330](https://github.com/expo/expo/pull/41330) by [@gabrieldonadel](https://github.com/gabrieldonadel))

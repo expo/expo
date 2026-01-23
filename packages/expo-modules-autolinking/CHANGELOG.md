@@ -6,6 +6,20 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.1 — 2026-01-22
+
+### 💡 Others
+
+Update ExpoModulesProvider to use internal imports ([#42449](https://github.com/expo/expo/pull/42449) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - Added support for cli command extensions in the interactive devtools menu ([#39598](https://github.com/expo/expo/pull/39598) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Sync flavor dimensions and product flavors from app to expo module ([#40238](https://github.com/expo/expo/pull/40238) by [@kosmydel](https://github.com/kosmydel))
 - [Android] Added support for `services`. ([#41809](https://github.com/expo/expo/pull/41809) by [@lukmccall](https://github.com/lukmccall))

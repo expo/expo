@@ -35,7 +35,7 @@ const parseArgsError = () => {
 const unknownCommandError = () => {
     console.error(`
 Error: unknown command
-Supported commands: build-android, build-ios, tasks-android`);
+Supported commands: build:android, build:ios, tasks:android`);
     return process.exit(1);
 };
 /**

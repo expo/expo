@@ -2,12 +2,10 @@
 
 import {
   createNavigatorFactory,
-  NavigationState,
   ParamListBase,
   TabNavigationState,
   TabRouterOptions,
   useNavigationBuilder,
-  type EventMapBase,
 } from '@react-navigation/native';
 import React, { use, useCallback, useMemo } from 'react';
 
@@ -16,6 +14,7 @@ import { NativeTabTrigger } from './NativeTabTrigger';
 import { NativeTabsView } from './NativeTabsView';
 import type {
   InternalNativeTabsProps,
+  NativeTabNavigationEventMap,
   NativeTabOptions,
   NativeTabsProps,
   NativeTabsViewTabItem,
@@ -40,6 +39,7 @@ export function NativeTabsNavigator({
   indicatorColor,
   badgeTextColor,
   shadowColor,
+  screenListeners,
   ...rest
 }: InternalNativeTabsProps) {
   if (use(NativeTabsContext)) {
@@ -63,12 +63,13 @@ export function NativeTabsNavigator({
   const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     TabNavigationState<ParamListBase>,
     TabRouterOptions,
-    Record<string, (...args: any) => void>,
+    Record<string, (...args: unknown[]) => void>,
     NativeTabOptions,
-    Record<string, any>
+    NativeTabNavigationEventMap
   >(NativeBottomTabsRouter, {
     children,
     backBehavior,
+    screenListeners,
     screenOptions: {
       disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
       labelStyle: processedLabelStyle.default,
@@ -162,8 +163,8 @@ const createNativeTabNavigator = createNavigatorFactory(NativeTabsNavigator);
 const NativeTabsNavigatorWithContext = withLayoutContext<
   NativeTabOptions,
   typeof NativeTabsNavigator,
-  NavigationState,
-  EventMapBase
+  TabNavigationState<ParamListBase>,
+  NativeTabNavigationEventMap
 >(createNativeTabNavigator().Navigator, undefined, true);
 
 export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {

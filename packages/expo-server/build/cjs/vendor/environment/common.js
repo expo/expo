@@ -33,14 +33,14 @@ function createEnvironment(input) {
     let cachedManifest = null;
     let ssrRenderer = null;
     async function getCachedRoutesManifest() {
-        if (!cachedManifest) {
+        if (!cachedManifest || input.isDevelopment) {
             const json = await input.readJson('_expo/routes.json');
             cachedManifest = initManifestRegExp(json);
         }
         return cachedManifest;
     }
     async function getServerRenderer() {
-        if (ssrRenderer) {
+        if (ssrRenderer && !input.isDevelopment) {
             return ssrRenderer;
         }
         const manifest = await getCachedRoutesManifest();
@@ -86,11 +86,10 @@ function createEnvironment(input) {
             if (renderer) {
                 let renderOptions;
                 try {
-                    const result = await executeLoader(request, route);
-                    if (result !== undefined) {
+                    if (route.loader) {
+                        const result = await executeLoader(request, route);
                         const data = (0, matchers_1.isResponse)(result) ? await result.json() : result;
-                        const normalizedData = data === undefined ? {} : data;
-                        renderOptions = { loader: { data: normalizedData } };
+                        renderOptions = { loader: { data: data ?? null } };
                     }
                     return await renderer(request, renderOptions);
                 }
@@ -130,8 +129,7 @@ function createEnvironment(input) {
             if ((0, matchers_1.isResponse)(result)) {
                 return result;
             }
-            const data = result === undefined ? {} : result;
-            return Response.json(data);
+            return Response.json(result ?? null);
         },
     };
 }

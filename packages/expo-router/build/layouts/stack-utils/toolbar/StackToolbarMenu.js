@@ -7,7 +7,7 @@ exports.convertStackToolbarMenuActionPropsToRNHeaderItem = convertStackToolbarMe
 const react_1 = require("react");
 const bottom_toolbar_native_elements_1 = require("./bottom-toolbar-native-elements");
 const context_1 = require("./context");
-const primitives_1 = require("../../../primitives");
+const menu_1 = require("../../../primitives/menu");
 const children_1 = require("../../../utils/children");
 const shared_1 = require("../shared");
 /**
@@ -57,7 +57,7 @@ const StackToolbarMenu = ({ children, ...props }) => {
         // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
         return <bottom_toolbar_native_elements_1.NativeToolbarMenu {...props} image={props.image} children={validChildren}/>;
     }
-    return <primitives_1.Menu {...props} children={validChildren}/>;
+    return <menu_1.Menu {...props} children={validChildren}/>;
 };
 exports.StackToolbarMenu = StackToolbarMenu;
 function convertStackToolbarMenuPropsToRNHeaderItem(props) {
@@ -70,6 +70,7 @@ function convertStackToolbarMenuPropsToRNHeaderItem(props) {
         ...(0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(rest),
         type: 'menu',
         menu: {
+            multiselectable: true,
             items: actions
                 .map((action) => {
                 if ((0, children_1.isChildOfType)(action, exports.StackToolbarMenu)) {
@@ -91,8 +92,6 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
     }
     const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props);
     const actions = react_1.Children.toArray(props.children).filter((child) => (0, children_1.isChildOfType)(child, exports.StackToolbarMenuAction) || (0, children_1.isChildOfType)(child, exports.StackToolbarMenu));
-    // TODO: Remove  Pick<HeaderBarButtonItemSubmenu> when this PR is merged and released in react-navigation:
-    // https://github.com/react-navigation/react-navigation/pull/12895
     const item = {
         type: 'submenu',
         items: actions
@@ -104,12 +103,13 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
         })
             .filter((i) => !!i),
         label: sharedProps.label || props.title || '',
+        multiselectable: true,
     };
     if (props.inline !== undefined) {
-        item.displayInline = props.inline;
+        item.inline = props.inline;
     }
     if (props.palette !== undefined) {
-        item.displayAsPalette = props.palette;
+        item.layout = props.palette ? 'palette' : 'default';
     }
     if (props.destructive !== undefined) {
         item.destructive = props.destructive;
@@ -159,7 +159,7 @@ const StackToolbarMenuAction = (props) => {
         const icon = typeof props.icon === 'string' ? props.icon : undefined;
         return <bottom_toolbar_native_elements_1.NativeToolbarMenuAction {...props} icon={icon} image={props.image}/>;
     }
-    return <primitives_1.MenuAction {...props}/>;
+    return <menu_1.MenuAction {...props}/>;
 };
 exports.StackToolbarMenuAction = StackToolbarMenuAction;
 function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {

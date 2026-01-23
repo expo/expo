@@ -6,9 +6,24 @@
 
 ### 🎉 New features
 
-- Add config plugin for receiving data from other apps. ([#42242](https://github.com/expo/expo/pull/42242) by [@behenate](https://github.com/behenate))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.2 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- Add `getSharedPayloads`, `getResolvedSharedPayloadsAsync`, `cleanSharedPayloads` functions and `useIncomingShare` hook for receiving data shared from other apps. ([#42284](https://github.com/expo/expo/pull/42284) by [@behenate](https://github.com/behenate))
+- Add config plugin for receiving data from other apps. ([#42242](https://github.com/expo/expo/pull/42242) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 

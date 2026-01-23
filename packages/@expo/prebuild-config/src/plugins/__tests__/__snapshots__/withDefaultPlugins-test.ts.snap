@@ -990,11 +990,13 @@ exports[`built-in plugins introspects mods 1`] = `
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.READ_EXTERNAL_STORAGE",
                 },
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.WRITE_EXTERNAL_STORAGE",
                 },
               },
@@ -1964,11 +1966,13 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.READ_EXTERNAL_STORAGE",
                 },
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.WRITE_EXTERNAL_STORAGE",
                 },
               },

@@ -1,3 +1,3 @@
 export * from './Widgets';
-export * from './Widgets.types';
+export { WidgetFamily, WidgetBase, ExpoLiveActivityEntry, LiveActivityComponent, ExpoWidgetsEvents, UserInteractionEvent, } from './Widgets.types';
 //# sourceMappingURL=index.d.ts.map

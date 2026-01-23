@@ -6,9 +6,25 @@
 
 ### 🎉 New features
 
-- [iOS] Add `locales` support for `Localizable.strings`. ([#39022](https://github.com/expo/expo/pull/39022) by [@desii101](https://github.com/desii101))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.2 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
 
 ### 🐛 Bug fixes
+
+- Add `android:maxSdkVersion="32"` to storage permissions in templates. ([#42401](https://github.com/expo/expo/pull/42401) by [@brentvatne](https://github.com/brentvatne))
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- [iOS] Add `locales` support for `Localizable.strings`. ([#39022](https://github.com/expo/expo/pull/39022) by [@desii101](https://github.com/desii101))
 
 ### 💡 Others
 

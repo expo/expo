@@ -1,4 +1,4 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import { validate, type JSONSchema } from '@expo/schema-utils';
 import semver from 'semver';
 
 /**
@@ -595,7 +595,8 @@ export interface PluginConfigTypeAndroidQueriesData {
   mimeType?: string;
 }
 
-const schema: JSONSchemaType<PluginConfigType> = {
+const schema: JSONSchema<PluginConfigType> = {
+  title: 'expo-build-properties',
   type: 'object',
   properties: {
     buildReactNativeFromSource: { type: 'boolean', nullable: true },
@@ -839,22 +840,30 @@ function maybeThrowInvalidVersions(config: PluginConfigType) {
   }
 }
 
+/** Handle deprecated enableProguardInReleaseBuilds */
+const fixupDeprecatedEnableProguardInReleaseBuilds = (config: unknown) => {
+  if (
+    config &&
+    typeof config === 'object' &&
+    'android' in config &&
+    config.android &&
+    typeof config.android === 'object'
+  ) {
+    const androidConfig = config.android as PluginConfigTypeAndroid & Record<string, unknown>;
+    if (androidConfig.enableProguardInReleaseBuilds != null) {
+      if (androidConfig.enableMinifyInReleaseBuilds === undefined) {
+        androidConfig.enableMinifyInReleaseBuilds = !!androidConfig.enableProguardInReleaseBuilds;
+      }
+    }
+  }
+};
+
 /**
  * @ignore
  */
-export function validateConfig(config: any): PluginConfigType {
-  const validate = new Ajv({ allowUnionTypes: true }).compile(schema);
-  // handle deprecated enableProguardInReleaseBuilds
-  if (
-    config.android?.enableProguardInReleaseBuilds !== undefined &&
-    config.android?.enableMinifyInReleaseBuilds === undefined
-  ) {
-    config.android.enableMinifyInReleaseBuilds = config.android.enableProguardInReleaseBuilds;
-  }
-  if (!validate(config)) {
-    throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
-  }
-
+export function validateConfig(config: unknown): PluginConfigType {
+  fixupDeprecatedEnableProguardInReleaseBuilds(config);
+  validate(schema, config);
   maybeThrowInvalidVersions(config);
 
   if (

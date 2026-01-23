@@ -540,4 +540,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After moving MetadataFAQ to EAS Metadata page
   '/eas/metadata/faq/': '/eas/metadata/',
+
+  // After creating EAS environment variables section
+  '/eas/hosting/environment-variables/':
+    '/eas/environment-variables/usage/#using-environment-variables-with-eas-hosting',
 };

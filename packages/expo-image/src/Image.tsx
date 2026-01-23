@@ -268,6 +268,8 @@ export class Image extends React.PureComponent<ImageProps> {
     const {
       resizeMode: resizeModeStyle,
       fontWeight: fontWeightStyle,
+      color: colorStyle,
+      fontSize: fontSizeStyle,
       ...restStyle
     } = (StyleSheet.flatten(style) as ImageStyle & TextStyle) || {};
     const resizeMode = resizeModeProp ?? resizeModeStyle;
@@ -290,16 +292,27 @@ export class Image extends React.PureComponent<ImageProps> {
     const isSFSymbol =
       Array.isArray(resolvedSource) && resolvedSource.some((s) => s?.uri?.startsWith('sf:/'));
 
+    // For SF Symbols, fontSize sets both the symbol point size and container dimensions
+    const resolvedStyle =
+      isSFSymbol && fontSizeStyle
+        ? { width: fontSizeStyle, height: fontSizeStyle, ...restStyle }
+        : restStyle;
+
     return (
       <ExpoImage
         {...restProps}
-        style={restStyle}
+        style={resolvedStyle}
         source={resolvedSource}
         placeholder={resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource)}
         contentFit={resolveContentFit(contentFit, resizeMode, isSFSymbol)}
         contentPosition={resolveContentPosition(contentPosition)}
         transition={resolveTransition(transition, fadeDuration)}
         sfEffect={resolveSfEffect(sfEffect)}
+        tintColor={
+          isSFSymbol && colorStyle && !restProps.tintColor
+            ? (colorStyle as string)
+            : restProps.tintColor
+        }
         symbolWeight={
           isSFSymbol
             ? typeof fontWeightStyle === 'number'
@@ -307,6 +320,7 @@ export class Image extends React.PureComponent<ImageProps> {
               : fontWeightStyle
             : null
         }
+        symbolSize={isSFSymbol && fontSizeStyle ? fontSizeStyle : null}
         nativeViewRef={this.nativeViewRef}
         containerViewRef={this.containerViewRef}
       />

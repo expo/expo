@@ -1,10 +1,10 @@
 'use client';
 
+import type { LoaderFunction } from 'expo-server';
 import { createContext, use, type ComponentType, type PropsWithChildren } from 'react';
 
 import { getContextKey } from './matchers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
-import { LoaderFunction } from './types';
 import { type ErrorBoundaryProps } from './views/Try';
 
 export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };

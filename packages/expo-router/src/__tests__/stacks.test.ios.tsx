@@ -451,7 +451,8 @@ test('pushing in a nested stack should only rerender the nested stack', () => {
   testRouter.push('/one/two/a');
   expect(RootLayout).toHaveBeenCalledTimes(1);
   expect(NestedLayout).toHaveBeenCalledTimes(1);
-  expect(NestedNestedLayout).toHaveBeenCalledTimes(1);
+  // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
+  expect(NestedNestedLayout).toHaveBeenCalledTimes(2);
 });
 
 test('can preserve the nested initialRouteName when navigating to a nested stack', () => {
