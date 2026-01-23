@@ -187,6 +187,7 @@ exceptions:
   - '.*Storage Access Framework.*'
   - '.*Strict-Transport-Security.*'
   - '.*SSO.*'
+  - '.*Suspense.*'
   - '.*Swift.*'
   - '.*Terser.*'
   - '.*TestFlight.*'
