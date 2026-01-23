@@ -134,6 +134,43 @@ function DataSection() {
 
 In the above example, [`useLoaderData`](/versions/unversioned/sdk/router/#useloaderdata) is in a child component of `<Home>` and wrapped it with [`<Suspense>`](https://react.dev/reference/react/Suspense) to show a loading state.
 
+### Error handling
+
+When a loader throws an error, it propagates to the nearest [error boundary](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary). You can export an [`ErrorBoundary`](/versions/latest/sdk/router/#errorboundary) component from the same route file to handle loader errors:
+
+```tsx app/data.tsx
+import { Text, View } from 'react-native';
+import { useLoaderData, type ErrorBoundaryProps } from 'expo-router';
+
+export async function loader() {
+  const response = await fetch('https://api.example.com/data');
+  if (!response.ok) {
+    throw new Error('Failed to fetch data');
+  }
+  return response.json();
+}
+
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  return (
+    <View>
+      <Text>Error: {error.message}</Text>
+      <Text onPress={retry}>Try again</Text>
+    </View>
+  );
+}
+
+export default function DataPage() {
+  const data = useLoaderData<typeof loader>();
+  return (
+    <View>
+      <Text>{data.title}</Text>
+    </View>
+  );
+}
+```
+
+When no `ErrorBoundary` is exported, the error propagates to the nearest parent route's error boundary. You can also use custom error boundary components within your route to catch errors at specific points in the component tree.
+
 ## Dynamic routes
 
 Loaders receive route parameters as the second argument:
@@ -334,24 +371,6 @@ export default function Post() {
 <Collapsible summary="Can I use data loaders without server rendering?">
 
 Yes. Data loaders work with both static rendering (`web.output: 'static'`) and server rendering (`web.output: 'server'`).
-
-</Collapsible>
-
-<Collapsible summary="How do I handle errors in loaders?">
-
-Throw an error in your loader to trigger error boundaries. You can also return error data and handle it in your component.
-
-```tsx
-export async function loader() {
-  const response = await fetch('https://api.example.com/data');
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch data');
-  }
-
-  return response.json();
-}
-```
 
 </Collapsible>
 
