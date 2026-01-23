@@ -14,7 +14,7 @@
 
 ### 🎉 New features
 
-- Add support for setting custom testStrings for FontObserver on the web.
+- Add support for setting custom testStrings for FontObserver on the web. ([#42442](https://github.com/expo/expo/pull/42442) by [@aleqsio](https://github.com/aleqsio))
 - add support for line-height ([#41094](https://github.com/expo/expo/pull/41094) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
