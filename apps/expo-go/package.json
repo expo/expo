@@ -112,7 +112,7 @@
         "react-native-screens",
         "@react-native-async-storage/async-storage",
         "react-native-webview",
-
+        "expo-router",
         "@shopify/react-native-skia",
         "@stripe/stripe-react-native",
         "react-native-svg",

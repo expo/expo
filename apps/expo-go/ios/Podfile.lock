@@ -328,9 +328,6 @@ PODS:
     - ExpoModulesTestCore
   - ExpoPrint (55.0.1):
     - ExpoModulesCore
-  - ExpoRouter (55.0.0-beta.2):
-    - ExpoModulesCore
-    - RNScreens
   - ExpoScreenCapture (55.0.1):
     - ExpoModulesCore
   - ExpoScreenOrientation (55.0.1):
@@ -2562,34 +2559,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-webview (13.16.0):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
   - React-NativeModulesApple (0.83.1):
     - boost
     - DoubleConversion
@@ -3147,93 +3116,6 @@ PODS:
     - React-perflogger (= 0.83.1)
     - React-utils (= 0.83.1)
     - SocketRocket
-  - RNCAsyncStorage (2.2.0):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
-  - RNScreens (4.20.0):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-RCTImage
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.20.0)
-    - SocketRocket
-    - Yoga
-  - RNScreens/common (4.20.0):
-    - boost
-    - DoubleConversion
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-RCTImage
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
   - SDWebImage (5.21.1):
     - SDWebImage/Core (= 5.21.1)
   - SDWebImage/Core (5.21.1)
@@ -3320,7 +3202,6 @@ DEPENDENCIES:
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
   - ExpoNotifications/Tests (from `../../../packages/expo-notifications/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
-  - ExpoRouter (from `../../../packages/expo-router/ios`)
   - ExpoScreenCapture (from `../../../packages/expo-screen-capture/ios`)
   - ExpoScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
@@ -3394,7 +3275,6 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-maps/Maps (from `../../../node_modules/react-native-maps`)
-  - react-native-webview (from `../modules/react-native-webview`)
   - React-NativeModulesApple (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-networking (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/networking`)
   - React-oscompat (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/oscompat`)
@@ -3428,8 +3308,6 @@ DEPENDENCIES:
   - ReactAppDependencyProvider (from `build/generated/ios/ReactAppDependencyProvider`)
   - ReactCodegen (from `build/generated/ios/ReactCodegen`)
   - ReactCommon/turbomodule/core (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
-  - "RNCAsyncStorage (from `../modules/@react-native-async-storage/async-storage`)"
-  - RNScreens (from `../../../node_modules/react-native-screens`)
   - SocketRocket
   - SocketRocket (~> 0.7.1)
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
@@ -3575,8 +3453,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-notifications/ios"
   ExpoPrint:
     :path: "../../../packages/expo-print/ios"
-  ExpoRouter:
-    :path: "../../../packages/expo-router/ios"
   ExpoScreenCapture:
     :path: "../../../packages/expo-screen-capture/ios"
   ExpoScreenOrientation:
@@ -3700,8 +3576,6 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/microtasks"
   react-native-maps:
     :path: "../../../node_modules/react-native-maps"
-  react-native-webview:
-    :path: "../modules/react-native-webview"
   React-NativeModulesApple:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-networking:
@@ -3768,10 +3642,6 @@ EXTERNAL SOURCES:
     :path: build/generated/ios/ReactCodegen
   ReactCommon:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon"
-  RNCAsyncStorage:
-    :path: "../modules/@react-native-async-storage/async-storage"
-  RNScreens:
-    :path: "../../../node_modules/react-native-screens"
   UMAppLoader:
     :path: "../../../packages/unimodules-app-loader/ios"
   Yoga:
@@ -3833,7 +3703,6 @@ SPEC CHECKSUMS:
   ExpoNetwork: 106c62c658548534a2e8be9a8c4de4850667ec8c
   ExpoNotifications: c57542394aded2f5005782c7280866a52f3b74aa
   ExpoPrint: 6c02b9f3768eb61cd0007b71fc9750c6e6a0a482
-  ExpoRouter: 0d8932948360b37ac7fd2be09966de733e97cef4
   ExpoScreenCapture: c5fdfc6fc37721d77749e38def2eff63e01a3dcf
   ExpoScreenOrientation: 6680af7900f4111b90df84c7a48a6e7a0e6bd942
   ExpoSecureStore: 8b9eef8b9bd088c98b4b8ef2a6e29f0cf6e4a2a7
@@ -3916,7 +3785,6 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 7b72a669e94662359dad4f42b5af005eb24b4e83
   React-microtasksnativemodule: cdc02da075f2857803ed63f24f5f72fc40e094c0
   react-native-maps: 48cbc77581f2ffc121a296f9abe071fe4a7ea4ee
-  react-native-webview: 654f794a7686b47491cf43aa67f7f428bea00eed
   React-NativeModulesApple: a2c3d2cbec893956a5b3e4060322db2984fff75b
   React-networking: 3f98bd96893a294376e7e03730947a08d474c380
   React-oscompat: 80166b66da22e7af7fad94474e9997bd52d4c8c6
@@ -3950,8 +3818,6 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 0eb286cc274abb059ee601b862ebddac2e681d01
   ReactCodegen: 948a4bf7eb35914bc867a7a2765891511fe8d881
   ReactCommon: ac934cb340aee91282ecd6f273a26d24d4c55cae
-  RNCAsyncStorage: 29f0230e1a25f36c20b05f65e2eb8958d6526e82
-  RNScreens: 714e10b6b554f7dc7ad9f78dcf36dc8e3fc73415
   SDWebImage: f29024626962457f3470184232766516dee8dfea
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
