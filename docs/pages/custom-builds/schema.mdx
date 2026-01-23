@@ -986,9 +986,9 @@ build:
     # @info #
     - eas/restore_build_cache:
         inputs:
-          key: android-ccache-${{ hashFiles('package-lock.json') }}
-          restore_keys: android
-          path: /home/expo/.cache/ccache
+          key: cache-${{ hashFiles('package-lock.json') }}
+          restore_keys: cache
+          path: /path/to/cache
     # @end #
 ```
 
@@ -1002,8 +1002,8 @@ build:
     # @info #
     - eas/restore_build_cache:
         inputs:
-          key: android-ccache-${{ hashFiles('package-lock.json') }}
-          path: /home/expo/.cache/ccache
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
     # @end #
 ```
 
@@ -1032,16 +1032,16 @@ build:
     - eas/checkout
     - eas/restore_build_cache:
         inputs:
-          key: android-ccache-${{ hashFiles('package-lock.json') }}
-          path: /home/expo/.cache/ccache
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
     - eas/install_node_modules
     - eas/prebuild
     - eas/run_gradle
     # @info #
     - eas/save_build_cache:
         inputs:
-          key: android-ccache-${{ hashFiles('package-lock.json') }}
-          path: /home/expo/.cache/ccache
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
     # @end #
 ```
 

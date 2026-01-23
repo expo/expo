@@ -1563,9 +1563,9 @@ jobs:
       # @info #
       - uses: eas/restore_cache
         with:
-          key: android-ccache-${{ hashFiles('package-lock.json') }}
-          restore_keys: android
-          path: /home/expo/.cache/ccache
+          key: cache-${{ hashFiles('package-lock.json') }}
+          restore_keys: cache
+          path: /path/to/cache
       # @end #
 ```
 
@@ -1579,8 +1579,8 @@ jobs:
       # @info #
       - uses: eas/restore_cache
         with:
-          key: android-ccache-${{ hashFiles('package-lock.json') }}
-          path: /home/expo/.cache/ccache
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
       # @end #
 ```
 
@@ -1610,15 +1610,15 @@ jobs:
       - uses: eas/prebuild
       - uses: eas/restore_cache
         with:
-          key: android-ccache-${{ hashFiles('package-lock.json') }}
-          path: /home/expo/.cache/ccache
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
       - name: Build Android app
         run: cd android && ./gradlew assembleRelease
       # @info #
       - uses: eas/save_cache
         with:
-          key: android-ccache-${{ hashFiles('package-lock.json') }}
-          path: /home/expo/.cache/ccache
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
       # @end #
 ```
 
