@@ -26,6 +26,8 @@ export type ServerTestConfiguration = {
 export type ServerTestOptions = {
   /** The E2E test scenario directory name (e.g., 'server-middleware-async') */
   fixtureName: string;
+  /** A unique value to ensure the output directory is not overwritten by another test running in parallel. Useful for tests that share the same `fixtureName` */
+  uniqueOutputKey?: string;
   /** Options for the export command */
   export?: {
     /** Environment variables to pass to the export command */
@@ -66,7 +68,7 @@ export function prepareServers(
   runtimes: RuntimeType[],
   options: ServerTestOptions
 ): ServerTestConfiguration[] {
-  const { fixtureName } = options;
+  const { fixtureName, uniqueOutputKey } = options;
   const projectRoot = getRouterE2ERoot();
 
   const exportEnv = options.export?.env ?? {};
@@ -83,7 +85,7 @@ export function prepareServers(
   const knownRuntimeConfigs: Record<RuntimeType, Omit<ServerTestConfiguration, 'name'>> = {
     [RUNTIME_EXPO_SERVE]: {
       prepareDist: async () => {
-        const outputName = `dist-${fixtureName}-expo-serve`;
+        const outputName = generateOutputDir('expo-serve', fixtureName, uniqueOutputKey);
         const outputDir = path.join(projectRoot, outputName);
 
         await executeExpoAsync(
@@ -119,7 +121,7 @@ export function prepareServers(
     },
     [RUNTIME_EXPRESS_SERVER]: {
       prepareDist: async () => {
-        const outputName = `dist-${fixtureName}-express`;
+        const outputName = generateOutputDir('express', fixtureName, uniqueOutputKey);
         const outputDir = path.join(projectRoot, outputName);
 
         await executeExpoAsync(
@@ -143,7 +145,7 @@ export function prepareServers(
     },
     [RUNTIME_WORKERD]: {
       prepareDist: async () => {
-        const outputName = `dist-${fixtureName}-workerd`;
+        const outputName = generateOutputDir('workerd', fixtureName, uniqueOutputKey);
         const outputDir = path.join(projectRoot, outputName);
 
         await executeExpoAsync(
@@ -172,7 +174,11 @@ export function prepareServers(
           command: [
             'node_modules/.bin/workerd',
             'serve',
-            path.join(projectRoot, `dist-${fixtureName}-workerd`, 'server/config.capnp'),
+            path.join(
+              projectRoot,
+              generateOutputDir('workerd', fixtureName, uniqueOutputKey),
+              'server/config.capnp'
+            ),
           ],
           host: (chunk: any) => processFindPrefixedValue(chunk, 'Workerd server listening'),
           port: 8787,
@@ -246,4 +252,8 @@ export function setupServer(config: ServerTestConfiguration) {
       return config.name === RUNTIME_WORKERD;
     },
   };
+}
+
+function generateOutputDir(runtimeName: string, fixtureName: string, uniqueOutputKey?: string) {
+  return `dist-${fixtureName}-${runtimeName}${uniqueOutputKey ? `-${uniqueOutputKey}` : ''}`;
 }

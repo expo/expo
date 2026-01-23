@@ -17,6 +17,7 @@ runExportSideEffects();
 describe.each(
   prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START, RUNTIME_WORKERD], {
     fixtureName: 'server-loader',
+    uniqueOutputKey: 'server',
     export: {
       env: {
         EXPO_USE_STATIC: 'server',
