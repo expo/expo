@@ -54,9 +54,7 @@ export class TrustedDependencyCheck extends DoctorMultiCheck<TrustedDependencyCh
       const result = this.checkBunTrustedDependencies(pkg, installedPackages);
       issues.push(...result.issues);
       advice.push(...result.advice);
-    }
-
-    if (hasPnpmLockfile) {
+    } else if (hasPnpmLockfile) {
       const result = this.checkPnpmOnlyBuiltDependencies(pkg, installedPackages);
       issues.push(...result.issues);
       advice.push(...result.advice);
