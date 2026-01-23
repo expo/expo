@@ -70,7 +70,13 @@ To disable using our Maven cache server for your builds set the `EAS_BUILD_DISAB
 
 ### Caching C/C++ compilation artifacts with ccache
 
-[ccache](https://ccache.dev/) is a compiler cache that speeds up recompilation by caching previous compilations. You can use remote user-scoped caching to persist ccache data across builds, which significantly speeds up builds that include native C/C++ code.
+[ccache](https://ccache.dev/) is a compiler cache that speeds up recompilation by caching previous compilations. You can use remote caching to share ccache data across builds, which significantly speeds up builds that include results for native libraries used by React Native, Hermes, or other native modules.
+
+You can enable in builds to use cache automatically with these environment variables:
+
+- `EAS_USE_CACHE`: Enables saving and restoring cache on build jobs. By setting to `1`, it will enable both saving and restoring the cache during a build job. By setting to `0`, it will disable both saving and restoring the cache
+- `EAS_RESTORE_CACHE`: Controls restoring the cache at the beginning of a build. Set to `1` to enable or `0` to disable.
+- `EAS_SAVE_CACHE`: Controls whether to save the build cache at the end of a build. Set to `1` to enable or `0` to disable.
 
 #### Custom builds
 
@@ -201,12 +207,6 @@ Caches are scoped to the branch where they were created. Workflow runs can resto
 
 If a workflow run is triggered for a pull request, it can also restore caches created in the base branch. For example, if a pull request from `feature-b` targets `main`, the workflow can access caches created in the `main` branch.
 
-#### Default branch cache
-
-If a build doesn't restore a user-scoped cache, it will automatically fallback to restoring caches published from GitHub builds triggered on the default branch. This allows builds to benefit from caches created by automated workflows even when no user-scoped cache exists yet, or to only keep publishing caches from a designated job.
-
-This is particularly useful for build tools like ccache, where the compilation cache can be shared across different builds and branches and the performance benefits can be applied broadly.
-
 #### User-scoped caches
 
 User-scoped caches allow for publishing caches that are just accessible to builds or workflow jobs that are ran by that respective user. Allowing for isolation so that modifications to the build and its cache are not unintentionally shared during development. This means:
@@ -216,6 +216,12 @@ User-scoped caches allow for publishing caches that are just accessible to build
 - Each user’s build will have their own isolated cache even when on the same branch
 
 This ensures that builds between teammates will benefit from remote caching with the guarantee that they are isolated and limited to the proper scope.
+
+#### Default branch cache
+
+If a build doesn't restore a user-scoped cache, it will automatically fallback to restoring caches published from GitHub builds triggered on the default branch. This allows builds to benefit from caches created by automated workflows even when no user-scoped cache exists yet, or to only keep publishing caches from a designated job.
+
+This is particularly useful for build tools like ccache, where the compilation cache can be shared across different builds and branches and the performance benefits can be applied broadly.
 
 ## iOS dependencies
 
