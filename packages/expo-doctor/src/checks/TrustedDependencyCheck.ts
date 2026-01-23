@@ -48,8 +48,7 @@ export class TrustedDependencyCheck extends DoctorMultiCheck<TrustedDependencyCh
     const root = resolveWorkspaceRoot(projectRoot) ?? projectRoot;
 
     // Detect package manager from lockfile
-    const hasBunLockfile =
-      fs.existsSync(`${root}/bun.lockb`) || fs.existsSync(`${root}/bun.lock`);
+    const hasBunLockfile = fs.existsSync(`${root}/bun.lockb`) || fs.existsSync(`${root}/bun.lock`);
     const hasPnpmLockfile = fs.existsSync(`${root}/pnpm-lock.yaml`);
 
     if (!hasBunLockfile && !hasPnpmLockfile) {
