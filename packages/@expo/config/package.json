@@ -33,7 +33,7 @@
     "paths"
   ],
   "dependencies": {
-    "@babel/code-frame": "~7.10.4",
+    "@babel/code-frame": "^7.20.0",
     "@expo/config-plugins": "~55.0.3",
     "@expo/config-types": "^55.0.3",
     "@expo/json-file": "^10.0.11",
@@ -48,6 +48,7 @@
     "sucrase": "~3.35.1"
   },
   "devDependencies": {
+    "@types/babel__code-frame": "^7.27.0",
     "@types/require-from-string": "^1.2.1",
     "expo-module-scripts": "^55.0.2"
   },
