@@ -1,7 +1,7 @@
 import { Asset } from 'expo-asset';
 export const nextId = (() => {
     let id = 0;
-    return () => id++;
+    return () => String(id++);
 })();
 let audioContext = null;
 export function getAudioContext() {

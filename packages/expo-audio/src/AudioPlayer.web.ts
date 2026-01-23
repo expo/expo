@@ -28,7 +28,7 @@ export class AudioPlayerWeb
     activePlayers.add(this);
   }
 
-  id: number = nextId();
+  id: string = nextId();
   isAudioSamplingSupported = false;
   isBuffering = false;
   shouldCorrectPitch = false;

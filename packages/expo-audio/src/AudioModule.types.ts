@@ -3,7 +3,10 @@ import { NativeModule, PermissionResponse, SharedObject } from 'expo-modules-cor
 import {
   AudioMetadata,
   AudioMode,
+  AudioPlaylistLoopMode,
+  AudioPlaylistStatus,
   AudioSource,
+  AudioSourceInfo,
   AudioStatus,
   PitchCorrectionQuality,
   RecorderState,
@@ -26,6 +29,7 @@ export declare class NativeAudioModule extends NativeModule {
 
   readonly AudioPlayer: typeof AudioPlayer;
   readonly AudioRecorder: typeof AudioRecorder;
+  readonly AudioPlaylist: typeof AudioPlaylist;
 }
 
 export declare class AudioPlayer extends SharedObject<AudioEvents> {
@@ -38,7 +42,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   /**
    * Unique identifier for the player object.
    */
-  id: number;
+  id: string;
 
   /**
    * Boolean value indicating whether the player is currently playing.
@@ -276,7 +280,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
   /**
    * Unique identifier for the recorder object.
    */
-  id: number;
+  id: string;
 
   /**
    * The current length of the recording, in seconds.
@@ -363,3 +367,172 @@ export type RecordingEvents = {
   /** Fired when the recorder's status changes (start/stop/pause/error, and so on). */
   recordingStatusUpdate: (status: RecordingStatus) => void;
 };
+
+/**
+ * Event types that an `AudioPlaylist` can emit.
+ *
+ * These events allow you to listen for changes in playlist playback state.
+ * Use `playlist.addListener()` to subscribe to these events.
+ */
+export type AudioPlaylistEvents = {
+  /** Fired when the playlist's status changes (play/pause/seek/load/track change). */
+  playlistStatusUpdate(status: AudioPlaylistStatus): void;
+  /** Fired when the current track changes (next/previous/skip). */
+  trackChanged(data: { previousIndex: number; currentIndex: number }): void;
+};
+
+export declare class AudioPlaylist extends SharedObject<AudioPlaylistEvents> {
+  /**
+   * Initializes a new audio playlist instance.
+   * @hidden
+   */
+  constructor(sources: AudioSource[], updateInterval: number, loop: AudioPlaylistLoopMode);
+
+  /**
+   * Unique identifier for the playlist instance.
+   */
+  id: string;
+
+  /**
+   * Index of the currently playing track in the playlist.
+   */
+  readonly currentIndex: number;
+
+  /**
+   * Total number of tracks in the playlist.
+   */
+  readonly trackCount: number;
+
+  /**
+   * The audio sources currently in the playlist.
+   */
+  readonly sources: AudioSourceInfo[];
+
+  /**
+   * Boolean value indicating whether the playlist is currently playing.
+   */
+  playing: boolean;
+
+  /**
+   * Boolean value indicating whether the playlist is currently muted.
+   */
+  muted: boolean;
+
+  /**
+   * Boolean value indicating whether the current track has finished loading.
+   */
+  isLoaded: boolean;
+
+  /**
+   * Boolean value indicating whether the playlist is buffering.
+   */
+  isBuffering: boolean;
+
+  /**
+   * Current playback position in seconds.
+   */
+  currentTime: number;
+
+  /**
+   * Duration of the current track in seconds.
+   */
+  duration: number;
+
+  /**
+   * Current volume (0.0 to 1.0).
+   */
+  volume: number;
+
+  /**
+   * Current playback rate (1.0 = normal speed).
+   */
+  playbackRate: number;
+
+  /**
+   * Current loop mode.
+   */
+  loop: AudioPlaylistLoopMode;
+
+  /**
+   * The current status of the audio playlist.
+   * @hidden
+   */
+  currentStatus: AudioPlaylistStatus;
+
+  /**
+   * Start playing the current track in the playlist.
+   */
+  play(): void;
+
+  /**
+   * Pause playback.
+   */
+  pause(): void;
+
+  /**
+   * Skip to the next track in the playlist.
+   * If at the end of the playlist and loop mode is 'all', wraps to the first track.
+   * If loop mode is 'none' and at the end, does nothing.
+   */
+  next(): void;
+
+  /**
+   * Skip to the previous track in the playlist.
+   * If at the beginning of the playlist and loop mode is 'all', wraps to the last track.
+   * If loop mode is 'none' and at the beginning, does nothing.
+   */
+  previous(): void;
+
+  /**
+   * Skip to a specific track in the playlist by index.
+   * @param index The index of the track to skip to.
+   */
+  skipTo(index: number): void;
+
+  /**
+   * Seeks the playback to a specific position in seconds.
+   * @param seconds The position to seek to.
+   */
+  seekTo(seconds: number): Promise<void>;
+
+  /**
+   * Add a track to the end of the playlist.
+   * @param source The audio source to add.
+   */
+  add(source: AudioSource): void;
+
+  /**
+   * Insert a track at a specific position in the playlist.
+   * @param source The audio source to insert.
+   * @param index The position to insert at.
+   */
+  insert(source: AudioSource, index: number): void;
+
+  /**
+   * Remove a track from the playlist by index.
+   * @param index The index of the track to remove.
+   */
+  remove(index: number): void;
+
+  /**
+   * Clear all tracks from the playlist.
+   */
+  clear(): void;
+
+  /**
+   * Set the playback rate.
+   * @param rate The playback rate (0.1 to 2.0).
+   */
+  setPlaybackRate(rate: number): void;
+
+  /**
+   * Set the loop mode.
+   * @param mode The loop mode ('none', 'single', or 'all').
+   */
+  setLoopMode(mode: AudioPlaylistLoopMode): void;
+
+  /**
+   * Release the playlist from memory to free up resources.
+   */
+  release(): void;
+}

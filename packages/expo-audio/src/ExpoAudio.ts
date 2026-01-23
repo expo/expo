@@ -6,6 +6,8 @@ import { Platform } from 'react-native';
 import {
   AudioMode,
   AudioPlayerOptions,
+  AudioPlaylistOptions,
+  AudioPlaylistStatus,
   AudioSource,
   AudioStatus,
   PitchCorrectionQuality,
@@ -17,10 +19,11 @@ import {
 import {
   AUDIO_SAMPLE_UPDATE,
   PLAYBACK_STATUS_UPDATE,
+  PLAYLIST_STATUS_UPDATE,
   RECORDING_STATUS_UPDATE,
 } from './AudioEventKeys';
 import AudioModule from './AudioModule';
-import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
+import { AudioPlayer, AudioPlaylist, AudioRecorder, AudioSample } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource, resolveSourceWithDownload } from './utils/resolveSource';
 
@@ -343,6 +346,102 @@ export function useAudioRecorderState(recorder: AudioRecorder, interval: number 
   }, [recorder.id]);
 
   return state;
+}
+
+/**
+ * Creates an `AudioPlaylist` instance that automatically releases when the component unmounts.
+ *
+ * This hook manages the playlist's lifecycle and ensures it's properly disposed when no longer needed.
+ * An audio playlist allows you to manage a collection of audio sources with gapless playback support.
+ *
+ * @param options Audio playlist configuration options including initial sources and loop mode.
+ * @returns An `AudioPlaylist` instance that's automatically managed by the component lifecycle.
+ *
+ * @example
+ * ```tsx
+ * import { useAudioPlaylist } from 'expo-audio';
+ *
+ * function PlaylistPlayer() {
+ *   const playlist = useAudioPlaylist({
+ *     sources: [
+ *       require('./track1.mp3'),
+ *       require('./track2.mp3'),
+ *       'https://example.com/track3.mp3',
+ *     ],
+ *     loop: 'all',
+ *   });
+ *
+ *   return (
+ *     <View>
+ *       <Text>Track {playlist.currentIndex + 1} of {playlist.trackCount}</Text>
+ *       <Button title="Previous" onPress={() => playlist.previous()} />
+ *       <Button title={playlist.playing ? 'Pause' : 'Play'} onPress={() => playlist.playing ? playlist.pause() : playlist.play()} />
+ *       <Button title="Next" onPress={() => playlist.next()} />
+ *     </View>
+ *   );
+ * }
+ * ```
+ */
+export function useAudioPlaylist(options: AudioPlaylistOptions = {}): AudioPlaylist {
+  const { sources = [], updateInterval = 500, loop = 'none' } = options;
+
+  const resolvedSources = useMemo(() => {
+    return sources
+      .map((source) => resolveSource(source))
+      .filter((source): source is NonNullable<AudioSource> => source != null);
+  }, [JSON.stringify(sources)]);
+
+  const playlist = useReleasingSharedObject(
+    () => new AudioModule.AudioPlaylist(resolvedSources, updateInterval, loop),
+    [JSON.stringify(resolvedSources), updateInterval, loop]
+  );
+
+  return playlist;
+}
+
+/**
+ * Hook that provides real-time status updates for an `AudioPlaylist`.
+ *
+ * This hook automatically subscribes to playlist status changes and returns the current status.
+ * The status includes information about the current track, playback state, and playlist position.
+ *
+ * @param playlist The `AudioPlaylist` instance to monitor.
+ * @returns The current `AudioPlaylistStatus` object containing playlist and playback information.
+ *
+ * @example
+ * ```tsx
+ * import { useAudioPlaylist, useAudioPlaylistStatus } from 'expo-audio';
+ *
+ * function PlaylistStatusDisplay() {
+ *   const playlist = useAudioPlaylist({ sources: [require('./track1.mp3')] });
+ *   const status = useAudioPlaylistStatus(playlist);
+ *
+ *   return (
+ *     <View>
+ *       <Text>Track: {status.currentIndex + 1} / {status.trackCount}</Text>
+ *       <Text>Time: {status.currentTime}s / {status.duration}s</Text>
+ *       <Text>Playing: {status.playing ? 'Yes' : 'No'}</Text>
+ *     </View>
+ *   );
+ * }
+ * ```
+ */
+export function useAudioPlaylistStatus(playlist: AudioPlaylist): AudioPlaylistStatus {
+  const currentStatus = useMemo(() => playlist.currentStatus, [playlist.id]);
+  return useEvent(playlist, PLAYLIST_STATUS_UPDATE, currentStatus);
+}
+
+/**
+ * Creates an instance of an `AudioPlaylist` that doesn't release automatically.
+ *
+ * > **info** For most use cases you should use the [`useAudioPlaylist`](#useaudioplaylistoptions) hook instead.
+ *
+ * @param options Audio playlist configuration options.
+ */
+export function createAudioPlaylist(options: AudioPlaylistOptions = {}): AudioPlaylist {
+  const { sources = [], updateInterval = 500, loop = 'none' } = options;
+  const resolvedSources = sources.map((source) => resolveSource(source));
+  return new AudioModule.AudioPlaylist(resolvedSources, updateInterval, loop);
 }
 
 /**

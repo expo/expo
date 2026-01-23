@@ -242,6 +242,126 @@ public class AudioModule: Module {
       }
     }
 
+    Class(AudioPlaylist.self) {
+      Constructor { (sources: [AudioSource], updateInterval: Double, loopMode: LoopMode) -> AudioPlaylist in
+        let items = sources.compactMap { AudioUtils.createAVPlayerItem(from: $0) }
+        let avQueuePlayer = AVQueuePlayer(items: items)
+        let playlist = AudioPlaylist(avQueuePlayer, sources: sources, interval: updateInterval, loopMode: loopMode)
+        playlist.owningRegistry = self.registry
+        self.registry.add(playlist)
+        return playlist
+      }
+
+      Property("id") { playlist in
+        playlist.id
+      }
+
+      Property("currentIndex") { playlist in
+        playlist.currentTrackIndex
+      }
+
+      Property("trackCount") { playlist in
+        playlist.trackCount
+      }
+
+      Property("sources") { playlist in
+        playlist.getSourceInfo()
+      }
+
+      Property("playing") { playlist in
+        playlist.isPlaying
+      }
+
+      Property("isLoaded") { playlist in
+        playlist.isLoaded
+      }
+
+      Property("isBuffering") { playlist in
+        playlist.isBuffering
+      }
+
+      Property("currentTime") { playlist in
+        playlist.currentTime
+      }
+
+      Property("duration") { playlist in
+        playlist.duration
+      }
+
+      Property("muted") { playlist in
+        playlist.ref.isMuted
+      }.set { (playlist, isMuted: Bool) in
+        playlist.ref.isMuted = isMuted
+      }
+
+      Property("volume") { playlist in
+        playlist.ref.volume
+      }.set { (playlist, volume: Double) in
+        playlist.ref.volume = Float(volume)
+      }
+
+      Property("playbackRate") { playlist in
+        playlist.isPlaying ? playlist.ref.rate : playlist.currentRate
+      }.set { (playlist, rate: Double) in
+        playlist.setPlaybackRate(Float(rate))
+      }
+
+      Property("loop") { playlist in
+        playlist.loopMode.rawValue
+      }.set { (playlist, mode: LoopMode) in
+        playlist.setLoopMode(mode)
+      }
+
+      Property("currentStatus") { playlist in
+        playlist.currentStatus()
+      }
+
+      Function("play") { playlist in
+        try activateSession()
+        playlist.play(at: playlist.currentRate)
+      }
+
+      Function("pause") { playlist in
+        playlist.pause()
+      }
+
+      Function("next") { playlist in
+        playlist.next()
+      }
+
+      Function("previous") { playlist in
+        playlist.previous()
+      }
+
+      Function("skipTo") { (playlist, index: Int) in
+        playlist.skipTo(index: index)
+      }
+
+      AsyncFunction("seekTo") { (playlist: AudioPlaylist, seconds: Double) in
+        await playlist.seekTo(seconds: seconds)
+      }
+
+      Function("add") { (playlist, source: AudioSource) in
+        playlist.add(source: source)
+      }
+
+      Function("insert") { (playlist, source: AudioSource, index: Int) in
+        playlist.insert(source: source, at: index)
+      }
+
+      Function("remove") { (playlist, index: Int) in
+        playlist.remove(at: index)
+      }
+
+      Function("clear") { playlist in
+        playlist.clear()
+      }
+
+      Function("release") { playlist in
+        self.registry.remove(playlist)
+      }
+    }
+
     #if os(iOS)
     // swiftlint:disable:next closure_body_length
     Class(AudioRecorder.self) {
@@ -407,6 +527,19 @@ public class AudioModule: Module {
       }
     }
 
+    registry.allPlaylists.values.forEach { playlist in
+      if playlist.isPlaying {
+        interruptedPlayers.insert(playlist.id)
+        switch interruptionMode {
+        case .duckOthers:
+          playerVolumes[playlist.id] = playlist.ref.volume
+          playlist.ref.volume *= 0.5
+        case .doNotMix, .mixWithOthers:
+          playlist.pause()
+        }
+      }
+    }
+
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
       if recorder.isRecording {
@@ -484,6 +617,19 @@ public class AudioModule: Module {
       }
     }
 
+    registry.allPlaylists.values.forEach { playlist in
+      if interruptedPlayers.contains(playlist.id) {
+        switch interruptionMode {
+        case .duckOthers:
+          if let originalVolume = playerVolumes[playlist.id] {
+            playlist.ref.volume = originalVolume
+          }
+        case .doNotMix, .mixWithOthers:
+          playlist.play(at: playlist.currentRate)
+        }
+      }
+    }
+
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
       if recorder.allowsRecording && !recorder.isRecording {
@@ -503,6 +649,13 @@ public class AudioModule: Module {
         player.ref.pause()
       }
     }
+
+    registry.allPlaylists.values.forEach { playlist in
+      if playlist.isPlaying {
+        playlist.wasPlaying = true
+        playlist.pause()
+      }
+    }
   }
 
   private func resumeAllPlayers() {
@@ -510,6 +663,13 @@ public class AudioModule: Module {
       if player.wasPlaying {
         player.ref.play()
         player.wasPlaying = false
+      }
+    }
+
+    registry.allPlaylists.values.forEach { playlist in
+      if playlist.wasPlaying {
+        playlist.play(at: playlist.currentRate)
+        playlist.wasPlaying = false
       }
     }
   }
@@ -635,7 +795,8 @@ public class AudioModule: Module {
         return
       }
       let hasActivePlayers = self.registry.allPlayers.values.contains { $0.isPlaying }
-      if !hasActivePlayers {
+      let hasActivePlaylists = self.registry.allPlaylists.values.contains { $0.isPlaying }
+      if !hasActivePlayers && !hasActivePlaylists {
         do {
           try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
         } catch {
