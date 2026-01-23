@@ -19,7 +19,7 @@ import { RecordingPresets } from './RecordingConstants';
 
 const nextId = (() => {
   let id = 0;
-  return () => id++;
+  return () => String(id++);
 })();
 
 async function getPermissionWithQueryAsync(
@@ -73,7 +73,7 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
   });
 }
 
-function getStatusFromMedia(media: HTMLMediaElement, id: number): AudioStatus {
+function getStatusFromMedia(media: HTMLMediaElement, id: string): AudioStatus {
   const isPlaying = !!(
     media.currentTime > 0 &&
     !media.paused &&
@@ -114,7 +114,7 @@ export class AudioPlayerWeb
     this.media = this._createMediaElement();
   }
 
-  id: number = nextId();
+  id: string = nextId();
   isAudioSamplingSupported = false;
   isBuffering = false;
   shouldCorrectPitch = false;

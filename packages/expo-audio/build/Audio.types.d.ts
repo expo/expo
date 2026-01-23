@@ -1,4 +1,18 @@
 import { AudioQuality, IOSOutputFormat } from './RecordingConstants';
+/**
+ * Represents audio source information returned from native.
+ * This is the object returned when reading sources from a queue.
+ */
+export type AudioSourceInfo = {
+    /**
+     * A string representing the resource identifier for the audio.
+     */
+    uri?: string;
+    /**
+     * An optional display name for the audio source.
+     */
+    name?: string;
+};
 export type AudioSource = string | number | null | {
     /**
      * A string representing the resource identifier for the audio,
@@ -15,6 +29,11 @@ export type AudioSource = string | number | null | {
      * On web requires the `Access-Control-Allow-Origin` header returned by the server to include the current domain.
      */
     headers?: Record<string, string>;
+    /**
+     * An optional display name for the audio source.
+     * Useful for showing track names in a queue or playlist UI.
+     */
+    name?: string;
 };
 /**
  * Options for configuring audio player behavior.
@@ -136,7 +155,7 @@ export type PitchCorrectionQuality = 'low' | 'medium' | 'high';
  */
 export type AudioStatus = {
     /** Unique identifier for the player instance. */
-    id: number;
+    id: string;
     /** Current playback position in seconds. */
     currentTime: number;
     /** String representation of the player's internal playback state. */
@@ -176,7 +195,7 @@ export type AudioStatus = {
  */
 export type RecordingStatus = {
     /** Unique identifier for the recording session. */
-    id: number;
+    id: string;
     /** Whether the recording has finished (stopped). */
     isFinished: boolean;
     /** Whether an error occurred during recording. */
@@ -513,5 +532,67 @@ export type AudioMetadata = {
     artist?: string;
     albumTitle?: string;
     artworkUrl?: string;
+};
+/**
+ * Loop mode for audio playlist playback.
+ *
+ * - `'none'`: No looping. Playback stops after the last track.
+ * - `'single'`: Loops the current track indefinitely.
+ * - `'all'`: Loops the entire playlist, returning to the first track after the last.
+ */
+export type AudioPlaylistLoopMode = 'none' | 'single' | 'all';
+/**
+ * Options for configuring an audio playlist.
+ */
+export type AudioPlaylistOptions = {
+    /**
+     * Initial sources to add to the playlist. Each source can be a local asset, remote URL, or null.
+     * @default []
+     */
+    sources?: AudioSource[];
+    /**
+     * How often (in milliseconds) to emit playback status updates. Defaults to 500ms.
+     * @default 500
+     */
+    updateInterval?: number;
+    /**
+     * Loop mode for the playlist.
+     * - `'none'`: No looping (default)
+     * - `'single'`: Loop the current track
+     * - `'all'`: Loop the entire playlist
+     * @default 'none'
+     */
+    loop?: AudioPlaylistLoopMode;
+};
+/**
+ * Status information for an audio playlist.
+ */
+export type AudioPlaylistStatus = {
+    /** Unique identifier for the playlist instance. */
+    id: string;
+    /** Index of the currently playing track in the playlist. */
+    currentIndex: number;
+    /** Total number of tracks in the playlist. */
+    trackCount: number;
+    /** Current playback position in seconds. */
+    currentTime: number;
+    /** Total duration of the current track in seconds. */
+    duration: number;
+    /** Whether the player is currently playing. */
+    playing: boolean;
+    /** Whether the player is buffering. */
+    isBuffering: boolean;
+    /** Whether the current track has finished loading. */
+    isLoaded: boolean;
+    /** Current playback rate (1.0 = normal speed). */
+    playbackRate: number;
+    /** Whether the player is muted. */
+    muted: boolean;
+    /** Current volume level (0.0 to 1.0). */
+    volume: number;
+    /** Current loop mode. */
+    loop: AudioPlaylistLoopMode;
+    /** Whether the current track just finished playing. */
+    didJustFinish: boolean;
 };
 //# sourceMappingURL=Audio.types.d.ts.map

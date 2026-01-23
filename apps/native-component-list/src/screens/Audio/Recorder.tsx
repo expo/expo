@@ -31,7 +31,7 @@ type RecorderProps = {
 
 export default function Recorder({ onDone, style }: RecorderProps) {
   const [state, setState] = React.useState<RecordingStatus>({
-    id: 0,
+    id: 'initial',
     hasError: false,
     error: null,
     isFinished: false,
