@@ -151,7 +151,7 @@ If there is an exact match to the provided `key`, this is considered a cache hit
 
 The restore key `android-ccache-` matches any key that starts with the string `android-ccache-`. For example, both of the keys `android-ccache-fd3052de` and `android-ccache-a9b253ff` match the restore key. The cache with the most recent creation date would be used. The keys in this example are searched in the following order:
 
-1. **`android-ccache-${{ hashFiles('package-lock.json') }}`** matches a specific hash.
+1. **`android-ccache-${{ hashFiles('yarn.lock') }}`** matches a specific hash.
 2. **`android-ccache-`** matches cache keys prefixed with `android-ccache-`.
 3. **`android-`** matches any keys prefixed with `android-`.
 
@@ -159,20 +159,65 @@ The restore key `android-ccache-` matches any key that starts with the string `a
 
 Access restrictions provide cache isolation and security by creating logical boundaries between different Git branches or users. It is important for security of yours and your users to understand and leverage them when building your app.
 
-#### Branch-based access
+#### GitHub run
 
-When build is run from GitHub, caches get scoped to the branch the build is running from. A build can restore caches created in:
+When a build is run from GitHub, caches get scoped to the branch the build is running from. A build can restore caches created in:
 
 - The current branch
 - The default branch (`main` or `master`)
 
-#### User-scoped caches
+#### EAS CLI run
 
-When a build is triggered from `eas-cli`, caches are scoped to the user running the build.
+When a build is triggered from `eas-cli`, caches are scoped to the user running the build. These user-scoped caches allow for isolation so that modifications to the build and its cache are not unintentionally shared during development.
 
 #### Default branch cache
 
-If a build doesn't restore a user-scoped cache, it will automatically fallback to restoring caches published from GitHub builds triggered on the default branch. This allows builds to benefit from caches created by automated workflows even when no user-scoped cache exists yet, or to only keep publishing caches from a designated job.
+If a build doesn't restore a user-scoped cache, it will automatically fallback to restoring caches published from GitHub builds triggered on the default branch. This allows builds to benefit from caches created by trusted sources even when no user-scoped cache exists yet.
+
+When a single user-actor is shared between multiple people (such as when using access tokens or triggering builds from GitHub Actions), user-scoped cache rules still apply. This means that builds operating under that shared account will no longer have isolated caches and run the risk of sharing unintended artifacts. We recommend avoiding this by having designated jobs to only save clean caches, while the development builds only restore.
+
+#### Cache publishing
+
+You can configure a job to publish clean, new caches by disabling cache restoration and only saving the cache.
+
+**Disable restoring cache for production builds:**
+
+You can disable cache restoration for specific build profiles by configuring these environment variables:
+
+```json eas.json
+{
+  "build": {
+    "production": {
+      "env": {
+        "EAS_RESTORE_CACHE": "0",
+        "EAS_SAVE_CACHE": "1"
+      }
+    },
+    "preview": {
+      "env": {
+        "EAS_USE_CACHE": "1"
+      }
+    }
+  }
+}
+```
+
+**Only save cache from designated jobs:**
+
+To ensure only trusted sources publish cache, you can configure workflows to only save cache from specific jobs on the main branch:
+
+```yaml .eas/workflows/build.yml
+jobs:
+  build_production:
+    type: build
+    if: ${{ github.ref_name == 'main' }}
+    env:
+      EAS_RESTORE_CACHE: '0'
+      EAS_SAVE_CACHE: '1'
+    params:
+      platform: android
+      profile: production
+```
 
 ## iOS dependencies
 
