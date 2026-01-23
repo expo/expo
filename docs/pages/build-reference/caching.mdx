@@ -68,7 +68,7 @@ To disable using our Maven cache server for your builds set the `EAS_BUILD_DISAB
 }
 ```
 
-### Caching C/C++ compilation artifacts with ccache
+## Caching C/C++ compilation artifacts with ccache
 
 [ccache](https://ccache.dev/) is a compiler cache that speeds up recompilation of native code by caching previous compilation results. EAS supports ccache configuration out of the box.
 
@@ -136,7 +136,7 @@ build:
     - eas/save_build_cache:
 ```
 
-The cache key uses `hashFiles('package-lock.json')` to create a unique key based on your dependencies. When dependencies change, a new cache will be created while still allowing fallback to previous caches using `restore_keys`.
+The cache key uses a hash of the package manager lock file to create a unique key based on your dependencies. When dependencies change, a new cache will be created while still allowing fallback to previous caches using `restore_keys`.
 
 ### Cache key matching
 
