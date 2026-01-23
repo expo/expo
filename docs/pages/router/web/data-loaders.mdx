@@ -363,8 +363,6 @@ export default function Post() {
 
 - Loaders **must** return JSON-serializable data. Streaming responses are currently not supported. This will be addressed in a future release.
 - Loader data is cached on the client during navigation. There is currently no built-in way to invalidate this cache. This will be addressed in a future release.
-- Data loaders are a web-specific feature for static and server rendering. They do not run on native platforms.
-- The `request` parameter passed to loaders in server rendering is an [`ImmutableRequest`](/versions/latest/sdk/server/#immutablerequest). You cannot modify the request object.
 
 ## Common questions
 
