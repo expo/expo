@@ -15,8 +15,26 @@ class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
     #else
       // `main.jsbundle` isn't part of the main app bundle
       // so we need to load it from the framework bundle
+      // and ensure that it's present in the framework
       let frameworkBundle = Bundle(for: ReactNativeHostManager.self)
-      return frameworkBundle.url(forResource: "main", withExtension: "jsbundle")
+      if let bundleURL = frameworkBundle.url(forResource: "main", withExtension: "jsbundle") {
+        return bundleURL
+      }
+
+      let availableBundles =
+        frameworkBundle.urls(forResourcesWithExtension: "jsbundle", subdirectory: nil)
+        ?? []
+      let bundleList =
+        availableBundles.isEmpty
+        ? "None"
+        : availableBundles.map { "- \($0.lastPathComponent)" }.joined(separator: "\n")
+
+      fatalError(
+        """
+        Cannot find `main.jsbundle` in the XCFramework bundle
+        Available JS bundles:
+        \(bundleList)
+        """)
     #endif
   }
 }
