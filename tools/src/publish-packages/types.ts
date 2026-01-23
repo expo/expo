@@ -21,6 +21,8 @@ export type CommandOptions = {
   deps: boolean;
   /** Publish only template packages under `templates/` */
   templatesOnly: boolean;
+  /** Include expo-module-scripts in publishing (excluded by default) */
+  includeExpoModuleScripts: boolean;
   skipAndroidArtifacts: boolean;
   /**
    * When true, automatically selects packages whose current package.json version
