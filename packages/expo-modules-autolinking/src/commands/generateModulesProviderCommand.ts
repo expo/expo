@@ -1,4 +1,5 @@
 import commander from 'commander';
+import fs from 'fs';
 
 import {
   AutolinkingCommonArguments,
@@ -16,9 +17,15 @@ interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
   appRoot?: string;
 }
 
+type PartialPodfileProperties = {
+  'expo.inlineModules.watchedDirectories'?: string;
+};
+
 /** Generates a source file listing all packages to link in the runtime */
 export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
-  return registerAutolinkingArguments(cli.command('generate-modules-provider [searchPaths...]'))
+  return registerAutolinkingArguments(
+    cli.command('generate-modules-provider <podfilePropertiesFilePath> [searchPaths...]')
+  )
     .option(
       '-t, --target <path>',
       'Path to the target file, where the package list should be written to.'
@@ -30,7 +37,11 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
     )
     .option('--app-root <path>', 'Path to the app root directory.')
     .action(
-      async (searchPaths: string[] | null, commandArguments: GenerateModulesProviderArguments) => {
+      async (
+        podfilePropertiesFilePath: string,
+        searchPaths: string[] | null,
+        commandArguments: GenerateModulesProviderArguments
+      ) => {
         const platform = commandArguments.platform ?? 'apple';
         const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
           ...commandArguments,
@@ -52,11 +63,26 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
           includeModules.has(module.packageName)
         );
 
-        await generateModulesProviderAsync(filteredModules, {
-          platform,
-          targetPath: commandArguments.target,
-          entitlementPath: commandArguments.entitlement ?? null,
-        });
+        const podfileProperties: PartialPodfileProperties = await fs.promises
+          .readFile(podfilePropertiesFilePath, {
+            encoding: 'utf8',
+          })
+          .then((file) => JSON.parse(file))
+          .catch(() => ({}));
+
+        const watchedDirectories = JSON.parse(
+          podfileProperties['expo.inlineModules.watchedDirectories'] ?? '[]'
+        );
+
+        await generateModulesProviderAsync(
+          filteredModules,
+          {
+            platform,
+            targetPath: commandArguments.target,
+            entitlementPath: commandArguments.entitlement ?? null,
+          },
+          watchedDirectories
+        );
       }
     );
 }
