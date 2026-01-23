@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import { resolveWorkspaceRoot } from 'resolve-workspace-root';
 
-import { TrustedDependencyCheck } from '../TrustedDependencyCheck';
+import { TrustedDependencyCheck, TrustedDependencyCheckItem } from '../TrustedDependencyCheck';
 
 jest.mock('fs');
 jest.mock('resolve-workspace-root', () => ({
@@ -11,14 +11,21 @@ jest.mock('resolve-workspace-root', () => ({
 const projectRoot = '/tmp/project';
 
 const additionalProjectProps = {
-  exp: { name: 'name', slug: 'slug', sdkVersion: '55.0.0' },
+  exp: { name: 'name', slug: 'slug', sdkVersion: '50.0.0' },
   projectRoot,
   hasUnusedStaticConfig: false,
   staticConfigPath: null,
   dynamicConfigPath: null,
 };
 
-const skiaPackage = { dependencies: { '@shopify/react-native-skia': '^2.0.0' } };
+// Mock check item used by all tests - independent of actual trustedDependencyCheckItems
+const mockCheckItem: TrustedDependencyCheckItem = {
+  packageName: 'test-package-with-postinstall',
+  getMessage: (name: string) => `Package "${name}" requires a postinstall script.`,
+  sdkVersionRange: '>=50.0.0',
+};
+
+const mockPackageDep = { dependencies: { 'test-package-with-postinstall': '^1.0.0' } };
 
 describe('TrustedDependencyCheck', () => {
   afterEach(() => {
@@ -26,9 +33,11 @@ describe('TrustedDependencyCheck', () => {
     jest.resetAllMocks();
   });
 
-  it('passes when skia is not installed', async () => {
+  it('passes when checked package is not installed', async () => {
     vol.fromJSON({ [projectRoot + '/bun.lockb']: 'test' });
     const check = new TrustedDependencyCheck();
+    check.checkItems = [mockCheckItem];
+
     const result = await check.runAsync({
       pkg: { name: 'test', version: '1.0.0' },
       ...additionalProjectProps,
@@ -39,20 +48,24 @@ describe('TrustedDependencyCheck', () => {
   it('passes when using yarn (no trustedDependencies needed)', async () => {
     vol.fromJSON({ [projectRoot + '/yarn.lock']: 'test' });
     const check = new TrustedDependencyCheck();
+    check.checkItems = [mockCheckItem];
+
     const result = await check.runAsync({
-      pkg: { name: 'test', version: '1.0.0', ...skiaPackage },
+      pkg: { name: 'test', version: '1.0.0', ...mockPackageDep },
       ...additionalProjectProps,
     });
     expect(result.isSuccessful).toBe(true);
   });
 
-  it('passes on SDK 54 (before SDK 55 requirement)', async () => {
+  it('passes when SDK version is outside check item range', async () => {
     vol.fromJSON({ [projectRoot + '/bun.lockb']: 'test' });
     const check = new TrustedDependencyCheck();
+    check.checkItems = [mockCheckItem];
+
     const result = await check.runAsync({
-      pkg: { name: 'test', version: '1.0.0', ...skiaPackage },
+      pkg: { name: 'test', version: '1.0.0', ...mockPackageDep },
       ...additionalProjectProps,
-      exp: { name: 'name', slug: 'slug', sdkVersion: '54.0.0' },
+      exp: { name: 'name', slug: 'slug', sdkVersion: '49.0.0' },
     });
     expect(result.isSuccessful).toBe(true);
   });
@@ -61,8 +74,10 @@ describe('TrustedDependencyCheck', () => {
     it('fails and provides bun pm trust advice', async () => {
       vol.fromJSON({ [projectRoot + '/bun.lockb']: 'test' });
       const check = new TrustedDependencyCheck();
+      check.checkItems = [mockCheckItem];
+
       const result = await check.runAsync({
-        pkg: { name: 'test', version: '1.0.0', ...skiaPackage },
+        pkg: { name: 'test', version: '1.0.0', ...mockPackageDep },
         ...additionalProjectProps,
       });
       expect(result.isSuccessful).toBe(false);
@@ -70,15 +85,17 @@ describe('TrustedDependencyCheck', () => {
       expect(result.advice[0]).toContain('bun pm trust');
     });
 
-    it('passes when trustedDependencies includes skia', async () => {
+    it('passes when trustedDependencies includes the package', async () => {
       vol.fromJSON({ [projectRoot + '/bun.lockb']: 'test' });
       const check = new TrustedDependencyCheck();
+      check.checkItems = [mockCheckItem];
+
       const result = await check.runAsync({
         pkg: {
           name: 'test',
           version: '1.0.0',
-          ...skiaPackage,
-          trustedDependencies: ['@shopify/react-native-skia'],
+          ...mockPackageDep,
+          trustedDependencies: ['test-package-with-postinstall'],
         } as any,
         ...additionalProjectProps,
       });
@@ -90,23 +107,27 @@ describe('TrustedDependencyCheck', () => {
     it('fails and provides correct advice', async () => {
       vol.fromJSON({ [projectRoot + '/pnpm-lock.yaml']: 'test' });
       const check = new TrustedDependencyCheck();
+      check.checkItems = [mockCheckItem];
+
       const result = await check.runAsync({
-        pkg: { name: 'test', version: '1.0.0', ...skiaPackage },
+        pkg: { name: 'test', version: '1.0.0', ...mockPackageDep },
         ...additionalProjectProps,
       });
       expect(result.isSuccessful).toBe(false);
       expect(result.advice[0]).toMatchSnapshot();
     });
 
-    it('passes when pnpm.onlyBuiltDependencies includes skia', async () => {
+    it('passes when pnpm.onlyBuiltDependencies includes the package', async () => {
       vol.fromJSON({ [projectRoot + '/pnpm-lock.yaml']: 'test' });
       const check = new TrustedDependencyCheck();
+      check.checkItems = [mockCheckItem];
+
       const result = await check.runAsync({
         pkg: {
           name: 'test',
           version: '1.0.0',
-          ...skiaPackage,
-          pnpm: { onlyBuiltDependencies: ['@shopify/react-native-skia'] },
+          ...mockPackageDep,
+          pnpm: { onlyBuiltDependencies: ['test-package-with-postinstall'] },
         } as any,
         ...additionalProjectProps,
       });
@@ -117,8 +138,10 @@ describe('TrustedDependencyCheck', () => {
   it('checks devDependencies too', async () => {
     vol.fromJSON({ [projectRoot + '/bun.lockb']: 'test' });
     const check = new TrustedDependencyCheck();
+    check.checkItems = [mockCheckItem];
+
     const result = await check.runAsync({
-      pkg: { name: 'test', version: '1.0.0', devDependencies: skiaPackage.dependencies },
+      pkg: { name: 'test', version: '1.0.0', devDependencies: mockPackageDep.dependencies },
       ...additionalProjectProps,
     });
     expect(result.isSuccessful).toBe(false);
@@ -130,8 +153,10 @@ describe('TrustedDependencyCheck', () => {
     jest.mocked(resolveWorkspaceRoot).mockReturnValue(monorepoRoot);
 
     const check = new TrustedDependencyCheck();
+    check.checkItems = [mockCheckItem];
+
     const result = await check.runAsync({
-      pkg: { name: 'test', version: '1.0.0', ...skiaPackage },
+      pkg: { name: 'test', version: '1.0.0', ...mockPackageDep },
       ...additionalProjectProps,
       projectRoot: '/monorepo-root/apps/my-app',
     });
@@ -139,16 +164,16 @@ describe('TrustedDependencyCheck', () => {
   });
 
   describe('multiple packages', () => {
-    const multipleCheckItems = [
+    const multipleCheckItems: TrustedDependencyCheckItem[] = [
       {
-        packageName: '@shopify/react-native-skia',
+        packageName: 'first-package',
         getMessage: (name: string) => `Package "${name}" requires postinstall.`,
-        sdkVersionRange: '>=55.0.0',
+        sdkVersionRange: '>=50.0.0',
       },
       {
-        packageName: 'some-other-package',
+        packageName: 'second-package',
         getMessage: (name: string) => `Package "${name}" requires postinstall.`,
-        sdkVersionRange: '>=55.0.0',
+        sdkVersionRange: '>=50.0.0',
       },
     ];
 
@@ -162,8 +187,8 @@ describe('TrustedDependencyCheck', () => {
           name: 'test',
           version: '1.0.0',
           dependencies: {
-            '@shopify/react-native-skia': '^2.0.0',
-            'some-other-package': '^1.0.0',
+            'first-package': '^1.0.0',
+            'second-package': '^1.0.0',
           },
         },
         ...additionalProjectProps,
@@ -171,9 +196,9 @@ describe('TrustedDependencyCheck', () => {
 
       expect(result.isSuccessful).toBe(false);
       expect(result.issues).toHaveLength(2);
-      expect(result.issues[0]).toContain('@shopify/react-native-skia');
-      expect(result.issues[1]).toContain('some-other-package');
-      expect(result.advice[0]).toContain('bun pm trust @shopify/react-native-skia some-other-package');
+      expect(result.issues[0]).toContain('first-package');
+      expect(result.issues[1]).toContain('second-package');
+      expect(result.advice[0]).toContain('bun pm trust first-package second-package');
     });
 
     it('reports multiple missing packages for pnpm', async () => {
@@ -186,8 +211,8 @@ describe('TrustedDependencyCheck', () => {
           name: 'test',
           version: '1.0.0',
           dependencies: {
-            '@shopify/react-native-skia': '^2.0.0',
-            'some-other-package': '^1.0.0',
+            'first-package': '^1.0.0',
+            'second-package': '^1.0.0',
           },
         },
         ...additionalProjectProps,
@@ -195,8 +220,8 @@ describe('TrustedDependencyCheck', () => {
 
       expect(result.isSuccessful).toBe(false);
       expect(result.issues).toHaveLength(2);
-      expect(result.advice[0]).toContain('@shopify/react-native-skia');
-      expect(result.advice[0]).toContain('some-other-package');
+      expect(result.advice[0]).toContain('first-package');
+      expect(result.advice[0]).toContain('second-package');
     });
 
     it('only reports packages that are missing from trustedDependencies', async () => {
@@ -209,18 +234,18 @@ describe('TrustedDependencyCheck', () => {
           name: 'test',
           version: '1.0.0',
           dependencies: {
-            '@shopify/react-native-skia': '^2.0.0',
-            'some-other-package': '^1.0.0',
+            'first-package': '^1.0.0',
+            'second-package': '^1.0.0',
           },
-          trustedDependencies: ['@shopify/react-native-skia'],
+          trustedDependencies: ['first-package'],
         } as any,
         ...additionalProjectProps,
       });
 
       expect(result.isSuccessful).toBe(false);
       expect(result.issues).toHaveLength(1);
-      expect(result.issues[0]).toContain('some-other-package');
-      expect(result.issues[0]).not.toContain('@shopify/react-native-skia');
+      expect(result.issues[0]).toContain('second-package');
+      expect(result.issues[0]).not.toContain('first-package');
     });
 
     it('passes when all packages are in trustedDependencies', async () => {
@@ -233,10 +258,10 @@ describe('TrustedDependencyCheck', () => {
           name: 'test',
           version: '1.0.0',
           dependencies: {
-            '@shopify/react-native-skia': '^2.0.0',
-            'some-other-package': '^1.0.0',
+            'first-package': '^1.0.0',
+            'second-package': '^1.0.0',
           },
-          trustedDependencies: ['@shopify/react-native-skia', 'some-other-package'],
+          trustedDependencies: ['first-package', 'second-package'],
         } as any,
         ...additionalProjectProps,
       });
@@ -254,8 +279,8 @@ describe('TrustedDependencyCheck', () => {
           name: 'test',
           version: '1.0.0',
           dependencies: {
-            '@shopify/react-native-skia': '^2.0.0',
-            // some-other-package is NOT installed
+            'first-package': '^1.0.0',
+            // second-package is NOT installed
           },
         },
         ...additionalProjectProps,
@@ -263,7 +288,7 @@ describe('TrustedDependencyCheck', () => {
 
       expect(result.isSuccessful).toBe(false);
       expect(result.issues).toHaveLength(1);
-      expect(result.issues[0]).toContain('@shopify/react-native-skia');
+      expect(result.issues[0]).toContain('first-package');
     });
   });
 });

@@ -3,7 +3,7 @@
 exports[`TrustedDependencyCheck bun fails and provides bun pm trust advice 1`] = `
 "Run the following to trust the package and re-run its postinstall script:
 
-bun pm trust @shopify/react-native-skia"
+bun pm trust test-package-with-postinstall"
 `;
 
 exports[`TrustedDependencyCheck pnpm fails and provides correct advice 1`] = `
@@ -11,7 +11,7 @@ exports[`TrustedDependencyCheck pnpm fails and provides correct advice 1`] = `
 
 "pnpm": {
   "onlyBuiltDependencies": [
-    "@shopify/react-native-skia"
+    "test-package-with-postinstall"
   ]
 }
 
