@@ -156,7 +156,6 @@
     "memfs": "^3.2.0",
     "nock": "^14.0.10",
     "node-html-parser": "^6.1.5",
-    "nullthrows": "^1.1.1",
     "playwright": "^1.53.1",
     "taskr": "^1.1.0",
     "tree-kill": "^1.2.2",
