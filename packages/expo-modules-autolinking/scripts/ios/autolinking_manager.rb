@@ -17,12 +17,7 @@ module Expo
       @podfile = podfile
       @target_definition = target_definition
       @options = options
-
-      podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
-      @watched_directories = '[]'
-      if podfile_properties["expo.inlineModules.watchedDirectories"] != nil then
-        @watched_directories = JSON.generate(podfile_properties['expo.inlineModules.watchedDirectories'])
-      end
+      @podfile_properties_path = File.join(Pod::Config.instance.project_root, 'Podfile.properties.json')
 
       validate_target_definition()
       resolve_result = resolve()
@@ -198,7 +193,7 @@ module Expo
       search_paths = @options.fetch(:searchPaths, @options.fetch(:modules_paths, nil))
       ignore_paths = @options.fetch(:ignorePaths, nil)
       exclude = @options.fetch(:exclude, [])
-      args = [@watched_directories]
+      args = ["\"#{@podfile_properties_path}\""]
 
       if !search_paths.nil? && !search_paths.empty?
         args.concat(search_paths)
@@ -248,7 +243,7 @@ module Expo
       end
 
       node_command_args('generate-modules-provider').concat(
-        [@watched_directories],
+        [@podfile_properties_path],
         command_args,
         ['--packages'],
         packages_to_generate.map(&:name)

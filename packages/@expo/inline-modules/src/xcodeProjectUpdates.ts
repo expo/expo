@@ -4,9 +4,17 @@ import fs from 'fs';
 import path from 'path';
 
 export async function updateXCodeProject(projectRoot: string): Promise<void> {
+  const swiftWatchedDirectories =
+    getConfig(projectRoot).exp.experiments?.inlineModules?.watchedDirectories ?? [];
+
+  // Only perform changes to pbxproj if necessary
+  if (swiftWatchedDirectories.length === 0) {
+    return;
+  }
+
   const pbxProject = IOSConfig.XcodeUtils.getPbxproj(projectRoot);
   const mainGroupUUID = pbxProject.getFirstProject().firstProject.mainGroup;
-  const mainTargetUUID = pbxProject.getFirstProject().firstProject.targets[0].value;
+  const mainTarget = pbxProject.getFirstProject().firstProject.targets[0];
   const iosFolderPath = path.resolve(projectRoot, 'ios');
 
   const objects = pbxProject.hash.project.objects;
@@ -29,8 +37,6 @@ export async function updateXCodeProject(projectRoot: string): Promise<void> {
     return false;
   };
 
-  const swiftWatchedDirectories =
-    getConfig(projectRoot).exp.experiments?.inlineModules?.watchedDirectories ?? [];
   for (const dir of swiftWatchedDirectories) {
     if (dirEntryExists(dir)) {
       continue;
@@ -55,14 +61,13 @@ export async function updateXCodeProject(projectRoot: string): Promise<void> {
       sourceTree: 'SOURCE_ROOT',
     };
 
-    //@ts-ignore
-    objects.PBXFileSystemSynchronizedRootGroup[newUUID + '_comment'] = dir;
-
-    const nativeTargetGroup = objects.PBXNativeTarget[mainTargetUUID];
-    if (!nativeTargetGroup.fileSystemSynchronizedGroups) {
-      nativeTargetGroup.fileSystemSynchronizedGroups = [];
+    if (mainTarget) {
+      const nativeTargetGroup = objects.PBXNativeTarget[mainTarget.value];
+      if (!nativeTargetGroup.fileSystemSynchronizedGroups) {
+        nativeTargetGroup.fileSystemSynchronizedGroups = [];
+      }
+      nativeTargetGroup.fileSystemSynchronizedGroups.push({ value: newUUID, comment: dir });
     }
-    nativeTargetGroup.fileSystemSynchronizedGroups.push({ value: newUUID, comment: dir });
   }
 
   await fs.promises.writeFile(pbxProject.filepath, pbxProject.writeSync());
