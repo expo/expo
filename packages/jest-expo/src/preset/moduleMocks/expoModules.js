@@ -618,6 +618,10 @@ module.exports = {
             key: 'unregisterForNotificationsAsync',
           },
         ],
+        ExpoRouter: [
+          { name: 'Material3DynamicColor', argumentsCount: 2, key: 'Material3DynamicColor' },
+          { name: 'Material3Color', argumentsCount: 2, key: 'Material3Color' },
+        ],
         ExpoRouterNativeLinkPreview: [],
         ExpoRouterToolbarModule: [],
         ExpoScreenCapture: [
