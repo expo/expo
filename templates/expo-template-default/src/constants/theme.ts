@@ -3,26 +3,36 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
+import { Color } from 'expo-router';
 import { Platform } from 'react-native';
 
-export const Colors = {
-  light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
-  },
-  dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
-  },
-} as const;
+import '@/global.css';
 
-export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
+export const Colors = Platform.select({
+  ios: () => ({
+    text: Color.ios.label,
+    textSecondary: Color.ios.secondaryLabel,
+    background: Color.ios.systemGroupedBackground,
+    backgroundElement: Color.ios.secondarySystemGroupedBackground,
+    backgroundSelected: Color.ios.tertiarySystemGroupedBackground,
+  }),
+  android: () => ({
+    text: Color.android.dynamic.onSurface,
+    textSecondary: Color.android.dynamic.onSurfaceVariant,
+    background: Color.android.dynamic.surface,
+    backgroundElement: Color.android.dynamic.surfaceContainer,
+    backgroundSelected: Color.android.dynamic.surfaceContainerHigh,
+  }),
+  default: () => ({
+    text: 'var(--color-text)',
+    background: 'var(--color-background)',
+    backgroundElement: 'var(--color-background-element)',
+    backgroundSelected: 'var(--color-background-selected)',
+    textSecondary: 'var(--color-text-secondary)',
+  }),
+})();
+
+export type ThemeColor = keyof typeof Colors;
 
 export const Fonts = Platform.select({
   ios: {
@@ -42,10 +52,10 @@ export const Fonts = Platform.select({
     mono: 'monospace',
   },
   web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+    sans: 'var(--font-display)',
+    serif: 'var(--font-serif)',
+    rounded: 'var(--font-rounded)',
+    mono: 'var(--font-mono)',
   },
 });
 
