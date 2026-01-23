@@ -72,7 +72,7 @@ To disable using our Maven cache server for your builds set the `EAS_BUILD_DISAB
 
 [ccache](https://ccache.dev/) is a compiler cache that speeds up recompilation by caching previous compilations. You can use remote caching to share ccache data across builds, which significantly speeds up builds that include results for native libraries used by React Native, Hermes, or other native modules.
 
-You can enable in builds to use cache automatically with these environment variables:
+You can configure builds to save and restore ccache automatically with these environment variables:
 
 - `EAS_USE_CACHE`: Enables saving and restoring cache on build jobs. By setting to `1`, it will enable both saving and restoring the cache during a build job. By setting to `0`, it will disable both saving and restoring the cache
 - `EAS_RESTORE_CACHE`: Controls restoring the cache at the beginning of a build. Set to `1` to enable or `0` to disable.
@@ -144,8 +144,7 @@ jobs:
           key: android-ccache-${{ hashFiles('package-lock.json') }}
           restore_keys: android
           path: /home/expo/.cache/ccache
-      - name: Build Android app
-        run: cd android && ./gradlew assembleRelease
+      - uses: eas/run_gradle
       - uses: eas/save_cache
         with:
           key: android-ccache-${{ hashFiles('package-lock.json') }}
@@ -166,8 +165,7 @@ jobs:
           key: ios-ccache-${{ hashFiles('package-lock.json') }}
           restore_keys: ios
           path: /Users/expo/Library/Caches/ccache
-      - name: Build iOS app
-        run: cd ios && fastlane build
+      - uses: eas/run_fastlane
       - uses: eas/save_cache
         with:
           key: ios-ccache-${{ hashFiles('package-lock.json') }}
