@@ -7,11 +7,11 @@ import { getFont } from './utils';
 const DEFAULT_SYMBOL_COLOR = Platform.OS === 'android' ? PlatformColor('@android:color/system_primary_dark') : '#7d9bd4';
 export function SymbolView(props) {
     const font = useMemo(() => getFont(props.weight), [props.weight]);
-    useFonts({ [font.name]: font.font });
+    const [isLoaded] = useFonts({ [font.name]: font.font });
     const name = typeof props.name === 'object'
         ? props.name[Platform.OS === 'android' ? 'android' : 'web']
         : null;
-    if (!name) {
+    if (!name || !isLoaded) {
         return <>{props.fallback}</>;
     }
     return (<Text style={{

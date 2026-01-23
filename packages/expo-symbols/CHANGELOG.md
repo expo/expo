@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] fix symbol render ([#42460](https://github.com/expo/expo/pull/42460) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 55.0.1 — 2026-01-22

@@ -12,12 +12,12 @@ const DEFAULT_SYMBOL_COLOR =
 
 export function SymbolView(props: SymbolViewProps) {
   const font = useMemo(() => getFont(props.weight), [props.weight]);
-  useFonts({ [font.name]: font.font });
+  const [isLoaded] = useFonts({ [font.name]: font.font });
   const name =
     typeof props.name === 'object'
       ? props.name[Platform.OS === 'android' ? 'android' : 'web']
       : null;
-  if (!name) {
+  if (!name || !isLoaded) {
     return <>{props.fallback}</>;
   }
   return (
