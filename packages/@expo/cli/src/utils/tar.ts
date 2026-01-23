@@ -42,6 +42,13 @@ export async function extractStream(
 
   for await (const file of untar(body)) {
     let name = path.normalize(file.name);
+    if (filter && !filter(name, file.typeflag)) {
+      debug(`filtered: ${path.resolve(output, name)}`);
+      continue;
+    } else if (rename) {
+      name = rename(name, file.typeflag) ?? name;
+    }
+
     for (let idx = 0; idx < strip; idx++) {
       const sepIdx = name.indexOf(path.sep);
       if (sepIdx > -1) {
@@ -49,13 +56,6 @@ export async function extractStream(
       } else {
         break;
       }
-    }
-
-    if (filter && !filter(name, file.typeflag)) {
-      debug(`filtered: ${path.resolve(output, name)}`);
-      continue;
-    } else if (rename) {
-      name = rename(name, file.typeflag) ?? name;
     }
 
     const resolved = path.resolve(output, name);
