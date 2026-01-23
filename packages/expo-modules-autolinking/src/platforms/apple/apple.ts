@@ -167,7 +167,7 @@ async function generatePackageListFileContentAsync(
  * but only these that are written in Swift and use the new API for creating Expo modules.
  */
 
-internal import ExpoModulesCore
+@_implementationOnly import ExpoModulesCore
 ${generateCommonImportList(swiftModules)}
 ${generateDebugOnlyImportList(debugOnlySwiftModules)}
 @objc(${className})
@@ -192,7 +192,7 @@ ${generateReactDelegateHandlers(reactDelegateHandlerModules, debugOnlyReactDeleg
 }
 
 function generateCommonImportList(swiftModules: string[]): string {
-  return swiftModules.map((moduleName) => `internal import ${moduleName}`).join('\n');
+  return swiftModules.map((moduleName) => `@_implementationOnly import ${moduleName}`).join('\n');
 }
 
 function generateDebugOnlyImportList(swiftModules: string[]): string {
@@ -203,7 +203,7 @@ function generateDebugOnlyImportList(swiftModules: string[]): string {
   return (
     wrapInDebugConfigurationCheck(
       0,
-      swiftModules.map((moduleName) => `internal import ${moduleName}`).join('\n')
+      swiftModules.map((moduleName) => `@_implementationOnly import ${moduleName}`).join('\n')
     ) + '\n'
   );
 }

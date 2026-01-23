@@ -1,7 +1,7 @@
-internal import Expo
+@_implementationOnly import Expo
 import Network
-internal import React
-internal import ReactAppDependencyProvider
+@_implementationOnly import React
+@_implementationOnly import ReactAppDependencyProvider
 import UIKit
 
 public class ReactNativeHostManager {
