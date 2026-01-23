@@ -285,7 +285,7 @@ const fixupDeprecatedEnableProguardInReleaseBuilds = (config) => {
  * @ignore
  */
 function getHermesCompilerVersion(projectRoot) {
-    const hermesCompilerPackageJsonPath = resolve_from_1.default.silent(projectRoot, 'hermes-compiler/package.json');
+    const hermesCompilerPackageJsonPath = resolve_from_1.default.silent(resolve_from_1.default.silent(projectRoot, 'react-native/package.json') ?? projectRoot, 'hermes-compiler/package.json');
     if (!hermesCompilerPackageJsonPath || !fs_1.default.existsSync(hermesCompilerPackageJsonPath)) {
         return null;
     }
