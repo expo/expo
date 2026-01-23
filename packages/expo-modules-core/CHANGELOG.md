@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Added missing checks in the promise implementation.
+
 ### 💡 Others
 
 ## 55.0.3 — 2026-01-22
