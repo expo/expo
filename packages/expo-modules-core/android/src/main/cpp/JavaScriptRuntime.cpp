@@ -14,11 +14,7 @@ namespace expo {
 JavaScriptRuntime::JavaScriptRuntime(
   jsi::Runtime *runtime,
   std::shared_ptr<react::CallInvoker> jsInvoker
-) : jsInvoker(std::move(jsInvoker)) {
-  // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
-  // In this code flow, the runtime should be owned by something else like the CatalystInstance.
-  // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
-  this->runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
+) : runtime(runtime), jsInvoker(std::move(jsInvoker)) {
 }
 
 jsi::Runtime &JavaScriptRuntime::get() const noexcept {
