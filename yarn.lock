@@ -11945,6 +11945,11 @@ ms@2.1.3, ms@^2.1.1, ms@^2.1.3:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
+multitars@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/multitars/-/multitars-0.2.3.tgz#356e6b000f16dcc7f633db2473b4f33e7335996e"
+  integrity sha512-PzKo1i2pC9+OVLOSOnLrzHImyCemcGGkPJs+EVSbLcyX0TcOBIkECtes79s8cYUfqVca7oRaAzafoO92o95kQg==
+
 mute-stream@0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.8.tgz#1630c42b2251ff81e2a283de96a5497ea92e5e0d"
