@@ -1,7 +1,7 @@
-import ExpoModulesCore
+internal import ExpoModulesCore
 import WebKit
 
-public class TestView: Module {
+class TestView: Module {
   public func definition() -> ModuleDefinition {
     View(ExpoWebView.self) {
       Events("onLoad")
