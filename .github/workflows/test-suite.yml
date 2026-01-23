@@ -46,14 +46,16 @@ jobs:
           files_yaml: |
             ios_only:
               - 'packages/**/ios/**'
-              - 'apps/bare-expo/ios/**'
-              - '**/*.{swift,podspec,xcodeproj,xcworkspace,plist,m,mm}'
-              - '!{**.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*}'
+              - 'apps/bare-expo/**/ios/**'
+
+              - '!{**/*.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*,**/.npmignore,**/.eslintrc*,**/.prettierrc*,**/.gitattributes,**/.watchmanconfig,**/.fingerprintignore}'
+
             android_only:
               - 'packages/**/android/**'
-              - 'apps/bare-expo/android/**'
-              - '**/*.{java,kt,gradle,xml,pro}'
-              - '!{**.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*}'
+              - 'apps/bare-expo/**/android/**'
+
+              - '!{**/*.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*,**/.npmignore,**/.eslintrc*,**/.prettierrc*,**/.gitattributes,**/.watchmanconfig,**/.fingerprintignore}'
+
             common:
               - .github/workflows/test-suite.yml
               - .github/actions/use-android-emulator/action.yml
@@ -61,12 +63,10 @@ jobs:
               - 'apps/test-suite/**'
               - 'packages/**'
               - 'yarn.lock'
-              - '!packages/**/{ios,android}/**'
-              - '!apps/bare-expo/{ios,android}/**'
-              - '!**/*.{swift,podspec,xcodeproj,xcworkspace,plist,m,mm}'
-              - '!**/*.{java,kt,gradle,xml,pro}'
-              - '!{**.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*}'
 
+              - '!packages/**/{ios,android}/**'
+              - '!apps/bare-expo/**/{ios,android}/**'
+              - '!{**/*.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*,**/.npmignore,**/.eslintrc*,**/.prettierrc*,**/.gitattributes,**/.watchmanconfig,**/.fingerprintignore}'
   ios-build:
     runs-on: macos-15
     needs: detect-platform-for-e2e
