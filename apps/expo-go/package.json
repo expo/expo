@@ -108,7 +108,29 @@
         "../../node_modules"
       ],
       "exclude": [
-        "@expo/home"
+        "@expo/home",
+        "react-native-screens",
+        "@react-native-async-storage/async-storage",
+        "react-native-webview",
+
+        "@shopify/react-native-skia",
+        "@stripe/stripe-react-native",
+        "react-native-svg",
+        "lottie-react-native",
+        "@react-native-masked-view/masked-view",
+        "@react-native-segmented-control/segmented-control",
+        "@react-native-community/datetimepicker",
+        "@react-native-community/netinfo",
+        "@react-native-picker/picker",
+        "@react-native-community/slider",
+        "react-native-view-shot",
+        "react-native-gesture-handler",
+        "react-native-keyboard-controller",
+        "react-native-maps",
+        "react-native-pager-view",
+        "react-native-reanimated",
+        "react-native-safe-area-context",
+        "react-native-worklets"
       ]
     }
   }
