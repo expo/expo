@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import fs from 'fs';
 import os from 'os';
-import { join } from 'path';
+import { join, resolve } from 'path';
 
 import { GitDirectory } from '../../../../tools/src/Git';
 import { autolinkingRunAsync, yarnSync, combinations } from '../TestUtils';
@@ -113,11 +113,11 @@ describe('monorepo', () => {
       if (platform === 'android') return;
       const appPath = projectPath(app);
       const target = join(appPath, 'generated', 'file.txt');
-      const watchedDirectoriesSerialized = JSON.stringify([]);
+      const podfilePropertiesFilePath = resolve(appPath, 'ios/Podfile.properties.json');
       const generatePackageListResult = await autolinkingRunAsync(
         [
           'generate-modules-provider',
-          watchedDirectoriesSerialized,
+          podfilePropertiesFilePath,
           '--platform',
           platform,
           '--target',
