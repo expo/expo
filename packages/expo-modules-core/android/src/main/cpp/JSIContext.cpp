@@ -154,7 +154,7 @@ void JSIContext::drainJSEventLoop() {
   runtimeHolder->drainJSEventLoop();
 }
 
-void JSIContext:: registerSharedObject(
+void JSIContext::registerSharedObject(
   jni::local_ref<jobject> native,
   jni::local_ref<JavaScriptObject::javaobject> js
 ) {
