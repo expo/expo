@@ -73,7 +73,7 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
               return nil
             }
             let item = UIBarButtonItem(
-              title: menu.title,
+              title: menu.label,
               image: menu.icon.flatMap { UIImage(systemName: $0) },
               primaryAction: nil,
               menu: menu.uiAction as? UIMenu
@@ -94,8 +94,8 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
             item.isEnabled = !menu.disabled
             if let accessibilityLabel = menu.accessibilityLabelForMenu {
               item.accessibilityLabel = accessibilityLabel
-            } else {
-              item.accessibilityLabel = menu.title
+            } else if let label = menu.label {
+              item.accessibilityLabel = label
             }
             if let accessibilityHint = menu.accessibilityHintForMenu {
               item.accessibilityHint = accessibilityHint

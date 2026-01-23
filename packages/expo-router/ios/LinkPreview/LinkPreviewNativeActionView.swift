@@ -4,6 +4,7 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
   var identifier: String = ""
   // MARK: - Shared props
   @NativeActionProp(updateAction: true, updateMenu: true) var title: String = ""
+  @NativeActionProp(updateMenu: true) var label: String?
   @NativeActionProp(updateAction: true, updateMenu: true) var icon: String?
   var customImage: SharedRef<UIImage>? {
     didSet {

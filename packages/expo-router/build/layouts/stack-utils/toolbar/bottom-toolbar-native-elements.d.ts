@@ -19,6 +19,7 @@ export interface NativeToolbarMenuProps {
      */
     image?: ImageRef;
     inline?: boolean;
+    label?: string;
     palette?: boolean;
     separateBackground?: boolean;
     style?: StyleProp<TextStyle>;

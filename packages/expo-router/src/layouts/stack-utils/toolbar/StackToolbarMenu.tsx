@@ -11,12 +11,37 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { NativeToolbarMenu, NativeToolbarMenuAction } from './bottom-toolbar-native-elements';
 import { useToolbarPlacement } from './context';
-import { Menu, MenuAction } from '../../../primitives/menu';
-import { filterAllowedChildrenElements, isChildOfType } from '../../../utils/children';
+import { MenuAction } from '../../../primitives/menu';
+import {
+  filterAllowedChildrenElements,
+  getFirstChildOfType,
+  isChildOfType,
+} from '../../../utils/children';
+import { StackToolbarLabel } from '../common-primitives';
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   type StackHeaderItemSharedProps,
 } from '../shared';
+
+/**
+ * Computes the label and menu title from children and title prop.
+ *
+ * Logic:
+ * - If only `title` prop: `title` → both label (button text) and menu title
+ * - If only `.Label` child: `.Label` → only label, no menu title (empty string)
+ * - If both `.Label` and `title`: `.Label` → label, `title` → menu title
+ */
+function computeMenuLabelAndTitle(
+  children: ReactNode,
+  title: string | undefined
+): { label: string; menuTitle: string } {
+  const labelChild = getFirstChildOfType(children, StackToolbarLabel);
+  const labelFromChild = labelChild?.props.children;
+  return {
+    label: labelFromChild ?? title ?? '',
+    menuTitle: title ?? '',
+  };
+}
 
 export interface StackToolbarMenuProps {
   accessibilityLabel?: string;
@@ -159,17 +184,32 @@ export interface StackToolbarMenuProps {
 export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = ({ children, ...props }) => {
   const placement = useToolbarPlacement();
 
+  if (placement !== 'bottom') {
+    // For placement other than bottom, this component will not render, and should be
+    // converted to RN header item using convertStackToolbarMenuPropsToRNHeaderItem.
+    // So if we reach here, it means we're not inside a toolbar or something else is wrong.
+    throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
+  }
+
   const allowedChildren = useMemo(
-    () =>
-      placement === 'bottom'
-        ? [StackToolbarMenu, StackToolbarMenuAction, NativeToolbarMenu, NativeToolbarMenuAction]
-        : [StackToolbarMenu, StackToolbarMenuAction],
+    () => [
+      StackToolbarMenu,
+      StackToolbarMenuAction,
+      NativeToolbarMenu,
+      NativeToolbarMenuAction,
+      StackToolbarLabel,
+    ],
     [placement]
   );
 
   const validChildren = useMemo(
     () => filterAllowedChildrenElements(children, allowedChildren),
     [children, allowedChildren]
+  );
+
+  const { label: computedLabel, menuTitle: computedMenuTitle } = computeMenuLabelAndTitle(
+    children,
+    props.title
   );
 
   if (process.env.NODE_ENV !== 'production') {
@@ -181,12 +221,16 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = ({ children, ..
     }
   }
 
-  if (placement === 'bottom') {
-    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    return <NativeToolbarMenu {...props} image={props.image} children={validChildren} />;
-  }
-
-  return <Menu {...props} children={validChildren} />;
+  // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+  return (
+    <NativeToolbarMenu
+      {...props}
+      image={props.image}
+      label={computedLabel}
+      title={computedMenuTitle}
+      children={validChildren}
+    />
+  );
 };
 
 export function convertStackToolbarMenuPropsToRNHeaderItem(
@@ -200,8 +244,17 @@ export function convertStackToolbarMenuPropsToRNHeaderItem(
     (child) =>
       isChildOfType(child, StackToolbarMenuAction) || isChildOfType(child, StackToolbarMenu)
   );
+
+  const { label: computedLabel, menuTitle: computedMenuTitle } = computeMenuLabelAndTitle(
+    props.children,
+    title
+  );
+
+  const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(rest);
+
   const item: NativeStackHeaderItemMenu = {
-    ...convertStackHeaderSharedPropsToRNSharedHeaderItem(rest),
+    ...sharedProps,
+    label: computedLabel,
     type: 'menu',
     menu: {
       multiselectable: true,
@@ -215,8 +268,8 @@ export function convertStackToolbarMenuPropsToRNHeaderItem(
         .filter((i) => !!i),
     },
   };
-  if (title) {
-    item.menu.title = title;
+  if (computedMenuTitle) {
+    item.menu.title = computedMenuTitle;
   }
 
   return item;
