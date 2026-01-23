@@ -70,17 +70,17 @@ To disable using our Maven cache server for your builds set the `EAS_BUILD_DISAB
 
 ### Caching C/C++ compilation artifacts with ccache
 
-[ccache](https://ccache.dev/) is a compiler cache that speeds up recompilation by caching previous compilations. You can use remote caching to share ccache data across builds, which significantly speeds up builds that include results for native libraries used by React Native, Hermes, or other native modules.
+[ccache](https://ccache.dev/) is a compiler cache that speeds up recompilation of native code by caching previous compilation results. EAS supports ccache configuration out of the box.
 
-You can configure builds to save and restore ccache automatically with these environment variables:
+You can configure builds to save and restore ccache cache automatically with these environment variables:
 
-- `EAS_USE_CACHE`: Enables saving and restoring cache on build jobs. By setting to `1`, it will enable both saving and restoring the cache during a build job. By setting to `0`, it will disable both saving and restoring the cache
-- `EAS_RESTORE_CACHE`: Controls restoring the cache at the beginning of a build. Set to `1` to enable or `0` to disable.
-- `EAS_SAVE_CACHE`: Controls whether to save the build cache at the end of a build. Set to `1` to enable or `0` to disable.
+- `EAS_USE_CACHE`: When set to `1`, enables both restoring and saving the cache results during a build job.
+- `EAS_RESTORE_CACHE`: Controls restoring the cache at the beginning of a build. Set to `1` to enable or `0` to disable. Overrides `EAS_USE_CACHE`.
+- `EAS_SAVE_CACHE`: Controls whether to save the build cache at the end of a build. Set to `1` to enable or `0` to disable. Overrides `EAS_USE_CACHE`.
 
 #### Custom builds
 
-For custom builds, use [`eas/restore_build_cache`](/custom-builds/schema/#easrestore_build_cache) and [`eas/save_build_cache`](/custom-builds/schema/#eassave_build_cache) to cache the ccache directory.
+In custom builds where you manage the build steps, add [`eas/restore_build_cache`](/custom-builds/schema/#easrestore_build_cache) and [`eas/save_build_cache`](/custom-builds/schema/#eassave_build_cache) to enable ccache cache.
 
 **Android example:**
 
