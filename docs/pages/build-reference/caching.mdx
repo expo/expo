@@ -131,9 +131,9 @@ build:
   name: Build with ccache
   steps:
     - eas/checkout
-    - eas/restore_build_cache:
+    - eas/restore_build_cache
     - eas/build
-    - eas/save_build_cache:
+    - eas/save_build_cache
 ```
 
 The cache key uses a hash of the package manager lock file to create a unique key based on your dependencies. When dependencies change, a new cache will be created while still allowing fallback to previous caches using `restore_keys`.
