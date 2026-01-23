@@ -7,8 +7,8 @@ import android.media.audiofx.Visualizer
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.media3.common.AudioAttributes
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -52,13 +52,14 @@ class AudioPlayer(
     .setSeekBackIncrementMs(SEEK_JUMP_INTERVAL_MS)
     .build(),
   appContext
-) {
-  val id = UUID.randomUUID().toString()
+),
+  Playable {
+  override val id = UUID.randomUUID().toString()
   var preservesPitch = true
-  var isPaused = false
-  var isMuted = false
-  var previousVolume = 1f
-  var onPlaybackStateChange: ((Boolean) -> Unit)? = null
+  override var isPaused = false
+  override var isMuted = false
+  override var previousVolume = 1f
+  override var onPlaybackStateChange: ((Boolean) -> Unit)? = null
 
   // Lock screen controls
   var isActiveForLockScreen = false
@@ -68,6 +69,7 @@ class AudioPlayer(
   val serviceConnection = AudioPlaybackServiceConnection(WeakReference(this), appContext)
 
   private var playerScope = CoroutineScope(Dispatchers.Main)
+  private var playerListener: Player.Listener? = null
   private var samplingEnabled = false
   private var visualizer: Visualizer? = null
   private var playing = false
@@ -80,26 +82,12 @@ class AudioPlayer(
   private var previousPlaybackState = Player.STATE_IDLE
   private var intendedPlayingState = false
 
-  val currentTime get() = ref.currentPosition / 1000f
-  val duration get() = if (ref.duration != C.TIME_UNSET) ref.duration / 1000f else 0f
+  override val player get() = ref
 
   init {
     addPlayerListeners()
     source?.let {
       setMediaSource(source)
-    }
-  }
-
-  fun setVolume(volume: Float?) = appContext?.mainQueue?.launch {
-    val boundedVolume = volume?.coerceIn(0f, 1f) ?: 1f
-    if (isMuted) {
-      if (boundedVolume > 0f) {
-        previousVolume = boundedVolume
-      }
-      ref.volume = 0f
-    } else {
-      previousVolume = boundedVolume
-      ref.volume = boundedVolume
     }
   }
 
@@ -176,60 +164,64 @@ class AudioPlayer(
       .launchIn(playerScope)
   }
 
-  private fun addPlayerListeners() = ref.addListener(object : Player.Listener {
-    override fun onIsPlayingChanged(isPlaying: Boolean) {
-      playing = isPlaying
-      onPlaybackStateChange?.invoke(isPlaying)
+  private fun addPlayerListeners() {
+    val listener = object : Player.Listener {
+      override fun onIsPlayingChanged(isPlaying: Boolean) {
+        playing = isPlaying
+        onPlaybackStateChange?.invoke(isPlaying)
 
-      val isTransient = !isPlaying &&
-        (ref.playbackState == Player.STATE_ENDED || ref.playbackState == Player.STATE_BUFFERING)
-      if (!isTransient) {
-        intendedPlayingState = isPlaying
+        val isTransient = !isPlaying &&
+          (ref.playbackState == Player.STATE_ENDED || ref.playbackState == Player.STATE_BUFFERING)
+        if (!isTransient) {
+          intendedPlayingState = isPlaying
+        }
+
+        if (isTransient) {
+          return
+        }
+        sendPlayerUpdate(mapOf("playing" to isPlaying))
       }
 
-      if (isTransient) {
-        return
-      }
-      sendPlayerUpdate(mapOf("playing" to isPlaying))
-    }
-
-    override fun onIsLoadingChanged(isLoading: Boolean) {
-      sendPlayerUpdate()
-    }
-
-    override fun onPlaybackStateChanged(playbackState: Int) {
-      val justFinished = playbackState == Player.STATE_ENDED &&
-        previousPlaybackState != Player.STATE_ENDED
-      previousPlaybackState = playbackState
-
-      if (justFinished) {
-        intendedPlayingState = false
+      override fun onIsLoadingChanged(isLoading: Boolean) {
+        sendPlayerUpdate()
       }
 
-      val updateMap = mutableMapOf<String, Any?>(
-        "playbackState" to playbackStateToString(playbackState)
-      )
-      if (justFinished) {
-        updateMap["didJustFinish"] = true
-        updateMap["playing"] = false
-      }
-      sendPlayerUpdate(updateMap)
-    }
+      override fun onPlaybackStateChanged(playbackState: Int) {
+        val justFinished = playbackState == Player.STATE_ENDED &&
+          previousPlaybackState != Player.STATE_ENDED
+        previousPlaybackState = playbackState
 
-    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-      sendPlayerUpdate()
-    }
+        if (justFinished) {
+          intendedPlayingState = false
+        }
 
-    override fun onPositionDiscontinuity(
-      oldPosition: Player.PositionInfo,
-      newPosition: Player.PositionInfo,
-      reason: Int
-    ) {
-      if (reason == Player.DISCONTINUITY_REASON_SEEK) {
-        sendPlayerUpdate(mapOf("currentTime" to (newPosition.positionMs / 1000f)))
+        val updateMap = mutableMapOf<String, Any?>(
+          "playbackState" to playbackStateToString(playbackState)
+        )
+        if (justFinished) {
+          updateMap["didJustFinish"] = true
+          updateMap["playing"] = false
+        }
+        sendPlayerUpdate(updateMap)
+      }
+
+      override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+        sendPlayerUpdate()
+      }
+
+      override fun onPositionDiscontinuity(
+        oldPosition: Player.PositionInfo,
+        newPosition: Player.PositionInfo,
+        reason: Int
+      ) {
+        if (reason == Player.DISCONTINUITY_REASON_SEEK) {
+          sendPlayerUpdate(mapOf("currentTime" to (newPosition.positionMs / 1000f)))
+        }
       }
     }
-  })
+    playerListener = listener
+    ref.addListener(listener)
+  }
 
   fun setSamplingEnabled(enabled: Boolean) {
     appContext?.reactContext?.let {
@@ -248,8 +240,10 @@ class AudioPlayer(
     }
   }
 
-  fun seekTo(seekTime: Double) {
-    ref.seekTo((seekTime * 1000L).toLong())
+  override fun setPlaybackRate(rate: Float) {
+    val playbackRate = rate.coerceIn(0.1f, 2.0f)
+    val pitch = if (preservesPitch) 1f else playbackRate
+    ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
   }
 
   private fun extractAmplitudes(chunk: ByteArray): List<Float> = chunk.map { byte ->
@@ -257,7 +251,7 @@ class AudioPlayer(
     ((unsignedByte - 128).toDouble() / 128.0).toFloat()
   }
 
-  fun currentStatus(): Map<String, Any?> {
+  override fun currentStatus(): Map<String, Any?> {
     val isMuted = ref.volume == 0f
     val isLooping = ref.repeatMode == Player.REPEAT_MODE_ONE
     val isLoaded = ref.playbackState == Player.STATE_READY
@@ -354,6 +348,7 @@ class AudioPlayer(
         serviceConnection.playbackServiceBinder?.service?.unregisterPlayer()
       }
       serviceConnection.unbind()
+      playerListener?.let { ref.removeListener(it) }
       playerScope.cancel()
       visualizer?.release()
       ref.release()
