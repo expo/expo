@@ -40,7 +40,7 @@
     "@testing-library/react-native": "^13.2.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-preset-expo": "~55.0.1",
-    "expo-module-scripts": "^55.0.1",
+    "expo-module-scripts": "^55.0.2",
     "react": "19.2.0",
     "react-native": "0.83.1"
   },

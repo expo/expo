@@ -1,7 +1,7 @@
 {
   "name": "expo-insights",
   "title": "Expo Insights",
-  "version": "55.0.1",
+  "version": "55.0.2",
   "description": "Expo module that offers developers insight into the usage data of the app",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -35,7 +35,7 @@
     "expo-eas-client": "~55.0.1"
   },
   "devDependencies": {
-    "expo-module-scripts": "^55.0.1"
+    "expo-module-scripts": "^55.0.2"
   },
   "peerDependencies": {
     "expo": "*"

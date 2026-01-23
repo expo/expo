@@ -37,12 +37,12 @@
     "expo-application": "~55.0.1",
     "expo-constants": "~55.0.1",
     "expo-crypto": "~55.0.1",
-    "expo-linking": "~55.0.1",
+    "expo-linking": "~55.0.2",
     "expo-web-browser": "~55.0.1",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "expo-module-scripts": "^55.0.1"
+    "expo-module-scripts": "^55.0.2"
   },
   "peerDependencies": {
     "react": "*",

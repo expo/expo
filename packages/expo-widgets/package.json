@@ -1,6 +1,6 @@
 {
   "name": "expo-widgets",
-  "version": "55.0.0-alpha.1",
+  "version": "55.0.0-alpha.2",
   "description": "Widgets.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -35,7 +35,7 @@
     "@expo/ui": "55.0.0-beta.1"
   },
   "devDependencies": {
-    "expo-module-scripts": "^55.0.1"
+    "expo-module-scripts": "^55.0.2"
   },
   "peerDependencies": {
     "expo": "*",

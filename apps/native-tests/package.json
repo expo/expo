@@ -9,12 +9,12 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~55.0.0-preview.4",
+    "expo": "~55.0.0-preview.5",
     "expo-clipboard": "55.0.1",
     "expo-dev-client": "~55.0.1",
     "expo-image": "~55.0.1",
     "expo-media-library": "55.0.1",
-    "expo-notifications": "~55.0.1",
+    "expo-notifications": "~55.0.2",
     "expo-splash-screen": "~55.0.1",
     "expo-updates": "55.0.3",
     "react": "19.2.0",

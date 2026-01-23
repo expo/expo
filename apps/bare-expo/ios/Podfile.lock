@@ -38,7 +38,7 @@ PODS:
   - EXManifests/Tests (55.0.1):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.0-preview.4):
+  - Expo (55.0.0-preview.5):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -297,7 +297,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (55.0.0-preview.4):
+  - Expo/Tests (55.0.0-preview.5):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -400,7 +400,7 @@ PODS:
     - SDWebImageWebPCoder
   - ExpoImagePicker (55.0.1):
     - ExpoModulesCore
-  - ExpoInsights (55.0.1):
+  - ExpoInsights (55.0.2):
     - EASClient
     - ExpoModulesCore
     - hermes-engine
@@ -428,7 +428,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLinearGradient (55.0.1):
     - ExpoModulesCore
-  - ExpoLinking (55.0.1):
+  - ExpoLinking (55.0.2):
     - ExpoModulesCore
   - ExpoLivePhoto (55.0.1):
     - ExpoModulesCore
@@ -436,7 +436,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLocalization (55.0.1):
     - ExpoModulesCore
-  - ExpoLocation (55.0.1):
+  - ExpoLocation (55.0.2):
     - ExpoModulesCore
   - ExpoLogBox (55.0.1):
     - React-Core
@@ -519,14 +519,14 @@ PODS:
     - React-hermes
   - ExpoNetwork (55.0.1):
     - ExpoModulesCore
-  - ExpoNotifications (55.0.1):
+  - ExpoNotifications (55.0.2):
     - ExpoModulesCore
-  - ExpoNotifications/Tests (55.0.1):
+  - ExpoNotifications/Tests (55.0.2):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - ExpoPrint (55.0.1):
     - ExpoModulesCore
-  - ExpoRouter (55.0.0-beta.1):
+  - ExpoRouter (55.0.0-beta.2):
     - ExpoModulesCore
     - RNScreens
   - ExpoScreenCapture (55.0.1):
@@ -558,7 +558,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSensors (55.0.1):
     - ExpoModulesCore
-  - ExpoSharing (55.0.1):
+  - ExpoSharing (55.0.2):
     - ExpoModulesCore
   - ExpoSMS (55.0.1):
     - ExpoModulesCore
@@ -3778,7 +3778,7 @@ SPEC CHECKSUMS:
   EXConstants: 1114a0d528d0b21c2710cd41b3f00a63e6758419
   EXJSONUtils: 0080c14b673cfa9a6be5e3fe429768ffe3d42dfb
   EXManifests: 6dfaf0a30de7f5babdbc43d40ea11c6e9427c5d6
-  Expo: 7544e96d3cd007db7f17e50664011aa567600a7d
+  Expo: b159ae0434c61b8140942f3b45ff6fd1d8d8136c
   expo-dev-client: 178f98249bb2e1a797d57db873acc774ec1a4e7f
   expo-dev-launcher: 0d211e49625b3d103548e175a8c45c6e06ce3f87
   expo-dev-menu: 93443c0fb88f322322be13a0da9e9cf0401a9654
@@ -3812,14 +3812,14 @@ SPEC CHECKSUMS:
   ExpoImage: 4787736f71ee33db102228539458feb6ca35d93a
   ExpoImageManipulator: d97a9637580934cc4c55ec154f78eb15ac0ebb0e
   ExpoImagePicker: c10f9ff944ab2305faf7ee6ca9c793ef8bc5613d
-  ExpoInsights: 68219aef25d1ba6c41cb325627adce780124fd63
+  ExpoInsights: edb2720a2d5f739a42f9dfb313fec9fa2ebffc2b
   ExpoKeepAwake: bbbcba9c6494a486b126963fe36d7922f4df1a1f
   ExpoLinearGradient: a212d1347dd704634407ff3620fc38eed0168245
-  ExpoLinking: 12fc755629ab6fe93c750c3a5e6fbf56169dee4c
+  ExpoLinking: b0340e14bcbada3baf365d27a25b9522ffe3c285
   ExpoLivePhoto: 77c1c78b3452ff671465b6a445c6435a51f5c0ae
   ExpoLocalAuthentication: c281b86e53e6f5d51f1aae1f169dac13181ca2f2
   ExpoLocalization: 4189ad9497ca6a99881cbcbc7cda4d030da21892
-  ExpoLocation: 503bbd7a9fe2b7198755389c2dfe40e8528b1a1d
+  ExpoLocation: ee43e9de31f569db4aff564baf47ef79712d1b22
   ExpoLogBox: 7fda53efe4e344cd362eaa280917b44bb4a3c7bb
   ExpoMailComposer: 7e11339254a25dfc553bd0110865f99f59768345
   ExpoMaps: 1f4e8e5e1344ab299bd9b8538008d065bde43d4d
@@ -3829,14 +3829,14 @@ SPEC CHECKSUMS:
   ExpoModulesJSI: 3c64115b67f5195e5d73d6467b1469e0c096350c
   ExpoModulesTestCore: 2d11936a13dd02701ec2d5be6978ad5fd1116a9c
   ExpoNetwork: 91c5fbd489a0a69083dc75d0c629d791d348d0ce
-  ExpoNotifications: ba1da9b4f1a7e885610a543ba7913588b88b6153
+  ExpoNotifications: 713866d141dc606b9ca37943d41dc477b31afefe
   ExpoPrint: 26c06a5ab551ad217d039d99bcffda68d6b7b082
-  ExpoRouter: ddf7f806dc668ede914ccf79a383e61a073bd141
+  ExpoRouter: 096bfabb8e06b76625ea4a600c184643315bd183
   ExpoScreenCapture: 98cb482cc15226039eb7481834ed8fba62fb3bed
   ExpoScreenOrientation: 17380612a43d33c900a63726768549b43e6eeb32
   ExpoSecureStore: 61ec20f9dc9e5d540b1c29aab74c66d104f7fd5e
   ExpoSensors: 83fada390a36ece201a2bb9842d1f5d57941deac
-  ExpoSharing: cf620d66e4f79ef6affe31b9ac39a62acdcc998a
+  ExpoSharing: 12dc62e0f2105e38ce7634bab656da5651cb8b06
   ExpoSMS: dd59e90a66381e9d4323e7abff001530a8179953
   ExpoSpeech: b3bcbaa68f433986d8c94e731db2721f23ab3a57
   ExpoSplashScreen: 7f4392e1b7e32274d1099fbc60a9a9d9fbd1a778
