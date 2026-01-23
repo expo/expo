@@ -9,9 +9,14 @@ const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 async function updateXCodeProject(projectRoot) {
+    const swiftWatchedDirectories = (0, config_1.getConfig)(projectRoot).exp.experiments?.inlineModules?.watchedDirectories ?? [];
+    // Only perform changes to pbxproj if necessary
+    if (swiftWatchedDirectories.length === 0) {
+        return;
+    }
     const pbxProject = config_plugins_1.IOSConfig.XcodeUtils.getPbxproj(projectRoot);
     const mainGroupUUID = pbxProject.getFirstProject().firstProject.mainGroup;
-    const mainTargetUUID = pbxProject.getFirstProject().firstProject.targets[0].value;
+    const mainTarget = pbxProject.getFirstProject().firstProject.targets[0];
     const iosFolderPath = path_1.default.resolve(projectRoot, 'ios');
     const objects = pbxProject.hash.project.objects;
     const dirEntryExists = (dir) => {
@@ -29,7 +34,6 @@ async function updateXCodeProject(projectRoot) {
         }
         return false;
     };
-    const swiftWatchedDirectories = (0, config_1.getConfig)(projectRoot).exp.experiments?.inlineModules?.watchedDirectories ?? [];
     for (const dir of swiftWatchedDirectories) {
         if (dirEntryExists(dir)) {
             continue;
@@ -50,13 +54,13 @@ async function updateXCodeProject(projectRoot) {
             path: path_1.default.relative(iosFolderPath, path_1.default.resolve(projectRoot, dir)),
             sourceTree: 'SOURCE_ROOT',
         };
-        //@ts-ignore
-        objects.PBXFileSystemSynchronizedRootGroup[newUUID + '_comment'] = dir;
-        const nativeTargetGroup = objects.PBXNativeTarget[mainTargetUUID];
-        if (!nativeTargetGroup.fileSystemSynchronizedGroups) {
-            nativeTargetGroup.fileSystemSynchronizedGroups = [];
+        if (mainTarget) {
+            const nativeTargetGroup = objects.PBXNativeTarget[mainTarget.value];
+            if (!nativeTargetGroup.fileSystemSynchronizedGroups) {
+                nativeTargetGroup.fileSystemSynchronizedGroups = [];
+            }
+            nativeTargetGroup.fileSystemSynchronizedGroups.push({ value: newUUID, comment: dir });
         }
-        nativeTargetGroup.fileSystemSynchronizedGroups.push({ value: newUUID, comment: dir });
     }
     await fs_1.default.promises.writeFile(pbxProject.filepath, pbxProject.writeSync());
 }
