@@ -56,7 +56,7 @@
   },
   "devDependencies": {
     "@types/diff": "^5.2.0",
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "^55.0.2"
   },
   "peerDependencies": {
     "expo": "*"
