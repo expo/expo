@@ -1583,15 +1583,6 @@
     metro-transform-plugins "0.83.3"
     metro-transform-worker "0.83.3"
 
-"@expo/multipart-body-parser@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/multipart-body-parser/-/multipart-body-parser-1.0.0.tgz#7227bab9cfe9d4baea925b748a3212e0239ba55d"
-  integrity sha512-ROR8PPuWZ6AcePdlmkzGmbniiScqQbyjFefb7Z8WZZOQkiIR/TdFA0vc0C9gmK1lJJp7IyXbW51XVG7eehyO3Q==
-  dependencies:
-    dicer "^0.3.1"
-    nullthrows "^1.1.1"
-    structured-headers "^0.4.1"
-
 "@expo/mux@^1.0.7":
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/@expo/mux/-/mux-1.0.7.tgz#77a29dcf7bd02edf76cfc74631a64ea6b13b9c58"
@@ -7231,13 +7222,6 @@ devtools-protocol@^0.0.1113120:
   version "0.0.1113120"
   resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.1113120.tgz#7ab2169517df18dfa3281b5a84a6628c93f97785"
   integrity sha512-jQ+n75ixpBT5aktBmsI/FQx5d26bSuXBd/fe9/bKIIAiKTfFNRT33nOJuBJMZNvxDNA7Wih/QFiIya1K1rdqKQ==
-
-dicer@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/dicer/-/dicer-0.3.1.tgz#abf28921e3475bc5e801e74e0159fd94f927ba97"
-  integrity sha512-ObioMtXnmjYs3aRtpIJt9rgQSPCIhKVkFPip+E9GUDyWl8N435znUxK/JfNwGZJ2wnn5JKQ7Ly3vOK5Q5dylGA==
-  dependencies:
-    streamsearch "^1.1.0"
 
 didyoumean@^1.2.2:
   version "1.2.2"

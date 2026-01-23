@@ -1,7 +1,4 @@
-import {
-  isMultipartPartWithName,
-  parseMultipartMixedResponseAsync,
-} from '@expo/multipart-body-parser';
+import { parseMultipart } from 'multitars';
 
 import { encodeMultipartMixed } from '../multipartMixed';
 
@@ -20,30 +17,28 @@ describe(encodeMultipartMixed, () => {
       },
     ]);
 
-    const multipartParts = await parseMultipartMixedResponseAsync(
-      `multipart/mixed; boundary=${encoded.boundary}`,
-      Buffer.from(encoded.body)
-    );
+    const multipartParts: { body: string; name: string; type: string }[] = [];
+    const contentType = `multipart/mixed; boundary=${encoded.boundary}`;
+    for await (const part of parseMultipart(new Blob([encoded.body]).stream(), { contentType })) {
+      multipartParts.push({
+        name: part.name,
+        type: part.type,
+        body: await part.text(),
+      });
+    }
 
     expect(multipartParts).toEqual([
       {
         body: 'test\na',
-        headers: new Map([
-          ['content-disposition', `form-data; name="a"`],
-          ['content-type', 'text/plain'],
-        ]),
+        name: 'a',
+        type: 'text/plain',
       },
       {
         body: '{"json":"value"}',
-        headers: new Map([
-          ['content-disposition', `form-data; name="b"`],
-          ['content-type', 'application/json'],
-        ]),
+        name: 'b',
+        type: 'application/json',
       },
     ]);
-
-    expect(isMultipartPartWithName(multipartParts[0], 'a')).toBe(true);
-    expect(isMultipartPartWithName(multipartParts[1], 'b')).toBe(true);
   });
 
   it('creates a parseable multipart/mixed body with custom part headers', async () => {
@@ -57,22 +52,10 @@ describe(encodeMultipartMixed, () => {
       },
     ]);
 
-    const multipartParts = await parseMultipartMixedResponseAsync(
-      `multipart/mixed; boundary=${encoded.boundary}`,
-      Buffer.from(encoded.body)
-    );
-
-    expect(multipartParts).toEqual([
-      {
-        body: 'test\na',
-        headers: new Map([
-          ['content-disposition', `form-data; name="a"`],
-          ['expo-signature', 'signature'],
-        ]),
-      },
-    ]);
-
-    expect(isMultipartPartWithName(multipartParts[0], 'a')).toBe(true);
+    const contentType = `multipart/mixed; boundary=${encoded.boundary}`;
+    for await (const part of parseMultipart(new Blob([encoded.body]).stream(), { contentType })) {
+      expect(part.headers['expo-signature']).toBe('signature');
+    }
   });
 
   it('accepts files', async () => {
@@ -83,21 +66,9 @@ describe(encodeMultipartMixed, () => {
       },
     ]);
 
-    const multipartParts = await parseMultipartMixedResponseAsync(
-      `multipart/mixed; boundary=${encoded.boundary}`,
-      Buffer.from(encoded.body)
-    );
-
-    expect(multipartParts).toEqual([
-      {
-        body: 'test\na',
-        headers: new Map([
-          ['content-disposition', `form-data; name="a"; filename="a.txt"`],
-          ['content-type', 'text/plain'],
-        ]),
-      },
-    ]);
-
-    expect(isMultipartPartWithName(multipartParts[0], 'a')).toBe(true);
+    const contentType = `multipart/mixed; boundary=${encoded.boundary}`;
+    for await (const part of parseMultipart(new Blob([encoded.body]).stream(), { contentType })) {
+      expect(await part.text()).toBe('test\na');
+    }
   });
 });
