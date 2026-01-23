@@ -92,45 +92,43 @@ describe.each(
     expect(response.status).toBe(404);
   });
 
-  it('loader endpoint returns JSON', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/second');
-    expect(response.status).toBe(200);
-    expect(response.headers.get('content-type')).toContain('application/json');
-
-    const data = await response.json();
-    expect(data).toBeDefined();
-  });
-
-  it('loader endpoint returns JSON with params for dynamic route', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/posts/my-test-post');
-    expect(response.status).toBe(200);
-    expect(response.headers.get('content-type')).toContain('application/json');
-
-    const data = await response.json();
-    expect(data.params).toHaveProperty('postId', 'my-test-post');
-  });
-
-  (server.isExpoStart ? it.skip : it)(
-    'loader can access server environment variables',
-    async () => {
-      const response = await server.fetchAsync('/_expo/loaders/env');
+  it.each(getPageAndLoaderData('/second'))(
+    'can access data for $url ($name)',
+    async ({ getData, name, url }) => {
+      const response = await server.fetchAsync(url);
       expect(response.status).toBe(200);
-      const data = await response.json();
+
+      if (name === 'loader') {
+        expect(response.headers.get('content-type')).toContain('application/json');
+      }
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'second' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/posts/static-post-1'))(
+    'can access data with dynamic params for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      const data = await getData(response);
+
+      expect(data.params).toHaveProperty('postId', 'static-post-1');
+    }
+  );
+
+  (server.isExpoStart ? it.skip : it).each(getPageAndLoaderData('/env'))(
+    'can access server environment variables for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      const data = await getData(response);
+
       expect(data).not.toHaveProperty('TEST_SECRET_KEY', 'test-secret-key');
       expect(data).toHaveProperty('TEST_SECRET_RUNTIME_KEY', 'runtime-secret-value');
     }
   );
-
-  it('loader endpoint returns `Response` with headers', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/response');
-    expect(response.status).toBe(200);
-    expect(response.headers.get('content-type')).toContain('application/json');
-    expect(response.headers.get('cache-control')).toBe('public, max-age=3600');
-    expect(response.headers.get('x-custom-header')).toBe('set-via-response');
-
-    const data = await response.json();
-    expect(data).toEqual({ foo: 'bar' });
-  });
 
   it.each(getPageAndLoaderData('/nullish/undefined'))(
     'returns `null` for `undefined` loader data for $url ($name)',
@@ -205,6 +203,17 @@ describe.each(
       expect(data.error).toContain('This operation is not allowed');
     }
   );
+
+  it('loader endpoint returns `Response`', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/response');
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('application/json');
+    expect(response.headers.get('cache-control')).toBe('public, max-age=3600');
+    expect(response.headers.get('x-custom-header')).toBe('set-via-response');
+
+    const data = await response.json();
+    expect(data).toEqual({ foo: 'bar' });
+  });
 
   it('sets custom headers on response using `setResponseHeaders()`', async () => {
     const response = await server.fetchAsync('/_expo/loaders/response?setresponseheaders=true');
