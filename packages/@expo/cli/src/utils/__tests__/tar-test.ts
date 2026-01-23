@@ -1,10 +1,16 @@
 import spawnAsync from '@expo/spawn-async';
-import * as tar from 'tar';
+import { vol } from 'memfs';
+import { untar } from 'multitars';
 
 import * as Log from '../../log';
 import { extractAsync } from '../tar';
 
 jest.mock(`../../log`);
+
+jest.mock('multitars', () => ({
+  ...jest.requireActual('multitars'),
+  untar: jest.fn(() => []),
+}));
 
 function mockPlatform(value: typeof process.platform) {
   Object.defineProperty(process, 'platform', {
@@ -16,8 +22,9 @@ describe(extractAsync, () => {
   const originalPlatform = process.platform;
 
   beforeEach(() => {
+    vol.fromJSON({ 'template.tgz': '' }, '.');
     jest.mocked(spawnAsync).mockClear();
-    jest.mocked(tar.extract).mockClear();
+    jest.mocked(untar).mockClear();
     jest.mocked(Log.warn).mockClear();
   });
 
@@ -40,8 +47,7 @@ describe(extractAsync, () => {
       expect.stringMatching(/Failed to extract tar.*mock failure/)
     );
     // JS tools
-    expect(tar.extract).toHaveBeenCalledTimes(1);
-    expect(tar.extract).toHaveBeenLastCalledWith({ cwd: './output', file: './template.tgz' });
+    expect(untar).toHaveBeenCalledTimes(1);
   });
 
   it('skips JS tools on mac when native tools work', async () => {
@@ -52,7 +58,7 @@ describe(extractAsync, () => {
 
     expect(spawnAsync).toHaveBeenCalledTimes(1);
     expect(Log.warn).toHaveBeenCalledTimes(0);
-    expect(tar.extract).toHaveBeenCalledTimes(0);
+    expect(untar).toHaveBeenCalledTimes(0);
   });
 
   it('skips native tools on windows', async () => {
@@ -64,7 +70,6 @@ describe(extractAsync, () => {
     expect(spawnAsync).toHaveBeenCalledTimes(0);
     expect(Log.warn).toHaveBeenCalledTimes(0);
     // JS tools
-    expect(tar.extract).toHaveBeenCalledTimes(1);
-    expect(tar.extract).toHaveBeenLastCalledWith({ cwd: './output', file: './template.tgz' });
+    expect(untar).toHaveBeenCalledTimes(1);
   });
 });
