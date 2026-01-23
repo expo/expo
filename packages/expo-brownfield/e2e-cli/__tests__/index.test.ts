@@ -20,11 +20,11 @@ describe('basic cli tests', () => {
   }, 600000);
 
   /**
-   * Command: npx expo-brownfield tasks-android
+   * Command: npx expo-brownfield tasks:android
    * Expected behavior: The CLI should display an error message
    */
   it('should correctly parse passed commands', async () => {
-    const { stderr, exitCode } = await executeCLIASync(TEMP_DIR, ['tasks-android'], {
+    const { stderr, exitCode } = await executeCLIASync(TEMP_DIR, ['tasks:android'], {
       ignoreErrors: true,
     });
     // Expect error because we haven't run prebuild
@@ -53,11 +53,11 @@ describe('basic cli tests', () => {
   });
 
   /**
-   * Command: npx expo-brownfield unknown-command
+   * Command: npx expo-brownfield unknown:command
    * Expected behavior: The CLI should display an error message
    */
   it('should display an error message if unknown command is provided', async () => {
-    const { stderr, exitCode } = await executeCLIASync(TEMP_DIR, ['unknown-command'], {
+    const { stderr, exitCode } = await executeCLIASync(TEMP_DIR, ['unknown:command'], {
       ignoreErrors: true,
     });
     expect(exitCode).not.toBe(0);
@@ -65,7 +65,7 @@ describe('basic cli tests', () => {
   });
 
   /**
-   * Command: npx expo-brownfield --unknown-flag
+   * Command: npx expo-brownfield --unknown:flag
    * Expected behavior: The CLI should display an error message
    */
   it('should display an error message if unknown flag is provided', async () => {

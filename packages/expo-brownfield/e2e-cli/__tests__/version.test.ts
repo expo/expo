@@ -38,11 +38,11 @@ describe('--version option', () => {
   });
 
   /**
-   * Command: npx expo-brownfield tasks-android --version
+   * Command: npx expo-brownfield tasks:android --version
    * Expected behavior: The CLI should not support the `--version` option after a command is used
    */
   it("shouldn't be supported after a command is used", async () => {
-    const { stderr, exitCode } = await executeCLIASync(TEMP_DIR, ['tasks-android', '--version'], {
+    const { stderr, exitCode } = await executeCLIASync(TEMP_DIR, ['tasks:android', '--version'], {
       ignoreErrors: true,
     });
     expect(exitCode).not.toBe(0);
@@ -50,11 +50,11 @@ describe('--version option', () => {
   });
 
   /**
-   * Command: npx expo-brownfield --version tasks-android
+   * Command: npx expo-brownfield --version tasks:android
    * Expected behavior: The `--version` option should be executed instead of the command
    */
   it('should take precedence over the command', async () => {
-    const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--version', 'tasks-android']);
+    const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--version', 'tasks:android']);
     expect(exitCode).toBe(0);
     expect(stdout).toBe(VERSION);
   });

@@ -10,12 +10,12 @@ const action = async () => {
     const args = (0, utils_1.parseArgs)({
         spec: constants_1.Args.Android,
         // Skip first three args:
-        // <node-path> expo-brownfield build-android
+        // <node-path> expo-brownfield build:android
         argv: process.argv.slice(3),
         stopAtPositional: true,
     });
     if ((0, utils_1.getCommand)(args)) {
-        return constants_1.Errors.additionalCommand('build-android');
+        return constants_1.Errors.additionalCommand('build:android');
     }
     // Only resolve --help and --verbose options
     const basicConfig = (0, utils_1.getCommonConfig)(args);

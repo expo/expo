@@ -38,11 +38,11 @@ describe('--help option', () => {
   });
 
   /**
-   * Command: npx expo-brownfield tasks-android --help
+   * Command: npx expo-brownfield tasks:android --help
    * Expected behavior: The CLI should not print general help after a command is used
    */
   it("shouldn't print general help after a command is used", async () => {
-    const { stdout } = await executeCLIASync(TEMP_DIR, ['tasks-android', '--help'], {
+    const { stdout } = await executeCLIASync(TEMP_DIR, ['tasks:android', '--help'], {
       ignoreErrors: true,
     });
     expect(stdout).not.toContain(HELP_MESSAGE.GENERAL_HEADER);
@@ -59,11 +59,11 @@ describe('--help option', () => {
   });
 
   /**
-   * Command: npx expo-brownfield --help tasks-android
+   * Command: npx expo-brownfield --help tasks:android
    * Expected behavior: The `--help` option should take precedence over the command
    */
   it('should take precedence over the command', async () => {
-    const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--help', 'tasks-android']);
+    const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--help', 'tasks:android']);
     expect(exitCode).toBe(0);
     expect(stdout).toContain(HELP_MESSAGE.GENERAL_HEADER);
   });

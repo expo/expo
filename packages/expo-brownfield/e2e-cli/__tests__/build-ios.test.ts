@@ -10,10 +10,10 @@ let TEMP_DIR_PREBUILD: string;
 const PREBUILD_WORKSPACE_NAME = 'buildiospb';
 
 /**
- * Tests the `build-ios` command
- * npx expo-brownfield build-ios
+ * Tests the `build:ios` command
+ * npx expo-brownfield build:ios
  */
-describe('build-ios command', () => {
+describe('build:ios command', () => {
   /**
    * Part of the cases doesn't and shouldn't require prebuild to be done
    */
@@ -27,7 +27,7 @@ describe('build-ios command', () => {
     }, 600000);
 
     /**
-     * Command: npx expo-brownfield build-android --help/-h
+     * Command: npx expo-brownfield build:android --help/-h
      * Expected behavior: The CLI should display the full help message
      */
     it('should display help message for --help/-h option', async () => {
@@ -37,7 +37,7 @@ describe('build-ios command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-ios --invalid-flag
+     * Command: npx expo-brownfield build:ios --invalid-flag
      * Expected behavior: The CLI should display the error message
      */
     it('should handle incorrect options', async () => {
@@ -51,21 +51,21 @@ describe('build-ios command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-ios build-android
+     * Command: npx expo-brownfield build:ios build:android
      * Expected behavior: The CLI should display the error message
      */
     it("shouldn't allow passing another command", async () => {
       await buildIosTest(
         TEMP_DIR,
-        ['build-android'],
+        ['build:android'],
         false,
         [],
-        [ERROR.ADDITIONAL_COMMAND('build-ios')]
+        [ERROR.ADDITIONAL_COMMAND('build:ios')]
       );
     });
 
     /**
-     * Command: npx expo-brownfield build-ios
+     * Command: npx expo-brownfield build:ios
      * Expected behavior: The CLI should validate and ask for prebuild
      */
     it('should validate and ask for prebuild', async () => {
@@ -74,7 +74,7 @@ describe('build-ios command', () => {
       const { exitCode, stdout, stderr } = await executeCommandAsync(
         TEMP_DIR,
         'bash',
-        ['-c', 'yes | npx expo-brownfield build-ios'],
+        ['-c', 'yes | npx expo-brownfield build:ios'],
         { ignoreErrors: true }
       );
       expect(exitCode).not.toBe(0);
@@ -104,7 +104,7 @@ describe('build-ios command', () => {
     }, 600000);
 
     /**
-     * Command: npx expo-brownfield build-ios --dry-run
+     * Command: npx expo-brownfield build:ios --dry-run
      * Expected behavior: The CLI should print the steps it would execute
      */
     it('should build the project', async () => {
@@ -117,7 +117,7 @@ describe('build-ios command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-ios --dry-run
+     * Command: npx expo-brownfield build:ios --dry-run
      * Expected behavior: The CLI should print the inferred build configuration
      */
     it('should infer and print build configuration', async () => {
@@ -127,7 +127,7 @@ describe('build-ios command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-ios --dry-run --verbose
+     * Command: npx expo-brownfield build:ios --dry-run --verbose
      * Expected behavior: The CLI should print the verbose configuration
      */
     it('should properly handle --verbose option', async () => {
@@ -135,7 +135,7 @@ describe('build-ios command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-ios --dry-run --debug/-d
+     * Command: npx expo-brownfield build:ios --dry-run --debug/-d
      * Expected behavior: The CLI should print the debug configuration and execute correct tasks
      */
     it('should properly handle --debug option', async () => {
@@ -150,7 +150,7 @@ describe('build-ios command', () => {
 
     // release
     /**
-     * Command: npx expo-brownfield build-ios --dry-run --debug/-d
+     * Command: npx expo-brownfield build:ios --dry-run --debug/-d
      * Expected behavior: The CLI should print the debug configuration and execute correct tasks
      */
     it('should properly handle --release option', async () => {
@@ -164,7 +164,7 @@ describe('build-ios command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-ios --dry-run --release -d
+     * Command: npx expo-brownfield build:ios --dry-run --release -d
      * Expected behavior: --release option should override --debug option
      */
     it('--release option should take precedence over --debug option', async () => {
@@ -181,7 +181,7 @@ describe('build-ios command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-ios --dry-run -x/--xcworkspace someworkspace.xcworkspace
+     * Command: npx expo-brownfield build:ios --dry-run -x/--xcworkspace someworkspace.xcworkspace
      * Expected behavior: The CLI should print the build configuration with the correct workspace
      */
     it('should properly handle --xcworkspace option', async () => {
@@ -200,7 +200,7 @@ describe('build-ios command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-ios --dry-run -s/--scheme someworkspace.xcworkspace
+     * Command: npx expo-brownfield build:ios --dry-run -s/--scheme someworkspace.xcworkspace
      * Expected behavior: The CLI should print the build configuration with the correct workspace
      */
     it('should properly handle --xcworkspace option', async () => {
@@ -213,7 +213,7 @@ describe('build-ios command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-ios --dry-run -s/--scheme someworkspace.xcworkspace
+     * Command: npx expo-brownfield build:ios --dry-run -s/--scheme someworkspace.xcworkspace
      * Expected behavior: The CLI should print the build configuration with the correct workspace
      */
     it('should properly handle --artifacts option', async () => {

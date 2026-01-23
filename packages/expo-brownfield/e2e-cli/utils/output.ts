@@ -4,9 +4,9 @@ import path from 'node:path';
  * Help messages
  */
 export const HELP_MESSAGE = {
-  BUILD_ANDROID: `Usage: expo-brownfield build-android [<options>]\n
+  BUILD_ANDROID: `Usage: expo-brownfield build:android [<options>]\n
 Options:
-  --help, -h                    display help for 'build-android'
+  --help, -h                    display help for 'build:android'
   --debug, -d                   build in debug configuration
   --release, -r                 build in release configuration
   --verbose                     forward all output to the terminal
@@ -14,9 +14,9 @@ Options:
   --repository, --repo          maven repository for publishing artifacts (multiple can be passed)
   --task, -t                    publishing task to be run (multiple can be passed)
   --library, -l                 name of the brownfield library`,
-  BUILD_IOS: `Usage: expo-brownfield build-ios [<options>]\n
+  BUILD_IOS: `Usage: expo-brownfield build:ios [<options>]\n
 Options:
-  --help, -h                    display help for 'build-ios'
+  --help, -h                    display help for 'build:ios'
   --debug, -d                   build in debug configuration
   --release, -r                 build in release configuration
   --verbose                     forward all output to the terminal
@@ -28,13 +28,13 @@ Options:
   --version, -v                 output the version number
   --help, -h                    display help for command\n
 Commands:
-  build-android [<options>]     build and publish Android brownfield artifacts
-  build-ios [<options>]         build iOS brownfield artifacts
-  tasks-android [<options>]     list available publishing tasks and repositories for android`,
+  build:android [<options>]     build and publish Android brownfield artifacts
+  build:ios [<options>]         build iOS brownfield artifacts
+  tasks:android [<options>]     list available publishing tasks and repositories for android`,
   GENERAL_HEADER: `Usage: expo-brownfield <command> [<options>]`,
-  TASKS_ANDROID: `Usage: expo-brownfield tasks-android [<options>]\n
+  TASKS_ANDROID: `Usage: expo-brownfield tasks:android [<options>]\n
 Options:
-  --help, -h                    display help for 'tasks-android'
+  --help, -h                    display help for 'tasks:android'
   --verbose                     output all subcommands output to the terminal
   --library, -l                 name of the brownfield library`,
 } as const;
@@ -123,7 +123,7 @@ export const ERROR = {
 For all available options please use the help command:
 npx expo-brownfield ${command} --help`,
   UNKNOWN_COMMAND: () => `Error: unknown command
-Supported commands: build-android, build-ios, tasks-android`,
+Supported commands: build:android, build:ios, tasks:android`,
   UNKNOWN_OPTION: (option: string) => `Error: unknown or unexpected option: ${option}`,
 } as const;
 

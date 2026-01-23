@@ -13,7 +13,7 @@ export const buildAndroidTest = async (
   stdout: string[] = [],
   stderr: string[] = []
 ) => {
-  await buildTestCommon(directory, 'build-android', args, successExit, stdout, stderr);
+  await buildTestCommon(directory, 'build:android', args, successExit, stdout, stderr);
 };
 
 /**
@@ -26,7 +26,7 @@ export const buildIosTest = async (
   stdout: string[] = [],
   stderr: string[] = []
 ) => {
-  await buildTestCommon(directory, 'build-ios', args, successExit, stdout, stderr);
+  await buildTestCommon(directory, 'build:ios', args, successExit, stdout, stderr);
 };
 
 /**

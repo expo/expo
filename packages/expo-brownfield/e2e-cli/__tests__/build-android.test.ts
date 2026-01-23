@@ -7,10 +7,10 @@ let TEMP_DIR: string;
 let TEMP_DIR_PREBUILD: string;
 
 /**
- * Tests the `build-android` command
- * npx expo-brownfield build-android
+ * Tests the `build:android` command
+ * npx expo-brownfield build:android
  */
-describe('build-android command', () => {
+describe('build:android command', () => {
   /**
    * Part of the cases doesn't and shouldn't require prebuild to be done
    */
@@ -24,7 +24,7 @@ describe('build-android command', () => {
     }, 600000);
 
     /**
-     * Command: npx expo-brownfield build-android --help/-h
+     * Command: npx expo-brownfield build:android --help/-h
      * Expected behavior: The CLI should display the full help message
      */
     it('should display help message for --help/-h option', async () => {
@@ -34,7 +34,7 @@ describe('build-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-android --invalid-flag
+     * Command: npx expo-brownfield build:android --invalid-flag
      * Expected behavior: The CLI should display the error message
      */
     it('should handle incorrect options', async () => {
@@ -48,21 +48,21 @@ describe('build-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-android build-ios
+     * Command: npx expo-brownfield build:android build:ios
      * Expected behavior: The CLI should display the error message
      */
     it("shouldn't allow passing another command", async () => {
       await buildAndroidTest(
         TEMP_DIR,
-        ['build-ios'],
+        ['build:ios'],
         false,
         [],
-        [ERROR.ADDITIONAL_COMMAND('build-android')]
+        [ERROR.ADDITIONAL_COMMAND('build:android')]
       );
     });
 
     /**
-     * Command: npx expo-brownfield build-android
+     * Command: npx expo-brownfield build:android
      * Expected behavior: The CLI should validate and ask for prebuild
      */
     it('should validate and ask for prebuild', async () => {
@@ -71,7 +71,7 @@ describe('build-android command', () => {
       const { exitCode, stdout, stderr } = await executeCommandAsync(
         TEMP_DIR,
         'bash',
-        ['-c', 'yes | npx expo-brownfield build-android'],
+        ['-c', 'yes | npx expo-brownfield build:android'],
         { ignoreErrors: true }
       );
       expect(exitCode).not.toBe(0);
@@ -101,7 +101,7 @@ describe('build-android command', () => {
     }, 600000);
 
     /**
-     * Command: npx expo-brownfield build-android --task someGradleTask --dry-run
+     * Command: npx expo-brownfield build:android --task someGradleTask --dry-run
      * Expected behavior: The CLI should print the task it would execute
      */
     it('should build the project', async () => {
@@ -111,7 +111,7 @@ describe('build-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-android --task someGradleTask --dry-run
+     * Command: npx expo-brownfield build:android --task someGradleTask --dry-run
      * Expected behavior: The CLI should print the inferred build configuration
      */
     it('should infer and print build configuration', async () => {
@@ -121,7 +121,7 @@ describe('build-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-android --task someGradleTask --dry-run --verbose
+     * Command: npx expo-brownfield build:android --task someGradleTask --dry-run --verbose
      * Expected behavior: The CLI should print the verbose configuration
      */
     it('should properly handle --verbose option', async () => {
@@ -134,7 +134,7 @@ describe('build-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-android --repo MavenLocal --dry-run --debug/-d
+     * Command: npx expo-brownfield build:android --repo MavenLocal --dry-run --debug/-d
      * Expected behavior: The CLI should print the debug configuration and execute correct tasks
      */
     it('should properly handle --debug option', async () => {
@@ -157,7 +157,7 @@ describe('build-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-android --repo MavenLocal --dry-run --release/-r     * Command: npx expo-brownfield build-android --repo MavenLocal --dry-run --release/-r
+     * Command: npx expo-brownfield build:android --repo MavenLocal --dry-run --release/-r     * Command: npx expo-brownfield build:android --repo MavenLocal --dry-run --release/-r
      * Expected behavior: The CLI should print the release configuration and execute correct tasks
      */
     it('should properly handle --release option', async () => {
@@ -180,7 +180,7 @@ describe('build-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-android --repo MavenLocal --dry-run --all/-a
+     * Command: npx expo-brownfield build:android --repo MavenLocal --dry-run --all/-a
      *  (or --release/-r + --debug/-d)
      * Expected behavior: The CLI should print the all configuration and execute correct tasks
      */
@@ -209,7 +209,7 @@ describe('build-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-android --repo MavenLocal --dry-run --library/-l brownfieldlib
+     * Command: npx expo-brownfield build:android --repo MavenLocal --dry-run --library/-l brownfieldlib
      * Expected behavior: The CLI should print the library configuration and execute correct tasks
      */
     it('should properly handle --library option', async () => {
@@ -231,7 +231,7 @@ describe('build-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-android --task/t task (multiple can be passed)
+     * Command: npx expo-brownfield build:android --task/t task (multiple can be passed)
      * Expected behavior: The CLI should print the tasks configuration and execute correct tasks
      */
     it('should properly handle --task/-t option(s)', async () => {
@@ -244,7 +244,7 @@ describe('build-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-android --repo MavenLocal --repository CustomLocal --dry-run
+     * Command: npx expo-brownfield build:android --repo MavenLocal --repository CustomLocal --dry-run
      * Expected behavior: The CLI should print the repositories configuration and execute correct tasks
      */
     it('should properly handle --repo/--repository option(s)', async () => {
@@ -261,7 +261,7 @@ describe('build-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-android --repo MavenLocal --task task1 --dry-run
+     * Command: npx expo-brownfield build:android --repo MavenLocal --task task1 --dry-run
      * Expected behavior: Tasks should take precedence over repositories. Correct task should be executed
      */
     it('tasks should take precedence over repositories', async () => {
@@ -274,7 +274,7 @@ describe('build-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield build-android <various configurations> --dry-run
+     * Command: npx expo-brownfield build:android <various configurations> --dry-run
      * Expected behavior: Correct tasks should be constructed and executed
      */
     it('should properly construct and execute tasks for various configurations', async () => {

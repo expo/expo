@@ -4,9 +4,9 @@ E2E tests for `expo-brownfield` CLI validating basic cases (like handling empty 
 
 - `--help`
 - `--version`
-- `build-android`
-- `build-ios`
-- `tasks-android`
+- `build:android`
+- `build:ios`
+- `tasks:android`
 
 Note: The tests use local versions of Expo CLI, Create Expo and expo-default-template
 

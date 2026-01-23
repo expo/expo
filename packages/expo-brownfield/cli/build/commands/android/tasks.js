@@ -11,12 +11,12 @@ const action = async () => {
     const args = (0, utils_1.parseArgs)({
         spec: constants_1.Args.TasksAndroid,
         // Skip first three args:
-        // <node-path> expo-brownfield tasks-android
+        // <node-path> expo-brownfield tasks:android
         argv: process.argv.slice(3),
         stopAtPositional: true,
     });
     if ((0, utils_1.getCommand)(args)) {
-        return constants_1.Errors.additionalCommand('tasks-android');
+        return constants_1.Errors.additionalCommand('tasks:android');
     }
     const config = await (0, utils_1.getTasksAndroidConfig)(args);
     if (config.help) {

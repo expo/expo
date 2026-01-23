@@ -6,10 +6,10 @@ let TEMP_DIR: string;
 let TEMP_DIR_PREBUILD: string;
 
 /**
- * Tests the `tasks-android` command
- * npx expo-brownfield tasks-android
+ * Tests the `tasks:android` command
+ * npx expo-brownfield tasks:android
  */
-describe('tasks-android command', () => {
+describe('tasks:android command', () => {
   /**
    * Part of the cases doesn't and shouldn't require prebuild to be done
    */
@@ -23,28 +23,28 @@ describe('tasks-android command', () => {
     }, 600000);
 
     /**
-     * Command: npx expo-brownfield tasks-android --help/-h
+     * Command: npx expo-brownfield tasks:android --help/-h
      * Expected behavior: The CLI should display the full help message
      */
     it('should display help message for --help/-h option', async () => {
       // Help message display shouldn't require prebuild
-      let result = await executeCLIASync(TEMP_DIR, ['tasks-android', '--help']);
+      let result = await executeCLIASync(TEMP_DIR, ['tasks:android', '--help']);
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toContain(HELP_MESSAGE.TASKS_ANDROID);
 
-      result = await executeCLIASync(TEMP_DIR, ['tasks-android', '-h']);
+      result = await executeCLIASync(TEMP_DIR, ['tasks:android', '-h']);
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toContain(HELP_MESSAGE.TASKS_ANDROID);
     });
 
     /**
-     * Command: npx expo-brownfield tasks-android --invalid-flag
+     * Command: npx expo-brownfield tasks:android --invalid-flag
      * Expected behavior: The CLI should display the error message
      */
     it('should handle incorrect options', async () => {
       const { exitCode, stderr } = await executeCLIASync(
         TEMP_DIR,
-        ['tasks-android', '--invalid-flag'],
+        ['tasks:android', '--invalid-flag'],
         { ignoreErrors: true }
       );
       expect(exitCode).toBe(1);
@@ -52,17 +52,17 @@ describe('tasks-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield tasks-android build-android
+     * Command: npx expo-brownfield tasks:android build:android
      * Expected behavior: The CLI should display the error message
      */
     it("shouldn't allow passing another command", async () => {
       const { exitCode, stderr } = await executeCLIASync(
         TEMP_DIR,
-        ['tasks-android', 'build-android'],
+        ['tasks:android', 'build:android'],
         { ignoreErrors: true }
       );
       expect(exitCode).toBe(1);
-      expect(stderr).toContain(ERROR.ADDITIONAL_COMMAND('tasks-android'));
+      expect(stderr).toContain(ERROR.ADDITIONAL_COMMAND('tasks:android'));
     });
   });
 
@@ -79,11 +79,11 @@ describe('tasks-android command', () => {
     }, 600000);
 
     /**
-     * Command: npx expo-brownfield tasks-android
+     * Command: npx expo-brownfield tasks:android
      * Expected behavior: The CLI should properly list available publishing tasks
      */
     it('should properly list available tasks', async () => {
-      const { stdout, exitCode } = await executeCLIASync(TEMP_DIR_PREBUILD, ['tasks-android']);
+      const { stdout, exitCode } = await executeCLIASync(TEMP_DIR_PREBUILD, ['tasks:android']);
       expect(exitCode).toBe(0);
       TASKS_ANDROID.RESULT.forEach((fragment) => {
         expect(stdout).toContain(fragment);
@@ -91,12 +91,12 @@ describe('tasks-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield tasks-android --library/-l <library-name>
+     * Command: npx expo-brownfield tasks:android --library/-l <library-name>
      * Expected behavior: The CLI should use the provided library name instead of inferring it
      */
     it('should properly handle --library/-l option', async () => {
       let result = await executeCLIASync(TEMP_DIR_PREBUILD, [
-        'tasks-android',
+        'tasks:android',
         '--library',
         'brownfield',
       ]);
@@ -105,7 +105,7 @@ describe('tasks-android command', () => {
         expect(result.stdout).toContain(fragment);
       });
 
-      result = await executeCLIASync(TEMP_DIR_PREBUILD, ['tasks-android', '-l', 'brownfield']);
+      result = await executeCLIASync(TEMP_DIR_PREBUILD, ['tasks:android', '-l', 'brownfield']);
       expect(result.exitCode).toBe(0);
       TASKS_ANDROID.RESULT.forEach((fragment) => {
         expect(result.stdout).toContain(fragment);
@@ -113,7 +113,7 @@ describe('tasks-android command', () => {
 
       result = await executeCLIASync(
         TEMP_DIR_PREBUILD,
-        ['tasks-android', '-l', 'wrongbrownfield'],
+        ['tasks:android', '-l', 'wrongbrownfield'],
         { ignoreErrors: true }
       );
       expect(result.exitCode).not.toBe(0);
@@ -123,11 +123,11 @@ describe('tasks-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield tasks-android
+     * Command: npx expo-brownfield tasks:android
      * Expected behavior: The CLI shouldn't print verbose output by default
      */
     it("shouldn't print verbose output by default", async () => {
-      const { stdout, exitCode } = await executeCLIASync(TEMP_DIR_PREBUILD, ['tasks-android']);
+      const { stdout, exitCode } = await executeCLIASync(TEMP_DIR_PREBUILD, ['tasks:android']);
       expect(exitCode).toBe(0);
       TASKS_ANDROID.VERBOSE.forEach((fragment) => {
         expect(stdout).not.toContain(fragment);
@@ -135,12 +135,12 @@ describe('tasks-android command', () => {
     });
 
     /**
-     * Command: npx expo-brownfield tasks-android --verbose
+     * Command: npx expo-brownfield tasks:android --verbose
      * Expected behavior: The CLI should print verbose output
      */
     it('should properly handle --verbose option', async () => {
       const { stdout, exitCode } = await executeCLIASync(TEMP_DIR_PREBUILD, [
-        'tasks-android',
+        'tasks:android',
         '--verbose',
       ]);
       expect(exitCode).toBe(0);

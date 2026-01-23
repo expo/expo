@@ -10,12 +10,12 @@ const action = async () => {
     const args = (0, utils_1.parseArgs)({
         spec: constants_1.Args.IOS,
         // Skip first three args:
-        // <node-path> expo-brownfield build-ios
+        // <node-path> expo-brownfield build:ios
         argv: process.argv.slice(3),
         stopAtPositional: true,
     });
     if ((0, utils_1.getCommand)(args)) {
-        return constants_1.Errors.additionalCommand('build-ios');
+        return constants_1.Errors.additionalCommand('build:ios');
     }
     // Only resolve --help and --verbose options
     const basicConfig = (0, utils_1.getCommonConfig)(args);

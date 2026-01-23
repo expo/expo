@@ -8,13 +8,13 @@ const action = async () => {
   const args = parseArgs({
     spec: Args.TasksAndroid,
     // Skip first three args:
-    // <node-path> expo-brownfield tasks-android
+    // <node-path> expo-brownfield tasks:android
     argv: process.argv.slice(3),
     stopAtPositional: true,
   });
 
   if (getCommand(args)) {
-    return Errors.additionalCommand('tasks-android');
+    return Errors.additionalCommand('tasks:android');
   }
 
   const config = await getTasksAndroidConfig(args);

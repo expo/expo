@@ -17,13 +17,13 @@ const action = async () => {
   const args = parseArgs({
     spec: Args.IOS,
     // Skip first three args:
-    // <node-path> expo-brownfield build-ios
+    // <node-path> expo-brownfield build:ios
     argv: process.argv.slice(3),
     stopAtPositional: true,
   });
 
   if (getCommand(args)) {
-    return Errors.additionalCommand('build-ios');
+    return Errors.additionalCommand('build:ios');
   }
 
   // Only resolve --help and --verbose options

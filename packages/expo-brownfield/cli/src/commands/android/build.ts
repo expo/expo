@@ -17,13 +17,13 @@ const action = async () => {
   const args = parseArgs({
     spec: Args.Android,
     // Skip first three args:
-    // <node-path> expo-brownfield build-android
+    // <node-path> expo-brownfield build:android
     argv: process.argv.slice(3),
     stopAtPositional: true,
   });
 
   if (getCommand(args)) {
-    return Errors.additionalCommand('build-android');
+    return Errors.additionalCommand('build:android');
   }
 
   // Only resolve --help and --verbose options
