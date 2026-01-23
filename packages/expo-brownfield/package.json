@@ -23,6 +23,7 @@
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepack": "cp -L plugin/templates/ios/ExpoAppDelegate.swift plugin/templates/ios/ExpoAppDelegate.swift.tmp && mv plugin/templates/ios/ExpoAppDelegate.swift.tmp plugin/templates/ios/ExpoAppDelegate.swift",
+    "postpack": "rm plugin/templates/ios/ExpoAppDelegate.swift && ln -s ../../../../expo/ios/AppDelegates/ExpoAppDelegate.swift plugin/templates/ios/ExpoAppDelegate.swift",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
