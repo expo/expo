@@ -81,6 +81,7 @@
     "glob": "^13.0.0",
     "lan-network": "^0.1.6",
     "minimatch": "^9.0.0",
+    "multitars": "^0.2.3",
     "node-forge": "^1.3.3",
     "npm-package-arg": "^11.0.0",
     "ora": "^3.4.0",
