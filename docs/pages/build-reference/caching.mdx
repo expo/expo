@@ -78,98 +78,62 @@ You can configure builds to save and restore ccache cache automatically with the
 - `EAS_RESTORE_CACHE`: Controls restoring the cache at the beginning of a build. Set to `1` to enable or `0` to disable. Overrides `EAS_USE_CACHE`.
 - `EAS_SAVE_CACHE`: Controls whether to save the build cache at the end of a build. Set to `1` to enable or `0` to disable. Overrides `EAS_USE_CACHE`.
 
-#### Custom builds
-
-In custom builds where you manage the build steps, add [`eas/restore_build_cache`](/custom-builds/schema/#easrestore_build_cache) and [`eas/save_build_cache`](/custom-builds/schema/#eassave_build_cache) to enable ccache cache.
-
-**Android example:**
-
-```yaml .eas/build/config.yml
-build:
-  name: Android build with ccache
-  steps:
-    - eas/checkout
-    - eas/install_node_modules
-    - eas/prebuild
-    - eas/restore_build_cache:
-        inputs:
-          key: android-ccache-${{ hashFiles('package-lock.json') }}
-          restore_keys: android
-          path: /home/expo/.cache/ccache
-    - eas/inject_android_credentials
-    - eas/run_gradle
-    - eas/save_build_cache:
-        inputs:
-          key: android-ccache-${{ hashFiles('package-lock.json') }}
-          path: /home/expo/.cache/ccache
-```
-
-**iOS example:**
-
-```yaml .eas/build/config.yml
-build:
-  name: iOS build with ccache
-  steps:
-    - eas/checkout
-    - eas/install_node_modules
-    - eas/prebuild
-    - eas/restore_build_cache:
-        inputs:
-          key: ios-ccache-${{ hashFiles('package-lock.json') }}
-          restore_keys: ios
-          path: /Users/expo/Library/Caches/ccache
-    - eas/configure_ios_credentials
-    - eas/run_fastlane
-    - eas/save_build_cache:
-        inputs:
-          key: ios-ccache-${{ hashFiles('package-lock.json') }}
-          path: /Users/expo/Library/Caches/ccache
-```
-
 #### EAS Workflows
 
 For EAS Workflows, use [`eas/restore_cache`](/eas/workflows/syntax/#easrestore_cache) and [`eas/save_cache`](/eas/workflows/syntax/#eassave_cache).
 
 **Android example:**
 
-```yaml .eas/workflows/build-android-custom.yml
+```yaml .eas/workflows/build-android.yml
 jobs:
   build_android:
+    type: build
     steps:
       - uses: eas/checkout
-      - uses: eas/install_node_modules
-      - uses: eas/prebuild
       - uses: eas/restore_cache
         with:
-          key: android-ccache-${{ hashFiles('package-lock.json') }}
+          key: android-ccache-${{ hashFiles('yarn.lock') }}
           restore_keys: android
           path: /home/expo/.cache/ccache
-      - uses: eas/run_gradle
+      - uses: eas/build
       - uses: eas/save_cache
         with:
-          key: android-ccache-${{ hashFiles('package-lock.json') }}
+          key: android-ccache-${{ hashFiles('yarn.lock') }}
           path: /home/expo/.cache/ccache
 ```
 
 **iOS example:**
 
-```yaml .eas/workflows/build-ios-custom.yml
+```yaml .eas/workflows/build-ios.yml
 jobs:
   build_ios:
+    type: build
     steps:
       - uses: eas/checkout
-      - uses: eas/install_node_modules
-      - uses: eas/prebuild
       - uses: eas/restore_cache
         with:
-          key: ios-ccache-${{ hashFiles('package-lock.json') }}
+          key: ios-ccache-${{ hashFiles('yarn.lock') }}
           restore_keys: ios
           path: /Users/expo/Library/Caches/ccache
-      - uses: eas/run_fastlane
+      - uses: eas/build
       - uses: eas/save_cache
         with:
-          key: ios-ccache-${{ hashFiles('package-lock.json') }}
+          key: ios-ccache-${{ hashFiles('yarn.lock') }}
           path: /Users/expo/Library/Caches/ccache
+```
+
+#### Custom builds
+
+In custom builds where you manage the build steps, add [`eas/restore_build_cache`](/custom-builds/schema/#easrestore_build_cache) and [`eas/save_build_cache`](/custom-builds/schema/#eassave_build_cache) to enable ccache cache.
+
+```yaml .eas/build/custom.yml
+build:
+  name: Build with ccache
+  steps:
+    - eas/checkout
+    - eas/restore_build_cache:
+    - eas/build
+    - eas/save_build_cache:
 ```
 
 The cache key uses `hashFiles('package-lock.json')` to create a unique key based on your dependencies. When dependencies change, a new cache will be created while still allowing fallback to previous caches using `restore_keys`.
@@ -179,8 +143,7 @@ The cache key uses `hashFiles('package-lock.json')` to create a unique key based
 When restoring a cache, the cache system follows a specific search sequence to find matching cache entries:
 
 1. **Exact match**: First, it searches for an exact match to your provided `key`.
-2. **Partial match**: If no exact match is found, it will search for partial matches of the `key` (keys that start with your key as a prefix).
-3. **Restore keys**: If there is still no match found, and you've provided `restore_keys`, these keys will be checked sequentially for partial matches.
+2. **Restore keys**: If no exact match is found, `restore_keys` will be checked sequentially for prefix matches
 
 If there is an exact match to the provided `key`, this is considered a cache hit and the cache is restored immediately. If there is a partial match or a match from `restore_keys`, the cache is restored but this is considered a cache miss, which may trigger additional steps in your workflow.
 
