@@ -68,6 +68,167 @@ To disable using our Maven cache server for your builds set the `EAS_BUILD_DISAB
 }
 ```
 
+### Caching C/C++ compilation artifacts with ccache
+
+[ccache](https://ccache.dev/) is a compiler cache that speeds up recompilation by caching previous compilations. You can use remote user-scoped caching to persist ccache data across builds, which significantly speeds up builds that include native C/C++ code.
+
+#### Custom builds
+
+For custom builds, use [`eas/restore_build_cache`](/custom-builds/schema/#easrestore_build_cache) and [`eas/save_build_cache`](/custom-builds/schema/#eassave_build_cache) to cache the ccache directory.
+
+**Android example:**
+
+```yaml .eas/build/config.yml
+build:
+  name: Android build with ccache
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    - eas/restore_build_cache:
+        inputs:
+          key: android-ccache-${{ hashFiles('package-lock.json') }}
+          restore_keys: android
+          path: /home/expo/.cache/ccache
+    - eas/inject_android_credentials
+    - eas/run_gradle
+    - eas/save_build_cache:
+        inputs:
+          key: android-ccache-${{ hashFiles('package-lock.json') }}
+          path: /home/expo/.cache/ccache
+```
+
+**iOS example:**
+
+```yaml .eas/build/config.yml
+build:
+  name: iOS build with ccache
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    - eas/restore_build_cache:
+        inputs:
+          key: ios-ccache-${{ hashFiles('package-lock.json') }}
+          restore_keys: ios
+          path: /Users/expo/Library/Caches/ccache
+    - eas/configure_ios_credentials
+    - eas/run_fastlane
+    - eas/save_build_cache:
+        inputs:
+          key: ios-ccache-${{ hashFiles('package-lock.json') }}
+          path: /Users/expo/Library/Caches/ccache
+```
+
+#### EAS Workflows
+
+For EAS Workflows, use [`eas/restore_cache`](/eas/workflows/syntax/#easrestore_cache) and [`eas/save_cache`](/eas/workflows/syntax/#eassave_cache).
+
+**Android example:**
+
+```yaml .eas/workflows/build-android-custom.yml
+jobs:
+  build_android:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/prebuild
+      - uses: eas/restore_cache
+        with:
+          key: android-ccache-${{ hashFiles('package-lock.json') }}
+          restore_keys: android
+          path: /home/expo/.cache/ccache
+      - name: Build Android app
+        run: cd android && ./gradlew assembleRelease
+      - uses: eas/save_cache
+        with:
+          key: android-ccache-${{ hashFiles('package-lock.json') }}
+          path: /home/expo/.cache/ccache
+```
+
+**iOS example:**
+
+```yaml .eas/workflows/build-ios-custom.yml
+jobs:
+  build_ios:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/prebuild
+      - uses: eas/restore_cache
+        with:
+          key: ios-ccache-${{ hashFiles('package-lock.json') }}
+          restore_keys: ios
+          path: /Users/expo/Library/Caches/ccache
+      - name: Build iOS app
+        run: cd ios && fastlane build
+      - uses: eas/save_cache
+        with:
+          key: ios-ccache-${{ hashFiles('package-lock.json') }}
+          path: /Users/expo/Library/Caches/ccache
+```
+
+The cache key uses `hashFiles('package-lock.json')` to create a unique key based on your dependencies. When dependencies change, a new cache will be created while still allowing fallback to previous caches using `restore_keys`.
+
+### Cache key matching
+
+When restoring a cache, the cache system follows a specific search sequence to find matching cache entries:
+
+1. **Exact match**: First, it searches for an exact match to your provided `key`.
+2. **Partial match**: If no exact match is found, it will search for partial matches of the `key` (keys that start with your key as a prefix).
+3. **Restore keys**: If there is still no match found, and you've provided `restore_keys`, these keys will be checked sequentially for partial matches.
+
+If there is an exact match to the provided `key`, this is considered a cache hit and the cache is restored immediately. If there is a partial match or a match from `restore_keys`, the cache is restored but this is considered a cache miss, which may trigger additional steps in your workflow.
+
+#### Using restore keys
+
+`restore_keys` allows you to specify a list of alternate restore keys to use when there is a cache miss on `key`. You can create multiple restore keys ordered from the most specific to least specific. The cache system searches the `restore_keys` in sequential order. When a key doesn't match directly, the system searches for keys prefixed with the restore key. If there are multiple partial matches for a restore key, the system returns the most recently created cache.
+
+**Example using multiple restore keys:**
+
+```yaml
+- uses: eas/restore_cache
+  with:
+    key: android-ccache-${{ hashFiles('package-lock.json') }}
+    restore_keys: |
+      android-ccache-${{ hashFiles('package-lock.json') }}
+      android-ccache-
+      android-
+```
+
+The restore key `android-ccache-` matches any key that starts with the string `android-ccache-`. For example, both of the keys `android-ccache-fd3052de` and `android-ccache-a9b253ff` match the restore key. The cache with the most recent creation date would be used. The keys in this example are searched in the following order:
+
+1. **`android-ccache-${{ hashFiles('package-lock.json') }}`** matches a specific hash.
+2. **`android-ccache-`** matches cache keys prefixed with `android-ccache-`.
+3. **`android-`** matches any keys prefixed with `android-`.
+
+### Cache restrictions
+
+Access restrictions provide cache isolation and security by creating logical boundaries between different branches and builds. Understanding these restrictions helps you optimize your cache usage and avoid unexpected cache misses.
+
+#### Branch-based access
+
+Caches are scoped to the branch where they were created. Workflow runs can restore caches created in:
+
+- The current branch
+- The default branch (usually `main` or `master`)
+
+If a workflow run is triggered for a pull request, it can also restore caches created in the base branch. For example, if a pull request from `feature-b` targets `main`, the workflow can access caches created in the `main` branch.
+
+#### Default branch cache
+
+If a build doesn't find a user-scoped cache (created with `eas/restore_cache` and `eas/save_cache` or `eas/restore_build_cache` and `eas/save_build_cache`), it will automatically fallback to restoring caches published from GitHub builds triggered on the `main` branch. This allows builds to benefit from caches created by automated workflows even when no user-scoped cache exists yet.
+
+#### User-scoped caches
+
+Remote user-scoped caches (created with `eas/restore_cache` and `eas/save_cache` or `eas/restore_build_cache` and `eas/save_build_cache`) are scoped to your user account. This means:
+
+- Caches are shared across all builds and workflows for your account
+- Caches persist across different branches and projects
+- You can reuse caches across multiple builds to maximize cache hit rates
+
+This is particularly useful for build tools like ccache, where the compilation cache can be shared across different projects and branches.
+
 ## iOS dependencies
 
 EAS Build serves most CocoaPods artifacts from a cache server. This improves the consistency of `pod install` times and generally improves speed. The cache will be bypassed automatically if you provide your own **.netrc** or **.curlrc** files.
