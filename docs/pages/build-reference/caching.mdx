@@ -182,20 +182,6 @@ If there is an exact match to the provided `key`, this is considered a cache hit
 
 #### Using restore keys
 
-`restore_keys` allows you to specify a list of alternate restore keys to use when there is a cache miss on `key`. You can create multiple restore keys ordered from the most specific to least specific. The cache system searches the `restore_keys` in sequential order. When a key doesn't match directly, the system searches for keys prefixed with the restore key. If there are multiple partial matches for a restore key, the system returns the most recently created cache.
-
-**Example using multiple restore keys:**
-
-```yaml
-- uses: eas/restore_cache
-  with:
-    key: android-ccache-${{ hashFiles('package-lock.json') }}
-    restore_keys: |
-      android-ccache-${{ hashFiles('package-lock.json') }}
-      android-ccache-
-      android-
-```
-
 The restore key `android-ccache-` matches any key that starts with the string `android-ccache-`. For example, both of the keys `android-ccache-fd3052de` and `android-ccache-a9b253ff` match the restore key. The cache with the most recent creation date would be used. The keys in this example are searched in the following order:
 
 1. **`android-ccache-${{ hashFiles('package-lock.json') }}`** matches a specific hash.
@@ -211,24 +197,25 @@ Access restrictions provide cache isolation and security by creating logical bou
 Caches are scoped to the branch where they were created. Workflow runs can restore caches created in:
 
 - The current branch
-- The default branch (usually `main` or `master`)
+- The default branch (`main` or `master`)
 
 If a workflow run is triggered for a pull request, it can also restore caches created in the base branch. For example, if a pull request from `feature-b` targets `main`, the workflow can access caches created in the `main` branch.
 
 #### Default branch cache
 
-If a build doesn't find a user-scoped cache (created with `eas/restore_cache` and `eas/save_cache` or `eas/restore_build_cache` and `eas/save_build_cache`), it will automatically fallback to restoring caches published from GitHub builds triggered on the `main` branch. This allows builds to benefit from caches created by automated workflows even when no user-scoped cache exists yet.
+If a build doesn't restore a user-scoped cache, it will automatically fallback to restoring caches published from GitHub builds triggered on the default branch. This allows builds to benefit from caches created by automated workflows even when no user-scoped cache exists yet, or to only keep publishing caches from a designated job.
+
+This is particularly useful for build tools like ccache, where the compilation cache can be shared across different builds and branches and the performance benefits can be applied broadly.
 
 #### User-scoped caches
 
-Remote user-scoped caches (created with `eas/restore_cache` and `eas/save_cache` or `eas/restore_build_cache` and `eas/save_build_cache`) are scoped to your user account. This means:
+User-scoped caches allow for publishing caches that are just accessible to builds or workflow jobs that are ran by that respective user. Allowing for isolation so that modifications to the build and its cache are not unintentionally shared during development. This means:
 
-- Caches are shared across all builds and workflows for your account
-- Caches persist across different branches and projects
-- You can reuse caches across multiple builds to maximize cache hit rates
+- Caches are shared just between the builds and workflows for an account
+- Caches persist across different branches and builds
+- Each user’s build will have their own isolated cache even when on the same branch
 
-This is particularly useful for build tools like ccache, where the compilation cache can be shared across different projects and branches.
-
+This ensures that builds between teammates will benefit from remote caching with the guarantee that they are isolated and limited to the proper scope. 
 ## iOS dependencies
 
 EAS Build serves most CocoaPods artifacts from a cache server. This improves the consistency of `pod install` times and generally improves speed. The cache will be bypassed automatically if you provide your own **.netrc** or **.curlrc** files.
