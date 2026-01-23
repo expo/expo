@@ -198,7 +198,7 @@ Access restrictions provide cache isolation and security by creating logical bou
 
 #### Branch-based access
 
-Caches are scoped to the branch where they were created. Workflow runs can restore caches created in:
+When build is run from GitHub, caches get scoped to the branch the build is running from. A build can restore caches created in:
 
 - The current branch
 - The default branch (`main` or `master`)
