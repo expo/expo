@@ -12,6 +12,53 @@ import {
 import type { RequireContext } from './types';
 import { shouldLinkExternally } from './utils/url';
 
+/**
+ * Check if a route pattern (which may contain dynamic segments like [post])
+ * matches a destination path (which has concrete values like expo-apps).
+ *
+ * For example: "blog/[post]" matches "blog/expo-apps"
+ */
+function matchesRouteWithDynamicSegments(
+  routePattern: string,
+  destinationPath: string
+): boolean {
+  const routeParts = routePattern.split('/');
+  const destParts = destinationPath.split('/');
+
+  // Must have same number of segments (unless there's a catch-all)
+  if (routeParts.length !== destParts.length) {
+    const lastRoutePart = routeParts[routeParts.length - 1];
+    const catchAll = matchDynamicName(lastRoutePart);
+    if (!catchAll?.deep) {
+      return false;
+    }
+    if (destParts.length < routeParts.length - 1) {
+      return false;
+    }
+  }
+
+  for (let i = 0; i < routeParts.length; i++) {
+    const routePart = routeParts[i];
+    const destPart = destParts[i];
+
+    const dynamicMatch = matchDynamicName(routePart);
+
+    if (dynamicMatch?.deep) {
+      return true;
+    }
+
+    if (dynamicMatch) {
+      continue;
+    }
+
+    if (routePart !== destPart) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 export type Options = {
   ignore?: RegExp[];
   preserveApiRoutes?: boolean;
@@ -245,12 +292,14 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
 
         const validDestination = isExternalRedirect
           ? undefined
-          : getValidDestinations().find(
-              (key) => key.nameWithoutInvisible === targetDestinationName
+          : getValidDestinations().find((key) =>
+              matchesRouteWithDynamicSegments(key.nameWithoutInvisible, targetDestinationName)
             );
         const destination = isExternalRedirect
           ? targetDestinationName
-          : validDestination?.nameWithoutInvisible;
+          : validDestination
+            ? targetDestinationName
+            : undefined;
         const destinationContextKey = isExternalRedirect
           ? targetDestinationName
           : validDestination?.contextKey;
@@ -297,10 +346,10 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           continue;
         }
 
-        const validDestination = getValidDestinations().find(
-          (key) => key.nameWithoutInvisible === targetDestinationName
+        const validDestination = getValidDestinations().find((key) =>
+          matchesRouteWithDynamicSegments(key.nameWithoutInvisible, targetDestinationName)
         );
-        const destination = validDestination?.nameWithoutInvisible;
+        const destination = validDestination ? targetDestinationName : undefined;
         const destinationContextKey = validDestination?.contextKey;
 
         if (!destinationContextKey || destination === undefined) {
@@ -408,6 +457,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
 
       const redirect = redirects[meta.route];
       node.destinationContextKey = redirect.destinationContextKey;
+      node.destinationPath = redirect.destination;
       node.permanent = redirect.permanent;
       node.generated = true;
       if (node.type === 'route') {
