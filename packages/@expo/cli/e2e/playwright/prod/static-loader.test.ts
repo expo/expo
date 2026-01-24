@@ -9,11 +9,9 @@ test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
 
 const projectRoot = getRouterE2ERoot();
-const outputDir = 'dist-static-loader';
+const outputDir = 'dist-static-loader-playwright';
 
-test.describe('static loader in production', () => {
-  test.describe.configure({ mode: 'serial' });
-
+test.describe('static loaders in production', () => {
   const expoServe = createExpoServe({
     cwd: projectRoot,
     env: {
@@ -33,44 +31,12 @@ test.describe('static loader in production', () => {
     });
     console.timeEnd('expo export');
 
-    console.time('npx serve');
+    console.time('expo serve');
     await expoServe.startAsync([outputDir]);
-    console.timeEnd('npx serve');
+    console.timeEnd('expo serve');
   });
   test.afterAll(async () => {
     await expoServe.stopAsync();
-  });
-
-  test('loads and renders a route without a loader', async ({ page }) => {
-    const pageErrors = pageCollectErrors(page);
-    await page.goto(expoServe.url.href);
-
-    const loaderDataScript = await page.evaluate(() => {
-      return globalThis.__EXPO_ROUTER_LOADER_DATA__;
-    });
-    expect(loaderDataScript).not.toBeDefined();
-
-    // Index route doesn't have a loader, so no loader-result element should exist
-    const loaderResult = page.locator('[data-testid="loader-result"]');
-    await expect(loaderResult).toHaveCount(0);
-
-    expect(pageErrors.all).toEqual([]);
-  });
-
-  test('loads and renders a route with a loader', async ({ page }) => {
-    const pageErrors = pageCollectErrors(page);
-    await page.goto(expoServe.url.href + 'second');
-
-    const loaderDataScript = await page.evaluate(() => {
-      return globalThis.__EXPO_ROUTER_LOADER_DATA__;
-    });
-    expect(loaderDataScript).toBeDefined();
-
-    await page.waitForSelector('[data-testid="loader-result"]');
-    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
-    expect(JSON.parse(loaderDataContent!)).toEqual({ data: 'second' });
-
-    expect(pageErrors.all).toEqual([]);
   });
 
   test('loads loader data modules on client-side navigation', async ({ page }) => {

@@ -11,9 +11,7 @@ test.afterAll(() => restoreEnv());
 const projectRoot = getRouterE2ERoot();
 const outputDir = 'dist-server-loader-playwright';
 
-test.describe('server loader (SSR) in production', () => {
-  test.describe.configure({ mode: 'serial' });
-
+test.describe('server loaders in production', () => {
   const expoServe = createExpoServe({
     cwd: projectRoot,
     env: {
@@ -31,62 +29,16 @@ test.describe('server loader (SSR) in production', () => {
         E2E_ROUTER_SRC: 'server-loader',
         E2E_ROUTER_SERVER_LOADERS: 'true',
         E2E_ROUTER_SERVER_RENDERING: 'true',
-        TEST_SECRET_KEY: 'test-secret-key',
       },
     });
     console.timeEnd('expo export');
 
-    console.time('npx serve');
+    console.time('expo serve');
     await expoServe.startAsync([outputDir]);
-    console.timeEnd('npx serve');
+    console.timeEnd('expo serve');
   });
   test.afterAll(async () => {
     await expoServe.stopAsync();
-  });
-
-  test('loads and renders a route without a loader', async ({ page }) => {
-    const pageErrors = pageCollectErrors(page);
-    await page.goto(expoServe.url.href);
-
-    // Index route doesn't have a loader
-    const loaderDataScript = await page.evaluate(() => {
-      return globalThis.__EXPO_ROUTER_LOADER_DATA__;
-    });
-    expect(loaderDataScript).not.toBeDefined();
-
-    // Index route doesn't have a loader, so no loader-result element should exist
-    const loaderResult = page.locator('[data-testid="loader-result"]');
-    await expect(loaderResult).toHaveCount(0);
-
-    expect(pageErrors.all).toEqual([]);
-  });
-
-  test('loads and renders a route with a loader', async ({ page }) => {
-    const pageErrors = pageCollectErrors(page);
-    await page.goto(expoServe.url.href + 'second');
-
-    // SSR should inject loader data into the page
-    const loaderDataScript = await page.evaluate(() => {
-      return globalThis.__EXPO_ROUTER_LOADER_DATA__;
-    });
-    expect(loaderDataScript).toBeDefined();
-
-    await page.waitForSelector('[data-testid="loader-result"]');
-    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
-    expect(JSON.parse(loaderDataContent!)).toEqual({ data: 'second' });
-
-    expect(pageErrors.all).toEqual([]);
-  });
-
-  test('loads and renders a dynamic params route with a loader', async ({ page }) => {
-    const pageErrors = pageCollectErrors(page);
-    await page.goto(expoServe.url.href + 'posts/my-dynamic-post');
-
-    await page.waitForSelector('[data-testid="loader-result"]');
-    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
-    expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'my-dynamic-post' } });
-
-    expect(pageErrors.all).toEqual([]);
   });
 
   test('loads loader data modules on client-side navigation', async ({ page }) => {
