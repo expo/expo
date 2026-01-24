@@ -6,7 +6,7 @@ import {
   RUNTIME_EXPO_START,
   setupServer,
 } from '../../utils/runtime';
-import { findProjectFiles, getPageAndLoaderData } from '../utils';
+import { findProjectFiles, getHtml, getPageAndLoaderData } from '../utils';
 
 runExportSideEffects();
 
@@ -44,6 +44,7 @@ describe.each(
     // HTML routes should be pre-rendered in SSR mode
     expect(files).toContain('env.html');
     expect(files).toContain('index.html');
+    expect(files).toContain('meta.html');
     expect(files).toContain('request.html');
     expect(files).toContain('response.html');
     expect(files).toContain('second.html');
@@ -56,6 +57,7 @@ describe.each(
 
     // Loader outputs are pre-generated JSON files
     expect(files).toContain('_expo/loaders/env');
+    expect(files).toContain('_expo/loaders/meta');
     expect(files).toContain('_expo/loaders/request');
     expect(files).toContain('_expo/loaders/response');
     expect(files).toContain('_expo/loaders/second');
@@ -178,5 +180,20 @@ describe.each(
 
     const data = await response.json();
     expect(data).toEqual({ foo: null });
+  });
+
+  it('renders meta tags from loader data in HTML', async () => {
+    const response = await server.fetchAsync('/meta');
+    expect(response.status).toBe(200);
+    const html = getHtml(await response.text());
+
+    expect(html.querySelector('title')?.textContent).toBe('Meta page');
+    expect(html.querySelector('meta[name="description"]')?.getAttribute('content')).toBe(
+      'Meta tag testing'
+    );
+    expect(html.querySelector('meta[name="keywords"]')?.getAttribute('content')).toBe(
+      'expo-router,loaders,meta'
+    );
+    expect(html.querySelector('meta[name="author"]')?.getAttribute('content')).toBe('Expo');
   });
 });

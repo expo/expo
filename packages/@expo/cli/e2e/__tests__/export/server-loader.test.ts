@@ -10,7 +10,7 @@ import {
   RUNTIME_WORKERD,
   setupServer,
 } from '../../utils/runtime';
-import { findProjectFiles, getPageAndLoaderData } from '../utils';
+import { findProjectFiles, getHtml, getPageAndLoaderData } from '../utils';
 
 runExportSideEffects();
 
@@ -57,6 +57,7 @@ describe.each(
 
     // Loader bundles should exist
     expect(files).toContain('_expo/loaders/env.js');
+    expect(files).toContain('_expo/loaders/meta.js');
     expect(files).toContain('_expo/loaders/request.js');
     expect(files).toContain('_expo/loaders/response.js');
     expect(files).toContain('_expo/loaders/second.js');
@@ -225,5 +226,20 @@ describe.each(
 
     const data = await response.json();
     expect(data).toEqual({ foo: 'bar' });
+  });
+
+  it('renders meta tags from loader data in HTML', async () => {
+    const response = await server.fetchAsync('/meta');
+    expect(response.status).toBe(200);
+    const html = getHtml(await response.text());
+
+    expect(html.querySelector('title')?.textContent).toBe('Meta page');
+    expect(html.querySelector('meta[name="description"]')?.getAttribute('content')).toBe(
+      'Meta tag testing'
+    );
+    expect(html.querySelector('meta[name="keywords"]')?.getAttribute('content')).toBe(
+      'expo-router,loaders,meta'
+    );
+    expect(html.querySelector('meta[name="author"]')?.getAttribute('content')).toBe('Expo');
   });
 });
