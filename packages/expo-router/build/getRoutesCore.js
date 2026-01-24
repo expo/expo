@@ -5,6 +5,42 @@ exports.extrapolateGroups = extrapolateGroups;
 exports.generateDynamic = generateDynamic;
 const matchers_1 = require("./matchers");
 const url_1 = require("./utils/url");
+/**
+ * Check if a route pattern (which may contain dynamic segments like [post])
+ * matches a destination path (which has concrete values like expo-apps).
+ *
+ * For example: "blog/[post]" matches "blog/expo-apps"
+ */
+function matchesRouteWithDynamicSegments(routePattern, destinationPath) {
+    const routeParts = routePattern.split('/');
+    const destParts = destinationPath.split('/');
+    // Must have same number of segments (unless there's a catch-all)
+    if (routeParts.length !== destParts.length) {
+        const lastRoutePart = routeParts[routeParts.length - 1];
+        const catchAll = (0, matchers_1.matchDynamicName)(lastRoutePart);
+        if (!catchAll?.deep) {
+            return false;
+        }
+        if (destParts.length < routeParts.length - 1) {
+            return false;
+        }
+    }
+    for (let i = 0; i < routeParts.length; i++) {
+        const routePart = routeParts[i];
+        const destPart = destParts[i];
+        const dynamicMatch = (0, matchers_1.matchDynamicName)(routePart);
+        if (dynamicMatch?.deep) {
+            return true;
+        }
+        if (dynamicMatch) {
+            continue;
+        }
+        if (routePart !== destPart) {
+            return false;
+        }
+    }
+    return true;
+}
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -138,10 +174,12 @@ function getDirectoryTree(contextModule, options) {
                 }
                 const validDestination = isExternalRedirect
                     ? undefined
-                    : getValidDestinations().find((key) => key.nameWithoutInvisible === targetDestinationName);
+                    : getValidDestinations().find((key) => matchesRouteWithDynamicSegments(key.nameWithoutInvisible, targetDestinationName));
                 const destination = isExternalRedirect
                     ? targetDestinationName
-                    : validDestination?.nameWithoutInvisible;
+                    : validDestination
+                        ? targetDestinationName
+                        : undefined;
                 const destinationContextKey = isExternalRedirect
                     ? targetDestinationName
                     : validDestination?.contextKey;
@@ -181,8 +219,8 @@ function getDirectoryTree(contextModule, options) {
                 if (ignoreList.some((regex) => regex.test(sourceContextKey))) {
                     continue;
                 }
-                const validDestination = getValidDestinations().find((key) => key.nameWithoutInvisible === targetDestinationName);
-                const destination = validDestination?.nameWithoutInvisible;
+                const validDestination = getValidDestinations().find((key) => matchesRouteWithDynamicSegments(key.nameWithoutInvisible, targetDestinationName));
+                const destination = validDestination ? targetDestinationName : undefined;
                 const destinationContextKey = validDestination?.contextKey;
                 if (!destinationContextKey || destination === undefined) {
                     /*
@@ -267,6 +305,7 @@ function getDirectoryTree(contextModule, options) {
             }
             const redirect = redirects[meta.route];
             node.destinationContextKey = redirect.destinationContextKey;
+            node.destinationPath = redirect.destination;
             node.permanent = redirect.permanent;
             node.generated = true;
             if (node.type === 'route') {

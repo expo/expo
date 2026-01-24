@@ -18,10 +18,7 @@ import { shouldLinkExternally } from './utils/url';
  *
  * For example: "blog/[post]" matches "blog/expo-apps"
  */
-function matchesRouteWithDynamicSegments(
-  routePattern: string,
-  destinationPath: string
-): boolean {
+function matchesRouteWithDynamicSegments(routePattern: string, destinationPath: string): boolean {
   const routeParts = routePattern.split('/');
   const destParts = destinationPath.split('/');
 

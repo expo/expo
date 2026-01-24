@@ -68,9 +68,10 @@ function getServerManifest(route, options) {
             redirect.absoluteRoutePath = redirect.route.destinationContextKey;
         }
         else {
-            redirect.absoluteRoutePath =
-                flat.find(({ route }) => route.contextKey === redirect.route.destinationContextKey)
-                    ?.normalizedContextKey ?? '/';
+            // Use the stored destination path directly
+            // This preserves the actual destination like /blog/expo-apps
+            // instead of the route pattern like /blog/[post]
+            redirect.absoluteRoutePath = '/' + (redirect.route.destinationPath || redirect.route.route);
         }
         return redirect;
     })

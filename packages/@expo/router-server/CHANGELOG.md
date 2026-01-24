@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add support for redirecting paths with path parameters.
+
 ### 💡 Others
 
 ## 55.0.2 — 2026-01-23
