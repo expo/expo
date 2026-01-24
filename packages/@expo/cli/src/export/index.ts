@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import arg from 'arg';
 import chalk from 'chalk';
+import path from 'path';
 
 import { Command } from '../../bin/cli';
-import { assertWithOptionsArgs, getProjectRoot, printHelp } from '../utils/args';
+import { assertWithOptionsArgs, printHelp } from '../utils/args';
 import { logCmdError } from '../utils/errors';
 
 const rawArgsMap: arg.Spec = {
@@ -68,7 +69,7 @@ export const expoExport: Command = async (argv) => {
     '--dump-sourcemap': '--source-maps',
   }).catch(logCmdError);
 
-  const projectRoot = getProjectRoot(args);
+  const projectRoot = path.resolve(parsed.projectRoot);
   const { resolveOptionsAsync } = await import('./resolveOptions.js');
   const options = await resolveOptionsAsync(projectRoot, {
     ...args,
