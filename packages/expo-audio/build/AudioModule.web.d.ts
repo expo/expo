@@ -1,6 +1,6 @@
 import { PermissionResponse } from 'expo-modules-core';
-import { AudioMode, AudioPlayerOptions, AudioSource, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions, RecordingStartOptions } from './Audio.types';
-import { AudioPlayer, AudioEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
+import { AudioMode, AudioPlayerOptions, AudioPlaylistLoopMode, AudioPlaylistStatus, AudioSource, AudioSourceInfo, AudioStatus, PitchCorrectionQuality, RecorderState, RecordingInput, RecordingOptions, RecordingStartOptions } from './Audio.types';
+import { AudioPlayer, AudioEvents, AudioPlaylist, AudioPlaylistEvents, RecordingEvents, AudioRecorder } from './AudioModule.types';
 export declare class AudioPlayerWeb extends globalThis.expo.SharedObject<AudioEvents> implements AudioPlayer {
     constructor(source: AudioSource, options?: AudioPlayerOptions);
     id: string;
@@ -66,8 +66,75 @@ export declare class AudioRecorderWeb extends globalThis.expo.SharedObject<Recor
     private createMediaRecorder;
     private getAudioRecorderDurationMillis;
 }
+export declare class AudioPlaylistWeb extends globalThis.expo.SharedObject<AudioPlaylistEvents> implements AudioPlaylist {
+    constructor(initialSources?: AudioSource[], updateInterval?: number, loopMode?: AudioPlaylistLoopMode, crossOrigin?: 'anonymous' | 'use-credentials');
+    id: string;
+    private _sources;
+    private _sourceInfos;
+    private _currentIndex;
+    private _currentMedia;
+    private _nextMedia;
+    private _updateInterval;
+    private _loopMode;
+    private _isPlaying;
+    private _isLoaded;
+    private _isBuffering;
+    private _volume;
+    private _muted;
+    private _playbackRate;
+    private _crossOrigin?;
+    private _knownDuration;
+    get currentIndex(): number;
+    get trackCount(): number;
+    get sources(): AudioSourceInfo[];
+    get playing(): boolean;
+    get muted(): boolean;
+    set muted(value: boolean);
+    get isLoaded(): boolean;
+    get isBuffering(): boolean;
+    get currentTime(): number;
+    get duration(): number;
+    get volume(): number;
+    set volume(value: number);
+    get playbackRate(): number;
+    set playbackRate(value: number);
+    get loop(): AudioPlaylistLoopMode;
+    set loop(value: AudioPlaylistLoopMode);
+    get currentStatus(): AudioPlaylistStatus;
+    play(): void;
+    pause(): void;
+    next(): void;
+    previous(): void;
+    skipTo(index: number): void;
+    seekTo(seconds: number): Promise<void>;
+    add(source: AudioSource): void;
+    insert(source: AudioSource, index: number): void;
+    remove(index: number): void;
+    clear(): void;
+    setPlaybackRate(rate: number): void;
+    setLoopMode(mode: AudioPlaylistLoopMode): void;
+    destroy(): void;
+    private _transitionToTrack;
+    private _preloadNext;
+    private _cleanupMedia;
+    private _attachMediaHandlers;
+    private _createMediaElement;
+    private _handleTrackEnded;
+    private _getStatus;
+    private _emitStatus;
+}
 export declare function setAudioModeAsync(mode: AudioMode): Promise<void>;
 export declare function setIsAudioActiveAsync(active: boolean): Promise<void>;
 export declare function getRecordingPermissionsAsync(): Promise<PermissionResponse>;
 export declare function requestRecordingPermissionsAsync(): Promise<PermissionResponse>;
+declare const _default: {
+    AudioPlayer: typeof AudioPlayerWeb;
+    AudioRecorder: typeof AudioRecorderWeb;
+    AudioPlaylist: typeof AudioPlaylistWeb;
+    setAudioModeAsync: typeof setAudioModeAsync;
+    setIsAudioActiveAsync: typeof setIsAudioActiveAsync;
+    getRecordingPermissionsAsync: typeof getRecordingPermissionsAsync;
+    requestRecordingPermissionsAsync: typeof requestRecordingPermissionsAsync;
+};
+export default _default;
 //# sourceMappingURL=AudioModule.web.d.ts.map

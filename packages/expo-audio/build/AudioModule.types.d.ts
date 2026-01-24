@@ -432,8 +432,8 @@ export declare class AudioPlaylist extends SharedObject<AudioPlaylistEvents> {
      */
     setLoopMode(mode: AudioPlaylistLoopMode): void;
     /**
-     * Release the playlist from memory to free up resources.
+     * Destroy the playlist and free up resources.
      */
-    release(): void;
+    destroy(): void;
 }
 //# sourceMappingURL=AudioModule.types.d.ts.map
