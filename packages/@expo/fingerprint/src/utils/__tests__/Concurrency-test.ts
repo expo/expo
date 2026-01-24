@@ -2,18 +2,14 @@ import { createLimiter } from '../Concurrency';
 
 const withResolvers = <T = void>() => {
   let resolve: (value: T) => void;
-  let reject: (value: T) => void;
-  const promise = new Promise<T>((_resolve, _reject) => {
+  const promise = new Promise<T>((_resolve) => {
     resolve = _resolve;
-    reject = _reject;
   });
   return {
     promise,
-    resolve(value: T) {
+    resolve(value: T): Promise<void> {
       resolve(value);
-    },
-    reject(error: any) {
-      reject(error);
+      return promise.then(() => Promise.resolve());
     },
   };
 };
@@ -23,31 +19,53 @@ describe(createLimiter, () => {
     const a = withResolvers();
     const b = withResolvers();
     const c = withResolvers();
+    const d = withResolvers();
 
     const limit = createLimiter(2);
-    const seen: string[] = [];
+    const started: string[] = [];
+    const stopped: string[] = [];
 
-    const aOut = limit(async () => {
+    limit(async () => {
+      started.push('a');
       await a.promise;
-      seen.push('a');
+      stopped.push('a');
     });
-    const bOut = limit(async () => {
+    limit(async () => {
+      started.push('b');
       await b.promise;
-      seen.push('b');
+      stopped.push('b');
     });
-    const cOut = limit(async () => {
+    limit(async () => {
+      started.push('c');
       await c.promise;
-      seen.push('c');
+      stopped.push('c');
+    });
+    limit(async () => {
+      started.push('d');
+      await d.promise;
+      stopped.push('d');
     });
 
-    expect(seen).toEqual([]);
-    a.resolve();
-    c.resolve(); // resolve early but is queued
-    await aOut;
-    expect(seen).toEqual(['a']);
-    b.resolve();
-    await bOut;
-    expect(seen).toEqual(['a', 'b', 'c']);
-    await cOut;
+    expect(started).toEqual(['a', 'b']);
+    expect(stopped).toEqual([]);
+
+    await a.resolve();
+    expect(stopped).toEqual(['a']);
+
+    await c.resolve();
+    expect(started).toEqual(['a', 'b', 'c', 'd']);
+    expect(stopped).toEqual(['a', 'c']);
+
+    await b.resolve();
+    expect(stopped).toEqual(['a', 'c', 'b']);
+
+    await d.resolve();
+    expect(stopped).toEqual(['a', 'c', 'b', 'd']);
+
+    await limit(async () => {
+      stopped.push('e');
+    });
+
+    expect(stopped).toEqual(['a', 'c', 'b', 'd', 'e']);
   });
 });
