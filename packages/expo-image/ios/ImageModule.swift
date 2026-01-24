@@ -246,7 +246,7 @@ public final class ImageModule: Module {
     }
 
     AsyncFunction("loadAsync") { (source: ImageSource, options: ImageLoadOptions?) -> Image? in
-      let image = try await ImageLoadTask(source, maxSize: options?.getMaxSize()).load()
+      let image = try await ImageLoadTask(source, options: options ?? ImageLoadOptions()).load()
       return Image(image)
     }
 
