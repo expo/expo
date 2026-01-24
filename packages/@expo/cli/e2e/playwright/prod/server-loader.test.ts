@@ -17,6 +17,7 @@ test.describe('server loaders in production', () => {
     env: {
       NODE_ENV: 'production',
       TEST_SECRET_KEY: 'test-secret-key',
+      TEST_THROW_ERROR: 'true',
     },
   });
 
@@ -151,9 +152,24 @@ test.describe('server loaders in production', () => {
 
     // Navigate to posts route (has loader)
     await page.click('a[href="/posts/static-post-1"]');
-    const postsLoaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
+    const postsLoaderDataContent = await page
+      .locator('[data-testid="loader-result"]')
+      .textContent();
     expect(JSON.parse(postsLoaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
 
     expect(pageErrors.all).toEqual([]);
+  });
+
+  test('displays error boundary when loader throws on client-side navigation', async ({ page }) => {
+    await page.goto(expoServe.url.href);
+
+    // Navigate to error route
+    await page.click('a[href="/error"]');
+
+    await page.waitForSelector('[data-testid="error-message"]');
+    const errorMessage = await page.locator('[data-testid="error-message"]').textContent();
+
+    expect(errorMessage).toContain('Failed to load loader data for route: /error');
+    await expect(page.locator('[data-testid="should-not-render"]')).not.toBeVisible();
   });
 });

@@ -29,6 +29,7 @@ describe.each(
     serve: {
       env: {
         TEST_SECRET_RUNTIME_KEY: 'runtime-secret-value',
+        TEST_THROW_ERROR: 'true',
       },
     },
   })
@@ -57,6 +58,7 @@ describe.each(
 
     // Loader bundles should exist
     expect(files).toContain('_expo/loaders/env.js');
+    expect(files).toContain('_expo/loaders/error.js');
     expect(files).toContain('_expo/loaders/meta.js');
     expect(files).toContain('_expo/loaders/request.js');
     expect(files).toContain('_expo/loaders/response.js');
@@ -71,12 +73,14 @@ describe.each(
     );
 
     const envRoute = routesJson.htmlRoutes.find((r: any) => r.page === '/env');
+    const errorRoute = routesJson.htmlRoutes.find((r: any) => r.page === '/error');
     const secondRoute = routesJson.htmlRoutes.find((r: any) => r.page === '/second');
     const postRoute = routesJson.htmlRoutes.find((r: any) => r.page === '/posts/[postId]');
     const indexRoute = routesJson.htmlRoutes.find((r: any) => r.page === '/index');
 
     // Routes with loaders should have loader property
     expect(envRoute?.loader).toBe('_expo/loaders/env.js');
+    expect(errorRoute?.loader).toBe('_expo/loaders/error.js');
     expect(secondRoute?.loader).toBe('_expo/loaders/second.js');
     expect(postRoute?.loader).toBe('_expo/loaders/posts/[postId].js');
 
@@ -93,6 +97,14 @@ describe.each(
     const response = await server.fetchAsync('/_expo/loaders/nonexistent');
     expect(response.status).toBe(404);
   });
+
+  it.each(getPageAndLoaderData('/error'))(
+    'returns error when loader throws for $url ($name)',
+    async ({ url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(500);
+    }
+  );
 
   it.each(getPageAndLoaderData('/second'))(
     'can access data for $url ($name)',
