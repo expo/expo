@@ -63,7 +63,7 @@ describe(resolveOptionsAsync, () => {
         '--clear': true,
         '--dev': true,
         '--dump-assetmap': true,
-        '--source-maps': true,
+        '--source-maps': 'true',
         '--max-workers': 2,
       })
     ).resolves.toEqual({
@@ -74,10 +74,22 @@ describe(resolveOptionsAsync, () => {
       dumpAssetmap: true,
       hostedNative: false,
       sourceMaps: true,
+      inlineSourceMaps: false,
       maxWorkers: 2,
       skipSSG: false,
       outputDir: 'foobar',
       platforms: ['android'],
+    });
+  });
+
+  it(`parses inline source maps option`, async () => {
+    await expect(
+      resolveOptionsAsync('/', {
+        '--source-maps': 'inline',
+      })
+    ).resolves.toMatchObject({
+      sourceMaps: true,
+      inlineSourceMaps: true,
     });
   });
 
@@ -90,6 +102,7 @@ describe(resolveOptionsAsync, () => {
       dumpAssetmap: false,
       hostedNative: false,
       sourceMaps: false,
+      inlineSourceMaps: false,
       maxWorkers: undefined,
       skipSSG: false,
       outputDir: 'dist',
