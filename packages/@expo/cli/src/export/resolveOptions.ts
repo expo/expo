@@ -83,7 +83,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
 
   const platforms = resolvePlatformOption(exp, platformBundlers, args['--platform']);
 
-  // --source-maps can be "true" or "inline"
+  // --source-maps can be true, "external", or "inline"
   const sourceMapsArg = args['--source-maps'];
   const sourceMaps = !!sourceMapsArg;
   const inlineSourceMaps = sourceMapsArg === 'inline';

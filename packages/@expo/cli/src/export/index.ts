@@ -56,7 +56,7 @@ export const expoExport: Command = async (argv) => {
         `--dump-assetmap            Emit an asset map for further processing`,
         `--no-ssg, --api-only       Skip exporting static HTML files and only export API routes for web`,
         chalk`-p, --platform <platform>  Options: android, ios, web, all. {dim Default: all}`,
-        chalk`-s, --source-maps [mode]   Emit JavaScript source maps. {dim [mode]: true (default), inline}`,
+        chalk`-s, --source-maps [mode]   Emit JavaScript source maps. {dim mode: external (when omitted), inline}`,
         `-c, --clear                Clear the bundler cache`,
         `-h, --help                 Usage info`,
       ].join('\n')
