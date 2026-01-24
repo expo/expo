@@ -19,12 +19,14 @@ class SourceMapExplorerViewModel: ObservableObject {
   }
 
   func loadSourceMap() async {
+    if case .loaded = loadingState { return }
+
     loadingState = .loading
 
     do {
       let sourceMap = try await service.fetchSourceMap()
       self.sourceMap = sourceMap
-      self.fileTree = service.buildFileTree(from: sourceMap)
+      self.fileTree = await service.buildFileTree(from: sourceMap)
       loadingState = .loaded(sourceMap)
     } catch let error as SourceMapError {
       loadingState = .error(error)
@@ -53,7 +55,7 @@ class SourceMapExplorerViewModel: ObservableObject {
         results.append(contentsOf: findMatchingFiles(in: node.children, searchText: searchText))
       } else {
         // Check if file name or path matches
-        if node.name.lowercased().contains(searchText) || node.path.lowercased().contains(searchText) {
+        if node.searchableName.contains(searchText) || node.searchablePath.contains(searchText) {
           results.append(node)
         }
       }

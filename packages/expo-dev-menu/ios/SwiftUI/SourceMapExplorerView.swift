@@ -6,6 +6,10 @@ import ExpoModulesCore
 struct SourceMapExplorerView: View {
   @StateObject private var viewModel = SourceMapExplorerViewModel()
 
+  private var isSearching: Bool {
+    !viewModel.searchText.isEmpty
+  }
+
   var body: some View {
     Group {
       switch viewModel.loadingState {
@@ -17,7 +21,7 @@ struct SourceMapExplorerView: View {
           nodes: viewModel.filteredFileTree,
           sourceMap: viewModel.sourceMap,
           stats: viewModel.sourceMapStats,
-          searchText: $viewModel.searchText
+          isSearching: isSearching
         )
       case .error(let error):
         errorView(error)
@@ -25,6 +29,7 @@ struct SourceMapExplorerView: View {
     }
     .navigationTitle("Source Map Explorer")
     .navigationBarTitleDisplayMode(.inline)
+    .searchable(text: $viewModel.searchText, placement: .automatic, prompt: "Search files")
     .task {
       await viewModel.loadSourceMap()
     }
@@ -69,45 +74,22 @@ struct FolderListView: View {
   let nodes: [FileTreeNode]
   let sourceMap: SourceMap?
   let stats: (files: Int, totalSize: String)?
-  @Binding var searchText: String
-
-  private var isSearching: Bool {
-    !searchText.isEmpty
-  }
-
-  private var displayedNodes: [FileTreeNode] {
-    guard isSearching else { return nodes }
-    return findMatchingFiles(in: nodes, searchText: searchText.lowercased())
-  }
-
-  private func findMatchingFiles(in nodes: [FileTreeNode], searchText: String) -> [FileTreeNode] {
-    var results: [FileTreeNode] = []
-    for node in nodes {
-      if node.isDirectory {
-        results.append(contentsOf: findMatchingFiles(in: node.children, searchText: searchText))
-      } else {
-        if node.name.lowercased().contains(searchText) || node.path.lowercased().contains(searchText) {
-          results.append(node)
-        }
-      }
-    }
-    return results
-  }
+  let isSearching: Bool
 
   var body: some View {
     List {
-      if isSearching && displayedNodes.isEmpty {
-        Text("No files found")
+      if nodes.isEmpty {
+        Text(isSearching ? "No files found" : "Empty folder")
           .foregroundColor(.secondary)
       } else {
-        ForEach(displayedNodes) { node in
+        ForEach(nodes) { node in
           if node.isDirectory {
             NavigationLink(destination: FolderListView(
               title: node.name,
               nodes: node.children,
               sourceMap: sourceMap,
               stats: nil,
-              searchText: $searchText
+              isSearching: false
             )) {
               FileRow(node: node, showPath: isSearching)
             }
@@ -122,7 +104,6 @@ struct FolderListView: View {
     .listStyle(.insetGrouped)
     .navigationTitle(isSearching ? "Search Results" : title)
     .navigationBarTitleDisplayMode(.inline)
-    .searchable(text: $searchText, placement: .automatic, prompt: "Search files")
     .toolbar {
       ToolbarItem(placement: .navigationBarTrailing) {
         if let stats = stats {
@@ -195,10 +176,11 @@ struct CodeFileView: View {
   let node: FileTreeNode
   let sourceMap: SourceMap?
   @Environment(\.colorScheme) private var colorScheme
+  @State private var highlightedLines: [AttributedString]?
 
   private var content: String {
     guard let contentIndex = node.contentIndex,
-          let sourceMap = sourceMap,
+          let sourceMap,
           let sourcesContent = sourceMap.sourcesContent,
           contentIndex < sourcesContent.count,
           let code = sourcesContent[contentIndex] else {
@@ -225,8 +207,8 @@ struct CodeFileView: View {
       ScrollView(.vertical) {
         ScrollView(.horizontal, showsIndicators: false) {
           HStack(alignment: .top, spacing: 0) {
-            lineNumbersColumn
-            codeColumn
+            LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth)
+            CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme)
           }
           .frame(minWidth: geometry.size.width, alignment: .leading)
         }
@@ -235,10 +217,19 @@ struct CodeFileView: View {
     .background(theme.background)
     .navigationTitle(node.name)
     .navigationBarTitleDisplayMode(.inline)
+    .task(id: colorScheme) {
+      highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
+    }
   }
+}
 
-  private var lineNumbersColumn: some View {
-    VStack(alignment: .trailing, spacing: 0) {
+struct LineNumbersColumn: View {
+  let lines: [String]
+  let theme: SyntaxHighlighter.Theme
+  let lineNumberWidth: CGFloat
+  
+  var body: some View {
+    LazyVStack(alignment: .trailing, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in
         Text("\(index + 1)")
           .font(.system(size: 13, weight: .regular, design: .monospaced))
@@ -250,13 +241,26 @@ struct CodeFileView: View {
     .padding(.vertical, 12)
     .background(theme.background.opacity(0.8))
   }
+}
 
-  private var codeColumn: some View {
-    VStack(alignment: .leading, spacing: 0) {
+struct CodeColumn: View {
+  let lines: [String]
+  let highlightedLines: [AttributedString]?
+  let theme: SyntaxHighlighter.Theme
+  
+  var body: some View {
+    LazyVStack(alignment: .leading, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in
-        Text(SyntaxHighlighter.highlight(lines[index].isEmpty ? " " : lines[index], theme: theme))
-          .font(.system(size: 13, weight: .regular, design: .monospaced))
-          .frame(height: 20, alignment: .leading)
+        if let highlightedLines, index < highlightedLines.count {
+          Text(highlightedLines[index])
+            .font(.system(size: 13, weight: .regular, design: .monospaced))
+            .frame(height: 20, alignment: .leading)
+        } else {
+          Text(lines[index].isEmpty ? " " : lines[index])
+            .font(.system(size: 13, weight: .regular, design: .monospaced))
+            .foregroundColor(theme.plain)
+            .frame(height: 20, alignment: .leading)
+        }
       }
     }
     .padding(.vertical, 12)

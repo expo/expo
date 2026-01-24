@@ -13,20 +13,24 @@ struct SourceMap: Codable {
 
 /// Represents a node in the file tree (file or directory)
 struct FileTreeNode: Identifiable, Hashable {
-  let id: UUID
+  var id: String { path }
   let name: String
   let path: String
   let isDirectory: Bool
   var children: [FileTreeNode]
   let contentIndex: Int?
 
+  let searchableName: String
+  let searchablePath: String
+
   init(name: String, path: String, isDirectory: Bool, children: [FileTreeNode] = [], contentIndex: Int? = nil) {
-    self.id = UUID()
     self.name = name
     self.path = path
     self.isDirectory = isDirectory
     self.children = children
     self.contentIndex = contentIndex
+    self.searchableName = name.lowercased()
+    self.searchablePath = path.lowercased()
   }
 
   func hash(into hasher: inout Hasher) {

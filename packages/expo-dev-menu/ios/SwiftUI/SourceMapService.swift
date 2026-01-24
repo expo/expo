@@ -3,7 +3,6 @@
 import Foundation
 import ObjectiveC
 
-@MainActor
 class SourceMapService {
   private let devMenuManager = DevMenuManager.shared
 
@@ -210,17 +209,42 @@ class SourceMapService {
   }
 
   // MARK: - File Tree Building
+  private class Node {
+    let name: String
+    let path: String
+    var children: [String: Node] = [:]
+    var contentIndex: Int?
+    let isDirectory: Bool
+
+    init(name: String, path: String, isDirectory: Bool, contentIndex: Int? = nil) {
+      self.name = name
+      self.path = path
+      self.isDirectory = isDirectory
+      self.contentIndex = contentIndex
+    }
+  }
 
   /// Builds a file tree from the source map sources array
-  func buildFileTree(from sourceMap: SourceMap) -> [FileTreeNode] {
-    var rootChildren: [String: FileTreeNode] = [:]
+  func buildFileTree(from sourceMap: SourceMap) async -> [FileTreeNode] {
+    let root = Node(name: "", path: "", isDirectory: true)
 
     for (index, sourcePath) in sourceMap.sources.enumerated() {
-      insertPath(sourcePath, contentIndex: index, into: &rootChildren)
+      insertPath(sourcePath, contentIndex: index, into: root)
     }
 
-    let sorted = sortNodes(Array(rootChildren.values))
+    let nodes = root.children.values.map { convertToNode($0) }
+    let sorted = sortNodes(nodes)
     return collapseSingleChildFolders(sorted)
+  }
+
+  private func convertToNode(_ builder: Node) -> FileTreeNode {
+    FileTreeNode(
+      name: builder.name,
+      path: builder.path,
+      isDirectory: builder.isDirectory,
+      children: builder.children.values.map { convertToNode($0) },
+      contentIndex: builder.contentIndex
+    )
   }
 
   /// Collapses folder chains that have only a single child folder
@@ -249,32 +273,28 @@ class SourceMapService {
     }
   }
 
-  private func insertPath(_ path: String, contentIndex: Int, into nodes: inout [String: FileTreeNode]) {
+  private func insertPath(_ path: String, contentIndex: Int, into parent: Node) {
     let components = path.split(separator: "/").map(String.init)
     guard !components.isEmpty else { return }
 
-    let firstName = components[0]
+    var current = parent
+    let lastIndex = components.count - 1
 
-    if components.count == 1 {
-      nodes[firstName] = FileTreeNode(
-        name: firstName,
-        path: path,
-        isDirectory: false,
-        contentIndex: contentIndex
-      )
-    } else {
-      var existingNode = nodes[firstName] ?? FileTreeNode(
-        name: firstName,
-        path: firstName,
-        isDirectory: true
-      )
+    for (index, component) in components.enumerated() {
+      let isLast = index == lastIndex
 
-      let remainingPath = components.dropFirst().joined(separator: "/")
-      var childrenDict = Dictionary(uniqueKeysWithValues: existingNode.children.map { ($0.name, $0) })
-      insertPath(remainingPath, contentIndex: contentIndex, into: &childrenDict)
-      existingNode.children = Array(childrenDict.values)
-
-      nodes[firstName] = existingNode
+      if let existing = current.children[component] {
+        current = existing
+      } else {
+        let newNode = Node(
+          name: component,
+          path: components[0...index].joined(separator: "/"),
+          isDirectory: !isLast,
+          contentIndex: isLast ? contentIndex : nil
+        )
+        current.children[component] = newNode
+        current = newNode
+      }
     }
   }
 
