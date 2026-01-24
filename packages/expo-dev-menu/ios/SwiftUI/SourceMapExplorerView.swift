@@ -170,8 +170,7 @@ struct FileRow: View {
   private var fileIcon: String {
     let ext = (node.name as NSString).pathExtension.lowercased()
     switch ext {
-    case "ts", "tsx": return "swift"
-    case "js", "jsx": return "curlybraces"
+    case "ts", "tsx", "js", "jsx": return "curlybraces"
     case "json": return "doc.text"
     case "css", "scss", "sass": return "paintbrush"
     case "png", "jpg", "jpeg", "gif", "svg": return "photo"
