@@ -13,6 +13,8 @@ import { Step } from '~/ui/components/Step';
 
 Server-side rendering (SSR) generates HTML dynamically on each request, as opposed to [static rendering](/router/web/static-rendering), which pre-renders HTML at build time. This guide walks you through enabling server rendering for your Expo Router app.
 
+> **info** With server-side rendering, [data loaders](/router/web/data-loaders) are executed on the server for each request and the result is embedded in the HTML response.
+
 ## Setup
 
 <Step label="1">

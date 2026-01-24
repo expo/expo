@@ -16,7 +16,7 @@
 
 ### 💡 Others
 
-[iOS] Use internal import for Expo ([#42449](https://github.com/expo/expo/pull/42449) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Use internal import for Expo ([#42449](https://github.com/expo/expo/pull/42449) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 55.0.1 — 2026-01-22
 
@@ -40,3 +40,4 @@ _This version does not introduce any user-facing changes._
 - Updated build configurations and resolved leftover TODOs in [#42072](https://github.com/expo/expo/pull/42072) by [@pmleczek](https://github.com/pmleczek)
 - [iOS] Symlink ExpoAppDelegate to iOS template ([#42240](https://github.com/expo/expo/pull/42240) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Remove ExpoModulesProvider patch ([#42317](https://github.com/expo/expo/pull/42317) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Improved bundle loading failure handling in [#42469](https://github.com/expo/expo/pull/42469) by [@pmleczek](https://github.com/pmleczek)

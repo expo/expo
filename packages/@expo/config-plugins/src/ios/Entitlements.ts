@@ -2,7 +2,6 @@ import { ExpoConfig } from '@expo/config-types';
 import { JSONObject } from '@expo/json-file';
 import fs from 'fs';
 import path from 'path';
-import slash from 'slash';
 import { XCBuildConfiguration } from 'xcode';
 
 import { findFirstNativeTarget, getXCBuildConfigurationFromPbxproj } from './Target';
@@ -91,10 +90,10 @@ export function ensureApplicationTargetEntitlementsFileConfigured(projectRoot: s
     }
     hasChangesToWrite = true;
     // Use posix formatted path, even on Windows
-    const entitlementsRelativePath = slash(path.join(projectName, `${productName}.entitlements`));
-    const entitlementsPath = path.normalize(
-      path.join(projectRoot, 'ios', entitlementsRelativePath)
-    );
+    const entitlementsRelativePath = path
+      .join(projectName, `${productName}.entitlements`)
+      .replace(/\\/g, '/');
+    const entitlementsPath = path.resolve(projectRoot, 'ios', entitlementsRelativePath);
     fs.mkdirSync(path.dirname(entitlementsPath), { recursive: true });
     if (!fs.existsSync(entitlementsPath)) {
       fs.writeFileSync(entitlementsPath, ENTITLEMENTS_TEMPLATE);

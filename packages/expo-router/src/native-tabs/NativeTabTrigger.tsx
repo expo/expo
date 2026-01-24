@@ -15,10 +15,10 @@ import {
   type SrcIcon,
 } from './common/elements';
 import type { NativeTabOptions, NativeTabTriggerProps } from './types';
+import { convertComponentSrcToImageSource } from './utils/icon';
 import { useIsPreview } from '../link/preview/PreviewRouteContext';
 import { useFocusEffect } from '../useFocusEffect';
 import { filterAllowedChildrenElements, isChildOfType } from '../utils/children';
-import { convertComponentSrcToImageSource } from './utils/icon';
 import { convertMaterialIconNameToImageSource } from './utils/materialIconConverter';
 
 /**
@@ -250,24 +250,15 @@ export function isNativeTabTrigger(
   child: ReactNode,
   contextKey?: string
 ): child is ReactElement<NativeTabTriggerProps & { name: string }> {
-  if (isValidElement(child) && child && child.type === NativeTabTrigger) {
-    if (
-      typeof child.props === 'object' &&
-      child.props &&
-      'name' in child.props &&
-      !child.props.name
-    ) {
+  if (isChildOfType(child, NativeTabTrigger)) {
+    if ('name' in child.props && !child.props.name) {
       throw new Error(
         `<Trigger /> component in \`default export\` at \`app${contextKey}/_layout\` must have a \`name\` prop when used as a child of a Layout Route.`
       );
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      if (
-        ['component', 'getComponent'].some(
-          (key) => child.props && typeof child.props === 'object' && key in child.props
-        )
-      ) {
+      if ((['component', 'getComponent'] as const).some((key) => key in child.props)) {
         throw new Error(
           `<Trigger /> component in \`default export\` at \`app${contextKey}/_layout\` must not have a \`component\` or \`getComponent\` prop when used as a child of a Layout Route`
         );
