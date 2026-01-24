@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add sources button to dev client on iOS. ([#42493](https://github.com/expo/expo/pull/42493) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

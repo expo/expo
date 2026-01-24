@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add "Source Code Explorer" screen to iOS dev menu ([#42493](https://github.com/expo/expo/pull/42493) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
