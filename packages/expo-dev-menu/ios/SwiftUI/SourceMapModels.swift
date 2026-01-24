@@ -55,7 +55,6 @@ enum SourceMapError: Error, LocalizedError {
   case httpError(Int)
   case noSourceMapFound
   case invalidInlineSourceMap
-  case easCDNAuthFailed
 
   var errorDescription: String? {
     switch self {
@@ -68,16 +67,11 @@ enum SourceMapError: Error, LocalizedError {
     case .parseError(let error):
       return "Failed to parse source map: \(error.localizedDescription)"
     case .httpError(let code):
-      if code == 403 {
-        return "Access denied (403). The EAS CDN requires authentication headers that aren't available. This can happen when expo-updates isn't properly initialized."
-      }
       return "HTTP error: \(code)"
     case .noSourceMapFound:
       return "No source map found. Enable inline source maps in your Metro config or ensure the bundle is stored locally."
     case .invalidInlineSourceMap:
       return "Found inline source map but failed to decode it."
-    case .easCDNAuthFailed:
-      return "Failed to authenticate with EAS CDN. expo-updates may not be properly configured for this project."
     }
   }
 }
