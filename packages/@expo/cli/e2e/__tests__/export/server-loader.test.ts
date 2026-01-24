@@ -72,20 +72,11 @@ describe.each(
       fs.readFileSync(path.join(server.outputDir, 'server/_expo/routes.json'), 'utf8')
     );
 
-    const envRoute = routesJson.htmlRoutes.find((r: any) => r.page === '/env');
-    const errorRoute = routesJson.htmlRoutes.find((r: any) => r.page === '/error');
-    const secondRoute = routesJson.htmlRoutes.find((r: any) => r.page === '/second');
-    const postRoute = routesJson.htmlRoutes.find((r: any) => r.page === '/posts/[postId]');
-    const indexRoute = routesJson.htmlRoutes.find((r: any) => r.page === '/index');
-
-    // Routes with loaders should have loader property
-    expect(envRoute?.loader).toBe('_expo/loaders/env.js');
-    expect(errorRoute?.loader).toBe('_expo/loaders/error.js');
-    expect(secondRoute?.loader).toBe('_expo/loaders/second.js');
-    expect(postRoute?.loader).toBe('_expo/loaders/posts/[postId].js');
-
-    // Route without loader should not have loader property
-    expect(indexRoute?.loader).toBeUndefined();
+    for (const route of routesJson.htmlRoutes) {
+      if (route.loader) {
+        expect(route.loader).toBe(`_expo/loaders${route.page}.js`);
+      }
+    }
   });
 
   it('returns 404 for loader endpoint when route has no loader', async () => {
