@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add sources button to dev client on iOS.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
