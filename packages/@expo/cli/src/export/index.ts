@@ -30,7 +30,7 @@ function preprocessSourceMapsArg(argv: string[]): string[] {
 export const expoExport: Command = async (argv) => {
   // Preprocess argv to handle --source-maps with optional value
   // If --source-maps is followed by another flag or end of args, insert 'true' as the value
-  const processedArgv = preprocessSourceMapsArg(argv);
+  const processedArgv = argv ? preprocessSourceMapsArg(argv) : undefined;
 
   const args = assertArgs(
     {
