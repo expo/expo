@@ -17,7 +17,7 @@ struct SourceMapExplorerView: View {
         loadingView
       case .loaded:
         FolderListView(
-          title: "Source Map Explorer",
+          title: "Source Code Explorer",
           nodes: viewModel.filteredFileTree,
           sourceMap: viewModel.sourceMap,
           stats: viewModel.sourceMapStats,
@@ -27,7 +27,7 @@ struct SourceMapExplorerView: View {
         errorView(error)
       }
     }
-    .navigationTitle("Source Map Explorer")
+    .navigationTitle("Source Code Explorer")
     .navigationBarTitleDisplayMode(.inline)
     .searchable(text: $viewModel.searchText, placement: .automatic, prompt: "Search files")
     .task {

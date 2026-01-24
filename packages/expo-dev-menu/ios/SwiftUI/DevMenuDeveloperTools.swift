@@ -57,7 +57,7 @@ struct DevMenuDeveloperTools: View {
               .foregroundColor(.primary)
               .opacity(0.6)
 
-            Text("Source map explorer")
+            Text("Source code explorer")
               .foregroundColor(.primary)
 
             Spacer()
