@@ -2,6 +2,7 @@ import { PermissionStatus } from 'expo-modules-core';
 import { activePlayers } from './AudioPlayer.web';
 import { getUserMedia } from './AudioUtils.web';
 export { AudioPlayerWeb } from './AudioPlayer.web';
+export { AudioPlaylistWeb } from './AudioPlaylist.web';
 export { AudioRecorderWeb } from './AudioRecorder.web';
 export let isAudioActive = true;
 async function getPermissionWithQueryAsync(name) {

@@ -59,7 +59,6 @@ export default function AudioPlaylistScreen() {
   const playlist = useAudioPlaylist({
     sources: INITIAL_SOURCES,
     loop: 'none',
-    updateInterval: 250,
   });
 
   const status = useAudioPlaylistStatus(playlist);
@@ -154,17 +153,17 @@ export default function AudioPlaylistScreen() {
       <View style={styles.loopControls}>
         <Button
           title="None"
-          onPress={() => playlist.setLoopMode('none')}
+          onPress={() => (playlist.loop = 'none')}
           disabled={status.loop === 'none'}
         />
         <Button
           title="Single"
-          onPress={() => playlist.setLoopMode('single')}
+          onPress={() => (playlist.loop = 'single')}
           disabled={status.loop === 'single'}
         />
         <Button
           title="All"
-          onPress={() => playlist.setLoopMode('all')}
+          onPress={() => (playlist.loop = 'all')}
           disabled={status.loop === 'all'}
         />
       </View>

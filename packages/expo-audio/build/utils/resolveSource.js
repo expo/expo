@@ -37,6 +37,11 @@ function createSourceFromAsset(asset, extras = {}) {
     }
     return result;
 }
+export function resolveSources(sources) {
+    return sources
+        .map((source) => resolveSource(source))
+        .filter((source) => source != null);
+}
 export function resolveSource(source) {
     if (source == null) {
         return null;

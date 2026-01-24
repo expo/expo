@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, PLAYLIST_STATUS_UPDATE, RECORDING_STATUS_UPDATE, } from './AudioEventKeys';
 import AudioModule from './AudioModule';
 import { createRecordingOptions } from './utils/options';
-import { resolveSource, resolveSourceWithDownload } from './utils/resolveSource';
+import { resolveSource, resolveSources, resolveSourceWithDownload } from './utils/resolveSource';
 // TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.
 const replace = AudioModule.AudioPlayer.prototype.replace;
 AudioModule.AudioPlayer.prototype.replace = function (source) {
@@ -323,11 +323,7 @@ export function useAudioRecorderState(recorder, interval = 500) {
  */
 export function useAudioPlaylist(options = {}) {
     const { sources = [], updateInterval = 500, loop = 'none' } = options;
-    const resolvedSources = useMemo(() => {
-        return sources
-            .map((source) => resolveSource(source))
-            .filter((source) => source != null);
-    }, [JSON.stringify(sources)]);
+    const resolvedSources = useMemo(() => resolveSources(sources), [JSON.stringify(sources)]);
     const playlist = useReleasingSharedObject(() => new AudioModule.AudioPlaylist(resolvedSources, updateInterval, loop), [JSON.stringify(resolvedSources), updateInterval, loop]);
     return playlist;
 }
@@ -371,7 +367,7 @@ export function useAudioPlaylistStatus(playlist) {
  */
 export function createAudioPlaylist(options = {}) {
     const { sources = [], updateInterval = 500, loop = 'none' } = options;
-    const resolvedSources = sources.map((source) => resolveSource(source));
+    const resolvedSources = resolveSources(sources);
     return new AudioModule.AudioPlaylist(resolvedSources, updateInterval, loop);
 }
 /**

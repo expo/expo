@@ -5,6 +5,8 @@ import { useEffect, useState, useMemo } from 'react';
 import {
   AudioMode,
   AudioPlayerOptions,
+  AudioPlaylistOptions,
+  AudioPlaylistStatus,
   AudioSource,
   AudioStatus,
   RecorderState,
@@ -14,12 +16,13 @@ import {
 import {
   AUDIO_SAMPLE_UPDATE,
   PLAYBACK_STATUS_UPDATE,
+  PLAYLIST_STATUS_UPDATE,
   RECORDING_STATUS_UPDATE,
 } from './AudioEventKeys';
 import { AudioPlayer, AudioRecorder, AudioSample } from './AudioModule.types';
 import * as AudioModule from './AudioModule.web';
 import { createRecordingOptions } from './utils/options';
-import { resolveSource, resolveSourceWithDownload } from './utils/resolveSource';
+import { resolveSource, resolveSources, resolveSourceWithDownload } from './utils/resolveSource';
 
 // Global registry for cleaning up object URLs when players are garbage collected
 // Since we are using blob urls, we need to clean them up when the player is garbage collected
@@ -227,6 +230,38 @@ export async function requestRecordingPermissionsAsync(): Promise<PermissionResp
 
 export async function getRecordingPermissionsAsync(): Promise<PermissionResponse> {
   return await AudioModule.getRecordingPermissionsAsync();
+}
+
+export function useAudioPlaylist(options: AudioPlaylistOptions = {}): AudioModule.AudioPlaylistWeb {
+  const { sources = [], updateInterval = 500, loop = 'none', crossOrigin } = options;
+
+  const resolvedSources = useMemo(() => resolveSources(sources), [JSON.stringify(sources)]);
+
+  const playlist = useMemo(
+    () => new AudioModule.AudioPlaylistWeb(resolvedSources, updateInterval, loop, crossOrigin),
+    [JSON.stringify(resolvedSources), updateInterval, loop, crossOrigin]
+  );
+
+  useEffect(() => {
+    return () => playlist.destroy();
+  }, [playlist]);
+
+  return playlist;
+}
+
+export function useAudioPlaylistStatus(
+  playlist: AudioModule.AudioPlaylistWeb
+): AudioPlaylistStatus {
+  const currentStatus = useMemo(() => playlist.currentStatus, [playlist.id]);
+  return useEvent(playlist, PLAYLIST_STATUS_UPDATE, currentStatus);
+}
+
+export function createAudioPlaylist(
+  options: AudioPlaylistOptions = {}
+): AudioModule.AudioPlaylistWeb {
+  const { sources = [], updateInterval = 500, loop = 'none', crossOrigin } = options;
+  const resolvedSources = resolveSources(sources);
+  return new AudioModule.AudioPlaylistWeb(resolvedSources, updateInterval, loop, crossOrigin);
 }
 
 export { AudioModule };

@@ -1,9 +1,9 @@
 import { useEvent } from 'expo';
 import { useEffect, useState, useMemo } from 'react';
-import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, RECORDING_STATUS_UPDATE, } from './AudioEventKeys';
+import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE, PLAYLIST_STATUS_UPDATE, RECORDING_STATUS_UPDATE, } from './AudioEventKeys';
 import * as AudioModule from './AudioModule.web';
 import { createRecordingOptions } from './utils/options';
-import { resolveSource, resolveSourceWithDownload } from './utils/resolveSource';
+import { resolveSource, resolveSources, resolveSourceWithDownload } from './utils/resolveSource';
 // Global registry for cleaning up object URLs when players are garbage collected
 // Since we are using blob urls, we need to clean them up when the player is garbage collected
 // this is only used for createAudioPlayer, as we have lifecycle management in useAudioPlayer
@@ -159,6 +159,24 @@ export async function requestRecordingPermissionsAsync() {
 }
 export async function getRecordingPermissionsAsync() {
     return await AudioModule.getRecordingPermissionsAsync();
+}
+export function useAudioPlaylist(options = {}) {
+    const { sources = [], updateInterval = 500, loop = 'none', crossOrigin } = options;
+    const resolvedSources = useMemo(() => resolveSources(sources), [JSON.stringify(sources)]);
+    const playlist = useMemo(() => new AudioModule.AudioPlaylistWeb(resolvedSources, updateInterval, loop, crossOrigin), [JSON.stringify(resolvedSources), updateInterval, loop, crossOrigin]);
+    useEffect(() => {
+        return () => playlist.destroy();
+    }, [playlist]);
+    return playlist;
+}
+export function useAudioPlaylistStatus(playlist) {
+    const currentStatus = useMemo(() => playlist.currentStatus, [playlist.id]);
+    return useEvent(playlist, PLAYLIST_STATUS_UPDATE, currentStatus);
+}
+export function createAudioPlaylist(options = {}) {
+    const { sources = [], updateInterval = 500, loop = 'none', crossOrigin } = options;
+    const resolvedSources = resolveSources(sources);
+    return new AudioModule.AudioPlaylistWeb(resolvedSources, updateInterval, loop, crossOrigin);
 }
 export { AudioModule };
 //# sourceMappingURL=ExpoAudio.web.js.map

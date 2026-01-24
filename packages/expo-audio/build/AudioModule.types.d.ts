@@ -427,18 +427,8 @@ export declare class AudioPlaylist extends SharedObject<AudioPlaylistEvents> {
      */
     clear(): void;
     /**
-     * Set the playback rate.
-     * @param rate The playback rate (0.1 to 2.0).
+     * Destroy the playlist and free up resources.
      */
-    setPlaybackRate(rate: number): void;
-    /**
-     * Set the loop mode.
-     * @param mode The loop mode ('none', 'single', or 'all').
-     */
-    setLoopMode(mode: AudioPlaylistLoopMode): void;
-    /**
-     * Release the playlist from memory to free up resources.
-     */
-    release(): void;
+    destroy(): void;
 }
 //# sourceMappingURL=AudioModule.types.d.ts.map

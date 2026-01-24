@@ -54,6 +54,12 @@ function createSourceFromAsset(
   return result;
 }
 
+export function resolveSources(sources: AudioSource[]): NonNullable<AudioSource>[] {
+  return sources
+    .map((source) => resolveSource(source))
+    .filter((source): source is NonNullable<AudioSource> => source != null);
+}
+
 export function resolveSource(source?: AudioSource | string | number | null): AudioSource | null {
   if (source == null) {
     return null;

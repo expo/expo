@@ -192,6 +192,14 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
         }
         this.samplingEnabled = false;
         this.media.pause();
+        // Clear event handlers to prevent memory leaks
+        this.media.ontimeupdate = null;
+        this.media.onplay = null;
+        this.media.onpause = null;
+        this.media.onseeked = null;
+        this.media.onended = null;
+        this.media.onloadeddata = null;
+        this.media.onerror = null;
         this.media.removeAttribute('src');
         this.media.load();
         activePlayers.delete(this);
@@ -276,6 +284,15 @@ export class AudioPlayerWeb extends globalThis.expo.SharedObject {
                 isLoaded: this.loaded,
             });
             mediaSessionController.updatePositionState(this);
+        };
+        media.onerror = () => {
+            this.loaded = false;
+            this.isPlaying = false;
+            this.emit(PLAYBACK_STATUS_UPDATE, {
+                ...getStatusFromMedia(media, this.id),
+                isLoaded: false,
+                playing: false,
+            });
         };
         return media;
     }
