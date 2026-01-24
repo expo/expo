@@ -5,16 +5,52 @@ export interface Limiter {
   ): Promise<ReturnType>;
 }
 
-export const createLimiter = (limit = 4): Limiter => {
-  const pending = new Set<Promise<unknown>>();
-  return async (fn, ...args) => {
-    while (pending.size >= limit) {
-      await Promise.race(pending);
-    }
-    const promise = Promise.resolve(fn(...args)).finally(() => {
-      pending.delete(promise);
+interface QueueItem {
+  resolve(): void;
+  next: QueueItem | null;
+}
+
+export const createLimiter = (limit = 1): Limiter => {
+  let running = 0;
+  let head: QueueItem | null = null;
+  let tail: QueueItem | null = null;
+
+  const enqueue = () =>
+    new Promise<void>((resolve) => {
+      const item: QueueItem = { resolve, next: null };
+      if (tail) {
+        tail.next = item;
+        tail = item;
+      } else {
+        head = item;
+        tail = item;
+      }
     });
-    pending.add(promise);
-    return await promise;
+
+  const dequeue = () => {
+    if (running < limit && head !== null) {
+      const { resolve, next } = head;
+      head.next = null;
+      head = next;
+      if (head === null) {
+        tail = null;
+      }
+      running++;
+      resolve();
+    }
+  };
+
+  return async (fn, ...args) => {
+    if (running < limit) {
+      running++;
+    } else {
+      await enqueue();
+    }
+    try {
+      return await fn(...args);
+    } finally {
+      running--;
+      dequeue();
+    }
   };
 };
