@@ -55,6 +55,8 @@ struct SyntaxHighlighter {
     "void", "while", "with", "yield"
   ])
 
+  private static let punctuationChars: Set<Character> = Set("{}[]();:,.<>+-*/%=!&|?@#~^")
+
   enum TokenType {
     case keyword, string, number, comment, punctuation, property, plain
 
@@ -169,7 +171,7 @@ struct SyntaxHighlighter {
       }
 
       // Punctuation
-      if "{}[]();:,.<>+-*/%=!&|?@#~^".contains(char) {
+      if punctuationChars.contains(char) {
         tokens.append(Token(text: String(char), type: .punctuation))
         index = remaining.index(after: index)
         continue
@@ -194,5 +196,11 @@ struct SyntaxHighlighter {
     }
 
     return result
+  }
+
+  static func highlightLines(_ lines: [String], theme: Theme) async -> [AttributedString] {
+    lines.map { line in
+      highlight(line.isEmpty ? " " : line, theme: theme)
+    }
   }
 }
