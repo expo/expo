@@ -42,5 +42,7 @@ struct DevMenuMainView: View {
       .padding()
     }
     .environmentObject(viewModel)
+    .navigationTitle("Dev Menu")
+    .navigationBarHidden(true)
   }
 }

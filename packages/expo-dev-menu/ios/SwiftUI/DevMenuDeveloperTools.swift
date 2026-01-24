@@ -69,6 +69,7 @@ struct DevMenuDeveloperTools: View {
           .padding()
           .background(Color.expoSecondarySystemBackground)
         }
+        .buttonStyle(.plain)
       }
       .background(Color.expoSystemBackground)
       .cornerRadius(18)

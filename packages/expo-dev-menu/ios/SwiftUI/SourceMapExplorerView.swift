@@ -13,7 +13,7 @@ struct SourceMapExplorerView: View {
         loadingView
       case .loaded:
         FolderListView(
-          title: "Source Map",
+          title: "Source Map Explorer",
           nodes: viewModel.filteredFileTree,
           sourceMap: viewModel.sourceMap,
           stats: viewModel.sourceMapStats,
@@ -75,13 +75,32 @@ struct FolderListView: View {
     !searchText.isEmpty
   }
 
+  private var displayedNodes: [FileTreeNode] {
+    guard isSearching else { return nodes }
+    return findMatchingFiles(in: nodes, searchText: searchText.lowercased())
+  }
+
+  private func findMatchingFiles(in nodes: [FileTreeNode], searchText: String) -> [FileTreeNode] {
+    var results: [FileTreeNode] = []
+    for node in nodes {
+      if node.isDirectory {
+        results.append(contentsOf: findMatchingFiles(in: node.children, searchText: searchText))
+      } else {
+        if node.name.lowercased().contains(searchText) || node.path.lowercased().contains(searchText) {
+          results.append(node)
+        }
+      }
+    }
+    return results
+  }
+
   var body: some View {
     List {
-      if isSearching && nodes.isEmpty {
+      if isSearching && displayedNodes.isEmpty {
         Text("No files found")
           .foregroundColor(.secondary)
       } else {
-        ForEach(nodes) { node in
+        ForEach(displayedNodes) { node in
           if node.isDirectory {
             NavigationLink(destination: FolderListView(
               title: node.name,
