@@ -63,10 +63,11 @@ struct DevMenuDeveloperTools: View {
             Spacer()
 
             Image(systemName: "chevron.right")
+              .font(.caption)
               .foregroundColor(.secondary)
-              .opacity(0.5)
           }
           .padding()
+          .background(Color.expoSecondarySystemBackground)
         }
       }
       .background(Color.expoSystemBackground)

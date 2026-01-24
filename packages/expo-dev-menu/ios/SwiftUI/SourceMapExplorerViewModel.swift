@@ -14,7 +14,8 @@ class SourceMapExplorerViewModel: ObservableObject {
 
   var filteredFileTree: [FileTreeNode] {
     guard !searchText.isEmpty else { return fileTree }
-    return filterNodes(fileTree, searchText: searchText.lowercased())
+    // When searching, flatten to show matching files directly
+    return findMatchingFiles(in: fileTree, searchText: searchText.lowercased())
   }
 
   func loadSourceMap() async {
@@ -42,22 +43,22 @@ class SourceMapExplorerViewModel: ObservableObject {
     return (fileCount, sizeString)
   }
 
-  private func filterNodes(_ nodes: [FileTreeNode], searchText: String) -> [FileTreeNode] {
-    var result: [FileTreeNode] = []
+  /// Finds all matching files and returns them as a flat list with full paths
+  private func findMatchingFiles(in nodes: [FileTreeNode], searchText: String) -> [FileTreeNode] {
+    var results: [FileTreeNode] = []
 
     for node in nodes {
-      if node.name.lowercased().contains(searchText) {
-        result.append(node)
-      } else if node.isDirectory {
-        let filteredChildren = filterNodes(node.children, searchText: searchText)
-        if !filteredChildren.isEmpty {
-          var filteredNode = node
-          filteredNode.children = filteredChildren
-          result.append(filteredNode)
+      if node.isDirectory {
+        // Recursively search children
+        results.append(contentsOf: findMatchingFiles(in: node.children, searchText: searchText))
+      } else {
+        // Check if file name or path matches
+        if node.name.lowercased().contains(searchText) || node.path.lowercased().contains(searchText) {
+          results.append(node)
         }
       }
     }
 
-    return result
+    return results
   }
 }

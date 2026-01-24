@@ -16,9 +16,9 @@ struct SourceMapExplorerView: View {
           title: "Source Map",
           nodes: viewModel.filteredFileTree,
           sourceMap: viewModel.sourceMap,
-          stats: viewModel.sourceMapStats
+          stats: viewModel.sourceMapStats,
+          searchText: $viewModel.searchText
         )
-        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search files")
       case .error(let error):
         errorView(error)
       }
@@ -69,53 +69,79 @@ struct FolderListView: View {
   let nodes: [FileTreeNode]
   let sourceMap: SourceMap?
   let stats: (files: Int, totalSize: String)?
+  @Binding var searchText: String
+
+  private var isSearching: Bool {
+    !searchText.isEmpty
+  }
 
   var body: some View {
     List {
-      if let stats = stats {
-        Section {
-          HStack {
-            Label("\(stats.files) files", systemImage: "doc.on.doc")
-            Spacer()
-            Label(stats.totalSize, systemImage: "internaldrive")
-          }
-          .font(.caption)
+      if isSearching && nodes.isEmpty {
+        Text("No files found")
           .foregroundColor(.secondary)
-        }
-      }
-
-      Section {
+      } else {
         ForEach(nodes) { node in
           if node.isDirectory {
             NavigationLink(destination: FolderListView(
               title: node.name,
               nodes: node.children,
               sourceMap: sourceMap,
-              stats: nil
+              stats: nil,
+              searchText: $searchText
             )) {
-              FileRow(node: node)
+              FileRow(node: node, showPath: isSearching)
             }
           } else {
             NavigationLink(destination: CodeFileView(node: node, sourceMap: sourceMap)) {
-              FileRow(node: node)
+              FileRow(node: node, showPath: isSearching)
             }
           }
         }
       }
     }
     .listStyle(.insetGrouped)
-    .navigationTitle(title)
+    .navigationTitle(isSearching ? "Search Results" : title)
     .navigationBarTitleDisplayMode(.inline)
+    .searchable(text: $searchText, placement: .automatic, prompt: "Search files")
+    .toolbar {
+      ToolbarItem(placement: .navigationBarTrailing) {
+        if let stats = stats {
+          Menu {
+            Label("\(stats.files) files", systemImage: "doc.on.doc")
+            Label(stats.totalSize, systemImage: "internaldrive")
+          } label: {
+            Image(systemName: "info.circle")
+          }
+        }
+      }
+    }
   }
 }
 
 struct FileRow: View {
   let node: FileTreeNode
+  var showPath: Bool = false
+
+  private var parentDirectory: String? {
+    let path = node.path
+    guard let lastSlash = path.lastIndex(of: "/") else { return nil }
+    let parent = String(path[..<lastSlash])
+    return parent.isEmpty ? nil : parent
+  }
 
   var body: some View {
     Label {
-      Text(node.name)
-        .lineLimit(1)
+      VStack(alignment: .leading, spacing: 2) {
+        Text(node.name)
+          .lineLimit(1)
+        if showPath, let parent = parentDirectory {
+          Text(parent)
+            .font(.caption)
+            .foregroundColor(.secondary)
+            .lineLimit(1)
+        }
+      }
     } icon: {
       Image(systemName: node.isDirectory ? "folder.fill" : fileIcon)
         .foregroundColor(node.isDirectory ? .blue : iconColor)
@@ -150,55 +176,73 @@ struct FileRow: View {
 struct CodeFileView: View {
   let node: FileTreeNode
   let sourceMap: SourceMap?
+  @Environment(\.colorScheme) private var colorScheme
 
-  private var content: String? {
+  private var content: String {
     guard let contentIndex = node.contentIndex,
           let sourceMap = sourceMap,
           let sourcesContent = sourceMap.sourcesContent,
-          contentIndex < sourcesContent.count else {
-      return nil
+          contentIndex < sourcesContent.count,
+          let code = sourcesContent[contentIndex] else {
+      return "// Content not available"
     }
-    return sourcesContent[contentIndex]
+    return code
   }
 
   private var lines: [String] {
-    (content ?? "").components(separatedBy: "\n")
+    content.components(separatedBy: "\n")
+  }
+
+  private var theme: SyntaxHighlighter.Theme {
+    colorScheme == .dark ? .dark : .light
+  }
+
+  private var lineNumberWidth: CGFloat {
+    let digits = String(lines.count).count
+    return CGFloat(digits * 10 + 16)
   }
 
   var body: some View {
-    ScrollView([.horizontal, .vertical]) {
-      HStack(alignment: .top, spacing: 0) {
-        lineNumbers
-        codeContent
+    GeometryReader { geometry in
+      ScrollView(.vertical) {
+        ScrollView(.horizontal, showsIndicators: false) {
+          HStack(alignment: .top, spacing: 0) {
+            lineNumbersColumn
+            codeColumn
+          }
+          .frame(minWidth: geometry.size.width, alignment: .leading)
+        }
       }
     }
+    .background(theme.background)
     .navigationTitle(node.name)
     .navigationBarTitleDisplayMode(.inline)
   }
 
-  private var lineNumbers: some View {
+  private var lineNumbersColumn: some View {
     VStack(alignment: .trailing, spacing: 0) {
-      ForEach(Array(lines.enumerated()), id: \.offset) { index, _ in
+      ForEach(0..<lines.count, id: \.self) { index in
         Text("\(index + 1)")
-          .font(.system(size: 12, design: .monospaced))
-          .foregroundColor(.secondary)
-          .frame(minWidth: 32, alignment: .trailing)
+          .font(.system(size: 13, weight: .regular, design: .monospaced))
+          .foregroundColor(theme.lineNumber)
+          .frame(height: 20)
       }
     }
-    .padding(.leading, 8)
-    .padding(.trailing, 8)
-    .background(Color.expoSecondarySystemBackground)
+    .frame(width: lineNumberWidth)
+    .padding(.vertical, 12)
+    .background(theme.background.opacity(0.8))
   }
 
-  private var codeContent: some View {
+  private var codeColumn: some View {
     VStack(alignment: .leading, spacing: 0) {
-      ForEach(Array(lines.enumerated()), id: \.offset) { _, line in
-        Text(line.isEmpty ? " " : line)
-          .font(.system(size: 12, design: .monospaced))
-          .foregroundColor(.primary)
+      ForEach(0..<lines.count, id: \.self) { index in
+        Text(SyntaxHighlighter.highlight(lines[index].isEmpty ? " " : lines[index], theme: theme))
+          .font(.system(size: 13, weight: .regular, design: .monospaced))
+          .frame(height: 20, alignment: .leading)
       }
     }
-    .padding(.horizontal, 8)
+    .padding(.vertical, 12)
+    .padding(.trailing, 16)
   }
 }
 
