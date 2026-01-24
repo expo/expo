@@ -16,6 +16,7 @@ export const loader: LoaderFunction = (request, params) => {
 
   if (url.searchParams.get('immutable') === 'true') {
     try {
+      // @ts-ignore The next line will fail at runtime for test purposes
       request.headers.set('X-Test', 'value');
       return { immutable: false, error: null }; // Should not reach here
     } catch (error) {

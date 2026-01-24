@@ -1,9 +1,11 @@
-import { type LoaderFunction, useLoaderData, useLocalSearchParams, usePathname } from 'expo-router';
+import { useLoaderData, useLocalSearchParams, usePathname } from 'expo-router';
+import { type LoaderFunction } from 'expo-router/server';
 import { setResponseHeaders } from 'expo-server';
+import { Suspense } from 'react';
 
-import { Container } from '../components/Container';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
 import { Table, TableRow } from '../components/Table';
+import { Loading } from '../components/Loading';
 
 export const loader: LoaderFunction = (request) => {
   // In SSG, request is unavailable since there's no HTTP request at build time
@@ -33,12 +35,20 @@ export const loader: LoaderFunction = (request) => {
 };
 
 export default function ResponseRoute() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ResponseScreen />
+    </Suspense>
+  );
+}
+
+const ResponseScreen = () => {
   const pathname = usePathname();
   const localParams = useLocalSearchParams();
   const data = useLoaderData<typeof loader>();
 
   return (
-    <Container>
+    <>
       <Table>
         <TableRow label="Pathname" value={pathname} testID="pathname-result" />
         <TableRow label="Local Params" value={localParams} testID="localparams-result" />
@@ -49,6 +59,6 @@ export default function ResponseRoute() {
         <SiteLink href="/">Go to Index</SiteLink>
         <SiteLink href="/second">Go to Second</SiteLink>
       </SiteLinks>
-    </Container>
+    </>
   );
 }

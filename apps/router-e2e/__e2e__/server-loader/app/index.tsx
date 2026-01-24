@@ -4,6 +4,10 @@ import { Table, TableRow } from '../components/Table';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
 
 export default function IndexRoute() {
+  return (<IndexScreen />)
+}
+
+const IndexScreen = () => {
   const pathname = usePathname();
   const localParams = useLocalSearchParams();
 

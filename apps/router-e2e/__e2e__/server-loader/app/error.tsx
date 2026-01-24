@@ -1,6 +1,7 @@
-import { Text } from 'react-native';
 import { ErrorBoundaryProps, useLoaderData } from 'expo-router';
-import { Container } from '../components/Container';
+import { Suspense } from 'react';
+
+import { Loading } from '../components/Loading';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
 import { Table, TableRow } from '../components/Table';
 
@@ -12,7 +13,7 @@ export async function loader() {
 
 export function ErrorBoundary({ error }: ErrorBoundaryProps) {
   return (
-    <Container>
+    <>
       <Table>
         <TableRow label="Error" value={error.message} testID="error-message" />
       </Table>
@@ -20,15 +21,26 @@ export function ErrorBoundary({ error }: ErrorBoundaryProps) {
       <SiteLinks>
         <SiteLink href="/">Go to Index</SiteLink>
       </SiteLinks>
-    </Container>
+    </>
   );
 }
 
 export default function ErrorRoute() {
-  const data = useLoaderData<typeof loader>();
   return (
-    <Container>
-      <Text testID="should-not-render">This should not render</Text>
-    </Container>
+    <Suspense fallback={<Loading />}>
+      <ErrorScreen />
+    </Suspense>
+  )
+}
+
+const ErrorScreen = () => {
+  const data = useLoaderData<typeof loader>();
+
+  return (
+    <>
+      <Table>
+        <TableRow label="This should not render" value={data} testID="should-not-render" />
+      </Table>
+    </>
   );
 }

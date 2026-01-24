@@ -1,6 +1,9 @@
 import { useLoaderData, useLocalSearchParams, usePathname } from 'expo-router';
 import Head from 'expo-router/head';
+import { Suspense } from 'react';
+
 import { Container } from '../components/Container';
+import { Loading } from '../components/Loading';
 import { Table, TableRow } from '../components/Table';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
 
@@ -14,12 +17,20 @@ export async function loader() {
 }
 
 export default function MetaRoute() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <MetaScreen />
+    </Suspense>
+  );
+}
+
+const MetaScreen = () => {
   const pathname = usePathname();
   const localParams = useLocalSearchParams();
   const data = useLoaderData<typeof loader>();
 
   return (
-    <Container>
+    <>
       <Head>
         <title>{data.title}</title>
         <meta name="description" content={data.description} />
@@ -37,6 +48,6 @@ export default function MetaRoute() {
         <SiteLink href="/">Go to Index</SiteLink>
         <SiteLink href="/second">Go to Second</SiteLink>
       </SiteLinks>
-    </Container>
+    </>
   );
 }
