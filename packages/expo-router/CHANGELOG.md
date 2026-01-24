@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Add support for redirecting paths with path parameters.
+- Add support for redirecting paths with path parameters. ([#42504](https://github.com/expo/expo/pull/42504) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
