@@ -1,73 +1,42 @@
 #!/usr/bin/env node
+import arg from 'arg';
 import chalk from 'chalk';
 
 import { Command } from '../../bin/cli';
-import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
+import { assertWithOptionsArgs, getProjectRoot, printHelp } from '../utils/args';
 import { logCmdError } from '../utils/errors';
 
-/**
- * Preprocess argv to handle --source-maps with optional value.
- * If --source-maps or -s is followed by another flag (starts with -) or end of args,
- * insert 'true' as the default value.
- */
-function preprocessSourceMapsArg(argv: string[]): string[] {
-  const result: string[] = [];
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i];
-    result.push(arg);
+const rawArgsMap: arg.Spec = {
+  // Types
+  '--help': Boolean,
+  '--clear': Boolean,
+  '--dump-assetmap': Boolean,
+  '--dev': Boolean,
+  '--max-workers': Number,
+  '--output-dir': String,
+  '--platform': [String],
+  '--no-minify': Boolean,
+  '--no-bytecode': Boolean,
+  '--no-ssg': Boolean,
+  '--api-only': Boolean,
+  '--unstable-hosted-native': Boolean,
 
-    if (arg === '--source-maps' || arg === '-s' || arg === '--dump-sourcemap') {
-      const nextArg = argv[i + 1];
-      // If no next arg or next arg is a flag, insert 'true' as the value
-      if (nextArg === undefined || nextArg.startsWith('-')) {
-        result.push('true');
-      }
-    }
-  }
-  return result;
-}
+  // Hack: This is added because EAS CLI always includes the flag.
+  // If supplied, we'll do nothing with the value, but at least the process won't crash.
+  // Note that we also don't show this value in the `--help` prompt since we don't want people to use it.
+  '--experimental-bundle': Boolean,
+
+  // Aliases
+  '-h': '--help',
+  // '-d': '--dump-assetmap',
+  '-c': '--clear',
+  '-p': '--platform',
+  // Interop with Metro docs and RedBox errors.
+  '--reset-cache': '--clear',
+};
 
 export const expoExport: Command = async (argv) => {
-  // Preprocess argv to handle --source-maps with optional value
-  // If --source-maps is followed by another flag or end of args, insert 'true' as the value
-  const processedArgv = argv ? preprocessSourceMapsArg(argv) : undefined;
-
-  const args = assertArgs(
-    {
-      // Types
-      '--help': Boolean,
-      '--clear': Boolean,
-      '--dump-assetmap': Boolean,
-      '--dev': Boolean,
-      '--source-maps': String,
-      '--max-workers': Number,
-      '--output-dir': String,
-      '--platform': [String],
-      '--no-minify': Boolean,
-      '--no-bytecode': Boolean,
-      '--no-ssg': Boolean,
-      '--api-only': Boolean,
-      '--unstable-hosted-native': Boolean,
-
-      // Hack: This is added because EAS CLI always includes the flag.
-      // If supplied, we'll do nothing with the value, but at least the process won't crash.
-      // Note that we also don't show this value in the `--help` prompt since we don't want people to use it.
-      '--experimental-bundle': Boolean,
-
-      // Aliases
-      '-h': '--help',
-      '-s': '--source-maps',
-      // '-d': '--dump-assetmap',
-      '-c': '--clear',
-      '-p': '--platform',
-      // Interop with Metro docs and RedBox errors.
-      '--reset-cache': '--clear',
-
-      // Deprecated
-      '--dump-sourcemap': '--source-maps',
-    },
-    processedArgv
-  );
+  const args = assertWithOptionsArgs(rawArgsMap, { argv, permissive: true });
 
   if (args['--help']) {
     printHelp(
@@ -90,9 +59,21 @@ export const expoExport: Command = async (argv) => {
     );
   }
 
+  // Handle --source-maps which can be a string or boolean
+  const { resolveStringOrBooleanArgsAsync } = await import('../utils/resolveArgs.js');
+  const parsed = await resolveStringOrBooleanArgsAsync(argv ?? [], rawArgsMap, {
+    '--source-maps': Boolean,
+    '-s': '--source-maps',
+    // Deprecated
+    '--dump-sourcemap': '--source-maps',
+  }).catch(logCmdError);
+
   const projectRoot = getProjectRoot(args);
   const { resolveOptionsAsync } = await import('./resolveOptions.js');
-  const options = await resolveOptionsAsync(projectRoot, args).catch(logCmdError);
+  const options = await resolveOptionsAsync(projectRoot, {
+    ...args,
+    '--source-maps': parsed.args['--source-maps'],
+  }).catch(logCmdError);
 
   const { exportAsync } = await import('./exportAsync.js');
   return exportAsync(projectRoot, options).catch(logCmdError);

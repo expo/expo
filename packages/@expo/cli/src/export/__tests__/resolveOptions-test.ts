@@ -93,6 +93,17 @@ describe(resolveOptionsAsync, () => {
     });
   });
 
+  it(`parses source maps option as boolean true`, async () => {
+    await expect(
+      resolveOptionsAsync('/', {
+        '--source-maps': true,
+      })
+    ).resolves.toMatchObject({
+      sourceMaps: true,
+      inlineSourceMaps: false,
+    });
+  });
+
   it(`parses default options`, async () => {
     await expect(resolveOptionsAsync('/', {})).resolves.toEqual({
       clear: false,
