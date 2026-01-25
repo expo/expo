@@ -267,11 +267,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appDidFinishLoadingSuccessfully:(EXKernelAppRecord *)appRecord
 {
-  // show nux if needed
-  if (!self.isNuxFinished && appRecord == [EXKernel sharedInstance].visibleApp) {
-    [DevMenuManager.shared openMenu];
-  }
-
   // Re-apply the default orientation after the app has been loaded (eq. after a reload)
   [self _applySupportedInterfaceOrientations];
 }
