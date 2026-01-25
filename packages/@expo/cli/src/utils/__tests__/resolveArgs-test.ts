@@ -186,6 +186,30 @@ describe(resolveStringOrBooleanArgsAsync, () => {
       projectRoot: 'custom-root',
     });
   });
+
+  it(`treats value after string-or-boolean flag as the flag value, not project root`, async () => {
+    // This documents a limitation: `--source-maps custom-root` treats `custom-root`
+    // as the value for --source-maps, not as the project root.
+    // To use a project root with --source-maps as boolean, put it before the flag
+    // or use an explicit value like `--source-maps inline custom-root`.
+    await expect(
+      resolveStringOrBooleanArgsAsync(
+        ['-p', 'web', '--source-maps', 'custom-root'],
+        {
+          '--platform': [String],
+          '-p': '--platform',
+        },
+        {
+          '--source-maps': Boolean,
+        }
+      )
+    ).resolves.toEqual({
+      args: {
+        '--source-maps': 'custom-root', // NOT true
+      },
+      projectRoot: '.', // NOT 'custom-root'
+    });
+  });
 });
 
 describe(assertDuplicateArgs, () => {
