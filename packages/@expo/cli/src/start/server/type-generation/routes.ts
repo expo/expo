@@ -1,7 +1,6 @@
 import type Server from '@expo/metro/metro/Server';
 import fs from 'fs/promises';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import { directoryExistsAsync } from '../../../utils/dir';
 import { unsafeTemplate } from '../../../utils/template';
@@ -42,11 +41,12 @@ export async function setupTypedRoutes(options: SetupTypedRoutesOptions) {
    *
    * TODO (@marklawlor): Remove this check in SDK 53, only support Expo Router v4 and above.
    */
-  const typedRoutesModule = resolveFrom.silent(
-    options.projectRoot,
-    '@expo/router-server/build/typed-routes'
-  );
-  return typedRoutesModule ? typedRoutes(typedRoutesModule, options) : legacyTypedRoutes(options);
+  try {
+    const typedRoutesModule = require.resolve('@expo/router-server/build/typed-routes');
+    return typedRoutes(typedRoutesModule, options);
+  } catch {
+    return legacyTypedRoutes(options);
+  }
 }
 
 async function typedRoutes(
