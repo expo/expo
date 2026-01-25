@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `--source-maps inline` option to `expo export` for embedding source maps in JavaScript bundles. ([#42492](https://github.com/expo/expo/pull/42492) by [@brentvatne](https://github.com/brentvatne))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

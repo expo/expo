@@ -1,47 +1,46 @@
 #!/usr/bin/env node
+import arg from 'arg';
 import chalk from 'chalk';
+import path from 'path';
 
 import { Command } from '../../bin/cli';
-import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
+import { assertWithOptionsArgs, printHelp } from '../utils/args';
 import { logCmdError } from '../utils/errors';
 
 export const expoExport: Command = async (argv) => {
-  const args = assertArgs(
-    {
-      // Types
-      '--help': Boolean,
-      '--clear': Boolean,
-      '--dump-assetmap': Boolean,
-      '--dev': Boolean,
-      '--source-maps': Boolean,
-      '--max-workers': Number,
-      '--output-dir': String,
-      '--platform': [String],
-      '--no-minify': Boolean,
-      '--no-bytecode': Boolean,
-      '--no-ssg': Boolean,
-      '--api-only': Boolean,
-      '--unstable-hosted-native': Boolean,
+  const rawArgsMap: arg.Spec = {
+    // Types
+    '--help': Boolean,
+    '--clear': Boolean,
+    '--dump-assetmap': Boolean,
+    '--dev': Boolean,
+    '--max-workers': Number,
+    '--output-dir': String,
+    '--platform': [String],
+    '--no-minify': Boolean,
+    '--no-bytecode': Boolean,
+    '--no-ssg': Boolean,
+    '--api-only': Boolean,
+    '--unstable-hosted-native': Boolean,
 
-      // Hack: This is added because EAS CLI always includes the flag.
-      // If supplied, we'll do nothing with the value, but at least the process won't crash.
-      // Note that we also don't show this value in the `--help` prompt since we don't want people to use it.
-      '--experimental-bundle': Boolean,
+    // Hack: This is added because EAS CLI always includes the flag.
+    // If supplied, we'll do nothing with the value, but at least the process won't crash.
+    // Note that we also don't show this value in the `--help` prompt since we don't want people to use it.
+    '--experimental-bundle': Boolean,
 
-      // Aliases
-      '-h': '--help',
-      '-s': '--source-maps',
-      // '-d': '--dump-assetmap',
-      '-c': '--clear',
-      '-p': '--platform',
-      // Interop with Metro docs and RedBox errors.
-      '--reset-cache': '--clear',
+    // Aliases
+    '-h': '--help',
+    // '-d': '--dump-assetmap',
+    '-c': '--clear',
+    '-p': '--platform',
+    // Interop with Metro docs and RedBox errors.
+    '--reset-cache': '--clear',
+  };
 
-      // Deprecated
-      '--dump-sourcemap': '--source-maps',
-    },
-    argv
-  );
+  const args = assertWithOptionsArgs(rawArgsMap, {
+    argv,
+    permissive: true,
+  });
 
   if (args['--help']) {
     printHelp(
@@ -57,16 +56,28 @@ export const expoExport: Command = async (argv) => {
         `--dump-assetmap            Emit an asset map for further processing`,
         `--no-ssg, --api-only       Skip exporting static HTML files and only export API routes for web`,
         chalk`-p, --platform <platform>  Options: android, ios, web, all. {dim Default: all}`,
-        `-s, --source-maps          Emit JavaScript source maps`,
+        chalk`-s, --source-maps [mode]   Emit JavaScript source maps. {dim mode: external (when omitted), inline}`,
         `-c, --clear                Clear the bundler cache`,
         `-h, --help                 Usage info`,
       ].join('\n')
     );
   }
 
-  const projectRoot = getProjectRoot(args);
+  // Handle --source-maps which can be a string or boolean (e.g., --source-maps or --source-maps inline)
+  const { resolveStringOrBooleanArgsAsync } = await import('../utils/resolveArgs.js');
+  const parsed = await resolveStringOrBooleanArgsAsync(argv ?? [], rawArgsMap, {
+    '--source-maps': Boolean,
+    '-s': '--source-maps',
+    // Deprecated
+    '--dump-sourcemap': '--source-maps',
+  }).catch(logCmdError);
+
+  const projectRoot = path.resolve(parsed.projectRoot);
   const { resolveOptionsAsync } = await import('./resolveOptions.js');
-  const options = await resolveOptionsAsync(projectRoot, args).catch(logCmdError);
+  const options = await resolveOptionsAsync(projectRoot, {
+    ...args,
+    '--source-maps': parsed.args['--source-maps'],
+  }).catch(logCmdError);
 
   const { exportAsync } = await import('./exportAsync.js');
   return exportAsync(projectRoot, options).catch(logCmdError);

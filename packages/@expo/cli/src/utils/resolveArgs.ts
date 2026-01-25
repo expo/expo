@@ -1,6 +1,6 @@
 import arg, { Spec } from 'arg';
 
-import { replaceValue } from './array';
+import { replaceAllValues } from './array';
 import { CommandError } from './errors';
 
 /** Split up arguments that are formatted like `--foo=bar` or `-f="bar"` to `['--foo', 'bar']` */
@@ -37,20 +37,20 @@ export async function resolveStringOrBooleanArgsAsync(
 ) {
   args = splitArgs(args);
 
+  const combinedSpec = { ...rawMap, ...extraArgs };
+
   // Assert any missing arguments
-  assertUnknownArgs(
-    {
-      ...rawMap,
-      ...extraArgs,
-    },
-    args
-  );
+  assertUnknownArgs(combinedSpec, args);
 
   // Collapse aliases into fully qualified arguments.
-  args = collapseAliases(extraArgs, args);
+  args = collapseAliases(combinedSpec, args);
+
+  // Filter out array-type arguments so _resolveStringOrBooleanArgs can process the rest.
+  // This is necessary because _resolveStringOrBooleanArgs can't handle array-type args like --platform.
+  const filteredArgs = filterOutArrayArgs(args, combinedSpec);
 
   // Resolve all of the string or boolean arguments and the project root.
-  return _resolveStringOrBooleanArgs({ ...rawMap, ...extraArgs }, args);
+  return _resolveStringOrBooleanArgs(combinedSpec, filteredArgs);
 }
 
 /**
@@ -145,11 +145,12 @@ export function collapseAliases(arg: Spec, args: string[]): string[] {
   const aliasMap = getAliasTuples(arg);
 
   for (const [arg, alias] of aliasMap) {
-    args = replaceValue(args, arg, alias);
+    args = replaceAllValues(args, arg, alias);
   }
 
   // Assert if there are duplicate flags after we collapse the aliases.
-  assertDuplicateArgs(args, aliasMap);
+  // Skip array-type arguments (like --platform) which can have multiple values.
+  assertDuplicateArgs(args, aliasMap, arg);
   return args;
 }
 
@@ -166,9 +167,47 @@ function getAliasTuples(arg: Spec): [string, string][] {
   return Object.entries(arg).filter(([, value]) => typeof value === 'string') as [string, string][];
 }
 
+/** Filter out array-type arguments from the spec (and their values).
+ * This is needed because _resolveStringOrBooleanArgs can't handle array args like --platform.
+ */
+function filterOutArrayArgs(args: string[], spec: Spec): string[] {
+  // Get the set of flag names that are array types
+  const arrayFlags = new Set(
+    Object.entries(spec)
+      .filter(([, value]) => Array.isArray(value))
+      .map(([key]) => key)
+  );
+
+  if (arrayFlags.size === 0) {
+    return args;
+  }
+
+  const result: string[] = [];
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arrayFlags.has(arg)) {
+      // Skip this flag and its value if it has one
+      if (i + 1 < args.length && !args[i + 1].startsWith('-')) {
+        i++;
+      }
+    } else {
+      result.push(arg);
+    }
+  }
+  return result;
+}
+
 /** Asserts that a duplicate flag has been used, this naively throws without knowing if an alias or flag were used as the duplicate. */
-export function assertDuplicateArgs(args: string[], argNameAliasTuple: [string, string][]) {
+export function assertDuplicateArgs(
+  args: string[],
+  argNameAliasTuple: [string, string][],
+  spec?: Spec
+) {
   for (const [argName, argNameAlias] of argNameAliasTuple) {
+    // Skip array-type arguments (like --platform) which can have multiple values
+    if (spec && Array.isArray(spec[argNameAlias])) {
+      continue;
+    }
     if (args.filter((a) => [argName, argNameAlias].includes(a)).length > 1) {
       throw new CommandError(
         'BAD_ARGS',
