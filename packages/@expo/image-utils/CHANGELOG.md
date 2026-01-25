@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - Drop `unique-string` and `temp-dir` dependencies ([#42480](https://github.com/expo/expo/pull/42480) by [@kitten](https://github.com/kitten))
+- Improve global resolution for `sharp-cli` resolution ([#42513](https://github.com/expo/expo/pull/42513) by [@kitten](https://github.com/kitten))
 
 ## 0.8.10 — 2026-01-22
 
