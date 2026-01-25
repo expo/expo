@@ -108,12 +108,37 @@ const getPnpmPrefixPaths = memoize(() => {
   return execGetPaths(isWindows ? 'pnpm.cmd' : 'pnpm', ['root', '-g']);
 });
 
+const getBunPrefixPaths = memoize(() => {
+  const prefix = [];
+  const bunPath = execGetPaths(isWindows ? 'bun.cmd' : 'bun', ['pm', 'bin', '-g'])[0];
+  if (!bunPath) {
+    return [];
+  }
+  prefix.push(bunPath);
+  prefix.push(path.resolve(bunPath, 'global'));
+  const moduleEntry = fs.readdirSync(bunPath, { withFileTypes: true }).find((entry) => {
+    return entry.isSymbolicLink() && entry.name !== 'global';
+  });
+  if (moduleEntry) {
+    try {
+      const moduleTarget = fs.realpathSync(path.resolve(bunPath, moduleEntry.name));
+      const splitIdx = moduleTarget.indexOf(path.sep + 'node_modules' + path.sep);
+      if (splitIdx > -1) {
+        const modulePath = moduleTarget.slice(0, splitIdx);
+        prefix.push(modulePath);
+      }
+    } catch {}
+  }
+  return prefix.filter((target) => fs.existsSync(target));
+});
+
 const getPaths = () => [
   ...getNpmDefaultPaths(),
   ...getNpmPrefixPaths(),
   ...getYarnDefaultPaths(),
   ...getYarnPrefixPaths(),
   ...getPnpmPrefixPaths(),
+  ...getBunPrefixPaths(),
   ...getNativeNodePaths(),
 ];
 
