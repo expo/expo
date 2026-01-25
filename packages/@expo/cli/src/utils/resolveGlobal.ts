@@ -145,7 +145,12 @@ const getPaths = () => [
 export const resolveGlobal = (id: string): string | null => {
   try {
     return require.resolve(id, { paths: getPaths() });
-  } catch {
-    return null;
-  }
+  } catch {}
+
+  // Fall back to local resolution
+  try {
+    return require.resolve(id, { paths: [process.cwd()] });
+  } catch {}
+
+  return null;
 };
