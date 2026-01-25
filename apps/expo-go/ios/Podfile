@@ -3,6 +3,11 @@ require_relative '../../../react-native-lab/react-native/packages/react-native/s
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
 ENV['RCT_NEW_ARCH_ENABLED'] = '1'
+ENV['RCT_HERMES_V1_ENABLED'] = '1'
+
+# Build Expo Go from Expo's fork of React Native
+ENV['RCT_USE_RN_DEP']  = '0'
+ENV['RCT_USE_PREBUILT_RNCORE'] = '0'
 
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,

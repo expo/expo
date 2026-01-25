@@ -65,7 +65,7 @@
     "immutable": "^4.0.0",
     "lottie-react-native": "^7.3.4",
     "react": "19.2.3",
-    "react-native": "0.84.0-rc.1",
+    "react-native": "0.84.0-rc.2",
     "react-native-edge-to-edge": "1.6.0",
     "react-native-fade-in-image": "^1.6.1",
     "react-native-gesture-handler": "~2.30.0",
