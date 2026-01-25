@@ -377,6 +377,14 @@ export interface IOS {
              * Your Branch API key
              */
             apiKey?: string;
+            /**
+             * Your Branch Test API key
+             */
+            testApiKey?: string;
+            /**
+             * A boolean indicating whether Branch should be initialised pointing to your Test environment
+             */
+            enableTestEnvironment?: boolean;
         };
         /**
          * Sets `ITSAppUsesNonExemptEncryption` in the standalone ipa's Info.plist to the given boolean value.
@@ -643,6 +651,14 @@ export interface Android {
              * Your Branch API key
              */
             apiKey?: string;
+            /**
+             * Your Branch Test API key
+             */
+            testApiKey?: string;
+            /**
+             * A boolean indicating whether Branch should be initialised pointing to your Test environment
+             */
+            enableTestEnvironment?: boolean;
         };
         /**
          * [Google Maps Android SDK](https://developers.google.com/maps/documentation/android-api/signup) configuration for your standalone app.
