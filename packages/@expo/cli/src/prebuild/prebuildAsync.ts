@@ -1,5 +1,6 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
+import { updateXCodeProject } from '@expo/inline-modules';
 import chalk from 'chalk';
 
 import { clearNativeFolder, promptToClearMalformedNativeProjectsAsync } from './clearNativeFolder';
@@ -172,6 +173,10 @@ export async function prebuildAsync(
     podsInstalled = await installCocoaPodsAsync(projectRoot);
   } else {
     debug('Skipped pod install');
+  }
+  const inlineModulesEnabled = exp.experiments?.inlineModules ?? false;
+  if (inlineModulesEnabled && options.platforms.includes('ios')) {
+    await updateXCodeProject(projectRoot);
   }
 
   return {

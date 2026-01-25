@@ -48,6 +48,7 @@
     "@expo/devcert": "^1.2.1",
     "@expo/env": "~2.0.10",
     "@expo/image-utils": "^0.8.10",
+    "@expo/inline-modules": "0.0.1",
     "@expo/json-file": "^10.0.10",
     "@expo/metro": "~54.2.0",
     "@expo/metro-config": "~55.0.2",
