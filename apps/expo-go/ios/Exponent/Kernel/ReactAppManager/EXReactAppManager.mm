@@ -430,11 +430,9 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 - (void)showDevMenu
 {
-  if ([self enablesDeveloperTools]) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[DevMenuManager shared] toggleMenu];
-    });
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[DevMenuManager shared] toggleMenu];
+  });
 }
 
 - (void)reloadApp
