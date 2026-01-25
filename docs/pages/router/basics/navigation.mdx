@@ -262,7 +262,11 @@ The `prefetch` prop on a `<Link />` component enables prefetching of the target 
 import { Link } from 'expo-router';
 
 export default function Page() {
-  return <Link href="/about" prefetch>About</Link>;
+  return (
+    <Link href="/about" prefetch>
+      About
+    </Link>
+  );
 }
 ```
 
