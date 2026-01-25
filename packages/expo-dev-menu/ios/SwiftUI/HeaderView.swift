@@ -1,12 +1,29 @@
 import SwiftUI
 import ExpoModulesCore
 
+#if os(macOS)
+import AppKit
+typealias PlatformImage = NSImage
+#else
+import UIKit
+typealias PlatformImage = UIImage
+#endif
+
 struct HeaderView: View {
   @EnvironmentObject var viewModel: DevMenuViewModel
-  @State private var appIcon: UIImage? = nil
+  @State private var appIcon: PlatformImage? = nil
 
   var body: some View {
     HStack(spacing: 12) {
+#if os(macOS)
+      if let icon = appIcon {
+        Image(nsImage: icon)
+          .resizable()
+          .scaledToFit()
+          .frame(width: 38, height: 38)
+          .clipShape(RoundedRectangle(cornerRadius: 16))
+      }
+#else
       if let icon = appIcon {
         Image(uiImage: icon)
           .resizable()
@@ -14,6 +31,7 @@ struct HeaderView: View {
           .frame(width: 38, height: 38)
           .clipShape(RoundedRectangle(cornerRadius: 16))
       }
+#endif
 
       versionInfo
 
@@ -55,13 +73,23 @@ struct HeaderView: View {
     }
 
     if url.isFileURL {
+#if os(macOS)
+      appIcon = NSImage(contentsOfFile: url.path)
+#else
       appIcon = UIImage(contentsOfFile: url.path)
+#endif
     } else {
       do {
         let (data, _) = try await URLSession.shared.data(from: url)
+#if os(macOS)
+        if let loadedImage = NSImage(data: data) {
+          appIcon = loadedImage
+        }
+#else
         if let loadedImage = UIImage(data: data) {
           appIcon = loadedImage
         }
+#endif
       } catch {
         appIcon = nil
       }
