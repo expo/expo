@@ -198,7 +198,11 @@ function filterOutArrayArgs(args: string[], spec: Spec): string[] {
 }
 
 /** Asserts that a duplicate flag has been used, this naively throws without knowing if an alias or flag were used as the duplicate. */
-export function assertDuplicateArgs(args: string[], argNameAliasTuple: [string, string][], spec?: Spec) {
+export function assertDuplicateArgs(
+  args: string[],
+  argNameAliasTuple: [string, string][],
+  spec?: Spec
+) {
   for (const [argName, argNameAlias] of argNameAliasTuple) {
     // Skip array-type arguments (like --platform) which can have multiple values
     if (spec && Array.isArray(spec[argNameAlias])) {
