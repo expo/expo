@@ -381,51 +381,53 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   }
 
   const resolvedPath = `/${resolveHref({ pathname: routeNode?.route, params })}`;
+  // Normalize by stripping trailing `/index` to match URL pathname
+  const normalizedPath = resolvedPath.replace(/\/index$/, '') || '/';
 
   // First invocation of this hook will happen server-side, so we look up the loaded data from context
   if (serverDataLoaderContext) {
-    return serverDataLoaderContext[resolvedPath];
+    return serverDataLoaderContext[normalizedPath];
   }
 
   // The second invocation happens after the client has hydrated on initial load, so we look up the data injected
   // by `<PreloadedDataScript />` using `globalThis.__EXPO_ROUTER_LOADER_DATA__`
   if (typeof window !== 'undefined' && globalThis.__EXPO_ROUTER_LOADER_DATA__) {
-    if (globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath]) {
-      return globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath];
+    if (globalThis.__EXPO_ROUTER_LOADER_DATA__[normalizedPath]) {
+      return globalThis.__EXPO_ROUTER_LOADER_DATA__[normalizedPath];
     }
   }
 
   // Check error cache first to prevent infinite retry loops when a loader fails.
   // We throw the cached error instead of starting a new fetch.
-  if (loaderErrorCache.has(resolvedPath)) {
-    throw loaderErrorCache.get(resolvedPath);
+  if (loaderErrorCache.has(normalizedPath)) {
+    throw loaderErrorCache.get(normalizedPath);
   }
 
   // Check cache for route data
-  if (loaderDataCache.has(resolvedPath)) {
-    return loaderDataCache.get(resolvedPath);
+  if (loaderDataCache.has(normalizedPath)) {
+    return loaderDataCache.get(normalizedPath);
   }
 
   // Fetch data if not cached
-  if (!loaderPromiseCache.has(resolvedPath)) {
-    const promise = fetchLoaderModule(resolvedPath)
+  if (!loaderPromiseCache.has(normalizedPath)) {
+    const promise = fetchLoaderModule(normalizedPath)
       .then((data) => {
-        loaderDataCache.set(resolvedPath, data);
-        loaderErrorCache.delete(resolvedPath);
-        loaderPromiseCache.delete(resolvedPath);
+        loaderDataCache.set(normalizedPath, data);
+        loaderErrorCache.delete(normalizedPath);
+        loaderPromiseCache.delete(normalizedPath);
         return data;
       })
       .catch((error) => {
-        const wrappedError = new Error(`Failed to load loader data for route: ${resolvedPath}`, {
+        const wrappedError = new Error(`Failed to load loader data for route: ${normalizedPath}`, {
           cause: error,
         });
-        loaderErrorCache.set(resolvedPath, wrappedError);
-        loaderPromiseCache.delete(resolvedPath);
+        loaderErrorCache.set(normalizedPath, wrappedError);
+        loaderPromiseCache.delete(normalizedPath);
         throw wrappedError;
       });
 
-    loaderPromiseCache.set(resolvedPath, promise);
+    loaderPromiseCache.set(normalizedPath, promise);
   }
 
-  return use(loaderPromiseCache.get(resolvedPath)!);
+  return use(loaderPromiseCache.get(normalizedPath)!);
 }

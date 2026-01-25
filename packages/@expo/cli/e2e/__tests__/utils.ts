@@ -297,14 +297,14 @@ export function stripWhitespace(str: string): string {
 /**
  * Gets the data from a page and its associated loader.
  *
- * @remarks We retrieve the laoder first to check for a module ID collision between the main and
+ * @remarks We retrieve the loader first to check for a module ID collision between the main and
  * loader bundles. See https://github.com/expo/expo/pull/42245
  */
 export function getPageAndLoaderData(url: string) {
   return [
     {
       name: 'loader endpoint',
-      url: `/_expo/loaders${url}`,
+      url: `/_expo/loaders${url === '/' ? '/index' : url}`,
       getData: (response: Response) => {
         return response.json();
       },
