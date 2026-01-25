@@ -17,6 +17,16 @@ describe(collapseAliases, () => {
     const actual = collapseAliases(arg, args);
     expect(actual).toEqual(['--basic', '--help']);
   });
+
+  it(`will collapse all occurrences of an alias`, () => {
+    const arg = {
+      '--platform': [String],
+      '-p': '--platform',
+    };
+    const args = ['-p', 'web', '-p', 'ios'];
+    const actual = collapseAliases(arg, args);
+    expect(actual).toEqual(['--platform', 'web', '--platform', 'ios']);
+  });
 });
 
 describe(_resolveStringOrBooleanArgs, () => {
@@ -133,6 +143,49 @@ describe(resolveStringOrBooleanArgsAsync, () => {
       projectRoot: 'custom-root',
     });
   });
+
+  it(`handles array-type arguments in rawMap`, async () => {
+    // This simulates `expo export -p web -p ios --source-maps`
+    // Array-type args like --platform should be filtered out and not cause errors
+    await expect(
+      resolveStringOrBooleanArgsAsync(
+        ['-p', 'web', '-p', 'ios', '--source-maps'],
+        {
+          '--platform': [String],
+          '-p': '--platform',
+        },
+        {
+          '--source-maps': Boolean,
+        }
+      )
+    ).resolves.toEqual({
+      args: {
+        '--source-maps': true,
+      },
+      projectRoot: '.',
+    });
+  });
+
+  it(`handles array-type arguments with extra args value`, async () => {
+    // This simulates `expo export -p web -p ios --source-maps inline`
+    await expect(
+      resolveStringOrBooleanArgsAsync(
+        ['-p', 'web', '-p', 'ios', '--source-maps', 'inline', 'custom-root'],
+        {
+          '--platform': [String],
+          '-p': '--platform',
+        },
+        {
+          '--source-maps': Boolean,
+        }
+      )
+    ).resolves.toEqual({
+      args: {
+        '--source-maps': 'inline',
+      },
+      projectRoot: 'custom-root',
+    });
+  });
 });
 
 describe(assertDuplicateArgs, () => {
@@ -144,5 +197,15 @@ describe(assertDuplicateArgs, () => {
     expect(() =>
       assertDuplicateArgs(['--device', '--bar', '--device'], [['--device', '-d']])
     ).toThrowErrorMatchingInlineSnapshot(`"Can only provide one instance of --device or -d"`);
+  });
+  it(`does not assert for array-type arguments`, () => {
+    const spec = {
+      '--platform': [String],
+      '-p': '--platform',
+    };
+    // Multiple --platform flags should be allowed when it's an array type
+    expect(() =>
+      assertDuplicateArgs(['--platform', 'web', '--platform', 'ios'], [['-p', '--platform']], spec)
+    ).not.toThrow();
   });
 });
