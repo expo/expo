@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove `rawBody` handling on `/symbolicate` endpoint. Clients MUST send the header `'Content-Type': 'application/json'`. ([#35757](https://github.com/expo/expo/pull/35757) by [@huntie](https://github.com/huntie))
+
 ### 🎉 New features
 
 - Add `--source-maps inline` option to `expo export` for embedding source maps in JavaScript bundles. ([#42492](https://github.com/expo/expo/pull/42492) by [@brentvatne](https://github.com/brentvatne))
