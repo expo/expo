@@ -1,4 +1,7 @@
 "use strict";
+// NOTE: This file is replicated to multiple packages! Keep these files in-sync:
+// - packages/@expo/cli/src/utils/resolveGlobal.ts
+// - packages/@expo/image-utils/src/resolveGlobal.ts
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
