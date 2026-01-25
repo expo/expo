@@ -114,7 +114,6 @@ const getBunPrefixPaths = memoize(() => {
   if (!bunPath) {
     return [];
   }
-  prefix.push(bunPath);
   prefix.push(path.resolve(bunPath, 'global'));
   const moduleEntry = fs.readdirSync(bunPath, { withFileTypes: true }).find((entry) => {
     return entry.isSymbolicLink() && entry.name !== 'global';
