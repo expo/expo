@@ -1,3 +1,7 @@
+// NOTE: This file is replicated to multiple packages! Keep these files in-sync:
+// - packages/@expo/cli/src/utils/resolveGlobal.ts
+// - packages/@expo/image-utils/src/resolveGlobal.ts
+
 import { spawnSync } from 'child_process';
 import fs from 'fs';
 import Module from 'module';
