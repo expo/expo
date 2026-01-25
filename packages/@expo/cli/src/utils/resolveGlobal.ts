@@ -140,17 +140,10 @@ const getPaths = () => [
   ...getPnpmPrefixPaths(),
   ...getBunPrefixPaths(),
   ...getNativeNodePaths(),
+  process.cwd(),
 ];
 
-export const resolveGlobal = (id: string): string | null => {
-  try {
-    return require.resolve(id, { paths: getPaths() });
-  } catch {}
-
-  // Fall back to local resolution
-  try {
-    return require.resolve(id, { paths: [process.cwd()] });
-  } catch {}
-
-  return null;
+/** Resolve a globally installed module before a locally installed one */
+export const resolveGlobal = (id: string): string => {
+  return require.resolve(id, { paths: getPaths() });
 };

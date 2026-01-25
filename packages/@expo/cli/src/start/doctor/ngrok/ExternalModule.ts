@@ -1,5 +1,4 @@
 import * as PackageManager from '@expo/package-manager';
-import requireGlobal from 'requireg';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
@@ -8,6 +7,7 @@ import { delayAsync } from '../../../utils/delay';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { confirmAsync } from '../../../utils/prompts';
+import { resolveGlobal } from '../../../utils/resolveGlobal';
 
 const debug = require('debug')('expo:doctor:externalModule') as typeof console.log;
 
@@ -163,7 +163,7 @@ export class ExternalModule<TModule> {
 
   /** Resolve a copy that's installed globally. Exposed for testing. */
   _resolveGlobal(moduleId: string): string {
-    return requireGlobal.resolve(moduleId);
+    return resolveGlobal(moduleId);
   }
 
   /** Resolve the module and verify the version. Exposed for testing. */
@@ -171,6 +171,8 @@ export class ExternalModule<TModule> {
     const resolver = isLocal ? this._resolveLocal.bind(this) : this._resolveGlobal.bind(this);
     try {
       const packageJsonPath = resolver(`${this.pkg.name}/package.json`);
+      if (packageJsonPath == null) {
+      }
       const packageJson = this._require(packageJsonPath);
       if (packageJson) {
         if (semver.satisfies(packageJson.version, this.pkg.versionRange)) {
