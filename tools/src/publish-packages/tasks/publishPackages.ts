@@ -68,11 +68,11 @@ export const publishPackages = new Task<TaskArgs>(
         });
         // Assign SDK tag when package is a template
         if (pkg.isTemplate() && !options.canary) {
-          const sdkTag = `sdk-${semver.major(pkg.packageVersion)}`;
+          const sdkTag = `sdk-${semver.major(releaseVersion)}`;
           logger.log('  ', `Assigning ${yellow(sdkTag)} tag to ${green(pkg.packageName)}`);
           if (!options.dry) {
             await sleepAsync(1000); // wait for npm to process the package
-            await Npm.addTagAsync(pkg.packageName, pkg.packageVersion, sdkTag, {
+            await Npm.addTagAsync(pkg.packageName, releaseVersion, sdkTag, {
               stdio: requiresOTP ? 'inherit' : undefined,
             });
           }

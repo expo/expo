@@ -1,6 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-public final class LegacyEventEmitterCompat: EXEventEmitterService {
+@available(*, deprecated, message: "Use `sendEvent` directly on the module instance instead")
+public final class LegacyEventEmitterCompat {
   internal weak var appContext: AppContext?
 
   init(appContext: AppContext) {

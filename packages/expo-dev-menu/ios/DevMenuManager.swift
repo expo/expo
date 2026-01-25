@@ -89,6 +89,11 @@ open class DevMenuManager: NSObject {
     manifestSubject.eraseToAnyPublisher()
   }
 
+  private let menuWillShowSubject = PassthroughSubject<Void, Never>()
+  public var menuWillShowPublisher: AnyPublisher<Void, Never> {
+    menuWillShowSubject.eraseToAnyPublisher()
+  }
+
   @objc
   public private(set) var currentManifest: Manifest? {
     didSet {
@@ -106,6 +111,26 @@ open class DevMenuManager: NSObject {
   @objc
   public func setDelegate(_ delegate: DevMenuHostDelegate?) {
     hostDelegate = delegate
+  }
+
+  @objc
+  public func setMotionGestureEnabled(_ enabled: Bool) {
+    DevMenuPreferences.motionGestureEnabled = enabled
+  }
+
+  @objc
+  public func setTouchGestureEnabled(_ enabled: Bool) {
+    DevMenuPreferences.touchGestureEnabled = enabled
+  }
+
+  @objc
+  public func getMotionGestureEnabled() -> Bool {
+    return DevMenuPreferences.motionGestureEnabled
+  }
+
+  @objc
+  public func getTouchGestureEnabled() -> Bool {
+    return DevMenuPreferences.touchGestureEnabled
   }
 
   @objc
@@ -338,13 +363,15 @@ open class DevMenuManager: NSObject {
       return false
     }
     if visible {
+      menuWillShowSubject.send()
       setCurrentScreen(screen)
       DispatchQueue.main.async {
 #if os(macOS)
         self.window?.makeKeyAndOrderFront(nil)
 #else
         if self.window?.windowScene == nil {
-          let windowScene = UIApplication.shared.connectedScenes
+          let keyWindowScene = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene
+          let windowScene = keyWindowScene ?? UIApplication.shared.connectedScenes
             .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
           self.window?.windowScene = windowScene
         }
@@ -400,11 +427,23 @@ open class DevMenuManager: NSObject {
   }
 
   func togglePerformanceMonitor() {
+    if let delegate = hostDelegate,
+       delegate.responds(to: #selector(DevMenuHostDelegate.devMenuTogglePerformanceMonitor)) {
+      delegate.devMenuTogglePerformanceMonitor?()
+      return
+    }
+
     let devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.togglePerformanceMonitor()
   }
 
   func toggleInspector() {
+    if let delegate = hostDelegate,
+       delegate.responds(to: #selector(DevMenuHostDelegate.devMenuToggleElementInspector)) {
+      delegate.devMenuToggleElementInspector?()
+      return
+    }
+
     let devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.toggleElementInsector()
   }

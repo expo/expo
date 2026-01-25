@@ -8,7 +8,7 @@ import NotificationCategoriesModule from './NotificationCategoriesModule';
  * @platform ios
  * @header categories
  */
-export default async function getNotificationCategoriesAsync() {
+export async function getNotificationCategoriesAsync() {
     if (!NotificationCategoriesModule.getNotificationCategoriesAsync) {
         throw new UnavailabilityError('Notifications', 'getNotificationCategoriesAsync');
     }

@@ -198,7 +198,7 @@ export interface ExpoConfig {
      */
     useNativeDebug?: boolean;
     /**
-     * Enable support for downloading and applying asset patches using the BSDiff format. Defaults to true. Set to false to force full asset downloads even when a server offers patch responses.
+     * Enable support for downloading and applying asset patches using the BSDiff format. Defaults to false. Set to true to enable downloading asset patches instead of full assets when a server offers patch responses.
      */
     enableBsdiffPatchSupport?: boolean;
   };

@@ -316,7 +316,9 @@ internal class UpdatesStateMachine {
     if transition(event) {
       // Only change context if transition succeeds
       context = reducedContext(context, event)
-      logger.info(message: "Updates state change: state = \(state), event = \(event.type), context = \(context)")
+      if event.type != .downloadProgress {
+        logger.info(message: "Updates state change: state = \(state), event = \(event.type), context = \(context)")
+      }
       sendContextToJS()
     }
   }

@@ -1,12 +1,13 @@
 {
   "name": "expo-sharing",
-  "version": "14.0.7",
+  "version": "55.0.2",
   "description": "Provides a way to share files directly with other compatible applications.",
-  "main": "build/Sharing.js",
-  "types": "build/Sharing.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",
+    "build:plugin": "expo-module build plugin",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
@@ -33,11 +34,17 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/sharing/",
-  "dependencies": {},
+  "dependencies": {
+    "@expo/plist": "^0.5.1",
+    "@expo/config-plugins": "^55.0.2",
+    "@expo/config-types": "^55.0.2"
+  },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "^55.0.2"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

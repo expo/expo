@@ -46,6 +46,7 @@ function ZoomTransitionSourceContextProvider({ children, linkProps, }) {
     return <zoom_transition_context_1.ZoomTransitionSourceContext value={value}>{children}</zoom_transition_context_1.ZoomTransitionSourceContext>;
 }
 function ZoomTransitionTargetContextProvider({ route, children, }) {
+    const [dismissalBoundsRect, setDismissalBoundsRect] = (0, react_1.useState)(null);
     const isPreview = (0, PreviewRouteContext_1.useIsPreview)();
     if ((0, ZoomTransitionEnabler_ios_1.isZoomTransitionEnabled)() &&
         !isPreview &&
@@ -61,7 +62,11 @@ function ZoomTransitionTargetContextProvider({ route, children, }) {
         const zoomTransitionScreenId = internalParams[navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME];
         const hasZoomTransition = !!zoomTransitionId && zoomTransitionScreenId === route.key;
         if (hasZoomTransition && typeof zoomTransitionId === 'string') {
-            return (<zoom_transition_context_1.ZoomTransitionTargetContext value={{ identifier: zoomTransitionId }}>
+            return (<zoom_transition_context_1.ZoomTransitionTargetContext value={{
+                    identifier: zoomTransitionId,
+                    dismissalBoundsRect,
+                    setDismissalBoundsRect,
+                }}>
           {children}
         </zoom_transition_context_1.ZoomTransitionTargetContext>);
         }

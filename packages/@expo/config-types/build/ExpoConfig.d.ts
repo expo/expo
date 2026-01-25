@@ -69,9 +69,6 @@ export interface ExpoConfig {
      */
     icon?: string;
     /**
-     * @deprecated in favor of expo-notifications config plugin. Configuration for remote (push) notifications.
-     */
-    /**
      * Configuration for the status bar on Android. For more details please navigate to [Configuring StatusBar](https://docs.expo.dev/guides/configuring-statusbar/).
      */
     androidStatusBar?: {
@@ -199,7 +196,7 @@ export interface ExpoConfig {
          */
         useNativeDebug?: boolean;
         /**
-         * Enable support for downloading and applying asset patches using the BSDiff format. Defaults to true. Set to false to force full asset downloads even when a server offers patch responses.
+         * Enable support for downloading and applying asset patches using the BSDiff format. Defaults to false. Set to true to enable downloading asset patches instead of full assets when a server offers patch responses.
          */
         enableBsdiffPatchSupport?: boolean;
     };

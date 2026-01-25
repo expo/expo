@@ -1,0 +1,12 @@
+{
+  "ios": {
+    "Localizable.strings": {
+      "hello": "hi!",
+      "welcome": "Welcome to the Notification Tester app"
+    }
+  },
+  "android": {
+    "hello": "hi!",
+    "welcome": "Welcome to the Notification Tester app"
+  }
+}

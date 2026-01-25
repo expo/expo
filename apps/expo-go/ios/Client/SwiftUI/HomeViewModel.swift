@@ -12,7 +12,7 @@ class HomeViewModel: ObservableObject {
 
   @Published var recentlyOpenedApps: [RecentlyOpenedApp] = []
 
-  @Published var showingAccountSheet = false
+  @Published var showingFeedbackForm = false
   @Published var errorToShow: ErrorInfo?
   @Published var isNetworkAvailable = true
 
@@ -65,6 +65,7 @@ class HomeViewModel: ObservableObject {
 
   func onViewWillAppear() {
     serverService.startDiscovery()
+    serverService.setSessionSecret(authService.sessionSecret)
 
     if isAuthenticated, let account = selectedAccount {
       dataService.startPolling(accountName: account.name)
@@ -118,10 +119,11 @@ class HomeViewModel: ObservableObject {
   func refreshData() async {
     guard let account = selectedAccount else { return }
 
-    async let task = dataService.fetchProjectsAndData(accountName: account.name)
-    serverService.discoverDevelopmentServers()
+    async let fetchTask: Void = dataService.fetchProjectsAndData(accountName: account.name)
+    async let discoveryTask: Void = serverService.discoverDevelopmentServers()
+    async let remoteTask: Void = serverService.refreshRemoteSessions()
 
-    await task
+    _ = await (fetchTask, discoveryTask, remoteTask)
   }
 
   func addToRecentlyOpened(url: String, name: String, iconUrl: String? = nil) {
@@ -174,26 +176,6 @@ class HomeViewModel: ObservableObject {
     openAppViaBridge(url: url)
   }
 
-  func extractAppName(from url: String) -> String {
-    guard let urlComponents = URL(string: url) else {
-      return url
-    }
-
-    let pathComponents = urlComponents.path.components(separatedBy: "/").filter { !$0.isEmpty }
-    if let lastComponent = pathComponents.last, !lastComponent.isEmpty, lastComponent != "@" {
-      return lastComponent
-    }
-
-    if let host = urlComponents.host {
-      if let port = urlComponents.port {
-        return "\(host):\(port)"
-      }
-      return host
-    }
-
-    return url
-  }
-
   func updateShakeGesture(_ enabled: Bool) {
     settingsManager.updateShakeGesture(enabled)
   }
@@ -206,16 +188,12 @@ class HomeViewModel: ObservableObject {
     settingsManager.updateTheme(themeIndex)
   }
 
-  func showAccountSheet() {
-    showingAccountSheet = true
+  func showFeedbackForm() {
+    showingFeedbackForm = true
   }
 
   func showError(_ message: String, apiError: APIError? = nil) {
     errorToShow = ErrorInfo(message: message, apiError: apiError)
-  }
-
-  func clearError() {
-    errorToShow = nil
   }
 
   private func setupSubscriptions() {
@@ -232,7 +210,10 @@ class HomeViewModel: ObservableObject {
       .store(in: &cancellables)
 
     authService.$isAuthenticated
-      .sink { [weak self] in self?.isAuthenticated = $0 }
+      .sink { [weak self] isAuthenticated in
+        self?.isAuthenticated = isAuthenticated
+        self?.serverService.setSessionSecret(self?.authService.sessionSecret)
+      }
       .store(in: &cancellables)
 
     dataService.$projects
@@ -294,15 +275,16 @@ struct RecentlyOpenedApp: Identifiable, Codable {
   var iconUrl: String?
 }
 
-struct DevelopmentServer: Identifiable {
-  var id = UUID()
+struct DevelopmentServer: Identifiable, Equatable {
+  var id: String { url }
   let url: String
   let description: String
   let source: String
   let isRunning: Bool
+  var iconUrl: String?
 }
 
-struct ExpoProject: Identifiable, Codable {
+struct ExpoProject: Identifiable, Codable, Equatable {
   let id: String
   let name: String
   let fullName: String

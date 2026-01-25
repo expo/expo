@@ -6,6 +6,7 @@ struct ProjectDetailsView: View {
   let projectId: String
   @StateObject private var viewModel: ProjectDetailsViewModel
   @EnvironmentObject var homeViewModel: HomeViewModel
+  @State private var showingAllBranches = false
 
   init(projectId: String, initialProject: ExpoProject? = nil) {
     self.projectId = projectId
@@ -34,14 +35,15 @@ struct ProjectDetailsView: View {
             } else {
               VStack(spacing: 6) {
                 ForEach(project.updateBranches.prefix(3)) { branch in
-                  BranchRow(branch: branch) {
-                    openBranch(branch)
+                  NavigationLink(destination: BranchDetailsView(projectId: projectId, branchName: branch.name)) {
+                    BranchRowContent(branch: branch)
                   }
+                  .buttonStyle(PlainButtonStyle())
                 }
 
                 if project.updateBranches.count > 3 {
                   Button("See all branches (\(project.updateBranches.count))") {
-                    // TODO: Navigate to branches list
+                    showingAllBranches = true
                   }
                   .frame(maxWidth: .infinity)
                   .padding()
@@ -70,9 +72,30 @@ struct ProjectDetailsView: View {
     .background(Color.expoSystemBackground)
     .navigationTitle(viewModel.project?.name ?? "")
     .navigationBarTitleDisplayMode(.inline)
+    .toolbar {
+      ToolbarItem(placement: .navigationBarTrailing) {
+        Button {
+          if let project = viewModel.project {
+            showShareSheet(for: project)
+          }
+        } label: {
+          Image(systemName: "square.and.arrow.up")
+        }
+        .disabled(viewModel.project == nil)
+      }
+    }
     .task {
       await viewModel.loadProject()
     }
+    .background(
+      NavigationLink(
+        destination: BranchesListView(projectId: projectId),
+        isActive: $showingAllBranches
+      ) {
+        EmptyView()
+      }
+      .hidden()
+    )
   }
 
   @ViewBuilder
@@ -87,7 +110,7 @@ struct ProjectDetailsView: View {
         .foregroundColor(.secondary)
 
       if !project.ownerAccount.name.isEmpty {
-        Text("by \(project.ownerAccount.name)")
+        Text("Owned by \(project.ownerAccount.name)")
           .font(.caption)
           .foregroundColor(.secondary)
       }
@@ -98,18 +121,14 @@ struct ProjectDetailsView: View {
     .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
   }
 
-  private func openBranch(_ branch: BranchDetail) {
-    guard let update = branch.updates.first else {
-      homeViewModel.showError("This branch has no published updates")
-      return
+  private func showShareSheet(for project: ProjectDetail) {
+    let host = APIClient.shared.apiOrigin.replacingOccurrences(of: "https://", with: "")
+    let expUrl = "exp://\(host)/\(project.fullName)"
+    let activityView = UIActivityViewController(activityItems: [expUrl], applicationActivities: nil)
+    if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+       let root = scene.windows.first?.rootViewController {
+      root.present(activityView, animated: true)
     }
-
-    homeViewModel.openApp(url: update.manifestPermalink)
-    homeViewModel.addToRecentlyOpened(
-      url: update.manifestPermalink,
-      name: "\(viewModel.project?.name ?? "Project") - \(branch.name)",
-      iconUrl: nil
-    )
   }
 }
 
@@ -120,7 +139,7 @@ class ProjectDetailsViewModel: ObservableObject {
   @Published var error: Error?
 
   private let projectId: String
-  private let hasMoreBranches: Bool
+  private var hasLoadedRemote = false
 
   init(projectId: String, initialProject: ExpoProject? = nil) {
     self.projectId = projectId
@@ -136,14 +155,11 @@ class ProjectDetailsViewModel: ObservableObject {
           BranchDetail(id: branch.id, name: branch.name, updates: branch.updates)
         }
       )
-      self.hasMoreBranches = initialProject.firstTwoBranches.count == 2
-    } else {
-      self.hasMoreBranches = true
     }
   }
 
   func loadProject() async {
-    if project != nil && !hasMoreBranches {
+    if hasLoadedRemote {
       return
     }
 
@@ -160,6 +176,7 @@ class ProjectDetailsViewModel: ObservableObject {
       )
 
       self.project = response.data.app.byId
+      self.hasLoadedRemote = true
     } catch {
       self.error = error
     }

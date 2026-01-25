@@ -16,7 +16,6 @@ import versioned.host.exp.exponent.core.modules.ExpoGoModule
 import versioned.host.exp.exponent.core.modules.ExpoGoUpdatesModule
 import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsCategoriesSerializer
 import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelsProvider
-import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationCategoriesModule
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationPresentationModule
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationScheduler
@@ -38,8 +37,6 @@ open class ExpoModuleRegistryAdapter(
     otherModules: List<NativeModule>
   ): List<NativeModule> {
     val moduleRegistry = mModuleRegistryProvider[scopedContext]
-
-    moduleRegistry.registerInternalModule(SharedCookiesDataSourceFactoryProvider())
 
     // Overriding expo-notifications classes
     moduleRegistry.registerInternalModule(

@@ -429,10 +429,10 @@ function mapProtectedScreen(props) {
             }
             else {
                 if (react_1.default.isValidElement(child)) {
-                    console.warn(`Warning: Unknown child element passed to Stack: ${child.type}`);
+                    console.warn(`Unknown child element passed to Stack: ${child.type}`);
                 }
                 else {
-                    console.warn(`Warning: Unknown child element passed to Stack: ${child}`);
+                    console.warn(`Unknown child element passed to Stack: ${child}`);
                 }
             }
             return null;
@@ -440,6 +440,11 @@ function mapProtectedScreen(props) {
             .filter(Boolean),
     };
 }
+/**
+ * Renders a native stack navigator.
+ *
+ * @hideType
+ */
 const Stack = Object.assign((props) => {
     const { isStackAnimationDisabled } = (0, LinkPreviewContext_1.useLinkPreviewContext)();
     const screenOptionsWithCompositionAPIOptions = (0, react_1.useMemo)(() => {
@@ -474,6 +479,8 @@ const Stack = Object.assign((props) => {
     Screen: stack_utils_1.StackScreen,
     Protected: Protected_1.Protected,
     Header: stack_utils_1.StackHeader,
+    SearchBar: stack_utils_1.StackSearchBar,
+    Toolbar: stack_utils_1.StackToolbar,
 });
 function disableAnimationInScreenOptions(options, condition) {
     if (options && typeof options === 'function') {

@@ -99,10 +99,7 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushTok
   // We wrap it with `fromExpoWebClient` to make sure other message
   // will not override content such as `notificationIcon`.
   // https://stackoverflow.com/a/35729334/2603230
-  const notificationIcon = (Constants.expoConfig?.notification ?? {}).icon;
-  await registration.active.postMessage(
-    JSON.stringify({ fromExpoWebClient: { notificationIcon } })
-  );
+  await registration.active.postMessage(JSON.stringify({ fromExpoWebClient: {} }));
 
   return subscriptionObject;
 }

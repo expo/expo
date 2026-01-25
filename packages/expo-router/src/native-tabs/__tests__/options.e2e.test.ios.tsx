@@ -1,10 +1,7 @@
 import { screen, act, fireEvent } from '@testing-library/react-native';
 import React from 'react';
 import { Button, View } from 'react-native';
-import {
-  BottomTabsScreen as _BottomTabsScreen,
-  type BottomTabsScreenProps,
-} from 'react-native-screens';
+import { Tabs, type TabsScreenProps } from 'react-native-screens';
 
 import { HrefPreview } from '../../link/preview/HrefPreview';
 import { renderRouter, within } from '../../testing-library';
@@ -21,14 +18,20 @@ import type { NativeTabOptions } from '../types';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  const actualModule = jest.requireActual(
+    'react-native-screens'
+  ) as typeof import('react-native-screens');
   return {
-    ...(jest.requireActual('react-native-screens') as typeof import('react-native-screens')),
-    BottomTabs: jest.fn(({ children }) => <View testID="BottomTabs">{children}</View>),
-    BottomTabsScreen: jest.fn(({ children }) => <View testID="BottomTabsScreen">{children}</View>),
+    ...actualModule,
+    Tabs: {
+      ...actualModule.Tabs,
+      Host: jest.fn(({ children }) => <View testID="TabsHost">{children}</View>),
+      Screen: jest.fn(({ children }) => <View testID="TabsScreen">{children}</View>),
+    },
   };
 });
 
-const BottomTabsScreen = _BottomTabsScreen as jest.MockedFunction<typeof _BottomTabsScreen>;
+const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
 
 it('can pass props via unstable_nativeProps', () => {
   const indexOptions = {
@@ -52,11 +55,11 @@ it('can pass props via unstable_nativeProps', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
-  expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
-  expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+  expect(TabsScreen).toHaveBeenCalledTimes(2);
+  expect(TabsScreen.mock.calls[0][0]).toMatchObject({
     ...indexOptions,
   });
-  expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+  expect(TabsScreen.mock.calls[1][0]).toMatchObject({
     ...secondOptions,
   });
 });
@@ -74,15 +77,14 @@ it('can pass options via elements', () => {
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
-  expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-  expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+  expect(TabsScreen).toHaveBeenCalledTimes(1);
+  expect(TabsScreen.mock.calls[0][0]).toMatchObject({
     icon: { ios: { type: 'sfSymbol', name: 'homepod.2.fill' } },
     selectedIcon: undefined,
-  } as BottomTabsScreenProps);
+  } as TabsScreenProps);
 });
 
 it('when no options are passed, default ones are used', () => {
-  const { BottomTabsScreen } = require('react-native-screens');
   renderRouter({
     _layout: () => (
       <NativeTabs>
@@ -93,8 +95,8 @@ it('when no options are passed, default ones are used', () => {
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
-  expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-  expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+  expect(TabsScreen).toHaveBeenCalledTimes(1);
+  expect(TabsScreen.mock.calls[0][0]).toMatchObject({
     hidden: false,
     specialEffects: {},
     tabKey: expect.stringMatching(/^index-[-\w]+/),
@@ -103,7 +105,7 @@ it('when no options are passed, default ones are used', () => {
     icon: undefined,
     selectedIcon: undefined,
     freezeContents: false,
-  } as BottomTabsScreenProps);
+  } as TabsScreenProps);
 });
 
 describe('Icons', () => {
@@ -120,10 +122,10 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       icon: { ios: { type: 'sfSymbol', name: 'homepod.2.fill' } },
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('when using Icon with sf selected prop, it is passed as selected icon sfSymbolName', () => {
@@ -139,10 +141,10 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' },
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('when using Icon with sf object, values are passed correctly', () => {
@@ -158,11 +160,11 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       selectedIcon: { type: 'sfSymbol', name: 'star.bubble' },
       icon: { ios: { type: 'sfSymbol', name: 'stairs' } },
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('when using Icon drawable on iOS, no value is passed', () => {
@@ -178,9 +180,9 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0].icon).toBeUndefined();
-    expect(BottomTabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].icon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
   });
 
   it('uses last Icon sf value when multiple are provided', () => {
@@ -197,11 +199,11 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       icon: { ios: { type: 'sfSymbol', name: 'homepod.2.fill' } },
       selectedIcon: undefined,
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('uses last Icon sf selected when multiple are provided', () => {
@@ -218,10 +220,10 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' },
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('uses last Icon sf for each type when multiple are provided', () => {
@@ -241,11 +243,11 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       selectedIcon: undefined,
       icon: { ios: { type: 'sfSymbol', name: '0.circle.ar' } },
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('uses last Icon sf for each type when multiple are provided', () => {
@@ -265,11 +267,11 @@ describe('Icons', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       selectedIcon: { type: 'sfSymbol', name: '0.circle.ar' },
       icon: undefined,
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('when selectedIconColor is provided, it is passed to screen', () => {
@@ -282,8 +284,8 @@ describe('Icons', () => {
       index: () => <View testID="index" />,
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       standardAppearance: {
         stacked: {
           selected: {
@@ -291,7 +293,7 @@ describe('Icons', () => {
           },
         },
       },
-    } as Partial<BottomTabsScreenProps>);
+    } as Partial<TabsScreenProps>);
   });
 
   it('when selectedIconColor is provided in container and tab, the tab should use the tab color', () => {
@@ -308,8 +310,8 @@ describe('Icons', () => {
       one: () => <View testID="one" />,
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       standardAppearance: {
         stacked: {
           selected: {
@@ -317,8 +319,8 @@ describe('Icons', () => {
           },
         },
       },
-    } as Partial<BottomTabsScreenProps>);
-    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+    } as Partial<TabsScreenProps>);
+    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       standardAppearance: {
         stacked: {
           selected: {
@@ -326,7 +328,7 @@ describe('Icons', () => {
           },
         },
       },
-    } as Partial<BottomTabsScreenProps>);
+    } as Partial<TabsScreenProps>);
   });
 
   it.each([
@@ -367,7 +369,7 @@ describe('Icons', () => {
     MaterialIcon &
     SrcIcon &
     SFSymbolIcon & {
-      expectedIcon: BottomTabsScreenProps['icon']['ios'];
+      expectedIcon: TabsScreenProps['icon']['ios'];
     })[])(
     'For <Icon sf="$sf" src="$src" drawable="$drawable">, icon is $expectedIcon',
     ({ sf, src, drawable, material, expectedIcon }) => {
@@ -383,8 +385,8 @@ describe('Icons', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-      expect(BottomTabsScreen.mock.calls[0][0].icon?.ios).toEqual(expectedIcon);
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
+      expect(TabsScreen.mock.calls[0][0].icon?.ios).toEqual(expectedIcon);
     }
   );
 });
@@ -403,10 +405,10 @@ describe('Badge', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       badgeValue: '5',
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('passes badge value as string', () => {
@@ -422,10 +424,10 @@ describe('Badge', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       badgeValue: 'New',
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('does not pass badge when Badge is not used', () => {
@@ -439,8 +441,8 @@ describe('Badge', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).not.toHaveProperty('badgeValue');
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).not.toHaveProperty('badgeValue');
   });
 
   it('uses last Badge value when multiple are provided', () => {
@@ -458,10 +460,10 @@ describe('Badge', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       badgeValue: '3',
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('when empty Badge is used, passes space to badgeValue', () => {
@@ -477,8 +479,8 @@ describe('Badge', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0].badgeValue).toBe(' '); // Space is used to show empty badge
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].badgeValue).toBe(' '); // Space is used to show empty badge
   });
 
   it('when empty Badge is used with hidden, passes undefined to badgeValue', () => {
@@ -494,8 +496,8 @@ describe('Badge', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0].badgeValue).toBeUndefined();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].badgeValue).toBeUndefined();
   });
 });
 
@@ -513,10 +515,10 @@ describe('Label', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Custom Title',
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('when title is not set, uses the route name', () => {
@@ -533,9 +535,9 @@ describe('Label', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('one')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
-    expect(BottomTabsScreen.mock.calls[0][0].title).toBe('index');
-    expect(BottomTabsScreen.mock.calls[1][0].title).toBe('one');
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0].title).toBe('index');
+    expect(TabsScreen.mock.calls[1][0].title).toBe('one');
   });
 
   it('uses last Label value when multiple are provided', () => {
@@ -553,10 +555,10 @@ describe('Label', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Last Title',
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('when empty Label is used, passes route name to title', () => {
@@ -572,8 +574,8 @@ describe('Label', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0].title).toBe('index'); // Route name is used as title when Label is empty
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].title).toBe('index'); // Route name is used as title when Label is empty
   });
 
   it('when Label with hidden is used, passes empty string to title', () => {
@@ -589,8 +591,8 @@ describe('Label', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0].title).toBe(''); // Route name is used as title when Label is empty
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].title).toBe(''); // Route name is used as title when Label is empty
   });
 
   it('when selectedLabelStyle is provided, it is passed to screen', () => {
@@ -603,8 +605,8 @@ describe('Label', () => {
       index: () => <View testID="index" />,
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       standardAppearance: {
         stacked: {
           selected: {
@@ -613,7 +615,7 @@ describe('Label', () => {
           },
         },
       },
-    } as Partial<BottomTabsScreenProps>);
+    } as Partial<TabsScreenProps>);
   });
 
   it('when selectedLabelStyle is provided in container and tab, the tab should use the tab color', () => {
@@ -630,8 +632,8 @@ describe('Label', () => {
       one: () => <View testID="one" />,
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       standardAppearance: {
         stacked: {
           selected: {
@@ -640,8 +642,8 @@ describe('Label', () => {
           },
         },
       },
-    } as Partial<BottomTabsScreenProps>);
-    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+    } as Partial<TabsScreenProps>);
+    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       standardAppearance: {
         stacked: {
           selected: {
@@ -650,7 +652,7 @@ describe('Label', () => {
           },
         },
       },
-    } as Partial<BottomTabsScreenProps>);
+    } as Partial<TabsScreenProps>);
   });
 });
 
@@ -669,14 +671,14 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-      expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
+      expect(TabsScreen.mock.calls[0][0]).toMatchObject({
         specialEffects: {
           repeatedTabSelection: {
             popToRoot: false,
           },
         },
-      } as BottomTabsScreenProps);
+      } as TabsScreenProps);
     });
 
     it('When disablePopToTop is not set or false, popToRoot is true', () => {
@@ -696,23 +698,23 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
-      expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      expect(TabsScreen).toHaveBeenCalledTimes(2);
+      expect(TabsScreen.mock.calls[0][0]).toMatchObject({
         title: 'Custom Title',
         specialEffects: {
           repeatedTabSelection: {
             popToRoot: true,
           },
         },
-      } as BottomTabsScreenProps);
-      expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+      } as TabsScreenProps);
+      expect(TabsScreen.mock.calls[1][0]).toMatchObject({
         title: 'One',
         specialEffects: {
           repeatedTabSelection: {
             popToRoot: true,
           },
         },
-      } as BottomTabsScreenProps);
+      } as TabsScreenProps);
     });
   });
 
@@ -730,14 +732,14 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-      expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
+      expect(TabsScreen.mock.calls[0][0]).toMatchObject({
         specialEffects: {
           repeatedTabSelection: {
             scrollToTop: false,
           },
         },
-      } as BottomTabsScreenProps);
+      } as TabsScreenProps);
     });
 
     it('When disableScrollToTop is not set or false, scrollToTop is true', () => {
@@ -757,23 +759,23 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
-      expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+      expect(TabsScreen).toHaveBeenCalledTimes(2);
+      expect(TabsScreen.mock.calls[0][0]).toMatchObject({
         title: 'Custom Title',
         specialEffects: {
           repeatedTabSelection: {
             scrollToTop: true,
           },
         },
-      } as BottomTabsScreenProps);
-      expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+      } as TabsScreenProps);
+      expect(TabsScreen.mock.calls[1][0]).toMatchObject({
         title: 'One',
         specialEffects: {
           repeatedTabSelection: {
             scrollToTop: true,
           },
         },
-      } as BottomTabsScreenProps);
+      } as TabsScreenProps);
     });
 
     it.each([true, false, undefined])(
@@ -789,10 +791,10 @@ describe('Tab options', () => {
         });
 
         expect(screen.getByTestId('index')).toBeVisible();
-        expect(BottomTabsScreen).toHaveBeenCalledTimes(1);
-        expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+        expect(TabsScreen).toHaveBeenCalledTimes(1);
+        expect(TabsScreen.mock.calls[0][0]).toMatchObject({
           overrideScrollViewContentInsetAdjustmentBehavior: !value,
-        } as BottomTabsScreenProps);
+        } as TabsScreenProps);
       }
     );
   });
@@ -813,8 +815,8 @@ describe('Dynamic options', () => {
       ),
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
@@ -824,8 +826,8 @@ describe('Dynamic options', () => {
       freezeContents: false,
       icon: undefined,
       selectedIcon: undefined,
-    } as BottomTabsScreenProps);
-    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+    } as TabsScreenProps);
+    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
@@ -835,7 +837,7 @@ describe('Dynamic options', () => {
       freezeContents: false,
       icon: undefined,
       selectedIcon: undefined,
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('unstable_nativeProps override dynamic options configuration', () => {
@@ -856,8 +858,8 @@ describe('Dynamic options', () => {
       ),
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
@@ -866,8 +868,8 @@ describe('Dynamic options', () => {
       icon: undefined,
       selectedIcon: undefined,
       freezeContents: false,
-    } as BottomTabsScreenProps);
-    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+    } as TabsScreenProps);
+    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
@@ -882,7 +884,7 @@ describe('Dynamic options', () => {
       },
       selectedIcon: undefined,
       freezeContents: false,
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('can override component children from _layout with unstable_nativeProps', () => {
@@ -912,8 +914,8 @@ describe('Dynamic options', () => {
       ),
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       badgeValue: '3',
       icon: {
@@ -926,8 +928,8 @@ describe('Dynamic options', () => {
       specialEffects: {},
       tabKey: expect.stringMatching(/^index-[-\w]+/),
       isFocused: true,
-    } as BottomTabsScreenProps);
-    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+    } as TabsScreenProps);
+    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
@@ -940,7 +942,7 @@ describe('Dynamic options', () => {
           name: 'homepod.2.fill',
         },
       },
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('can override component children from _layout with dynamic children', () => {
@@ -965,8 +967,8 @@ describe('Dynamic options', () => {
       ),
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       badgeValue: '3',
       icon: {
@@ -979,8 +981,8 @@ describe('Dynamic options', () => {
       specialEffects: {},
       tabKey: expect.stringMatching(/^index-[-\w]+/),
       isFocused: true,
-    } as BottomTabsScreenProps);
-    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+    } as TabsScreenProps);
+    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
@@ -993,7 +995,7 @@ describe('Dynamic options', () => {
           name: 'homepod.2.fill',
         },
       },
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 
   it('can dynamically update options with state update', () => {
@@ -1019,15 +1021,15 @@ describe('Dynamic options', () => {
       },
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
-    expect(BottomTabsScreen.mock.calls[0][0].title).toBe('Initial Title');
-    expect(BottomTabsScreen.mock.calls[1][0].title).toBe('Updated Title 0');
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0].title).toBe('Initial Title');
+    expect(TabsScreen.mock.calls[1][0].title).toBe('Updated Title 0');
     act(() => fireEvent.press(screen.getByTestId('update-button')));
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(3);
-    expect(BottomTabsScreen.mock.calls[2][0].title).toBe('Updated Title 1');
+    expect(TabsScreen).toHaveBeenCalledTimes(3);
+    expect(TabsScreen.mock.calls[2][0].title).toBe('Updated Title 1');
     act(() => fireEvent.press(screen.getByTestId('update-button')));
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(4);
-    expect(BottomTabsScreen.mock.calls[3][0].title).toBe('Updated Title 2');
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    expect(TabsScreen.mock.calls[3][0].title).toBe('Updated Title 2');
   });
 
   it('can be used in preview', () => {
@@ -1061,8 +1063,8 @@ describe('Dynamic options', () => {
     // Tab + preview
     expect(screen.getAllByTestId('second')).toHaveLength(2);
     expect(within(screen.getByTestId('index')).getByTestId('second')).toBeVisible();
-    expect(BottomTabsScreen).toHaveBeenCalledTimes(2);
-    expect(BottomTabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
@@ -1071,8 +1073,8 @@ describe('Dynamic options', () => {
       icon: undefined,
       selectedIcon: undefined,
       freezeContents: false,
-    } as BottomTabsScreenProps);
-    expect(BottomTabsScreen.mock.calls[1][0]).toMatchObject({
+    } as TabsScreenProps);
+    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Second',
       hidden: false,
       specialEffects: {},
@@ -1081,7 +1083,7 @@ describe('Dynamic options', () => {
       icon: undefined,
       selectedIcon: undefined,
       freezeContents: false,
-    } as BottomTabsScreenProps);
+    } as TabsScreenProps);
   });
 });
 

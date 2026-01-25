@@ -10,4 +10,8 @@ export const WorkletsTester = {
   executeWorklet: (worklet: () => void) => {
     WorkletsTesterModule?.executeWorklet?.(createSerializable(worklet));
   },
+
+  isAvailable() {
+    return WorkletsTesterModule != null;
+  },
 };

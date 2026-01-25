@@ -118,7 +118,7 @@ void (^EXinitializeGlobalSingletonModulesSet)(void) = ^{
 
   for (Class klass in [self.class getModulesClasses]) {
     if (![klass conformsToProtocol:@protocol(EXInternalModule)]) {
-      EXLogWarn(@"Registered class `%@` does not conform to the `EXInternalModule` protocol.", [klass description]);
+      RCTLogWarn(@"Registered class `%@` does not conform to the `EXInternalModule` protocol.", [klass description]);
       continue;
     }
 

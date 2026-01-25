@@ -17,8 +17,8 @@ export default function MapsCameraControlsScreen() {
           {
             coordinates: { latitude: 50, longitude: 10 },
             title: 'Marker #1',
+            monogram: '1',
             tintColor: 'blue',
-            systemImage: 'pin',
           },
           {
             coordinates: { latitude: 51, longitude: 9 },

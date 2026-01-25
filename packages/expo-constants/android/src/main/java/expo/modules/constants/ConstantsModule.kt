@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package expo.modules.constants
 
+import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -10,7 +11,7 @@ class ConstantsModule : Module() {
     Name("ExponentConstants")
 
     Constants {
-      return@Constants appContext.service<ConstantsService>()?.constants ?: emptyMap()
+      return@Constants appContext.service<ConstantsInterface>()?.constants ?: emptyMap()
     }
 
     AsyncFunction<String?>("getWebViewUserAgentAsync") {

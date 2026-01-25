@@ -1,5 +1,7 @@
+import { ImmutableRequest } from '../../ImmutableRequest';
 import type { Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
-import type { ServerRenderModule, SsrRenderFn } from '../../rendering';
+import type { LoaderModule, RenderOptions, ServerRenderModule, SsrRenderFn } from '../../rendering';
+import { isResponse, parseParams } from '../../utils/matchers';
 
 function initManifestRegExp(manifest: RawManifest): Manifest {
   return {
@@ -31,6 +33,7 @@ interface EnvironmentInput {
   readText(request: string): Promise<string | null>;
   readJson(request: string): Promise<unknown>;
   loadModule(request: string): Promise<unknown>;
+  isDevelopment: boolean;
 }
 
 export function createEnvironment(input: EnvironmentInput) {
@@ -39,7 +42,7 @@ export function createEnvironment(input: EnvironmentInput) {
   let ssrRenderer: SsrRenderFn | null = null;
 
   async function getCachedRoutesManifest(): Promise<Manifest> {
-    if (!cachedManifest) {
+    if (!cachedManifest || input.isDevelopment) {
       const json = await input.readJson('_expo/routes.json');
       cachedManifest = initManifestRegExp(json as RawManifest);
     }
@@ -47,7 +50,7 @@ export function createEnvironment(input: EnvironmentInput) {
   }
 
   async function getServerRenderer(): Promise<SsrRenderFn | null> {
-    if (ssrRenderer) {
+    if (ssrRenderer && !input.isDevelopment) {
       return ssrRenderer;
     }
 
@@ -79,6 +82,20 @@ export function createEnvironment(input: EnvironmentInput) {
     return ssrRenderer;
   }
 
+  async function executeLoader(request: Request, route: Route): Promise<unknown> {
+    if (!route.loader) {
+      return undefined;
+    }
+
+    const loaderModule = (await input.loadModule(route.loader)) as LoaderModule | null;
+    if (!loaderModule) {
+      throw new Error(`Loader module not found at: ${route.loader}`);
+    }
+
+    const params = parseParams(request, route);
+    return loaderModule.loader(new ImmutableRequest(request), params);
+  }
+
   return {
     async getRoutesManifest(): Promise<Manifest> {
       return getCachedRoutesManifest();
@@ -88,8 +105,15 @@ export function createEnvironment(input: EnvironmentInput) {
       // SSR path: Render at runtime if SSR module is available
       const renderer = await getServerRenderer();
       if (renderer) {
+        let renderOptions: RenderOptions | undefined;
+
         try {
-          return await renderer(request);
+          if (route.loader) {
+            const result = await executeLoader(request, route);
+            const data = isResponse(result) ? await result.json() : result;
+            renderOptions = { loader: { data: data ?? null } };
+          }
+          return await renderer(request, renderOptions);
         } catch (error) {
           console.error('SSR render error:', error);
           throw error;
@@ -123,6 +147,16 @@ export function createEnvironment(input: EnvironmentInput) {
         return null;
       }
       return mod;
+    },
+
+    async getLoaderData(request: Request, route: Route): Promise<Response> {
+      const result = await executeLoader(request, route);
+
+      if (isResponse(result)) {
+        return result;
+      }
+
+      return Response.json(result ?? null);
     },
   };
 }

@@ -7,6 +7,7 @@ import {
   cornerRadius,
   frame,
   matchedGeometryEffect,
+  onTapGesture,
 } from '@expo/ui/swift-ui/modifiers';
 import { useId, useState } from 'react';
 import { View } from 'react-native';
@@ -36,8 +37,8 @@ export default function MatchedGeometryEffectDemo() {
                         background(colors[index]),
                         cornerRadius(12),
                         matchedGeometryEffect(boxId, namespaceId),
+                        onTapGesture(() => setSelectedBox(boxId)),
                       ]}
-                      onPress={() => setSelectedBox(boxId)}
                     />
                   ))}
                 </HStack>
@@ -53,14 +54,14 @@ export default function MatchedGeometryEffectDemo() {
                         background(colors[index + 3]),
                         cornerRadius(12),
                         matchedGeometryEffect(boxId, namespaceId),
+                        onTapGesture(() => setSelectedBox(boxId)),
                       ]}
-                      onPress={() => setSelectedBox(boxId)}
                     />
                   ))}
                 </HStack>
               </VStack>
             ) : (
-              <ZStack onPress={() => setSelectedBox(null)}>
+              <ZStack modifiers={[onTapGesture(() => setSelectedBox(null))]}>
                 <HStack
                   modifiers={[
                     frame({ maxWidth: Infinity, maxHeight: Infinity }),

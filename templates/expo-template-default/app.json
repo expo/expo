@@ -8,7 +8,6 @@
     "scheme": "helloworld",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true,
       "icon": "./assets/expo.icon"
     },
     "android": {
@@ -30,7 +29,11 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF"
+          "backgroundColor": "#208AEF",
+          "android": {
+            "image": "./assets/images/splash-icon.png",
+            "imageWidth": 76
+          }
         }
       ]
     ],

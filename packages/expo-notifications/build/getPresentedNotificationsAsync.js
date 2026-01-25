@@ -7,7 +7,7 @@ import { mapNotification } from './utils/mapNotificationResponse';
  * @return A Promise which resolves with a list of notifications ([`Notification`](#notification)) currently present in the notification tray (Notification Center).
  * @header dismiss
  */
-export default async function getPresentedNotificationsAsync() {
+export async function getPresentedNotificationsAsync() {
     if (!NotificationPresenter.getPresentedNotificationsAsync) {
         throw new UnavailabilityError('Notifications', 'getPresentedNotificationsAsync');
     }

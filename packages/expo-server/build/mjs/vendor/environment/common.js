@@ -1,3 +1,5 @@
+import { ImmutableRequest } from '../../ImmutableRequest';
+import { isResponse, parseParams } from '../../utils/matchers';
 function initManifestRegExp(manifest) {
     return {
         ...manifest,
@@ -28,14 +30,14 @@ export function createEnvironment(input) {
     let cachedManifest = null;
     let ssrRenderer = null;
     async function getCachedRoutesManifest() {
-        if (!cachedManifest) {
+        if (!cachedManifest || input.isDevelopment) {
             const json = await input.readJson('_expo/routes.json');
             cachedManifest = initManifestRegExp(json);
         }
         return cachedManifest;
     }
     async function getServerRenderer() {
-        if (ssrRenderer) {
+        if (ssrRenderer && !input.isDevelopment) {
             return ssrRenderer;
         }
         const manifest = await getCachedRoutesManifest();
@@ -60,6 +62,17 @@ export function createEnvironment(input) {
         };
         return ssrRenderer;
     }
+    async function executeLoader(request, route) {
+        if (!route.loader) {
+            return undefined;
+        }
+        const loaderModule = (await input.loadModule(route.loader));
+        if (!loaderModule) {
+            throw new Error(`Loader module not found at: ${route.loader}`);
+        }
+        const params = parseParams(request, route);
+        return loaderModule.loader(new ImmutableRequest(request), params);
+    }
     return {
         async getRoutesManifest() {
             return getCachedRoutesManifest();
@@ -68,8 +81,14 @@ export function createEnvironment(input) {
             // SSR path: Render at runtime if SSR module is available
             const renderer = await getServerRenderer();
             if (renderer) {
+                let renderOptions;
                 try {
-                    return await renderer(request);
+                    if (route.loader) {
+                        const result = await executeLoader(request, route);
+                        const data = isResponse(result) ? await result.json() : result;
+                        renderOptions = { loader: { data: data ?? null } };
+                    }
+                    return await renderer(request, renderOptions);
                 }
                 catch (error) {
                     console.error('SSR render error:', error);
@@ -101,6 +120,13 @@ export function createEnvironment(input) {
                 return null;
             }
             return mod;
+        },
+        async getLoaderData(request, route) {
+            const result = await executeLoader(request, route);
+            if (isResponse(result)) {
+                return result;
+            }
+            return Response.json(result ?? null);
         },
     };
 }
