@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Reallow connections on `/expo-dev-plugins/broadcast` broadcast socket to local connections ([#42538](https://github.com/expo/expo/pull/42538) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 54.0.22 — 2026-01-21
