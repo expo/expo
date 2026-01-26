@@ -4,7 +4,7 @@ import React from 'react';
 import * as DevMenu from 'expo-dev-menu';
 import { Button, Host, SyncTextField, useSwiftUIState, VStack } from '@expo/ui/swift-ui';
 import MainNavigator, { optionalRequire } from './MainNavigator';
-import { scheduleOnUI } from 'react-native-worklets';
+import { Text, TextInput, View, StyleSheet } from 'react-native';
 
 let Notifications;
 try {
@@ -91,20 +91,106 @@ export default function Main() {
 }
 
 const TestScreen = () => {
-  const state = useSwiftUIState("Hello", (value: string) => {
+  const syncState = useSwiftUIState("", (value: string) => {
     'worklet';
-    if (value.length > 10) {
-      return "Hello world";
-    }
+    const filtered = value.replace(/[^a-zA-Z ]/g, '').slice(0, 20);
+    return filtered !== value ? filtered : undefined;
   });
+  const [asyncText, setAsyncText] = React.useState("");
+  const onChangeText = (value: string) => {
+    const filtered = value.replace(/[^a-zA-Z ]/g, '').slice(0, 20);
+    setAsyncText(filtered);
+  };
 
   return (
-    <Host style={{ flex: 1, justifyContent:"center", alignItems:"center" }}>
-      <VStack>
-        <SyncTextField state={state} />
-        <Button label="Set Value" onPress={() => state.setValue("World")} />
-        <Button label="Get Value" onPress={() => console.log(state.getValue())} />
-      </VStack>
-    </Host>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Sync vs Async Text Input</Text>
+        <Text style={styles.subtitle}>
+          Type numbers or special characters to see the difference
+        </Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.label}>React Native TextInput (Async)</Text>
+        <Text style={styles.hint}>Flickers when filtering invalid chars</Text>
+        <TextInput
+          value={asyncText}
+          onChangeText={onChangeText}
+          placeholder="Type here..."
+          style={styles.rnInput}
+        />
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.label}>Expo UI SyncTextField (Sync)</Text>
+        <Text style={styles.hint}>No flicker - filtered on UI thread</Text>
+        <Host matchContents>
+          <VStack>
+            <SyncTextField state={syncState} />
+          </VStack>
+        </Host>
+      </View>
+
+      <Host matchContents>
+        <VStack>
+          <Button
+            label="Reset Both"
+            onPress={() => {
+              syncState.setValue("");
+              setAsyncText("");
+            }}
+          />
+        </VStack>
+      </Host>
+    </View>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    paddingTop: 80,
+    backgroundColor: '#f5f5f5',
+  },
+  header: {
+    marginBottom: 30,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    paddingHorizontal: 20,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  hint: {
+    fontSize: 12,
+    color: '#888',
+    marginTop: 2,
+    marginBottom: 8,
+  },
+  rnInput: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+  },
+});
