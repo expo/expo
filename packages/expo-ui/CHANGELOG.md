@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [iOS] Remove leftover `Switch` TypeScript exports from swift-ui package. Use `Toggle` instead. ([#](https://github.com/expo/expo/pull/41675) by [@shubh73](https://github.com/shubh73))
+
 ## 55.0.0-beta.1 — 2026-01-22
 
 _This version does not introduce any user-facing changes._

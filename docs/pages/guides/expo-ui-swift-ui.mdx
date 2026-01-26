@@ -192,7 +192,7 @@ Combining the Expo UI components and modifiers, you can build a UI like iOS Sett
       Image,
       Section,
       Spacer,
-      Switch,
+      Toggle,
       Text,
     } from '@expo/ui/swift-ui';
     import { background, clipShape, frame } from '@expo/ui/swift-ui/modifiers';
@@ -219,7 +219,7 @@ Combining the Expo UI components and modifiers, you can build a UI like iOS Sett
                 />
                 <Text>Airplane Mode</Text>
                 <Spacer />
-                <Switch value={isAirplaneMode} onValueChange={setIsAirplaneMode} />
+                <Toggle isOn={isAirplaneMode} onIsOnChange={setIsAirplaneMode} />
               </HStack>
 
               <Link href="/wifi" asChild>

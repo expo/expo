@@ -1,4 +1,4 @@
-import { ColorPicker, Form, Host, Section, Switch, Text, VStack } from '@expo/ui/swift-ui';
+import { ColorPicker, Form, Host, Section, Toggle, Text, VStack } from '@expo/ui/swift-ui';
 import * as React from 'react';
 
 export default function ColorPickerScreen() {
@@ -11,10 +11,10 @@ export default function ColorPickerScreen() {
           <Text>Color: {color}</Text>
           <Host matchContents>
             <VStack spacing={8}>
-              <Switch
+              <Toggle
                 label="Supports opacity"
-                value={supportsOpacity}
-                onValueChange={setSupportsOpacity}
+                isOn={supportsOpacity}
+                onIsOnChange={setSupportsOpacity}
               />
               <ColorPicker
                 label="Select a color"
