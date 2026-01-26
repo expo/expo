@@ -127,7 +127,7 @@ export async function startInterfaceAsync(
         );
       } else {
         try {
-          if (options.devClient && options.platformsOptions?.appId) {
+          if (options.platformsOptions?.appId) {
             const androidProps = await androidResolveOptions(
               devServerManager.projectRoot,
               options.platformsOptions
