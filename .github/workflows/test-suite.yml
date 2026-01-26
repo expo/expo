@@ -37,12 +37,15 @@ jobs:
       - name: 👀 Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1000
           filter: blob:none
       - name: 🧐 Check changes categories
         id: changes
         uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47
         with:
+          # If the number of commits from actions/checkout is not sufficient to find a base commit,
+          # tj-actions/changed-files tries 10 times to fetch more commits by this amount:
+          fetch_depth: 1000
           files_yaml: |
             ios_only:
               - 'packages/**/ios/**'
