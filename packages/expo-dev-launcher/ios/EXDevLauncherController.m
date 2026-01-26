@@ -222,7 +222,7 @@
   [self.delegate destroyReactInstance];
 
   if (_devLauncherViewController != nil) {
-    [_devLauncherViewController resetHostingController];
+    [_devLauncherViewController restoreHostingControllerView];
   }
 }
 

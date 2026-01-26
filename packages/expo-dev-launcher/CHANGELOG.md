@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix safe area sometimes not applied ([#42537](https://github.com/expo/expo/pull/42537) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 55.0.2 — 2026-01-22

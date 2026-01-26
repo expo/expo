@@ -96,7 +96,7 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
     initialProps: [AnyHashable: Any]?,
     launchOptions: [AnyHashable: Any]?
   ) -> UIView {
-    guard let delegate = self.delegate else {
+    guard self.delegate != nil else {
       fatalError("recreateRootView: Missing RCTReactNativeFactoryDelegate")
     }
 

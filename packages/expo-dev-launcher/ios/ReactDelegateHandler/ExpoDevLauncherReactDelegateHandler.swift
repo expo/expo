@@ -4,40 +4,6 @@ import ExpoModulesCore
 import EXUpdatesInterface
 import React
 
-private class DevLauncherWrapperView: UIView {
-  weak var devLauncherViewController: UIViewController?
-
-#if !os(macOS)
-  override func didMoveToWindow() {
-    super.didMoveToWindow()
-
-    guard let devLauncherViewController,
-      let window,
-      let rootViewController = window.rootViewController else {
-      return
-    }
-
-    let isSwiftUIController = NSStringFromClass(type(of: rootViewController)).contains("UIHostingController")
-    // TODO(pmleczek): Revisit this for a more reliable solution
-    let isBrownfield = NSStringFromClass(type(of: rootViewController)).contains("UINavigationController")
-    if !isSwiftUIController && !isBrownfield && devLauncherViewController.parent != rootViewController {
-      rootViewController.addChild(devLauncherViewController)
-      devLauncherViewController.didMove(toParent: rootViewController)
-      devLauncherViewController.view.setNeedsLayout()
-      devLauncherViewController.view.layoutIfNeeded()
-    }
-  }
-
-  override func willMove(toWindow newWindow: UIWindow?) {
-    super.willMove(toWindow: newWindow)
-    if newWindow == nil {
-      devLauncherViewController?.willMove(toParent: nil)
-      devLauncherViewController?.removeFromParent()
-    }
-  }
-#endif
-}
-
 @objc
 public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDevLauncherControllerDelegate {
   private weak var reactNativeFactory: RCTReactNativeFactory?
@@ -75,8 +41,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     rootViewController = viewController
 
     // We need to create a wrapper View because React Native Factory will reassign rootViewController later
-    let wrapperView = DevLauncherWrapperView()
-    wrapperView.devLauncherViewController = viewController
+    let wrapperView = UIView()
     wrapperView.addSubview(viewController.view)
     viewController.view.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([
