@@ -13,7 +13,7 @@ export const loader: LoaderFunction = (request) => {
     return { foo: null };
   }
 
-  const url = new URL(request!.url);
+  const url = new URL(request.url);
 
   if (url.searchParams.get('setresponseheaders') === 'true') {
     setResponseHeaders({
