@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed incorrect option name for tag inclusion in `AESSealedData.ciphertext(options)`. ([#42535](https://github.com/expo/expo/pull/42535) by [@barthap](https://github.com/barthap))
+
 ### 💡 Others
 
 ## 55.0.2 — 2026-01-26

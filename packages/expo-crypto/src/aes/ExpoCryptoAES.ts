@@ -66,16 +66,16 @@ declare class SealedData {
   static fromParts(iv: BinaryInput, ciphertextWithTag: BinaryInput, tagLength?: number): SealedData;
 
   /** @hidden */
-  ciphertext(options: { withTag?: boolean; encoding: 'base64' }): Promise<string>;
+  ciphertext(options: { includeTag?: boolean; encoding: 'base64' }): Promise<string>;
   /** @hidden */
-  ciphertext(options?: { withTag?: boolean; encoding?: 'bytes' }): Promise<Uint8Array>;
+  ciphertext(options?: { includeTag?: boolean; encoding?: 'bytes' }): Promise<Uint8Array>;
   /**
    * Retrieves the ciphertext from the sealed data.
    * @param options Options controlling whether to include the authentication tag and output encoding.
    * @returns The ciphertext as a `Uint8Array` or `base64` string depending on encoding option.
    */
   ciphertext(options: {
-    withTag?: boolean;
+    includeTag?: boolean;
     encoding?: 'base64' | 'bytes';
   }): Promise<string | Uint8Array>;
 
