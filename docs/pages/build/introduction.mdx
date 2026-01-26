@@ -13,9 +13,9 @@ import { Terminal } from '~/ui/components/Snippet';
 
 **EAS Build** is a hosted Expo Application Services (EAS) service that builds app binaries for your Expo and React Native projects.
 
-It makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using [ad hoc](/build/internal-distribution/) and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+EAS Build makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using [ad hoc](/build/internal-distribution/) and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
 
-It is also designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
+EAS Build is also designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
 
 ## Quick start
 
@@ -95,7 +95,7 @@ jobs:
       profile: ${{ github.ref_name == 'main' && 'production' || 'preview' }}
 ```
 
-For more information, see the [EAS Workflows build job](/eas/workflows/pre-packaged-jobs#build).
+For more information and other usage examples, see the [EAS Workflows build job](/eas/workflows/pre-packaged-jobs#build).
 
 You can also configure [builds from GitHub](/build/building-from-github/) and use [building on CI](/build/building-on-ci/) with any provider.
 
