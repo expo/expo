@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix tvOS compilation errors in Source Map Explorer by excluding tvOS from unavailable SwiftUI APIs (`navigationBarTitleDisplayMode`, `listStyle(.insetGrouped)`, `Menu`) and adding proper availability checks. Refactored platform-specific modifiers to use `@ViewBuilder` instead of `AnyView` for better type preservation and performance. ([#TBD] by [@OtavioStasiak](https://github.com/OtavioStasiak))
+
 ### 💡 Others
 
 ## 55.0.2 — 2026-01-26
