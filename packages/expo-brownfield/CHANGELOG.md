@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.3 — 2026-01-26
+
+### 💡 Others
+
 - Add script to resolve symlinks ([#42457](https://github.com/expo/expo/pull/42457) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 55.0.2 — 2026-01-22
