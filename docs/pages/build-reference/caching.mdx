@@ -186,9 +186,9 @@ If a build doesn't restore a user-scoped cache, it will automatically fallback t
 
 #### Shared user behavior
 
-When a single user-actor is shared between multiple people (such as when using access tokens or triggering builds from GitHub Actions), user-scoped cache rules still apply. This means that builds operating under that shared account will no longer have isolated caches and run the risk of sharing unintended artifacts. We recommend avoiding this by having designated jobs to only save clean caches, while the development builds only restore.
+When a single user-actor is shared between multiple people (such as when using access tokens or triggering builds from GitHub Actions), user-scoped cache rules still apply. This means that builds operating under that shared account will no longer have isolated caches and run the risk of sharing unintended artifacts. To avoid this, we recommend not restoring cache for production builds under a shared user, and to have designated jobs to only save clean, new caches.
 
-#### Cache publishing
+#### Designated jobs for cache creation
 
 You can configure a job to publish clean, new caches by disabling cache restoration and only saving the cache.
 
@@ -216,7 +216,7 @@ You can disable cache restoration for specific build profiles by configuring the
 
 **Only save cache from designated jobs:**
 
-To ensure only trusted sources publish cache, you can configure workflows to only save cache from specific jobs on the main branch:
+To ensure only trusted sources publish cache, you can configure a workflow to only save cache from specific job on the main branch.
 
 ```yaml .eas/workflows/build.yml
 jobs:
@@ -230,6 +230,8 @@ jobs:
       platform: android
       profile: production
 ```
+
+> **Note:** Setting `EAS_SAVE_CACHE: '1'` does not make cache saving exclusive to this job, other jobs with the same environment variable can still save and overwrite the cache.
 
 ## iOS dependencies
 
