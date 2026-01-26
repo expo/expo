@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump `react-server-dom-webpack` ([#42572](https://github.com/expo/expo/pull/42572) by [@vonovak](https://github.com/vonovak))
+
 ## 6.0.22 — 2026-01-20
 
 ### 🐛 Bug fixes
