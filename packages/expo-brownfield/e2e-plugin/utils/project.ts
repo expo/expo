@@ -5,7 +5,7 @@ import path from 'node:path';
 import tempDir from 'temp-dir';
 
 import { executeCreateExpoCLIAsync, executeExpoCLIAsync, sleep } from './process';
-import type { PluginProps } from './types';
+import type { PluginProps, TemplateEntry } from './types';
 
 const PROJECT_NAME = 'testapp';
 const TEMP_DIR = process.env.EXPO_E2E_TEMP_DIR
@@ -157,4 +157,24 @@ const filterOutPlugin = (plugins?: (any[] | string)[]) => {
       (Array.isArray(plugin) && plugin[0] !== 'expo-brownfield') ||
       (!Array.isArray(plugin) && plugin !== 'expo-brownfield')
   );
+};
+
+export const createTemplateOverrides = async (projectRoot: string, entries: TemplateEntry[]) => {
+  const templatesDir = path.join(projectRoot, '.brownfield-templates');
+  if (fs.existsSync(templatesDir)) {
+    await fs.promises.rm(templatesDir, { recursive: true, force: true });
+  }
+  await fs.promises.mkdir(templatesDir, { recursive: true });
+
+  for (const entry of entries) {
+    const subdirectoryPath = entry.subdirectory
+      ? path.join(templatesDir, entry.subdirectory)
+      : undefined;
+    if (subdirectoryPath && !fs.existsSync(subdirectoryPath)) {
+      await fs.promises.mkdir(subdirectoryPath);
+    }
+
+    const templatePath = path.join(subdirectoryPath ?? templatesDir, entry.filename);
+    await fs.promises.writeFile(templatePath, entry.content);
+  }
 };

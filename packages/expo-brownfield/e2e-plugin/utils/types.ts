@@ -5,3 +5,9 @@ export interface PluginProps {
   android?: PluginPropsAndroid;
   ios?: PluginPropsIOS;
 }
+
+export interface TemplateEntry {
+  filename: string;
+  subdirectory?: string;
+  content: string;
+}
