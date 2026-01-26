@@ -3,6 +3,7 @@ import ExpoModulesCore
 public class ScreenOrientationModule: Module, ScreenOrientationController {
   static let didUpdateDimensionsEvent = "expoDidUpdateDimensions"
   let screenOrientationRegistry = ScreenOrientationRegistry.shared
+  private var lastSetOrientationMask: UIInterfaceOrientationMask
 
   public func definition() -> ModuleDefinition {
     Name("ExpoScreenOrientation")
@@ -19,7 +20,7 @@ public class ScreenOrientationModule: Module, ScreenOrientationController {
       guard orientationMask.isSupportedByDevice() else {
         throw UnsupportedOrientationLockException(orientationLock)
       }
-
+      self.lastSetOrientationMask = orientationMask
       screenOrientationRegistry.setMask(orientationMask, forController: self)
     }
 
@@ -40,7 +41,7 @@ public class ScreenOrientationModule: Module, ScreenOrientationController {
       guard allowedOrientationsMask.isSupportedByDevice() else {
         throw UnsupportedOrientationLockException(nil)
       }
-
+      self.lastSetOrientationMask = allowedOrientationsMask
       screenOrientationRegistry.setMask(allowedOrientationsMask, forController: self)
     }
 
@@ -83,6 +84,11 @@ public class ScreenOrientationModule: Module, ScreenOrientationController {
 
     OnAppEntersForeground {
       screenOrientationRegistry.registerController(self)
+
+      // Re-apply the last set orientation mask when the app comes to foreground
+      if let lastMask = self.lastSetOrientationMask {
+        screenOrientationRegistry.setMask(lastMask, forController: self)
+      }
     }
 
     OnAppEntersBackground {
