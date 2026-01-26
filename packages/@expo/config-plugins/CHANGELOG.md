@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.3 — 2026-01-26
+
+### 💡 Others
+
 - Drop `slash` dependency ([#42484](https://github.com/expo/expo/pull/42484) by [@kitten](https://github.com/kitten))
 
 ## 55.0.2 — 2026-01-22

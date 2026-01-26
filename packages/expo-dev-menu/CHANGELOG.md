@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 55.0.2 — 2026-01-26
+
+### 🎉 New features
+
+- Add "Source Code Explorer" screen to iOS dev menu ([#42493](https://github.com/expo/expo/pull/42493) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 55.0.1 — 2026-01-22
 
 _This version does not introduce any user-facing changes._

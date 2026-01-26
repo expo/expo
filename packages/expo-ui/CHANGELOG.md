@@ -6,13 +6,17 @@
 
 ### 🎉 New features
 
-- [iOS] Add Markdown support to the Text component. ([#42448](https://github.com/expo/expo/pull/42448) by [@Pflaumenbaum](https://github.com/Pflaumenbaum))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
-- [iOS] Remove leftover `Switch` TypeScript exports from swift-ui package. Use `Toggle` instead. ([#](https://github.com/expo/expo/pull/41675) by [@shubh73](https://github.com/shubh73))
+- [iOS] Remove leftover `Switch` TypeScript exports from swift-ui package. Use `Toggle` instead. ([#42571](https://github.com/expo/expo/pull/42571)) by [@shubh73](https://github.com/shubh73))
+
+## 55.0.0-beta.2 — 2026-01-26
+
+### 🎉 New features
+
+- [iOS] Add Markdown support to the Text component. ([#42448](https://github.com/expo/expo/pull/42448) by [@Pflaumenbaum](https://github.com/Pflaumenbaum))
 
 ## 55.0.0-beta.1 — 2026-01-22
 

@@ -2,6 +2,17 @@
 import SwiftUI
 import ExpoModulesCore
 
+private struct SafeAreaTopPadding: View {
+  let manualInset: CGFloat
+
+  var body: some View {
+    if manualInset > 0 {
+      Color.expoSystemBackground
+        .frame(height: manualInset)
+    }
+  }
+}
+
 class DevLauncherNavigation: ObservableObject {
   @Binding var showingUserProfile: Bool
 
@@ -27,6 +38,13 @@ struct DevLauncherNavigationHeader: View {
   @EnvironmentObject var navigation: DevLauncherNavigation
 
   var body: some View {
+    VStack(spacing: 0) {
+      SafeAreaTopPadding(manualInset: viewModel.topSafeAreaInset)
+      headerContent
+    }
+  }
+
+  private var headerContent: some View {
     HStack {
       HStack(spacing: 12) {
         if let path = viewModel.buildInfo["appIcon"] as? String,
