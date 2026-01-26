@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Make the Action Button always enabled on Quest. ([#42562](https://github.com/expo/expo/pull/42562) by [@behenate](https://github.com/behenate))
+
 ## 55.0.2 — 2026-01-26
 
 ### 🎉 New features
