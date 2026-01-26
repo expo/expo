@@ -96,7 +96,7 @@
     "react-native-safe-area-context": ">= 5.4.0",
     "react-native-screens": "*",
     "react-native-web": "*",
-    "react-server-dom-webpack": "~19.0.3 || ~19.1.4 || ~19.2.3"
+    "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4"
   },
   "peerDependenciesMeta": {
     "@testing-library/react-native": {
@@ -129,7 +129,7 @@
     "@types/react-dom": "^19.1.7",
     "@types/semver": "^7.7.0",
     "immer": "^10.1.1",
-    "react-server-dom-webpack": "~19.0.3"
+    "react-server-dom-webpack": "~19.0.4"
   },
   "dependencies": {
     "@expo/metro-runtime": "^55.0.2",
