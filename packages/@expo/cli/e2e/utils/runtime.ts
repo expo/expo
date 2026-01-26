@@ -19,7 +19,7 @@ type RuntimeType =
 
 export type ServerTestConfiguration = {
   name: string;
-  createServer: () => BackgroundServer;
+  createServer: (overrideServe?: ServerTestOptions['serve']) => BackgroundServer;
   prepareDist: () => Promise<[outputDir: string, outputName?: string]>;
 };
 
@@ -94,12 +94,13 @@ export function prepareServers(
 
         return [outputDir, outputName];
       },
-      createServer: () =>
+      createServer: (overrideServe) =>
         createExpoServe({
           cwd: projectRoot,
           env: {
             NODE_ENV: 'production',
             ...serveEnv,
+            ...overrideServe?.env,
           },
         }),
     },
@@ -107,12 +108,13 @@ export function prepareServers(
       prepareDist: async () => {
         return [''];
       },
-      createServer: () =>
+      createServer: (overrideServe) =>
         createExpoStart({
           cwd: projectRoot,
           env: {
             ...defaultExportEnv,
             ...serveEnv,
+            ...overrideServe?.env,
             NODE_ENV: 'development',
           },
         }),
@@ -130,7 +132,7 @@ export function prepareServers(
 
         return [outputDir, outputName];
       },
-      createServer: () =>
+      createServer: (overrideServe) =>
         createBackgroundServer({
           command: ['node', path.join(projectRoot, `__e2e__/${fixtureName}/express.js`)],
           host: (chunk: any) => processFindPrefixedValue(chunk, 'Express server listening'),
@@ -138,6 +140,7 @@ export function prepareServers(
           env: {
             NODE_ENV: 'production',
             ...serveEnv,
+            ...overrideServe?.env,
           },
         }),
     },
@@ -167,7 +170,7 @@ export function prepareServers(
 
         return [outputDir];
       },
-      createServer: () =>
+      createServer: (overrideServe) =>
         createBackgroundServer({
           command: [
             'node_modules/.bin/workerd',
@@ -177,6 +180,9 @@ export function prepareServers(
           host: (chunk: any) => processFindPrefixedValue(chunk, 'Workerd server listening'),
           port: 8787,
           cwd: projectRoot,
+          env: {
+            ...overrideServe?.env,
+          },
         }),
     },
   };
@@ -200,7 +206,12 @@ export function prepareServers(
  *
  * @remarks Must be called at the top level of a `describe()` block that uses `prepareServers()`.
  */
-export function setupServer(config: ServerTestConfiguration) {
+export function setupServer(
+  /** Server configuration from `prepareServers()` */
+  config: ServerTestConfiguration,
+  /** Optional overrides to pass to `expo serve` for this specific test scenario */
+  options?: Pick<ServerTestOptions, 'serve'>
+) {
   let outputDir: string | undefined;
   let server: BackgroundServer;
 
@@ -209,7 +220,7 @@ export function setupServer(config: ServerTestConfiguration) {
     const [newOutputDir, outputName] = await config.prepareDist();
     console.timeEnd('export-server');
     outputDir = newOutputDir;
-    server = config.createServer();
+    server = config.createServer(options?.serve);
     if (outputName) {
       await server.startAsync([outputName]);
     } else {
