@@ -13,7 +13,7 @@ const withDevLauncherWarning = (config) => {
         DID_NOTIFY = true;
         console.warn("⚠ It seems that you're using `expo-dev-client` with `expo-brownfield`");
         console.warn("`expo-dev-client` isn't currently supported in the isolated brownfield setup");
-        console.warn('Please instead use `expo-dev-menu`');
+        console.warn('Please use `expo-dev-menu` instead');
     }
 };
 const maybeGetFromPlugins = (config) => {
