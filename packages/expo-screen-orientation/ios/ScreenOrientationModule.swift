@@ -3,7 +3,7 @@ import ExpoModulesCore
 public class ScreenOrientationModule: Module, ScreenOrientationController {
   static let didUpdateDimensionsEvent = "expoDidUpdateDimensions"
   let screenOrientationRegistry = ScreenOrientationRegistry.shared
-  private var lastSetOrientationMask: UIInterfaceOrientationMask
+  private var lastSetOrientationMask: UIInterfaceOrientationMask?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoScreenOrientation")
