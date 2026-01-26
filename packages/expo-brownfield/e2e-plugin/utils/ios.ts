@@ -245,7 +245,6 @@ export const parsePbxproj = (projectRoot: string) => {
   const pbxprojPath = path.join(
     projectRoot,
     'ios',
-    // TODO(pmleczek): Constants?
     `testapppluginios.xcodeproj`,
     'project.pbxproj'
   );

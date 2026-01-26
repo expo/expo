@@ -48,7 +48,11 @@ export const cleanUpProject = async (suffix: string = ''): Promise<void> => {
 /**
  * Add the Expo Brownfield plugin to the project
  */
-export const addPlugin = async (projectRoot: string, props?: PluginProps) => {
+export const addPlugin = async (
+  projectRoot: string,
+  props?: PluginProps,
+  android: Record<string, any> = {}
+) => {
   const appJsonPath = path.join(projectRoot, 'app.json');
   if (!fs.existsSync(appJsonPath)) {
     throw new Error(`App.json not found: ${appJsonPath}`);
@@ -65,6 +69,11 @@ export const addPlugin = async (projectRoot: string, props?: PluginProps) => {
   plugins.push(expoBrownfieldPlugin);
 
   appConfig.expo.plugins = plugins;
+  appConfig.expo.android = {
+    ...appConfig.expo.android,
+    ...android,
+  };
+
   await fs.promises.writeFile(appJsonPath, JSON.stringify(appConfig, null, 2));
 };
 
@@ -177,4 +186,20 @@ export const createTemplateOverrides = async (projectRoot: string, entries: Temp
     const templatePath = path.join(subdirectoryPath ?? templatesDir, entry.filename);
     await fs.promises.writeFile(templatePath, entry.content);
   }
+};
+
+/**
+ * Create an .env file with specified values
+ */
+export const createEnvFile = async (projectRoot: string, variables: Record<string, string>) => {
+  const envFilePath = path.join(projectRoot, '.env');
+  if (fs.existsSync(envFilePath)) {
+    await fs.promises.rm(envFilePath, { force: true });
+  }
+  await fs.promises.writeFile(
+    envFilePath,
+    Object.entries(variables)
+      .map(([key, value]) => `${key}=${value}`)
+      .join('\n')
+  );
 };
