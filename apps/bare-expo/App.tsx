@@ -2,8 +2,9 @@ import { ThemeProvider } from 'ThemeProvider';
 import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
 import * as DevMenu from 'expo-dev-menu';
-
+import { Button, Host, SyncTextField, useSwiftUIState, VStack } from '@expo/ui/swift-ui';
 import MainNavigator, { optionalRequire } from './MainNavigator';
+import { scheduleOnUI } from 'react-native-worklets';
 
 let Notifications;
 try {
@@ -86,5 +87,20 @@ export default function Main() {
 
   const isLoaded = useLoaded();
 
-  return <ThemeProvider>{isLoaded ? <MainNavigator /> : null}</ThemeProvider>;
+  return <ThemeProvider>{isLoaded ? <TestScreen /> : null}</ThemeProvider>;
+}
+
+const TestScreen = () => {
+  const { stateId, setValue, getValue } = useSwiftUIState("Hello world");
+  console.log(stateId);
+  return (
+    <Host style={{ flex: 1, justifyContent:"center", alignItems:"center" }}>
+      <VStack>
+      <SyncTextField stateId={stateId} />
+      <Button label="Set Value" onPress={
+        () => scheduleOnUI(() => setValue("World"))
+      } />
+      </VStack>
+    </Host>
+  );
 }
