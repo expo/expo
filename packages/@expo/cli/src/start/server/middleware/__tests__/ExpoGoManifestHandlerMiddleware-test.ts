@@ -1,4 +1,3 @@
-import { GraphQLError } from '@0no-co/graphql.web';
 import { ExpoConfig } from '@expo/config';
 import {
   isMultipartPartWithName,
@@ -9,6 +8,7 @@ import { vol } from 'memfs';
 import nullthrows from 'nullthrows';
 
 import { AppQuery } from '../../../../api/graphql/queries/AppQuery';
+import { UnexpectedServerError } from '../../../../api/rest/client';
 import { getUserAsync } from '../../../../api/user/user';
 import {
   mockExpoRootChain,
@@ -202,6 +202,7 @@ describe('_getManifestResponseAsync', () => {
       scopeKey: 'scope-key',
       ownerAccount: {
         id: 'blah-account',
+        name: 'test',
       },
     }));
   });
@@ -288,7 +289,7 @@ describe('_getManifestResponseAsync', () => {
 
   it('returns an anon manifest when viewer does not have permission to view app', async () => {
     jest.mocked(AppQuery.byIdAsync).mockImplementation(async () => {
-      throw new GraphQLError('test');
+      throw new UnexpectedServerError('test');
     });
 
     const middleware = createMiddleware();
@@ -342,6 +343,7 @@ describe('_getManifestResponseAsync', () => {
       scopeKey: 'scope-key',
       ownerAccount: {
         id: 'blah-other-account',
+        name: 'test',
       },
     }));
 
