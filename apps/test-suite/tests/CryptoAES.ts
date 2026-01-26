@@ -325,7 +325,7 @@ export async function test({ describe, it, expect, beforeAll }) {
 
         expect(ciphertext.byteLength).toBe(plaintextSize);
         expect(ciphertextWithTag.byteLength).toBe(plaintextSize + sealedData.tagSize);
-      })
+      });
     });
 
     describe('Key size compatibility', () => {
