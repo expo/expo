@@ -31,45 +31,36 @@ jobs:
   detect-platform-for-e2e:
     runs-on: ubuntu-24.04
     outputs:
-      should_run_ios: ${{ steps.changes.outputs.ios_only_any_changed == 'true' || steps.changes.outputs.common_any_changed == 'true' }}
-      should_run_android: ${{ steps.changes.outputs.android_only_any_changed == 'true' || steps.changes.outputs.common_any_changed == 'true' }}
+      should_run_ios: ${{ steps.changes.outputs.should_run_ios }}
+      should_run_android: ${{ steps.changes.outputs.should_run_android }}
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1000
-          filter: blob:none
-      - name: 🧐 Check changes categories
+        uses: actions/checkout@v5
+      - name: 🧐 Detect platform change
         id: changes
-        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47
+        uses: ./.github/actions/detect-platform-change
         with:
-          # If the number of commits from actions/checkout is not sufficient to find a base commit,
-          # tj-actions/changed-files tries 10 times to fetch more commits by this amount:
-          fetch_depth: 1000
-          files_yaml: |
-            ios_only:
-              - 'packages/**/ios/**'
-              - 'apps/bare-expo/**/ios/**'
+          android-paths: >-
+            "packages/**/android/**",
+            "apps/bare-expo/**/android/**"
 
-              - '!{**/*.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*,**/.npmignore,**/.eslintrc*,**/.prettierrc*,**/.gitattributes,**/.watchmanconfig,**/.fingerprintignore}'
+          ios-paths: >-
+            "packages/**/ios/**",
+            "apps/bare-expo/**/ios/**"
 
-            android_only:
-              - 'packages/**/android/**'
-              - 'apps/bare-expo/**/android/**'
+          common-paths: >-
+            .github/workflows/test-suite.yml,
+            .github/actions/use-android-emulator/action.yml,
+            "apps/bare-expo/**",
+            "apps/test-suite/**",
+            "packages/**",
+            yarn.lock,
+            "!packages/**/{ios,android}/**",
+            "!apps/bare-expo/**/{ios,android}/**"
 
-              - '!{**/*.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*,**/.npmignore,**/.eslintrc*,**/.prettierrc*,**/.gitattributes,**/.watchmanconfig,**/.fingerprintignore}'
+          shared-ignores: >-
+            "!{**/*.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*,**/.npmignore,**/.eslintrc*,**/.prettierrc*,**/.gitattributes,**/.watchmanconfig,**/.fingerprintignore}"
 
-            common:
-              - .github/workflows/test-suite.yml
-              - .github/actions/use-android-emulator/action.yml
-              - 'apps/bare-expo/**'
-              - 'apps/test-suite/**'
-              - 'packages/**'
-              - 'yarn.lock'
-
-              - '!packages/**/{ios,android}/**'
-              - '!apps/bare-expo/**/{ios,android}/**'
-              - '!{**/*.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*,**/.npmignore,**/.eslintrc*,**/.prettierrc*,**/.gitattributes,**/.watchmanconfig,**/.fingerprintignore}'
   ios-build:
     runs-on: macos-15
     needs: detect-platform-for-e2e

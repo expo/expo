@@ -1,0 +1,42 @@
+name: 'Detect Platform Change'
+description: 'Detects whether to run Android, iOS, or both based on changed files'
+inputs:
+  android-paths:
+    description: 'Paths that trigger only Android tests'
+    required: true
+  ios-paths:
+    description: 'Paths that trigger only iOS tests'
+    required: true
+  common-paths:
+    description: 'Paths that trigger both platform tests'
+    required: true
+  shared-ignores:
+    description: 'Paths to ignore for all platforms'
+    required: false
+    default: ''
+
+outputs:
+  should_run_android:
+    value: ${{ steps.changes.outputs.android_any_changed == 'true' || steps.changes.outputs.common_any_changed == 'true' }}
+  should_run_ios:
+    value: ${{ steps.changes.outputs.ios_any_changed == 'true' || steps.changes.outputs.common_any_changed == 'true' }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 👀 Checkout
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 1000
+        filter: 'blob:none'
+    - name: 🧐 Check changes categories
+      id: changes
+      uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47
+      with:
+        # If the number of commits from actions/checkout is not sufficient to find a base commit,
+        # tj-actions/changed-files tries 10 times to fetch more commits by this amount:
+        fetch_depth: 1000
+        files_yaml: |
+          ios: [ ${{ inputs.ios-paths }}, ${{ inputs.shared-ignores }} ]
+          android: [ ${{ inputs.android-paths }}, ${{ inputs.shared-ignores }} ]
+          common: [ ${{ inputs.common-paths }}, ${{ inputs.shared-ignores }} ]
