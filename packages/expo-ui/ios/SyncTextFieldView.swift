@@ -25,10 +25,7 @@ private struct SyncTextFieldContent: View {
     TextField("Enter text", text: state.binding(as: String.self, default: ""))
       .onChange(of: state.value as? String) { newValue in
         guard let newValue, let onChange = state.onChange else { return }
-        let transformed = onChange(newValue) as? String
-        if let transformed, transformed != newValue {
-          state.value = transformed
-        }
+        onChange(newValue)
       }
   }
 }

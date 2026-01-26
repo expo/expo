@@ -1,13 +1,14 @@
 import { requireNativeView } from 'expo';
-import { useSwiftUIState } from "../SwiftUIState";
-
+import { useEffect } from 'react';
+import { SwiftUIState, registerOnChange } from "../SwiftUIState";
 
 type NativeSyncTextFieldProps = {
   stateId: number;
 }
 
 type SyncTextFieldProps = {
-  state: ReturnType<typeof useSwiftUIState<string>>;
+  state: SwiftUIState<string>;
+  onChangeSync?: (value: string) => void;
 }
 
 const SyncTextFieldNativeView: React.ComponentType<NativeSyncTextFieldProps> = requireNativeView(
@@ -16,7 +17,13 @@ const SyncTextFieldNativeView: React.ComponentType<NativeSyncTextFieldProps> = r
 );
 
 export function SyncTextField(props: SyncTextFieldProps) {
-  const { state } = props;
+  const { state, onChangeSync } = props;
+
+  useEffect(() => {
+    if (onChangeSync) {
+      registerOnChange(state.stateId, onChangeSync);
+    }
+  }, [state.stateId, onChangeSync]);
 
   return (
     <SyncTextFieldNativeView

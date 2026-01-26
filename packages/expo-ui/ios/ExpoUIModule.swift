@@ -83,11 +83,7 @@ public final class ExpoUIModule: Module {
         let callback = args[1].getFunction()
         SwiftUIStateRegistry.shared.onChange(id: id) { newValue in
           let jsValue = JavaScriptValue.from(newValue, runtime: uiRuntime)
-          let result = callback.call(withArguments: [jsValue], thisObject: nil, asConstructor: false)
-          if result.isUndefined() {
-            return nil
-          }
-          return result.getRaw()
+          _ = callback.call(withArguments: [jsValue], thisObject: nil, asConstructor: false)
         }
         return .undefined
       }

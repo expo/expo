@@ -91,16 +91,13 @@ export default function Main() {
 }
 
 const TestScreen = () => {
-  const syncState = useSwiftUIState("", (value: string) => {
-    'worklet';
-    const filtered = value.replace(/[^a-zA-Z ]/g, '').slice(0, 20);
-    return filtered !== value ? filtered : undefined;
-  });
+  const syncState = useSwiftUIState("Hello");
   const [asyncText, setAsyncText] = React.useState("");
   const onChangeText = (value: string) => {
     const filtered = value.replace(/[^a-zA-Z ]/g, '').slice(0, 20);
     setAsyncText(filtered);
   };
+
 
   return (
     <View style={styles.container}>
@@ -127,7 +124,16 @@ const TestScreen = () => {
         <Text style={styles.hint}>No flicker - filtered on UI thread</Text>
         <Host matchContents>
           <VStack>
-            <SyncTextField state={syncState} />
+            <SyncTextField
+              state={syncState}
+              onChangeSync={(value: string) => {
+                'worklet';
+                const filtered = value.replace(/[^a-zA-Z ]/g, '').slice(0, 20);
+                if (filtered !== value) {
+                  syncState.setValue(filtered);
+                }
+              }}
+            />
           </VStack>
         </Host>
       </View>

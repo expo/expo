@@ -1,6 +1,7 @@
-import { useSwiftUIState } from "../SwiftUIState";
+import { SwiftUIState } from "../SwiftUIState";
 type SyncTextFieldProps = {
-    state: ReturnType<typeof useSwiftUIState<string>>;
+    state: SwiftUIState<string>;
+    onChangeSync?: (value: string) => void;
 };
 export declare function SyncTextField(props: SyncTextFieldProps): import("react").JSX.Element;
 export {};
