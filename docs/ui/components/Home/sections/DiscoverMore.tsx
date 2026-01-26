@@ -104,7 +104,9 @@ export function DiscoverMore() {
           <HomeButton
             className="border-palette-blue10 bg-palette-blue10 text-palette-blue1 hocus:bg-palette-blue9 dark:border-palette-blue9 dark:bg-palette-blue9 dark:text-palette-blue2"
             href="https://chat.expo.dev"
-            rightSlot={<ArrowUpRightIcon className="icon-md text-palette-blue1 dark:text-palette-blue2" />}>
+            rightSlot={
+              <ArrowUpRightIcon className="icon-md text-palette-blue1 dark:text-palette-blue2" />
+            }>
             Go to Discord
           </HomeButton>
         </GridCell>
