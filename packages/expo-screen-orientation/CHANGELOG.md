@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 55.0.3 - 2026-01-26
+
+### 🐛 Bug fixes
+
+- [iOS] [New Architecture] Restore orientationMask after app transition from background to foreground ([](https://github.com/expo/expo/pull/) by [@LongyuW](https://github.com/LongyuW))
+
 ## 55.0.2 — 2026-01-26
 
 _This version does not introduce any user-facing changes._
