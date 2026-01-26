@@ -19,15 +19,21 @@ struct SyncTextFieldView: ExpoSwiftUI.View {
   var body: some View {
     TextField("Enter text", text: $text)
       .onChange(of: text) { newValue in
-        if let transformed = stateManager?.callOnChange(newValue), transformed != newValue {
-          text = transformed
+        guard let stateManager else { return }
+        let jsValue = JavaScriptValue.string(newValue, runtime: stateManager.uiRuntime)
+        if let result = stateManager.callOnChange(jsValue) {
+          let transformed = result.getString()
+          if transformed != newValue {
+            text = transformed
+          }
         }
       }
       .onAppear {
         text = props.defaultValue
-        stateManager?.register(
-          getState: { text },
-          setState: { text = $0 }
+        guard let stateManager else { return }
+        stateManager.register(
+          getState: { JavaScriptValue.string(text, runtime: stateManager.uiRuntime) },
+          setState: { text = $0.getString() }
         )
       }
       .onDisappear {

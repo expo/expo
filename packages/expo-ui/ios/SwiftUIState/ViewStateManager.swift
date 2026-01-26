@@ -32,7 +32,7 @@ struct ViewStateManager {
 
   // MARK: - Setup & Cleanup
 
-  func register(getState: @escaping () -> String, setState: @escaping (String) -> Void) {
+  func register(getState: @escaping () -> JavaScriptValue, setState: @escaping (JavaScriptValue) -> Void) {
     // Ensure registry exists
     if !global.hasProperty("__expoSwiftUIState") {
       global.setProperty("__expoSwiftUIState", value: uiRuntime.createObject())
@@ -42,12 +42,12 @@ struct ViewStateManager {
     let viewState = uiRuntime.createObject()
 
     let getStateFn = uiRuntime.createSyncFunction("getState", argsCount: 0) { _, _ in
-      JavaScriptValue.string(getState(), runtime: uiRuntime)
+      getState()
     }
 
     let setStateFn = uiRuntime.createSyncFunction("setState", argsCount: 1) { _, args in
-      if let newValue = args.first?.getString() {
-        setState(newValue)
+      if let value = args.first {
+        setState(value)
       }
       return JavaScriptValue.undefined
     }
@@ -63,7 +63,7 @@ struct ViewStateManager {
 
   // MARK: - onChange
 
-  func callOnChange(_ value: String) -> String? {
+  func callOnChange(_ value: JavaScriptValue) -> JavaScriptValue? {
     guard let viewState,
           viewState.hasProperty("onChange"),
           viewState.getProperty("onChange").isFunction() else {
@@ -71,12 +71,8 @@ struct ViewStateManager {
     }
 
     let onChange = viewState.getProperty("onChange").getFunction()
-    let jsValue = JavaScriptValue.string(value, runtime: uiRuntime)
-    let result = onChange.call(withArguments: [jsValue], thisObject: nil, asConstructor: false)
+    let result = onChange.call(withArguments: [value], thisObject: nil, asConstructor: false)
 
-    if !result.isUndefined() {
-      return result.getString()
-    }
-    return nil
+    return result.isUndefined() ? nil : result
   }
 }
