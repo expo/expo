@@ -45,3 +45,4 @@ _This version does not introduce any user-facing changes._
 - [iOS] Symlink ExpoAppDelegate to iOS template ([#42240](https://github.com/expo/expo/pull/42240) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Remove ExpoModulesProvider patch ([#42317](https://github.com/expo/expo/pull/42317) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Improved bundle loading failure handling in [#42469](https://github.com/expo/expo/pull/42469) by [@pmleczek](https://github.com/pmleczek)
+- Added `expo-dev-client` warning message in [#42564](https://github.com/expo/expo/pull/42564) by [@pmleczek](https://github.com/pmleczek)
