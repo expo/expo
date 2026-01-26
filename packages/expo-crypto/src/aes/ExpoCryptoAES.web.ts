@@ -198,9 +198,9 @@ class AesCryptoModule extends NativeModule {
     // workaround for invalid AAD format error when it's present but undefined
     const gcmParams = aad
       ? {
-        ...baseParams,
-        additionalData: binaryInputBytes(aad),
-      }
+          ...baseParams,
+          additionalData: binaryInputBytes(aad),
+        }
       : baseParams;
 
     const ciphertextWithTag = await crypto.subtle.encrypt(
@@ -228,9 +228,9 @@ class AesCryptoModule extends NativeModule {
     };
     const gcmParams: AesGcmParams = aad
       ? {
-        ...baseParams,
-        additionalData: binaryInputBytes(aad) as BufferSource,
-      }
+          ...baseParams,
+          additionalData: binaryInputBytes(aad) as BufferSource,
+        }
       : baseParams;
 
     const taggedCiphertext = await sealedData.ciphertext({ includeTag: true });
