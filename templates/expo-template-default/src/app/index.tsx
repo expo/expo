@@ -1,3 +1,4 @@
+import * as Device from 'expo-device';
 import { Platform, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -7,6 +8,18 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+
+function getDevMenuHint() {
+  if (Device.isDevice) {
+    return 'shake device';
+  }
+  const shortcut = Platform.OS === 'android' ? 'cmd+m' : 'cmd+d';
+  return (
+    <>
+      press <ThemedText type="code">{shortcut}</ThemedText>
+    </>
+  );
+}
 
 export default function HomeScreen() {
   return (
@@ -24,9 +37,9 @@ export default function HomeScreen() {
         </ThemedText>
 
         <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow title="Try editing" hint="src/app/index.tsx" />
-          <HintRow title="Dev tools" hint="cmd+d" />
-          <HintRow title="Fresh start" hint="npm reset project" />
+          <HintRow title="Try editing" hint={<ThemedText type="code">src/app/index.tsx</ThemedText>} />
+          {Platform.OS !== 'web' && <HintRow title="Dev tools" hint={getDevMenuHint()} />}
+          <HintRow title="Fresh start" hint={<ThemedText type="code">npm run reset-project</ThemedText>} />
         </ThemedView>
 
         {Platform.OS === 'web' && <WebBadge />}
