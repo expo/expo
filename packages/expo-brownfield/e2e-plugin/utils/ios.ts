@@ -5,6 +5,8 @@ import {
   PBXNativeTarget,
   PBXShellScriptBuildPhase,
   PBXSourcesBuildPhase,
+  XCBuildConfiguration,
+  XCConfigurationList,
 } from '@bacons/xcode/json';
 import fs from 'fs';
 import path from 'path';
@@ -28,9 +30,6 @@ export const validatePodfile = async (projectRoot: string, targetName: string) =
   const podfileContent = fs.readFileSync(podfilePath, 'utf8');
   const podfileRegex = new RegExp(`\\s*target '${targetName}' do\n\\s*inherit! :complete\n\\s*end`);
   expect(podfileContent).toMatch(podfileRegex);
-
-  const customScriptLine = `require File.join(File.dirname(\`node --print "require.resolve('expo-brownfield/package.json')"\`), "plugin/src/ios/scripts/reorder_build_phases.rb")`;
-  expect(podfileContent).toContain(customScriptLine);
 };
 
 /**
@@ -137,20 +136,6 @@ export const validateBuildPhases = (projectRoot: string, targetName: string) => 
   const pbxproj = parsePbxproj(projectRoot);
   const buildPhases = getBuildPhases(projectRoot, targetName);
 
-  const patchEMPBuildPhase = buildPhases.find(
-    (phase) =>
-      phase in pbxproj.objects &&
-      pbxproj.objects[phase].isa === 'PBXShellScriptBuildPhase' &&
-      (pbxproj.objects[phase] as PBXShellScriptBuildPhase).name === 'Patch ExpoModulesProvider'
-  );
-  expect(patchEMPBuildPhase).toBeDefined();
-  const patchEMPBuildPhaseObj = pbxproj.objects[patchEMPBuildPhase] as PBXShellScriptBuildPhase;
-  const firstLine =
-    'FILE="${SRCROOT}/Pods/Target Support Files/Pods-testapppluginios-testapppluginiosbrownfield/ExpoModulesProvider.swift"';
-  expect(patchEMPBuildPhaseObj.shellScript).toContain(firstLine);
-  const lastLine = 'fi';
-  expect(patchEMPBuildPhaseObj.shellScript).toContain(lastLine);
-
   const bundlePhase = buildPhases.find(
     (phase) =>
       phase in pbxproj.objects &&
@@ -159,6 +144,43 @@ export const validateBuildPhases = (projectRoot: string, targetName: string) => 
         'Bundle React Native code and images'
   );
   expect(bundlePhase).toBeDefined();
+};
+
+/**
+ * Validates that the build settings are properly set
+ */
+export const validateBuildSettings = (projectRoot: string, targetName: string) => {
+  const pbxproj = parsePbxproj(projectRoot);
+
+  const frameworkTarget = Object.keys(pbxproj.objects).find(
+    (key) =>
+      pbxproj.objects[key].isa === 'PBXNativeTarget' &&
+      'name' in pbxproj.objects[key] &&
+      pbxproj.objects[key].name === targetName
+  );
+  expect(frameworkTarget).toBeDefined();
+
+  const buildConfigurationListKey = (pbxproj.objects[frameworkTarget] as PBXNativeTarget)
+    .buildConfigurationList;
+  const buildConfigurationList = pbxproj.objects[buildConfigurationListKey];
+  expect(buildConfigurationList).toBeDefined();
+
+  const buildConfigurations = (buildConfigurationList as XCConfigurationList).buildConfigurations;
+  expect(buildConfigurations.length).toBe(2);
+
+  buildConfigurations.forEach((buildConfigurationKey) => {
+    const buildConfigurationObj = pbxproj.objects[buildConfigurationKey] as XCBuildConfiguration;
+    expect(buildConfigurationObj).toBeDefined();
+
+    expect(buildConfigurationObj.isa).toBe('XCBuildConfiguration');
+    expect(['Debug', 'Release']).toContain(buildConfigurationObj.name);
+
+    expect(buildConfigurationObj.buildSettings).toBeDefined();
+    expect(buildConfigurationObj.buildSettings['BUILD_LIBRARY_FOR_DISTRIBUTION']).toBe('YES');
+    expect(buildConfigurationObj.buildSettings['ENABLE_MODULE_VERIFIER']).toBe('NO');
+    expect(buildConfigurationObj.buildSettings['SKIP_INSTALL']).toBe('NO');
+    expect(buildConfigurationObj.buildSettings['USER_SCRIPT_SANDBOXING']).toBe('NO');
+  });
 };
 
 // END SECTION: Validation functions

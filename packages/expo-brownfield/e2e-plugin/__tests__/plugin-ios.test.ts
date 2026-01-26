@@ -1,4 +1,3 @@
-import { PROPS_TEST_CASES_IOS } from '../utils/config';
 import {
   validatePodfile,
   validateBuildProperties,
@@ -7,8 +6,8 @@ import {
   validateBrownfieldFiles,
   validateAppDelegatePatch,
   validateBuildPhases,
-  validatePluginProps,
   validateBundleIdentifier,
+  validateBuildSettings,
 } from '../utils/ios';
 import { createTempProject, cleanUpProject, prebuildProject, addPlugin } from '../utils/project';
 
@@ -121,6 +120,16 @@ describe('plugin for ios', () => {
     await addPlugin(TEMP_DIR);
     await prebuildProject(TEMP_DIR, 'ios');
     validateBuildPhases(TEMP_DIR, 'testapppluginiosbrownfield');
+  });
+
+  /**
+   * Expected behavior:
+   * - The build settings are properly set up for the brownfield target
+   */
+  it('should properly set up build settings', async () => {
+    await addPlugin(TEMP_DIR);
+    await prebuildProject(TEMP_DIR, 'ios');
+    validateBuildSettings(TEMP_DIR, 'testapppluginiosbrownfield');
   });
 
   /**
