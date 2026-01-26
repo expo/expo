@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Reallow connections on `/expo-dev-plugins/broadcast` broadcast socket to local connections ([#42538](https://github.com/expo/expo/pull/42538) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - Drop `freeport-async` dependency ([#42478](https://github.com/expo/expo/pull/42478) by [@kitten](https://github.com/kitten))
