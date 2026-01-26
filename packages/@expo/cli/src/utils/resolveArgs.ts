@@ -3,6 +3,46 @@ import arg, { Spec } from 'arg';
 import { replaceAllValues } from './array';
 import { CommandError } from './errors';
 
+/**
+ * Spec for extra arguments that can be string or boolean.
+ * - `'--flag': Boolean` → accepts any value
+ * - `'--flag': [Boolean, 'a', 'b']` → restricted to 'true', 'false', 'a', 'b'
+ * - `'-f': '--flag'` → alias
+ */
+export type ExtraArgsSpec = Record<string, typeof Boolean | string | [typeof Boolean, ...string[]]>;
+
+/** Convert ExtraArgsSpec to arg.Spec (for validation) and extract allowedValues */
+function parseExtraArgMap(extraArgMap: ExtraArgsSpec): {
+  spec: arg.Spec;
+  allowedValues: Record<string, string[]>;
+} {
+  const spec: arg.Spec = {};
+  const allowedValues: Record<string, string[]> = {};
+
+  for (const [key, value] of Object.entries(extraArgMap)) {
+    if (typeof value === 'string') {
+      // Alias (e.g. '-f': '--flag')
+      spec[key] = value;
+    } else if (Array.isArray(value)) {
+      // Tuple [Boolean, ...strings] - Boolean is enforced by the type, but check at runtime too
+      const [first, ...stringValues] = value;
+      if (first !== Boolean) {
+        throw new CommandError(
+          'BAD_ARGS',
+          `Invalid extraArgMap spec for ${key}: first element must be Boolean`
+        );
+      }
+      spec[key] = Boolean;
+      allowedValues[key] = ['true', 'false', ...stringValues];
+    } else {
+      // Boolean - any value allowed
+      spec[key] = Boolean;
+    }
+  }
+
+  return { spec, allowedValues };
+}
+
 /** Split up arguments that are formatted like `--foo=bar` or `-f="bar"` to `['--foo', 'bar']` */
 function splitArgs(args: string[]): string[] {
   const result: string[] = [];
@@ -25,19 +65,23 @@ function splitArgs(args: string[]): string[] {
 /**
  * Enables the resolution of arguments that can either be a string or a boolean.
  *
- * @param args arguments that were passed to the command.
- * @param rawMap raw map of arguments that are passed to the command.
- * @param extraArgs extra arguments and aliases that should be resolved as string or boolean.
+ * @param argv arguments that were passed to the command.
+ * @param rawArgMap base argument spec defining valid arguments and their types.
+ * @param extraArgMap extra arguments and aliases that should be resolved as string or boolean.
+ *   - `'--flag': Boolean` → accepts any value
+ *   - `'--flag': [Boolean, 'a', 'b']` → restricted to 'true', 'false', 'a', 'b'
+ *   - `'-f': '--flag'` → alias
  * @returns parsed arguments and project root.
  */
 export async function resolveStringOrBooleanArgsAsync(
-  args: string[],
-  rawMap: arg.Spec,
-  extraArgs: arg.Spec
+  argv: string[],
+  rawArgMap: arg.Spec,
+  extraArgMap: ExtraArgsSpec
 ) {
-  args = splitArgs(args);
+  let args = splitArgs(argv);
 
-  const combinedSpec = { ...rawMap, ...extraArgs };
+  const { spec: extraArgSpec, allowedValues } = parseExtraArgMap(extraArgMap);
+  const combinedSpec = { ...rawArgMap, ...extraArgSpec };
 
   // Assert any missing arguments
   assertUnknownArgs(combinedSpec, args);
@@ -50,29 +94,31 @@ export async function resolveStringOrBooleanArgsAsync(
   const filteredArgs = filterOutArrayArgs(args, combinedSpec);
 
   // Resolve all of the string or boolean arguments and the project root.
-  return _resolveStringOrBooleanArgs(combinedSpec, filteredArgs);
+  return _resolveStringOrBooleanArgs(combinedSpec, filteredArgs, allowedValues);
 }
 
 /**
  * Enables the resolution of boolean arguments that can be formatted like `--foo=true` or `--foo false`
  *
- * @param args arguments that were passed to the command.
- * @param rawMap raw map of arguments that are passed to the command.
- * @param extraArgs extra arguments and aliases that should be resolved as string or boolean.
+ * @param argv arguments that were passed to the command.
+ * @param rawArgMap base argument spec defining valid arguments and their types.
+ * @param extraArgMap extra arguments and aliases that should be resolved as string or boolean.
  * @returns parsed arguments and project root.
  */
 export async function resolveCustomBooleanArgsAsync(
-  args: string[],
-  rawMap: arg.Spec,
-  extraArgs: arg.Spec
+  argv: string[],
+  rawArgMap: arg.Spec,
+  extraArgMap: ExtraArgsSpec
 ) {
-  const results = await resolveStringOrBooleanArgsAsync(args, rawMap, extraArgs);
+  const results = await resolveStringOrBooleanArgsAsync(argv, rawArgMap, extraArgMap);
 
   return {
     ...results,
     args: Object.fromEntries(
       Object.entries(results.args).map(([key, value]) => {
-        if (extraArgs[key]) {
+        // Skip aliases (e.g. '-f': '--flag') - only process actual flags
+        const extraArgValue = extraArgMap[key];
+        if (extraArgValue && typeof extraArgValue !== 'string') {
           if (typeof value === 'string') {
             if (!['true', 'false'].includes(value)) {
               throw new CommandError(
@@ -89,7 +135,11 @@ export async function resolveCustomBooleanArgsAsync(
   };
 }
 
-export function _resolveStringOrBooleanArgs(arg: Spec, args: string[]) {
+export function _resolveStringOrBooleanArgs(
+  arg: Spec,
+  args: string[],
+  allowedValues?: Record<string, string[]>
+) {
   // Default project root, if a custom one is defined then it will overwrite this.
   let projectRoot: string = '.';
   // The resolved arguments.
@@ -99,6 +149,14 @@ export function _resolveStringOrBooleanArgs(arg: Spec, args: string[]) {
   const possibleArgs = Object.entries(arg)
     .filter(([, value]) => typeof value !== 'string')
     .map(([key]) => key);
+
+  // Check if a value is allowed for a given flag
+  const isAllowedValue = (flag: string, value: string): boolean => {
+    if (!allowedValues || !allowedValues[flag]) {
+      return true; // No restrictions, allow any value
+    }
+    return allowedValues[flag].includes(value);
+  };
 
   // Loop over arguments in reverse order so we can resolve if a value belongs to a flag.
   for (let i = args.length - 1; i > -1; i--) {
@@ -114,7 +172,7 @@ export function _resolveStringOrBooleanArgs(arg: Spec, args: string[]) {
     } else {
       // Get the previous argument in the array.
       const nextValue = i > 0 ? args[i - 1] : null;
-      if (nextValue && possibleArgs.includes(nextValue)) {
+      if (nextValue && possibleArgs.includes(nextValue) && isAllowedValue(nextValue, value)) {
         // We don't override arguments that are already set
         if (!(nextValue in settings)) {
           settings[nextValue] = value;

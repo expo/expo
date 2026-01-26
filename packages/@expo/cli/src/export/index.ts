@@ -56,7 +56,7 @@ export const expoExport: Command = async (argv) => {
         `--dump-assetmap            Emit an asset map for further processing`,
         `--no-ssg, --api-only       Skip exporting static HTML files and only export API routes for web`,
         chalk`-p, --platform <platform>  Options: android, ios, web, all. {dim Default: all}`,
-        chalk`-s, --source-maps [mode]   Emit JavaScript source maps. {dim mode: external (when omitted), inline}`,
+        chalk`-s, --source-maps [mode]   Emit JavaScript source maps. {dim Options: true, false, inline, external. Default: false}`,
         `-c, --clear                Clear the bundler cache`,
         `-h, --help                 Usage info`,
       ].join('\n')
@@ -66,7 +66,8 @@ export const expoExport: Command = async (argv) => {
   // Handle --source-maps which can be a string or boolean (e.g., --source-maps or --source-maps inline)
   const { resolveStringOrBooleanArgsAsync } = await import('../utils/resolveArgs.js');
   const parsed = await resolveStringOrBooleanArgsAsync(argv ?? [], rawArgsMap, {
-    '--source-maps': Boolean,
+    // Restrict to 'true', 'false', 'inline', 'external'. Other values are treated as project root.
+    '--source-maps': [Boolean, 'inline', 'external'],
     '-s': '--source-maps',
     // Deprecated
     '--dump-sourcemap': '--source-maps',
