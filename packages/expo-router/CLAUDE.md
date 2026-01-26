@@ -97,6 +97,7 @@ File-based routing library for React Native and web applications. Built on top o
 ├── entry.js                   # Module entry point
 ├── head.js                    # Head/meta tags entrypoint - import Head from "expo-router/head"
 ├── server.js                  # Deprecated server entrypoint. Use @expo/server instead.
+├── server.d.ts                # Re-exports types from `@expo/router-server`
 ├── drawer.js                  # Drawer navigator - import { Drawer } from "expo-router/drawer"
 ├── stack.js                   # Stack navigator - import { Stack } from "expo-router/stack"
 ├── tabs.js                    # Tab navigator - import { Tabs } from "expo-router/tabs"
