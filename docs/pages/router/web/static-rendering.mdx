@@ -1,5 +1,5 @@
 ---
-title: Static Rendering
+title: Static rendering
 description: Learn how to render routes to static HTML and CSS files with Expo Router.
 ---
 
@@ -10,11 +10,13 @@ import { Step } from '~/ui/components/Step';
 
 To enable Search Engine Optimization (SEO) on the web you must statically render your app. This guide will walk you through the process of statically rendering your Expo Router app.
 
+> **info** With static rendering, [data loaders](/router/web/data-loaders) are executed during the build process and their results are embedded in the output HTML files.
+
 ## Setup
 
 <Step label="1">
 
-Enable metro bundler and static rendering in the project's [app config](/versions/latest/config/app/):
+Enable static rendering in your project's [app config](/versions/latest/config/app/):
 
 ```json app.json
 {
@@ -22,9 +24,6 @@ Enable metro bundler and static rendering in the project's [app config](/version
     /* @hide ... */
     /* @end */
     "web": {
-      /* @info Static rendering is only supported with Metro bundler and Expo Router */
-      "bundler": "metro",
-      /* @end */
       "output": "static"
     }
   }
@@ -35,31 +34,6 @@ Enable metro bundler and static rendering in the project's [app config](/version
 
 <Step label="2">
 
-If you have a **metro.config.js** file in your project, ensure it extends **expo/metro-config** as shown below:
-
-```js metro.config.js
-const { getDefaultConfig } = require('expo/metro-config');
-
-/** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(__dirname, {
-  // Additional features...
-});
-
-module.exports = config;
-```
-
-You can also learn more about [customizing Metro](/guides/customizing-metro/) .
-
-</Step>
-
-<Step label="3">
-
-Ensure Fast Refresh is configured. Expo Router requires at least `react-refresh@0.14.0`. Ensure you **do not** have any overrides or resolutions for `react-refresh` in your **package.json**.
-
-</Step>
-
-<Step label="4">
-
 Start the development server:
 
 <Terminal cmd={['$ npx expo start']} />
@@ -68,7 +42,7 @@ Start the development server:
 
 ## Production
 
-To bundle your static website for production, run the universal export command:
+To bundle your static website for production, run the export command:
 
 <Terminal cmd={['$ npx expo export --platform web']} />
 
@@ -77,7 +51,7 @@ You can test the production build locally by running the following command and o
 
 <Terminal cmd={['$ npx serve dist']} />
 
-This project can be deployed to almost every hosting service. Note that this is not a single-page application, nor does it contain a custom server API. This means dynamic routes (**app/[id].tsx**) will not arbitrarily work. You may need to build a serverless function to handle dynamic routes.
+This project can be deployed to almost every hosting service. Note that this is not a single-page application, nor does it contain a custom server API. This means dynamic routes (for example, **app/[id].tsx**) will not arbitrarily work. You may need to build a serverless function to handle dynamic routes.
 
 ## Dynamic Routes
 
@@ -109,7 +83,7 @@ This will output a file for each post in the **dist** directory. For example, if
 
 <PaddedAPIBox header="generateStaticParams">
 
-A server-only function evaluated at build-time in a Node.js environment by Expo CLI. This means it has access to `__dirname`, `process.cwd()`, `process.env`, and more. It also has access to every environment variable that's available in the process. However, the values prefixed with `EXPO_PUBLIC_.generateStaticParams` do not run in a browser environment, so it cannot access browser APIs such as `localStorage` or `document`. It also cannot access native Expo APIs such as `expo-camera` or `expo-location`.
+A server-only function evaluated at build-time in a Node.js environment by Expo CLI. This means it has access to `__dirname`, `process.cwd()`, `process.env`, and more. It also has access to every environment variable that's available in the process. However, the values prefixed with `EXPO_PUBLIC_` do not run in a browser environment, so it cannot access browser APIs such as `localStorage` or `document`. It also cannot access native Expo APIs such as `expo-camera` or `expo-location`.
 
 ```tsx app/[id].tsx
 export async function generateStaticParams(): Promise<Record<string, string>[]> {
@@ -156,19 +130,19 @@ Since Expo Router compiles your code into a separate directory you cannot use `_
 Instead, use `process.cwd()`, which gives you the directory where the project is being compiled.
 
 ```tsx app/[category].tsx
-import fs from 'fs/promises';
-import path from 'path';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
 export async function generateStaticParams(params: {
   id: string;
 }): Promise<Record<string, string>[]> {
-  const directory = await fs.readdir(path.join(process.cwd(), './posts/', category));
+  const directory = await fs.readdir(path.join(process.cwd(), './posts/'));
   const posts = directory.filter(fileOrSubDirectory => return path.extname(fileOrSubDirectory) === '.md')
 
-  return {
+  return [{
     id,
     posts,
-  };
+  }];
 }
 ```
 
@@ -331,7 +305,7 @@ In the future, there will be a server API, and a new `web.output` mode which wil
 
 ## Server-side Rendering
 
-Rendering at request-time (SSR) is not supported in `web.output: 'static'`. This will likely be added in a future version of Expo Router.
+Rendering at request-time is not supported with `web.output: 'static'`. To render pages dynamically on each request, use [server rendering](/router/web/server-rendering) with `web.output: 'server'` instead.
 
 ### Where can I deploy statically rendered websites?
 

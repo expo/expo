@@ -12,6 +12,7 @@ export interface RequestHandlerParams extends ExpoRequestHandlerParams, Partial<
 export declare function createRequestHandler(params: {
     build: string;
     environment?: string | null;
+    isDevelopment?: boolean;
 }, setup?: Partial<RequestHandlerParams>): RequestHandler;
 export declare function convertRequest(req: http.IncomingMessage, res: http.ServerResponse): Request;
 export declare function convertHeaders(requestHeaders: http.IncomingHttpHeaders): Headers;

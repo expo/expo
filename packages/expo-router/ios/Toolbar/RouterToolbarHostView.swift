@@ -38,15 +38,6 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
     }
   }
 
-  func updateToolbarItem(withId id: String) {
-    if let controller = self.findViewController() {
-      let index = toolbarItemsArray.firstIndex(of: id)
-      if let index = index, let item = toolbarItemsMap[id] {
-        controller.toolbarItems?[index] = item.barButtonItem
-      }
-    }
-  }
-
   func updateToolbarItems() {
     // If update already scheduled, skip - the pending async block will handle it
     if hasPendingToolbarUpdate {

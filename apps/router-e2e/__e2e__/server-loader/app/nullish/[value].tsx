@@ -1,4 +1,5 @@
 import { useLoaderData, useLocalSearchParams, usePathname } from 'expo-router';
+import { ImmutableRequest } from 'expo-router/server';
 import { Container } from '../../components/Container';
 import { Table, TableRow } from '../../components/Table';
 import { SiteLinks, SiteLink } from '../../components/SiteLink';
@@ -7,7 +8,7 @@ export async function generateStaticParams(): Promise<Record<string, string>[]> 
   return [{ value: 'null' }, { value: 'undefined' }];
 }
 
-export async function loader({ params }: { params: { value: string } }) {
+export async function loader(_: ImmutableRequest, params: { value: string }) {
   if (params.value === 'null') {
     return null;
   }

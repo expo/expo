@@ -63,6 +63,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/zstack': ['swift-ui/ZStack/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/spacer': ['swift-ui/Spacer/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/image': ['swift-ui/Image/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/foreach': ['swift-ui/ForEach/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/textinput': ['jetpack-compose/TextInput/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/chip': ['jetpack-compose/Chip/index.tsx', 'expo-ui'],
 };
@@ -82,6 +83,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-blur': ['index.ts'],
   'expo-blob': ['ExpoBlob.types.ts'],
   'expo-brightness': ['Brightness.ts'],
+  'expo-brownfield': ['index.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
   'expo-calendar': ['Calendar.ts'],
   'expo-calendar-next': ['next/Calendar.ts', 'expo-calendar'],
@@ -91,6 +93,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-clipboard': [['Clipboard.ts', 'Clipboard.types.ts']],
   'expo-constants': [['Constants.ts', 'Constants.types.ts']],
   'expo-contacts': ['index.ts'],
+  'expo-contacts-next': ['next/index.ts', 'expo-contacts'],
   'expo-crypto': ['Crypto.ts'],
   'expo-dev-client': ['DevClient.ts'],
   'expo-device': ['Device.ts'],
@@ -139,7 +142,6 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-router-ui': ['ui/index.ts', 'expo-router'],
   'expo-router-native-tabs': ['native-tabs/index.ts', 'expo-router'],
   'expo-router-split-view': ['split-view/index.ts', 'expo-router'],
-  'expo-router-toolbar': ['toolbar/index.ts', 'expo-router'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
   'expo-secure-store': ['SecureStore.ts'],
@@ -163,6 +165,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-age-range': ['index.ts'],
   'expo-app-integrity': ['index.ts'],
   'expo-glass-effect': ['index.ts'],
+  'expo-widgets': ['index.ts'],
   ...uiPackagesMapping,
 };
 
@@ -220,6 +223,7 @@ const executeCommand = async (
       '@deprecated',
       '@docsMissing',
       '@header',
+      '@hideType',
       '@needsAudit',
       '@platform',
     ],

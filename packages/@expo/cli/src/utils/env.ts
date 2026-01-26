@@ -144,6 +144,16 @@ class Env {
   }
 
   /**
+   * Instructs a different Metro config to be loaded.
+   * The path, according to metro-config, should be a path relative to the current working directory.
+   * This flag is internal and was added for external tools.
+   * @internal
+   */
+  get EXPO_OVERRIDE_METRO_CONFIG(): string | undefined {
+    return process.env.EXPO_OVERRIDE_METRO_CONFIG?.trim() || undefined;
+  }
+
+  /**
    * Use the network inspector by overriding the metro inspector proxy with a custom version.
    * @deprecated This has been replaced by `@react-native/dev-middleware` and is now unused.
    */

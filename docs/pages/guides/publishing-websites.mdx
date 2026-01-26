@@ -45,6 +45,8 @@ Expo Router supports three output targets for web apps.
 | `server`           | <YesIcon /> | <YesIcon /> | Creates **client** and **server** directories. Client files are output as separate HTML files. API routes as separate JavaScript files for hosting with a custom Node.js server. |
 | `static`           | <YesIcon /> | <NoIcon />  | Outputs separate HTML files for every route in the **app** directory.                                                                                                            |
 
+> **info** **Note**: For `static` and `server` output modes, you can configure [global HTTP headers](/router/web/server-headers) that are applied to all route responses via the `expo-router` plugin.
+
 ## Create a build
 
 Creating a build of the project is the first step to publishing a web app. Whether you want to serve it locally or deploy to a hosting service, you'll need to export all JavaScript and assets of a project. This is known as a static bundle. It can be exported by running the following command:

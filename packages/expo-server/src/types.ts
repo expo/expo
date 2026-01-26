@@ -10,7 +10,7 @@ export interface ImmutableRequest extends _ImmutableRequest {
 
 /**
  * Middleware function type. Middleware run for every request in your app, or on
- * specified conditonally matched methods and path patterns, as per {@link MiddlewareMatcher}.
+ * specified conditionally matched methods and path patterns, as per {@link MiddlewareMatcher}.
  * @param request - An `ImmutableRequest` with read-only headers and no body access
  * @example
  * ```ts
@@ -22,7 +22,7 @@ export interface ImmutableRequest extends _ImmutableRequest {
  *
  * export default middleware;
  * ```
- * @see https://docs.expo.dev/router/reference/middleware/
+ * @see [Server middleware](https://docs.expo.dev/router/web/middleware/) for more information.
  */
 export type MiddlewareFunction = (
   request: ImmutableRequest
@@ -62,3 +62,28 @@ export interface MiddlewareSettings {
   /** Matcher definition that restricts the middleware to run conditionally. */
   matcher?: MiddlewareMatcher;
 }
+
+/**
+ * Function type for route loaders. Loaders are executed on the server during
+ * SSR/SSG to fetch data required by a route.
+ *
+ * During SSG (Static Site Generation), the `request` parameter will be `undefined`
+ * as there is no HTTP request at build time.
+ *
+ * @param request - An `ImmutableRequest` with read-only headers and no body access. In SSG, this is `undefined`
+ * @param params - Route parameters extracted from the URL path
+ * @example
+ * ```ts
+ * import type { LoaderFunction } from 'expo-server';
+ *
+ * export const loader: LoaderFunction = async (request, params) => {
+ *   const data = await fetchData(params.id);
+ *   return { data };
+ * };
+ * ```
+ * @see [Data loaders](/router/web/data-loaders) for more information.
+ */
+export type LoaderFunction<T = any> = (
+  request: ImmutableRequest | undefined,
+  params: Record<string, string | string[]>
+) => Promise<T> | T;

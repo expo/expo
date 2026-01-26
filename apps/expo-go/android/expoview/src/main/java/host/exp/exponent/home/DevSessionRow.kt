@@ -12,26 +12,39 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import host.exp.expoview.R
 
 @Composable
 fun DevSessionRow(session: DevSession) {
   val uriHandler = LocalUriHandler.current
-  val image = if (session.source == DevSessionSource.Desktop) {
-    painterResource(id = R.drawable.cli)
-  } else {
-    painterResource(id = R.drawable.snack)
-  }
+
   ClickableItemRow(
     onClick = { uriHandler.openUri(session.url) },
     icon = {
-      Image(
-        painter = image,
-        contentDescription = "Icon",
-        modifier = Modifier
-          .size(24.dp)
-          .clip(shape = RoundedCornerShape(4.dp))
-      )
+      if (session.iconUrl != null) {
+        AsyncImage(
+          session.iconUrl,
+          contentDescription = "Icon",
+          modifier = Modifier
+            .size(24.dp)
+            .clip(shape = RoundedCornerShape(4.dp))
+        )
+      } else {
+        Image(
+          painter = painterResource(
+            id = if (session.source == DevSessionSource.Desktop) {
+              R.drawable.cli
+            } else {
+              R.drawable.snack
+            }
+          ),
+          contentDescription = "Icon",
+          modifier = Modifier
+            .size(24.dp)
+            .clip(shape = RoundedCornerShape(4.dp))
+        )
+      }
     }
   ) {
     Column {

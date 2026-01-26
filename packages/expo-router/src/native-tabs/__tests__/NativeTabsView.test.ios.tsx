@@ -1,29 +1,28 @@
-import { screen, act, fireEvent } from '@testing-library/react-native';
-import React from 'react';
-import { Button, View } from 'react-native';
-import {
-  BottomTabs as _BottomTabs,
-  type BottomTabsProps,
-  type BottomTabsScreenProps,
-} from 'react-native-screens';
+import { screen } from '@testing-library/react-native';
+import { View } from 'react-native';
+import { Tabs, type TabsHostProps } from 'react-native-screens';
 
-import { HrefPreview } from '../../link/preview/HrefPreview';
-import { renderRouter, within } from '../../testing-library';
-import { appendIconOptions } from '../NativeTabTrigger';
+import { renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
-import { type NativeTabsTriggerIconProps } from '../common/elements';
-import type { NativeTabOptions, NativeTabsProps } from '../types';
+import type { NativeTabsProps } from '../types';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  const actualModule = jest.requireActual(
+    'react-native-screens'
+  ) as typeof import('react-native-screens');
   return {
-    ...(jest.requireActual('react-native-screens') as typeof import('react-native-screens')),
-    BottomTabs: jest.fn(({ children }) => <View testID="BottomTabs">{children}</View>),
-    BottomTabsScreen: jest.fn(({ children }) => <View testID="BottomTabsScreen">{children}</View>),
+    ...actualModule,
+    Tabs: {
+      ...actualModule.Tabs,
+      Host: jest.fn(({ children }) => <View testID="TabsHost">{children}</View>),
+      Screen: jest.fn(({ children }) => <View testID="TabsScreen">{children}</View>),
+    },
   };
 });
 
-const BottomTabs = _BottomTabs as jest.MockedFunction<typeof _BottomTabs>;
+const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
+const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
 
 it.each([
   { value: undefined, expected: 'automatic' },
@@ -31,7 +30,7 @@ it.each([
   { value: false, expected: 'tabBar' },
 ] as {
   value: NativeTabsProps['sidebarAdaptable'];
-  expected: BottomTabsProps['tabBarControllerMode'];
+  expected: TabsHostProps['tabBarControllerMode'];
 }[])('when sidebarAdaptable is $value, then ', ({ value, expected }) => {
   renderRouter({
     _layout: () => (
@@ -43,6 +42,38 @@ it.each([
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
-  expect(BottomTabs).toHaveBeenCalledTimes(1);
-  expect(BottomTabs.mock.calls[0][0].tabBarControllerMode).toBe(expected);
+  expect(TabsHost).toHaveBeenCalledTimes(1);
+  expect(TabsHost.mock.calls[0][0].tabBarControllerMode).toBe(expected);
+});
+
+it('uses shadowColor when it is passed to NativeTabs', () => {
+  renderRouter({
+    _layout: () => (
+      <NativeTabs shadowColor="red">
+        <NativeTabs.Trigger name="index" />
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(TabsScreen).toHaveBeenCalledTimes(1);
+  expect(TabsScreen.mock.calls[0][0].standardAppearance.tabBarShadowColor).toBe('red');
+  expect(TabsScreen.mock.calls[0][0].scrollEdgeAppearance.tabBarShadowColor).toBe('transparent');
+});
+
+it('uses shadowColor when it is passed to NativeTabs in both standardAppearance and scrollEdgeAppearance when disableTransparentOnScrollEdge is true', () => {
+  renderRouter({
+    _layout: () => (
+      <NativeTabs shadowColor="red" disableTransparentOnScrollEdge>
+        <NativeTabs.Trigger name="index" />
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(TabsScreen).toHaveBeenCalledTimes(1);
+  expect(TabsScreen.mock.calls[0][0].standardAppearance.tabBarShadowColor).toBe('red');
+  expect(TabsScreen.mock.calls[0][0].scrollEdgeAppearance.tabBarShadowColor).toBe('red');
 });

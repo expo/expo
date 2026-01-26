@@ -2,15 +2,14 @@ import type { ScopeDefinition } from '../../runtime/scope';
 interface WorkerdEnvParams {
     build?: string;
     environment?: string | null;
+    isDevelopment?: boolean;
 }
 export declare function createWorkerdEnv(params: WorkerdEnvParams): {
     getRoutesManifest(): Promise<import("../../manifest").Manifest>;
     getHtml(request: Request, route: import("../../manifest").Route): Promise<string | Response | null>;
     getApiRoute(route: import("../../manifest").Route): Promise<unknown>;
     getMiddleware(middleware: import("../../manifest").MiddlewareInfo): Promise<any>;
-    getLoaderData(request: Request, route: import("../../manifest").Route): Promise<{
-        data: unknown;
-    } | undefined>;
+    getLoaderData(request: Request, route: import("../../manifest").Route): Promise<Response>;
 };
 export interface ExecutionContext {
     waitUntil?(promise: Promise<any>): void;

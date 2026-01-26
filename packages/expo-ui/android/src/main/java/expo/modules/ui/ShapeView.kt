@@ -1,11 +1,6 @@
 package expo.modules.ui
 
-import android.content.Context
-import expo.modules.kotlin.views.ExpoComposeView
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.ui.graphics.Color
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ComposeProps
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.Modifier
@@ -15,8 +10,6 @@ import androidx.graphics.shapes.toPath
 import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
@@ -32,7 +25,7 @@ import androidx.graphics.shapes.star
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.ExpoViewComposableScope
 import android.graphics.Color as GraphicsColor
 
 enum class ShapeType(val value: String) : Enumerable {
@@ -45,14 +38,14 @@ enum class ShapeType(val value: String) : Enumerable {
 }
 
 data class ShapeProps(
-  val cornerRounding: MutableState<Float> = mutableFloatStateOf(0.0f),
-  val smoothing: MutableState<Float> = mutableFloatStateOf(0.0f),
-  val verticesCount: MutableState<Int> = mutableIntStateOf(6),
-  val innerRadius: MutableState<Float> = mutableFloatStateOf(0.0f),
-  val radius: MutableState<Float> = mutableFloatStateOf(0.0f),
-  val type: MutableState<ShapeType> = mutableStateOf(ShapeType.CIRCLE),
-  val color: MutableState<GraphicsColor?> = mutableStateOf(null),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+  val cornerRounding: Float = 0.0f,
+  val smoothing: Float = 0.0f,
+  val verticesCount: Int = 6,
+  val innerRadius: Float = 0.0f,
+  val radius: Float = 0.0f,
+  val type: ShapeType = ShapeType.CIRCLE,
+  val color: GraphicsColor? = null,
+  val modifiers: List<ModifierConfig> = emptyList()
 ) : ComposeProps
 
 private fun Size.centerX() = this.width / 2
@@ -140,20 +133,14 @@ data class ShapeRecord(
 ) : Record
 
 fun pathFromShapeRecord(record: ShapeRecord, size: Size): Path {
-  val cornerRounding = record.cornerRounding
-  val smoothing = record.smoothing
-  val innerRadius = record.innerRadius
-  val radius = record.radius
-  val shapeType = record.type
-  val verticesCount = record.verticesCount
   return runCatching {
-    when (shapeType) {
-      ShapeType.STAR -> createStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, radius = radius, verticesCount = verticesCount)
-      ShapeType.PILL_STAR -> createPillStarPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, innerRadius = innerRadius, verticesCount = verticesCount)
-      ShapeType.PILL -> createPillPath(size = size, smoothing = smoothing)
-      ShapeType.CIRCLE -> createCirclePath(size = size, radius = radius, verticesCount = verticesCount)
-      ShapeType.RECTANGLE -> createRectanglePath(size = size, cornerRounding = cornerRounding, smoothing = smoothing)
-      ShapeType.POLYGON -> createPolygonPath(size = size, cornerRounding = cornerRounding, smoothing = smoothing, verticesCount = verticesCount)
+    when (record.type) {
+      ShapeType.STAR -> createStarPath(size = size, cornerRounding = record.cornerRounding, smoothing = record.smoothing, innerRadius = record.innerRadius, radius = record.radius, verticesCount = record.verticesCount)
+      ShapeType.PILL_STAR -> createPillStarPath(size = size, cornerRounding = record.cornerRounding, smoothing = record.smoothing, innerRadius = record.innerRadius, verticesCount = record.verticesCount)
+      ShapeType.PILL -> createPillPath(size = size, smoothing = record.smoothing)
+      ShapeType.CIRCLE -> createCirclePath(size = size, radius = record.radius, verticesCount = record.verticesCount)
+      ShapeType.RECTANGLE -> createRectanglePath(size = size, cornerRounding = record.cornerRounding, smoothing = record.smoothing)
+      ShapeType.POLYGON -> createPolygonPath(size = size, cornerRounding = record.cornerRounding, smoothing = record.smoothing, verticesCount = record.verticesCount)
     }
   }.getOrNull() ?: Path()
 }
@@ -168,39 +155,27 @@ fun shapeFromShapeRecord(shapeRecord: ShapeRecord?): Shape? {
   }
 }
 
-class ShapeView(context: Context, appContext: AppContext) : ExpoComposeView<ShapeProps>(context, appContext) {
-  override val props = ShapeProps()
+@Composable
+fun ExpoViewComposableScope.ShapeContent(props: ShapeProps) {
+  Box(
+    modifier = ModifierRegistry.applyModifiers(props.modifiers)
+      .drawWithCache {
+        val path = pathFromShapeRecord(
+          ShapeRecord(
+            cornerRounding = props.cornerRounding,
+            smoothing = props.smoothing,
+            innerRadius = props.innerRadius,
+            radius = props.radius,
+            type = props.type,
+            verticesCount = props.verticesCount
+          ),
+          size
+        )
 
-  @Composable
-  override fun ComposableScope.Content() {
-    val (smoothing) = props.smoothing
-    val (cornerRounding) = props.cornerRounding
-    val (innerRadius) = props.innerRadius
-    val (radius) = props.radius
-    val (shapeType) = props.type
-    val (verticesCount) = props.verticesCount
-    val (color) = props.color
-    Box(
-      modifier = Modifier
-        .fromExpoModifiers(props.modifiers.value)
-        .drawWithCache {
-          val path = pathFromShapeRecord(
-            ShapeRecord(
-              cornerRounding = cornerRounding,
-              smoothing = smoothing,
-              innerRadius = innerRadius,
-              radius = radius,
-              type = shapeType,
-              verticesCount = verticesCount
-            ),
-            size
-          )
-
-          onDrawBehind {
-            drawPath(path, color = color.composeOrNull ?: Color.Transparent)
-          }
+        onDrawBehind {
+          drawPath(path, color = props.color.composeOrNull ?: Color.Transparent)
         }
-        .fillMaxSize()
-    )
-  }
+      }
+      .fillMaxSize()
+  )
 }

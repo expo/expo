@@ -71,7 +71,6 @@ class RouterToolbarItemView: RouterViewWithLogger {
     guard let item = currentBarButtonItem else {
       // If no current item exists, create one
       rebuildBarButtonItem()
-      self.host?.updateToolbarItem(withId: self.identifier)
       return
     }
 

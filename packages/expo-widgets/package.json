@@ -1,11 +1,12 @@
 {
   "name": "expo-widgets",
-  "version": "0.0.0",
+  "version": "55.0.0-alpha.3",
   "description": "Widgets.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
     "build": "expo-module build",
+    "build:plugin": "expo-module build plugin",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
@@ -29,9 +30,12 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/widgets/",
-  "dependencies": {},
+  "dependencies": {
+    "@expo/plist": "^0.5.2",
+    "@expo/ui": "55.0.0-beta.2"
+  },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "^55.0.2"
   },
   "peerDependencies": {
     "expo": "*",

@@ -11,5 +11,6 @@ exports.Stack = _web_modal_1.default;
 const stack_utils_1 = require("./stack-utils");
 _web_modal_1.default.Screen = stack_utils_1.StackScreen;
 _web_modal_1.default.Header = stack_utils_1.StackHeader;
+_web_modal_1.default.Toolbar = stack_utils_1.StackToolbar;
 exports.default = _web_modal_1.default;
 //# sourceMappingURL=Stack.web.js.map

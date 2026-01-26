@@ -11,6 +11,10 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
 import APISectionComponents from '~/components/plugins/api/APISectionComponents';
+import {
+  COMPONENT_TYPE_NAMES,
+  deriveComponentsFromProps,
+} from '~/components/plugins/api/APISectionCompoundNames';
 import APISectionConstants from '~/components/plugins/api/APISectionConstants';
 import APISectionEnums from '~/components/plugins/api/APISectionEnums';
 import APISectionInterfaces from '~/components/plugins/api/APISectionInterfaces';
@@ -103,12 +107,8 @@ const isProp = ({ name }: GeneratedData) =>
   name !== 'ScreenProps' &&
   !PROP_EXCEPTIONS.has(name);
 
-const componentTypeNames = new Set([
-  'React.FC',
-  'ForwardRefExoticComponent',
-  'ComponentType',
-  'NamedExoticComponent',
-]);
+const componentTypeNames = COMPONENT_TYPE_NAMES;
+
 const interfaceClassNames = new Set([
   'EventEmitterType',
   'NativeModuleType',
@@ -180,6 +180,10 @@ const renderAPI = (
 ) => {
   try {
     let data: GeneratedData[] = [];
+    const isRouterPackage = (name?: string) => !!name && name.startsWith('expo-router');
+    const shouldDeriveRouterComponents = Array.isArray(packageName)
+      ? packageName.some(isRouterPackage)
+      : isRouterPackage(packageName);
 
     if (Array.isArray(packageName)) {
       data = packageName
@@ -299,8 +303,13 @@ const renderAPI = (
       [TypeDocKind.Variable, TypeDocKind.Class, TypeDocKind.Function],
       entry => isComponent(entry) || isRouterUiComponentOverride(entry)
     );
+    const componentsWithDerived = shouldDeriveRouterComponents
+      ? deriveComponentsFromProps(components)
+      : components;
     const componentsPropNames = new Set(
-      components.map(({ name, children }) => getPossibleComponentPropsNames(name, children)).flat()
+      componentsWithDerived
+        .map(({ name, children }) => getPossibleComponentPropsNames(name, children))
+        .flat()
     );
 
     const componentsProps = filterDataByKind(
@@ -385,7 +394,7 @@ const renderAPI = (
                 />
               )))}
         <APISectionComponents
-          data={components}
+          data={componentsWithDerived}
           sdkVersion={sdkVersion}
           componentsProps={componentsProps}
         />

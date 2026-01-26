@@ -6,12 +6,31 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.2 — 2026-01-26
+
+### 🎉 New features
+
+- Add "Source Code Explorer" screen to iOS dev menu ([#42493](https://github.com/expo/expo/pull/42493) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [iOS] Add support to SwiftUI apps ([#40542](https://github.com/expo/expo/pull/40542) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Decouple dev menu from dev launcher. ([#40669](https://github.com/expo/expo/pull/40669) by [@alanjhughes](https://github.com/alanjhughes))
 - Add initial macOS support ([#41330](https://github.com/expo/expo/pull/41330) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
+- Fixed reload when used in Expo Go. ([#42295](https://github.com/expo/expo/pull/42295) by [@aleqsio](https://github.com/aleqsio))
 - [iOS] Fix React Native dev menu not showing up in 0.83.x ([#40819](https://github.com/expo/expo/pull/40819) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Hide Action button in PiP mode to prevent crash ([#40792](https://github.com/expo/expo/pull/40792) by [@kosmydel](https://github.com/kosmydel))
 - [iOS] remove unnecessary `unregisterKeyCommand` for cmd+r ([#41449](https://github.com/expo/expo/pull/41449) by [@vonovak](https://github.com/vonovak))

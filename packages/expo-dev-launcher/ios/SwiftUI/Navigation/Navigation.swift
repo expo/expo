@@ -1,5 +1,6 @@
 // swiftlint:disable closure_body_length
 import SwiftUI
+import ExpoModulesCore
 
 class DevLauncherNavigation: ObservableObject {
   @Binding var showingUserProfile: Bool

@@ -3,7 +3,7 @@ import { requireNativeView } from 'expo';
 import { MaterialIcon } from './types';
 import { ExpoModifier, ViewEvent } from '../../types';
 import { getTextFromChildren } from '../../utils';
-import { parseJSXShape, ShapeJSXElement, ShapeProps } from '../Shape';
+import { parseJSXShape, ShapeJSXElement, ShapeRecordProps } from '../Shape';
 
 /**
  * The built-in button styles available on Android.
@@ -82,7 +82,7 @@ export type NativeButtonProps = Omit<
   text: string;
   leadingIcon?: string;
   trailingIcon?: string;
-  shape: ShapeProps;
+  shape?: ShapeRecordProps;
 } & ViewEvent<'onButtonPressed', void>;
 
 // We have to work around the `role` and `onPress` props being reserved by React Native.
@@ -108,8 +108,6 @@ export function transformButtonProps(props: ButtonProps): NativeButtonProps {
     shape: parseJSXShape(shape),
     trailingIcon,
     onButtonPressed: onPress,
-    // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
     elementColors: props.elementColors
       ? props.elementColors
       : props.color

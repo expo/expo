@@ -32,7 +32,7 @@ import type { GetStaticContentOptions } from '@expo/router-server/build/static/r
 import assert from 'assert';
 import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
-import { type RouteInfo, type RoutesManifest } from 'expo-server/private';
+import { type RouteInfo, type RoutesManifest, type ImmutableRequest } from 'expo-server/private';
 import path from 'path';
 
 import {
@@ -469,7 +469,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       route: RouteNode,
       opts?: GetStaticContentOptions
     ) => Promise<string>;
-    executeLoaderAsync: (path: string, route: RouteNode) => Promise<{ data: unknown } | undefined>;
+    executeLoaderAsync: (path: string, route: RouteNode) => Promise<Response | undefined>;
   }> {
     const { routerRoot } = this.instanceMetroOptions;
     assert(
@@ -573,7 +573,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   /**
    * This function is invoked when running in development via `expo start`
    */
-  private async getStaticPageAsync(pathname: string, route: RouteInfo<RegExp>, request?: Request) {
+  private async getStaticPageAsync(
+    pathname: string,
+    route: RouteInfo<RegExp>,
+    request?: ImmutableRequest
+  ) {
     const { exp } = getConfig(this.projectRoot);
     const { mode, isExporting, clientBoundaries, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
@@ -636,7 +640,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       if (!loaderResult) {
         return await getStaticContent(location);
       }
-      return await getStaticContent(location, { loader: { data: loaderResult.data } });
+
+      const loaderData = await loaderResult.json();
+      return await getStaticContent(location, { loader: { data: loaderData } });
     };
 
     const [{ artifacts: resources }, staticHtml] = await Promise.all([
@@ -1701,10 +1707,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     location: URL,
     route: ResolvedLoaderRoute,
     // The `request` object is only available when using SSR
-    request?: Request
-  ): Promise<{ data: unknown } | undefined> {
+    request?: ImmutableRequest
+  ): Promise<Response | undefined> {
     const { exp } = getConfig(this.projectRoot);
-    const { unstable_useServerDataLoaders } = exp.extra?.router;
+    const { unstable_useServerDataLoaders, unstable_useServerRendering } = exp.extra?.router;
 
     if (!unstable_useServerDataLoaders) {
       throw new CommandError(
@@ -1738,14 +1744,25 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // Register this module for loader HMR
         this.setupLoaderHmr(modulePath);
 
-        const data = await routeModule.loader({
-          params: route.params,
-          request,
-        });
+        const maybeResponse = await routeModule.loader(request, route.params);
 
-        const normalizedData = data === undefined ? {} : data;
-        debug('Loader data:', normalizedData, ' for location:', location.pathname);
-        return { data: normalizedData };
+        let data: unknown;
+        if (maybeResponse instanceof Response) {
+          debug('Loader returned Response for location:', location.pathname);
+
+          // In SSR, preserve `Response` from the loader
+          if (exp.web?.output === 'server' && unstable_useServerRendering) {
+            return maybeResponse;
+          }
+
+          // In SSG, extract body
+          data = await maybeResponse.json();
+        } else {
+          data = maybeResponse;
+        }
+
+        debug('Loader data:', data ?? null, ' for location:', location.pathname);
+        return Response.json(data ?? null);
       }
 
       debug('No loader found for location:', location.pathname);

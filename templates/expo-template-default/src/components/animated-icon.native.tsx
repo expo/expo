@@ -1,6 +1,8 @@
 import { Image } from 'expo-image';
+import { useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import Animated, { Easing, Keyframe } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 
 const INITIAL_SCALE_FACTOR = Dimensions.get('screen').height / 90;
 const DURATION = 600;
@@ -25,13 +27,20 @@ const splashKeyframe = new Keyframe({
 });
 
 export function AnimatedSplashOverlay() {
+  const [visible, setVisible] = useState(true);
+
+  if (!visible) return null;
+
   return (
-    <View style={styles.container}>
-      <Animated.View
-        entering={splashKeyframe.duration(DURATION)}
-        style={styles.backgroundSolidColor}
-      />
-    </View>
+    <Animated.View
+      entering={splashKeyframe.duration(DURATION).withCallback((finished) => {
+        'worklet';
+        if (finished) {
+          scheduleOnRN(setVisible, false);
+        }
+      })}
+      style={styles.backgroundSolidColor}
+    />
   );
 }
 
@@ -87,13 +96,6 @@ export function AnimatedIcon() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    width: '100%',
-    zIndex: 1000,
-    position: 'absolute',
-    top: 128 / 2 + 138,
-  },
   imageContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -123,10 +125,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   backgroundSolidColor: {
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: '#208AEF',
-    borderRadius: 40,
-    width: 128,
-    height: 128,
-    position: 'absolute',
+    zIndex: 1000,
   },
 });

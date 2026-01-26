@@ -4,7 +4,6 @@
 
 #include "JSIObjectWrapper.h"
 #include "JavaScriptRuntime.h"
-#include "WeakRuntimeHolder.h"
 #include "types/ExpectedType.h"
 
 #include <fbjni/fbjni.h>
@@ -39,23 +38,18 @@ public:
     std::shared_ptr<jsi::Function> jsFunction
   );
 
-  JavaScriptFunction(
-    WeakRuntimeHolder runtime,
-    std::shared_ptr<jsi::Function> jsFunction
-  );
-
   std::shared_ptr<jsi::Function> get() override;
 
 
 private:
   friend HybridBase;
 
-  WeakRuntimeHolder runtimeHolder;
+  std::weak_ptr<JavaScriptRuntime> runtimeHolder;
   std::shared_ptr<jsi::Function> jsFunction;
 
   jobject invoke(
     jni::alias_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> jsThis,
-    jni::alias_ref<jni::JArrayClass<jni::JObject>> args,
+    jni::alias_ref<jni::JArrayClass<jobject>> args,
     jni::alias_ref<ExpectedType::javaobject> expectedReturnType
   );
 };

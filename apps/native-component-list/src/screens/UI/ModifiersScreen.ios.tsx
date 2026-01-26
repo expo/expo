@@ -11,6 +11,8 @@ import {
   Switch,
   Rectangle,
   Slider,
+  Capsule,
+  Stepper,
 } from '@expo/ui/swift-ui';
 import {
   background,
@@ -23,6 +25,7 @@ import {
   brightness,
   saturation,
   scaleEffect,
+  containerRelativeFrame,
   rotationEffect,
   offset,
   listRowSeparator,
@@ -106,6 +109,8 @@ export default function ModifiersScreen() {
 
   const badgeType = ['standard', 'increased', 'decreased'] as const;
   const [badgeIndex, setBadgeIndex] = useState(0);
+
+  const [containerRelativeFrameCount, setContainerRelativeFrameCount] = useState(1);
 
   return (
     <ScrollView>
@@ -629,6 +634,40 @@ export default function ModifiersScreen() {
                 ))}
               </Picker>
             </VStack>
+          </Section>
+
+          {/* Container Relative Frame Modifier */}
+          <Section title="Container Relative Frame Modifier">
+            <Capsule
+              modifiers={[
+                containerRelativeFrame({
+                  axes: 'horizontal',
+                  count: containerRelativeFrameCount,
+                  span: 1,
+                }),
+                foregroundStyle('#3498DB'),
+              ]}
+            />
+            <HStack>
+              {new Array(containerRelativeFrameCount).fill(null).map((_, i) => (
+                <Capsule
+                  key={i}
+                  modifiers={[
+                    containerRelativeFrame({
+                      axes: 'horizontal',
+                      count: containerRelativeFrameCount,
+                      span: 1,
+                    }),
+                    foregroundStyle('#3498DB'),
+                  ]}
+                />
+              ))}
+            </HStack>
+            <Stepper
+              onValueChanged={setContainerRelativeFrameCount}
+              defaultValue={containerRelativeFrameCount}
+              label={`Items count: ${containerRelativeFrameCount}`}
+            />
           </Section>
 
           <AppearSection />

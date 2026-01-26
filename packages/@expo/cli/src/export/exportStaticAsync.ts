@@ -206,14 +206,16 @@ export async function exportFromServerAsync(
     scriptTags,
   }: Options
 ): Promise<ExportAssetMap> {
-  Log.log(
-    `Static rendering is enabled. ` +
-      learnMore('https://docs.expo.dev/router/reference/static-rendering/')
-  );
+  const useServerRendering = exp?.extra?.router?.unstable_useServerRendering ?? false;
+
+  const logOutput =
+    exp?.web?.output === 'server' && useServerRendering
+      ? `Server rendering is enabled. ${learnMore('https://docs.expo.dev/router/web/server-rendering/')}`
+      : `Static rendering is enabled. ${learnMore('https://docs.expo.dev/router/web/static-rendering/')}`;
+  Log.log(logOutput);
 
   const platform = 'web';
   const isExporting = true;
-  const useServerRendering = exp?.extra?.router?.unstable_useServerRendering ?? false;
   const isExportingWithSSR =
     exportServer && useServerRendering && !devServer.isReactServerComponentsEnabled;
   const appDir = path.join(projectRoot, routerRoot);
@@ -250,18 +252,19 @@ export async function exportFromServerAsync(
       let renderOpts;
 
       if (useServerLoaders) {
-        const loaderResult = await executeLoaderAsync(normalizedPathname, route);
+        const loaderResponse = await executeLoaderAsync(normalizedPathname, route);
 
-        if (loaderResult !== undefined) {
+        if (loaderResponse !== undefined) {
+          const data = await loaderResponse.json();
           const loaderPath = getLoaderModulePath(normalizedPathname);
           const fileSystemPath = loaderPath.startsWith('/') ? loaderPath.slice(1) : loaderPath;
           files.set(fileSystemPath, {
-            contents: JSON.stringify(loaderResult.data, null, 2),
+            contents: JSON.stringify(data, null, 2),
             targetDomain: 'client',
             loaderId: normalizedPathname,
           });
 
-          renderOpts = { loader: { data: loaderResult.data } };
+          renderOpts = { loader: { data } };
         }
       }
 
