@@ -91,15 +91,13 @@ export default function Main() {
 }
 
 const TestScreen = () => {
-  const { stateId, setValue, getValue } = useSwiftUIState("Hello world");
-  console.log(stateId);
+  const state = useSwiftUIState("Hello world");
   return (
     <Host style={{ flex: 1, justifyContent:"center", alignItems:"center" }}>
       <VStack>
-      <SyncTextField stateId={stateId} />
-      <Button label="Set Value" onPress={
-        () => scheduleOnUI(() => setValue("World"))
-      } />
+        <SyncTextField state={state} initialValue="Hello world" />
+        <Button label="Set Value" onPress={() => state.setValue("World")} />
+        <Button label="Get Value" onPress={() => console.log(state.getValue())} />
       </VStack>
     </Host>
   );

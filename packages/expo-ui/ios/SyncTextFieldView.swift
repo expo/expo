@@ -4,16 +4,27 @@ import SwiftUI
 import ExpoModulesCore
 
 final class SyncTextFieldProps: UIBaseViewProps {
-  @Field var stateId: Double?
+  @Field var initialValue: String = ""
+  var onStateInitialize = EventDispatcher()
 }
 
 struct SyncTextFieldView: ExpoSwiftUI.View {
   @ObservedObject var props: SyncTextFieldProps
+  @State private var stateId: Int
+
+  init(props: SyncTextFieldProps) {
+    self.props = props
+    let id = SwiftUIStateRegistry.shared.createState(initialValue: props.initialValue)
+    _stateId = State(initialValue: id)
+    props.onStateInitialize(["stateId": id])
+  }
 
   var body: some View {
-    if let stateId = props.stateId,
-       let state = SwiftUIStateRegistry.shared.getState(id: Int(stateId)) {
+    if let state = SwiftUIStateRegistry.shared.getState(id: stateId) {
       SyncTextFieldContent(state: state)
+        .onDisappear {
+          SwiftUIStateRegistry.shared.deleteState(id: stateId)
+        }
     }
   }
 }
