@@ -17,7 +17,7 @@
 ### 💡 Others
 
 - Make the Action Button always enabled on Quest. ([#42562](https://github.com/expo/expo/pull/42562) by [@behenate](https://github.com/behenate))
-- [ios] Moves connection info lower in the menu.
+- [ios] Moves connection info lower in the menu. ([#42568](https://github.com/expo/expo/pull/42568) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 55.0.2 — 2026-01-26
 
