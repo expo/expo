@@ -8,6 +8,9 @@ type SerializableRef<TValue = unknown> = {
 declare class WorkletsTesterModule extends NativeModule {
   executeWorklet(worklet: SerializableRef<() => void>): void;
   scheduleWorklet(worklet: SerializableRef<() => void>): void;
+
+  executeWorkletWithArgs(worklet: SerializableRef<(number, string, boolean) => void>): void;
+  scheduleWorkletWithArgs(worklet: SerializableRef<(number, string, boolean) => void>): void;
 }
 
 export default requireOptionalNativeModule<WorkletsTesterModule>('WorkletsTesterModule');

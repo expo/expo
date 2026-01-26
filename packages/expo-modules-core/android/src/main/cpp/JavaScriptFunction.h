@@ -49,7 +49,7 @@ private:
 
   jobject invoke(
     jni::alias_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> jsThis,
-    jni::alias_ref<jni::JArrayClass<jni::JObject>> args,
+    jni::alias_ref<jni::JArrayClass<jobject>> args,
     jni::alias_ref<ExpectedType::javaobject> expectedReturnType
   );
 };
