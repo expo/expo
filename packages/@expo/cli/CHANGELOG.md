@@ -23,6 +23,7 @@
 - Add allowedValues validation for string-or-boolean args ([#42523](https://github.com/expo/expo/pull/42523) by [@brentvatne](https://github.com/brentvatne))
 - Drop `freeport-async` dependency ([#42478](https://github.com/expo/expo/pull/42478) by [@kitten](https://github.com/kitten))
 - Drop `pretty-bytes` for `Intl.NumberFormat` call with fallback ([#42482](https://github.com/expo/expo/pull/42482) by [@kitten](https://github.com/kitten))
+- Warn when `@expo/fingerprint` is missing during build cache check ([#41910](https://github.com/expo/expo/pull/41910) by [@gustavoharff](https://github.com/gustavoharff))
 
 ## 55.0.2 — 2026-01-23
 
