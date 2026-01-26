@@ -32,8 +32,7 @@ export default class DeviceSensor {
         this._nativeModule.removeAllListeners(this._nativeEventName);
     }
     /**
-     * Removes the given subscription.
-     * @param subscription A subscription to remove.
+     * @deprecated use subscription.remove() instead.
      */
     removeSubscription(subscription) {
         subscription.remove();

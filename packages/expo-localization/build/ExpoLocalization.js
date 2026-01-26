@@ -52,6 +52,9 @@ listener) {
         remove: () => removeEventListener(WEB_LANGUAGE_CHANGE_EVENT, listener),
     };
 }
+/**
+ * @deprecated use subscription.remove() instead
+ * */
 export function removeSubscription(subscription) {
     subscription.remove();
 }

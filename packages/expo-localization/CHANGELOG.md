@@ -30,6 +30,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
+- mark `removeSubscription` calls as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))
 - [Web] Add `getTextInfo()` fallback for deprecated `textInfo` in `getLocales()` ([#39255](https://github.com/expo/expo/pull/39255) by [@desii101](https://github.com/desii101))
 
 ## 17.0.8 - 2025-12-05

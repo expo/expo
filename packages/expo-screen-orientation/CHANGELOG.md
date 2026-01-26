@@ -15,6 +15,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] [New Architecture] Restore orientationMask after app transition from background to foreground ([#42536](https://github.com/expo/expo/pull/42536) by [@LongyuW](https://github.com/LongyuW))
+- mark `removeOrientationChangeListeners` and `removeOrientationChangeListener` calls as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))
 
 ## 55.0.2 — 2026-01-26
 

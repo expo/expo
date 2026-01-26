@@ -1,6 +1,6 @@
 import { WebSocket, WebSocketServer } from 'ws';
 
-import { isLocalSocket, isMatchingOrigin } from '../../../utils/net';
+import { isMatchingOrigin } from '../../../utils/net';
 
 interface DevToolsPluginWebsocketEndpointParams {
   serverBaseUrl: string;
@@ -13,7 +13,7 @@ export function createDevToolsPluginWebsocketEndpoint({
 
   wss.on('connection', (ws, request) => {
     // Explicitly limit devtools websocket to loopback requests
-    if (!isLocalSocket(request.socket) || !isMatchingOrigin(request, serverBaseUrl)) {
+    if (request.headers.origin && !isMatchingOrigin(request, serverBaseUrl)) {
       // NOTE: `socket.close` nicely closes the websocket, which will still allow incoming messages
       // `socket.terminate` instead forcefully closes down the socket
       ws.terminate();

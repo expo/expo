@@ -65,7 +65,7 @@ public struct WidgetLiveActivity: Widget {
 
 extension WidgetConfiguration {
   func supplementalActivityFamiliesIfAvailable() -> some WidgetConfiguration {
-    if #available(iOSApplicationExtension 18.0, *) {
+    if #available(iOS 18.0, iOSApplicationExtension 18.0, *) {
       return self.supplementalActivityFamilies([.small, .medium])
     } else {
       return self

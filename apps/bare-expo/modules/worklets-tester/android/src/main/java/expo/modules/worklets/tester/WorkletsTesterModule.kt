@@ -15,5 +15,13 @@ class WorkletsTesterModule : Module() {
     Function("scheduleWorklet") { worklet: Worklet ->
       worklet.schedule(appContext.uiRuntime)
     }
+
+    Function("executeWorkletWithArgs") { worklet: Worklet ->
+      worklet.execute(appContext.uiRuntime, 2026, "worklet", true)
+    }
+
+    Function("scheduleWorkletWithArgs") { worklet: Worklet ->
+      worklet.schedule(appContext.uiRuntime, 2026, "worklet", true)
+    }
   }
 }

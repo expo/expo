@@ -32,6 +32,24 @@ jsi::Value convert(
   const jni::local_ref<jobject> &value
 );
 
+template<typename RefType>
+std::vector<jsi::Value> convertArray(
+  JNIEnv *env,
+  jsi::Runtime &rt,
+  RefType &values
+) {
+  size_t size = values->size();
+  std::vector<jsi::Value> convertedValues;
+  convertedValues.reserve(size);
+
+  for (size_t i = 0; i < size; i++) {
+    jni::local_ref<jobject> value = values->getElement(i);
+    convertedValues.push_back(convert(env, rt, value));
+  }
+
+  return convertedValues;
+}
+
 /**
  * Convert a string with FollyDynamicExtensionConverter support.
  */
