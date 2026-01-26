@@ -26,7 +26,8 @@ class SourceMapExplorerViewModel: ObservableObject {
     do {
       let sourceMap = try await service.fetchSourceMap()
       self.sourceMap = sourceMap
-      self.fileTree = await service.buildFileTree(from: sourceMap)
+      let tree = await service.buildFileTree(from: sourceMap)
+      self.fileTree = tree.first(where: { $0.isDirectory })?.children ?? tree
       loadingState = .loaded(sourceMap)
     } catch let error as SourceMapError {
       loadingState = .error(error)
