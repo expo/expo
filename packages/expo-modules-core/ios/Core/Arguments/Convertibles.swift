@@ -22,19 +22,21 @@ extension URL: Convertible {
     // iOS 18.6+ CRITICAL: Check for HTTP/HTTPS URLs FIRST to prevent API misuse
     // iOS 18.6 will crash with "API MISUSE: URL(filePath:) called with an HTTP URL string"
     // if we try to use fileURLWithPath on an HTTP URL
-    let lowercasedValue = value.lowercased()
-    let isHttpUrl = lowercasedValue.hasPrefix("http://") || lowercasedValue.hasPrefix("https://")
+    // Trim whitespace early to catch HTTP URLs with leading/trailing whitespace
+    let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
+    let trimmedLowercased = trimmedValue.lowercased()
+    let isHttpUrl = trimmedLowercased.hasPrefix("http://") || trimmedLowercased.hasPrefix("https://")
     
     if isHttpUrl {
-      // Try to parse as HTTP URL first
-      if let url = URL(string: value) {
-        return url
-      }
-      // If URL(string:) fails, try with URLComponents for better RFC 3986 support
+      // Since we know it's HTTP/HTTPS, try URLComponents first for better RFC 3986 support
       if #available(iOS 16, *) {
         if let url = URLComponents(string: value)?.url {
           return url
         }
+      }
+      // Fallback to URL(string:) if URLComponents is not available or fails
+      if let url = URL(string: value) {
+        return url
       }
       throw UrlContainsInvalidCharactersException()
     }
@@ -55,34 +57,23 @@ extension URL: Convertible {
       }
       
       // iOS 18.6+ requires stricter validation - check for invalid characters
-      let trimmedPath = value.trimmingCharacters(in: .whitespacesAndNewlines)
-      guard !trimmedPath.isEmpty else {
+      // Use the already-trimmed value from the HTTP check above
+      guard !trimmedValue.isEmpty else {
         throw UrlContainsInvalidCharactersException()
       }
       
       // Validate path format for iOS 18.6+ strict requirements
       // Must be absolute path (starts with /) or already a file:// URL
-      // CRITICAL: Double-check it's not an HTTP URL that slipped through
-      let isAbsolutePath = trimmedPath.hasPrefix("/")
-      let isFileURL = trimmedPath.hasPrefix("file://")
-      let trimmedLowercased = trimmedPath.lowercased()
-      let isHttpUrl = trimmedLowercased.hasPrefix("http://") || trimmedLowercased.hasPrefix("https://")
-      
-      // iOS 18.6+ will crash if we call fileURLWithPath on an HTTP URL
-      guard !isHttpUrl else {
-        // Try to parse as HTTP URL instead
-        if let url = URL(string: value) {
-          return url
-        }
-        throw UrlContainsInvalidCharactersException()
-      }
+      // Note: HTTP URL check already done above with trimmed value, so isHttpUrl is already accurate
+      let isAbsolutePath = trimmedValue.hasPrefix("/")
+      let isFileURL = trimmedValue.hasPrefix("file://")
       
       guard isAbsolutePath || isFileURL else {
         throw UrlContainsInvalidCharactersException()
       }
       
       // Check for null characters and control characters that iOS 18.6 rejects
-      if trimmedPath.contains("\0") || trimmedPath.rangeOfCharacter(from: CharacterSet.controlCharacters) != nil {
+      if trimmedValue.contains("\0") || trimmedValue.rangeOfCharacter(from: CharacterSet.controlCharacters) != nil {
         throw UrlContainsInvalidCharactersException()
       }
       
@@ -91,13 +82,13 @@ extension URL: Convertible {
       let fileURL: URL
       if isFileURL {
         // Already a file:// URL, parse it safely
-        guard let parsedURL = URL(string: trimmedPath) else {
+        guard let parsedURL = URL(string: trimmedValue) else {
           throw UrlContainsInvalidCharactersException()
         }
         fileURL = parsedURL
       } else {
         // Absolute path - iOS 18.6 will assert if malformed
-        fileURL = URL(fileURLWithPath: trimmedPath)
+        fileURL = URL(fileURLWithPath: trimmedValue)
       }
       
       return fileURL
