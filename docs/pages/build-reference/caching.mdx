@@ -90,16 +90,19 @@ jobs:
     type: build
     steps:
       - uses: eas/checkout
-      - uses: eas/restore_cache
-        with:
-          key: android-ccache-${{ hashFiles('yarn.lock') }}
-          restore_keys: android
-          path: /home/expo/.cache/ccache
+      - uses: eas/restore_build_cache
+      # This is equivalent to the step above. You can also use /restore_cache for other caching purposes by defining your own key pattern and path
+      # - uses: eas/restore_cache
+      #   with:
+      #     key: android-ccache-${{ hashFiles('yarn.lock') }}
+      #     restore_keys: android
+      #     path: /home/expo/.cache/ccache
       - uses: eas/build
-      - uses: eas/save_cache
-        with:
-          key: android-ccache-${{ hashFiles('yarn.lock') }}
-          path: /home/expo/.cache/ccache
+      - uses: eas/save_build_cache
+      # - uses: eas/save_cache
+      #   with:
+      #    key: android-ccache-${{ hashFiles('yarn.lock') }}
+      #    path: /home/expo/.cache/ccache
 ```
 
 **iOS example:**
@@ -110,16 +113,19 @@ jobs:
     type: build
     steps:
       - uses: eas/checkout
-      - uses: eas/restore_cache
-        with:
-          key: ios-ccache-${{ hashFiles('yarn.lock') }}
-          restore_keys: ios
-          path: /Users/expo/Library/Caches/ccache
+      - uses: eas/restore_build_cache
+      # This is equivalent to the step above. You can also use /restore_cache for other caching purposes by defining your own key pattern and path
+      # - uses: eas/restore_cache
+      #   with:
+      #     key: ios-ccache-${{ hashFiles('yarn.lock') }}
+      #     restore_keys: ios
+      #     path: /Users/expo/Library/Caches/ccache
       - uses: eas/build
-      - uses: eas/save_cache
-        with:
-          key: ios-ccache-${{ hashFiles('yarn.lock') }}
-          path: /Users/expo/Library/Caches/ccache
+      - uses: eas/save_build_cache
+      # - uses: eas/save_cache
+      #   with:
+      #    key: ios-ccache-${{ hashFiles('yarn.lock') }}
+      #    path: /Users/expo/Library/Caches/ccache
 ```
 
 #### Custom builds
@@ -140,14 +146,18 @@ The cache key uses a hash of the package manager lock file to create a unique ke
 
 ### Cache key matching
 
-When restoring a cache, the cache system follows a specific search sequence to find matching cache entries:
+When restoring a cache, the cache system follows a specific search sequence to find matching cache entries. The cache key is either automatically generated (when using `eas/restore_build_cache` or `eas/save_build_cache`) or explicitly provided via the `key` parameter (when using `eas/restore_cache` or `eas/save_cache` with custom configuration).
 
-1. **Exact match**: First, it searches for an exact match to your provided `key`.
-2. **Restore keys**: If no exact match is found, `restore_keys` will be checked sequentially for prefix matches
+The search sequence:
 
-If there is an exact match to the provided `key`, this is considered a cache hit and the cache is restored immediately. If there is a partial match or a match from `restore_keys`, the cache is restored but this is considered a cache miss, which may trigger additional steps in your workflow.
+1. **Exact match**: First, it searches for an exact match to the cache key (automatically generated or explicitly provided)
+2. **Restore keys**: If no exact match is found, `restore_keys` will be checked sequentially for the most recent prefix matches
+
+If there is an exact match to the provided `key`, this is considered a direct cache hit and the cache is restored immediately. If there is a partial match or a match from `restore_keys`, the cache is restored but may not perform as effectively
 
 #### Using restore keys
+
+> **Note:** Restore key matching is handled automatically by the cache system and does not require manual configuration. This is a reference to detail expected behavior.
 
 The restore key `android-ccache-` matches any key that starts with the string `android-ccache-`. For example, both of the keys `android-ccache-fd3052de` and `android-ccache-a9b253ff` match the restore key. The cache with the most recent creation date would be used. The keys in this example are searched in the following order:
 
@@ -173,6 +183,8 @@ When a build is triggered from `eas-cli`, caches are scoped to the user running 
 #### Default branch cache
 
 If a build doesn't restore a user-scoped cache, it will automatically fallback to restoring caches published from GitHub builds triggered on the default branch. This allows builds to benefit from caches created by trusted sources even when no user-scoped cache exists yet.
+
+#### Shared user behavior
 
 When a single user-actor is shared between multiple people (such as when using access tokens or triggering builds from GitHub Actions), user-scoped cache rules still apply. This means that builds operating under that shared account will no longer have isolated caches and run the risk of sharing unintended artifacts. We recommend avoiding this by having designated jobs to only save clean caches, while the development builds only restore.
 
