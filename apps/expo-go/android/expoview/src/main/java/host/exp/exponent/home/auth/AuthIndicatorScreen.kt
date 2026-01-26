@@ -37,7 +37,7 @@ fun AuthIndicatorScreen(
       Spacer(modifier = Modifier.height(24.dp))
       Text(
         text = "Authenticating in the browser...",
-        style = MaterialTheme.typography.bodyLarge,
+        style = MaterialTheme.typography.bodyLarge
       )
       Spacer(modifier = Modifier.height(32.dp))
       Button(
