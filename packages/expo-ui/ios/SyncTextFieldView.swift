@@ -8,36 +8,50 @@ final class SyncTextFieldProps: UIBaseViewProps {
   @Field var defaultValue: String = ""
 }
 
+final class TextFieldState: ObservableObject {
+  @Published var text: String = ""
+  var stateManager: ViewStateManager?
+}
+
 struct SyncTextFieldView: ExpoSwiftUI.View {
   @ObservedObject var props: SyncTextFieldProps
-  @State private var text: String = ""
-
-  private var stateManager: ViewStateManager? {
-    ViewStateManager(viewId: props.viewId, appContext: props.appContext)
-  }
+  @StateObject private var state = TextFieldState()
 
   var body: some View {
-    TextField("Enter text", text: $text)
-      .onChange(of: text) { newValue in
-        guard let stateManager else { return }
-        let jsValue = JavaScriptValue.string(newValue, runtime: stateManager.uiRuntime)
-        if let result = stateManager.callOnChange(jsValue) {
+    TextField("Enter text", text: $state.text)
+      .onChange(of: state.text) { newValue in
+        guard let runtime = state.stateManager?.uiRuntime else { return }
+        let jsValue = JavaScriptValue.string(newValue, runtime: runtime)
+        if let result = state.stateManager?.callOnChange(jsValue) {
           let transformed = result.getString()
           if transformed != newValue {
-            text = transformed
+            state.text = transformed
           }
         }
       }
       .onAppear {
-        text = props.defaultValue
-        guard let stateManager else { return }
+        state.text = props.defaultValue
+        state.stateManager = ViewStateManager(viewId: props.viewId, appContext: props.appContext)
+
+        guard let stateManager = state.stateManager else { return }
+
+        weak var weakState = state
+        weak var weakRuntime = stateManager.uiRuntime
+
         stateManager.register(
-          getState: { JavaScriptValue.string(text, runtime: stateManager.uiRuntime) },
-          setState: { text = $0.getString() }
+          getState: {
+            guard let state = weakState, let runtime = weakRuntime else {
+              return JavaScriptValue.undefined
+            }
+            return JavaScriptValue.string(state.text, runtime: runtime)
+          },
+          setState: {
+            weakState?.text = $0.getString()
+          }
         )
       }
       .onDisappear {
-        stateManager?.cleanup()
+        state.stateManager?.cleanup()
       }
   }
 }

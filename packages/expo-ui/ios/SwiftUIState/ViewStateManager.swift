@@ -6,7 +6,7 @@ import ExpoModulesCore
 /// Helper for managing view state on the UI runtime global
 struct ViewStateManager {
   let viewId: String
-  let uiRuntime: WorkletRuntime
+  weak var uiRuntime: WorkletRuntime?
 
   init?(viewId: String?, appContext: AppContext?) {
     guard let viewId,
@@ -18,10 +18,10 @@ struct ViewStateManager {
     self.uiRuntime = uiRuntime
   }
 
-  private var global: JavaScriptObject { uiRuntime.global() }
+  private var global: JavaScriptObject? { uiRuntime?.global() }
 
   private var registry: JavaScriptObject? {
-    guard global.hasProperty("__expoSwiftUIState") else { return nil }
+    guard let global, global.hasProperty("__expoSwiftUIState") else { return nil }
     return global.getProperty("__expoSwiftUIState").getObject()
   }
 
@@ -33,6 +33,8 @@ struct ViewStateManager {
   // MARK: - Setup & Cleanup
 
   func register(getState: @escaping () -> JavaScriptValue, setState: @escaping (JavaScriptValue) -> Void) {
+    guard let uiRuntime, let global else { return }
+
     // Ensure registry exists
     if !global.hasProperty("__expoSwiftUIState") {
       global.setProperty("__expoSwiftUIState", value: uiRuntime.createObject())
@@ -58,7 +60,7 @@ struct ViewStateManager {
   }
 
   func cleanup() {
-    _ = try? uiRuntime.eval("delete globalThis.__expoSwiftUIState?.['\(viewId)']")
+    _ = try? uiRuntime?.eval("delete globalThis.__expoSwiftUIState?.['\(viewId)']")
   }
 
   // MARK: - onChange
