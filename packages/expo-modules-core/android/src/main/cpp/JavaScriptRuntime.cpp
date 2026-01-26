@@ -14,7 +14,7 @@ namespace expo {
 JavaScriptRuntime::JavaScriptRuntime(
   jsi::Runtime *runtime,
   std::shared_ptr<react::CallInvoker> jsInvoker
-) : runtime(runtime), jsInvoker(std::move(jsInvoker)) {
+) : jsInvoker(std::move(jsInvoker)), runtime(runtime) {
 }
 
 jsi::Runtime &JavaScriptRuntime::get() const noexcept {

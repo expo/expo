@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix issue where the header would overlap the safe area. ([#42540](https://github.com/expo/expo/pull/42540) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 55.0.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.2 — 2026-01-22
 

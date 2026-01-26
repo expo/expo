@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Added missing checks in the promise implementation. ([#42467](https://github.com/expo/expo/pull/42467) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 55.0.4 — 2026-01-26
+
+### 🐛 Bug fixes
+
+- [Android] Added missing checks in the promise implementation. ([#42467](https://github.com/expo/expo/pull/42467) by [@lukmccall](https://github.com/lukmccall))
 
 ## 55.0.3 — 2026-01-22
 

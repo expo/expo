@@ -6,11 +6,17 @@
 
 ### 🎉 New features
 
-- Add "Source Code Explorer" screen to iOS dev menu ([#42493](https://github.com/expo/expo/pull/42493) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Add delegate method to control visibility of "Open React Native dev menu" option. ([#42541](https://github.com/expo/expo/pull/42541) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.2 — 2026-01-26
+
+### 🎉 New features
+
+- Add "Source Code Explorer" screen to iOS dev menu ([#42493](https://github.com/expo/expo/pull/42493) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 55.0.1 — 2026-01-22
 

@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Bump `react-server-dom-webpack` ([#42570](https://github.com/expo/expo/pull/42570) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.0-beta.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.0-beta.2 — 2026-01-23
 
 _This version does not introduce any user-facing changes._

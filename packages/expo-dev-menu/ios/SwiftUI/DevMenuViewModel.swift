@@ -165,6 +165,10 @@ class DevMenuViewModel: ObservableObject {
     return devMenuManager.canNavigateHome
   }
 
+  var shouldShowReactNativeDevMenu: Bool {
+    return devMenuManager.shouldShowReactNativeDevMenu
+  }
+
   private func checkOnboardingStatus() {
     isOnboardingFinished = devMenuManager.isOnboardingFinished
   }

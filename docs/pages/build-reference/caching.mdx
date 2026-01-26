@@ -68,6 +68,171 @@ To disable using our Maven cache server for your builds set the `EAS_BUILD_DISAB
 }
 ```
 
+## Caching C/C++ compilation artifacts with ccache
+
+[ccache](https://ccache.dev/) is a compiler cache that speeds up recompilation of native code by caching previous compilation results. EAS supports ccache configuration out of the box.
+
+You can configure builds to save and restore ccache cache automatically with these environment variables:
+
+- `EAS_USE_CACHE`: When set to `1`, enables both restoring and saving the cache results during a build job.
+- `EAS_RESTORE_CACHE`: Controls restoring the cache at the beginning of a build. Set to `1` to enable or `0` to disable. Overrides `EAS_USE_CACHE`.
+- `EAS_SAVE_CACHE`: Controls whether to save the build cache at the end of a build. Set to `1` to enable or `0` to disable. Overrides `EAS_USE_CACHE`.
+
+### EAS Workflows
+
+For EAS Workflows, use [`eas/restore_cache`](/eas/workflows/syntax/#easrestore_cache) and [`eas/save_cache`](/eas/workflows/syntax/#eassave_cache).
+
+**Android example:**
+
+```yaml .eas/workflows/build-android.yml
+jobs:
+  build_android:
+    type: build
+    steps:
+      - uses: eas/checkout
+      - uses: eas/restore_build_cache
+      # This is equivalent to the step above. You can also use /restore_cache for other caching purposes by defining your own key pattern and path
+      # - uses: eas/restore_cache
+      #   with:
+      #     key: android-ccache-${{ hashFiles('yarn.lock') }}
+      #     restore_keys: android
+      #     path: /home/expo/.cache/ccache
+      - uses: eas/build
+      - uses: eas/save_build_cache
+      # - uses: eas/save_cache
+      #   with:
+      #    key: android-ccache-${{ hashFiles('yarn.lock') }}
+      #    path: /home/expo/.cache/ccache
+```
+
+**iOS example:**
+
+```yaml .eas/workflows/build-ios.yml
+jobs:
+  build_ios:
+    type: build
+    steps:
+      - uses: eas/checkout
+      - uses: eas/restore_build_cache
+      # This is equivalent to the step above. You can also use /restore_cache for other caching purposes by defining your own key pattern and path
+      # - uses: eas/restore_cache
+      #   with:
+      #     key: ios-ccache-${{ hashFiles('yarn.lock') }}
+      #     restore_keys: ios
+      #     path: /Users/expo/Library/Caches/ccache
+      - uses: eas/build
+      - uses: eas/save_build_cache
+      # - uses: eas/save_cache
+      #   with:
+      #    key: ios-ccache-${{ hashFiles('yarn.lock') }}
+      #    path: /Users/expo/Library/Caches/ccache
+```
+
+### Custom builds
+
+In custom builds where you manage the build steps, add [`eas/restore_build_cache`](/custom-builds/schema/#easrestore_build_cache) and [`eas/save_build_cache`](/custom-builds/schema/#eassave_build_cache) to enable ccache cache.
+
+```yaml .eas/build/custom.yml
+build:
+  name: Build with ccache
+  steps:
+    - eas/checkout
+    - eas/restore_build_cache
+    - eas/build
+    - eas/save_build_cache
+```
+
+The cache key uses a hash of the package manager lock file to create a unique key based on your dependencies. When dependencies change, a new cache will be created while still allowing fallback to previous caches using `restore_keys`.
+
+### Cache key matching
+
+When restoring a cache, the cache system follows a specific search sequence to find matching cache entries. The cache key is either automatically generated (when using `eas/restore_build_cache` or `eas/save_build_cache`) or explicitly provided via the `key` parameter (when using `eas/restore_cache` or `eas/save_cache`).
+
+The search sequence:
+
+1. **Exact match**: First, it searches for an exact match to the cache key (automatically generated or explicitly provided)
+2. **Restore keys**: If no exact match is found, `restore_keys` will be checked sequentially for the most recent prefix matches
+
+If there is an exact match to the provided `key`, this is considered a direct cache hit and the cache is restored immediately. If there is a partial match or a match from `restore_keys`, the cache is restored but may not perform as effectively
+
+#### Using restore keys
+
+> **Note:** Restore key matching is handled automatically by the cache system and does not require manual configuration. This is a reference to detail expected behavior.
+
+The restore key `android-ccache-` matches any key that starts with the string `android-ccache-`. For example, both of the keys `android-ccache-fd3052de` and `android-ccache-a9b253ff` match the restore key. The cache with the most recent creation date would be used. The keys in this example are searched in the following order:
+
+1. **`android-ccache-${{ hashFiles('yarn.lock') }}`** matches a specific hash.
+2. **`android-ccache-`** matches cache keys prefixed with `android-ccache-`.
+3. **`android-`** matches any keys prefixed with `android-`.
+
+### Cache restrictions
+
+Access restrictions provide cache isolation and security by creating logical boundaries between different Git branches or users. It is important for security of yours and your users to understand and leverage them when building your app.
+
+#### GitHub run
+
+When a build is run from GitHub, caches get scoped to the branch the build is running from. A build can restore caches created in:
+
+- The current branch
+- The default branch (`main` or `master`)
+
+#### EAS CLI run
+
+When a build is triggered from `eas-cli`, caches are scoped to the user running the build. These user-scoped caches allow for isolation so that modifications to the build and its cache are not unintentionally shared during development or between users.
+
+#### Default branch cache
+
+If a build doesn't restore a user-scoped cache, it will automatically fallback to restoring caches published from GitHub builds triggered on the default branch. This allows builds to benefit from caches created by trusted sources even when no user-scoped cache exists yet.
+
+#### Shared user behavior
+
+When a single user-actor is shared between multiple people (such as when using access tokens or triggering builds from GitHub Actions), user-scoped cache rules still apply. This means that builds operating under that shared account will no longer have isolated caches and run the risk of sharing unintended artifacts. To avoid this, we recommend not restoring cache for production builds under a shared user, and to have designated jobs to only save clean, new caches.
+
+### Designated jobs for cache creation
+
+You can configure a job to publish clean, new caches by disabling cache restoration and only saving the cache.
+
+**Disable restoring cache for production builds:**
+
+You can disable cache restoration for specific build profiles by configuring these environment variables:
+
+```json eas.json
+{
+  "build": {
+    "production": {
+      "env": {
+        "EAS_RESTORE_CACHE": "0",
+        "EAS_SAVE_CACHE": "1"
+      }
+    },
+    "preview": {
+      "env": {
+        "EAS_USE_CACHE": "1"
+      }
+    }
+  }
+}
+```
+
+**Only save cache from designated jobs:**
+
+To ensure only trusted sources publish cache, you can configure a workflow to only save cache from specific job on the main branch.
+
+```yaml .eas/workflows/build.yml
+jobs:
+  build_production:
+    type: build
+    if: ${{ github.ref_name == 'main' }}
+    env:
+      EAS_RESTORE_CACHE: '0'
+      EAS_SAVE_CACHE: '1'
+    params:
+      platform: android
+      profile: production
+```
+
+> **Note:** Setting `EAS_SAVE_CACHE: '1'` does not make cache saving exclusive to this job, other jobs with the same environment variable can still save and overwrite the cache.
+
 ## iOS dependencies
 
 EAS Build serves most CocoaPods artifacts from a cache server. This improves the consistency of `pod install` times and generally improves speed. The cache will be bypassed automatically if you provide your own **.netrc** or **.curlrc** files.

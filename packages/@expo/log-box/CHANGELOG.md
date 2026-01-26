@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- absolute position web content to prevent modifying body layout. ([#42565](https://github.com/expo/expo/pull/42565) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.1 — 2026-01-22
 
