@@ -75,7 +75,7 @@ export declare const NativeToolbarSpacer: React.FC<NativeToolbarSpacerProps>;
 export interface NativeToolbarSearchBarSlotProps {
     hidesSharedBackground?: boolean;
     hidden?: boolean;
-    sharesBackground?: boolean;
+    separateBackground?: boolean;
 }
 /**
  * Native toolbar search bar slot for bottom toolbar (iOS 26+).

@@ -218,7 +218,7 @@ export const NativeToolbarSpacer: React.FC<NativeToolbarSpacerProps> = (props) =
 export interface NativeToolbarSearchBarSlotProps {
   hidesSharedBackground?: boolean;
   hidden?: boolean;
-  sharesBackground?: boolean;
+  separateBackground?: boolean;
 }
 
 /**
@@ -228,7 +228,7 @@ export interface NativeToolbarSearchBarSlotProps {
 export const NativeToolbarSearchBarSlot: React.FC<NativeToolbarSearchBarSlotProps> = ({
   hidesSharedBackground,
   hidden,
-  sharesBackground,
+  separateBackground,
 }) => {
   const id = useId();
   if (process.env.EXPO_OS !== 'ios' || parseInt(String(Platform.Version).split('.')[0], 10) < 26) {
@@ -241,7 +241,7 @@ export const NativeToolbarSearchBarSlot: React.FC<NativeToolbarSearchBarSlotProp
     <RouterToolbarItem
       hidesSharedBackground={hidesSharedBackground}
       identifier={id}
-      sharesBackground={sharesBackground}
+      sharesBackground={!separateBackground}
       type="searchBar"
     />
   );
