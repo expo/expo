@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- absolute position web content to prevent modifying body layout.
+- absolute position web content to prevent modifying body layout. ([#42565](https://github.com/expo/expo/pull/42565) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
