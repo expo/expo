@@ -32,7 +32,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
 class QRScannerActivity : ComponentActivity() {
-  class Contract: ActivityResultContract<Unit, String?>() {
+  class Contract : ActivityResultContract<Unit, String?>() {
     override fun createIntent(context: Context, input: Unit): Intent {
       return Intent(context, QRScannerActivity::class.java)
     }
