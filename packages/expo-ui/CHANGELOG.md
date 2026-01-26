@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Add Markdown support to the Text component. ([#42448](https://github.com/expo/expo/pull/42448) by [@Pflaumenbaum](https://github.com/Pflaumenbaum))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.0-beta.2 — 2026-01-26
+
+### 🎉 New features
+
+- [iOS] Add Markdown support to the Text component. ([#42448](https://github.com/expo/expo/pull/42448) by [@Pflaumenbaum](https://github.com/Pflaumenbaum))
 
 ## 55.0.0-beta.1 — 2026-01-22
 

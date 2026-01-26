@@ -28,7 +28,9 @@ struct SourceMapExplorerView: View {
       }
     }
     .navigationTitle("Source Code Explorer")
+#if !os(macOS)
     .navigationBarTitleDisplayMode(.inline)
+#endif
     .searchable(text: $viewModel.searchText, placement: .automatic, prompt: "Search files")
     .task {
       await viewModel.loadSourceMap()
@@ -101,8 +103,11 @@ struct FolderListView: View {
         }
       }
     }
+#if !os(macOS)
     .listStyle(.insetGrouped)
+#endif
     .navigationTitle(isSearching ? "Search Results" : title)
+#if !os(macOS)
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .navigationBarTrailing) {
@@ -116,6 +121,7 @@ struct FolderListView: View {
         }
       }
     }
+#endif
   }
 }
 
@@ -216,7 +222,9 @@ struct CodeFileView: View {
     }
     .background(theme.background)
     .navigationTitle(node.name)
+#if !os(macOS)
     .navigationBarTitleDisplayMode(.inline)
+#endif
     .task(id: colorScheme) {
       highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
     }
