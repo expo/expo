@@ -188,7 +188,7 @@ If a build doesn't restore a user-scoped cache, it will automatically fallback t
 
 When a single user-actor is shared between multiple people (such as when using access tokens or triggering builds from GitHub Actions), user-scoped cache rules still apply. This means that builds operating under that shared account will no longer have isolated caches and run the risk of sharing unintended artifacts. To avoid this, we recommend not restoring cache for production builds under a shared user, and to have designated jobs to only save clean, new caches.
 
-#### Designated jobs for cache creation
+### Designated jobs for cache creation
 
 You can configure a job to publish clean, new caches by disabling cache restoration and only saving the cache.
 
