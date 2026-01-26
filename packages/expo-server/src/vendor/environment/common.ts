@@ -33,6 +33,7 @@ interface EnvironmentInput {
   readText(request: string): Promise<string | null>;
   readJson(request: string): Promise<unknown>;
   loadModule(request: string): Promise<unknown>;
+  isDevelopment: boolean;
 }
 
 export function createEnvironment(input: EnvironmentInput) {
@@ -41,7 +42,7 @@ export function createEnvironment(input: EnvironmentInput) {
   let ssrRenderer: SsrRenderFn | null = null;
 
   async function getCachedRoutesManifest(): Promise<Manifest> {
-    if (!cachedManifest) {
+    if (!cachedManifest || input.isDevelopment) {
       const json = await input.readJson('_expo/routes.json');
       cachedManifest = initManifestRegExp(json as RawManifest);
     }
@@ -49,7 +50,7 @@ export function createEnvironment(input: EnvironmentInput) {
   }
 
   async function getServerRenderer(): Promise<SsrRenderFn | null> {
-    if (ssrRenderer) {
+    if (ssrRenderer && !input.isDevelopment) {
       return ssrRenderer;
     }
 
@@ -107,11 +108,10 @@ export function createEnvironment(input: EnvironmentInput) {
         let renderOptions: RenderOptions | undefined;
 
         try {
-          const result = await executeLoader(request, route);
-          if (result !== undefined) {
+          if (route.loader) {
+            const result = await executeLoader(request, route);
             const data = isResponse(result) ? await result.json() : result;
-            const normalizedData = data === undefined ? {} : data;
-            renderOptions = { loader: { data: normalizedData } };
+            renderOptions = { loader: { data: data ?? null } };
           }
           return await renderer(request, renderOptions);
         } catch (error) {
@@ -156,8 +156,7 @@ export function createEnvironment(input: EnvironmentInput) {
         return result;
       }
 
-      const data = result === undefined ? {} : result;
-      return Response.json(data);
+      return Response.json(result ?? null);
     },
   };
 }

@@ -1,5 +1,5 @@
 ---
-title: Server Rendering
+title: Server rendering
 description: Learn how to render Expo Router routes dynamically at request time using server-side rendering (SSR).
 isAlpha: true
 ---
@@ -13,11 +13,13 @@ import { Step } from '~/ui/components/Step';
 
 Server-side rendering (SSR) generates HTML dynamically on each request, as opposed to [static rendering](/router/web/static-rendering), which pre-renders HTML at build time. This guide walks you through enabling server rendering for your Expo Router app.
 
+> **info** With server-side rendering, [data loaders](/router/web/data-loaders) are executed on the server for each request and the result is embedded in the HTML response.
+
 ## Setup
 
 <Step label="1">
 
-Enable Metro bundler and server output in your project's [app config](/versions/latest/config/app/):
+Enable server rendering in your project's [app config](/versions/latest/config/app/):
 
 ```json app.json
 {
@@ -25,26 +27,8 @@ Enable Metro bundler and server output in your project's [app config](/versions/
     /* @hide ... */
     /* @end */
     "web": {
-      /* @info Server rendering requires Metro bundler */
-      "bundler": "metro",
-      /* @end */
       "output": "server"
-    }
-  }
-}
-```
-
-</Step>
-
-<Step label="2">
-
-Enable server rendering in the `expo-router` plugin configuration:
-
-```json app.json
-{
-  "expo": {
-    /* @hide ... */
-    /* @end */
+    },
     "plugins": [
       [
         "expo-router",
@@ -61,24 +45,7 @@ Enable server rendering in the `expo-router` plugin configuration:
 
 </Step>
 
-<Step label="3">
-
-If you have a **metro.config.js** file in your project, ensure it extends `expo/metro-config`:
-
-```js metro.config.js
-const { getDefaultConfig } = require('expo/metro-config');
-
-/** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(__dirname, {
-  // Additional features...
-});
-
-module.exports = config;
-```
-
-</Step>
-
-<Step label="4">
+<Step label="2">
 
 Start the development server:
 
@@ -88,7 +55,7 @@ Start the development server:
 
 ## Production
 
-To export your app for production, run the universal export command:
+To export your app for production, run the export command:
 
 <Terminal cmd={['$ npx expo export --platform web']} />
 

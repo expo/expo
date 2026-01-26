@@ -1,0 +1,92 @@
+---
+title: Divider
+description: A SwiftUI Divider component for creating visual separators.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Divider matches the official SwiftUI [Divider API](https://developer.apple.com/documentation/swiftui/divider) and creates a visual separator between content.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic divider
+
+```tsx BasicDividerExample.tsx
+import { Host, Divider, VStack, Text } from '@expo/ui/swift-ui';
+
+export default function BasicDividerExample() {
+  return (
+    <Host matchContents>
+      <VStack>
+        <Text>First section</Text>
+        <Divider />
+        <Text>Second section</Text>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Divider in a list
+
+```tsx DividerInListExample.tsx
+import { Host, Divider, VStack, Text } from '@expo/ui/swift-ui';
+
+export default function DividerInListExample() {
+  return (
+    <Host matchContents>
+      <VStack spacing={8}>
+        <Text>Item 1</Text>
+        <Divider />
+        <Text>Item 2</Text>
+        <Divider />
+        <Text>Item 3</Text>
+        <Divider />
+        <Text>Item 4</Text>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Divider in a context menu
+
+Dividers are commonly used to separate groups of actions in context menus.
+
+```tsx DividerInContextMenuExample.tsx
+import { Host, ContextMenu, Button, Text, Divider } from '@expo/ui/swift-ui';
+
+export default function DividerInContextMenuExample() {
+  return (
+    <Host matchContents>
+      <ContextMenu>
+        <ContextMenu.Items>
+          <Button label="Edit" onPress={() => console.log('Edit')} />
+          <Button label="Duplicate" onPress={() => console.log('Duplicate')} />
+          <Divider />
+          <Button label="Delete" role="destructive" onPress={() => console.log('Delete')} />
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <Text>Long press me</Text>
+        </ContextMenu.Trigger>
+      </ContextMenu>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Divider } from '@expo/ui/swift-ui';
+```
+
+<APISection packageName="expo-ui/swift-ui/divider" apiName="Divider" />

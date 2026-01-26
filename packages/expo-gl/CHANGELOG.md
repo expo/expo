@@ -8,6 +8,20 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
 - Fix race condition bug for **web** env for `onLayout` callback. ([#41460](https://github.com/expo/expo/pull/41460) by [@psnet](https://github.com/psnet))
 
 ### 💡 Others

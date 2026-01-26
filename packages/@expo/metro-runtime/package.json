@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-runtime",
-  "version": "6.1.2",
+  "version": "55.0.2",
   "description": "Tools for making advanced Metro bundler features work",
   "sideEffects": true,
   "main": "src/index.ts",
@@ -43,14 +43,14 @@
     }
   },
   "dependencies": {
-    "@expo/log-box": "0.0.13-canary-20251023-4c86f95",
+    "@expo/log-box": "55.0.2",
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10",
     "pretty-format": "^29.7.0",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7",
+    "expo-module-scripts": "^55.0.2",
     "react-dom": "19.2.0"
   }
 }

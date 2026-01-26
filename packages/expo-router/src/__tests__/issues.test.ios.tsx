@@ -92,7 +92,8 @@ it('should return correct pathname for nested stack with initialRouteName, after
   expect(screen.queryByTestId('inner-a-pathname')).toBeNull();
   expect(screen.getByTestId('inner-index-pathname')).toHaveTextContent('/inner');
   expect(indexRenderCount).toHaveBeenCalledTimes(1);
-  expect(innerIndexRenderCount).toHaveBeenCalledTimes(1);
+  // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
+  expect(innerIndexRenderCount).toHaveBeenCalledTimes(2);
   expect(innerARenderCount).toHaveBeenCalledTimes(0);
 });
 

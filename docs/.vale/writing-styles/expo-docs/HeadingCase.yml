@@ -187,6 +187,7 @@ exceptions:
   - '.*Storage Access Framework.*'
   - '.*Strict-Transport-Security.*'
   - '.*SSO.*'
+  - '.*Suspense.*'
   - '.*Swift.*'
   - '.*Terser.*'
   - '.*TestFlight.*'
@@ -289,3 +290,6 @@ exceptions:
   - 'Method 1: Use'
   - 'Method 2: Use'
   - 'Image manipulation without disk I/O'
+  - Live Activities
+  - Starting a Live Activity
+  - Updating a Live Activity

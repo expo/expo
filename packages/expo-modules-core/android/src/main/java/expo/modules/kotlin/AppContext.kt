@@ -264,16 +264,25 @@ class AppContext(
   }
 
   internal fun onDestroy() = trace("AppContext.onDestroy") {
-    hostingRuntimeContext.reactContext?.removeLifecycleEventListener(reactLifecycleDelegate)
-    registry.post(EventName.MODULE_DESTROY)
-    registry.cleanUp()
+    runtime.reactContext?.run {
+      removeLifecycleEventListener(reactLifecycleDelegate)
+      removeActivityEventListener(reactLifecycleDelegate)
+    }
+
+    with(registry) {
+      post(EventName.MODULE_DESTROY)
+      cleanUp()
+    }
+
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
-    hostingRuntimeContext.deallocate()
+
+    runtime.deallocate()
     if (uiRuntimeHolder.isInitialized()) {
       uiRuntime.deallocate()
     }
+
     logger.info("✅ AppContext was destroyed")
   }
 

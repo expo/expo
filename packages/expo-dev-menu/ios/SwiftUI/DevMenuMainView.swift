@@ -42,5 +42,9 @@ struct DevMenuMainView: View {
       .padding()
     }
     .environmentObject(viewModel)
+    .navigationTitle("Dev Menu")
+#if !os(macOS)
+    .navigationBarHidden(true)
+#endif
   }
 }

@@ -11,6 +11,14 @@ export const WorkletsTester = {
     WorkletsTesterModule?.executeWorklet?.(createSerializable(worklet));
   },
 
+  executeWorkletWithArgs: (worklet: (num: number, str: string, bool: boolean) => void) => {
+    WorkletsTesterModule?.executeWorkletWithArgs?.(createSerializable(worklet));
+  },
+
+  scheduleWorkletWithArgs: (worklet: (num: number, str: string, bool: boolean) => void) => {
+    WorkletsTesterModule?.scheduleWorkletWithArgs?.(createSerializable(worklet));
+  },
+
   isAvailable() {
     return WorkletsTesterModule != null;
   },

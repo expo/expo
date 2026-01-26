@@ -6,6 +6,32 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.4 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-22
+
+### 🐛 Bug fixes
+
+- Prevent logging on download progress events to reduce log size. ([#42436](https://github.com/expo/expo/pull/42436) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - Remove `ExpoAppDelegate` inheritance requirement ([#39417](https://github.com/expo/expo/pull/39417) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add patch content negotiation headers. ([#40583](https://github.com/expo/expo/pull/40583) by [@alanjhughes](https://github.com/alanjhughes))
 

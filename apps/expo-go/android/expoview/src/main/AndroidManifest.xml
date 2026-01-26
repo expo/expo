@@ -27,8 +27,8 @@
   <uses-permission android:name="android.permission.READ_CONTACTS" />
   <uses-permission android:name="android.permission.READ_CALENDAR" />
   <uses-permission android:name="android.permission.WRITE_CALENDAR" />
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
   <uses-permission android:name="android.permission.CAMERA" />
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -135,6 +135,11 @@
         <data android:scheme="expauth" />
       </intent-filter>
     </activity>
+
+    <activity
+      android:name="host.exp.exponent.home.qrScanner.QRScannerActivity"
+      android:exported="false"
+      android:theme="@style/Theme.AppCompat.NoActionBar" />
   </application>
 
 </manifest>

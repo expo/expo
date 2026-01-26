@@ -8931,12 +8931,7 @@ in order to enable/disable the permission.
                 class="text-default text-[13px] font-normal leading-[130%] tracking-[-0.003rem] inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5 [&>span]:!text-inherit"
                 data-text="true"
               >
-                <a
-                  class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
-                  href="#permissionexpiration"
-                >
-                  PermissionExpiration
-                </a>
+                PermissionExpiration
               </code>
             </td>
             <td

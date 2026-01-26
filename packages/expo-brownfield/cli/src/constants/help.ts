@@ -37,17 +37,17 @@ const commonBuildOptions = [
 const generalHelp = helpMessage({
   commands: [
     {
-      command: 'build-android',
+      command: 'build:android',
       description: 'build and publish Android brownfield artifacts',
       hasOptions: true,
     },
     {
-      command: 'build-ios',
+      command: 'build:ios',
       description: 'build iOS brownfield artifacts',
       hasOptions: true,
     },
     {
-      command: 'tasks-android',
+      command: 'tasks:android',
       description: 'list available publishing tasks and repositories for android',
       hasOptions: true,
     },
@@ -63,12 +63,12 @@ const generalHelp = helpMessage({
 });
 
 /**
- * Help message for 'build-android' command
+ * Help message for 'build:android' command
  */
 const buildAndroidHelp = helpMessage({
-  promptCommand: 'build-android',
+  promptCommand: 'build:android',
   options: [
-    helpOption("'build-android'"),
+    helpOption("'build:android'"),
     ...commonBuildOptions,
     {
       description: 'build both debug and release configurations',
@@ -94,9 +94,9 @@ const buildAndroidHelp = helpMessage({
 });
 
 const tasksAndroidHelp = helpMessage({
-  promptCommand: 'tasks-android',
+  promptCommand: 'tasks:android',
   options: [
-    helpOption("'tasks-android'"),
+    helpOption("'tasks:android'"),
     {
       description: 'output all subcommands output to the terminal',
       option: '--verbose',
@@ -110,12 +110,12 @@ const tasksAndroidHelp = helpMessage({
 });
 
 /**
- * Help message for 'build-ios' command
+ * Help message for 'build:ios' command
  */
 const buildIosHelp = helpMessage({
-  promptCommand: 'build-ios',
+  promptCommand: 'build:ios',
   options: [
-    helpOption("'build-ios'"),
+    helpOption("'build:ios'"),
     ...commonBuildOptions,
     {
       description: 'path to artifacts directory',

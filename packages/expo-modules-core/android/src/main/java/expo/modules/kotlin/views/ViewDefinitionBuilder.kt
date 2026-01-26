@@ -123,14 +123,12 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified PropType> Prop(
     name: String,
     noinline body: (view: T, prop: PropType) -> Unit
-  ): ConcreteViewProp<T, PropType> {
-    return ConcreteViewProp(
+  ) {
+    props[name] = ConcreteViewProp(
       name,
       toAnyType<PropType>(),
       body
-    ).apply {
-      props[name] = this
-    }
+    )
   }
 
   /**
@@ -140,14 +138,12 @@ class ViewDefinitionBuilder<T : View>(
   inline fun <reified ViewType : View, reified PropType> Prop(
     name: String,
     noinline body: (view: ViewType, prop: PropType) -> Unit
-  ): ConcreteViewProp<ViewType, PropType> {
-    return ConcreteViewProp(
+  ) {
+    props[name] = ConcreteViewProp(
       name,
       toAnyType<PropType>(),
       body
-    ).apply {
-      props[name] = this
-    }
+    )
   }
 
   /**
@@ -158,15 +154,13 @@ class ViewDefinitionBuilder<T : View>(
     name: String,
     defaultValue: PropType,
     noinline body: (view: ViewType, prop: PropType) -> Unit
-  ): ConcreteViewPropWithDefault<ViewType, PropType> {
-    return ConcreteViewPropWithDefault(
+  ) {
+    props[name] = ConcreteViewPropWithDefault(
       name,
       toAnyType<PropType>(),
       body,
       defaultValue
-    ).apply {
-      props[name] = this
-    }
+    )
   }
 
   inline fun <reified ViewType : View, reified PropType, reified CustomValueType> PropGroup(

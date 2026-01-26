@@ -9,6 +9,7 @@ public class ReactNativeHostManager {
 
   private var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   private var reactNativeFactory: RCTReactNativeFactory?
+  private var firstViewLoad: Bool = true
 
   /**
    * Initializes ReactNativeHostManager instance
@@ -41,6 +42,16 @@ public class ReactNativeHostManager {
   ) throws -> UIView {
     guard let reactNativeFactory else {
       fatalError("Trying to load view without initializing reactNativeFactory")
+    }
+
+    // Needed to set up delegates (e.g. for expo-dev-menu)
+    if firstViewLoad {
+      firstViewLoad = false
+      reactNativeFactory.startReactNative(
+        withModuleName: moduleName,
+        in: nil,
+        launchOptions: nil
+      )
     }
 
     return reactNativeFactory.rootViewFactory.view(

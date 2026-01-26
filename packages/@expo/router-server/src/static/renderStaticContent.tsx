@@ -73,8 +73,10 @@ export async function getStaticContent(
   resetReactNavigationContexts();
 
   const loadedData =
-    options?.loader?.data !== undefined
-      ? { [location.pathname + location.search]: options.loader.data }
+    options?.loader !== undefined
+      ? {
+          [location.pathname + location.search]: options.loader.data ?? null,
+        }
       : null;
 
   const html = ReactDOMServer.renderToString(

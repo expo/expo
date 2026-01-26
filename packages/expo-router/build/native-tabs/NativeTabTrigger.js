@@ -9,10 +9,10 @@ const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const elements_1 = require("./common/elements");
+const icon_1 = require("./utils/icon");
 const PreviewRouteContext_1 = require("../link/preview/PreviewRouteContext");
 const useFocusEffect_1 = require("../useFocusEffect");
 const children_1 = require("../utils/children");
-const icon_1 = require("./utils/icon");
 const materialIconConverter_1 = require("./utils/materialIconConverter");
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
@@ -21,8 +21,7 @@ const materialIconConverter_1 = require("./utils/materialIconConverter");
  * When used in the tab screen, the `name` prop takes no effect.
  *
  * @example
- * ```tsx
- * // In _layout file
+ * ```tsx app/_layout.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function Layout() {
@@ -36,8 +35,7 @@ const materialIconConverter_1 = require("./utils/materialIconConverter");
  * ```
  *
  * @example
- * ```tsx
- * // In a tab screen
+ * ```tsx app/home.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function HomeScreen() {
@@ -51,8 +49,6 @@ const materialIconConverter_1 = require("./utils/materialIconConverter");
  *   );
  * }
  * ```
- *
- * > **Note:** You can use the alias `NativeTabs.Trigger` for this component.
  */
 function NativeTabTriggerImpl(props) {
     const route = (0, native_1.useRoute)();
@@ -210,15 +206,12 @@ function convertSrcOrComponentToSrc(src, options) {
     return undefined;
 }
 function isNativeTabTrigger(child, contextKey) {
-    if ((0, react_1.isValidElement)(child) && child && child.type === exports.NativeTabTrigger) {
-        if (typeof child.props === 'object' &&
-            child.props &&
-            'name' in child.props &&
-            !child.props.name) {
+    if ((0, children_1.isChildOfType)(child, exports.NativeTabTrigger)) {
+        if ('name' in child.props && !child.props.name) {
             throw new Error(`<Trigger /> component in \`default export\` at \`app${contextKey}/_layout\` must have a \`name\` prop when used as a child of a Layout Route.`);
         }
         if (process.env.NODE_ENV !== 'production') {
-            if (['component', 'getComponent'].some((key) => child.props && typeof child.props === 'object' && key in child.props)) {
+            if (['component', 'getComponent'].some((key) => key in child.props)) {
                 throw new Error(`<Trigger /> component in \`default export\` at \`app${contextKey}/_layout\` must not have a \`component\` or \`getComponent\` prop when used as a child of a Layout Route`);
             }
         }

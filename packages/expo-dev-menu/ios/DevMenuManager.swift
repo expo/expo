@@ -89,6 +89,11 @@ open class DevMenuManager: NSObject {
     manifestSubject.eraseToAnyPublisher()
   }
 
+  private let menuWillShowSubject = PassthroughSubject<Void, Never>()
+  public var menuWillShowPublisher: AnyPublisher<Void, Never> {
+    menuWillShowSubject.eraseToAnyPublisher()
+  }
+
   @objc
   public private(set) var currentManifest: Manifest? {
     didSet {
@@ -358,6 +363,7 @@ open class DevMenuManager: NSObject {
       return false
     }
     if visible {
+      menuWillShowSubject.send()
       setCurrentScreen(screen)
       DispatchQueue.main.async {
 #if os(macOS)

@@ -105,6 +105,16 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
        * @platform ios
        */
       fontWeight?: TextStyle['fontWeight'];
+      /**
+       * Sets the tint color of SF symbols. This is an alias for `tintColor` that can be used in styles.
+       * @platform ios
+       */
+      color?: TextStyle['color'];
+      /**
+       * Sets the size (width and height) of SF symbols.
+       * @platform ios
+       */
+      fontSize?: TextStyle['fontSize'];
     }
   >;
 
@@ -114,6 +124,8 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * will be chosen. In this case it is important to provide `width`, `height` and `scale` properties.
    *
    * For SF Symbols (iOS), use the `sf:` prefix followed by the symbol name, for example, `sf:star.fill`.
+   *
+   * > **Note**: For the complete list of SF Symbols, see [Apple's SF Symbols catalog](https://developer.apple.com/sf-symbols/) or the [`sf-symbols-typescript`](https://github.com/nandorojo/sf-symbols-typescript) library documentation.
    */
   source?:
     | ImageSource
@@ -464,6 +476,7 @@ export interface ImageNativeProps extends ImageProps {
   nativeViewRef?: React.RefObject<ExpoImage | null>;
   containerViewRef?: React.RefObject<View | null>;
   symbolWeight?: string | null;
+  symbolSize?: number | null;
 }
 
 /**

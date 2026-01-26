@@ -47,6 +47,29 @@ struct DevMenuDeveloperTools: View {
           action: viewModel.toggleFastRefresh,
           disabled: !(viewModel.devSettings?.isHotLoadingAvailable ?? true)
         )
+
+        Divider()
+
+        NavigationLink(destination: SourceMapExplorerView()) {
+          HStack {
+            Image(systemName: "map")
+              .frame(width: 24, height: 24)
+              .foregroundColor(.primary)
+              .opacity(0.6)
+
+            Text("Source code explorer")
+              .foregroundColor(.primary)
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+              .font(.caption)
+              .foregroundColor(.secondary)
+          }
+          .padding()
+          .background(Color.expoSecondarySystemBackground)
+        }
+        .buttonStyle(.plain)
       }
       .background(Color.expoSystemBackground)
       .cornerRadius(18)

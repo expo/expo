@@ -16,7 +16,12 @@ class ModuleDefinitionEncoder: Encodable {
   func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     try container.encode(definition.name, forKey: .name)
-    try container.encode(definition.legacyConstants.map({ LegacyConstantsDefinitionEncoder($0) }), forKey: .constants)
+    var allConstants: [[ConstantEncoder]] = []
+    allConstants.append(contentsOf: definition.legacyConstants.map({ LegacyConstantsDefinitionEncoder($0).getEncoders() }))
+    if !definition.constants.isEmpty {
+      allConstants.append(definition.constants.values.map({ ConstantEncoder($0.name, value: $0.getRawValue()) }))
+    }
+    try container.encode(allConstants, forKey: .constants)
     try container.encode(definition.properties.values.map({ PropertyDefinitionEncoder($0) }), forKey: .properties)
     try container.encode(definition.functions.values.map({ FunctionDefinitionEncoder($0) }), forKey: .functions)
     try container.encode(definition.views.values.map({ ViewDefinitionEncoder($0) }), forKey: .views)
@@ -130,10 +135,10 @@ class ConstantEncoder: Encodable {
     case nil:
       try container.encodeNil(forKey: .value)
       try container.encode("null", forKey: .type)
-    case let value as [String: Any]:
+    case _ as [String: Any]:
       try container.encodeNil(forKey: .value)
       try container.encode("object", forKey: .type)
-    case let value as [Any]:
+    case _ as [Any]:
       try container.encodeNil(forKey: .value)
       try container.encode("array", forKey: .type)
     default:
@@ -143,24 +148,16 @@ class ConstantEncoder: Encodable {
   }
 }
 
-class LegacyConstantsDefinitionEncoder: Encodable {
+class LegacyConstantsDefinitionEncoder {
   private let definition: ConstantsDefinition
 
   init(_ definition: ConstantsDefinition) {
     self.definition = definition
   }
 
-  enum CodingKeys: String, CodingKey {
-    case name
-    case value
-  }
-
-  func encode(to encoder: Encoder) throws {
-    var container = encoder.unkeyedContainer()
+  func getEncoders() -> [ConstantEncoder] {
     let constants = definition.body()
-    for (key, value) in constants {
-      try container.encode(ConstantEncoder(key, value: value))
-    }
+    return constants.map { (key, value) in ConstantEncoder(key, value: value) }
   }
 }
 

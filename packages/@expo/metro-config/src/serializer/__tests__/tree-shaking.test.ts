@@ -1976,3 +1976,65 @@ it(`barrel star empty file`, async () => {
   ]);
   expectImports(graph, '/app/barrel.js').toEqual([]);
 });
+
+describe('React Compiler', () => {
+  it(`works with tree shaking when React Compiler is enabled`, async () => {
+    const [[, , graph], artifacts] = await serializeShakingAsync(
+      {
+        'index.js': `
+          import { add } from './math';
+          console.log('keep', add(1, 2));
+        `,
+        'math.js': `
+          export function add(a, b) {
+            return a + b;
+          }
+
+          export function subtract(a, b) {
+            return a - b;
+          }
+        `,
+      },
+      {
+        reactCompiler: true,
+      }
+    );
+
+    expectImports(graph, '/app/index.js').toEqual([
+      expect.objectContaining({ absolutePath: '/app/math.js' }),
+    ]);
+    expect(artifacts[0].source).not.toMatch('subtract');
+  });
+
+  it(`works with barrel exports and React Compiler enabled`, async () => {
+    const [[, , graph], artifacts] = await serializeShakingAsync(
+      {
+        'index.js': `
+          import { add } from './barrel';
+          console.log('keep', add(1, 2));
+        `,
+        'barrel.js': `export { add, subtract } from './math';`,
+        'math.js': `
+          export function add(a, b) {
+            return a + b;
+          }
+
+          export function subtract(a, b) {
+            return a - b;
+          }
+        `,
+      },
+      {
+        reactCompiler: true,
+      }
+    );
+
+    expectImports(graph, '/app/index.js').toEqual([
+      expect.objectContaining({ absolutePath: '/app/barrel.js' }),
+    ]);
+    expectImports(graph, '/app/barrel.js').toEqual([
+      expect.objectContaining({ absolutePath: '/app/math.js' }),
+    ]);
+    expect(artifacts[0].source).not.toMatch('subtract');
+  });
+});

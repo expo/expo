@@ -2,6 +2,7 @@ import type { ScopeDefinition } from '../../runtime/scope';
 interface NodeEnvParams {
     build: string;
     environment?: string | null;
+    isDevelopment?: boolean;
 }
 export declare function createNodeEnv(params: NodeEnvParams): {
     getRoutesManifest(): Promise<import("../../manifest").Manifest>;

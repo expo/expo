@@ -22,7 +22,9 @@
 #import <React/RCTAppearance.h>
 #import <React/RCTDevSettings.h>
 
+#if __has_include(<RNScreens/RNSScreenWindowTraits.h>)
 #import <RNScreens/RNSScreenWindowTraits.h>
+#endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -529,7 +531,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldUseRNScreenOrientation
 {
+#if __has_include(<RNScreens/RNSScreenWindowTraits.h>)
   return [RNSScreenWindowTraits shouldAskScreensForScreenOrientationInViewController:self];
+#else
+  return NO;
+#endif
 }
 
 - (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault

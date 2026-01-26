@@ -115,6 +115,10 @@ public final class ImageModule: Module {
         view.symbolWeight = symbolWeight
       }
 
+      Prop("symbolSize") { (view, symbolSize: Double?) in
+        view.symbolSize = symbolSize
+      }
+
       Prop("useAppleWebpCodec", true) { (view, useAppleWebpCodec: Bool) in
         view.useAppleWebpCodec = useAppleWebpCodec
       }
@@ -242,7 +246,7 @@ public final class ImageModule: Module {
     }
 
     AsyncFunction("loadAsync") { (source: ImageSource, options: ImageLoadOptions?) -> Image? in
-      let image = try await ImageLoadTask(source, maxSize: options?.getMaxSize()).load()
+      let image = try await ImageLoadTask(source, options: options ?? ImageLoadOptions()).load()
       return Image(image)
     }
 

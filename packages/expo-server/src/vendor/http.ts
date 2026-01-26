@@ -33,7 +33,7 @@ export interface RequestHandlerParams
  * Returns a request handler for http that serves the response using Remix.
  */
 export function createRequestHandler(
-  params: { build: string; environment?: string | null },
+  params: { build: string; environment?: string | null; isDevelopment?: boolean },
   setup?: Partial<RequestHandlerParams>
 ): RequestHandler {
   const run = createNodeRequestScope(STORE, params);
