@@ -3,6 +3,10 @@
   "title": "Expo Development Launcher",
   "version": "55.0.0",
   "description": "Pre-release version of the Expo development launcher package for testing.",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
