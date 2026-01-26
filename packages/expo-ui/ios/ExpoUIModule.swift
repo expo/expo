@@ -88,9 +88,18 @@ public final class ExpoUIModule: Module {
         return .undefined
       }
 
+      let removeOnChange = uiRuntime.createSyncFunction("removeOnChange", argsCount: 1) { _, args in
+        guard let id = args.first?.getInt() else {
+          return .undefined
+        }
+        SwiftUIStateRegistry.shared.removeOnChange(id: id)
+        return .undefined
+      }
+
       stateObject.setProperty("getValue", value: getValue)
       stateObject.setProperty("setValue", value: setValue)
       stateObject.setProperty("onChange", value: onChange)
+      stateObject.setProperty("removeOnChange", value: removeOnChange)
 
       uiRuntime.global().setProperty("__expoSwiftUIState", value: stateObject)
     }

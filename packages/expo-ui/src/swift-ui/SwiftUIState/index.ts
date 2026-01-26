@@ -68,7 +68,7 @@ export function useSwiftUIState<T>(initialValue: T): SwiftUIState<T> {
   }
 }
 
-export function registerOnChange<T>(stateId: number, onChange: (value: T) => void) {
+export function registerOnChange<T>(stateId: number, onChange: (value: T) => void): () => void {
   scheduleOnUI(() => {
     'worklet';
     // @ts-ignore
@@ -77,4 +77,13 @@ export function registerOnChange<T>(stateId: number, onChange: (value: T) => voi
       onChange(value);
     });
   });
+
+  // Return unsubscribe function
+  return () => {
+    scheduleOnUI(() => {
+      'worklet';
+      // @ts-ignore
+      global.__expoSwiftUIState.removeOnChange(stateId);
+    });
+  };
 }

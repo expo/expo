@@ -65,6 +65,12 @@ internal final class SwiftUIStateRegistry {
     states[id]?.onChange = callback
   }
 
+  func removeOnChange(id: Int) {
+    lock.lock()
+    defer { lock.unlock() }
+    states[id]?.onChange = nil
+  }
+
   func clear() {
     lock.lock()
     defer { lock.unlock() }

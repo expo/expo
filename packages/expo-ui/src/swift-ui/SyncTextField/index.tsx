@@ -20,9 +20,9 @@ export function SyncTextField(props: SyncTextFieldProps) {
   const { state, onChangeSync } = props;
 
   useEffect(() => {
-    if (onChangeSync) {
-      registerOnChange(state.stateId, onChangeSync);
-    }
+    if (!onChangeSync) return;
+    const unsubscribe = registerOnChange(state.stateId, onChangeSync);
+    return unsubscribe;
   }, [state.stateId, onChangeSync]);
 
   return (
