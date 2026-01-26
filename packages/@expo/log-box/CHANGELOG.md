@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- absolute position web content to prevent modifying body layout.
+
 ### 💡 Others
 
 ## 55.0.2 — 2026-01-26
