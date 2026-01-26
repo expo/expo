@@ -37,7 +37,9 @@ struct DevMenuMainView: View {
 
         DevMenuAppInfo()
 
-        DevMenuRNDevMenu(onOpenRNDevMenu: viewModel.openRNDevMenu)
+        if viewModel.shouldShowReactNativeDevMenu {
+          DevMenuRNDevMenu(onOpenRNDevMenu: viewModel.openRNDevMenu)
+        }
       }
       .padding()
     }

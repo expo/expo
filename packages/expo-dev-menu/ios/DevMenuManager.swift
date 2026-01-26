@@ -271,6 +271,15 @@ open class DevMenuManager: NSObject {
   }
 
   @objc
+  public var shouldShowReactNativeDevMenu: Bool {
+    guard let delegate = hostDelegate,
+      delegate.responds(to: #selector(DevMenuHostDelegate.devMenuShouldShowReactNativeDevMenu)) else {
+      return true
+    }
+    return delegate.devMenuShouldShowReactNativeDevMenu?() ?? true
+  }
+
+  @objc
   public func navigateHome() {
     guard let delegate = hostDelegate,
       delegate.responds(to: #selector(DevMenuHostDelegate.devMenuNavigateHome)) else {
