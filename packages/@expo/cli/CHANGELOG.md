@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support in `expo start` for custom app ids. ([#42555](https://github.com/expo/expo/pull/42555) by [@sebryu](https://github.com/sebryu))
+
 ### 🐛 Bug fixes
 
 - Reallow connections on `/expo-dev-plugins/broadcast` broadcast socket to local connections ([#42538](https://github.com/expo/expo/pull/42538) by [@kitten](https://github.com/kitten))
