@@ -28,7 +28,7 @@ struct SourceMapExplorerView: View {
       }
     }
     .navigationTitle("Source Code Explorer")
-#if !os(macOS)
+#if !os(macOS) && !os(tvOS)
     .navigationBarTitleDisplayMode(.inline)
 #endif
     .searchable(text: $viewModel.searchText, placement: .automatic, prompt: "Search files")
@@ -103,25 +103,39 @@ struct FolderListView: View {
         }
       }
     }
-#if !os(macOS)
+#if !os(macOS) && !os(tvOS)
     .listStyle(.insetGrouped)
+#elseif os(tvOS)
+    .listStyle(.plain)
 #endif
     .navigationTitle(isSearching ? "Search Results" : title)
-#if !os(macOS)
+#if !os(macOS) && !os(tvOS)
     .navigationBarTitleDisplayMode(.inline)
+#endif
     .toolbar {
       ToolbarItem(placement: .navigationBarTrailing) {
         if let stats = stats {
+#if os(tvOS)
+          if #available(tvOS 17.0, *) {
+            Menu {
+              Label("\(stats.files) files", systemImage: "doc.on.doc")
+              Label(stats.totalSize, systemImage: "internaldrive")
+            } label: {
+              Image(systemName: "info.circle")
+            }
+          }
+          // Menu not available on tvOS < 17.0, toolbar item is hidden
+#else
           Menu {
             Label("\(stats.files) files", systemImage: "doc.on.doc")
             Label(stats.totalSize, systemImage: "internaldrive")
           } label: {
             Image(systemName: "info.circle")
           }
+#endif
         }
       }
     }
-#endif
   }
 }
 
@@ -222,7 +236,7 @@ struct CodeFileView: View {
     }
     .background(theme.background)
     .navigationTitle(node.name)
-#if !os(macOS)
+#if !os(macOS) && !os(tvOS)
     .navigationBarTitleDisplayMode(.inline)
 #endif
     .task(id: colorScheme) {
