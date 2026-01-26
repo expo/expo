@@ -16,7 +16,33 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  detect-platform-for-e2e:
+    runs-on: ubuntu-24.04
+    outputs:
+      should_run_ios: ${{ steps.changes.outputs.should_run_ios }}
+      should_run_android: ${{ steps.changes.outputs.should_run_android }}
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v5
+      - name: 🧐 Detect platform change
+        id: changes
+        uses: ./.github/actions/detect-platform-change
+        with:
+          android-paths: >-
+            "apps/brownfield-tester/**/android/**",
+            "packages/{expo,expo-modules-core,expo-dev-client,expo-updates}/**/android/**"
+          ios-paths: >-
+            "apps/brownfield-tester/**/ios/**",
+            "packages/{expo,expo-modules-core,expo-dev-client,expo-updates}/**/ios/**"
+          common-paths: >-
+            .github/workflows/test-suite-brownfield.yml,
+            "apps/brownfield-tester/**",
+            "!apps/brownfield-tester/**/{ios,android}/**",
+            "packages/{expo,expo-modules-core,expo-dev-client,expo-updates}/**",
+            "!packages/{expo,expo-modules-core,expo-dev-client,expo-updates}/**/{ios,android}/**"
   ios-build:
+    needs: detect-platform-for-e2e
+    if: needs.detect-platform-for-e2e.outputs.should_run_ios == 'true'
     strategy:
       fail-fast: true
       matrix:
@@ -68,6 +94,8 @@ jobs:
           channel: '#expo-ios'
           author_name: Brownfield Test Suite (iOS)
   android-build:
+    needs: detect-platform-for-e2e
+    if: needs.detect-platform-for-e2e.outputs.should_run_android == 'true'
     strategy:
       fail-fast: true
       matrix:
