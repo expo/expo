@@ -1,1 +1,1 @@
-{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/swift-ui/SwiftUIState/index.ts"],"names":[],"mappings":"AAKA,wBAAgB,eAAe,CAAC,CAAC,EAAE,YAAY,EAAE,CAAC,EAAE,QAAQ,EAAE,CAAC,KAAK,EAAE,CAAC,KAAK,IAAI;sBAoBrD,CAAC;oBAcJ,CAAC;;qBA/BC,MAAM;EAoD/B"}
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../src/swift-ui/SwiftUIState/index.ts"],"names":[],"mappings":"AAAA,OAAO,yBAAyB,CAAC;AAajC,wBAAgB,eAAe,CAAC,CAAC,EAAE,YAAY,EAAE,CAAC,EAAE,QAAQ,CAAC,EAAE,CAAC,KAAK,EAAE,CAAC,KAAK,CAAC,GAAG,IAAI;sBA4B1D,CAAC;oBAcL,CAAC;;EAmBvB"}

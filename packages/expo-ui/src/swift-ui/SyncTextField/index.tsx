@@ -1,23 +1,13 @@
-import "react-native-reanimated";
-import { NativeSyntheticEvent } from "react-native";
-import { installOnUIRuntime, requireNativeView } from 'expo';
-import { requireNativeModule } from 'expo';
+import { requireNativeView } from 'expo';
 import { useSwiftUIState } from "../SwiftUIState";
 
-installOnUIRuntime();
-
-const ExpoUI = requireNativeModule('ExpoUI');
-ExpoUI.initializeWorkletFunctions();
-
-type StateInitializeEvent = NativeSyntheticEvent<{ stateId: number }>;
 
 type NativeSyncTextFieldProps = {
-  initialValue: string;
-  onStateInitialize: (event: StateInitializeEvent) => void;
+  stateId: number;
 }
 
 type SyncTextFieldProps = {
-  state: ReturnType<typeof useSwiftUIState<NativeSyncTextFieldProps['initialValue']>>;
+  state: ReturnType<typeof useSwiftUIState<string>>;
 }
 
 const SyncTextFieldNativeView: React.ComponentType<NativeSyncTextFieldProps> = requireNativeView(
@@ -28,14 +18,9 @@ const SyncTextFieldNativeView: React.ComponentType<NativeSyncTextFieldProps> = r
 export function SyncTextField(props: SyncTextFieldProps) {
   const { state } = props;
 
-  const onStateInitialize = (event: StateInitializeEvent) => {
-    state.setStateId(event.nativeEvent.stateId);
-  }
-
   return (
     <SyncTextFieldNativeView
-      initialValue={state.initialValue}
-      onStateInitialize={onStateInitialize}
+      stateId={state.stateId}
     />
   );
 }

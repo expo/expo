@@ -1,7 +1,7 @@
-export declare function useSwiftUIState<T>(initialValue: T, onChange: (value: T) => void): {
+import "react-native-reanimated";
+export declare function useSwiftUIState<T>(initialValue: T, onChange?: (value: T) => T | void): {
     setValue: (value: T) => void;
     getValue: () => T;
-    initialValue: T;
-    setStateId: (id: number) => void;
+    stateId: number;
 };
 //# sourceMappingURL=index.d.ts.map

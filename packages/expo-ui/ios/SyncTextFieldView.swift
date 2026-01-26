@@ -4,27 +4,16 @@ import SwiftUI
 import ExpoModulesCore
 
 final class SyncTextFieldProps: UIBaseViewProps {
-  @Field var initialValue: String = ""
-  var onStateInitialize = EventDispatcher()
+  @Field var stateId: Int?
 }
 
 struct SyncTextFieldView: ExpoSwiftUI.View {
   @ObservedObject var props: SyncTextFieldProps
-  @State private var stateId: Int
-
-  init(props: SyncTextFieldProps) {
-    self.props = props
-    let id = SwiftUIStateRegistry.shared.createState(initialValue: props.initialValue)
-    _stateId = State(initialValue: id)
-    props.onStateInitialize(["stateId": id])
-  }
 
   var body: some View {
-    if let state = SwiftUIStateRegistry.shared.getState(id: stateId) {
+    if let stateId = props.stateId,
+       let state = SwiftUIStateRegistry.shared.getState(id: stateId) {
       SyncTextFieldContent(state: state)
-        .onDisappear {
-          SwiftUIStateRegistry.shared.deleteState(id: stateId)
-        }
     }
   }
 }
@@ -34,8 +23,12 @@ private struct SyncTextFieldContent: View {
 
   var body: some View {
     TextField("Enter text", text: state.binding(as: String.self, default: ""))
-      .onChange(of: state.value as? String) { _ in
-        state.onChange?()
+      .onChange(of: state.value as? String) { newValue in
+        guard let newValue, let onChange = state.onChange else { return }
+        let transformed = onChange(newValue) as? String
+        if let transformed, transformed != newValue {
+          state.value = transformed
+        }
       }
   }
 }
