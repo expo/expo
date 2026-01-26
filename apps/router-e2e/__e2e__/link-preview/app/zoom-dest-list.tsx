@@ -1,22 +1,9 @@
-import { Link, usePreventZoomTransitionDismissal } from 'expo-router';
-import { useState } from 'react';
+import { Link } from 'expo-router';
 import { Image, ScrollView, View } from 'react-native';
 
 export default function ZoomDestScreen() {
-  const [shouldPrevent, setShouldPrevent] = useState(false);
-  usePreventZoomTransitionDismissal(
-    shouldPrevent
-      ? undefined
-      : {
-          unstable_dismissalBoundsRect: { minX: 0, minY: 0 },
-        }
-  );
   return (
-    <ScrollView
-      style={{ flex: 1 }}
-      onScroll={(event) => {
-        setShouldPrevent(event.nativeEvent.contentOffset.y > 1);
-      }}>
+    <ScrollView style={{ flex: 1 }}>
       <Link.AppleZoomTarget>
         <View style={{ width: '100%', aspectRatio: 1 }}>
           <Image
