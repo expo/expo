@@ -873,7 +873,8 @@ const fixupDeprecatedEnableProguardInReleaseBuilds = (config: unknown) => {
  */
 function getHermesCompilerVersion(projectRoot: string): string | null {
   const reactNativePath = resolveFrom.silent(projectRoot, 'react-native/package.json');
-  const hermesCompilerPackageJsonPath = reactNativePath && resolveFrom.silent(reactNativePath, 'hermes-compiler/package.json');
+  const hermesCompilerPackageJsonPath =
+    reactNativePath && resolveFrom.silent(reactNativePath, 'hermes-compiler/package.json');
   if (!hermesCompilerPackageJsonPath) {
     return null;
   }
@@ -910,12 +911,10 @@ export function validateConfig(config: unknown, projectRoot?: string): PluginCon
   // Hermes v1 requires a specific hermes-compiler version
   if ((androidUseHermesV1 || iosUseHermesV1) && projectRoot) {
     const hermesCompilerVersion = getHermesCompilerVersion(projectRoot);
-    if (hermesCompilerVersion !== HERMES_V1_COMPILER_VERSION) {
+    if (hermesCompilerVersion && hermesCompilerVersion !== HERMES_V1_COMPILER_VERSION) {
       throw new Error(
         `\`useHermesV1\` requires setting the hermes-compiler version to ${HERMES_V1_COMPILER_VERSION} through resolutions. ` +
-          (hermesCompilerVersion
-            ? `Found version "${hermesCompilerVersion}" instead.`
-            : 'hermes-compiler dependency not found.')
+          `Found version "${hermesCompilerVersion}" instead.`
       );
     }
   }

@@ -311,14 +311,13 @@ function validateConfig(config, projectRoot) {
     }
     const androidUseHermesV1 = resolveConfigValue(config, 'android', 'useHermesV1');
     const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1');
+    // TODO(gabrieldonadel): Revisit this before releasing SDK 56
     // Hermes v1 requires a specific hermes-compiler version
     if ((androidUseHermesV1 || iosUseHermesV1) && projectRoot) {
         const hermesCompilerVersion = getHermesCompilerVersion(projectRoot);
-        if (hermesCompilerVersion !== HERMES_V1_COMPILER_VERSION) {
+        if (hermesCompilerVersion && hermesCompilerVersion !== HERMES_V1_COMPILER_VERSION) {
             throw new Error(`\`useHermesV1\` requires setting the hermes-compiler version to ${HERMES_V1_COMPILER_VERSION} through resolutions. ` +
-                (hermesCompilerVersion
-                    ? `Found version "${hermesCompilerVersion}" instead.`
-                    : 'hermes-compiler dependency not found.'));
+                `Found version "${hermesCompilerVersion}" instead.`);
         }
     }
     // Validate useHermesV1 requires buildReactNativeFromSource for Android
