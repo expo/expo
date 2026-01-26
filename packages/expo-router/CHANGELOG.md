@@ -12,6 +12,7 @@
 - add disableTransparentOnScrollEdge to NativeTabs.Trigger ([#42664](https://github.com/expo/expo/pull/42664) by [@Ubax](https://github.com/Ubax))
 - Add asChild prop to Stack.Screen.Title ([#42650](https://github.com/expo/expo/pull/42650) by [@Ubax](https://github.com/Ubax))
 - [ios] unify the separateBackground prop on SearchBarSlot with other components ([#42530](https://github.com/expo/expo/pull/42530) by [@Ubax](https://github.com/Ubax))
+- [ios] accept Label, Icon and Badge prop in menu and button ([#42546](https://github.com/expo/expo/pull/42546) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
