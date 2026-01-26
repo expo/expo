@@ -66,8 +66,8 @@ export function createServerComponentsMiddleware(
   }
 ) {
   const routerModule = useClientRouter
-    ? '@expo/router-server/build/rsc/router/noopRouter'
-    : '@expo/router-server/build/rsc/router/expo-definedRouter';
+    ? require.resolve('@expo/router-server/build/rsc/router/noopRouter')
+    : require.resolve('@expo/router-server/build/rsc/router/expo-definedRouter');
 
   const rscMiddleware = getRscMiddleware({
     config: {},
@@ -469,7 +469,7 @@ export function createServerComponentsMiddleware(
     // TODO: Extract CSS Modules / Assets from the bundler process
     const renderer = await ssrLoadModule<
       typeof import('@expo/router-server/build/rsc/rsc-renderer')
-    >('@expo/router-server/build/rsc/rsc-renderer', {
+    >(require.resolve('@expo/router-server/build/rsc/rsc-renderer'), {
       environment: 'react-server',
       platform,
     });
