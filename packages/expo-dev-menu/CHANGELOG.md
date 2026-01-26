@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix dev menu not opening when pressing m key in CLI. ([#42566](https://github.com/expo/expo/pull/42566) by [@lukmccall](https://github.com/lukmccall))
+- [Quest] Fix Floating action button not responding to presses. ([#42563](https://github.com/expo/expo/pull/42563) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
