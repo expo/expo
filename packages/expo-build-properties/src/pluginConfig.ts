@@ -906,6 +906,7 @@ export function validateConfig(config: unknown, projectRoot?: string): PluginCon
   const androidUseHermesV1 = resolveConfigValue(config, 'android', 'useHermesV1');
   const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1');
 
+  // TODO(gabrieldonadel): Revisit this before releasing SDK 56
   // Hermes v1 requires a specific hermes-compiler version
   if ((androidUseHermesV1 || iosUseHermesV1) && projectRoot) {
     const hermesCompilerVersion = getHermesCompilerVersion(projectRoot);
