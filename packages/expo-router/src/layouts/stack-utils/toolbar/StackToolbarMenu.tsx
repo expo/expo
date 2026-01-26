@@ -17,7 +17,7 @@ import {
   getFirstChildOfType,
   isChildOfType,
 } from '../../../utils/children';
-import { StackToolbarLabel } from '../common-primitives';
+import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from '../common-primitives';
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   type StackHeaderItemSharedProps,
@@ -197,7 +197,7 @@ export interface StackToolbarMenuProps {
  *
  * @platform ios
  */
-export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = ({ children, ...props }) => {
+export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
   const placement = useToolbarPlacement();
 
   if (placement !== 'bottom') {
@@ -207,32 +207,31 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = ({ children, ..
     throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
   }
 
-  const allowedChildren = useMemo(
-    () => [
-      StackToolbarMenu,
-      StackToolbarMenuAction,
-      NativeToolbarMenu,
-      NativeToolbarMenuAction,
-      StackToolbarLabel,
-    ],
-    [placement]
-  );
-
   const validChildren = useMemo(
-    () => filterAllowedChildrenElements(children, allowedChildren),
-    [children, allowedChildren]
+    () => filterAllowedChildrenElements(props.children, ALLOWED_CHILDREN),
+    [props.children]
   );
 
-  const { label: computedLabel, menuTitle: computedMenuTitle } = computeMenuLabelAndTitle(
-    children,
-    props.title
-  );
+  const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props);
+
+  const computedLabel = sharedProps?.label;
+  const computedMenuTitle = sharedProps?.menu?.title;
+  const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
 
   if (process.env.NODE_ENV !== 'production') {
-    const allChildren = Children.toArray(children);
+    const allChildren = Children.toArray(props.children);
     if (allChildren.length !== validChildren.length) {
       throw new Error(
-        `Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu and Stack.Toolbar.MenuAction as its children.`
+        `Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu, Stack.Toolbar.MenuAction, Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`
+      );
+    }
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    const hasBadge = getFirstChildOfType(props.children, StackToolbarBadge);
+    if (hasBadge) {
+      console.warn(
+        'Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.'
       );
     }
   }
@@ -241,6 +240,7 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = ({ children, ..
   return (
     <NativeToolbarMenu
       {...props}
+      icon={icon}
       image={props.image}
       imageRenderingMode={props.iconRenderingMode}
       label={computedLabel}
@@ -485,3 +485,13 @@ export function convertStackToolbarMenuActionPropsToRNHeaderItem(
   }
   return item;
 }
+
+const ALLOWED_CHILDREN = [
+  StackToolbarMenu,
+  StackToolbarMenuAction,
+  NativeToolbarMenu,
+  NativeToolbarMenuAction,
+  StackToolbarLabel,
+  StackToolbarIcon,
+  StackToolbarBadge,
+];
