@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump `react-server-dom-webpack` ([#42573](https://github.com/expo/expo/pull/42573) by [@vonovak](https://github.com/vonovak))
+
 ## 5.1.10 — 2025-12-12
 
 ### 💡 Others
