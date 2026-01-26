@@ -1,13 +1,13 @@
 package expo.modules.kotlin.jni
 
+import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
 import java.lang.ref.PhantomReference
 import java.lang.ref.ReferenceQueue
-import java.lang.ref.WeakReference
 
 @DoNotStrip
 interface Destructible {
-  fun deallocate()
+  fun getHybridDataForJNIDeallocator(): HybridData
 }
 
 @DoNotStrip
@@ -24,7 +24,7 @@ class JNIDeallocator(shouldCreateDestructorThread: Boolean = true) : AutoCloseab
   /**
    * A registry to keep all active [Destructible] objects and their [PhantomReference]s
    */
-  private val destructorMap = mutableMapOf<PhantomReference<Destructible>, WeakReference<Destructible>>()
+  private val destructorMap = mutableMapOf<PhantomReference<Destructible>, HybridData>()
 
   /**
    * A thread that clears your registry when an object has been garbage collected
@@ -43,9 +43,8 @@ class JNIDeallocator(shouldCreateDestructorThread: Boolean = true) : AutoCloseab
    */
   @DoNotStrip
   fun addReference(destructible: Destructible): Unit = synchronized(this) {
-    val weakRef = WeakReference(destructible)
     val phantomRef = PhantomReference(destructible, referenceQueue)
-    destructorMap[phantomRef] = weakRef
+    destructorMap[phantomRef] = destructible.getHybridDataForJNIDeallocator()
   }
 
   /**
@@ -53,7 +52,7 @@ class JNIDeallocator(shouldCreateDestructorThread: Boolean = true) : AutoCloseab
    */
   internal fun deallocate() = synchronized(this) {
     destructorMap.values.forEach {
-      it.get()?.deallocate()
+      it.resetNative()
     }
     destructorMap.clear()
     destructorThread?.interrupt()
@@ -64,15 +63,17 @@ class JNIDeallocator(shouldCreateDestructorThread: Boolean = true) : AutoCloseab
    * and are present in the memory.
    */
   fun inspectMemory() = synchronized(this) {
-    destructorMap.values.mapNotNull { it.get() }
+    destructorMap
+      .values
+      .filter { synchronized(it) { it.isValid } }
+      .map { it }
   }
 
   private fun Thread.deallocator() {
     while (!isInterrupted) {
       try {
-        // Referent of PhantomReference were garbage collected so we can remove it from our registry.
-        // Note that we don't have to call `deallocate` method - it was called [com.facebook.jni.HybridData].
         val current = referenceQueue.remove()
+        destructorMap[current]?.resetNative()
         synchronized(this@JNIDeallocator) {
           destructorMap.remove(current)
         }

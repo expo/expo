@@ -99,225 +99,221 @@ export default function HeaderItemsScreen() {
   return (
     <>
       <Stack.Screen>
-        <Stack.Header style={{ backgroundColor: headerBackgroundColor }}>
-          <Stack.Header.BackButton hidden={hideBackButton} />
-          <Stack.Header.Title>Header Items Test</Stack.Header.Title>
+        <Stack.Header style={{ backgroundColor: headerBackgroundColor }} />
+        <Stack.Screen.BackButton hidden={hideBackButton} />
+        <Stack.Screen.Title>Header Items Test</Stack.Screen.Title>
 
-          {/* Left header items */}
-          <Stack.Header.Left>
-            {/* TODO: Hidden prop is missing for bar items */}
-            {showLeftButton1 && (
-              <Stack.Header.Button icon="arrow.left" onPress={handleLeftButton1Press} />
-            )}
-            {showLeftButton2 && (
-              <Stack.Header.Button
-                separateBackground={leftButton2SeparateBackground}
-                selected={leftButton2Selected}
-                onPress={handleLeftButton2Press}
+        {/* Left header items */}
+        <Stack.Toolbar placement="left">
+          <Stack.Toolbar.Button
+            hidden={!showLeftButton1}
+            icon="arrow.left"
+            onPress={handleLeftButton1Press}
+          />
+          <Stack.Toolbar.Button
+            hidden={!showLeftButton2}
+            separateBackground={leftButton2SeparateBackground}
+            selected={leftButton2Selected}
+            onPress={handleLeftButton2Press}
+            style={{
+              fontWeight: 500,
+              fontSize: 10,
+              color: '#f0f',
+            }}>
+            <Stack.Toolbar.Label>Button 2</Stack.Toolbar.Label>
+            <Stack.Toolbar.Icon sf="star" />
+            <Stack.Toolbar.Badge>33</Stack.Toolbar.Badge>
+          </Stack.Toolbar.Button>
+
+          <Stack.Toolbar.View hidden={!showLeftCustomItem}>
+            <CustomHeaderElement />
+          </Stack.Toolbar.View>
+
+          <Stack.Toolbar.Menu
+            hidden={!showLeftMenu}
+            style={{
+              color: '#00f',
+              fontFamily: 'Arial',
+            }}>
+            <Stack.Toolbar.Label>Left Menu</Stack.Toolbar.Label>
+            <Stack.Toolbar.Icon sf="list.bullet" />
+            <Stack.Toolbar.Badge
+              style={{
+                backgroundColor: '#eee',
+                fontFamily: 'Courier New',
+                fontWeight: 100,
+              }}>
+              99
+            </Stack.Toolbar.Badge>
+            <Stack.Toolbar.MenuAction onPress={() => Alert.alert('Option 1')}>
+              <Stack.Toolbar.Label>Option 1</Stack.Toolbar.Label>
+              <Stack.Toolbar.Icon sf="1.circle" />
+            </Stack.Toolbar.MenuAction>
+            <Stack.Toolbar.MenuAction isOn onPress={() => Alert.alert('Option 2')}>
+              <Stack.Toolbar.Label>Option 2</Stack.Toolbar.Label>
+              <Stack.Toolbar.Icon sf="2.circle" />
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
+        </Stack.Toolbar>
+
+        {/* Right header items */}
+        <Stack.Toolbar placement="right">
+          <Stack.Toolbar.Menu
+            hidden={!showRightMenu1}
+            icon="ellipsis.circle"
+            title="Actions"
+            style={{
+              color: '#00f',
+              fontFamily: 'Arial',
+            }}>
+              <Stack.Toolbar.Label>Menu</Stack.Toolbar.Label>
+              <Stack.Toolbar.Badge
                 style={{
-                  fontWeight: 500,
-                  fontSize: 10,
-                  color: '#f0f',
+                  backgroundColor: '#eee',
+                  fontFamily: 'Courier New',
+                  fontWeight: 100,
                 }}>
-                <Stack.Header.Label>Button 2</Stack.Header.Label>
-                <Stack.Header.Icon sf="star" />
-                <Stack.Header.Badge>33</Stack.Header.Badge>
-              </Stack.Header.Button>
-            )}
+                99
+              </Stack.Toolbar.Badge>
 
-            {showLeftCustomItem && (
-              <Stack.Header.View>
-                <CustomHeaderElement />
-              </Stack.Header.View>
-            )}
+              {/* Simple actions */}
+              <Stack.Toolbar.MenuAction onPress={handleSendEmail}>
+                <Stack.Toolbar.Label>Send email</Stack.Toolbar.Label>
+                <Stack.Toolbar.Icon sf="paperplane" />
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction destructive onPress={handleDeleteEmail}>
+                <Stack.Toolbar.Label>Delete email</Stack.Toolbar.Label>
+                <Stack.Toolbar.Icon sf="trash" />
+              </Stack.Toolbar.MenuAction>
 
-            {showLeftMenu && (
-              <Stack.Header.Menu
-                style={{
-                  color: '#00f',
-                  fontFamily: 'Arial',
-                }}>
-                <Stack.Header.Label>Left Menu</Stack.Header.Label>
-                <Stack.Header.Icon sf="list.bullet" />
-                <Stack.Header.Badge
-                  style={{
-                    backgroundColor: '#eee',
-                    fontFamily: 'Courier New',
-                    fontWeight: 100,
-                  }}>
-                  99
-                </Stack.Header.Badge>
-                <Stack.Header.MenuAction onPress={() => Alert.alert('Option 1')}>
-                  <Stack.Header.Label>Option 1</Stack.Header.Label>
-                  <Stack.Header.Icon sf="1.circle" />
-                </Stack.Header.MenuAction>
-                <Stack.Header.MenuAction isOn onPress={() => Alert.alert('Option 2')}>
-                  <Stack.Header.Label>Option 2</Stack.Header.Label>
-                  <Stack.Header.Icon sf="2.circle" />
-                </Stack.Header.MenuAction>
-              </Stack.Header.Menu>
-            )}
-          </Stack.Header.Left>
+              {/* Toggle action */}
+              <Stack.Toolbar.MenuAction isOn={emailsArchived} onPress={handleArchiveToggle}>
+                <Stack.Toolbar.Label>
+                  {emailsArchived ? 'Unarchive emails' : 'Archive emails'}
+                </Stack.Toolbar.Label>
+                <Stack.Toolbar.Icon sf={emailsArchived ? 'tray.full' : 'tray'} />
+              </Stack.Toolbar.MenuAction>
 
-          {/* Right header items */}
-          <Stack.Header.Right>
-            {showRightMenu1 && (
-              <Stack.Header.Menu
-                icon="ellipsis.circle"
-                title="Actions"
-                style={{
-                  color: '#00f',
-                  fontFamily: 'Arial',
-                }}>
-                <Stack.Header.Label>Menu</Stack.Header.Label>
-                <Stack.Header.Badge
-                  style={{
-                    backgroundColor: '#eee',
-                    fontFamily: 'Courier New',
-                    fontWeight: 100,
-                  }}>
-                  99
-                </Stack.Header.Badge>
+              {/* Nested inline menu - View mode */}
+              <Stack.Toolbar.Menu inline>
+                <Stack.Toolbar.Label>View Mode</Stack.Toolbar.Label>
+                <Stack.Toolbar.MenuAction
+                  isOn={viewMode === 'icons'}
+                  onPress={() => handleViewModeSelect('icons')}>
+                  <Stack.Toolbar.Label>Icons</Stack.Toolbar.Label>
+                  <Stack.Toolbar.Icon sf="square.grid.2x2" />
+                </Stack.Toolbar.MenuAction>
+                <Stack.Toolbar.MenuAction
+                  isOn={viewMode === 'list'}
+                  onPress={() => handleViewModeSelect('list')}>
+                  <Stack.Toolbar.Label>List</Stack.Toolbar.Label>
+                  <Stack.Toolbar.Icon sf="list.bullet" />
+                </Stack.Toolbar.MenuAction>
+              </Stack.Toolbar.Menu>
 
-                {/* Simple actions */}
-                <Stack.Header.MenuAction onPress={handleSendEmail}>
-                  <Stack.Header.Label>Send email</Stack.Header.Label>
-                  <Stack.Header.Icon sf="paperplane" />
-                </Stack.Header.MenuAction>
-                <Stack.Header.MenuAction destructive onPress={handleDeleteEmail}>
-                  <Stack.Header.Label>Delete email</Stack.Header.Label>
-                  <Stack.Header.Icon sf="trash" />
-                </Stack.Header.MenuAction>
+              {/* Nested inline menu - Sort by */}
+              <Stack.Toolbar.Menu inline>
+                <Stack.Toolbar.Label>Sort By</Stack.Toolbar.Label>
+                <Stack.Toolbar.MenuAction
+                  isOn={sortBy === 'name'}
+                  subtitle="Ascending"
+                  onPress={() => handleSortBySelect('name')}>
+                  Name
+                </Stack.Toolbar.MenuAction>
+                <Stack.Toolbar.MenuAction
+                  isOn={sortBy === 'kind'}
+                  onPress={() => handleSortBySelect('kind')}>
+                  Kind
+                </Stack.Toolbar.MenuAction>
+                <Stack.Toolbar.MenuAction
+                  isOn={sortBy === 'date'}
+                  onPress={() => handleSortBySelect('date')}>
+                  Date
+                </Stack.Toolbar.MenuAction>
+                <Stack.Toolbar.MenuAction
+                  isOn={sortBy === 'size'}
+                  onPress={() => handleSortBySelect('size')}>
+                  Size
+                </Stack.Toolbar.MenuAction>
+                <Stack.Toolbar.MenuAction
+                  isOn={sortBy === 'tags'}
+                  onPress={() => handleSortBySelect('tags')}>
+                  Tags
+                </Stack.Toolbar.MenuAction>
+              </Stack.Toolbar.Menu>
 
-                {/* Toggle action */}
-                <Stack.Header.MenuAction isOn={emailsArchived} onPress={handleArchiveToggle}>
-                  <Stack.Header.Label>
-                    {emailsArchived ? 'Unarchive emails' : 'Archive emails'}
-                  </Stack.Header.Label>
-                  <Stack.Header.Icon sf={emailsArchived ? 'tray.full' : 'tray'} />
-                </Stack.Header.MenuAction>
+              {/* Nested menu - Preferences */}
+              <Stack.Toolbar.Menu title="Preferences">
+                <Stack.Toolbar.MenuAction
+                  isOn={notificationsEnabled}
+                  onPress={handleNotificationsToggle}>
+                  <Stack.Toolbar.Label>
+                    {notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
+                  </Stack.Toolbar.Label>
+                  <Stack.Toolbar.Icon sf="bell" />
+                </Stack.Toolbar.MenuAction>
 
-                {/* Nested inline menu - View mode */}
-                <Stack.Header.Menu inline>
-                  <Stack.Header.Label>View Mode</Stack.Header.Label>
-                  <Stack.Header.MenuAction
-                    isOn={viewMode === 'icons'}
-                    onPress={() => handleViewModeSelect('icons')}>
-                    <Stack.Header.Label>Icons</Stack.Header.Label>
-                    <Stack.Header.Icon sf="square.grid.2x2" />
-                  </Stack.Header.MenuAction>
-                  <Stack.Header.MenuAction
-                    isOn={viewMode === 'list'}
-                    onPress={() => handleViewModeSelect('list')}>
-                    <Stack.Header.Label>List</Stack.Header.Label>
-                    <Stack.Header.Icon sf="list.bullet" />
-                  </Stack.Header.MenuAction>
-                </Stack.Header.Menu>
+                {/* Color selection submenu */}
+                <Stack.Toolbar.Menu inline title="Favorite Color">
+                  <Stack.Toolbar.MenuAction
+                    isOn={favoriteColors.includes('red')}
+                    onPress={() => handleColorSelect('red')}>
+                    <Stack.Toolbar.Label>Red</Stack.Toolbar.Label>
+                    <Stack.Toolbar.Icon sf="circle.fill" />
+                  </Stack.Toolbar.MenuAction>
+                  <Stack.Toolbar.MenuAction
+                    isOn={favoriteColors.includes('blue')}
+                    onPress={() => handleColorSelect('blue')}>
+                    <Stack.Toolbar.Label>Blue</Stack.Toolbar.Label>
+                    <Stack.Toolbar.Icon sf="circle.fill" />
+                  </Stack.Toolbar.MenuAction>
+                  <Stack.Toolbar.MenuAction
+                    isOn={favoriteColors.includes('green')}
+                    onPress={() => handleColorSelect('green')}>
+                    <Stack.Toolbar.Label>Green</Stack.Toolbar.Label>
+                    <Stack.Toolbar.Icon sf="circle.fill" />
+                  </Stack.Toolbar.MenuAction>
+                </Stack.Toolbar.Menu>
+              </Stack.Toolbar.Menu>
 
-                {/* Nested inline menu - Sort by */}
-                <Stack.Header.Menu inline>
-                  <Stack.Header.Label>Sort By</Stack.Header.Label>
-                  <Stack.Header.MenuAction
-                    isOn={sortBy === 'name'}
-                    subtitle="Ascending"
-                    onPress={() => handleSortBySelect('name')}>
-                    Name
-                  </Stack.Header.MenuAction>
-                  <Stack.Header.MenuAction
-                    isOn={sortBy === 'kind'}
-                    onPress={() => handleSortBySelect('kind')}>
-                    Kind
-                  </Stack.Header.MenuAction>
-                  <Stack.Header.MenuAction
-                    isOn={sortBy === 'date'}
-                    onPress={() => handleSortBySelect('date')}>
-                    Date
-                  </Stack.Header.MenuAction>
-                  <Stack.Header.MenuAction
-                    isOn={sortBy === 'size'}
-                    onPress={() => handleSortBySelect('size')}>
-                    Size
-                  </Stack.Header.MenuAction>
-                  <Stack.Header.MenuAction
-                    isOn={sortBy === 'tags'}
-                    onPress={() => handleSortBySelect('tags')}>
-                    Tags
-                  </Stack.Header.MenuAction>
-                </Stack.Header.Menu>
+              {/* Palette menu */}
+              <Stack.Toolbar.Menu palette destructive title="quick-actions">
+                <Label>Quick Actions</Label>
+                <Stack.Toolbar.MenuAction isOn icon="star" onPress={() => Alert.alert('Star')}>
+                  Star
+                </Stack.Toolbar.MenuAction>
+                <Stack.Toolbar.MenuAction icon="flag" onPress={() => Alert.alert('Flag')}>
+                  Flag
+                </Stack.Toolbar.MenuAction>
+                <Stack.Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
+                  Pin
+                </Stack.Toolbar.MenuAction>
+              </Stack.Toolbar.Menu>
 
-                {/* Nested menu - Preferences */}
-                <Stack.Header.Menu title="Preferences">
-                  <Stack.Header.MenuAction
-                    isOn={notificationsEnabled}
-                    onPress={handleNotificationsToggle}>
-                    <Stack.Header.Label>
-                      {notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
-                    </Stack.Header.Label>
-                    <Stack.Header.Icon sf="bell" />
-                  </Stack.Header.MenuAction>
+              {/* Disabled action */}
+              <Stack.Toolbar.MenuAction disabled onPress={() => {}}>
+                <Stack.Toolbar.Label>Locked action</Stack.Toolbar.Label>
+                <Stack.Toolbar.Icon sf="lock" />
+              </Stack.Toolbar.MenuAction>
+            </Stack.Toolbar.Menu>
 
-                  {/* Color selection submenu */}
-                  <Stack.Header.Menu inline title="Favorite Color">
-                    <Stack.Header.MenuAction
-                      isOn={favoriteColors.includes('red')}
-                      onPress={() => handleColorSelect('red')}>
-                      <Stack.Header.Label>Red</Stack.Header.Label>
-                      <Stack.Header.Icon sf="circle.fill" />
-                    </Stack.Header.MenuAction>
-                    <Stack.Header.MenuAction
-                      isOn={favoriteColors.includes('blue')}
-                      onPress={() => handleColorSelect('blue')}>
-                      <Stack.Header.Label>Blue</Stack.Header.Label>
-                      <Stack.Header.Icon sf="circle.fill" />
-                    </Stack.Header.MenuAction>
-                    <Stack.Header.MenuAction
-                      isOn={favoriteColors.includes('green')}
-                      onPress={() => handleColorSelect('green')}>
-                      <Stack.Header.Label>Green</Stack.Header.Label>
-                      <Stack.Header.Icon sf="circle.fill" />
-                    </Stack.Header.MenuAction>
-                  </Stack.Header.Menu>
-                </Stack.Header.Menu>
+          <Stack.Toolbar.Menu hidden={!showRightMenu2} title="second-menu">
+            <Stack.Toolbar.Label>Second</Stack.Toolbar.Label>
+          </Stack.Toolbar.Menu>
 
-                {/* Palette menu */}
-                <Stack.Header.Menu palette destructive title="quick-actions">
-                  <Label>Quick Actions</Label>
-                  <Stack.Header.MenuAction isOn icon="star" onPress={() => Alert.alert('Star')}>
-                    Star
-                  </Stack.Header.MenuAction>
-                  <Stack.Header.MenuAction icon="flag" onPress={() => Alert.alert('Flag')}>
-                    Flag
-                  </Stack.Header.MenuAction>
-                  <Stack.Header.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
-                    Pin
-                  </Stack.Header.MenuAction>
-                </Stack.Header.Menu>
+          <Stack.Toolbar.Button
+            hidden={!showRightButton}
+            style={{ color: 'green' }}
+            onPress={handleRightButtonPress}>
+            Right
+          </Stack.Toolbar.Button>
 
-                {/* Disabled action */}
-                <Stack.Header.MenuAction disabled onPress={() => {}}>
-                  <Stack.Header.Label>Locked action</Stack.Header.Label>
-                  <Stack.Header.Icon sf="lock" />
-                </Stack.Header.MenuAction>
-              </Stack.Header.Menu>
-            )}
-
-            {showRightMenu2 && (
-              <Stack.Header.Menu title="second-menu">
-                <Stack.Header.Label>Second</Stack.Header.Label>
-              </Stack.Header.Menu>
-            )}
-
-            {showRightButton && (
-              <Stack.Header.Button style={{ color: 'green' }} onPress={handleRightButtonPress}>
-                Right
-              </Stack.Header.Button>
-            )}
-
-            {showSearchButton && (
-              <Stack.Header.Button icon="magnifyingglass" onPress={handleSearchPress} />
-            )}
-          </Stack.Header.Right>
-        </Stack.Header>
+          <Stack.Toolbar.Button
+            hidden={!showSearchButton}
+            icon="magnifyingglass"
+            onPress={handleSearchPress}
+          />
+        </Stack.Toolbar>
       </Stack.Screen>
 
       <ScrollView

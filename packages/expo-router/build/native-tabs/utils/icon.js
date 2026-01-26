@@ -61,6 +61,9 @@ function convertOptionsIconToIOSPropsIcon(icon) {
         };
     }
     if (icon && 'src' in icon && icon.src) {
+        if (icon.renderingMode === 'original') {
+            return { type: 'imageSource', imageSource: icon.src };
+        }
         return { type: 'templateSource', templateSource: icon.src };
     }
     return undefined;

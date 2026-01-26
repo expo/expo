@@ -1,4 +1,5 @@
-import { parseParams } from '../../utils/matchers';
+import { ImmutableRequest } from '../../ImmutableRequest';
+import { isResponse, parseParams } from '../../utils/matchers';
 function initManifestRegExp(manifest) {
     return {
         ...manifest,
@@ -29,14 +30,14 @@ export function createEnvironment(input) {
     let cachedManifest = null;
     let ssrRenderer = null;
     async function getCachedRoutesManifest() {
-        if (!cachedManifest) {
+        if (!cachedManifest || input.isDevelopment) {
             const json = await input.readJson('_expo/routes.json');
             cachedManifest = initManifestRegExp(json);
         }
         return cachedManifest;
     }
     async function getServerRenderer() {
-        if (ssrRenderer) {
+        if (ssrRenderer && !input.isDevelopment) {
             return ssrRenderer;
         }
         const manifest = await getCachedRoutesManifest();
@@ -63,14 +64,14 @@ export function createEnvironment(input) {
     }
     async function executeLoader(request, route) {
         if (!route.loader) {
-            return null;
+            return undefined;
         }
         const loaderModule = (await input.loadModule(route.loader));
-        if (!loaderModule?.loader) {
-            return null;
+        if (!loaderModule) {
+            throw new Error(`Loader module not found at: ${route.loader}`);
         }
         const params = parseParams(request, route);
-        return loaderModule.loader({ params, request });
+        return loaderModule.loader(new ImmutableRequest(request), params);
     }
     return {
         async getRoutesManifest() {
@@ -82,16 +83,11 @@ export function createEnvironment(input) {
             if (renderer) {
                 let renderOptions;
                 try {
-                    const data = await executeLoader(request, route);
-                    if (data !== null) {
-                        renderOptions = { loader: { data } };
+                    if (route.loader) {
+                        const result = await executeLoader(request, route);
+                        const data = isResponse(result) ? await result.json() : result;
+                        renderOptions = { loader: { data: data ?? null } };
                     }
-                }
-                catch (error) {
-                    console.error('Loader error:', error);
-                    throw error;
-                }
-                try {
                     return await renderer(request, renderOptions);
                 }
                 catch (error) {
@@ -126,7 +122,11 @@ export function createEnvironment(input) {
             return mod;
         },
         async getLoaderData(request, route) {
-            return executeLoader(request, route);
+            const result = await executeLoader(request, route);
+            if (isResponse(result)) {
+                return result;
+            }
+            return Response.json(result ?? null);
         },
     };
 }

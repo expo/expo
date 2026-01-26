@@ -25,6 +25,7 @@ const createCachedImport = () => {
 interface WorkerdEnvParams {
   build?: string;
   environment?: string | null;
+  isDevelopment?: boolean;
 }
 
 export function createWorkerdEnv(params: WorkerdEnvParams) {
@@ -62,6 +63,7 @@ export function createWorkerdEnv(params: WorkerdEnvParams) {
     readText,
     readJson,
     loadModule,
+    isDevelopment: params.isDevelopment ?? false,
   });
 }
 

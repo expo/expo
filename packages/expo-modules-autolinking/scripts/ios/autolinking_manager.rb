@@ -172,9 +172,7 @@ module Expo
       return @options.fetch(:appRoot, @options.fetch(:projectRoot, nil))
     end
 
-    # privates
-
-    private def resolve
+    public def resolve
       json = []
 
       IO.popen(resolve_command_args) do |data|

@@ -37,17 +37,17 @@ const commonBuildOptions = [
 const generalHelp = (0, utils_1.helpMessage)({
     commands: [
         {
-            command: 'build-android',
+            command: 'build:android',
             description: 'build and publish Android brownfield artifacts',
             hasOptions: true,
         },
         {
-            command: 'build-ios',
+            command: 'build:ios',
             description: 'build iOS brownfield artifacts',
             hasOptions: true,
         },
         {
-            command: 'tasks-android',
+            command: 'tasks:android',
             description: 'list available publishing tasks and repositories for android',
             hasOptions: true,
         },
@@ -62,12 +62,12 @@ const generalHelp = (0, utils_1.helpMessage)({
     ],
 });
 /**
- * Help message for 'build-android' command
+ * Help message for 'build:android' command
  */
 const buildAndroidHelp = (0, utils_1.helpMessage)({
-    promptCommand: 'build-android',
+    promptCommand: 'build:android',
     options: [
-        helpOption("'build-android'"),
+        helpOption("'build:android'"),
         ...commonBuildOptions,
         {
             description: 'build both debug and release configurations',
@@ -92,9 +92,9 @@ const buildAndroidHelp = (0, utils_1.helpMessage)({
     ],
 });
 const tasksAndroidHelp = (0, utils_1.helpMessage)({
-    promptCommand: 'tasks-android',
+    promptCommand: 'tasks:android',
     options: [
-        helpOption("'tasks-android'"),
+        helpOption("'tasks:android'"),
         {
             description: 'output all subcommands output to the terminal',
             option: '--verbose',
@@ -107,12 +107,12 @@ const tasksAndroidHelp = (0, utils_1.helpMessage)({
     ],
 });
 /**
- * Help message for 'build-ios' command
+ * Help message for 'build:ios' command
  */
 const buildIosHelp = (0, utils_1.helpMessage)({
-    promptCommand: 'build-ios',
+    promptCommand: 'build:ios',
     options: [
-        helpOption("'build-ios'"),
+        helpOption("'build:ios'"),
         ...commonBuildOptions,
         {
             description: 'path to artifacts directory',

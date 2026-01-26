@@ -12,7 +12,7 @@ import {
   Divider,
   RNHostView,
 } from '@expo/ui/swift-ui';
-import { buttonStyle, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+import { buttonStyle, foregroundStyle, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as React from 'react';
 import { View, StyleSheet, Text as RNText } from 'react-native';
@@ -50,7 +50,7 @@ export default function ContextMenuScreen() {
               />
             </ContextMenu.Items>
             <ContextMenu.Trigger>
-              <Text color="accentColor">Show menu</Text>
+              <Text modifiers={[foregroundStyle('accentColor')]}>Show menu</Text>
             </ContextMenu.Trigger>
           </ContextMenu>
         </Section>
@@ -81,7 +81,7 @@ export default function ContextMenuScreen() {
               </Picker>
             </ContextMenu.Items>
             <ContextMenu.Trigger>
-              <Text color="accentColor">Show Menu</Text>
+              <Text modifiers={[foregroundStyle('accentColor')]}>Show Menu</Text>
             </ContextMenu.Trigger>
           </ContextMenu>
         </Section>
@@ -151,7 +151,7 @@ export default function ContextMenuScreen() {
               </SwiftUISection>
             </ContextMenu.Items>
             <ContextMenu.Trigger>
-              <Text color="accentColor">Show menu</Text>
+              <Text modifiers={[foregroundStyle('accentColor')]}>Show menu</Text>
             </ContextMenu.Trigger>
           </ContextMenu>
         </Section>

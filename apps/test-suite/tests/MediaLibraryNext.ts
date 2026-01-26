@@ -56,6 +56,27 @@ export async function test(t) {
     }
   });
 
+  t.describe('Stress tests', async () => {
+    t.it('creating files with the same filename', async () => {
+      for (let i = 0; i < 40; i++) {
+        const asset = await Asset.create(pngFile.localUri);
+        assetsContainer.push(asset);
+      }
+    });
+
+    t.it('moving files with the same filename to album', async () => {
+      const createdAssets = [];
+      for (let i = 0; i < 40; i++) {
+        const album = await Album.create(createAlbumName(`temp album ${i}`), [pngFile.localUri]);
+        albumsContainer.push(album);
+        createdAssets.push(...(await album.getAssets()));
+      }
+      assetsContainer.push(...createdAssets);
+      const albumName = createAlbumName('stress test moving directories');
+      const album = await Album.create(albumName, createdAssets);
+      albumsContainer.push(album);
+    });
+  });
   t.describe('Album creation', () => {
     t.it('creates an album from a list of paths', async () => {
       const albumName = createAlbumName('album from paths');

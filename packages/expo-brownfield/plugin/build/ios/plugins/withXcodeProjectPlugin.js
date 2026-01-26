@@ -16,30 +16,26 @@ const withXcodeProjectPlugin = (config, pluginConfig) => {
         // Create a directory for the framework files
         const groupPath = node_path_1.default.join(projectRoot, 'ios', pluginConfig.targetName);
         (0, utils_1.mkdir)(groupPath);
-        // Create the React Native host manager based on the template
-        (0, utils_1.createFileFromTemplate)('ReactNativeHostManager.swift', groupPath);
-        // Create the messaging proxy based on the template
-        (0, utils_1.createFileFromTemplate)('Messaging.swift', groupPath);
-        // Create the SwiftUI brownfield entrypoint based on the template
-        (0, utils_1.createFileFromTemplate)('ReactNativeView.swift', groupPath);
-        // Create the UIKit brownfield view controller based on the template
-        (0, utils_1.createFileFromTemplate)('ReactNativeViewController.swift', groupPath);
-        // Create the ExpoAppDelegateWrapper based on the template
-        (0, utils_1.createFileFromTemplate)('ExpoAppDelegateWrapper.swift', groupPath);
-        // Create the BrownfieldAppDelegate based on the template
-        (0, utils_1.createFileFromTemplate)('BrownfieldAppDelegate.swift', groupPath);
-        // Create the ReactNativeDelegate based on the template
-        (0, utils_1.createFileFromTemplate)('ReactNativeDelegate.swift', groupPath);
-        // Create and properly add a new group for the framework
-        (0, utils_1.createGroup)(xcodeProject, pluginConfig.targetName, groupPath, [
+        const templateFiles = [
+            // React Native host manager
             'ReactNativeHostManager.swift',
+            // Messaging proxy
             'Messaging.swift',
+            //SwiftUI brownfield entrypoint
             'ReactNativeView.swift',
+            // UIKit brownfield view controller
             'ReactNativeViewController.swift',
-            'ExpoAppDelegateWrapper.swift',
-            'BrownfieldAppDelegate.swift',
+            // ExpoAppDelegate symlinked and reexported from the main Expo package
+            'ExpoAppDelegate.swift',
+            // ReactNativeDelegate
             'ReactNativeDelegate.swift',
-        ]);
+        ];
+        // Create files from templates
+        templateFiles.forEach((templateFile) => (0, utils_1.createFileFromTemplate)(templateFile, groupPath));
+        // Apply patch to ExpoAppDelegate.swift to make it compatible with the brownfield framework
+        (0, utils_1.applyPatchToFile)('ExpoAppDelegate.patch', node_path_1.default.join(groupPath, 'ExpoAppDelegate.swift'));
+        // Create and properly add a new group for the framework
+        (0, utils_1.createGroup)(xcodeProject, pluginConfig.targetName, groupPath, templateFiles);
         // Create 'Info.plist' and '<target-name>.entitlements' based on the templates
         (0, utils_1.createFileFromTemplate)('Info.plist', groupPath, {
             bundleIdentifier: pluginConfig.bundleIdentifier,
@@ -49,19 +45,8 @@ const withXcodeProjectPlugin = (config, pluginConfig) => {
         // Configure build phases:
         // - Reference Expo app target's RN bundle script
         // - Add custom script for patching ExpoModulesProvider
-        // - Add 'ReactNativeHostManager.swift', 'ReactNativeView.swift',
-        //   'Messaging.swift', 'ReactNativeViewController.swift' and
-        //   'ExpoAppDelegateWrapper.swift' and 'BrownfieldAppDelegate.swift'
-        //   to the compile sources phase
-        (0, utils_1.configureBuildPhases)(xcodeProject, target, pluginConfig.targetName, projectName, [
-            `${pluginConfig.targetName}/ReactNativeHostManager.swift`,
-            `${pluginConfig.targetName}/Messaging.swift`,
-            `${pluginConfig.targetName}/ReactNativeView.swift`,
-            `${pluginConfig.targetName}/ReactNativeViewController.swift`,
-            `${pluginConfig.targetName}/ExpoAppDelegateWrapper.swift`,
-            `${pluginConfig.targetName}/BrownfieldAppDelegate.swift`,
-            `${pluginConfig.targetName}/ReactNativeDelegate.swift`,
-        ]);
+        // - Add template files to the compile sources phase
+        (0, utils_1.configureBuildPhases)(xcodeProject, target, pluginConfig.targetName, projectName, templateFiles.map((file) => `${pluginConfig.targetName}/${file}`));
         // Add the required build settings
         (0, utils_1.configureBuildSettings)(xcodeProject, pluginConfig.targetName, config.ios?.buildNumber || '1', pluginConfig.bundleIdentifier);
         return config;

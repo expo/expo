@@ -2,6 +2,7 @@
 
 import SDWebImage
 import ExpoModulesCore
+import Symbols
 #if !os(tvOS)
 import VisionKit
 #endif
@@ -72,7 +73,18 @@ public final class ImageView: ExpoView {
 
   var autoplay: Bool = true
 
+  var sfEffect: [SFSymbolEffect]?
+
+  var symbolWeight: String?
+
+  var symbolSize: Double?
+
   var useAppleWebpCodec: Bool = true
+
+  /**
+   Tracks whether the current image is an SF Symbol for animation control.
+   */
+  var isSFSymbolSource: Bool = false
 
   /**
    The ideal image size that fills in the container size while maintaining the source aspect ratio.
@@ -144,6 +156,10 @@ public final class ImageView: ExpoView {
       displayPlaceholderIfNecessary()
       return
     }
+
+    // Track if this is an SF Symbol source for animation handling
+    isSFSymbolSource = source.isSFSymbol
+
     if sdImageView.image == nil {
       sdImageView.contentMode = contentFit.toContentMode()
     }
@@ -174,6 +190,12 @@ public final class ImageView: ExpoView {
 
     // Do it here so we don't waste resources trying to fetch from a remote URL
     if maybeRenderLocalAsset(from: source) {
+      return
+    }
+
+    // Render SF Symbols directly without going through SDWebImage to preserve symbol properties
+    if source.isSFSymbol {
+      renderSFSymbol(from: source)
       return
     }
 
@@ -257,6 +279,71 @@ public final class ImageView: ExpoView {
     } else {
       displayPlaceholderIfNecessary()
     }
+  }
+
+  private func renderSFSymbol(from source: ImageSource) {
+    guard let uri = source.uri else {
+      return
+    }
+
+    // Extract symbol name from URL path (e.g., sf:/star.fill)
+    let symbolName = uri.pathComponents.count > 1 ? uri.pathComponents[1] : ""
+
+    // Create symbol with configuration using the symbolWeight and symbolSize props
+    let weight = parseSymbolWeight(symbolWeight)
+    let pointSize = symbolSize ?? 100
+    let configuration = UIImage.SymbolConfiguration(pointSize: pointSize, weight: weight)
+    guard let image = UIImage(systemName: symbolName, withConfiguration: configuration) else {
+      onError(["error": "Unable to create SF Symbol image for '\(symbolName)'"])
+      return
+    }
+
+    onLoad([
+      "cacheType": "none",
+      "source": [
+        "url": uri.absoluteString,
+        "width": image.size.width,
+        "height": image.size.height,
+        "mediaType": nil,
+        "isAnimated": false
+      ]
+    ])
+
+    let scale = window?.screen.scale ?? UIScreen.main.scale
+    imageIdealSize = idealSize(
+      contentPixelSize: image.size * image.scale,
+      containerSize: frame.size,
+      scale: scale,
+      contentFit: contentFit
+    ).rounded(.up)
+
+    applyContentPosition(contentSize: imageIdealSize, containerSize: frame.size)
+    renderSFSymbolImage(image)
+  }
+
+  private func renderSFSymbolImage(_ image: UIImage) {
+    sourceImage = image
+
+    sdImageView.contentMode = contentFit.toContentMode()
+
+    let templateImage = image.withRenderingMode(.alwaysTemplate)
+    if let imageTintColor {
+      sdImageView.tintColor = imageTintColor
+    }
+
+    // Use replace content transition for sf:replace effects
+    if #available(iOS 17.0, tvOS 17.0, *), let effect = transition?.effect, effect.isSFReplaceEffect {
+      applyReplaceTransition(image: templateImage, effect: effect)
+    } else {
+      sdImageView.image = templateImage
+    }
+
+    // Apply symbol effect if autoplay is enabled
+    if #available(iOS 17.0, tvOS 17.0, *), autoplay {
+      applySymbolEffect()
+    }
+
+    onDisplay()
   }
 
   private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
@@ -409,7 +496,10 @@ public final class ImageView: ExpoView {
     // Update the source image before it gets rendered or transitioned to.
     sourceImage = image
 
-    if let transition = transition, transition.duration > 0 {
+    // For SF Symbol replace effect, skip the UIView transition and let the native symbol animation handle it
+    let isSFReplaceEffect = transition?.effect.isSFReplaceEffect == true && isSFSymbolSource
+
+    if let transition = transition, transition.duration > 0, !isSFReplaceEffect {
       let options = transition.toAnimationOptions()
       let seconds = transition.duration / 1000
 
@@ -432,12 +522,37 @@ public final class ImageView: ExpoView {
       sdImageView.autoPlayAnimatedImage = autoplay
     }
 
+    // Remove any existing symbol effects before setting new image
+    if #available(iOS 17.0, tvOS 17.0, *) {
+      sdImageView.removeAllSymbolEffects()
+    }
+
     if let imageTintColor, !isPlaceholder {
       sdImageView.tintColor = imageTintColor
-      sdImageView.image = image?.withRenderingMode(.alwaysTemplate)
+      let templateImage = image?.withRenderingMode(.alwaysTemplate)
+      // Use replace content transition for SF Symbols when sf:replace effect is set
+      if #available(iOS 17.0, tvOS 17.0, *), isSFSymbolSource, let effect = transition?.effect, effect.isSFReplaceEffect, let templateImage {
+        let duration = (transition?.duration ?? 300) / 1000
+        applyReplaceTransition(image: templateImage, effect: effect, duration: duration)
+      } else {
+        sdImageView.image = templateImage
+      }
     } else {
       sdImageView.tintColor = nil
-      sdImageView.image = image
+      // Use replace content transition for SF Symbols when sf:replace effect is set
+      if #available(iOS 17.0, tvOS 17.0, *), isSFSymbolSource, let effect = transition?.effect, effect.isSFReplaceEffect, let image {
+        let duration = (transition?.duration ?? 300) / 1000
+        applyReplaceTransition(image: image, effect: effect, duration: duration)
+      } else {
+        sdImageView.image = image
+      }
+    }
+
+    // Apply symbol effect if this is an SF Symbol and autoplay is enabled
+    if #available(iOS 17.0, tvOS 17.0, *) {
+      if !isPlaceholder && isSFSymbolSource && autoplay {
+        applySymbolEffect()
+      }
     }
 
     if !isPlaceholder {
@@ -451,7 +566,172 @@ public final class ImageView: ExpoView {
 #endif
   }
 
+  // MARK: - Symbol Effects
+
+  @available(iOS 17.0, tvOS 17.0, *)
+  func applySymbolEffect() {
+    // Remove any existing effects before applying new ones
+    sdImageView.removeAllSymbolEffects()
+
+    guard let effects = sfEffect, !effects.isEmpty else {
+      return
+    }
+
+    for sfEffectItem in effects {
+      applySingleSymbolEffect(sfEffectItem)
+    }
+  }
+
+  @available(iOS 17.0, tvOS 17.0, *)
+  private func applySingleSymbolEffect(_ sfEffectItem: SFSymbolEffect) {
+    let repeatCount = sfEffectItem.repeatCount
+    // -1 = infinite, 0 = play once, 1 = repeat once (play twice), etc.
+    let options: SymbolEffectOptions = repeatCount < 0 ? .repeating : .repeat(repeatCount + 1)
+    let scope = sfEffectItem.scope
+    let effect = sfEffectItem.effect
+
+    switch effect {
+    case .bounce, .bounceUp, .bounceDown:
+      let base: BounceSymbolEffect = effect == .bounceUp ? .bounce.up : effect == .bounceDown ? .bounce.down : .bounce
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(base.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(base.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(base, options: options)
+      }
+    case .pulse:
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.pulse.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.pulse.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.pulse, options: options)
+      }
+    case .variableColor, .variableColorIterative, .variableColorCumulative:
+      let base: VariableColorSymbolEffect = effect == .variableColorIterative ? .variableColor.iterative :
+        effect == .variableColorCumulative ? .variableColor.cumulative : .variableColor
+      sdImageView.addSymbolEffect(base, options: options)
+    case .scale, .scaleUp, .scaleDown:
+      let base: ScaleSymbolEffect = effect == .scaleUp ? .scale.up : effect == .scaleDown ? .scale.down : .scale
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(base.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(base.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(base, options: options)
+      }
+    case .appear:
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.appear.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.appear.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.appear, options: options)
+      }
+    case .disappear:
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.disappear.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.disappear.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.disappear, options: options)
+      }
+    default:
+      if #available(iOS 18.0, tvOS 18.0, *) {
+        applySymbolEffectiOS18(effect: effect, scope: scope, options: options)
+      }
+    }
+  }
+
+  @available(iOS 18.0, tvOS 18.0, *)
+  private func applySymbolEffectiOS18(effect: SFSymbolEffectType, scope: SFSymbolEffectScope?, options: SymbolEffectOptions) {
+    switch effect {
+    case .wiggle:
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.wiggle.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.wiggle.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.wiggle, options: options)
+      }
+    case .rotate:
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.rotate.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.rotate.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.rotate, options: options)
+      }
+    case .breathe:
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.breathe.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.breathe.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.breathe, options: options)
+      }
+    default:
+      if #available(iOS 26.0, tvOS 26.0, *) {
+        applySymbolEffectiOS26(effect: effect, scope: scope, options: options)
+      }
+    }
+  }
+
+  @available(iOS 26.0, tvOS 26.0, *)
+  private func applySymbolEffectiOS26(effect: SFSymbolEffectType, scope: SFSymbolEffectScope?, options: SymbolEffectOptions) {
+    switch effect {
+    case .drawOn:
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.drawOn.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.drawOn.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.drawOn, options: options)
+      }
+    case .drawOff:
+      switch scope {
+      case .byLayer: sdImageView.addSymbolEffect(.drawOff.byLayer, options: options)
+      case .wholeSymbol: sdImageView.addSymbolEffect(.drawOff.wholeSymbol, options: options)
+      case .none: sdImageView.addSymbolEffect(.drawOff, options: options)
+      }
+    default:
+      break
+    }
+  }
+
+  func startSymbolAnimation() {
+    if #available(iOS 17.0, tvOS 17.0, *) {
+      applySymbolEffect()
+    }
+  }
+
+  func stopSymbolAnimation() {
+    if #available(iOS 17.0, tvOS 17.0, *) {
+      sdImageView.removeAllSymbolEffects()
+    }
+  }
+
+  @available(iOS 17.0, tvOS 17.0, *)
+  func applyReplaceTransition(image: UIImage, effect: ImageTransitionEffect, duration: Double = 0) {
+    let animate: (@escaping () -> Void) -> Void = { block in
+      if duration > 0 {
+        UIView.animate(withDuration: duration, animations: block)
+      } else {
+        block()
+      }
+    }
+
+    switch effect {
+    case .sfDownUp:
+      animate { self.sdImageView.setSymbolImage(image, contentTransition: .replace.downUp) }
+    case .sfUpUp:
+      animate { self.sdImageView.setSymbolImage(image, contentTransition: .replace.upUp) }
+    case .sfOffUp:
+      animate { self.sdImageView.setSymbolImage(image, contentTransition: .replace.offUp) }
+    default:
+      animate { self.sdImageView.setSymbolImage(image, contentTransition: .replace) }
+    }
+  }
+
   // MARK: - Helpers
+
+  private func parseSymbolWeight(_ fontWeight: String?) -> UIImage.SymbolWeight {
+    switch fontWeight {
+    case "100": return .ultraLight
+    case "200": return .thin
+    case "300": return .light
+    case "400", "normal": return .regular
+    case "500": return .medium
+    case "600": return .semibold
+    case "700", "bold": return .bold
+    case "800": return .heavy
+    case "900": return .black
+    default: return .regular
+    }
+  }
 
   func cancelPendingOperation() {
     pendingOperation?.cancel()

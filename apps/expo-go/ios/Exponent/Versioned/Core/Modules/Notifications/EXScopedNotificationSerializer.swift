@@ -16,7 +16,7 @@ public class EXScopedNotificationSerializer {
         let scopedSerializedContent = NotificationContentRecord(from: request)
 
         let categoryIdentifier = request.content.categoryIdentifier
-        if (!categoryIdentifier.isEmpty) {
+        if !categoryIdentifier.isEmpty {
             let unscopedCategoryId = EXScopedNotificationsUtils.getScopeAndIdentifierFromScopedIdentifier(categoryIdentifier).identifier
             scopedSerializedContent.categoryIdentifier = unscopedCategoryId
         } else {

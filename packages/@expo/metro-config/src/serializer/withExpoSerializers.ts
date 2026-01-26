@@ -6,7 +6,7 @@
  */
 import type { MetroConfig } from '@expo/metro/metro';
 import type { Module, ReadOnlyGraph, MixedOutput } from '@expo/metro/metro/DeltaBundler';
-import type { SerializerOptions } from '@expo/metro/metro/DeltaBundler/types';
+import type { ReadOnlyDependencies, SerializerOptions } from '@expo/metro/metro/DeltaBundler/types';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import type { ConfigT, InputConfigT } from '@expo/metro/metro-config';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
@@ -295,14 +295,26 @@ function getDefaultSerializer(
       environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
     };
 
+    const isLoaderBundle =
+      graph.transformOptions?.customTransformOptions?.isLoaderBundle === 'true';
+    const loaderPaths = isLoaderBundle ? getLoaderPaths(graph.dependencies) : new Set<string>();
+
     const options: ExpoSerializerOptions = {
       ...inputOptions,
       createModuleId: (moduleId, ...props) => {
+        // For loader bundles, append `+loader` to modules with `loaderReference`.
+        // This creates different module IDs from `render.js` for the same source file,
+        // avoiding module ID collisions when both bundles are loaded in the same runtime.
+        let pathToHash = moduleId;
+        if (isLoaderBundle && loaderPaths.has(moduleId)) {
+          pathToHash = `${moduleId}+loader`;
+        }
+
         if (props.length > 0) {
-          return inputOptions.createModuleId(moduleId, ...props);
+          return inputOptions.createModuleId(pathToHash, ...props);
         }
         return inputOptions.createModuleId(
-          moduleId,
+          pathToHash,
           // @ts-expect-error: context is added by Expo and not part of the upstream Metro implementation.
           context
         );
@@ -405,6 +417,22 @@ function wrapSerializerWithOriginal(original: Serializer | null, expo: Serialize
 function unwrapOriginalSerializer(serializer?: Serializer | null) {
   if (!serializer || !('__originalSerializer' in serializer)) return null;
   return serializer.__originalSerializer as Serializer | null;
+}
+
+/**
+ * Collect paths of modules that have `loaderReference` metadata.
+ * In loader bundles, these modules need different IDs to avoid collisions with `render.js`.
+ */
+function getLoaderPaths(dependencies: ReadOnlyDependencies) {
+  const loaderPaths = new Set<string>();
+  for (const module of dependencies.values()) {
+    for (const output of module.output) {
+      if ('loaderReference' in output.data && typeof output.data.loaderReference === 'string') {
+        loaderPaths.add(module.path);
+      }
+    }
+  }
+  return loaderPaths;
 }
 
 export { SerialAsset };

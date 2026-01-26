@@ -3,6 +3,7 @@ package host.exp.exponent.home
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
@@ -17,6 +18,7 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.apollo.Paginator
+import host.exp.exponent.experience.DevMenuSharedPreferencesAdapter
 import host.exp.exponent.graphql.BranchDetailsQuery
 import host.exp.exponent.graphql.BranchesForProjectQuery
 import host.exp.exponent.graphql.Home_AccountAppsQuery
@@ -53,6 +55,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.util.Date
 import kotlin.reflect.typeOf
 import kotlin.time.DurationUnit
@@ -75,11 +78,25 @@ data class DevSession(
   val source: DevSessionSource,
   val hostname: String? = null,
   val config: Map<String, Any>? = null,
-  val platform: DevSessionPlatform? = null
+  val platform: DevSessionPlatform? = null,
+  val iconUrl: String? = null
 )
 
 data class DevSessionResponse(
   val data: List<DevSession>
+)
+
+private data class ManifestResponse(
+  val extra: ManifestExtra?
+)
+
+private data class ManifestExtra(
+  val expoClient: ManifestExpoClient?
+)
+
+private data class ManifestExpoClient(
+  val name: String?,
+  val iconUrl: String?
 )
 
 private const val USER_REVIEW_INFO_PREFS_KEY = "userReviewInfo"
@@ -140,12 +157,16 @@ class HomeAppViewModel(
   homeActivityEvents: MutableSharedFlow<HomeActivityEvent>,
   private val authLauncher: ActivityResultLauncher<AuthRequestType>
 ) : AndroidViewModel(application) {
-
   val userReviewState = MutableStateFlow(UserReviewState())
 
   private val userReviewPrefs = application.getSharedPreferences(
     USER_REVIEW_INFO_PREFS_KEY,
     Context.MODE_PRIVATE
+  )
+
+  val devMenuPreferencesAdapter = DevMenuSharedPreferencesAdapter(
+    application,
+    exponentHistoryService.exponentSharedPreferences
   )
 
   private val gson = Gson()
@@ -164,8 +185,24 @@ class HomeAppViewModel(
 
   val expoVersion = expoViewKernel.versionName
 
-  val isDevice =
-    !(android.os.Build.MODEL.contains("google_sdk") || android.os.Build.MODEL.contains("Emulator"))
+  val isDevice = !(
+    (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) ||
+      Build.FINGERPRINT.startsWith("generic") ||
+      Build.FINGERPRINT.startsWith("unknown") ||
+      Build.HARDWARE.contains("goldfish") ||
+      Build.HARDWARE.contains("ranchu") ||
+      Build.MODEL.contains("google_sdk") ||
+      Build.MODEL.contains("Emulator") ||
+      Build.MODEL.contains("Android SDK built for x86") ||
+      Build.MANUFACTURER.contains("Genymotion") ||
+      Build.PRODUCT.contains("sdk_google") ||
+      Build.PRODUCT.contains("google_sdk") ||
+      Build.PRODUCT.contains("sdk") ||
+      Build.PRODUCT.contains("sdk_x86") ||
+      Build.PRODUCT.contains("vbox86p") ||
+      Build.PRODUCT.contains("emulator") ||
+      Build.PRODUCT.contains("simulator")
+    )
 
   val service = ApolloClientService(client, sessionRepository)
   private val restClient =
@@ -199,7 +236,55 @@ class HomeAppViewModel(
 
   val feedbackState = MutableStateFlow(FeedbackState())
 
-  val developmentServers: StateFlow<List<DevSession>> = flow {
+  private suspend fun checkDevelopmentServer(host: String, port: String): DevSession? {
+    return withContext(Dispatchers.IO) {
+      runCatching {
+        val url = "http://$host:$port"
+        val request = Request.Builder().url("$url/status").build()
+        val response = client.newCall(request).execute()
+
+        if (!response.isSuccessful || response.body?.string()?.contains("packager-status:running") != true) {
+          return@runCatching null
+        }
+
+        val manifestInfo = fetchLocalManifestInfo(url)
+        DevSession(
+          url = "exp://$host:$port",
+          description = manifestInfo?.extra?.expoClient?.name ?: "exp://$host:$port",
+          source = DevSessionSource.Desktop,
+          hostname = "exp://$host:$port",
+          platform = DevSessionPlatform.Native,
+          config = null,
+          iconUrl = manifestInfo?.extra?.expoClient?.iconUrl
+        )
+      }.getOrNull()
+    }
+  }
+
+  private suspend fun fetchLocalManifestInfo(baseUrl: String): ManifestResponse? {
+    return withContext(Dispatchers.IO) {
+      runCatching {
+        val manifestUrl = "$baseUrl/manifest"
+        val request = Request.Builder()
+          .url(manifestUrl)
+          .addHeader("Accept", "application/expo+json,application/json")
+          .addHeader("Expo-Platform", "android")
+          .build()
+
+        client.newCall(request).execute().use { response ->
+          if (response.isSuccessful) {
+            response.body?.string()?.let {
+              gson.fromJson(it, ManifestResponse::class.java)
+            }
+          } else {
+            null
+          }
+        }
+      }.getOrNull()
+    }
+  }
+
+  private val remoteDevelopmentServers: StateFlow<List<DevSession>> = flow {
     while (true) {
       try {
         val sessions = restClient.sendAuthenticatedApiV2Request<DevSessionResponse>(
@@ -217,6 +302,57 @@ class HomeAppViewModel(
     started = SharingStarted.WhileSubscribed(5000),
     initialValue = emptyList()
   )
+
+  private val localDevelopmentServers: StateFlow<List<DevSession>> = flow {
+    val portsToCheck = listOf(8081, 8082, 8083, 19000, 19001, 19002)
+    val baseAddress = if (isDevice) "localhost" else "10.0.2.2"
+    while (true) {
+      val discoveredServers = mutableListOf<DevSession>()
+      withContext(Dispatchers.IO) {
+        portsToCheck.map { port ->
+          launch {
+            checkDevelopmentServer(baseAddress, "$port")?.let {
+              synchronized(discoveredServers) {
+                discoveredServers.add(it)
+              }
+            }
+          }
+        }.forEach { it.join() }
+      }
+      emit(discoveredServers)
+      delay(3000)
+    }
+  }.stateIn(
+    scope = viewModelScope,
+    started = SharingStarted.WhileSubscribed(5000),
+    initialValue = emptyList()
+  )
+
+  val developmentServers: StateFlow<List<DevSession>> =
+    combine(
+      localDevelopmentServers,
+      remoteDevelopmentServers
+    ) { local, remote ->
+      val merged = mutableMapOf<String, DevSession>()
+
+      // Add all local servers first
+      for (server in local) {
+        val key = normalizeUrl(server.url).lowercase()
+        merged[key] = server
+      }
+
+      // Add remote servers, preferring them over local ones if a conflict exists
+      for (server in remote) {
+        val key = normalizeUrl(server.url).lowercase()
+        merged[key] = server
+      }
+      merged.values.sortedBy { it.url }
+    }
+      .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+      )
 
   fun branch(branchName: String, appId: String): RefreshableFlow<BranchDetailsQuery.ById?> {
     return refreshableFlow(scope = viewModelScope, fetcher = {

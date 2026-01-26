@@ -322,9 +322,7 @@ export async function createMetroServerAndBundleRequestAsync(
     {
       // TODO: This is always enabled in the native script and there's no way to disable it.
       resetCache: options.resetCache,
-
       maxWorkers: options.maxWorkers,
-      config: options.config,
     },
     {
       exp,

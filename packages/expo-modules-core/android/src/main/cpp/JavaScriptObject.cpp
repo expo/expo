@@ -51,14 +51,7 @@ JavaScriptObject::JavaScriptObject(
   std::weak_ptr<JavaScriptRuntime> runtime,
   std::shared_ptr<jsi::Object> jsObject
 ) : runtimeHolder(std::move(runtime)), jsObject(std::move(jsObject)) {
-  runtimeHolder.ensureRuntimeIsValid();
-}
-
-JavaScriptObject::JavaScriptObject(
-  WeakRuntimeHolder runtime,
-  std::shared_ptr<jsi::Object> jsObject
-) : runtimeHolder(std::move(runtime)), jsObject(std::move(jsObject)) {
-  runtimeHolder.ensureRuntimeIsValid();
+  assert((!runtimeHolder.expired()) && "JS Runtime was used after deallocation");
 }
 
 std::shared_ptr<jsi::Object> JavaScriptObject::get() {
@@ -66,13 +59,19 @@ std::shared_ptr<jsi::Object> JavaScriptObject::get() {
 }
 
 bool JavaScriptObject::hasProperty(const std::string &name) {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
-  return jsObject->hasProperty(jsRuntime, name.c_str());
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
+  return jsObject->hasProperty(rawRuntime, name.c_str());
 }
 
 jsi::Value JavaScriptObject::getProperty(const std::string &name) {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
-  return jsObject->getProperty(jsRuntime, name.c_str());
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
+  return jsObject->getProperty(rawRuntime, name.c_str());
 }
 
 bool JavaScriptObject::jniHasProperty(jni::alias_ref<jstring> name) {
@@ -82,26 +81,32 @@ bool JavaScriptObject::jniHasProperty(jni::alias_ref<jstring> name) {
 jni::local_ref<JavaScriptValue::javaobject> JavaScriptObject::jniGetProperty(
   jni::alias_ref<jstring> name
 ) {
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
   auto result = std::make_shared<jsi::Value>(getProperty(name->toStdString()));
   return JavaScriptValue::newInstance(
-    runtimeHolder.getJSIContext(),
+    expo::getJSIContext(rawRuntime),
     runtimeHolder,
     result
   );
 }
 
 std::vector<std::string> JavaScriptObject::getPropertyNames() {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
 
-  jsi::Array properties = jsObject->getPropertyNames(jsRuntime);
-  auto size = properties.size(jsRuntime);
+  jsi::Array properties = jsObject->getPropertyNames(rawRuntime);
+  auto size = properties.size(rawRuntime);
 
   std::vector<std::string> names(size);
   for (size_t i = 0; i < size; i++) {
     auto propertyName = properties
-      .getValueAtIndex(jsRuntime, i)
-      .asString(jsRuntime)
-      .utf8(jsRuntime);
+      .getValueAtIndex(rawRuntime, i)
+      .asString(rawRuntime)
+      .utf8(rawRuntime);
     names[i] = propertyName;
   }
 
@@ -120,33 +125,46 @@ jni::local_ref<jni::JArrayClass<jstring>> JavaScriptObject::jniGetPropertyNames(
 
 jni::local_ref<jni::HybridClass<JavaScriptWeakObject, Destructible>::javaobject>
 JavaScriptObject::createWeak() {
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
   return JavaScriptWeakObject::newInstance(
-    runtimeHolder.getJSIContext(),
+    expo::getJSIContext(rawRuntime),
     runtimeHolder,
     get()
   );
 }
 
 jni::local_ref<JavaScriptFunction::javaobject> JavaScriptObject::jniAsFunction() {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
-  auto jsFuncion = std::make_shared<jsi::Function>(jsObject->asFunction(jsRuntime));
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
+  auto jsFuncion = std::make_shared<jsi::Function>(jsObject->asFunction(rawRuntime));
   return JavaScriptFunction::newInstance(
-    runtimeHolder.getJSIContext(),
+    expo::getJSIContext(rawRuntime),
     runtimeHolder,
     jsFuncion
   );
 }
 
 void JavaScriptObject::setProperty(const std::string &name, jsi::Value value) {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
-  jsObject->setProperty(jsRuntime, name.c_str(), value);
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
+  jsObject->setProperty(rawRuntime, name.c_str(), value);
 }
 
 void JavaScriptObject::unsetProperty(jni::alias_ref<jstring> name) {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
   auto cName = name->toStdString();
   jsObject->setProperty(
-    jsRuntime,
+    rawRuntime,
     cName.c_str(),
     jsi::Value::undefined()
   );
@@ -178,11 +196,14 @@ jni::local_ref<JavaScriptObject::javaobject> JavaScriptObject::newInstance(
 void JavaScriptObject::defineNativeDeallocator(
   jni::alias_ref<JNIFunctionBody::javaobject> deallocator
 ) {
-  auto &rt = runtimeHolder.getJSRuntime();
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
   jni::global_ref<JNIFunctionBody::javaobject> globalRef = jni::make_global(deallocator);
 
   common::setDeallocator(
-    rt,
+    rawRuntime,
     jsObject,
     [globalRef = std::move(globalRef)]() mutable {
       auto args = jni::Environment::ensureCurrentThreadIsAttached()->NewObjectArray(
@@ -197,28 +218,36 @@ void JavaScriptObject::defineNativeDeallocator(
 }
 
 void JavaScriptObject::setExternalMemoryPressure(int size) {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
-  jsObject->setExternalMemoryPressure(jsRuntime, size);
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
+  jsObject->setExternalMemoryPressure(rawRuntime, size);
 }
 
 bool JavaScriptObject::isArray() {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
-  return jsObject->isArray(jsRuntime);
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
+  return jsObject->isArray(rawRuntime);
 }
 
 jni::local_ref<jni::JArrayClass<JavaScriptValue::javaobject>> JavaScriptObject::getArray() {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
-  auto moduleRegistry = runtimeHolder.getJSIContext();
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+  auto jsiContext = expo::getJSIContext(rawRuntime);
 
-  auto jsArray = jsObject->getArray(jsRuntime);
-  size_t size = jsArray.size(jsRuntime);
+  auto jsArray = jsObject->getArray(rawRuntime);
+  size_t size = jsArray.size(rawRuntime);
 
   auto result = jni::JArrayClass<JavaScriptValue::javaobject>::newArray(size);
   for (size_t i = 0; i < size; i++) {
     auto element = JavaScriptValue::newInstance(
-      moduleRegistry,
+      jsiContext,
       runtimeHolder,
-      std::make_shared<jsi::Value>(jsArray.getValueAtIndex(jsRuntime, i))
+      std::make_shared<jsi::Value>(jsArray.getValueAtIndex(rawRuntime, i))
     );
 
     result->setElement(i, element.release());
@@ -227,18 +256,23 @@ jni::local_ref<jni::JArrayClass<JavaScriptValue::javaobject>> JavaScriptObject::
 }
 
 bool JavaScriptObject::isArrayBuffer() {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
-  return jsObject->isArrayBuffer(jsRuntime);
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
+  return jsObject->isArrayBuffer(rawRuntime);
 }
 
 jni::local_ref<JavaScriptArrayBuffer::javaobject> JavaScriptObject::getArrayBuffer() {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
-  auto jsiContext = runtimeHolder.getJSIContext();
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+  auto jsiContext = expo::getJSIContext(rawRuntime);
 
   return JavaScriptArrayBuffer::newInstance(
     jsiContext,
     runtimeHolder,
-    std::make_shared<jsi::ArrayBuffer>(jsObject->getArrayBuffer(jsRuntime))
+    std::make_shared<jsi::ArrayBuffer>(jsObject->getArrayBuffer(rawRuntime))
   );
 }
 

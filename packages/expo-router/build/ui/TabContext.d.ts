@@ -83,7 +83,7 @@ export declare const TabsDescriptorsContext: import("react").Context<Record<stri
     getParent<T = import("@react-navigation/native").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string): T;
     getState(): TabNavigationState<any>;
 } & import("@react-navigation/native").PrivateValueStore<[ParamListBase, unknown, unknown]>, "getParent"> & {
-    getParent<T = NavigationProp<ParamListBase, string, undefined, Readonly<{
+    getParent<T = NavigationProp<ParamListBase, string, string | undefined, Readonly<{
         key: string;
         index: number;
         routeNames: string[];

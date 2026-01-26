@@ -75,8 +75,9 @@ public final class ExpoUIModule: Module {
     View(GridRowView.self)
     View(LabeledContentLabel.self)
     View(LabeledContentContent.self)
-    View(LabelIcon.self)    
+    View(LabelIcon.self)
     View(HostView.self)
+    View(TextView.self)
 
     // MARK: - Expo UI Views
 
@@ -95,11 +96,13 @@ public final class ExpoUIModule: Module {
 
     ExpoUIView(FormView.self)
     ExpoUIView(GaugeView.self)
+    View(GaugeLabelView.self)
     ExpoUIView(GroupView.self)
     ExpoUIView(HStackView.self)
     ExpoUIView(ImageView.self)
     ExpoUIView(LabelView.self)
     ExpoUIView(ListView.self)
+    ExpoUIView(ListForEachView.self)
 
     // Picker
     ExpoUIView(PickerView.self)
@@ -116,7 +119,6 @@ public final class ExpoUIModule: Module {
     ExpoUIView(SpacerView.self)
     ExpoUIView(StepperView.self)
     ExpoUIView(ToggleView.self)
-    ExpoUIView(TextView.self)
     ExpoUIView(VStackView.self)
     ExpoUIView(ZStackView.self)
     ExpoUIView(GlassEffectContainerView.self)

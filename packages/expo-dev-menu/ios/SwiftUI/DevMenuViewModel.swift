@@ -109,7 +109,7 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func copyToClipboard(_ content: String) {
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(macOS)
     UIPasteboard.general.string = content
     hostUrlCopiedMessage = "Copied!"
 
@@ -120,7 +120,7 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func copyAppInfo() {
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(macOS)
     guard let appInfo = appInfo else {
       return
     }
