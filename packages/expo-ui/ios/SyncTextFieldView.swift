@@ -34,5 +34,8 @@ private struct SyncTextFieldContent: View {
 
   var body: some View {
     TextField("Enter text", text: state.binding(as: String.self, default: ""))
+      .onChange(of: state.value as? String) { _ in
+        state.onChange?()
+      }
   }
 }

@@ -5,19 +5,19 @@ import { requireNativeModule } from 'expo';
 import { useSwiftUIState } from "../SwiftUIState";
 
 installOnUIRuntime();
+
 const ExpoUI = requireNativeModule('ExpoUI');
 ExpoUI.initializeWorkletFunctions();
 
 type StateInitializeEvent = NativeSyntheticEvent<{ stateId: number }>;
 
-type SyncTextFieldProps = {
-  state: ReturnType<typeof useSwiftUIState>;
-  initialValue?: string;
-}
-
 type NativeSyncTextFieldProps = {
   initialValue: string;
   onStateInitialize: (event: StateInitializeEvent) => void;
+}
+
+type SyncTextFieldProps = {
+  state: ReturnType<typeof useSwiftUIState<NativeSyncTextFieldProps['initialValue']>>;
 }
 
 const SyncTextFieldNativeView: React.ComponentType<NativeSyncTextFieldProps> = requireNativeView(
@@ -26,16 +26,15 @@ const SyncTextFieldNativeView: React.ComponentType<NativeSyncTextFieldProps> = r
 );
 
 export function SyncTextField(props: SyncTextFieldProps) {
-  const { state, initialValue = "" } = props;
+  const { state } = props;
 
   const onStateInitialize = (event: StateInitializeEvent) => {
-    console.log('onStateInitialize', event.nativeEvent.stateId);
-    state.stateId.current = event.nativeEvent.stateId;
+    state.setStateId(event.nativeEvent.stateId);
   }
 
   return (
     <SyncTextFieldNativeView
-      initialValue={initialValue}
+      initialValue={state.initialValue}
       onStateInitialize={onStateInitialize}
     />
   );

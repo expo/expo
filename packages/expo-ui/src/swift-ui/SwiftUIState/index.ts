@@ -1,19 +1,29 @@
-import { useRef} from "react"
-import { requireNativeModule } from "expo"
+import { useRef } from "react"
 import { scheduleOnUI, runOnUISync } from "react-native-worklets"
 
 declare const _WORKLET: boolean;
 
-const ExpoUI = requireNativeModule('ExpoUI');
-
-export const useSwiftUIState = (initialValue: any) => {
+export function useSwiftUIState<T>(initialValue: T, onChange: (value: T) => void) {
   const stateId = useRef<number | null>(null);
 
-  const deleteState = () => {
-    ExpoUI.deleteState(stateId.current);
+  const setStateId = (id: number) => {
+    stateId.current = id;
+    scheduleOnUI(() => {
+      'worklet';
+      // @ts-ignore
+      global.__expoSwiftUIState.onChange(id, () => {
+        'worklet';
+        // @ts-ignore
+        const value = onChange(global.__expoSwiftUIState.getValue(id));
+        if (value !== undefined) {
+          // @ts-ignore
+          global.__expoSwiftUIState.setValue(id, value);
+        }
+      });
+    });
   }
 
-  const setValue = (value: any) => {
+  const setValue = (value: T) => {
     'worklet';
     if (_WORKLET) {
       // @ts-ignore
@@ -27,7 +37,7 @@ export const useSwiftUIState = (initialValue: any) => {
     }
   }
 
-  const getValue = () => {
+  const getValue = () : T => {
     'worklet';
   if (_WORKLET) {
     // @ts-ignore
@@ -45,7 +55,7 @@ export const useSwiftUIState = (initialValue: any) => {
   return {
     setValue,
     getValue,
-    deleteState,
-    stateId,
+    initialValue,
+    setStateId,
   }
 }

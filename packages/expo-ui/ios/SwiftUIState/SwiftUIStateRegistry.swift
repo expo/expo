@@ -4,6 +4,7 @@ import SwiftUI
 internal final class SwiftUIState: ObservableObject {
   let id: Int
   @Published var value: Any?
+  var onChange: (() -> Void)?
 
   init(id: Int, initialValue: Any?) {
     self.id = id
@@ -44,7 +45,12 @@ internal final class SwiftUIStateRegistry {
   }
 
   func setValue(id: Int, value: Any?) {
+    print("setting vlaue \(String(describing: value))")
     states[id]?.value = value
+  }
+
+  func onChange(id: Int, callback: @escaping () -> Void) {
+    states[id]?.onChange = callback
   }
 
   func clear() {

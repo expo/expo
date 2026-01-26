@@ -32,14 +32,6 @@ public final class ExpoUIModule: Module {
       RefreshableManager.shared.completeRefresh(id: id)
     }
 
-    Function("createState") { (initialValue: JavaScriptValue) -> Int in
-      SwiftUIStateRegistry.shared.createState(initialValue: initialValue.getRaw())
-    }
-
-    Function("deleteState") { (id: Int) in
-      SwiftUIStateRegistry.shared.deleteState(id: id)
-    }
-
     Function("initializeWorkletFunctions") {
       guard let appContext else {
         throw Exceptions.AppContextLost()
@@ -74,8 +66,22 @@ public final class ExpoUIModule: Module {
         return .undefined
       }
 
+      let onChange = uiRuntime.createSyncFunction("onChange", argsCount: 2) { _, args in
+        guard let id = args.first?.getInt(),
+              args.count > 1,
+              args[1].isFunction() else {
+          return .undefined
+        }
+        let callback = args[1].getFunction()
+        SwiftUIStateRegistry.shared.onChange(id: id) {
+          callback.call(withArguments: [], thisObject: nil, asConstructor: false)
+        }
+        return .undefined
+      }
+
       stateObject.setProperty("getValue", value: getValue)
       stateObject.setProperty("setValue", value: setValue)
+      stateObject.setProperty("onChange", value: onChange)
 
       uiRuntime.global().setProperty("__expoSwiftUIState", value: stateObject)
     }
