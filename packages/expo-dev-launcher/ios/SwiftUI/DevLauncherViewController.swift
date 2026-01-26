@@ -10,6 +10,23 @@ import ExpoModulesCore
     addHostingController()
   }
 
+#if !os(macOS)
+  public override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    updateTopSafeAreaInset()
+  }
+
+  private func updateTopSafeAreaInset() {
+    let hostingViewInset = hostingController?.view.safeAreaInsets.top ?? 0
+    let windowInset = view.window?.safeAreaInsets.top ?? 0
+    let newInset: CGFloat = hostingViewInset > 0 ? 0 : windowInset
+
+    if newInset != viewModel.topSafeAreaInset {
+      viewModel.topSafeAreaInset = newInset
+    }
+  }
+#endif
+
   private func setupViewController() {
     view.backgroundColor = UIColor.white
 
