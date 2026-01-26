@@ -19,7 +19,7 @@ export function SymbolView(props: SymbolViewProps) {
   const [loaded] = useFonts({
     [font.name]: {
       uri: font.font,
-      testString: androidSymbolToString(name),
+      testString: name ? androidSymbolToString(name) : null,
     },
   });
   if (!name) {
