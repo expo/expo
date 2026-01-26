@@ -23,7 +23,7 @@ declare class SealedData {
     tag(encoding?: 'bytes' | 'base64'): Promise<Uint8Array | string>;
     combined(encoding?: 'bytes' | 'base64'): Promise<Uint8Array | string>;
     ciphertext(options?: {
-        withTag?: boolean;
+        includeTag?: boolean;
         encoding?: 'bytes' | 'base64';
     }): Promise<Uint8Array | string>;
 }

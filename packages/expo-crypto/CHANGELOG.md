@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed incorrect option name for tag inclusion in `AESSealedData.ciphertext(options)`.
+
 ### 💡 Others
 
 ## 55.0.2 — 2026-01-26
