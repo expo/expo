@@ -4,28 +4,34 @@ import SwiftUI
 import ExpoModulesCore
 
 final class SyncTextFieldProps: UIBaseViewProps {
-  @Field var stateId: Int?
+  @Field var viewId: String?
+  @Field var defaultValue: String = ""
 }
 
 struct SyncTextFieldView: ExpoSwiftUI.View {
   @ObservedObject var props: SyncTextFieldProps
+  @State private var text: String = ""
 
-  var body: some View {
-    if let stateId = props.stateId,
-       let state = SwiftUIStateRegistry.shared.getState(id: stateId) {
-      SyncTextFieldContent(state: state)
-    }
+  private var stateManager: ViewStateManager? {
+    ViewStateManager(viewId: props.viewId, appContext: props.appContext)
   }
-}
-
-private struct SyncTextFieldContent: View {
-  @ObservedObject var state: SwiftUIState
 
   var body: some View {
-    TextField("Enter text", text: state.binding(as: String.self, default: ""))
-      .onChange(of: state.value as? String) { newValue in
-        guard let newValue, let onChange = state.onChange else { return }
-        onChange(newValue)
+    TextField("Enter text", text: $text)
+      .onChange(of: text) { newValue in
+        if let transformed = stateManager?.callOnChange(newValue), transformed != newValue {
+          text = transformed
+        }
+      }
+      .onAppear {
+        text = props.defaultValue
+        stateManager?.register(
+          getState: { text },
+          setState: { text = $0 }
+        )
+      }
+      .onDisappear {
+        stateManager?.cleanup()
       }
   }
 }

@@ -2,9 +2,10 @@ import { ThemeProvider } from 'ThemeProvider';
 import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
 import * as DevMenu from 'expo-dev-menu';
-import { Button, Host, SyncTextField, useSwiftUIState, VStack } from '@expo/ui/swift-ui';
+import { Button, Host, SyncTextField, VStack } from '@expo/ui/swift-ui';
 import MainNavigator, { optionalRequire } from './MainNavigator';
 import { Text, TextInput, View, StyleSheet } from 'react-native';
+import ListScreen from 'native-component-list/src/screens/UI/ListScreen.ios';
 
 let Notifications;
 try {
@@ -91,7 +92,8 @@ export default function Main() {
 }
 
 const TestScreen = () => {
-  const syncState = useSwiftUIState("Hello");
+  const syncTextFieldRef = React.useRef<any>(null);
+
   const [asyncText, setAsyncText] = React.useState("");
   const onChangeText = (value: string) => {
     const filtered = value.replace(/[^a-zA-Z ]/g, '').slice(0, 20);
@@ -125,13 +127,12 @@ const TestScreen = () => {
         <Host matchContents>
           <VStack>
             <SyncTextField
-              state={syncState}
-              onChangeSync={(value: string) => {
+              ref={syncTextFieldRef}
+              defaultValue="Hello"
+              onChangeSync={(value) => {
                 'worklet';
                 const filtered = value.replace(/[^a-zA-Z ]/g, '').slice(0, 20);
-                if (filtered !== value) {
-                  syncState.setValue(filtered);
-                }
+                return filtered !== value ? filtered : undefined;
               }}
             />
           </VStack>
@@ -143,7 +144,7 @@ const TestScreen = () => {
           <Button
             label="Reset Both"
             onPress={() => {
-              syncState.setValue("");
+              syncTextFieldRef.current?.setState("");
               setAsyncText("");
             }}
           />

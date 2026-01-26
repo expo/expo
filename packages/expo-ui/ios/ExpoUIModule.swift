@@ -2,14 +2,6 @@
 
 import ExpoModulesCore
 
-internal final class WorkletUIRuntimeException: Exception, @unchecked Sendable {
-  override var reason: String {
-    "Cannot find UI worklet runtime"
-  }
-}
-
-private let WORKLET_RUNTIME_KEY = "_WORKLET_RUNTIME"
-
 public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUI")
@@ -30,78 +22,6 @@ public final class ExpoUIModule: Module {
 
     AsyncFunction("completeRefresh") { (id: String) in
       RefreshableManager.shared.completeRefresh(id: id)
-    }
-
-    Function("createState") { (initialValue: JavaScriptValue) -> Int in
-      SwiftUIStateRegistry.shared.createState(initialValue: initialValue.getRaw())
-    }
-
-    Function("deleteState") { (id: Int) in
-      SwiftUIStateRegistry.shared.deleteState(id: id)
-    }
-
-    Function("initializeWorkletFunctions") {
-      guard let appContext else {
-        throw Exceptions.AppContextLost()
-      }
-      let runtime = try appContext.runtime
-      if !runtime.global().hasProperty(WORKLET_RUNTIME_KEY) {
-        throw WorkletUIRuntimeException()
-      }
-      let pointerHolder = runtime.global().getProperty(WORKLET_RUNTIME_KEY)
-      if !pointerHolder.isObject() {
-        throw WorkletUIRuntimeException()
-      }
-
-      let uiRuntime = try appContext.uiRuntime
-      let stateObject = uiRuntime.createObject()
-      let getValue = uiRuntime.createSyncFunction("getValue", argsCount: 1) { _, args in
-        guard let id = args.first?.getInt() else {
-          return .undefined
-        }
-        guard let value = SwiftUIStateRegistry.shared.getValue(id: id) else {
-          return .undefined
-        }
-        return JavaScriptValue.from(value, runtime: uiRuntime)
-      }
-
-      let setValue = uiRuntime.createSyncFunction("setValue", argsCount: 2) { _, args in
-        guard let id = args.first?.getInt() else {
-          return .undefined
-        }
-        let value = args.count > 1 ? args[1].getRaw() : nil
-        SwiftUIStateRegistry.shared.setValue(id: id, value: value)
-        return .undefined
-      }
-
-      let onChange = uiRuntime.createSyncFunction("onChange", argsCount: 2) { _, args in
-        guard let id = args.first?.getInt(),
-              args.count > 1,
-              args[1].isFunction() else {
-          return .undefined
-        }
-        let callback = args[1].getFunction()
-        SwiftUIStateRegistry.shared.onChange(id: id) { newValue in
-          let jsValue = JavaScriptValue.from(newValue, runtime: uiRuntime)
-          _ = callback.call(withArguments: [jsValue], thisObject: nil, asConstructor: false)
-        }
-        return .undefined
-      }
-
-      let removeOnChange = uiRuntime.createSyncFunction("removeOnChange", argsCount: 1) { _, args in
-        guard let id = args.first?.getInt() else {
-          return .undefined
-        }
-        SwiftUIStateRegistry.shared.removeOnChange(id: id)
-        return .undefined
-      }
-
-      stateObject.setProperty("getValue", value: getValue)
-      stateObject.setProperty("setValue", value: setValue)
-      stateObject.setProperty("onChange", value: onChange)
-      stateObject.setProperty("removeOnChange", value: removeOnChange)
-
-      uiRuntime.global().setProperty("__expoSwiftUIState", value: stateObject)
     }
 
     // MARK: - Views with AsyncFunctions that need to explicitly add `.modifier(UIBaseViewModifier(props: props))`

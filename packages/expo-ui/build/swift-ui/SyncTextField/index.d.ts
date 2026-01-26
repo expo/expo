@@ -1,8 +1,12 @@
-import { SwiftUIState } from "../SwiftUIState";
-type SyncTextFieldProps = {
-    state: SwiftUIState<string>;
-    onChangeSync?: (value: string) => void;
+import "react-native-reanimated";
+export type SyncTextFieldRef = {
+    setState: (value: string) => void;
+    getState: () => string;
 };
-export declare function SyncTextField(props: SyncTextFieldProps): import("react").JSX.Element;
+type SyncTextFieldProps = {
+    defaultValue?: string;
+    onChangeSync?: (value: string) => string | void;
+};
+export declare const SyncTextField: import("react").ForwardRefExoticComponent<SyncTextFieldProps & import("react").RefAttributes<SyncTextFieldRef>>;
 export {};
 //# sourceMappingURL=index.d.ts.map

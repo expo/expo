@@ -4,6 +4,8 @@ export type SwiftUIState<T> = {
     getValue: () => T;
     stateId: number;
 };
-export declare function useSwiftUIState<T>(initialValue: T): SwiftUIState<T>;
+type OnChangeCallback<T> = (newValue: T, setValue: (value: T) => void) => void;
+export declare function useSwiftUIState<T>(initialValue: T, onChange?: OnChangeCallback<T>): SwiftUIState<T>;
 export declare function registerOnChange<T>(stateId: number, onChange: (value: T) => void): () => void;
+export {};
 //# sourceMappingURL=index.d.ts.map
