@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fixed autolinking when building react-native from source.
+
 ## 55.0.0-alpha.3 — 2026-01-26
 
 _This version does not introduce any user-facing changes._
