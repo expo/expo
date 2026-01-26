@@ -84,7 +84,7 @@ export function useAudioRecorderState(recorder: AudioRecorder, interval: number 
     }, interval);
 
     return () => clearInterval(int);
-  }, [recorder.id]);
+  }, [recorder.id, interval]);
 
   return state;
 }
