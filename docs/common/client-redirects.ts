@@ -540,7 +540,6 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After moving FAQ to EAS Update page
   '/eas-update/faq/': '/eas-update/introduction/',
-  
   // After creating EAS environment variables section
   '/eas/hosting/environment-variables/':
     '/eas/environment-variables/usage/#using-environment-variables-with-eas-hosting',
