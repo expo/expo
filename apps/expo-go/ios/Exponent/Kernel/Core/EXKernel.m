@@ -301,6 +301,10 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   [[self visibleApp].appManager toggleElementInspector];
 }
 
+- (BOOL)devMenuShouldShowReactNativeDevMenu {
+  return NO;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

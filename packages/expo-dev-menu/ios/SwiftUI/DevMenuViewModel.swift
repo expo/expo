@@ -12,6 +12,7 @@ class DevMenuViewModel: ObservableObject {
   @Published var clipboardMessage: String?
   @Published var hostUrlCopiedMessage: String?
   @Published var isOnboardingFinished: Bool = true
+  @Published var showFloatingActionButton: Bool = false
 
   private let devMenuManager = DevMenuManager.shared
   private var cancellables = Set<AnyCancellable>()
@@ -27,6 +28,7 @@ class DevMenuViewModel: ObservableObject {
     loadAppInfo()
     loadDevSettings()
     loadRegisteredCallbacks()
+    loadFloatingActionButtonState()
   }
 
   private func loadAppInfo() {
@@ -165,6 +167,10 @@ class DevMenuViewModel: ObservableObject {
     return devMenuManager.canNavigateHome
   }
 
+  var shouldShowReactNativeDevMenu: Bool {
+    return devMenuManager.shouldShowReactNativeDevMenu
+  }
+
   private func checkOnboardingStatus() {
     isOnboardingFinished = devMenuManager.isOnboardingFinished
   }
@@ -172,6 +178,15 @@ class DevMenuViewModel: ObservableObject {
   func finishOnboarding() {
     devMenuManager.setOnboardingFinished(true)
     isOnboardingFinished = true
+  }
+
+  private func loadFloatingActionButtonState() {
+    showFloatingActionButton = DevMenuPreferences.showFloatingActionButton
+  }
+
+  func toggleFloatingActionButton() {
+    showFloatingActionButton.toggle()
+    DevMenuPreferences.showFloatingActionButton = showFloatingActionButton
   }
 
   private func observeRegisteredCallbacks() {

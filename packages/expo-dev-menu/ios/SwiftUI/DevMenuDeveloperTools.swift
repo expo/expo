@@ -48,6 +48,17 @@ struct DevMenuDeveloperTools: View {
           disabled: !(viewModel.devSettings?.isHotLoadingAvailable ?? true)
         )
 
+        #if !os(tvOS) && !os(macOS)
+        Divider()
+
+        DevMenuToggleButton(
+          title: "Action button",
+          icon: "hand.tap",
+          isEnabled: viewModel.showFloatingActionButton,
+          action: viewModel.toggleFloatingActionButton
+        )
+        #endif
+
         Divider()
 
         NavigationLink(destination: SourceMapExplorerView()) {

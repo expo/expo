@@ -184,7 +184,7 @@ class SourceMapService {
   private func extractInlineSourceMap(from bundleContent: String) throws -> SourceMap {
     let patterns = [
       "//# sourceMappingURL=data:application/json;charset=utf-8;base64,",
-      "//# sourceMappingURL=data:application/json;base64,",
+      "//# sourceMappingURL=data:application/json;base64,"
     ]
 
     for pattern in patterns {
@@ -234,7 +234,14 @@ class SourceMapService {
 
     let nodes = root.children.values.map { convertToNode($0) }
     let sorted = sortNodes(nodes)
-    return collapseSingleChildFolders(sorted)
+    let collapsed = collapseSingleChildFolders(sorted)
+
+    let directories = collapsed.filter { $0.isDirectory }
+    if directories.count == 1, let mainDir = directories.first {
+      return mainDir.children
+    }
+
+    return collapsed
   }
 
   private func convertToNode(_ builder: Node) -> FileTreeNode {
@@ -255,7 +262,7 @@ class SourceMapService {
       while current.isDirectory && current.children.count == 1 && current.children[0].isDirectory {
         let child = current.children[0]
         current = FileTreeNode(
-          name: "\(current.name)/\(child.name)",
+          name: child.name,
           path: child.path,
           isDirectory: true,
           children: child.children,

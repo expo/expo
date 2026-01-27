@@ -133,16 +133,7 @@ export declare function hasImageAsync(): Promise<boolean>;
 export declare function addClipboardListener(listener: (event: ClipboardEvent) => void): EventSubscription;
 /**
  * Removes the listener added by addClipboardListener. This method is a no-op on Web.
- *
- * @param subscription The subscription to remove (created by addClipboardListener).
- *
- * @example
- * ```typescript
- * const subscription = addClipboardListener(() => {
- *   alert('Copy pasta!');
- * });
- * removeClipboardListener(subscription);
- * ```
+ * @deprecated use subscription.remove() instead.
  */
 export declare function removeClipboardListener(subscription: EventSubscription): void;
 /**

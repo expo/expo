@@ -107,6 +107,7 @@ class DevMenuWindow: UIWindow, PresentationControllerDelegate {
       self.isDismissing = false
       self.isHidden = true
       self.backgroundColor = UIColor(white: 0, alpha: 0.4)
+      DevMenuManager.shared.updateFABVisibility()
       completion?()
     }
   }

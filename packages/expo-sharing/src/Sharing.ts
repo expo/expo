@@ -32,10 +32,28 @@ export async function shareAsync(url: string, options: SharingOptions = {}): Pro
   return await SharingNativeModule.shareAsync(url, options);
 }
 
+/**
+ * Returns raw data shared with the app. Returns an empty array if no data has been shared with the app.
+ *
+ * @platform android
+ * @platform ios
+ * @experimental
+ */
 export function getSharedPayloads(): SharePayload[] {
   return SharingNativeModule.getSharedPayloads();
 }
 
+/**
+ * Returns resolved data shared with the app. Compared to data returned from [`getSharedPayloads`](#sharinggetsharedpayloads) contains additional
+ * information useful for reading and displaying the data. For example, when a web `URL` is shared with the app,
+ * a resolved payload will contain additional information about the URL contents.
+ *
+ * > Depending on what has been shared, this method may require a network connection to resolve content details.
+ *
+ * @platform android
+ * @platform ios
+ * @experimental
+ */
 export async function getResolvedSharedPayloadsAsync(): Promise<ResolvedSharePayload[]> {
   return await SharingNativeModule.getResolvedSharedPayloadsAsync();
 }

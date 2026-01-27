@@ -28,7 +28,7 @@ struct SourceMapExplorerView: View {
       }
     }
     .navigationTitle("Source Code Explorer")
-#if !os(macOS)
+#if !os(macOS) && !os(tvOS)
     .navigationBarTitleDisplayMode(.inline)
 #endif
     .searchable(text: $viewModel.searchText, placement: .automatic, prompt: "Search files")
@@ -64,7 +64,9 @@ struct SourceMapExplorerView: View {
       Button("Retry") {
         Task { await viewModel.loadSourceMap() }
       }
+      #if !os(tvOS)
       .buttonStyle(.borderedProminent)
+      #endif
     }
     .padding()
     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -85,43 +87,60 @@ struct FolderListView: View {
           .foregroundColor(.secondary)
       } else {
         ForEach(nodes) { node in
-          if node.isDirectory {
-            NavigationLink(destination: FolderListView(
-              title: node.name,
-              nodes: node.children,
-              sourceMap: sourceMap,
-              stats: nil,
-              isSearching: false
-            )) {
-              FileRow(node: node, showPath: isSearching)
-            }
-          } else {
-            NavigationLink(destination: CodeFileView(node: node, sourceMap: sourceMap)) {
-              FileRow(node: node, showPath: isSearching)
-            }
+          NavigationLink(destination: destinationView(for: node)) {
+            FileRow(node: node, showPath: isSearching)
           }
         }
       }
     }
-#if !os(macOS)
+#if !os(macOS) && !os(tvOS)
     .listStyle(.insetGrouped)
+#elseif os(tvOS)
+    .listStyle(.plain)
 #endif
     .navigationTitle(isSearching ? "Search Results" : title)
-#if !os(macOS)
+#if !os(macOS) && !os(tvOS)
     .navigationBarTitleDisplayMode(.inline)
+#endif
     .toolbar {
       ToolbarItem(placement: .navigationBarTrailing) {
         if let stats = stats {
+#if os(tvOS)
+          if #available(tvOS 17.0, *) {
+            Menu {
+              Label("\(stats.files) files", systemImage: "doc.on.doc")
+              Label(stats.totalSize, systemImage: "internaldrive")
+            } label: {
+              Image(systemName: "info.circle")
+            }
+          }
+          // Menu not available on tvOS < 17.0, toolbar item is hidden
+#else
           Menu {
             Label("\(stats.files) files", systemImage: "doc.on.doc")
             Label(stats.totalSize, systemImage: "internaldrive")
           } label: {
             Image(systemName: "info.circle")
           }
+#endif
         }
       }
     }
-#endif
+  }
+
+  @ViewBuilder
+  private func destinationView(for node: FileTreeNode) -> some View {
+    if node.isDirectory {
+      FolderListView(
+        title: node.name,
+        nodes: node.children,
+        sourceMap: sourceMap,
+        stats: nil,
+        isSearching: false
+      )
+    } else {
+      CodeFileView(node: node, sourceMap: sourceMap)
+    }
   }
 }
 
@@ -222,7 +241,7 @@ struct CodeFileView: View {
     }
     .background(theme.background)
     .navigationTitle(node.name)
-#if !os(macOS)
+#if !os(macOS) && !os(tvOS)
     .navigationBarTitleDisplayMode(.inline)
 #endif
     .task(id: colorScheme) {
@@ -235,7 +254,7 @@ struct LineNumbersColumn: View {
   let lines: [String]
   let theme: SyntaxHighlighter.Theme
   let lineNumberWidth: CGFloat
-  
+
   var body: some View {
     LazyVStack(alignment: .trailing, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in
@@ -255,7 +274,7 @@ struct CodeColumn: View {
   let lines: [String]
   let highlightedLines: [AttributedString]?
   let theme: SyntaxHighlighter.Theme
-  
+
   var body: some View {
     LazyVStack(alignment: .leading, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in

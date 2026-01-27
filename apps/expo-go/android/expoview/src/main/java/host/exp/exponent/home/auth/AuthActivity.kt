@@ -4,10 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
+import expo.modules.core.utilities.VRUtilities
+import host.exp.exponent.home.HomeAppTheme
+import host.exp.exponent.services.ThemeSetting
 import java.net.URLEncoder
 
 private const val SESSION_SECRET_KEY = "session_secret"
@@ -53,6 +57,14 @@ class AuthActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
+    setContent {
+      HomeAppTheme(themeSetting = ThemeSetting.Automatic) {
+        AuthIndicatorScreen(
+          onCancel = { cancelAuth() }
+        )
+      }
+    }
+
     val authRequestType = intent.getStringExtra(AUTH_REQUEST_TYPE_KEY)
       ?: throw IllegalStateException("AuthActivity started without AuthRequestType extra")
 
@@ -65,6 +77,11 @@ class AuthActivity : AppCompatActivity() {
   override fun onResume() {
     super.onResume()
 
+    // Due to multi-window nature of Quest (and lack of proper support for Custom Tabs) resuming the activity shouldn't cancel the auth
+    if (VRUtilities.isQuest()) {
+      return
+    }
+
     // onNewIntent will handle the response from the web browser
     if (intent?.data?.host == REDIRECT_HOST) {
       return
@@ -76,9 +93,7 @@ class AuthActivity : AppCompatActivity() {
       return
     }
 
-    val resultIntent = Intent()
-    setResult(RESULT_CANCELED, resultIntent)
-    finish()
+    cancelAuth()
   }
 
   override fun onNewIntent(intent: Intent) {
@@ -105,6 +120,12 @@ class AuthActivity : AppCompatActivity() {
       setResult(RESULT_OK, resultIntent)
       finish()
     }
+  }
+
+  private fun cancelAuth() {
+    val resultIntent = Intent()
+    setResult(RESULT_CANCELED, resultIntent)
+    finish()
   }
 
   private fun openWebBrowserAsync(startUrl: String) {

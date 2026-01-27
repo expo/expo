@@ -34,11 +34,11 @@
     "expo"
   ],
   "peerDependencies": {
-    "@expo/metro-runtime": "^55.0.1",
+    "@expo/metro-runtime": "^55.0.2",
     "react": "*",
     "react-dom": "*",
     "expo": "*",
-    "expo-constants": "^55.0.1",
+    "expo-constants": "^55.0.2",
     "expo-font": "*",
     "expo-router": "*",
     "expo-server": "*",

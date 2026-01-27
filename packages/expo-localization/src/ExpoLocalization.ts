@@ -75,6 +75,9 @@ export function addCalendarListener(
   };
 }
 
+/**
+ * @deprecated use subscription.remove() instead
+ * */
 export function removeSubscription(subscription: EventSubscription) {
   subscription.remove();
 }

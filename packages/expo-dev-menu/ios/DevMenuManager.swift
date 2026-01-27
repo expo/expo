@@ -67,6 +67,13 @@ open class DevMenuManager: NSObject {
    */
   var window: DevMenuWindow?
 
+  #if !os(macOS) && !os(tvOS)
+  /**
+   The window that hosts the floating action button.
+   */
+  var fabWindow: DevMenuFABWindow?
+  #endif
+
   var currentScreen: String?
 
   weak var hostDelegate: DevMenuHostDelegate?
@@ -79,7 +86,10 @@ open class DevMenuManager: NSObject {
       if let currentBridge {
         DispatchQueue.main.async {
           self.disableRNDevMenuHoykeys(for: currentBridge)
+          self.updateFABVisibility()
         }
+      } else {
+        updateFABVisibility()
       }
     }
   }
@@ -250,7 +260,11 @@ open class DevMenuManager: NSObject {
   @objc
   @discardableResult
   public func hideMenu() -> Bool {
-    return setVisibility(false)
+    let result = setVisibility(false)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+      self?.updateFABVisibility()
+    }
+    return result
   }
 
   /**
@@ -268,6 +282,15 @@ open class DevMenuManager: NSObject {
       return false
     }
     return delegate.responds(to: #selector(DevMenuHostDelegate.devMenuNavigateHome))
+  }
+
+  @objc
+  public var shouldShowReactNativeDevMenu: Bool {
+    guard let delegate = hostDelegate,
+      delegate.responds(to: #selector(DevMenuHostDelegate.devMenuShouldShowReactNativeDevMenu)) else {
+      return true
+    }
+    return delegate.devMenuShouldShowReactNativeDevMenu?() ?? true
   }
 
   @objc
@@ -369,9 +392,10 @@ open class DevMenuManager: NSObject {
 #if os(macOS)
         self.window?.makeKeyAndOrderFront(nil)
 #else
+        self.updateFABVisibility()
+
         if self.window?.windowScene == nil {
-          let keyWindowScene = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene
-          let windowScene = keyWindowScene ?? UIApplication.shared.connectedScenes
+          let windowScene = UIApplication.shared.connectedScenes
             .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
           self.window?.windowScene = windowScene
         }
@@ -379,7 +403,12 @@ open class DevMenuManager: NSObject {
 #endif
       }
     } else {
-      DispatchQueue.main.async { self.window?.closeBottomSheet(nil) }
+      DispatchQueue.main.async {
+        self.window?.closeBottomSheet(nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+          self.updateFABVisibility()
+        }
+      }
     }
     return true
   }
@@ -457,4 +486,33 @@ open class DevMenuManager: NSObject {
     let devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.toggleFastRefresh()
   }
+
+  #if !os(macOS) && !os(tvOS)
+  private func setupFABWindowIfNeeded(for windowScene: UIWindowScene) {
+    guard fabWindow == nil else { return }
+    fabWindow = DevMenuFABWindow(manager: self, windowScene: windowScene)
+  }
+
+  @objc
+  public func updateFABVisibility() {
+    DispatchQueue.main.async { [weak self] in
+      guard let self = self else { return }
+
+      if self.fabWindow == nil {
+        if let windowScene = UIApplication.shared.connectedScenes
+          .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+          self.setupFABWindowIfNeeded(for: windowScene)
+        }
+      }
+
+      let shouldShow = DevMenuPreferences.showFloatingActionButton && !self.isVisible && self.currentBridge != nil
+      self.fabWindow?.setVisible(shouldShow, animated: true)
+    }
+  }
+  #else
+  @objc
+  public func updateFABVisibility() {
+    // FAB not available on macOS/tvOS
+  }
+  #endif
 }

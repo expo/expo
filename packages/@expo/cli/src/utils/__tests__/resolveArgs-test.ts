@@ -105,14 +105,8 @@ describe(resolveStringOrBooleanArgsAsync, () => {
     await expect(
       resolveStringOrBooleanArgsAsync(
         ['--no-bundler', '--scheme', '-d', 'my-device', 'custom-root'],
-        {
-          '--no-bundler': Boolean,
-        },
-        {
-          '--scheme': Boolean,
-          '--device': Boolean,
-          '-d': '--device',
-        }
+        { '--no-bundler': Boolean },
+        { '--scheme': Boolean, '--device': Boolean, '-d': '--device' }
       )
     ).resolves.toEqual({
       args: {
@@ -128,12 +122,8 @@ describe(resolveStringOrBooleanArgsAsync, () => {
     await expect(
       resolveStringOrBooleanArgsAsync(
         ['--dev=false', '--minify=false', '--minify', 'true', '--dev', 'true', 'custom-root'],
-        {
-          '--dev': Boolean,
-        },
-        {
-          '--minify': Boolean,
-        }
+        { '--dev': Boolean },
+        { '--minify': Boolean }
       )
     ).resolves.toEqual({
       args: {
@@ -150,13 +140,8 @@ describe(resolveStringOrBooleanArgsAsync, () => {
     await expect(
       resolveStringOrBooleanArgsAsync(
         ['-p', 'web', '-p', 'ios', '--source-maps'],
-        {
-          '--platform': [String],
-          '-p': '--platform',
-        },
-        {
-          '--source-maps': Boolean,
-        }
+        { '--platform': [String], '-p': '--platform' },
+        { '--source-maps': Boolean }
       )
     ).resolves.toEqual({
       args: {
@@ -171,13 +156,8 @@ describe(resolveStringOrBooleanArgsAsync, () => {
     await expect(
       resolveStringOrBooleanArgsAsync(
         ['-p', 'web', '-p', 'ios', '--source-maps', 'inline', 'custom-root'],
-        {
-          '--platform': [String],
-          '-p': '--platform',
-        },
-        {
-          '--source-maps': Boolean,
-        }
+        { '--platform': [String], '-p': '--platform' },
+        { '--source-maps': Boolean }
       )
     ).resolves.toEqual({
       args: {
@@ -187,27 +167,37 @@ describe(resolveStringOrBooleanArgsAsync, () => {
     });
   });
 
-  it(`treats value after string-or-boolean flag as the flag value, not project root`, async () => {
-    // This documents a limitation: `--source-maps custom-root` treats `custom-root`
-    // as the value for --source-maps, not as the project root.
-    // To use a project root with --source-maps as boolean, put it before the flag
-    // or use an explicit value like `--source-maps inline custom-root`.
+  it(`treats unrecognized value after string-or-boolean flag as project root when allowedValues is specified`, async () => {
+    // With allowedValues, `--source-maps custom-root` treats `custom-root` as project root
+    // because it's not in the allowed values list.
     await expect(
       resolveStringOrBooleanArgsAsync(
         ['-p', 'web', '--source-maps', 'custom-root'],
-        {
-          '--platform': [String],
-          '-p': '--platform',
-        },
-        {
-          '--source-maps': Boolean,
-        }
+        { '--platform': [String], '-p': '--platform' },
+        // [Boolean, 'inline', 'external'] restricts to 'true', 'false', 'inline', 'external'
+        { '--source-maps': [Boolean, 'inline', 'external'] }
       )
     ).resolves.toEqual({
       args: {
-        '--source-maps': 'custom-root', // NOT true
+        '--source-maps': true,
       },
-      projectRoot: '.', // NOT 'custom-root'
+      projectRoot: 'custom-root',
+    });
+  });
+
+  it(`treats value after string-or-boolean flag as flag value when no allowedValues specified`, async () => {
+    // Without allowedValues, any value after the flag is treated as the flag's value
+    await expect(
+      resolveStringOrBooleanArgsAsync(
+        ['-p', 'web', '--source-maps', 'custom-root'],
+        { '--platform': [String], '-p': '--platform' },
+        { '--source-maps': Boolean }
+      )
+    ).resolves.toEqual({
+      args: {
+        '--source-maps': 'custom-root',
+      },
+      projectRoot: '.',
     });
   });
 });

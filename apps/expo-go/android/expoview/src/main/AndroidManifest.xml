@@ -135,6 +135,11 @@
         <data android:scheme="expauth" />
       </intent-filter>
     </activity>
+
+    <activity
+      android:name="host.exp.exponent.home.qrScanner.QRScannerActivity"
+      android:exported="false"
+      android:theme="@style/Theme.AppCompat.NoActionBar" />
   </application>
 
 </manifest>

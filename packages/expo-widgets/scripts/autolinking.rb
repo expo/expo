@@ -25,7 +25,7 @@ end
 
 def expo_widgets_post_install(installer)
   installer.pods_project.targets.each do |target|
-    if target.name == 'ExpoModulesCore' || target.name == 'ExpoUI'
+    if target.name == 'ExpoModulesCore' || target.name == 'ExpoUI' || target.name.start_with?('React-')
       target.build_configurations.each do |config|
         config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'No'
       end
