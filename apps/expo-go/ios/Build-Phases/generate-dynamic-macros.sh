@@ -348,7 +348,6 @@ copy_template_files() {
     "FIREBASE_DATABASE_URL"
     "FIREBASE_STORAGE_BUCKET"
     "FIREBASE_PLIST_VERSION"
-    "GOOGLE_MAPS_IOS_API_KEY"
   )
 
   for key in "${keys[@]}"; do
