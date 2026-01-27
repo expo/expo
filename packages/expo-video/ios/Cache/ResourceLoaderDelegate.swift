@@ -83,14 +83,45 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     cachableRequest.onReceivedData(data: subdata)
 
     if dataRequest.requestsAllDataToEndOfResource {
+      guard currentOffset >= requestedOffset else {
+        log.warn("Current offset (\(currentOffset)) < requested offset (\(requestedOffset))")
+        return
+      }
+
       let currentDataResponseOffset = Int(currentOffset - requestedOffset)
+      guard currentDataResponseOffset >= 0 && currentDataResponseOffset <= cachableRequest.receivedData.count else {
+        log.warn("Invalid offset: \(currentDataResponseOffset), receivedData.count: \(cachableRequest.receivedData.count)")
+        return
+      }
+
       let currentDataResponseLength = cachableRequest.receivedData.count - currentDataResponseOffset
-      let subdata = cachableRequest.receivedData.subdata(in: currentDataResponseOffset..<currentDataResponseOffset + currentDataResponseLength)
+      guard currentDataResponseLength >= 0 else {
+        return
+      }
+
+      let endOffset = currentDataResponseOffset + currentDataResponseLength
+      guard endOffset <= cachableRequest.receivedData.count else {
+        log.warn("End offset (\(endOffset)) exceeds receivedData.count (\(cachableRequest.receivedData.count))")
+        return
+      }
+
+      let subdata = cachableRequest.receivedData.subdata(in: currentDataResponseOffset..<endOffset)
       dataRequest.respond(with: subdata)
-    } else if currentOffset - requestedOffset <= cachableRequest.receivedData.count {
+    } else if currentOffset >= requestedOffset && currentOffset - requestedOffset < cachableRequest.receivedData.count {
       let rangeStart = Int(currentOffset - requestedOffset)
       let rangeLength = min(cachableRequest.receivedData.count - rangeStart, length)
-      let subdata = cachableRequest.receivedData.subdata(in: rangeStart..<rangeStart + rangeLength)
+
+      guard rangeStart >= 0 && rangeStart < cachableRequest.receivedData.count && rangeLength > 0 else {
+        return
+      }
+
+      let endOffset = rangeStart + rangeLength
+      guard endOffset <= cachableRequest.receivedData.count else {
+        log.warn("End offset (\(endOffset)) exceeds receivedData.count (\(cachableRequest.receivedData.count))")
+        return
+      }
+
+      let subdata = cachableRequest.receivedData.subdata(in: rangeStart..<endOffset)
       dataRequest.respond(with: subdata)
     }
   }
@@ -122,12 +153,13 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     // The data shouldn't be corrupted and can be cached
     if let error = error as? URLError, error.code == URLError.cancelled || error.code == URLError.networkConnectionLost {
       cachedDataRequest.saveData(to: cachedResource)
+      cachedDataRequest.loadingRequest.finishLoading(with: error)
     } else if error == nil {
       cachedDataRequest.saveData(to: cachedResource)
+      cachedDataRequest.loadingRequest.finishLoading()
     } else {
       cachedDataRequest.loadingRequest.finishLoading(with: error)
     }
-    cachedDataRequest.loadingRequest.finishLoading(with: error)
     cachableRequests.remove(cachedDataRequest)
   }
 
