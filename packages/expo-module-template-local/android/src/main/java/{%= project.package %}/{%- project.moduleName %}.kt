@@ -1,3 +1,4 @@
+<% if (!features.android) { %>// __SKIP_FILE__<% } %>
 package <%- project.package %>
 
 import expo.modules.kotlin.modules.Module
@@ -36,6 +37,7 @@ class <%- project.moduleName %> : Module() {
       ))
     }
 
+<% if (features.view) { %>
     // Enables the module to be used as a native view. Definition components that are accepted as part of
     // the view definition: Prop, Events.
     View(<%- project.viewName %>::class) {
@@ -46,5 +48,6 @@ class <%- project.moduleName %> : Module() {
       // Defines an event that the view can send to JavaScript.
       Events("onLoad")
     }
+<% } %>
   }
 }
