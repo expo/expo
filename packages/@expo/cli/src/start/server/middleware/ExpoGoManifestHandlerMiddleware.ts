@@ -21,7 +21,7 @@ import {
   FormDataField,
   EncodedFormData,
 } from '../../../utils/multipartMixed';
-import { stripPort } from '../../../utils/url';
+import { parseUrl } from '../../../utils/url';
 
 const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');
 
@@ -81,11 +81,14 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
 
     const expectSignature = req.headers['expo-expect-signature'];
 
+    const requestedUrl = parseUrl(req.headers['host']);
+
     return {
       responseContentType,
       platform,
       expectSignature: expectSignature ? String(expectSignature) : null,
-      hostname: stripPort(req.headers['host']),
+      hostname: requestedUrl?.hostname,
+      port: requestedUrl?.port,
       protocol: req.headers['x-forwarded-proto'] as 'http' | 'https' | undefined,
     };
   }
