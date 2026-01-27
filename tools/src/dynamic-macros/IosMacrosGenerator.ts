@@ -38,7 +38,6 @@ async function updatePlistAsync(
 async function generateBuildConstantsFromMacrosAsync(
   buildConstantsPath: string,
   macros,
-  buildConfiguration,
   infoPlistContents,
   keys
 ): Promise<PlistObject> {
@@ -57,6 +56,13 @@ async function generateBuildConstantsFromMacrosAsync(
       config[name] = value || '';
     }
 
+    // Remove legacy kernel-related fields if they exist from previous builds
+    delete config.BUILD_MACHINE_KERNEL_MANIFEST;
+    delete config.BUILD_MACHINE_LOCAL_HOSTNAME;
+    delete config.DEV_PUBLISHED_KERNEL_MANIFEST;
+    delete config.DEV_KERNEL_SOURCE;
+    delete config.IS_DEV_KERNEL;
+
     config.EXPO_RUNTIME_VERSION = infoPlistContents.CFBundleVersion
       ? infoPlistContents.CFBundleVersion
       : infoPlistContents.CFBundleShortVersionString;
@@ -68,51 +74,16 @@ async function generateBuildConstantsFromMacrosAsync(
       const { GOOGLE_MAPS_IOS_API_KEY } = keys;
       config.DEFAULT_API_KEYS = { GOOGLE_MAPS_IOS_API_KEY };
     }
-    const validatedConfig = validateBuildConstants(config, buildConfiguration);
+
+    config.USE_GENERATED_DEFAULTS = true;
+
     const sortedConfig = Object.fromEntries(
-      Object.entries(validatedConfig).sort(([a], [b]) => a.localeCompare(b))
+      Object.entries(config).sort(([a], [b]) => a.localeCompare(b))
     );
     return sortedConfig;
   });
 
   return result;
-}
-
-/**
- *  Adds IS_DEV_KERNEL (bool) and DEV_KERNEL_SOURCE (PUBLISHED, LOCAL)
- *  and errors if there's a problem with the chosen environment.
- */
-function validateBuildConstants(config: PlistObject, buildConfiguration: string): PlistObject {
-  config.USE_GENERATED_DEFAULTS = true;
-
-  let IS_DEV_KERNEL = false;
-  let DEV_KERNEL_SOURCE = '';
-  if (buildConfiguration === 'Debug') {
-    IS_DEV_KERNEL = true;
-    DEV_KERNEL_SOURCE = config.DEV_KERNEL_SOURCE;
-    if (!DEV_KERNEL_SOURCE) {
-      // default to dev published build if nothing specified
-      DEV_KERNEL_SOURCE = 'PUBLISHED';
-    }
-  } else {
-    IS_DEV_KERNEL = false;
-  }
-
-  if (IS_DEV_KERNEL) {
-    if (DEV_KERNEL_SOURCE === 'LOCAL' && !config.BUILD_MACHINE_KERNEL_MANIFEST) {
-      throw new Error(
-        `Error generating local kernel manifest.\nMake sure a local kernel is being served, or switch DEV_KERNEL_SOURCE to use PUBLISHED instead.`
-      );
-    }
-
-    if (DEV_KERNEL_SOURCE === 'PUBLISHED' && !config.DEV_PUBLISHED_KERNEL_MANIFEST) {
-      throw new Error(`Error downloading DEV published kernel manifest.\n`);
-    }
-  }
-
-  config.IS_DEV_KERNEL = IS_DEV_KERNEL;
-  config.DEV_KERNEL_SOURCE = DEV_KERNEL_SOURCE;
-  return config;
 }
 
 export default class IosMacrosGenerator {
@@ -126,7 +97,6 @@ export default class IosMacrosGenerator {
     await generateBuildConstantsFromMacrosAsync(
       path.resolve(buildConstantsPath),
       macros,
-      options.configuration,
       infoPlist,
       templateSubstitutions
     );
