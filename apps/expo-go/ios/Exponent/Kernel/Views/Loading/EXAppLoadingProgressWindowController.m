@@ -98,7 +98,11 @@
   dispatch_async(dispatch_get_main_queue(), ^{
     EX_ENSURE_STRONGIFY(self);
     float progressPercent = ([progress.done floatValue] / [progress.total floatValue]);
-    self.textLabel.text = [NSString stringWithFormat:@"%@ %.2f%%", progress.status, progressPercent * 100];
+    NSString *status = progress.status;
+    if ([status caseInsensitiveCompare:@"Downloading"] == NSOrderedSame) {
+      status = @"Loading";
+    }
+    self.textLabel.text = [NSString stringWithFormat:@"%@ %.2f%%", status, progressPercent * 100];
     [self.textLabel setNeedsDisplay];
 
     // TODO: (@bbarthec) maybe it's better to show/hide this based on other thing than progress status reported by the fetcher?
@@ -130,9 +134,9 @@
 + (nullable NSString *)_loadingViewTextForStatus:(EXAppLoaderRemoteUpdateStatus)status
 {
   if (status == kEXAppLoaderRemoteUpdateStatusChecking) {
-    return @"Checking for new update...";
+    return @"Checking for latest version...";
   } else if (status == kEXAppLoaderRemoteUpdateStatusDownloading) {
-    return @"New update available, downloading...";
+    return @"Loading latest version...";
   } else {
     return nil;
   }
