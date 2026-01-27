@@ -184,7 +184,7 @@ class SourceMapService {
   private func extractInlineSourceMap(from bundleContent: String) throws -> SourceMap {
     let patterns = [
       "//# sourceMappingURL=data:application/json;charset=utf-8;base64,",
-      "//# sourceMappingURL=data:application/json;base64,",
+      "//# sourceMappingURL=data:application/json;base64,"
     ]
 
     for pattern in patterns {

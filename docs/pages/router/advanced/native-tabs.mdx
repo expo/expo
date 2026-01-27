@@ -817,6 +817,82 @@ export default function TabLayout() {
 
 </Tabs>
 
+#### Bottom accessory
+
+> **info** This feature is available in SDK 55 and later.
+
+{/* TODO: Add screenshot/video showing a bottom accessory (e.g., mini music player) above the tab bar */}
+
+A bottom accessory is a floating view that appears above the tab bar, useful for displaying persistent controls like a mini music player. See Apple's [`UITabBarController` bottomAccessory documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/bottomaccessory) for more details.
+
+The bottom accessory can appear in two placements: `'regular'` (standard position above the tab bar) or `'inline'` (compact mode, inline with the tab bar). Use the `usePlacement` hook to adapt your UI based on the current placement.
+
+{/* TODO: Add screenshot/video comparing 'regular' vs 'inline' placement */}
+
+> **warning** You must store state outside the accessory component using props, context, or external state management. Two instances of the bottom accessory component are rendered simultaneously (one for each placement) and state is **not** shared between them.
+
+The following example demonstrates a mini player with state lifted to the parent component:
+
+```tsx app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { useState } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+
+function MiniPlayer({ isPlaying, onToggle }) {
+  const placement = NativeTabs.BottomAccessory.usePlacement();
+
+  if (placement === 'inline') {
+    // Compact UI for inline placement
+    return (
+      <Pressable onPress={onToggle} style={styles.inlinePlayer}>
+        <Text>{isPlaying ? '⏸' : '▶'}</Text>
+      </Pressable>
+    );
+  }
+
+  // Full UI for regular placement
+  return (
+    <View style={styles.regularPlayer}>
+      <Text>Now Playing: Song Title</Text>
+      <Pressable onPress={onToggle}>
+        <Text>{isPlaying ? 'Pause' : 'Play'}</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+export default function TabLayout() {
+  // State must be stored outside BottomAccessory
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  return (
+    <NativeTabs>
+      <NativeTabs.BottomAccessory>
+        <MiniPlayer isPlaying={isPlaying} onToggle={() => setIsPlaying(!isPlaying)} />
+      </NativeTabs.BottomAccessory>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="library">
+        <NativeTabs.Trigger.Label>Library</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+
+const styles = StyleSheet.create({
+  inlinePlayer: {
+    padding: 8,
+  },
+  regularPlayer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+});
+```
+
 ### Disabling keyboard avoidance on Android
 
 By default, when the keyboard is displayed on Android, the native tabs automatically adjust to avoid being obscured. You can disable this behavior by changing the [`android.softwareKeyboardLayoutMode`](/versions/latest/config/app/#softwarekeyboardlayoutmode) property to `pan` in your app config file:
@@ -939,6 +1015,80 @@ function TabLayout() {
 ```
 
 When you are using a `ScrollView` and the tab bar is transparent from the start, ensure that the `ScrollView` is a first child of the screen component. If you wrap it with another component make sure to set `collapsable` to `false` on the wrapper component.
+
+```tsx app/index.tsx
+import { ScrollView, View } from 'react-native';
+
+export default function HomeScreen() {
+  return (
+    <View collapsable={false} style={{ flex: 1 }}>
+      <ScrollView>{/* Screen content */}</ScrollView>
+    </View>
+  );
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="White background flashes when switching tabs on iOS 26">
+
+This happens because React Navigation's default theme uses a white background color. To fix this, wrap your app in React Navigation's `ThemeProvider` with the appropriate theme.
+
+**For apps supporting both light and dark modes:**
+
+```tsx app/_layout.tsx
+import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { useColorScheme } from 'react-native';
+
+export default function TabLayout() {
+  const colorScheme = useColorScheme();
+
+  return (
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <NativeTabs>
+        <NativeTabs.Trigger name="index">
+          <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="settings">
+          <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+      </NativeTabs>
+    </ThemeProvider>
+  );
+}
+```
+
+**For dark-mode-only apps:**
+
+```tsx app/_layout.tsx
+import { ThemeProvider, DarkTheme } from '@react-navigation/native';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <ThemeProvider value={DarkTheme}>
+      <NativeTabs>{/* tabs */}</NativeTabs>
+    </ThemeProvider>
+  );
+}
+```
+
+**Alternative for specific background colors:**
+
+If you need a specific background color that doesn't match the default themes, you can use the [`contentStyle`](/versions/latest/sdk/router-native-tabs/#contentstyle) prop on `NativeTabs.Trigger`:
+
+```tsx
+<NativeTabs.Trigger name="index" contentStyle={{ backgroundColor: '#1a1a2e' }}>
+```
+
+</Collapsible>
+
+<Collapsible summary="Scroll to top does not work when tapping a tab">
+
+Tapping an active tab should scroll the content to the top, but this may not work if the `ScrollView` is not the first child of the screen component.
+
+Ensure that the `ScrollView` is a direct first child of the screen component. If you wrap it with another component, make sure to set `collapsable` to `false` on the wrapper component.
 
 ```tsx app/index.tsx
 import { ScrollView, View } from 'react-native';

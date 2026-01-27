@@ -38,15 +38,28 @@ struct DevMenuDeveloperTools: View {
           )
         }
 
+        if viewModel.configuration.showFastRefresh {
+          Divider()
+
+          DevMenuToggleButton(
+            title: "Fast refresh",
+            icon: "figure.run",
+            isEnabled: viewModel.devSettings?.isHotLoadingEnabled ?? false,
+            action: viewModel.toggleFastRefresh,
+            disabled: !(viewModel.devSettings?.isHotLoadingAvailable ?? true)
+          )
+        }
+
+        #if !os(tvOS) && !os(macOS)
         Divider()
 
         DevMenuToggleButton(
-          title: "Fast refresh",
-          icon: "figure.run",
-          isEnabled: viewModel.devSettings?.isHotLoadingEnabled ?? false,
-          action: viewModel.toggleFastRefresh,
-          disabled: !(viewModel.devSettings?.isHotLoadingAvailable ?? true)
+          title: "Action button",
+          icon: "hand.tap",
+          isEnabled: viewModel.showFloatingActionButton,
+          action: viewModel.toggleFloatingActionButton
         )
+        #endif
 
         Divider()
 

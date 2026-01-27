@@ -135,6 +135,25 @@ export enum AppleMapsMapStyleEmphasis {
 }
 
 /**
+ * Controls the color scheme (appearance) of the map.
+ * @platform ios
+ */
+export enum AppleMapsColorScheme {
+  /**
+   * The map follows the app's color scheme (light/dark mode).
+   */
+  AUTOMATIC = 'AUTOMATIC',
+  /**
+   * The map is always displayed in light mode.
+   */
+  LIGHT = 'LIGHT',
+  /**
+   * The map is always displayed in dark mode.
+   */
+  DARK = 'DARK',
+}
+
+/**
  * @platform ios
  * @see https://developer.apple.com/documentation/mapkit/AppleMapPointOfInterestCategory
  */
@@ -425,6 +444,13 @@ export type AppleMapsPolygon = {
 export type AppleMapsViewProps = {
   ref?: Ref<AppleMapsViewType>;
   style?: StyleProp<ViewStyle>;
+
+  /**
+   * Controls the color scheme (appearance) of the map.
+   * Use this to force the map to display in light or dark mode.
+   * @default AppleMapsColorScheme.AUTOMATIC
+   */
+  colorScheme?: AppleMapsColorScheme;
 
   /**
    * The initial camera position of the map.

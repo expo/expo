@@ -28,8 +28,9 @@ struct SourceMapExplorerView: View {
       }
     }
     .navigationTitle("Source Code Explorer")
-#if !os(macOS)
+#if !os(macOS) && !os(tvOS)
     .navigationBarTitleDisplayMode(.inline)
+    .navigationBarHidden(false)
 #endif
     .searchable(text: $viewModel.searchText, placement: .automatic, prompt: "Search files")
     .task {
@@ -64,7 +65,9 @@ struct SourceMapExplorerView: View {
       Button("Retry") {
         Task { await viewModel.loadSourceMap() }
       }
+      #if !os(tvOS)
       .buttonStyle(.borderedProminent)
+      #endif
     }
     .padding()
     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -85,43 +88,60 @@ struct FolderListView: View {
           .foregroundColor(.secondary)
       } else {
         ForEach(nodes) { node in
-          if node.isDirectory {
-            NavigationLink(destination: FolderListView(
-              title: node.name,
-              nodes: node.children,
-              sourceMap: sourceMap,
-              stats: nil,
-              isSearching: false
-            )) {
-              FileRow(node: node, showPath: isSearching)
-            }
-          } else {
-            NavigationLink(destination: CodeFileView(node: node, sourceMap: sourceMap)) {
-              FileRow(node: node, showPath: isSearching)
-            }
+          NavigationLink(destination: destinationView(for: node)) {
+            FileRow(node: node, showPath: isSearching)
           }
         }
       }
     }
-#if !os(macOS)
+#if !os(macOS) && !os(tvOS)
     .listStyle(.insetGrouped)
+#elseif os(tvOS)
+    .listStyle(.plain)
 #endif
     .navigationTitle(isSearching ? "Search Results" : title)
-#if !os(macOS)
+#if !os(macOS) && !os(tvOS)
     .navigationBarTitleDisplayMode(.inline)
+#endif
     .toolbar {
       ToolbarItem(placement: .navigationBarTrailing) {
         if let stats = stats {
+#if os(tvOS)
+          if #available(tvOS 17.0, *) {
+            Menu {
+              Label("\(stats.files) files", systemImage: "doc.on.doc")
+              Label(stats.totalSize, systemImage: "internaldrive")
+            } label: {
+              Image(systemName: "info.circle")
+            }
+          }
+          // Menu not available on tvOS < 17.0, toolbar item is hidden
+#else
           Menu {
             Label("\(stats.files) files", systemImage: "doc.on.doc")
             Label(stats.totalSize, systemImage: "internaldrive")
           } label: {
             Image(systemName: "info.circle")
           }
+#endif
         }
       }
     }
-#endif
+  }
+
+  @ViewBuilder
+  private func destinationView(for node: FileTreeNode) -> some View {
+    if node.isDirectory {
+      FolderListView(
+        title: node.name,
+        nodes: node.children,
+        sourceMap: sourceMap,
+        stats: nil,
+        isSearching: false
+      )
+    } else {
+      CodeFileView(node: node, sourceMap: sourceMap)
+    }
   }
 }
 
@@ -183,8 +203,10 @@ struct CodeFileView: View {
   let sourceMap: SourceMap?
   @Environment(\.colorScheme) private var colorScheme
   @State private var highlightedLines: [AttributedString]?
+  @State private var isEditing = false
+  @State private var displayContent: String = ""
 
-  private var content: String {
+  private var originalContent: String {
     guard let contentIndex = node.contentIndex,
           let sourceMap,
           let sourcesContent = sourceMap.sourcesContent,
@@ -196,7 +218,7 @@ struct CodeFileView: View {
   }
 
   private var lines: [String] {
-    content.components(separatedBy: "\n")
+    displayContent.components(separatedBy: "\n")
   }
 
   private var theme: SyntaxHighlighter.Theme {
@@ -209,24 +231,72 @@ struct CodeFileView: View {
   }
 
   var body: some View {
-    GeometryReader { geometry in
-      ScrollView(.vertical) {
-        ScrollView(.horizontal, showsIndicators: false) {
-          HStack(alignment: .top, spacing: 0) {
-            LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth)
-            CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme)
-          }
-          .frame(minWidth: geometry.size.width, alignment: .leading)
-        }
+    Group {
+      if isEditing {
+        editingView()
+      } else {
+        readOnlyView()
       }
     }
     .background(theme.background)
     .navigationTitle(node.name)
-#if !os(macOS)
+#if !os(macOS) && !os(tvOS)
     .navigationBarTitleDisplayMode(.inline)
+    .toolbar {
+      ToolbarItem(placement: .navigationBarTrailing) {
+        Button(isEditing ? "Done" : "Edit") {
+          if isEditing {
+            isEditing = false
+            Task {
+              highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
+            }
+          } else {
+            isEditing = true
+          }
+        }
+      }
+    }
 #endif
+    .onAppear {
+      if displayContent.isEmpty {
+        displayContent = originalContent
+      }
+    }
     .task(id: colorScheme) {
       highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
+    }
+  }
+
+  private func readOnlyView() -> some View {
+    ScrollView(.vertical) {
+      ScrollView(.horizontal, showsIndicators: false) {
+        HStack(alignment: .top, spacing: 0) {
+          LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth)
+          CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme)
+        }
+      }
+    }
+  }
+
+  private func editingView() -> some View {
+    TextEditor(text: $displayContent)
+      .font(.system(size: 13, weight: .regular, design: .monospaced))
+      #if os(iOS) || os(tvOS)
+      .textInputAutocapitalization(.never)
+      #endif
+      .autocorrectionDisabled()
+      .modifier(ScrollContentBackgroundModifier())
+      .background(theme.background)
+      .foregroundColor(theme.plain)
+  }
+}
+
+private struct ScrollContentBackgroundModifier: ViewModifier {
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, tvOS 16.0, *) {
+      content.scrollContentBackground(.hidden)
+    } else {
+      content
     }
   }
 }
@@ -235,9 +305,9 @@ struct LineNumbersColumn: View {
   let lines: [String]
   let theme: SyntaxHighlighter.Theme
   let lineNumberWidth: CGFloat
-  
+
   var body: some View {
-    LazyVStack(alignment: .trailing, spacing: 0) {
+    VStack(alignment: .trailing, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in
         Text("\(index + 1)")
           .font(.system(size: 13, weight: .regular, design: .monospaced))
@@ -255,9 +325,9 @@ struct CodeColumn: View {
   let lines: [String]
   let highlightedLines: [AttributedString]?
   let theme: SyntaxHighlighter.Theme
-  
+
   var body: some View {
-    LazyVStack(alignment: .leading, spacing: 0) {
+    VStack(alignment: .leading, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in
         if let highlightedLines, index < highlightedLines.count {
           Text(highlightedLines[index])
@@ -271,13 +341,8 @@ struct CodeColumn: View {
         }
       }
     }
+    .fixedSize(horizontal: true, vertical: false)
     .padding(.vertical, 12)
     .padding(.trailing, 16)
-  }
-}
-
-#Preview {
-  NavigationView {
-    SourceMapExplorerView()
   }
 }
