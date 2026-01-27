@@ -1121,6 +1121,76 @@ describe('redirects', () => {
     });
   });
 
+  it('can redirect to catch-all routes', () => {
+    expect(
+      getRoutes(
+        inMemoryContext({
+          './(app)/index': () => null,
+          './(app)/blog/[...slug]': () => null,
+        }),
+        {
+          internal_stripLoadRoute: true,
+          skipGenerated: true,
+          redirects: [
+            // Zero catch-all segments; `/old-`blog` becomes `/blog`
+            { source: '/old-blog', destination: '/(app)/blog' },
+            // One or more catch-all segments; `/old-blog/post` becomes `/blog/new-post`
+            { source: '/old-blog/post', destination: '/(app)/blog/new-post' },
+          ],
+          preserveRedirectAndRewrites: true,
+        }
+      )
+    ).toEqual({
+      children: [
+        {
+          children: [],
+          contextKey: './old-blog.js',
+          destinationContextKey: './(app)/blog/[...slug].js',
+          destinationPath: 'blog',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/blog/[...slug].js'],
+          generated: true,
+          type: 'redirect',
+          route: 'old-blog',
+          permanent: false,
+        },
+        {
+          children: [],
+          contextKey: './(app)/index.js',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
+          route: '(app)/index',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: './(app)/blog/[...slug].js',
+          dynamic: [{ deep: true, name: 'slug' }],
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/blog/[...slug].js'],
+          route: '(app)/blog/[...slug]',
+          type: 'route',
+        },
+        {
+          children: [],
+          contextKey: './old-blog/post.js',
+          destinationContextKey: './(app)/blog/[...slug].js',
+          destinationPath: 'blog/new-post',
+          dynamic: null,
+          entryPoints: ['expo-router/build/views/Navigator.js', './(app)/blog/[...slug].js'],
+          generated: true,
+          type: 'redirect',
+          route: 'old-blog/post',
+          permanent: false,
+        },
+      ],
+      contextKey: 'expo-router/build/views/Navigator.js',
+      dynamic: null,
+      generated: true,
+      route: '',
+      type: 'layout',
+    });
+  });
+
   it('will not duplicate routes for redirects', () => {
     expect(
       getRoutes(

@@ -120,13 +120,19 @@ export function getServerManifest(
         // Use the stored destination path directly
         // This preserves the actual destination like /blog/expo-apps
         // instead of the route pattern like /blog/[post]
-        redirect.absoluteRoutePath = '/' + (redirect.route.destinationPath || redirect.route.route);
+        redirect.absoluteRoutePath =
+          '/' +
+          (redirect.route.destinationPath ??
+            flat.find(({ route }) => route.contextKey === redirect.route.destinationContextKey)
+              ?.normalizedContextKey ??
+            '');
       }
 
       return redirect;
     })
     .reverse();
 
+  // TODO(@hassankhan): Consider reusing `destinationPath` for rewrites too, similar to redirects above
   const rewrites = uniqueBy(
     flat.filter(({ route }) => route.type === 'rewrite'),
     ({ normalizedContextKey }) => normalizedContextKey
