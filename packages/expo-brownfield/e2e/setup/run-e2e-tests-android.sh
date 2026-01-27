@@ -6,7 +6,7 @@ PROJECT_DIR=$(mktemp -d)
 echo " ✅ Temporary directory created: $PROJECT_DIR"
 
 # [1] Setup emulator
-$DIR/setup-emulator.sh
+# $DIR/setup-emulator.sh
 
 # [2] Setup native project
 $DIR/create-android-project.sh $PROJECT_DIR
