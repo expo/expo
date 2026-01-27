@@ -209,14 +209,11 @@ struct CodeFileView: View {
   }
 
   var body: some View {
-    GeometryReader { geometry in
-      ScrollView(.vertical) {
-        ScrollView(.horizontal, showsIndicators: false) {
-          HStack(alignment: .top, spacing: 0) {
-            LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth)
-            CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme)
-          }
-          .frame(minWidth: geometry.size.width, alignment: .leading)
+    ScrollView(.vertical) {
+      ScrollView(.horizontal, showsIndicators: false) {
+        HStack(alignment: .top, spacing: 0) {
+          LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth)
+          CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme)
         }
       }
     }
@@ -235,9 +232,9 @@ struct LineNumbersColumn: View {
   let lines: [String]
   let theme: SyntaxHighlighter.Theme
   let lineNumberWidth: CGFloat
-  
+
   var body: some View {
-    LazyVStack(alignment: .trailing, spacing: 0) {
+    VStack(alignment: .trailing, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in
         Text("\(index + 1)")
           .font(.system(size: 13, weight: .regular, design: .monospaced))
@@ -255,9 +252,9 @@ struct CodeColumn: View {
   let lines: [String]
   let highlightedLines: [AttributedString]?
   let theme: SyntaxHighlighter.Theme
-  
+
   var body: some View {
-    LazyVStack(alignment: .leading, spacing: 0) {
+    VStack(alignment: .leading, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in
         if let highlightedLines, index < highlightedLines.count {
           Text(highlightedLines[index])
@@ -271,6 +268,7 @@ struct CodeColumn: View {
         }
       }
     }
+    .fixedSize(horizontal: true, vertical: false)
     .padding(.vertical, 12)
     .padding(.trailing, 16)
   }
