@@ -235,7 +235,7 @@ struct LineNumbersColumn: View {
   let lines: [String]
   let theme: SyntaxHighlighter.Theme
   let lineNumberWidth: CGFloat
-  
+
   var body: some View {
     LazyVStack(alignment: .trailing, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in
@@ -255,7 +255,7 @@ struct CodeColumn: View {
   let lines: [String]
   let highlightedLines: [AttributedString]?
   let theme: SyntaxHighlighter.Theme
-  
+
   var body: some View {
     LazyVStack(alignment: .leading, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in
