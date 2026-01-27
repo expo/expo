@@ -3,6 +3,18 @@
 import SwiftUI
 import ExpoModulesCore
 
+// MARK: - Platform Helpers
+
+#if os(macOS)
+private let toolbarPlacement: ToolbarItemPlacement = .automatic
+#elseif os(tvOS)
+private let toolbarPlacement: ToolbarItemPlacement = .automatic
+#else
+private let toolbarPlacement: ToolbarItemPlacement = .navigationBarTrailing
+#endif
+
+// MARK: - Source Map Explorer
+
 struct SourceMapExplorerView: View {
   @StateObject private var viewModel = SourceMapExplorerViewModel()
 
@@ -28,10 +40,7 @@ struct SourceMapExplorerView: View {
       }
     }
     .navigationTitle("Source Code Explorer")
-#if !os(macOS) && !os(tvOS)
-    .navigationBarTitleDisplayMode(.inline)
-    .navigationBarHidden(false)
-#endif
+    .inlineNavigationBar()
     .searchable(text: $viewModel.searchText, placement: .automatic, prompt: "Search files")
     .task {
       await viewModel.loadSourceMap()
@@ -94,39 +103,37 @@ struct FolderListView: View {
         }
       }
     }
-#if !os(macOS) && !os(tvOS)
-    .listStyle(.insetGrouped)
-#elseif os(tvOS)
-    .listStyle(.plain)
-#endif
+    .defaultListStyle()
     .navigationTitle(isSearching ? "Search Results" : title)
-#if !os(macOS) && !os(tvOS)
-    .navigationBarTitleDisplayMode(.inline)
-#endif
+    .inlineNavigationBar()
     .toolbar {
-      ToolbarItem(placement: .navigationBarTrailing) {
+      ToolbarItem(placement: toolbarPlacement) {
         if let stats = stats {
-#if os(tvOS)
-          if #available(tvOS 17.0, *) {
-            Menu {
-              Label("\(stats.files) files", systemImage: "doc.on.doc")
-              Label(stats.totalSize, systemImage: "internaldrive")
-            } label: {
-              Image(systemName: "info.circle")
-            }
-          }
-          // Menu not available on tvOS < 17.0, toolbar item is hidden
-#else
-          Menu {
-            Label("\(stats.files) files", systemImage: "doc.on.doc")
-            Label(stats.totalSize, systemImage: "internaldrive")
-          } label: {
-            Image(systemName: "info.circle")
-          }
-#endif
+          statsMenu(stats)
         }
       }
     }
+  }
+
+  @ViewBuilder
+  private func statsMenu(_ stats: (files: Int, totalSize: String)) -> some View {
+    #if os(tvOS)
+    if #available(tvOS 17.0, *) {
+      Menu {
+        Label("\(stats.files) files", systemImage: "doc.on.doc")
+        Label(stats.totalSize, systemImage: "internaldrive")
+      } label: {
+        Image(systemName: "info.circle")
+      }
+    }
+    #else
+    Menu {
+      Label("\(stats.files) files", systemImage: "doc.on.doc")
+      Label(stats.totalSize, systemImage: "internaldrive")
+    } label: {
+      Image(systemName: "info.circle")
+    }
+    #endif
   }
 
   @ViewBuilder
@@ -240,10 +247,9 @@ struct CodeFileView: View {
     }
     .background(theme.background)
     .navigationTitle(node.name)
-#if !os(macOS) && !os(tvOS)
-    .navigationBarTitleDisplayMode(.inline)
+    .inlineNavigationBar()
     .toolbar {
-      ToolbarItem(placement: .navigationBarTrailing) {
+      ToolbarItem(placement: toolbarPlacement) {
         Button(isEditing ? "Done" : "Edit") {
           if isEditing {
             isEditing = false
@@ -256,7 +262,6 @@ struct CodeFileView: View {
         }
       }
     }
-#endif
     .onAppear {
       if displayContent.isEmpty {
         displayContent = originalContent
@@ -293,7 +298,7 @@ struct CodeFileView: View {
 
 private struct ScrollContentBackgroundModifier: ViewModifier {
   func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, *) {
+    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
       content.scrollContentBackground(.hidden)
     } else {
       content
@@ -344,5 +349,27 @@ struct CodeColumn: View {
     .fixedSize(horizontal: true, vertical: false)
     .padding(.vertical, 12)
     .padding(.trailing, 16)
+  }
+}
+
+private extension View {
+  @ViewBuilder
+  func inlineNavigationBar() -> some View {
+    #if os(iOS)
+    self.navigationBarTitleDisplayMode(.inline)
+    #else
+    self
+    #endif
+  }
+
+  @ViewBuilder
+  func defaultListStyle() -> some View {
+    #if os(iOS)
+    self.listStyle(.insetGrouped)
+    #elseif os(tvOS)
+    self.listStyle(.plain)
+    #else
+    self
+    #endif
   }
 }
