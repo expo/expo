@@ -1,0 +1,59 @@
+---
+title: Bundle diffing for EAS Update
+sidebar_title: Serve bundle diffs
+description: Enable your project to accept bundle diffs when available.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **info** Bundle diffing is in **beta** and may have limitations. See [Current limitations](#current-limitations) for details.
+
+Enable bundle diffing to let EAS Update deliver a **bundle patch** when possible. When you publish a new update, EAS Update can generate a smaller file containing only the differences between the bundle currently running on the device and the new bundle. This often reduces update download size significantly.
+
+## Prerequisites
+
+Your app must use **Expo SDK 55 or later**.
+
+## Enable bundle diffing
+
+In your project’s `app.json` or `app.config.js`, set `updates.enableBsdiffPatchSupport` to `true`:
+
+```json
+{
+  "expo": {
+    "updates": {
+      "enableBsdiffPatchSupport": true
+    }
+  }
+}
+```
+
+## Verify bundle diffs are being served
+
+### Expo website
+
+You can confirm that bundle diffs are being served from the [Update Details](https://expo.dev/accounts/[account]/projects/[project]/updates) page. Open the Update Group you published, then select the platform you want to inspect.
+
+<ContentSpotlight
+  alt="Bundle diffing downloads"
+  src="/static/images/eas-update/bundle-diffing.png"
+/>
+
+### Updates API
+
+You can confirm that bundle diffs are being served by inspecting update logs with Updates.readLogEntriesAsync(). If your app received a patch, you should see an entry indicating it was successfully applied (for example, “patch successfully applied”).
+
+## Patch generation and serving
+
+EAS Update uses the [bsdiff algorithm](https://en.wikipedia.org/wiki/Bsdiff) to generate bundle patches.
+
+Whether a patch is served depends on:
+
+- **Patch is meaningfully smaller than the full bundle.** If not, EAS Update serves the full bundle instead.
+- **Patch generation completes within time limit.** If generating the patch exceeds the time limit (currently **10 seconds**), EAS Update serves the full bundle instead.
+
+## Current limitations
+
+- **Embedded bundles aren’t eligible.** Devices must already be running a **published update** (not the embedded bundle) to receive a patch.
+- **Patches are generated shortly after publish.** It can take a few minutes between publishing an update and the patch being ready. During that window, devices may receive the full bundle.
