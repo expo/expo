@@ -80,7 +80,7 @@ internal struct VideoTrack: Record, Equatable {
     )
   }
 
-  @available(iOS 26, *)
+  @available(iOS 26, tvOS 26, *)
   static func from(assetVariant: AVAssetVariant, isPlayable: Bool, mainUrl: URL) -> VideoTrack? {
     guard let videoAttributes = assetVariant.videoAttributes else {
       return nil

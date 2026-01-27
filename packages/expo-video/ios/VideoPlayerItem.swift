@@ -67,7 +67,7 @@ class VideoPlayerItem: AVPlayerItem {
       }
 
       if isHls {
-        if #available(iOS 26.0, *) {
+        if #available(iOS 26.0, tvOS 26, *) {
           if let assetVariants = try? await urlAsset.load(.variants) {
             let isPlayable = (try? await urlAsset.load(.isPlayable)) ?? false
             for variant in assetVariants {
