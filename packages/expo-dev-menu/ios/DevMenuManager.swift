@@ -7,6 +7,27 @@ import CoreGraphics
 import CoreMedia
 import Combine
 
+/**
+ Configuration options for customizing the dev menu appearance.
+ Host apps (e.g., Expo Go) can set these to tailor the menu for their context.
+ The defaults match the standard dev menu behavior.
+ */
+@objc
+public class DevMenuConfiguration: NSObject {
+  /// Whether to show the debugging tip (e.g., "Debugging not working? Try manually reloading first.")
+  @objc public var showDebuggingTip: Bool = true
+
+  /// Whether to show the "Connected to:" host URL section
+  @objc public var showHostUrl: Bool = true
+
+  /// Whether to show the Fast Refresh toggle
+  @objc public var showFastRefresh: Bool = true
+
+  /// Custom title for the onboarding text. Use to replace "development builds" with e.g. "Expo Go".
+  /// When nil, the default "development builds" text is used.
+  @objc public var onboardingAppName: String?
+}
+
 class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
     if Thread.isMainThread {
@@ -50,6 +71,8 @@ open class DevMenuManager: NSObject {
 
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   var canLaunchDevMenuOnStart = true
+
+  @objc public var configuration = DevMenuConfiguration()
 
   static public var wasInitilized = false
 
