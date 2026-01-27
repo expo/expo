@@ -1,5 +1,7 @@
 package expo.modules.securestore
 
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import android.content.Context
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.PromptInfo
@@ -11,12 +13,23 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class AuthenticationPrompt(private val currentActivity: FragmentActivity, context: Context, title: String) {
+class AuthenticationPrompt(private val currentActivity: FragmentActivity, context: Context, title: String, enableDeviceFallback: Boolean) {
+  private var authType: Int = if (enableDeviceFallback) BIOMETRIC_STRONG or DEVICE_CREDENTIAL else BIOMETRIC_STRONG
   private var executor: Executor = ContextCompat.getMainExecutor(context)
-  private var promptInfo = PromptInfo.Builder()
-    .setTitle(title)
-    .setNegativeButtonText(context.getString(android.R.string.cancel))
-    .build()
+  private var promptInfo = buildPromptInfo(context, title, enableDeviceFallback)
+
+  private fun buildPromptInfo(context: Context, title: String, enableDeviceFallback: Boolean): PromptInfo {
+    var prompt = PromptInfo.Builder()
+      .setTitle(title)
+      .setAllowedAuthenticators(authType)
+
+    if (!enableDeviceFallback) {
+      prompt = prompt.
+        setNegativeButtonText(context.getString(android.R.string.cancel))
+    }
+
+    return prompt.build()
+  }
 
   suspend fun authenticate(cipher: Cipher): BiometricPrompt.AuthenticationResult? =
     suspendCoroutine { continuation ->
@@ -27,9 +40,11 @@ class AuthenticationPrompt(private val currentActivity: FragmentActivity, contex
           override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
             super.onAuthenticationError(errorCode, errString)
 
-            val errorType = convertErrorCode(errorCode)
-            val message = "$errorType. $errString"
-            continuation.resumeWithException(AuthenticationException(message))
+            if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
+              continuation.resumeWithException(AuthenticationException("User canceled the authentication"))
+            } else {
+              continuation.resumeWithException(AuthenticationException("Could not authenticate the user"))
+            }
           }
 
           override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
