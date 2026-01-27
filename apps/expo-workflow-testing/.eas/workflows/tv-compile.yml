@@ -18,6 +18,9 @@ on:
       - packages/expo-structured-headers/ios/**
       - packages/expo-updates/ios/**
       - packages/expo-updates-interface/ios/**
+      - packages/expo-dev-menu/ios/**
+      - packages/expo-dev-launcher/ios/**
+      - packages/expo-dev-client/ios/**
       - packages/expo-audio/ios/**
       - packages/expo-blur/ios/**
       - packages/expo-crypto/ios/**
@@ -49,6 +52,9 @@ on:
       - packages/expo-structured-headers/ios/**
       - packages/expo-updates/ios/**
       - packages/expo-updates-interface/ios/**
+      - packages/expo-dev-menu/ios/**
+      - packages/expo-dev-launcher/ios/**
+      - packages/expo-dev-client/ios/**
       - packages/expo-audio/ios/**
       - packages/expo-blur/ios/**
       - packages/expo-crypto/ios/**
