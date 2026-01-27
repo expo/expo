@@ -129,6 +129,7 @@ export const home = [
       ],
       { expanded: false }
     ),
+    makePage('develop/database.mdx'),
     makePage('develop/authentication.mdx'),
     makePage('develop/unit-testing.mdx'),
   ]),
@@ -357,6 +358,7 @@ export const general = [
     ]),
     makeGroup('CMS', [makePage('guides/using-a-cms.mdx')]),
     makeGroup('Database and SDKs', [
+      makePage('guides/using-convex.mdx'),
       makePage('guides/using-firebase.mdx'),
       makePage('guides/using-supabase.mdx'),
     ]),
