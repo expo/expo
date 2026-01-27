@@ -18,7 +18,7 @@ import { ConfigReactNative, ConfigPluginExample } from '~/ui/components/ConfigSe
 
 ## Configuration in app config
 
-You can configure `expo-system-ui` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure [`userInterfaceStyle`](../config/app/#userinterfacestyle) on Android and [`backgroundColor`](../config/app/#backgroundcolor) on iOS properties from [app config](../config/app). These properties cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
+You can configure `expo-system-ui` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure [`userInterfaceStyle`](../config/app/#userinterfacestyle) and [`backgroundColor`](../config/app/#backgroundcolor) properties from [app config](../config/app) on both Android and iOS. These properties cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
 
 <ConfigPluginExample>
 
@@ -29,11 +29,13 @@ You can configure `expo-system-ui` using its built-in [config plugin](/config-pl
     "userInterfaceStyle": "light",
     "ios": {
       "backgroundColor": "#ffffff",
-    }
-    "android": {
       "userInterfaceStyle": "light"
     },
-    "plugins": ["expo-system-ui"],
+    "android": {
+      "backgroundColor": "#ffffff",
+      "userInterfaceStyle": "light"
+    },
+    "plugins": ["expo-system-ui"]
   }
 }
 ```
@@ -46,25 +48,55 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 
 **Android**
 
-To apply `userInterfaceStyle` on Android, you need to add the `expo_system_ui_user_interface_style` configuration **android/app/src/main/res/values/strings.xml**:
+To apply `userInterfaceStyle` on Android, you need to add the `expo_system_ui_user_interface_style` configuration in **android/app/src/main/res/values/strings.xml**:
 
 ```xml
 <resources>
   <!-- ... -->
-  <string name="expo_system_ui_user_interface_style" translatable="false">light</string> <!-- or dark -->
+  <string name="expo_system_ui_user_interface_style" translatable="false">light</string> <!-- or dark or automatic -->
+</resources>
+```
+
+To apply `backgroundColor` on Android, you need to add a color and style in **android/app/src/main/res/values/colors.xml** and **android/app/src/main/res/values/styles.xml**:
+
+```xml colors.xml
+<resources>
+  <!-- ... -->
+  <color name="activityBackground">#ffffff</color>
+</resources>
+```
+
+```xml styles.xml
+<resources>
+  <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- ... -->
+    <item name="android:windowBackground">@color/activityBackground</item>
+  </style>
 </resources>
 ```
 
 **iOS**
 
-To apply `backgroundColor` on iOS, you need to add the `UIUserInterfaceStyle` configuration in **ios/your-app/Info.plist**:
+To apply `userInterfaceStyle` on iOS, you need to add the `UIUserInterfaceStyle` configuration in **ios/your-app/Info.plist**:
 
 ```xml
 <plist>
   <dict>
     <!-- ... -->
     <key>UIUserInterfaceStyle</key>
-    <string>Light</string> <!-- or Dark -->
+    <string>Light</string> <!-- or Dark or Automatic -->
+  </dict>
+</plist>
+```
+
+To apply `backgroundColor` on iOS, you need to add the `RCTRootViewBackgroundColor` configuration in **ios/your-app/Info.plist**. The value is a 32-bit integer representing the color in ARGB format:
+
+```xml
+<plist>
+  <dict>
+    <!-- ... -->
+    <key>RCTRootViewBackgroundColor</key>
+    <integer>4294967295</integer> <!-- white (#ffffff) in ARGB format -->
   </dict>
 </plist>
 ```
