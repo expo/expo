@@ -57,10 +57,6 @@ jobs:
             yarn.lock,
             "!packages/**/{ios,android}/**",
             "!apps/bare-expo/**/{ios,android}/**"
-
-          shared-ignores: >-
-            "!{**/*.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*,**/.npmignore,**/.eslintrc*,**/.prettierrc*,**/.gitattributes,**/.watchmanconfig,**/.fingerprintignore}"
-
   ios-build:
     runs-on: macos-15
     needs: detect-platform-for-e2e

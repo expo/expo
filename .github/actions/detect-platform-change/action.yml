@@ -13,7 +13,7 @@ inputs:
   shared-ignores:
     description: 'Paths to ignore for all platforms'
     required: false
-    default: ''
+    default: '!{**/*.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*,**/.npmignore,**/.eslintrc*,**/.prettierrc*,**/.gitattributes,**/.watchmanconfig,**/.fingerprintignore}'
 
 outputs:
   should_run_android:
