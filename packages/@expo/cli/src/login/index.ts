@@ -12,11 +12,13 @@ export const expoLogin: Command = async (argv) => {
       '--password': String,
       '--otp': String,
       '--sso': Boolean,
+      '--browser': Boolean,
       // Aliases
       '-h': '--help',
       '-u': '--username',
       '-p': '--password',
       '-s': '--sso',
+      '-b': '--browser',
     },
     argv
   );
@@ -30,6 +32,7 @@ export const expoLogin: Command = async (argv) => {
         `-p, --password <string>  Password`,
         `--otp <string>           One-time password from your 2FA device`,
         `-s, --sso                Log in with SSO`,
+        // -b, --browser is hidden for soft launch
         `-h, --help               Usage info`,
       ].join('\n')
     );
@@ -42,5 +45,6 @@ export const expoLogin: Command = async (argv) => {
     password: args['--password'],
     otp: args['--otp'],
     sso: !!args['--sso'],
+    browser: !!args['--browser'],
   }).catch(logCmdError);
 };

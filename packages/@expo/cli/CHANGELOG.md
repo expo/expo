@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `--browser` option to `expo login`. ([#42614](https://github.com/expo/expo/pull/42614) by [@byronkarlen](https://github.com/byronkarlen))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -2,7 +2,7 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import { retryUsernamePasswordAuthWithOTPAsync } from './otp';
-import { Actor, getUserAsync, loginAsync, ssoLoginAsync } from './user';
+import { Actor, getUserAsync, loginAsync, browserLoginAsync } from './user';
 import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
@@ -21,19 +21,21 @@ export async function showLoginPromptAsync({
   password?: string;
   otp?: string;
   sso?: boolean | undefined;
+  browser?: boolean | undefined;
 } = {}): Promise<void> {
   if (env.EXPO_OFFLINE) {
     throw new CommandError('OFFLINE', 'Cannot authenticate in offline-mode');
   }
   const hasCredentials = options.username && options.password;
   const sso = options.sso;
+  const browser = options.browser;
 
   if (printNewLine) {
     Log.log();
   }
 
-  if (sso) {
-    await ssoLoginAsync();
+  if (sso || browser) {
+    await browserLoginAsync({ sso: !!sso });
     return;
   }
 
