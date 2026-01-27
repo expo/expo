@@ -38,15 +38,17 @@ struct DevMenuDeveloperTools: View {
           )
         }
 
-        Divider()
+        if viewModel.configuration.showFastRefresh {
+          Divider()
 
-        DevMenuToggleButton(
-          title: "Fast refresh",
-          icon: "figure.run",
-          isEnabled: viewModel.devSettings?.isHotLoadingEnabled ?? false,
-          action: viewModel.toggleFastRefresh,
-          disabled: !(viewModel.devSettings?.isHotLoadingAvailable ?? true)
-        )
+          DevMenuToggleButton(
+            title: "Fast refresh",
+            icon: "figure.run",
+            isEnabled: viewModel.devSettings?.isHotLoadingEnabled ?? false,
+            action: viewModel.toggleFastRefresh,
+            disabled: !(viewModel.devSettings?.isHotLoadingAvailable ?? true)
+          )
+        }
 
         Divider()
 

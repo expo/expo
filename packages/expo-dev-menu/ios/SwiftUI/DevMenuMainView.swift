@@ -7,7 +7,7 @@ struct DevMenuMainView: View {
     ScrollView {
       VStack(spacing: 32) {
         VStack {
-          if let hostUrl = viewModel.appInfo?.hostUrl {
+          if viewModel.configuration.showHostUrl, let hostUrl = viewModel.appInfo?.hostUrl {
             HostUrl(
               hostUrl: hostUrl,
               onCopy: viewModel.copyToClipboard,
@@ -31,7 +31,7 @@ struct DevMenuMainView: View {
 
         DevMenuDeveloperTools()
 
-        if viewModel.appInfo?.engine == "Hermes" {
+        if viewModel.configuration.showDebuggingTip && viewModel.appInfo?.engine == "Hermes" {
           HermesDebuggerTip()
         }
 
@@ -47,6 +47,7 @@ struct DevMenuMainView: View {
     .navigationTitle("Dev Menu")
 #if !os(macOS)
     .navigationBarHidden(true)
+    .navigationBarTitleDisplayMode(.inline)
 #endif
   }
 }
