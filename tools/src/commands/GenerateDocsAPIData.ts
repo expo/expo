@@ -146,7 +146,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-screen-orientation': ['ScreenOrientation.ts'],
   'expo-secure-store': ['SecureStore.ts'],
   'expo-server': ['index.ts'],
-  'expo-sharing': ['Sharing.ts'],
+  'expo-sharing': ['index.ts'],
   'expo-sms': ['SMS.ts'],
   'expo-speech': ['Speech/Speech.ts'],
   'expo-splash-screen': ['index.ts'],
