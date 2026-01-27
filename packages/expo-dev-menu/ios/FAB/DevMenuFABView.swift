@@ -7,7 +7,7 @@ import SwiftUI
 enum FABConstants {
   static let iconSize: CGFloat = 44
   static let margin: CGFloat = 16
-  static let dragThreshold: CGFloat = 40
+  static let dragThreshold: CGFloat = 10
   static let momentumFactor: CGFloat = 0.35
   static let labelDismissDelay: TimeInterval = 10
 
@@ -34,7 +34,6 @@ struct FabPill: View {
             .stroke(Color.blue.opacity(0.5), lineWidth: 4)
             .frame(width: FABConstants.iconSize + 4, height: FABConstants.iconSize + 4)
         )
-        .opacity(isPressed ? 0.8 : 1.0)
         .scaleEffect(isPressed ? 0.9 : 1.0)
         .animation(.easeInOut(duration: 0.1), value: isPressed)
 
@@ -67,9 +66,16 @@ struct DevMenuFABView: View {
   private let fabSize = CGSize(width: 72, height: FABConstants.iconSize + 24)
 
   @State private var position: CGPoint = .zero
+  @State private var targetPosition: CGPoint = .zero
   @State private var isDragging = false
   @State private var isPressed = false
   @State private var dragStartPosition: CGPoint = .zero
+
+  private let dragSpring: Animation = .spring(
+    response: 0.35,
+    dampingFraction: 0.35,
+    blendDuration: 0
+  )
 
   private var currentFrame: CGRect {
     CGRect(origin: position, size: fabSize)
@@ -97,7 +103,7 @@ struct DevMenuFABView: View {
           position = newPos
           onFrameChange(CGRect(origin: newPos, size: fabSize))
         }
-        .animation(isDragging ? nil : FABConstants.snapAnimation, value: position)
+        .animation(isDragging ? dragSpring : FABConstants.snapAnimation, value: position)
     }
     .ignoresSafeArea()
   }
@@ -114,9 +120,18 @@ struct DevMenuFABView: View {
           dragStartPosition = position
         }
         if isDragging {
+          let margin = FABConstants.margin
+          let minX = margin
+          let maxX = bounds.width - fabSize.width - margin
+          let minY = margin + safeArea.top
+          let maxY = bounds.height - fabSize.height - margin - safeArea.bottom
+
+          let rawX = dragStartPosition.x + value.translation.width
+          let rawY = dragStartPosition.y + value.translation.height
+
           position = CGPoint(
-            x: dragStartPosition.x + value.translation.width,
-            y: dragStartPosition.y + value.translation.height
+            x: rawX.clamped(to: minX...maxX),
+            y: rawY.clamped(to: minY...maxY)
           )
           onFrameChange(currentFrame)
         }

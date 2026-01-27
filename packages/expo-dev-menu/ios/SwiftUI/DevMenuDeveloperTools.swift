@@ -12,6 +12,29 @@ struct DevMenuDeveloperTools: View {
         .foregroundColor(.primary.opacity(0.6))
 
       VStack(spacing: 0) {
+        NavigationLink(destination: SourceMapExplorerView()) {
+          HStack {
+            Image(systemName: "map")
+              .frame(width: 24, height: 24)
+              .foregroundColor(.primary)
+              .opacity(0.6)
+
+            Text("Source code explorer")
+              .foregroundColor(.primary)
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+              .font(.caption)
+              .foregroundColor(.secondary)
+          }
+          .padding()
+          .background(Color.expoSecondarySystemBackground)
+        }
+        .buttonStyle(.plain)
+
+        Divider()
+
         DevMenuActionButton(
           title: "Toggle performance monitor",
           icon: "speedometer",
@@ -60,29 +83,6 @@ struct DevMenuDeveloperTools: View {
           action: viewModel.toggleFloatingActionButton
         )
         #endif
-
-        Divider()
-
-        NavigationLink(destination: SourceMapExplorerView()) {
-          HStack {
-            Image(systemName: "map")
-              .frame(width: 24, height: 24)
-              .foregroundColor(.primary)
-              .opacity(0.6)
-
-            Text("Source code explorer")
-              .foregroundColor(.primary)
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
-              .font(.caption)
-              .foregroundColor(.secondary)
-          }
-          .padding()
-          .background(Color.expoSecondarySystemBackground)
-        }
-        .buttonStyle(.plain)
       }
       .background(Color.expoSystemBackground)
       .cornerRadius(18)
