@@ -3,12 +3,10 @@
 import SwiftUI
 import ExpoModulesCore
 
-#if os(macOS)
-private let toolbarPlacement: ToolbarItemPlacement = .automatic
-#elseif os(tvOS)
-private let toolbarPlacement: ToolbarItemPlacement = .automatic
-#else
+#if os(iOS)
 private let toolbarPlacement: ToolbarItemPlacement = .navigationBarTrailing
+#else
+private let toolbarPlacement: ToolbarItemPlacement = .automatic
 #endif
 
 struct SourceMapExplorerView: View {
@@ -349,7 +347,6 @@ struct CodeColumn: View {
 }
 
 private extension View {
-  @ViewBuilder
   func inlineNavigationBar() -> some View {
     #if os(iOS)
     self.navigationBarTitleDisplayMode(.inline)
@@ -358,7 +355,6 @@ private extension View {
     #endif
   }
 
-  @ViewBuilder
   func defaultListStyle() -> some View {
     #if os(iOS)
     self.listStyle(.insetGrouped)
