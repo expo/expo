@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix only one player getting released when reloading with multiple players present. ([#42780](https://github.com/expo/expo/pull/42780) by [@behenate](https://github.com/behenate))
+- [iOS] Fix data getting corrupted when caching is enabled. ([#42621](https://github.com/expo/expo/pull/42621) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
