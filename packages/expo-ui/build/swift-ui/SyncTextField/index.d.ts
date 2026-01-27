@@ -1,4 +1,3 @@
-import "react-native-reanimated";
 export type SyncTextFieldRef = {
     setState: (value: string) => void;
     getState: () => string;
