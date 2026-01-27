@@ -141,8 +141,6 @@ struct DevMenuFABView: View {
             safeArea: safeArea
           )
 
-          // Position is already at drag-release point.
-          // Defer snap so isDragging=false activates the spring animation first.
           DispatchQueue.main.async {
             isDragging = false
             position = newPos
