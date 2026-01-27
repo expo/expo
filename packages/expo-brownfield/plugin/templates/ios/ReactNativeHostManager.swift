@@ -85,7 +85,7 @@ public class ReactNativeHostManager {
       return
     }
 
-    guard let manifestURL = URL(string: "\(scheme)://\(host):\(port)/manifest?platform=ios") else {
+    guard let manifestURL = URL(string: "\(scheme)://\(host):\(port)") else {
       print("⚠️ Manifest URL couldn't be created")
       return
     }
