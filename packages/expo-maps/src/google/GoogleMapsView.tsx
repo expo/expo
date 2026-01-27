@@ -39,7 +39,6 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
       onCircleClick,
       onPolygonClick,
       onCameraMove,
-      onDeselect,
       markers,
       polylines,
       circles,
@@ -53,8 +52,8 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
       setCameraPosition(config?: SetCameraPositionConfig) {
         nativeRef.current?.setCameraPosition(config);
       },
-      select(id: string | null, options?: { zoom?: number; moveCamera?: boolean }) {
-        nativeRef.current?.select(id, options);
+      selectMarker(id?: string, options?: { zoom?: number; moveCamera?: boolean }) {
+        nativeRef.current?.selectMarker(id, options);
       },
     }));
 
@@ -69,9 +68,6 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
     const onNativePolylineClick = useNativeEvent(onPolylineClick);
     const onNativePolygonClick = useNativeEvent(onPolygonClick);
     const onNativeCircleClick = useNativeEvent(onCircleClick);
-    const onNativeDeselect = React.useCallback(() => {
-      onDeselect?.();
-    }, [onDeselect]);
 
     const parsedPolylines = polylines?.map((polyline) => ({
       ...polyline,
@@ -116,7 +112,6 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
         onPolylineClick={onNativePolylineClick}
         onPolygonClick={onNativePolygonClick}
         onCircleClick={onNativeCircleClick}
-        onDeselect={onNativeDeselect}
       />
     );
   }
