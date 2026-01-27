@@ -60,32 +60,49 @@ class VideoPlayerItem: AVPlayerItem {
       }
 
       var tracks: [VideoTrack] = []
-      if let assetTracks = try? await urlAsset.loadTracks(withMediaType: .video), !assetTracks.isEmpty {
+      if let assetTracks = try? await urlAsset.loadTracks(withMediaType: .video) {
         for avAssetTrack in assetTracks {
           tracks.append(await VideoTrack.from(assetTrack: avAssetTrack))
         }
       }
 
-      if isHls {
-        if #available(iOS 26.0, tvOS 26, *) {
-          if let assetVariants = try? await urlAsset.load(.variants) {
-            let isPlayable = (try? await urlAsset.load(.isPlayable)) ?? false
-            for variant in assetVariants {
-              if let track = VideoTrack.from(assetVariant: variant, isPlayable: isPlayable, mainUrl: mainUrl) {
-                tracks.append(track)
-              }
-            }
-          }
-        } else {
-          do {
-            tracks = try await self.fetchHlsVideoTracks()
-          } catch {
-            tracks = []
-            log.warn("Failed to fetch HLS video tracks, this is not required for playback, but `expo-video` will have no knowledge of the available tracks: \(error.localizedDescription)")
-          }
-        }
+      guard isHls else {
+        return tracks
       }
-      return tracks
+
+      let hlsTracks = await loadHlsTracks(mainUrl: mainUrl)
+      return tracks + hlsTracks
+    }
+  }
+
+  // MARK: - HLS Helpers
+
+  private func loadHlsTracks(mainUrl: URL) async -> [VideoTrack] {
+    if #available(iOS 26.0, tvOS 26, *) {
+      return await loadModernHlsTracks(mainUrl: mainUrl)
+    }
+
+    return await loadLegacyHlsTracks()
+  }
+
+  @available(iOS 26.0, tvOS 26, *)
+  private func loadModernHlsTracks(mainUrl: URL) async -> [VideoTrack] {
+    guard let variants = try? await urlAsset.load(.variants) else {
+      return []
+    }
+    let isPlayable = (try? await urlAsset.load(.isPlayable)) ?? false
+
+    return variants.compactMap { variant in
+      VideoTrack.from(assetVariant: variant, isPlayable: isPlayable, mainUrl: mainUrl)
+    }
+  }
+
+  private func loadLegacyHlsTracks() async -> [VideoTrack] {
+    do {
+      return try await self.fetchHlsVideoTracks()
+    } catch {
+      log.warn("Failed to fetch HLS video tracks: \(error.localizedDescription)")
+      return []
     }
   }
 
