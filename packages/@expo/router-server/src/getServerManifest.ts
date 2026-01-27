@@ -132,15 +132,18 @@ export function getServerManifest(
     })
     .reverse();
 
-  // TODO(@hassankhan): Consider reusing `destinationPath` for rewrites too, similar to redirects above
   const rewrites = uniqueBy(
     flat.filter(({ route }) => route.type === 'rewrite'),
     ({ normalizedContextKey }) => normalizedContextKey
   )
     .map((rewrite) => {
+      // Use the stored destination path directly, similar to redirects above
       rewrite.absoluteRoutePath =
-        flat.find(({ route }) => route.contextKey === rewrite.route.destinationContextKey)
-          ?.normalizedContextKey ?? '/';
+        '/' +
+        (rewrite.route.destinationPath ??
+          flat.find(({ route }) => route.contextKey === rewrite.route.destinationContextKey)
+            ?.normalizedContextKey ??
+          '');
 
       return rewrite;
     })

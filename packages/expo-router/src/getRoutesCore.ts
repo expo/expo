@@ -479,6 +479,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
 
       const rewrite = rewrites[meta.route];
       node.destinationContextKey = rewrite.destinationContextKey;
+      node.destinationPath = rewrite.destination;
       node.generated = true;
       if (node.type === 'route') {
         node = options.getSystemRoute({
