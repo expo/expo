@@ -37,4 +37,5 @@ export * from './Shapes';
 export * from './Popover';
 export * from './Grid';
 export * from './RNHostView';
+export * from './SyncTextField';
 //# sourceMappingURL=index.d.ts.map

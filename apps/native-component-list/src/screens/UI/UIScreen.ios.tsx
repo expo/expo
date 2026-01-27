@@ -99,6 +99,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'SyncTextField component',
+    route: 'ui/sync-text-field',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SyncTextFieldScreen'));
+    },
+  },
+  {
     name: 'ProgressView component',
     route: 'ui/progress-view',
     options: {},
