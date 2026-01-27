@@ -16,7 +16,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 **EAS Workflows** is a CI/CD service from EAS (Expo Application Services) that lets teams automate repeated tasks such as building Android and iOS binaries, publishing over-the-air updates, submitting to app stores, running E2E tests with Maestro, and deploying web apps to EAS Hosting.
 
-EAS Workflows run in managed cloud environments with pre-packaged job types designed specifically for mobile app development. Teams can trigger workflows from GitHub events (push, pull request, labels), schedules (cron), or manually via the EAS CLI.
+EAS Workflows run in managed cloud environments with pre-packaged job types designed specifically for mobile app development. When your EAS project is linked to GitHub, teams can trigger workflows from GitHub events (push, pull request, labels) or schedules (cron), or run them manually via the EAS CLI.
 
 <VideoBoxLink
   videoId="OJ2u9tQCpr4"
@@ -38,11 +38,10 @@ Workflows are defined as YAML files in the **.eas/workflows/** directory at the 
 - **No infrastructure to manage**: Runs on EAS with macOS and Linux workers, so you don't need to maintain CI servers or configure Android Studio/Xcode
 - **Unified artifact management**: All build artifacts, updates, and logs appear on EAS dashboard
 - **GitHub integration**: Trigger workflows automatically on push, pull request, or label events with branch and path filtering
-- **Faster iteration**: Use fingerprint-based builds to skip redundant native builds and send OTA updates instead
+- **Faster iteration**: Combine Fingerprint, Get Build, and Update jobs to avoid redundant native builds and publish OTA (over-the-air) updates when possible
 - **E2E testing built-in**: Run Maestro tests on Android emulators and iOS simulators directly in workflows
 - **Slack notifications**: Send notifications to Slack channels when workflows run successfully or fail
-- **Fingerprint-based builds**: Calculate fingerprints of your project to skip redundant native builds
-  **Repack**: Repack builds into a single binary for faster distribution
+- **Repack**: Reuse an existing build's metadata and JavaScript bundle to create a compatible build faster
 
 ## Workflow trigger types
 
