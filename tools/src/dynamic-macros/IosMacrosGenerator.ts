@@ -56,13 +56,6 @@ async function generateBuildConstantsFromMacrosAsync(
       config[name] = value || '';
     }
 
-    // Remove legacy kernel-related fields if they exist from previous builds
-    delete config.BUILD_MACHINE_KERNEL_MANIFEST;
-    delete config.BUILD_MACHINE_LOCAL_HOSTNAME;
-    delete config.DEV_PUBLISHED_KERNEL_MANIFEST;
-    delete config.DEV_KERNEL_SOURCE;
-    delete config.IS_DEV_KERNEL;
-
     config.EXPO_RUNTIME_VERSION = infoPlistContents.CFBundleVersion
       ? infoPlistContents.CFBundleVersion
       : infoPlistContents.CFBundleShortVersionString;
