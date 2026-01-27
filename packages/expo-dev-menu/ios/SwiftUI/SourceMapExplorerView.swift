@@ -3,56 +3,6 @@
 import SwiftUI
 import ExpoModulesCore
 
-// MARK: - Platform-Specific View Extensions
-
-private extension View {
-  /// Safely applies navigation bar title display mode where supported
-  @ViewBuilder
-  func applyNavigationDisplayModeInline() -> some View {
-    #if os(iOS) || os(watchOS)
-    self.navigationBarTitleDisplayMode(.inline)
-    #else
-    self
-    #endif
-  }
-  
-  /// Applies appropriate list style based on platform without type erasure
-  @ViewBuilder
-  func applyCompatibleListStyle() -> some View {
-    #if os(iOS)
-    self.listStyle(.insetGrouped)
-    #elseif os(tvOS)
-    self.listStyle(.plain)
-    #else
-    self.listStyle(.automatic)
-    #endif
-  }
-}
-
-/// Platform-compatible Menu view builder for stats display
-@ViewBuilder
-private func statsMenu(files: Int, totalSize: String) -> some View {
-  #if os(tvOS)
-  if #available(tvOS 17.0, *) {
-    menuContent(files: files, totalSize: totalSize)
-  }
-  #else
-  menuContent(files: files, totalSize: totalSize)
-  #endif
-}
-
-@ViewBuilder
-private func menuContent(files: Int, totalSize: String) -> some View {
-  Menu {
-    Label("\(files) files", systemImage: "doc.on.doc")
-    Label(totalSize, systemImage: "internaldrive")
-  } label: {
-    Image(systemName: "info.circle")
-  }
-}
-
-// MARK: - Views
-
 struct SourceMapExplorerView: View {
   @StateObject private var viewModel = SourceMapExplorerViewModel()
 
@@ -78,7 +28,9 @@ struct SourceMapExplorerView: View {
       }
     }
     .navigationTitle("Source Code Explorer")
-    .applyNavigationDisplayModeInline()
+#if !os(macOS) && !os(tvOS)
+    .navigationBarTitleDisplayMode(.inline)
+#endif
     .searchable(text: $viewModel.searchText, placement: .automatic, prompt: "Search files")
     .task {
       await viewModel.loadSourceMap()
@@ -141,14 +93,36 @@ struct FolderListView: View {
         }
       }
     }
-    .applyCompatibleListStyle()
+#if !os(macOS) && !os(tvOS)
+    .listStyle(.insetGrouped)
+#elseif os(tvOS)
+    .listStyle(.plain)
+#endif
     .navigationTitle(isSearching ? "Search Results" : title)
-    .applyNavigationDisplayModeInline()
+#if !os(macOS) && !os(tvOS)
+    .navigationBarTitleDisplayMode(.inline)
+#endif
     .toolbar {
-      // Using .primaryAction or .automatic works better for cross-platform
-      ToolbarItem(placement: .automatic) {
+      ToolbarItem(placement: .navigationBarTrailing) {
         if let stats = stats {
-          statsMenu(files: stats.files, totalSize: stats.totalSize)
+#if os(tvOS)
+          if #available(tvOS 17.0, *) {
+            Menu {
+              Label("\(stats.files) files", systemImage: "doc.on.doc")
+              Label(stats.totalSize, systemImage: "internaldrive")
+            } label: {
+              Image(systemName: "info.circle")
+            }
+          }
+          // Menu not available on tvOS < 17.0, toolbar item is hidden
+#else
+          Menu {
+            Label("\(stats.files) files", systemImage: "doc.on.doc")
+            Label(stats.totalSize, systemImage: "internaldrive")
+          } label: {
+            Image(systemName: "info.circle")
+          }
+#endif
         }
       }
     }
@@ -267,7 +241,9 @@ struct CodeFileView: View {
     }
     .background(theme.background)
     .navigationTitle(node.name)
-    .applyNavigationDisplayModeInline()
+#if !os(macOS) && !os(tvOS)
+    .navigationBarTitleDisplayMode(.inline)
+#endif
     .task(id: colorScheme) {
       highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
     }
