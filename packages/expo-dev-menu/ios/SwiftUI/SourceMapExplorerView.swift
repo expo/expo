@@ -30,6 +30,7 @@ struct SourceMapExplorerView: View {
     .navigationTitle("Source Code Explorer")
 #if !os(macOS) && !os(tvOS)
     .navigationBarTitleDisplayMode(.inline)
+    .navigationBarHidden(false)
 #endif
     .searchable(text: $viewModel.searchText, placement: .automatic, prompt: "Search files")
     .task {
@@ -202,8 +203,10 @@ struct CodeFileView: View {
   let sourceMap: SourceMap?
   @Environment(\.colorScheme) private var colorScheme
   @State private var highlightedLines: [AttributedString]?
+  @State private var isEditing = false
+  @State private var displayContent: String = ""
 
-  private var content: String {
+  private var originalContent: String {
     guard let contentIndex = node.contentIndex,
           let sourceMap,
           let sourcesContent = sourceMap.sourcesContent,
@@ -215,7 +218,7 @@ struct CodeFileView: View {
   }
 
   private var lines: [String] {
-    content.components(separatedBy: "\n")
+    displayContent.components(separatedBy: "\n")
   }
 
   private var theme: SyntaxHighlighter.Theme {
@@ -228,24 +231,72 @@ struct CodeFileView: View {
   }
 
   var body: some View {
-    GeometryReader { geometry in
-      ScrollView(.vertical) {
-        ScrollView(.horizontal, showsIndicators: false) {
-          HStack(alignment: .top, spacing: 0) {
-            LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth)
-            CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme)
-          }
-          .frame(minWidth: geometry.size.width, alignment: .leading)
-        }
+    Group {
+      if isEditing {
+        editingView()
+      } else {
+        readOnlyView()
       }
     }
     .background(theme.background)
     .navigationTitle(node.name)
 #if !os(macOS) && !os(tvOS)
     .navigationBarTitleDisplayMode(.inline)
+    .toolbar {
+      ToolbarItem(placement: .navigationBarTrailing) {
+        Button(isEditing ? "Done" : "Edit") {
+          if isEditing {
+            isEditing = false
+            Task {
+              highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
+            }
+          } else {
+            isEditing = true
+          }
+        }
+      }
+    }
 #endif
+    .onAppear {
+      if displayContent.isEmpty {
+        displayContent = originalContent
+      }
+    }
     .task(id: colorScheme) {
       highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
+    }
+  }
+
+  private func readOnlyView() -> some View {
+    ScrollView(.vertical) {
+      ScrollView(.horizontal, showsIndicators: false) {
+        HStack(alignment: .top, spacing: 0) {
+          LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth)
+          CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme)
+        }
+      }
+    }
+  }
+
+  private func editingView() -> some View {
+    TextEditor(text: $displayContent)
+      .font(.system(size: 13, weight: .regular, design: .monospaced))
+      #if os(iOS) || os(tvOS)
+      .textInputAutocapitalization(.never)
+      #endif
+      .autocorrectionDisabled()
+      .modifier(ScrollContentBackgroundModifier())
+      .background(theme.background)
+      .foregroundColor(theme.plain)
+  }
+}
+
+private struct ScrollContentBackgroundModifier: ViewModifier {
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, tvOS 16.0, *) {
+      content.scrollContentBackground(.hidden)
+    } else {
+      content
     }
   }
 }
@@ -256,7 +307,7 @@ struct LineNumbersColumn: View {
   let lineNumberWidth: CGFloat
 
   var body: some View {
-    LazyVStack(alignment: .trailing, spacing: 0) {
+    VStack(alignment: .trailing, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in
         Text("\(index + 1)")
           .font(.system(size: 13, weight: .regular, design: .monospaced))
@@ -276,7 +327,7 @@ struct CodeColumn: View {
   let theme: SyntaxHighlighter.Theme
 
   var body: some View {
-    LazyVStack(alignment: .leading, spacing: 0) {
+    VStack(alignment: .leading, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in
         if let highlightedLines, index < highlightedLines.count {
           Text(highlightedLines[index])
@@ -290,13 +341,8 @@ struct CodeColumn: View {
         }
       }
     }
+    .fixedSize(horizontal: true, vertical: false)
     .padding(.vertical, 12)
     .padding(.trailing, 16)
-  }
-}
-
-#Preview {
-  NavigationView {
-    SourceMapExplorerView()
   }
 }
