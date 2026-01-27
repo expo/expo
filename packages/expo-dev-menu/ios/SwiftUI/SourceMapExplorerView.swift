@@ -3,8 +3,6 @@
 import SwiftUI
 import ExpoModulesCore
 
-// MARK: - Platform Helpers
-
 #if os(macOS)
 private let toolbarPlacement: ToolbarItemPlacement = .automatic
 #elseif os(tvOS)
@@ -12,8 +10,6 @@ private let toolbarPlacement: ToolbarItemPlacement = .automatic
 #else
 private let toolbarPlacement: ToolbarItemPlacement = .navigationBarTrailing
 #endif
-
-// MARK: - Source Map Explorer
 
 struct SourceMapExplorerView: View {
   @StateObject private var viewModel = SourceMapExplorerViewModel()
