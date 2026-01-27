@@ -135,12 +135,12 @@ export enum AppleMapsMapStyleEmphasis {
 }
 
 /**
- * Controls the user interface style (appearance) of the map.
+ * Controls the color scheme (appearance) of the map.
  * @platform ios
  */
-export enum AppleMapsUserInterfaceStyle {
+export enum AppleMapsColorScheme {
   /**
-   * The map follows the system's color scheme (light/dark mode).
+   * The map follows the app's color scheme (light/dark mode).
    */
   AUTOMATIC = 'AUTOMATIC',
   /**
@@ -446,11 +446,11 @@ export type AppleMapsViewProps = {
   style?: StyleProp<ViewStyle>;
 
   /**
-   * Controls the user interface style (appearance) of the map.
-   * Use this to force the map to display in light or dark mode regardless of the app's color scheme.
-   * @default AppleMapsUserInterfaceStyle.AUTOMATIC
+   * Controls the color scheme (appearance) of the map.
+   * Use this to force the map to display in light or dark mode.
+   * @default AppleMapsColorScheme.AUTOMATIC
    */
-  userInterfaceStyle?: AppleMapsUserInterfaceStyle;
+  colorScheme?: AppleMapsColorScheme;
 
   /**
    * The initial camera position of the map.

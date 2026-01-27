@@ -206,64 +206,19 @@ enum MapStyleEmphasis: String, Enumerable {
   }
 }
 
-enum UserInterfaceStyle: String, Enumerable {
+enum MapColorScheme: String, Enumerable {
   case automatic = "AUTOMATIC"
   case light = "LIGHT"
   case dark = "DARK"
 
-  func toUIUserInterfaceStyle() -> UIUserInterfaceStyle {
+  func toColorScheme() -> ColorScheme? {
     switch self {
     case .light:
       return .light
     case .dark:
       return .dark
     case .automatic:
-      return .unspecified
-    }
-  }
-}
-
-/**
- A UIViewRepresentable that sets overrideUserInterfaceStyle on the view hierarchy
- up to the Expo HostingView. This is necessary because MapKit's Map view reads
- the trait collection from UIKit, and SwiftUI's colorScheme environment doesn't
- propagate to UIKit views. Only views within this map component are modified.
- */
-struct UserInterfaceStyleApplier: UIViewRepresentable {
-  let style: UIUserInterfaceStyle
-
-  func makeUIView(context: Context) -> UIView {
-    let view = UIView()
-    view.isUserInteractionEnabled = false
-    view.backgroundColor = .clear
-    return view
-  }
-
-  func updateUIView(_ uiView: UIView, context: Context) {
-    DispatchQueue.main.async {
-      self.applyStyleToViewHierarchy(from: uiView, style: self.style)
-    }
-  }
-
-  private func applyStyleToViewHierarchy(from view: UIView, style: UIUserInterfaceStyle) {
-    // Set the style on our view first
-    if view.overrideUserInterfaceStyle != style {
-      view.overrideUserInterfaceStyle = style
-    }
-
-    // Then traverse up and set on all parent views up to (and including) the HostingView
-    var current: UIView? = view
-    while let parent = current?.superview {
-      if parent.overrideUserInterfaceStyle != style {
-        parent.overrideUserInterfaceStyle = style
-      }
-
-      // Stop after we've set the style on the HostingView
-      let typeName = String(describing: type(of: parent))
-      if typeName.contains("HostingView") {
-        break
-      }
-      current = parent
+      return nil
     }
   }
 }

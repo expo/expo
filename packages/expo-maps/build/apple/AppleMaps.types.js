@@ -65,24 +65,24 @@ export var AppleMapsMapStyleEmphasis;
     AppleMapsMapStyleEmphasis["MUTED"] = "MUTED";
 })(AppleMapsMapStyleEmphasis || (AppleMapsMapStyleEmphasis = {}));
 /**
- * Controls the user interface style (appearance) of the map.
+ * Controls the color scheme (appearance) of the map.
  * @platform ios
  */
-export var AppleMapsUserInterfaceStyle;
-(function (AppleMapsUserInterfaceStyle) {
+export var AppleMapsColorScheme;
+(function (AppleMapsColorScheme) {
     /**
-     * The map follows the system's color scheme (light/dark mode).
+     * The map follows the app's color scheme (light/dark mode).
      */
-    AppleMapsUserInterfaceStyle["AUTOMATIC"] = "AUTOMATIC";
+    AppleMapsColorScheme["AUTOMATIC"] = "AUTOMATIC";
     /**
      * The map is always displayed in light mode.
      */
-    AppleMapsUserInterfaceStyle["LIGHT"] = "LIGHT";
+    AppleMapsColorScheme["LIGHT"] = "LIGHT";
     /**
      * The map is always displayed in dark mode.
      */
-    AppleMapsUserInterfaceStyle["DARK"] = "DARK";
-})(AppleMapsUserInterfaceStyle || (AppleMapsUserInterfaceStyle = {}));
+    AppleMapsColorScheme["DARK"] = "DARK";
+})(AppleMapsColorScheme || (AppleMapsColorScheme = {}));
 /**
  * @platform ios
  * @see https://developer.apple.com/documentation/mapkit/AppleMapPointOfInterestCategory
