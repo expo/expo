@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix dev menu not opening when pressing m key in CLI. ([#42566](https://github.com/expo/expo/pull/42566) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 55.0.2 — 2026-01-26
