@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DevMenuOnboardingView: View {
   let onFinish: () -> Void
+  var appName: String = "development builds"
   @State private var isVisible = true
 
   var body: some View {
@@ -16,7 +17,7 @@ struct DevMenuOnboardingView: View {
   private var onboardingOverlay: some View {
     VStack(spacing: 24) {
       VStack(spacing: 16) {
-        Text("This is the developer menu. It gives you access to useful tools in your development builds.")
+        Text("This is the developer menu. It gives you access to useful tools in \(appName).")
           .frame(maxWidth: .infinity, alignment: .leading)
           .font(.callout)
 
