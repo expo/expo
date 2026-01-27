@@ -1,4 +1,74 @@
----
+---import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { Feather } from '@expo/vector-icons'; // Ícones modernos
+
+export default function Dashboard() {
+  return (
+    <ScrollView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.greeting}>Olá, Cliente Energy Cia</Text>
+        <Feather name="bell" size={24} color="#0057FF" />
+      </View>
+
+      {/* Círculo de Consumo */}
+      <View style={styles.consumptionCard}>
+        <Text style={styles.cardTitle}>Consumo Mensal</Text>
+        <View style={styles.progressCircle}>
+          <Text style={styles.kwhValue}>250</Text>
+          <Text style={styles.kwhUnit}>kWh</Text>
+        </View>
+        <Text style={styles.statusText}>Dentro da meta esperada ✅</Text>
+      </View>
+
+      {/* Detalhes da Fatura */}
+      <View style={styles.billCard}>
+        <View>
+          <Text style={styles.billLabel}>Última Fatura</Text>
+          <Text style={styles.billValue}>R$ 185,50</Text>
+        </View>
+        <TouchableOpacity style={styles.payButton}>
+          <Text style={styles.payButtonText}>Pagar com PIX</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Atalhos Rápidos */}
+      <View style={styles.shortcuts}>
+        <TouchableOpacity style={styles.shortcutItem}>
+          <Feather name="bar-chart-2" size={24} color="#0057FF" />
+          <Text>Histórico</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.shortcutItem}>
+          <Feather name="zap" size={24} color="#0057FF" />
+          <Text>Dicas</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.shortcutItem}>
+          <Feather name="help-circle" size={24} color="#0057FF" />
+          <Text>Suporte</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#F5F7FA', padding: 20 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 40, marginBottom: 30 },
+  greeting: { fontSize: 18, fontWeight: 'bold', color: '#333' },
+  consumptionCard: { backgroundColor: '#FFF', borderRadius: 20, padding: 30, alignItems: 'center', elevation: 5 },
+  cardTitle: { fontSize: 16, color: '#666', marginBottom: 20 },
+  progressCircle: { width: 150, height: 150, borderRadius: 75, borderWidth: 8, borderColor: '#0057FF', justifyContent: 'center', alignItems: 'center' },
+  kwhValue: { fontSize: 32, fontWeight: 'bold', color: '#0057FF' },
+  kwhUnit: { fontSize: 14, color: '#666' },
+  statusText: { marginTop: 15, color: '#2ecc71', fontWeight: '500' },
+  billCard: { backgroundColor: '#FFF', borderRadius: 15, padding: 20, marginTop: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  billLabel: { color: '#666' },
+  billValue: { fontSize: 20, fontWeight: 'bold', color: '#333' },
+  payButton: { backgroundColor: '#0057FF', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10 },
+  payButtonText: { color: '#FFF', fontWeight: 'bold' },
+  shortcuts: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 30 },
+  shortcutItem: { backgroundColor: '#FFF', width: '30%', padding: 15, borderRadius: 12, alignItems: 'center' }
+});
 title: Create your first build
 description: Learn how to create a build for your app with EAS Build.
 ---
