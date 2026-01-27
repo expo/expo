@@ -10,6 +10,7 @@
 
 - [Android] Add `buttonConfiguration` prop to `VideoView`. ([#42875](https://github.com/expo/expo/pull/42875) by [@behenate](https://github.com/behenate))
 - [Android] Add `PlayerBuilderOptions` parameter to `useVideoPlayer` hook to configure seek backward/forward increments. ([#43043](https://github.com/expo/expo/pull/43043) by [@behenate](https://github.com/behenate))
+- [Android][iOS] Add `url` field to HLS video tracks. ([#41681](https://github.com/expo/expo/pull/41681) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
@@ -17,6 +18,8 @@
 - [iOS] Fix data getting corrupted when caching is enabled. ([#42621](https://github.com/expo/expo/pull/42621) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
+
+- Update HLS video track fetching for iOS 26+. ([#41681](https://github.com/expo/expo/pull/41681) by [@behenate](https://github.com/behenate))
 
 ## 55.0.5 — 2026-02-08
 
