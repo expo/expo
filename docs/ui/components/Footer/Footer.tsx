@@ -9,7 +9,6 @@ import { NavigationRouteWithSection } from '~/types/common';
 import { P, FOOTNOTE, UL, LI } from '~/ui/components/Text';
 
 import { ForumsLink, EditPageLink, IssuesLink, LlmsTxtLink, ShareFeedbackLink } from './Links';
-import { NewsletterSignUp } from './NewsletterSignUp';
 import { PageVote } from './PageVote';
 
 type Props = {
@@ -129,7 +128,6 @@ export const Footer = ({
             )}
           </UL>
         </div>
-        <NewsletterSignUp />
       </div>
     </footer>
   );
