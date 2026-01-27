@@ -8,14 +8,14 @@ describe(getMetroDirectBundleOptions, () => {
       getMetroDirectBundleOptions({
         bytecode: true,
         platform: 'web',
-      })
+      } as any)
     ).toThrow(/Cannot use bytecode with the web platform/);
   });
   it(`asserts unsupported options: using bytecode without hermes`, () => {
     expect(() =>
       getMetroDirectBundleOptions({
         bytecode: true,
-      })
+      } as any)
     ).toThrow(/Bytecode is only supported with the Hermes engine/);
   });
 
@@ -27,19 +27,25 @@ describe(getMetroDirectBundleOptions, () => {
         platform: 'ios',
         baseUrl: '/foo/',
         isExporting: false,
+        bytecode: false,
+        reactCompiler: false,
       })
     ).toEqual({
       customResolverOptions: {},
       customTransformOptions: {
         baseUrl: '/foo/',
       },
-      serializerOptions: {},
+      serializerOptions: {
+        includeSourceMaps: undefined,
+        excludeSource: false,
+      },
       dev: true,
       entryFile: '/index.js',
       inlineSourceMap: false,
       minify: false,
       platform: 'ios',
       unstable_transformProfile: 'default',
+      shallow: false,
     });
   });
   it(`injects source url if serializer options are provided`, () => {
@@ -60,6 +66,7 @@ describe(getMetroDirectBundleOptions, () => {
       customTransformOptions: {},
       serializerOptions: {
         includeSourceMaps: true,
+        excludeSource: false,
       },
       sourceMapUrl:
         'http://localhost:8081/index.js.map?platform=ios&dev=true&hot=false&serializer.map=true',
@@ -69,6 +76,7 @@ describe(getMetroDirectBundleOptions, () => {
       minify: false,
       platform: 'ios',
       unstable_transformProfile: 'default',
+      shallow: false,
     });
   });
   describe(`live bindings`, () => {
@@ -76,15 +84,21 @@ describe(getMetroDirectBundleOptions, () => {
       delete env.EXPO_UNSTABLE_LIVE_BINDINGS;
     });
     it(`enables live bindings by default`, () => {
-      expect(getMetroDirectBundleOptions({}).customTransformOptions?.liveBindings).toBeUndefined();
+      expect(
+        getMetroDirectBundleOptions({} as any).customTransformOptions?.liveBindings
+      ).toBeUndefined();
     });
     it(`enables live bindings by default`, () => {
       env.EXPO_UNSTABLE_LIVE_BINDINGS = 'true';
-      expect(getMetroDirectBundleOptions({}).customTransformOptions?.liveBindings).toBeUndefined();
+      expect(
+        getMetroDirectBundleOptions({} as any).customTransformOptions?.liveBindings
+      ).toBeUndefined();
     });
     it(`enables live bindings by default`, () => {
       env.EXPO_UNSTABLE_LIVE_BINDINGS = '0';
-      expect(getMetroDirectBundleOptions({}).customTransformOptions?.liveBindings).toBe('false');
+      expect(getMetroDirectBundleOptions({} as any).customTransformOptions?.liveBindings).toBe(
+        'false'
+      );
     });
   });
 });

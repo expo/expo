@@ -733,7 +733,7 @@ describe('applyEdgeToEdge', () => {
       slug: 'test',
       android: { edgeToEdgeEnabled: undefined },
     };
-    applyEdgeToEdge(config, '/app');
+    applyEdgeToEdge(config);
     expect(WarningAggregator.addWarningAndroid).not.toHaveBeenCalledWith(
       'EDGE_TO_EDGE_PLUGIN',
       expect.stringContaining('No configuration found for `edgeToEdgeEnabled`'),
@@ -749,31 +749,9 @@ describe('applyEdgeToEdge', () => {
     expect(mockWithRestoreDefaultTheme).toHaveBeenCalledTimes(1);
   });
 
-  it('should add warnings when edgeToEdgeEnabled is false and plugin not configured', () => {
-    const config: ExpoConfig = {
-      name: 'test',
-      slug: 'test',
-      android: { edgeToEdgeEnabled: false },
-    };
-    applyEdgeToEdge(config, '/app');
-    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
-      'EDGE_TO_EDGE_PLUGIN',
-      expect.stringContaining('`edgeToEdgeEnabled` field is explicitly set to false'),
-      expect.any(String)
-    );
-    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledTimes(1);
-    expect(mockWithEdgeToEdgeEnabledGradleProperties).toHaveBeenCalledWith(expect.anything(), {
-      edgeToEdgeEnabled: false,
-    });
-    expect(mockWithConfigureEdgeToEdgeEnforcement).toHaveBeenCalledWith(expect.anything(), {
-      disableEdgeToEdgeEnforcement: true,
-    });
-    expect(mockWithRestoreDefaultTheme).toHaveBeenCalledTimes(1);
-  });
-
   it('should not add enablement warnings when edgeToEdgeEnabled is true', () => {
     const config: ExpoConfig = { name: 'test', slug: 'test', android: { edgeToEdgeEnabled: true } };
-    applyEdgeToEdge(config, '/app');
+    applyEdgeToEdge(config);
     expect(WarningAggregator.addWarningAndroid).not.toHaveBeenCalledWith(
       'EDGE_TO_EDGE_PLUGIN',
       expect.stringContaining('No configuration found'),

@@ -6,23 +6,60 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [iOS/Android] Add showSeekForward and showSeekBackward options to AudioLockScreenOptions to control visibility of seek buttons on lock screen. ([#40124](https://github.com/expo/expo/pull/40124) by [@chrfalch](https://github.com/chrfalch))
+- [iOS/Android] Add support background recording. ([#41134](https://github.com/expo/expo/pull/41134) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Support `mixWithOthers` interruption mode. ([#41670](https://github.com/expo/expo/pull/41670) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
 - [Android] Removed call to setShowActionsInCompactView when using custom layout in notification. ([#40557](https://github.com/expo/expo/pull/40557) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Fixed race-condition when creating the notification before the actions has been added. ([#40518](https://github.com/expo/expo/pull/40518) by [@chrfalch](https://github.com/chrfalch))
 - [iOS/Android] Aligned Android and iOS pitch correction by changing the default quality on iOS to match Android. `shouldCorrectPitch` now defaults to `true`. ([#40176](https://github.com/expo/expo/pull/40176) by [@chrfalch](https://github.com/chrfalch))
-- [Android] Fix issue where after replacing the media source, events are emitted twice. ([#40133](https://github.com/expo/expo/pull/40133) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Fix issue where if `prepare` fails on android there was no error and the user would receive an empty file. ([#40239](https://github.com/expo/expo/pull/40239) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Fix incorrect volume read. ([#40258](https://github.com/expo/expo/pull/40258) by [@alanjhughes](https://github.com/alanjhughes))
-- Fix issue where local assets don't resolve correctly in release mode. ([#40642](https://github.com/expo/expo/pull/40642) by [@alanjhughes](https://github.com/alanjhughes))
-- [web] Bring fix from [#38273](https://github.com/expo/expo/pull/38273) to web. ([#40802](https://github.com/expo/expo/pull/40802) by [@alanjhughes](https://github.com/alanjhughes)
+- [Android] Use correct method to start foreground service on android 14+. ([#41145](https://github.com/expo/expo/pull/41145) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix incorrect notify others on deactivation ([#41196](https://github.com/expo/expo/pull/41196) by [@dylancom](https://github.com/dylancom))
+- [Android] Handle `stop` errors on the `recorder` and return correct timestamp for `currentTime`. ([#41933](https://github.com/expo/expo/pull/41933) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
 - Removing `Record` from `RecordingPresets` type annotation to improve type safety ([#39391](https://github.com/expo/expo/pull/39391) by [@Shoghy](https://github.com/Shoghy))
 - Separate the conditions to enable and disable microphone permissions. ([#40861](https://github.com/expo/expo/pull/40861) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Dedupe events when sending status updates. ([#41700](https://github.com/expo/expo/pull/41700) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.0.16 - 2025-12-04
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.15 - 2025-11-21
+
+### 🐛 Bug fixes
+
+- [Android] Fix issue where after replacing the media source, events are emitted twice. ([#40133](https://github.com/expo/expo/pull/40133) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix issue where if `prepare` fails on android there was no error and the user would receive an empty file. ([#40239](https://github.com/expo/expo/pull/40239) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix incorrect volume read. ([#40258](https://github.com/expo/expo/pull/40258) by [@alanjhughes](https://github.com/alanjhughes))
+- [web] Bring fix from [#38273](https://github.com/expo/expo/pull/38273) to web. ([#40802](https://github.com/expo/expo/pull/40802) by [@alanjhughes](https://github.com/alanjhughes) ([#38273](https://github.com/expo/expo/pull/38273), [#40802](https://github.com/expo/expo/pull/40802) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Fix recording options not being applied to web correctly. ([#41154](https://github.com/expo/expo/pull/41154) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 1.0.14 - 2025-10-28
+
+### 🐛 Bug fixes
+
+- Fix issue where local assets don't resolve correctly in release mode. ([#40642](https://github.com/expo/expo/pull/40642) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 1.0.13 - 2025-09-18
 
@@ -39,6 +76,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix setting audio quality for recordings. ([#39705](https://github.com/expo/expo/pull/39705) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Removed requiring shouldPlayInBackground to be true for background recording. ([#42134](https://github.com/expo/expo/pull/42134) by [@chrfalch](https://github.com/chrfalch))
 
 ## 1.0.11 — 2025-09-11
 

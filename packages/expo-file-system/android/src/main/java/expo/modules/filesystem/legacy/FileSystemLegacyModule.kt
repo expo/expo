@@ -767,7 +767,10 @@ open class FileSystemLegacyModule : Module() {
   }
 
   private fun permissionsForPath(path: String?): EnumSet<Permission>? {
-    return appContext.filePermission?.getPathPermissions(context, path)
+    if (path == null) {
+      return null
+    }
+    return appContext.filePermission.getPathPermissions(context, path)
   }
 
   private fun permissionsForUri(uri: Uri) = when {

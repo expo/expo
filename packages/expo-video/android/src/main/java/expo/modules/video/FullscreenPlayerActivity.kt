@@ -22,6 +22,7 @@ import expo.modules.video.utils.applyPiPParams
 import expo.modules.video.utils.applyRectHint
 import expo.modules.video.utils.calculatePiPAspectRatio
 import expo.modules.video.utils.calculateRectHint
+import expo.modules.video.managers.VideoManager
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class FullscreenPlayerActivity : Activity() {
@@ -77,7 +78,11 @@ class FullscreenPlayerActivity : Activity() {
     requestedOrientation = options.orientation.toActivityOrientation()
 
     videoPlayer = videoView.videoPlayer
-    videoPlayer?.changePlayerView(playerView)
+    videoPlayer?.player?.let {
+      PlayerView.switchTargetView(it, videoView.playerView, playerView)
+      videoPlayer?.hasBeenDisconnectedFromVideoView() // The video player is disconnected. We are only using the ExoPlayer it contained
+    }
+
     VideoManager.registerFullscreenPlayerActivity(hashCode().toString(), this)
     playerView.player?.let {
       val aspectRatio = calculatePiPAspectRatio(it.videoSize, playerView.width, playerView.height, videoView.contentFit)

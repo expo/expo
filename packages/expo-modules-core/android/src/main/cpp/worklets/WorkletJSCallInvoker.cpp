@@ -14,7 +14,7 @@ namespace expo {
       return;
     }
 
-    workletRuntime->executeAsync(std::move(func));
+    workletRuntime->schedule(std::move(func));
   }
 
 

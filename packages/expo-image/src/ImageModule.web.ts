@@ -60,6 +60,21 @@ class ImageModule extends NativeModule implements ImageNativeModule {
       response.headers.get('Content-Type')
     );
   }
+
+  getCachePathAsync(_: string): Promise<string | null> {
+    return Promise.resolve(null);
+  }
+
+  generateBlurhashAsync(
+    _: string | ImageRef,
+    __: [number, number] | { width: number; height: number }
+  ): Promise<string | null> {
+    throw new Error('Blurhash generation is not supported on Web.');
+  }
+
+  generateThumbhashAsync(_: string | ImageRef): Promise<string> {
+    throw new Error('Thumbhash generation is not supported on Web.');
+  }
 }
 
 /**

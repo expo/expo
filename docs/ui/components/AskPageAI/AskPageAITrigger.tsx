@@ -16,18 +16,12 @@ export function AskPageAITrigger({ onClick, isActive = false }: AskPageAITrigger
         <Button
           type="button"
           theme="quaternary"
-          className={mergeClasses(
-            'min-h-[48px] min-w-[60px] justify-center px-2 max-xl-gutters:min-h-[unset]'
-          )}
+          className="justify-center px-2.5"
           onClick={onClick}
           aria-pressed={isActive}
           aria-label="Ask about this page with AI">
-          <div
-            className={mergeClasses(
-              'flex flex-col items-center',
-              'max-xl-gutters:flex-row max-xl-gutters:gap-1.5'
-            )}>
-            <Star06Icon className="mt-0.5 text-palette-purple11" />
+          <div className="flex items-center gap-1.5">
+            <Star06Icon className="icon-sm text-palette-purple11" />
             <FOOTNOTE crawlable={false} className="text-palette-purple11">
               Ask AI
             </FOOTNOTE>

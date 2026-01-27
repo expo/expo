@@ -2,7 +2,7 @@
 
 import React
 
-public class ExpoReactNativeFactory: RCTReactNativeFactory, ExpoReactNativeFactoryProtocol {
+public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNativeFactoryProtocol {
   private let defaultModuleName = "main"
 
   @MainActor
@@ -13,8 +13,6 @@ public class ExpoReactNativeFactory: RCTReactNativeFactory, ExpoReactNativeFacto
     )
   }()
 
-  // TODO: Remove check when react-native-macos 0.81 is released
-  #if !os(macOS)
   @objc public override init(delegate: any RCTReactNativeFactoryDelegate) {
     let releaseLevel = (Bundle.main.object(forInfoDictionaryKey: "ReactNativeReleaseLevel") as? String)
       .flatMap { [
@@ -27,7 +25,6 @@ public class ExpoReactNativeFactory: RCTReactNativeFactory, ExpoReactNativeFacto
 
     super.init(delegate: delegate, releaseLevel: releaseLevel)
   }
-  #endif
 
   @MainActor
   @objc func createRCTRootViewFactory() -> RCTRootViewFactory {
@@ -103,13 +100,6 @@ public class ExpoReactNativeFactory: RCTReactNativeFactory, ExpoReactNativeFacto
       fatalError("recreateRootView: Missing RCTReactNativeFactoryDelegate")
     }
 
-    if RCTIsNewArchEnabled() {
-      // chrfalch: rootViewFactory.reactHost is not available here in swift due to the underlying RCTHost type of the property. (todo: check)
-      assert(self.rootViewFactory.value(forKey: "reactHost") == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
-    } else {
-      assert(self.rootViewFactory.bridge == nil, "recreateRootViewWithBundleURL: does not support when react instance is created")
-    }
-
     let configuration = self.rootViewFactory.value(forKey: "_configuration") as? RCTRootViewFactoryConfiguration
 
     if let bundleURL = withBundleURL {
@@ -120,6 +110,8 @@ public class ExpoReactNativeFactory: RCTReactNativeFactory, ExpoReactNativeFacto
 
     let rootView: UIView
     if let factory = self.rootViewFactory as? ExpoReactRootViewFactory {
+      // RCTDevMenuConfiguration is only available in react-native 0.83+
+#if os(iOS)
       // When calling `recreateRootViewWithBundleURL:` from `EXReactRootViewFactory`,
       // we don't want to loop the ReactDelegate again. Otherwise, it will be an infinite loop.
       rootView = factory.superView(
@@ -128,13 +120,28 @@ public class ExpoReactNativeFactory: RCTReactNativeFactory, ExpoReactNativeFacto
         launchOptions: launchOptions ?? [:],
         devMenuConfiguration: self.devMenuConfiguration
       )
+#else
+      rootView = factory.superView(
+        withModuleName: moduleName ?? defaultModuleName,
+        initialProperties: initialProps,
+        launchOptions: launchOptions ?? [:]
+      )
+#endif
     } else {
+#if os(iOS)
       rootView = rootViewFactory.view(
         withModuleName: moduleName ?? defaultModuleName,
         initialProperties: initialProps,
         launchOptions: launchOptions,
         devMenuConfiguration: self.devMenuConfiguration
       )
+#else
+      rootView = rootViewFactory.view(
+        withModuleName: moduleName ?? defaultModuleName,
+        initialProperties: initialProps,
+        launchOptions: launchOptions
+      )
+#endif
     }
 
     return rootView

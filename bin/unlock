@@ -31,7 +31,10 @@ TEMP_JSON=$(mktemp)
 if gcloud secrets versions access latest --project exponentjs --secret "$EXPO_EXPOTOOLS_SECRET_NAME" > "$TEMP_JSON" 2>/dev/null; then
   # Convert JSON to env format
   if command -v jq &> /dev/null; then
-    jq -r 'to_entries | map("\(.key)=\(.value)") | .[]' "$TEMP_JSON" > "$EXPOTOOLS_ENV_FILE"
+    {
+      echo '#!/usr/bin/env bash'
+      jq -r 'to_entries | map("export \(.key)=\(.value|@sh)") | .[]' "$TEMP_JSON"
+    } > "$EXPOTOOLS_ENV_FILE"
   else
     echo "Warning: jq not found. Storing expotools.env as raw JSON. Install jq for proper env format."
     cat "$TEMP_JSON" > "$EXPOTOOLS_ENV_FILE"

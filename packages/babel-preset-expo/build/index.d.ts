@@ -26,6 +26,8 @@ type BabelPresetExpoPlatformOptions = {
     unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
     /** Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the plugin. */
     'react-compiler'?: false | ReactCompilerOptions;
+    /** Only set to `false` to disable `react-refresh/babel` forcefully, defaults to `undefined` */
+    enableReactFastRefresh?: boolean;
     /** Enable `typeof window` runtime checks. The default behavior is to minify `typeof window` on web clients to `"object"` and `"undefined"` on servers. */
     minifyTypeofWindow?: boolean;
     /**

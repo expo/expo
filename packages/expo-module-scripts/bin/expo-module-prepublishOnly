@@ -1,9 +1,7 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
 
-set -eo pipefail
+import { packageManagerExecAsync } from '../utils/commandUtils.js';
 
-script_dir="$(dirname "$0")"
+process.env.EXPO_NONINTERACTIVE = 1;
 
-export EXPO_NONINTERACTIVE=1
-
-"$script_dir/npx" proofread
+await packageManagerExecAsync(['proofread']);

@@ -49,6 +49,10 @@ public final class SpeechModule: Module, SpeechResultHadler {
         utterance.rate = Float(rate) * AVSpeechUtteranceDefaultSpeechRate
       }
 
+      if let volume = options.volume {
+        utterance.volume = min(max(volume, 0.0), 1.0);
+      }
+
       if let useApplicationAudioSession = options.useApplicationAudioSession {
         synthesizer.usesApplicationAudioSession = useApplicationAudioSession
       }

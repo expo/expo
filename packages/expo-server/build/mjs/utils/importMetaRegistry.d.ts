@@ -1,3 +1,3 @@
 export declare const importMetaRegistry: {
-    readonly url: any;
+    readonly url: string;
 };

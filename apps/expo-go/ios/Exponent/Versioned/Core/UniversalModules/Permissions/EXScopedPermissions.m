@@ -17,6 +17,11 @@
 
 @implementation EXScopedPermissions
 
++ (const NSArray<Protocol *> *)exportedInterfaces
+{
+  return @[@protocol(EXPermissionsInterface)];
+}
+
 - (instancetype)initWithScopeKey:(NSString *)scopeKey andConstantsBinding:(EXConstantsBinding *)constantsBinding
 {
   if (self = [super init]) {
@@ -28,7 +33,6 @@
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  [super setModuleRegistry:moduleRegistry];
   _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
   _permissionsService = [moduleRegistry getSingletonModuleForName:@"Permissions"];
 }
@@ -46,7 +50,7 @@
   if (!_permissionsService) {
     return [[self class] permissionStringForStatus:EXPermissionStatusGranted];
   }
-  
+
   return [[self class] permissionStringForStatus:[_permissionsService getPermission:permissionType forExperience:_scopeKey]];
 }
 
@@ -55,7 +59,7 @@
   if (!_permissionsService || ![self shouldVerifyScopedPermission:permissionType]) {
     return YES;
   }
-  
+
   return [_permissionsService getPermission:permissionType forExperience:_scopeKey] == EXPermissionStatusGranted;
 }
 
@@ -77,7 +81,7 @@
       }
       resolve(permission);
     };
-    
+
     return [self askForGlobalPermissionUsingRequesterClass:requesterClass withResolver:customOnResults withRejecter:reject];
   } else if (![self hasGrantedScopedPermission:permissionType]) {
     // second group
@@ -92,7 +96,7 @@
       }
       resolve(permission);
     }];
-    
+
     UIAlertAction *denyAction = [UIAlertAction actionWithTitle:@"Deny" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
       EX_ENSURE_STRONGIFY(self);
       NSMutableDictionary *permission = [globalPermissions mutableCopy];
@@ -100,10 +104,10 @@
       permission[@"granted"] = @(NO);
       resolve([NSDictionary dictionaryWithDictionary:permission]);
     }];
-    
+
     return [self showPermissionRequestAlert:permissionType withAllowAction:allowAction withDenyAction:denyAction];
   }
-  
+
   resolve(globalPermissions); // third group
 }
 
@@ -115,7 +119,7 @@
     return nil;
   }
   NSMutableDictionary *permission = [NSMutableDictionary dictionaryWithDictionary:globalPermission];
-  
+
   if ([self shouldVerifyScopedPermission:permissionType]
       && [EXPermissionsService statusForPermission:permission] == EXPermissionStatusGranted) {
     permission[@"status"] = [self getScopedPermissionStatus:permissionType];
@@ -154,7 +158,7 @@
   } else if ([type isEqualToString:@"cameraRoll"]) {
     return @"photos";
   }
-  
+
   return type;
 }
 

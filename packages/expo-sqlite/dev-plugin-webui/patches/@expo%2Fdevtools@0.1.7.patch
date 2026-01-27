@@ -1,0 +1,64 @@
+diff --git a/build/DevToolsPluginClient.js b/build/DevToolsPluginClient.js
+index 30e5df9397a5fdd5327afae078299ad9c369dc8d..0c09c3fd1f451f6e16a774fff1559d72d74e0bb2 100644
+--- a/build/DevToolsPluginClient.js
++++ b/build/DevToolsPluginClient.js
+@@ -146,7 +146,8 @@ export class DevToolsPluginClient {
+     connectAsync() {
+         return new Promise((resolve, reject) => {
+             const endpoint = 'expo-dev-plugins/broadcast';
+-            const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/${endpoint}`, {
++            const protocol = this.connectionInfo.useWss ? 'wss' : 'ws';
++            const ws = new WebSocketWithReconnect(`${protocol}://${this.connectionInfo.devServer}/${endpoint}`, {
+                 binaryType: this.options?.websocketBinaryType,
+                 onError: (e) => {
+                     if (e instanceof Error) {
+diff --git a/build/devtools.types.d.ts b/build/devtools.types.d.ts
+index 06a79472ec7998b07cc6e73511a8961bb3b6b865..6f4a1a40e4d7cfe4bc7eb0eb59f70b2f53247a4f 100644
+--- a/build/devtools.types.d.ts
++++ b/build/devtools.types.d.ts
+@@ -19,6 +19,10 @@ export interface ConnectionInfo {
+      * The transport protocol version between the app and the webui.
+      */
+     protocolVersion: number;
++    /**
++     * Whether to use WSS for the WebSocket connection.
++     */
++    useWss: boolean;
+ }
+ /**
+  * Options for the devtools plugin client.
+diff --git a/build/getConnectionInfo.js b/build/getConnectionInfo.js
+index dae52cab933ccbf23d723beb93511d5e0a3b9cec..733b9723153e86f3e296eb575cb55311f78872b7 100644
+--- a/build/getConnectionInfo.js
++++ b/build/getConnectionInfo.js
+@@ -9,6 +9,7 @@ export function getConnectionInfo() {
+         protocolVersion: PROTOCOL_VERSION,
+         sender: 'browser',
+         devServer: devServerQuery || host,
++        useWss: window.location.protocol === 'https:',
+     };
+ }
+ //# sourceMappingURL=getConnectionInfo.js.map
+\ No newline at end of file
+diff --git a/build/getConnectionInfo.native.js b/build/getConnectionInfo.native.js
+index 0273a6bfbeae55a459fcb10c11899bc9af84b1a6..72d5939c79c676f573dccd2762cd65b5994a234b 100644
+--- a/build/getConnectionInfo.native.js
++++ b/build/getConnectionInfo.native.js
+@@ -4,13 +4,13 @@
+ import { PROTOCOL_VERSION } from './ProtocolVersion';
+ export function getConnectionInfo() {
+     const getDevServer = require('react-native/Libraries/Core/Devtools/getDevServer').default;
+-    const devServer = getDevServer()
+-        .url.replace(/^https?:\/\//, '')
+-        .replace(/\/?$/, '');
++    const devServerUrl = getDevServer().url;
++    const devServer = devServerUrl.replace(/^https?:\/\//, '').replace(/\/?$/, '');
+     return {
+         protocolVersion: PROTOCOL_VERSION,
+         sender: 'app',
+         devServer,
++        useWss: devServerUrl.startsWith('https://'),
+     };
+ }
+ //# sourceMappingURL=getConnectionInfo.native.js.map
+\ No newline at end of file

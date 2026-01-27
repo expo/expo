@@ -13,5 +13,9 @@
         <action android:name="androidx.media3.session.MediaSessionService" />
       </intent-filter>
     </service>
+    <service
+      android:name=".service.AudioRecordingService"
+      android:exported="false"
+      android:foregroundServiceType="microphone" />
   </application>
 </manifest>

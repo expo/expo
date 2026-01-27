@@ -11,11 +11,11 @@ import { AppJSIcon } from './AppJSIcon';
 export function AppJSBanner() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isAppJSBannerVisible, setIsAppJSBannerVisible] = useLocalStorage<boolean>({
-    name: '2025-appjs-banner',
+    name: '2026-appjs-banner',
     defaultValue: true,
   });
 
-  const appJSConfEndDate = new Date('2025-05-28');
+  const appJSConfEndDate = new Date('2026-05-29');
   const showAppJSConfShoutout = isBefore(new Date(), appJSConfEndDate);
 
   useEffect(function didMount() {
@@ -41,7 +41,7 @@ export function AppJSBanner() {
         </div>
         <div className="relative grid grid-cols-1">
           <p className="text-base font-medium text-[#494CFC] dark:text-[#a0b9ff]">
-            App.js Conf 2025
+            App.js Conf 2026
           </p>
           <p className="text-sm text-[#494CFC] dark:text-[#a0b9ff]">
             Join us at the biggest React Native & Expo-focused conference.

@@ -21,19 +21,13 @@ export type ExpoRouteConfig = {
  */
 export declare function populateParams(routes?: ParsedRoute[], params?: Record<string, any>): ParsedRoute[] | undefined;
 export declare function safelyDecodeURIComponent(str: string): string;
-export declare function getUrlWithReactNavigationConcessions(path: string, baseUrl?: string | undefined): {
-    path: string;
-    cleanUrl: string;
-    nonstandardPathname: string;
-    url: URL;
-    pathWithoutGroups?: undefined;
-} | {
+interface UrlWithReactNavigationConcessions {
     path: string;
     nonstandardPathname: string;
-    url: URL;
+    hash: string;
     pathWithoutGroups: string;
-    cleanUrl?: undefined;
-};
+}
+export declare function getUrlWithReactNavigationConcessions(path: string, baseUrl?: string | undefined): UrlWithReactNavigationConcessions;
 export declare function createConfig(screen: string, pattern: string, routeNames: string[], config?: Record<string, any>): Omit<ExpoRouteConfig, 'isInitial'>;
 export declare function assertScreens(options?: Options<object>): asserts options is Options<object>;
 export declare function configRegExp(config: RouteConfig): RegExp | undefined;
@@ -66,4 +60,5 @@ export declare function getRouteConfigSorter(previousSegments?: string[]): (a: R
 export declare function parseQueryParams(path: string, route: ParsedRoute, parseConfig?: Record<string, (value: string) => any>, hash?: string): Record<string, string | string[]> | undefined;
 export declare function cleanPath(path: string): string;
 export declare function routePatternToRegex(pattern: string): RegExp;
+export {};
 //# sourceMappingURL=getStateFromPath-forks.d.ts.map

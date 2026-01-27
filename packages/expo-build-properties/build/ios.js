@@ -2,18 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withIosInfoPlist = exports.withIosDeploymentTarget = exports.withIosBuildProperties = void 0;
 const config_plugins_1 = require("expo/config-plugins");
+const pluginConfig_1 = require("./pluginConfig");
 const { createBuildPodfilePropsConfigPlugin } = config_plugins_1.IOSConfig.BuildProperties;
 exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
-    {
-        propName: 'newArchEnabled',
-        propValueGetter: (config) => {
-            if (config.ios?.newArchEnabled !== undefined) {
-                config_plugins_1.WarningAggregator.addWarningIOS('withIosBuildProperties', 'ios.newArchEnabled is deprecated, use app config `newArchEnabled` instead.\n' +
-                    'https://docs.expo.dev/versions/latest/config/app/#newarchenabled');
-            }
-            return config.ios?.newArchEnabled?.toString();
-        },
-    },
     {
         propName: 'ios.useFrameworks',
         propValueGetter: (config) => config.ios?.useFrameworks,
@@ -43,7 +34,11 @@ exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
     },
     {
         propName: 'ios.buildReactNativeFromSource',
-        propValueGetter: (config) => config.ios?.buildReactNativeFromSource?.toString(),
+        propValueGetter: (config) => (0, pluginConfig_1.resolveConfigValue)(config, 'ios', 'buildReactNativeFromSource')?.toString(),
+    },
+    {
+        propName: 'expo.useHermesV1',
+        propValueGetter: (config) => (0, pluginConfig_1.resolveConfigValue)(config, 'ios', 'useHermesV1')?.toString(),
     },
 ], 'withIosBuildProperties');
 const withIosDeploymentTarget = (config, props) => {
@@ -59,7 +54,7 @@ const withIosDeploymentTarget = (config, props) => {
 };
 exports.withIosDeploymentTarget = withIosDeploymentTarget;
 const withIosInfoPlist = (config, props) => {
-    const reactNativeReleaseLevel = props.ios?.reactNativeReleaseLevel;
+    const reactNativeReleaseLevel = (0, pluginConfig_1.resolveConfigValue)(props, 'ios', 'reactNativeReleaseLevel');
     if (reactNativeReleaseLevel) {
         config = withIosReactNativeReleaseLevel(config, { reactNativeReleaseLevel });
     }

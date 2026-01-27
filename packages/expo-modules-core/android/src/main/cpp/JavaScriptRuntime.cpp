@@ -14,11 +14,7 @@ namespace expo {
 JavaScriptRuntime::JavaScriptRuntime(
   jsi::Runtime *runtime,
   std::shared_ptr<react::CallInvoker> jsInvoker
-) : jsInvoker(std::move(jsInvoker)) {
-  // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
-  // In this code flow, the runtime should be owned by something else like the CatalystInstance.
-  // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
-  this->runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
+) : jsInvoker(std::move(jsInvoker)), runtime(runtime) {
 }
 
 jsi::Runtime &JavaScriptRuntime::get() const noexcept {
@@ -86,32 +82,4 @@ void JavaScriptRuntime::drainJSEventLoop() {
   while (!runtime->drainMicrotasks()) {}
 }
 
-void JavaScriptRuntime::installMainObject() {
-  auto coreModule = getJSIContext(get())->getCoreModule();
-
-  // As opposed to other modules, the core module is represented by a raw JS object instead of an instance of NativeModule class.
-  mainObject = std::make_shared<jsi::Object>(*runtime);
-
-  // Decorate the core object based on the module definition.
-  for (const auto &decorator : coreModule->cthis()->decorators) {
-    decorator->decorate(*runtime, *mainObject);
-  }
-
-  auto global = runtime->global();
-
-  jsi::Object descriptor = JavaScriptObject::preparePropertyDescriptor(*runtime, 1 << 1);
-
-  descriptor.setProperty(*runtime, "value", jsi::Value(*runtime, *mainObject));
-
-  common::defineProperty(
-    *runtime,
-    &global,
-    "expo",
-    std::move(descriptor)
-  );
-}
-
-std::shared_ptr<jsi::Object> JavaScriptRuntime::getMainObject() noexcept {
-  return mainObject;
-}
 } // namespace expo

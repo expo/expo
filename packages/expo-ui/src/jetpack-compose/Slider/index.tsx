@@ -1,5 +1,4 @@
 import { requireNativeView } from 'expo';
-import { StyleProp, ViewStyle } from 'react-native';
 
 import { ExpoModifier, ViewEvent } from '../../types';
 
@@ -16,10 +15,6 @@ export type SliderElementColors = {
 };
 
 export type SliderProps = {
-  /**
-   * Custom styles for the slider component.
-   */
-  style?: StyleProp<ViewStyle>;
   /**
    * The current value of the slider.
    * @default 0
@@ -91,8 +86,6 @@ export function transformSliderProps(props: SliderProps): NativeSliderProps {
           }
         : undefined,
     color: props.color,
-    // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   };
 }
 

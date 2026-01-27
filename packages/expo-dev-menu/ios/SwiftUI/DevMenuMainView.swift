@@ -37,10 +37,16 @@ struct DevMenuMainView: View {
 
         DevMenuAppInfo()
 
-        DevMenuRNDevMenu(onOpenRNDevMenu: viewModel.openRNDevMenu)
+        if viewModel.shouldShowReactNativeDevMenu {
+          DevMenuRNDevMenu(onOpenRNDevMenu: viewModel.openRNDevMenu)
+        }
       }
       .padding()
     }
     .environmentObject(viewModel)
+    .navigationTitle("Dev Menu")
+#if !os(macOS)
+    .navigationBarHidden(true)
+#endif
   }
 }

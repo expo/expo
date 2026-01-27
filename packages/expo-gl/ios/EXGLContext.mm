@@ -7,6 +7,7 @@
 #import <ExpoModulesCore/EXUIManager.h>
 #import <ExpoModulesCore/EXJavaScriptContextProvider.h>
 #import <ExpoModulesCore/EXFileSystemInterface.h>
+#import <React/RCTLog.h>
 
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
@@ -17,7 +18,6 @@
 
 @property (nonatomic, strong) dispatch_queue_t glQueue;
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) EXGLObjectManager *objectManager;
 @property (nonatomic, assign) BOOL isContextReady;
 @property (nonatomic, assign) BOOL wasPrepareCalled;
 @property (nonatomic) BOOL appIsBackgrounded;
@@ -33,7 +33,6 @@
     self.delegate = delegate;
 
     _moduleRegistry = moduleRegistry;
-    _objectManager = (EXGLObjectManager *)[_moduleRegistry getExportedModuleOfClass:[EXGLObjectManager class]];
     _glQueue = dispatch_queue_create("host.exp.gl", DISPATCH_QUEUE_SERIAL);
     _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3] ?: [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     _isContextReady = NO;
@@ -75,7 +74,7 @@
 - (void)initialize
 {
   self->_contextId = EXGLContextCreate();
-  [self->_objectManager saveContext:self];
+  [[EXGLObjectManager shared] saveContext:self];
 
   // listen for foreground/background transitions
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -145,7 +144,7 @@
     }];
   } else {
     BLOCK_SAFE_RUN(callback, NO);
-    EXLogWarn(@"EXGL: Can only run on JavaScriptCore! Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://reactnative.dev/docs/debugging)? EXGL is not supported while using Remote Debugging, you will need to disable it to use EXGL.");
+    RCTLogWarn(@"EXGL: Can only run on JavaScriptCore! Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://reactnative.dev/docs/debugging)? EXGL is not supported while using Remote Debugging, you will need to disable it to use EXGL.");
   }
 }
 
@@ -182,7 +181,7 @@
       EXGLContextDestroy(self->_contextId);
 
       // Remove from dictionary of contexts
-      [self->_objectManager deleteContextWithId:@(self->_contextId)];
+      [[EXGLObjectManager shared] deleteContextWithId:@(self->_contextId)];
     }];
   }];
 }
@@ -231,7 +230,7 @@
       reject(
              @"E_GL_NO_FRAMEBUFFER",
              nil,
-             EXErrorWithMessage(@"No framebuffer bound. Create and bind one to take a snapshot from it.")
+             RCTErrorWithMessage(@"No framebuffer bound. Create and bind one to take a snapshot from it.")
              );
       return;
     }
@@ -239,7 +238,7 @@
       reject(
              @"E_GL_INVALID_VIEWPORT",
              nil,
-             EXErrorWithMessage(@"Rect's width and height must be greater than 0. If you didn't set `rect` option, check if the viewport is set correctly.")
+             RCTErrorWithMessage(@"Rect's width and height must be greater than 0. If you didn't set `rect` option, check if the viewport is set correctly.")
              );
       return;
     }
@@ -288,7 +287,7 @@
     NSString *extension;
 
     if ([format isEqualToString:@"webp"]) {
-      EXLogWarn(@"iOS doesn't support 'webp' representation, so 'takeSnapshot' won't work with that format. The image is going to be exported as 'png', but consider using a different code for iOS. Check this docs to learn how to do platform specific code (https://reactnative.dev/docs/platform-specific-code)");
+      RCTLogWarn(@"iOS doesn't support 'webp' representation, so 'takeSnapshot' won't work with that format. The image is going to be exported as 'png', but consider using a different code for iOS. Check this docs to learn how to do platform specific code (https://reactnative.dev/docs/platform-specific-code)");
       imageData = UIImagePNGRepresentation(image);
       extension = @".png";
     }

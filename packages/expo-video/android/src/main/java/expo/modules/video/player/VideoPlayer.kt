@@ -21,18 +21,21 @@ import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.video.IntervalUpdateClock
 import expo.modules.video.IntervalUpdateEmitter
-import expo.modules.video.VideoManager
+import expo.modules.video.VideoView
+import expo.modules.video.managers.VideoManager
 import expo.modules.video.delegates.IgnoreSameSet
 import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.enums.PlayerStatus.*
 import expo.modules.video.getPlaybackServiceErrorMessage
+import expo.modules.video.listeners.VideoPlayerListener
 import expo.modules.video.playbackService.ExpoVideoPlaybackService
 import expo.modules.video.playbackService.PlaybackServiceConnection
 import expo.modules.video.records.BufferOptions
@@ -43,6 +46,7 @@ import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoSource
 import expo.modules.video.utils.MutableWeakReference
 import expo.modules.video.records.VideoTrack
+import expo.modules.video.utils.buildBasicMediaSession
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
 import java.lang.ref.WeakReference
@@ -54,8 +58,11 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   private var renderersFactory = DefaultRenderersFactory(context)
     .forceEnableMediaCodecAsynchronousQueueing()
     .setEnableDecoderFallback(true)
-  private var listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
-  private var currentPlayerView = MutableWeakReference<PlayerView?>(null)
+  private val listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
+  private val currentVideoViewRef = MutableWeakReference<VideoView?>(null) { new, old ->
+    sendEvent(PlayerEvent.TargetViewChanged(new, old))
+  }
+  var currentVideoView by currentVideoViewRef
   val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl()
   val subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(this)
   val audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(this)
@@ -67,11 +74,11 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .setLoadControl(loadControl)
     .build()
 
-  private val firstFrameEventGenerator = createFirstFrameEventGenerator()
+  internal lateinit var firstFrameEventGenerator: FirstFrameEventGenerator
   val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
+  var mediaSession: MediaSession = buildBasicMediaSession(context, player)
   val intervalUpdateClock = IntervalUpdateClock(this)
 
-  var hasRenderedAFrameOfVideoSource = false
   var playing by IgnoreSameSet(false) { new, old ->
     sendEvent(PlayerEvent.IsPlayingChanged(new, old))
   }
@@ -95,24 +102,32 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   var preservesPitch = false
     set(preservesPitch) {
       field = preservesPitch
-      playbackParameters = applyPitchCorrection(playbackParameters)
+      appContext?.mainQueue?.launch {
+        playbackParameters = applyPitchCorrection(playbackParameters)
+      }
     }
   var showNowPlayingNotification = false
     set(value) {
       field = value
-      serviceSetShowNotification(value)
+      appContext?.mainQueue?.launch {
+        serviceSetShowNotification(value)
+      }
     }
   var duration = 0f
   var isLive = false
 
   var volume: Float by IgnoreSameSet(1f) { new: Float, old: Float ->
-    player.volume = if (muted) 0f else new
+    appContext.mainQueue.launch {
+      player.volume = if (muted) 0f else new
+    }
     userVolume = volume
     sendEvent(PlayerEvent.VolumeChanged(new, old))
   }
 
   var muted: Boolean by IgnoreSameSet(false) { new: Boolean, old: Boolean ->
-    player.volume = if (new) 0f else userVolume
+    appContext.mainQueue.launch {
+      player.volume = if (new) 0f else userVolume
+    }
     sendEvent(PlayerEvent.MutedChanged(new, old))
   }
 
@@ -120,7 +135,9 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     PlaybackParameters.DEFAULT,
     propertyMapper = { applyPitchCorrection(it) }
   ) { new: PlaybackParameters, old: PlaybackParameters ->
-    player.playbackParameters = new
+    appContext.mainQueue.launch {
+      player.playbackParameters = new
+    }
 
     if (old.speed != new.speed) {
       sendEvent(PlayerEvent.PlaybackRateChanged(new.speed, old.speed))
@@ -222,12 +239,13 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       val newCurrentSubtitleTrack = subtitles.currentSubtitleTrack
       val newCurrentAudioTrack = audioTracks.currentAudioTrack
       availableVideoTracks = tracks.toVideoTracks()
+      refreshPlaybackInfo()
 
       if (isLoadingNewSource) {
         sendEvent(
           PlayerEvent.VideoSourceLoaded(
             commitedSource,
-            this@VideoPlayer.player.duration / 1000.0,
+            duration.toDouble(),
             availableVideoTracks,
             newSubtitleTracks,
             newAudioTracks
@@ -273,7 +291,6 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
         resetPlaybackInfo()
       }
       subtitles.setSubtitlesEnabled(false)
-      hasRenderedAFrameOfVideoSource = false
       super.onMediaItemTransition(mediaItem, reason)
     }
 
@@ -325,6 +342,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
     // ExoPlayer will enable subtitles automatically at the start, we want them disabled by default
     appContext.mainQueue.launch {
+      firstFrameEventGenerator = createFirstFrameEventGenerator()
       subtitles.setSubtitlesEnabled(false)
     }
   }
@@ -334,9 +352,12 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       appContext?.reactContext?.unbindService(serviceConnection)
     }
     serviceConnection.playbackServiceBinder?.service?.unregisterPlayer(player)
+    mediaSession.release()
+
     VideoManager.unregisterVideoPlayer(this@VideoPlayer)
 
     appContext?.mainQueue?.launch {
+      firstFrameEventGenerator.release()
       player.removeListener(playerListener)
       player.release()
     }
@@ -354,16 +375,16 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   /**
    * Used to notify the player that is has been disconnected from the player view by another player.
    */
-  fun hasBeenDisconnectedFromPlayerView() {
-    if (currentPlayerView.get()?.player == this.player) {
+  fun hasBeenDisconnectedFromVideoView() {
+    if (currentVideoView?.playerView?.player == this.player) {
       throw IllegalStateException("The player has been notified of disconnection from the player view, even though it's still connected.")
     }
-    currentPlayerView.set(null)
+    currentVideoView = null
   }
 
-  fun changePlayerView(playerView: PlayerView?) {
-    PlayerView.switchTargetView(player, currentPlayerView.get(), playerView)
-    currentPlayerView.set(playerView)
+  fun changeVideoView(videoView: VideoView?) {
+    PlayerView.switchTargetView(player, currentVideoView?.playerView, videoView?.playerView)
+    currentVideoView = videoView
   }
 
   fun prepare() {
@@ -461,19 +482,24 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   fun addListener(videoPlayerListener: VideoPlayerListener) {
-    if (listeners.all { it.get() != videoPlayerListener }) {
-      listeners.add(WeakReference(videoPlayerListener))
+    synchronized(listeners) {
+      if (listeners.all { it.get() != videoPlayerListener }) {
+        listeners.add(WeakReference(videoPlayerListener))
+      }
     }
   }
 
   fun removeListener(videoPlayerListener: VideoPlayerListener) {
-    listeners.removeAll { it.get() == videoPlayerListener }
+    synchronized(listeners) {
+      listeners.removeAll { it.get() == videoPlayerListener }
+    }
   }
 
   private fun sendEvent(event: PlayerEvent) {
+    val listenersSnapshot = synchronized(listeners) {
+      listeners.mapNotNull { it.get() }
+    }
     // Emits to the native listeners
-    val listenersSnapshot = listeners.toList().mapNotNull { it.get() }
-
     event.emit(this, listenersSnapshot)
 
     // Emits to the JS side
@@ -483,8 +509,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   private fun createFirstFrameEventGenerator(): FirstFrameEventGenerator {
-    return FirstFrameEventGenerator(player, currentPlayerView) {
-      hasRenderedAFrameOfVideoSource = true
+    return FirstFrameEventGenerator(this, currentVideoViewRef) {
       sendEvent(PlayerEvent.RenderedFirstFrame())
     }
   }

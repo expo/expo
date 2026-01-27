@@ -37,6 +37,7 @@ function getExpoDependencyChunks({
     ['@expo/config'],
     ['@expo/config-plugins'],
     ['@expo/plist'],
+    ['@expo/local-build-cache-provider'],
     ['expo-modules-core'],
     ['unimodules-app-loader'],
     ['expo-task-manager'],
@@ -44,6 +45,7 @@ function getExpoDependencyChunks({
     ['expo-manifests'],
     ['@expo/prebuild-config', '@expo/metro-config', 'expo-constants'],
     ['@expo/image-utils'],
+    ['@expo/dom-webview', '@expo/log-box'],
     [
       'babel-preset-expo',
       'expo-application',
@@ -67,7 +69,6 @@ function getExpoDependencyChunks({
           [
             'expo-app-integrity',
             'expo-audio',
-            'expo-av',
             'expo-background-task',
             'expo-blur',
             'expo-crypto',

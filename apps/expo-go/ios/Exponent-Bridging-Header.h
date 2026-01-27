@@ -14,6 +14,7 @@
 
 #import "ExpoKit.h"
 #import "EXKernel.h"
+#import "EXKernelLinkingManager.h"
 #import "EXRootViewController.h"
 #import "EXAppViewController.h"
 #import "EXVersionManagerObjC.h"
@@ -24,7 +25,6 @@
 #import "EXDisabledDevLoadingView.h"
 #import "EXStatusBarManager.h"
 #import "EXKernelDevKeyCommands.h"
-#import "EXClientReleaseType.h"
 #import "ExpoGoReactNativeFactory.h"
 #import "EXUtil.h"
 #import "EXReactAppManager.h"

@@ -1,0 +1,10 @@
+fragment UpdateData on Update {
+  id
+  group
+  message
+  createdAt
+  runtimeVersion
+  expoGoSDKVersion
+  platform
+  manifestPermalink
+}

@@ -1,10 +1,24 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
 
-set -euo pipefail
+import { spawnSync } from 'node:child_process';
+import path from 'node:path';
 
-script_dir=$(dirname "$0")
-repository_root="${script_dir}/.."
-expotools_dir="`cd ${repository_root}/tools;pwd;`"
-NODE_BINARY=${NODE_BINARY:-node}
+const repositoryRoot = path.resolve(import.meta.dirname, '..');
+const expotoolsDir = path.join(repositoryRoot, 'tools');
+const nodeBinary = process.env.NODE_BINARY || 'node';
 
-$NODE_BINARY "${expotools_dir}/bin/expotools.js" "$@"
+const result = spawnSync(
+  nodeBinary,
+  [path.join(expotoolsDir, 'bin', 'expotools.js'), ...process.argv.slice(2)],
+  {
+    stdio: 'inherit',
+    cwd: repositoryRoot,
+  }
+);
+
+if (result.error) {
+  console.error(result.error);
+  process.exit(1);
+}
+
+process.exit(result.status ?? 0);

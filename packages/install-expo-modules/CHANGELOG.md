@@ -10,6 +10,32 @@
 
 ### 💡 Others
 
+## 0.14.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.2 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.0 — 2026-01-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.13 - 2025-12-04
+
+### 💡 Others
+
+- Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
+
+## 0.13.12 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
+
 ## 0.13.11 - 2025-09-18
 
 _This version does not introduce any user-facing changes._

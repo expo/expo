@@ -41,6 +41,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   const hasToSetupAudioContext = useRef(false);
   const fullscreenChangeListeners = useRef<null | FullscreenChangeListeners>(null);
   const isWaitingForFirstFrame = useRef(false);
+  const mountedPlayerRef = useRef<null | VideoPlayer>(null);
 
   /**
    * Audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
@@ -62,9 +63,6 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
 
   useImperativeHandle(ref, () => ({
     enterFullscreen: async () => {
-      if (!props.allowsFullscreen || !videoRef.current) {
-        return;
-      }
       // Cast the video to any to avoid ts errors. Methods such as webkitRequestFullscreen,
       // webkitEnterFullScreen, msRequestFullscreen are not typed even though they exist.
       const video = videoRef.current as any;
@@ -140,7 +138,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     const mediaNode = mediaNodeRef.current;
 
     if (audioContext && zeroGainNode && mediaNode) {
-      props.player.mountAudioNode(audioContext, zeroGainNode, mediaNode);
+      props.player?.mountAudioNode(audioContext, zeroGainNode, mediaNode);
     } else {
       console.warn(
         "Couldn't mount audio node, this might affect the audio playback when using multiple video views with the same player."
@@ -155,14 +153,19 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     const audioContext = audioContextRef.current;
     const mediaNode = mediaNodeRef.current;
     if (audioContext && mediaNode && videoRef.current) {
-      props.player.unmountAudioNode(videoRef.current, audioContext, mediaNode);
+      props.player?.unmountAudioNode(videoRef.current, audioContext, mediaNode);
     }
   }
 
   function maybeSetupAudioContext() {
+    // Not all browsers support the UserActivation API, so check it exists before we access it.
+    // If the API doesn't exist then we'll continue as if the user has been active.
+    const userHasNotBeenActive =
+      'userActivation' in navigator && !navigator.userActivation.hasBeenActive;
+
     if (
       !hasToSetupAudioContext.current ||
-      !navigator.userActivation.hasBeenActive ||
+      userHasNotBeenActive ||
       !videoRef.current ||
       !props.useAudioNodePlayback
     ) {
@@ -229,16 +232,26 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   }
 
   useEffect(() => {
+    videoRef.current && mountedPlayerRef.current?.unmountVideoView(videoRef.current);
+
     if (videoRef.current) {
       props.player?.mountVideoView(videoRef.current);
     }
     setupFullscreenListener();
     attachAudioNodes();
 
+    mountedPlayerRef.current = props.player ?? null;
+
+    if (props.player == null) {
+      videoRef.current?.removeAttribute('src');
+      videoRef.current?.load();
+    }
+
     return () => {
       if (videoRef.current) {
         props.player?.unmountVideoView(videoRef.current);
       }
+      mountedPlayerRef.current = null;
       cleanupFullscreenListener();
       detachAudioNodes();
     };
@@ -247,7 +260,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
   return (
     <video
       controls={props.nativeControls ?? true}
-      controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'}
+      controlsList={props.fullscreenOptions?.enable ? undefined : 'nofullscreen'}
       crossOrigin={props.crossOrigin}
       style={{
         ...mapStyles(props.style),
@@ -271,7 +284,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
       }}
       disablePictureInPicture={!props.allowsPictureInPicture}
       playsInline={props.playsInline}
-      src={getSourceUri(props.player?.src) ?? ''}
+      src={getSourceUri(props.player?.src) ?? undefined}
     />
   );
 });

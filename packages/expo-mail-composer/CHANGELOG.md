@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
+- [Android] Fix mail composer not suggesting an e-mail client on some devices. ([#41274](https://github.com/expo/expo/pull/41274) by [@behenate](https://github.com/behenate))
+
+## 15.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 15.0.7 — 2025-09-11
 
 _This version does not introduce any user-facing changes._

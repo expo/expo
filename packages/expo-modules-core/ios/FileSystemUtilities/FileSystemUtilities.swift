@@ -6,6 +6,8 @@ public enum FileSystemPermissionFlags {
   case write
 }
 
+let validSchemas = ["assets-library", "http", "https", "ph"]
+
 public struct FileSystemUtilities {
   @discardableResult
   public static func ensureDirExists(at url: URL?) -> Bool {
@@ -38,7 +40,6 @@ public struct FileSystemUtilities {
     guard let scheme = uri.scheme else {
       return [.none]
     }
-    let validSchemas = ["assets-library", "http", "https", "ph"]
 
     if validSchemas.contains(scheme) {
       return [.read]
@@ -49,6 +50,24 @@ public struct FileSystemUtilities {
     }
 
     return [.none]
+  }
+
+  public static func isReadableFile(_ appContext: AppContext?, _ uri: URL) -> Bool {
+    if(!permissions(appContext, for: uri).contains(.read)) {
+      return false
+    }
+
+    let validSchemas = ["assets-library", "http", "https", "ph"]
+
+    guard let scheme = uri.scheme else {
+      return false
+    }
+
+    if validSchemas.contains(scheme) {
+      return true
+    }
+
+    return FileManager.default.isReadableFile(atPath: uri.path)
   }
 
   private static func getPathPermissions(_ appContext: AppContext?, for path: URL) -> [FileSystemPermissionFlags] {

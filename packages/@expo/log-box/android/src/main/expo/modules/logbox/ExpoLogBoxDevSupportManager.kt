@@ -97,10 +97,6 @@ class ExpoLogBoxDevSupportManager(
  * An implementation of [DevSupportManager] that extends the functionality in
  * [DevSupportManagerBase] with some additional, more flexible APIs for asynchronously loading the
  * JS bundle.
- *
- * @constructor The primary constructor mirrors the same constructor we have for
- *   [BridgeDevSupportManager] and
- *     * is kept for backward compatibility.
  */
 open class ExpoBridgelessDevSupportManager(
   applicationContext: Context,

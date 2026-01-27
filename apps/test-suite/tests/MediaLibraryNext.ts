@@ -56,6 +56,27 @@ export async function test(t) {
     }
   });
 
+  t.describe('Stress tests', async () => {
+    t.it('creating files with the same filename', async () => {
+      for (let i = 0; i < 40; i++) {
+        const asset = await Asset.create(pngFile.localUri);
+        assetsContainer.push(asset);
+      }
+    });
+
+    t.it('moving files with the same filename to album', async () => {
+      const createdAssets = [];
+      for (let i = 0; i < 40; i++) {
+        const album = await Album.create(createAlbumName(`temp album ${i}`), [pngFile.localUri]);
+        albumsContainer.push(album);
+        createdAssets.push(...(await album.getAssets()));
+      }
+      assetsContainer.push(...createdAssets);
+      const albumName = createAlbumName('stress test moving directories');
+      const album = await Album.create(albumName, createdAssets);
+      albumsContainer.push(album);
+    });
+  });
   t.describe('Album creation', () => {
     t.it('creates an album from a list of paths', async () => {
       const albumName = createAlbumName('album from paths');
@@ -281,6 +302,13 @@ export async function test(t) {
       t.expect(height).toBeGreaterThan(0);
     });
 
+    t.it('returns a shape', async () => {
+      const shape = await asset.getShape();
+      t.expect(shape).toBeDefined();
+      t.expect(shape?.width).toBeGreaterThan(0);
+      t.expect(shape?.height).toBeGreaterThan(0);
+    });
+
     t.it('returns a media type', async () => {
       const mediaType = await asset.getMediaType();
       t.expect(mediaType).toBeDefined();
@@ -300,6 +328,20 @@ export async function test(t) {
     t.it('returns positive width', async () => {
       const width = await asset.getWidth();
       t.expect(width).toBeGreaterThan(0);
+    });
+
+    t.it('returns an asset info object', async () => {
+      const info = await asset.getInfo();
+      t.expect(info).toBeDefined();
+      t.expect(info.id).toBe(asset.id);
+      t.expect(info.mediaType).toBe(await asset.getMediaType());
+      t.expect(info.width).toBe(await asset.getWidth());
+      t.expect(info.height).toBe(await asset.getHeight());
+      t.expect(info.uri).toBe(await asset.getUri());
+      t.expect(info.filename).toBe(await asset.getFilename());
+      t.expect(info.duration).toBe(await asset.getDuration());
+      t.expect(info.creationTime).toBe(await asset.getCreationTime());
+      t.expect(info.modificationTime).toBe(await asset.getModificationTime());
     });
   });
 

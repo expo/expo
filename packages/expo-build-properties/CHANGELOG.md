@@ -10,6 +10,37 @@
 
 ### 💡 Others
 
+- Validate `hermes-compiler` version when enabling hermes V1 ([#42477](https://github.com/expo/expo/pull/42477) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 55.0.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+### 💡 Others
+
+- Switch from `ajv` to `@expo/schema-utils` ([#42218](https://github.com/expo/expo/pull/42218) by [@kitten](https://github.com/kitten))
+
+## 55.0.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
+- Remove deprecated `android.newArchEnabled` and `ios.newArchEnabled` properties. ([#41684](https://github.com/expo/expo/pull/41684) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🎉 New features
+
+- Add support for enabling Hermes V1 ([#41715](https://github.com/expo/expo/pull/41715) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add top-level `buildReactNativeFromSource`, `reactNativeReleaseLevel`, and `useHermesV1` config fields that apply to both platforms, with platform-specific values taking precedence. ([#42302](https://github.com/expo/expo/pull/42302) by [@brentvatne](https://github.com/brentvatne))
+
+## 1.0.10 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 1.0.9 - 2025-09-18
 
 _This version does not introduce any user-facing changes._

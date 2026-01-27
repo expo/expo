@@ -62,9 +62,6 @@ export type LivePhotoViewType = {
      */
     stopPlayback: () => void;
 };
-/**
- * @hidden
- */
 export type LivePhotoViewStatics = {
     /**
      * Determines whether the current device is capable of displaying live photos.

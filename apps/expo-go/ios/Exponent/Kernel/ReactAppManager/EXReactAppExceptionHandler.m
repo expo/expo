@@ -1,8 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAppViewController.h"
-#import "EXErrorRecoveryManager.h"
 #import "EXKernel.h"
+
+#import "Expo_Go-Swift.h"
 #import "EXKernelAppRecord.h"
 #import "EXReactAppManager.h"
 #import "EXReactAppExceptionHandler.h"
@@ -15,10 +16,7 @@ RCTFatalHandler handleFatalReactError = ^(NSError *error) {
   [EXUtil performSynchronouslyOnMainThread:^{
     EXKernelAppRecord *record = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager appRecordForError:error];
     if (!record) {
-      // show the error on Home or on the main standalone app if we can't figure out who this error belongs to
-      if ([EXKernel sharedInstance].appRegistry.homeAppRecord) {
-        record = [EXKernel sharedInstance].appRegistry.homeAppRecord;
-      }
+      record = [EXKernel sharedInstance].visibleApp;
     }
     if (record) {
       [record.viewController maybeShowError:error];
@@ -67,9 +65,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forScopeKey:_appRecord.scopeKey];
 
-  if ([self _isProdHome]) {
-    RCTFatal(error);
-  }
+  [_appRecord.viewController maybeShowError:error];
 }
 
 - (void)updateJSExceptionWithMessage:(nullable NSString *)message
@@ -89,10 +85,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (BOOL)_isProdHome
 {
-  if (RCT_DEBUG) {
-    return NO;
-  }
-  return (_appRecord && _appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord);
+  return NO;
 }
 
 @end

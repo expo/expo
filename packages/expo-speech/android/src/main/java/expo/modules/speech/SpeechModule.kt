@@ -123,10 +123,17 @@ class SpeechModule : Module() {
         ?.let(textToSpeech::setVoice)
     }
 
+    val params = Bundle().apply {
+      options.volume?.let {
+        val volume = it.coerceAtLeast(0.0f).coerceAtMost(1.0f)
+        putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, volume)
+      }
+    }
+
     textToSpeech.speak(
       text,
       TextToSpeech.QUEUE_ADD,
-      null,
+      params,
       id
     )
   }

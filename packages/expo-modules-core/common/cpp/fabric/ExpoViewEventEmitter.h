@@ -20,7 +20,7 @@ public:
    Dispatches an event to send from the native view to JavaScript.
    This is basically exposing `dispatchEvent` from `facebook::react::EventEmitter` for public use.
    */
-  void dispatch(std::string eventName, react::ValueFactory payloadFactory) const;
+  void dispatch(std::string eventName, const react::ValueFactory& payloadFactory) const;
 };
 
 } // namespace expo

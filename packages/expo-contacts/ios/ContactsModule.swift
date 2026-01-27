@@ -5,7 +5,7 @@ import ContactsUI
 let onContactsChangeEventName = "onContactsChange"
 
 public class ContactsModule: Module, OnContactPickingResultHandler {
-  private let contactStore = CNContactStore()
+  private lazy var contactStore = CNContactStore()
   private let delegate = ContactControllerDelegate()
   private var presentingViewController: UIViewController?
   private var contactPickerDelegate: ContactPickerControllerDelegate?
@@ -328,6 +328,22 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       return try serializeContactPayload(payload: payload, keys: keysToFetch, options: options)
     }
 
+    AsyncFunction("hasContactsAsync") { (promise: Promise) in
+      let keysToFetch = [CNContactIdentifierKey]
+      let fetchRequest = CNContactFetchRequest(keysToFetch: getDescriptors(for: keysToFetch))
+      
+      do {
+        var hasAnyContact = false
+        try contactStore.enumerateContacts(with: fetchRequest) { _, stop in
+          hasAnyContact = true
+          stop.pointee = true
+        }
+        promise.resolve(hasAnyContact)
+      } catch {
+        promise.reject(ContactsCheckFailedException())
+      }
+    }
+
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
       appContext?.permissions?.getPermissionUsingRequesterClass(
         ContactsPermissionRequester.self,
@@ -562,7 +578,7 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
     let path = url.path
     let standardizedPath = NSString(string: path).standardizingPath
 
-    guard FileSystemUtilities.permissions(appContext, for: url).contains(.read) && FileManager.default.isReadableFile(atPath: url.path) else {
+    guard FileSystemUtilities.isReadableFile(appContext, url) else {
       return nil
     }
 

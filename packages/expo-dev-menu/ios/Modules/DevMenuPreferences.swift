@@ -54,7 +54,9 @@ public class DevMenuPreferences: Module {
      We don't want to uninstall `DevMenuMotionInterceptor`, because otherwise, the app on shake gesture will bring up the dev-menu from the RN.
      So we added `isEnabled` to disable it, but not uninstall.
      */
+#if !os(macOS)
     DevMenuTouchInterceptor.isInstalled = DevMenuPreferences.touchGestureEnabled
+#endif
     DevMenuKeyCommandsInterceptor.isInstalled = DevMenuPreferences.keyCommandsEnabled
   }
 
@@ -79,7 +81,9 @@ public class DevMenuPreferences: Module {
     }
     set {
       setBool(newValue, forKey: touchGestureEnabledKey)
+#if !os(macOS)
       DevMenuTouchInterceptor.isInstalled = newValue
+#endif
     }
   }
 
@@ -92,7 +96,9 @@ public class DevMenuPreferences: Module {
     }
     set {
       setBool(newValue, forKey: keyCommandsEnabledKey)
+#if !os(macOS)
       DevMenuKeyCommandsInterceptor.isInstalled = newValue
+#endif
     }
   }
 

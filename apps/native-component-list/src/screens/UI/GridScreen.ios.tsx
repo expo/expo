@@ -16,12 +16,15 @@ import {
 import {
   background,
   clipShape,
+  font,
   foregroundStyle,
   frame,
   gridCellAnchor,
   gridCellColumns,
   gridCellUnsizedAxes,
   padding,
+  pickerStyle,
+  tag,
 } from '@expo/ui/swift-ui/modifiers';
 import { Image as ExpoImage } from 'expo-image';
 import * as React from 'react';
@@ -150,11 +153,15 @@ export default function GridScreen() {
             </Grid>
             <Spacer />
             <Picker
-              options={[...gridCellAxesOptions]}
-              selectedIndex={gridCellAxesIndex}
-              onOptionSelected={(e) => setGridCellAxesIndex(e.nativeEvent.index)}
-              variant="menu"
-            />
+              modifiers={[pickerStyle('menu')]}
+              selection={gridCellAxesIndex}
+              onSelectionChange={setGridCellAxesIndex}>
+              {gridCellAxesOptions.map((option, index) => (
+                <Text key={index} modifiers={[tag(index)]}>
+                  {option}
+                </Text>
+              ))}
+            </Picker>
           </HStack>
 
           {/* 3x3 Grid and Circle Grid */}
@@ -187,9 +194,7 @@ export default function GridScreen() {
 
           {/* spacing and alignment */}
           <VStack spacing={10} alignment="leading">
-            <Text size={16} weight="bold">
-              Grid settings
-            </Text>
+            <Text modifiers={[font({ size: 16, weight: 'bold' })]}>Grid settings</Text>
             <VStack
               alignment="center"
               modifiers={[background('white'), clipShape('roundedRectangle')]}>
@@ -210,11 +215,15 @@ export default function GridScreen() {
                   <Text>Alignment</Text>
                   <Spacer />
                   <Picker
-                    options={[...alignmentOptions]}
-                    selectedIndex={alignmentIndex}
-                    onOptionSelected={(e) => setAlignmentIndex(e.nativeEvent.index)}
-                    variant="menu"
-                  />
+                    modifiers={[pickerStyle('menu')]}
+                    selection={alignmentIndex}
+                    onSelectionChange={setAlignmentIndex}>
+                    {alignmentOptions.map((option, index) => (
+                      <Text key={index} modifiers={[tag(index)]}>
+                        {option}
+                      </Text>
+                    ))}
+                  </Picker>
                 </HStack>
 
                 {/* Colored Rectangles Grid */}
@@ -235,27 +244,32 @@ export default function GridScreen() {
 
           {/* Example small Grid */}
           <VStack alignment="leading" spacing={5}>
-            <Text weight="bold">Anchor</Text>
+            <Text modifiers={[font({ weight: 'bold' })]}>Anchor</Text>
             <VStack
               alignment="leading"
               modifiers={[background('white'), clipShape('roundedRectangle')]}>
               <VStack modifiers={[padding({ all: 5 })]} alignment="center" spacing={20}>
                 <Picker
-                  variant="segmented"
-                  options={['Custom', 'Preset']}
-                  selectedIndex={anchorType === 'custom' ? 0 : 1}
-                  onOptionSelected={({ nativeEvent }) =>
-                    setAnchorType(nativeEvent.index === 0 ? 'custom' : 'preset')
-                  }
-                />
+                  modifiers={[pickerStyle('segmented')]}
+                  selection={anchorType === 'custom' ? 0 : 1}
+                  onSelectionChange={(selection) =>
+                    setAnchorType(selection === 0 ? 'custom' : 'preset')
+                  }>
+                  <Text modifiers={[tag(0)]}>Custom</Text>
+                  <Text modifiers={[tag(1)]}>Preset</Text>
+                </Picker>
                 <VStack alignment="center">
                   {anchorType === 'preset' ? (
                     <Picker
-                      options={[...anchorOptions]}
-                      onOptionSelected={(event) => setAnchorIndex(event.nativeEvent.index)}
-                      selectedIndex={anchorIndex}
-                      variant="menu"
-                    />
+                      modifiers={[pickerStyle('menu')]}
+                      selection={anchorIndex}
+                      onSelectionChange={setAnchorIndex}>
+                      {anchorOptions.map((option, index) => (
+                        <Text key={index} modifiers={[tag(index)]}>
+                          {option}
+                        </Text>
+                      ))}
+                    </Picker>
                   ) : (
                     <VStack spacing={12}>
                       {(['x', 'y'] as const).map((anchor) => (
@@ -315,7 +329,9 @@ export default function GridScreen() {
 
           {/* Example 1 */}
           <DisclosureGroup
-            onStateChange={(v) => setDisclosureGroupExpanded((prev) => ({ ...prev, example1: v }))}
+            onIsExpandedChange={(v) =>
+              setDisclosureGroupExpanded((prev) => ({ ...prev, example1: v }))
+            }
             isExpanded={disclosureGroupExpanded.example1}
             label="Example #1">
             <Grid horizontalSpacing={15} verticalSpacing={15} alignment="leading">
@@ -351,7 +367,9 @@ export default function GridScreen() {
 
           {/* Example 2 */}
           <DisclosureGroup
-            onStateChange={(v) => setDisclosureGroupExpanded((prev) => ({ ...prev, example2: v }))}
+            onIsExpandedChange={(v) =>
+              setDisclosureGroupExpanded((prev) => ({ ...prev, example2: v }))
+            }
             isExpanded={disclosureGroupExpanded.example2}
             label="Example #2">
             <Grid verticalSpacing={5} horizontalSpacing={5} alignment="center">

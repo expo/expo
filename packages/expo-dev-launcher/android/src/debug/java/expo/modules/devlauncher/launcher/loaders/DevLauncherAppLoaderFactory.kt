@@ -3,35 +3,26 @@ package expo.modules.devlauncher.launcher.loaders
 import android.content.Context
 import android.net.Uri
 import com.facebook.react.ReactHost
+import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.createUpdatesConfigurationWithUrl
 import expo.modules.devlauncher.helpers.loadUpdate
-import expo.modules.devlauncher.koin.DevLauncherKoinComponent
-import expo.modules.devlauncher.koin.optInject
-import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
-import org.koin.core.component.inject
 
-interface DevLauncherAppLoaderFactoryInterface {
-  suspend fun createAppLoader(url: Uri, projectUrl: Uri, manifestParser: DevLauncherManifestParser): DevLauncherAppLoader
-  fun getManifest(): Manifest?
-  fun shouldUseDeveloperSupport(): Boolean
-}
-
-class DevLauncherAppLoaderFactory : DevLauncherKoinComponent, DevLauncherAppLoaderFactoryInterface {
-  private val context: Context by inject()
-  private val appHost: ReactHost by inject()
-  private val updatesInterface: UpdatesInterface? by optInject()
-  private val controller: DevLauncherControllerInterface by inject()
-  private val installationIDHelper: DevLauncherInstallationIDHelper by inject()
-
+class DevLauncherAppLoaderFactory(
+  val context: Context,
+  val appHost: ReactHost,
+  val updatesInterface: UpdatesInterface?,
+  val controller: DevLauncherController,
+  val installationIDHelper: DevLauncherInstallationIDHelper
+) {
   private var instanceWasCreated = false
   private var manifest: Manifest? = null
   private var useDeveloperSupport = true
 
-  override suspend fun createAppLoader(url: Uri, projectUrl: Uri, manifestParser: DevLauncherManifestParser): DevLauncherAppLoader {
+  suspend fun createAppLoader(url: Uri, projectUrl: Uri, manifestParser: DevLauncherManifestParser): DevLauncherAppLoader {
     instanceWasCreated = true
 
     if (!manifestParser.isManifestUrl()) {
@@ -74,9 +65,9 @@ class DevLauncherAppLoaderFactory : DevLauncherKoinComponent, DevLauncherAppLoad
     }
   }
 
-  override fun getManifest(): Manifest? = checkIfInstanceWasCreated { manifest }
+  fun getManifest(): Manifest? = checkIfInstanceWasCreated { manifest }
 
-  override fun shouldUseDeveloperSupport(): Boolean = checkIfInstanceWasCreated { useDeveloperSupport }
+  fun shouldUseDeveloperSupport(): Boolean = checkIfInstanceWasCreated { useDeveloperSupport }
 
   private inline fun <T> checkIfInstanceWasCreated(block: () -> T): T {
     if (!instanceWasCreated) {

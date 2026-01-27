@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.7 - 2025-12-04
+
+### 🐛 Bug fixes
+
+- Fixed `Blob` export on web. ([#41195](https://github.com/expo/expo/pull/41195) by [@barthap](https://github.com/barthap))
+
 ## 0.1.6 — 2025-09-11
 
 _This version does not introduce any user-facing changes._

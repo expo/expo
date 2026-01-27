@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- Added support for `volume` option on iOS and Android. ([#40959](https://github.com/expo/expo/pull/40959) by [@barthap](https://github.com/barthap))
+
+## 14.0.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 14.0.7 — 2025-09-11
 
 _This version does not introduce any user-facing changes._

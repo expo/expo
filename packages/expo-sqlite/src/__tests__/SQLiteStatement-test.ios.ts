@@ -1,6 +1,9 @@
 import { openDatabaseAsync, SQLiteDatabase } from '../SQLiteDatabase';
 import { SQLiteStatement } from '../SQLiteStatement';
 
+jest.mock('expo/devtools', () => ({
+  getDevToolsPluginClientAsync: jest.fn(),
+}));
 jest.mock('../ExpoSQLite', () => require('../__mocks__/ExpoSQLite'));
 
 interface TestEntity {

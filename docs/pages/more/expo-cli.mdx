@@ -283,7 +283,7 @@ The following options are provided:
 - `-c, --clear`: Clear the bundler cache before exporting.
 - `--no-minify`: Skip minifying JavaScript and CSS assets.
 - `--no-bytecode`: Skip generating Hermes bytecode for native platforms. Only use this for analyzing bundle sizes and never ship UTF-8 bundles to native platforms as this will lead to drastically longer startup times.
-- `--no-ssg`: Skip exporting static HTML files for web routes. This option only generates server code inside the **dist** directory. Useful for [API routes](/router/reference/api-routes).
+- `--no-ssg`: Skip exporting static HTML files for web routes. This option only generates server code inside the **dist** directory. Useful for [API routes](/router/web/api-routes).
 
 #### Hosting with sub-paths
 
@@ -541,6 +541,7 @@ From here, you can choose to generate basic project files like:
 | `EXPO_NO_DEPENDENCY_VALIDATION`      | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="SDK 52+" /></div>Disable built-in dependency validation when installing packages through `npx expo install` and `npx expo start`.                                                                                                                                                                                                                                  |
 | `EXPO_WEB_DEV_HYDRATE`               | **boolean** | Enable React hydration in development for a web project. This can help you identify hydration issues early.                                                                                                                                                                                                                                                                                                                     |
 | `EXPO_UNSTABLE_LIVE_BINDINGS`        | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 54+" /></div>Disable live binding in experimental import export support. Enabled by default. Live bindings improve circular dependencies support, but can lead to slightly worse performance.                                                                                                                               |
+| `EXPO_UNSTABLE_LOG_BOX`              | **boolean** | <div className="flex items-center pb-1.5"><StatusTag status="experimental" /><StatusTag status="SDK 55+" /></div>Enable the experimental LogBox error overlay for native applications. Enabled by default for web.                                                                                                                                                                                                              |
 
 ## Telemetry
 

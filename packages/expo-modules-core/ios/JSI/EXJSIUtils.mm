@@ -1,12 +1,10 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#import <sstream>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 
-#import <ExpoModulesCore/EXJSIConversions.h>
-#import <ExpoModulesCore/EXJSIUtils.h>
-#import <ExpoModulesCore/JSIUtils.h>
-#import <ExpoModulesCore/NativeModule.h>
-#import <ExpoModulesCore/EventEmitter.h>
+#import <ExpoModulesJSI/EXJSIConversions.h>
+#import <ExpoModulesJSI/EXJSIUtils.h>
+#import <ExpoModulesJSI/JSIUtils.h>
 
 namespace expo {
 
@@ -127,23 +125,13 @@ jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *messa
     });
 }
 
+#pragma mark - RuntimeScheduler
+
+std::shared_ptr<react::RuntimeScheduler> runtimeSchedulerFromRuntime(jsi::Runtime &runtime) {
+  if (auto binding = react::RuntimeSchedulerBinding::getBinding(runtime)) {
+    return binding->getRuntimeScheduler();
+  }
+  return nullptr;
+}
+
 } // namespace expo
-
-@implementation EXJSIUtils
-
-+ (nonnull EXJavaScriptObject *)createNativeModuleObject:(nonnull EXJavaScriptRuntime *)runtime
-{
-  std::shared_ptr<jsi::Object> nativeModule = std::make_shared<jsi::Object>(expo::NativeModule::createInstance(*[runtime get]));
-  return [[EXJavaScriptObject alloc] initWith:nativeModule runtime:runtime];
-}
-
-+ (void)emitEvent:(nonnull NSString *)eventName
-         toObject:(nonnull EXJavaScriptObject *)object
-    withArguments:(nonnull NSArray<id> *)arguments
-        inRuntime:(nonnull EXJavaScriptRuntime *)runtime
-{
-  const std::vector<jsi::Value> argumentsVector(expo::convertNSArrayToStdVector(*[runtime get], arguments));
-  expo::EventEmitter::emitEvent(*[runtime get], *[object get], [eventName UTF8String], std::move(argumentsVector));
-}
-
-@end

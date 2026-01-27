@@ -39,12 +39,21 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
     MapReader { reader in
       Map(position: $state.mapCameraPosition) {
         ForEach(props.markers) { marker in
-          Marker(
-            marker.title,
-            systemImage: marker.systemImage,
-            coordinate: marker.clLocationCoordinate2D
-          )
-          .tint(marker.tintColor)
+          if marker.hasMonogram {
+            Marker(
+              marker.title,
+              monogram: Text(marker.monogram),
+              coordinate: marker.clLocationCoordinate2D
+            )
+            .tint(marker.tintColor)
+          } else {
+            Marker(
+              marker.title,
+              systemImage: marker.systemImage,
+              coordinate: marker.clLocationCoordinate2D
+            )
+            .tint(marker.tintColor)
+          }
         }
 
         ForEach(props.polylines) { polyline in
@@ -115,6 +124,7 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
       .onMapCameraChange(frequency: .onEnd) { context in
         let cameraPosition = context.region.center
         let longitudeDelta = context.region.span.longitudeDelta
+        let latitudeDelta = context.region.span.latitudeDelta
         let zoomLevel = log2(360 / longitudeDelta)
 
         props.onCameraMove([
@@ -122,6 +132,8 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
             "latitude": cameraPosition.latitude,
             "longitude": cameraPosition.longitude
           ],
+          "longitudeDelta": longitudeDelta,
+          "latitudeDelta": latitudeDelta,
           "zoom": zoomLevel,
           "tilt": context.camera.pitch,
           "bearing": context.camera.heading
@@ -140,7 +152,10 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
         }
       )
       .onAppear {
-        state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
+        if !state.hasInitializedCamera {
+          state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
+          state.hasInitializedCamera = true
+        }
       }
     }
   }

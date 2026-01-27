@@ -2,7 +2,7 @@ package expo.modules.kotlin.sharedobjects
 
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.RuntimeContext
+import expo.modules.kotlin.runtime.Runtime
 import kotlin.reflect.KClass
 
 /**
@@ -12,8 +12,8 @@ import kotlin.reflect.KClass
 @DoNotStrip
 open class SharedRef<RefType>(
   val ref: RefType,
-  runtimeContext: RuntimeContext? = null
-) : SharedObject(runtimeContext) {
+  runtime: Runtime? = null
+) : SharedObject(runtime) {
   constructor(ref: RefType, appContext: AppContext) : this(ref, appContext.hostingRuntimeContext)
 
   /**

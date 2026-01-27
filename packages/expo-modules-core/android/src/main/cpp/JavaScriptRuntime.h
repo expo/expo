@@ -73,14 +73,15 @@ public:
    */
   void drainJSEventLoop();
 
-  void installMainObject();
-
   std::shared_ptr<react::CallInvoker> jsInvoker;
 
-  std::shared_ptr<jsi::Object> getMainObject() noexcept;
-
 private:
-  std::shared_ptr<jsi::Runtime> runtime;
-  std::shared_ptr<jsi::Object> mainObject;
+  /**
+   * Raw pointer to the runtime. We do not own this - it's managed by React Native.
+   * The runtime's lifetime is guaranteed to exceed JavaScriptRuntime's lifetime,
+   * as JSIContext::prepareForDeallocation() invalidates all weak references before
+   * the runtime is deallocated.
+   */
+  jsi::Runtime *runtime;
 };
 } // namespace expo

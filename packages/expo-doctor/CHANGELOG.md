@@ -8,10 +8,32 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 1.18.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
 - Fix dependecy check failure when using EXPO_DEBUG=1 ([#39929](https://github.com/expo/expo/pull/39929) by [@betomoedano](https://github.com/betomoedano))
 - Circumvent `npx expo` Expo CLI invocation to avoid debug warnings from npm polluting standard output ([#40731](https://github.com/expo/expo/pull/40731) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+- Bump to `@expo/metro@54.2.0` and `metro@0.83.3` ([#41142](https://github.com/expo/expo/pull/41142) by [@kitten](https://github.com/kitten))
+
+## 1.17.12 - 2025-12-04
+
+### 💡 Others
+
+- Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
 
 ## 1.17.11 - 2025-10-20
 

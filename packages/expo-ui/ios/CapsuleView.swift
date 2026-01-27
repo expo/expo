@@ -8,14 +8,18 @@ internal enum CapsuleCornerStyle: String, Enumerable {
   case circular
 }
 
-internal final class CapsuleViewProps: UIBaseViewProps {
+public final class CapsuleViewProps: UIBaseViewProps {
   @Field var cornerStyle: CapsuleCornerStyle = .continuous
 }
 
-internal struct CapsuleView: ExpoSwiftUI.View {
-  @ObservedObject var props: CapsuleViewProps
+public struct CapsuleView: ExpoSwiftUI.View {
+  @ObservedObject public var props: CapsuleViewProps
 
-  var body: some View {
+  public init(props: CapsuleViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     Capsule(style: props.cornerStyle == .continuous ? .continuous : .circular)
   }
 }

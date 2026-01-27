@@ -146,7 +146,8 @@ export class DevToolsPluginClient {
     connectAsync() {
         return new Promise((resolve, reject) => {
             const endpoint = 'expo-dev-plugins/broadcast';
-            const ws = new WebSocketWithReconnect(`ws://${this.connectionInfo.devServer}/${endpoint}`, {
+            const protocol = this.connectionInfo.useWss ? 'wss' : 'ws';
+            const ws = new WebSocketWithReconnect(`${protocol}://${this.connectionInfo.devServer}/${endpoint}`, {
                 binaryType: this.options?.websocketBinaryType,
                 onError: (e) => {
                     if (e instanceof Error) {

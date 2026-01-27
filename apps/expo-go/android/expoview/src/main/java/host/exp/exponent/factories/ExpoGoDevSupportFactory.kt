@@ -2,7 +2,6 @@ package host.exp.exponent.factories
 
 import android.content.Context
 import com.facebook.react.common.SurfaceDelegateFactory
-import com.facebook.react.devsupport.BridgeDevSupportManager
 import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.devsupport.ReactInstanceDevHelper
 import com.facebook.react.devsupport.ReleaseDevSupportManager
@@ -12,7 +11,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
-import com.facebook.react.devsupport.BridgelessDevSupportManager
+import host.exp.exponent.modules.perfmonitor.ExpoBridgelessDevSupportManager
 import versioned.host.exp.exponent.VersionedUtils
 
 class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDownloadListener?, private val minNumShakes: Int = 100) : DevSupportManagerFactory {
@@ -29,19 +28,8 @@ class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDo
     devLoadingViewManager: DevLoadingViewManager?,
     pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
   ): DevSupportManager {
-    return BridgeDevSupportManager(
-      applicationContext,
-      reactInstanceManagerHelper,
-      packagerPathForJSBundleName,
-      enableOnCreate,
-      redBoxHandler,
-      this.devBundleDownloadListener,
-      this.minNumShakes,
-      customPackagerCommandHandlers,
-      surfaceDelegateFactory,
-      devLoadingViewManager,
-      pausedInDebuggerOverlayManager
-    )
+    // This method was used only by legacy architecture and is stubbed here.
+    return ReleaseDevSupportManager()
   }
 
   override fun create(
@@ -62,7 +50,7 @@ class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDo
       return ReleaseDevSupportManager()
     }
 
-    return BridgelessDevSupportManager(
+    return ExpoBridgelessDevSupportManager(
       applicationContext,
       reactInstanceManagerHelper,
       packagerPathForJSBundleName,

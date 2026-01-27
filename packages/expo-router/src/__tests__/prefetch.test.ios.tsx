@@ -724,6 +724,7 @@ it('can still use <Screen /> while prefetching in stack', () => {
   });
 
   expect(headerTitle.mock.calls).toStrictEqual([
+    // TODO(@ubax): find out why this is called twice on initial render
     [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
     [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
     [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
@@ -736,12 +737,12 @@ it('can still use <Screen /> while prefetching in stack', () => {
   act(() => router.push('/second'));
 
   expect(headerTitle.mock.calls).toStrictEqual([
+    // Call after navigation
     [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
     [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
-    [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
+    // Call from the <Stack.Screen />
     [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
     [{ tintColor: 'rgb(0, 122, 255)', children: 'Should only change after focus' }],
-    [{ tintColor: 'rgb(0, 122, 255)', children: 'custom-title' }],
   ]);
 });
 

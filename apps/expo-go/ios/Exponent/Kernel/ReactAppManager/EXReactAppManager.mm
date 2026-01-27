@@ -1,6 +1,4 @@
-#import "EXBuildConstants.h"
 #import "EXEnvironment.h"
-#import "EXErrorRecoveryManager.h"
 #import "EXKernel.h"
 #import "EXAbstractLoader.h"
 #import "EXKernelLinkingManager.h"
@@ -10,7 +8,6 @@
 #import "EXReactAppManager.h"
 #import "EXReactAppManager+Private.h"
 #import "EXVersionManagerObjC.h"
-#import "EXVersions.h"
 #import "EXAppViewController.h"
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <EXConstants/EXConstantsService.h>
@@ -25,7 +22,19 @@
 #endif
 
 #import <React/RCTBridge.h>
+#import <React/RCTBridge+Private.h>
 #import <React/RCTRootView.h>
+
+#if __has_include(<ExpoModulesCore-Swift.h>)
+#import <ExpoModulesCore-Swift.h>
+#endif
+
+#if __has_include(<EXDevMenu/EXDevMenu-Swift.h>)
+#import <EXDevMenu/EXDevMenu-Swift.h>
+#else
+#import "EXDevMenu-Swift.h"
+#endif
+
 
 #import "Expo_Go-Swift.h"
 
@@ -128,6 +137,12 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
       _reactRootView = [self.expoAppInstance.reactNativeFactory.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
     }
 
+    RCTHost *host = (RCTHost *)self.reactHost;
+    if (host) {
+      [DevMenuManager.shared updateCurrentManifest:_appRecord.appLoader.manifest
+                                       manifestURL:_appRecord.appLoader.manifestUrl];
+    }
+
     [self setupWebSocketControls];
     [_delegate reactAppManagerIsReadyForLoad:self];
   }
@@ -167,7 +182,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     @"testEnvironment": @([EXEnvironment sharedEnvironment].testEnvironment),
     @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
     @"singletonModules": [EXModuleRegistryProvider singletonModules],
-    @"moduleRegistryDelegateClass": RCTNullIfNil([self moduleRegistryDelegateClass]),
     @"fileSystemDirectories": @{
         @"documentDirectory": [self scopedDocumentDirectory],
         @"cachesDirectory": [self scopedCachesDirectory]
@@ -325,6 +339,13 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     _hasHostEverLoaded = YES;
     [_versionManager hostFinishedLoading:self.reactHost];
 
+    // Update expo-dev-menu with the current bridge and manifest
+    if ([self enablesDeveloperTools]) {
+      [[DevMenuManager shared] updateCurrentBridge:[RCTBridge currentBridge]];
+      [[DevMenuManager shared] updateCurrentManifest:_appRecord.appLoader.manifest
+                                         manifestURL:_appRecord.appLoader.manifestUrl];
+    }
+
     // TODO: temporary solution for hiding LoadingProgressWindow
     if (_appRecord.viewController) {
       EX_WEAKIFY(self);
@@ -397,7 +418,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 {
   EXManifestsManifest *manifest = _appRecord.appLoader.manifest;
   if (manifest) {
-    return manifest.isUsingDeveloperTool;
+    return manifest.isUsingDeveloperTool || manifest.isDevelopmentMode;
   }
   return false;
 }
@@ -409,11 +430,9 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 - (void)showDevMenu
 {
-  if ([self enablesDeveloperTools]) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self.versionManager showDevMenuForHost:self.reactHost];
-    });
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[DevMenuManager shared] toggleMenu];
+  });
 }
 
 - (void)reloadApp
@@ -439,7 +458,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 - (void)toggleDevMenu
 {
-  [[EXKernel sharedInstance] switchTasks];
+  [self showDevMenu];
 }
 
 - (void)setupWebSocketControls
@@ -504,16 +523,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 }
 
 #pragma mark - RN configuration
-
-- (NSDictionary *)launchOptionsForHost
-{
-  return @{};
-}
-
-- (Class)moduleRegistryDelegateClass
-{
-  return nil;
-}
 
 - (NSString *)applicationKeyForRootView
 {

@@ -31,7 +31,7 @@ export default function GLThreeSprite() {
   }, []);
 
   React.useEffect(() => {
-    if (animationFrameId.current) {
+    if (animationFrameId.current >= 0) {
       cancelAnimationFrame(animationFrameId.current);
       animate();
     }

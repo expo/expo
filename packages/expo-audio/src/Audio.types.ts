@@ -331,7 +331,7 @@ export type RecordingOptions = {
    * Recording options for the Web platform.
    * @platform web
    */
-  web?: RecordingOptionsWeb;
+  web: RecordingOptionsWeb;
 };
 
 /**
@@ -426,11 +426,11 @@ export type RecordingOptionsAndroid = {
    */
   sampleRate?: number;
   /**
-   * The desired file format. See the [`AndroidOutputFormat`](#androidoutputformat) enum for all valid values.
+   * The desired file format. See the [`AndroidOutputFormat`](#androidoutputformat) type for all valid values.
    */
   outputFormat: AndroidOutputFormat;
   /**
-   * The desired audio encoder. See the [`AndroidAudioEncoder`](#androidaudioencoder) enum for all valid values.
+   * The desired audio encoder. See the [`AndroidAudioEncoder`](#androidaudioencoder) type for all valid values.
    */
   audioEncoder: AndroidAudioEncoder;
   /**
@@ -442,7 +442,7 @@ export type RecordingOptionsAndroid = {
    */
   maxFileSize?: number;
   /**
-   * The desired audio Source. See the [`AndroidAudioSource`](#androidaudiosource) enum for all valid values.
+   * The desired audio Source. See the [`RecordingSource`](#recordingsource) type for all valid values.
    */
   audioSource?: RecordingSource;
 };
@@ -455,17 +455,22 @@ export type AudioMode = {
    */
   playsInSilentMode: boolean;
   /**
-   * Determines how the audio session interacts with other sessions.
+   * Determines how the audio session interacts with other audio sessions.
    *
-   * @platform ios
+   * - `'doNotMix'`: Requests exclusive audio focus. Other apps will pause their audio.
+   * - `'duckOthers'`: Requests audio focus with ducking. Other apps lower their volume but continue playing.
+   * - `'mixWithOthers'`: Audio plays alongside other apps without interrupting them.
+   *   On Android, this means no audio focus is requested. Best suited for sound effects,
+   *   UI feedback, or short audio clips.
    */
   interruptionMode: InterruptionMode;
   /**
    * Determines how the audio session interacts with other sessions on Android.
    *
    * @platform android
+   * @deprecated Use `interruptionMode` instead, which now works on both platforms.
    */
-  interruptionModeAndroid: InterruptionModeAndroid;
+  interruptionModeAndroid?: InterruptionModeAndroid;
   /**
    * Whether the audio session allows recording.
    *
@@ -483,27 +488,38 @@ export type AudioMode = {
    * @platform android
    */
   shouldRouteThroughEarpiece: boolean;
+  /**
+   * Whether audio recording should continue when the app moves to the background.
+   *
+   * @default false
+   * @platform ios
+   * @platform android
+   */
+  allowsBackgroundRecording?: boolean;
 };
 
 /**
- * Audio interruption behavior modes for iOS.
+ * Audio interruption behavior modes.
  *
- * Controls how your app's audio interacts with other apps' audio when interruptions occur.
- * This affects what happens when phone calls, notifications, or other apps play audio.
+ * Controls how your app's audio interacts with other apps' audio.
  *
- * @platform ios
+ * - `'doNotMix'`: Requests exclusive audio focus. Other apps will pause their audio.
+ * - `'duckOthers'`: Requests audio focus with ducking. Other apps lower their volume but continue playing.
+ * - `'mixWithOthers'`: Audio plays alongside other apps without interrupting them.
+ *
+ *   On Android, this means no audio focus is requested. Best suited for sound effects,
+ *   UI feedback, or short audio clips. Note that on Android your app won't receive
+ *   audio focus loss callbacks (for example, during phone calls) when using this mode.
+ *
+ *  > **Note:** When using `setActiveForLockScreen`, this must be set to `doNotMix`.
+ *
  */
 export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
 
 /**
- * Audio interruption behavior modes for Android.
- *
- * Controls how your app's audio interacts with other apps' audio on Android.
- * Note that Android doesn't support 'mixWithOthers' mode; audio focus is more strictly managed.
- *
- * @platform android
+ * @deprecated Use `InterruptionMode` instead, which now works on both platforms.
  */
-export type InterruptionModeAndroid = 'doNotMix' | 'duckOthers';
+export type InterruptionModeAndroid = InterruptionMode;
 
 /**
  * Recording source for android.

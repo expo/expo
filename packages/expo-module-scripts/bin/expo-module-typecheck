@@ -1,12 +1,12 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
 
-set -eo pipefail
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-script_dir="$(dirname "$0")"
+import { commandRunner, getArgs } from '../utils/commandUtils.js';
 
-args=("$@")
-if [[ -t 1 && (-z "$CI" && -z "$EXPO_NONINTERACTIVE") ]]; then
-  args+=("--watch")
-fi
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-"$script_dir/expo-module-tsc" --noEmit "${args[@]}"
+const args = getArgs({ maybeAddWatchFlag: true });
+
+await commandRunner(path.join(dirname, 'expo-module-tsc'), ['--noEmit', ...args]);

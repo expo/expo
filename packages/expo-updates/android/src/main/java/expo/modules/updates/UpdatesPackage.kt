@@ -1,5 +1,6 @@
 package expo.modules.updates
 
+import android.app.Application
 import android.content.Context
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
@@ -7,6 +8,7 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.core.interfaces.ApplicationLifecycleListener
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.ReactActivityHandler
 import expo.modules.core.interfaces.ReactNativeHostHandler
@@ -90,6 +92,30 @@ class UpdatesPackage : Package {
     }
 
     return listOf(handler)
+  }
+
+  override fun createApplicationLifecycleListeners(context: Context): List<ApplicationLifecycleListener> {
+    val handler = object : ApplicationLifecycleListener {
+      override fun onCreate(application: Application) {
+        super.onCreate(application)
+        if (isRunningAndroidTest()) {
+          // Preload updates to prevent Detox ANR
+          UpdatesController.initialize(context)
+          UpdatesController.instance.launchAssetFile
+        }
+      }
+    }
+
+    return listOf(handler)
+  }
+
+  private fun isRunningAndroidTest(): Boolean {
+    try {
+      Class.forName("androidx.test.espresso.Espresso")
+      return true
+    } catch (_: ClassNotFoundException) {
+    }
+    return false
   }
 
   companion object {

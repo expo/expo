@@ -14,7 +14,7 @@ export default function PickerScreen() {
           <Text>{[...options, 'unset'][selectedIndex ?? options.length]}</Text>
         </Section>
         <Section title="Segmented picker">
-          <Host>
+          <Host matchContents={{ vertical: true }}>
             <Picker
               options={options}
               selectedIndex={selectedIndex}
@@ -26,7 +26,7 @@ export default function PickerScreen() {
           </Host>
         </Section>
         <Section title="Tinted picker">
-          <Host>
+          <Host matchContents={{ vertical: true }}>
             <Picker
               options={options}
               selectedIndex={selectedIndex}
@@ -38,7 +38,7 @@ export default function PickerScreen() {
           </Host>
         </Section>
         <Section title="Radio picker">
-          <Host>
+          <Host matchContents={{ vertical: true }}>
             <Picker
               options={options}
               selectedIndex={selectedIndex}

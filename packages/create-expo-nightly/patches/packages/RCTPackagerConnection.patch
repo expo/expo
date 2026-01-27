@@ -1,0 +1,57 @@
+diff --git a/packages/expo-dev-launcher/ios/EXDevLauncherController.m b/packages/expo-dev-launcher/ios/EXDevLauncherController.m
+index 97dc4923a7..c8f86fb220 100644
+--- a/packages/expo-dev-launcher/ios/EXDevLauncherController.m
++++ b/packages/expo-dev-launcher/ios/EXDevLauncherController.m
+@@ -444,9 +444,9 @@
+ 
+ #if RCT_DEV
+     // Connect to the websocket, ignore downloaded update bundles
+-    if (![bundleUrl.scheme isEqualToString:@"file"]) {
+-      [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
+-    }
++//    if (![bundleUrl.scheme isEqualToString:@"file"]) {
++//      [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
++//    }
+     self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
+ #endif
+ 
+diff --git a/packages/expo-dev-menu/ios/DevMenuPackagerConnectionHandler.swift b/packages/expo-dev-menu/ios/DevMenuPackagerConnectionHandler.swift
+index aaeb55069c..2821ecfb69 100644
+--- a/packages/expo-dev-menu/ios/DevMenuPackagerConnectionHandler.swift
++++ b/packages/expo-dev-menu/ios/DevMenuPackagerConnectionHandler.swift
+@@ -17,21 +17,20 @@ class DevMenuPackagerConnectionHandler {
+ #if DEBUG
+     self.swizzleRCTDevMenuShow()
+ 
+-    RCTPackagerConnection
+-      .shared()
+-      .addNotificationHandler(
+-        self.sendDevCommandNotificationHandler,
+-        queue: DispatchQueue.main,
+-        forMethod: "sendDevCommand"
+-      )
+-
+-    RCTPackagerConnection
+-      .shared()
+-      .addNotificationHandler(
+-        self.devMenuNotificationHanlder,
+-        queue: DispatchQueue.main,
+-        forMethod: "devMenu"
+-      )
++    let devSettings = self.manager?.currentBridge?.module(forName: "DevSettings") as? RCTDevSettings
++    let packagerConnection = devSettings?.packagerConnection
++
++    packagerConnection?.addNotificationHandler(
++      self.sendDevCommandNotificationHandler,
++      queue: DispatchQueue.main,
++      forMethod: "sendDevCommand"
++    )
++
++    packagerConnection?.addNotificationHandler(
++      self.devMenuNotificationHanlder,
++      queue: DispatchQueue.main,
++      forMethod: "devMenu"
++    )
+ #endif
+   }
+ 

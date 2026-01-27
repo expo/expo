@@ -1,5 +1,5 @@
-import { ResizeMode, Video } from 'expo-av';
 import { ImagePickerAsset, ImagePickerResult } from 'expo-image-picker';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import React from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 
@@ -7,37 +7,33 @@ export default function ImagePickerAssetsList(
   result: ImagePickerResult
 ): React.ReactElement | void {
   return (
-    <View>{result.assets?.map((asset, index) => <AssetView key={index} asset={asset} />)}</View>
-  );
-}
-
-function AssetView({ asset }: { asset: ImagePickerAsset }) {
-  if (!isAnObjectWithUriAndType(asset)) {
-    return null;
-  }
-  return (
-    <View style={styles.container}>
-      {asset.type === 'video' ? (
-        <Video
-          source={{ uri: asset.uri }}
-          style={styles.video}
-          resizeMode={ResizeMode.CONTAIN}
-          shouldPlay
-          isLooping
-        />
-      ) : (
-        <Image source={{ uri: asset.uri }} style={styles.image} />
-      )}
+    <View>
+      {result.assets?.map((asset, index) => <AssetViewContainer key={index} asset={asset} />)}
     </View>
   );
 }
 
-function isAnObjectWithUriAndType(obj: unknown): obj is { uri: string; type: string } {
+type AssetViewProps = {
+  asset: ImagePickerAsset;
+};
+
+function ImageAssetView({ asset }: AssetViewProps) {
+  return <Image source={{ uri: asset.uri }} style={styles.image} />;
+}
+
+function VideoAssetView({ asset }: AssetViewProps) {
+  const player = useVideoPlayer(asset.uri, (player) => {
+    player.loop = true;
+    player.play();
+  });
+  return <VideoView player={player} style={styles.video} />;
+}
+
+function AssetViewContainer({ asset }: AssetViewProps) {
   return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    typeof (obj as any).uri === 'string' &&
-    typeof (obj as any).type === 'string'
+    <View style={styles.container}>
+      {asset.type === 'video' ? <VideoAssetView asset={asset} /> : <ImageAssetView asset={asset} />}
+    </View>
   );
 }
 

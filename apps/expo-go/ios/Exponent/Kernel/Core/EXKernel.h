@@ -32,11 +32,6 @@ typedef NS_ENUM(NSInteger, EXKernelErrorCode) {
 - (void)reloadVisibleApp; // called in development whenever the app is reloaded
 
 /**
- *  Initial props to pass to an app based on LaunchOptions from UIApplicationDelegate.
- */
-- (nullable NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions;
-
-/**
  *  Find and return the (potentially versioned) native module instance belonging to the
  *  specified app manager. Module name is the exported name such as @"AppState".
  */

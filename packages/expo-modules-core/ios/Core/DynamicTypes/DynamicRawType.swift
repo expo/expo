@@ -35,7 +35,9 @@ internal struct DynamicRawType<InnerType>: AnyDynamicType {
     // TODO: Definitions and JS object builders should have its own dynamic type.
     // We use `DynamicRawType` for this only temporarily.
     if let objectBuilder = result as? JavaScriptObjectBuilder {
-      return try objectBuilder.build(appContext: appContext) as Any
+      return try JavaScriptActor.assumeIsolated {
+        return try objectBuilder.build(appContext: appContext)
+      } as Any
     }
     return result
   }

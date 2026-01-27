@@ -9,9 +9,11 @@
 #include "../JSIContext.h"
 #include "../JavaScriptObject.h"
 #include "../JavaScriptArrayBuffer.h"
+#include "../NativeArrayBuffer.h"
 #include "../JavaScriptValue.h"
 #include "../JavaScriptFunction.h"
 #include "../javaclasses/Collections.h"
+#include "../worklets/Serializable.h"
 
 #include "react/jni/ReadableNativeMap.h"
 #include "react/jni/ReadableNativeArray.h"
@@ -30,9 +32,12 @@ jobject IntegerFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
+  jvalue jValue{
+    .i = static_cast<int>(value.asNumber())
+  };
+
   auto &integerClass = JCacheHolder::get().jInteger;
-  return env->NewObject(integerClass.clazz, integerClass.constructor,
-                        static_cast<int>(value.asNumber()));
+  return env->NewObjectA(integerClass.clazz, integerClass.constructor, &jValue);
 }
 
 bool IntegerFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -44,9 +49,12 @@ jobject LongFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
+  jvalue jValue{
+    .j = static_cast<jlong>(value.asNumber())
+  };
+
   auto &longClass = JCacheHolder::get().jLong;
-  return env->NewObject(longClass.clazz, longClass.constructor,
-                        static_cast<jlong>(value.asNumber()));
+  return env->NewObjectA(longClass.clazz, longClass.constructor, &jValue);
 }
 
 bool LongFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -58,9 +66,12 @@ jobject FloatFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
+  jvalue jValue{
+    .f = static_cast<float>(value.asNumber())
+  };
+
   auto &floatClass = JCacheHolder::get().jFloat;
-  return env->NewObject(floatClass.clazz, floatClass.constructor,
-                        static_cast<float>(value.asNumber()));
+  return env->NewObjectA(floatClass.clazz, floatClass.constructor, &jValue);
 }
 
 bool FloatFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -72,8 +83,12 @@ jobject BooleanFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
+  jvalue jValue{
+    .z = value.asBool()
+  };
+
   auto &booleanClass = JCacheHolder::get().jBoolean;
-  return env->NewObject(booleanClass.clazz, booleanClass.constructor, value.asBool());
+  return env->NewObjectA(booleanClass.clazz, booleanClass.constructor, &jValue);
 }
 
 bool BooleanFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -85,8 +100,12 @@ jobject DoubleFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
+  jvalue jValue{
+    .d = value.asNumber()
+  };
+
   auto &doubleClass = JCacheHolder::get().jDouble;
-  return env->NewObject(doubleClass.clazz, doubleClass.constructor, value.asNumber());
+  return env->NewObjectA(doubleClass.clazz, doubleClass.constructor, &jValue);
 }
 
 bool DoubleFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -180,6 +199,31 @@ bool TypedArrayFrontendConverter::canConvert(
   const jsi::Value &value
 ) const {
   return value.isObject();
+}
+
+jobject NativeArrayBufferFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  JSIContext *jsiContext = getJSIContext(rt);
+  auto arrayBuffer = value.asObject(rt).getArrayBuffer(rt);
+  return NativeArrayBuffer::newInstance(
+    jsiContext,
+    rt,
+    arrayBuffer
+  ).release();
+}
+
+bool NativeArrayBufferFrontendConverter::canConvert(
+  jsi::Runtime &rt,
+  const jsi::Value &value
+) const {
+  if (value.isObject()) {
+    auto object = value.getObject(rt);
+    return object.isArrayBuffer(rt);
+  }
+  return false;
 }
 
 jobject JavaScriptValueFrontendConverter::convert(
@@ -696,5 +740,33 @@ jobject ValueOrUndefinedFrontendConverter::convert(
 
   return parameterConverter->convert(rt, env, value);
 }
+
+#if WORKLETS_ENABLED
+
+jobject SynchronizableFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  JSIContext *jsiContext = getJSIContext(rt);
+
+  auto worklet = worklets::extractSerializableOrThrow(rt, value);
+  return Serializable::newInstance(
+    jsiContext,
+    worklet
+  ).release();
+}
+
+bool SynchronizableFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
+  try {
+    // TODO(@lukmccall): find a better way to check this without throwing exception
+    worklets::extractSerializableOrThrow(rt, value);
+    return true;
+  } catch (...) {
+    return false;
+  }
+}
+
+#endif
 
 } // namespace expo

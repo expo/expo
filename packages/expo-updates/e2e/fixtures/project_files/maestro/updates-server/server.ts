@@ -100,11 +100,18 @@ function consumeRequestedStaticFiles() {
   return returnArray;
 }
 
-app.use(express.json());
-app.use('/static', (req: { url: string }, res: any, next: () => void) => {
-  requestedStaticFiles.push(path.basename(req.url));
-  next();
-});
+app.use(express.json({ limit: '200kb' }));
+app.use(
+  '/static',
+  (
+    req: { url: string; headers: Record<string, string | undefined> },
+    res: any,
+    next: () => void
+  ) => {
+    requestedStaticFiles.push(path.basename(req.url));
+    next();
+  }
+);
 app.use('/static', express.static(path.resolve(__dirname, '..', '.static')));
 
 app.get(

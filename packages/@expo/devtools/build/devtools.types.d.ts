@@ -19,6 +19,10 @@ export interface ConnectionInfo {
      * The transport protocol version between the app and the webui.
      */
     protocolVersion: number;
+    /**
+     * Whether to use WSS for the WebSocket connection.
+     */
+    useWss: boolean;
 }
 /**
  * Options for the devtools plugin client.

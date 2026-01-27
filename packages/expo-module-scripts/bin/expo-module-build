@@ -1,34 +1,30 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
 
-set -eo pipefail
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-script_dir="$(dirname "$0")"
+import { commandRunner, getArgs, addWatchFlagIfNeeded } from '../utils/commandUtils.js';
 
-args=("$@")
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-# If the command is used like `yarn build plugin`, set the --build option to point to
-# plugin/tsconfig.json
-extra_module_build_types=("plugin" "cli" "utils" "scripts")
-for i in "${extra_module_build_types[@]}"
-do
-  if [ "$1" == "$i" ]; then
-    # Check if tsconfig.json exists in the directory
-    if [ -f "$(pwd)/$i/tsconfig.json" ]; then
-      # `--build` must be the first argument, so reset the array
-      args=()
-      args+=("--build")
-      args+=("$(pwd)/$i")
-      # Push the rest of the arguments minus the `plugin` arg
-      args+=("${@:2}")
-    else
-      echo "tsconfig.json not found in $@, skipping build for $@/"
-      exit
-    fi
-  fi
-done
+const EXTRA_MODULE_BUILD_TARGETS = ['plugin', 'cli', 'utils', 'scripts'];
 
-if [[ -t 1 && (-z "$CI" && -z "$EXPO_NONINTERACTIVE") ]]; then
-  args+=("--watch")
-fi
+let args = getArgs();
 
-"$script_dir/expo-module-tsc" "${args[@]}"
+// If the command is used like `yarn build plugin`, set the --build option to point to plugin/tsconfig.json
+if (EXTRA_MODULE_BUILD_TARGETS.includes(args[0])) {
+  const target = args[0];
+  const targetDir = path.join(process.cwd(), args[0]);
+  if (fs.existsSync(path.join(targetDir, 'tsconfig.json'))) {
+    // Push the rest of the arguments minus the `plugin` arg
+    const restArgs = args.slice(1);
+    args = ['--build', targetDir, ...restArgs];
+  } else {
+    console.log(`tsconfig.json not found in ${target}, skipping build for ${target}`);
+    process.exit(0);
+  }
+}
+
+args = addWatchFlagIfNeeded(args);
+await commandRunner(path.join(dirname, 'expo-module-tsc'), args);

@@ -1,4 +1,4 @@
-import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import { NativeSyntheticEvent } from 'react-native';
 import { ExpoModifier } from '../../types';
 /**
  * Only for switch.
@@ -40,10 +40,6 @@ export type SwitchProps = {
      * Callback function that is called when the checked state changes.
      */
     onValueChange?: (value: boolean) => void;
-    /**
-     * Optional style for the switch component.
-     */
-    style?: StyleProp<ViewStyle>;
     /**
      * Picker color.
      */

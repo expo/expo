@@ -1,6 +1,13 @@
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import Checkbox from 'expo-checkbox';
-import { GlassStyle, GlassView, GlassContainer } from 'expo-glass-effect';
+import {
+  GlassColorScheme,
+  GlassStyle,
+  GlassView,
+  GlassContainer,
+  isLiquidGlassAvailable,
+  isGlassEffectAPIAvailable,
+} from 'expo-glass-effect';
 import React from 'react';
 import { StyleSheet, ScrollView, Text, View, Image, TouchableOpacity } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -15,11 +22,13 @@ const colorOptions = [
 ];
 
 const glassStyles: GlassStyle[] = ['clear', 'regular'];
+const colorSchemes: GlassColorScheme[] = ['auto', 'light', 'dark'];
 
 const AnimatedGlassView = Animated.createAnimatedComponent(GlassView);
 
 export default function GlassViewScreen() {
   const [selectedStyle, setSelectedStyle] = React.useState<GlassStyle>('regular');
+  const [colorScheme, setColorScheme] = React.useState<GlassColorScheme>('auto');
   const [isInteractive, setIsInteractive] = React.useState(false);
   const [tintColor, setTintColor] = React.useState<string | undefined>(undefined);
   const [spacing, setSpacing] = React.useState(20);
@@ -46,6 +55,12 @@ export default function GlassViewScreen() {
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
       <Text style={styles.title}>Glass Effect View (iOS 26+)</Text>
+      <Text style={styles.subtitle}>
+        Liquid Glass Available: {isLiquidGlassAvailable() ? 'Yes' : 'No'}
+      </Text>
+      <Text style={styles.subtitle}>
+        Glass Effect API Available: {isGlassEffectAPIAvailable() ? 'Yes' : 'No'}
+      </Text>
 
       <View style={styles.backgroundContainer}>
         <Image
@@ -58,6 +73,7 @@ export default function GlassViewScreen() {
           <AnimatedGlassView
             style={[styles.glassRect, animatedStyle]}
             glassEffectStyle={selectedStyle}
+            colorScheme={colorScheme}
             tintColor={tintColor}
             isInteractive={isInteractive}
             // known issue: the `isInteractive` prop can only be set once on mount
@@ -73,6 +89,15 @@ export default function GlassViewScreen() {
           selectedIndex={glassStyles.indexOf(selectedStyle)}
           onChange={(event) => {
             setSelectedStyle(event.nativeEvent.value as GlassStyle);
+          }}
+        />
+
+        <Text style={styles.sectionTitle}>Color Scheme</Text>
+        <SegmentedControl
+          values={colorSchemes}
+          selectedIndex={colorSchemes.indexOf(colorScheme)}
+          onChange={(event) => {
+            setColorScheme(event.nativeEvent.value as GlassColorScheme);
           }}
         />
 
@@ -113,16 +138,19 @@ export default function GlassViewScreen() {
             <GlassView
               style={styles.smallGlass1}
               glassEffectStyle={selectedStyle}
+              colorScheme={colorScheme}
               tintColor={tintColor}
             />
             <GlassView
               style={styles.smallGlass2}
               glassEffectStyle={selectedStyle}
+              colorScheme={colorScheme}
               tintColor={tintColor}
             />
             <GlassView
               style={styles.smallGlass3}
               glassEffectStyle={selectedStyle}
+              colorScheme={colorScheme}
               tintColor={tintColor}
             />
           </GlassContainer>
@@ -287,5 +315,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 100,
+  },
+  subtitle: {
+    fontSize: 14,
+    lineHeight: 20,
   },
 });

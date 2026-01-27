@@ -9,6 +9,8 @@ import type {
   Page,
 } from './types';
 
+type BaseMessage = Parameters<DeviceMetadata['sendMessage']>[0];
+
 export abstract class MessageHandler {
   protected page: Page;
   protected device: DeviceMetadata;
@@ -26,16 +28,14 @@ export abstract class MessageHandler {
   }
 
   /** Send a message directly to the device */
-  sendToDevice<T = DeviceResponse | DebuggerResponse>(message: T): true {
-    // @ts-expect-error Type `T` is json serializable, just not the same one from `@react-native/dev-middleware`
-    this.device.sendMessage(message);
+  sendToDevice<T = DeviceResponse | DebuggerResponse>(message: Readonly<T>): true {
+    this.device.sendMessage(message as BaseMessage);
     return true;
   }
 
   /** Send a message directly to the debugger */
-  sendToDebugger<T = DeviceResponse | DebuggerResponse>(message: T): true {
-    // @ts-expect-error Type `T` is json serializable, just not the same one from `@react-native/dev-middleware`
-    this.debugger.sendMessage(message);
+  sendToDebugger<T = DeviceResponse | DebuggerResponse>(message: Readonly<T>): true {
+    this.debugger.sendMessage(message as BaseMessage);
     return true;
   }
 

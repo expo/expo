@@ -9,9 +9,6 @@ import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.helpers.injectDevServerHelper
-import expo.modules.devlauncher.koin.DevLauncherKoinComponent
-import expo.modules.devlauncher.koin.optInject
-import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
 
@@ -36,9 +33,8 @@ class DevLauncherBridgelessDevSupportManager(
   null,
   null,
   null
-),
-  DevLauncherKoinComponent {
-  private val controller: DevLauncherControllerInterface? by optInject()
+) {
+  private val controller = DevLauncherController.nullableInstance
 
   init {
     injectDevServerHelper(applicationContext, this, controller)
@@ -82,6 +78,6 @@ class DevLauncherBridgelessDevSupportManager(
   }
 
   companion object {
-    fun getDevHelperInternalFieldName() = "mReactInstanceDevHelper"
+    fun getDevHelperInternalFieldName() = "reactInstanceDevHelper"
   }
 }

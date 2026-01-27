@@ -1,6 +1,6 @@
 import { Directory, File, Paths } from 'expo-file-system';
 import { Image } from 'expo-image';
-import { Asset, MediaType, requestPermissionsAsync } from 'expo-media-library/next';
+import { Asset, MediaType, AssetInfo, requestPermissionsAsync } from 'expo-media-library/next';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEffect, useState } from 'react';
 import { View, Pressable, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
@@ -15,17 +15,7 @@ enum TestState {
 const AssetScreen = () => {
   const screenName = 'asset_screen';
   const [asset, setAsset] = useState<Asset | null>(null);
-  const [assetInfo, setAssetInfo] = useState<{
-    uri: string;
-    height: number;
-    width: number;
-    filename: string;
-    mediaType: MediaType;
-    creationTime: number | null;
-    modificationTime: number | null;
-    duration: number | null;
-  } | null>(null);
-
+  const [assetInfo, setAssetInfo] = useState<AssetInfo | null>(null);
   const [testState, setTestState] = useState<TestState>(TestState.START);
 
   const isVideo = assetInfo?.mediaType === MediaType.VIDEO;
@@ -58,17 +48,9 @@ const AssetScreen = () => {
     try {
       const file = await downloadFile(type);
       const newAsset = await Asset.create(file.uri);
+      const info = await newAsset.getInfo();
       setAsset(newAsset);
-      setAssetInfo({
-        uri: await newAsset.getUri(),
-        height: await newAsset.getHeight(),
-        width: await newAsset.getWidth(),
-        filename: await newAsset.getFilename(),
-        mediaType: await newAsset.getMediaType(),
-        creationTime: await newAsset.getCreationTime(),
-        modificationTime: await newAsset.getModificationTime(),
-        duration: await newAsset.getDuration(),
-      });
+      setAssetInfo(info);
       setTestState(TestState.FINISHED);
     } catch (e) {
       console.error('Error adding asset:', e);

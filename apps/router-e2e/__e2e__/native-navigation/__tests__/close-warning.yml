@@ -1,0 +1,9 @@
+appId: com.expo.routere2e
+---
+- runFlow:
+    when:
+      visible: "!, Open debugger to view warnings."
+    commands:
+      - tapOn:
+          point: 96%,93%
+      - assertNotVisible: "!, Open debugger to view warnings."

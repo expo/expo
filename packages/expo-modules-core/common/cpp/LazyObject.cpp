@@ -1,6 +1,11 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+#ifdef __APPLE__
+#include <ExpoModulesJSI/JSIUtils.h>
+#else
 #include "JSIUtils.h"
+#endif
+
 #include "LazyObject.h"
 
 namespace expo {

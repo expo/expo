@@ -10,7 +10,27 @@
 
 ### 💡 Others
 
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 💡 Others
+
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
+
+## 1.0.10 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.9 - 2025-11-17
+
+_This version does not introduce any user-facing changes._
 
 ## 1.0.8 — 2025-09-11
 

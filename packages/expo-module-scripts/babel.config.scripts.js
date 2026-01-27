@@ -1,1 +1,1 @@
-module.exports = require('./babel.config.cli');
+export * from './babel.config.cli';

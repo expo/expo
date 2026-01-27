@@ -1,204 +1,120 @@
+import { Button, Host, Label, List, Picker, Section, Text, Toggle } from '@expo/ui/swift-ui';
 import {
-  Button,
-  ColorPicker,
-  Host,
-  HStack,
-  Image,
-  Label,
-  List,
+  animation,
+  foregroundStyle,
+  Animation,
   type ListStyle,
-  Picker,
-  Section,
-  Switch,
-  Text,
-} from '@expo/ui/swift-ui';
-import {
-  background,
-  clipShape,
-  disabled,
-  frame,
-  headerProminence,
-  padding,
+  listStyle,
+  pickerStyle,
   refreshable,
-  scrollDismissesKeyboard,
+  tag,
+  environment,
 } from '@expo/ui/swift-ui/modifiers';
-import { useNavigation } from '@react-navigation/native';
 import type { SFSymbol } from 'expo-symbols';
 import * as React from 'react';
-import { useLayoutEffect } from 'react';
+
+type ListItem = {
+  id: string;
+  title: string;
+  icon: SFSymbol;
+};
+
+const INITIAL_ITEMS: ListItem[] = [
+  { id: '1', title: 'Sun', icon: 'sun.max.fill' },
+  { id: '2', title: 'Moon', icon: 'moon.fill' },
+  { id: '3', title: 'Star', icon: 'star.fill' },
+  { id: '4', title: 'Cloud', icon: 'cloud.fill' },
+  { id: '5', title: 'Rain', icon: 'cloud.rain.fill' },
+];
+
+const LIST_STYLES: ListStyle[] = [
+  'automatic',
+  'plain',
+  'inset',
+  'insetGrouped',
+  'grouped',
+  'sidebar',
+];
 
 export default function ListScreen() {
-  const [color, setColor] = React.useState<string>('blue');
-  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(0);
-  const data: { text: string; systemImage: SFSymbol }[] = [
-    { text: 'Good Morning', systemImage: 'sun.max.fill' },
-    { text: 'Weather', systemImage: 'cloud.sun.fill' },
-    { text: 'Settings', systemImage: 'gearshape.fill' },
-    { text: 'Music', systemImage: 'music.note' },
-    { text: 'Home', systemImage: 'house.circle.fill' },
-    { text: 'Location', systemImage: 'location.fill' },
-  ];
-  const listStyleOptions: ListStyle[] = [
-    'automatic',
-    'plain',
-    'inset',
-    'insetGrouped',
-    'grouped',
-    'sidebar',
-  ];
-  const scrollDismissesKeyboardOptions = [
-    'automatic',
-    'never',
-    'interactively',
-    'immediately',
-  ] as const;
-  const [selectEnabled, setSelectEnabled] = React.useState<boolean>(true);
-  const [deleteEnabled, setDeleteEnabled] = React.useState<boolean>(true);
-  const [moveEnabled, setMoveEnabled] = React.useState<boolean>(true);
-  const [editModeEnabled, setEditModeEnabled] = React.useState<boolean>(false);
-  const [scrollDismissesKeyboardIndex, setScrollDismissesKeyboardIndex] = React.useState<
-    number | null
-  >(0);
-  const [increasedHeader, setIncreasedHeader] = React.useState(false);
-  const [collapsible, setCollapsible] = React.useState<boolean>(false);
-  const [customHeaderFooter, setCustomHeaderFooter] = React.useState<{
-    header: boolean;
-    footer: boolean;
-  }>({ header: false, footer: false });
-  const [lastRefresh, setLastRefresh] = React.useState<Date | null>(null);
-  const [refreshEnabled, setRefreshEnabled] = React.useState<boolean>(false);
+  const [items, setItems] = React.useState<ListItem[]>(INITIAL_ITEMS);
+  const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
+  const [editMode, setEditMode] = React.useState(false);
+  const [listStyleIndex, setListStyleIndex] = React.useState(0);
 
-  const navigation = useNavigation();
+  const handleDelete = (indices: number[]) => {
+    setItems((prev) => prev.filter((_, i) => !indices.includes(i)));
+  };
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      title: 'List',
-      headerSearchBarOptions: {
-        placeholder: 'Test different keyboard dismissals',
-      },
+  const handleMove = (sourceIndices: number[], destination: number) => {
+    setItems((prev) => {
+      const newItems = [...prev];
+      const [removed] = newItems.splice(sourceIndices[0], 1);
+      const adjustedDest = sourceIndices[0] < destination ? destination - 1 : destination;
+      newItems.splice(adjustedDest, 0, removed);
+      return newItems;
     });
-  }, [navigation]);
+  };
+
+  const handleRefresh = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setItems(INITIAL_ITEMS);
+  };
+
+  const resetItems = () => setItems(INITIAL_ITEMS);
+  const clearSelection = () => setSelectedIds([]);
 
   return (
     <Host style={{ flex: 1 }}>
       <List
-        editModeEnabled={editModeEnabled}
-        onSelectionChange={(items) => alert(`indexes of selected items: ${items.join(', ')}`)}
-        moveEnabled={moveEnabled}
-        onMoveItem={(from, to) => alert(`moved item at index ${from} to index ${to}`)}
-        onDeleteItem={(item) => alert(`deleted item at index: ${item}`)}
-        listStyle={listStyleOptions[selectedIndex ?? 0]}
+        selection={selectedIds}
+        onSelectionChange={(ids) => setSelectedIds(ids.map((id) => id.toString()))}
         modifiers={[
-          scrollDismissesKeyboard(
-            scrollDismissesKeyboardOptions[scrollDismissesKeyboardIndex ?? 0]
-          ),
-          headerProminence(increasedHeader ? 'increased' : 'standard'),
-          ...(refreshEnabled
-            ? [
-                refreshable(async () => {
-                  // Simulate async data fetching
-                  await new Promise((resolve) => setTimeout(resolve, 2000));
-                  setLastRefresh(new Date());
-                }),
-              ]
-            : []),
-        ]}
-        deleteEnabled={deleteEnabled}
-        selectEnabled={selectEnabled}>
-        <Section
-          collapsible={collapsible}
-          title="Collapsible section"
-          {...(customHeaderFooter.header && {
-            header: (
-              <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
-                <HStack modifiers={[padding({ all: 8 })]}>
-                  <Image systemName="list.bullet" color="white" size={22} />
-                  <Text color="white" size={16}>
-                    Custom header
-                  </Text>
-                </HStack>
-              </HStack>
-            ),
-          })}
-          footer={
-            <>
-              {customHeaderFooter.footer && (
-                <HStack modifiers={[background('red'), clipShape('roundedRectangle')]}>
-                  <Text size={16} color="white" modifiers={[padding({ all: 8 })]}>
-                    Custom Footer
-                  </Text>
-                </HStack>
-              )}
-            </>
-          }>
-          <Switch
-            label="Use increased section header"
-            value={increasedHeader}
-            onValueChange={setIncreasedHeader}
-          />
-          <Switch label="Collapsible" value={collapsible} onValueChange={setCollapsible} />
-          <Switch
-            label="Custom header"
-            value={customHeaderFooter.header}
-            onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, header: v }))}
-          />
-          <Switch
-            label="Custom footer"
-            value={customHeaderFooter.footer}
-            onValueChange={(v) => setCustomHeaderFooter((prev) => ({ ...prev, footer: v }))}
-            modifiers={[disabled(collapsible)]}
+          listStyle(LIST_STYLES[listStyleIndex]),
+          refreshable(handleRefresh),
+          animation(Animation.default, editMode),
+          environment('editMode', editMode ? 'active' : 'inactive'),
+        ]}>
+        <Section title="Settings">
+          <Toggle label="Edit Mode" isOn={editMode} onIsOnChange={setEditMode} />
+          <Picker
+            label="List Style"
+            selection={listStyleIndex}
+            onSelectionChange={setListStyleIndex}
+            modifiers={[pickerStyle('menu')]}>
+            {LIST_STYLES.map((style, i) => (
+              <Text key={style} modifiers={[tag(i)]}>
+                {style}
+              </Text>
+            ))}
+          </Picker>
+          <Button label="Reset Items" onPress={resetItems} />
+          <Button label="Clear Selection" onPress={clearSelection} />
+        </Section>
+
+        <Section title="Info">
+          <Label title={`${items.length} items`} systemImage="number" />
+          <Label
+            title={selectedIds.length > 0 ? `Selected: ${selectedIds.join(', ')}` : 'None selected'}
+            systemImage="checkmark.circle"
+            modifiers={[foregroundStyle(selectedIds.length > 0 ? 'blue' : 'gray')]}
           />
         </Section>
-        <Section title="Controls" collapsible>
-          <Button onPress={() => setEditModeEnabled(!editModeEnabled)}>Toggle Edit</Button>
-          <Switch value={selectEnabled} label="Select enabled" onValueChange={setSelectEnabled} />
-          <Switch value={deleteEnabled} label="Delete enabled" onValueChange={setDeleteEnabled} />
-          <Switch value={moveEnabled} label="Move enabled" onValueChange={setMoveEnabled} />
-          <Switch
-            value={refreshEnabled}
-            label="Refreshable enabled"
-            onValueChange={setRefreshEnabled}
-          />
-          {lastRefresh && (
-            <Text size={12} color="gray">
-              Last refresh: {lastRefresh.toLocaleTimeString()}
-            </Text>
-          )}
-          <ColorPicker
-            label="Item icon color"
-            selection={color}
-            supportsOpacity
-            onValueChanged={setColor}
-          />
-          <Picker
-            label="Scroll dismisses keyboard"
-            options={[...scrollDismissesKeyboardOptions]}
-            selectedIndex={scrollDismissesKeyboardIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setScrollDismissesKeyboardIndex(index);
-            }}
-            variant="menu"
-          />
-          <Picker
-            label="List style"
-            options={listStyleOptions}
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedIndex(index);
-            }}
-            variant="menu"
-          />
-        </Section>
-        <Section title="Data">
-          {data.map((item, index) => (
-            <Label
-              key={index}
-              modifiers={[frame({ height: 24 })]}
-              title={item.text}
-              systemImage={item.systemImage}
-              color={color}
-            />
-          ))}
+
+        <Section title="Items" footer={<Text>Swipe to delete, drag to reorder</Text>}>
+          <List.ForEach
+            onDelete={handleDelete}
+            onMove={handleMove}
+            modifiers={[animation(Animation.default, editMode)]}>
+            {items.map((item) => (
+              <Label
+                key={item.id}
+                title={item.title}
+                systemImage={item.icon}
+                modifiers={[tag(item.id)]}
+              />
+            ))}
+          </List.ForEach>
         </Section>
       </List>
     </Host>

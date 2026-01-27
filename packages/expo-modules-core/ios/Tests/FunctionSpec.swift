@@ -256,6 +256,10 @@ class FunctionSpec: ExpoSpec {
         @Field var a: ValueOrUndefined<Double> = .value(unwrapped: 1.0)
         @Field var b: ValueOrUndefined<Double> = .undefined
       }
+      
+      struct NullableValueOfUndefinedRecord: Record {
+        @Field var a: ValueOrUndefined<Double?> = .value(unwrapped: 1.0)
+      }
 
       struct TestEncodable: Encodable {
         let name: String
@@ -321,6 +325,19 @@ class FunctionSpec: ExpoSpec {
 
           Function("withOptionalRecord") { (f: TestRecord?) in
             return "\(f?.property ?? "no value")"
+          }
+          
+          Function("withNullableValueOrUndefinded") { (record: NullableValueOfUndefinedRecord) in
+            expect(record.a.isUndefined).to(beFalse())
+            expect(record.a.optional).to(beNil())
+          }
+          
+          Function("withNullableValueOrUndefindedInArray") { (items: [ValueOrUndefined<Double?>]) in
+            expect(items[0].isUndefined).to(beFalse())
+            expect(items[0].optional).to(beNil())
+
+            expect(items[1].isUndefined).to(beTrue())
+            expect(items[1].optional).to(beNil())
           }
 
           Function("returnEncodable") {
@@ -416,6 +433,14 @@ class FunctionSpec: ExpoSpec {
 
       it("accepts optional record") {
         expect(try runtime.eval("expo.modules.TestModule.withOptionalRecord({property: \"123\"})").asString()) == "123"
+      }
+
+      it("accepts nullable ValueOrUndefinded") {
+        try runtime.eval("expo.modules.TestModule.withNullableValueOrUndefinded({a: null})")
+      }
+
+      it("accepts nullable ValueOrUndefinded in array") {
+        try runtime.eval("expo.modules.TestModule.withNullableValueOrUndefindedInArray([null, undefined])")
       }
 
       it("returns encodable struct") {

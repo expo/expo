@@ -20,8 +20,12 @@ class EXDevMenuDevSettings: NSObject {
 
     if let bridge = manager.currentBridge,
       let bridgeSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings {
-      let perfMonitor = bridge.module(forName: "PerfMonitor")
-      let isPerfMonitorAvailable = perfMonitor != nil
+      #if !os(macOS)
+        let perfMonitor = bridge.module(forName: "PerfMonitor")
+        let isPerfMonitorAvailable = perfMonitor != nil
+      #else
+        let isPerfMonitorAvailable = false
+      #endif
 
       devSettings["isElementInspectorShown"] = bridgeSettings.isElementInspectorShown
       devSettings["isHotLoadingEnabled"] = bridgeSettings.isHotLoadingEnabled

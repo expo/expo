@@ -1,13 +1,11 @@
 package expo.modules.medialibrary.next.objects.asset.delegates
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import androidx.exifinterface.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
-import androidx.core.net.toUri
 import expo.modules.medialibrary.next.exceptions.AssetPropertyNotFoundException
 import expo.modules.medialibrary.next.exceptions.ContentResolverNotObtainedException
 import expo.modules.medialibrary.next.extensions.getOrThrow
@@ -17,29 +15,31 @@ import expo.modules.medialibrary.next.extensions.resolver.publishPendingAsset
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDisplayName
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDuration
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetHeight
-import expo.modules.medialibrary.next.extensions.resolver.queryAssetModificationTime
-import expo.modules.medialibrary.next.extensions.resolver.queryAssetPath
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetWidth
-import expo.modules.medialibrary.next.extensions.resolver.queryAssetCreationTime
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetData
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetDateModified
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetDateTaken
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetMediaStoreItem
 import expo.modules.medialibrary.next.extensions.resolver.updateRelativePath
+import expo.modules.medialibrary.next.extensions.resolver.updateRelativePathAndName
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.asset.EXIF_TAGS
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
+import expo.modules.medialibrary.next.objects.asset.factories.buildUniqueDisplayName
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import expo.modules.medialibrary.next.permissions.MediaStorePermissionsDelegate
+import expo.modules.medialibrary.next.records.AssetInfo
 import expo.modules.medialibrary.next.records.Location
+import expo.modules.medialibrary.next.records.Shape
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
-import java.io.File
 import java.lang.ref.WeakReference
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.let
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 @RequiresApi(Build.VERSION_CODES.Q)
 class AssetModernDelegate(
@@ -55,20 +55,21 @@ class AssetModernDelegate(
       .getOrThrow()
       .contentResolver ?: throw ContentResolverNotObtainedException()
 
+  private val mediaStoreToAssetAdapter by lazy {
+    MediaStoreToAssetAdapter(contextRef.getOrThrow())
+  }
+
   override suspend fun getCreationTime(): Long? {
-    return contentResolver
-      .queryAssetCreationTime(contentUri)
-      .takeIf { it != 0L }
+    val mediaStoreDateTaken = contentResolver.queryAssetDateTaken(contentUri)
+    return mediaStoreToAssetAdapter.transformCreationTime(mediaStoreDateTaken)
   }
 
   override suspend fun getDuration(): Long? {
-    return if (getMimeType().isVideo()) {
-      contentResolver
-        .queryAssetDuration(contentUri)
-        .takeIf { it != 0L }
-    } else {
-      null
+    if (getMediaType() != MediaType.VIDEO) {
+      return null
     }
+    val mediaStoreDuration = contentResolver.queryAssetDuration(contentUri)
+    return mediaStoreToAssetAdapter.transformDuration(mediaStoreDuration)
   }
 
   override suspend fun getFilename(): String =
@@ -76,45 +77,60 @@ class AssetModernDelegate(
       ?: throw AssetPropertyNotFoundException("Filename")
 
   override suspend fun getHeight(): Int {
-    val height = contentResolver.queryAssetHeight(contentUri)
-    // If height is not saved to the database
-    if (getMediaType() == MediaType.IMAGE && height != null && height <= 0) {
-      return downloadBitmapAndGet { it.outHeight }
-    }
-    return height ?: throw AssetPropertyNotFoundException("Height")
+    val mediaStoreHeight = contentResolver.queryAssetHeight(contentUri)
+    return mediaStoreToAssetAdapter.transformHeight(mediaStoreHeight, contentUri)
+      ?: throw AssetPropertyNotFoundException("Height")
   }
 
   override suspend fun getWidth(): Int {
-    val width = contentResolver.queryAssetWidth(contentUri)
-    if (getMediaType() == MediaType.IMAGE && width != null && width <= 0) {
-      return downloadBitmapAndGet { it.outWidth }
-    }
-    return width ?: throw AssetPropertyNotFoundException("Width")
+    val mediaStoreWidth = contentResolver.queryAssetWidth(contentUri)
+    return mediaStoreToAssetAdapter.transformWidth(mediaStoreWidth, contentUri)
+      ?: throw AssetPropertyNotFoundException("Width")
   }
 
-  private suspend fun downloadBitmapAndGet(extract: (BitmapFactory.Options) -> Int): Int {
-    val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    val stringAssetUri = contentResolver.queryAssetPath(contentUri)
-    BitmapFactory.decodeFile(stringAssetUri, options)
-    return extract(options)
+  override suspend fun getShape(): Shape? {
+    val width = getWidth()
+    val height = getHeight()
+    return Shape(width, height).takeIf { width > 0 && height > 0 }
   }
 
   override suspend fun getMediaType(): MediaType =
     MediaType.fromContentUri(contentUri)
 
-  override suspend fun getModificationTime(): Long? =
-    contentResolver.queryAssetModificationTime(contentUri)
-      ?.takeIf { it != 0L }
-      ?.toDuration(DurationUnit.SECONDS)
-      ?.inWholeMilliseconds
+  override suspend fun getModificationTime(): Long? {
+    val mediaStoreDateModified = contentResolver.queryAssetDateModified(contentUri)
+    return mediaStoreToAssetAdapter.transformModificationTime(mediaStoreDateModified)
+  }
 
   override suspend fun getUri(): Uri {
     // e.g. storage/emulated/0/Android/data/expo/files/[ROOT_ALBUM]/[ALBUM_NAME]
-    val path = contentResolver.queryAssetPath(contentUri)
-      ?: throw AssetPropertyNotFoundException("Uri")
+    val mediaStoreData = contentResolver.queryAssetData(contentUri)
     // e.g. file:///storage/emulated/0/Android/data/expo/files/[ROOT_ALBUM]/[ALBUM_NAME]
-    val uri = File(path).toUri()
-    return uri
+    return mediaStoreToAssetAdapter.transformUri(mediaStoreData)
+      ?: throw AssetPropertyNotFoundException("Uri")
+  }
+
+  override suspend fun getInfo(): AssetInfo {
+    val mediaStoreItem = contentResolver.queryAssetMediaStoreItem(contentUri)
+      ?: throw AssetPropertyNotFoundException("Info")
+    val mediaType = getMediaType()
+    val height = mediaStoreToAssetAdapter.transformHeight(mediaStoreItem.height, contentUri)
+    val width = mediaStoreToAssetAdapter.transformWidth(mediaStoreItem.width, contentUri)
+    return AssetInfo(
+      id = contentUri,
+      mediaType = mediaType,
+      creationTime = mediaStoreToAssetAdapter.transformCreationTime(mediaStoreItem.dateTaken),
+      modificationTime = mediaStoreToAssetAdapter.transformModificationTime(mediaStoreItem.dateModified),
+      duration = mediaStoreToAssetAdapter.transformDuration(mediaStoreItem.duration),
+      filename = mediaStoreItem.displayName
+        ?: throw AssetPropertyNotFoundException("Filename"),
+      height = height
+        ?: throw AssetPropertyNotFoundException("Height"),
+      width = width
+        ?: throw AssetPropertyNotFoundException("Width"),
+      uri = mediaStoreToAssetAdapter.transformUri(mediaStoreItem.data)
+        ?: throw AssetPropertyNotFoundException("Uri")
+    )
   }
 
   override suspend fun getMimeType(): MimeType {
@@ -156,14 +172,55 @@ class AssetModernDelegate(
 
   override suspend fun move(relativePath: RelativePath) {
     mediaStorePermissionsDelegate.requestMediaLibraryWritePermission(listOf(contentUri))
-    contentResolver.updateRelativePath(contentUri, relativePath)
+
+    try {
+      contentResolver.updateRelativePath(contentUri, relativePath)
+    } catch (e: IllegalStateException) {
+      if (e.message?.contains("Failed to build unique file", ignoreCase = true) == true) {
+        val uniqueName = buildUniqueDisplayName(getUri())
+        contentResolver.updateRelativePathAndName(contentUri, relativePath, uniqueName)
+      } else {
+        throw e
+      }
+    }
   }
 
-  override suspend fun copy(relativePath: RelativePath): Asset = withContext(Dispatchers.IO) {
-    val newAssetUri = contentResolver.insertPendingAsset(getFilename(), getMimeType(), relativePath)
-    contentResolver.copyUriContent(contentUri, newAssetUri)
-    contentResolver.publishPendingAsset(newAssetUri)
-    val newAssetDelegate = AssetModernDelegate(newAssetUri, assetDeleter, mediaStorePermissionsDelegate, contextRef.getOrThrow())
-    return@withContext Asset(newAssetDelegate)
+  override suspend fun copy(relativePath: RelativePath): Asset =
+    copyInternal(relativePath, forceUniqueName = false)
+
+  private suspend fun copyInternal(relativePath: RelativePath, forceUniqueName: Boolean): Asset = withContext(Dispatchers.IO) {
+    val displayName = if (forceUniqueName) {
+      buildUniqueDisplayName(getUri())
+    } else {
+      getUri().toString()
+    }
+    val newAssetUri = contentResolver.insertPendingAsset(
+      displayName,
+      getMimeType(),
+      relativePath
+    )
+    return@withContext try {
+      ensureActive()
+      contentResolver.copyUriContent(contentUri, newAssetUri)
+      ensureActive()
+      contentResolver.publishPendingAsset(newAssetUri)
+      val newAssetDelegate = AssetModernDelegate(
+        newAssetUri,
+        assetDeleter,
+        mediaStorePermissionsDelegate,
+        contextRef.getOrThrow()
+      )
+      Asset(newAssetDelegate)
+    } catch (e: IllegalStateException) {
+      contentResolver.delete(newAssetUri, null, null)
+      // It occurs when trying to create too many assets with the same filename in the same album.
+      // By default, the Content Resolver can resolve this issue for up to 32 assets, but then it throws this exception.
+      val isCollisionError = e.message?.contains("Failed to build unique file", ignoreCase = true) == true
+      if (isCollisionError && !forceUniqueName) {
+        copyInternal(relativePath, forceUniqueName = true)
+      } else {
+        throw e
+      }
+    }
   }
 }

@@ -1,10 +1,13 @@
 {
-  "platforms": ["apple", "android"],
+  "platforms": ["apple", "android", "devtools"],
   "apple": {
     "modules": ["SQLiteModule"]
   },
   "android": {
     "modules": ["expo.modules.sqlite.SQLiteModule"],
     "shouldUsePublicationScriptPath": "android/shouldUsePublication.groovy"
+  },
+  "devtools": {
+    "webpageRoot": "dev-plugin-dist"
   }
 }

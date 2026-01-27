@@ -16,8 +16,9 @@ import ReactDOMServer from 'react-dom/server.node';
 
 import { getRootComponent } from './getRootComponent';
 import { PreloadedDataScript } from './html';
+import { createDebug } from '../utils/debug';
 
-const debug = require('debug')('expo:router:server:renderStaticContent');
+const debug = createDebug('expo:router:server:renderStaticContent');
 
 function resetReactNavigationContexts() {
   // https://github.com/expo/router/discussions/588
@@ -32,6 +33,12 @@ function resetReactNavigationContexts() {
 export type GetStaticContentOptions = {
   loader?: {
     data?: any;
+  };
+  request?: Request;
+  /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
+  assets?: {
+    css: string[];
+    js: string[];
   };
 };
 
@@ -65,7 +72,12 @@ export async function getStaticContent(
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
 
-  const loadedData = options?.loader?.data ? { [location.pathname]: options.loader.data } : null;
+  const loadedData =
+    options?.loader !== undefined
+      ? {
+          [location.pathname + location.search]: options.loader.data ?? null,
+        }
+      : null;
 
   const html = ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
@@ -85,12 +97,37 @@ export async function getStaticContent(
   // debug('Push static fonts:', fonts)
   // Inject static fonts loaded with expo-font
   output = output.replace('</head>', `${fonts.join('')}</head>`);
-
   if (loadedData) {
     const loaderDataScript = ReactDOMServer.renderToStaticMarkup(
       <PreloadedDataScript data={loadedData} />
     );
     output = output.replace('</head>', `${loaderDataScript}</head>`);
+  }
+
+  // Inject hydration assets (JS/CSS bundles). Used in SSR mode
+  if (options?.assets) {
+    if (options.assets.css.length > 0) {
+      /**
+       * For each CSS file, inject two link elements; one for preloading and one as the actual
+       * stylesheet. This matches what we do for SSG
+       *
+       * @see @expo/cli/src/start/server/metro/serializeHtml.ts
+       */
+      const injectedCSS = options.assets.css
+        .flatMap((href) => [
+          `<link rel="preload" href="${href}" as="style">`,
+          `<link rel="stylesheet" href="${href}">`,
+        ])
+        .join('\n');
+      output = output.replace('</head>', `${injectedCSS}\n</head>`);
+    }
+
+    if (options.assets.js.length > 0) {
+      const injectedJS = options.assets.js
+        .map((src) => `<script src="${src}" defer></script>`)
+        .join('\n');
+      output = output.replace('</body>', `${injectedJS}\n</body>`);
+    }
   }
 
   return '<!DOCTYPE html>' + output;

@@ -143,7 +143,5 @@ export function MarkdownActionsDropdown() {
     </Button>
   );
 
-  return (
-    <Dropdown.Dropdown trigger={<div>{dropdownTrigger}</div>}>{dropdownItems}</Dropdown.Dropdown>
-  );
+  return <Dropdown.Dropdown trigger={dropdownTrigger}>{dropdownItems}</Dropdown.Dropdown>;
 }

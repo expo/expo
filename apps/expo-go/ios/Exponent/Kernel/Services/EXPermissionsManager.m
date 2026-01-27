@@ -3,7 +3,7 @@
 #import <ExpoModulesCore/EXPermissionsService.h>
 
 #import "EXPermissionsManager.h"
-#import "EXEnvironment.h"
+#import "EXUtil.h"
 
 NSString * const EXPermissionsKey = @"ExpoPermissions";
 
@@ -79,9 +79,7 @@ EX_REGISTER_SINGLETON_MODULE(Permissions)
 
 + (NSString *)escapedResourceName:(NSString *)name
 {
-  NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
-  NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
-  return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
+  return [EXUtil escapedResourceName:name];
 }
 
 + (NSString *)mapPermissionType:(NSString *)type

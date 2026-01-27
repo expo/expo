@@ -1,5 +1,6 @@
 import { isRunningInExpoGo } from 'expo';
 import { NativeModule, PermissionResponse, requireNativeModule } from 'expo-modules-core';
+import { ProcessedColorValue } from 'react-native';
 
 import {
   ExpoCalendar,
@@ -7,7 +8,7 @@ import {
   ExpoCalendarEvent,
   ExpoCalendarReminder,
 } from './ExpoCalendar.types';
-import { EntityTypes, Source } from '../Calendar';
+import { Calendar, EntityTypes, Source } from '../Calendar';
 import ExpoGoCalendarNextStub from './ExpoGoCalendarNextStub';
 
 declare class ExpoCalendarNextModule extends NativeModule {
@@ -16,7 +17,12 @@ declare class ExpoCalendarNextModule extends NativeModule {
   ExpoCalendarAttendee: typeof ExpoCalendarAttendee;
   ExpoCalendarReminder: typeof ExpoCalendarReminder;
 
+  createCalendar(
+    details: Omit<Partial<Calendar>, 'color'> & { color: ProcessedColorValue | undefined }
+  ): Promise<ExpoCalendar>;
+
   getDefaultCalendar(): ExpoCalendar;
+  getDefaultCalendarSync(): unknown;
   getCalendars(type?: EntityTypes): Promise<ExpoCalendar[]>;
 
   listEvents(

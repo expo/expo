@@ -8,6 +8,52 @@ import EXManifests
 
 private final class FileDownloaderHermesDiffSpecBundle {}
 
+// URLProtocol used to intercept downloader requests so we can inspect headers and
+// return responses without hitting the network.
+private final class TestURLProtocol: URLProtocol {
+  static var lastRequest: URLRequest?
+  static var requests: [URLRequest] = []
+  static var requestHandler: ((URLRequest) throws -> (HTTPURLResponse, Data?))?
+
+  override class func canInit(with request: URLRequest) -> Bool {
+    return true
+  }
+
+  override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+    return request
+  }
+
+  override func startLoading() {
+    guard let handler = TestURLProtocol.requestHandler else {
+      fatalError("TestURLProtocol requestHandler not set")
+    }
+
+    TestURLProtocol.lastRequest = request
+    TestURLProtocol.requests.append(request)
+
+    do {
+      let (response, data) = try handler(request)
+      client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+      if let data {
+        client?.urlProtocol(self, didLoad: data)
+      }
+      client?.urlProtocolDidFinishLoading(self)
+    } catch {
+      client?.urlProtocol(self, didFailWithError: error)
+    }
+  }
+
+  override func stopLoading() {
+    // no-op
+  }
+
+  static func reset() {
+    lastRequest = nil
+    requests = []
+    requestHandler = nil
+  }
+}
+
 class FileDownloaderSpec : ExpoSpec {
   override class func spec() {
     var testDatabaseDir: URL!
@@ -45,6 +91,8 @@ class FileDownloaderSpec : ExpoSpec {
       db.databaseQueue.sync {
         db.closeDatabase()
       }
+
+      TestURLProtocol.reset()
 
       try! FileManager.default.removeItem(atPath: testDatabaseDir.path)
       try? FileManager.default.removeItem(atPath: testUpdatesDir.path)
@@ -224,6 +272,61 @@ class FileDownloaderSpec : ExpoSpec {
           expect(extraHeaders["Expo-Extra-Params"]).to(beNil())
         }
       }
+
+      it("includes conditional headers for asset requests") {
+        let config = try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "test-scope"
+        ])
+
+        let launchedUpdateId = UUID()
+        let requestedUpdateId = UUID()
+        
+        let launchedUpdateIdLower = launchedUpdateId.uuidString.lowercased()
+        let requestedUpdateIdLower = requestedUpdateId.uuidString.lowercased()
+
+        let launchedUpdate = Update(
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
+          config: config,
+          database: db,
+          updateId: launchedUpdateId,
+          scopeKey: config.scopeKey,
+          commitTime: Date(),
+          runtimeVersion: config.runtimeVersion,
+          keep: true,
+          status: .StatusReady,
+          isDevelopmentMode: false,
+          assetsFromManifest: [],
+          url: config.updateUrl,
+          requestHeaders: [:]
+        )
+
+        let requestedUpdate = Update(
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
+          config: config,
+          database: db,
+          updateId: requestedUpdateId,
+          scopeKey: config.scopeKey,
+          commitTime: Date(),
+          runtimeVersion: config.runtimeVersion,
+          keep: true,
+          status: .StatusReady,
+          isDevelopmentMode: false,
+          assetsFromManifest: [],
+          url: config.updateUrl,
+          requestHeaders: [:]
+        )
+
+        let extraHeaders = FileDownloader.extraHeadersForRemoteAssetRequest(
+          launchedUpdate: launchedUpdate,
+          embeddedUpdate: nil,
+          requestedUpdate: requestedUpdate
+        )
+
+        expect(extraHeaders["Expo-Current-Update-ID"] as? String) == launchedUpdateIdLower
+        expect(extraHeaders["Expo-Requested-Update-ID"] as? String) == requestedUpdateIdLower
+      }
     }
     
     describe("asset extra headers") {
@@ -282,6 +385,346 @@ class FileDownloaderSpec : ExpoSpec {
       }
     }
     
+    describe("patch negotiation headers") {
+      it("sets diff headers when patch allowed") {
+        TestURLProtocol.reset()
+
+        let config = try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/11111111-1111-1111-1111-111111111111",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0.0",
+          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "test-scope"
+        ])
+
+        let sessionConfiguration = URLSessionConfiguration.ephemeral
+        sessionConfiguration.protocolClasses = [TestURLProtocol.self]
+
+        let downloader = FileDownloader(
+          config: config,
+          urlSessionConfiguration: sessionConfiguration,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
+
+        let launchedUpdate = Update(
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
+          config: config,
+          database: db,
+          updateId: UUID(),
+          scopeKey: config.scopeKey,
+          commitTime: Date(),
+          runtimeVersion: config.runtimeVersion,
+          keep: true,
+          status: .StatusReady,
+          isDevelopmentMode: false,
+          assetsFromManifest: [],
+          url: config.updateUrl,
+          requestHeaders: [:]
+        )
+
+        let requestedUpdate = Update(
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
+          config: config,
+          database: db,
+          updateId: UUID(),
+          scopeKey: config.scopeKey,
+          commitTime: Date(),
+          runtimeVersion: config.runtimeVersion,
+          keep: true,
+          status: .StatusReady,
+          isDevelopmentMode: false,
+          assetsFromManifest: [],
+          url: config.updateUrl,
+          requestHeaders: [:]
+        )
+
+        let asset = UpdateAsset(key: "bundle", type: "hbc")
+        asset.isLaunchAsset = true
+        asset.url = URL(string: "https://example.com/\(UUID().uuidString).hbc")
+
+        let destinationURL = updatesDirectory.appendingPathComponent("bundle-\(UUID().uuidString).hbc")
+
+        let extraHeaders = FileDownloader.extraHeadersForRemoteAssetRequest(
+          launchedUpdate: launchedUpdate,
+          embeddedUpdate: nil,
+          requestedUpdate: requestedUpdate
+        )
+
+        waitUntil(timeout: .seconds(2)) { done in
+          TestURLProtocol.requestHandler = { request in
+            let response = HTTPURLResponse(
+              url: request.url!,
+              statusCode: 200,
+              httpVersion: nil,
+              headerFields: ["Content-Type": "application/octet-stream"]
+            )!
+            return (response, "test-data".data(using: .utf8))
+          }
+
+          downloader.downloadAsset(
+            asset: asset,
+            fromURL: asset.url!,
+            verifyingHash: nil,
+            toPath: destinationURL.path,
+            extraHeaders: extraHeaders,
+            allowPatch: true,
+            launchedUpdate: launchedUpdate,
+            requestedUpdate: requestedUpdate,
+            progressBlock: nil,
+            successBlock: { _, _, _ in
+              done()
+            },
+            errorBlock: { error in
+              fail("Unexpected error downloading asset: \(error)")
+              done()
+            }
+          )
+        }
+
+        expect(TestURLProtocol.requests.count) == 1
+
+        guard let request = TestURLProtocol.requests.last else {
+          fail("Expected intercepted request")
+          return
+        }
+
+        expect(request.value(forHTTPHeaderField: "A-IM")) == "bsdiff"
+      }
+
+      it("omits diff headers when patch disabled") {
+        TestURLProtocol.reset()
+
+        let config = try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/22222222-2222-2222-2222-222222222222",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0.0",
+          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "test-scope"
+        ])
+
+        let sessionConfiguration = URLSessionConfiguration.ephemeral
+        sessionConfiguration.protocolClasses = [TestURLProtocol.self]
+
+        let downloader = FileDownloader(
+          config: config,
+          urlSessionConfiguration: sessionConfiguration,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
+
+        let launchedUpdate = Update(
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
+          config: config,
+          database: db,
+          updateId: UUID(),
+          scopeKey: config.scopeKey,
+          commitTime: Date(),
+          runtimeVersion: config.runtimeVersion,
+          keep: true,
+          status: .StatusReady,
+          isDevelopmentMode: false,
+          assetsFromManifest: [],
+          url: config.updateUrl,
+          requestHeaders: [:]
+        )
+
+        let requestedUpdate = Update(
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
+          config: config,
+          database: db,
+          updateId: UUID(),
+          scopeKey: config.scopeKey,
+          commitTime: Date(),
+          runtimeVersion: config.runtimeVersion,
+          keep: true,
+          status: .StatusReady,
+          isDevelopmentMode: false,
+          assetsFromManifest: [],
+          url: config.updateUrl,
+          requestHeaders: [:]
+        )
+
+        let asset = UpdateAsset(key: "bundle", type: "hbc")
+        asset.isLaunchAsset = true
+        asset.url = URL(string: "https://example.com/\(UUID().uuidString).hbc")
+
+        let destinationURL = updatesDirectory.appendingPathComponent("bundle-\(UUID().uuidString).hbc")
+
+        let extraHeaders = FileDownloader.extraHeadersForRemoteAssetRequest(
+          launchedUpdate: launchedUpdate,
+          embeddedUpdate: nil,
+          requestedUpdate: requestedUpdate
+        )
+
+        waitUntil(timeout: .seconds(2)) { done in
+          TestURLProtocol.requestHandler = { request in
+            let response = HTTPURLResponse(
+              url: request.url!,
+              statusCode: 200,
+              httpVersion: nil,
+              headerFields: ["Content-Type": "application/octet-stream"]
+            )!
+            return (response, "fallback-data".data(using: .utf8))
+          }
+
+          downloader.downloadAsset(
+            asset: asset,
+            fromURL: asset.url!,
+            verifyingHash: nil,
+            toPath: destinationURL.path,
+            extraHeaders: extraHeaders,
+            allowPatch: false,
+            launchedUpdate: launchedUpdate,
+            requestedUpdate: requestedUpdate,
+            progressBlock: nil,
+            successBlock: { _, _, _ in
+              done()
+            },
+            errorBlock: { error in
+              fail("Unexpected error downloading asset: \(error)")
+              done()
+            }
+          )
+        }
+
+        expect(TestURLProtocol.requests.count) == 1
+        guard let request = TestURLProtocol.requests.last else {
+          fail("Expected intercepted request")
+          return
+        }
+
+        expect(request.value(forHTTPHeaderField: "A-IM")).to(beNil())
+        expect(request.value(forHTTPHeaderField: "Accept")) == "*/*"
+      }
+
+      it("falls back to full download when patch metadata invalid") {
+        TestURLProtocol.reset()
+
+        let config = try! UpdatesConfig.config(fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/33333333-3333-3333-3333-333333333333",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0.0",
+          UpdatesConfig.EXUpdatesConfigScopeKeyKey: "test-scope"
+        ])
+
+        let sessionConfiguration = URLSessionConfiguration.ephemeral
+        sessionConfiguration.protocolClasses = [TestURLProtocol.self]
+
+        let downloader = FileDownloader(
+          config: config,
+          urlSessionConfiguration: sessionConfiguration,
+          logger: logger,
+          updatesDirectory: updatesDirectory,
+          database: db
+        )
+
+        let launchedUpdate = Update(
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
+          config: config,
+          database: db,
+          updateId: UUID(),
+          scopeKey: config.scopeKey,
+          commitTime: Date(),
+          runtimeVersion: config.runtimeVersion,
+          keep: true,
+          status: .StatusReady,
+          isDevelopmentMode: false,
+          assetsFromManifest: [],
+          url: config.updateUrl,
+          requestHeaders: [:]
+        )
+
+        let requestedUpdate = Update(
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
+          config: config,
+          database: db,
+          updateId: UUID(),
+          scopeKey: config.scopeKey,
+          commitTime: Date(),
+          runtimeVersion: config.runtimeVersion,
+          keep: true,
+          status: .StatusReady,
+          isDevelopmentMode: false,
+          assetsFromManifest: [],
+          url: config.updateUrl,
+          requestHeaders: [:]
+        )
+
+        let asset = UpdateAsset(key: "bundle", type: "hbc")
+        asset.isLaunchAsset = true
+        asset.url = URL(string: "https://example.com/\(UUID().uuidString).hbc")
+
+        let destinationURL = updatesDirectory.appendingPathComponent("bundle-\(UUID().uuidString).hbc")
+
+        let extraHeaders = FileDownloader.extraHeadersForRemoteAssetRequest(
+          launchedUpdate: launchedUpdate,
+          embeddedUpdate: nil,
+          requestedUpdate: requestedUpdate
+        )
+
+        var requestCount = 0
+        let mismatchedBaseId = UUID().uuidString.lowercased()
+
+        waitUntil(timeout: .seconds(2)) { done in
+          TestURLProtocol.requestHandler = { request in
+            requestCount += 1
+
+            if requestCount == 1 {
+              let response = HTTPURLResponse(
+                url: request.url!,
+                statusCode: 226,
+                httpVersion: nil,
+                headerFields: [
+                  "Content-Type": "application/javascript",
+                  "IM": "bsdiff",
+                  "expo-base-update-id": mismatchedBaseId
+                ]
+              )!
+              return (response, "patch-data".data(using: .utf8))
+            }
+
+            let response = HTTPURLResponse(
+              url: request.url!,
+              statusCode: 200,
+              httpVersion: nil,
+              headerFields: ["Content-Type": "application/javascript"]
+            )!
+            return (response, "full-data".data(using: .utf8))
+          }
+
+          downloader.downloadAsset(
+            asset: asset,
+            fromURL: asset.url!,
+            verifyingHash: nil,
+            toPath: destinationURL.path,
+            extraHeaders: extraHeaders,
+            allowPatch: true,
+            launchedUpdate: launchedUpdate,
+            requestedUpdate: requestedUpdate,
+            progressBlock: nil,
+            successBlock: { _, _, _ in
+              done()
+            },
+            errorBlock: { error in
+              fail("Unexpected error downloading asset: \(error)")
+              done()
+            }
+          )
+        }
+
+        expect(requestCount) == 2
+        expect(TestURLProtocol.requests.count) == 2
+
+        guard
+          let firstRequest = TestURLProtocol.requests.first,
+          let secondRequest = TestURLProtocol.requests.last else {
+          fail("Expected two intercepted requests")
+          return
+        }
+
+        expect(firstRequest.value(forHTTPHeaderField: "A-IM")) == "bsdiff"
+        expect(secondRequest.value(forHTTPHeaderField: "A-IM")).to(beNil())
+      }
+    }
+
     describe("Hermes diff application") {
       var config: UpdatesConfig!
       var downloader: FileDownloader!

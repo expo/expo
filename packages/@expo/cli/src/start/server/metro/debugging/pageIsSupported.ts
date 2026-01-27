@@ -14,8 +14,10 @@ type DevicePageResponse = {
  * If it's not, the extended CDP handlers will not be enabled.
  */
 export function pageIsSupported(page: DevicePageInternal | DevicePageResponse): boolean {
-  // @ts-expect-error No good way to filter this properly in TypeScript
-  const capabilities = page.capabilities ?? page.reactNative?.capabilities ?? {};
+  const capabilities =
+    (page as DevicePageInternal).capabilities ??
+    (page as DevicePageResponse).reactNative?.capabilities ??
+    {};
 
   return (
     page.title === 'React Native Experimental (Improved Chrome Reloads)' ||

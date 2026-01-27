@@ -11,6 +11,8 @@ struct SpeechOptions: Record {
   var voice: String?
   @Field
   var useApplicationAudioSession: Bool?
+  @Field
+  var volume: Float?
 }
 
 struct VoiceInfo: Record {

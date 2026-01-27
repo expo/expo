@@ -1,6 +1,6 @@
 import { PropsWithChildren, createContext, ComponentType } from 'react';
 
-import { HeadingManager } from '~/common/headingManager';
+import { type HeadingManager } from '~/common/headingManager';
 
 export const HeadingsContext = createContext<HeadingManager | null>(null);
 

@@ -48,12 +48,9 @@ jobs:
         env:
           FORCE_COLOR: '2'
       - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: failure() && github.event_name == 'schedule'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
         with:
-          status: ${{ job.status }}
-          fields: job,message,author,took
+          webhook: ${{ secrets.slack_webhook_api }}
           author_name: Publish Canaries
+          fields: job,message,author,took

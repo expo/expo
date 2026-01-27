@@ -42,5 +42,6 @@ public protocol AnyViewDefinition: Sendable {
   /**
    Creates a JavaScript object that may be used as a React component prototype.
    */
+  @JavaScriptActor
   func createReactComponentPrototype(appContext: AppContext) throws -> JavaScriptObject
 }

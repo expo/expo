@@ -11,7 +11,7 @@ module Pod
     public
 
     def framework_modules_to_patch
-      @framework_modules_to_patch ||= ['ExpoModulesCore', 'Expo', 'ReactAppDependencyProvider', 'expo-dev-menu']
+      @framework_modules_to_patch ||= ['ExpoModulesCore', 'ExpoModulesJSI', 'Expo', 'ReactAppDependencyProvider', 'expo-dev-menu']
     end
 
     def expo_add_modules_to_patch(modules)

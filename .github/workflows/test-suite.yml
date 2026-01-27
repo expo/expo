@@ -6,6 +6,7 @@ on:
     branches: [main, 'sdk-*']
     paths:
       - .github/workflows/test-suite.yml
+      - .github/actions/use-android-emulator/action.yml
       - apps/bare-expo/**
       - apps/test-suite/**
       - packages/**
@@ -14,6 +15,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/test-suite.yml
+      - .github/actions/use-android-emulator/action.yml
       - apps/bare-expo/**
       - apps/test-suite/**
       - packages/**
@@ -26,8 +28,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  detect-platform-for-e2e:
+    runs-on: ubuntu-24.04
+    outputs:
+      should_run_ios: ${{ steps.changes.outputs.should_run_ios }}
+      should_run_android: ${{ steps.changes.outputs.should_run_android }}
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v5
+      - name: 🧐 Detect platform change
+        id: changes
+        uses: ./.github/actions/detect-platform-change
+        with:
+          android-paths: >-
+            "packages/**/android/**",
+            "apps/bare-expo/**/android/**"
+
+          ios-paths: >-
+            "packages/**/ios/**",
+            "apps/bare-expo/**/ios/**"
+
+          common-paths: >-
+            .github/workflows/test-suite.yml,
+            .github/actions/use-android-emulator/action.yml,
+            "apps/bare-expo/**",
+            "apps/test-suite/**",
+            "packages/**",
+            yarn.lock,
+            "!packages/**/{ios,android}/**",
+            "!apps/bare-expo/**/{ios,android}/**"
   ios-build:
     runs-on: macos-15
+    needs: detect-platform-for-e2e
+    if: needs.detect-platform-for-e2e.outputs.should_run_ios == 'true'
     permissions:
       # REQUIRED: Allow updating fingerprint in action caches
       actions: write
@@ -107,15 +140,11 @@ jobs:
           build-output: apps/bare-expo/ios/build/BareExpo.app
           artifact-name: bare-expo-ios-builds
       - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
+          webhook: ${{ secrets.slack_webhook_ios }}
           channel: '#expo-ios'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
           author_name: Test Suite e2e (iOS)
 
   ios-test-e2e:
@@ -178,6 +207,11 @@ jobs:
         env:
           MAESTRO_CLI_NO_ANALYTICS: 1
         timeout-minutes: 40
+      - name: 📦 Prepare testing artifacts
+        if: always()
+        run: |
+          # Rename .maestro to maestroArtifacts so it's not a hidden folder when downloaded locally
+          mv ~/.maestro ~/maestroArtifacts
       - name: 📸 Store testing artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -185,10 +219,9 @@ jobs:
         with:
           name: bare-expo-artifacts-ios
           path: |
-            ~/.maestro/tests/**/*
+            ~/maestroArtifacts/tests/**/*
             ~/Library/Logs/maestro/**/*
           overwrite: true
-          include-hidden-files: true # .maestro is skipped otherwise
       - name: 🔗 Artifacts download URL
         if: always()
         run: |
@@ -196,11 +229,10 @@ jobs:
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
+          webhook: ${{ secrets.slack_webhook_ios }}
           channel: '#expo-ios'
-          job_name: 'Test Suite e2e (iOS)'
+          author_name: Test Suite e2e (iOS)
           artifact_url: ${{ steps.upload-artifacts.outputs.artifact-url }}
       - name: 🛑 Stop image comparison server
         if: always()
@@ -212,6 +244,8 @@ jobs:
 
   android-build:
     runs-on: ubuntu-24.04
+    needs: detect-platform-for-e2e
+    if: needs.detect-platform-for-e2e.outputs.should_run_android == 'true'
     permissions:
       # REQUIRED: Allow updating fingerprint in action caches
       actions: write
@@ -288,16 +322,11 @@ jobs:
           build-output: apps/bare-expo/android/app/build/outputs/apk/release
           artifact-name: bare-expo-android-builds
       - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
+          webhook: ${{ secrets.slack_webhook_android }}
           channel: '#expo-android'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
           author_name: Test Suite e2e (Android)
 
   android-test-e2e:
@@ -309,6 +338,8 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v5
+      - name: 🧹 Cleanup GitHub Linux runner disk space
+        uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -348,6 +379,11 @@ jobs:
             # Run the actual tests
             ./scripts/start-android-e2e-test.ts --test
           working-directory: ./apps/bare-expo
+      - name: 📦 Prepare testing artifacts
+        if: always()
+        run: |
+          # Rename .maestro to maestroArtifacts so it's not a hidden folder when downloaded locally
+          mv ~/.maestro ~/maestroArtifacts
       - name: 📸 Store testing artifacts
         if: always()
         id: upload-artifacts
@@ -355,7 +391,7 @@ jobs:
         with:
           name: bare-expo-artifacts-android
           path: |
-            ~/.maestro/tests/**/*
+            ~/maestroArtifacts/tests/**/*
           overwrite: true
       - name: 🔗 Artifacts download URL
         if: always()
@@ -364,11 +400,10 @@ jobs:
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
         with:
+          webhook: ${{ secrets.slack_webhook_android }}
           channel: '#expo-android'
-          job_name: 'Test Suite e2e (Android)'
+          author_name: Test Suite e2e (Android)
           artifact_url: ${{ steps.upload-artifacts.outputs.artifact-url }}
       - name: 🛑 Stop image comparison server
         if: always()

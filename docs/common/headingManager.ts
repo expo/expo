@@ -64,53 +64,56 @@ export type Heading = {
 /**
  * Manages heading entries. Each entry corresponds to one markdown heading with specified level (#, ##, ### etc)
  *
- * This class uses Slugger instance to generate and manage unique slugs
+ * Uses a Slugger instance to generate and manage unique slugs
  */
-export class HeadingManager {
-  private readonly slugger: GithubSlugger;
-  private readonly _headings: Heading[];
-  private readonly _meta: Metadata;
-  private readonly _maxNestingLevel: number;
-
-  public get headings() {
-    return this._headings;
-  }
-
-  public get maxNestingLevel() {
-    return this._maxNestingLevel;
-  }
-
-  public get metadata() {
-    return this._meta;
-  }
-
-  /**
-   * @param slugger A _GithubSlugger_ instance
-   * @param meta Document metadata gathered by `headingsMdPlugin`.
-   */
-  constructor(slugger: GithubSlugger, meta: Metadata) {
-    this.slugger = slugger;
-    this._meta = meta;
-    this._headings = [];
-
-    const maxHeadingDepth =
-      (meta.maxHeadingDepth ?? DEFAULT_NESTING_LIMIT) + (meta.packageName ? 2 : 0);
-    this._maxNestingLevel = maxHeadingDepth + BASE_HEADING_LEVEL;
-  }
-
-  /**
-   * Creates heading object instance and stores it
-   * @param {string | Object} title Heading display title or `<code/>` element
-   * @param {number|undefined} nestingLevel Override metadata heading nesting level.
-   * @param {*} additionalProps Additional properties passed to heading component
-   * @returns {Object} Newly created heading instance
-   */
-  addHeading(
+export type HeadingManager = {
+  addHeading: (
     title: React.ReactNode,
     nestingLevel?: number,
     additionalProps?: AdditionalProps,
     id?: string
-  ): Heading {
+  ) => Heading;
+  headings: Heading[];
+  maxNestingLevel: number;
+  metadata: Metadata;
+  findMetaForTitle?: (realTitle: string) => ElementType<Metadata['headings']> | undefined;
+};
+
+type FindMetaForTitle = (realTitle: string) => ElementType<Metadata['headings']> | undefined;
+
+export function createHeadingManager(slugger: GithubSlugger, meta: Metadata): HeadingManager {
+  const headings: Heading[] = [];
+  const metadata = meta;
+
+  const maxHeadingDepth =
+    (metadata.maxHeadingDepth ?? DEFAULT_NESTING_LIMIT) + (metadata.packageName ? 2 : 0);
+  const maxNestingLevel = maxHeadingDepth + BASE_HEADING_LEVEL;
+
+  const findMetaForTitle: FindMetaForTitle = realTitle => {
+    const entry = metadata.headings.find(
+      heading => heading.title === realTitle && !heading._processed
+    );
+    if (!entry) {
+      return;
+    }
+    entry._processed = true;
+    return entry;
+  };
+
+  const isCode = (title: any): boolean => {
+    if (!title?.props) {
+      return false;
+    }
+    const { name, originalType, mdxType } = title.props;
+    return [name, originalType, mdxType].includes(HeadingType.INLINE_CODE);
+  };
+
+  const addHeading = (
+    title: React.ReactNode,
+    nestingLevel?: number,
+    additionalProps?: AdditionalProps,
+    id?: string
+  ): Heading => {
     // NOTE (barthap): workaround for complex titles containing both normal text and inline code
     // changing this needs also change in `headingsMdPlugin.js` to make metadata loading correctly
     title = Array.isArray(title) ? title.map(Utilities.toString).join(' ') : title;
@@ -118,11 +121,11 @@ export class HeadingManager {
     const { hideInSidebar, sidebarTitle, sidebarDepth, sidebarType, tags } = additionalProps ?? {};
     const levelOverride = sidebarDepth != null ? BASE_HEADING_LEVEL + sidebarDepth : undefined;
 
-    const slug = id ?? Utilities.generateSlug(this.slugger, title);
+    const slug = id ?? Utilities.generateSlug(slugger, title);
     const realTitle = Utilities.toString(title);
-    const meta = this.findMetaForTitle(realTitle);
-    const level = levelOverride ?? nestingLevel ?? meta?.depth ?? BASE_HEADING_LEVEL;
-    const type = sidebarType ?? (this.isCode(title) ? HeadingType.INLINE_CODE : HeadingType.TEXT);
+    const metaEntry = findMetaForTitle(realTitle);
+    const level = levelOverride ?? nestingLevel ?? metaEntry?.depth ?? BASE_HEADING_LEVEL;
+    const type = sidebarType ?? (isCode(title) ? HeadingType.INLINE_CODE : HeadingType.TEXT);
 
     const heading = {
       title: sidebarTitle ?? realTitle,
@@ -131,43 +134,21 @@ export class HeadingManager {
       type,
       tags,
       ref: React.createRef(),
-      metadata: meta,
+      metadata: metaEntry,
     };
 
-    // levels out of range are unlisted
-    if (!hideInSidebar && level >= BASE_HEADING_LEVEL && level <= this.maxNestingLevel) {
-      this._headings.push(heading);
+    if (!hideInSidebar && level >= BASE_HEADING_LEVEL && level <= maxNestingLevel) {
+      headings.push(heading);
     }
 
     return heading;
-  }
+  };
 
-  /**
-   * Finds MDX-plugin metadata for specified title. Once found, it's marked as processed
-   * and will not be returned again.
-   * @param {string} realTitle Title to find metadata for
-   */
-  private findMetaForTitle(realTitle: string) {
-    const entry = this._meta.headings.find(
-      heading => heading.title === realTitle && !heading._processed
-    );
-    if (!entry) {
-      return;
-    }
-    entry._processed = true;
-    return entry;
-  }
-
-  /**
-   * Checks if header title is an inline code block.
-   * @param {any} title Heading object to check
-   * @returns {boolean} true if header is a code block
-   */
-  private isCode(title: any): boolean {
-    if (!title.props) {
-      return false;
-    }
-    const { name, originalType, mdxType } = title.props;
-    return [name, originalType, mdxType].includes(HeadingType.INLINE_CODE);
-  }
+  return {
+    addHeading,
+    headings,
+    maxNestingLevel,
+    metadata,
+    findMetaForTitle,
+  };
 }

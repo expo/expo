@@ -8,13 +8,34 @@ import {
   Section,
   Text,
   HStack,
+  Picker,
 } from '@expo/ui/swift-ui';
-import { listSectionSpacing, scrollDismissesKeyboard } from '@expo/ui/swift-ui/modifiers';
+import {
+  listSectionSpacing,
+  pickerStyle,
+  scrollDismissesKeyboard,
+  submitLabel,
+  tag,
+  buttonStyle,
+} from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
 export default function TextInputScreen() {
   const textRef = React.useRef<TextFieldRef>(null);
   const secureRef = React.useRef<TextFieldRef>(null);
+  const submitLabelOptions = [
+    'continue',
+    'done',
+    'go',
+    'join',
+    'next',
+    'return',
+    'route',
+    'search',
+    'send',
+  ] as const;
+  const [selectedSubmitLabel, setSelectedSubmitLabel] =
+    React.useState<(typeof submitLabelOptions)[number]>('continue');
   const [selection, setSelection] = React.useState<{ start: number; end: number } | null>(null);
 
   return (
@@ -35,37 +56,37 @@ export default function TextInputScreen() {
           />
           <HStack spacing={16}>
             <Button
-              variant="bordered"
+              modifiers={[buttonStyle('bordered')]}
               onPress={async () => {
                 textRef.current?.focus();
-              }}>
-              Focus
-            </Button>
+              }}
+              label="Focus"
+            />
             <Button
-              variant="bordered"
+              modifiers={[buttonStyle('bordered')]}
               onPress={async () => {
                 textRef.current?.blur();
                 secureRef.current?.blur();
-              }}>
-              Blur
-            </Button>
+              }}
+              label="Blur"
+            />
           </HStack>
           <HStack spacing={16}>
             <Button
-              variant="bordered"
+              modifiers={[buttonStyle('bordered')]}
               onPress={async () => {
                 textRef.current?.setText('Hello there!');
                 secureRef.current?.setText('123');
-              }}>
-              Set text
-            </Button>
+              }}
+              label="Set text"
+            />
             <Button
-              variant="bordered"
+              modifiers={[buttonStyle('bordered')]}
               onPress={async () => {
                 textRef.current?.setSelection(2, 7);
-              }}>
-              Set Selection
-            </Button>
+              }}
+              label="Set Selection"
+            />
           </HStack>
           <Text>Selection: {JSON.stringify(selection)}</Text>
         </Section>
@@ -100,6 +121,27 @@ export default function TextInputScreen() {
             allowNewlines
             autocorrection={false}
             defaultValue="hey there"
+          />
+        </Section>
+        <Section title="Submit Label">
+          <Picker
+            label="Submit label"
+            modifiers={[pickerStyle('menu')]}
+            onSelectionChange={(selection) =>
+              setSelectedSubmitLabel(selection as (typeof submitLabelOptions)[number])
+            }>
+            {submitLabelOptions.map((option) => (
+              <Text key={option} modifiers={[tag(option)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
+          <TextField
+            modifiers={[submitLabel(selectedSubmitLabel)]}
+            defaultValue="hey there"
+            onChangeText={(value) => {
+              console.log('value', value);
+            }}
           />
         </Section>
         <Section title="Secure Text Input">

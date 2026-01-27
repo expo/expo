@@ -93,6 +93,10 @@ class MediaLibraryNextModule : Module() {
         self.getExif()
       }
 
+      AsyncFunction("getInfo") Coroutine { self: Asset ->
+        self.getInfo()
+      }
+
       AsyncFunction("getLocation") Coroutine { self: Asset ->
         self.getLocation()
       }
@@ -111,6 +115,10 @@ class MediaLibraryNextModule : Module() {
 
       AsyncFunction("getModificationTime") Coroutine { self: Asset ->
         self.getModificationTime()
+      }
+
+      AsyncFunction("getShape") Coroutine { self: Asset ->
+        self.getShape()
       }
 
       AsyncFunction("getUri") Coroutine { self: Asset ->

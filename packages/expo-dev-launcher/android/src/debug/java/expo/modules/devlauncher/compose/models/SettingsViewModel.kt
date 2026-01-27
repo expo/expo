@@ -1,12 +1,11 @@
 package expo.modules.devlauncher.compose.models
 
-import android.app.Application
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import expo.modules.devlauncher.services.AppService
 import expo.modules.devlauncher.services.ApplicationInfo
 import expo.modules.devlauncher.services.inject
-import expo.modules.devmenu.DevMenuPreferencesHandle
+import expo.modules.devmenu.DevMenuPreferences
 
 data class SettingsState(
   val showMenuAtLaunch: Boolean = false,
@@ -26,8 +25,8 @@ sealed interface SettingsAction {
   data class ToggleShowFabAtLaunch(val newValue: Boolean) : SettingsAction
 }
 
-class SettingsViewModel(application: Application) : AndroidViewModel(application) {
-  private val menuPreferences = DevMenuPreferencesHandle
+class SettingsViewModel() : ViewModel() {
+  private val menuPreferences = inject<DevMenuPreferences>()
   private val appService = inject<AppService>()
 
   private val _state = mutableStateOf(

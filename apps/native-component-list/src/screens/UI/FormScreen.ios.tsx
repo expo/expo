@@ -12,6 +12,7 @@ import {
   ContentUnavailableView,
   LabeledContent,
 } from '@expo/ui/swift-ui';
+import { buttonStyle, font, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 
 export default function FormScreen() {
@@ -29,14 +30,16 @@ export default function FormScreen() {
     <Host style={{ flex: 1 }}>
       <Form>
         <Section title="My form Section">
-          <Text size={17} testID="test-id-from-expo-ui!">
+          <Text modifiers={[font({ size: 17 })]} testID="test-id-from-expo-ui!">
             Some text!
           </Text>
-          <Button onPress={() => alert('Clicked!')}>I'm a button</Button>
+          <Button onPress={() => alert('Clicked!')} label="I'm a button" />
           <LabeledContent label="Labeled Content">
-            <Button variant="borderless" onPress={() => alert('Clicked!')}>
-              Labeled Content Button
-            </Button>
+            <Button
+              label="Labeled Content Button"
+              modifiers={[buttonStyle('borderless')]}
+              onPress={() => alert('Clicked!')}
+            />
           </LabeledContent>
           <LabeledContent label="Name">
             <Text>Beto</Text>
@@ -69,38 +72,46 @@ export default function FormScreen() {
             label="Select a color"
             selection={color}
             supportsOpacity
-            onValueChanged={setColor}
+            onSelectionChange={setColor}
           />
           <Picker
             label="Menu picker"
-            options={options}
-            selectedIndex={selectedIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedIndex(index);
-            }}
-            variant="menu"
-          />
+            modifiers={[pickerStyle('menu')]}
+            selection={selectedIndex}
+            onSelectionChange={(selection) => {
+              setSelectedIndex(selection);
+            }}>
+            {options.map((option, index) => (
+              <Text key={index} modifiers={[tag(index)]}>
+                {option}
+              </Text>
+            ))}
+          </Picker>
           <Slider value={sliderValue} onValueChange={setSliderValue} />
         </Section>
 
         <Section title="User Profiles">
           <Picker
-            variant="menu"
             label="Profile Image Size"
-            options={profileImageSizes}
-            selectedIndex={selectedProfileImageSizeIndex}
-            onOptionSelected={({ nativeEvent: { index } }) => {
-              setSelectedProfileImageSizeIndex(index);
-            }}
-          />
+            modifiers={[pickerStyle('menu')]}
+            selection={selectedProfileImageSizeIndex}
+            onSelectionChange={(selection) => {
+              setSelectedProfileImageSizeIndex(selection);
+            }}>
+            {profileImageSizes.map((size, index) => (
+              <Text key={index} modifiers={[tag(index)]}>
+                {size}
+              </Text>
+            ))}
+          </Picker>
           <Button
             onPress={() => {
               alert('Fake cache cleared');
-            }}>
-            Clear Image Cache
-          </Button>
+            }}
+            label="Clear Image Cache"
+          />
           <DisclosureGroup
-            onStateChange={setDisclosureGroupExpanded}
+            onIsExpandedChange={setDisclosureGroupExpanded}
             isExpanded={disclosureGroupExpanded}
             label="Show User Profile Details">
             <Text>Name: John Doe</Text>

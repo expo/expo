@@ -2,26 +2,24 @@
 
 #import "EXAppState.h"
 #import "EXAppViewController.h"
-#import "EXBuildConstants.h"
 #import "EXKernel.h"
+
+#import "Expo_Go-Swift.h"
 #import "EXAbstractLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
-#import "EXVersions.h"
-#import "EXHomeModule.h"
+#import "EXKernelDevKeyCommands.h"
 
 #import <EXConstants/EXConstantsService.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
+#import "EXDevMenu-Swift.h"
+#import "EXDevMenuInterface-Swift.h"
 
-// Kernel is DevMenu's delegate only in non-detached builds.
-#import "EXDevMenuManager.h"
-#import "EXDevMenuDelegateProtocol.h"
-
-@interface EXKernel () <EXDevMenuDelegateProtocol>
+@interface EXKernel () <DevMenuHostDelegate>
 @end
 
 NS_ASSUME_NONNULL_BEGIN
@@ -63,8 +61,10 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     // init service registry: classes which manage shared resources among all hosts
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
 
-    // Set the delegate of dev menu manager. Maybe it should be a separate class? Will see later once the delegate protocol gets too big.
-    [[EXDevMenuManager sharedInstance] setDelegate:self];
+    [DevMenuManager.shared setDelegate:self];
+
+    // Register keyboard commands (e.g., Cmd+D) for simulator
+    [[EXKernelDevKeyCommands sharedInstance] registerDevCommands];
 
     // register for notifications to request reloading the visible app
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -133,13 +133,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   [[NSNotificationCenter defaultCenter] postNotificationName:name object:nil];
 }
 
-#pragma mark - App props
-
-- (nullable NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions
-{
-  return nil;
-}
-
 #pragma mark - App State
 
 - (EXKernelAppRecord *)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps
@@ -165,10 +158,10 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   if (!_browserController) {
     return;
   }
-  
-  if (_visibleApp != _appRegistry.homeAppRecord) {
+
+  if (_visibleApp != nil) {
     [EXUtil performSynchronouslyOnMainThread:^{
-      [[EXDevMenuManager sharedInstance] toggle];
+      [self->_browserController moveHomeToVisible];
     }];
   } else {
     EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
@@ -194,7 +187,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   [appRecord.viewController reloadFromCache];
 }
 
-- (void)viewController:(__unused EXViewController *)vc didNavigateAppToVisible:(EXKernelAppRecord *)appRecord
+- (void)viewController:(__unused EXViewController *)vc didNavigateAppToVisible:(EXKernelAppRecord * _Nullable)appRecord
 {
   EXKernelAppRecord *appRecordPreviouslyVisible = _visibleApp;
   if (appRecord != appRecordPreviouslyVisible) {
@@ -214,12 +207,12 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
         [appStateModule setState:@"active"];
       }
       _visibleApp = appRecord;
+      [self _unregisterUnusedAppRecords];
     } else {
       _visibleApp = nil;
-    }
-    
-    if (_visibleApp && _visibleApp != _appRegistry.homeAppRecord) {
-      [self _unregisterUnusedAppRecords];
+      if (appRecordPreviouslyVisible) {
+        [_appRegistry unregisterAppWithRecord:appRecordPreviouslyVisible];
+      }
     }
   }
 }
@@ -294,19 +287,22 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   }
 }
 
-#pragma mark - EXDevMenuDelegateProtocol
+#pragma mark - DevMenuHostDelegate
 
-- (RCTHost *)mainHostForDevMenuManager:(EXDevMenuManager *)manager {
-  return _appRegistry.homeAppRecord.appManager.reactHost;
+- (void)devMenuNavigateHome {
+  [self switchTasks];
 }
 
-- (nullable RCTReactNativeFactory *)appDelegateForDevMenuManager:(EXDevMenuManager *)manager {
-  return _appRegistry.homeAppRecord.appManager.expoAppInstance.reactNativeFactory;
+- (void)devMenuTogglePerformanceMonitor {
+  [[self visibleApp].appManager togglePerformanceMonitor];
 }
 
-- (BOOL)devMenuManager:(EXDevMenuManager *)manager canChangeVisibility:(BOOL)visibility
-{
-  return !visibility || _visibleApp != _appRegistry.homeAppRecord;
+- (void)devMenuToggleElementInspector {
+  [[self visibleApp].appManager toggleElementInspector];
+}
+
+- (BOOL)devMenuShouldShowReactNativeDevMenu {
+  return NO;
 }
 
 @end

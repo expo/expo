@@ -12,8 +12,15 @@ export type AppleMapsMarker = {
     id?: string;
     /**
      * The SF Symbol to display for the marker.
+     * This is mutually exclusive with `monogram`. If both are provided, `systemImage` takes precedence.
      */
     systemImage?: string;
+    /**
+     * A short text (typically initials or 1-2 characters) to display on the marker balloon.
+     * This is mutually exclusive with `systemImage`. If both are provided, `systemImage` takes precedence.
+     * @platform ios 17.0+
+     */
+    monogram?: string;
     /**
      * The coordinates of the marker.
      */
@@ -420,6 +427,8 @@ export type AppleMapsViewProps = {
      */
     onCameraMove?: (event: {
         coordinates: Coordinates;
+        latitudeDelta: number;
+        longitudeDelta: number;
         zoom: number;
         tilt: number;
         bearing: number;

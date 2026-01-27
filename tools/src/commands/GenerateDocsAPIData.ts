@@ -5,6 +5,7 @@ import fs from 'fs-extra';
 import os from 'node:os';
 import path from 'node:path';
 import recursiveOmitBy from 'recursive-omit-by';
+import type { TypeDocOptions } from 'typedoc';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
@@ -23,14 +24,18 @@ const MINIFY_JSON = true;
 const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/bottomsheet': ['jetpack-compose/BottomSheet/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/popover': ['swift-ui/Popover/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/text': ['swift-ui/Text/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/button': ['jetpack-compose/Button/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/circularprogress': ['swift-ui/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/circularprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/colorpicker': ['swift-ui/ColorPicker/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/form': ['swift-ui/Form/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/contextmenu': ['swift-ui/ContextMenu/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/disclosuregroup': ['swift-ui/DisclosureGroup/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/contextmenu': ['jetpack-compose/ContextMenu/index.tsx', 'expo-ui'],
-  'expo-ui/swift-ui/datetimepicker': ['swift-ui/DatePicker/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/datepicker': ['swift-ui/DatePicker/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/datetimepicker': ['jetpack-compose/DatePicker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/gauge': ['swift-ui/Gauge/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/host': ['swift-ui/Host/index.tsx', 'expo-ui'],
@@ -38,18 +43,27 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/linearprogress': ['swift-ui/Progress/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/linearprogress': ['jetpack-compose/Progress/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/list': ['swift-ui/List/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/menu': ['swift-ui/Menu/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/picker': ['swift-ui/Picker/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/picker': ['jetpack-compose/Picker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/slider': ['swift-ui/Slider/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/slider': ['jetpack-compose/Slider/index.tsx', 'expo-ui'],
-  'expo-ui/swift-ui/switch': ['swift-ui/Switch/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/toggle': ['swift-ui/Toggle/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/namespace': ['swift-ui/Namespace.tsx', 'expo-ui'],
   'expo-ui/swift-ui/section': ['swift-ui/Section/index.tsx', 'expo-ui'],
-  'expo-ui/swift-ui/form': ['swift-ui/Form/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/divider': ['swift-ui/Divider/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/rnhostview': ['swift-ui/RNHostView.tsx', 'expo-ui'],
   'expo-ui/swift-ui/modifiers': ['swift-ui/modifiers/index.ts', 'expo-ui'],
+  'expo-ui/swift-ui/progressview': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/switch': ['jetpack-compose/Switch/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/textfield': ['swift-ui/TextField/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/group': ['swift-ui/Group/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/hstack': ['swift-ui/HStack/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/vstack': ['swift-ui/VStack/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/zstack': ['swift-ui/ZStack/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/spacer': ['swift-ui/Spacer/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/image': ['swift-ui/Image/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/foreach': ['swift-ui/ForEach/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/textinput': ['jetpack-compose/TextInput/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/chip': ['jetpack-compose/Chip/index.tsx', 'expo-ui'],
 };
@@ -60,9 +74,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-apple-authentication': ['index.ts'],
   'expo-application': ['Application.ts'],
   'expo-audio': ['index.ts'],
-  'expo-audio-av': [['Audio.ts', 'Audio.types.ts'], 'expo-av'],
   'expo-auth-session': ['index.ts'],
-  'expo-av': [['AV.ts', 'AV.types.ts'], 'expo-av'],
   'expo-asset': [['Asset.ts', 'AssetHooks.ts']],
   'expo-background-fetch': ['BackgroundFetch.ts'],
   'expo-background-task': ['BackgroundTask.ts'],
@@ -71,6 +83,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-blur': ['index.ts'],
   'expo-blob': ['ExpoBlob.types.ts'],
   'expo-brightness': ['Brightness.ts'],
+  'expo-brownfield': ['index.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
   'expo-calendar': ['Calendar.ts'],
   'expo-calendar-next': ['next/Calendar.ts', 'expo-calendar'],
@@ -80,6 +93,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-clipboard': [['Clipboard.ts', 'Clipboard.types.ts']],
   'expo-constants': [['Constants.ts', 'Constants.types.ts']],
   'expo-contacts': ['index.ts'],
+  'expo-contacts-next': ['next/index.ts', 'expo-contacts'],
   'expo-crypto': ['Crypto.ts'],
   'expo-dev-client': ['DevClient.ts'],
   'expo-device': ['Device.ts'],
@@ -127,11 +141,12 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-router': ['exports.ts'],
   'expo-router-ui': ['ui/index.ts', 'expo-router'],
   'expo-router-native-tabs': ['native-tabs/index.ts', 'expo-router'],
+  'expo-router-split-view': ['split-view/index.ts', 'expo-router'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],
   'expo-secure-store': ['SecureStore.ts'],
   'expo-server': ['index.ts'],
-  'expo-sharing': ['Sharing.ts'],
+  'expo-sharing': ['index.ts'],
   'expo-sms': ['SMS.ts'],
   'expo-speech': ['Speech/Speech.ts'],
   'expo-splash-screen': ['index.ts'],
@@ -144,13 +159,13 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-tracking-transparency': ['TrackingTransparency.ts'],
   'expo-updates': ['index.ts'],
   'expo-video': ['index.ts'],
-  'expo-video-av': [['Video.tsx', 'Video.types.ts'], 'expo-av'],
   'expo-video-thumbnails': ['VideoThumbnails.ts'],
   'expo-web-browser': ['WebBrowser.ts'],
   '@expo/fingerprint': ['index.ts'],
   'expo-age-range': ['index.ts'],
   'expo-app-integrity': ['index.ts'],
   'expo-glass-effect': ['index.ts'],
+  'expo-widgets': ['index.ts'],
   ...uiPackagesMapping,
 };
 
@@ -188,33 +203,36 @@ const executeCommand = async (
     ? entryPoint.map((entry) => path.join(entriesPath, entry))
     : [path.join(entriesPath, entryPoint)];
 
-  const app = await Application.bootstrapWithPlugins(
-    {
-      entryPoints,
-      tsconfig: tsConfigPath,
-      disableSources: true,
-      hideGenerator: true,
-      excludePrivate: true,
-      excludeProtected: true,
-      excludeExternals: true,
-      pretty: !MINIFY_JSON,
-      commentStyle: 'block',
-      jsDocCompatibility: false,
-      preserveLinkText: true,
-      sourceLinkExternal: false,
-      markdownLinkExternal: false,
-      blockTags: [
-        ...Configuration.OptionDefaults.blockTags,
-        '@alias',
-        '@deprecated',
-        '@docsMissing',
-        '@header',
-        '@needsAudit',
-        '@platform',
-      ],
-    },
-    [new TSConfigReader(), new TypeDocReader()]
-  );
+  const typedocOptions = {
+    entryPoints,
+    tsconfig: tsConfigPath,
+    disableSources: true,
+    hideGenerator: true,
+    excludePrivate: true,
+    excludeProtected: true,
+    excludeExternals: true,
+    pretty: !MINIFY_JSON,
+    commentStyle: 'block',
+    jsDocCompatibility: false,
+    preserveLinkText: true,
+    sourceLinkExternal: false,
+    markdownLinkExternal: false,
+    blockTags: [
+      ...Configuration.OptionDefaults.blockTags,
+      '@alias',
+      '@deprecated',
+      '@docsMissing',
+      '@header',
+      '@hideType',
+      '@needsAudit',
+      '@platform',
+    ],
+  } as unknown as TypeDocOptions;
+
+  const app = await Application.bootstrapWithPlugins(typedocOptions, [
+    new TSConfigReader(),
+    new TypeDocReader(),
+  ]);
 
   const project = await app.convert();
 

@@ -3,6 +3,7 @@
 #import <ExpoModulesCore/EXUtilitiesInterface.h>
 #import <ExpoModulesCore/EXUtilities.h>
 #import <ExpoModulesCore/EXPermissionsService.h>
+#import <React/RCTLog.h>
 
 NSString * const EXStatusKey = @"status";
 NSString * const EXExpiresKey = @"expires";
@@ -15,13 +16,10 @@ NSString * const EXPermissionExpiresNever = @"never";
 
 @property (nonatomic, strong) NSMutableDictionary<NSString *, id<EXPermissionsRequester>> *requesters;
 @property (nonatomic, strong) NSMapTable<Class, id<EXPermissionsRequester>> *requestersByClass;
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXPermissionsService
-
-EX_EXPORT_MODULE();
 
 - (instancetype)init
 {
@@ -32,21 +30,11 @@ EX_EXPORT_MODULE();
   return self;
 }
 
-+ (const NSArray<Protocol *> *)exportedInterfaces
-{
-  return @[@protocol(EXPermissionsInterface)];
-}
-
 - (void)registerRequesters:(NSArray<id<EXPermissionsRequester>> *)newRequesters {
   for (id<EXPermissionsRequester> requester in newRequesters) {
     [_requesters setObject:requester forKey:[[requester class] permissionType]];
     [_requestersByClass setObject:requester forKey:[requester class]];
   }
-}
-
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
-{
-  _moduleRegistry = moduleRegistry;
 }
 
 # pragma mark - permission requsters / getters
@@ -87,7 +75,7 @@ EX_EXPORT_MODULE();
 {
   NSDictionary *permissions = [self getPermissionUsingRequesterClass:requesterClass];
   if (!permissions) {
-    EXLogWarn(@"Permission requester '%@' not found.", NSStringFromClass(requesterClass));
+    RCTLogWarn(@"Permission requester '%@' not found.", NSStringFromClass(requesterClass));
     return false;
   }
   
@@ -183,4 +171,3 @@ EX_EXPORT_MODULE();
 }
 
 @end
-

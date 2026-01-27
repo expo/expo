@@ -26,14 +26,12 @@ export const SettingsAction = ({ ...rest }: SnippetActionProps) => {
   return (
     <Dropdown.Dropdown
       trigger={
-        <div>
-          <SnippetAction
-            className="min-w-[44px] px-3"
-            aria-label="Show settings"
-            leftSlot={<DotsVerticalIcon className="icon-md shrink-0 text-icon-secondary" />}
-            {...rest}
-          />
-        </div>
+        <SnippetAction
+          className="min-w-[44px] px-3"
+          aria-label="Show settings"
+          leftSlot={<DotsVerticalIcon className="icon-md shrink-0 text-icon-secondary" />}
+          {...rest}
+        />
       }>
       <Dropdown.Item
         preventAutoClose

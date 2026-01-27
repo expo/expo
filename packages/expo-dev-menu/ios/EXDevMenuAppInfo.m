@@ -26,6 +26,11 @@
     appName = [manager.currentManifest name];
     appVersion = [manager.currentManifest version];
 
+    NSString *manifestIcon = [manager.currentManifest iosAppIconUrl];
+    if (manifestIcon) {
+      appIcon = manifestIcon;
+    }
+
     if ([manager.currentManifest isKindOfClass:[EXManifestsExpoUpdatesManifest class]]) {
       runtimeVersion = [(EXManifestsExpoUpdatesManifest *)manager.currentManifest runtimeVersion];
     }

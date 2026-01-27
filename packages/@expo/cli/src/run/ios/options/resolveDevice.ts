@@ -15,14 +15,7 @@ import { logDeviceArgument } from '../../hints';
 import { BuildProps } from '../XcodeBuild.types';
 import * as AppleDevice from '../appleDevice/AppleDevice';
 
-type AnyDevice = {
-  name: string;
-  osType: OSType;
-  osVersion: string;
-  udid: string;
-  deviceType?: string;
-};
-// type AnyDevice = SimControl.Device | AppleDevice.ConnectedDevice;
+type AnyDevice = SimControl.Device | AppleDevice.ConnectedDevice;
 
 /** Get a list of devices (called destinations) that are connected to the host machine. Filter by `osType` if defined. */
 async function getDevicesAsync({
@@ -115,7 +108,6 @@ export async function resolveDeviceAsync(
   const resolved =
     device === true
       ? // `--device` (no props after)
-        // @ts-expect-error
         await promptDeviceAsync(devices)
       : // `--device <name|udid>`
         findDeviceFromSearchValue(devices, device.toLowerCase());

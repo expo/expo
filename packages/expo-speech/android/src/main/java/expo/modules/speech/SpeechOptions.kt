@@ -7,5 +7,6 @@ data class SpeechOptions(
   @Field val language: String?,
   @Field val pitch: Float?,
   @Field val rate: Float?,
-  @Field val voice: String?
+  @Field val voice: String?,
+  @Field val volume: Float?
 ) : Record

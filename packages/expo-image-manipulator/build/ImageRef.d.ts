@@ -18,6 +18,4 @@ export declare class ImageRef extends SharedRef<'image'> {
      */
     saveAsync(options?: SaveOptions): Promise<ImageResult>;
 }
-declare const _default: typeof ImageRef;
-export default _default;
 //# sourceMappingURL=ImageRef.d.ts.map

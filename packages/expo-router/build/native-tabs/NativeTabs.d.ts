@@ -3,8 +3,7 @@ import type { NativeTabsProps } from './types';
  * The component used to create native tabs layout.
  *
  * @example
- * ```tsx
- * // In _layout file
+ * ```tsx app/_layout.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function Layout() {
@@ -19,7 +18,13 @@ import type { NativeTabsProps } from './types';
  */
 export declare const NativeTabs: ((props: NativeTabsProps) => import("react").JSX.Element) & {
     Trigger: ((props: import("./types").NativeTabTriggerProps) => null) & {
-        TabBar: typeof import("./NativeTabsTriggerTabBar").NativeTabsTriggerTabBar;
+        Label: import("react").FC<import("./common/elements").NativeTabsTriggerLabelProps>;
+        Icon: import("react").FC<import("./common/elements").NativeTabsTriggerIconProps>;
+        Badge: import("react").FC<import("./common/elements").NativeTabsTriggerBadgeProps>;
+        VectorIcon: typeof import("..").VectorIcon;
+    };
+    BottomAccessory: import("react").FC<import("./common/elements").NativeTabsBottomAccessoryProps> & {
+        usePlacement: () => "regular" | "inline";
     };
 };
 //# sourceMappingURL=NativeTabs.d.ts.map

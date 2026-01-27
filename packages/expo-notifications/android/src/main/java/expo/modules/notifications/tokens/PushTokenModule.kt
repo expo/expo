@@ -5,6 +5,7 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.notifications.service.delegates.FirebaseMessagingDelegate.Companion.addTokenListener
+import expo.modules.notifications.service.delegates.FirebaseMessagingDelegate.Companion.removeTokenListener
 import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener
 
 private const val NEW_TOKEN_EVENT_NAME = "onDevicePushToken"
@@ -20,12 +21,16 @@ class PushTokenModule : Module(), FirebaseTokenListener {
    * @param token New push token.
    */
   override fun onNewToken(token: String) {
-    sendEvent(
-      NEW_TOKEN_EVENT_NAME,
-      mapOf(
-        NEW_TOKEN_EVENT_TOKEN_KEY to token
+    runCatching {
+      // onNewToken is emitted asynchronously and the module may be destroyed by the time sendEvent is called
+      // that would result in an exception
+      sendEvent(
+        NEW_TOKEN_EVENT_NAME,
+        mapOf(
+          NEW_TOKEN_EVENT_TOKEN_KEY to token
+        )
       )
-    )
+    }
   }
 
   override fun definition() = ModuleDefinition {
@@ -35,6 +40,10 @@ class PushTokenModule : Module(), FirebaseTokenListener {
 
     OnCreate {
       addTokenListener(this@PushTokenModule)
+    }
+
+    OnDestroy {
+      removeTokenListener(this@PushTokenModule)
     }
 
     /**

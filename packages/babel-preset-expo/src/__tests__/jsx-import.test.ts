@@ -22,7 +22,13 @@ const DEF_OPTIONS = {
 it(`compiles React auto jsx import`, () => {
   const options = {
     ...DEF_OPTIONS,
-    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true }),
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'ios',
+      isDev: true,
+      isHMREnabled: true,
+    }),
   };
 
   const sourceCode = `
@@ -38,7 +44,13 @@ function App() {
 
   const productionOptions = {
     ...DEF_OPTIONS,
-    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: false }),
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'ios',
+      isDev: false,
+      isHMREnabled: true,
+    }),
   };
   expect(babel.transform(sourceCode, productionOptions)!.code).toMatchInlineSnapshot(`
     "var _jsxRuntime = require("react/jsx-runtime");
@@ -51,7 +63,13 @@ function App() {
 it(`transforms React display name`, () => {
   const options = {
     ...DEF_OPTIONS,
-    caller: getCaller({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true }),
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'ios',
+      isDev: true,
+      isHMREnabled: true,
+    }),
   };
 
   // Ensure no duplication
@@ -79,6 +97,7 @@ describe('classic runtime', () => {
       caller: getCaller({
         name: 'babel-loader',
         isDev: true,
+        isHMREnabled: true,
       }),
     };
 
@@ -101,6 +120,7 @@ describe('classic runtime', () => {
       caller: getCaller({
         name: 'babel-loader',
         isDev: false,
+        isHMREnabled: true,
       }),
     };
 
@@ -126,6 +146,7 @@ describe('classic runtime', () => {
           name: 'metro',
           platform,
           isDev: true,
+          isHMREnabled: true,
         }),
       };
 
@@ -144,6 +165,7 @@ describe('classic runtime', () => {
           name: 'metro',
           platform,
           isDev: false,
+          isHMREnabled: true,
         }),
       };
 
@@ -167,6 +189,7 @@ it(`supports nested React components in destructured props in Metro + developmen
       platform: 'ios',
       engine: 'hermes',
       isDev: true,
+      isHMREnabled: true,
     }),
     retainLines: false,
   };
@@ -223,6 +246,7 @@ describe('auto runtime (default)', () => {
       caller: getCaller({
         name: 'babel-loader',
         isDev: true,
+        isHMREnabled: true,
       }),
     };
 
@@ -245,6 +269,7 @@ describe('auto runtime (default)', () => {
       caller: getCaller({
         name: 'babel-loader',
         isDev: false,
+        isHMREnabled: true,
       }),
     };
 
@@ -270,6 +295,7 @@ describe('auto runtime (default)', () => {
           name: 'metro',
           platform,
           isDev: true,
+          isHMREnabled: true,
         }),
       };
 
@@ -288,6 +314,7 @@ describe('auto runtime (default)', () => {
           name: 'metro',
           platform,
           isDev: false,
+          isHMREnabled: true,
         }),
       };
 

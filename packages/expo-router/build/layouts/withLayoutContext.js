@@ -66,7 +66,7 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
                     if (options.hidden === false) {
                         screens.push({
                             ...child.props,
-                            options: (0, NativeTabTrigger_1.convertTabPropsToOptions)(child.props),
+                            options,
                         });
                     }
                     else {

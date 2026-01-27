@@ -3,30 +3,50 @@
 import ExpoModulesCore
 import SwiftUI
 
-final class LabelViewProps: UIBaseViewProps {
+public final class LabelViewProps: UIBaseViewProps {
   @Field var title: String?
   @Field var systemImage: String?
-  @Field var color: Color?
 }
 
-struct LabelView: ExpoSwiftUI.View {
-  @ObservedObject var props: LabelViewProps
+public final class LabelIconProps: ExpoSwiftUI.ViewProps {}
+public struct LabelIcon: ExpoSwiftUI.View {
+  @ObservedObject public var props: LabelIconProps
 
-  var body: some View {
-    if let title = props.title, let systemImage = props.systemImage {
-      // TODO: Deprecate this - recommend using foregroundStyle modifier
-      if let color = props.color {
-        Label(title, systemImage: systemImage).foregroundStyle(color)
-          .applyFixedSize(props.fixedSize ?? true)
-      } else {
+  public init(props: LabelIconProps) {
+    self.props = props
+  }
+
+  public var body: some View {
+    Children()
+  }
+}
+
+public struct LabelView: ExpoSwiftUI.View {
+  @ObservedObject public var props: LabelViewProps
+
+  public init(props: LabelViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
+    if let title = props.title {
+      if let customIcon {
+        Label {
+          Text(title)
+        } icon: {
+          customIcon
+        }
+      } else if let systemImage = props.systemImage {
         Label(title, systemImage: systemImage)
-          .applyFixedSize(props.fixedSize ?? true)
+      } else {
+        Label(title, systemImage: "").labelStyle(.titleOnly)
       }
     }
-    // TODO: Deprecate this - recommend using labelStyle modifier
-    else if let title = props.title {
-      Label(title, systemImage: "").labelStyle(.titleOnly)
-        .applyFixedSize(props.fixedSize ?? true)
-    }
+  }
+
+  private var customIcon: LabelIcon? {
+    props.children?
+      .compactMap({ $0.childView as? LabelIcon })
+      .first
   }
 }

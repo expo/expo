@@ -1,10 +1,8 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
-import './Preclude.fx.js';
-
-import chalk from 'chalk';
 import { Command } from 'commander';
 import path from 'node:path';
+import { chalk } from 'zx';
 
 import { packExpoBareTemplateTarballAsync } from './ExpoRepo.js';
 import { getNpmVersionAsync } from './Npm.js';
@@ -22,6 +20,9 @@ import {
 } from './Project.js';
 import { checkRequiredToolsAsync } from './SanityChecks.js';
 import packageJSON from '../package.json';
+import { applyPatchesGlobAsync } from './Patch.js';
+
+const PACKAGE_ROOT = path.dirname(import.meta.dirname);
 
 const program = new Command(packageJSON.name)
   .version(packageJSON.version)
@@ -39,11 +40,6 @@ const program = new Command(packageJSON.name)
     'dev.expo.testnightlies'
   )
   .option('--no-install', 'Skip installing CocoaPods.')
-  .option(
-    '--enable-new-architecture <boolean>',
-    'Enable / disable the New Architecture mode (default: new arch enabled).',
-    'true'
-  )
   .parse(process.argv);
 
 async function runAsync(programName: string) {
@@ -56,7 +52,6 @@ async function runAsync(programName: string) {
   const nightlyVersion = await getNpmVersionAsync('react-native', 'nightly');
   const projectProps: ProjectProperties = {
     appId: programOpts.appId,
-    newArchEnabled: programOpts.enableNewArchitecture !== 'false',
     nightlyVersion,
     useExpoRepoPath: programOpts.expoRepo,
   };
@@ -75,6 +70,24 @@ async function runAsync(programName: string) {
 
   console.log(chalk.cyan(`Reinstalling packages`));
   await reinstallPackagesAsync(projectRoot);
+
+  await applyPatchesGlobAsync({
+    patchGlobPattern: 'packages/**/*.patch',
+    patchRoot: path.join(PACKAGE_ROOT, 'patches'),
+    cwd: expoRepoPath,
+    // Assume the patches have `a/packages/b/c/d.patch` format,
+    // so we need to strip 1 level of prefixes into the expo repo path.
+    stripPrefixNum: 1,
+  });
+  await applyPatchesGlobAsync({
+    patchGlobPattern: 'node_modules/**/*.patch',
+    patchRoot: path.join(PACKAGE_ROOT, 'patches'),
+    cwd: projectRoot,
+    destination: 'node_modules',
+    // Assume the patches have `a/node_modules/b/c/d.patch` format,
+    // so we need to strip 2 levels of prefixes into the node_modules directory.
+    stripPrefixNum: 2,
+  });
 
   console.log(chalk.cyan(`Creating expo-template-bare-minimum tarball`));
   const tarballPath = await packExpoBareTemplateTarballAsync(

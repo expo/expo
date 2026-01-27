@@ -1,13 +1,18 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package host.exp.exponent.modules
 
-import com.facebook.react.bridge.*
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import host.exp.exponent.Constants
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.ErrorActivity
-import host.exp.exponent.kernel.DevMenuManager
 import host.exp.exponent.kernel.ExponentKernelModuleInterface
 import host.exp.exponent.kernel.ExponentKernelModuleProvider
 import host.exp.exponent.kernel.ExponentKernelModuleProvider.KernelEvent
@@ -16,7 +21,7 @@ import host.exp.exponent.kernel.Kernel
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.utils.BundleJSONConverter
 import org.json.JSONObject
-import java.util.*
+import java.util.UUID
 import javax.inject.Inject
 
 class ExponentKernelModule(reactContext: ReactApplicationContext?) :
@@ -27,9 +32,6 @@ class ExponentKernelModule(reactContext: ReactApplicationContext?) :
 
   @Inject
   lateinit var exponentSharedPreferences: ExponentSharedPreferences
-
-  @Inject
-  lateinit var devMenuManager: DevMenuManager
 
   override fun getConstants(): Map<String, Any> {
     return mapOf(
@@ -148,56 +150,6 @@ class ExponentKernelModule(reactContext: ReactApplicationContext?) :
   fun onEventFailure(eventId: String, errorMessage: String?) {
     kernelEventCallbacks.remove(eventId)?.onEventFailure(errorMessage)
   }
-
-  //region DevMenu
-  @ReactMethod
-  fun doesCurrentTaskEnableDevtoolsAsync(promise: Promise) {
-    promise.resolve(devMenuManager.isDevSupportEnabledByCurrentActivity())
-  }
-
-  @ReactMethod
-  fun getIsOnboardingFinishedAsync(promise: Promise) {
-    promise.resolve(devMenuManager.isOnboardingFinished())
-  }
-
-  @ReactMethod
-  fun setIsOnboardingFinishedAsync(isOnboardingFinished: Boolean, promise: Promise) {
-    devMenuManager.setIsOnboardingFinished(isOnboardingFinished)
-    promise.resolve(null)
-  }
-
-  @ReactMethod
-  fun closeDevMenuAsync(promise: Promise) {
-    devMenuManager.hideInCurrentActivity()
-    promise.resolve(true)
-  }
-
-  @ReactMethod
-  fun getDevMenuItemsToShowAsync(promise: Promise) {
-    val devMenuItems = devMenuManager.getMenuItems()
-    promise.resolve(devMenuItems)
-  }
-
-  @ReactMethod
-  fun selectDevMenuItemWithKeyAsync(itemKey: String?, promise: Promise) {
-    devMenuManager.selectItemWithKey(itemKey!!)
-    devMenuManager.requestToClose()
-    promise.resolve(true)
-  }
-
-  @ReactMethod
-  fun reloadAppAsync(promise: Promise) {
-    devMenuManager.reloadApp()
-    devMenuManager.requestToClose()
-    promise.resolve(true)
-  }
-
-  @ReactMethod
-  fun goToHomeAsync(promise: Promise) {
-    kernel.openHomeActivity()
-    devMenuManager.requestToClose()
-    promise.resolve(true)
-  } //endregion DevMenu
 
   //endregion Exported methods
   companion object {

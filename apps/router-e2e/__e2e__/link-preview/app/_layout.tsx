@@ -10,6 +10,7 @@ export default function Layout() {
         <Stack.Screen name="protected" />
       </Stack.Protected>
       <Stack.Screen name="modal" options={{ presentation: 'modal', headerShown: true }} />
+      <Stack.Screen name="misc" options={{ gestureEnabled: false }} />
       <Stack.Screen
         name="fullScreenModal"
         options={{ presentation: 'fullScreenModal', headerShown: true }}

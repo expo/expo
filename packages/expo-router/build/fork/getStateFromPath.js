@@ -107,7 +107,7 @@ segments = []
             return { name };
         });
         if (routes.length) {
-            return createNestedStateObject(expoPath, routes, initialRoutes, [], expoPath.url.hash);
+            return createNestedStateObject(expoPath, routes, initialRoutes, [], expoPath.hash);
         }
         return undefined;
     }
@@ -126,7 +126,7 @@ segments = []
         // );
         // END FORK
         if (match) {
-            return createNestedStateObject(expoPath, match.routeNames.map((name) => ({ name })), initialRoutes, configs, expoPath.url.hash);
+            return createNestedStateObject(expoPath, match.routeNames.map((name) => ({ name })), initialRoutes, configs, expoPath.hash);
         }
         return undefined;
     }
@@ -137,7 +137,7 @@ segments = []
     const { routes, remainingPath } = matchAgainstConfigs(remaining, configWithRegexes);
     if (routes !== undefined) {
         // This will always be empty if full path matched
-        current = createNestedStateObject(expoPath, routes, initialRoutes, configs, expoPath.url.hash);
+        current = createNestedStateObject(expoPath, routes, initialRoutes, configs, expoPath.hash);
         remaining = remainingPath;
         result = current;
     }

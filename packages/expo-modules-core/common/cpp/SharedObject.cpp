@@ -1,7 +1,12 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-#include "SharedObject.h"
+#ifdef __APPLE__
+#include <ExpoModulesJSI/JSIUtils.h>
+#else
 #include "JSIUtils.h"
+#endif
+
+#include "SharedObject.h"
 
 namespace expo::SharedObject {
 

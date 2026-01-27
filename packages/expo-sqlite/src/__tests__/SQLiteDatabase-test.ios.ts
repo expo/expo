@@ -8,6 +8,9 @@ import {
   SQLiteDatabase,
 } from '../SQLiteDatabase';
 
+jest.mock('expo/devtools', () => ({
+  getDevToolsPluginClientAsync: jest.fn(),
+}));
 jest.mock('../ExpoSQLite', () => require('../__mocks__/ExpoSQLite'));
 
 interface TestEntity {
@@ -39,7 +42,14 @@ describe('Database', () => {
 
   it('execAsync should throw error from an invalid command', async () => {
     db = await openDatabaseAsync(':memory:');
-    await expect(db.execAsync('INVALID COMMAMD')).rejects.toThrow();
+    let error: any;
+    try {
+      await db.execAsync('INVALID COMMAMD');
+    } catch (e: any) {
+      error = e;
+    }
+    expect(error).toBeDefined();
+    expect(error.toString()).toContain('syntax error');
   });
 
   it('runAsync should return SQLiteRunResult', async () => {

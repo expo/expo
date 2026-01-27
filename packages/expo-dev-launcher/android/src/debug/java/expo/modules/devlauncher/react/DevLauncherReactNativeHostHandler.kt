@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandler {
   private val contextHolder = WeakReference(context)
-  override fun getDevSupportManagerFactory(): DevSupportManagerFactory? {
+  override fun getDevSupportManagerFactory(): DevSupportManagerFactory {
     return DevLauncherDevSupportManagerFactory()
   }
 

@@ -19,10 +19,6 @@ export function digestString(
   return '';
 }
 
-export function getRandomBase64String(length: number): string {
-  return '';
-}
-
 export function getRandomValues(array: TypedArray): TypedArray {
   return null; // TODO: Replace with mock for value of type TypedArray.
 }
@@ -36,9 +32,5 @@ export async function digestStringAsync(
   str: string,
   options: DigestOptions
 ): Promise<string> {
-  return '';
-}
-
-export async function getRandomBase64StringAsync(length: number): Promise<string> {
   return '';
 }

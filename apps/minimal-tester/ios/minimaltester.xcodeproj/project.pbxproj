@@ -8,37 +8,111 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		2254091221B84C9AA553974E /* ExpoAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA31C75083F7467797782A25 /* ExpoAppDelegate.swift */; };
+		34C5E0452A74357905ED5169 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 05BA831F9756B673C9BBE617 /* PrivacyInfo.xcprivacy */; };
+		3DF810F5FAA84349BA1369BD /* ReactNativeDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0D6AB536D248849877F7D3 /* ReactNativeDelegate.swift */; };
+		2BFB6924A0DE867335609929 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BD6989B0D56002172F61C58 /* ExpoModulesProvider.swift */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		408BE0AB2DC41874004192D3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 408BE0AA2DC41874004192D3 /* AppDelegate.swift */; };
-		96905EF65AED1B983A6B3ABC /* libPods-minimaltester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-minimaltester.a */; };
-		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
+		435BDB3DC69840AE9B29F7F4 /* ReactNativeHostManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F0DE02501DA4F2F85CE7C34 /* ReactNativeHostManager.swift */; };
+		5FE1EE223A124930AB42B6C0 /* ReactNativeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 423616B5ECC54DA588FA1C7E /* ReactNativeViewController.swift */; };
+		6339C9F34388DBB82F435CD3 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F86AC3DD43E6118B4DFF7D /* ExpoModulesProvider.swift */; };
+		9ADCE841A00849AA9354F08E /* Messaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28023188238A4ECAB556739F /* Messaging.swift */; };
+		43C7C811D508488599D681D7 /* ReactNativeDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C01F3C3FD7B4A40BF37403F /* ReactNativeDelegate.swift */; };
+		54DC818C26344A338FBD223F /* ReactNativeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4F3AE8BD9A4F8381D889FC /* ReactNativeView.swift */; };
+		6F9BD8E3EAB1402EA5158FFD /* ReactNativeHostManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB19C1B83684E0F93B77F74 /* ReactNativeHostManager.swift */; };
+		7559F23945462FBFE55EB02B /* Pods_minimaltester_minimaltesterbrownfield.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4BCEA000CC8EF23719451B0 /* Pods_minimaltester_minimaltesterbrownfield.framework */; };
+		A01F9B1FDF6D48F0822E6832 /* ReactNativeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1F738D79D2496DA090CA02 /* ReactNativeViewController.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		C915C11236D5469AB5796BED /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E7B3F88382486C86FF924E /* noop-file.swift */; };
+		C4527CC3DBDE587C78B5CB12 /* Pods_minimaltester.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 524602FD19ECF96E08A27B79 /* Pods_minimaltester.framework */; };
+		D19BEEDF3C6D4273BE5EE97B /* Pods_minimaltester_minimaltesterbrownfield.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E2E3F50EA16E330FDC9C56C /* Pods_minimaltester_minimaltesterbrownfield.framework */; };
+		E80B12B740014503A23B87CE /* ReactNativeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2236CCBA3DB94C06B0EF4C4C /* ReactNativeView.swift */; };
+		C9AE6CE96C58368B6AC63DF6 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B6B84DE78AFE8D9B0BF3A1AE /* PrivacyInfo.xcprivacy */; };
+		CA92A3296199421E9509A2A9 /* ExpoAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5B048DC50C43E3B2BEA897 /* ExpoAppDelegate.swift */; };
+		E2D36015D7B944A1D6108F5E /* Pods_minimaltester.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7948F5DE45F4CCA13BC7CCE1 /* Pods_minimaltester.framework */; };
+		E4BC6394748FE19E01A0354F /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A632793DB62AC94D8DD148CE /* ExpoModulesProvider.swift */; };
+		EED24139D38A4326B603DA6F /* Messaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FB3089D46146B2BAF9B3FD /* Messaging.swift */; };
+		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
+		FD75274D2DFE9F49F0F5E7B6 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49DFE6AE523FAACF5765097B /* ExpoModulesProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
+		05BA831F9756B673C9BBE617 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = minimaltester/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		06AF64CE8ECB2C1F3CF3E4B5 /* Pods-minimaltester.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-minimaltester.debug.xcconfig"; path = "Target Support Files/Pods-minimaltester/Pods-minimaltester.debug.xcconfig"; sourceTree = "<group>"; };
+		0C0D6AB536D248849877F7D3 /* ReactNativeDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeDelegate.swift; path = minimaltesterbrownfield/ReactNativeDelegate.swift; sourceTree = "<group>"; };
+		034ED5E80B444A2B8FB1DFA3 /* ReactNativeHostManager.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; path = ReactNativeHostManager.swift; sourceTree = "<group>"; };
+		0ECB103E2B1E41ABB632C9C9 /* minimaltesterbrownfield.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; fileEncoding = 9; includeInIndex = 0; path = minimaltesterbrownfield.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* minimaltester.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = minimaltester.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = minimaltester/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = minimaltester/Info.plist; sourceTree = "<group>"; };
-		20E7B3F88382486C86FF924E /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "minimaltester/noop-file.swift"; sourceTree = "<group>"; };
-		408BE0AA2DC41874004192D3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		408BE0AC2DC418B5004192D3 /* minimaltester-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "minimaltester-Bridging-Header.h"; sourceTree = "<group>"; };
-		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-minimaltester.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-minimaltester.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6C2E3173556A471DD304B334 /* Pods-minimaltester.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-minimaltester.debug.xcconfig"; path = "Target Support Files/Pods-minimaltester/Pods-minimaltester.debug.xcconfig"; sourceTree = "<group>"; };
-		7A4D352CD337FB3A3BF06240 /* Pods-minimaltester.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-minimaltester.release.xcconfig"; path = "Target Support Files/Pods-minimaltester/Pods-minimaltester.release.xcconfig"; sourceTree = "<group>"; };
+		2236CCBA3DB94C06B0EF4C4C /* ReactNativeView.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeView.swift; path = minimaltesterbrownfield/ReactNativeView.swift; sourceTree = "<group>"; };
+		28023188238A4ECAB556739F /* Messaging.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = Messaging.swift; path = minimaltesterbrownfield/Messaging.swift; sourceTree = "<group>"; };
+		3E2E3F50EA16E330FDC9C56C /* Pods_minimaltester_minimaltesterbrownfield.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_minimaltester_minimaltesterbrownfield.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		423616B5ECC54DA588FA1C7E /* ReactNativeViewController.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeViewController.swift; path = minimaltesterbrownfield/ReactNativeViewController.swift; sourceTree = "<group>"; };
+		49DFE6AE523FAACF5765097B /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-minimaltester-minimaltesterbrownfield/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		4BEA1E871928440BAE9C963D /* ExpoAppDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ExpoAppDelegate.swift; path = ExpoAppDelegate.swift; sourceTree = "<group>"; };
+		524602FD19ECF96E08A27B79 /* Pods_minimaltester.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_minimaltester.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		57BD76673CFB456096412D4F /* ReactNativeViewController.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeViewController.swift; path = ReactNativeViewController.swift; sourceTree = "<group>"; };
+		5F0DE02501DA4F2F85CE7C34 /* ReactNativeHostManager.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeHostManager.swift; path = minimaltesterbrownfield/ReactNativeHostManager.swift; sourceTree = "<group>"; };
+		75D786E36F2849E58B20CB4C /* minimaltesterbrownfield.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = undefined; name = minimaltesterbrownfield.framework; path = minimaltesterbrownfield.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1BD6989B0D56002172F61C58 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-minimaltester/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		2115662F5C3EDF6CC7E5F44C /* Pods-minimaltester-minimaltesterbrownfield.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-minimaltester-minimaltesterbrownfield.debug.xcconfig"; path = "Target Support Files/Pods-minimaltester-minimaltesterbrownfield/Pods-minimaltester-minimaltesterbrownfield.debug.xcconfig"; sourceTree = "<group>"; };
+		4D9E3508515F41689B15D18B /* ReactNativeDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; path = ReactNativeDelegate.swift; sourceTree = "<group>"; };
+		5C3F4764CFF74FFA9E6218E0 /* ReactNativeView.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; path = ReactNativeView.swift; sourceTree = "<group>"; };
+		632501C1139B40D7ACA9F6D6 /* Messaging.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; path = Messaging.swift; sourceTree = "<group>"; };
+		77B96E96905541BB9C1F4A2D /* ExpoAppDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; path = ExpoAppDelegate.swift; sourceTree = "<group>"; };
+		7948F5DE45F4CCA13BC7CCE1 /* Pods_minimaltester.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_minimaltester.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		79FB3089D46146B2BAF9B3FD /* Messaging.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = Messaging.swift; path = minimaltesterbrownfield/Messaging.swift; sourceTree = "<group>"; };
+		7B4F3AE8BD9A4F8381D889FC /* ReactNativeView.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeView.swift; path = minimaltesterbrownfield/ReactNativeView.swift; sourceTree = "<group>"; };
+		8C01F3C3FD7B4A40BF37403F /* ReactNativeDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeDelegate.swift; path = minimaltesterbrownfield/ReactNativeDelegate.swift; sourceTree = "<group>"; };
+		8F5B048DC50C43E3B2BEA897 /* ExpoAppDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ExpoAppDelegate.swift; path = minimaltesterbrownfield/ExpoAppDelegate.swift; sourceTree = "<group>"; };
+		A632793DB62AC94D8DD148CE /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-minimaltester-minimaltesterbrownfield/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = minimaltester/SplashScreen.storyboard; sourceTree = "<group>"; };
+		AA31C75083F7467797782A25 /* ExpoAppDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ExpoAppDelegate.swift; path = minimaltesterbrownfield/ExpoAppDelegate.swift; sourceTree = "<group>"; };
+		B40F6AB3378145C4936565D4 /* ReactNativeView.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeView.swift; path = ReactNativeView.swift; sourceTree = "<group>"; };
+		B9F86AC3DD43E6118B4DFF7D /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-minimaltester/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		B0CE53A9CE031D7D00E2F0FC /* Pods-minimaltester.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-minimaltester.release.xcconfig"; path = "Target Support Files/Pods-minimaltester/Pods-minimaltester.release.xcconfig"; sourceTree = "<group>"; };
+		B6B84DE78AFE8D9B0BF3A1AE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = minimaltester/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		BC33192A1BF1473ABE4B30FF /* ReactNativeHostManager.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeHostManager.swift; path = ReactNativeHostManager.swift; sourceTree = "<group>"; };
+		C6A7E0A08C2073E007A6A4B6 /* Pods-minimaltester-minimaltesterbrownfield.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-minimaltester-minimaltesterbrownfield.debug.xcconfig"; path = "Target Support Files/Pods-minimaltester-minimaltesterbrownfield/Pods-minimaltester-minimaltesterbrownfield.debug.xcconfig"; sourceTree = "<group>"; };
+		CA4AA5814BAF40159CEEA350 /* Messaging.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = Messaging.swift; path = Messaging.swift; sourceTree = "<group>"; };
+		DC4DCCFA8FA7E79C4A057F36 /* Pods-minimaltester-minimaltesterbrownfield.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-minimaltester-minimaltesterbrownfield.release.xcconfig"; path = "Target Support Files/Pods-minimaltester-minimaltesterbrownfield/Pods-minimaltester-minimaltesterbrownfield.release.xcconfig"; sourceTree = "<group>"; };
+		E13162346AC08B1E87753822 /* Pods-minimaltester.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-minimaltester.release.xcconfig"; path = "Target Support Files/Pods-minimaltester/Pods-minimaltester.release.xcconfig"; sourceTree = "<group>"; };
+		BFB19C1B83684E0F93B77F74 /* ReactNativeHostManager.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeHostManager.swift; path = minimaltesterbrownfield/ReactNativeHostManager.swift; sourceTree = "<group>"; };
+		D4BCEA000CC8EF23719451B0 /* Pods_minimaltester_minimaltesterbrownfield.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_minimaltester_minimaltesterbrownfield.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D758FCF0F9A6905996BB74EA /* Pods-minimaltester.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-minimaltester.debug.xcconfig"; path = "Target Support Files/Pods-minimaltester/Pods-minimaltester.debug.xcconfig"; sourceTree = "<group>"; };
+		DD1F738D79D2496DA090CA02 /* ReactNativeViewController.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeViewController.swift; path = minimaltesterbrownfield/ReactNativeViewController.swift; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-minimaltester/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		EFB260E88C5D41179427FB5F /* ReactNativeDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeDelegate.swift; path = ReactNativeDelegate.swift; sourceTree = "<group>"; };
+		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = minimaltester/AppDelegate.swift; sourceTree = "<group>"; };
+		F11748442D0722820044C1D9 /* minimaltester-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "minimaltester-Bridging-Header.h"; path = "minimaltester/minimaltester-Bridging-Header.h"; sourceTree = "<group>"; };
+		F1897054E8EB449588AD543A /* ReactNativeViewController.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; path = ReactNativeViewController.swift; sourceTree = "<group>"; };
+		F9E6C4DB59158EA20C04837B /* Pods-minimaltester-minimaltesterbrownfield.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-minimaltester-minimaltesterbrownfield.release.xcconfig"; path = "Target Support Files/Pods-minimaltester-minimaltesterbrownfield/Pods-minimaltester-minimaltesterbrownfield.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		0828A7B9316B632E46498FAD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D19BEEDF3C6D4273BE5EE97B /* Pods_minimaltester_minimaltesterbrownfield.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96905EF65AED1B983A6B3ABC /* libPods-minimaltester.a in Frameworks */,
+				C4527CC3DBDE587C78B5CB12 /* Pods_minimaltester.framework in Frameworks */,
+				E2D36015D7B944A1D6108F5E /* Pods_minimaltester.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B4FF9BB0EA555935619B8519 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7559F23945462FBFE55EB02B /* Pods_minimaltester_minimaltesterbrownfield.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -48,25 +122,81 @@
 		13B07FAE1A68108700A75B9A /* minimaltester */ = {
 			isa = PBXGroup;
 			children = (
+				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
+				F11748442D0722820044C1D9 /* minimaltester-Bridging-Header.h */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
-				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
-				408BE0AA2DC41874004192D3 /* AppDelegate.swift */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				408BE0AC2DC418B5004192D3 /* minimaltester-Bridging-Header.h */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				20E7B3F88382486C86FF924E /* noop-file.swift */,
+				05BA831F9756B673C9BBE617 /* PrivacyInfo.xcprivacy */,
+				B6B84DE78AFE8D9B0BF3A1AE /* PrivacyInfo.xcprivacy */,
 			);
 			name = minimaltester;
+			sourceTree = "<group>";
+		};
+		297E74C9BE17A62984E294A1 /* ExpoModulesProviders */ = {
+		1C70D8B3D2AECC85061C377D /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				BE7A8274E8BE715D5D44DA2B /* minimaltester */,
+				4C68D975F4B685E936979D27 /* minimaltesterbrownfield */,
+				5AE231EA721443113504B772 /* minimaltester */,
+				35F2B4EDEDB311BD14C4455E /* minimaltesterbrownfield */,
+			);
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				58EEBF8E8E6FB1BC6CAF49B5 /* libPods-minimaltester.a */,
+				524602FD19ECF96E08A27B79 /* Pods_minimaltester.framework */,
+				3E2E3F50EA16E330FDC9C56C /* Pods_minimaltester_minimaltesterbrownfield.framework */,
+				7948F5DE45F4CCA13BC7CCE1 /* Pods_minimaltester.framework */,
+				D4BCEA000CC8EF23719451B0 /* Pods_minimaltester_minimaltesterbrownfield.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		487549DC9BB540479F11CE20 /* minimaltesterbrownfield */ = {
+		35F2B4EDEDB311BD14C4455E /* minimaltesterbrownfield */ = {
+			isa = PBXGroup;
+			children = (
+				BC33192A1BF1473ABE4B30FF /* ReactNativeHostManager.swift */,
+				CA4AA5814BAF40159CEEA350 /* Messaging.swift */,
+				B40F6AB3378145C4936565D4 /* ReactNativeView.swift */,
+				57BD76673CFB456096412D4F /* ReactNativeViewController.swift */,
+				4BEA1E871928440BAE9C963D /* ExpoAppDelegate.swift */,
+				EFB260E88C5D41179427FB5F /* ReactNativeDelegate.swift */,
+				A632793DB62AC94D8DD148CE /* ExpoModulesProvider.swift */,
+			);
+			name = minimaltesterbrownfield;
+			path = "/Users/patrykmleczek/Desktop/expo/apps/minimal-tester/ios/minimaltesterbrownfield";
+			sourceTree = "<group>";
+		};
+		4C68D975F4B685E936979D27 /* minimaltesterbrownfield */ = {
+		5AE231EA721443113504B772 /* minimaltester */ = {
+			isa = PBXGroup;
+			children = (
+				49DFE6AE523FAACF5765097B /* ExpoModulesProvider.swift */,
+				1BD6989B0D56002172F61C58 /* ExpoModulesProvider.swift */,
+			);
+			name = minimaltesterbrownfield;
+			name = minimaltester;
+			sourceTree = "<group>";
+		};
+		7C6E022EDB3F41AC8263C8BC /* minimaltesterbrownfield */ = {
+			isa = PBXGroup;
+			children = (
+				034ED5E80B444A2B8FB1DFA3 /* ReactNativeHostManager.swift */,
+				632501C1139B40D7ACA9F6D6 /* Messaging.swift */,
+				5C3F4764CFF74FFA9E6218E0 /* ReactNativeView.swift */,
+				F1897054E8EB449588AD543A /* ReactNativeViewController.swift */,
+				77B96E96905541BB9C1F4A2D /* ExpoAppDelegate.swift */,
+				4D9E3508515F41689B15D18B /* ReactNativeDelegate.swift */,
+			);
+			name = minimaltesterbrownfield;
+			path = "/Users/gabriel/Workspace/expo/expo/apps/minimal-tester/ios/minimaltesterbrownfield";
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -83,8 +213,13 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				D65327D7A22EEC0BE12398D9 /* Pods */,
-				D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */,
+				487549DC9BB540479F11CE20 /* minimaltesterbrownfield */,
+				8CC6EF72273840051C403222 /* Pods */,
+				297E74C9BE17A62984E294A1 /* ExpoModulesProviders */,
+				7C6E022EDB3F41AC8263C8BC /* minimaltesterbrownfield */,
+				9FAFD98695548F2A2EAC0848 /* Pods */,
+				1C70D8B3D2AECC85061C377D /* ExpoModulesProviders */,
+				C0AB576D2F1F2B8700DDF7A8 /* Recovered References */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -95,16 +230,33 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* minimaltester.app */,
+				75D786E36F2849E58B20CB4C /* minimaltesterbrownfield.framework */,
+				0ECB103E2B1E41ABB632C9C9 /* minimaltesterbrownfield.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		92DBD88DE9BF7D494EA9DA96 /* minimaltester */ = {
+		8CC6EF72273840051C403222 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */,
+				06AF64CE8ECB2C1F3CF3E4B5 /* Pods-minimaltester.debug.xcconfig */,
+				E13162346AC08B1E87753822 /* Pods-minimaltester.release.xcconfig */,
+				C6A7E0A08C2073E007A6A4B6 /* Pods-minimaltester-minimaltesterbrownfield.debug.xcconfig */,
+				DC4DCCFA8FA7E79C4A057F36 /* Pods-minimaltester-minimaltesterbrownfield.release.xcconfig */,
 			);
-			name = minimaltester;
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		9FAFD98695548F2A2EAC0848 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				D758FCF0F9A6905996BB74EA /* Pods-minimaltester.debug.xcconfig */,
+				B0CE53A9CE031D7D00E2F0FC /* Pods-minimaltester.release.xcconfig */,
+				2115662F5C3EDF6CC7E5F44C /* Pods-minimaltester-minimaltesterbrownfield.debug.xcconfig */,
+				F9E6C4DB59158EA20C04837B /* Pods-minimaltester-minimaltesterbrownfield.release.xcconfig */,
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -116,21 +268,20 @@
 			path = minimaltester/Supporting;
 			sourceTree = "<group>";
 		};
-		D65327D7A22EEC0BE12398D9 /* Pods */ = {
+		BE7A8274E8BE715D5D44DA2B /* minimaltester */ = {
+		C0AB576D2F1F2B8700DDF7A8 /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
-				6C2E3173556A471DD304B334 /* Pods-minimaltester.debug.xcconfig */,
-				7A4D352CD337FB3A3BF06240 /* Pods-minimaltester.release.xcconfig */,
+				B9F86AC3DD43E6118B4DFF7D /* ExpoModulesProvider.swift */,
+				BFB19C1B83684E0F93B77F74 /* ReactNativeHostManager.swift */,
+				79FB3089D46146B2BAF9B3FD /* Messaging.swift */,
+				7B4F3AE8BD9A4F8381D889FC /* ReactNativeView.swift */,
+				DD1F738D79D2496DA090CA02 /* ReactNativeViewController.swift */,
+				8F5B048DC50C43E3B2BEA897 /* ExpoAppDelegate.swift */,
+				8C01F3C3FD7B4A40BF37403F /* ReactNativeDelegate.swift */,
 			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
-		D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				92DBD88DE9BF7D494EA9DA96 /* minimaltester */,
-			);
-			name = ExpoModulesProviders;
+			name = minimaltester;
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -141,13 +292,15 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "minimaltester" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				09567D9806DDFC579BBC37F3 /* [Expo] Configure project */,
+				9A5BB747A7A0A3BCE47CBFD6 /* [Expo] Configure project */,
+				2EE4F4E4ADB205C8F7863171 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				1C1C473D3C42ACF6903296D3 /* [CP] Embed Pods Frameworks */,
+				3BAA3C2E03DEEACEE5FFDB7D /* [CP] Embed Pods Frameworks */,
+				1BD2848BBB4D8D82D8DF7D09 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -158,6 +311,34 @@
 			productReference = 13B07F961A680F5B00A75B9A /* minimaltester.app */;
 			productType = "com.apple.product-type.application";
 		};
+		E5BEE2A324BC46ED83724545 /* minimaltesterbrownfield */ = {
+		3631C697DDD143E1B0171DB5 /* minimaltesterbrownfield */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 72735F0602E644009D135303 /* Build configuration list for PBXNativeTarget "minimaltesterbrownfield" */;
+			buildConfigurationList = 7A53170E006649D7A9A3FAD8 /* Build configuration list for PBXNativeTarget "minimaltesterbrownfield" */;
+			buildPhases = (
+				83C4C9E931EB9CA5F80E306B /* [CP] Check Pods Manifest.lock */,
+				85AC744550B9B15D53CC6C51 /* [CP] Check Pods Manifest.lock */,
+				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				3372E39F88D4C576647F322F /* [Expo] Configure project */,
+				970CF4F644384BF2AE05B4E1 /* Sources */,
+				0828A7B9316B632E46498FAD /* Frameworks */,
+				710C37F76C841A76844918C7 /* [CP] Copy Pods Resources */,
+				3D0664A7CA09D733B4EA52D5 /* [Expo] Configure project */,
+				04C95FF9C8814C978E8F47FE /* Sources */,
+				B4FF9BB0EA555935619B8519 /* Frameworks */,
+				6B7357FF9C023513B2FA6B8E /* [CP] Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = minimaltesterbrownfield;
+			productName = minimaltesterbrownfield;
+			productReference = 75D786E36F2849E58B20CB4C /* minimaltesterbrownfield.framework */;
+			productReference = 0ECB103E2B1E41ABB632C9C9 /* minimaltesterbrownfield.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -167,9 +348,7 @@
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = C8D8QTF339;
 						LastSwiftMigration = 1250;
-						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -187,6 +366,8 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* minimaltester */,
+				E5BEE2A324BC46ED83724545 /* minimaltesterbrownfield */,
+				3631C697DDD143E1B0171DB5 /* minimaltesterbrownfield */,
 			);
 		};
 /* End PBXProject section */
@@ -199,6 +380,8 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
+				34C5E0452A74357905ED5169 /* PrivacyInfo.xcprivacy in Resources */,
+				C9AE6CE96C58368B6AC63DF6 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,6 +390,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -219,7 +403,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\n\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli')\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
+			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Source .xcode.env.updates if it exists to allow\n# SKIP_BUNDLING to be unset if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.updates\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.updates\"\nfi\n# Source local changes to allow overrides\n# if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
 		};
 		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -243,7 +427,48 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		09567D9806DDFC579BBC37F3 /* [Expo] Configure project */ = {
+		3372E39F88D4C576647F322F /* [Expo] Configure project */ = {
+		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-minimaltester-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		1BD2848BBB4D8D82D8DF7D09 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-minimaltester/Pods-minimaltester-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermesvm.framework/hermesvm",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermesvm.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-minimaltester/Pods-minimaltester-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		2EE4F4E4ADB205C8F7863171 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -267,7 +492,32 @@
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-minimaltester/expo-configure-project.sh\"\n";
 		};
-		1C1C473D3C42ACF6903296D3 /* [CP] Embed Pods Frameworks */ = {
+		3D0664A7CA09D733B4EA52D5 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/.xcode.env",
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/minimaltesterbrownfield/minimaltesterbrownfield.entitlements",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-minimaltester-minimaltesterbrownfield/expo-configure-project.sh",
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/Pods/Target Support Files/Pods-minimaltester-minimaltesterbrownfield/ExpoModulesProvider.swift",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-minimaltester-minimaltesterbrownfield/expo-configure-project.sh\"\n";
+		};
+		3BAA3C2E03DEEACEE5FFDB7D /* [CP] Embed Pods Frameworks */ = {
+		6B7357FF9C023513B2FA6B8E /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -275,14 +525,81 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-minimaltester/Pods-minimaltester-frameworks.sh",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermesvm.framework/hermesvm",
+				"${PODS_ROOT}/Target Support Files/Pods-minimaltester-minimaltesterbrownfield/Pods-minimaltester-minimaltesterbrownfield-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/EXUpdates.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RCT-Folly/RCT-Folly_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ReachabilitySwift/ReachabilitySwift.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React-Core_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React-cxxreact_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/SDWebImage/SDWebImage.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/boost/boost_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/EXDevLauncher.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/glog/glog_privacy.bundle",
 			);
 			name = "[CP] Embed Pods Frameworks";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermesvm.framework",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXUpdates.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCT-Folly_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ReachabilitySwift.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-Core_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-cxxreact_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SDWebImage.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/boost_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevLauncher.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/glog_privacy.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-minimaltester/Pods-minimaltester-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		710C37F76C841A76844918C7 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-minimaltester-minimaltesterbrownfield/Pods-minimaltester-minimaltesterbrownfield-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/EXUpdates.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RCT-Folly/RCT-Folly_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ReachabilitySwift/ReachabilitySwift.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React-Core_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React-cxxreact_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/SDWebImage/SDWebImage.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/boost/boost_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/EXDevLauncher.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/glog/glog_privacy.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXUpdates.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCT-Folly_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ReachabilitySwift.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-Core_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-cxxreact_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SDWebImage.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/boost_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevLauncher.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/glog_privacy.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-minimaltester-minimaltesterbrownfield/Pods-minimaltester-minimaltesterbrownfield-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-minimaltester-minimaltesterbrownfield/Pods-minimaltester-minimaltesterbrownfield-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
@@ -325,16 +642,93 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-minimaltester/Pods-minimaltester-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		83C4C9E931EB9CA5F80E306B /* [CP] Check Pods Manifest.lock */ = {
+		85AC744550B9B15D53CC6C51 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-minimaltester-minimaltesterbrownfield-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9A5BB747A7A0A3BCE47CBFD6 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/.xcode.env",
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/minimaltester/minimaltester.entitlements",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-minimaltester/expo-configure-project.sh",
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/Pods/Target Support Files/Pods-minimaltester/ExpoModulesProvider.swift",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-minimaltester/expo-configure-project.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		04C95FF9C8814C978E8F47FE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6F9BD8E3EAB1402EA5158FFD /* ReactNativeHostManager.swift in Sources */,
+				EED24139D38A4326B603DA6F /* Messaging.swift in Sources */,
+				54DC818C26344A338FBD223F /* ReactNativeView.swift in Sources */,
+				A01F9B1FDF6D48F0822E6832 /* ReactNativeViewController.swift in Sources */,
+				CA92A3296199421E9509A2A9 /* ExpoAppDelegate.swift in Sources */,
+				43C7C811D508488599D681D7 /* ReactNativeDelegate.swift in Sources */,
+				E4BC6394748FE19E01A0354F /* ExpoModulesProvider.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		13B07F871A680F5B00A75B9A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */,
-				408BE0AB2DC41874004192D3 /* AppDelegate.swift in Sources */,
-				C915C11236D5469AB5796BED /* noop-file.swift in Sources */,
+				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
+				6339C9F34388DBB82F435CD3 /* ExpoModulesProvider.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		970CF4F644384BF2AE05B4E1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				435BDB3DC69840AE9B29F7F4 /* ReactNativeHostManager.swift in Sources */,
+				9ADCE841A00849AA9354F08E /* Messaging.swift in Sources */,
+				E80B12B740014503A23B87CE /* ReactNativeView.swift in Sources */,
+				5FE1EE223A124930AB42B6C0 /* ReactNativeViewController.swift in Sources */,
+				2254091221B84C9AA553974E /* ExpoAppDelegate.swift in Sources */,
+				3DF810F5FAA84349BA1369BD /* ReactNativeDelegate.swift in Sources */,
+				FD75274D2DFE9F49F0F5E7B6 /* ExpoModulesProvider.swift in Sources */,
+				2BFB6924A0DE867335609929 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -343,15 +737,13 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6C2E3173556A471DD304B334 /* Pods-minimaltester.debug.xcconfig */;
+			baseConfigurationReference = 06AF64CE8ECB2C1F3CF3E4B5 /* Pods-minimaltester.debug.xcconfig */;
+			baseConfigurationReference = D758FCF0F9A6905996BB74EA /* Pods-minimaltester.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = minimaltester/minimaltester.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = C8D8QTF339;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -372,6 +764,7 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.community.minimaltester;
 				PRODUCT_NAME = minimaltester;
+				SWIFT_OBJC_BRIDGING_HEADER = "minimaltester/minimaltester-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -381,15 +774,13 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7A4D352CD337FB3A3BF06240 /* Pods-minimaltester.release.xcconfig */;
+			baseConfigurationReference = E13162346AC08B1E87753822 /* Pods-minimaltester.release.xcconfig */;
+			baseConfigurationReference = B0CE53A9CE031D7D00E2F0FC /* Pods-minimaltester.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = minimaltester/minimaltester.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = C8D8QTF339;
 				INFOPLIST_FILE = minimaltester/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -405,17 +796,40 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.community.minimaltester;
 				PRODUCT_NAME = minimaltester;
+				SWIFT_OBJC_BRIDGING_HEADER = "minimaltester/minimaltester-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
 		};
+		2D849B51D9384D6889D4F66D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C6A7E0A08C2073E007A6A4B6 /* Pods-minimaltester-minimaltesterbrownfield.debug.xcconfig */;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_ENTITLEMENTS = minimaltesterbrownfield/minimaltesterbrownfield.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_MODULE_VERIFIER = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = minimaltesterbrownfield/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = minimaltesterbrownfield;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+				PRODUCT_BUNDLE_IDENTIFIER = com.community.minimaltesterbrownfield;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_SCRIPT_SANDBOXING = NO;
+			};
+			name = Debug;
+		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CC = "";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -442,10 +856,8 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				CXX = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -461,9 +873,20 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD = "";
-				LDPLUSPLUS = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -471,18 +894,8 @@
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DRN_FABRIC_ENABLED",
-				);
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(inherited)",
-					"-DRN_FABRIC_ENABLED",
-				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -494,7 +907,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CC = "";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++20";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -521,44 +933,90 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				CXX = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
-				LD = "";
-				LDPLUSPLUS = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					"-DRN_FABRIC_ENABLED",
-				);
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(inherited)",
-					"-DRN_FABRIC_ENABLED",
-				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)";
+				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E03CDD14D62740C2915523EE /* Release */ = {
+		A7B705EC444A46C291FEAFFF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DC4DCCFA8FA7E79C4A057F36 /* Pods-minimaltester-minimaltesterbrownfield.release.xcconfig */;
+			baseConfigurationReference = 2115662F5C3EDF6CC7E5F44C /* Pods-minimaltester-minimaltesterbrownfield.debug.xcconfig */;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_ENTITLEMENTS = minimaltesterbrownfield/minimaltesterbrownfield.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_MODULE_VERIFIER = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = minimaltesterbrownfield/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = minimaltesterbrownfield;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+				PRODUCT_BUNDLE_IDENTIFIER = com.community.minimaltesterbrownfield;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_SCRIPT_SANDBOXING = NO;
+			};
+			name = Debug;
+		};
+		B343B89984824EE18D297C5C /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F9E6C4DB59158EA20C04837B /* Pods-minimaltester-minimaltesterbrownfield.release.xcconfig */;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_ENTITLEMENTS = minimaltesterbrownfield/minimaltesterbrownfield.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_MODULE_VERIFIER = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = minimaltesterbrownfield/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = minimaltesterbrownfield;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
+				PRODUCT_BUNDLE_IDENTIFIER = com.community.minimaltesterbrownfield;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_SCRIPT_SANDBOXING = NO;
 			};
 			name = Release;
 		};
@@ -570,6 +1028,18 @@
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
 				13B07F951A680F5B00A75B9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		72735F0602E644009D135303 /* Build configuration list for PBXNativeTarget "minimaltesterbrownfield" */ = {
+		7A53170E006649D7A9A3FAD8 /* Build configuration list for PBXNativeTarget "minimaltesterbrownfield" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2D849B51D9384D6889D4F66D /* Debug */,
+				E03CDD14D62740C2915523EE /* Release */,
+				A7B705EC444A46C291FEAFFF /* Debug */,
+				B343B89984824EE18D297C5C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

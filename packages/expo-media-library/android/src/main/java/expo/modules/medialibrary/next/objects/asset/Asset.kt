@@ -7,7 +7,9 @@ import expo.modules.medialibrary.next.objects.asset.delegates.AssetDelegate
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
+import expo.modules.medialibrary.next.records.AssetInfo
 import expo.modules.medialibrary.next.records.Location
+import expo.modules.medialibrary.next.records.Shape
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -29,6 +31,9 @@ class Asset(val assetDelegate: AssetDelegate) : SharedObject() {
   suspend fun getWidth(): Int =
     assetDelegate.getWidth()
 
+  suspend fun getShape(): Shape? =
+    assetDelegate.getShape()
+
   suspend fun getMediaType(): MediaType =
     assetDelegate.getMediaType()
 
@@ -37,6 +42,9 @@ class Asset(val assetDelegate: AssetDelegate) : SharedObject() {
 
   suspend fun getUri(): Uri =
     assetDelegate.getUri()
+
+  suspend fun getInfo(): AssetInfo =
+    assetDelegate.getInfo()
 
   suspend fun getMimeType(): MimeType =
     assetDelegate.getMimeType()

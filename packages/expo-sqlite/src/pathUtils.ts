@@ -34,3 +34,7 @@ export function createDatabasePath(databaseName: string, directory?: string): st
 
   return `${removeTrailingSlash(resolvedDirectory)}/${removeLeadingSlash(databaseName)}`;
 }
+
+export function basename(path: string): string {
+  return path.substring(path.lastIndexOf('/') + 1);
+}

@@ -209,7 +209,7 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
       completionHandler("Missing JS Runtime")
       return
     }
-    appContext.executeOnJavaScriptThread {
+    try? appContext.runtime.schedule {
       let wrappedSource = NATIVE_EVAL_WRAPPER_SCRIPT
         .replacingOccurrences(of: "\"%%DEFERRED_ID%%\"", with: String(deferredId))
         .replacingOccurrences(of: "\"%%WEBVIEW_ID%%\"", with: String(webViewId))

@@ -5,34 +5,8 @@ import ExpoModulesCore
 
 final class SectionProps: UIBaseViewProps {
   @Field var title: String?
-  @Field var collapsible: Bool = false
-}
-
-internal final class SectionHeaderProps: ExpoSwiftUI.ViewProps {}
-internal struct SectionHeader: ExpoSwiftUI.View {
-  @ObservedObject var props: SectionHeaderProps
-
-  var body: some View {
-    Children()
-  }
-}
-
-internal final class SectionFooterProps: ExpoSwiftUI.ViewProps {}
-internal struct SectionFooter: ExpoSwiftUI.View {
-  @ObservedObject var props: SectionFooterProps
-
-  var body: some View {
-    Children()
-  }
-}
-
-internal final class SectionContentProps: ExpoSwiftUI.ViewProps {}
-internal struct SectionContent: ExpoSwiftUI.View {
-  @ObservedObject var props: SectionContentProps
-
-  var body: some View {
-    Children()
-  }
+  @Field var isExpanded: Bool?
+  var onIsExpandedChange = EventDispatcher()
 }
 
 internal struct SectionView: ExpoSwiftUI.View {
@@ -40,62 +14,90 @@ internal struct SectionView: ExpoSwiftUI.View {
   @State private var isExpanded: Bool = true
 
   var body: some View {
-    if #available(iOS 17.0, macOS 14.0, tvOS 17.0, *), props.collapsible {
+    if #available(iOS 17.0, macOS 14.0, tvOS 17.0, *), let propIsExpanded = props.isExpanded {
       collapsibleSection
+        .onAppear {
+          isExpanded = propIsExpanded
+        }
+        .onChange(of: props.isExpanded) { newValue in
+          if let newValue {
+            isExpanded = newValue
+          }
+        }
+        .onChange(of: isExpanded) { newValue in
+          if propIsExpanded != newValue {
+            props.onIsExpandedChange(["isExpanded": newValue])
+          }
+        }
     } else {
       regularSection
     }
   }
 
   @ViewBuilder
-  private var contentChildren: some View {
-    if let content = props.children?
-      .compactMap({ $0.childView as? SectionContent })
-      .first
-    {
-      content
-    }
-  }
-
-  @ViewBuilder
-  private var headerView: some View {
-    if let header = props.children?
-      .compactMap({ $0.childView as? SectionHeader })
-      .first
-    {
-      header
-    } else if let title = props.title, !title.isEmpty {
-      Text(title).textCase(nil)
-    }
-  }
-
-  @ViewBuilder
-  private var footerView: some View {
-    if let footer = props.children?
-      .compactMap({ $0.childView as? SectionFooter })
-      .first
-    {
-      footer
-    }
-  }
-
-  @ViewBuilder
   private var regularSection: some View {
-    Section {
-      contentChildren
-    } header: {
-      headerView
-    } footer: {
-      footerView
+    if let title = props.title, !title.isEmpty {
+      Section(title) {
+        contentChildren
+      }
+    } else if let headerView, let footerView {
+      Section {
+        contentChildren
+      } header: {
+        headerView
+      } footer: {
+        footerView
+      }
+    } else if let headerView {
+      Section {
+        contentChildren
+      } header: {
+        headerView
+      }
+    } else if let footerView {
+      Section {
+        contentChildren
+      } footer: {
+        footerView
+      }
+    } else {
+      Section {
+        contentChildren
+      }
     }
   }
 
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
+  @ViewBuilder
   private var collapsibleSection: some View {
-    Section(isExpanded: $isExpanded) {
-      contentChildren
-    } header: {
-      headerView
+    if let title = props.title, !title.isEmpty {
+      Section(title, isExpanded: $isExpanded) {
+        contentChildren
+      }
+    } else {
+      Section(isExpanded: $isExpanded) {
+        contentChildren
+      } header: {
+        headerView
+      }
     }
+  }
+  
+  private var contentChildren: SectionContent? {
+    props.children?
+      .compactMap({ $0.childView as? SectionContent })
+      .first
+  }
+
+  private var headerView: SectionHeader? {
+    props.children?
+      .compactMap({ $0.childView as? SectionHeader })
+      .first
+  }
+
+  private var footerView: SectionFooter? {
+    props.children?
+      .compactMap({ $0.childView as? SectionFooter })
+      .first
   }
 }

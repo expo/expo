@@ -553,6 +553,18 @@ export { PermissionStatus, PermissionResponse, PermissionExpiration };
  * @returns A promise that fulfills with a `boolean`, indicating whether the Contacts API is available on the current device. It always resolves to `false` on web.
  */
 export declare function isAvailableAsync(): Promise<boolean>;
+/**
+ * Checks if any contacts exist on the device without querying all contacts. This method requires contacts read permission.
+ * @return A promise that fulfills with a `boolean`, indicating whether there are any contacts on the device.
+ * @example
+ * ```js
+ * const hasContacts = await Contacts.hasContactsAsync();
+ * if (hasContacts) {
+ *   console.log('Contacts are available');
+ * }
+ * ```
+ */
+export declare function hasContactsAsync(): Promise<boolean>;
 export declare function shareContactAsync(contactId: string, message: string, shareOptions?: ShareOptions): Promise<any>;
 /**
  * Return a list of contacts that fit a given criteria. You can get all of the contacts by passing no criteria.

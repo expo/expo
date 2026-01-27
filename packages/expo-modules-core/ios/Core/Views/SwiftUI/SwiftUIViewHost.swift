@@ -57,6 +57,10 @@ extension ExpoSwiftUI {
       ObjectIdentifier(view)
     }
   }
+
+  public protocol RNHostViewProtocol {
+    var matchContents: Bool { get set }
+  }
 }
 
 // ViewSizeWrapper attaches an observer to the view's bounds and updates the frame modifier of the view host.
@@ -72,8 +76,12 @@ private struct ViewSizeWrapper: View {
   }
 
   var body: some View {
+    if let rnHostView = viewHost.view as? ExpoSwiftUI.RNHostViewProtocol, rnHostView.matchContents {
       viewHost
         .frame(width: viewSizeModel.viewFrame.width, height: viewSizeModel.viewFrame.height)
+    } else {
+      viewHost
+    }
   }
 }
 

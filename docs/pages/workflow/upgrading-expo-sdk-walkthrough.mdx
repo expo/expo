@@ -1,18 +1,24 @@
 ---
 title: Upgrade Expo SDK
 description: Learn how to incrementally upgrade the Expo SDK version in your project.
+hasVideoLink: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { Tabs, Tab } from '~/ui/components/Tabs';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 > **info** We recommend upgrading SDK versions incrementally, one at a time. Doing so will help you pinpoint breakages and issues that arise during the upgrade process.
 
 With a new SDK release, the latest version enters the current release status. This applies to Expo Go as it only supports the latest SDK version and previous versions are no longer supported. We recommend using [development builds](/develop/development-builds/introduction/) for production apps as the backwards compatibility for older SDK versions on EAS services tends to be much longer, but not forever.
 
 If you are looking to install a specific version of Expo Go, visit [expo.dev/go](https://expo.dev/go). It supports downloads for Android devices/emulators and iOS simulators. However, due to iOS platform restrictions, only the latest version of Expo Go is available for installation on physical iOS devices.
+
+<VideoBoxLink
+  videoId="QuN63BRRhAM"
+  title="Watch: How to upgrade from Expo SDK 53 to SDK 54 in 5 minutes"
+/>
 
 ## How to upgrade to the latest SDK version
 
@@ -22,20 +28,14 @@ If you are looking to install a specific version of Expo Go, visit [expo.dev/go]
 
 Install the new version of the Expo package:
 
-<Tabs>
-  <Tab label="npm">
-    <Terminal cmd={['$ npm install expo@^54.0.0']} />
-  </Tab>
-  <Tab label="Yarn">
-    <Terminal cmd={['$ yarn add expo@^54.0.0']} />
-  </Tab>
-  <Tab label="pnpm">
-    <Terminal cmd={['$ pnpm add expo@^54.0.0']} />
-  </Tab>
-  <Tab label="Bun">
-    <Terminal cmd={['$ bun install expo@^54.0.0']} />
-  </Tab>
-</Tabs>
+<Terminal
+  cmd={{
+    npm: ['$ npm install expo@^54.0.0'],
+    yarn: ['$ yarn add expo@^54.0.0'],
+    pnpm: ['$ pnpm add expo@^54.0.0'],
+    bun: ['$ bun install expo@^54.0.0'],
+  }}
+/>
 
 Depending on which SDK you're upgrading to, substitute the `expo@^54.0.0` with the version range of the Expo SDK version you're targeting. For example, `expo@^54.0.0` stands for SDK 54.
 

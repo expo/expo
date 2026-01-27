@@ -23,7 +23,7 @@ New and upcoming features that are planned to come to Metro include:
 - Compiling Flow code to native machine code with Static Hermes. Learn more in the [Static Hermes](https://www.youtube.com/watch?v=GUM64b-gAGg) talk by Tzvetan Mikov.
 - Data fetching, streaming, React Suspense, server rendering, and build-time static rendering with universal React Server Components for all platforms. Learn more in the [Universal React Server Components](https://www.youtube.com/watch?v=djhEgxQf3Kw) talk at React Conf 2024.
 
-The Expo team collaborates with Meta to develop Metro for Expo Router, adding features like [file-based routing](/develop/file-based-routing/), [web support](/guides/customizing-metro/#web-support), [bundle splitting](/guides/customizing-metro/#bundle-splitting), [tree shaking](/guides/tree-shaking/), [CSS](/versions/latest/config/metro/#css), [DOM components](/guides/dom-components/), server components, and [API routes](/router/reference/api-routes/).
+The Expo team collaborates with Meta to develop Metro for Expo Router, adding features like [file-based routing](/develop/file-based-routing/), [web support](/guides/customizing-metro/#web-support), [bundle splitting](/guides/customizing-metro/#bundle-splitting), [tree shaking](/guides/tree-shaking/), [CSS](/versions/latest/config/metro/#css), [DOM components](/guides/dom-components/), server components, and [API routes](/router/web/api-routes/).
 
 ## Battle-tested at scale
 
@@ -31,7 +31,7 @@ Nearly every React Native app in the world uses Metro, making it a battle-tested
 
 ## On-demand processing
 
-In development, Metro doesn't perform any platform-specific work until requested. This allows developers to work on large projects without paying a performance cost for the number of platforms they support. In conjunction with aggressive caching and [async routes](/router/reference/async-routes/), developers can incrementally bundle only the parts of the app that they're actively working on.
+In development, Metro doesn't perform any platform-specific work until requested. This allows developers to work on large projects without paying a performance cost for the number of platforms they support. In conjunction with aggressive caching and [async routes](/router/web/async-routes/), developers can incrementally bundle only the parts of the app that they're actively working on.
 
 ## Multi-dimensional
 

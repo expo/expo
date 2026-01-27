@@ -47,6 +47,11 @@ const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const storeContext_1 = require("./global-state/storeContext");
 const import_mode_1 = __importDefault(require("./import-mode"));
+const ZoomTransitionEnabler_1 = require("./link/zoom/ZoomTransitionEnabler");
+const zoom_transition_context_providers_1 = require("./link/zoom/zoom-transition-context-providers");
+const navigationEvents_1 = require("./navigationEvents");
+const utils_1 = require("./navigationEvents/utils");
+const navigationParams_1 = require("./navigationParams");
 const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
 const SuspenseFallback_1 = require("./views/SuspenseFallback");
@@ -194,13 +199,13 @@ function getQualifiedRouteComponent(value) {
         const store = (0, storeContext_1.useExpoRouterStore)();
         if (isFocused) {
             const state = navigation.getState();
-            const isLeaf = !('state' in state.routes[state.index]);
+            const isLeaf = !(state && 'state' in state.routes[state.index]);
             if (isLeaf && stateForPath)
                 store.setFocusedState(stateForPath);
         }
         (0, react_1.useEffect)(() => navigation.addListener('focus', () => {
             const state = navigation.getState();
-            const isLeaf = !('state' in state.routes[state.index]);
+            const isLeaf = !(state && 'state' in state.routes[state.index]);
             // Because setFocusedState caches the route info, this call will only trigger rerenders
             // if the component itself didn’t rerender and the route info changed.
             // Otherwise, the update from the `if` above will handle it,
@@ -208,13 +213,30 @@ function getQualifiedRouteComponent(value) {
             if (isLeaf && stateForPath)
                 store.setFocusedState(stateForPath);
         }), [navigation]);
-        return (<Route_1.Route node={value} route={route}>
-        <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
-          <ScreenComponent {...props} 
+        (0, react_1.useEffect)(() => {
+            return navigation.addListener('transitionEnd', (e) => {
+                if (!e?.data?.closing) {
+                    // When navigating to a screen, remove the no animation param to re-enable animations
+                    // Otherwise the navigation back would also have no animation
+                    if ((0, navigationParams_1.hasParam)(route?.params, navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
+                        navigation.replaceParams((0, navigationParams_1.removeParams)(route?.params, [navigationParams_1.INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]));
+                    }
+                }
+            });
+        }, [navigation]);
+        const isRouteType = value.type === 'route';
+        const hasRouteKey = !!route?.key;
+        return (<Route_1.Route node={value} params={route?.params}>
+        {navigationEvents_1.unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (<AnalyticsListeners navigation={navigation} screenId={route.key}/>)}
+        <zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider route={route}>
+          <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
+          <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
+            <ScreenComponent {...props} 
         // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
         // the intention is to make it possible to deduce shared routes.
         segment={value.route}/>
-        </react_1.default.Suspense>
+          </react_1.default.Suspense>
+        </zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider>
       </Route_1.Route>);
     }
     if (__DEV__) {
@@ -222,6 +244,68 @@ function getQualifiedRouteComponent(value) {
     }
     qualifiedStore.set(value, BaseRoute);
     return BaseRoute;
+}
+function AnalyticsListeners({ navigation, screenId, }) {
+    const stateForPath = (0, native_1.useStateForPath)();
+    const isFirstRenderRef = react_1.default.useRef(true);
+    const hasBlurredRef = react_1.default.useRef(true);
+    const stringUrl = (0, react_1.useMemo)(() => (0, utils_1.generateStringUrlForState)(stateForPath), [stateForPath]);
+    if (isFirstRenderRef.current) {
+        isFirstRenderRef.current = false;
+        if (stringUrl) {
+            navigationEvents_1.unstable_navigationEvents.emit('pageWillRender', {
+                ...(0, utils_1.getPathAndParamsFromStringUrl)(stringUrl),
+                screenId,
+            });
+        }
+    }
+    (0, react_1.useEffect)(() => {
+        if (stringUrl) {
+            return () => {
+                navigationEvents_1.unstable_navigationEvents.emit('pageRemoved', {
+                    ...(0, utils_1.getPathAndParamsFromStringUrl)(stringUrl),
+                    screenId,
+                });
+            };
+        }
+        return () => { };
+    }, [stringUrl, screenId]);
+    const isFocused = navigation.isFocused();
+    if (isFocused && stringUrl) {
+        navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
+            ...(0, utils_1.getPathAndParamsFromStringUrl)(stringUrl),
+            screenId,
+        });
+        hasBlurredRef.current = false;
+    }
+    (0, react_1.useEffect)(() => {
+        if (stringUrl) {
+            const cleanFocus = navigation.addListener('focus', () => {
+                // If the screen was not blurred, don't emit focused again
+                // hasBlurredRef will be false when the screen was initially focused
+                if (hasBlurredRef.current) {
+                    navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
+                        ...(0, utils_1.getPathAndParamsFromStringUrl)(stringUrl),
+                        screenId,
+                    });
+                    hasBlurredRef.current = false;
+                }
+            });
+            const cleanBlur = navigation.addListener('blur', () => {
+                navigationEvents_1.unstable_navigationEvents.emit('pageBlurred', {
+                    ...(0, utils_1.getPathAndParamsFromStringUrl)(stringUrl),
+                    screenId,
+                });
+                hasBlurredRef.current = true;
+            });
+            return () => {
+                cleanFocus();
+                cleanBlur();
+            };
+        }
+        return () => { };
+    }, [navigation, stringUrl, screenId]);
+    return null;
 }
 function screenOptionsFactory(route, options) {
     return (args) => {

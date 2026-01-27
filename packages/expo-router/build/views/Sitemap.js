@@ -60,7 +60,8 @@ function Sitemap() {
 function SitemapInner() {
     const sitemap = (0, useSitemap_1.useSitemap)();
     const children = react_1.default.useMemo(() => sitemap?.children.filter(({ isInternal }) => !isInternal) ?? [], [sitemap]);
-    return (<react_native_1.View style={styles.container} testID="expo-router-sitemap">
+    const Wrapper = react_native_1.Platform.OS === 'android' ? react_native_safe_area_context_1.SafeAreaView : react_native_1.View;
+    return (<Wrapper style={styles.container} testID="expo-router-sitemap">
       {statusbar_1.canOverrideStatusBarBehavior && <react_native_1.StatusBar barStyle="light-content"/>}
       <react_native_1.ScrollView contentContainerStyle={styles.scroll} automaticallyAdjustContentInsets contentInsetAdjustmentBehavior="automatic">
         {children.map((child) => (<react_native_1.View testID="sitemap-item-container" key={child.contextKey} style={styles.itemContainer}>
@@ -68,7 +69,7 @@ function SitemapInner() {
           </react_native_1.View>))}
         <SystemInfo />
       </react_native_1.ScrollView>
-    </react_native_1.View>);
+    </Wrapper>);
 }
 function SitemapItem({ node, level = 0 }) {
     const isLayout = react_1.default.useMemo(() => node.children.length > 0 || node.contextKey.match(/_layout\.[jt]sx?$/), [node]);

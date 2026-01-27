@@ -21,6 +21,9 @@ appId: dev.expo.Payments
       diffOutputPath: ~/.maestro/tests/${screenshotOutputPath}
       similarityThreshold: ${similarityThreshold}
       resizingFactor: ${resizingFactor}
+      # Explicitly unset testID and mode to prevent them from persisting from previous flows
+      testID: ''
+      mode: ''
 
 - assertTrue:
     condition: ${output.comparisonResult.success}

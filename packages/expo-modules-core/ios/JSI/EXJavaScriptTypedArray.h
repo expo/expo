@@ -1,8 +1,8 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <ExpoModulesCore/EXJavaScriptObject.h>
-#import <ExpoModulesCore/EXJavaScriptRuntime.h>
+#import <ExpoModulesJSI/EXJavaScriptObject.h>
+#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 
 // We need to redefine the C++ enum (see TypedArray.h) in an Objective-C way to expose it to Swift.
 // Please keep them in-sync!

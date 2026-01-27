@@ -7,6 +7,8 @@
 #include "../JNIUtils.h"
 #include "ObjectDeallocator.h"
 #include "../javaclasses/Collections.h"
+#include "../JavaScriptArrayBuffer.h"
+#include "../NativeArrayBuffer.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -29,6 +31,24 @@ jsi::Value convert(
   jsi::Runtime &rt,
   const jni::local_ref<jobject> &value
 );
+
+template<typename RefType>
+std::vector<jsi::Value> convertArray(
+  JNIEnv *env,
+  jsi::Runtime &rt,
+  RefType &values
+) {
+  size_t size = values->size();
+  std::vector<jsi::Value> convertedValues;
+  convertedValues.reserve(size);
+
+  for (size_t i = 0; i < size; i++) {
+    jni::local_ref<jobject> value = values->getElement(i);
+    convertedValues.push_back(convert(env, rt, value));
+  }
+
+  return convertedValues;
+}
 
 /**
  * Convert a string with FollyDynamicExtensionConverter support.
@@ -314,6 +334,37 @@ public:
   ) {
     auto jsTypedArray = value->get();
     return {rt, *jsTypedArray};
+  }
+};
+
+template<>
+class JNIToJSIConverter<JavaScriptArrayBuffer *> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    JavaScriptArrayBuffer *value
+  ) {
+    auto jsArrayBuffer = value->jsiArrayBuffer();
+    return {rt, *jsArrayBuffer};
+  }
+};
+
+template<>
+class JNIToJSIConverter<NativeArrayBuffer *> {
+public:
+  typedef SimpleConverter converterType;
+
+  static inline jsi::Value convert(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    NativeArrayBuffer *value
+  ) {
+    auto buffer = value->jsiMutableBuffer();
+    jsi::ArrayBuffer arrayBuffer(rt, buffer);
+    return {rt, arrayBuffer};
   }
 };
 

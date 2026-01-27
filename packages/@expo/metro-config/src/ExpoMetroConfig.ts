@@ -11,7 +11,7 @@ import type {
   Options as GraphOptions,
 } from '@expo/metro/metro/DeltaBundler/types';
 import { stableHash } from '@expo/metro/metro-cache';
-import type { ConfigT as MetroConfig, InputConfigT } from '@expo/metro/metro-config';
+import type { InputConfigT, ConfigT as MetroConfig } from '@expo/metro/metro-config';
 import chalk from 'chalk';
 import os from 'os';
 import path from 'path';
@@ -31,14 +31,6 @@ import { toPosixPath } from './utils/filePath';
 import { setOnReadonly } from './utils/setOnReadonly';
 
 const debug = require('debug')('expo:metro:config') as typeof console.log;
-
-export interface LoadOptions {
-  config?: string;
-  maxWorkers?: number;
-  port?: number;
-  reporter?: Reporter;
-  resetCache?: boolean;
-}
 
 export interface DefaultConfigOptions {
   /** @deprecated */
@@ -141,9 +133,13 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
   }) as T;
 }
 
+function asMetroConfigInput<T extends InputConfigT>(config: T): T {
+  return config;
+}
+
 export function createStableModuleIdFactory(
   root: string
-): (path: string, context?: { platform: string; environment?: string }) => number {
+): (path: string, context?: { platform: string; environment?: string | null }) => number {
   const getModulePath = (modulePath: string, scope: string) => {
     // NOTE: Metro allows this but it can lead to confusing errors when dynamic requires cannot be resolved, e.g. `module 456 cannot be found`.
     if (modulePath == null) {
@@ -162,7 +158,10 @@ export function createStableModuleIdFactory(
 
   // This is an absolute file path.
   // TODO: We may want a hashed version for production builds in the future.
-  return (modulePath: string, context?: { platform: string; environment?: string }): number => {
+  return (
+    modulePath: string,
+    context?: { platform: string; environment?: string | null }
+  ): number => {
     const env = context?.environment ?? 'client';
 
     if (env === 'client') {
@@ -187,7 +186,7 @@ export function createStableModuleIdFactory(
 export function getDefaultConfig(
   projectRoot: string,
   { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
-): InputConfigT {
+) {
   const {
     getDefaultConfig: getDefaultMetroConfig,
     mergeConfig,
@@ -270,12 +269,7 @@ export function getDefaultConfig(
     console.log();
   }
 
-  const {
-    // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
-    // This prints a giant React logo which is less accessible to users on smaller terminals.
-    reporter,
-    ...metroDefaultValues
-  } = getDefaultMetroConfig.getDefaultValues(projectRoot);
+  const metroDefaultValues = getDefaultMetroConfig.getDefaultValues(projectRoot);
 
   const cacheStore = new FileStore<any>({
     root: path.join(os.tmpdir(), 'metro-cache'),
@@ -284,9 +278,15 @@ export function getDefaultConfig(
   const serverRoot = getMetroServerRoot(projectRoot);
 
   const routerPackageRoot = resolveFrom.silent(projectRoot, 'expo-router');
-  // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
-  // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
-  const metroConfig: Partial<MetroConfig> = mergeConfig(metroDefaultValues, {
+
+  const expoMetroConfig = asMetroConfigInput({
+    reporter: {
+      // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
+      // This prints a giant React logo which is less accessible to users on smaller terminals.
+      update() {
+        /*noop*/
+      },
+    },
     watchFolders,
     resolver: {
       unstable_conditionsByPlatform: {
@@ -315,6 +315,7 @@ export function getDefaultConfig(
     },
     cacheStores: [cacheStore],
     watcher: {
+      unstable_workerThreads: false,
       // strip starting dot from env files. We only support watching development variants of env files as production is inlined using a different system.
       additionalExts: ['env', 'local', 'development'],
     },
@@ -380,11 +381,12 @@ export function getDefaultConfig(
       customizeFrame: getDefaultCustomizeFrame(),
     },
     transformerPath: require.resolve('./transform-worker/transform-worker'),
+
     // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
     transformer: {
+      unstable_workerThreads: true,
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
       unstable_renameRequire: false,
-      // @ts-expect-error: not on type.
       _expoRouterPath: routerPackageRoot ? path.relative(serverRoot, routerPackageRoot) : undefined,
       postcssHash: getPostcssConfigHash(projectRoot),
       browserslistHash: pkg?.browserslist
@@ -417,6 +419,16 @@ export function getDefaultConfig(
       }),
     },
   });
+
+  // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
+  // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
+  const metroConfig = mergeConfig(
+    // NOTE(@kitten): We neither want ConfigT/MetroConfig here, which is mostly marked as readonly,
+    // nor InputConfigT which is inexact and partial. Instead, we want an exact type combination of
+    // the default config and Expo's config
+    metroDefaultValues as MetroConfig & typeof expoMetroConfig,
+    expoMetroConfig
+  );
 
   return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }

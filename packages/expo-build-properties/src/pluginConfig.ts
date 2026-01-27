@@ -1,4 +1,6 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import { validate, type JSONSchema } from '@expo/schema-utils';
+import fs from 'fs';
+import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
 /**
@@ -18,9 +20,65 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
 };
 
 /**
+ * The hermes-compiler version expected to use hermesV1 compiler version.
+ * Keep this in sync with the expected `react-native` version.
+ * @ignore
+ */
+const HERMES_V1_COMPILER_VERSION = '250829098.0.4';
+
+/**
+ * Shared build configuration fields that can be set at the top level
+ * or overridden per-platform. Platform-specific values take precedence.
+ */
+export interface SharedBuildConfigFields {
+  /**
+   * Enable building React Native from source. Turning this on will significantly increase the build times.
+   *
+   * On iOS, this controls support for precompiled React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
+   * Setting this value to `true` will enable building React Native from source and disable the use of precompiled xcframeworks.
+   * This feature is available from React Native 0.80 and later when using the new architecture.
+   * From React Native 0.81, this setting will also control the use of a precompiled React Native Core (`React.xcframework`).
+   *
+   * @default false
+   * @see [Precompiled React Native for iOS: Faster builds are coming in 0.81](https://expo.dev/blog/precompiled-react-native-for-ios) for more information.
+   */
+  buildReactNativeFromSource?: boolean;
+
+  /**
+   * The React Native release level to use for the project.
+   * This can be used to enable different sets of internal React Native feature flags.
+   *
+   * @default 'stable'
+   */
+  reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
+
+  /**
+   * Enable the experimental Hermes V1 engine.
+   *
+   * In React Native 0.83, using Hermes V1 requires building React Native from source.
+   * You must set `buildReactNativeFromSource` to `true` when enabling this option.
+   *
+   * @default false
+   */
+  useHermesV1?: boolean;
+}
+
+/**
+ * Resolves a shared config value with platform-specific override.
+ * Platform-specific values take precedence over top-level values.
+ */
+export function resolveConfigValue<K extends keyof SharedBuildConfigFields>(
+  config: PluginConfigType,
+  platform: 'android' | 'ios',
+  key: K
+): SharedBuildConfigFields[K] {
+  return config[platform]?.[key] ?? config[key];
+}
+
+/**
  * Interface representing base build properties configuration.
  */
-export interface PluginConfigType {
+export interface PluginConfigType extends SharedBuildConfigFields {
   /**
    * Interface representing available configuration for Android native build properties.
    * @platform android
@@ -37,14 +95,7 @@ export interface PluginConfigType {
  * Interface representing available configuration for Android native build properties.
  * @platform android
  */
-export interface PluginConfigTypeAndroid {
-  /**
-   * Enable React Native New Architecture for Android platform.
-   *
-   * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
-   * app config file instead.
-   */
-  newArchEnabled?: boolean;
+export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
   /**
    * Override the default `minSdkVersion` version number in **build.gradle**.
    * */
@@ -176,12 +227,6 @@ export interface PluginConfigTypeAndroid {
    */
   enableBundleCompression?: boolean;
 
-  /*
-   * Enable building React Native from source. Turning this on will significantly increase the build times.
-   * @default false
-   */
-  buildReactNativeFromSource?: boolean;
-
   /**
    * Enable building React Native from source. Turning this on will significantly increase the build times.
    * @deprecated Use `buildReactNativeFromSource` instead.
@@ -208,14 +253,6 @@ export interface PluginConfigTypeAndroid {
    * @see [Using a Maven Mirror](https://reactnative.dev/docs/build-speed#using-a-maven-mirror-android-only)
    */
   exclusiveMavenMirror?: string;
-
-  /**
-   * The React Native release level to use for the project.
-   * This can be used to enable different sets of internal React Native feature flags.
-   *
-   * @default 'stable'
-   */
-  reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 }
 
 // @docsMissing
@@ -306,14 +343,7 @@ export type AndroidMavenRepositoryCredentials =
  * Interface representing available configuration for iOS native build properties.
  * @platform ios
  */
-export interface PluginConfigTypeIos {
-  /**
-   * Enable React Native New Architecture for iOS platform.
-   *
-   * @deprecated Use [`newArchEnabled`](https://docs.expo.dev/versions/latest/config/app/#newarchenabled) in
-   * app config file instead.
-   */
-  newArchEnabled?: boolean;
+export interface PluginConfigTypeIos extends SharedBuildConfigFields {
   /**
    * Override the default iOS "Deployment Target" version in the following projects:
    *  - in CocoaPods projects,
@@ -390,26 +420,6 @@ export interface PluginConfigTypeIos {
    * and [Apple's documentation on Privacy manifest files](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
    */
   privacyManifestAggregationEnabled?: boolean;
-
-  /**
-   * Enables support for precompiled React Native iOS dependencies (`ReactNativeDependencies.xcframework`).
-   * Setting this value to `true` will enable building React Native from source and disable the use of precompiled xcframeworks.
-   * This feature is available from React Native 0.80 and later when using the new architecture.
-   * From React Native 0.81, this setting will also control the use of a precompiled React Native Core (`React.xcframework`).
-   *
-   * @default false
-   * @see React Expo blog for details: [Precompiled React Native for iOS: Faster builds are coming in 0.81](https://expo.dev/blog/precompiled-react-native-for-ios) for more information.
-   * @experimental
-   */
-  buildReactNativeFromSource?: boolean;
-
-  /**
-   * The React Native release level to use for the project.
-   * This can be used to enable different sets of internal React Native feature flags.
-   *
-   * @default 'stable'
-   */
-  reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 }
 
 /**
@@ -594,13 +604,20 @@ export interface PluginConfigTypeAndroidQueriesData {
   mimeType?: string;
 }
 
-const schema: JSONSchemaType<PluginConfigType> = {
+const schema: JSONSchema<PluginConfigType> = {
+  title: 'expo-build-properties',
   type: 'object',
   properties: {
+    buildReactNativeFromSource: { type: 'boolean', nullable: true },
+    reactNativeReleaseLevel: {
+      type: 'string',
+      enum: ['stable', 'canary', 'experimental'],
+      nullable: true,
+    },
+    useHermesV1: { type: 'boolean', nullable: true },
     android: {
       type: 'object',
       properties: {
-        newArchEnabled: { type: 'boolean', nullable: true },
         minSdkVersion: { type: 'integer', nullable: true },
         compileSdkVersion: { type: 'integer', nullable: true },
         targetSdkVersion: { type: 'integer', nullable: true },
@@ -727,13 +744,13 @@ const schema: JSONSchemaType<PluginConfigType> = {
           enum: ['stable', 'canary', 'experimental'],
           nullable: true,
         },
+        useHermesV1: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
     ios: {
       type: 'object',
       properties: {
-        newArchEnabled: { type: 'boolean', nullable: true },
         deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
         useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
         forceStaticLinking: { type: 'array', items: { type: 'string' }, nullable: true },
@@ -770,6 +787,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
           enum: ['stable', 'canary', 'experimental'],
           nullable: true,
         },
+        useHermesV1: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
@@ -831,22 +849,50 @@ function maybeThrowInvalidVersions(config: PluginConfigType) {
   }
 }
 
+/** Handle deprecated enableProguardInReleaseBuilds */
+const fixupDeprecatedEnableProguardInReleaseBuilds = (config: unknown) => {
+  if (
+    config &&
+    typeof config === 'object' &&
+    'android' in config &&
+    config.android &&
+    typeof config.android === 'object'
+  ) {
+    const androidConfig = config.android as PluginConfigTypeAndroid & Record<string, unknown>;
+    if (androidConfig.enableProguardInReleaseBuilds != null) {
+      if (androidConfig.enableMinifyInReleaseBuilds === undefined) {
+        androidConfig.enableMinifyInReleaseBuilds = !!androidConfig.enableProguardInReleaseBuilds;
+      }
+    }
+  }
+};
+
+/**
+ * Reads the hermes-compiler version from node_modules
+ * @ignore
+ */
+function getHermesCompilerVersion(projectRoot: string): string | null {
+  const reactNativePath = resolveFrom.silent(projectRoot, 'react-native/package.json');
+  const hermesCompilerPackageJsonPath =
+    reactNativePath && resolveFrom.silent(reactNativePath, 'hermes-compiler/package.json');
+  if (!hermesCompilerPackageJsonPath) {
+    return null;
+  }
+
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(hermesCompilerPackageJsonPath, 'utf8'));
+    return packageJson.version ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * @ignore
  */
-export function validateConfig(config: any): PluginConfigType {
-  const validate = new Ajv({ allowUnionTypes: true }).compile(schema);
-  // handle deprecated enableProguardInReleaseBuilds
-  if (
-    config.android?.enableProguardInReleaseBuilds !== undefined &&
-    config.android?.enableMinifyInReleaseBuilds === undefined
-  ) {
-    config.android.enableMinifyInReleaseBuilds = config.android.enableProguardInReleaseBuilds;
-  }
-  if (!validate(config)) {
-    throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
-  }
-
+export function validateConfig(config: unknown, projectRoot?: string): PluginConfigType {
+  fixupDeprecatedEnableProguardInReleaseBuilds(config);
+  validate(schema, config);
   maybeThrowInvalidVersions(config);
 
   if (
@@ -856,6 +902,37 @@ export function validateConfig(config: any): PluginConfigType {
     throw new Error(
       '`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableMinifyInReleaseBuilds` to be enabled.'
     );
+  }
+
+  const androidUseHermesV1 = resolveConfigValue(config, 'android', 'useHermesV1');
+  const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1');
+
+  // TODO(gabrieldonadel): Revisit this before releasing SDK 56
+  // Hermes v1 requires a specific hermes-compiler version
+  if ((androidUseHermesV1 || iosUseHermesV1) && projectRoot) {
+    const hermesCompilerVersion = getHermesCompilerVersion(projectRoot);
+    if (hermesCompilerVersion && hermesCompilerVersion !== HERMES_V1_COMPILER_VERSION) {
+      throw new Error(
+        `\`useHermesV1\` requires setting the hermes-compiler version to ${HERMES_V1_COMPILER_VERSION} through resolutions. ` +
+          `Found version "${hermesCompilerVersion}" instead.`
+      );
+    }
+  }
+
+  // Validate useHermesV1 requires buildReactNativeFromSource for Android
+  const androidBuildFromSource =
+    resolveConfigValue(config, 'android', 'buildReactNativeFromSource') ??
+    config.android?.buildFromSource; // Deprecated fallback
+  if (androidUseHermesV1 === true && androidBuildFromSource !== true) {
+    throw new Error(
+      '`useHermesV1` requires `buildReactNativeFromSource` to be `true` for Android.'
+    );
+  }
+
+  // Validate useHermesV1 requires buildReactNativeFromSource for iOS
+  const iosBuildFromSource = resolveConfigValue(config, 'ios', 'buildReactNativeFromSource');
+  if (iosUseHermesV1 === true && iosBuildFromSource !== true) {
+    throw new Error('`useHermesV1` requires `buildReactNativeFromSource` to be `true` for iOS.');
   }
 
   return config;

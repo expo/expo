@@ -60,7 +60,7 @@ export async function performAndroidHapticsAsync(type: AndroidHaptics) {
   if (Platform.OS !== 'android') {
     return;
   }
-  ExpoHaptics.performHapticsAsync(type);
+  await ExpoHaptics.performHapticsAsync(type);
 }
 
 export { NotificationFeedbackType, ImpactFeedbackStyle, AndroidHaptics };

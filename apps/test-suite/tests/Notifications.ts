@@ -229,7 +229,7 @@ export async function test(t) {
       const testChannelId = 'test-channel-id';
       const testChannel: NotificationChannelInput = {
         name: 'Test channel',
-        importance: AndroidImportance.UNSPECIFIED,
+        importance: AndroidImportance.DEFAULT,
       };
 
       t.describe('getNotificationChannelAsync()', () => {
@@ -239,7 +239,7 @@ export async function test(t) {
           t.expect(channel).toBe(null);
         });
 
-        // Test push notifications sent without a channel ID should create a fallback channel
+        // prerequisite: send a test push notification without a channel ID, it creates the fallback channel
         if (Platform.OS === 'android' && Device.platformApiLevel >= 26) {
           t.it('returns an object if there is such channel', async () => {
             const channel = await Notifications.getNotificationChannelAsync(fallbackChannelId);

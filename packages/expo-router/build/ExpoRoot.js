@@ -48,7 +48,9 @@ const storeContext_1 = require("./global-state/storeContext");
 const utils_1 = require("./global-state/utils");
 const LinkPreviewContext_1 = require("./link/preview/LinkPreviewContext");
 const primitives_1 = require("./primitives");
+const screensFeatureFlags_1 = require("./screensFeatureFlags");
 const statusbar_1 = require("./utils/statusbar");
+const url_1 = require("./utils/url");
 const Sitemap_1 = require("./views/Sitemap");
 const SplashScreen = __importStar(require("./views/Splash"));
 const Unmatched_1 = require("./views/Unmatched");
@@ -66,6 +68,7 @@ const documentTitle = {
  * @hidden
  */
 function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
+    (0, screensFeatureFlags_1.initScreensFeatureFlags)();
     /*
      * Due to static rendering we need to wrap these top level views in second wrapper
      * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
@@ -108,7 +111,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
         }
         else if (typeof initialLocation === 'string') {
             // The initial location is a string, so we need to parse it into a URL.
-            const url = new URL(initialLocation, 'http://placeholder.base');
+            const url = (0, url_1.parseUrlUsingCustomBase)(initialLocation);
             contextType = {
                 location: {
                     pathname: url.pathname,

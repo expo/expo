@@ -1,6 +1,8 @@
 import { Album } from './Album';
+import { AssetInfo } from './AssetInfo';
 import { Location } from './Location';
 import { MediaType } from './MediaType';
+import { Shape } from './Shape';
 
 /**
  * Represents a single media asset on the device (image, video, or audio).
@@ -70,6 +72,13 @@ export declare class Asset {
   getModificationTime(): Promise<number | null>;
 
   /**
+   * Gets the shape (width and height) of the asset.
+   * @returns A promise resolving to the {@link Shape} object, or `null` if any dimension is unavailable.
+   * @throws An exception if the asset could not be found.
+   */
+  getShape(): Promise<Shape | null>;
+
+  /**
    * Gets the URI pointing to the asset’s location in the system.
    * Example, for Android: `file:///storage/emulated/0/DCIM/Camera/IMG_20230915_123456.jpg`.
    * @returns A promise resolving to the string URI.
@@ -84,6 +93,13 @@ export declare class Asset {
    * @throws An exception if the asset could not be found.
    */
   getWidth(): Promise<number>;
+
+  /**
+   * Gets detailed information about the asset.
+   * @returns A promise resolving to an {@link AssetInfo}
+   * @throws An exception if the asset could not be found.
+   */
+  getInfo(): Promise<AssetInfo>;
 
   /**
    * Gets the location of the asset.

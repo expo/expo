@@ -1,6 +1,6 @@
 {
   "name": "@expo/config-plugins",
-  "version": "54.0.1",
+  "version": "55.0.3",
   "description": "A library for Expo config plugins",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -55,17 +55,16 @@
     "paths"
   ],
   "dependencies": {
-    "@expo/config-types": "^54.0.8",
-    "@expo/json-file": "~10.0.7",
-    "@expo/plist": "^0.4.7",
+    "@expo/config-types": "^55.0.3",
+    "@expo/json-file": "~10.0.11",
+    "@expo/plist": "^0.5.2",
     "@expo/sdk-runtime-versions": "^1.0.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.5",
     "getenv": "^2.0.0",
-    "glob": "^10.4.2",
+    "glob": "^13.0.0",
     "resolve-from": "^5.0.0",
     "semver": "^7.5.4",
-    "slash": "^3.0.0",
     "slugify": "^1.6.6",
     "xcode": "^3.0.1",
     "xml2js": "0.6.0"
@@ -73,7 +72,7 @@
   "devDependencies": {
     "@types/debug": "^4.1.5",
     "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "^5.0.7"
+    "expo-module-scripts": "^55.0.2"
   },
   "publishConfig": {
     "access": "public"

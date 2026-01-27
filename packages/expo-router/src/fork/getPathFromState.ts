@@ -210,7 +210,8 @@ export function getPathDataFromState<ParamList extends object>(
           : undefined;
 
         if (screen && screens && currentOptions[route.name].screens?.[screen]) {
-          route = { ...screens[screen], name: screen, key: screen };
+          const nestedParams = (route.params as { params?: object } | undefined)?.params;
+          route = { ...screens[screen], name: screen, key: screen, params: nestedParams };
           currentOptions = screens;
         } else {
           hasNext = false;

@@ -2,7 +2,7 @@
 
 exports[`lints with the default config: fixtures/baseline/all-00.js 1`] = `
 {
-  "errorCount": 7,
+  "errorCount": 8,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
@@ -43,6 +43,16 @@ exports[`lints with the default config: fixtures/baseline/all-00.js 1`] = `
       "endLine": 5,
       "line": 5,
       "message": "Unable to resolve path to module 'c'.",
+      "nodeType": "Literal",
+      "ruleId": "import/no-unresolved",
+      "severity": 2,
+    },
+    {
+      "column": 20,
+      "endColumn": 23,
+      "endLine": 6,
+      "line": 6,
+      "message": "Unable to resolve path to module 'd'.",
       "nodeType": "Literal",
       "ruleId": "import/no-unresolved",
       "severity": 2,
@@ -158,7 +168,7 @@ function *gen() {}
 
 exports[`lints with the default config: fixtures/baseline/all-01.ts 1`] = `
 {
-  "errorCount": 6,
+  "errorCount": 7,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
@@ -199,6 +209,16 @@ exports[`lints with the default config: fixtures/baseline/all-01.ts 1`] = `
       "endLine": 5,
       "line": 5,
       "message": "Unable to resolve path to module 'c'.",
+      "nodeType": "Literal",
+      "ruleId": "import/no-unresolved",
+      "severity": 2,
+    },
+    {
+      "column": 20,
+      "endColumn": 23,
+      "endLine": 6,
+      "line": 6,
+      "message": "Unable to resolve path to module 'd'.",
       "nodeType": "Literal",
       "ruleId": "import/no-unresolved",
       "severity": 2,

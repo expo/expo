@@ -36,7 +36,7 @@ const Menus = () => {
 
   const toggleIconVisibility = () => {
     setIsIconVisible(!isIconVisible);
-  }
+  };
 
   return (
     <ScrollView
@@ -110,8 +110,21 @@ const Menus = () => {
           </Link.Menu>
         </Link.Menu>
       </Link>
-      <Link href="/one">
-        <Link.Trigger>Link.Menu no preview: /one</Link.Trigger>
+      <Link href="/one" asChild>
+        <Link.Trigger>
+          <Pressable>
+            <Text
+              style={{
+                height: 50,
+                width: '100%',
+                backgroundColor: '#DDD',
+                textAlign: 'center',
+                lineHeight: 50,
+              }}>
+              Custom Trigger without preview
+            </Text>
+          </Pressable>
+        </Link.Trigger>
         <Link.Menu title="Actions" icon="ellipsis">
           <Link.MenuAction
             title="Share"
@@ -136,7 +149,7 @@ const Menus = () => {
               console.log('Delete Pressed');
             }}
           />
-          <Link.Menu title="Single" displayAsPalette displayInline>
+          <Link.Menu title="Single" palette inline>
             <Link.MenuAction
               title="1"
               onPress={() => setPalette('1')}
@@ -173,6 +186,29 @@ const Menus = () => {
               isOn={palette === '6'}
               unstable_keepPresented
             />
+          </Link.Menu>
+          {/* elementSize="medium" displays actions horizontally with titles (iOS 16+) */}
+          <Link.Menu title="Element Size Medium" inline elementSize="medium">
+            <Link.MenuAction
+              title="Refresh"
+              icon="arrow.clockwise"
+              onPress={() => console.log('Refresh')}
+            />
+            <Link.MenuAction
+              title="Resume"
+              icon="arrow.2.circlepath"
+              onPress={() => console.log('Resume')}
+            />
+            <Link.MenuAction title="Pin" icon="pin" onPress={() => console.log('Pin')} />
+          </Link.Menu>
+          {/* elementSize="large" displays actions with larger icons and titles */}
+          <Link.Menu title="Element Size Large" inline elementSize="large">
+            <Link.MenuAction
+              title="Share"
+              icon="square.and.arrow.up"
+              onPress={() => console.log('Share')}
+            />
+            <Link.MenuAction title="Copy" icon="doc.on.doc" onPress={() => console.log('Copy')} />
           </Link.Menu>
           <Link.Menu title="More" icon="ellipsis">
             <Link.MenuAction
@@ -242,7 +278,7 @@ const Menus = () => {
         <Link.Menu>
           <Link.MenuAction
             title="Menu action"
-            icon={isIconVisible ? "0.square" : undefined}
+            icon={isIconVisible ? '0.square' : undefined}
             disabled={isDisabled ? true : undefined}
             destructive={isDestructive ? true : undefined}
             unstable_keepPresented={keepPresented ? true : undefined}

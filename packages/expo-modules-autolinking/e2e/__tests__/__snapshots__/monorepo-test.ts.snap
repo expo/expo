@@ -8,11 +8,11 @@ exports[`monorepo generate-modules-provider { app: 'ejected', platform: 'apple' 
  * but only these that are written in Swift and use the new API for creating Expo modules.
  */
 
-import ExpoModulesCore
+@_implementationOnly import ExpoModulesCore
 
 
 @objc(file)
-public class file: ModulesProvider {
+internal class file: ModulesProvider {
   public override func getModuleClasses() -> [ExpoModuleTupleType] {
     return [
     ]
@@ -43,11 +43,11 @@ exports[`monorepo generate-modules-provider { app: 'managed', platform: 'apple' 
  * but only these that are written in Swift and use the new API for creating Expo modules.
  */
 
-import ExpoModulesCore
+@_implementationOnly import ExpoModulesCore
 
 
 @objc(file)
-public class file: ModulesProvider {
+internal class file: ModulesProvider {
   public override func getModuleClasses() -> [ExpoModuleTupleType] {
     return [
     ]
@@ -78,11 +78,11 @@ exports[`monorepo generate-modules-provider { app: 'with-sentry', platform: 'app
  * but only these that are written in Swift and use the new API for creating Expo modules.
  */
 
-import ExpoModulesCore
+@_implementationOnly import ExpoModulesCore
 
 
 @objc(file)
-public class file: ModulesProvider {
+internal class file: ModulesProvider {
   public override func getModuleClasses() -> [ExpoModuleTupleType] {
     return [
     ]
@@ -116,6 +116,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
         "modules": [],
         "name": "unimodules-core",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/@unimodules/core/android",
       },
     ],
@@ -129,6 +130,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-application",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-application/android",
       },
     ],
@@ -142,6 +144,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-constants",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-constants/android",
       },
     ],
@@ -155,6 +158,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-error-recovery",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-error-recovery/android",
       },
     ],
@@ -168,6 +172,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-file-system",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-file-system/android",
       },
     ],
@@ -181,6 +186,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-font",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-font/android",
       },
     ],
@@ -194,6 +200,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-image-loader",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-image-loader/android",
       },
     ],
@@ -207,19 +214,21 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-keep-awake",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-keep-awake/android",
       },
     ],
   },
   {
     "packageName": "expo-modules-core",
-    "packageVersion": "",
+    "packageVersion": "0.2.0",
     "pods": undefined,
     "projects": [
       {
         "modules": [],
         "name": "expo-modules-core",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-modules-core/android",
       },
     ],
@@ -233,6 +242,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-permissions",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-permissions/android",
       },
     ],
@@ -246,6 +256,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-splash-screen",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-splash-screen/android",
       },
     ],
@@ -259,6 +270,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-structured-headers",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-structured-headers/android",
       },
     ],
@@ -272,6 +284,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-updates",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-updates/android",
       },
     ],
@@ -285,6 +298,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-updates-interface",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-updates-interface/android",
       },
     ],
@@ -298,6 +312,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
         "modules": [],
         "name": "unimodules-app-loader",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/unimodules-app-loader/android",
       },
     ],
@@ -311,6 +326,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
         "modules": [],
         "name": "unimodules-task-manager-interface",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/unimodules-task-manager-interface/android",
       },
     ],
@@ -487,7 +503,7 @@ exports[`monorepo resolve { app: 'ejected', platform: 'apple' } 1`] = `
     "debugOnly": false,
     "modules": [],
     "packageName": "expo-modules-core",
-    "packageVersion": "",
+    "packageVersion": "0.2.0",
     "pods": [
       {
         "podName": "ExpoModulesCore",
@@ -640,6 +656,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
         "modules": [],
         "name": "unimodules-core",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/@unimodules/core/android",
       },
     ],
@@ -653,6 +670,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-application",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-application/android",
       },
     ],
@@ -666,6 +684,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-constants",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-constants/android",
       },
     ],
@@ -679,6 +698,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-error-recovery",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-error-recovery/android",
       },
     ],
@@ -692,6 +712,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-file-system",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-file-system/android",
       },
     ],
@@ -705,6 +726,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-font",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-font/android",
       },
     ],
@@ -718,6 +740,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-image-loader",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-image-loader/android",
       },
     ],
@@ -731,19 +754,21 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-keep-awake",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-keep-awake/android",
       },
     ],
   },
   {
     "packageName": "expo-modules-core",
-    "packageVersion": "",
+    "packageVersion": "0.2.0",
     "pods": undefined,
     "projects": [
       {
         "modules": [],
         "name": "expo-modules-core",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-modules-core/android",
       },
     ],
@@ -757,6 +782,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-permissions",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-permissions/android",
       },
     ],
@@ -770,6 +796,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-splash-screen",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-splash-screen/android",
       },
     ],
@@ -783,6 +810,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-structured-headers",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-structured-headers/android",
       },
     ],
@@ -796,6 +824,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-updates",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-updates/android",
       },
     ],
@@ -809,6 +838,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-updates-interface",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-updates-interface/android",
       },
     ],
@@ -822,6 +852,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
         "modules": [],
         "name": "unimodules-app-loader",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/unimodules-app-loader/android",
       },
     ],
@@ -835,6 +866,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
         "modules": [],
         "name": "unimodules-task-manager-interface",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/unimodules-task-manager-interface/android",
       },
     ],
@@ -1011,7 +1043,7 @@ exports[`monorepo resolve { app: 'managed', platform: 'apple' } 1`] = `
     "debugOnly": false,
     "modules": [],
     "packageName": "expo-modules-core",
-    "packageVersion": "",
+    "packageVersion": "0.2.0",
     "pods": [
       {
         "podName": "ExpoModulesCore",
@@ -1164,6 +1196,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "unimodules-core",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/@unimodules/core/android",
       },
     ],
@@ -1177,6 +1210,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-application",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-application/android",
       },
     ],
@@ -1190,6 +1224,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-constants",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-constants/android",
       },
     ],
@@ -1203,6 +1238,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-device",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-device/android",
       },
     ],
@@ -1216,6 +1252,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-error-recovery",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-error-recovery/android",
       },
     ],
@@ -1229,6 +1266,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-file-system",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-file-system/android",
       },
     ],
@@ -1242,6 +1280,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-font",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-font/android",
       },
     ],
@@ -1255,6 +1294,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-image-loader",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-image-loader/android",
       },
     ],
@@ -1268,19 +1308,21 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-keep-awake",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-keep-awake/android",
       },
     ],
   },
   {
     "packageName": "expo-modules-core",
-    "packageVersion": "",
+    "packageVersion": "0.2.0",
     "pods": undefined,
     "projects": [
       {
         "modules": [],
         "name": "expo-modules-core",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-modules-core/android",
       },
     ],
@@ -1294,6 +1336,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-permissions",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-permissions/android",
       },
     ],
@@ -1307,6 +1350,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-splash-screen",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-splash-screen/android",
       },
     ],
@@ -1320,6 +1364,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-structured-headers",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/expo-structured-headers/android",
       },
     ],
@@ -1333,6 +1378,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-updates",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/apps/with-sentry/node_modules/expo-updates/android",
       },
     ],
@@ -1346,6 +1392,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "expo-updates-interface",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/apps/with-sentry/node_modules/expo-updates-interface/android",
       },
     ],
@@ -1359,6 +1406,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "unimodules-app-loader",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/unimodules-app-loader/android",
       },
     ],
@@ -1372,6 +1420,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
         "modules": [],
         "name": "unimodules-task-manager-interface",
         "packages": [],
+        "services": [],
         "sourceDir": "monorepo/node_modules/unimodules-task-manager-interface/android",
       },
     ],
@@ -1566,7 +1615,7 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'apple' } 1`] = `
     "debugOnly": false,
     "modules": [],
     "packageName": "expo-modules-core",
-    "packageVersion": "",
+    "packageVersion": "0.2.0",
     "pods": [
       {
         "podName": "ExpoModulesCore",
@@ -1842,7 +1891,7 @@ exports[`monorepo search ejected 1`] = `
     "duplicates": [],
     "name": "expo-modules-core",
     "path": "monorepo/node_modules/expo-modules-core",
-    "version": "",
+    "version": "0.2.0",
   },
   "expo-permissions": {
     "config": {
@@ -2072,7 +2121,7 @@ exports[`monorepo search managed 1`] = `
     "duplicates": [],
     "name": "expo-modules-core",
     "path": "monorepo/node_modules/expo-modules-core",
-    "version": "",
+    "version": "0.2.0",
   },
   "expo-permissions": {
     "config": {
@@ -2316,7 +2365,7 @@ exports[`monorepo search with-sentry 1`] = `
     "duplicates": [],
     "name": "expo-modules-core",
     "path": "monorepo/node_modules/expo-modules-core",
-    "version": "",
+    "version": "0.2.0",
   },
   "expo-permissions": {
     "config": {

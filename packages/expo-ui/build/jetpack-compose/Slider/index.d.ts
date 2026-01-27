@@ -1,4 +1,3 @@
-import { StyleProp, ViewStyle } from 'react-native';
 import { ExpoModifier, ViewEvent } from '../../types';
 /**
  * Colors for slider's core elements.
@@ -12,10 +11,6 @@ export type SliderElementColors = {
     inactiveTickColor?: string;
 };
 export type SliderProps = {
-    /**
-     * Custom styles for the slider component.
-     */
-    style?: StyleProp<ViewStyle>;
     /**
      * The current value of the slider.
      * @default 0

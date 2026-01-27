@@ -34,19 +34,22 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeTabsNavigatorWithContext = exports.NativeTabsContext = void 0;
+exports.NativeTabsContext = void 0;
 exports.NativeTabsNavigator = NativeTabsNavigator;
+exports.NativeTabsNavigatorWrapper = NativeTabsNavigatorWrapper;
 const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const NativeBottomTabsRouter_1 = require("./NativeBottomTabsRouter");
+const NativeTabTrigger_1 = require("./NativeTabTrigger");
 const NativeTabsView_1 = require("./NativeTabsView");
 const utils_1 = require("./utils");
 const withLayoutContext_1 = require("../layouts/withLayoutContext");
 const linking_1 = require("../link/linking");
+const children_1 = require("../utils/children");
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
 const defaultBackBehavior = 'initialRoute';
 exports.NativeTabsContext = react_1.default.createContext(false);
-function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, labelStyle, iconColor, blurEffect, backgroundColor, badgeBackgroundColor, indicatorColor, badgeTextColor, ...rest }) {
+function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, labelStyle, iconColor, blurEffect, backgroundColor, badgeBackgroundColor, indicatorColor, badgeTextColor, shadowColor, screenListeners, ...rest }) {
     if ((0, react_1.use)(exports.NativeTabsContext)) {
         throw new Error('Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.');
     }
@@ -63,6 +66,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
     const { state, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(NativeBottomTabsRouter_1.NativeBottomTabsRouter, {
         children,
         backBehavior,
+        screenListeners,
         screenOptions: {
             disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
             labelStyle: processedLabelStyle.default,
@@ -74,6 +78,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
             badgeBackgroundColor,
             indicatorColor,
             badgeTextColor,
+            shadowColor,
         },
     });
     const { routes } = state;
@@ -88,6 +93,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
         contentRenderer: () => descriptors[route.key].render(),
     })), [routes, descriptors]);
     const visibleFocusedTabIndex = (0, react_1.useMemo)(() => visibleTabs.findIndex((tab) => tab.routeKey === routes[state.index].key), [visibleTabs, routes, state.index]);
+    const visibleTabsKeys = (0, react_1.useMemo)(() => visibleTabs.map((tab) => tab.routeKey).join(';'), [visibleTabs]);
     if (visibleFocusedTabIndex < 0) {
         if (process.env.NODE_ENV !== 'production') {
             throw new Error(`The focused tab in NativeTabsView cannot be displayed. Make sure path is correct and the route is not hidden. Path: "${(0, linking_1.getPathFromState)(state)}"`);
@@ -97,6 +103,13 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
     const onTabChange = (0, react_1.useCallback)((tabKey) => {
         const descriptor = descriptors[tabKey];
         const route = descriptor.route;
+        navigation.emit({
+            type: 'tabPress',
+            target: tabKey,
+            data: {
+                __internalTabsType: 'native',
+            },
+        });
         navigation.dispatch({
             type: 'JUMP_TO',
             target: state.key,
@@ -107,10 +120,15 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
     }, [descriptors, navigation, state.key]);
     return (<NavigationContent>
       <exports.NativeTabsContext value>
-        <NativeTabsView_1.NativeTabsView {...rest} focusedIndex={focusedIndex} tabs={visibleTabs} onTabChange={onTabChange}/>
+        <NativeTabsView_1.NativeTabsView {...rest} key={visibleTabsKeys} focusedIndex={focusedIndex} tabs={visibleTabs} onTabChange={onTabChange}/>
       </exports.NativeTabsContext>
     </NavigationContent>);
 }
 const createNativeTabNavigator = (0, native_1.createNavigatorFactory)(NativeTabsNavigator);
-exports.NativeTabsNavigatorWithContext = (0, withLayoutContext_1.withLayoutContext)(createNativeTabNavigator().Navigator, undefined, true);
+const NativeTabsNavigatorWithContext = (0, withLayoutContext_1.withLayoutContext)(createNativeTabNavigator().Navigator, undefined, true);
+function NativeTabsNavigatorWrapper(props) {
+    const triggerChildren = (0, react_1.useMemo)(() => (0, children_1.getAllChildrenOfType)(props.children, NativeTabTrigger_1.NativeTabTrigger), [props.children]);
+    const nonTriggerChildren = (0, react_1.useMemo)(() => (0, children_1.getAllChildrenNotOfType)(props.children, NativeTabTrigger_1.NativeTabTrigger), [props.children]);
+    return (<NativeTabsNavigatorWithContext {...props} children={triggerChildren} nonTriggerChildren={nonTriggerChildren}/>);
+}
 //# sourceMappingURL=NativeBottomTabsNavigator.js.map

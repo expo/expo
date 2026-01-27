@@ -10,6 +10,10 @@ const CHAR_B_LOWER = 98;
 // .mobileprovision
 // const CHAR_ZERO = 30;
 
+declare module 'bplist-parser' {
+  export function parseBuffer<T = any>(buffer: Buffer): Promise<[T]>;
+}
+
 export async function parsePlistAsync(plistPath: string) {
   Log.debug(`Parse plist: ${plistPath}`);
 
@@ -22,7 +26,6 @@ export function parsePlistBuffer(contents: Buffer) {
     if (Array.isArray(info)) return info[0];
     return info;
   } else if (contents[0] === CHAR_B_LOWER) {
-    // @ts-expect-error
     const info = binaryPlist.parseBuffer(contents);
     if (Array.isArray(info)) return info[0];
     return info;

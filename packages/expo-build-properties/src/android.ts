@@ -2,7 +2,6 @@ import {
   AndroidConfig,
   ConfigPlugin,
   History,
-  WarningAggregator,
   withAndroidManifest,
   withAndroidStyles,
   withDangerousMod,
@@ -13,26 +12,12 @@ import path from 'path';
 
 import { renderQueryIntents, renderQueryPackages, renderQueryProviders } from './androidQueryUtils';
 import { appendContents, purgeContents } from './fileContentsUtils';
-import type { PluginConfigType } from './pluginConfig';
+import { PluginConfigType, resolveConfigValue } from './pluginConfig';
 
 const { createBuildGradlePropsConfigPlugin } = AndroidConfig.BuildProperties;
 
 export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<PluginConfigType>(
   [
-    {
-      propName: 'newArchEnabled',
-      propValueGetter: (config) => {
-        if (config.android?.newArchEnabled !== undefined) {
-          WarningAggregator.addWarningAndroid(
-            'withAndroidBuildProperties',
-            'android.newArchEnabled is deprecated, use app config `newArchEnabled` instead.',
-            'https://docs.expo.dev/versions/latest/config/app/#newarchenabled'
-          );
-        }
-
-        return config.android?.newArchEnabled?.toString();
-      },
-    },
     {
       propName: 'android.minSdkVersion',
       propValueGetter: (config) => config.android?.minSdkVersion?.toString(),
@@ -87,7 +72,7 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
     },
     {
       propName: 'reactNativeReleaseLevel',
-      propValueGetter: (config) => config.android?.reactNativeReleaseLevel,
+      propValueGetter: (config) => resolveConfigValue(config, 'android', 'reactNativeReleaseLevel'),
     },
     {
       propName: 'expo.useLegacyPackaging',
@@ -120,6 +105,10 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
     {
       propName: 'exclusiveEnterpriseRepository',
       propValueGetter: (config) => config.android?.exclusiveMavenMirror,
+    },
+    {
+      propName: 'hermesV1Enabled',
+      propValueGetter: (config) => resolveConfigValue(config, 'android', 'useHermesV1')?.toString(),
     },
   ],
   'withAndroidBuildProperties'
@@ -317,9 +306,13 @@ export const withAndroidDayNightTheme: ConfigPlugin<PluginConfigType> = (config,
 
 export const withAndroidSettingsGradle: ConfigPlugin<PluginConfigType> = (config, props) => {
   return withSettingsGradle(config, (config) => {
+    // Resolution order: android.buildReactNativeFromSource > top-level > deprecated android.buildFromSource
+    const buildFromSource =
+      resolveConfigValue(props, 'android', 'buildReactNativeFromSource') ??
+      props.android?.buildFromSource; // Deprecated fallback (last resort)
     config.modResults.contents = updateAndroidSettingsGradle({
       contents: config.modResults.contents,
-      buildFromSource: props.android?.buildReactNativeFromSource ?? props.android?.buildFromSource,
+      buildFromSource,
     });
     return config;
   });

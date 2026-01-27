@@ -4,6 +4,8 @@
 
 #include "JNIDeallocator.h"
 #include "JSharedObject.h"
+#include "JavaScriptArrayBuffer.h"
+#include "NativeArrayBuffer.h"
 
 #include <jsi/jsi.h>
 #include <fbjni/fbjni.h>
@@ -82,6 +84,10 @@ private:
   void invokeMap(jni::alias_ref<jni::JMap<jstring, jobject>> result);
 
   void invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result);
+
+  void invokeJavaScriptArrayBuffer(jni::alias_ref<JavaScriptArrayBuffer::javaobject> result);
+
+  void invokeNativeArrayBuffer(jni::alias_ref<NativeArrayBuffer::javaobject> result);
 
   void invokeError(jni::alias_ref<jstring> code, jni::alias_ref<jstring> errorMessage);
 

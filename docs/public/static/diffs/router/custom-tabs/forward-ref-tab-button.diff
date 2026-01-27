@@ -1,0 +1,12 @@
+diff --git a/components/TabButton.tsx b/components/TabButton.tsx
+index 0000000..1111111 100644
+--- a/components/TabButton.tsx
++++ b/components/TabButton.tsx
+@@ -1,5 +1,5 @@
+-import { ComponentProps, Ref } from 'react';
++import { ComponentProps, Ref, forwardRef } from 'react';
+
+-export function TabButton({ icon, children, isFocused, ...props }: TabButtonProps) {
++export const TabButton = forwardRef((props: TabButtonProps, ref: Ref<View>) => {
+  // ...
+}

@@ -12,8 +12,7 @@ namespace expo {
  Borrows the props map from the source props and applies the update given in the raw props.
  */
 std::unordered_map<std::string, folly::dynamic> propsMapFromProps(const ExpoViewProps &sourceProps, const react::RawProps &rawProps) {
-  // Move the contents of the source props map – the source props instance will not be used anymore.
-  std::unordered_map<std::string, folly::dynamic> propsMap = std::move(sourceProps.propsMap);
+  std::unordered_map<std::string, folly::dynamic> propsMap = sourceProps.propsMap;
 
   // Iterate over values in the raw props object.
   // Note that it contains only updated props.

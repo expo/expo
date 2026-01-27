@@ -44,6 +44,8 @@ JCache::JCache(JNIEnv *env) {
   jJavaScriptObject = REGISTER_CLASS("expo/modules/kotlin/jni/JavaScriptObject");
   jJavaScriptValue = REGISTER_CLASS("expo/modules/kotlin/jni/JavaScriptValue");
   jJavaScriptTypedArray = REGISTER_CLASS("expo/modules/kotlin/jni/JavaScriptTypedArray");
+  jJavaScriptArrayBuffer = REGISTER_CLASS("expo/modules/kotlin/jni/JavaScriptArrayBuffer");
+  jNativeArrayBuffer = REGISTER_CLASS("expo/modules/kotlin/jni/NativeArrayBuffer");
 
   jReadableNativeArray = REGISTER_CLASS("com/facebook/react/bridge/ReadableNativeArray");
   jReadableNativeMap = REGISTER_CLASS("com/facebook/react/bridge/ReadableNativeMap");

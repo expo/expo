@@ -1,14 +1,13 @@
-import { Badge, Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import { useState } from 'react';
-import { Button, Text, TextInput, View } from 'react-native';
+import { Button, Platform, Text, TextInput, View } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-const iconNames =
-  process.env.EXPO_OS === 'ios'
-    ? (['safari', '0.square', 'hockey.puck', 'hourglass', 'house.and.flag'] as SFSymbol[])
-    : process.env.EXPO_OS === 'android'
-      ? ['ic_search', 'sym_action_email', 'sym_action_chat', 'sym_call_missed']
-      : [];
+const iconNames = Platform.select<string[]>({
+  ios: ['safari', '0.square', 'hockey.puck', 'hourglass', 'house.and.flag'],
+  android: ['ic_search', 'sym_action_email', 'sym_action_chat', 'sym_call_missed'],
+  default: [],
+});
 
 export default function Dynamic() {
   const [badgeValue, setBadgeValue] = useState('9+');
@@ -25,10 +24,9 @@ export default function Dynamic() {
         gap: 16,
       }}>
       <NativeTabs.Trigger>
-        <NativeTabs.Trigger.TabBar backgroundColor="#fff" disableTransparentOnScrollEdge />
-        <Label>{labelValue}</Label>
-        <Badge>{badgeValue}</Badge>
-        <Icon sf={iconName as SFSymbol} drawable={iconName} />
+        <NativeTabs.Trigger.Label>{labelValue}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Badge>{badgeValue}</NativeTabs.Trigger.Badge>
+        <NativeTabs.Trigger.Icon sf={iconName as SFSymbol} drawable={iconName} />
       </NativeTabs.Trigger>
       <Text style={{ fontSize: 24, fontWeight: 600 }}>Label</Text>
       <TextInput

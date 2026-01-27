@@ -1,8 +1,10 @@
 import { Platform } from 'react-native';
 import ExpoSQLite from './ExpoSQLite';
 import { flattenOpenOptions } from './NativeDatabase';
+import { registerDatabaseForDevToolsAsync, unregisterDatabaseForDevToolsAsync, } from './SQLiteDevToolsClient';
 import { SQLiteSession } from './SQLiteSession';
 import { SQLiteStatement, } from './SQLiteStatement';
+import { SQLiteTaggedQuery } from './SQLiteTaggedQuery';
 import { createDatabasePath } from './pathUtils';
 /**
  * A SQLite database.
@@ -26,6 +28,9 @@ export class SQLiteDatabase {
      * Close the database.
      */
     closeAsync() {
+        if (this.options.useNewConnection !== true) {
+            unregisterDatabaseForDevToolsAsync(this);
+        }
         return this.nativeDatabase.closeAsync();
     }
     /**
@@ -179,6 +184,9 @@ export class SQLiteDatabase {
      * Close the database.
      */
     closeSync() {
+        if (this.options.useNewConnection !== true) {
+            unregisterDatabaseForDevToolsAsync(this);
+        }
         return this.nativeDatabase.closeSync();
     }
     /**
@@ -270,6 +278,40 @@ export class SQLiteDatabase {
             throw e;
         }
     }
+    /**
+     * Execute SQL queries using tagged template literals (Bun-style API).
+     * Queries are automatically protected against SQL injection using prepared statements.
+     *
+     * The query result is directly awaitable and returns an array of objects by default.
+     * Use `.values()`, `.first()`, or `.each()` for different result formats.
+     *
+     * @example
+     * ```ts
+     * // Direct await - returns array of objects
+     * const users = await sql<User>`SELECT * FROM users WHERE age > ${21}`;
+     *
+     * // Get first row only
+     * const user = await sql<User>`SELECT * FROM users WHERE id = ${userId}`.first();
+     *
+     * // Get values as arrays
+     * const rows = await sql`SELECT name, age FROM users`.values();
+     * // Returns: [["Alice", 30], ["Bob", 25]]
+     *
+     * // INSERT/UPDATE/DELETE - returns SQLiteRunResult
+     * const result = await sql`INSERT INTO users (name, age) VALUES (${name}, ${age})` as SQLiteRunResult;
+     * console.log('Inserted row:', result.lastInsertRowId);
+     *
+     * // Iteration
+     * for await (const user of db<User>`SELECT * FROM users`.each()) {
+     *   console.log(user.name);
+     * }
+     *
+     * // Synchronous API
+     * const users = sql<User>`SELECT * FROM users WHERE age > ${21}`.allSync();
+     * const user = sql<User>`SELECT * FROM users WHERE id = ${userId}`.firstSync();
+     * ```
+     */
+    sql = (strings, ...values) => new SQLiteTaggedQuery(this, strings, values);
     async runAsync(source, ...params) {
         const statement = await this.prepareAsync(source);
         let result;
@@ -396,7 +438,11 @@ export async function openDatabaseAsync(databaseName, options, directory) {
     await ExpoSQLite.ensureDatabasePathExistsAsync(databasePath);
     const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, flattenOpenOptions(openOptions));
     await nativeDatabase.initAsync();
-    return new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
+    const database = new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
+    if (options?.useNewConnection !== true) {
+        registerDatabaseForDevToolsAsync(database);
+    }
+    return database;
 }
 /**
  * Open a database.
@@ -413,7 +459,11 @@ export function openDatabaseSync(databaseName, options, directory) {
     ExpoSQLite.ensureDatabasePathExistsSync(databasePath);
     const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, flattenOpenOptions(openOptions));
     nativeDatabase.initSync();
-    return new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
+    const database = new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
+    if (options?.useNewConnection !== true) {
+        registerDatabaseForDevToolsAsync(database);
+    }
+    return database;
 }
 /**
  * Given a `Uint8Array` data and [deserialize to memory database](https://sqlite.org/c3ref/deserialize.html).

@@ -1,4 +1,3 @@
-import { StyleProp, ViewStyle } from 'react-native';
 import { ExpoModifier } from '../../types';
 /**
  * Colors for picker's core elements.
@@ -40,10 +39,6 @@ export type PickerProps = {
      * @default 'segmented'
      */
     variant?: 'segmented' | 'radio';
-    /**
-     * Optional style to apply to the picker component.
-     */
-    style?: StyleProp<ViewStyle>;
     /**
      * Colors for picker's core elements.
      */

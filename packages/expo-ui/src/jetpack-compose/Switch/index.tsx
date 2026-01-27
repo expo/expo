@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { NativeSyntheticEvent, StyleProp, ViewStyle } from 'react-native';
+import { NativeSyntheticEvent } from 'react-native';
 
 import { ExpoModifier } from '../../types';
 
@@ -48,10 +48,7 @@ export type SwitchProps = {
    * Callback function that is called when the checked state changes.
    */
   onValueChange?: (value: boolean) => void;
-  /**
-   * Optional style for the switch component.
-   */
-  style?: StyleProp<ViewStyle>;
+
   /**
    * Picker color.
    */
@@ -125,8 +122,6 @@ export function transformSwitchProps(props: SwitchProps): NativeSwitchProps {
     onValueChange: ({ nativeEvent: { value } }) => {
       props?.onValueChange?.(value);
     },
-    // @ts-expect-error
-    modifiers: props.modifiers?.map((m) => m.__expo_shared_object_id__),
   } as NativeSwitchProps;
 }
 

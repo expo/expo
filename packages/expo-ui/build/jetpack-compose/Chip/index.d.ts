@@ -1,11 +1,10 @@
 import React from 'react';
-import { ViewProps } from 'react-native';
 import { ExpoModifier } from '../../types';
 /**
  * Available text style variants for chip labels.
  */
 export type ChipTextStyle = 'labelSmall' | 'labelMedium' | 'labelLarge' | 'bodySmall' | 'bodyMedium' | 'bodyLarge';
-export interface ChipProps extends ViewProps {
+export interface ChipProps {
     /**
      * The variant of the chip.
      */
