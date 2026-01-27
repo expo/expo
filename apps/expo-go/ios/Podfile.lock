@@ -4643,7 +4643,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 0080c14b673cfa9a6be5e3fe429768ffe3d42dfb
   EXManifests: 7afe669f6a3d11e5d3a39670bd586d1421e685e8
   Expo: 9326a365e033ca80d24f264001359c05bc7d274c
-  expo-dev-menu: e7817c63412d30b5dad9bc8a87bc903f9ea78938
+  expo-dev-menu: 7273fb20b8da0713a4ffa2e5220f94076707c37d
   expo-dev-menu-interface: bf6f816d29b45bec038080790963c635e8d588c2
   ExpoAgeRange: 22b5f3884c7937871abf3842a4e3883df6644563
   ExpoAppleAuthentication: d54590bfeac0606ed60f879472549ea38b164dea
@@ -4724,7 +4724,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 5fe31775fd37ae963dff271e227decb44d08e843
+  hermes-engine: 452f2dd7422b2fd7973ae9ca103898d28d7744f0
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
