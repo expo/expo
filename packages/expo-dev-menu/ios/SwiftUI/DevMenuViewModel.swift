@@ -205,6 +205,7 @@ class DevMenuViewModel: ObservableObject {
       .receive(on: DispatchQueue.main)
       .sink { [weak self] _ in
         self?.loadAppInfo()
+        self?.loadDevSettings()
       }
       .store(in: &cancellables)
   }
