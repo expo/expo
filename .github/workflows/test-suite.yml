@@ -28,8 +28,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  detect-platform-for-e2e:
+    runs-on: ubuntu-24.04
+    outputs:
+      should_run_ios: ${{ steps.changes.outputs.should_run_ios }}
+      should_run_android: ${{ steps.changes.outputs.should_run_android }}
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v5
+      - name: 🧐 Detect platform change
+        id: changes
+        uses: ./.github/actions/detect-platform-change
+        with:
+          android-paths: >-
+            "packages/**/android/**",
+            "apps/bare-expo/**/android/**"
+
+          ios-paths: >-
+            "packages/**/ios/**",
+            "apps/bare-expo/**/ios/**"
+
+          common-paths: >-
+            .github/workflows/test-suite.yml,
+            .github/actions/use-android-emulator/action.yml,
+            "apps/bare-expo/**",
+            "apps/test-suite/**",
+            "packages/**",
+            yarn.lock,
+            "!packages/**/{ios,android}/**",
+            "!apps/bare-expo/**/{ios,android}/**"
   ios-build:
     runs-on: macos-15
+    needs: detect-platform-for-e2e
+    if: needs.detect-platform-for-e2e.outputs.should_run_ios == 'true'
     permissions:
       # REQUIRED: Allow updating fingerprint in action caches
       actions: write
@@ -213,6 +244,8 @@ jobs:
 
   android-build:
     runs-on: ubuntu-24.04
+    needs: detect-platform-for-e2e
+    if: needs.detect-platform-for-e2e.outputs.should_run_android == 'true'
     permissions:
       # REQUIRED: Allow updating fingerprint in action caches
       actions: write
