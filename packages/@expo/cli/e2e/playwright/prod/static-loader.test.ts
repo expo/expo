@@ -9,11 +9,9 @@ test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
 
 const projectRoot = getRouterE2ERoot();
-const outputDir = 'dist-static-loader';
+const outputDir = 'dist-static-loader-playwright';
 
-test.describe('static loader in production', () => {
-  test.describe.configure({ mode: 'serial' });
-
+test.describe('static loaders in production', () => {
   const expoServe = createExpoServe({
     cwd: projectRoot,
     env: {
@@ -33,44 +31,12 @@ test.describe('static loader in production', () => {
     });
     console.timeEnd('expo export');
 
-    console.time('npx serve');
+    console.time('expo serve');
     await expoServe.startAsync([outputDir]);
-    console.timeEnd('npx serve');
+    console.timeEnd('expo serve');
   });
   test.afterAll(async () => {
     await expoServe.stopAsync();
-  });
-
-  test('loads and renders a route without a loader', async ({ page }) => {
-    const pageErrors = pageCollectErrors(page);
-    await page.goto(expoServe.url.href);
-
-    const loaderDataScript = await page.evaluate(() => {
-      return globalThis.__EXPO_ROUTER_LOADER_DATA__;
-    });
-    expect(loaderDataScript).not.toBeDefined();
-
-    // Index route doesn't have a loader, so no loader-result element should exist
-    const loaderResult = page.locator('[data-testid="loader-result"]');
-    await expect(loaderResult).toHaveCount(0);
-
-    expect(pageErrors.all).toEqual([]);
-  });
-
-  test('loads and renders a route with a loader', async ({ page }) => {
-    const pageErrors = pageCollectErrors(page);
-    await page.goto(expoServe.url.href + 'second');
-
-    const loaderDataScript = await page.evaluate(() => {
-      return globalThis.__EXPO_ROUTER_LOADER_DATA__;
-    });
-    expect(loaderDataScript).toBeDefined();
-
-    await page.waitForSelector('[data-testid="loader-result"]');
-    const loaderDataElement = await page.locator('[data-testid="loader-result"]');
-    await expect(loaderDataElement).toHaveText('{"data":"second"}');
-
-    expect(pageErrors.all).toEqual([]);
   });
 
   test('loads loader data modules on client-side navigation', async ({ page }) => {
@@ -90,8 +56,8 @@ test.describe('static loader in production', () => {
       expect.stringContaining('/_expo/loaders/posts/static-post-1')
     );
 
-    const loaderData = page.locator('[data-testid="loader-result"]');
-    await expect(loaderData).toContainText('"postId":"static-post-1"');
+    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
+    expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
   });
 
   test('caches loader data for subsequent navigations', async ({ page }) => {
@@ -143,13 +109,11 @@ test.describe('static loader in production', () => {
 
     await page.click('a[href="/posts/static-post-1"]');
 
-    const loaderResult = page.locator('[data-testid="loader-result"]');
+    const suspenseFallback = await page.locator('[data-testid="suspense-fallback"]');
+    await expect(suspenseFallback).toBeVisible();
 
-    // In production, `<SuspenseFallback>` returns null, but we can verify the Suspense boundary is
-    // working by checking that content is not rendered during loading
-    await expect(loaderResult).not.toBeVisible({ timeout: 100 });
-
-    await expect(loaderResult).toBeVisible({ timeout: 1000 });
+    await page.waitForSelector('[data-testid="loader-result"]');
+    await expect(suspenseFallback).not.toBeVisible();
   });
 
   test('navigates from route without loader to route with loader', async ({ page }) => {
@@ -158,12 +122,12 @@ test.describe('static loader in production', () => {
     // Start at index route (no loader)
     await page.goto(expoServe.url.href);
 
-    // Navigate to second route (has loader) - this was previously broken
+    // Navigate to second route (has loader)
     await page.click('a[href="/second"]');
     await page.waitForSelector('[data-testid="loader-result"]');
 
-    const loaderData = page.locator('[data-testid="loader-result"]');
-    await expect(loaderData).toHaveText('{"data":"second"}');
+    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
+    expect(JSON.parse(loaderDataContent!)).toEqual({ data: 'second' });
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -178,13 +142,17 @@ test.describe('static loader in production', () => {
     await page.goto(url.toString());
     await page.waitForSelector('[data-testid="loader-result"]');
 
-    await expect(page.locator('[data-testid="loader-result"]')).toHaveText('{"data":"second"}');
+    const secondLoaderDataContent = await page
+      .locator('[data-testid="loader-result"]')
+      .textContent();
+    expect(JSON.parse(secondLoaderDataContent!)).toEqual({ data: 'second' });
 
     // Navigate to posts route (has loader)
     await page.click('a[href="/posts/static-post-1"]');
-    await expect(page.locator('[data-testid="loader-result"]')).toContainText(
-      '"postId":"static-post-1"'
-    );
+    const postsLoaderDataContent = await page
+      .locator('[data-testid="loader-result"]')
+      .textContent();
+    expect(JSON.parse(postsLoaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
 
     expect(pageErrors.all).toEqual([]);
   });

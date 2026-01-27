@@ -10,9 +10,12 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix tvOS compilation errors in Source Map Explorer by excluding tvOS from unavailable SwiftUI APIs (`navigationBarTitleDisplayMode`, `listStyle(.insetGrouped)`, `Menu`) and adding proper availability checks. Refactored platform-specific modifiers to use `@ViewBuilder` instead of `AnyView` for better type preservation and performance. ([#TBD] by [@OtavioStasiak](https://github.com/OtavioStasiak)) ([#42574](https://github.com/expo/expo/pull/42574) by [@OtavioStasiak](https://github.com/OtavioStasiak))
+- [iOS] Fix tvOS compilation errors in Source Map Explorer by excluding tvOS from unavailable SwiftUI APIs (`navigationBarTitleDisplayMode`, `listStyle(.insetGrouped)`, `Menu`) and adding proper availability checks. Refactored platform-specific modifiers to use `@ViewBuilder` instead of `AnyView` for better type preservation and performance. ([#42574](https://github.com/expo/expo/pull/42574) by [@OtavioStasiak](https://github.com/OtavioStasiak))
+- [Android] Fix dev menu not opening when pressing m key in CLI. ([#42566](https://github.com/expo/expo/pull/42566) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
+
+- Make the Action Button always enabled on Quest. ([#42562](https://github.com/expo/expo/pull/42562) by [@behenate](https://github.com/behenate))
 
 ## 55.0.2 — 2026-01-26
 

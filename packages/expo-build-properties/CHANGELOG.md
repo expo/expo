@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Validate `hermes-compiler` version when enabling hermes V1 ([#42477](https://github.com/expo/expo/pull/42477) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 55.0.3 — 2026-01-26
 
 _This version does not introduce any user-facing changes._
