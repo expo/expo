@@ -15,14 +15,14 @@ function useNativeEvent(userHandler) {
 /**
  * @platform android
  */
-export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMapLongClick, onPOIClick, onMarkerClick, onPolylineClick, onCircleClick, onPolygonClick, onCameraMove, onDeselect, markers, polylines, circles, polygons, ...props }, ref) => {
+export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMapLongClick, onPOIClick, onMarkerClick, onPolylineClick, onCircleClick, onPolygonClick, onCameraMove, markers, polylines, circles, polygons, ...props }, ref) => {
     const nativeRef = React.useRef(null);
     React.useImperativeHandle(ref, () => ({
         setCameraPosition(config) {
             nativeRef.current?.setCameraPosition(config);
         },
-        select(id, options) {
-            nativeRef.current?.select(id, options);
+        selectMarker(id, options) {
+            nativeRef.current?.selectMarker(id, options);
         },
     }));
     const onNativeMapLoaded = React.useCallback(() => {
@@ -36,9 +36,6 @@ export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMap
     const onNativePolylineClick = useNativeEvent(onPolylineClick);
     const onNativePolygonClick = useNativeEvent(onPolygonClick);
     const onNativeCircleClick = useNativeEvent(onCircleClick);
-    const onNativeDeselect = React.useCallback(() => {
-        onDeselect?.();
-    }, [onDeselect]);
     const parsedPolylines = polylines?.map((polyline) => ({
         ...polyline,
         color: processColor(polyline.color) ?? undefined,
@@ -61,6 +58,6 @@ export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMap
     if (!NativeView) {
         return null;
     }
-    return (<NativeView {...props} ref={nativeRef} markers={parsedMarkers} polylines={parsedPolylines} polygons={parsedPolygons} circles={parsedCircles} onMapLoaded={onNativeMapLoaded} onMapClick={onNativeMapClick} onMapLongClick={onNativeMapLongClick} onPOIClick={onNativePOIClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove} onPolylineClick={onNativePolylineClick} onPolygonClick={onNativePolygonClick} onCircleClick={onNativeCircleClick} onDeselect={onNativeDeselect}/>);
+    return (<NativeView {...props} ref={nativeRef} markers={parsedMarkers} polylines={parsedPolylines} polygons={parsedPolygons} circles={parsedCircles} onMapLoaded={onNativeMapLoaded} onMapClick={onNativeMapClick} onMapLongClick={onNativeMapLongClick} onPOIClick={onNativePOIClick} onMarkerClick={onNativeMarkerClick} onCameraMove={onNativeCameraMove} onPolylineClick={onNativePolylineClick} onPolygonClick={onNativePolygonClick} onCircleClick={onNativeCircleClick}/>);
 });
 //# sourceMappingURL=GoogleMapsView.js.map

@@ -38,16 +38,24 @@ const MARKERS: GoogleMaps.Marker[] = [
 
 export default function MapsMarkerScreen() {
   const mapRef = useRef<GoogleMaps.MapView>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedMarkerId, setSelectedMarkerId] = useState<string | undefined>();
 
   const handleMarkerSelect = (markerId: string) => {
-    const newId = selectedId === markerId ? null : markerId;
-    mapRef.current?.select(newId, { moveCamera: true });
+    setSelectedMarkerId(markerId);
+    mapRef.current?.selectMarker(markerId, { moveCamera: true });
   };
 
   const clearSelection = () => {
-    setSelectedId(null);
-    mapRef.current?.select(null);
+    setSelectedMarkerId(undefined);
+    mapRef.current?.selectMarker(undefined);
+  };
+
+  const onMapClick = () => {
+    setSelectedMarkerId(undefined);
+  };
+
+  const onMarkerClick = (marker: GoogleMaps.Marker) => {
+    setSelectedMarkerId(marker.id);
   };
 
   return (
@@ -62,13 +70,9 @@ export default function MapsMarkerScreen() {
           },
           zoom: 7,
         }}
+        onMarkerClick={onMarkerClick}
         markers={MARKERS}
-        onMarkerClick={(marker) => {
-          setSelectedId(marker.id ?? null);
-        }}
-        onDeselect={() => {
-          setSelectedId(null);
-        }}
+        onMapClick={onMapClick}
       />
 
       <View style={styles.listContainer}>
@@ -80,7 +84,7 @@ export default function MapsMarkerScreen() {
           keyExtractor={(item) => item.id!}
           contentContainerStyle={styles.listContent}
           renderItem={({ item }) => {
-            const isSelected = selectedId === item.id;
+            const isSelected = selectedMarkerId === item.id;
             return (
               <Pressable
                 style={[styles.markerItem, isSelected && styles.markerItemSelected]}
@@ -93,7 +97,7 @@ export default function MapsMarkerScreen() {
             );
           }}
         />
-        {selectedId && (
+        {selectedMarkerId && (
           <Pressable style={styles.clearButton} onPress={clearSelection}>
             <Text style={styles.clearButtonText}>Clear Selection</Text>
           </Pressable>

@@ -6,8 +6,7 @@
 
 ### 🎉 New features
 
-- [Android] Add programmatic selection support for markers and annotations via `selectedId` prop and `select()` ref method. ([#42189](https://github.com/expo/expo/pull/42189) by [@huextrat](https://github.com/huextrat))
-- [Android] Add `onDeselect` event callback for when a marker is deselected. ([#42189](https://github.com/expo/expo/pull/42189) by [@huextrat](https://github.com/huextrat))
+- [Android] Add programmatic selection support for markers via `selectMarker()` ref method. ([#42189](https://github.com/expo/expo/pull/42189) by [@huextrat](https://github.com/huextrat))
 
 ### 🐛 Bug fixes
 
