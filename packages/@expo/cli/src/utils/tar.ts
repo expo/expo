@@ -131,19 +131,5 @@ export async function extractAsync(
   output: string,
   options?: ExtractOptions
 ): Promise<void> {
-  try {
-    if (process.platform !== 'win32') {
-      debug(`Extracting ${input} to ${output}`);
-      await spawnAsync('tar', ['-xf', input, '-C', output], {
-        stdio: 'inherit',
-      });
-      return;
-    }
-  } catch (error: any) {
-    Log.warn(
-      `Failed to extract tar using native tools, falling back on JS extraction. ${error.message}`
-    );
-  }
-
   await extractStream(fs.createReadStream(input), output, options);
 }
