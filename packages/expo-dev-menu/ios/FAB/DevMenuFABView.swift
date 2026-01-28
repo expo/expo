@@ -7,9 +7,12 @@ import SwiftUI
 enum FABConstants {
   static let iconSize: CGFloat = 44
   static let margin: CGFloat = 16
+  static let verticalPadding: CGFloat = 20
   static let dragThreshold: CGFloat = 10
   static let momentumFactor: CGFloat = 0.35
   static let labelDismissDelay: TimeInterval = 10
+  static let idleTimeout: UInt64 = 5_000_000_000
+  static let imageSize: CGFloat = 26
 
   static let snapAnimation: Animation = .spring(
     response: 0.6,
@@ -20,22 +23,33 @@ enum FABConstants {
 
 struct FabPill: View {
   @Binding var isPressed: Bool
+  @Binding var isDragging: Bool
   @State private var showLabel = true
+  @State private var isIdle = false
+  @State private var idleTask: Task<Void, Never>?
+
+  private var isInteracting: Bool {
+    isPressed || isDragging
+  }
 
   var body: some View {
-    VStack(spacing: 4) {
-      Image(systemName: "gearshape.fill")
-        .font(.system(size: 20))
-        .foregroundStyle(.white)
-        .frame(width: FABConstants.iconSize, height: FABConstants.iconSize)
-        .background(Color.blue, in: Circle())
-        .overlay(
-          Circle()
-            .stroke(Color.blue.opacity(0.5), lineWidth: 4)
-            .frame(width: FABConstants.iconSize + 4, height: FABConstants.iconSize + 4)
-        )
+    VStack(spacing: 8) {
+      actionButton
         .scaleEffect(isPressed ? 0.9 : 1.0)
         .animation(.easeInOut(duration: 0.1), value: isPressed)
+        .onChange(of: isInteracting) { interacting in
+          if interacting {
+            idleTask?.cancel()
+            withAnimation {
+              isIdle = false
+            }
+          } else {
+            startIdleTimer()
+          }
+        }
+        .onAppear {
+          startIdleTimer()
+        }
 
       if showLabel {
         Text("Dev tools")
@@ -48,7 +62,12 @@ struct FabPill: View {
           .transition(.opacity.combined(with: .scale(scale: 0.8)))
       }
     }
+    .saturation(isIdle ? 0 : 1)
+    .opacity(isIdle ? 0.5 : 1)
+    .animation(.easeInOut(duration: 0.3), value: isIdle)
     .task {
+      // [Alan] This is poor practice but without it, the label is not included in the drag gesture
+      // and remains in it's original posistion.
       try? await Task.sleep(nanoseconds: UInt64(1_000_000_000 * FABConstants.labelDismissDelay))
       await MainActor.run {
         withAnimation(.easeOut(duration: 0.3)) {
@@ -57,13 +76,65 @@ struct FabPill: View {
       }
     }
   }
+
+  @ViewBuilder
+  private var actionButton: some View {
+    if #available(iOS 26.0, *) {
+      liquidGlassButton
+    } else {
+      classicButton
+    }
+  }
+
+  private func startIdleTimer() {
+    idleTask?.cancel()
+    idleTask = Task {
+      try? await Task.sleep(nanoseconds: FABConstants.idleTimeout)
+      guard !Task.isCancelled else { return }
+      await MainActor.run {
+        withAnimation {
+          isIdle = true
+        }
+      }
+    }
+  }
+
+  @available(iOS 26.0, *)
+  private var liquidGlassButton: some View {
+    Image(systemName: "gearshape.fill")
+      .resizable()
+      .frame(width: FABConstants.imageSize, height: FABConstants.imageSize)
+      .foregroundStyle(.white)
+      .frame(width: FABConstants.iconSize, height: FABConstants.iconSize)
+      .background(
+        Circle()
+          .frame(width: FABConstants.iconSize + 10, height: FABConstants.iconSize + 10)
+          .glassEffect(.clear, in: Circle())
+      )
+      .shadow(color: .black.opacity(0.4), radius: 8, x: 0, y: 4)
+  }
+
+  private var classicButton: some View {
+    Image(systemName: "gearshape.fill")
+      .resizable()
+      .frame(width: FABConstants.imageSize, height: FABConstants.imageSize)
+      .foregroundStyle(.white)
+      .frame(width: FABConstants.iconSize, height: FABConstants.iconSize)
+      .background(Color.blue, in: Circle())
+      .background(
+        Circle()
+          .stroke(Color.blue.opacity(0.5), lineWidth: 4)
+          .frame(width: FABConstants.iconSize + 4, height: FABConstants.iconSize + 4)
+      )
+      .shadow(color: .black.opacity(0.4), radius: 8, x: 0, y: 4)
+  }
 }
 
 struct DevMenuFABView: View {
   let onOpenMenu: () -> Void
   let onFrameChange: (CGRect) -> Void
 
-  private let fabSize = CGSize(width: 72, height: FABConstants.iconSize + 24)
+  private let fabSize = CGSize(width: 72, height: FABConstants.iconSize + 50)
 
   @State private var position: CGPoint = .zero
   @State private var targetPosition: CGPoint = .zero
@@ -84,7 +155,8 @@ struct DevMenuFABView: View {
   var body: some View {
     GeometryReader { geometry in
       let safeArea = geometry.safeAreaInsets
-      FabPill(isPressed: $isPressed)
+
+      FabPill(isPressed: $isPressed, isDragging: $isDragging)
         .frame(width: fabSize.width, height: fabSize.height)
         .position(x: currentFrame.midX, y: currentFrame.midY)
         .gesture(dragGesture(bounds: geometry.size, safeArea: safeArea))
@@ -123,8 +195,8 @@ struct DevMenuFABView: View {
           let margin = FABConstants.margin
           let minX = margin
           let maxX = bounds.width - fabSize.width - margin
-          let minY = margin + safeArea.top
-          let maxY = bounds.height - fabSize.height - margin - safeArea.bottom
+          let minY = margin + safeArea.top + FABConstants.verticalPadding
+          let maxY = bounds.height - fabSize.height - margin - safeArea.bottom - FABConstants.verticalPadding
 
           let rawX = dragStartPosition.x + value.translation.width
           let rawY = dragStartPosition.y + value.translation.height
@@ -168,7 +240,7 @@ struct DevMenuFABView: View {
   private func defaultPosition(bounds: CGSize, safeArea: EdgeInsets) -> CGPoint {
     CGPoint(
       x: bounds.width - fabSize.width - FABConstants.margin,
-      y: (bounds.height / 2) - fabSize.height
+      y: bounds.height * 0.25
     )
   }
 
@@ -187,8 +259,8 @@ struct DevMenuFABView: View {
       ? margin
     : bounds.width - self.fabSize.width - margin
 
-    let minY = margin + safeArea.top
-    let maxY = bounds.height - self.fabSize.height - margin - safeArea.bottom
+    let minY = margin + safeArea.top + FABConstants.verticalPadding
+    let maxY = bounds.height - self.fabSize.height - margin - safeArea.bottom - FABConstants.verticalPadding
     let targetY = (point.y + momentumY).clamped(to: minY...maxY)
 
     return CGPoint(x: targetX, y: targetY)

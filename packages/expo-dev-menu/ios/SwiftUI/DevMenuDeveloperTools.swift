@@ -77,7 +77,7 @@ struct DevMenuDeveloperTools: View {
         Divider()
 
         DevMenuToggleButton(
-          title: "Action button",
+          title: "Show dev tools button",
           icon: "hand.tap",
           isEnabled: viewModel.showFloatingActionButton,
           action: viewModel.toggleFloatingActionButton

@@ -9,12 +9,18 @@ struct DevMenuOnboardingView: View {
     Rectangle()
       .fill(.ultraThinMaterial)
       .ignoresSafeArea()
-      .overlay(onboardingOverlay)
+      .overlay(OnboardingOverlay(onFinish: onFinish, isVisible: $isVisible))
       .offset(x: 0, y: isVisible ? 0.0 : 650.0)
       .animation(.easeInOut(duration: 0.5), value: isVisible)
   }
+}
 
-  private var onboardingOverlay: some View {
+private struct OnboardingOverlay: View {
+  let onFinish: () -> Void
+  @Binding var isVisible: Bool
+  var appName = "development builds"
+  
+  var body: some View {
     ScrollView {
       VStack(spacing: 16) {
         Image("dev-tools", bundle: getDevMenuBundle())
@@ -49,13 +55,18 @@ struct DevMenuOnboardingView: View {
 #endif
         }
 
-        continueButton
+        ContinueButton(onFinish: onFinish, isVisible: $isVisible)
       }
       .padding()
     }
   }
+}
 
-  private var continueButton: some View {
+private struct ContinueButton: View {
+  let onFinish: () -> Void
+  @Binding var isVisible: Bool
+  
+  var body: some View {
     Button {
       withAnimation(.easeInOut(duration: 0.3)) {
         isVisible = false
