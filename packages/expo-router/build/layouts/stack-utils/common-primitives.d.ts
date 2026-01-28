@@ -9,6 +9,19 @@ export interface StackToolbarLabelProps {
 export declare const StackToolbarLabel: React.FC<StackToolbarLabelProps>;
 export type StackToolbarIconProps = {
     src: ImageSourcePropType;
+    /**
+     * Controls how the image icon is rendered on iOS.
+     *
+     * - `'template'`: iOS applies tint color to the icon
+     * - `'original'`: Preserves original icon colors
+     *
+     * Defaults based on parent component's `tintColor`:
+     * - With `tintColor`: defaults to `'template'`
+     * - Without `tintColor`: defaults to `'original'`
+     *
+     * @platform ios
+     */
+    renderingMode?: 'template' | 'original';
 } | {
     sf: SFSymbol;
 };

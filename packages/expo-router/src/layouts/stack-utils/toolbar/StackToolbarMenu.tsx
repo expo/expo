@@ -95,6 +95,23 @@ export interface StackToolbarMenuProps {
    */
   icon?: StackHeaderItemSharedProps['icon'];
   /**
+   * Controls how image-based icons are rendered on iOS.
+   *
+   * - `'template'`: iOS applies tint color to the icon (useful for monochrome icons)
+   * - `'original'`: Preserves original icon colors (useful for multi-color icons)
+   *
+   * **Default behavior:**
+   * - If `tintColor` is specified, defaults to `'template'`
+   * - If no `tintColor`, defaults to `'original'`
+   *
+   * This prop only affects image-based icons (not SF Symbols).
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+   *
+   * @platform ios
+   */
+  iconRenderingMode?: 'template' | 'original';
+  /**
    * If `true`, the menu will be displayed inline.
    * This means that the menu will not be collapsed
    *
@@ -225,6 +242,7 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = ({ children, ..
     <NativeToolbarMenu
       {...props}
       image={props.image}
+      imageRenderingMode={props.iconRenderingMode}
       label={computedLabel}
       title={computedMenuTitle}
       children={validChildren}
@@ -346,6 +364,23 @@ export interface StackToolbarMenuActionProps {
    */
   image?: ImageRef;
   /**
+   * Controls how image-based icons are rendered on iOS.
+   *
+   * - `'template'`: iOS applies tint color to the icon (useful for monochrome icons)
+   * - `'original'`: Preserves original icon colors (useful for multi-color icons)
+   *
+   * **Default behavior:**
+   * - If `tintColor` is specified, defaults to `'template'`
+   * - If no `tintColor`, defaults to `'original'`
+   *
+   * This prop only affects image-based icons (not SF Symbols).
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+   *
+   * @platform ios
+   */
+  iconRenderingMode?: 'template' | 'original';
+  /**
    * If `true`, the menu item will be displayed as destructive.
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive) for more information.
@@ -409,7 +444,14 @@ export const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps> = (pr
   if (placement === 'bottom') {
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
     const icon = typeof props.icon === 'string' ? props.icon : undefined;
-    return <NativeToolbarMenuAction {...props} icon={icon} image={props.image} />;
+    return (
+      <NativeToolbarMenuAction
+        {...props}
+        icon={icon}
+        image={props.image}
+        imageRenderingMode={props.iconRenderingMode}
+      />
+    );
   }
 
   return <MenuAction {...props} />;
