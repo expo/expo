@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "widgets-tester",
+    "slug": "widgets-tester",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jake7.widgets-tester"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-widgets",
+        {
+          "groupIdentifier": "group.com.jake7.widgets-tester",
+          "enablePushNotifications": true,
+          "widgets": [
+            {
+              "name": "Widget1",
+              "supportedFamilies": ["systemLarge"],
+              "displayName": "My First Widget",
+              "description": "This is an example widget created with Expo Widget Config Plugin"
+            },
+            {
+              "name": "Widget2",
+              "supportedFamilies": ["systemSmall", "systemMedium", "systemLarge"],
+              "displayName": "My Second Widget",
+              "description": "Description for Widget 2"
+            }
+          ]
+        }
+      ]
+    ]
+  }
+}

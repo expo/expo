@@ -1,0 +1,22 @@
+{
+  "name": "widgets-tester",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "expo": "54.0.8",
+    "expo-status-bar": "3.0.8",
+    "react": "19.2.0",
+    "react-native": "0.83.1",
+    "expo-widgets": "0.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.0"
+  },
+  "private": true
+}
