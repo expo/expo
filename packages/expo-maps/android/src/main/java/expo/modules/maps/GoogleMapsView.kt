@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -82,12 +83,12 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   private var manualCameraControl = false
 
   // Selection state management
-  private val markerStatesById = mutableMapOf<String, MarkerState>()
+  private lateinit var markerState: State<List<Pair<MarkerRecord, MarkerState>>>
 
   @Composable
   override fun ComposableScope.Content() {
     cameraState = updateCameraState()
-    val markerState = markerStateFromProps()
+    markerState = markerStateFromProps()
     val locationSource = locationSourceFromProps()
     val polylineState by polylineStateFromProps()
     val polygonState by polygonStateFromProps()
@@ -269,18 +270,8 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   private fun markerStateFromProps() =
     remember {
       derivedStateOf {
-        val currentMarkerIds = props.markers.value.map { it.id }.toSet()
-
-        // Clean up stale marker states
-        markerStatesById.keys.removeAll { it !in currentMarkerIds }
-
         props.markers.value.map { marker ->
-          val state = markerStatesById.getOrPut(marker.id) {
-            MarkerState(position = marker.coordinates.toLatLng())
-          }
-          // Update position if it changed
-          state.position = marker.coordinates.toLatLng()
-          marker to state
+          marker to MarkerState(position = marker.coordinates.toLatLng())
         }
       }
     }
@@ -368,35 +359,30 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
    */
   suspend fun selectMarker(id: String?, options: SelectOptionsRecord?) {
     if (id == null) {
-      markerStatesById.values.forEach { it.hideInfoWindow() }
+      markerState.value.forEach { it.second.hideInfoWindow() }
       return
     }
-
-    val markerState = markerStatesById[id]
-    val marker = props.markers.value.find { it.id == id }
-
-    if (markerState != null && marker != null) {
-      markerState.showInfoWindow()
-
-      onMarkerClick(
-        MarkerRecord(
-          id = marker.id,
-          title = marker.title,
-          snippet = marker.snippet,
-          coordinates = marker.coordinates
-        )
+    val pair = markerState.value.find { it.first.id == id } ?: return
+    val marker = pair.first
+    val state = pair.second
+    state.showInfoWindow()
+    onMarkerClick(
+      MarkerRecord(
+        id = marker.id,
+        title = marker.title,
+        snippet = marker.snippet,
+        coordinates = marker.coordinates
       )
-
-      val moveCamera = options?.moveCamera ?: true
-      if (moveCamera) {
-        val zoom = options?.zoom
-        val cameraUpdate = if (zoom != null) {
-          CameraUpdateFactory.newLatLngZoom(markerState.position, zoom)
-        } else {
-          CameraUpdateFactory.newLatLng(markerState.position)
-        }
-        cameraState.animate(cameraUpdate)
+    )
+    val moveCamera = options?.moveCamera ?: true
+    if (moveCamera) {
+      val zoom = options?.zoom
+      val cameraUpdate = if (zoom != null) {
+        CameraUpdateFactory.newLatLngZoom(state.position, zoom)
+      } else {
+        CameraUpdateFactory.newLatLng(state.position)
       }
+      cameraState.animate(cameraUpdate)
     }
   }
 
