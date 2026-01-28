@@ -294,6 +294,11 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   [self switchTasks];
 }
 
+- (void)devMenuReload {
+  [DevMenuManager.shared hideMenu];
+  [self reloadVisibleApp];
+}
+
 - (void)devMenuTogglePerformanceMonitor {
   [[self visibleApp].appManager togglePerformanceMonitor];
 }
