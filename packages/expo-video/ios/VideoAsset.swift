@@ -57,6 +57,8 @@ internal class VideoAsset: AVURLAsset, @unchecked Sendable {
 
     // Enable caching
     useCaching = true
+    VideoCacheManager.shared.ensureCacheIntegrity(forSavePath: saveFilePath)
+    Self.createCacheDirectoryIfNeeded()
     resourceLoaderDelegate = ResourceLoaderDelegate(url: url, saveFilePath: saveFilePath, fileExtension: fileExtension, urlRequestHeaders: urlRequestHeaders)
     super.init(url: urlWithCustomScheme, options: assetOptions)
 
@@ -64,8 +66,6 @@ internal class VideoAsset: AVURLAsset, @unchecked Sendable {
       self?.cachingError = error
     }
     self.resourceLoader.setDelegate(resourceLoaderDelegate, queue: VideoCacheManager.shared.cacheQueue)
-    self.createCacheDirectoryIfNeeded()
-    VideoCacheManager.shared.ensureCacheIntegrity(forSavePath: saveFilePath)
   }
 
   deinit {
@@ -107,7 +107,7 @@ internal class VideoAsset: AVURLAsset, @unchecked Sendable {
     return videoSource.drm == nil
   }
 
-  private func createCacheDirectoryIfNeeded() {
+  private static func createCacheDirectoryIfNeeded() {
     guard var cachesDirectory = try? FileManager.default.url(
       for: .cachesDirectory,
       in: .userDomainMask,
