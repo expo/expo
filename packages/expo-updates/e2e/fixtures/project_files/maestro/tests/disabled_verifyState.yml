@@ -5,6 +5,10 @@ onFlowStart:
 ---
 # Check that state is correct when updates are disabled
 - launchApp
+- extendedWaitUntil:
+    visible:
+      id: updateString
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from update string
     id: updateString

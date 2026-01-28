@@ -5,9 +5,13 @@ onFlowStart:
 ---
 # initial request includes correct update-id headers
 - launchApp
+- extendedWaitUntil:
+    visible:
+      id: updateString
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from update string
-    id: updatestring
+    id: updateString
 - assertTrue:
     condition: ${maestro.copiedText == "test"}
     label: Assert update string is from embedded bundle

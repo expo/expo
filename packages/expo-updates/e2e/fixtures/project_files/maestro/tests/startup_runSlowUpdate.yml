@@ -15,6 +15,10 @@ onFlowStart:
     env:
       MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
 - launchApp
+- extendedWaitUntil:
+    visible:
+      id: updateString
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from update string
     id: updateString
