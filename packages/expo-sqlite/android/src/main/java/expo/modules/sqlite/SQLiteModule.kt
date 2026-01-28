@@ -421,7 +421,7 @@ class SQLiteModule : Module() {
       }
       val firstRowValues: SQLiteColumnValues =
         if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-          statement.ref.getColumnValues()
+          statement.getTransformedColumnValues()
         } else {
           arrayListOf()
         }
@@ -439,7 +439,7 @@ class SQLiteModule : Module() {
     maybeThrowForFinalizedStatement(statement)
     val ret = statement.ref.sqlite3_step()
     if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-      return statement.ref.getColumnValues()
+      return ArrayList(statement.getTransformedColumnValues())
     }
     if (ret != NativeDatabaseBinding.SQLITE_DONE) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
@@ -455,7 +455,7 @@ class SQLiteModule : Module() {
     while (true) {
       val ret = statement.ref.sqlite3_step()
       if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-        columnValuesList.add(statement.ref.getColumnValues())
+        columnValuesList.add(statement.getTransformedColumnValues())
         continue
       } else if (ret == NativeDatabaseBinding.SQLITE_DONE) {
         break

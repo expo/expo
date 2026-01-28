@@ -149,11 +149,13 @@ jni::local_ref<jni::JObject> NativeStatementBinding::getColumnValue(int index) {
   }
   case SQLITE_BLOB: {
     size_t length = static_cast<size_t>(exsqlite3_column_bytes(stmt, index));
-    auto byteArray = jni::JArrayByte::newArray(length);
-    byteArray->setRegion(
-        0, length,
-        static_cast<const signed char *>(exsqlite3_column_blob(stmt, index)));
-    return byteArray;
+    auto byteBuffer = jni::JByteBuffer::allocateDirect(length);
+    memcpy(
+      byteBuffer->getDirectAddress(),
+      exsqlite3_column_blob(stmt, index),
+      length
+    );
+    return byteBuffer;
   }
   case SQLITE_NULL: {
     return nullptr;
