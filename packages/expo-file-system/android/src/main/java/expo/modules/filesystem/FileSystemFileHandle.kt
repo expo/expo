@@ -4,6 +4,8 @@ import expo.modules.kotlin.sharedobjects.SharedRef
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
+import kotlin.math.min
+
 class FileSystemFileHandle(file: FileSystemFile) : SharedRef<FileChannel>(RandomAccessFile(file.javaFile, "rw").channel), AutoCloseable {
   private val fileChannel: FileChannel = ref
 
@@ -21,11 +23,28 @@ class FileSystemFileHandle(file: FileSystemFile) : SharedRef<FileChannel>(Random
     fileChannel.close()
   }
 
-  fun read(length: Int): ByteArray {
+  fun read(length: Long): ByteArray {
     ensureIsOpen()
     try {
-      val buffer = ByteBuffer.allocate(length.coerceAtMost((fileChannel.size() - fileChannel.position()).toInt()))
-      fileChannel.read(buffer)
+      val currentPosition = fileChannel.position()
+      val totalSize = fileChannel.size()
+
+      val available = totalSize - currentPosition
+
+      val readAmount = min(length, available).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+
+      if (readAmount <= 0) {
+        return ByteArray(0)
+      }
+
+      val buffer = ByteBuffer.allocate(readAmount)
+      var bytesRead = 0
+      while (bytesRead < readAmount) {
+        val result = fileChannel.read(buffer)
+        if (result == -1) break
+        bytesRead += result
+      }
+
       return buffer.array()
     } catch (e: Exception) {
       throw UnableToReadHandleException(e.message ?: "unknown error")
@@ -36,7 +55,9 @@ class FileSystemFileHandle(file: FileSystemFile) : SharedRef<FileChannel>(Random
     ensureIsOpen()
     try {
       val buffer = ByteBuffer.wrap(data)
-      fileChannel.write(buffer)
+      while (buffer.hasRemaining()) {
+        fileChannel.write(buffer)
+      }
     } catch (e: Exception) {
       throw UnableToWriteHandleException(e.message ?: "unknown error")
     }
@@ -51,9 +72,7 @@ class FileSystemFileHandle(file: FileSystemFile) : SharedRef<FileChannel>(Random
       }
     }
     set(value) {
-      if (value == null) {
-        return
-      }
+      if (value == null) return
       fileChannel.position(value)
     }
 
