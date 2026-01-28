@@ -196,10 +196,10 @@ public final class SQLiteModule: Module {
 
       // swiftlint:disable line_length
 
-      AsyncFunction("runAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [String: Any] in
+      AsyncFunction("runAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: NativeArrayBuffer], shouldPassAsArray: Bool) -> [String: Any] in
         return try run(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }.runOnQueue(moduleQueue)
-      Function("runSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) -> [String: Any] in
+      Function("runSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: JavaScriptArrayBuffer], shouldPassAsArray: Bool) -> [String: Any] in
         return try run(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
       }
 
@@ -385,7 +385,7 @@ public final class SQLiteModule: Module {
 
   // swiftlint:disable line_length
 
-  private func run(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: Data], shouldPassAsArray: Bool) throws -> [String: Any] {
+  private func run(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: ArrayBuffer], shouldPassAsArray: Bool) throws -> [String: Any] {
     try maybeThrowForClosedDatabase(database)
     try maybeThrowForFinalizedStatement(statement)
 
@@ -639,9 +639,9 @@ public final class SQLiteModule: Module {
       exsqlite3_bind_double(instance, index, param)
     case let param as String:
       exsqlite3_bind_text(instance, index, param, -1, SQLITE_TRANSIENT)
-    case let param as Data:
+    case let param as ArrayBuffer:
       _ = param.withUnsafeBytes {
-        exsqlite3_bind_blob(instance, index, $0.baseAddress, Int32(param.count), SQLITE_TRANSIENT)
+        exsqlite3_bind_blob(instance, index, $0.baseAddress, Int32(param.byteLength), SQLITE_TRANSIENT)
       }
     case let param as Bool:
       exsqlite3_bind_int(instance, index, param ? 1 : 0)

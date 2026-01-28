@@ -25,6 +25,9 @@ export function normalizeParams(...params) {
     for (const key in bindParams) {
         const value = bindParams[key];
         if (value instanceof Uint8Array) {
+            blobParams[key] = value.buffer;
+        }
+        else if (value instanceof ArrayBuffer) {
             blobParams[key] = value;
         }
         else if (typeof value === 'boolean') {
