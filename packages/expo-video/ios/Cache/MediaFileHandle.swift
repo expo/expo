@@ -17,7 +17,7 @@ internal class MediaFileHandle {
     do {
       return try FileManager.default.attributesOfItem(atPath: filePath)
     } catch let error as NSError {
-      log.warn("An error occured while reading the file attributes at \(filePath) error: \(error)")
+      log.warn("[expo-video] An error occured while reading the file attributes at \(filePath) error: \(error)")
     }
     return nil
   }
@@ -45,10 +45,10 @@ internal class MediaFileHandle {
     self.writeHandle = FileHandle(forWritingAtPath: filePath)
 
     if readHandle == nil {
-      log.warn("Failed to open file for reading at: \(filePath)")
+      log.warn("[expo-video] Failed to open file for reading at: \(filePath)")
     }
     if writeHandle == nil {
-      log.warn("Failed to open file for writing at: \(filePath)")
+      log.warn("[expo-video] Failed to open file for writing at: \(filePath)")
     }
   }
 
@@ -68,18 +68,18 @@ internal class MediaFileHandle {
     defer { lock.unlock() }
 
     guard let readHandle = readHandle else {
-      log.warn("Read handle not available for file at: \(filePath)")
+      log.warn("[expo-video] Read handle not available for file at: \(filePath)")
       return nil
     }
 
     guard offset >= 0 else {
-      log.warn("Invalid negative offset: \(offset)")
+      log.warn("[expo-video] Invalid negative offset: \(offset)")
       return nil
     }
 
     let currentSize = fileSize
     guard offset <= currentSize else {
-      log.warn("Offset \(offset) exceeds file size \(currentSize)")
+      log.warn("[expo-video] Offset \(offset) exceeds file size \(currentSize)")
       return nil
     }
 
@@ -88,12 +88,12 @@ internal class MediaFileHandle {
       let data = readHandle.readData(ofLength: length)
 
       if data.count < length && offset + Int64(data.count) < currentSize {
-        log.warn("Read \(data.count) bytes but expected \(length) bytes")
+        log.warn("[expo-video] Read \(data.count) bytes but expected \(length) bytes")
       }
 
       return data
     } catch {
-      log.warn("Failed to read data at offset \(offset): \(error)")
+      log.warn("[expo-video] Failed to read data at offset \(offset): \(error)")
       return nil
     }
   }

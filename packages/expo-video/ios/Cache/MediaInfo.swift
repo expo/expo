@@ -86,7 +86,7 @@ class MediaInfo: Codable {
 
     // Validate empty or invalid ranges
     guard newDataRange.1 > newDataRange.0 else {
-      log.warn("Invalid range: [\(newDataRange.0), \(newDataRange.1)) - end must be > start")
+      log.warn("[expo-video] Invalid range: [\(newDataRange.0), \(newDataRange.1)) - end must be > start")
       return
     }
 
@@ -124,7 +124,7 @@ class MediaInfo: Codable {
     do {
       return try JSONEncoder().encode(self)
     } catch {
-      log.warn("Error encoding MediaInfo object: \(error)")
+      log.warn("[expo-video] Error encoding MediaInfo object: \(error)")
       return nil
     }
   }
@@ -134,7 +134,7 @@ class MediaInfo: Codable {
   func saveToFile() {
     do {
       guard let data = self.encodeToData() else {
-        log.warn("Failed to encode MediaInfo for saving at: \(savePath)")
+        log.warn("[expo-video] Failed to encode MediaInfo for saving at: \(savePath)")
         return
       }
 
@@ -153,7 +153,7 @@ class MediaInfo: Codable {
       // Atomically move temp file to final location
       try FileManager.default.moveItem(at: tempURL, to: finalURL)
     } catch {
-      log.warn("Failed to save media info at: \(savePath), error: \(error)")
+      log.warn("[expo-video] Failed to save media info at: \(savePath), error: \(error)")
     }
   }
 
