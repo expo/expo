@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix sometimes two dev menus would open. ([#42567](https://github.com/expo/expo/pull/42567) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix color of placeholder text in URL input.
 
 ### 💡 Others
 
