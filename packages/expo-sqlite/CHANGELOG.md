@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Session changesets now use native `ArrayBuffer`s. ([#42638](https://github.com/expo/expo/pull/42638) by [@barthap](https://github.com/barthap))
+
 ## 55.0.10 — 2026-02-25
 
 ### 💡 Others
