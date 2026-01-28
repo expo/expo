@@ -171,8 +171,6 @@ export class ExternalModule<TModule> {
     const resolver = isLocal ? this._resolveLocal.bind(this) : this._resolveGlobal.bind(this);
     try {
       const packageJsonPath = resolver(`${this.pkg.name}/package.json`);
-      if (packageJsonPath == null) {
-      }
       const packageJson = this._require(packageJsonPath);
       if (packageJson) {
         if (semver.satisfies(packageJson.version, this.pkg.versionRange)) {
