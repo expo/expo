@@ -16,6 +16,11 @@ export type StackScreenTitleProps = {
     color?: string;
     textAlign?: 'left' | 'center';
   }>;
+  /**
+   * Style properties for the large title header.
+   *
+   * @platform ios
+   */
   largeStyle?: StyleProp<{
     fontFamily?: TextStyle['fontFamily'];
     fontSize?: TextStyle['fontSize'];
@@ -24,6 +29,11 @@ export type StackScreenTitleProps = {
     // currently only accept string for color props. In RN v8 we can change this to ColorValue.
     color?: string;
   }>;
+  /**
+   * Whether to use large title mode.
+   *
+   * @platform ios
+   */
   large?: boolean;
 };
 
@@ -60,8 +70,6 @@ export type StackScreenTitleProps = {
  *   );
  * }
  * ```
- *
- * @platform ios
  */
 export function StackScreenTitle(props: StackScreenTitleProps) {
   const updatedOptions = useMemo(() => appendStackScreenTitlePropsToOptions({}, props), [props]);
