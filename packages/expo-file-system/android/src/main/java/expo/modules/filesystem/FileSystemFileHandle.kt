@@ -28,9 +28,7 @@ class FileSystemFileHandle(file: FileSystemFile) : SharedRef<FileChannel>(Random
     try {
       val currentPosition = fileChannel.position()
       val totalSize = fileChannel.size()
-
       val available = totalSize - currentPosition
-
       val readAmount = min(length, available).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
 
       if (readAmount <= 0) {
