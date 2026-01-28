@@ -42,8 +42,9 @@ export async function checkForProcessEnvAsync(
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
-  let hasProcessEnvRef = false;
-  const processEnvPattern = /process\.env\./;
+  // Pattern to match process.env.VARIABLE_NAME and capture the variable name
+  const processEnvPattern = /process\.env\.([A-Z_][A-Z0-9_]*)/gi;
+  const foundEnvVars = new Set<string>();
 
   try {
     for (const platform of platforms) {
@@ -72,13 +73,13 @@ export async function checkForProcessEnvAsync(
         );
 
         for (const artifact of bundle.artifacts) {
-          if (artifact.type === 'js' && processEnvPattern.test(artifact.source)) {
-            hasProcessEnvRef = true;
-            break;
+          if (artifact.type === 'js') {
+            let match;
+            while ((match = processEnvPattern.exec(artifact.source)) !== null) {
+              foundEnvVars.add(match[1]);
+            }
           }
         }
-
-        if (hasProcessEnvRef) break;
       } catch (error) {
         Log.log('');
         if (error instanceof Error) {
@@ -94,5 +95,19 @@ export async function checkForProcessEnvAsync(
     await devServerManager.stopAsync();
   }
 
-  Log.log(hasProcessEnvRef ? 'true' : 'false');
+  // Check for unresolved environment variables and print warnings
+  const unresolvedVars: string[] = [];
+  for (const envVar of foundEnvVars) {
+    if (process.env[envVar] === undefined) {
+      unresolvedVars.push(envVar);
+    }
+  }
+
+  if (unresolvedVars.length > 0) {
+    for (const envVar of unresolvedVars.sort()) {
+      Log.warn(`Unresolved environment variable: process.env.${envVar}`);
+    }
+  }
+
+  Log.log(foundEnvVars.size > 0 ? 'true' : 'false');
 }
