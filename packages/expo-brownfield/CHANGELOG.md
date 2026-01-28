@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Abdriud] fix dev menu in isolated brownfield ([#42637](https://github.com/expo/expo/pull/42637) by [@pmleczek](https://github.com/pmleczek))
+
 ### 💡 Others
 
 ## 55.0.3 — 2026-01-26
