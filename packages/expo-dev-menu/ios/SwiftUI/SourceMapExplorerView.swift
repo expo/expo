@@ -230,6 +230,9 @@ struct CodeFileView: View {
   @State private var highlightedLines: [AttributedString]?
   @State private var isEditing = false
   @State private var displayContent: String = ""
+  @State private var showCopiedConfirmation = false
+  @State private var wrapLines = false
+  @State private var fontSize: CGFloat = 12
 
   private var isImageFile: Bool {
     let ext = (node.name as NSString).pathExtension.lowercased()
@@ -257,17 +260,89 @@ struct CodeFileView: View {
 
   private var lineNumberWidth: CGFloat {
     let digits = String(lines.count).count
-    return CGFloat(digits * 10 + 16)
+    let charWidth = fontSize * 0.6
+    return CGFloat(digits) * charWidth + 16
+  }
+
+  private var codeToolbar: some View {
+    HStack(spacing: 0) {
+      // Copy button
+      Button {
+        UIPasteboard.general.string = displayContent
+        showCopiedConfirmation = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+          showCopiedConfirmation = false
+        }
+      } label: {
+        Label("Copy", systemImage: "doc.on.doc")
+          .font(.system(size: 14))
+          .frame(maxWidth: .infinity)
+      }
+
+      Divider().frame(height: 24)
+
+      // Wrap lines button
+      Button {
+        wrapLines.toggle()
+      } label: {
+        Label(wrapLines ? "Unwrap" : "Wrap", systemImage: wrapLines ? "arrow.left.and.right.text.vertical" : "text.justify.leading")
+          .font(.system(size: 14))
+          .frame(maxWidth: .infinity)
+      }
+
+      Divider().frame(height: 24)
+
+      // Font size decrease
+      Button {
+        if fontSize > 8 {
+          fontSize -= 1
+        }
+      } label: {
+        HStack(spacing: 2) {
+          Image(systemName: "minus")
+            .font(.system(size: 10, weight: .bold))
+          Text("A")
+            .font(.system(size: 16, weight: .medium))
+        }
+        .frame(maxWidth: .infinity)
+      }
+
+      Divider().frame(height: 24)
+
+      // Font size increase
+      Button {
+        if fontSize < 24 {
+          fontSize += 1
+        }
+      } label: {
+        HStack(spacing: 2) {
+          Image(systemName: "plus")
+            .font(.system(size: 10, weight: .bold))
+          Text("A")
+            .font(.system(size: 16, weight: .medium))
+        }
+        .frame(maxWidth: .infinity)
+      }
+    }
+    .foregroundColor(Color(uiColor: .label))
+    .padding(.vertical, 10)
+    .background(Color(uiColor: .secondarySystemBackground))
   }
 
   var body: some View {
-    Group {
-      if isImageFile {
-        imagePreviewUnavailableView()
-      } else if isEditing {
-        editingView()
-      } else {
-        readOnlyView()
+    VStack(spacing: 0) {
+      if !isImageFile {
+        codeToolbar
+      }
+
+      Group {
+        if isImageFile {
+          imagePreviewUnavailableView()
+        } else if isEditing {
+          editingView()
+        } else {
+          readOnlyView()
+        }
       }
     }
     .background(isImageFile ? Color(uiColor: .systemGroupedBackground) : theme.background)
@@ -289,6 +364,13 @@ struct CodeFileView: View {
         }
       }
     }
+    .overlay {
+      if showCopiedConfirmation {
+        copiedConfirmationView
+          .transition(.opacity.combined(with: .scale(scale: 0.9)))
+      }
+    }
+    .animation(.easeOut(duration: 0.2), value: showCopiedConfirmation)
     .onAppear {
       if displayContent.isEmpty {
         displayContent = originalContent
@@ -313,12 +395,33 @@ struct CodeFileView: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
 
+  private var copiedConfirmationView: some View {
+    HStack(spacing: 8) {
+      Image(systemName: "checkmark")
+        .font(.system(size: 14, weight: .semibold))
+      Text("Copied")
+        .font(.system(size: 16, weight: .medium))
+    }
+    .foregroundColor(.white)
+    .padding(.horizontal, 16)
+    .padding(.vertical, 10)
+    .background(Color(uiColor: .darkGray))
+    .cornerRadius(8)
+  }
+
   private func readOnlyView() -> some View {
     ScrollView(.vertical) {
-      ScrollView(.horizontal, showsIndicators: false) {
+      if wrapLines {
         HStack(alignment: .top, spacing: 0) {
-          LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth)
-          CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme)
+          LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth, fontSize: fontSize)
+          CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme, fontSize: fontSize, wrapLines: true)
+        }
+      } else {
+        ScrollView(.horizontal, showsIndicators: false) {
+          HStack(alignment: .top, spacing: 0) {
+            LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth, fontSize: fontSize)
+            CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme, fontSize: fontSize, wrapLines: false)
+          }
         }
       }
     }
@@ -326,7 +429,7 @@ struct CodeFileView: View {
 
   private func editingView() -> some View {
     TextEditor(text: $displayContent)
-      .font(.system(size: 13, weight: .regular, design: .monospaced))
+      .font(.system(size: fontSize, weight: .regular, design: .monospaced))
       #if os(iOS) || os(tvOS)
       .textInputAutocapitalization(.never)
       #endif
@@ -351,14 +454,19 @@ struct LineNumbersColumn: View {
   let lines: [String]
   let theme: SyntaxHighlighter.Theme
   let lineNumberWidth: CGFloat
+  var fontSize: CGFloat = 13
+
+  private var lineHeight: CGFloat {
+    fontSize * 1.5
+  }
 
   var body: some View {
     VStack(alignment: .trailing, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in
         Text("\(index + 1)")
-          .font(.system(size: 13, weight: .regular, design: .monospaced))
+          .font(.system(size: fontSize, weight: .regular, design: .monospaced))
           .foregroundColor(theme.lineNumber)
-          .frame(height: 20)
+          .frame(height: lineHeight)
       }
     }
     .frame(width: lineNumberWidth)
@@ -371,25 +479,41 @@ struct CodeColumn: View {
   let lines: [String]
   let highlightedLines: [AttributedString]?
   let theme: SyntaxHighlighter.Theme
+  var fontSize: CGFloat = 13
+  var wrapLines: Bool = false
+
+  private var lineHeight: CGFloat {
+    fontSize * 1.5
+  }
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 0) {
+    codeContent
+      .padding(.vertical, 12)
+      .padding(.trailing, 16)
+  }
+
+  @ViewBuilder
+  private var codeContent: some View {
+    let content = VStack(alignment: .leading, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in
         if let highlightedLines, index < highlightedLines.count {
           Text(highlightedLines[index])
-            .font(.system(size: 13, weight: .regular, design: .monospaced))
-            .frame(height: 20, alignment: .leading)
+            .font(.system(size: fontSize, weight: .regular, design: .monospaced))
+            .frame(minHeight: lineHeight, alignment: .leading)
         } else {
           Text(lines[index].isEmpty ? " " : lines[index])
-            .font(.system(size: 13, weight: .regular, design: .monospaced))
+            .font(.system(size: fontSize, weight: .regular, design: .monospaced))
             .foregroundColor(theme.plain)
-            .frame(height: 20, alignment: .leading)
+            .frame(minHeight: lineHeight, alignment: .leading)
         }
       }
     }
-    .fixedSize(horizontal: true, vertical: false)
-    .padding(.vertical, 12)
-    .padding(.trailing, 16)
+
+    if wrapLines {
+      content
+    } else {
+      content.fixedSize(horizontal: true, vertical: false)
+    }
   }
 }
 

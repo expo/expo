@@ -260,7 +260,8 @@ class SourceMapService {
     return nodes.map { node in
       var current = node
 
-      while current.isDirectory && current.children.count == 1 && current.children[0].isDirectory {
+      // Don't collapse ".." directory - keep it as a container for modules
+      while current.isDirectory && current.children.count == 1 && current.children[0].isDirectory && current.name != ".." {
         let child = current.children[0]
         current = FileTreeNode(
           name: child.name,
@@ -282,23 +283,16 @@ class SourceMapService {
   }
 
   private func insertPath(_ path: String, contentIndex: Int, into parent: Node) {
-    let components = path.split(separator: "/").map(String.init)
+    var components = path.split(separator: "/").map(String.init)
     guard !components.isEmpty else { return }
 
-    // Check for excluded paths
-    for (index, component) in components.enumerated() {
-      let isLast = index == components.count - 1
-
-      // Skip node_modules directories
-      if !isLast && component == "node_modules" {
-        return
-      }
-
-      // Skip files starting with "app?ctx="
-      if isLast && component.hasPrefix("app?ctx=") {
-        return
-      }
+    // Skip files starting with "app?ctx="
+    if let last = components.last, last.hasPrefix("app?ctx=") {
+      return
     }
+
+    // Move node_modules into a ".." directory and rename to "modules"
+    components = components.flatMap { $0 == "node_modules" ? ["..", "modules"] : [$0] }
 
     var current = parent
     let lastIndex = components.count - 1
