@@ -2,6 +2,8 @@
 
 #import <objc/runtime.h>
 
+#import <React/RCTLog.h>
+
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
