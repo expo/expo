@@ -236,6 +236,7 @@ class SourceMapService {
     let sorted = sortNodes(nodes)
     let collapsed = collapseSingleChildFolders(sorted)
 
+    // Unwrap single top-level directory
     let directories = collapsed.filter { $0.isDirectory }
     if directories.count == 1, let mainDir = directories.first {
       return mainDir.children
@@ -283,6 +284,21 @@ class SourceMapService {
   private func insertPath(_ path: String, contentIndex: Int, into parent: Node) {
     let components = path.split(separator: "/").map(String.init)
     guard !components.isEmpty else { return }
+
+    // Check for excluded paths
+    for (index, component) in components.enumerated() {
+      let isLast = index == components.count - 1
+
+      // Skip node_modules directories
+      if !isLast && component == "node_modules" {
+        return
+      }
+
+      // Skip files starting with "app?ctx="
+      if isLast && component.hasPrefix("app?ctx=") {
+        return
+      }
+    }
 
     var current = parent
     let lastIndex = components.count - 1

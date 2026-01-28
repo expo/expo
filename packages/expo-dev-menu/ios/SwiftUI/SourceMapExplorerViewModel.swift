@@ -35,16 +35,6 @@ class SourceMapExplorerViewModel: ObservableObject {
     }
   }
 
-  var sourceMapStats: (files: Int, totalSize: String)? {
-    guard case .loaded(let sourceMap) = loadingState else { return nil }
-
-    let fileCount = sourceMap.sources.count
-    let totalChars = sourceMap.sourcesContent?.compactMap { $0?.count }.reduce(0, +) ?? 0
-    let sizeString = ByteCountFormatter.string(fromByteCount: Int64(totalChars), countStyle: .file)
-
-    return (fileCount, sizeString)
-  }
-
   /// Finds all matching files and returns them as a flat list with full paths
   private func findMatchingFiles(in nodes: [FileTreeNode], searchText: String) -> [FileTreeNode] {
     var results: [FileTreeNode] = []

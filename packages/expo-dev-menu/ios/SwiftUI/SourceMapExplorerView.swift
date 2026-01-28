@@ -11,44 +11,78 @@ private let toolbarPlacement: ToolbarItemPlacement = .automatic
 
 struct SourceMapExplorerView: View {
   @StateObject private var viewModel = SourceMapExplorerViewModel()
+  @State private var showContent = false
 
   private var isSearching: Bool {
     !viewModel.searchText.isEmpty
   }
 
+  private var isLoading: Bool {
+    switch viewModel.loadingState {
+    case .idle, .loading:
+      return true
+    case .loaded, .error:
+      return false
+    }
+  }
+
   var body: some View {
-    Group {
+    contentView
+      .task {
+        await viewModel.loadSourceMap()
+        withAnimation(.easeOut(duration: 0.2)) {
+          showContent = true
+        }
+      }
+  }
+
+  @ViewBuilder
+  private var contentView: some View {
+    ZStack {
       switch viewModel.loadingState {
       case .idle, .loading:
         loadingView
       case .loaded:
-        FolderListView(
-          title: "Source Code Explorer",
-          nodes: viewModel.filteredFileTree,
-          sourceMap: viewModel.sourceMap,
-          stats: viewModel.sourceMapStats,
-          isSearching: isSearching
-        )
+        loadedView
+          .opacity(showContent ? 1 : 0)
+          .offset(y: showContent ? 0 : 12)
       case .error(let error):
         errorView(error)
+          .opacity(showContent ? 1 : 0)
+          .offset(y: showContent ? 0 : 12)
+      }
+
+      // Loading overlay that fades out
+      if !showContent && !isLoading {
+        loadingView
+          .transition(.opacity)
       }
     }
-    .navigationTitle("Source Code Explorer")
+    .animation(.easeOut(duration: 0.2), value: showContent)
+    .navigationTitle(showContent ? "Source code explorer" : "")
     .inlineNavigationBar()
-    .searchable(text: $viewModel.searchText, placement: .automatic, prompt: "Search files")
-    .task {
-      await viewModel.loadSourceMap()
-    }
+    .navigationBarHidden(!showContent)
+    .modifier(ConditionalSearchable(isEnabled: showContent, text: $viewModel.searchText))
+  }
+
+  private var loadedView: some View {
+    FolderListView(
+      title: "Source code explorer",
+      nodes: isSearching ? viewModel.filteredFileTree : viewModel.fileTree,
+      sourceMap: viewModel.sourceMap,
+      isSearching: isSearching
+    )
   }
 
   private var loadingView: some View {
     VStack(spacing: 12) {
       ProgressView()
-      Text("Loading source map...")
+      Text("Loading source code...")
         .font(.subheadline)
         .foregroundColor(.secondary)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(Color(uiColor: .systemGroupedBackground))
   }
 
   private func errorView(_ error: SourceMapError) -> some View {
@@ -77,11 +111,23 @@ struct SourceMapExplorerView: View {
   }
 }
 
+private struct ConditionalSearchable: ViewModifier {
+  let isEnabled: Bool
+  @Binding var text: String
+
+  func body(content: Content) -> some View {
+    if isEnabled {
+      content.searchable(text: $text, placement: .automatic, prompt: "Search files")
+    } else {
+      content
+    }
+  }
+}
+
 struct FolderListView: View {
   let title: String
   let nodes: [FileTreeNode]
   let sourceMap: SourceMap?
-  let stats: (files: Int, totalSize: String)?
   let isSearching: Bool
 
   var body: some View {
@@ -100,34 +146,6 @@ struct FolderListView: View {
     .defaultListStyle()
     .navigationTitle(isSearching ? "Search Results" : title)
     .inlineNavigationBar()
-    .toolbar {
-      ToolbarItem(placement: toolbarPlacement) {
-        if let stats = stats {
-          statsMenu(stats)
-        }
-      }
-    }
-  }
-
-  @ViewBuilder
-  private func statsMenu(_ stats: (files: Int, totalSize: String)) -> some View {
-    #if os(tvOS)
-    if #available(tvOS 17.0, *) {
-      Menu {
-        Label("\(stats.files) files", systemImage: "doc.on.doc")
-        Label(stats.totalSize, systemImage: "internaldrive")
-      } label: {
-        Image(systemName: "info.circle")
-      }
-    }
-    #else
-    Menu {
-      Label("\(stats.files) files", systemImage: "doc.on.doc")
-      Label(stats.totalSize, systemImage: "internaldrive")
-    } label: {
-      Image(systemName: "info.circle")
-    }
-    #endif
   }
 
   @ViewBuilder
@@ -137,7 +155,6 @@ struct FolderListView: View {
         title: node.name,
         nodes: node.children,
         sourceMap: sourceMap,
-        stats: nil,
         isSearching: false
       )
     } else {
@@ -364,4 +381,5 @@ private extension View {
     self
     #endif
   }
+
 }
