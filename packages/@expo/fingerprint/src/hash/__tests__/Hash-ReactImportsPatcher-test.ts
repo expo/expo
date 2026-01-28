@@ -3,6 +3,7 @@ import pLimit from 'p-limit';
 import path from 'path';
 
 import { normalizeOptionsAsync } from '../../Options';
+import { createLimiter } from '../../utils/Concurrency';
 import { createFileHashResultsAsync } from '../Hash';
 import { ReactImportsPatchTransform } from '../ReactImportsPatcher';
 
@@ -22,7 +23,7 @@ describe(`createFileHashResultsAsync - use ReactImportsPatchTransform`, () => {
   });
 
   it('should use ReactImportsPatchTransform when `enableReactImportsPatcher=false`', async () => {
-    const limiter = pLimit(1);
+    const limiter = createLimiter(1);
     const options = await normalizeOptionsAsync('/app', {
       debug: true,
       enableReactImportsPatcher: false,
