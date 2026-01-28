@@ -378,6 +378,19 @@ struct CodeFileView: View {
           Button(isEditing ? "Done" : "Edit") {
             if isEditing {
               isEditing = false
+
+              // If content changed and we have an active Snack session, send the update
+              if displayContent != originalContent && SourceMapService.hasActiveSnackSession {
+                let success = SourceMapService.sendSnackFileUpdate(
+                  path: node.path,
+                  oldContents: originalContent,
+                  newContents: displayContent
+                )
+                if success {
+                  print("[CodeFileView] Sent file update for: \(node.path)")
+                }
+              }
+
               Task {
                 highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
               }
