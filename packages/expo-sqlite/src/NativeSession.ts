@@ -2,7 +2,7 @@
  * A type that represents a changeset.
  */
 export type Changeset = Uint8Array;
-type NativeChangeset = ArrayBuffer;
+export type NativeChangeset = ArrayBuffer;
 
 export type SQLiteAnyDatabase = any;
 

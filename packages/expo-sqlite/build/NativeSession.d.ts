@@ -2,7 +2,7 @@
  * A type that represents a changeset.
  */
 export type Changeset = Uint8Array;
-type NativeChangeset = ArrayBuffer;
+export type NativeChangeset = ArrayBuffer;
 export type SQLiteAnyDatabase = any;
 export declare class NativeSession {
     attachAsync(database: SQLiteAnyDatabase, table: string | null): Promise<void>;
@@ -20,5 +20,4 @@ export declare class NativeSession {
     applyChangesetSync(database: SQLiteAnyDatabase, changeset: NativeChangeset): void;
     invertChangesetSync(database: SQLiteAnyDatabase, changeset: NativeChangeset): NativeChangeset;
 }
-export {};
 //# sourceMappingURL=NativeSession.d.ts.map
