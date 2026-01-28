@@ -14,10 +14,9 @@ const shared_1 = require("../shared");
 /**
  * Computes the label and menu title from children and title prop.
  *
- * Logic:
- * - If only `title` prop: `title` → both label (button text) and menu title
- * - If only `.Label` child: `.Label` → only label, no menu title (empty string)
- * - If both `.Label` and `title`: `.Label` → label, `title` → menu title
+ * - If only `title` prop is provided, it is used for both the label (button text) and menu title
+ * - If only `.Label` child is provided, it is used for the label and the menu title is an empty string
+ * - If both `.Label` child and `title` prop are provided. `.Label` is used for the label, and `title` is used for the menu title
  */
 function computeMenuLabelAndTitle(children, title) {
     const labelChild = (0, children_1.getFirstChildOfType)(children, common_primitives_1.StackToolbarLabel);
