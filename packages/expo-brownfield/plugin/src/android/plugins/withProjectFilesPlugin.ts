@@ -49,12 +49,16 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
     createFileFromTemplate('proguard-rules.pro', brownfieldPath);
     createFileFromTemplate('consumer-rules.pro', brownfieldPath);
 
-    // Adjust
+    // Adjust ReactNativeHostManager and BrownfieldActivity to initialize dev menu
     if (checkPlugin(config, 'expo-dev-menu')) {
-      // applyPatchToFile(
-      //   'ReactNativeHostManager.kt',
-      //   path.join(brownfieldSourcesPath, 'ReactNativeHostManager.kt')
-      // );
+      applyPatchToFile(
+        'ReactNativeHostManager.patch',
+        path.join(brownfieldSourcesPath, 'ReactNativeHostManager.kt')
+      );
+      applyPatchToFile(
+        'BrownfieldActivity.patch',
+        path.join(brownfieldSourcesPath, 'BrownfieldActivity.kt')
+      );
     }
 
     return config;

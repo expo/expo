@@ -6,6 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkPlugin = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+/**
+ * Tries to find specified plugin in the expo config or package.json dependencies
+ */
 const checkPlugin = (config, pluginName) => {
     return checkExpoConfig(config, pluginName) || checkPackageJson(config, pluginName);
 };
