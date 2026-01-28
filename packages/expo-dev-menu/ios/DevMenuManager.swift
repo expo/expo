@@ -76,6 +76,8 @@ open class DevMenuManager: NSObject {
 
   static public var wasInitilized = false
 
+  private var contentDidAppearObserver: NSObjectProtocol?
+
   /**
    Shared singleton instance.
    */
@@ -111,10 +113,28 @@ open class DevMenuManager: NSObject {
       if let currentBridge {
         DispatchQueue.main.async {
           self.disableRNDevMenuHoykeys(for: currentBridge)
-          self.updateFABVisibility()
         }
+        observeContentDidAppear()
       } else {
         updateFABVisibility()
+      }
+    }
+  }
+
+  private func observeContentDidAppear() {
+    if let observer = contentDidAppearObserver {
+      NotificationCenter.default.removeObserver(observer)
+    }
+
+    contentDidAppearObserver = NotificationCenter.default.addObserver(
+      forName: NSNotification.Name.RCTContentDidAppear,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      self?.updateFABVisibility()
+      if let observer = self?.contentDidAppearObserver {
+        NotificationCenter.default.removeObserver(observer)
+        self?.contentDidAppearObserver = nil
       }
     }
   }
