@@ -124,6 +124,71 @@ describe('when using both composition API and screen options, composition API sh
       });
     });
 
+    it('should set headerTitle as function when asChild is true', () => {
+      function CustomTitle() {
+        return <Text>My Custom Title</Text>;
+      }
+      renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Screen.Title asChild>
+                <CustomTitle />
+              </Stack.Screen.Title>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <Text testID="index">index</Text>,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(ScreenStackItem).toHaveBeenCalledTimes(1);
+      expect(consoleWarnMock).not.toHaveBeenCalled();
+      // asChild should render the custom component in the header
+      expect(screen.getByText('My Custom Title')).toBeVisible();
+    });
+
+    it('should warn when asChild is true but children is a string', () => {
+      renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Screen.Title asChild>Plain String</Stack.Screen.Title>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <Text testID="index">index</Text>,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(consoleWarnMock).toHaveBeenCalledWith(
+        "Stack.Screen.Title: 'asChild' expects a custom component as children, string received."
+      );
+    });
+
+    it('should warn when non-string children used without asChild', () => {
+      function CustomTitle() {
+        return <Text>My Custom Title</Text>;
+      }
+      renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Screen.Title>
+                <CustomTitle />
+              </Stack.Screen.Title>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <Text testID="index">index</Text>,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(consoleWarnMock).toHaveBeenCalledWith(
+        'Stack.Screen.Title: Component passed to Stack.Screen.Title without `asChild` enabled. In order to render a custom component as the title, set `asChild` to true.'
+      );
+    });
+
     it('should set screen Stack.Toolbar.Title over screenOptions title', () => {
       renderRouter({
         _layout: () => (
