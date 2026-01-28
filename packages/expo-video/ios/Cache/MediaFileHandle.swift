@@ -38,7 +38,10 @@ internal class MediaFileHandle {
     }
 
     if !FileManager.default.fileExists(atPath: filePath) {
-      FileManager.default.createFile(atPath: filePath, contents: nil, attributes: nil)
+      let fileCreated = FileManager.default.createFile(atPath: filePath, contents: nil, attributes: nil)
+      if !fileCreated {
+        log.error("[expo-video] Failed to create cache file at: \(filePath)")
+      }
     }
 
     self.readHandle = FileHandle(forReadingAtPath: filePath)

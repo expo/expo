@@ -167,7 +167,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     let (remainingRequest, dataReceived) = attemptToRespondFromCache(forRequest: loadingRequest)
 
     // Cache fulfilled the entire request
-    if dataReceived != nil && remainingRequest == nil {
+    if dataReceived != nil && dataReceived?.isEmpty != true && remainingRequest == nil {
       return
     }
 
