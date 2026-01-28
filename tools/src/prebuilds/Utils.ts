@@ -46,17 +46,99 @@ export const getVersionsInfoAsync = async (options: {
     path.join(__dirname, '../../../apps/bare-expo/package.json')
   );
 
+  const resolveReactNativePath = () => path.join(__dirname, '../../../node_modules/react-native');
+
+  const readHermesTag = async (reactNativePath: string) => {
+    const hermesTagPath = path.join(reactNativePath, 'sdks', '.hermesversion');
+    if (!(await fs.exists(hermesTagPath))) {
+      throw new Error('[Hermes] .hermesversion does not exist.');
+    }
+    const data = (await fs.readFile(hermesTagPath, 'utf8')).trim();
+    if (!data) {
+      throw new Error('[Hermes] .hermesversion file is empty.');
+    }
+    return data;
+  };
+
+  const readHermesV1Tag = async (reactNativePath: string) => {
+    const hermesV1TagPath = path.join(reactNativePath, 'sdks', '.hermesv1version');
+    if (!(await fs.exists(hermesV1TagPath))) {
+      throw new Error('[Hermes] .hermesv1version does not exist.');
+    }
+    const data = (await fs.readFile(hermesV1TagPath, 'utf8')).trim();
+    if (!data) {
+      throw new Error('[Hermes] .hermesv1version file is empty.');
+    }
+    return data;
+  };
+
+  const readHermesVersionProperties = async (reactNativePath: string) => {
+    const versionPropertiesPath = path.join(
+      reactNativePath,
+      'sdks/hermes-engine/version.properties'
+    );
+    if (!(await fs.exists(versionPropertiesPath))) {
+      throw new Error('version.properties does not exist.');
+    }
+    const content = await fs.readFile(versionPropertiesPath, 'utf8');
+    const properties: Record<string, string> = {};
+    content.split('\n').forEach((line) => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#')) {
+        const [key, value] = trimmed.split('=');
+        if (key && value) {
+          properties[key.trim()] = value.trim();
+        }
+      }
+    });
+    return properties;
+  };
+
+  const resolveHermesVersionAsync = async (): Promise<string> => {
+    const reactNativePath = resolveReactNativePath();
+    const properties = await readHermesVersionProperties(reactNativePath);
+
+    let classicTag: string | null = null;
+    let v1Tag: string | null = null;
+
+    try {
+      classicTag = await readHermesTag(reactNativePath);
+    } catch (error) {
+      logger.warn(`Could not read .hermesversion: ${String((error as Error).message || error)}`);
+    }
+
+    try {
+      v1Tag = await readHermesV1Tag(reactNativePath);
+    } catch (error) {
+      logger.warn(`Could not read .hermesv1version: ${String((error as Error).message || error)}`);
+    }
+
+    const normalizeHermesVersion = (value: string) =>
+      value
+        .replace(/^hermes-?/i, '')
+        .replace(/^v/i, '')
+        .trim();
+
+    const isHermesV1Enabled = process.env.RCT_HERMES_V1_ENABLED === '1';
+    const version = isHermesV1Enabled
+      ? properties.HERMES_V1_VERSION_NAME
+      : properties.HERMES_VERSION_NAME;
+    const tag = isHermesV1Enabled ? v1Tag : classicTag;
+
+    if (!version) {
+      throw new Error(
+        'Hermes version could not be resolved from version.properties. ' +
+          'Provide --hermes-version explicitly.'
+      );
+    }
+
+    return normalizeHermesVersion(tag ?? version);
+  };
+
   const reactNativeVersion =
     options.reactNativeVersion || rootPackageJson.dependencies?.['react-native'] || 'nightly';
 
-  // Hermes version must be provided explicitly since it uses different versioning than React Native
-  // Check node_modules/react-native/sdks/.hermesversion for the correct version
-  const hermesVersion = options.hermesVersion;
-  if (!hermesVersion) {
-    throw new Error(
-      `Hermes version is required. Check node_modules/react-native/sdks/.hermesversion for the correct version.\n   Example: et prebuild-packages --hermes-version 0.14.0 expo-modules-core`
-    );
-  }
+  const hermesVersion = options.hermesVersion ?? (await resolveHermesVersionAsync());
 
   return {
     reactNativeVersion,
