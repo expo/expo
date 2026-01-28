@@ -67,6 +67,10 @@ TinyBase works seamlessly with Expo Go, allowing you to develop quickly. On Andr
   title="Watch: Build a Local-First Real-Time Shopping List App with Expo and TinyBase"
 />
 
+### RxDB
+
+[RxDB](https://rxdb.info/) (Reactive Database) is a local-first, NoSQL database for JavaScript applications. It is deeply reactive, allowing you to subscribe to query results so your UI updates automatically when data changes. RxDB focuses on offline-first capabilities to build apps that work even without internet and syncs when back online. RxDB works with Expo using the [SQLite storage adapter](https://rxdb.info/rx-storage-sqlite.html#usage-with-expo-sqlite), which wraps [`expo-sqlite`](/versions/latest/sdk/sqlite/). It also offers a variety of replication plugins to sync with your existing backend, whether it's HTTP, GraphQL, Supabase, or a custom one.
+
 ### SQLite
 
 [Expo SQLite](/versions/latest/sdk/sqlite/) is a SQLite library that is a great choice for persistence for local-first apps. You can use SQLite with different state management and syncing layers in front of it, such as [`y-expo-sqlite`](https://github.com/brentvatne/y-expo-sqlite) to persist [Yjs](#yjs) documents, and [TinyBase](#tinybase) as a state management layer. Using SQLite is flexible, but you will need to combine it with other tools or build your own tools to get a complete local-first solution. See [Expo SQLite API reference](/versions/latest/sdk/sqlite/) for more information.
