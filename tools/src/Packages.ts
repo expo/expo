@@ -5,6 +5,7 @@ import path from 'path';
 import { Podspec, readPodspecAsync } from './CocoaPods';
 import * as Directories from './Directories';
 import * as Npm from './Npm';
+import { SPMConfig } from './prebuilds/SPMConfig.types';
 
 const ANDROID_DIR = Directories.getExpoGoAndroidDir();
 const IOS_DIR = Directories.getExpoGoIosDir();
@@ -84,6 +85,8 @@ export type ExpoModuleConfig = {
     }[];
   };
 };
+
+const SPMConfigFileName = 'spm.config.json';
 
 /**
  * Represents a package in the monorepo.
@@ -314,6 +317,26 @@ export class Package {
     }
     const podspecPath = path.join(this.path, 'ios/Pods/Local Podspecs', `${podName}.podspec.json`);
     return await fs.pathExists(podspecPath);
+  }
+
+  /**
+   * Checks whether the package has a Swift PM configuration file
+   */
+  hasSwiftPMConfiguration(): boolean {
+    const swiftPMPackagePath = path.join(this.path, SPMConfigFileName);
+    return fs.pathExistsSync(swiftPMPackagePath);
+  }
+
+  /**
+   * @returns The swift PM configuration object.
+   * @throws Error if the configuration file doesn't exist or can't be parsed.
+   */
+  getSwiftPMConfiguration(): SPMConfig {
+    const swiftPMPackagePath = path.join(this.path, SPMConfigFileName);
+    if (!fs.pathExistsSync(swiftPMPackagePath)) {
+      throw new Error(`No SwiftPM configuration found for package: ${this.packageName}`);
+    }
+    return require(swiftPMPackagePath);
   }
 
   /**
