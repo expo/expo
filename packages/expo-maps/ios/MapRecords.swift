@@ -206,6 +206,23 @@ enum MapStyleEmphasis: String, Enumerable {
   }
 }
 
+enum MapColorScheme: String, Enumerable {
+  case automatic = "AUTOMATIC"
+  case light = "LIGHT"
+  case dark = "DARK"
+
+  func toColorScheme() -> ColorScheme? {
+    switch self {
+    case .light:
+      return .light
+    case .dark:
+      return .dark
+    case .automatic:
+      return nil
+    }
+  }
+}
+
 enum MapType: String, Enumerable {
   case standard = "STANDARD"
   case hybrid = "HYBRID"

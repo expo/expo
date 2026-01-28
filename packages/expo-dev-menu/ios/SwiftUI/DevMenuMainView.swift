@@ -6,21 +6,11 @@ struct DevMenuMainView: View {
   var body: some View {
     ScrollView {
       VStack(spacing: 32) {
-        VStack {
-          if let hostUrl = viewModel.appInfo?.hostUrl {
-            HostUrl(
-              hostUrl: hostUrl,
-              onCopy: viewModel.copyToClipboard,
-              copiedMessage: viewModel.hostUrlCopiedMessage
-            )
-          }
-
-          DevMenuActions(
-            canNavigateHome: viewModel.canNavigateHome,
-            onReload: viewModel.reload,
-            onGoHome: viewModel.goHome
-          )
-        }
+        DevMenuActions(
+          canNavigateHome: viewModel.canNavigateHome,
+          onReload: viewModel.reload,
+          onGoHome: viewModel.goHome
+        )
 
         if !viewModel.registeredCallbacks.isEmpty {
           CustomItems(
@@ -31,13 +21,23 @@ struct DevMenuMainView: View {
 
         DevMenuDeveloperTools()
 
-        if viewModel.appInfo?.engine == "Hermes" {
+        if viewModel.configuration.showDebuggingTip && viewModel.appInfo?.engine == "Hermes" {
           HermesDebuggerTip()
+        }
+
+        if viewModel.configuration.showHostUrl, let hostUrl = viewModel.appInfo?.hostUrl {
+          HostUrl(
+            hostUrl: hostUrl,
+            onCopy: viewModel.copyToClipboard,
+            copiedMessage: viewModel.hostUrlCopiedMessage
+          )
         }
 
         DevMenuAppInfo()
 
-        DevMenuRNDevMenu(onOpenRNDevMenu: viewModel.openRNDevMenu)
+        if viewModel.shouldShowReactNativeDevMenu {
+          DevMenuRNDevMenu(onOpenRNDevMenu: viewModel.openRNDevMenu)
+        }
       }
       .padding()
     }
@@ -45,6 +45,7 @@ struct DevMenuMainView: View {
     .navigationTitle("Dev Menu")
 #if !os(macOS)
     .navigationBarHidden(true)
+    .navigationBarTitleDisplayMode(.inline)
 #endif
   }
 }

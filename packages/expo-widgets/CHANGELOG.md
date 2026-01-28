@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 55.0.0-alpha.4 — 2026-01-27
+
+### 💡 Others
+
 - Fixed availability check. ([#42543](https://github.com/expo/expo/pull/42543) by [@tsapeta](https://github.com/tsapeta))
 - Fixed autolinking when building react-native from source. ([#42553](https://github.com/expo/expo/pull/42553) by [@jakex7](https://github.com/jakex7))
 

@@ -13,18 +13,16 @@ const children_1 = require("../../../utils/children");
  * Native toolbar menu component for bottom toolbar.
  * Renders as NativeLinkPreviewAction.
  */
-const NativeToolbarMenu = ({ accessibilityHint, accessibilityLabel, separateBackground, hidesSharedBackground, palette, inline, hidden, subtitle, title, destructive, children, icon, image, tintColor, variant, style, elementSize, }) => {
+const NativeToolbarMenu = ({ accessibilityHint, accessibilityLabel, separateBackground, hidesSharedBackground, palette, inline, hidden, subtitle, title, label, destructive, children, icon, image, tintColor, variant, style, elementSize, }) => {
     const identifier = (0, react_1.useId)();
-    const label = (0, children_1.getFirstChildOfType)(children, primitives_1.Label);
     const iconComponent = (0, children_1.getFirstChildOfType)(children, primitives_1.Icon);
-    const computedTitle = title ?? label?.props.children ?? '';
     const computedIcon = icon ??
         (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
     const sf = typeof computedIcon === 'string' ? computedIcon : undefined;
     const titleStyle = react_native_1.StyleSheet.flatten(style);
     return (<native_1.NativeLinkPreviewAction sharesBackground={!separateBackground} hidesSharedBackground={hidesSharedBackground} hidden={hidden} icon={sf} 
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    image={image} destructive={destructive} subtitle={subtitle} accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint} displayAsPalette={palette} displayInline={inline} preferredElementSize={elementSize} tintColor={tintColor} titleStyle={titleStyle} barButtonItemStyle={variant === 'done' ? 'prominent' : variant} title={computedTitle} onSelected={() => { }} children={children} identifier={identifier}/>);
+    image={image} destructive={destructive} subtitle={subtitle} accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint} displayAsPalette={palette} displayInline={inline} preferredElementSize={elementSize} tintColor={tintColor} titleStyle={titleStyle} barButtonItemStyle={variant === 'done' ? 'prominent' : variant} title={title ?? ''} label={label} onSelected={() => { }} children={children} identifier={identifier}/>);
 };
 exports.NativeToolbarMenu = NativeToolbarMenu;
 // #endregion

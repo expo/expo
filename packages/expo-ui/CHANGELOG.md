@@ -4,13 +4,19 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] Renamed `ignoreSafeAreaKeyboardInsets` to `ignoreSafeArea` on `Host` component. It now accepts `'all'` or `'keyboard'` instead of a boolean. ([#42598](https://github.com/expo/expo/pull/42598) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
-- [iOS] Remove leftover `Switch` TypeScript exports from swift-ui package. Use `Toggle` instead. ([#42571](https://github.com/expo/expo/pull/42571)) by [@shubh73](https://github.com/shubh73))
+- [iOS] Remove leftover `Switch` TypeScript exports from swift-ui package. Use `Toggle` instead. ([#42571](https://github.com/expo/expo/pull/42571) by [@shubh73](https://github.com/shubh73))
+
+## 55.0.0-beta.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.0-beta.2 — 2026-01-26
 
