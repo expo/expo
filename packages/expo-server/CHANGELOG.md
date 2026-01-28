@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Expose new helper `requestHeaders()` in Runtime API ([#42626](https://github.com/expo/expo/pull/42626) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
