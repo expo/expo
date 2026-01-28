@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix toolbar placement updates ([#42585](https://github.com/expo/expo/pull/42585) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 55.0.0-beta.4 — 2026-01-27
