@@ -142,6 +142,15 @@ class MediaInfo: Codable {
       let tempURL = URL(fileURLWithPath: tempPath)
       let finalURL = URL(fileURLWithPath: savePath)
 
+      let parentDirectory = finalURL.deletingLastPathComponent()
+      if !FileManager.default.fileExists(atPath: parentDirectory.path) {
+        try FileManager.default.createDirectory(at: parentDirectory, withIntermediateDirectories: true, attributes: nil)
+      }
+
+      if !FileManager.default.fileExists(atPath: tempPath) && FileManager.default.fileExists(atPath: savePath) {
+        try FileManager.default.copyItem(at: finalURL, to: tempURL)
+      }
+
       // Write to temporary file first
       try data.write(to: tempURL, options: .atomic)
 
