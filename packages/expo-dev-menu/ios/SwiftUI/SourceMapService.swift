@@ -184,7 +184,7 @@ class SourceMapService {
   private func extractInlineSourceMap(from bundleContent: String) throws -> SourceMap {
     let patterns = [
       "//# sourceMappingURL=data:application/json;charset=utf-8;base64,",
-      "//# sourceMappingURL=data:application/json;base64,",
+      "//# sourceMappingURL=data:application/json;base64,"
     ]
 
     for pattern in patterns {
@@ -236,6 +236,7 @@ class SourceMapService {
     let sorted = sortNodes(nodes)
     let collapsed = collapseSingleChildFolders(sorted)
 
+    // Unwrap single top-level directory
     let directories = collapsed.filter { $0.isDirectory }
     if directories.count == 1, let mainDir = directories.first {
       return mainDir.children
@@ -259,7 +260,8 @@ class SourceMapService {
     return nodes.map { node in
       var current = node
 
-      while current.isDirectory && current.children.count == 1 && current.children[0].isDirectory {
+      // Don't collapse ".." directory - keep it as a container for modules
+      while current.isDirectory && current.children.count == 1 && current.children[0].isDirectory && current.name != ".." {
         let child = current.children[0]
         current = FileTreeNode(
           name: child.name,
@@ -281,8 +283,16 @@ class SourceMapService {
   }
 
   private func insertPath(_ path: String, contentIndex: Int, into parent: Node) {
-    let components = path.split(separator: "/").map(String.init)
+    var components = path.split(separator: "/").map(String.init)
     guard !components.isEmpty else { return }
+
+    // Skip files starting with "app?ctx="
+    if let last = components.last, last.hasPrefix("app?ctx=") {
+      return
+    }
+
+    // Move node_modules into a ".." directory and rename to "modules"
+    components = components.flatMap { $0 == "node_modules" ? ["..", "modules"] : [$0] }
 
     var current = parent
     let lastIndex = components.count - 1

@@ -17,7 +17,10 @@
 {
   EXPermissionStatus status;
 
-  if (@available(iOS 11, *)) {
+#ifdef EXPO_DISABLE_MOTION_PERMISSION
+  status = EXPermissionStatusDenied;
+  RCTErrorWithMessage(@"This app has disabled `motionPermission` through the config plugin options so CMPedometer services will fail.");
+#else
     NSString *motionUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMotionUsageDescription"];
     // Related: NSFallDetectionUsageDescription
     if (!(motionUsageDescription)) {
@@ -38,10 +41,8 @@
           break;
       }
     }
-  } else {
-    status = EXPermissionStatusUndetermined;
-  }
- 
+#endif
+
   return @{
     @"status": @(status)
   };
@@ -49,6 +50,9 @@
 
 - (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
+#ifdef EXPO_DISABLE_MOTION_PERMISSION
+  resolve([self getPermissions]);
+#else
   CMPedometer *manager = [CMPedometer new];
   NSDate *today = [[NSDate alloc] init];
    
@@ -58,6 +62,7 @@
     [manager stopPedometerUpdates];
     resolve([self getPermissions]);
   }];
+#endif
 }
 
 @end

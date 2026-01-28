@@ -3,6 +3,8 @@
 #import <OpenGLES/EAGL.h>
 #import <ExpoGL/EXGLNativeApi.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
+#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 
 @class EXGLContext;
 
@@ -18,7 +20,8 @@
 @interface EXGLContext : NSObject
 
 - (nonnull instancetype)initWithDelegate:(nullable id<EXGLContextDelegate>)delegate
-                       andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry;
+                                 runtime:(nullable EXJavaScriptRuntime *)runtime
+                              fileSystem:(nullable id<EXFileSystemInterface>)fileSystemManager;
 - (void)prepare:(nullable void(^)(BOOL))callback andEnableExperimentalWorkletSupport:(BOOL)enableExperimentalWorkletSupport;
 - (BOOL)isInitialized;
 - (nonnull EAGLContext *)createSharedEAGLContext;

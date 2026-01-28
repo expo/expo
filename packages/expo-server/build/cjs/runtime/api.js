@@ -2,10 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StatusError = void 0;
 exports.origin = origin;
+exports.requestHeaders = requestHeaders;
 exports.environment = environment;
 exports.runTask = runTask;
 exports.deferTask = deferTask;
 exports.setResponseHeaders = setResponseHeaders;
+const ImmutableRequest_1 = require("../ImmutableRequest");
 const scope_1 = require("./scope");
 function enforcedRequestScope() {
     const scope = scope_1.scopeRef.current?.getStore();
@@ -33,6 +35,11 @@ Object.defineProperty(exports, "StatusError", { enumerable: true, get: function 
  */
 function origin() {
     return assertSupport('origin()', enforcedRequestScope().origin);
+}
+/** Returns an immutable copy of the current request's headers. */
+function requestHeaders() {
+    const headers = assertSupport('requestHeaders', enforcedRequestScope().requestHeaders);
+    return new ImmutableRequest_1.ImmutableHeaders(headers);
 }
 /** Returns the request's environment, if the server runtime supports this.
  *

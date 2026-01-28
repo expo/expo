@@ -18,6 +18,23 @@ export interface StackHeaderItemSharedProps {
   tintColor?: ColorValue;
   icon?: SFSymbol | ImageSourcePropType;
   /**
+   * Controls how image-based icons are rendered on iOS.
+   *
+   * - `'template'`: iOS applies tint color to the icon
+   * - `'original'`: Preserves original icon colors (useful for multi-color icons)
+   *
+   * **Default behavior:**
+   * - If `tintColor` is specified, defaults to `'template'`
+   * - If no `tintColor`, defaults to `'original'`
+   *
+   * This prop only affects image-based icons (not SF Symbols).
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+   *
+   * @platform ios
+   */
+  iconRenderingMode?: 'template' | 'original';
+  /**
    * @default 'plain'
    */
   variant?: 'plain' | 'done' | 'prominent';
@@ -62,9 +79,17 @@ export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
       return undefined;
     }
     if ('src' in iconComponentProps) {
+      // Get explicit renderingMode from icon component props, or use iconRenderingMode from shared props
+      const explicitRenderingMode =
+        'renderingMode' in iconComponentProps ? iconComponentProps.renderingMode : undefined;
+      const effectiveRenderingMode =
+        explicitRenderingMode ??
+        props.iconRenderingMode ??
+        (props.tintColor ? 'template' : 'original');
       return {
         type: 'image',
         source: iconComponentProps.src,
+        tinted: effectiveRenderingMode === 'template',
       };
     }
     return {

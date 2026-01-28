@@ -11,7 +11,7 @@ typealias PlatformImage = UIImage
 
 struct HeaderView: View {
   @EnvironmentObject var viewModel: DevMenuViewModel
-  @State private var appIcon: PlatformImage? = nil
+  @State private var appIcon: PlatformImage?
 
   var body: some View {
     HStack(spacing: 12) {

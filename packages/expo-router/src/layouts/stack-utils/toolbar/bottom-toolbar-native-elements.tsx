@@ -35,7 +35,9 @@ export interface NativeToolbarMenuProps {
    * Image to display for the menu item.
    */
   image?: ImageRef;
+  imageRenderingMode?: 'template' | 'original';
   inline?: boolean;
+  label?: string;
   palette?: boolean;
   separateBackground?: boolean;
   style?: StyleProp<TextStyle>;
@@ -59,25 +61,26 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
   hidden,
   subtitle,
   title,
+  label,
   destructive,
   children,
   icon,
   image,
+  imageRenderingMode,
   tintColor,
   variant,
   style,
   elementSize,
 }) => {
   const identifier = useId();
-  const label = getFirstChildOfType(children, Label);
   const iconComponent = getFirstChildOfType(children, Icon);
 
-  const computedTitle = title ?? label?.props.children ?? '';
   const computedIcon =
     icon ??
     (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
   const sf = typeof computedIcon === 'string' ? computedIcon : undefined;
   const titleStyle = StyleSheet.flatten(style);
+  const renderingMode = imageRenderingMode ?? (tintColor !== undefined ? 'template' : 'original');
   return (
     <NativeLinkPreviewAction
       sharesBackground={!separateBackground}
@@ -86,6 +89,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
       icon={sf}
       // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
       image={image}
+      imageRenderingMode={renderingMode}
       destructive={destructive}
       subtitle={subtitle}
       accessibilityLabel={accessibilityLabel}
@@ -96,7 +100,8 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
       tintColor={tintColor}
       titleStyle={titleStyle}
       barButtonItemStyle={variant === 'done' ? 'prominent' : variant}
-      title={computedTitle}
+      title={title ?? ''}
+      label={label}
       onSelected={() => {}}
       children={children}
       identifier={identifier}
@@ -126,6 +131,7 @@ export interface NativeToolbarButtonProps {
   hidesSharedBackground?: boolean;
   icon?: SFSymbol;
   image?: ImageRef;
+  imageRenderingMode?: 'template' | 'original';
   onPress?: () => void;
   possibleTitles?: string[];
   selected?: boolean;
@@ -151,6 +157,8 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
     props.icon ??
     (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
   const sf = typeof icon === 'string' ? icon : undefined;
+  const renderingMode =
+    props.imageRenderingMode ?? (props.tintColor !== undefined ? 'template' : 'original');
   return (
     <RouterToolbarItem
       accessibilityHint={props.accessibilityHint}
@@ -161,6 +169,7 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
       hidesSharedBackground={props.hidesSharedBackground}
       identifier={id}
       image={props.image}
+      imageRenderingMode={renderingMode}
       onSelected={props.onPress}
       possibleTitles={props.possibleTitles}
       selected={props.selected}

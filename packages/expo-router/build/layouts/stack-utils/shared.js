@@ -23,9 +23,15 @@ function convertStackHeaderSharedPropsToRNSharedHeaderItem(props) {
             return undefined;
         }
         if ('src' in iconComponentProps) {
+            // Get explicit renderingMode from icon component props, or use iconRenderingMode from shared props
+            const explicitRenderingMode = 'renderingMode' in iconComponentProps ? iconComponentProps.renderingMode : undefined;
+            const effectiveRenderingMode = explicitRenderingMode ??
+                props.iconRenderingMode ??
+                (props.tintColor ? 'template' : 'original');
             return {
                 type: 'image',
                 source: iconComponentProps.src,
+                tinted: effectiveRenderingMode === 'template',
             };
         }
         return {

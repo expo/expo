@@ -9,12 +9,22 @@ export type StackScreenTitleProps = {
         color?: string;
         textAlign?: 'left' | 'center';
     }>;
+    /**
+     * Style properties for the large title header.
+     *
+     * @platform ios
+     */
     largeStyle?: StyleProp<{
         fontFamily?: TextStyle['fontFamily'];
         fontSize?: TextStyle['fontSize'];
         fontWeight?: Exclude<TextStyle['fontWeight'], number>;
         color?: string;
     }>;
+    /**
+     * Enables large title mode.
+     *
+     * @platform ios
+     */
     large?: boolean;
 };
 /**
@@ -50,8 +60,6 @@ export type StackScreenTitleProps = {
  *   );
  * }
  * ```
- *
- * @platform ios
  */
 export declare function StackScreenTitle(props: StackScreenTitleProps): import("react").JSX.Element;
 export declare function appendStackScreenTitlePropsToOptions(options: NativeStackNavigationOptions, props: StackScreenTitleProps): NativeStackNavigationOptions;

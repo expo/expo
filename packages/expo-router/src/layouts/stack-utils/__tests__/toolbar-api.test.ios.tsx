@@ -1,7 +1,9 @@
+import React from 'react';
 import { Text, View } from 'react-native';
 import { ScreenStackItem as _ScreenStackItem } from 'react-native-screens';
 
 import { renderRouter, screen } from '../../../testing-library';
+import { RouterToolbarItem } from '../../../toolbar/native';
 import Stack from '../../Stack';
 
 jest.mock('react-native-screens', () => {
@@ -14,7 +16,16 @@ jest.mock('react-native-screens', () => {
   };
 });
 
+jest.mock('../../../toolbar/native', () => {
+  const { View } = require('react-native');
+  return {
+    RouterToolbarHost: jest.fn((props) => <View {...props} />),
+    RouterToolbarItem: jest.fn((props) => <View {...props} />),
+  };
+});
+
 const ScreenStackItem = _ScreenStackItem as jest.MockedFunction<typeof _ScreenStackItem>;
+const MockedRouterToolbarItem = RouterToolbarItem as jest.MockedFunction<typeof RouterToolbarItem>;
 
 let consoleWarnMock: jest.SpyInstance;
 beforeEach(() => {
@@ -266,6 +277,111 @@ describe('Stack.Toolbar unified API', () => {
       expect(leftItems).toHaveLength(1);
       expect(leftItems[0].type).toBe('button');
     });
+
+    describe('iconRenderingMode', () => {
+      it('passes iconRenderingMode="template" with image icon (templateSource)', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="left">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    iconRenderingMode="template"
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const leftItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerLeftBarButtonItems;
+        expect(leftItems[0].icon).toEqual({
+          type: 'templateSource',
+          templateSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
+
+      it('passes iconRenderingMode="original" with image icon (imageSource)', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="left">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    iconRenderingMode="original"
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const leftItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerLeftBarButtonItems;
+        expect(leftItems[0].icon).toEqual({
+          type: 'imageSource',
+          imageSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
+
+      it('defaults to template when tintColor is set', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="left">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    tintColor="red"
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const leftItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerLeftBarButtonItems;
+        expect(leftItems[0].icon).toEqual({
+          type: 'templateSource',
+          templateSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
+
+      it('defaults to original when no tintColor', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="left">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const leftItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerLeftBarButtonItems;
+        expect(leftItems[0].icon).toEqual({
+          type: 'imageSource',
+          imageSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
+    });
   });
 
   describe('Stack.Toolbar placement="right"', () => {
@@ -341,6 +457,111 @@ describe('Stack.Toolbar unified API', () => {
       expect(rightItems).toBeDefined();
       expect(rightItems).toHaveLength(1);
       expect(rightItems[0].type).toBe('button');
+    });
+
+    describe('iconRenderingMode', () => {
+      it('passes iconRenderingMode="template" with image icon (templateSource)', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="right">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    iconRenderingMode="template"
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const rightItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerRightBarButtonItems;
+        expect(rightItems[0].icon).toEqual({
+          type: 'templateSource',
+          templateSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
+
+      it('passes iconRenderingMode="original" with image icon (imageSource)', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="right">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    iconRenderingMode="original"
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const rightItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerRightBarButtonItems;
+        expect(rightItems[0].icon).toEqual({
+          type: 'imageSource',
+          imageSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
+
+      it('defaults to template when tintColor is set', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="right">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    tintColor="blue"
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const rightItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerRightBarButtonItems;
+        expect(rightItems[0].icon).toEqual({
+          type: 'templateSource',
+          templateSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
+
+      it('defaults to original when no tintColor', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="right">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const rightItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerRightBarButtonItems;
+        expect(rightItems[0].icon).toEqual({
+          type: 'imageSource',
+          imageSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
     });
   });
 
@@ -425,6 +646,97 @@ describe('Stack.Toolbar unified API', () => {
       expect(screen.getByTestId('index')).toBeVisible();
       // No error should occur
       expect(ScreenStackItem).toHaveBeenCalled();
+    });
+
+    describe('iconRenderingMode', () => {
+      it('passes imageRenderingMode="template" to RouterToolbarItem', () => {
+        renderRouter({
+          _layout: () => <Stack />,
+          index: () => (
+            <>
+              <Stack.Toolbar>
+                <Stack.Toolbar.Button icon="star" iconRenderingMode="template" onPress={() => {}} />
+              </Stack.Toolbar>
+              <Text testID="index">index</Text>
+            </>
+          ),
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(MockedRouterToolbarItem).toHaveBeenCalled();
+        // Find the call with the button props (not the spacer)
+        const buttonCall = MockedRouterToolbarItem.mock.calls.find(
+          (call) => call[0].systemImageName === 'star'
+        );
+        expect(buttonCall).toBeDefined();
+        expect(buttonCall![0].imageRenderingMode).toBe('template');
+      });
+
+      it('passes imageRenderingMode="original" to RouterToolbarItem', () => {
+        renderRouter({
+          _layout: () => <Stack />,
+          index: () => (
+            <>
+              <Stack.Toolbar>
+                <Stack.Toolbar.Button icon="star" iconRenderingMode="original" onPress={() => {}} />
+              </Stack.Toolbar>
+              <Text testID="index">index</Text>
+            </>
+          ),
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(MockedRouterToolbarItem).toHaveBeenCalled();
+        const buttonCall = MockedRouterToolbarItem.mock.calls.find(
+          (call) => call[0].systemImageName === 'star'
+        );
+        expect(buttonCall).toBeDefined();
+        expect(buttonCall![0].imageRenderingMode).toBe('original');
+      });
+
+      it('defaults to template when tintColor is set', () => {
+        renderRouter({
+          _layout: () => <Stack />,
+          index: () => (
+            <>
+              <Stack.Toolbar>
+                <Stack.Toolbar.Button icon="star" tintColor="green" onPress={() => {}} />
+              </Stack.Toolbar>
+              <Text testID="index">index</Text>
+            </>
+          ),
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(MockedRouterToolbarItem).toHaveBeenCalled();
+        const buttonCall = MockedRouterToolbarItem.mock.calls.find(
+          (call) => call[0].systemImageName === 'star'
+        );
+        expect(buttonCall).toBeDefined();
+        expect(buttonCall![0].imageRenderingMode).toBe('template');
+      });
+
+      it('defaults to original when no tintColor', () => {
+        renderRouter({
+          _layout: () => <Stack />,
+          index: () => (
+            <>
+              <Stack.Toolbar>
+                <Stack.Toolbar.Button icon="star" onPress={() => {}} />
+              </Stack.Toolbar>
+              <Text testID="index">index</Text>
+            </>
+          ),
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(MockedRouterToolbarItem).toHaveBeenCalled();
+        const buttonCall = MockedRouterToolbarItem.mock.calls.find(
+          (call) => call[0].systemImageName === 'star'
+        );
+        expect(buttonCall).toBeDefined();
+        expect(buttonCall![0].imageRenderingMode).toBe('original');
+      });
     });
   });
 

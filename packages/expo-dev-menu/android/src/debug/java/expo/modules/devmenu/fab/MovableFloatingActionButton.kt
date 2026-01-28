@@ -123,7 +123,6 @@ fun MovableFloatingActionButton(
                       .coerceIn(maxX = bounds.x, maxY = bounds.y)
                     dragDistance += change.positionChange().getDistance()
                     velocityTracker.registerPosition(dragOffset.x, dragOffset.y)
-                    change.consume()
 
                     if (dragDistance > ClickDragTolerance) {
                       launch {

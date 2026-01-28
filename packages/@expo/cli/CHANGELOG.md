@@ -4,14 +4,23 @@
 
 ### 🛠 Breaking changes
 
+- Remove legacy typed routes logic for SDK 51 projects ([#42604](https://github.com/expo/expo/pull/42604) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Bump `@expo/xcpretty` ([#42485](https://github.com/expo/expo/pull/42485) by [@kitten](https://github.com/kitten))
+
+## 55.0.4 — 2026-01-27
 
 ### 🐛 Bug fixes
 
 - Reallow connections on `/expo-dev-plugins/broadcast` broadcast socket to local connections ([#42538](https://github.com/expo/expo/pull/42538) by [@kitten](https://github.com/kitten))
 - Fix `freeport-async` replacement ([#42509](https://github.com/expo/expo/pull/42509) by [@kitten](https://github.com/kitten))
-
-### 💡 Others
+- Use `require.resolve` to resolve `@expo/router-server` path ([#42516](https://github.com/expo/expo/pull/42516) by [@hassankhan](https://github.com/hassankhan))
 
 ## 55.0.3 — 2026-01-26
 
