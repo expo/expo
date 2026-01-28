@@ -1,7 +1,7 @@
-@_implementationOnly import Expo
+internal import Expo
 import Network
-@_implementationOnly import React
-@_implementationOnly import ReactAppDependencyProvider
+internal import React
+internal import ReactAppDependencyProvider
 import UIKit
 
 #if DEBUG && canImport(EXDevMenu) && canImport(EXManifests)
@@ -14,6 +14,7 @@ public class ReactNativeHostManager {
 
   private var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   private var reactNativeFactory: RCTReactNativeFactory?
+  private var firstViewLoad: Bool = true
   private var firstViewLoad: Bool = true
 
   /**
