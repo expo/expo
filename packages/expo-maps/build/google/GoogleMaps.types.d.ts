@@ -436,9 +436,9 @@ export type GoogleMapsViewType = {
      */
     setCameraPosition: (config?: SetCameraPositionConfig) => void;
     /**
-     * Programmatically select a marker by its ID.
-     * This will show the information window for the marker.
-     * Pass `undefined` or omit to clear the selection and hide all information windows.
+     *
+     * This is an async operation that animates the camera to the marker. If called
+     * rapidly, a previous animation may be cancelled, causing the returned promise to reject.
      *
      * @param id The ID of the marker to select, or `undefined` to clear selection.
      * @param options Optional configuration for the selection.
@@ -448,7 +448,7 @@ export type GoogleMapsViewType = {
     selectMarker: (id?: string, options?: {
         zoom?: number;
         moveCamera?: boolean;
-    }) => void;
+    }) => Promise<void>;
 };
 /**
  * @platform android

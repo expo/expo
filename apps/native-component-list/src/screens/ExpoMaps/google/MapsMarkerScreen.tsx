@@ -40,14 +40,20 @@ export default function MapsMarkerScreen() {
   const mapRef = useRef<GoogleMaps.MapView>(null);
   const [selectedMarkerId, setSelectedMarkerId] = useState<string | undefined>();
 
-  const handleMarkerSelect = (markerId: string) => {
+  const handleMarkerSelect = async (markerId: string) => {
     setSelectedMarkerId(markerId);
-    mapRef.current?.selectMarker(markerId, { moveCamera: true });
+    await mapRef.current?.selectMarker(markerId, { moveCamera: true }).catch((e) => {
+      // Promise may reject when a previous animation was cancelled by a rapid call.
+      console.warn('Error selecting marker:', e);
+    });
   };
 
-  const clearSelection = () => {
+  const clearSelection = async () => {
     setSelectedMarkerId(undefined);
-    mapRef.current?.selectMarker(undefined);
+    await mapRef.current?.selectMarker(undefined).catch((e) => {
+      // Promise may reject when a previous animation was cancelled by a rapid call.
+      console.warn('Error clearing selection:', e);
+    });
   };
 
   const onMapClick = () => {

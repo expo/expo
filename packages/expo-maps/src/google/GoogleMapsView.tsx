@@ -52,8 +52,8 @@ export const GoogleMapsView = React.forwardRef<GoogleMapsViewType, GoogleMapsVie
       setCameraPosition(config?: SetCameraPositionConfig) {
         nativeRef.current?.setCameraPosition(config);
       },
-      selectMarker(id?: string, options?: { zoom?: number; moveCamera?: boolean }) {
-        nativeRef.current?.selectMarker(id, options);
+      async selectMarker(id?: string, options?: { zoom?: number; moveCamera?: boolean }) {
+        return nativeRef.current?.selectMarker(id, options);
       },
     }));
 
