@@ -333,6 +333,25 @@ jobs:
     # @end #
 ```
 
+### `jobs.<job_id>.hooks`
+
+Some pre-packaged jobs support hooks to run additional steps before or after the main job action (for example, `maestro-cloud`, `maestro-test`, and `submit`). Hook names are job-specific; see the job's documentation for the available hook keys.
+
+```yaml
+jobs:
+  maestro_test:
+    type: maestro-cloud
+    params:
+      build_id: ${{ needs.build.outputs.build_id }}
+      maestro_project_id: proj_xyz
+      flows: ./maestro/flows
+    hooks:
+      before_maestro_cloud:
+        - run: echo "Before upload"
+      after_maestro_cloud:
+        - run: echo "After upload"
+```
+
 ### `jobs.<job_id>.defaults.run.working_directory`
 
 Sets the directory to run commands in for all steps in the job.
@@ -999,6 +1018,9 @@ jobs:
       build_id: string # required
       profile: string # optional, default: production
       groups: string[] # optional
+    hooks:
+      before_submit: step[] # optional
+      after_submit: step[] # optional
 ```
 
 This job outputs the following properties:
@@ -1094,6 +1116,9 @@ jobs:
       android_system_image_package: string # optional. Android emulator system image package to use.
       device_identifier: string | { android?: string, ios?: string } # optional. Device identifier to use for the tests.
       output_format?: string # optional. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
+    hooks:
+      before_maestro_tests: step[] # optional
+      after_maestro_tests: step[] # optional
 ```
 
 #### `maestro-cloud`
@@ -1126,6 +1151,9 @@ jobs:
       name: string # optional. Name for the Maestro Cloud upload. Corresponds to `--name` param to `maestro cloud`.
       branch: string # optional. Override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
       async: boolean # optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, *not* whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
+    hooks:
+      before_maestro_cloud: step[] # optional. Steps to run before the Maestro Cloud upload.
+      after_maestro_cloud: step[] # optional. Steps to run after the Maestro Cloud upload.
 ```
 
 #### `slack`
