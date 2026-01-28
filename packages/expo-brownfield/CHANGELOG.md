@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Abdriud] fix dev menu in isolated brownfield ([#42637](https://github.com/expo/expo/pull/42637) by [@pmleczek](https://github.com/pmleczek))
+- [Android] fix dev menu in isolated brownfield ([#42637](https://github.com/expo/expo/pull/42637) by [@pmleczek](https://github.com/pmleczek))
 
 ### 💡 Others
 
