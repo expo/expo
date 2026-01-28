@@ -45,9 +45,6 @@ public final class AppContext: NSObject, @unchecked Sendable {
   @objc
   public weak var legacyModuleRegistry: EXModuleRegistry?
 
-  @objc
-  public weak var legacyModulesProxy: LegacyNativeModulesProxy?
-
   /**
    React bridge of the context's app. Can be `nil` when the bridge
    hasn't been propagated to the bridge modules yet (see ``ExpoBridgeModule``),
@@ -161,9 +158,8 @@ public final class AppContext: NSObject, @unchecked Sendable {
     listenToClientAppNotifications()
   }
 
-  public convenience init(legacyModulesProxy: Any, legacyModuleRegistry: Any, config: AppContextConfig? = nil) {
+  public convenience init(legacyModuleRegistry: Any, config: AppContextConfig? = nil) {
     self.init(config: config)
-    self.legacyModulesProxy = legacyModulesProxy as? LegacyNativeModulesProxy
     self.legacyModuleRegistry = legacyModuleRegistry as? EXModuleRegistry
   }
 
@@ -324,20 +320,6 @@ public final class AppContext: NSObject, @unchecked Sendable {
     }
   }
 
-  // MARK: - Interop with NativeModulesProxy
-
-  /**
-   Returns view modules wrapped by the base `ViewModuleWrapper` class.
-   */
-  @objc
-  public func getViewManagers() -> [ViewModuleWrapper] {
-    return moduleRegistry.flatMap { holder in
-      holder.definition.views.map { key, viewDefinition in
-        ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
-      }
-    }
-  }
-
   /**
    Returns a bool whether the module with given name is registered in this context.
    */
@@ -406,46 +388,6 @@ public final class AppContext: NSObject, @unchecked Sendable {
           resolve(value)
         }
       }
-  }
-
-  @objc
-  public final lazy var expoModulesConfig = ModulesProxyConfig(constants: self.exportedModulesConstants(),
-                                                               methodNames: self.exportedFunctionNames(),
-                                                               viewManagers: self.viewManagersMetadata())
-
-  private func exportedFunctionNames() -> [String: [[String: Any]]] {
-    var constants = [String: [[String: Any]]]()
-
-    for holder in moduleRegistry {
-      constants[holder.name] = holder.definition.functions.map({ functionName, function in
-        return [
-          "name": functionName,
-          "argumentsCount": function.argumentsCount,
-          "key": functionName
-        ]
-      })
-    }
-    return constants
-  }
-
-  private func exportedModulesConstants() -> [String: Any] {
-    return moduleRegistry
-      // prevent infinite recursion - exclude NativeProxyModule constants
-      .filter { $0.name != NativeModulesProxyModule.moduleName }
-      .reduce(into: [String: Any]()) { acc, holder in
-        acc[holder.name] = holder.getLegacyConstants()
-      }
-  }
-
-  private func viewManagersMetadata() -> [String: Any] {
-    return moduleRegistry.reduce(into: [String: Any]()) { acc, holder in
-      holder.definition.views.forEach { key, definition in
-        let name = key == DEFAULT_MODULE_VIEW ? holder.name : "\(holder.name)_\(definition.name)"
-        acc[name] = [
-          "propsNames": definition.props.map { $0.name }
-        ]
-      }
-    }
   }
 
   // MARK: - Modules registration
