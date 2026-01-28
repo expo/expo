@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `null cannot be cast to non-null type expo.modules.devmenu.DevMenuFragment`.
+
 ### 💡 Others
 
 ## 55.0.3 — 2026-01-27
