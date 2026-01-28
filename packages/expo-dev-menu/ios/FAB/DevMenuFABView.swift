@@ -33,7 +33,7 @@ struct FabPill: View {
 
   var body: some View {
     VStack(spacing: 8) {
-      fabButton
+      actionButton
         .scaleEffect(isPressed ? 0.9 : 1.0)
         .animation(.easeInOut(duration: 0.1), value: isPressed)
         .onChange(of: isInteracting) { interacting in
@@ -77,7 +77,7 @@ struct FabPill: View {
   }
 
   @ViewBuilder
-  private var fabButton: some View {
+  private var actionButton: some View {
     if #available(iOS 26.0, *) {
       liquidGlassButton
     } else {
