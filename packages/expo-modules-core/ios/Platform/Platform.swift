@@ -40,4 +40,10 @@ extension NSPasteboard {
   }
 }
 
+extension NSEdgeInsets {
+  public static var zero: NSEdgeInsets {
+    return NSEdgeInsetsZero
+  }
+}
+
 #endif // os(macOS)

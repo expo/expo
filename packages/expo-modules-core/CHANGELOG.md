@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [macOS] Added `NSEdgeInsets.zero` extension to better match `UIEdgeInsets`.
+
 ### 🐛 Bug fixes
 
 - [iOS] Fixed a crash in Fabric when unmounting a view while a geometry change event is being dispatched. ([#42628](https://github.com/expo/expo/issues/42628) by [@danishshaik](https://github.com/danishshaik)) ([#42634](https://github.com/expo/expo/pull/42634) by [@danishshaik](https://github.com/danishshaik))
