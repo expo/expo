@@ -2,6 +2,9 @@ import type { ExpoConfig } from 'expo/config';
 import fs from 'fs';
 import path from 'path';
 
+/**
+ * Tries to find specified plugin in the expo config or package.json dependencies
+ */
 export const checkPlugin = (config: ExpoConfig, pluginName: string): boolean => {
   return checkExpoConfig(config, pluginName) || checkPackageJson(config, pluginName);
 };
