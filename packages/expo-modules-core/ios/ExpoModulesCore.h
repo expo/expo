@@ -1,6 +1,6 @@
 @class RCTBundleURLProvider;
 
-#import <React/RCTHTTPRequestHandler.h>
+
 
 #import <ExpoModulesCore/ExpoBridgeModule.h>
 #import <ExpoModulesCore/CoreModuleHelper.h>
@@ -12,7 +12,6 @@
 #import <ExpoModulesCore/ExpoModulesCore.h>
 #import <ExpoModulesCore/ExpoModulesCore.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
-#import <ExpoModulesCore/EXHostWrapper.h>
 #import <ExpoModulesCore/EXCameraInterface.h>
 #import <ExpoModulesCore/EXConstantsInterface.h>
 #import <ExpoModulesCore/EXFaceDetectorManagerInterface.h>
@@ -58,7 +57,6 @@
 #import <ExpoModulesCore/EXPermissionsService.h>
 #import <ExpoModulesCore/EXReactNativeUserNotificationCenterProxy.h>
 #import <ExpoModulesCore/Platform.h>
-#import <ExpoModulesCore/RCTComponentData+Privates.h>
 #import <ExpoModulesCore/EXReactDelegateWrapper.h>
 #import <ExpoModulesCore/EventEmitter.h>
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>

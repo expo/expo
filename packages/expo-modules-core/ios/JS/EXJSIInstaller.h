@@ -1,6 +1,10 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#if !__building_module(ExpoModulesCore)
 #import <React/RCTBridge.h>
+#else
+@class RCTBridge;
+#endif
 
 // Swift classes need forward-declaration in the headers.
 @class EXAppContext;
