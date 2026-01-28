@@ -73,18 +73,6 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
 }
 
 /**
- This should be called inside `[EXNativeModulesProxy setBridge:]`.
- */
-- (void)legacyProxyDidSetBridge:(nonnull EXNativeModulesProxy *)moduleProxy
-           legacyModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
-{
-  // Cast to protocol to access properties without importing Swift.h
-  id<EXAppContextProtocol> ctx = (id<EXAppContextProtocol>)_appContext;
-  ctx.legacyModulesProxy = moduleProxy;
-  ctx.legacyModuleRegistry = moduleRegistry;
-}
-
-/**
  A synchronous method that is called from JS before requiring
  any module to ensure that all necessary bindings are installed.
  */
