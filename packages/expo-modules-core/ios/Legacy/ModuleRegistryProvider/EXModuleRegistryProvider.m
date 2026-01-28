@@ -1,17 +1,14 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-<<<<<<< Updated upstream
 #import <ExpoModulesCore/EXSingletonModule.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
-=======
 
 #import <React/RCTLog.h>
 
 // Forward declaration for LegacyModuleRegistry (Swift)
 // This allows SPM prebuilds to use the Swift-based registry
 @class EXLegacyModuleRegistry;
->>>>>>> Stashed changes
 
 static dispatch_once_t onceToken;
 static NSMutableSet<Class> *EXModuleClasses;
