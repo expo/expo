@@ -15,7 +15,6 @@ public class ReactNativeHostManager {
   private var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
   private var reactNativeFactory: RCTReactNativeFactory?
   private var firstViewLoad: Bool = true
-  private var firstViewLoad: Bool = true
 
   /**
    * Initializes ReactNativeHostManager instance
