@@ -3,8 +3,50 @@
 import Foundation
 import ObjectiveC
 
+/// Response from Snack API
+private struct SnackApiResponse: Codable {
+  let id: String
+  let hashId: String
+  let code: [String: SnackApiFile]
+
+  struct SnackApiFile: Codable {
+    let type: String  // "CODE" or "ASSET"
+    let contents: String
+  }
+}
+
 class SourceMapService {
   private let devMenuManager = DevMenuManager.shared
+
+  // Cache for Snack session client to keep connection alive
+  private static var cachedSession: SnackSessionClient?
+  private static var cachedSessionChannel: String?
+  private static var cachedFiles: [String: SnackSessionClient.SnackFile]?
+
+  // MARK: - Snack Detection
+
+  /// Parses the manifest URL to extract Snack parameters
+  private func parseSnackParams() -> (snackId: String?, channel: String?) {
+    guard let manifestURL = devMenuManager.currentManifestURL,
+          let components = URLComponents(url: manifestURL, resolvingAgainstBaseURL: false) else {
+      return (nil, nil)
+    }
+
+    let snackId = components.queryItems?.first(where: { $0.name == "snack" })?.value
+    let channel = components.queryItems?.first(where: { $0.name == "snack-channel" })?.value
+
+    return (snackId, channel)
+  }
+
+  /// Detects the Snack API host based on the manifest URL
+  /// Returns staging host if URL contains "staging", otherwise production
+  private func detectSnackApiHost() -> String {
+    if let manifestURL = devMenuManager.currentManifestURL,
+       manifestURL.absoluteString.contains("staging") {
+      return "https://staging.exp.host"
+    }
+    return "https://exp.host"
+  }
 
   /// Checks if a URL is an EAS CDN URL (assets.eascdn.net)
   private func isEASCDNURL(_ url: URL) -> Bool {
@@ -121,10 +163,172 @@ class SourceMapService {
     return nil
   }
 
+  // MARK: - Snack Session Integration
+
+  /// Sends a file update to the Snack session (if connected)
+  /// - Returns: true if the update was sent, false if no active session
+  static func sendSnackFileUpdate(path: String, oldContents: String, newContents: String) -> Bool {
+    guard let session = cachedSession else {
+      print("[SourceMapService] No active Snack session for file update")
+      return false
+    }
+
+    session.sendFileUpdate(path: path, oldContents: oldContents, newContents: newContents)
+    return true
+  }
+
+  /// Checks if there's an active Snack session
+  static var hasActiveSnackSession: Bool {
+    return cachedSession != nil && cachedSessionChannel != nil
+  }
+
+  /// Fetches source files from a live Snack session via Snackpub
+  private func fetchSnackSourceMapFromSession(channel: String) async throws -> SourceMap {
+    // Check if we have cached files for this channel
+    if SourceMapService.cachedSessionChannel == channel,
+       let cachedFiles = SourceMapService.cachedFiles,
+       !cachedFiles.isEmpty {
+      print("[SourceMapService] Using cached files for channel: \(channel)")
+      return buildSourceMap(from: cachedFiles)
+    }
+
+    let isStaging = devMenuManager.currentManifestURL?.absoluteString.contains("staging") == true
+
+    // Reuse existing session or create new one
+    let client: SnackSessionClient
+    if SourceMapService.cachedSessionChannel == channel,
+       let existingClient = SourceMapService.cachedSession {
+      print("[SourceMapService] Reusing existing session for channel: \(channel)")
+      client = existingClient
+    } else {
+      // Disconnect old session if different channel
+      SourceMapService.cachedSession?.disconnect()
+      client = SnackSessionClient(channel: channel, isStaging: isStaging)
+      SourceMapService.cachedSession = client
+      SourceMapService.cachedSessionChannel = channel
+    }
+
+    return try await withCheckedThrowingContinuation { continuation in
+      var hasResumed = false
+
+      // Timeout after 10 seconds
+      let timeoutTask = Task {
+        try await Task.sleep(nanoseconds: 10_000_000_000)
+        if !hasResumed {
+          hasResumed = true
+          continuation.resume(throwing: SnackSessionError.timeout)
+        }
+      }
+
+      client.connect(
+        onFilesReceived: { [weak self] files in
+          guard !hasResumed else { return }
+          hasResumed = true
+          timeoutTask.cancel()
+
+          // Cache the files (don't disconnect - keep session alive!)
+          SourceMapService.cachedFiles = files
+
+          let sourceMap = self?.buildSourceMap(from: files) ?? SourceMap(
+            version: 3,
+            sources: [],
+            sourcesContent: [],
+            mappings: "",
+            names: []
+          )
+
+          print("[SourceMapService] Built SourceMap from Snackpub with \(files.count) files")
+          continuation.resume(returning: sourceMap)
+        },
+        onError: { error in
+          guard !hasResumed else { return }
+          hasResumed = true
+          timeoutTask.cancel()
+          continuation.resume(throwing: error)
+        }
+      )
+    }
+  }
+
+  private func buildSourceMap(from files: [String: SnackSessionClient.SnackFile]) -> SourceMap {
+    let sources = files.keys.sorted()
+    let sourcesContent = sources.map { files[$0]?.contents }
+
+    return SourceMap(
+      version: 3,
+      sources: sources,
+      sourcesContent: sourcesContent,
+      mappings: "",
+      names: []
+    )
+  }
+
+  // MARK: - Snack API Integration
+
+  /// Fetches source files from Snack API and builds a SourceMap
+  private func fetchSnackSourceMap(snackId: String) async throws -> SourceMap {
+    // Build the API URL - handle both "@snack/xxx" and plain "xxx" formats
+    let cleanId = snackId.hasPrefix("@snack/") ? String(snackId.dropFirst(7)) : snackId
+
+    // Determine API host based on manifest URL (staging vs production)
+    let apiHost = detectSnackApiHost()
+    let apiURL = URL(string: "\(apiHost)/--/api/v2/snack/\(cleanId)")!
+
+    var request = URLRequest(url: apiURL)
+    request.setValue("3.0.0", forHTTPHeaderField: "Snack-Api-Version")
+    request.setValue("expo-dev-menu/1.0", forHTTPHeaderField: "User-Agent")
+
+    let (data, response) = try await URLSession.shared.data(for: request)
+
+    if let httpResponse = response as? HTTPURLResponse,
+       !(200...299).contains(httpResponse.statusCode) {
+      throw SourceMapError.httpError(httpResponse.statusCode)
+    }
+
+    let snackResponse = try JSONDecoder().decode(SnackApiResponse.self, from: data)
+
+    // Build SourceMap from Snack files (excluding assets)
+    let codeFiles = snackResponse.code.filter { $0.value.type == "CODE" }
+    let sources = codeFiles.keys.sorted()
+    let sourcesContent = sources.map { codeFiles[$0]?.contents }
+
+    print("[SourceMapService] Built SourceMap from Snack API with \(sources.count) files")
+
+    return SourceMap(
+      version: 3,
+      sources: sources,
+      sourcesContent: sourcesContent,
+      mappings: "",
+      names: []
+    )
+  }
+
   // MARK: - Source Map Fetching
 
   /// Fetches and parses the source map, trying multiple strategies
   func fetchSourceMap() async throws -> SourceMap {
+    // Strategy 0: Check if running a Snack
+    let (snackId, channel) = parseSnackParams()
+    print("[SourceMapService] Snack params - id: \(snackId ?? "nil"), channel: \(channel ?? "nil")")
+
+    // Strategy 0a: If we have a snack ID, fetch from Snack API
+    if let snackId = snackId {
+      print("[SourceMapService] Fetching from Snack API for id: \(snackId)")
+      if let snackSourceMap = try? await fetchSnackSourceMap(snackId: snackId) {
+        return snackSourceMap
+      }
+      print("[SourceMapService] Snack API fetch failed, falling back to other strategies")
+    }
+
+    // Strategy 0b: If we have a channel (live session), connect to Snackpub
+    if let channel = channel {
+      print("[SourceMapService] Connecting to Snackpub for channel: \(channel)")
+      if let snackSourceMap = try? await fetchSnackSourceMapFromSession(channel: channel) {
+        return snackSourceMap
+      }
+      print("[SourceMapService] Snackpub connection failed, falling back to other strategies")
+    }
+
     let bundleURL = devMenuManager.currentBridge?.bundleURL
 
     // Strategy 1: If the bundle is from Metro dev server, try to fetch external .map file
@@ -236,9 +440,10 @@ class SourceMapService {
     let sorted = sortNodes(nodes)
     let collapsed = collapseSingleChildFolders(sorted)
 
-    // Unwrap single top-level directory
+    // Unwrap single top-level directory (only if there are no files at root)
     let directories = collapsed.filter { $0.isDirectory }
-    if directories.count == 1, let mainDir = directories.first {
+    let files = collapsed.filter { !$0.isDirectory }
+    if directories.count == 1 && files.isEmpty, let mainDir = directories.first {
       return mainDir.children
     }
 
