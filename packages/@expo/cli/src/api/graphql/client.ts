@@ -52,6 +52,7 @@ export const query = (() => {
   const getFetchHeaders = (): Record<string, string> => {
     const token = getAccessToken();
     const headers: Record<string, string> = {
+      'content-type': 'application/json',
       accept: 'application/graphql-response+json, application/graphql+json, application/json',
     };
     let sessionSecret: string | undefined;
@@ -114,9 +115,9 @@ export const query = (() => {
 
       try {
         response = await wrappedFetch(url, {
+          ...options,
           method: 'POST',
           body: JSON.stringify({ query, variables }),
-          ...options,
           headers,
         });
       } catch (networkError) {
