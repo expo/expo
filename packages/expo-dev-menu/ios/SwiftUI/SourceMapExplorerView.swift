@@ -11,6 +11,7 @@ private let toolbarPlacement: ToolbarItemPlacement = .automatic
 
 struct SourceMapExplorerView: View {
   @StateObject private var viewModel = SourceMapExplorerViewModel()
+  @State private var showNavigationBar = false
   @State private var showContent = false
 
   private var isSearching: Bool {
@@ -30,8 +31,13 @@ struct SourceMapExplorerView: View {
     contentView
       .task {
         await viewModel.loadSourceMap()
-        withAnimation(.easeOut(duration: 0.2)) {
-          showContent = true
+        // Show nav bar first
+        showNavigationBar = true
+        // Wait for layout to settle, then fade in content
+        DispatchQueue.main.async {
+          withAnimation(.easeOut(duration: 0.2)) {
+            showContent = true
+          }
         }
       }
   }
@@ -39,29 +45,29 @@ struct SourceMapExplorerView: View {
   @ViewBuilder
   private var contentView: some View {
     ZStack {
+      // Content layer
       switch viewModel.loadingState {
       case .idle, .loading:
-        loadingView
+        Color.clear
       case .loaded:
         loadedView
           .opacity(showContent ? 1 : 0)
-          .offset(y: showContent ? 0 : 12)
+          .animation(.easeOut(duration: 0.2), value: showContent)
       case .error(let error):
         errorView(error)
           .opacity(showContent ? 1 : 0)
-          .offset(y: showContent ? 0 : 12)
+          .animation(.easeOut(duration: 0.2), value: showContent)
       }
 
-      // Loading overlay that fades out
-      if !showContent && !isLoading {
-        loadingView
-          .transition(.opacity)
-      }
+      // Loading overlay - fades out when showContent becomes true
+      loadingView
+        .opacity(showContent ? 0 : 1)
+        .animation(.easeOut(duration: 0.2).delay(0.2), value: showContent)
+        .allowsHitTesting(!showContent)
     }
-    .animation(.easeOut(duration: 0.2), value: showContent)
-    .navigationTitle(showContent ? "Source code explorer" : "")
+    .navigationTitle(showNavigationBar ? "Source code explorer" : "")
     .inlineNavigationBar()
-    .navigationBarHidden(!showContent)
+    .navigationBarHidden(!showNavigationBar)
     .modifier(ConditionalSearchable(isEnabled: showContent, text: $viewModel.searchText))
   }
 
@@ -83,6 +89,7 @@ struct SourceMapExplorerView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color(uiColor: .systemGroupedBackground))
+    .ignoresSafeArea()
   }
 
   private func errorView(_ error: SourceMapError) -> some View {
@@ -224,6 +231,11 @@ struct CodeFileView: View {
   @State private var isEditing = false
   @State private var displayContent: String = ""
 
+  private var isImageFile: Bool {
+    let ext = (node.name as NSString).pathExtension.lowercased()
+    return ["png", "jpg", "jpeg", "gif", "svg", "webp", "ico", "bmp"].contains(ext)
+  }
+
   private var originalContent: String {
     guard let contentIndex = node.contentIndex,
           let sourceMap,
@@ -250,25 +262,29 @@ struct CodeFileView: View {
 
   var body: some View {
     Group {
-      if isEditing {
+      if isImageFile {
+        imagePreviewUnavailableView()
+      } else if isEditing {
         editingView()
       } else {
         readOnlyView()
       }
     }
-    .background(theme.background)
+    .background(isImageFile ? Color(uiColor: .systemGroupedBackground) : theme.background)
     .navigationTitle(node.name)
     .inlineNavigationBar()
     .toolbar {
       ToolbarItem(placement: toolbarPlacement) {
-        Button(isEditing ? "Done" : "Edit") {
-          if isEditing {
-            isEditing = false
-            Task {
-              highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
+        if !isImageFile {
+          Button(isEditing ? "Done" : "Edit") {
+            if isEditing {
+              isEditing = false
+              Task {
+                highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
+              }
+            } else {
+              isEditing = true
             }
-          } else {
-            isEditing = true
           }
         }
       }
@@ -279,8 +295,22 @@ struct CodeFileView: View {
       }
     }
     .task(id: colorScheme) {
-      highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
+      if !isImageFile {
+        highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
+      }
     }
+  }
+
+  private func imagePreviewUnavailableView() -> some View {
+    VStack(spacing: 12) {
+      Image(systemName: "photo")
+        .font(.system(size: 40))
+        .foregroundColor(.secondary)
+      Text("Image preview not available")
+        .font(.subheadline)
+        .foregroundColor(.secondary)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
 
   private func readOnlyView() -> some View {
