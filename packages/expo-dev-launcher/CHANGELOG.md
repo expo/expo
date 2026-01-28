@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix issue where the header would overlap the safe area. ([#42540](https://github.com/expo/expo/pull/42540) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Fix sometimes two dev menus would open.
+- [Android] Fix sometimes two dev menus would open. ([#42567](https://github.com/expo/expo/pull/42567) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
