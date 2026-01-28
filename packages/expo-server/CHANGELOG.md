@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Expose `ImmutableHeaders` type ([#42645](https://github.com/expo/expo/pull/42645) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
 
 ## 55.0.2 — 2026-01-26

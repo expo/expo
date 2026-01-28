@@ -21,6 +21,9 @@ const getHeadersConstructor = (): typeof Headers => {
   }
 };
 
+/** @hidden */
+export type _ImmutableHeaders = Omit<Headers, 'append' | 'delete' | 'set'>;
+
 /**
  * An immutable version of the Fetch API's [`Headers`](https://developer.mozilla.org/en-US/docs/Web/API/Headers) object which prevents mutations.
  */
