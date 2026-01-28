@@ -39,8 +39,6 @@ const Screen_1 = require("../../../views/Screen");
  *   );
  * }
  * ```
- *
- * @platform ios
  */
 function StackScreenTitle(props) {
     const updatedOptions = (0, react_1.useMemo)(() => appendStackScreenTitlePropsToOptions({}, props), [props]);
