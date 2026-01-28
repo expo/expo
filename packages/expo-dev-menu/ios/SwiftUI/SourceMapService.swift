@@ -428,6 +428,11 @@ class SourceMapService {
     }
   }
 
+  private var isSnackProject: Bool {
+    let (snackId, channel) = parseSnackParams()
+    return snackId != nil || channel != nil
+  }
+
   /// Builds a file tree from the source map sources array
   func buildFileTree(from sourceMap: SourceMap) async -> [FileTreeNode] {
     let root = Node(name: "", path: "", isDirectory: true)
@@ -438,13 +443,14 @@ class SourceMapService {
 
     let nodes = root.children.values.map { convertToNode($0) }
     let sorted = sortNodes(nodes)
-    let collapsed = collapseSingleChildFolders(sorted)
+    var collapsed = collapseSingleChildFolders(sorted)
 
-    // Unwrap single top-level directory (only if there are no files at root)
-    let directories = collapsed.filter { $0.isDirectory }
-    let files = collapsed.filter { !$0.isDirectory }
-    if directories.count == 1 && files.isEmpty, let mainDir = directories.first {
-      return mainDir.children
+    // For non-Snack projects, unwrap single top-level directory to start at project root
+    if !isSnackProject {
+      let directories = collapsed.filter { $0.isDirectory }
+      if directories.count == 1, let mainDir = directories.first {
+        collapsed = mainDir.children
+      }
     }
 
     return collapsed
