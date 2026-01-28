@@ -9,7 +9,6 @@
 #import "EXKernelAppRecord.h"
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
-#import "EXKernelDevKeyCommands.h"
 
 #import <EXConstants/EXConstantsService.h>
 #import <React/RCTBridge+Private.h>
@@ -63,9 +62,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
     [DevMenuManager.shared setDelegate:self];
     [DevMenuManager shared].configuration.onboardingAppName = @"Expo Go";
-
-    // Register keyboard commands (e.g., Cmd+D) for simulator
-    [[EXKernelDevKeyCommands sharedInstance] registerDevCommands];
 
     // register for notifications to request reloading the visible app
     [[NSNotificationCenter defaultCenter] addObserver:self
