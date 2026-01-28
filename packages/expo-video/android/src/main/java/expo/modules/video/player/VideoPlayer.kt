@@ -243,7 +243,6 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       availableVideoTracks = tracks.toVideoTracks(hlsManifest)
       refreshPlaybackInfo()
 
-
       if (isLoadingNewSource) {
         sendEvent(
           PlayerEvent.VideoSourceLoaded(
