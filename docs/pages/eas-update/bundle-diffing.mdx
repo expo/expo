@@ -51,7 +51,7 @@ EAS Update uses the [bsdiff algorithm](https://en.wikipedia.org/wiki/Bsdiff) to 
 Whether a patch is served depends on:
 
 - **Patch is meaningfully smaller than the full bundle.** If not, EAS Update serves the full bundle instead.
-- **Patch generation completes within time limit.** If generating the patch exceeds the time limit (currently **10 seconds**), EAS Update serves the full bundle instead.
+- **Patch is able to be computed efficiently.** If generating the patch is too resource intensive, EAS Update serves the full bundle instead.
 
 ## Current limitations
 
