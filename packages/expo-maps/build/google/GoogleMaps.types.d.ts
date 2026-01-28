@@ -436,7 +436,6 @@ export type GoogleMapsViewType = {
      */
     setCameraPosition: (config?: SetCameraPositionConfig) => void;
     /**
-     *
      * This is an async operation that animates the camera to the marker. If called
      * rapidly, a previous animation may be cancelled, causing the returned promise to reject.
      *
