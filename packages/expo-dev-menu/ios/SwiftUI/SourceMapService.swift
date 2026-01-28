@@ -43,9 +43,9 @@ class SourceMapService {
   private func detectSnackApiHost() -> String {
     if let manifestURL = devMenuManager.currentManifestURL,
        manifestURL.absoluteString.contains("staging") {
-      return "https://staging.exp.host"
+      return "https://staging-api.expo.dev"
     }
-    return "https://exp.host"
+    return "https://api.expo.dev"
   }
 
   /// Checks if a URL is an EAS CDN URL (assets.eascdn.net)

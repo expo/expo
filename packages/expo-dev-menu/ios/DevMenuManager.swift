@@ -505,6 +505,12 @@ open class DevMenuManager: NSObject {
   }
 
   func reload() {
+    if let delegate = hostDelegate,
+       delegate.responds(to: #selector(DevMenuHostDelegate.devMenuReload)) {
+      delegate.devMenuReload?()
+      return
+    }
+
     let devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.reload()
   }

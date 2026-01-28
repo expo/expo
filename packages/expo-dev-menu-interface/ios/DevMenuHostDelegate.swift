@@ -10,6 +10,12 @@ public protocol DevMenuHostDelegate: NSObjectProtocol {
   @objc optional func devMenuNavigateHome()
 
   /**
+   Optional function to reload the current application.
+   If not implemented, falls back to ExpoModulesCore's reloadAppAsync.
+   */
+  @objc optional func devMenuReload()
+
+  /**
    Optional function to toggle the performance monitor.
    */
   @objc optional func devMenuTogglePerformanceMonitor()

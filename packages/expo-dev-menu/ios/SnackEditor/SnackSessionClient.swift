@@ -13,12 +13,6 @@ class SnackSessionClient {
     let isAsset: Bool
   }
 
-  struct CodeMessage {
-    let diff: [String: String]
-    let s3url: [String: String]
-    let dependencies: [String: Any]
-  }
-
   enum ConnectionState {
     case disconnected
     case connecting
