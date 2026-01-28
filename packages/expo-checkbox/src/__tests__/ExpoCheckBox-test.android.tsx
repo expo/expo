@@ -47,7 +47,6 @@ describe('Checkbox', () => {
               "height": 20,
               "width": 20,
             },
-            undefined,
             {
               "backgroundColor": "#009688",
               "borderColor": "#009688",
@@ -56,6 +55,7 @@ describe('Checkbox', () => {
               "backgroundColor": "#4630EB",
               "borderColor": "#4630EB",
             },
+            undefined,
             undefined,
             undefined,
           ]
