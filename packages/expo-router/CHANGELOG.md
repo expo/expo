@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add support for redirecting paths with path parameters. ([#42504](https://github.com/expo/expo/pull/42504) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 55.0.0-beta.4 — 2026-01-27
