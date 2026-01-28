@@ -2,13 +2,13 @@ import { getConfig } from '@expo/config';
 import assert from 'assert';
 
 import { Options } from './resolveOptions';
-import { getPublicExpoManifestAsync } from '../getPublicExpoManifest';
-import { isEnableHermesManaged, assertEngineMismatchAsync } from '../exportHermes';
 import * as Log from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { getEntryWithServerRoot } from '../../start/server/middleware/ManifestMiddleware';
 import { setNodeEnv } from '../../utils/nodeEnv';
+import { isEnableHermesManaged, assertEngineMismatchAsync } from '../exportHermes';
+import { getPublicExpoManifestAsync } from '../getPublicExpoManifest';
 
 export async function checkForProcessEnvAsync(
   projectRoot: string,
@@ -43,7 +43,7 @@ export async function checkForProcessEnvAsync(
   assert(devServer instanceof MetroBundlerDevServer);
 
   // Pattern to match process.env.VARIABLE_NAME and capture the variable name
-  const processEnvPattern = /process\.env\.([A-Z_][A-Z0-9_]*)/gi;
+  const processEnvPattern = /process\.env\.EXPO_PUBLIC_([A-Z_][A-Z0-9_]*)/gi;
   const foundEnvVars = new Set<string>();
 
   try {

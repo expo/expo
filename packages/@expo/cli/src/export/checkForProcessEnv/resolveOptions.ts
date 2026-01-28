@@ -1,8 +1,7 @@
-import { Platform } from '@expo/config';
+import { Platform, getConfig } from '@expo/config';
 
-import { resolvePlatformOption } from '../resolveOptions';
 import { getPlatformBundlers } from '../../start/server/platformBundlers';
-import { getConfig } from '@expo/config';
+import { resolvePlatformOption } from '../resolveOptions';
 
 export type Options = {
   platforms: Platform[];
