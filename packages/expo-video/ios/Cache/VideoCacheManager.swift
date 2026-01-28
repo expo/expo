@@ -48,7 +48,7 @@ class VideoCacheManager {
       do {
         try self.limitCacheSize(to: maxCacheSize)
       } catch {
-        log.warn("Failed to auto clean expo-video cache")
+        log.warn("[expo-video] Failed to auto clean expo-video cache")
       }
     }
   }

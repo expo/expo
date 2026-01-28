@@ -73,7 +73,7 @@ class CachedResource {
 
   func writeData(data: Data, offset: Int64) async {
     guard !data.isEmpty else {
-      log.warn("Attempted to write empty data at offset \(offset), skipping")
+      log.warn("[expo-video] Attempted to write empty data at offset \(offset), skipping")
       return
     }
 
@@ -90,7 +90,7 @@ class CachedResource {
         mediaInfo: mediaInfo
       )
     } catch {
-      log.warn("Failed to write at offset \(offset) with the file handle: \(error)")
+      log.warn("[expo-video] Failed to write at offset \(offset) with the file handle: \(error)")
     }
   }
 

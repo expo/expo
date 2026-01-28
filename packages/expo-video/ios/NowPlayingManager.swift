@@ -270,13 +270,13 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
 private func fetchArtwork(url: URL, completion: @escaping (MPMediaItemArtwork?) -> Void) -> URLSessionDataTask {
   let task = URLSession.shared.dataTask(with: url) { data, response, error in
     if let error = error {
-      log.warn("ExpoVideo - Couldn't fetch the artwork: \(error.localizedDescription)")
+      log.warn("[expo-video] Couldn't fetch the artwork: \(error.localizedDescription)")
       completion(nil)
       return
     }
 
     guard let data, response is HTTPURLResponse else {
-      log.warn("ExpoVideo - Couldn't display the artwork: the response was empty")
+      log.warn("[expo-video] Couldn't display the artwork: the response was empty")
       completion(nil)
       return
     }

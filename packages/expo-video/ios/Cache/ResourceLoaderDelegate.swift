@@ -84,7 +84,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
 
     if dataRequest.requestsAllDataToEndOfResource {
       guard currentOffset >= requestedOffset else {
-        log.warn("Current offset (\(currentOffset)) < requested offset (\(requestedOffset))")
+        log.warn("[expo-video] Current offset (\(currentOffset)) < requested offset (\(requestedOffset))")
         return
       }
 
@@ -101,7 +101,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
 
       let endOffset = currentDataResponseOffset + currentDataResponseLength
       guard endOffset <= cachableRequest.receivedData.count else {
-        log.warn("End offset (\(endOffset)) exceeds receivedData.count (\(cachableRequest.receivedData.count))")
+        log.warn("[expo-video] End offset (\(endOffset)) exceeds receivedData.count (\(cachableRequest.receivedData.count))")
         return
       }
 
@@ -117,7 +117,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
 
       let endOffset = rangeStart + rangeLength
       guard endOffset <= cachableRequest.receivedData.count else {
-        log.warn("End offset (\(endOffset)) exceeds receivedData.count (\(cachableRequest.receivedData.count))")
+        log.warn("[expo-video] End offset (\(endOffset)) exceeds receivedData.count (\(cachableRequest.receivedData.count))")
         return
       }
 
@@ -193,7 +193,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
       }
       cachableRequests.add(cachableRequest)
     } else {
-      log.warn("ResourceLoaderDelegate has received a loading request without a data request")
+      log.warn("[expo-video] ResourceLoaderDelegate has received a loading request without a data request")
     }
     dataTask.resume()
   }
