@@ -193,6 +193,7 @@ PODS:
     - ExpoModulesCore
   - ExpoGL (55.0.3):
     - ExpoModulesCore
+    - ExpoModulesJSI
     - ReactCommon/turbomodule/core
   - ExpoGlassEffect (55.0.3):
     - ExpoModulesCore
@@ -4666,7 +4667,7 @@ SPEC CHECKSUMS:
   ExpoDomWebView: 2cb9e9bed46799fa8f36b6284ce7799f1dbff297
   ExpoFileSystem: fbc1b6c573adea694db76bcfdec603952d96b0d5
   ExpoFont: 4e2967170d6ee7316c5efd62dd06aabd7b4593d2
-  ExpoGL: 995034ac1bf272589a7f0670dddf6c646c3842af
+  ExpoGL: 5c4ead68e3ccad2ff5d71a9afe6b332af5da6233
   ExpoGlassEffect: 3f4ba89f21a3077d598777608808c5bde0d7de43
   ExpoHaptics: f919ee984bb7617ddb9819856dd662b2f4248f71
   ExpoImage: eb2443489a4e380def23857653e170054ecec49c
@@ -4693,7 +4694,7 @@ SPEC CHECKSUMS:
   ExpoScreenCapture: 3ec7ec7d0e4c2c4e7d7cc8b9687c7040a6fbfcef
   ExpoScreenOrientation: bb92ea51153cdca0200570e930ecb9aa8b45692d
   ExpoSecureStore: 27c70a3d198a990067e6dfd5872e258644688e29
-  ExpoSensors: 4253127337637fd8d6dd0dc4491005a47140e0e2
+  ExpoSensors: d1936c29c560a7aaee830bd403fa11547e3e2781
   ExpoSharing: a68c6c9629a81ea1cd8ed2f742b2f766753c5e2a
   ExpoSMS: 1c5c7c8054e297d077e7f3ef9a016a456a29f3c4
   ExpoSpeech: c27caca51a2d86f880634f2cecc469734bf0d4f6
