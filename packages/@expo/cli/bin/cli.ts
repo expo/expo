@@ -27,6 +27,8 @@ const commands: { [command: string]: () => Promise<Command> } = {
   export: () => import('../src/export/index.js').then((i) => i.expoExport),
   'export:web': () => import('../src/export/web/index.js').then((i) => i.expoExportWeb),
   'export:embed': () => import('../src/export/embed/index.js').then((i) => i.expoExportEmbed),
+  'export:check-for-process-env': () =>
+    import('../src/export/checkForProcessEnv/index.js').then((i) => i.expoExportCheckForProcessEnv),
 
   serve: () => import('../src/serve/index.js').then((i) => i.expoServe),
 
@@ -96,6 +98,8 @@ if (!isSubcommand && args['--help']) {
     'export:embed': exportEmbed_unused,
     // The export:web command is deprecated. Hide it from the help prompt.
     'export:web': exportWeb_unused,
+    // Internal command for checking process.env usage in bundles.
+    'export:check-for-process-env': exportCheckForProcessEnv_unused,
     // Other ignored commands, these are intentially not listed in the `--help` output
     run: _run,
     // NOTE(cedric): Still pending the migration to ESLint's flat config
