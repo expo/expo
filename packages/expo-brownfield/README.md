@@ -48,6 +48,8 @@ Ensure that you have the `expo-brownfield` plugin included in your `app.json` or
 
 Run `npx expo prebuild` after adding the plugin to your `app.json` file to generate the additional native targets for brownfield.
 
+For projects that don't use CNG please follow the manual steps at [How to add Expo to an existing native (brownfield) app](https://docs.expo.dev/brownfield/get-started/). 
+
 ## Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
