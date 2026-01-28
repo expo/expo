@@ -362,9 +362,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
       markerState.value.forEach { it.second.hideInfoWindow() }
       return
     }
-    val pair = markerState.value.find { it.first.id == id } ?: return
-    val marker = pair.first
-    val state = pair.second
+    val (marker, state) = markerState.value.find { it.first.id == id } ?: return
     state.showInfoWindow()
     onMarkerClick(
       MarkerRecord(
