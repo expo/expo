@@ -3,7 +3,7 @@
 import { registerWebModule, NativeModule } from 'expo';
 
 import { type SQLiteOpenOptions } from '../src/NativeDatabase';
-import { type Changeset } from '../src/NativeSession';
+import { type NativeChangeset } from '../src/NativeSession';
 import {
   type SQLiteBindBlobParams,
   type SQLiteBindPrimitiveParams,
@@ -120,28 +120,28 @@ export class NativeSession {
   async closeAsync(database: NativeDatabase): Promise<void> {}
   closeSync(database: NativeDatabase): void {}
 
-  async createChangesetAsync(database: NativeDatabase): Promise<Changeset> {
-    return new Uint8Array();
+  async createChangesetAsync(database: NativeDatabase): Promise<NativeChangeset> {
+    return new Uint8Array().buffer;
   }
-  createChangesetSync(database: NativeDatabase): Changeset {
-    return new Uint8Array();
-  }
-
-  async createInvertedChangesetAsync(database: NativeDatabase): Promise<Changeset> {
-    return new Uint8Array();
-  }
-  createInvertedChangesetSync(database: NativeDatabase): Changeset {
-    return new Uint8Array();
+  createChangesetSync(database: NativeDatabase): NativeChangeset {
+    return new Uint8Array().buffer;
   }
 
-  async applyChangesetAsync(database: NativeDatabase, changeset: Changeset): Promise<void> {}
-  applyChangesetSync(database: NativeDatabase, changeset: Changeset): void {}
-
-  async invertChangesetAsync(database: NativeDatabase, changeset: Changeset): Promise<Changeset> {
-    return new Uint8Array();
+  async createInvertedChangesetAsync(database: NativeDatabase): Promise<NativeChangeset> {
+    return new Uint8Array().buffer;
   }
-  invertChangesetSync(database: NativeDatabase, changeset: Changeset): Changeset {
-    return new Uint8Array();
+  createInvertedChangesetSync(database: NativeDatabase): NativeChangeset {
+    return new Uint8Array().buffer;
+  }
+
+  async applyChangesetAsync(database: NativeDatabase, changeset: NativeChangeset): Promise<void> {}
+  applyChangesetSync(database: NativeDatabase, changeset: NativeChangeset): void {}
+
+  async invertChangesetAsync(database: NativeDatabase, changeset: NativeChangeset): Promise<NativeChangeset> {
+    return new Uint8Array().buffer;
+  }
+  invertChangesetSync(database: NativeDatabase, changeset: NativeChangeset): NativeChangeset {
+    return new Uint8Array().buffer;
   }
 }
 
