@@ -133,5 +133,9 @@ public final class ExpoUIModule: Module {
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
     ExpoUIView(GridView.self)
+
+    // Lazy Stacks
+    ExpoUIView(LazyHStackView.self)
+    ExpoUIView(LazyVStackView.self)
   }
 }
