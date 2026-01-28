@@ -12,6 +12,9 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.modules.ExpoReactHostFactory
 import expo.modules.brownfield.BrownfieldNavigationState
+import expo.modules.devmenu.api.DevMenuApi
+import java.lang.ref.WeakReference
+import android.view.ViewGroup
 
 class ReactNativeHostManager {
   companion object {
@@ -61,13 +64,39 @@ class ReactNativeHostManager {
       context = application.applicationContext,
       packageList = PackageList(application).packages
     )
+
+    if (BuildConfig.DEBUG) {
+      reactHost?.devSupportManager?.let { devSupportManager ->
+        DevMenuApi.installWebSocketHandlers(devSupportManager)
+        DevMenuApi.uninstallDefaultShakeDetector(devSupportManager)
+      }
+    }
   }
 }
 
 fun Activity.showReactNativeFragment() {
   ReactNativeHostManager.shared.initialize(this.application)
-  val fragment = ReactNativeFragment.createFragmentHost(this)
-  setContentView(fragment)
+
+  if (BuildConfig.DEBUG) {
+    val reactHost = ReactNativeHostManager.shared.getReactHost()
+    val fragmentHost = DevMenuApi.createFragmentHost(
+      activity = this,
+      reactHostHolder = WeakReference(reactHost)
+    )
+    if (fragmentHost != null) {
+      val reactNativeView = ReactNativeViewFactory.createFrameLayout(
+        this,
+        this as androidx.fragment.app.FragmentActivity,
+        RootComponent.Main
+      )
+      fragmentHost.addView(reactNativeView, ViewGroup.LayoutParams.MATCH_PARENT)
+      setContentView(fragmentHost)
+    }
+  } else {
+    val fragment = ReactNativeFragment.createFragmentHost(this)
+    setContentView(fragment)
+  }
+
   setUpNativeBackHandling()
 }
 

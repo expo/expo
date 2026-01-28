@@ -45,6 +45,13 @@ const withProjectFilesPlugin = (config, pluginConfig) => {
         });
         (0, utils_1.createFileFromTemplate)('proguard-rules.pro', brownfieldPath);
         (0, utils_1.createFileFromTemplate)('consumer-rules.pro', brownfieldPath);
+        // Adjust
+        if ((0, common_1.checkPlugin)(config, 'expo-dev-menu')) {
+            // applyPatchToFile(
+            //   'ReactNativeHostManager.kt',
+            //   path.join(brownfieldSourcesPath, 'ReactNativeHostManager.kt')
+            // );
+        }
         return config;
     });
 };
