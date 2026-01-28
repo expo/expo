@@ -21,7 +21,7 @@ export type StackScreenTitleProps = {
         color?: string;
     }>;
     /**
-     * Whether to use large title mode.
+     * Enables large title mode.
      *
      * @platform ios
      */
