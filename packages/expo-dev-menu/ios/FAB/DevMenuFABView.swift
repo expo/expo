@@ -12,6 +12,7 @@ enum FABConstants {
   static let momentumFactor: CGFloat = 0.35
   static let labelDismissDelay: TimeInterval = 10
   static let idleTimeout: UInt64 = 5_000_000_000
+  static let imageSize: CGFloat = 26
 
   static let snapAnimation: Animation = .spring(
     response: 0.6,
@@ -102,7 +103,7 @@ struct FabPill: View {
   private var liquidGlassButton: some View {
     Image(systemName: "gearshape.fill")
       .resizable()
-      .frame(width: 26, height: 26)
+      .frame(width: FABConstants.imageSize, height: FABConstants.imageSize)
       .foregroundStyle(.white)
       .frame(width: FABConstants.iconSize, height: FABConstants.iconSize)
       .background(
@@ -116,7 +117,7 @@ struct FabPill: View {
   private var classicButton: some View {
     Image(systemName: "gearshape.fill")
       .resizable()
-      .frame(width: 26, height: 26)
+      .frame(width: FABConstants.imageSize, height: FABConstants.imageSize)
       .foregroundStyle(.white)
       .frame(width: FABConstants.iconSize, height: FABConstants.iconSize)
       .background(Color.blue, in: Circle())
