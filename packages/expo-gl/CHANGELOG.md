@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed a crash caused by the missing module registry.
+
 ### 💡 Others
 
 ## 55.0.3 — 2026-01-27
