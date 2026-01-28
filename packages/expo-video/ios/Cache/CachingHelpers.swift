@@ -68,7 +68,7 @@ internal extension Data {
       return nil
     }
 
-    guard requestStart >= responseStart, requestStart <= responseEnd else {
+    guard responseStart <= responseEnd, (responseStart...responseEnd).contains(requestStart) else {
       return nil
     }
 
