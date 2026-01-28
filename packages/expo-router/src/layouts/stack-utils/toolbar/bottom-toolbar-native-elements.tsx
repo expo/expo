@@ -36,6 +36,7 @@ export interface NativeToolbarMenuProps {
    */
   image?: ImageRef;
   inline?: boolean;
+  label?: string;
   palette?: boolean;
   separateBackground?: boolean;
   style?: StyleProp<TextStyle>;
@@ -59,6 +60,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
   hidden,
   subtitle,
   title,
+  label,
   destructive,
   children,
   icon,
@@ -69,10 +71,8 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
   elementSize,
 }) => {
   const identifier = useId();
-  const label = getFirstChildOfType(children, Label);
   const iconComponent = getFirstChildOfType(children, Icon);
 
-  const computedTitle = title ?? label?.props.children ?? '';
   const computedIcon =
     icon ??
     (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
@@ -96,7 +96,8 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
       tintColor={tintColor}
       titleStyle={titleStyle}
       barButtonItemStyle={variant === 'done' ? 'prominent' : variant}
-      title={computedTitle}
+      title={title ?? ''}
+      label={label}
       onSelected={() => {}}
       children={children}
       identifier={identifier}

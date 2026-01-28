@@ -3,49 +3,93 @@
 import SwiftUI
 import ExpoModulesCore
 
+#if os(iOS)
+private let toolbarPlacement: ToolbarItemPlacement = .navigationBarTrailing
+#else
+private let toolbarPlacement: ToolbarItemPlacement = .automatic
+#endif
+
 struct SourceMapExplorerView: View {
   @StateObject private var viewModel = SourceMapExplorerViewModel()
+  @State private var showNavigationBar = false
+  @State private var showContent = false
 
   private var isSearching: Bool {
     !viewModel.searchText.isEmpty
   }
 
+  private var isLoading: Bool {
+    switch viewModel.loadingState {
+    case .idle, .loading:
+      return true
+    case .loaded, .error:
+      return false
+    }
+  }
+
   var body: some View {
-    Group {
+    contentView
+      .task {
+        await viewModel.loadSourceMap()
+        // Show nav bar first
+        showNavigationBar = true
+        // Wait for layout to settle, then fade in content
+        DispatchQueue.main.async {
+          withAnimation(.easeOut(duration: 0.2)) {
+            showContent = true
+          }
+        }
+      }
+  }
+
+  @ViewBuilder
+  private var contentView: some View {
+    ZStack {
+      // Content layer
       switch viewModel.loadingState {
       case .idle, .loading:
-        loadingView
+        Color.clear
       case .loaded:
-        FolderListView(
-          title: "Source Code Explorer",
-          nodes: viewModel.filteredFileTree,
-          sourceMap: viewModel.sourceMap,
-          stats: viewModel.sourceMapStats,
-          isSearching: isSearching
-        )
+        loadedView
+          .opacity(showContent ? 1 : 0)
+          .animation(.easeOut(duration: 0.2), value: showContent)
       case .error(let error):
         errorView(error)
+          .opacity(showContent ? 1 : 0)
+          .animation(.easeOut(duration: 0.2), value: showContent)
       }
+
+      // Loading overlay - fades out when showContent becomes true
+      loadingView
+        .opacity(showContent ? 0 : 1)
+        .animation(.easeOut(duration: 0.2).delay(0.2), value: showContent)
+        .allowsHitTesting(!showContent)
     }
-    .navigationTitle("Source Code Explorer")
-#if !os(macOS) && !os(tvOS)
-    .navigationBarTitleDisplayMode(.inline)
-    .navigationBarHidden(false)
-#endif
-    .searchable(text: $viewModel.searchText, placement: .automatic, prompt: "Search files")
-    .task {
-      await viewModel.loadSourceMap()
-    }
+    .navigationTitle(showNavigationBar ? "Source code explorer" : "")
+    .inlineNavigationBar()
+    .navigationBarHidden(!showNavigationBar)
+    .modifier(ConditionalSearchable(isEnabled: showContent, text: $viewModel.searchText))
+  }
+
+  private var loadedView: some View {
+    FolderListView(
+      title: "Source code explorer",
+      nodes: isSearching ? viewModel.filteredFileTree : viewModel.fileTree,
+      sourceMap: viewModel.sourceMap,
+      isSearching: isSearching
+    )
   }
 
   private var loadingView: some View {
     VStack(spacing: 12) {
       ProgressView()
-      Text("Loading source map...")
+      Text("Loading source code...")
         .font(.subheadline)
         .foregroundColor(.secondary)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(Color(uiColor: .systemGroupedBackground))
+    .ignoresSafeArea()
   }
 
   private func errorView(_ error: SourceMapError) -> some View {
@@ -74,11 +118,23 @@ struct SourceMapExplorerView: View {
   }
 }
 
+private struct ConditionalSearchable: ViewModifier {
+  let isEnabled: Bool
+  @Binding var text: String
+
+  func body(content: Content) -> some View {
+    if isEnabled {
+      content.searchable(text: $text, placement: .automatic, prompt: "Search files")
+    } else {
+      content
+    }
+  }
+}
+
 struct FolderListView: View {
   let title: String
   let nodes: [FileTreeNode]
   let sourceMap: SourceMap?
-  let stats: (files: Int, totalSize: String)?
   let isSearching: Bool
 
   var body: some View {
@@ -94,39 +150,9 @@ struct FolderListView: View {
         }
       }
     }
-#if !os(macOS) && !os(tvOS)
-    .listStyle(.insetGrouped)
-#elseif os(tvOS)
-    .listStyle(.plain)
-#endif
+    .defaultListStyle()
     .navigationTitle(isSearching ? "Search Results" : title)
-#if !os(macOS) && !os(tvOS)
-    .navigationBarTitleDisplayMode(.inline)
-#endif
-    .toolbar {
-      ToolbarItem(placement: .navigationBarTrailing) {
-        if let stats = stats {
-#if os(tvOS)
-          if #available(tvOS 17.0, *) {
-            Menu {
-              Label("\(stats.files) files", systemImage: "doc.on.doc")
-              Label(stats.totalSize, systemImage: "internaldrive")
-            } label: {
-              Image(systemName: "info.circle")
-            }
-          }
-          // Menu not available on tvOS < 17.0, toolbar item is hidden
-#else
-          Menu {
-            Label("\(stats.files) files", systemImage: "doc.on.doc")
-            Label(stats.totalSize, systemImage: "internaldrive")
-          } label: {
-            Image(systemName: "info.circle")
-          }
-#endif
-        }
-      }
-    }
+    .inlineNavigationBar()
   }
 
   @ViewBuilder
@@ -136,7 +162,6 @@ struct FolderListView: View {
         title: node.name,
         nodes: node.children,
         sourceMap: sourceMap,
-        stats: nil,
         isSearching: false
       )
     } else {
@@ -205,6 +230,14 @@ struct CodeFileView: View {
   @State private var highlightedLines: [AttributedString]?
   @State private var isEditing = false
   @State private var displayContent: String = ""
+  @State private var showCopiedConfirmation = false
+  @State private var wrapLines = false
+  @State private var fontSize: CGFloat = 12
+
+  private var isImageFile: Bool {
+    let ext = (node.name as NSString).pathExtension.lowercased()
+    return ["png", "jpg", "jpeg", "gif", "svg", "webp", "ico", "bmp"].contains(ext)
+  }
 
   private var originalContent: String {
     guard let contentIndex = node.contentIndex,
@@ -227,52 +260,168 @@ struct CodeFileView: View {
 
   private var lineNumberWidth: CGFloat {
     let digits = String(lines.count).count
-    return CGFloat(digits * 10 + 16)
+    let charWidth = fontSize * 0.6
+    return CGFloat(digits) * charWidth + 16
+  }
+
+  private var codeToolbar: some View {
+    HStack(spacing: 0) {
+      // Copy button
+      Button {
+        UIPasteboard.general.string = displayContent
+        showCopiedConfirmation = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+          showCopiedConfirmation = false
+        }
+      } label: {
+        Label("Copy", systemImage: "doc.on.doc")
+          .font(.system(size: 14))
+          .frame(maxWidth: .infinity)
+      }
+
+      Divider().frame(height: 24)
+
+      // Wrap lines button
+      Button {
+        wrapLines.toggle()
+      } label: {
+        Label(wrapLines ? "Unwrap" : "Wrap", systemImage: wrapLines ? "arrow.left.and.right.text.vertical" : "text.justify.leading")
+          .font(.system(size: 14))
+          .frame(maxWidth: .infinity)
+      }
+
+      Divider().frame(height: 24)
+
+      // Font size decrease
+      Button {
+        if fontSize > 8 {
+          fontSize -= 1
+        }
+      } label: {
+        HStack(spacing: 2) {
+          Image(systemName: "minus")
+            .font(.system(size: 10, weight: .bold))
+          Text("A")
+            .font(.system(size: 16, weight: .medium))
+        }
+        .frame(maxWidth: .infinity)
+      }
+
+      Divider().frame(height: 24)
+
+      // Font size increase
+      Button {
+        if fontSize < 24 {
+          fontSize += 1
+        }
+      } label: {
+        HStack(spacing: 2) {
+          Image(systemName: "plus")
+            .font(.system(size: 10, weight: .bold))
+          Text("A")
+            .font(.system(size: 16, weight: .medium))
+        }
+        .frame(maxWidth: .infinity)
+      }
+    }
+    .foregroundColor(Color(uiColor: .label))
+    .padding(.vertical, 10)
+    .background(Color(uiColor: .secondarySystemBackground))
   }
 
   var body: some View {
-    Group {
-      if isEditing {
-        editingView()
-      } else {
-        readOnlyView()
+    VStack(spacing: 0) {
+      if !isImageFile {
+        codeToolbar
+      }
+
+      Group {
+        if isImageFile {
+          imagePreviewUnavailableView()
+        } else if isEditing {
+          editingView()
+        } else {
+          readOnlyView()
+        }
       }
     }
-    .background(theme.background)
+    .background(isImageFile ? Color(uiColor: .systemGroupedBackground) : theme.background)
     .navigationTitle(node.name)
-#if !os(macOS) && !os(tvOS)
-    .navigationBarTitleDisplayMode(.inline)
+    .inlineNavigationBar()
     .toolbar {
-      ToolbarItem(placement: .navigationBarTrailing) {
-        Button(isEditing ? "Done" : "Edit") {
-          if isEditing {
-            isEditing = false
-            Task {
-              highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
+      ToolbarItem(placement: toolbarPlacement) {
+        if !isImageFile {
+          Button(isEditing ? "Done" : "Edit") {
+            if isEditing {
+              isEditing = false
+              Task {
+                highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
+              }
+            } else {
+              isEditing = true
             }
-          } else {
-            isEditing = true
           }
         }
       }
     }
-#endif
+    .overlay {
+      if showCopiedConfirmation {
+        copiedConfirmationView
+          .transition(.opacity.combined(with: .scale(scale: 0.9)))
+      }
+    }
+    .animation(.easeOut(duration: 0.2), value: showCopiedConfirmation)
     .onAppear {
       if displayContent.isEmpty {
         displayContent = originalContent
       }
     }
     .task(id: colorScheme) {
-      highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
+      if !isImageFile {
+        highlightedLines = await SyntaxHighlighter.highlightLines(lines, theme: theme)
+      }
     }
+  }
+
+  private func imagePreviewUnavailableView() -> some View {
+    VStack(spacing: 12) {
+      Image(systemName: "photo")
+        .font(.system(size: 40))
+        .foregroundColor(.secondary)
+      Text("Image preview not available")
+        .font(.subheadline)
+        .foregroundColor(.secondary)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+  }
+
+  private var copiedConfirmationView: some View {
+    HStack(spacing: 8) {
+      Image(systemName: "checkmark")
+        .font(.system(size: 14, weight: .semibold))
+      Text("Copied")
+        .font(.system(size: 16, weight: .medium))
+    }
+    .foregroundColor(.white)
+    .padding(.horizontal, 16)
+    .padding(.vertical, 10)
+    .background(Color(uiColor: .darkGray))
+    .cornerRadius(8)
   }
 
   private func readOnlyView() -> some View {
     ScrollView(.vertical) {
-      ScrollView(.horizontal, showsIndicators: false) {
+      if wrapLines {
         HStack(alignment: .top, spacing: 0) {
-          LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth)
-          CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme)
+          LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth, fontSize: fontSize)
+          CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme, fontSize: fontSize, wrapLines: true)
+        }
+      } else {
+        ScrollView(.horizontal, showsIndicators: false) {
+          HStack(alignment: .top, spacing: 0) {
+            LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth, fontSize: fontSize)
+            CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme, fontSize: fontSize, wrapLines: false)
+          }
         }
       }
     }
@@ -280,7 +429,7 @@ struct CodeFileView: View {
 
   private func editingView() -> some View {
     TextEditor(text: $displayContent)
-      .font(.system(size: 13, weight: .regular, design: .monospaced))
+      .font(.system(size: fontSize, weight: .regular, design: .monospaced))
       #if os(iOS) || os(tvOS)
       .textInputAutocapitalization(.never)
       #endif
@@ -293,7 +442,7 @@ struct CodeFileView: View {
 
 private struct ScrollContentBackgroundModifier: ViewModifier {
   func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, *) {
+    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
       content.scrollContentBackground(.hidden)
     } else {
       content
@@ -305,14 +454,19 @@ struct LineNumbersColumn: View {
   let lines: [String]
   let theme: SyntaxHighlighter.Theme
   let lineNumberWidth: CGFloat
+  var fontSize: CGFloat = 13
+
+  private var lineHeight: CGFloat {
+    fontSize * 1.5
+  }
 
   var body: some View {
     VStack(alignment: .trailing, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in
         Text("\(index + 1)")
-          .font(.system(size: 13, weight: .regular, design: .monospaced))
+          .font(.system(size: fontSize, weight: .regular, design: .monospaced))
           .foregroundColor(theme.lineNumber)
-          .frame(height: 20)
+          .frame(height: lineHeight)
       }
     }
     .frame(width: lineNumberWidth)
@@ -325,24 +479,61 @@ struct CodeColumn: View {
   let lines: [String]
   let highlightedLines: [AttributedString]?
   let theme: SyntaxHighlighter.Theme
+  var fontSize: CGFloat = 13
+  var wrapLines: Bool = false
+
+  private var lineHeight: CGFloat {
+    fontSize * 1.5
+  }
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 0) {
+    codeContent
+      .padding(.vertical, 12)
+      .padding(.trailing, 16)
+  }
+
+  @ViewBuilder
+  private var codeContent: some View {
+    let content = VStack(alignment: .leading, spacing: 0) {
       ForEach(0..<lines.count, id: \.self) { index in
         if let highlightedLines, index < highlightedLines.count {
           Text(highlightedLines[index])
-            .font(.system(size: 13, weight: .regular, design: .monospaced))
-            .frame(height: 20, alignment: .leading)
+            .font(.system(size: fontSize, weight: .regular, design: .monospaced))
+            .frame(minHeight: lineHeight, alignment: .leading)
         } else {
           Text(lines[index].isEmpty ? " " : lines[index])
-            .font(.system(size: 13, weight: .regular, design: .monospaced))
+            .font(.system(size: fontSize, weight: .regular, design: .monospaced))
             .foregroundColor(theme.plain)
-            .frame(height: 20, alignment: .leading)
+            .frame(minHeight: lineHeight, alignment: .leading)
         }
       }
     }
-    .fixedSize(horizontal: true, vertical: false)
-    .padding(.vertical, 12)
-    .padding(.trailing, 16)
+
+    if wrapLines {
+      content
+    } else {
+      content.fixedSize(horizontal: true, vertical: false)
+    }
   }
+}
+
+private extension View {
+  func inlineNavigationBar() -> some View {
+    #if os(iOS)
+    self.navigationBarTitleDisplayMode(.inline)
+    #else
+    self
+    #endif
+  }
+
+  func defaultListStyle() -> some View {
+    #if os(iOS)
+    self.listStyle(.insetGrouped)
+    #elseif os(tvOS)
+    self.listStyle(.plain)
+    #else
+    self
+    #endif
+  }
+
 }

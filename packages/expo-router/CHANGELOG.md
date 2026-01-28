@@ -6,7 +6,17 @@
 
 ### 🎉 New features
 
+- improve assignment of Stack.Header props to Stack options ([#42544](https://github.com/expo/expo/pull/42544) by [@Ubax](https://github.com/Ubax))
+- fallback to title when label is not present in Stack.Toolbar.Menu ([#42531](https://github.com/expo/expo/pull/42531) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
+
+- fix toolbar placement updates ([#42585](https://github.com/expo/expo/pull/42585) by [@Ubax](https://github.com/Ubax))
+- [ios] activate native zoom preventDismissal only when hook is used ([#42533](https://github.com/expo/expo/pull/42533) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+## 55.0.0-beta.4 — 2026-01-27
 
 ### 💡 Others
 

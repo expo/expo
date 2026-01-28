@@ -52,6 +52,9 @@ public class LinkPreviewNativeModule: Module {
       Prop("title") { (view: LinkPreviewNativeActionView, title: String) in
         view.title = title
       }
+      Prop("label") { (view: LinkPreviewNativeActionView, label: String?) in
+        view.label = label
+      }
       Prop("identifier") { (view: LinkPreviewNativeActionView, identifier: String) in
         view.identifier = identifier
       }

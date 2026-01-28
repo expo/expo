@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "55.0.3",
+  "version": "55.0.4",
   "description": "The Expo CLI",
   "main": "build/bin/cli",
   "bin": {
@@ -55,8 +55,8 @@
     "@expo/package-manager": "^1.10.2",
     "@expo/plist": "^0.5.2",
     "@expo/prebuild-config": "^55.0.3",
-    "@expo/router-server": "^55.0.2",
-    "@expo/log-box": "55.0.2",
+    "@expo/router-server": "^55.0.3",
+    "@expo/log-box": "55.0.3",
     "@expo/schema-utils": "^55.0.2",
     "@expo/spawn-async": "^1.7.2",
     "@expo/ws-tunnel": "^1.0.1",

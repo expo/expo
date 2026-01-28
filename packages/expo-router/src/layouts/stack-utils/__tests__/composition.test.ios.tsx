@@ -421,3 +421,98 @@ it('should set options correctly, when used inside page', () => {
     expect(rightChild.type).toBe(CustomHeaderRight);
   }
 });
+
+describe('Stack.Header transparent prop', () => {
+  it('should set headerTransparent when transparent prop is true', () => {
+    renderRouter({
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="index">
+            <Stack.Header transparent />
+          </Stack.Screen>
+        </Stack>
+      ),
+      index: () => <Text testID="index">index</Text>,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(ScreenStackItem).toHaveBeenCalledTimes(1);
+    expect(consoleWarnMock).not.toHaveBeenCalled();
+    expect(ScreenStackItem.mock.calls[0][0].headerConfig.translucent).toBe(true);
+  });
+
+  it('should auto-enable transparency when backgroundColor is transparent', () => {
+    renderRouter({
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="index">
+            <Stack.Header style={{ backgroundColor: 'transparent' }} />
+          </Stack.Screen>
+        </Stack>
+      ),
+      index: () => <Text testID="index">index</Text>,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(ScreenStackItem).toHaveBeenCalledTimes(1);
+    expect(consoleWarnMock).not.toHaveBeenCalled();
+    expect(ScreenStackItem.mock.calls[0][0].headerConfig.translucent).toBe(true);
+  });
+
+  it('should auto-enable transparency when blurEffect is set', () => {
+    renderRouter({
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="index">
+            <Stack.Header blurEffect="systemMaterial" />
+          </Stack.Screen>
+        </Stack>
+      ),
+      index: () => <Text testID="index">index</Text>,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(ScreenStackItem).toHaveBeenCalledTimes(1);
+    expect(consoleWarnMock).not.toHaveBeenCalled();
+    expect(ScreenStackItem.mock.calls[0][0].headerConfig.translucent).toBe(true);
+  });
+
+  it('should warn when blurEffect is set but transparent is explicitly false', () => {
+    renderRouter({
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="index">
+            <Stack.Header blurEffect="systemMaterial" transparent={false} />
+          </Stack.Screen>
+        </Stack>
+      ),
+      index: () => <Text testID="index">index</Text>,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(ScreenStackItem).toHaveBeenCalledTimes(1);
+    expect(consoleWarnMock).toHaveBeenCalledTimes(1);
+    expect(consoleWarnMock.mock.calls[0][0]).toBe(
+      `Stack.Header: 'blurEffect' requires 'transparent' to be enabled.`
+    );
+    expect(ScreenStackItem.mock.calls[0][0].headerConfig.translucent).toBe(false);
+  });
+
+  it('should map style.color to headerTintColor', () => {
+    renderRouter({
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="index">
+            <Stack.Header style={{ color: '#ff0000' }} />
+          </Stack.Screen>
+        </Stack>
+      ),
+      index: () => <Text testID="index">index</Text>,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(ScreenStackItem).toHaveBeenCalledTimes(1);
+    expect(consoleWarnMock).not.toHaveBeenCalled();
+    expect(ScreenStackItem.mock.calls[0][0].headerConfig.color).toBe('#ff0000');
+  });
+});

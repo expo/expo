@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] Renamed `ignoreSafeAreaKeyboardInsets` to `ignoreSafeArea` on `Host` component. It now accepts `'all'` or `'keyboard'` instead of a boolean. ([#42598](https://github.com/expo/expo/pull/42598) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.5 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.4 — 2026-01-26
 

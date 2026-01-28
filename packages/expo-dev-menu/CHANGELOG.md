@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.3 — 2026-01-27
+
+### 🎉 New features
+
 - [iOS] Add delegate method to control visibility of "Open React Native dev menu" option. ([#42541](https://github.com/expo/expo/pull/42541) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Add action button. ([#42587](https://github.com/expo/expo/pull/42587) by [@alanjhughes](https://github.com/alanjhughes))
 
@@ -13,6 +21,7 @@
 
 - [iOS] Fix tvOS compilation errors in Source Map Explorer by excluding tvOS from unavailable SwiftUI APIs (`navigationBarTitleDisplayMode`, `listStyle(.insetGrouped)`, `Menu`) and adding proper availability checks. Refactored platform-specific modifiers to use `@ViewBuilder` instead of `AnyView` for better type preservation and performance. ([#42574](https://github.com/expo/expo/pull/42574) by [@OtavioStasiak](https://github.com/OtavioStasiak))
 - [Android] Fix dev menu not opening when pressing m key in CLI. ([#42566](https://github.com/expo/expo/pull/42566) by [@lukmccall](https://github.com/lukmccall))
+- [Quest] Fix Floating action button not responding to presses. ([#42563](https://github.com/expo/expo/pull/42563) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 

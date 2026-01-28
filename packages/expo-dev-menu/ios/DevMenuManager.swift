@@ -76,6 +76,8 @@ open class DevMenuManager: NSObject {
 
   static public var wasInitilized = false
 
+  private var contentDidAppearObserver: NSObjectProtocol?
+
   /**
    Shared singleton instance.
    */
@@ -99,6 +101,8 @@ open class DevMenuManager: NSObject {
 
   var currentScreen: String?
 
+  private var isNavigatingHome = false
+
   weak var hostDelegate: DevMenuHostDelegate?
 
   @objc
@@ -109,10 +113,28 @@ open class DevMenuManager: NSObject {
       if let currentBridge {
         DispatchQueue.main.async {
           self.disableRNDevMenuHoykeys(for: currentBridge)
-          self.updateFABVisibility()
         }
+        observeContentDidAppear()
       } else {
         updateFABVisibility()
+      }
+    }
+  }
+
+  private func observeContentDidAppear() {
+    if let observer = contentDidAppearObserver {
+      NotificationCenter.default.removeObserver(observer)
+    }
+
+    contentDidAppearObserver = NotificationCenter.default.addObserver(
+      forName: NSNotification.Name.RCTContentDidAppear,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      self?.updateFABVisibility()
+      if let observer = self?.contentDidAppearObserver {
+        NotificationCenter.default.removeObserver(observer)
+        self?.contentDidAppearObserver = nil
       }
     }
   }
@@ -169,6 +191,9 @@ open class DevMenuManager: NSObject {
   @objc
   public func updateCurrentBridge(_ bridge: RCTBridge?) {
     currentBridge = bridge
+    if bridge != nil {
+      isNavigatingHome = false
+    }
   }
 
   @objc
@@ -283,11 +308,7 @@ open class DevMenuManager: NSObject {
   @objc
   @discardableResult
   public func hideMenu() -> Bool {
-    let result = setVisibility(false)
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-      self?.updateFABVisibility()
-    }
-    return result
+    return setVisibility(false)
   }
 
   /**
@@ -322,6 +343,12 @@ open class DevMenuManager: NSObject {
       delegate.responds(to: #selector(DevMenuHostDelegate.devMenuNavigateHome)) else {
       return
     }
+
+    isNavigatingHome = true
+
+    #if !os(macOS) && !os(tvOS)
+    fabWindow?.setVisible(false, animated: false)
+    #endif
 
     let action: () -> Void = {
       delegate.devMenuNavigateHome?()
@@ -428,9 +455,6 @@ open class DevMenuManager: NSObject {
     } else {
       DispatchQueue.main.async {
         self.window?.closeBottomSheet(nil)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-          self.updateFABVisibility()
-        }
       }
     }
     return true
@@ -528,7 +552,7 @@ open class DevMenuManager: NSObject {
         }
       }
 
-      let shouldShow = DevMenuPreferences.showFloatingActionButton && !self.isVisible && self.currentBridge != nil
+      let shouldShow = DevMenuPreferences.showFloatingActionButton && !self.isVisible && self.currentBridge != nil && !self.isNavigatingHome
       self.fabWindow?.setVisible(shouldShow, animated: true)
     }
   }

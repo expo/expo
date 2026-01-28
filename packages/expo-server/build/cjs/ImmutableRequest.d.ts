@@ -11,7 +11,7 @@ declare const ImmutableHeaders_base: {
 /**
  * An immutable version of the Fetch API's [`Headers`](https://developer.mozilla.org/en-US/docs/Web/API/Headers) object which prevents mutations.
  */
-declare class ImmutableHeaders extends ImmutableHeaders_base {
+export declare class ImmutableHeaders extends ImmutableHeaders_base {
     #private;
     set(): void;
     append(): void;

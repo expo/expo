@@ -37,6 +37,14 @@ struct RouterFontUtils {
     item.setTitleTextAttributes(attrs, for: .focused)
   }
 
+  static func clearTitleStyle(for item: UIBarButtonItem) {
+    item.setTitleTextAttributes(nil, for: .normal)
+    item.setTitleTextAttributes(nil, for: .highlighted)
+    item.setTitleTextAttributes(nil, for: .disabled)
+    item.setTitleTextAttributes(nil, for: .selected)
+    item.setTitleTextAttributes(nil, for: .focused)
+  }
+
   private static func resolveFontSize(_ fontSize: Double?) -> CGFloat {
     if let fontSize = fontSize {
       return CGFloat(fontSize)
