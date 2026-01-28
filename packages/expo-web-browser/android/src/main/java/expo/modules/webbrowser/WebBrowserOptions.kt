@@ -12,5 +12,6 @@ internal data class OpenBrowserOptions(
   @Field val enableBarCollapsing: Boolean = false,
   @Field val showInRecents: Boolean = false,
   @Field(key = "createTask") val shouldCreateTask: Boolean = true,
+  @Field val preferEphemeralSession: Boolean = false,
   @Field val useProxyActivity: Boolean = true
 ) : Record
