@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix relative navigation in NativeTabs index routes. ([#40225](https://github.com/expo/expo/pull/40225) by [@mensonones](https://github.com/mensonones))
+
 ### 💡 Others
 
 ## 55.0.0-beta.4 — 2026-01-27
