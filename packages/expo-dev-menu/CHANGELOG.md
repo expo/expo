@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix `null cannot be cast to non-null type expo.modules.devmenu.DevMenuFragment`. ([#42660](https://github.com/expo/expo/pull/42660) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix null current bridge in standalone mode ([#42666](https://github.com/expo/expo/pull/42666) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
