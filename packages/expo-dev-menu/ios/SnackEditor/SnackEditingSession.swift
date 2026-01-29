@@ -88,6 +88,11 @@ public class SnackEditingSession {
     return sessionClient?.currentFiles
   }
 
+  /// Resets files to original (discards edits). Call this on app reload.
+  public func resetFiles() {
+    sessionClient?.resetToOriginalFiles()
+  }
+
   /// Clears the current session.
   /// Should be called when the snack is closed or a new snack is opened.
   public func clearSession() {
