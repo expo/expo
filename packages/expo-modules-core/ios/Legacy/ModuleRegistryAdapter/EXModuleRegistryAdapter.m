@@ -1,6 +1,5 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXModuleRegistryAdapter.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
@@ -29,9 +28,6 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   NSMutableArray<id<RCTBridgeModule>> *extraModules = [NSMutableArray array];
-
-  EXNativeModulesProxy *nativeModulesProxy = [[EXNativeModulesProxy alloc] initWithModuleRegistry:moduleRegistry];
-  [extraModules addObject:nativeModulesProxy];
 
   // It is possible that among internal modules there are some RCTBridgeModules --
   // let's add them to extraModules here.

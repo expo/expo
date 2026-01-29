@@ -1,7 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-@class RCTBridge;
-
+#import <React/RCTBridgeModule.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 // An "adapter" over module registry, for given RCTBridge and NSString
