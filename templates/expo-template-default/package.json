@@ -18,6 +18,7 @@
     "@react-navigation/native": "^7.1.28",
     "expo": "~55.0.0-preview.7",
     "expo-constants": "~55.0.2",
+    "expo-device": "~55.0.3",
     "expo-font": "~55.0.3",
     "expo-glass-effect": "~55.0.3",
     "expo-image": "~55.0.3",
