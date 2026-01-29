@@ -21,7 +21,6 @@ class SourceMapService {
   // Cache for Snack session client to keep connection alive
   private static var cachedSession: SnackSessionClient?
   private static var cachedSessionChannel: String?
-  private static var cachedFiles: [String: SnackSessionClient.SnackFile]?
 
   // MARK: - Snack Detection
 
@@ -237,11 +236,12 @@ class SourceMapService {
       return buildSourceMap(from: convertedFiles)
     }
 
-    // Check if we have cached files for this channel
+    // Check if we have a cached session for this channel with files
+    // Use currentFiles from the session (not cachedFiles) to preserve any edits made
     if SourceMapService.cachedSessionChannel == channel,
-       let cachedFiles = SourceMapService.cachedFiles,
-       !cachedFiles.isEmpty {
-      return buildSourceMap(from: cachedFiles)
+       let session = SourceMapService.cachedSession,
+       !session.currentFiles.isEmpty {
+      return buildSourceMap(from: session.currentFiles)
     }
 
     let isStaging = devMenuManager.currentManifestURL?.absoluteString.contains("staging") == true
@@ -276,9 +276,6 @@ class SourceMapService {
           guard !hasResumed else { return }
           hasResumed = true
           timeoutTask.cancel()
-
-          // Cache the files (don't disconnect - keep session alive!)
-          SourceMapService.cachedFiles = files
 
           let sourceMap = self?.buildSourceMap(from: files) ?? SourceMap(
             version: 3,
