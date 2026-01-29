@@ -59,6 +59,7 @@ const withProjectFilesPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
         'BrownfieldActivity.patch',
         path.join(brownfieldSourcesPath, 'BrownfieldActivity.kt')
       );
+      applyPatchToFile('build.gradle.patch', path.join(brownfieldPath, 'build.gradle.kts'));
     }
 
     return config;
