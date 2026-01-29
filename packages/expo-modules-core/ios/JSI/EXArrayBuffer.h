@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+#import <Foundation/Foundation.h>
+
 #ifdef __cplusplus
 #import <jsi/jsi.h>
 #import <ExpoModulesJSI/MemoryBuffer.h>
