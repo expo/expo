@@ -1,11 +1,13 @@
 'use client';
 import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
 import type { ImageRef } from 'expo-image';
-import type { ReactNode } from 'react';
+import { Children, useMemo, type ReactNode } from 'react';
 import type { StyleProp, TextStyle } from 'react-native';
 
 import { NativeToolbarButton } from './bottom-toolbar-native-elements';
 import { useToolbarPlacement } from './context';
+import { filterAllowedChildrenElements, getFirstChildOfType } from '../../../utils/children';
+import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from '../common-primitives';
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   type StackHeaderItemSharedProps,
@@ -170,6 +172,37 @@ export interface StackToolbarButtonProps {
  */
 export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => {
   const placement = useToolbarPlacement();
+
+  const allowedChildren = useMemo(
+    () => [StackToolbarLabel, StackToolbarIcon, StackToolbarBadge],
+    []
+  );
+
+  const validChildren = useMemo(
+    () => filterAllowedChildrenElements(props.children, allowedChildren),
+    [props.children, allowedChildren]
+  );
+
+  if (process.env.NODE_ENV !== 'production') {
+    // Skip validation for string children
+    if (typeof props.children !== 'string') {
+      const allChildren = Children.toArray(props.children);
+      if (allChildren.length !== validChildren.length) {
+        throw new Error(
+          `Stack.Toolbar.Button only accepts a single string or Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`
+        );
+      }
+    }
+  }
+
+  if (process.env.NODE_ENV !== 'production' && placement === 'bottom') {
+    const hasBadge = getFirstChildOfType(props.children, StackToolbarBadge);
+    if (hasBadge) {
+      console.warn(
+        'Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.'
+      );
+    }
+  }
 
   if (placement === 'bottom') {
     const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);

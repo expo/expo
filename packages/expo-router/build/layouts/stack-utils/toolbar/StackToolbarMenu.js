@@ -71,13 +71,21 @@ const StackToolbarMenu = ({ children, ...props }) => {
         bottom_toolbar_native_elements_1.NativeToolbarMenu,
         bottom_toolbar_native_elements_1.NativeToolbarMenuAction,
         common_primitives_1.StackToolbarLabel,
+        common_primitives_1.StackToolbarIcon,
+        common_primitives_1.StackToolbarBadge,
     ], [placement]);
     const validChildren = (0, react_1.useMemo)(() => (0, children_1.filterAllowedChildrenElements)(children, allowedChildren), [children, allowedChildren]);
     const { label: computedLabel, menuTitle: computedMenuTitle } = computeMenuLabelAndTitle(children, props.title);
     if (process.env.NODE_ENV !== 'production') {
         const allChildren = react_1.Children.toArray(children);
         if (allChildren.length !== validChildren.length) {
-            throw new Error(`Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu and Stack.Toolbar.MenuAction as its children.`);
+            throw new Error(`Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu, Stack.Toolbar.MenuAction, Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`);
+        }
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        const hasBadge = (0, children_1.getFirstChildOfType)(children, common_primitives_1.StackToolbarBadge);
+        if (hasBadge) {
+            console.warn('Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.');
         }
     }
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.

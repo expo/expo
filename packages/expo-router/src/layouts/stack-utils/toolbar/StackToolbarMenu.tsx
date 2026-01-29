@@ -17,7 +17,7 @@ import {
   getFirstChildOfType,
   isChildOfType,
 } from '../../../utils/children';
-import { StackToolbarLabel } from '../common-primitives';
+import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from '../common-primitives';
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   type StackHeaderItemSharedProps,
@@ -214,6 +214,8 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = ({ children, ..
       NativeToolbarMenu,
       NativeToolbarMenuAction,
       StackToolbarLabel,
+      StackToolbarIcon,
+      StackToolbarBadge,
     ],
     [placement]
   );
@@ -232,7 +234,16 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = ({ children, ..
     const allChildren = Children.toArray(children);
     if (allChildren.length !== validChildren.length) {
       throw new Error(
-        `Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu and Stack.Toolbar.MenuAction as its children.`
+        `Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu, Stack.Toolbar.MenuAction, Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`
+      );
+    }
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    const hasBadge = getFirstChildOfType(children, StackToolbarBadge);
+    if (hasBadge) {
+      console.warn(
+        'Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.'
       );
     }
   }

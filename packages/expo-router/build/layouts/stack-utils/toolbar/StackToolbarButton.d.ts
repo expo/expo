@@ -1,6 +1,6 @@
 import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
 import type { ImageRef } from 'expo-image';
-import type { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import type { StyleProp, TextStyle } from 'react-native';
 import { type StackHeaderItemSharedProps } from '../shared';
 export interface StackToolbarButtonProps {
