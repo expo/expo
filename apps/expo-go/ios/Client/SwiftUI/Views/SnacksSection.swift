@@ -70,7 +70,8 @@ struct SnackRowWithAction: View {
     let url = createSnackRuntimeUrl(sdkVersion: versions.sdkVersion, snack: snackId, channel: channel)
 
     viewModel.openApp(url: url)
-    viewModel.addToRecentlyOpened(url: url, name: snack.name, iconUrl: nil)
+    // TODO: Re-enable once we properly handle snack sessions when reopening
+    // viewModel.addToRecentlyOpened(url: url, name: snack.name, iconUrl: nil)
   }
 
   /// Creates a Snack runtime URL matching the format from snack-content package

@@ -203,6 +203,14 @@ NS_ASSUME_NONNULL_BEGIN
     return;
   }
 
+  // Skip snack URLs - they often don't work properly when reopened from history
+  NSURLComponents *components = [NSURLComponents componentsWithURL:manifestUrl resolvingAgainstBaseURL:NO];
+  for (NSURLQueryItem *item in components.queryItems) {
+    if ([item.name isEqualToString:@"snack"]) {
+      return;
+    }
+  }
+
   NSString *appName = nil;
   NSString *iconUrl = nil;
 
