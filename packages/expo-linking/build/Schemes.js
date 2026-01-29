@@ -80,12 +80,12 @@ export function hasConstantsManifest() {
 }
 // @docsMissing
 export function resolveScheme(options) {
-    if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient &&
-        !hasConstantsManifest()) {
-        throw new Error(`expo-linking needs access to the expo-constants manifest (app.json or app.config.js) to determine what URI scheme to use. Setup the manifest and rebuild: https://github.com/expo/expo/blob/main/packages/expo-constants/README.md`);
-    }
-    const manifestSchemes = collectManifestSchemes();
-    const nativeAppId = getNativeAppIdScheme();
+    // if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient &&
+    //     !hasConstantsManifest()) {
+    //     throw new Error(`expo-linking needs access to the expo-constants manifest (app.json or app.config.js) to determine what URI scheme to use. Setup the manifest and rebuild: https://github.com/expo/expo/blob/main/packages/expo-constants/README.md`);
+    // }
+    const manifestSchemes = ['exp'];
+    const nativeAppId = 'exp';
     if (!manifestSchemes.length) {
         if (__DEV__ && !options.isSilent) {
             // Assert a config warning if no scheme is setup yet. `isSilent` is used for warnings, but we'll ignore it for exceptions.

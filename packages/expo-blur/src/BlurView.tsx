@@ -84,6 +84,7 @@ export default class BlurView extends React.Component<BlurViewProps, BlurViewSta
       children,
       ...props
     } = this.props;
+    const flattenedStyle = StyleSheet.flatten(style);
     return (
       <View {...props} style={[styles.container, style]}>
         <NativeBlurView
@@ -93,7 +94,20 @@ export default class BlurView extends React.Component<BlurViewProps, BlurViewSta
           intensity={intensity}
           blurReductionFactor={blurReductionFactor}
           blurMethod={this._getBlurMethod()}
-          style={StyleSheet.absoluteFill}
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              borderRadius: flattenedStyle?.borderRadius,
+              borderTopLeftRadius: flattenedStyle?.borderTopLeftRadius,
+              borderTopRightRadius: flattenedStyle?.borderTopRightRadius,
+              borderBottomLeftRadius: flattenedStyle?.borderBottomLeftRadius,
+              borderBottomRightRadius: flattenedStyle?.borderBottomRightRadius,
+              borderTopStartRadius: flattenedStyle?.borderTopStartRadius,
+              borderTopEndRadius: flattenedStyle?.borderTopEndRadius,
+              borderBottomStartRadius: flattenedStyle?.borderBottomStartRadius,
+              borderBottomEndRadius: flattenedStyle?.borderBottomEndRadius,
+            },
+          ]}
         />
         {children}
       </View>
