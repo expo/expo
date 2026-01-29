@@ -16,12 +16,14 @@ struct DevMenuAppInfo: View {
 
         InfoRow(title: "Version", value: viewModel.appInfo?.appVersion ?? "Unknown")
 
-        if let runtimeVersion = viewModel.appInfo?.runtimeVersion {
-          Divider()
-          InfoRow(title: "Runtime version", value: runtimeVersion)
-        } else if let sdkVersion = viewModel.appInfo?.sdkVersion {
-          Divider()
-          InfoRow(title: "SDK Version", value: sdkVersion)
+        if viewModel.configuration.showRuntimeVersion {
+          if let runtimeVersion = viewModel.appInfo?.runtimeVersion {
+            Divider()
+            InfoRow(title: "Runtime version", value: runtimeVersion)
+          } else if let sdkVersion = viewModel.appInfo?.sdkVersion {
+            Divider()
+            InfoRow(title: "SDK Version", value: sdkVersion)
+          }
         }
 
         Divider()

@@ -22,8 +22,14 @@
 
   DevMenuManager *manager = [DevMenuManager shared];
 
-  if (manager.currentManifest != nil) {
+  // Use app name override if set (e.g., "Playground" for Snacks)
+  if (manager.configuration.appNameOverride != nil) {
+    appName = manager.configuration.appNameOverride;
+  } else if (manager.currentManifest != nil) {
     appName = [manager.currentManifest name];
+  }
+
+  if (manager.currentManifest != nil) {
     appVersion = [manager.currentManifest version];
 
     NSString *manifestIcon = [manager.currentManifest iosAppIconUrl];

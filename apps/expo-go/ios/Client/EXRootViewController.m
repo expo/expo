@@ -359,21 +359,28 @@ NS_ASSUME_NONNULL_BEGIN
       DevMenuConfiguration *config = [DevMenuManager shared].configuration;
 
       BOOL isDev = appRecord.appLoader.manifest.isDevelopmentMode || appRecord.appLoader.manifest.isUsingDeveloperTool;
+      BOOL isSnack = [self _isSnackURL:appRecord.appLoader.manifestUrl];
 
-      NSLog(@"[DevMenu] Configuration: isDev=%d", isDev);
+      NSLog(@"[DevMenu] Configuration: isDev=%d, isSnack=%d", isDev, isSnack);
 
       if (!isDev) {
         config.showDebuggingTip = NO;
         config.showFastRefresh = NO;
         config.showPerformanceMonitor = NO;
         config.showElementInspector = NO;
+        config.showRuntimeVersion = NO;
         config.showHostUrl = NO;
+        config.showSystemSection = !isSnack;
+        config.appNameOverride = isSnack ? @"Playground" : nil;
       } else {
         config.showDebuggingTip = YES;
         config.showFastRefresh = YES;
         config.showPerformanceMonitor = YES;
         config.showElementInspector = YES;
+        config.showRuntimeVersion = YES;
         config.showHostUrl = NO;
+        config.showSystemSection = YES;
+        config.appNameOverride = nil;
       }
     }
   }
