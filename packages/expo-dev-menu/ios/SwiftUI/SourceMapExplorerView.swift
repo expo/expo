@@ -428,6 +428,9 @@ struct CodeFileView: View {
   }
 
   private func editingView() -> some View {
+    #if os(tvOS)
+    Text(displayContent)
+    #else
     TextEditor(text: $displayContent)
       .font(.system(size: fontSize, weight: .regular, design: .monospaced))
       #if os(iOS) || os(tvOS)
@@ -437,16 +440,21 @@ struct CodeFileView: View {
       .modifier(ScrollContentBackgroundModifier())
       .background(theme.background)
       .foregroundColor(theme.plain)
+    #endif
   }
 }
 
 private struct ScrollContentBackgroundModifier: ViewModifier {
   func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
+    #if os(tvOS)
+    content
+    #else
+    if #available(iOS 16.0, macOS 13.0, *) {
       content.scrollContentBackground(.hidden)
     } else {
       content
     }
+    #endif
   }
 }
 
