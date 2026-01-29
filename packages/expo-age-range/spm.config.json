@@ -1,0 +1,33 @@
+{
+    "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "products": [
+        {
+            "name": "ExpoAgeRange",
+            "platforms": [
+                "iOS(.v15)"
+            ],
+            "externalDependencies": [
+                "ReactNativeDependencies",
+                "React",
+                "Hermes",
+                "expo-modules-core/ExpoModulesCore"
+            ],
+            "swiftLanguageVersions": ["6.0"],
+            "targets": [
+                {
+                    "type": "swift",
+                    "name": "ExpoAgeRange",
+                    "path": "ios",
+                    "pattern": "*.swift",
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "expo-modules-core/ExpoModulesCore"
+                    ],
+                    "linkedFrameworks": ["Foundation"]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "products": [
+        {
+            "name": "ExpoScreenCapture",
+            "platforms": [
+                "iOS(.v15)"
+            ],
+            "externalDependencies": [
+                "ReactNativeDependencies",
+                "React",
+                "Hermes",
+                "expo-modules-core/ExpoModulesCore"
+            ],
+            "targets": [
+                {
+                    "type": "swift",
+                    "name": "ExpoScreenCapture",
+                    "path": "ios",
+                    "pattern": "*.swift",
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "expo-modules-core/ExpoModulesCore"
+                    ],
+                    "linkedFrameworks": ["Foundation", "UIKit"]
+                }
+            ]
+        }
+    ]
+}

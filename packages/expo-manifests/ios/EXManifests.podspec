@@ -21,22 +21,20 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
 
-  # Swift/Objective-C compatibility
-  s.pod_target_xcconfig = {
-    'GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS' => 'YES',
-    'GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS' => 'YES',
-    'DEFINES_MODULE' => 'YES',
-    'SWIFT_COMPILATION_MODE' => 'wholemodule'
-  }
   s.user_target_xcconfig = {
     'HEADER_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/EXManifests/Swift Compatibility Header"',
   }
 
-  if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
-    s.source_files = "#{s.name}/**/*.h"
-    s.vendored_frameworks = "#{s.name}.xcframework"
-  else
+  if (!Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s))
+    s.static_framework = true
     s.source_files = "#{s.name}/**/*.{h,m,swift}"
+    # Swift/Objective-C compatibility
+    s.pod_target_xcconfig = {
+      'GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS' => 'YES',
+      'GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS' => 'YES',
+      'DEFINES_MODULE' => 'YES',
+      'SWIFT_COMPILATION_MODE' => 'wholemodule'
+    }
   end
 
   s.exclude_files = 'Tests/'
