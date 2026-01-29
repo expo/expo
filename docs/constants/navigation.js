@@ -270,6 +270,7 @@ export const general = [
       makePage('router/advanced/apple-handoff.mdx'),
       makePage('router/advanced/custom-tabs.mdx'),
       makePage('router/advanced/stack-toolbar.mdx'),
+      makePage('router/advanced/zoom-transition.mdx'),
     ]),
     makeGroup('Web', [
       makePage('router/web/api-routes.mdx'),
@@ -534,6 +535,7 @@ export const eas = [
       makePage('eas-update/download-updates.mdx'),
       makePage('eas-update/rollouts.mdx'),
       makePage('eas-update/rollbacks.mdx'),
+      makePage('eas-update/bundle-diffing.mdx'),
       makePage('eas-update/optimize-assets.mdx'),
       makePage('eas-update/deployment-patterns.mdx'),
     ]),
@@ -563,11 +565,7 @@ export const eas = [
     makePage('eas/metadata/getting-started.mdx'),
     makeGroup(
       'Reference',
-      [
-        makePage('eas/metadata/config.mdx'),
-        makePage('eas/metadata/schema.mdx'),
-        makePage('eas/metadata/faq.mdx'),
-      ],
+      [makePage('eas/metadata/config.mdx'), makePage('eas/metadata/schema.mdx')],
       { expanded: false }
     ),
   ]),

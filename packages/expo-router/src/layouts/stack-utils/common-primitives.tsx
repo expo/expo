@@ -16,6 +16,19 @@ export type StackToolbarIconProps =
   | {
       // TODO: add support for vector icons
       src: ImageSourcePropType;
+      /**
+       * Controls how the image icon is rendered on iOS.
+       *
+       * - `'template'`: iOS applies tint color to the icon
+       * - `'original'`: Preserves original icon colors
+       *
+       * Defaults based on parent component's `tintColor`:
+       * - With `tintColor`: defaults to `'template'`
+       * - Without `tintColor`: defaults to `'original'`
+       *
+       * @platform ios
+       */
+      renderingMode?: 'template' | 'original';
     }
   | {
       sf: SFSymbol;

@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed build failure when motion permission is disabled with the config plugin. ([#42599](https://github.com/expo/expo/pull/42599) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+## 55.0.3 — 2026-01-27
+
 ### 💡 Others
 
 - mark `removeSubscription` calls as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))

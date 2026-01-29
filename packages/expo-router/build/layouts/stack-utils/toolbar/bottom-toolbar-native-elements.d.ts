@@ -18,7 +18,9 @@ export interface NativeToolbarMenuProps {
      * Image to display for the menu item.
      */
     image?: ImageRef;
+    imageRenderingMode?: 'template' | 'original';
     inline?: boolean;
+    label?: string;
     palette?: boolean;
     separateBackground?: boolean;
     style?: StyleProp<TextStyle>;
@@ -45,6 +47,7 @@ export interface NativeToolbarButtonProps {
     hidesSharedBackground?: boolean;
     icon?: SFSymbol;
     image?: ImageRef;
+    imageRenderingMode?: 'template' | 'original';
     onPress?: () => void;
     possibleTitles?: string[];
     selected?: boolean;
@@ -72,7 +75,7 @@ export declare const NativeToolbarSpacer: React.FC<NativeToolbarSpacerProps>;
 export interface NativeToolbarSearchBarSlotProps {
     hidesSharedBackground?: boolean;
     hidden?: boolean;
-    sharesBackground?: boolean;
+    separateBackground?: boolean;
 }
 /**
  * Native toolbar search bar slot for bottom toolbar (iOS 26+).

@@ -27,8 +27,6 @@ export interface StackSearchBarProps extends SearchBarProps {
  *   );
  * }
  * ```
- *
- * @platform ios
  */
 export declare function StackSearchBar(props: StackSearchBarProps): import("react").JSX.Element;
 export declare function appendStackSearchBarPropsToOptions(options: NativeStackNavigationOptions, props: StackSearchBarProps): NativeStackNavigationOptions;

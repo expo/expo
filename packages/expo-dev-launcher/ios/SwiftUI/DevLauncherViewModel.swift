@@ -356,6 +356,7 @@ class DevLauncherViewModel: ObservableObject {
     UserDefaults.standard.removeObject(forKey: sessionKey)
     UserDefaults.standard.removeObject(forKey: selectedAccountKey)
     APIClient.shared.setSession(nil)
+    clearRecentlyOpenedApps()
     isAuthenticated = false
     user = nil
     selectedAccountId = nil
@@ -364,6 +365,7 @@ class DevLauncherViewModel: ObservableObject {
   func selectAccount(accountId: String) {
     selectedAccountId = accountId
     UserDefaults.standard.set(accountId, forKey: selectedAccountKey)
+    clearRecentlyOpenedApps()
   }
 
   private func performAuthentication(isSignUp: Bool) async throws -> Bool {

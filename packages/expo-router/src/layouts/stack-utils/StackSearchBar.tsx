@@ -34,8 +34,6 @@ export interface StackSearchBarProps extends SearchBarProps {}
  *   );
  * }
  * ```
- *
- * @platform ios
  */
 export function StackSearchBar(props: StackSearchBarProps) {
   const updatedOptions = useMemo(() => appendStackSearchBarPropsToOptions({}, props), [props]);

@@ -4,9 +4,7 @@
 #import <ExpoGL/EXGLObjectManager.h>
 
 #import <ExpoModulesCore/EXUtilities.h>
-#import <ExpoModulesCore/EXUIManager.h>
-#import <ExpoModulesCore/EXJavaScriptContextProvider.h>
-#import <ExpoModulesCore/EXFileSystemInterface.h>
+
 #import <React/RCTLog.h>
 
 #include <OpenGLES/ES3/gl.h>
@@ -17,7 +15,8 @@
 @interface EXGLContext ()
 
 @property (nonatomic, strong) dispatch_queue_t glQueue;
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXJavaScriptRuntime *runtime;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystemManager;
 @property (nonatomic, assign) BOOL isContextReady;
 @property (nonatomic, assign) BOOL wasPrepareCalled;
 @property (nonatomic) BOOL appIsBackgrounded;
@@ -27,12 +26,14 @@
 @implementation EXGLContext
 
 - (nonnull instancetype)initWithDelegate:(id<EXGLContextDelegate>)delegate
-                       andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
+                                 runtime:(nullable EXJavaScriptRuntime *)runtime
+                              fileSystem:(nullable id<EXFileSystemInterface>)fileSystemManager
 {
   if (self = [super init]) {
     self.delegate = delegate;
 
-    _moduleRegistry = moduleRegistry;
+    _runtime = runtime;
+    _fileSystemManager = fileSystemManager;
     _glQueue = dispatch_queue_create("host.exp.gl", DISPATCH_QUEUE_SERIAL);
     _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3] ?: [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     _isContextReady = NO;
@@ -106,46 +107,36 @@
     return;
   }
   _wasPrepareCalled = YES;
-  id<EXUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
-  id<EXJavaScriptContextProvider> jsContextProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXJavaScriptContextProvider)];
 
-  void *jsRuntimePtr = [jsContextProvider javaScriptRuntimePointer];
+  __weak EXGLContext *weakSelf = self;
 
-  if (jsRuntimePtr) {
-    __weak __typeof__(self) weakSelf = self;
-    __weak __typeof__(uiManager) weakUIManager = uiManager;
+  [_runtime schedule:^{
+    EXGLContext *self = weakSelf;
+    EXJavaScriptRuntime *runtime = [self runtime];
 
-    [uiManager dispatchOnClientThread:^{
-      EXGLContext *self = weakSelf;
-      id<EXUIManager> uiManager = weakUIManager;
+    if (!self || !runtime) {
+      BLOCK_SAFE_RUN(callback, NO);
+      return;
+    }
 
-      if (!self || !uiManager) {
-        BLOCK_SAFE_RUN(callback, NO);
-        return;
-      }
+    EXGLContextSetDefaultFramebuffer(self->_contextId, [self defaultFramebuffer]);
+    EXGLContextPrepare([runtime get], self->_contextId, [self](){
+      [self flush];
+    });
 
-      EXGLContextSetDefaultFramebuffer(self->_contextId, [self defaultFramebuffer]);
-      EXGLContextPrepare(jsRuntimePtr, self->_contextId, [self](){
-        [self flush];
+    if (enableExperimentalWorkletSupport) {
+      dispatch_sync(dispatch_get_main_queue(), ^{
+        EXGLContextPrepareWorklet(self->_contextId);
       });
+    }
+    self.isContextReady = YES;
 
-      if (enableExperimentalWorkletSupport) {
-        dispatch_sync(dispatch_get_main_queue(), ^{
-          EXGLContextPrepareWorklet(self->_contextId);
-        });
-      }
-      _isContextReady = YES;
+    if ([self.delegate respondsToSelector:@selector(glContextInitialized:)]) {
+      [self.delegate glContextInitialized:self];
+    }
 
-      if ([self.delegate respondsToSelector:@selector(glContextInitialized:)]) {
-        [self.delegate glContextInitialized:self];
-      }
-
-      BLOCK_SAFE_RUN(callback, YES);
-    }];
-  } else {
-    BLOCK_SAFE_RUN(callback, NO);
-    RCTLogWarn(@"EXGL: Can only run on JavaScriptCore! Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://reactnative.dev/docs/debugging)? EXGL is not supported while using Remote Debugging, you will need to disable it to use EXGL.");
-  }
+    BLOCK_SAFE_RUN(callback, YES);
+  } priority:(int)react::SchedulerPriority::ImmediatePriority];
 }
 
 - (void)flush
@@ -167,22 +158,32 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
 
+  __weak EXGLContext *weakSelf = self;
+
   [self runAsync:^{
+    EXGLContext *self = weakSelf;
+    EXJavaScriptRuntime *runtime = [self runtime];
+
+    if (!self || !runtime) {
+      return;
+    }
+
     if ([self.delegate respondsToSelector:@selector(glContextWillDestroy:)]) {
       [self.delegate glContextWillDestroy:self];
     }
 
-    // Flush all the stuff
-    EXGLContextFlush(self->_contextId);
+    EXGLContextId contextId = self->_contextId;
 
-    id<EXUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
-    [uiManager dispatchOnClientThread:^{
+    // Flush all the stuff
+    EXGLContextFlush(contextId);
+
+    [runtime schedule:^{
       // Destroy JS binding
-      EXGLContextDestroy(self->_contextId);
+      EXGLContextDestroy(contextId);
 
       // Remove from dictionary of contexts
-      [[EXGLObjectManager shared] deleteContextWithId:@(self->_contextId)];
-    }];
+      [[EXGLObjectManager shared] deleteContextWithId:@(contextId)];
+    } priority:(int)react::SchedulerPriority::ImmediatePriority];
   }];
 }
 
@@ -340,11 +341,13 @@
 
 - (NSString *)generateSnapshotPathWithExtension:(NSString *)extension
 {
-  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
-  NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"GLView"];
+  if (!_fileSystemManager) {
+    RCTFatal(RCTErrorWithMessage(@"[expo-gl] File system manager is not available."));
+  }
+  NSString *directory = [_fileSystemManager.cachesDirectory stringByAppendingPathComponent:@"GLView"];
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
 
-  [fileSystem ensureDirExistsWithPath:directory];
+  [_fileSystemManager ensureDirExistsWithPath:directory];
 
   return [directory stringByAppendingPathComponent:fileName];
 }
