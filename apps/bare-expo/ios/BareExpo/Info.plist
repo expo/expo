@@ -157,5 +157,11 @@
     <array>
       <string>com.expo.modules.backgroundtask.processing</string>
     </array>
+    <key>NSBonjourServices</key>
+    <array>
+      <string>_expo._tcp.</string>
+    </array>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to discover local development-only servers</string>
   </dict>
 </plist>
