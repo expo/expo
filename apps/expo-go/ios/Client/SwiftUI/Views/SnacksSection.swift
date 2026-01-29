@@ -51,10 +51,23 @@ struct SnackRowWithAction: View {
       return
     }
 
-    let encodedFullName = snack.fullName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? snack.fullName
-    let url = "exp://exp.host/\(encodedFullName)?sdkVersion=\(versions.sdkVersion).0.0"
+    let url = createSnackRuntimeUrl(sdkVersion: versions.sdkVersion, snack: snack.fullName)
 
     viewModel.openApp(url: url)
     viewModel.addToRecentlyOpened(url: url, name: snack.name, iconUrl: nil)
+  }
+
+  /// Creates a Snack runtime URL matching the format from snack-content package
+  private func createSnackRuntimeUrl(sdkVersion: String, snack: String) -> String {
+    var components = URLComponents()
+    components.scheme = "exp"
+    components.host = "u.expo.dev"
+    components.path = "/933fd9c0-1666-11e7-afca-d980795c5824"
+    components.queryItems = [
+      URLQueryItem(name: "runtime-version", value: "exposdk:\(sdkVersion)"),
+      URLQueryItem(name: "channel-name", value: "production"),
+      URLQueryItem(name: "snack", value: snack)
+    ]
+    return components.url?.absoluteString ?? ""
   }
 }
