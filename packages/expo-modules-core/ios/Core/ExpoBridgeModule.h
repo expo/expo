@@ -2,7 +2,6 @@
 
 @protocol RCTBridgeModule;
 
-#import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 
 @class EXAppContext;
@@ -12,8 +11,5 @@
 @property(nonatomic, nullable, strong) EXAppContext *appContext;
 
 - (nonnull instancetype)initWithAppContext:(nonnull EXAppContext *)appContext;
-
-- (void)legacyProxyDidSetBridge:(nonnull EXNativeModulesProxy *)moduleProxy
-           legacyModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry;
 
 @end
