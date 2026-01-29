@@ -55,8 +55,11 @@ typedef void (NS_SWIFT_SENDABLE ^EXPromiseRejectBlock)(NSString * _Nullable code
 
 /**
  Returns a JavaScript object that represents a module with given name.
+
+ @warning This method must only be called from the JavaScript thread.
+ It uses assumeIsolated internally and will crash if called from other threads.
  */
-- (nullable EXJavaScriptObject *)getNativeModuleObject:(nonnull NSString *)moduleName;
+- (nullable EXJavaScriptObject *)getNativeModuleObjectUnsafe:(nonnull NSString *)moduleName;
 
 /**
  Returns an array of event names supported by all Swift modules.

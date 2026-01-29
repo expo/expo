@@ -6,13 +6,17 @@
 @class RCTModuleData;
 
 #import <React/RCTComponentViewFactory.h> // Allows non-umbrella since it's coming from React-RCTFabric
-#import <React/RCTUIManager.h>
+#import <React/RCTLog.h>
 
 #import <jsi/jsi.h>
 
+#import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
+#import <ExpoModulesCore/ExpoBridgeModule.h>
+// Swift.h is still needed for ViewModuleWrapper, ExpoFabricView
+// These have class inheritance cycles that require Swift.h
 #import <ExpoModulesCore/Swift.h>
 
 static const NSString *exportedMethodsNamesKeyPath = @"exportedMethods";
@@ -87,7 +91,7 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 @end
 
 @implementation EXNativeModulesProxy {
-  __weak EXAppContext * _Nullable _appContext;
+  __weak id<EXAppContextProtocol> _appContext;
 }
 
 @synthesize bridge = _bridge;
@@ -189,7 +193,9 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   ExpoBridgeModule *expoBridgeModule = [bridge moduleForClass:ExpoBridgeModule.class];
   [expoBridgeModule legacyProxyDidSetBridge:self legacyModuleRegistry:_exModuleRegistry];
 
-  _appContext = [expoBridgeModule appContext];
+  // Cast is safe - EXAppContext conforms to EXAppContextProtocol but compiler
+  // can't verify forward declaration
+  _appContext = (id<EXAppContextProtocol>)[expoBridgeModule appContext];
 
   if (!_bridge) {
     // The `setBridge` can be called during module setup or after. Registering more modules
@@ -259,16 +265,21 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   NSMutableSet *visitedSweetModules = [NSMutableSet new];
 
   // Add dynamic wrappers for view modules written in Sweet API.
-  for (EXViewModuleWrapper *swiftViewModule in [_appContext getViewManagers]) {
-    Class wrappedViewModuleClass = [self registerComponentData:swiftViewModule
-                                                      inBridge:bridge
-                                                      forAppId:_appContext.appIdentifier];
+  // Note: getViewManagers returns [Any] to avoid Swift type exposure, but they
+  // are EXViewModuleWrapper instances
+  for (id swiftViewModule in [_appContext getViewManagers]) {
+    Class wrappedViewModuleClass =
+        [self registerViewModule:swiftViewModule
+                        forAppId:[_appContext appIdentifier]];
     [additionalModuleClasses addObject:wrappedViewModuleClass];
-    [visitedSweetModules addObject:swiftViewModule.name];
+    [visitedSweetModules addObject:[swiftViewModule name]];
   }
 
-  [additionalModuleClasses addObject:[EXViewModuleWrapper class]];
-  [self registerLegacyComponentData:[EXViewModuleWrapper class] inBridge:bridge];
+  // EXViewModuleWrapper is defined in Swift, get class at runtime
+  Class viewModuleWrapperClass = NSClassFromString(@"EXViewModuleWrapper");
+  if (viewModuleWrapperClass) {
+    [additionalModuleClasses addObject:viewModuleWrapperClass];
+  }
 
   // Add modules from legacy module registry only when the NativeModulesProxy owns the registry.
   if (ownsModuleRegistry) {
@@ -279,11 +290,6 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
       }
     }
   }
-
-  // `registerAdditionalModuleClasses:` call below is not thread-safe if RCTUIManager is not initialized.
-  // The case happens especially with reanimated which accesses `bridge.uiManager` and initialize bridge in js thread.
-  // Accessing uiManager here, we try to make sure RCTUIManager is initialized.
-  [bridge uiManager];
 
   // Register the view managers as additional modules.
   [self registerAdditionalModuleClasses:additionalModuleClasses inBridge:bridge];
@@ -327,46 +333,143 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   }
 }
 
-- (Class)registerComponentData:(EXViewModuleWrapper *)viewModule inBridge:(RCTBridge *)bridge forAppId:(NSString *)appId
-{
-  // Hacky way to get a dictionary with `RCTComponentData` from UIManager.
-  NSMutableDictionary<NSString *, RCTComponentData *> *componentDataByName = [[bridge uiManager] valueForKey:@"_componentDataByName"];
+#pragma mark - Cached Runtime Lookups for View Module Registration
 
-  Class wrappedViewModuleClass = [EXViewModuleWrapper createViewModuleWrapperClassWithModule:viewModule appId:appId];
-  NSString *className = NSStringFromClass(wrappedViewModuleClass);
+// Static cache for classes, selectors, and method signatures used in
+// registerViewModule:forAppId: These are initialized once per process lifetime
+// via dispatch_once for thread safety.
+static Class _cachedViewModuleWrapperClass = nil;
+static Class _cachedExpoFabricViewClass = nil;
+static SEL _cachedCreateWrapperSelector = nil;
+static SEL _cachedMakeViewSelector = nil;
+static SEL _cachedModuleNameSelector = nil;
+static SEL _cachedViewNameSelector = nil;
+static NSMethodSignature *_cachedCreateWrapperSignature = nil;
+static NSMethodSignature *_cachedMakeViewSignature = nil;
+static BOOL _cachedWrapperRespondsToCreate = NO;
+static BOOL _cachedFabricRespondsToMakeView = NO;
 
-  if (componentDataByName[className]) {
-    // Just in case the component was already registered, let's leave a log that we're overriding it.
-    NSLog(@"Overriding ComponentData for view %@", className);
-  }
+static void initializeViewModuleCache(void) {
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    // Cache class lookups
+    _cachedViewModuleWrapperClass = NSClassFromString(@"EXViewModuleWrapper");
+    _cachedExpoFabricViewClass = NSClassFromString(@"ExpoFabricView");
 
-  EXComponentData *componentData = [[EXComponentData alloc] initWithViewModule:viewModule
-                                                                  managerClass:wrappedViewModuleClass
-                                                                        bridge:bridge];
-  componentDataByName[className] = componentData;
+    // Cache selector lookups
+    _cachedCreateWrapperSelector =
+        NSSelectorFromString(@"createViewModuleWrapperClassWithModule:appId:");
+    _cachedMakeViewSelector = NSSelectorFromString(
+        @"makeViewClassForAppContext:moduleName:viewName:className:");
+    _cachedModuleNameSelector = NSSelectorFromString(@"moduleName");
+    _cachedViewNameSelector = NSSelectorFromString(@"viewName");
 
-#ifdef RCT_NEW_ARCH_ENABLED
-  Class viewClass = [ExpoFabricView makeViewClassForAppContext:_appContext moduleName:[viewModule moduleName] viewName: [viewModule viewName] className:className];
-  [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
-#endif
+    // Validate and cache EXViewModuleWrapper setup
+    if (!_cachedViewModuleWrapperClass) {
+      RCTLogWarn(@"[EXNativeModulesProxy] EXViewModuleWrapper class not found. "
+                 @"Swift view modules will not be registered.");
+    } else {
+      _cachedWrapperRespondsToCreate = [_cachedViewModuleWrapperClass
+          respondsToSelector:_cachedCreateWrapperSelector];
+      if (!_cachedWrapperRespondsToCreate) {
+        RCTLogWarn(
+            @"[EXNativeModulesProxy] EXViewModuleWrapper does not respond to "
+            @"'createViewModuleWrapperClassWithModule:appId:'. "
+            @"The method signature may have changed.");
+      } else {
+        _cachedCreateWrapperSignature = [_cachedViewModuleWrapperClass
+            methodSignatureForSelector:_cachedCreateWrapperSelector];
+        if (!_cachedCreateWrapperSignature) {
+          RCTLogWarn(
+              @"[EXNativeModulesProxy] Could not get method signature for "
+              @"'createViewModuleWrapperClassWithModule:appId:'.");
+        }
+      }
+    }
 
-  return wrappedViewModuleClass;
+    // Validate and cache ExpoFabricView setup (optional - only needed for
+    // Fabric)
+    if (!_cachedExpoFabricViewClass) {
+      // This is not an error - ExpoFabricView may not exist in non-Fabric
+      // builds
+    } else {
+      _cachedFabricRespondsToMakeView = [_cachedExpoFabricViewClass
+          respondsToSelector:_cachedMakeViewSelector];
+      if (!_cachedFabricRespondsToMakeView) {
+        RCTLogWarn(
+            @"[EXNativeModulesProxy] ExpoFabricView does not respond to "
+            @"'makeViewClassForAppContext:moduleName:viewName:className:'. "
+            @"The method signature may have changed. Fabric views will not be "
+            @"registered.");
+      } else {
+        _cachedMakeViewSignature = [_cachedExpoFabricViewClass
+            methodSignatureForSelector:_cachedMakeViewSelector];
+        if (!_cachedMakeViewSignature) {
+          RCTLogWarn(
+              @"[EXNativeModulesProxy] Could not get method signature for "
+              @"'makeViewClassForAppContext:moduleName:viewName:className:'.");
+        }
+      }
+    }
+  });
 }
 
-/**
- Bridge's `registerAdditionalModuleClasses:` method doesn't register
- components in UIManager — we need to register them on our own.
- */
-- (void)registerLegacyComponentData:(Class)moduleClass inBridge:(RCTBridge *)bridge
-{
-  // Hacky way to get a dictionary with `RCTComponentData` from UIManager.
-  NSMutableDictionary<NSString *, RCTComponentData *> *componentDataByName = [bridge.uiManager valueForKey:@"_componentDataByName"];
-  NSString *className = [moduleClass moduleName] ?: NSStringFromClass(moduleClass);
+- (Class)registerViewModule:(id)viewModule forAppId:(NSString *)appId {
+  // Initialize cached values on first call (thread-safe)
+  initializeViewModuleCache();
 
-  if ([moduleClass isSubclassOfClass:[RCTViewManager class]] && !componentDataByName[className]) {
-    RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
-    componentDataByName[className] = componentData;
+  Class wrappedViewModuleClass = nil;
+
+  // Create the view module wrapper class using cached lookups
+  if (_cachedViewModuleWrapperClass && _cachedWrapperRespondsToCreate &&
+      _cachedCreateWrapperSignature) {
+    NSInvocation *invocation = [NSInvocation
+        invocationWithMethodSignature:_cachedCreateWrapperSignature];
+    [invocation setTarget:_cachedViewModuleWrapperClass];
+    [invocation setSelector:_cachedCreateWrapperSelector];
+    [invocation setArgument:&viewModule atIndex:2];
+    [invocation setArgument:&appId atIndex:3];
+    [invocation invoke];
+    [invocation getReturnValue:&wrappedViewModuleClass];
   }
+
+  if (!wrappedViewModuleClass) {
+    return nil;
+  }
+
+  NSString *className = NSStringFromClass(wrappedViewModuleClass);
+
+  // Register with Fabric's RCTComponentViewFactory using cached lookups
+  if (_cachedExpoFabricViewClass && _cachedFabricRespondsToMakeView &&
+      _cachedMakeViewSignature) {
+    // Get moduleName and viewName from viewModule using cached selectors
+    NSString *moduleName = nil;
+    NSString *viewName = nil;
+    if ([viewModule respondsToSelector:_cachedModuleNameSelector]) {
+      moduleName = [viewModule performSelector:_cachedModuleNameSelector];
+    }
+    if ([viewModule respondsToSelector:_cachedViewNameSelector]) {
+      viewName = [viewModule performSelector:_cachedViewNameSelector];
+    }
+
+    NSInvocation *invocation =
+        [NSInvocation invocationWithMethodSignature:_cachedMakeViewSignature];
+    [invocation setTarget:_cachedExpoFabricViewClass];
+    [invocation setSelector:_cachedMakeViewSelector];
+    id appContextArg = _appContext;
+    [invocation setArgument:&appContextArg atIndex:2];
+    [invocation setArgument:&moduleName atIndex:3];
+    [invocation setArgument:&viewName atIndex:4];
+    [invocation setArgument:&className atIndex:5];
+    [invocation invoke];
+    Class viewClass = nil;
+    [invocation getReturnValue:&viewClass];
+    if (viewClass) {
+      [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
+    }
+  }
+
+  return wrappedViewModuleClass;
 }
 
 - (void)assignExportedMethodsKeys:(NSMutableArray<NSMutableDictionary<const NSString *, id> *> *)exportedMethods forModuleName:(const NSString *)moduleName

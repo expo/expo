@@ -2,6 +2,7 @@
 
 import ExpoModulesCore
 import MapKit
+import React
 
 class MapPermissionRequester: NSObject, EXPermissionsRequester, CLLocationManagerDelegate {
   private var locationManager = CLLocationManager()
