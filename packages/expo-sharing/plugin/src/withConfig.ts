@@ -1,5 +1,4 @@
 import { ConfigPlugin, InfoPlist } from '@expo/config-plugins';
-import * as console from 'node:console';
 
 import { createEntitlements, ShareIntoEntitlements } from './ios/createEntitlements';
 
