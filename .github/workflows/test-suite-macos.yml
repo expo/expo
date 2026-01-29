@@ -28,6 +28,8 @@ on:
       - packages/expo-updates/**
       - packages/expo-updates-interface/**
       - packages/expo-web-browser/**
+      - '!packages/**/android/**'
+      - '!{**/*.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*,**/.npmignore,**/.eslintrc*,**/.prettierrc*,**/.gitattributes,**/.watchmanconfig,**/.fingerprintignore}'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
