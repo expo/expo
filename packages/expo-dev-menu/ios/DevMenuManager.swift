@@ -23,6 +23,12 @@ public class DevMenuConfiguration: NSObject {
   /// Whether to show the Fast Refresh toggle
   @objc public var showFastRefresh: Bool = true
 
+  /// Whether to show the Toggle Performance Monitor button
+  @objc public var showPerformanceMonitor: Bool = true
+
+  /// Whether to show the Toggle Element Inspector button
+  @objc public var showElementInspector: Bool = true
+
   /// Custom title for the onboarding text. Use to replace "development builds" with e.g. "Expo Go".
   /// When nil, the default "development builds" text is used.
   @objc public var onboardingAppName: String?
