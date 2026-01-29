@@ -238,7 +238,7 @@ export async function instantiateMetroAsync(
       return middleware.use(metroMiddleware);
     };
 
-    const devtoolsWebsocketEndpoints = createDevToolsPluginWebsocketEndpoint({ serverBaseUrl });
+    const devtoolsWebsocketEndpoints = createDevToolsPluginWebsocketEndpoint();
     Object.assign(websocketEndpoints, devtoolsWebsocketEndpoints);
   }
 

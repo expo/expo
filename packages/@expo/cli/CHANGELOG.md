@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - Restrict debugger (`/inspector/network`) and devtools (`/expo-dev-plugins/broadcast`) sockets to local connections ([#42156](https://github.com/expo/expo/pull/42156) by [@kitten](https://github.com/kitten))
-- Reallow connections on `/expo-dev-plugins/broadcast` broadcast socket to local connections ([#42538](https://github.com/expo/expo/pull/42538) by [@kitten](https://github.com/kitten))
+- Reallow connections on `/expo-dev-plugins/broadcast` broadcast socket to local connections ([#42538](https://github.com/expo/expo/pull/42538) by [@kitten](https://github.com/kitten)), ([#42705](https://github.com/expo/expo/pull/42705) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
 
