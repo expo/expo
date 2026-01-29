@@ -1,3 +1,4 @@
+npx create-expo-app@latest
 ---
 title: Create a project
 description: Learn how to create a new Expo project.
@@ -9,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 System requirements:
 
 - [Node.js (LTS)](https://nodejs.org/en/).
-- macOS, Windows (Powershell and [WSL 2](https://expo.fyi/wsl)), and Linux are supported.
+- macOS, Windows (Powershell and [WSL(https://expo.fyi/wsl)), and Linux are supported.
 
 We recommend starting with the default project created by `create-expo-app`. The default project includes example code to help you get started.
 
@@ -19,6 +20,9 @@ To create a new project, run the following command:
 
 > You can choose a different template by adding the [`--template` option](/more/create-expo/#--template).
 
-## Next step
+## Next stepnpx create-expo-app@latest
 
-You have a project. Now it's time to set up your development environment so that you can start developing.
+
+You have a project. Now it's time to set up your development cd your-project
+npx expo start
+npx create-expo-app@latest
