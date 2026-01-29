@@ -153,9 +153,9 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
 The simplest way to create a widget is using `updateWidgetSnapshot`. This creates a widget with a single timeline entry that displays immediately.
 
 ```tsx
-import { updateWidgetSnapshot, WidgetBase } from 'expo-widgets';
 import { Text, VStack } from '@expo/ui/swift-ui';
 import { font, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+import { updateWidgetSnapshot, WidgetBase } from 'expo-widgets';
 
 type MyWidgetProps = {
   count: number;
@@ -182,11 +182,10 @@ The widget name (`'MyWidget'`) must match the `name` field in your widget config
 Use `updateWidgetTimeline` to schedule widget updates at specific time. System will automatically update the widget based on the timeline.
 
 ```tsx
-import { updateWidgetTimeline, WidgetProps } from 'expo-widgets';
 import { Text, VStack } from '@expo/ui/swift-ui';
-import { font } from '@expo/ui/swift-ui/modifiers';
+import { updateWidgetTimeline, WidgetBase } from 'expo-widgets';
 
-const TimeWidget = (props: WidgetProps) => {
+const TimeWidget = (props: WidgetBase) => {
   return (
     <VStack>
       <Text>{props.date.toLocaleTimeString()}</Text>
@@ -210,15 +209,15 @@ updateWidgetTimeline('TimeWidget', dates, TimeWidget);
 Widget component receives a `family` prop indicating which size is being rendered. Use this to adapt layout for different widget sizes.
 
 ```tsx
-import { updateWidgetSnapshot, WidgetProps, WidgetFamily } from 'expo-widgets';
-import { Text, VStack, HStack } from '@expo/ui/swift-ui';
+import { HStack, Text, VStack } from '@expo/ui/swift-ui';
+import { updateWidgetSnapshot, WidgetBase } from 'expo-widgets';
 
 type WeatherWidgetProps = {
   temperature: number;
   condition: string;
 };
 
-const WeatherWidget = (props: WidgetProps<WeatherWidgetProps>) => {
+const WeatherWidget = (props: WidgetBase<WeatherWidgetProps>) => {
   // Render different layouts based on size
   if (props.family === 'systemSmall') {
     return (
@@ -260,17 +259,15 @@ Live Activities display real-time information on the Lock Screen and in the Dyna
 #### Starting a Live Activity
 
 ```tsx
-import { startLiveActivity, LiveActivityComponent } from 'expo-widgets';
-import { Text, Image, HStack, VStack } from '@expo/ui/swift-ui';
-import { foregroundStyle, font, padding } from '@expo/ui/swift-ui/modifiers';
-import { Button } from 'react-native';
+import { Image, Text, VStack } from '@expo/ui/swift-ui';
+import { font, padding } from '@expo/ui/swift-ui/modifiers';
+import { LiveActivityComponent, startLiveActivity } from 'expo-widgets';
+import { Button, View } from 'react-native';
 
 const DeliveryActivity: LiveActivityComponent = () => ({
   banner: (
-    <VStack modifiers={[padding(12)]}>
-      <Text modifiers={[font({ weight: 'bold' }), foregroundStyle('#000000')]}>
-        Your delivery is on the way
-      </Text>
+    <VStack modifiers={[padding({ all: 12 })]}>
+      <Text modifiers={[font({ weight: 'bold' })]}>Your delivery is on the way</Text>
       <Text>Estimated arrival: 15 minutes</Text>
     </VStack>
   ),
@@ -278,19 +275,19 @@ const DeliveryActivity: LiveActivityComponent = () => ({
   compactTrailing: <Text>15 min</Text>,
   minimal: <Image systemName="box.truck.fill" color="#007AFF" />,
   expandedLeading: (
-    <VStack modifiers={[padding(12)]}>
+    <VStack modifiers={[padding({ all: 12 })]}>
       <Image systemName="box.truck.fill" color="#007AFF" />
       <Text modifiers={[font({ size: 12 })]}>Delivering</Text>
     </VStack>
   ),
   expandedTrailing: (
-    <VStack modifiers={[padding(12)]}>
+    <VStack modifiers={[padding({ all: 12 })]}>
       <Text modifiers={[font({ weight: 'bold', size: 20 })]}>15</Text>
       <Text modifiers={[font({ size: 12 })]}>minutes</Text>
     </VStack>
   ),
   expandedBottom: (
-    <VStack modifiers={[padding(12)]}>
+    <VStack modifiers={[padding({ all: 12 })]}>
       <Text>Driver: John Smith</Text>
       <Text>Order #12345</Text>
     </VStack>
@@ -307,11 +304,12 @@ function App() {
   };
 
   return (
-    <View>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Button title="Start Delivery Tracking" onPress={startDeliveryTracking} />
     </View>
   );
 }
+export default App;
 ```
 
 #### Updating a Live Activity
@@ -321,7 +319,7 @@ import { updateLiveActivity, LiveActivityComponent } from 'expo-widgets';
 
 const UpdatedDeliveryActivity: LiveActivityComponent = () => ({
   banner: (
-    <VStack modifiers={[padding(12)]}>
+    <VStack modifiers={[padding({ all: 12 })]}>
       <Text modifiers={[font({ weight: 'bold' }), foregroundStyle('#00FF00')]}>
         Delivery arriving soon!
       </Text>

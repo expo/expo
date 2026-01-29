@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `useImage` crashing on SVGs when the max dimensions are not set. ([#42496](https://github.com/expo/expo/pull/42496) by [@tsapeta](https://github.com/tsapeta))
+
 ## 55.0.1 — 2026-01-22
 
 _This version does not introduce any user-facing changes._

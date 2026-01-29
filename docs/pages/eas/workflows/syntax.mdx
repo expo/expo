@@ -1146,7 +1146,7 @@ jobs:
 
 #### `github-comment`
 
-Automatically posts comprehensive reports of your workflow's completed builds and updates to GitHub pull requests or content provided by you. See [GitHub Comment job documentation](/eas/workflows/pre-packaged-jobs#github-comment) for detailed information and examples.
+Automatically posts comprehensive reports of your workflow's completed builds, updates, and deployments to GitHub pull requests or content provided by you. See [GitHub Comment job documentation](/eas/workflows/pre-packaged-jobs#github-comment) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1158,8 +1158,9 @@ jobs:
       message: string # optional - custom message to include in the report
       build_ids: string[] # optional - specific build IDs to include, defaults to all related to the running workflow
       update_group_ids: string[] # optional - specific update group IDs to include, defaults to all related to the workflow
+      deployment_ids: string[] # optional - specific deployment IDs to include, defaults to all related to the workflow
 
-  # instead of using message and the builds and updates table, you can also override the comment contents with `payload`
+  # instead of using message and the builds, updates, and deployments table, you can also override the comment contents with `payload`
   custom_github_comment:
     type: github-comment
     params:
@@ -1547,6 +1548,91 @@ jobs:
   description="View the source code for the eas/prebuild function on GitHub."
   Icon={GithubIcon}
   href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/prebuild.ts"
+/>
+
+#### `eas/restore_cache`
+
+Restores a previously saved cache from a specified key. This is useful for speeding up builds by reusing cached artifacts like compiled dependencies, build tools, or other intermediate build outputs.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/prebuild
+      # @info #
+      - uses: eas/restore_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          restore_keys: cache
+          path: /path/to/cache
+      # @end #
+```
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/prebuild
+      # @info #
+      - uses: eas/restore_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
+      # @end #
+```
+
+| Property       | Type     | Required | Description                                                                                                                                              |
+| -------------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `key`          | `string` | Yes      | The cache key to restore. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes.              |
+| `restore_keys` | `string` | No       | A fallback key or prefix to use if the exact key is not found. If provided, the cache system will look for any cache entry that starts with this prefix. |
+| `path`         | `string` | Yes      | The path where the cache should be restored. This should match the path used when saving the cache.                                                      |
+
+<BoxLink
+  title="eas/restore_cache source code"
+  description="View the source code for the eas/restore_cache function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/restoreCache.ts"
+/>
+
+#### `eas/save_cache`
+
+Saves a cache to a specified key. This allows you to persist build artifacts, compiled dependencies, or other intermediate outputs that can be reused in subsequent builds to speed up the build process.
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/prebuild
+      - uses: eas/restore_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
+      - name: Build Android app
+        run: cd android && ./gradlew assembleRelease
+      # @info #
+      - uses: eas/save_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
+      # @end #
+```
+
+| Property | Type     | Required | Description                                                                                                                                                                                                       |
+| -------- | -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `key`    | `string` | Yes      | The cache key to save the cache under. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes. This should match the key used when restoring the cache. |
+| `path`   | `string` | Yes      | The path to the directory or files that should be cached. This should match the path used when restoring the cache.                                                                                               |
+
+<BoxLink
+  title="eas/save_cache source code"
+  description="View the source code for the eas/save_cache function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-build/blob/main/packages/build-tools/src/steps/functions/saveCache.ts"
 />
 
 #### `eas/send_slack_message`

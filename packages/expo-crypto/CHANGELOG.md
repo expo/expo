@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 55.0.3 — 2026-01-27
+
+### 🐛 Bug fixes
+
+- Fixed incorrect option name for tag inclusion in `AESSealedData.ciphertext(options)`. ([#42535](https://github.com/expo/expo/pull/42535) by [@barthap](https://github.com/barthap))
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.1 — 2026-01-22
 
 _This version does not introduce any user-facing changes._

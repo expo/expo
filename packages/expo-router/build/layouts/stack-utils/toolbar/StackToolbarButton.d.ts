@@ -75,6 +75,23 @@ export interface StackToolbarButtonProps {
      * > **Note**: This prop is only supported in toolbar with `placement="bottom"`.
      */
     image?: ImageRef;
+    /**
+     * Controls how image-based icons are rendered on iOS.
+     *
+     * - `'template'`: iOS applies tint color to the icon
+     * - `'original'`: Preserves original icon colors (useful for multi-color icons)
+     *
+     * **Default behavior:**
+     * - If `tintColor` is specified, defaults to `'template'`
+     * - If no `tintColor`, defaults to `'original'`
+     *
+     * This prop only affects image-based icons (not SF Symbols).
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+     *
+     * @platform ios
+     */
+    iconRenderingMode?: 'template' | 'original';
     onPress?: () => void;
     /**
      * Whether to separate the background of this item from other header items.

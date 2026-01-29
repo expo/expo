@@ -312,7 +312,7 @@ class DevMenuFragment(
 
     internal fun findIn(activity: Activity?): DevMenuFragment? {
       val activity = activity ?: return null
-      return (activity as FragmentActivity).supportFragmentManager.findFragmentByTag(TAG) as DevMenuFragment
+      return (activity as FragmentActivity).supportFragmentManager.findFragmentByTag(TAG) as? DevMenuFragment
     }
 
     private data class KeyCommand(val code: Int, val withShift: Boolean = false)

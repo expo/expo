@@ -183,6 +183,7 @@ export function addOrientationChangeListener(listener) {
 // @needsAudit
 /**
  * Removes all listeners subscribed to orientation change updates.
+ * @deprecated this function will be removed in future versions. Keep track of your own subscriptions.
  */
 export function removeOrientationChangeListeners() {
     // Remove listener by subscription instead of eventType to avoid clobbering Dimension module's subscription of didUpdateDimensions
@@ -200,6 +201,7 @@ export function removeOrientationChangeListeners() {
  * updates.
  * @param subscription A subscription object that manages the updates passed to a listener function
  * on an orientation change.
+ * @deprecated this function will be removed in a future version. Use `subscription.remove()` instead.
  */
 export function removeOrientationChangeListener(subscription) {
     if (!subscription || !subscription.remove) {

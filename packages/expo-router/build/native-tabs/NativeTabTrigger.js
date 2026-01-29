@@ -74,10 +74,11 @@ exports.NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
     Badge: elements_1.NativeTabsTriggerBadge,
     VectorIcon: elements_1.NativeTabsTriggerVectorIcon,
 });
-function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, disableAutomaticContentInsets, contentStyle, }, isDynamic = false) {
+function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, disableAutomaticContentInsets, contentStyle, disableTransparentOnScrollEdge, }, isDynamic = false) {
     const initialOptions = isDynamic
         ? {
             ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
+            ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
         }
         : {
             hidden: !!hidden,
@@ -91,6 +92,7 @@ function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, dis
             role,
             nativeProps: unstable_nativeProps,
             disableAutomaticContentInsets,
+            ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
         };
     const allowedChildren = (0, children_1.filterAllowedChildrenElements)(children, [
         elements_1.NativeTabsTriggerBadge,

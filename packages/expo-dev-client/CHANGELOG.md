@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+### 🎉 New features
+
+- Add sources button to dev client on iOS. ([#42493](https://github.com/expo/expo/pull/42493) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 55.0.1 — 2026-01-22
 
 _This version does not introduce any user-facing changes._

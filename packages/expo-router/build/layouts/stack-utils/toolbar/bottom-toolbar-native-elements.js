@@ -13,18 +13,17 @@ const children_1 = require("../../../utils/children");
  * Native toolbar menu component for bottom toolbar.
  * Renders as NativeLinkPreviewAction.
  */
-const NativeToolbarMenu = ({ accessibilityHint, accessibilityLabel, separateBackground, hidesSharedBackground, palette, inline, hidden, subtitle, title, destructive, children, icon, image, tintColor, variant, style, elementSize, }) => {
+const NativeToolbarMenu = ({ accessibilityHint, accessibilityLabel, separateBackground, hidesSharedBackground, palette, inline, hidden, subtitle, title, label, destructive, children, icon, image, imageRenderingMode, tintColor, variant, style, elementSize, }) => {
     const identifier = (0, react_1.useId)();
-    const label = (0, children_1.getFirstChildOfType)(children, primitives_1.Label);
     const iconComponent = (0, children_1.getFirstChildOfType)(children, primitives_1.Icon);
-    const computedTitle = title ?? label?.props.children ?? '';
     const computedIcon = icon ??
         (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
     const sf = typeof computedIcon === 'string' ? computedIcon : undefined;
     const titleStyle = react_native_1.StyleSheet.flatten(style);
+    const renderingMode = imageRenderingMode ?? (tintColor !== undefined ? 'template' : 'original');
     return (<native_1.NativeLinkPreviewAction sharesBackground={!separateBackground} hidesSharedBackground={hidesSharedBackground} hidden={hidden} icon={sf} 
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    image={image} destructive={destructive} subtitle={subtitle} accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint} displayAsPalette={palette} displayInline={inline} preferredElementSize={elementSize} tintColor={tintColor} titleStyle={titleStyle} barButtonItemStyle={variant === 'done' ? 'prominent' : variant} title={computedTitle} onSelected={() => { }} children={children} identifier={identifier}/>);
+    image={image} imageRenderingMode={renderingMode} destructive={destructive} subtitle={subtitle} accessibilityLabel={accessibilityLabel} accessibilityHint={accessibilityHint} displayAsPalette={palette} displayInline={inline} preferredElementSize={elementSize} tintColor={tintColor} titleStyle={titleStyle} barButtonItemStyle={variant === 'done' ? 'prominent' : variant} title={title ?? ''} label={label} onSelected={() => { }} children={children} identifier={identifier}/>);
 };
 exports.NativeToolbarMenu = NativeToolbarMenu;
 // #endregion
@@ -47,7 +46,8 @@ const NativeToolbarButton = (props) => {
     const icon = props.icon ??
         (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
     const sf = typeof icon === 'string' ? icon : undefined;
-    return (<native_2.RouterToolbarItem accessibilityHint={props.accessibilityHint} accessibilityLabel={props.accessibilityLabel} barButtonItemStyle={props.variant === 'done' ? 'prominent' : props.variant} disabled={props.disabled} hidden={props.hidden} hidesSharedBackground={props.hidesSharedBackground} identifier={id} image={props.image} onSelected={props.onPress} possibleTitles={props.possibleTitles} selected={props.selected} sharesBackground={!props.separateBackground} systemImageName={sf} title={label} tintColor={props.tintColor} titleStyle={react_native_1.StyleSheet.flatten(props.style)}/>);
+    const renderingMode = props.imageRenderingMode ?? (props.tintColor !== undefined ? 'template' : 'original');
+    return (<native_2.RouterToolbarItem accessibilityHint={props.accessibilityHint} accessibilityLabel={props.accessibilityLabel} barButtonItemStyle={props.variant === 'done' ? 'prominent' : props.variant} disabled={props.disabled} hidden={props.hidden} hidesSharedBackground={props.hidesSharedBackground} identifier={id} image={props.image} imageRenderingMode={renderingMode} onSelected={props.onPress} possibleTitles={props.possibleTitles} selected={props.selected} sharesBackground={!props.separateBackground} systemImageName={sf} title={label} tintColor={props.tintColor} titleStyle={react_native_1.StyleSheet.flatten(props.style)}/>);
 };
 exports.NativeToolbarButton = NativeToolbarButton;
 /**
@@ -63,7 +63,7 @@ exports.NativeToolbarSpacer = NativeToolbarSpacer;
  * Native toolbar search bar slot for bottom toolbar (iOS 26+).
  * Renders as RouterToolbarItem with type 'searchBar'.
  */
-const NativeToolbarSearchBarSlot = ({ hidesSharedBackground, hidden, sharesBackground, }) => {
+const NativeToolbarSearchBarSlot = ({ hidesSharedBackground, hidden, separateBackground, }) => {
     const id = (0, react_1.useId)();
     if (process.env.EXPO_OS !== 'ios' || parseInt(String(react_native_1.Platform.Version).split('.')[0], 10) < 26) {
         return null;
@@ -71,7 +71,7 @@ const NativeToolbarSearchBarSlot = ({ hidesSharedBackground, hidden, sharesBackg
     if (hidden) {
         return null;
     }
-    return (<native_2.RouterToolbarItem hidesSharedBackground={hidesSharedBackground} identifier={id} sharesBackground={sharesBackground} type="searchBar"/>);
+    return (<native_2.RouterToolbarItem hidesSharedBackground={hidesSharedBackground} identifier={id} sharesBackground={!separateBackground} type="searchBar"/>);
 };
 exports.NativeToolbarSearchBarSlot = NativeToolbarSearchBarSlot;
 /**

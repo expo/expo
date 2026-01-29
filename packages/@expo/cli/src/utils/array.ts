@@ -22,6 +22,10 @@ export function replaceValue<T>(values: T[], original: T, replacement: T): T[] {
   return values;
 }
 
+export function replaceAllValues<T>(values: T[], original: T, replacement: T): T[] {
+  return values.map((value) => (value === original ? replacement : value));
+}
+
 /** lodash.uniqBy */
 export function uniqBy<T>(array: T[], key: (item: T) => string): T[] {
   const seen: { [key: string]: boolean } = {};

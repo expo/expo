@@ -154,7 +154,7 @@ new file mode 100644
 index 00000000000..4aeed11d00b
 Binary files /dev/null and b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable-xxxhdpi/splashscreen_logo.png differ
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen.xml b/templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
-similarity index 53%
+similarity index 59%
 rename from templates/expo-template-bare-minimum/android/app/src/main/res/drawable/splashscreen.xml
 rename to templates/expo-template-bare-minimum/android/app/src/main/res/drawable/ic_launcher_background.xml
 index 12f2f769806..883b2a080f3 100644
@@ -780,7 +780,7 @@ index 57c1dd38343..f740040e7be 100644
 -  end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 563853071f0..ce89a2c49b2 100644
+index 563853071f0..7d0eda00285 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,8 @@
@@ -789,7 +789,7 @@ index 563853071f0..ce89a2c49b2 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "51.0.56",
 +  "license": "0BSD",
-+  "version": "52.0.77",
++  "version": "52.0.78",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -801,7 +801,7 @@ index 563853071f0..ce89a2c49b2 100644
 -    "expo-status-bar": "~1.12.1",
 -    "react": "18.2.0",
 -    "react-native": "0.74.5"
-+    "expo": "~52.0.47",
++    "expo": "~52.0.48",
 +    "expo-status-bar": "~2.0.1",
 +    "react": "18.3.1",
 +    "react-native": "0.76.9"

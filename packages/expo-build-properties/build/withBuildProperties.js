@@ -10,7 +10,8 @@ const pluginConfig_1 = require("./pluginConfig");
  * @param props Configuration for the build properties plugin.
  */
 const withBuildProperties = (config, props) => {
-    const pluginConfig = (0, pluginConfig_1.validateConfig)(props || {});
+    const projectRoot = config._internal?.projectRoot;
+    const pluginConfig = (0, pluginConfig_1.validateConfig)(props || {}, projectRoot);
     config = (0, android_1.withAndroidBuildProperties)(config, pluginConfig);
     config = (0, android_1.withAndroidProguardRules)(config, pluginConfig);
     config = (0, android_1.withAndroidCleartextTraffic)(config, pluginConfig);
