@@ -36,22 +36,28 @@ struct DevMenuDeveloperTools: View {
 
         Divider()
         #endif
-        
-        DevMenuActionButton(
-          title: "Toggle performance monitor",
-          icon: "speedometer",
-          action: viewModel.togglePerformanceMonitor,
-          disabled: !(viewModel.devSettings?.isPerfMonitorAvailable ?? true)
-        )
 
-        Divider()
+        if viewModel.configuration.showPerformanceMonitor {
+          Divider()
 
-        DevMenuActionButton(
-          title: "Toggle element inspector",
-          icon: "viewfinder",
-          action: viewModel.toggleElementInspector,
-          disabled: !(viewModel.devSettings?.isElementInspectorAvailable ?? true)
-        )
+          DevMenuActionButton(
+            title: "Toggle performance monitor",
+            icon: "speedometer",
+            action: viewModel.togglePerformanceMonitor,
+            disabled: !(viewModel.devSettings?.isPerfMonitorAvailable ?? true)
+          )
+        }
+
+        if viewModel.configuration.showElementInspector {
+          Divider()
+
+          DevMenuActionButton(
+            title: "Toggle element inspector",
+            icon: "viewfinder",
+            action: viewModel.toggleElementInspector,
+            disabled: !(viewModel.devSettings?.isElementInspectorAvailable ?? true)
+          )
+        }
 
         if viewModel.devSettings?.isJSInspectorAvailable == true {
           Divider()
