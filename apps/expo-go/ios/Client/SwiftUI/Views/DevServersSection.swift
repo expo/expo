@@ -80,7 +80,7 @@ struct DevServersSection: View {
       Text("npx expo start")
         .font(.system(.callout, design: .monospaced))
         .padding(.horizontal, 12)
-        .padding(.vertical, 8)
+        .padding(.vertical, 10)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.expoSecondarySystemBackground)
         .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
