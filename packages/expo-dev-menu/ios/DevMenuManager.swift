@@ -29,6 +29,15 @@ public class DevMenuConfiguration: NSObject {
   /// Whether to show the Toggle Element Inspector button
   @objc public var showElementInspector: Bool = true
 
+  /// Whether to show the runtime/SDK version in the header and app info
+  @objc public var showRuntimeVersion: Bool = true
+
+  /// Whether to show the SYSTEM section (version, runtime version, copy system info)
+  @objc public var showSystemSection: Bool = true
+
+  /// Override the app name shown in the header. When set, this takes precedence over the manifest name.
+  @objc public var appNameOverride: String?
+
   /// Custom title for the onboarding text. Use to replace "development builds" with e.g. "Expo Go".
   /// When nil, the default "development builds" text is used.
   @objc public var onboardingAppName: String?
