@@ -5,7 +5,6 @@
 /// Typealias matching React Native's NSURLSessionConfigurationProvider block type
 public typealias URLSessionConfigurationProvider = @convention(block) () -> URLSessionConfiguration?
 
-
 private let fetchRequestQueue = DispatchQueue(label: "expo.modules.fetch.RequestQueue")
 nonisolated(unsafe) internal var urlSessionConfigurationProvider: URLSessionConfigurationProvider?
 
