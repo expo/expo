@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - [test] Added E2E tests and improvements for CLI in [#42120](https://github.com/expo/expo/pull/42120) by [@pmleczek](https://github.com/pmleczek)
+- [test] Added E2E tests for the config plugin in [#42374](https://github.com/expo/expo/pull/42374) by [@pmleczek](https://github.com/pmleczek)
 
 ## 55.0.4 — 2026-01-27
 
