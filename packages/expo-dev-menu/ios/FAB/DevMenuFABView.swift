@@ -6,7 +6,7 @@ import SwiftUI
 
 enum FABConstants {
   static let iconSize: CGFloat = 44
-  static let margin: CGFloat = 16
+  static let margin: CGFloat = 10
   static let verticalPadding: CGFloat = 20
   static let dragThreshold: CGFloat = 10
   static let momentumFactor: CGFloat = 0.35

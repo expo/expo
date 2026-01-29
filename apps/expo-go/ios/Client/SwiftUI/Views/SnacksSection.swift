@@ -1,6 +1,7 @@
 //  Copyright © 2025 650 Industries. All rights reserved.
 
 import SwiftUI
+import EXDevMenu
 
 struct SnacksSection: View {
   @EnvironmentObject var viewModel: HomeViewModel
@@ -51,23 +52,46 @@ struct SnackRowWithAction: View {
       return
     }
 
-    let url = createSnackRuntimeUrl(sdkVersion: versions.sdkVersion, snack: snack.fullName)
+    // Generate channel for this session
+    let channel = generateChannelId()
+    let snackId = snack.fullName
+
+    // Set up the editing session in the background
+    // This connects to Snackpub and prepares to respond to the snack runtime's RESEND_CODE
+    Task {
+      await SnackEditingSession.shared.setupSession(
+        snackId: snackId,
+        channel: channel,
+        isStaging: false
+      )
+    }
+
+    // Open the snack with the channel
+    let url = createSnackRuntimeUrl(sdkVersion: versions.sdkVersion, snack: snackId, channel: channel)
 
     viewModel.openApp(url: url)
     viewModel.addToRecentlyOpened(url: url, name: snack.name, iconUrl: nil)
   }
 
   /// Creates a Snack runtime URL matching the format from snack-content package
-  private func createSnackRuntimeUrl(sdkVersion: String, snack: String) -> String {
+  private func createSnackRuntimeUrl(sdkVersion: String, snack: String, channel: String) -> String {
     var components = URLComponents()
     components.scheme = "exp"
     components.host = "u.expo.dev"
     components.path = "/933fd9c0-1666-11e7-afca-d980795c5824"
+
     components.queryItems = [
       URLQueryItem(name: "runtime-version", value: "exposdk:\(sdkVersion)"),
       URLQueryItem(name: "channel-name", value: "production"),
-      URLQueryItem(name: "snack", value: snack)
+      URLQueryItem(name: "snack", value: snack),
+      URLQueryItem(name: "snack-channel", value: channel)
     ]
     return components.url?.absoluteString ?? ""
+  }
+
+  /// Generates a random channel ID for Snackpub connection
+  private func generateChannelId() -> String {
+    let chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    return String((0..<10).map { _ in chars.randomElement()! })
   }
 }
