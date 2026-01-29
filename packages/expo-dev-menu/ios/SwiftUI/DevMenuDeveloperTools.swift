@@ -92,8 +92,7 @@ struct DevMenuDeveloperTools: View {
         )
         #endif
       }
-      .background(Color.expoSystemBackground)
-      .cornerRadius(18)
+      .background(Color.expoSecondarySystemBackground, in: RoundedRectangle(cornerRadius: 18))
     }
   }
 }
