@@ -58,13 +58,21 @@ public class SnackEditingSession {
       self.sessionClient = client
 
       // Connect to Snackpub
+      // Use a flag to ensure the continuation is only resumed once.
+      // Both onReady and onError can fire, and onError can fire after onReady
+      // if the WebSocket disconnects later - we only want the first callback to resume.
       await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+        var hasResumed = false
         client.connectAsHost(
           onReady: {
+            guard !hasResumed else { return }
+            hasResumed = true
             self.isReady = true
             continuation.resume()
           },
           onError: { error in
+            guard !hasResumed else { return }
+            hasResumed = true
             self.setupError = error
             continuation.resume()
           }
