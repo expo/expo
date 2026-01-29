@@ -103,10 +103,11 @@ struct FabPill: View {
       .frame(width: FABConstants.imageSize, height: FABConstants.imageSize)
       .foregroundStyle(.white)
       .frame(width: FABConstants.iconSize, height: FABConstants.iconSize)
+      .background(Color.blue, in: Circle())
       .background(
         Circle()
-          .frame(width: FABConstants.iconSize + 10, height: FABConstants.iconSize + 10)
-          .glassEffect(.clear, in: Circle())
+          .stroke(Color.blue.opacity(0.5), lineWidth: 4)
+          .frame(width: FABConstants.iconSize + 4, height: FABConstants.iconSize + 4)
       )
       .shadow(color: .black.opacity(0.4), radius: 8, x: 0, y: 4)
   }
