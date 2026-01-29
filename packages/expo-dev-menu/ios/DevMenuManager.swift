@@ -498,6 +498,10 @@ open class DevMenuManager: NSObject {
   }
 
   func reload() {
+    #if !os(macOS) && !os(tvOS)
+    fabWindow?.setVisible(false, animated: false)
+    #endif
+
     if let delegate = hostDelegate,
        delegate.responds(to: #selector(DevMenuHostDelegate.devMenuReload)) {
       delegate.devMenuReload?()
@@ -546,7 +550,11 @@ open class DevMenuManager: NSObject {
     fabWindow = DevMenuFABWindow(manager: self, windowScene: windowScene)
   }
 
-  public func updateFABVisibility(menuDismissing: Bool = false) {
+  @objc public func hideFAB() {
+    fabWindow?.setVisible(false, animated: false)
+  }
+
+  public func updateFABVisibility() {
     DispatchQueue.main.async { [weak self] in
       guard let self = self else { return }
 
@@ -558,7 +566,7 @@ open class DevMenuManager: NSObject {
       }
 
       let shouldShow = DevMenuPreferences.showFloatingActionButton
-        && (menuDismissing || !self.isVisible)
+        && !self.isVisible
         && self.currentBridge != nil
         && !self.isNavigatingHome
         && DevMenuPreferences.isOnboardingFinished
@@ -566,7 +574,7 @@ open class DevMenuManager: NSObject {
     }
   }
   #else
-  public func updateFABVisibility(menuDismissing: Bool = false) {
+  public func updateFABVisibility() {
     // FAB not available on macOS/tvOS
   }
   #endif
