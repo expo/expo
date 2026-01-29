@@ -239,8 +239,8 @@ struct CodeFileView: View {
   @State private var isEditing = false
   @State private var displayContent: String = ""
   @State private var showCopiedConfirmation = false
-  @State private var wrapLines = false
-  @State private var fontSize: CGFloat = 12
+  @AppStorage("EXDevMenuSourceExplorerWrapLines") private var wrapLines = false
+  @AppStorage("EXDevMenuSourceExplorerFontSize") private var fontSize: Double = 12
 
   private var isImageFile: Bool {
     let ext = (node.name as NSString).pathExtension.lowercased()
@@ -268,7 +268,7 @@ struct CodeFileView: View {
 
   private var lineNumberWidth: CGFloat {
     let digits = String(lines.count).count
-    let charWidth = fontSize * 0.6
+    let charWidth = CGFloat(fontSize) * 0.6
     return CGFloat(digits) * charWidth + 16
   }
 
@@ -447,14 +447,14 @@ struct CodeFileView: View {
     ScrollView(.vertical) {
       if wrapLines {
         HStack(alignment: .top, spacing: 0) {
-          LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth, fontSize: fontSize)
-          CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme, fontSize: fontSize, wrapLines: true)
+          LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth, fontSize: CGFloat(fontSize))
+          CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme, fontSize: CGFloat(fontSize), wrapLines: true)
         }
       } else {
         ScrollView(.horizontal, showsIndicators: false) {
           HStack(alignment: .top, spacing: 0) {
-            LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth, fontSize: fontSize)
-            CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme, fontSize: fontSize, wrapLines: false)
+            LineNumbersColumn(lines: lines, theme: theme, lineNumberWidth: lineNumberWidth, fontSize: CGFloat(fontSize))
+            CodeColumn(lines: lines, highlightedLines: highlightedLines, theme: theme, fontSize: CGFloat(fontSize), wrapLines: false)
           }
         }
       }
@@ -466,7 +466,7 @@ struct CodeFileView: View {
     readOnlyView()
     #else
     TextEditor(text: $displayContent)
-      .font(.system(size: fontSize, weight: .regular, design: .monospaced))
+      .font(.system(size: CGFloat(fontSize), weight: .regular, design: .monospaced))
       #if os(iOS) || os(tvOS)
       .textInputAutocapitalization(.never)
       #endif
