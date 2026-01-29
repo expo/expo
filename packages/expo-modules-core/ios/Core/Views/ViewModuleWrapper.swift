@@ -10,12 +10,12 @@ protocol DynamicModuleWrapperProtocol {
 }
 
 /**
- Each module that has a view manager definition needs to be wrapped by `RCTViewManager`.
- Unfortunately, we can't use just one class because React Native checks for duplicated classes.
- We're generating its subclasses in runtime as a workaround.
+ Wrapper class that holds view module metadata and creates views.
+ With Fabric, views are registered directly with RCTComponentViewFactory
+ rather than through the legacy RCTViewManager bridge module system.
  */
 @objc(EXViewModuleWrapper)
-public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtocol {
+public final class ViewModuleWrapper: NSObject, DynamicModuleWrapperProtocol {
   /**
    A reference to the module holder that stores the module definition.
    */
@@ -40,10 +40,8 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
   }
 
   /**
-   The designated initializer that is used by React Native to create module instances.
-   https://github.com/facebook/react-native/blob/540c41be9/packages/react-native/React/Views/RCTComponentData.m#L506-L507
-   It doesn't matter to return dummy class here. The wrapper will then to subclass dynamically.
-   Must be called on a dynamic class to get access to underlying wrapped module. Throws fatal exception otherwise.
+   Default initializer required by NSObject and used by dynamic subclasses.
+   When called on a dynamic subclass, retrieves the wrapped module reference.
    */
   @objc
   public override init() {
@@ -101,7 +99,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    have custom class name (see `objc_allocateClassPair` invocation in `createViewModuleWrapperClass`).
    */
   @objc
-  public override class func moduleName() -> String {
+  public class func moduleName() -> String {
     return NSStringFromClass(Self.self)
   }
 
@@ -110,7 +108,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    Also, lazy-loaded modules must return false here.
    */
   @objc
-  public override class func requiresMainQueueSetup() -> Bool {
+  public class func requiresMainQueueSetup() -> Bool {
     return false
   }
 
@@ -118,7 +116,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    Creates a view from the wrapped module.
    */
   @objc
-  public override func view() -> UIView! {
+  public func view() -> UIView! {
     guard let appContext = moduleHolder?.appContext else {
       fatalError(Exceptions.AppContextLost().reason)
     }
