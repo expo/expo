@@ -27,7 +27,6 @@ export default function ToolbarScreen() {
   const [showMenu, setShowMenu] = useState(!!params.menu);
   const [showFixedSpacer, setShowFixedSpacer] = useState(false);
   const [fixedSpacerShareBackground, setFixedSpacerShareBackground] = useState(false);
-  const [fixedSpacerHideSharedBackground, setFixedSpacerHideSharedBackground] = useState(false);
   const [fixedSpacerWidth, setFixedSpacerWidth] = useState(20);
 
   // State for search functionality
@@ -217,15 +216,6 @@ export default function ToolbarScreen() {
               </View>
 
               <View style={styles.switchRow}>
-                <Text style={styles.label}>Fixed Spacer Hides Shared Background</Text>
-                <Switch
-                  testID="toggle-fixed-spacer-hide-shared-background"
-                  value={fixedSpacerHideSharedBackground}
-                  onValueChange={setFixedSpacerHideSharedBackground}
-                />
-              </View>
-
-              <View style={styles.switchRow}>
                 <Text style={styles.label}>Fixed Spacer Width (pt)</Text>
                 <TextInput
                   testID="input-fixed-spacer-width"
@@ -276,7 +266,7 @@ export default function ToolbarScreen() {
         {/* Search bar */}
         <Stack.Toolbar.SearchBarSlot
           hidden={!showSearchBar}
-          sharesBackground={sharesBackgroundSearchBar}
+          separateBackground={!sharesBackgroundSearchBar}
           hidesSharedBackground={hidesSharedBackgroundSearchBar}
         />
 
@@ -297,7 +287,6 @@ export default function ToolbarScreen() {
           <Stack.Toolbar.Spacer
             // hidden={!showFixedSpacer}
             sharesBackground={fixedSpacerShareBackground}
-            hidesSharedBackground={fixedSpacerHideSharedBackground}
             width={fixedSpacerWidth}
           />
         )}

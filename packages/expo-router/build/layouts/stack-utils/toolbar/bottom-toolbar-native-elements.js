@@ -63,7 +63,7 @@ exports.NativeToolbarSpacer = NativeToolbarSpacer;
  * Native toolbar search bar slot for bottom toolbar (iOS 26+).
  * Renders as RouterToolbarItem with type 'searchBar'.
  */
-const NativeToolbarSearchBarSlot = ({ hidesSharedBackground, hidden, sharesBackground, }) => {
+const NativeToolbarSearchBarSlot = ({ hidesSharedBackground, hidden, separateBackground, }) => {
     const id = (0, react_1.useId)();
     if (process.env.EXPO_OS !== 'ios' || parseInt(String(react_native_1.Platform.Version).split('.')[0], 10) < 26) {
         return null;
@@ -71,7 +71,7 @@ const NativeToolbarSearchBarSlot = ({ hidesSharedBackground, hidden, sharesBackg
     if (hidden) {
         return null;
     }
-    return (<native_2.RouterToolbarItem hidesSharedBackground={hidesSharedBackground} identifier={id} sharesBackground={sharesBackground} type="searchBar"/>);
+    return (<native_2.RouterToolbarItem hidesSharedBackground={hidesSharedBackground} identifier={id} sharesBackground={!separateBackground} type="searchBar"/>);
 };
 exports.NativeToolbarSearchBarSlot = NativeToolbarSearchBarSlot;
 /**
