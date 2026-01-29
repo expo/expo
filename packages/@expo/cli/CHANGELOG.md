@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix RSC support in development ([#42617](https://github.com/expo/expo/pull/42617) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
 
 - Bump `@expo/xcpretty` ([#42485](https://github.com/expo/expo/pull/42485) by [@kitten](https://github.com/kitten))
