@@ -16,9 +16,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.appendScreenStackPropsToOptions = exports.StackScreen = exports.StackSearchBar = exports.StackHeader = void 0;
 const StackHeaderComponent_1 = require("./StackHeaderComponent");
-const StackSearchBar_1 = require("./StackSearchBar");
-Object.defineProperty(exports, "StackSearchBar", { enumerable: true, get: function () { return StackSearchBar_1.StackSearchBar; } });
 exports.StackHeader = StackHeaderComponent_1.StackHeaderComponent;
+var StackSearchBar_1 = require("./StackSearchBar");
+Object.defineProperty(exports, "StackSearchBar", { enumerable: true, get: function () { return StackSearchBar_1.StackSearchBar; } });
 __exportStar(require("./toolbar"), exports);
 __exportStar(require("./screen"), exports);
 var StackScreen_1 = require("./StackScreen");

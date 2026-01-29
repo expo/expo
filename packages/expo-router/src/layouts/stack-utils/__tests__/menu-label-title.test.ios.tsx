@@ -1,9 +1,9 @@
 import { Text } from 'react-native';
 import { ScreenStackItem as _ScreenStackItem } from 'react-native-screens';
 
+import { NativeLinkPreviewAction as _NativeLinkPreviewAction } from '../../../link/preview/native';
 import { renderRouter, screen } from '../../../testing-library';
 import Stack from '../../Stack';
-import { NativeToolbarMenu as _NativeToolbarMenu } from '../toolbar/bottom-toolbar-native-elements';
 
 jest.mock('react-native-screens', () => {
   const actualScreens = jest.requireActual(
@@ -15,16 +15,20 @@ jest.mock('react-native-screens', () => {
   };
 });
 
-jest.mock('../toolbar/bottom-toolbar-native-elements', () => {
-  const actual = jest.requireActual('../toolbar/bottom-toolbar-native-elements');
+jest.mock('../../../link/preview/native', () => {
+  const actual = jest.requireActual(
+    '../../../link/preview/native'
+  ) as typeof import('../../../link/preview/native');
   return {
     ...actual,
-    NativeToolbarMenu: jest.fn((props) => <actual.NativeToolbarMenu {...props} />),
+    NativeLinkPreviewAction: jest.fn((props) => <actual.NativeLinkPreviewAction {...props} />),
   };
 });
 
 const ScreenStackItem = _ScreenStackItem as jest.MockedFunction<typeof _ScreenStackItem>;
-const NativeToolbarMenu = _NativeToolbarMenu as jest.MockedFunction<typeof _NativeToolbarMenu>;
+const NativeLinkPreviewAction = _NativeLinkPreviewAction as jest.MockedFunction<
+  typeof _NativeLinkPreviewAction
+>;
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -118,7 +122,7 @@ describe('Stack.Toolbar.Menu label and title logic', () => {
     });
   });
 
-  describe('placement="bottom" (NativeToolbarMenu)', () => {
+  describe('placement="bottom" (NativeLinkPreviewAction)', () => {
     it('uses title prop for both label and menu title when only title is provided', () => {
       renderRouter({
         _layout: () => <Stack />,
@@ -135,8 +139,9 @@ describe('Stack.Toolbar.Menu label and title logic', () => {
       });
 
       expect(screen.getByTestId('content')).toBeVisible();
-      expect(NativeToolbarMenu).toHaveBeenCalled();
-      const lastCall = NativeToolbarMenu.mock.calls[NativeToolbarMenu.mock.calls.length - 1][0];
+      expect(NativeLinkPreviewAction).toHaveBeenCalled();
+      const lastCall =
+        NativeLinkPreviewAction.mock.calls[NativeLinkPreviewAction.mock.calls.length - 1][0];
       // Label should be the title
       expect(lastCall.label).toBe('My Menu Title');
       // Menu title should also be the title
@@ -160,12 +165,13 @@ describe('Stack.Toolbar.Menu label and title logic', () => {
       });
 
       expect(screen.getByTestId('content')).toBeVisible();
-      expect(NativeToolbarMenu).toHaveBeenCalled();
-      const lastCall = NativeToolbarMenu.mock.calls[NativeToolbarMenu.mock.calls.length - 1][0];
+      expect(NativeLinkPreviewAction).toHaveBeenCalled();
+      const lastCall =
+        NativeLinkPreviewAction.mock.calls[NativeLinkPreviewAction.mock.calls.length - 1][0];
       // Label should come from the Label child
       expect(lastCall.label).toBe('Label From Child');
       // Menu title should be empty string
-      expect(lastCall.title).toBeUndefined();
+      expect(lastCall.title).toBe('');
     });
 
     it('uses Label child for label and title prop for menu title when both are provided', () => {
@@ -185,8 +191,9 @@ describe('Stack.Toolbar.Menu label and title logic', () => {
       });
 
       expect(screen.getByTestId('content')).toBeVisible();
-      expect(NativeToolbarMenu).toHaveBeenCalled();
-      const lastCall = NativeToolbarMenu.mock.calls[NativeToolbarMenu.mock.calls.length - 1][0];
+      expect(NativeLinkPreviewAction).toHaveBeenCalled();
+      const lastCall =
+        NativeLinkPreviewAction.mock.calls[NativeLinkPreviewAction.mock.calls.length - 1][0];
       // Label should come from the Label child
       expect(lastCall.label).toBe('Button Label');
       // Menu title should be the title prop

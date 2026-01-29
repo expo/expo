@@ -36,7 +36,7 @@ File-based routing library for React Native and web applications. Built on top o
 │   │   └── stack-utils/       # Stack utilities
 │   │       ├── StackScreen.tsx, StackSearchBar.tsx  # Screen and search bar components
 │   │       ├── screen/        # Title (StackScreenTitle) and BackButton (StackScreenBackButton)
-│   │       └── toolbar/       # StackToolbar* components, with native bridge in bottom-toolbar-native-elements
+│   │       └── toolbar/       # StackToolbar* components
 │   │
 │   ├── native-tabs/           # Native bottom tabs (iOS UITabBar, Android BottomNav)
 │   │   ├── NativeTabs.tsx            # Assignment of Trigger and BottomAccessory to NativeTabs component
@@ -228,7 +228,7 @@ The `apps/router-e2e` app contains end-to-end tests and examples for Expo Router
 After developing a feature, run these commands in `packages/expo-router`:
 
 1. `CI=1 yarn test` - Run all tests. During development use `yarn test [test file]` for efficiency. For RSC tests: `yarn test:rsc`
-2. `yarn build` - Build and verify TypeScript correctness
+2. `yarn build` - Build and verify TypeScript correctness. If you moved or deleted files, run `yarn clean` first.
 3. `yarn lint` - Run last to find linting issues
 
 When adding dependencies or changing static/server rendering, run e2e tests in `packages/@expo/cli` (time-consuming, run only when necessary).

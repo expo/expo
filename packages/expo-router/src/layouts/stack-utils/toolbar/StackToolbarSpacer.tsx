@@ -1,8 +1,9 @@
 'use client';
 import type { NativeStackHeaderItemSpacing } from '@react-navigation/native-stack';
+import { useId } from 'react';
 
-import { NativeToolbarSpacer } from './bottom-toolbar-native-elements';
 import { useToolbarPlacement } from './context';
+import { RouterToolbarItem } from '../../../toolbar/native';
 
 export interface StackToolbarSpacerProps {
   /**
@@ -109,3 +110,32 @@ export function convertStackToolbarSpacerPropsToRNHeaderItem(
     spacing: width ?? 0,
   };
 }
+
+// #region NativeToolbarSpacer
+
+interface NativeToolbarSpacerProps {
+  hidden?: boolean;
+  hidesSharedBackground?: boolean;
+  sharesBackground?: boolean;
+  width?: number;
+}
+
+/**
+ * Native toolbar spacer component for bottom toolbar.
+ * Renders as RouterToolbarItem with type 'fixedSpacer' or 'fluidSpacer'.
+ */
+const NativeToolbarSpacer: React.FC<NativeToolbarSpacerProps> = (props) => {
+  const id = useId();
+  return (
+    <RouterToolbarItem
+      hidesSharedBackground={props.hidesSharedBackground}
+      hidden={props.hidden}
+      identifier={id}
+      sharesBackground={props.sharesBackground}
+      type={props.width ? 'fixedSpacer' : 'fluidSpacer'}
+      width={props.width}
+    />
+  );
+};
+
+// #endregion

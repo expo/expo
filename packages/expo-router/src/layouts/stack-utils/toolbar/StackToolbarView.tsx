@@ -1,8 +1,9 @@
 'use client';
 import type { NativeStackHeaderItemCustom } from '@react-navigation/native-stack';
+import { useId, type ReactNode } from 'react';
 
-import { NativeToolbarView } from './bottom-toolbar-native-elements';
 import { useToolbarPlacement } from './context';
+import { RouterToolbarItem } from '../../../toolbar/native';
 
 export interface StackToolbarViewProps {
   /**
@@ -93,3 +94,36 @@ export function convertStackToolbarViewPropsToRNHeaderItem(
     hidesSharedBackground,
   };
 }
+
+// #region NativeToolbarView
+
+interface NativeToolbarViewProps {
+  children?: ReactNode;
+  hidden?: boolean;
+  hidesSharedBackground?: boolean;
+  separateBackground?: boolean;
+}
+
+/**
+ * Native toolbar view component for bottom toolbar.
+ * Renders as RouterToolbarItem with children.
+ */
+const NativeToolbarView: React.FC<NativeToolbarViewProps> = ({
+  children,
+  hidden,
+  hidesSharedBackground,
+  separateBackground,
+}) => {
+  const id = useId();
+  return (
+    <RouterToolbarItem
+      hidesSharedBackground={hidesSharedBackground}
+      hidden={hidden}
+      identifier={id}
+      sharesBackground={!separateBackground}>
+      {children}
+    </RouterToolbarItem>
+  );
+};
+
+// #endregion

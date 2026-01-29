@@ -1,7 +1,7 @@
 import { type ImageSourcePropType, type StyleProp, type TextStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { Badge, Icon, Label } from '../../primitives';
+import { Badge, Icon, Label } from '../../../primitives';
 
 export interface StackToolbarLabelProps {
   /**
