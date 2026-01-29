@@ -10,6 +10,7 @@ class DevMenuFABWindow: UIWindow {
   private weak var manager: DevMenuManager?
   private var hostingController: UIHostingController<DevMenuFABView>?
   var fabFrame: CGRect = .zero
+  private var currentAnimator: UIViewPropertyAnimator?
 
   init(manager: DevMenuManager, windowScene: UIWindowScene) {
     self.manager = manager
@@ -51,44 +52,39 @@ class DevMenuFABWindow: UIWindow {
   }
 
   func setVisible(_ visible: Bool, animated: Bool = true) {
+    print("[FAB] setVisible(\(visible))")
+
+    // Cancel any in-progress animation and reset to clean state
+    if currentAnimator != nil {
+      currentAnimator?.stopAnimation(true)
+      currentAnimator = nil
+      transform = .identity
+    }
+
     if visible {
       isHidden = false
-      if animated {
-        alpha = 0
-        transform = edgeTranslation
-        UIView.animate(
-          withDuration: 0.5,
-          delay: 0,
-          usingSpringWithDamping: 0.6,
-          initialSpringVelocity: 0.8,
-          options: .curveEaseOut
-        ) {
-          self.alpha = 1
-          self.transform = .identity
-        }
-      } else {
-        alpha = 1
-        transform = .identity
+      alpha = 0
+      transform = edgeTranslation
+
+      let animator = UIViewPropertyAnimator(duration: animated ? 0.5 : 0, dampingRatio: 0.6) {
+        self.alpha = 1
+        self.transform = .identity
       }
+      currentAnimator = animator
+      animator.startAnimation()
     } else {
-      if animated {
-        UIView.animate(
-          withDuration: 0.4,
-          delay: 0,
-          usingSpringWithDamping: 0.6,
-          initialSpringVelocity: 0.8,
-          options: .curveEaseIn
-        ) {
-          self.alpha = 0
-          self.transform = self.edgeTranslation
-        } completion: { _ in
-          self.isHidden = true
-          self.transform = .identity
-        }
-      } else {
-        alpha = 0
-        isHidden = true
+      let animator = UIViewPropertyAnimator(duration: animated ? 0.3 : 0, dampingRatio: 0.8) {
+        self.alpha = 0
+        self.transform = self.edgeTranslation
       }
+      animator.addCompletion { [weak self] position in
+        if position == .end {
+          self?.isHidden = true
+          self?.transform = .identity
+        }
+      }
+      currentAnimator = animator
+      animator.startAnimation()
     }
   }
 

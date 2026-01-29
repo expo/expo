@@ -169,7 +169,6 @@ class SourceMapService {
   /// - Returns: true if the update was sent, false if no active session
   static func sendSnackFileUpdate(path: String, oldContents: String, newContents: String) -> Bool {
     guard let session = cachedSession else {
-      print("[SourceMapService] No active Snack session for file update")
       return false
     }
 
@@ -188,7 +187,6 @@ class SourceMapService {
     if SourceMapService.cachedSessionChannel == channel,
        let cachedFiles = SourceMapService.cachedFiles,
        !cachedFiles.isEmpty {
-      print("[SourceMapService] Using cached files for channel: \(channel)")
       return buildSourceMap(from: cachedFiles)
     }
 
@@ -198,7 +196,6 @@ class SourceMapService {
     let client: SnackSessionClient
     if SourceMapService.cachedSessionChannel == channel,
        let existingClient = SourceMapService.cachedSession {
-      print("[SourceMapService] Reusing existing session for channel: \(channel)")
       client = existingClient
     } else {
       // Disconnect old session if different channel
@@ -237,7 +234,6 @@ class SourceMapService {
             names: []
           )
 
-          print("[SourceMapService] Built SourceMap from Snackpub with \(files.count) files")
           continuation.resume(returning: sourceMap)
         },
         onError: { error in
@@ -292,7 +288,6 @@ class SourceMapService {
     let sources = codeFiles.keys.sorted()
     let sourcesContent = sources.map { codeFiles[$0]?.contents }
 
-    print("[SourceMapService] Built SourceMap from Snack API with \(sources.count) files")
 
     return SourceMap(
       version: 3,
@@ -309,24 +304,19 @@ class SourceMapService {
   func fetchSourceMap() async throws -> SourceMap {
     // Strategy 0: Check if running a Snack
     let (snackId, channel) = parseSnackParams()
-    print("[SourceMapService] Snack params - id: \(snackId ?? "nil"), channel: \(channel ?? "nil")")
 
     // Strategy 0a: If we have a snack ID, fetch from Snack API
     if let snackId = snackId {
-      print("[SourceMapService] Fetching from Snack API for id: \(snackId)")
       if let snackSourceMap = try? await fetchSnackSourceMap(snackId: snackId) {
         return snackSourceMap
       }
-      print("[SourceMapService] Snack API fetch failed, falling back to other strategies")
     }
 
     // Strategy 0b: If we have a channel (live session), connect to Snackpub
     if let channel = channel {
-      print("[SourceMapService] Connecting to Snackpub for channel: \(channel)")
       if let snackSourceMap = try? await fetchSnackSourceMapFromSession(channel: channel) {
         return snackSourceMap
       }
-      print("[SourceMapService] Snackpub connection failed, falling back to other strategies")
     }
 
     let bundleURL = devMenuManager.currentBridge?.bundleURL

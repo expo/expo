@@ -148,6 +148,9 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 - (void)reloadVisibleApp
 {
+  // Hide FAB immediately to avoid jank during reload
+  [[DevMenuManager shared] hideFAB];
+
   if (_browserController) {
     [EXUtil performSynchronouslyOnMainThread:^{
       [self->_browserController reloadVisibleApp];

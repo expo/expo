@@ -60,12 +60,10 @@ class SnackSessionClient {
     self.onError = onError
 
     guard state == .disconnected else {
-      print("[SnackSessionClient] Already connecting or connected")
       return
     }
 
     state = .connecting
-    print("[SnackSessionClient] Connecting to channel: \(channel)")
 
     guard let url = URL(string: snackpubURL) else {
       onError(SnackSessionError.invalidURL)
@@ -89,7 +87,6 @@ class SnackSessionClient {
     urlSession = nil
     state = .disconnected
     socketId = nil
-    print("[SnackSessionClient] Disconnected")
   }
 
   /// Sends a file update to the session
@@ -99,15 +96,12 @@ class SnackSessionClient {
   ///   - newContents: The new file contents
   func sendFileUpdate(path: String, oldContents: String, newContents: String) {
     guard state == .connected else {
-      print("[SnackSessionClient] Cannot send update - not connected")
       return
     }
 
     // Generate unified diff in the format expected by the 'diff' npm package
     let diff = generateUnifiedDiff(oldContents: oldContents, newContents: newContents)
 
-    print("[SnackSessionClient] Sending file update for: \(path)")
-    print("[SnackSessionClient]   diff length: \(diff.count) chars")
 
     // Create CODE message with diffs for ALL files
     // Snack expects diff from empty string to full content for each file
@@ -135,7 +129,6 @@ class SnackSessionClient {
       "metadata": currentMetadata
     ]
 
-    print("[SnackSessionClient] Sending CODE with \(currentDependencies.count) deps, \(currentS3Urls.count) s3urls, SDK: \(currentMetadata["expoSDKVersion"] ?? "none")")
 
     sendSocketIOEvent("message", data: [
       "channel": channel,
@@ -186,16 +179,6 @@ class SnackSessionClient {
       diff += "\\ No newline at end of file\n"
     }
 
-    // Log the diff for debugging (first 10 lines)
-    let diffLines = diff.components(separatedBy: "\n")
-    print("[SnackSessionClient] Generated diff (\(diffLines.count) lines):")
-    for (i, line) in diffLines.prefix(10).enumerated() {
-      print("[SnackSessionClient]   \(i): \(line)")
-    }
-    if diffLines.count > 10 {
-      print("[SnackSessionClient]   ... (\(diffLines.count - 10) more lines)")
-    }
-
     return diff
   }
 
@@ -208,7 +191,6 @@ class SnackSessionClient {
         self?.handleWebSocketMessage(message)
         self?.receiveMessage() // Continue receiving
       case .failure(let error):
-        print("[SnackSessionClient] WebSocket error: \(error)")
         self?.onError?(error)
         self?.state = .disconnected
       }
@@ -233,14 +215,13 @@ class SnackSessionClient {
       handleSocketIOPacket(String(text.dropFirst()))
 
     default:
-      print("[SnackSessionClient] Unknown packet: \(text.prefix(50))")
+      break
     }
   }
 
   private func handleEngineIOOpen(_ text: String) {
     // Parse the open packet to get ping interval
     // Format: 0{"sid":"xxx","upgrades":[],"pingInterval":25000,"pingTimeout":20000}
-    print("[SnackSessionClient] Engine.IO connected")
 
     // Send Socket.IO CONNECT packet (40 = message + connect)
     sendRaw("40")
@@ -257,7 +238,7 @@ class SnackSessionClient {
       handleSocketIOEvent(String(text.dropFirst()))
 
     default:
-      print("[SnackSessionClient] Unknown Socket.IO packet type: \(firstChar)")
+      break
     }
   }
 
@@ -270,7 +251,6 @@ class SnackSessionClient {
     }
 
     state = .connected
-    print("[SnackSessionClient] Socket.IO connected, sid: \(socketId ?? "unknown")")
 
     // Subscribe to channel
     subscribeToChannel()
@@ -293,14 +273,11 @@ class SnackSessionClient {
     case "message":
       handleMessage(eventData)
 
-    case "joinChannel":
-      print("[SnackSessionClient] Someone joined the channel")
-
-    case "leaveChannel":
-      print("[SnackSessionClient] Someone left the channel")
+    case "joinChannel", "leaveChannel":
+      break
 
     default:
-      print("[SnackSessionClient] Unknown event: \(eventName)")
+      break
     }
   }
 
@@ -311,7 +288,6 @@ class SnackSessionClient {
       return
     }
 
-    print("[SnackSessionClient] Received message type: \(type)")
 
     if type == "CODE" {
       handleCodeMessage(message)
@@ -319,14 +295,7 @@ class SnackSessionClient {
   }
 
   private func handleCodeMessage(_ message: [String: Any]) {
-    // Log all top-level keys in the CODE message
-    print("[SnackSessionClient] CODE message keys: \(message.keys.sorted())")
-
     guard let diff = message["diff"] as? [String: String] else {
-      print("[SnackSessionClient] CODE message missing diff or wrong type")
-      if let diffValue = message["diff"] {
-        print("[SnackSessionClient]   diff type: \(type(of: diffValue))")
-      }
       return
     }
 
@@ -335,31 +304,13 @@ class SnackSessionClient {
     // Save dependencies and metadata for later use when sending updates
     if let dependencies = message["dependencies"] as? [String: Any] {
       self.currentDependencies = dependencies
-      print("[SnackSessionClient] Saved \(dependencies.count) dependencies")
     }
     if let metadata = message["metadata"] as? [String: Any] {
       self.currentMetadata = metadata
-      if let sdkVersion = metadata["expoSDKVersion"] as? String {
-        print("[SnackSessionClient] Saved metadata with SDK version: \(sdkVersion)")
-      }
-    }
-
-    print("[SnackSessionClient] Received CODE:")
-    print("[SnackSessionClient]   diff keys (\(diff.count)): \(diff.keys.sorted())")
-    print("[SnackSessionClient]   s3url keys (\(s3url.count)): \(s3url.keys.sorted())")
-
-    // Log first 100 chars of each diff to understand format
-    for (path, content) in diff {
-      let preview = String(content.prefix(100)).replacingOccurrences(of: "\n", with: "\\n")
-      print("[SnackSessionClient]   diff[\(path)]: \(preview)...")
     }
 
     // Save ALL s3urls for later use when sending updates (includes assets + large files)
     self.currentS3Urls = s3url
-    if !self.currentS3Urls.isEmpty {
-      let assetCount = s3url.values.filter { $0.contains("~asset") || $0.contains("%7Easset") }.count
-      print("[SnackSessionClient] Saved \(self.currentS3Urls.count) s3urls (\(assetCount) assets)")
-    }
 
     // Convert diffs to files
     // Note: diff format is a unified diff, we need to apply it
@@ -401,7 +352,6 @@ class SnackSessionClient {
         }
       }
 
-      print("[SnackSessionClient] Total files after processing: \(self.currentFiles.count)")
       await MainActor.run {
         self.onFilesReceived?(self.currentFiles)
       }
@@ -524,31 +474,22 @@ class SnackSessionClient {
     for (path, url) in s3url {
       // Skip assets
       if url.contains("~asset") || url.contains("%7Easset") {
-        print("[SnackSessionClient] Skipping asset: \(path)")
         continue
       }
 
-      print("[SnackSessionClient] Fetching S3 file: \(path)")
-
       do {
-        let (data, response) = try await URLSession.shared.data(from: URL(string: url)!)
-        let httpResponse = response as? HTTPURLResponse
-        print("[SnackSessionClient]   HTTP status: \(httpResponse?.statusCode ?? -1), size: \(data.count) bytes")
+        let (data, _) = try await URLSession.shared.data(from: URL(string: url)!)
 
         if let contents = String(data: data, encoding: .utf8) {
           var finalContents = contents
           // Apply diff if there is one for this file
           if let fileDiff = diff[path], !fileDiff.isEmpty {
-            print("[SnackSessionClient]   Applying diff to S3 content for \(path)")
             finalContents = applyDiff(fileDiff, to: contents)
           }
           files[path] = SnackFile(path: path, contents: finalContents, isAsset: false)
-          print("[SnackSessionClient]   Loaded \(path): \(finalContents.count) chars")
-        } else {
-          print("[SnackSessionClient]   Failed to decode \(path) as UTF-8 (binary file?)")
         }
       } catch {
-        print("[SnackSessionClient] Failed to fetch \(path): \(error)")
+        // Silently skip files that fail to fetch
       }
     }
 
@@ -566,7 +507,6 @@ class SnackSessionClient {
   }
 
   private func requestCode() {
-    print("[SnackSessionClient] Requesting code...")
     sendSocketIOEvent("message", data: [
       "channel": channel,
       "message": [
@@ -592,11 +532,7 @@ class SnackSessionClient {
   }
 
   private func sendRaw(_ text: String) {
-    webSocketTask?.send(.string(text)) { error in
-      if let error = error {
-        print("[SnackSessionClient] Send error: \(error)")
-      }
-    }
+    webSocketTask?.send(.string(text)) { _ in }
   }
 
   private func startPingTimer() {

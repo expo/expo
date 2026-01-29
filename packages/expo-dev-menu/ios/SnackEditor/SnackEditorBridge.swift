@@ -47,7 +47,6 @@ public class SnackEditorBridge: Module {
 
     OnCreate {
       SnackEditorBridge._shared = self
-      print("[SnackEditorBridge] Module created")
     }
 
     OnDestroy {
@@ -60,10 +59,8 @@ public class SnackEditorBridge: Module {
 
     /// Called by the Snack runtime to provide all source files
     AsyncFunction("setSnackFiles") { (files: [String: [String: Any]]) in
-      print("[SnackEditorBridge] setSnackFiles called with \(files.count) files")
       SnackEditorBridge._isSnackSession = true
       SnackEditorBridge.snackFiles = files.compactMapValues { SnackFile(from: $0) }
-      print("[SnackEditorBridge] Parsed \(SnackEditorBridge.snackFiles.count) files, isSnackSession=\(SnackEditorBridge._isSnackSession)")
 
       // Notify SwiftUI views that files have changed
       DispatchQueue.main.async {
