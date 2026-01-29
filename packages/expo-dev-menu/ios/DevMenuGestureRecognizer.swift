@@ -10,7 +10,6 @@ class DevMenuGestureRecognizerDelegate {
   @objc
   func handleLongPress(_ gestureReconizer: UILongPressGestureRecognizer) {
     if gestureReconizer.state == UIGestureRecognizer.State.began {
-      print("[DevMenu] Three-finger long press detected")
       if DevMenuManager.shared.toggleMenu() {
         #if !os(tvOS)
         let feedback = UIImpactFeedbackGenerator(style: .light)

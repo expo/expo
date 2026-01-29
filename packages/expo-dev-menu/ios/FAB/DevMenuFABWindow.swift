@@ -32,7 +32,6 @@ class DevMenuFABWindow: UIWindow {
 
     let fabView = DevMenuFABView(
       onOpenMenu: { [weak self] in
-        print("[DevMenu] FAB tapped")
         self?.manager?.openMenu()
       },
       onFrameChange: { [weak self] frame in
@@ -54,8 +53,6 @@ class DevMenuFABWindow: UIWindow {
   }
 
   func setVisible(_ visible: Bool, animated: Bool = true) {
-    print("[FAB] setVisible(\(visible))")
-
     // Skip if already animating to the same state
     if targetVisibility == visible {
       return
