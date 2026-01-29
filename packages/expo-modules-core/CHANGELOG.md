@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [core] Remove legacy `EXNativeModulesProxy` ([#42672](https://github.com/expo/expo/pull/42672) by [@tsapeta](https://github.com/tsapeta))
+
 ## 55.0.5 — 2026-01-27
 
 _This version does not introduce any user-facing changes._
