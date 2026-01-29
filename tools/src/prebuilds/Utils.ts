@@ -4,15 +4,37 @@ import ora from 'ora';
 import path from 'path';
 
 import logger from '../Logger';
-import { getPackageByName, Package } from '../Packages';
+import { getListOfPackagesAsync, getPackageByName, Package } from '../Packages';
 import { SPMProduct } from './SPMConfig.types';
 
 /**
+ * Discovers all packages that have spm.config.json files.
+ * @returns Array of Packages that have SPM configuration
+ */
+export const discoverPackagesWithSPMConfigAsync = async (): Promise<Package[]> => {
+  const allPackages = await getListOfPackagesAsync();
+  return allPackages.filter((pkg) => pkg.hasSwiftPMConfiguration());
+};
+
+/**
  * Verifies that all requested packages exist and have spm-config.json files.
- * @param packageNames Names of packages to verify
+ * If no package names are provided, discovers all packages with spm.config.json.
+ * @param packageNames Names of packages to verify (if empty, discovers all SPM packages)
  * @returns Parsed Packages that were verified
  */
 export const verifyPackagesAsync = async (packageNames: string[]): Promise<Package[]> => {
+  // If no package names provided, discover all packages with spm.config.json
+  if (packageNames.length === 0) {
+    const packages = await discoverPackagesWithSPMConfigAsync();
+    if (packages.length === 0) {
+      throw new Error('No packages with spm.config.json found in the packages directory.');
+    }
+    logger.info(
+      `Discovered ${chalk.cyan(packages.length)} packages with spm.config.json: ${chalk.green(packages.map((p) => p.packageName).join(', '))}`
+    );
+    return packages;
+  }
+
   return Promise.all(
     packageNames.map(async (name) => {
       // Does it have a folder in packages/?

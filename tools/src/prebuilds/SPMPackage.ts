@@ -72,6 +72,14 @@ export const SPMPackage = {
       targetSourceCodePath
     );
     await fs.ensureDir(path.dirname(packageSwiftPath));
+
+    // Only write if content changed (preserves mtime for Xcode incremental builds)
+    if (await fs.pathExists(packageSwiftPath)) {
+      const existing = await fs.readFile(packageSwiftPath, 'utf-8');
+      if (existing === content) {
+        return; // No changes
+      }
+    }
     await fs.writeFile(packageSwiftPath, content, 'utf-8');
   },
 

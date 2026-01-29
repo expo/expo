@@ -6,6 +6,7 @@ export { BuildPlatform } from './SPMConfig.types';
 export { SPMGenerator } from './SPMGenerator';
 export { SPMPackage } from './SPMPackage';
 export {
+  discoverPackagesWithSPMConfigAsync,
   getVersionsInfoAsync,
   verifyLocalTarballPathsIfSetAsync,
   verifyPackagesAsync,

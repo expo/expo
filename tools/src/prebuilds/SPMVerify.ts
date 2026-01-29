@@ -936,6 +936,7 @@ const verifySwiftInterfaceImports = async (
     'Combine',
     'SwiftUI',
     'AVFoundation',
+    'AVKit',
     'CoreMedia',
     'CoreData',
     'Photos',
@@ -952,9 +953,12 @@ const verifySwiftInterfaceImports = async (
     'Security',
     'LocalAuthentication',
     'AuthenticationServices',
+    'AppTrackingTransparency',
     'UserNotifications',
     'PushKit',
     'StoreKit',
+    'CryptoKit',
+    'DeviceCheck',
     'GameKit',
     'SpriteKit',
     'SceneKit',
@@ -1154,10 +1158,14 @@ const collectDependencyXcframeworkPaths = (
   }
 
   for (const dep of product.externalDependencies) {
+    // Dependencies can be in format "package-name" or "package-name/ProductName"
+    // We need the package name for the path
+    const packageName = dep.includes('/') ? dep.split('/')[0] : dep;
+
     const depXcframeworksDir = path.join(
       pkg.path,
       '..',
-      dep,
+      packageName,
       '.xcframeworks',
       buildFlavor.toLowerCase()
     );

@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { spawnSync } from 'child_process';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
@@ -9,6 +10,47 @@ import { SPMProduct, SPMTarget } from './SPMConfig.types';
 import { SPMPackage } from './SPMPackage';
 import { createAsyncSpinner } from './Utils';
 import logger from '../Logger';
+
+/**
+ * Checks if file content has changed between source and destination.
+ * Uses size comparison first (fast), then native cmp command for byte comparison.
+ * Returns true if destination doesn't exist or content differs.
+ */
+function hasFileContentChanged(sourcePath: string, destPath: string): boolean {
+  if (!fs.existsSync(destPath)) {
+    return true;
+  }
+
+  const sourceStat = fs.statSync(sourcePath);
+  const destStat = fs.statSync(destPath);
+
+  // Different size = different content
+  if (sourceStat.size !== destStat.size) {
+    return true;
+  }
+
+  // Same size - use cmp for efficient byte comparison
+  // cmp -s returns 0 if identical, 1 if different, 2 if error
+  const result = spawnSync('cmp', ['-s', sourcePath, destPath]);
+  return result.status !== 0;
+}
+
+/**
+ * Writes content to file only if it differs from existing content.
+ * Preserves mtime for Xcode incremental builds.
+ * Returns true if file was written, false if unchanged.
+ */
+function writeFileIfChanged(filePath: string, content: string): boolean {
+  if (fs.existsSync(filePath)) {
+    const existing = fs.readFileSync(filePath, 'utf-8');
+    if (existing === content) {
+      return false;
+    }
+  }
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, content, 'utf-8');
+  return true;
+}
 
 export const SPMGenerator = {
   /**
@@ -45,8 +87,6 @@ export const SPMGenerator = {
    * @param product Product
    */
   generateIsolatedSourcesForTargetsAsync: async (pkg: Package, product: SPMProduct) => {
-    const spmConfig = pkg.getSwiftPMConfiguration();
-
     const loggerTitle = `${chalk.green(pkg.packageName)}/${chalk.green(product.name)}`;
     logger.info(`📂 Generating files for ${loggerTitle}`);
 
@@ -102,9 +142,6 @@ export const SPMGenerator = {
 
         if (headerFiles.length > 0) {
           for (const file of headerFiles) {
-            spinner.info(
-              `Generating header files for target ${chalk.green(target.name)} ${path.basename(file)}...`
-            );
             const sourceFilePath = path.join(targetSourcePath, file);
             // Flatten destination and copy the file - we don't want a symlink here, since these files will be used
             // when composing the XCFrameworks later - and then we need the actual files present
@@ -113,9 +150,13 @@ export const SPMGenerator = {
               path.basename(file)
             );
 
-            if (!fs.existsSync(destinationFilePath)) {
-              await fs.ensureDir(path.dirname(destinationFilePath));
-              await fs.copy(sourceFilePath, destinationFilePath);
+            // Only copy if content changed (preserves mtime for Xcode incremental builds)
+            await fs.ensureDir(path.dirname(destinationFilePath));
+            if (hasFileContentChanged(sourceFilePath, destinationFilePath)) {
+              spinner.info(
+                `Copying header file for target ${chalk.green(target.name)} ${path.basename(file)}...`
+              );
+              await fs.copy(sourceFilePath, destinationFilePath, { overwrite: true });
             }
           }
         }
@@ -124,26 +165,22 @@ export const SPMGenerator = {
       // Generate exports file for Swift targets to re-export dependencies
       if (target.type === 'swift') {
         const exportsFilePath = path.join(targetDestination, `${product.name}.swift`);
-        if (!fs.existsSync(exportsFilePath)) {
-          spinner.info(
-            `Generating ${product.name}.swift for target ${loggerTitle + '/' + chalk.green(product.name) + '/' + chalk.green(target.name)}...`
-          );
 
-          // Re-export commonly used Apple frameworks so other files can just `import ProductName`
-          const frameworkImports = (target.linkedFrameworks ?? []).map(
-            (framework) => `@_exported import ${framework}`
-          );
+        // Re-export commonly used Apple frameworks so other files can just `import ProductName`
+        const frameworkImports = (target.linkedFrameworks ?? []).map(
+          (framework) => `@_exported import ${framework}`
+        );
 
-          // Import ObjC module dependencies with @_exported.
-          // These are needed for build-time access to types like JavaScriptObject, JavaScriptRuntime, etc.
-          // Only include _objc targets (not _cpp) since C++ targets can't be imported by Swift directly.
-          const objcDependencyImports = (target.dependencies ?? [])
-            .filter((dep) => /_objc$/.test(dep))
-            .map((dep) => `@_exported import ${dep}`);
+        // Import ObjC module dependencies with @_exported.
+        // These are needed for build-time access to types like JavaScriptObject, JavaScriptRuntime, etc.
+        // Only include _objc targets (not _cpp) since C++ targets can't be imported by Swift directly.
+        const objcDependencyImports = (target.dependencies ?? [])
+          .filter((dep) => /_objc$/.test(dep))
+          .map((dep) => `@_exported import ${dep}`);
 
-          const allImports = [...frameworkImports, ...objcDependencyImports];
-          if (allImports.length > 0) {
-            const fileContent = `// Copyright 2022-present 650 Industries. All rights reserved.
+        const allImports = [...frameworkImports, ...objcDependencyImports];
+        if (allImports.length > 0) {
+          const fileContent = `// Copyright 2022-present 650 Industries. All rights reserved.
 // This file is auto-generated by SPMGenerator.ts
 
 ${allImports.join('\n')}
@@ -152,7 +189,11 @@ ${allImports.join('\n')}
 // This allows other Swift files in the module to access Foundation, UIKit, and all ObjC types
 // without needing to explicitly import them in every file.
 `;
-            await fs.writeFile(exportsFilePath, fileContent, 'utf-8');
+          // Only write if content changed (preserves mtime for Xcode incremental builds)
+          if (writeFileIfChanged(exportsFilePath, fileContent)) {
+            spinner.info(
+              `Generated ${product.name}.swift for target ${loggerTitle + '/' + chalk.green(product.name) + '/' + chalk.green(target.name)}...`
+            );
           }
         }
       }
