@@ -10,31 +10,45 @@ const constants_1 = require("../constants");
 const inferAndroidLibrary = async () => {
     const files = ['ReactNativeFragment.kt', 'ReactNativeHostManager.kt'];
     try {
-        const android = await promises_1.default.readdir('android', { withFileTypes: true });
+        const androidPath = path_1.default.join(process.cwd(), 'android');
+        await promises_1.default.access(androidPath);
+        const android = await promises_1.default.readdir(androidPath, { withFileTypes: true });
         const directories = android.filter((item) => item.isDirectory());
+        if (directories.length === 0) {
+            throw new Error('No directories found in android/ folder');
+        }
         for (const directory of directories) {
-            const contents = await promises_1.default.readdir(`android/${directory.name}`, {
-                recursive: true,
-            });
-            const hasAllFiles = files.every((file) => contents.find((item) => item.includes(file)));
-            if (hasAllFiles) {
-                return directory.name;
+            const libraryPath = path_1.default.join(androidPath, directory.name);
+            try {
+                const contents = await promises_1.default.readdir(libraryPath, {
+                    recursive: true,
+                });
+                const hasAllFiles = files.every((file) => contents.some((item) => item.includes(file)));
+                if (hasAllFiles) {
+                    return directory.name;
+                }
+            }
+            catch (readError) {
+                continue;
             }
         }
-        throw new Error();
+        throw new Error('Unable to find brownfield Android library');
     }
     catch (error) {
-        return constants_1.Errors.inference('Android library name');
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        return constants_1.Errors.inference('Android library name: ' + message);
     }
 };
 exports.inferAndroidLibrary = inferAndroidLibrary;
 const inferXCWorkspace = async () => {
     try {
-        const xcworkspace = (await promises_1.default.readdir('ios', { withFileTypes: true })).find((item) => item.name.endsWith('.xcworkspace'));
+        const iosPath = path_1.default.join(process.cwd(), 'ios');
+        await promises_1.default.access(iosPath);
+        const xcworkspace = (await promises_1.default.readdir(iosPath, { withFileTypes: true })).find((item) => item.name.endsWith('.xcworkspace'));
         if (xcworkspace) {
-            return path_1.default.join(xcworkspace.parentPath, xcworkspace.name);
+            return path_1.default.join(iosPath, xcworkspace.name);
         }
-        throw new Error();
+        throw new Error('Unable to find brownfield iOS Workspace (.xcworkspace)');
     }
     catch (error) {
         return constants_1.Errors.inference('iOS Workspace (.xcworkspace)');
@@ -43,17 +57,22 @@ const inferXCWorkspace = async () => {
 exports.inferXCWorkspace = inferXCWorkspace;
 const inferScheme = async () => {
     try {
-        const subDirs = (await promises_1.default.readdir('ios', { withFileTypes: true })).filter((item) => item.isDirectory());
-        let scheme = undefined;
+        const iosPath = path_1.default.join(process.cwd(), 'ios');
+        await promises_1.default.access(iosPath);
+        const subDirs = (await promises_1.default.readdir(iosPath, { withFileTypes: true })).filter((item) => item.isDirectory());
         for (const subDir of subDirs) {
-            if ((await promises_1.default.readdir(`ios/${subDir.name}`)).includes('ReactNativeHostManager.swift')) {
-                scheme = subDir.name;
+            try {
+                const subDirPath = path_1.default.join(iosPath, subDir.name);
+                const contents = await promises_1.default.readdir(subDirPath);
+                if (contents.includes('ReactNativeHostManager.swift')) {
+                    return subDir.name;
+                }
+            }
+            catch (readError) {
+                continue;
             }
         }
-        if (scheme) {
-            return scheme;
-        }
-        throw new Error();
+        throw new Error('Unable to find brownfield iOS group');
     }
     catch (error) {
         return constants_1.Errors.inference('iOS Scheme');

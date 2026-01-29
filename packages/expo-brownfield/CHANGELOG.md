@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [test] Added E2E tests and improvements for CLI in [#42120](https://github.com/expo/expo/pull/42120) by [@pmleczek](https://github.com/pmleczek)
+
 ## 55.0.4 — 2026-01-27
 
 _This version does not introduce any user-facing changes._
