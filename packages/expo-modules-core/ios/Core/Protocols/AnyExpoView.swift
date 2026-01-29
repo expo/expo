@@ -1,6 +1,7 @@
-import React
-
-public protocol AnyExpoView: RCTView {
+// Note: We use UIView as the base constraint (not RCTView or RCTViewComponentView)
+// to avoid re-exporting React types in the xcframework's swiftinterface.
+// Both RCTViewComponentView (Fabric) and RCTView (Paper) inherit from UIView.
+public protocol AnyExpoView: UIView {
   var appContext: AppContext? { get }
 
   init(appContext: AppContext?)

@@ -1,15 +1,11 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-import React
-
 #if RCT_NEW_ARCH_ENABLED
 public typealias ExpoView = ExpoFabricView
 #else
-/**
- The view that extends `RCTView` which handles some styles (e.g. borders) and accessibility.
- Inherit from `ExpoView` to keep this behavior and let your view use the associated `AppContext`.
- */
-open class ExpoClassicView: RCTView, AnyExpoView {
+  /// The base view class for expo modules in Paper architecture.
+  /// Inherit from `ExpoView` to let your view use the associated `AppContext`.
+  open class ExpoClassicView: UIView, AnyExpoView {
   /**
    A weak pointer to the associated `AppContext`.
    */
