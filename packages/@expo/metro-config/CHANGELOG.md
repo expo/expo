@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Collapse `InternalBytecode.js` stack frames, take 2 ([#40223](https://github.com/expo/expo/pull/40223) by [@sync](https://github.com/sync))
+
 ### 💡 Others
 
 ## 55.0.3 — 2026-01-26
