@@ -67,9 +67,10 @@ export async function loginAsync(credentials: {
   });
 }
 
-export async function ssoLoginAsync(): Promise<void> {
+export async function browserLoginAsync({ sso = false }): Promise<void> {
   const sessionSecret = await getSessionUsingBrowserAuthFlowAsync({
     expoWebsiteUrl: getExpoWebsiteBaseUrl(),
+    sso,
   });
   const userData = await fetchUserAsync({ sessionSecret });
 
