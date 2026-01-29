@@ -5,10 +5,12 @@ import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import expo.modules.kotlin.AppContext
 import expo.modules.video.VideoView
 import expo.modules.video.enums.ContentFit
 import expo.modules.video.listeners.VideoPlayerListener
 import expo.modules.video.utils.MutableWeakReference
+import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import kotlin.math.abs
 
@@ -23,11 +25,13 @@ import kotlin.math.abs
 @OptIn(UnstableApi::class)
 @MainThread
 internal class FirstFrameEventGenerator(
+  appContext: AppContext,
   videoPlayer: VideoPlayer,
   private val currentViewReference: MutableWeakReference<VideoView?>,
   private val onFirstFrameRendered: () -> Unit
 ) : Player.Listener, VideoPlayerListener {
   private val videoPlayerReference = WeakReference(videoPlayer)
+  private val weakAppContext = WeakReference(appContext)
   private var hasPendingOnFirstFrame = false
   internal var hasSentFirstFrameForCurrentMediaItem = false
     private set
@@ -35,13 +39,18 @@ internal class FirstFrameEventGenerator(
     private set
 
   init {
-    videoPlayer.player.addListener(this)
     videoPlayer.addListener(this)
+    appContext.mainQueue.launch {
+      videoPlayer.player.addListener(this@FirstFrameEventGenerator)
+    }
   }
 
   fun release() {
     videoPlayerReference.get()?.removeListener(this)
-    videoPlayerReference.get()?.player?.removeListener(this)
+
+    weakAppContext.get()?.mainQueue?.launch {
+      videoPlayerReference.get()?.player?.removeListener(this@FirstFrameEventGenerator)
+    }
   }
 
   override fun onRenderedFirstFrame() {

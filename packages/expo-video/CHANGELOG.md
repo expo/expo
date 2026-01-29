@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix uninitialized `firstFrameEventGenerator` exception in VideoView when setting the `player` prop. ([#42615](https://github.com/expo/expo/pull/42615) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 55.0.3 — 2026-01-27

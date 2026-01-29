@@ -74,7 +74,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     .setLoadControl(loadControl)
     .build()
 
-  internal lateinit var firstFrameEventGenerator: FirstFrameEventGenerator
+  internal val firstFrameEventGenerator: FirstFrameEventGenerator
   val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
   var mediaSession: MediaSession = buildBasicMediaSession(context, player)
   val intervalUpdateClock = IntervalUpdateClock(this)
@@ -339,10 +339,9 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     player.addListener(playerListener)
     player.addAnalyticsListener(analyticsListener)
     VideoManager.registerVideoPlayer(this)
-
+    firstFrameEventGenerator = createFirstFrameEventGenerator()
     // ExoPlayer will enable subtitles automatically at the start, we want them disabled by default
     appContext.mainQueue.launch {
-      firstFrameEventGenerator = createFirstFrameEventGenerator()
       subtitles.setSubtitlesEnabled(false)
     }
   }
@@ -509,7 +508,10 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   private fun createFirstFrameEventGenerator(): FirstFrameEventGenerator {
-    return FirstFrameEventGenerator(this, currentVideoViewRef) {
+    val appContext = appContext
+      ?: throw Exceptions.AppContextLost()
+
+    return FirstFrameEventGenerator(appContext, this, currentVideoViewRef) {
       sendEvent(PlayerEvent.RenderedFirstFrame())
     }
   }
