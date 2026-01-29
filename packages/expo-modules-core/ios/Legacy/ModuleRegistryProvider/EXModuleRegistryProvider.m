@@ -1,5 +1,6 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
+#import <ExpoModulesCore/EXDefines.h>
 #import <Foundation/Foundation.h>
 #import <ExpoModulesCore/EXSingletonModule.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
@@ -22,15 +23,15 @@ void (^EXinitializeGlobalModulesRegistry)(void) = ^{
   [EXModuleClasses addObject: NSClassFromString(@"EXFileSystemLegacyUtilities")];
 };
 
-extern void EXRegisterModule(Class);
-extern void EXRegisterModule(Class moduleClass)
+EX_EXTERN void EXRegisterModule(Class);
+EX_EXTERN void EXRegisterModule(Class moduleClass)
 {
   dispatch_once(&onceToken, EXinitializeGlobalModulesRegistry);
   [EXModuleClasses addObject:moduleClass];
 }
 
-extern void EXRegisterSingletonModule(Class);
-extern void EXRegisterSingletonModule(Class singletonModuleClass)
+EX_EXTERN void EXRegisterSingletonModule(Class);
+EX_EXTERN void EXRegisterSingletonModule(Class singletonModuleClass)
 {
   dispatch_once(&onceToken, EXinitializeGlobalModulesRegistry);
 
