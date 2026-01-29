@@ -175,6 +175,7 @@ public class DevMenuPreferences: Module {
   }
 
   @objc static func toggleMenu() {
+    print("[DevMenu] Shake detected, motionGestureEnabled=\(DevMenuPreferences.motionGestureEnabled)")
     if DevMenuPreferences.motionGestureEnabled {
       DevMenuManager.shared.toggleMenu()
     }
