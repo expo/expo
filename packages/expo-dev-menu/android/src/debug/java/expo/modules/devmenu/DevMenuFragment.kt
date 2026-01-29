@@ -40,7 +40,7 @@ import java.lang.ref.WeakReference
 typealias GoHomeAction = () -> Unit
 typealias AppInfoProvider = (application: Application, reactHost: ReactHost) -> DevMenuState.AppInfo?
 
-@SuppressLint("ViewConstructor")
+@SuppressLint("ViewConstructor HELLO WORLD")
 class DevMenuFragment(
   private val reactHostHolder: WeakReference<ReactHost>,
   private val preferences: DevMenuPreferences,
