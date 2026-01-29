@@ -86,7 +86,6 @@ describe('tasks:android command', () => {
     it('should properly list available tasks', async () => {
       await tasksAndroidTest({
         directory: TEMP_DIR_PREBUILD,
-        args: ['--dry-run'],
         stdout: TASKS_ANDROID.RESULT,
       });
     });
@@ -98,19 +97,19 @@ describe('tasks:android command', () => {
     it('should properly handle --library/-l option', async () => {
       await tasksAndroidTest({
         directory: TEMP_DIR_PREBUILD,
-        args: ['--dry-run', '--library', 'brownfield'],
+        args: ['--library', 'brownfield'],
         stdout: TASKS_ANDROID.RESULT,
       });
 
       await tasksAndroidTest({
         directory: TEMP_DIR_PREBUILD,
-        args: ['--dry-run', '-l', 'brownfield'],
+        args: ['-l', 'brownfield'],
         stdout: TASKS_ANDROID.RESULT,
       });
 
       await tasksAndroidTest({
         directory: TEMP_DIR_PREBUILD,
-        args: ['--dry-run', '-l', 'wrongbrownfield'],
+        args: ['-l', 'wrongbrownfield'],
         successExit: false,
         stderr: new Set<string>(TASKS_ANDROID.RESULT),
       });
@@ -123,7 +122,6 @@ describe('tasks:android command', () => {
     it("shouldn't print verbose output by default", async () => {
       await tasksAndroidTest({
         directory: TEMP_DIR_PREBUILD,
-        args: ['--dry-run'],
         stdout: new Set<string>(TASKS_ANDROID.VERBOSE),
       });
     });
@@ -135,7 +133,7 @@ describe('tasks:android command', () => {
     it('should properly handle --verbose option', async () => {
       await tasksAndroidTest({
         directory: TEMP_DIR_PREBUILD,
-        args: ['--dry-run', '--verbose'],
+        args: ['--verbose'],
         stdout: TASKS_ANDROID.VERBOSE,
       });
     });

@@ -11,7 +11,7 @@ type ExpectedStreamValue =
 interface BuildTestOptions {
   directory: string;
   command: string;
-  args: string[];
+  args?: string[];
   successExit?: boolean;
   stdout?: ExpectedStreamValue;
   stderr?: ExpectedStreamValue;
@@ -92,7 +92,7 @@ export const tasksAndroidTest = async ({
 export const buildTestCommon = async ({
   directory,
   command,
-  args,
+  args = [],
   successExit = true,
   stdout = [],
   stderr = [],
