@@ -30,56 +30,93 @@ public class SnackEditingSession {
   // MARK: - Public Methods
 
   /// Sets up a new editing session for a published snack.
-  /// This should be called before opening the snack URL.
+  /// This fetches code from the Snack API and sets up a host session.
   /// - Parameters:
   ///   - snackId: The snack identifier (e.g., @username/snackname)
   ///   - channel: The generated channel ID
   ///   - isStaging: Whether to use staging Snackpub
   public func setupSession(snackId: String, channel: String, isStaging: Bool) async {
-    // Clear any existing session
+    // Clear any existing session first (before fetch, in case fetch fails)
     clearSession()
 
+    // Set these early so they're available even if fetch fails
     self.snackId = snackId
     self.channel = channel
-    self.setupError = nil
 
     do {
       // Fetch snack code and dependencies from API
       let (files, dependencies) = try await fetchSnackCode(snackId: snackId, isStaging: isStaging)
 
-      // Create session client in host mode
-      let client = SnackSessionClient(
+      // Set up session with fetched code (pass clearFirst: false since we already cleared)
+      await setupSessionWithCode(
+        snackId: snackId,
+        code: files,
+        dependencies: dependencies,
         channel: channel,
         isStaging: isStaging,
-        hostedFiles: files,
-        hostedDependencies: dependencies
+        clearFirst: false
       )
-
-      self.sessionClient = client
-
-      // Connect to Snackpub
-      // Use a flag to ensure the continuation is only resumed once.
-      // Both onReady and onError can fire, and onError can fire after onReady
-      // if the WebSocket disconnects later - we only want the first callback to resume.
-      await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-        var hasResumed = false
-        client.connectAsHost(
-          onReady: {
-            guard !hasResumed else { return }
-            hasResumed = true
-            self.isReady = true
-            continuation.resume()
-          },
-          onError: { error in
-            guard !hasResumed else { return }
-            hasResumed = true
-            self.setupError = error
-            continuation.resume()
-          }
-        )
-      }
     } catch {
       self.setupError = error
+    }
+  }
+
+  /// Sets up an editing session with provided code.
+  /// This is the core method - setupSession calls this after fetching code from API.
+  /// - Parameters:
+  ///   - snackId: Optional snack ID (use "new" for new playgrounds)
+  ///   - code: The code files to host
+  ///   - dependencies: Dependencies to include (empty for new playgrounds)
+  ///   - channel: The generated channel ID
+  ///   - isStaging: Whether to use staging Snackpub
+  ///   - clearFirst: Whether to clear existing session (false when called from setupSession which already cleared)
+  public func setupSessionWithCode(
+    snackId: String = "new",
+    code: [String: SnackSessionClient.SnackFile],
+    dependencies: [String: [String: Any]] = [:],
+    channel: String,
+    isStaging: Bool = false,
+    clearFirst: Bool = true
+  ) async {
+    // Clear any existing session (unless caller already did)
+    if clearFirst {
+      clearSession()
+    }
+
+    self.snackId = snackId
+    self.channel = channel
+    self.setupError = nil
+
+    // Create session client in host mode with provided code
+    let client = SnackSessionClient(
+      channel: channel,
+      isStaging: isStaging,
+      hostedFiles: code,
+      hostedDependencies: dependencies
+    )
+
+    self.sessionClient = client
+
+    // Connect to Snackpub
+    // Use a flag to ensure the continuation is only resumed once.
+    // Both onReady and onError can fire, and onError can fire after onReady
+    // if the WebSocket disconnects later - we only want the first callback to resume.
+    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+      var hasResumed = false
+      client.connectAsHost(
+        onReady: {
+          guard !hasResumed else { return }
+          hasResumed = true
+          self.isReady = true
+          continuation.resume()
+        },
+        onError: { error in
+          guard !hasResumed else { return }
+          hasResumed = true
+          self.setupError = error
+          continuation.resume()
+        }
+      )
     }
   }
 

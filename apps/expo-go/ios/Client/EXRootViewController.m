@@ -203,10 +203,10 @@ NS_ASSUME_NONNULL_BEGIN
     return;
   }
 
-  // Skip snack URLs - they often don't work properly when reopened from history
+  // Skip snack/playground URLs - they use ephemeral channels that won't work when reopened from history
   NSURLComponents *components = [NSURLComponents componentsWithURL:manifestUrl resolvingAgainstBaseURL:NO];
   for (NSURLQueryItem *item in components.queryItems) {
-    if ([item.name isEqualToString:@"snack"]) {
+    if ([item.name isEqualToString:@"snack"] || [item.name isEqualToString:@"snack-channel"]) {
       return;
     }
   }
