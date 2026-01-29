@@ -37,7 +37,7 @@
     "**/util": "~0.12.4"
   },
   "dependencies": {
-    "eslint": "^8.57.1",
+    "eslint": "^9.26.0",
     "jsc-android": "^250231.0.0",
     "patch-package": "^8.0.1",
     "prettier": "^3.4.2",
