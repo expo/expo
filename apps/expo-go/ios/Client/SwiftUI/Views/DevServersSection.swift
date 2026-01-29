@@ -6,6 +6,15 @@ struct DevServersSection: View {
   @State private var showingURLInput = false
   @State private var urlText = ""
   @State private var showingTroubleshootingAlert = false
+
+  /// Hide "Enter URL manually" on physical devices (not useful there since users can't easily type URLs)
+  private var shouldShowEnterUrl: Bool {
+    #if targetEnvironment(simulator)
+    return true
+    #else
+    return false
+    #endif
+  }
   @State private var troubleshootingTitle = ""
   @State private var troubleshootingMessage = ""
 
@@ -33,7 +42,9 @@ struct DevServersSection: View {
           }
         }
 
-        enterUrl
+        if shouldShowEnterUrl {
+          enterUrl
+        }
       }
     }
     .alert(troubleshootingTitle, isPresented: $showingTroubleshootingAlert) {
