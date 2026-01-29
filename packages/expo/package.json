@@ -83,10 +83,10 @@
     "@expo/devtools": "55.0.2",
     "@expo/fingerprint": "0.16.2",
     "@expo/local-build-cache-provider": "55.0.2",
+    "@expo/log-box": "55.0.3",
     "@expo/metro": "~54.2.0",
     "@expo/metro-config": "55.0.3",
     "@expo/vector-icons": "^15.0.2",
-    "@expo/log-box": "55.0.3",
     "@ungap/structured-clone": "^1.3.0",
     "babel-preset-expo": "~55.0.2",
     "expo-asset": "~55.0.2",
@@ -98,6 +98,7 @@
     "expo-modules-core": "55.0.5",
     "pretty-format": "^29.7.0",
     "react-refresh": "^0.14.2",
+    "whatwg-url-minimum": "^0.1.1",
     "whatwg-url-without-unicode": "8.0.0-3"
   },
   "devDependencies": {
