@@ -1,18 +1,27 @@
 diff --git a/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt b/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt
-index a9fbbe7d70..bdb8aef763 100644
+index a9fbbe7d70..57c6cd10aa 100644
 --- a/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt
 +++ b/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt
-@@ -12,6 +12,9 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
+@@ -12,6 +12,18 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
  import com.facebook.react.modules.core.DeviceEventManagerModule
  import expo.modules.ExpoReactHostFactory
  import expo.modules.brownfield.BrownfieldNavigationState
 +import expo.modules.devmenu.api.DevMenuApi
++import expo.modules.devmenu.AppInfo
 +import java.lang.ref.WeakReference
 +import android.view.ViewGroup
++import okhttp3.OkHttpClient
++import okhttp3.Request
++import java.util.concurrent.TimeUnit
++import org.json.JSONObject
++import expo.modules.manifests.core.Manifest
++import java.net.URL
++import expo.modules.manifests.core.ExpoUpdatesManifest
++import java.io.IOException
  
  class ReactNativeHostManager {
    companion object {
-@@ -61,13 +64,40 @@ class ReactNativeHostManager {
+@@ -61,13 +73,41 @@ class ReactNativeHostManager {
        context = application.applicationContext,
        packageList = PackageList(application).packages
      )
@@ -35,7 +44,7 @@ index a9fbbe7d70..bdb8aef763 100644
 +    val reactHost = ReactNativeHostManager.shared.getReactHost()
 +    val fragmentHost = DevMenuApi.createFragmentHost(
 +      activity = this,
-+      reactHostHolder = WeakReference(reactHost)
++      reactHostHolder = WeakReference(reactHost),
 +    )
 +    if (fragmentHost != null) {
 +      val reactNativeView = ReactNativeViewFactory.createFrameLayout(
@@ -45,6 +54,7 @@ index a9fbbe7d70..bdb8aef763 100644
 +      )
 +      fragmentHost.addView(reactNativeView, ViewGroup.LayoutParams.MATCH_PARENT)
 +      setContentView(fragmentHost)
++      maybeGetAppInfoFromManifest(application, reactHost, this)
 +    }
 +  } else {
 +    setContentView(
@@ -55,3 +65,69 @@ index a9fbbe7d70..bdb8aef763 100644
    setUpNativeBackHandling()
  }
  
+@@ -97,3 +137,65 @@ fun Activity.setUpNativeBackHandling() {
+ 
+   componentActivity.onBackPressedDispatcher?.addCallback(componentActivity, backCallback)
+ }
++
++internal fun maybeGetAppInfoFromManifest(
++  application: Application, 
++  reactHost: ReactHost?,
++  activity: Activity
++) {
++  Thread {
++    try {
++      if (reactHost == null) {
++        return@Thread
++      }
++
++      val defaultAppInfo = AppInfo.getAppInfo(application, reactHost)
++      val sourceURL = reactHost.devSupportManager?.sourceUrl
++      if (sourceURL == null) {
++        return@Thread
++      }
++
++      val url = URL(sourceURL)
++      val metroURL = "${url.protocol}://${url.host}:${url.port}"
++      println("Fetching manifest for dev menu from: $metroURL")
++
++      val client = OkHttpClient.Builder()
++        .connectTimeout(10, TimeUnit.SECONDS)
++        .readTimeout(10, TimeUnit.SECONDS)
++        .build()
++
++      val request = Request.Builder()
++        .url("$metroURL")
++        .addHeader("Accept", "application/expo+json,application/json")
++        .addHeader("Expo-Platform", "android")
++        .build()
++
++      val response = client.newCall(request).execute()
++      if (response.isSuccessful) {
++        val responseBody = response.body?.string()
++        if (responseBody != null) {
++          val manifestJson = JSONObject(responseBody)
++          val manifest = Manifest.fromManifestJson(manifestJson)
++
++          val updatedAppInfo = defaultAppInfo.copy(
++            appName = manifest.getName() ?: defaultAppInfo.appName,
++            appVersion = manifest.getVersion() ?: defaultAppInfo.appVersion,
++            sdkVersion = (manifest as? ExpoUpdatesManifest)?.getExpoGoSDKVersion() ?: defaultAppInfo.sdkVersion,
++            runtimeVersion = (manifest as? ExpoUpdatesManifest)?.getRuntimeVersion() ?: defaultAppInfo.runtimeVersion,
++            hostUrl = metroURL
++          )
++
++          val viewModel = DevMenuApi.model { activity }.value
++          viewModel?.updateAppInfo(updatedAppInfo)
++          println("Successfully updated dev menu with info from manifest")
++        }
++      } else {
++        println("Failed to fetch manifest: ${response.code}")
++      }
++    } catch (e: IOException) {
++      println("Failed to connect to Metro: ${e.message}")
++    } catch (e: Exception) {
++      println("Failed to parse manifest: ${e.message}")
++    }
++  }.start()
++}

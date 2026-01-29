@@ -51,6 +51,7 @@
     "chalk": "^4.1.2",
     "diff": "^5.2.0",
     "expo-build-properties": "~55.0.3",
+    "expo-manifests": "~55.0.3",
     "ora": "^5.4.1",
     "prompts": "^2.4.2"
   },
