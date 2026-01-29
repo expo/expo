@@ -36,24 +36,25 @@ struct AccountSheet: View {
 
   private var accountScreenHeader: some View {
     VStack(spacing: 8) {
-      HStack {
+      ZStack {
         Text("Account")
           .font(.title2)
           .fontWeight(.semibold)
 
-        Spacer()
-
-        Button {
-          dismiss()
-        } label: {
-          Image(systemName: "xmark")
-            .font(.system(size: 16, weight: .medium))
-            .foregroundColor(.primary)
-            .frame(width: 44, height: 44)
+        HStack {
+          Button {
+            dismiss()
+          } label: {
+            Image(systemName: "xmark")
+              .font(.system(size: 16, weight: .medium))
+              .foregroundColor(.primary)
+              .frame(width: 44, height: 44)
+          }
+          Spacer()
         }
       }
       .padding(.horizontal, 16)
-      .padding(.top, 8)
+      .padding(.top, 16)
     }
   }
 
