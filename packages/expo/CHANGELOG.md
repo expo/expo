@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Replace `URL` and `URLSearchParams` implementation ([#42706](https://github.com/expo/expo/pull/42706) by [@kitten](https://github.com/kitten))
+
 ## 55.0.0-preview.7 — 2026-01-27
 
 _This version does not introduce any user-facing changes._
