@@ -12,8 +12,6 @@ struct DevMenuAppInfo: View {
         .foregroundColor(.primary.opacity(0.6))
 
       VStack(spacing: 0) {
-        Divider()
-
         InfoRow(title: "Version", value: viewModel.appInfo?.appVersion ?? "Unknown")
 
         if viewModel.configuration.showRuntimeVersion {
@@ -46,8 +44,7 @@ struct DevMenuAppInfo: View {
         }
       }
       .padding(.horizontal)
-      .background(Color.expoSystemBackground)
-      .cornerRadius(18)
+      .background(Color.expoSecondarySystemBackground, in: RoundedRectangle(cornerRadius: 18))
     }
   }
 }
