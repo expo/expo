@@ -14,10 +14,13 @@ Pod::Spec.new do |s|
     :ios => '15.1'
   }
   s.source         = { git: 'https://github.com/expo/expo.git' }
-  s.static_framework = true
-  s.source_files   = '**/*.{h,m,swift}'
-  s.preserve_paths = '**/*.{h,m,swift}'
   s.requires_arc   = true
 
   s.dependency 'ExpoModulesCore'
+
+  if (!Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s))
+    s.static_framework = true
+    s.source_files   = '**/*.{h,m,swift}'
+    s.preserve_paths = '**/*.{h,m,swift}'
+  end
 end
