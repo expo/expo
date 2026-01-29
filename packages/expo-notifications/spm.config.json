@@ -1,0 +1,33 @@
+{
+    "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "products": [
+        {
+            "name": "ExpoNotifications",
+            "platforms": [
+                "iOS(.v15)"
+            ],
+            "externalDependencies": [
+                "ReactNativeDependencies",
+                "React",
+                "Hermes",
+                "expo-modules-core/ExpoModulesCore"
+            ],
+            "targets": [
+                {
+                    "type": "swift",
+                    "name": "ExpoNotifications",
+                    "path": "ios/ExpoNotifications",
+                    "pattern": "**/*.swift",
+                    "exclude": ["Tests/**"],
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "expo-modules-core/ExpoModulesCore"
+                    ],
+                    "linkedFrameworks": ["Foundation", "UIKit", "UserNotifications"]
+                }
+            ]
+        }
+    ]
+}

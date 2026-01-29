@@ -32,7 +32,7 @@ module Expo
       if (should_use_prebuilt)
         xcframework_path = ".xcframeworks/debug/#{spec.name}.xcframework"
         framework_exists = File.exist?("#{xcframework_path}")
-        Pod::UI.info "#{"[Expo-precompiled]:".blue} 📦 #{spec.name.green} #{!framework_exists ? "(❌ Build from source: framework not found #{xcframework_path})" : ""}"
+        Pod::UI.info "#{"[Expo-precompiled] ".blue} 📦 #{spec.name.green} #{!framework_exists ? "(❌ Build from source: framework not found #{xcframework_path})" : ""}"
         if framework_exists
           spec.vendored_frameworks = xcframework_path
           return true
