@@ -165,10 +165,34 @@ class SourceMapService {
 
   // MARK: - Snack Session Integration
 
+  /// Gets the current snack channel from the manifest URL
+  private static func getCurrentChannel() -> String? {
+    guard let manifestURL = DevMenuManager.shared.currentManifestURL,
+          let components = URLComponents(url: manifestURL, resolvingAgainstBaseURL: false) else {
+      return nil
+    }
+    return components.queryItems?.first(where: { $0.name == "snack-channel" })?.value
+  }
+
   /// Sends a file update to the Snack session (if connected)
   /// - Returns: true if the update was sent, false if no active session
   static func sendSnackFileUpdate(path: String, oldContents: String, newContents: String) -> Bool {
-    guard let session = cachedSession else {
+    let currentChannel = getCurrentChannel()
+
+    // First try the SnackEditingSession (for published snacks opened from Expo Go)
+    // Only use if the channel matches the current snack
+    if let session = SnackEditingSession.shared.sessionClient,
+       let editingChannel = SnackEditingSession.shared.channel,
+       editingChannel == currentChannel {
+      session.sendFileUpdate(path: path, oldContents: oldContents, newContents: newContents)
+      return true
+    }
+
+    // Fall back to cached session (for snacks opened from snack.expo.dev)
+    // Only use if the channel matches the current snack
+    guard let session = cachedSession,
+          let cachedChannel = cachedSessionChannel,
+          cachedChannel == currentChannel else {
       return false
     }
 
@@ -176,13 +200,43 @@ class SourceMapService {
     return true
   }
 
-  /// Checks if there's an active Snack session
+  /// Checks if there's an active Snack session for the current snack
   static var hasActiveSnackSession: Bool {
-    return cachedSession != nil && cachedSessionChannel != nil
+    let currentChannel = getCurrentChannel()
+
+    // Check SnackEditingSession first (for published snacks)
+    if SnackEditingSession.shared.isReady,
+       SnackEditingSession.shared.sessionClient != nil,
+       let editingChannel = SnackEditingSession.shared.channel,
+       editingChannel == currentChannel {
+      return true
+    }
+
+    // Fall back to cached session (for snacks from website)
+    if cachedSession != nil,
+       let cachedChannel = cachedSessionChannel,
+       cachedChannel == currentChannel {
+      return true
+    }
+
+    return false
   }
 
   /// Fetches source files from a live Snack session via Snackpub
   private func fetchSnackSourceMapFromSession(channel: String) async throws -> SourceMap {
+    // Check if SnackEditingSession has files for this channel (published snacks from Expo Go)
+    if SnackEditingSession.shared.channel == channel,
+       SnackEditingSession.shared.isReady,
+       let files = SnackEditingSession.shared.currentFiles,
+       !files.isEmpty {
+      // Convert SnackSessionClient.SnackFile to our expected format and build source map
+      var convertedFiles: [String: SnackSessionClient.SnackFile] = [:]
+      for (path, file) in files {
+        convertedFiles[path] = file
+      }
+      return buildSourceMap(from: convertedFiles)
+    }
+
     // Check if we have cached files for this channel
     if SourceMapService.cachedSessionChannel == channel,
        let cachedFiles = SourceMapService.cachedFiles,

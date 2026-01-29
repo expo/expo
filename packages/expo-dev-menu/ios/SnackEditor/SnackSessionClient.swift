@@ -4,13 +4,19 @@ import Foundation
 
 /// Client that connects to Snackpub to participate in a Snack session.
 /// This allows the dev menu to receive and send code updates as a peer in the session.
-class SnackSessionClient {
+public class SnackSessionClient {
   // MARK: - Types
 
-  struct SnackFile {
-    let path: String
-    let contents: String
-    let isAsset: Bool
+  public struct SnackFile {
+    public let path: String
+    public let contents: String
+    public let isAsset: Bool
+
+    public init(path: String, contents: String, isAsset: Bool) {
+      self.path = path
+      self.contents = contents
+      self.isAsset = isAsset
+    }
   }
 
   enum ConnectionState {
@@ -31,10 +37,15 @@ class SnackSessionClient {
 
   private var onFilesReceived: (([String: SnackFile]) -> Void)?
   private var onError: ((Error) -> Void)?
-  private var currentFiles: [String: SnackFile] = [:]  // Track current file state
+  public private(set) var currentFiles: [String: SnackFile] = [:]  // Track current file state
   private var currentDependencies: [String: Any] = [:]  // Track dependencies from last CODE message
   private var currentMetadata: [String: Any] = [:]  // Track metadata (includes SDK version)
   private var currentS3Urls: [String: String] = [:]  // Track ALL s3urls (assets + large files)
+
+  // Host mode properties
+  private var hostMode: Bool = false
+  private var hostedFiles: [String: SnackFile]?
+  private var onHostReady: (() -> Void)?
 
   // MARK: - Initialization
 
@@ -43,6 +54,19 @@ class SnackSessionClient {
     self.snackpubURL = isStaging
       ? "wss://staging-snackpub.expo.dev/socket.io/?EIO=4&transport=websocket"
       : "wss://snackpub.expo.dev/socket.io/?EIO=4&transport=websocket"
+  }
+
+  /// Initialize in host mode with pre-fetched files.
+  /// In host mode, the client responds to RESEND_CODE requests with the provided files.
+  init(channel: String, isStaging: Bool = false, hostedFiles: [String: SnackFile], hostedDependencies: [String: Any] = [:]) {
+    self.channel = channel
+    self.snackpubURL = isStaging
+      ? "wss://staging-snackpub.expo.dev/socket.io/?EIO=4&transport=websocket"
+      : "wss://snackpub.expo.dev/socket.io/?EIO=4&transport=websocket"
+    self.hostMode = true
+    self.hostedFiles = hostedFiles
+    self.currentFiles = hostedFiles
+    self.currentDependencies = hostedDependencies
   }
 
   deinit {
@@ -57,6 +81,38 @@ class SnackSessionClient {
     onError: @escaping (Error) -> Void
   ) {
     self.onFilesReceived = onFilesReceived
+    self.onError = onError
+
+    guard state == .disconnected else {
+      return
+    }
+
+    state = .connecting
+
+    guard let url = URL(string: snackpubURL) else {
+      onError(SnackSessionError.invalidURL)
+      return
+    }
+
+    urlSession = URLSession(configuration: .default)
+    webSocketTask = urlSession?.webSocketTask(with: url)
+    webSocketTask?.resume()
+
+    receiveMessage()
+  }
+
+  /// Connects to Snackpub in host mode.
+  /// In this mode, the client subscribes to the channel and responds to RESEND_CODE requests.
+  func connectAsHost(
+    onReady: @escaping () -> Void,
+    onError: @escaping (Error) -> Void
+  ) {
+    guard hostMode else {
+      onError(SnackSessionError.notInHostMode)
+      return
+    }
+
+    self.onHostReady = onReady
     self.onError = onError
 
     guard state == .disconnected else {
@@ -106,25 +162,37 @@ class SnackSessionClient {
     // Create CODE message with diffs for ALL files
     // Snack expects diff from empty string to full content for each file
     var allDiffs: [String: String] = [:]
+    var s3urls: [String: String] = currentS3Urls
+
     for (filePath, file) in currentFiles {
-      if filePath == path {
+      // Check if this is an asset or S3-hosted file
+      let isS3File = file.isAsset || file.contents.hasPrefix("https://snack-code-uploads.s3")
+
+      if isS3File {
+        // For assets/S3 files, use empty diff and put URL in s3urls
+        allDiffs[filePath] = ""
+        s3urls[filePath] = file.contents
+      } else if filePath == path {
         // Use the new content diff for the changed file
         allDiffs[filePath] = diff
       } else {
-        // For unchanged files, generate diff from empty to current content
+        // For unchanged code files, generate diff from empty to current content
         allDiffs[filePath] = generateUnifiedDiff(oldContents: "", newContents: file.contents)
       }
     }
 
-    // Include empty diffs for s3url entries (assets + large files)
-    for s3path in currentS3Urls.keys {
-      allDiffs[s3path] = ""
+    // Add empty diffs for any s3url entries not in currentFiles (assets received from website)
+    // This prevents the runtime from deleting these files
+    for s3path in s3urls.keys {
+      if allDiffs[s3path] == nil {
+        allDiffs[s3path] = ""
+      }
     }
 
     let codeMessage: [String: Any] = [
       "type": "CODE",
       "diff": allDiffs,
-      "s3url": currentS3Urls,
+      "s3url": s3urls,
       "dependencies": currentDependencies,
       "metadata": currentMetadata
     ]
@@ -288,10 +356,61 @@ class SnackSessionClient {
       return
     }
 
-
-    if type == "CODE" {
+    switch type {
+    case "CODE":
       handleCodeMessage(message)
+
+    case "RESEND_CODE":
+      if hostMode {
+        handleResendCodeRequest()
+      }
+
+    default:
+      break
     }
+  }
+
+  /// Responds to a RESEND_CODE request by sending the hosted files
+  private func handleResendCodeRequest() {
+    guard let files = hostedFiles else { return }
+    sendCodeMessage(files: files)
+  }
+
+  /// Sends a CODE message with the given files
+  private func sendCodeMessage(files: [String: SnackFile]) {
+    guard state == .connected else { return }
+
+    // Generate diffs for all files (from empty string to full content)
+    var allDiffs: [String: String] = [:]
+    var s3urls: [String: String] = [:]
+
+    for (path, file) in files {
+      // Check if contents is an S3 URL (for uploaded files)
+      let isS3Url = file.contents.hasPrefix("https://snack-code-uploads.s3")
+
+      if file.isAsset || isS3Url {
+        // For assets and uploaded code files, include empty diff and the s3url
+        allDiffs[path] = ""
+        s3urls[path] = file.contents
+      } else {
+        // For inline code files, generate diff from empty to full content
+        allDiffs[path] = generateUnifiedDiff(oldContents: "", newContents: file.contents)
+      }
+    }
+
+    let codeMessage: [String: Any] = [
+      "type": "CODE",
+      "diff": allDiffs,
+      "s3url": s3urls,
+      "dependencies": currentDependencies,
+      "metadata": currentMetadata
+    ]
+
+    sendSocketIOEvent("message", data: [
+      "channel": channel,
+      "message": codeMessage,
+      "sender": socketId ?? ""
+    ])
   }
 
   private func handleCodeMessage(_ message: [String: Any]) {
@@ -502,8 +621,13 @@ class SnackSessionClient {
       "sender": socketId ?? ""
     ])
 
-    // Request current code
-    requestCode()
+    if hostMode {
+      // In host mode, we're ready to respond to RESEND_CODE requests
+      onHostReady?()
+    } else {
+      // In client mode, request current code
+      requestCode()
+    }
   }
 
   private func requestCode() {
@@ -549,12 +673,14 @@ enum SnackSessionError: Error, LocalizedError {
   case invalidURL
   case connectionFailed
   case timeout
+  case notInHostMode
 
   var errorDescription: String? {
     switch self {
     case .invalidURL: return "Invalid Snackpub URL"
     case .connectionFailed: return "Failed to connect to Snackpub"
     case .timeout: return "Connection timed out"
+    case .notInHostMode: return "Cannot connect as host when not in host mode"
     }
   }
 }
