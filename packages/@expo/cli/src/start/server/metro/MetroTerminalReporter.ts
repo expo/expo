@@ -1,4 +1,4 @@
-import type { Terminal } from '@expo/metro/metro-core';
+import { AmbiguousModuleResolutionError, type Terminal } from '@expo/metro/metro-core';
 import chalk from 'chalk';
 import path from 'path';
 import { stripVTControlCharacters } from 'util';
@@ -12,7 +12,9 @@ import {
   TerminalReportableEvent,
 } from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
+import { stripAnsi } from '../../../utils/ansi';
 import { env } from '../../../utils/env';
+import { getJsonlReporter } from '../../../utils/jsonl';
 import { learnMore } from '../../../utils/link';
 import {
   logLikeMetro,
@@ -31,6 +33,8 @@ const LIGHT_BLOCK_CHAR = '\u2591';
  * Also removes the giant Metro logo from the output.
  */
 export class MetroTerminalReporter extends TerminalReporter {
+  private lastFailedBuildID: string | undefined = undefined;
+
   constructor(
     public projectRoot: string,
     terminal: Terminal
@@ -39,8 +43,24 @@ export class MetroTerminalReporter extends TerminalReporter {
   }
 
   _log(event: TerminalReportableEvent): void {
+    const jsonlReporter = getJsonlReporter();
+
     switch (event.type) {
-      case 'unstable_server_log':
+      case 'bundle_build_started': {
+        const details = event.bundleDetails;
+        if (details) {
+          const platform = details.platform || 'unknown';
+          const environment = details.customTransformOptions?.environment;
+          jsonlReporter.emitBundlingStarted({
+            id: event.buildID!,
+            platform,
+            path: details.entryFile,
+            environment,
+          });
+        }
+        break;
+      }
+      case 'unstable_server_log': {
         if (typeof event.data?.[0] === 'string') {
           const message = event.data[0];
           if (message.match(/JavaScript logs have moved/)) {
@@ -66,7 +86,17 @@ export class MetroTerminalReporter extends TerminalReporter {
             }
           }
         }
+
+        // In JSONL mode, emit server log events and skip normal terminal logging
+        if (
+          jsonlReporter.emitServerLog({
+            level: event.level,
+            value: event.data ?? [],
+          })
+        )
+          return;
         break;
+      }
       case 'client_log': {
         if (this.shouldFilterClientLog(event)) {
           return;
@@ -121,13 +151,28 @@ export class MetroTerminalReporter extends TerminalReporter {
                 usefulStackCount && !env.EXPO_DEBUG
                   ? symbolicated.filter((_, index) => !fallbackIndices.includes(index))
                   : symbolicated;
-
+              if (
+                jsonlReporter.emitConsole({
+                  level,
+                  source: 'client',
+                  value: filtered,
+                })
+              )
+                return;
               logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...filtered);
             })();
             return;
           }
         }
 
+        if (
+          jsonlReporter.emitConsole({
+            level,
+            source: 'client',
+            value: event.data,
+          })
+        )
+          return;
         // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
         logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...event.data);
         return;
@@ -146,6 +191,8 @@ export class MetroTerminalReporter extends TerminalReporter {
    * @returns `iOS path/to/bundle.js ▓▓▓▓▓░░░░░░░░░░░ 36.6% (4790/7922)`
    */
   _getBundleStatusMessage(progress: BundleProgress, phase: BuildPhase): string {
+    const jsonlReporter = getJsonlReporter();
+
     const env = getEnvironmentForBuildDetails(progress.bundleDetails);
     const platform = env || getPlatformTagForBuildDetails(progress.bundleDetails);
     const inProgress = phase === 'in_progress';
@@ -169,24 +216,45 @@ export class MetroTerminalReporter extends TerminalReporter {
     }
 
     if (!inProgress) {
-      const status = phase === 'done' ? `Bundled ` : `Bundling failed `;
-      const color = phase === 'done' ? chalk.green : chalk.red;
-
       const startTime = this._bundleTimers.get(progress.bundleDetails.buildID!);
 
-      let time: string = '';
+      let time: number | undefined = undefined;
 
       if (startTime != null) {
         const elapsed: bigint = this._getElapsedTime(startTime);
-        const micro = Number(elapsed) / 1000;
         const converted = Number(elapsed) / 1e6;
-        // If the milliseconds are < 0.5 then it will display as 0, so we display in microseconds.
-        if (converted <= 0.5) {
-          const tenthFractionOfMicro = ((micro * 10) / 1000).toFixed(0);
+        time = converted;
+      }
+
+      // Emit bundling.done in JSONL mode and return empty string
+      if (phase === 'done') {
+        if (
+          jsonlReporter.emitBundlingDone({
+            id: progress.bundleDetails.buildID!,
+            duration: time,
+            totalModules: progress.totalFileCount,
+          })
+        ) {
+          return '';
+        }
+      }
+
+      // Return empty string for failed phase in JSONL mode (error is emitted by _logBundlingError)
+      if (phase === 'failed' && jsonlReporter.isEnabled) {
+        return '';
+      }
+
+      const status = phase === 'done' ? `Bundled ` : `Bundling failed `;
+      const color = phase === 'done' ? chalk.green : chalk.red;
+
+      let timeLabel: string = '';
+      // If the milliseconds are < 0.5 then it will display as 0, so we display in microseconds.
+      if (time !== undefined) {
+        if (time <= 0.5) {
           // Format as microseconds to nearest tenth
-          time = chalk.cyan.bold(`0.${tenthFractionOfMicro}ms`);
+          timeLabel = chalk.cyan.bold(`${time.toFixed(1)}ms`);
         } else {
-          time = chalk.dim(converted.toFixed(0) + 'ms');
+          timeLabel = chalk.dim(time.toFixed(0) + 'ms');
         }
       }
 
@@ -194,7 +262,7 @@ export class MetroTerminalReporter extends TerminalReporter {
       const plural = progress.totalFileCount === 1 ? '' : 's';
       return (
         color(platform + status) +
-        time +
+        timeLabel +
         chalk.reset.dim(` ${localPath} (${progress.totalFileCount} module${plural})`)
       );
     }
@@ -212,13 +280,24 @@ export class MetroTerminalReporter extends TerminalReporter {
         )
       : '';
 
-    return (
-      platform +
-      chalk.reset.dim(`${path.dirname(localPath)}${path.sep}`) +
-      chalk.bold(path.basename(localPath)) +
-      ' ' +
-      _progress
-    );
+    if (
+      getJsonlReporter().emitBundlingProgress({
+        id: progress.bundleDetails.buildID ?? 'unknown',
+        progress: progress.ratio,
+        total: progress.totalFileCount,
+        current: progress.transformedFileCount,
+      })
+    ) {
+      return '';
+    } else {
+      return (
+        platform +
+        chalk.reset.dim(`${path.dirname(localPath)}${path.sep}`) +
+        chalk.bold(path.basename(localPath)) +
+        ' ' +
+        _progress
+      );
+    }
   }
 
   _logInitializing(port: number, hasReducedPerformance: boolean): void {
@@ -258,9 +337,35 @@ export class MetroTerminalReporter extends TerminalReporter {
     }
   }
 
+  /**
+   * Workaround to link build ids to bundling errors.
+   * This works because `_logBundleBuildFailed` is called before `_logBundlingError` in synchronous manner.
+   * https://github.com/facebook/metro/blob/main/packages/metro/src/Server.js#L939-L945
+   */
+  _logBundleBuildFailed(buildID: string): void {
+    this.lastFailedBuildID = buildID;
+    super._logBundleBuildFailed(buildID);
+  }
+
   _logBundlingError(error: SnippetError): void {
+    // Reset the last failed build id after it's used
+    // Bundling errors can also be emitted during hot reload,
+    // where bundling id is not available.
+    // https://github.com/facebook/metro/blob/main/packages/metro/src/HmrServer.js#L384
+    const lastFailedBuildID = this.lastFailedBuildID;
+    this.lastFailedBuildID = undefined;
+
     const moduleResolutionError = formatUsingNodeStandardLibraryError(this.projectRoot, error);
     if (moduleResolutionError) {
+      if (
+        getJsonlReporter().emitBundlingError({
+          id: lastFailedBuildID,
+          value: stripAnsi(moduleResolutionError) ?? '',
+          filename: error.filename,
+        })
+      )
+        return;
+
       let message = maybeAppendCodeFrame(moduleResolutionError, error.message);
       message += '\n\n' + nearestImportStack(error);
       return this.terminal.log(message);
@@ -276,8 +381,49 @@ export class MetroTerminalReporter extends TerminalReporter {
       delete error.stack;
     }
 
+    if (
+      getJsonlReporter().emitBundlingError({
+        id: lastFailedBuildID,
+        value: stripAnsi(formatSnippetErrorForJSONL(error)) ?? '',
+        filename: error.filename,
+      })
+    )
+      return;
+
     return super._logBundlingError(error);
   }
+}
+
+/**
+ * Based on Metro's default `_logBundlingError` implementation.
+ * https://github.com/facebook/metro/blob/main/packages/metro/src/lib/TerminalReporter.js#L308
+ */
+export function formatSnippetErrorForJSONL(error: SnippetError): string {
+  if (error instanceof AmbiguousModuleResolutionError) {
+    const he = error.hasteError;
+    const message =
+      'ambiguous resolution: module `' +
+      `${error.fromModulePath}\` tries to require \`${he.hasteName}\`, ` +
+      'but there are several files providing this module. You can delete ' +
+      'or fix them: \n\n' +
+      Object.keys(he.duplicatesSet)
+        .sort()
+        .map((dupFilePath) => `  * \`${dupFilePath}\`\n`)
+        .join('');
+    return message;
+  }
+
+  let { message } = error;
+
+  if (error.filename && !message.includes(error.filename)) {
+    message += ` [${error.filename}]`;
+  }
+
+  if (error.snippet != null) {
+    message += '\n' + error.snippet;
+  }
+
+  return message;
 }
 
 /**
