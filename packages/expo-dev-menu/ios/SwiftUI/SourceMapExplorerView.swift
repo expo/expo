@@ -88,7 +88,11 @@ struct SourceMapExplorerView: View {
         .foregroundColor(.secondary)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    #if os(tvOS)
+    .background(Color(uiColor: .systemGray))
+    #else
     .background(Color(uiColor: .systemGroupedBackground))
+    #endif
     .ignoresSafeArea()
   }
 
@@ -266,6 +270,9 @@ struct CodeFileView: View {
 
   private var codeToolbar: some View {
     HStack(spacing: 0) {
+      #if os(tvOS)
+      Spacer()
+      #else
       // Copy button
       Button {
         UIPasteboard.general.string = displayContent
@@ -278,6 +285,7 @@ struct CodeFileView: View {
           .font(.system(size: 14))
           .frame(maxWidth: .infinity)
       }
+      #endif
 
       Divider().frame(height: 24)
 
@@ -326,7 +334,11 @@ struct CodeFileView: View {
     }
     .foregroundColor(Color(uiColor: .label))
     .padding(.vertical, 10)
+    #if os(tvOS)
+    .background(Color(uiColor: .systemGray))
+    #else
     .background(Color(uiColor: .secondarySystemBackground))
+    #endif
   }
 
   var body: some View {
@@ -345,7 +357,11 @@ struct CodeFileView: View {
         }
       }
     }
+    #if os(tvOS)
+    .background(theme.background)
+    #else
     .background(isImageFile ? Color(uiColor: .systemGroupedBackground) : theme.background)
+    #endif
     .navigationTitle(node.name)
     .inlineNavigationBar()
     .toolbar {
