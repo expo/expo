@@ -248,8 +248,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   PureComponent: 'https://react.dev/reference/react/PureComponent',
   PushTokenListener: '/versions/latest/sdk/notifications/#pushtokenlistenertoken',
   ReadableStream: 'https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream',
-  RegExp:
-    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp',
+  RegExp: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp',
   Response: 'https://developer.mozilla.org/en-US/docs/Web/API/Response',
   ReactNode: 'https://reactnative.dev/docs/react-node',
   Readonly: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype',
