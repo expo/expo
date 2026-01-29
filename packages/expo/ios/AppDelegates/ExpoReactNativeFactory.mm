@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 #import <Expo/ExpoReactNativeFactory.h>
+#import <ExpoModulesCore/EXHostWrapper.h>
 
 // When using xcframeworks, the generated Swift
 // header is inside ExpoModulesCore module. Otherwise, it's available only
@@ -45,6 +46,8 @@
 
   // Inject and decorate the `global.expo` object
   _appContext._runtime = [[EXRuntime alloc] initWithRuntime:runtime];
+  [_appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
+
   
   [_appContext registerNativeModules];
 }

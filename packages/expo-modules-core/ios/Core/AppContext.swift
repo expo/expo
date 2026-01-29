@@ -57,6 +57,11 @@ public final class AppContext: NSObject, @unchecked Sendable {
   internal weak var reactBridge: RCTBridge?
 
   /**
+   RCTHost wrapper. This is set by ``ExpoReactNativeFactory`` in `didInitializeRuntime`.
+   */
+  private var hostWrapper: ExpoHostWrapper?
+
+  /**
    Underlying JSI runtime of the running app.
    */
   @objc
