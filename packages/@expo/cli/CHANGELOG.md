@@ -16,6 +16,7 @@
 ### 💡 Others
 
 - Bump `@expo/xcpretty` ([#42485](https://github.com/expo/expo/pull/42485) by [@kitten](https://github.com/kitten))
+- Improve global resolution for `ExternalModule` resolution ([#42513](https://github.com/expo/expo/pull/42513) by [@kitten](https://github.com/kitten))
 
 ## 55.0.4 — 2026-01-27
 
