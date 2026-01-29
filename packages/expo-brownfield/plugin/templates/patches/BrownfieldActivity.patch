@@ -1,5 +1,5 @@
 diff --git a/packages/expo-brownfield/plugin/templates/android/BrownfieldActivity.kt b/packages/expo-brownfield/plugin/templates/android/BrownfieldActivity.kt
-index dda8db9d25..bf79e09ed9 100644
+index dda8db9d25..ee263e78e2 100644
 --- a/packages/expo-brownfield/plugin/templates/android/BrownfieldActivity.kt
 +++ b/packages/expo-brownfield/plugin/templates/android/BrownfieldActivity.kt
 @@ -4,6 +4,8 @@ import android.app.Application
@@ -11,15 +11,14 @@ index dda8db9d25..bf79e09ed9 100644
  
  object BrownfieldLifecycleDispatcher {
    fun onApplicationCreate(application: Application) {
-@@ -20,4 +22,16 @@ open class BrownfieldActivity : AppCompatActivity() {
+@@ -20,4 +22,15 @@ open class BrownfieldActivity : AppCompatActivity() {
      super.onConfigurationChanged(newConfig)
      BrownfieldLifecycleDispatcher.onConfigurationChanged(this.application, newConfig)
    }
 +
 +  override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
 +    if (BuildConfig.DEBUG) {
-+      val fragmentDelegate = DevMenuApi.fragment { this }
-+      val fragment = fragmentDelegate.value
++      val fragment by DevMenuApi.fragment { this }
 +      if (fragment?.onKeyUp(keyCode, event) == true) {
 +        return true
 +      }
