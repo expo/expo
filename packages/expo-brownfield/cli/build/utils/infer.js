@@ -32,7 +32,7 @@ const inferAndroidLibrary = async () => {
                 continue;
             }
         }
-        throw new Error('');
+        throw new Error('Unable to find brownfield Android library');
     }
     catch (error) {
         const message = error instanceof Error ? error.message : 'Unknown error';
@@ -48,7 +48,7 @@ const inferXCWorkspace = async () => {
         if (xcworkspace) {
             return path_1.default.join(iosPath, xcworkspace.name);
         }
-        throw new Error();
+        throw new Error('Unable to find brownfield iOS Workspace (.xcworkspace)');
     }
     catch (error) {
         return constants_1.Errors.inference('iOS Workspace (.xcworkspace)');
@@ -72,7 +72,7 @@ const inferScheme = async () => {
                 continue;
             }
         }
-        throw new Error();
+        throw new Error('Unable to find brownfield iOS group');
     }
     catch (error) {
         return constants_1.Errors.inference('iOS Scheme');
