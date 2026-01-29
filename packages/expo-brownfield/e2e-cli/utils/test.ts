@@ -3,43 +3,101 @@ import path from 'path';
 
 import { executeCLIASync } from './process';
 
+type ExpectedStreamValue =
+  | string // Validate that output includes expected string
+  | string[] // Validate that output includes expected strings
+  | Set<string>; // Validate that output excludes all strings from the set
+
+interface BuildTestOptions {
+  directory: string;
+  command: string;
+  args: string[];
+  successExit?: boolean;
+  stdout?: ExpectedStreamValue;
+  stderr?: ExpectedStreamValue;
+  useSnapshot?: boolean;
+}
+
+type BuildTestOptionsPlatform = Omit<BuildTestOptions, 'command'>;
+
 /**
- * Runs a build-android test scenario and validates results
+ * Runs a build:android test scenario and validates results
  */
-export const buildAndroidTest = async (
-  directory: string,
-  args: string[],
-  successExit: boolean,
-  stdout: string[] = [],
-  stderr: string[] = []
-) => {
-  await buildTestCommon(directory, 'build:android', args, successExit, stdout, stderr);
+export const buildAndroidTest = async ({
+  directory,
+  args,
+  successExit,
+  stdout,
+  stderr,
+  useSnapshot,
+}: BuildTestOptionsPlatform) => {
+  await buildTestCommon({
+    directory,
+    command: 'build:android',
+    args,
+    successExit,
+    stdout,
+    stderr,
+    useSnapshot,
+  });
 };
 
 /**
- * Runs a build-ios test scenario and validates results
+ * Runs a build:ios test scenario and validates results
  */
-export const buildIosTest = async (
-  directory: string,
-  args: string[],
-  successExit: boolean,
-  stdout: string[] = [],
-  stderr: string[] = []
-) => {
-  await buildTestCommon(directory, 'build:ios', args, successExit, stdout, stderr);
+export const buildIosTest = async ({
+  directory,
+  args,
+  successExit,
+  stdout,
+  stderr,
+  useSnapshot,
+}: BuildTestOptionsPlatform) => {
+  await buildTestCommon({
+    directory,
+    command: 'build:ios',
+    args,
+    successExit,
+    stdout,
+    stderr,
+    useSnapshot,
+  });
 };
 
 /**
- * Common logic for build-android and build-ios tests
+ * Runs a tasks:android test scenario and validates results
  */
-export const buildTestCommon = async (
-  directory: string,
-  command: string,
-  args: string[],
-  successExit: boolean,
-  stdout: string[] = [],
-  stderr: string[] = []
-) => {
+export const tasksAndroidTest = async ({
+  directory,
+  args,
+  successExit,
+  stdout,
+  stderr,
+  useSnapshot,
+}: BuildTestOptionsPlatform) => {
+  await buildTestCommon({
+    directory,
+    command: 'tasks:android',
+    args,
+    successExit,
+    stdout,
+    stderr,
+    useSnapshot,
+  });
+};
+
+/**
+ * Common logic for build:android, build:ios and tasks:android tests
+ */
+export const buildTestCommon = async ({
+  directory,
+  command,
+  args,
+  successExit = true,
+  stdout = [],
+  stderr = [],
+  useSnapshot = false,
+}: BuildTestOptions) => {
   const result = await executeCLIASync(directory, [command, ...args], {
     ignoreErrors: !successExit,
   });
@@ -50,11 +108,36 @@ export const buildTestCommon = async (
     expect(result.exitCode).not.toBe(0);
   }
 
-  for (const line of stdout) {
-    expect(result.stdout).toContain(line);
+  if (useSnapshot) {
+    expect(result.stdout).toMatchSnapshot();
   }
-  for (const line of stderr) {
-    expect(result.stderr).toContain(line);
+
+  if (stdout) {
+    if (typeof stdout === 'string') {
+      expect(result.stdout).toContain(stdout);
+    } else if (Array.isArray(stdout)) {
+      stdout.forEach((line) => {
+        expect(result.stdout).toContain(line);
+      });
+    } else if (stdout instanceof Set) {
+      stdout.forEach((line) => {
+        expect(result.stdout).not.toContain(line);
+      });
+    }
+  }
+
+  if (stderr) {
+    if (typeof stderr === 'string') {
+      expect(result.stderr).toContain(stderr);
+    } else if (Array.isArray(stderr)) {
+      stderr.forEach((line) => {
+        expect(result.stderr).toContain(line);
+      });
+    } else if (stderr instanceof Set) {
+      stderr.forEach((line) => {
+        expect(result.stderr).not.toContain(line);
+      });
+    }
   }
 };
 

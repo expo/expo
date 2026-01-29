@@ -29,8 +29,16 @@ describe('build:android command', () => {
      */
     it('should display help message for --help/-h option', async () => {
       // Help message display shouldn't require prebuild
-      await buildAndroidTest(TEMP_DIR, ['--help'], true, [HELP_MESSAGE.BUILD_ANDROID]);
-      await buildAndroidTest(TEMP_DIR, ['-h'], true, [HELP_MESSAGE.BUILD_ANDROID]);
+      await buildAndroidTest({
+        directory: TEMP_DIR,
+        args: ['--help'],
+        useSnapshot: true,
+      });
+      await buildAndroidTest({
+        directory: TEMP_DIR,
+        args: ['-h'],
+        useSnapshot: true,
+      });
     });
 
     /**
@@ -38,13 +46,12 @@ describe('build:android command', () => {
      * Expected behavior: The CLI should display the error message
      */
     it('should handle incorrect options', async () => {
-      await buildAndroidTest(
-        TEMP_DIR,
-        ['--invalid-flag'],
-        false,
-        [],
-        [ERROR.UNKNOWN_OPTION('--invalid-flag')]
-      );
+      await buildAndroidTest({
+        directory: TEMP_DIR,
+        args: ['--invalid-flag'],
+        successExit: false,
+        stderr: [ERROR.UNKNOWN_OPTION('--invalid-flag')],
+      });
     });
 
     /**
@@ -52,13 +59,12 @@ describe('build:android command', () => {
      * Expected behavior: The CLI should display the error message
      */
     it("shouldn't allow passing another command", async () => {
-      await buildAndroidTest(
-        TEMP_DIR,
-        ['build:ios'],
-        false,
-        [],
-        [ERROR.ADDITIONAL_COMMAND('build:android')]
-      );
+      await buildAndroidTest({
+        directory: TEMP_DIR,
+        args: ['build:ios'],
+        successExit: false,
+        stderr: [ERROR.ADDITIONAL_COMMAND('build:android')],
+      });
     });
 
     /**
@@ -105,9 +111,11 @@ describe('build:android command', () => {
      * Expected behavior: The CLI should print the task it would execute
      */
     it('should build the project', async () => {
-      await buildAndroidTest(TEMP_DIR_PREBUILD, ['--task', 'someGradleTask', '--dry-run'], true, [
-        './gradlew someGradleTask',
-      ]);
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--task', 'someGradleTask', '--dry-run'],
+        stdout: ['./gradlew someGradleTask'],
+      });
     });
 
     /**
@@ -115,9 +123,11 @@ describe('build:android command', () => {
      * Expected behavior: The CLI should print the inferred build configuration
      */
     it('should infer and print build configuration', async () => {
-      await buildAndroidTest(TEMP_DIR_PREBUILD, ['--task', 'someGradleTask', '--dry-run'], true, [
-        BUILD_ANDROID.CONFIGURATION,
-      ]);
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--task', 'someGradleTask', '--dry-run'],
+        stdout: [BUILD_ANDROID.CONFIGURATION],
+      });
     });
 
     /**
@@ -125,12 +135,11 @@ describe('build:android command', () => {
      * Expected behavior: The CLI should print the verbose configuration
      */
     it('should properly handle --verbose option', async () => {
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['--task', 'someGradleTask', '--dry-run', '--verbose'],
-        true,
-        [BUILD.VERBOSE]
-      );
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--task', 'someGradleTask', '--dry-run', '--verbose'],
+        stdout: [BUILD.VERBOSE],
+      });
     });
 
     /**
@@ -138,22 +147,21 @@ describe('build:android command', () => {
      * Expected behavior: The CLI should print the debug configuration and execute correct tasks
      */
     it('should properly handle --debug option', async () => {
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['--repo', 'MavenLocal', '--dry-run', '--debug'],
-        true,
-        [BUILD.BUILD_TYPE_DEBUG, `./gradlew publishBrownfieldDebugPublicationToMavenLocal`]
-      );
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['--repo', 'MavenLocal', '--dry-run', '--debug'],
-        true,
-        [BUILD.BUILD_TYPE_DEBUG, `./gradlew publishBrownfieldDebugPublicationToMavenLocal`]
-      );
-      await buildAndroidTest(TEMP_DIR_PREBUILD, ['--repo', 'MavenLocal', '--dry-run', '-d'], true, [
-        BUILD.BUILD_TYPE_DEBUG,
-        `./gradlew publishBrownfieldDebugPublicationToMavenLocal`,
-      ]);
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--dry-run', '--debug'],
+        stdout: [BUILD.BUILD_TYPE_DEBUG, `./gradlew publishBrownfieldDebugPublicationToMavenLocal`],
+      });
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--dry-run', '--debug'],
+        stdout: [BUILD.BUILD_TYPE_DEBUG, `./gradlew publishBrownfieldDebugPublicationToMavenLocal`],
+      });
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--dry-run', '-d'],
+        stdout: [BUILD.BUILD_TYPE_DEBUG, `./gradlew publishBrownfieldDebugPublicationToMavenLocal`],
+      });
     });
 
     /**
@@ -162,21 +170,31 @@ describe('build:android command', () => {
      */
     it('should properly handle --release option', async () => {
       // Full version: --release
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['--repo', 'MavenLocal', '--dry-run', '--release'],
-        true,
-        [BUILD.BUILD_TYPE_RELEASE, `./gradlew publishBrownfieldReleasePublicationToMavenLocal`]
-      );
-      await buildAndroidTest(TEMP_DIR_PREBUILD, ['--repo', 'MavenLocal', '--dry-run', '-r'], true, [
-        BUILD.BUILD_TYPE_RELEASE,
-        `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
-      ]);
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--dry-run', '--release'],
+        stdout: [
+          BUILD.BUILD_TYPE_RELEASE,
+          `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
+        ],
+      });
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--dry-run', '-r'],
+        stdout: [
+          BUILD.BUILD_TYPE_RELEASE,
+          `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
+        ],
+      });
       // Short version: -r
-      await buildAndroidTest(TEMP_DIR_PREBUILD, ['--repo', 'MavenLocal', '--dry-run', '-r'], true, [
-        BUILD.BUILD_TYPE_RELEASE,
-        `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
-      ]);
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--dry-run', '-r'],
+        stdout: [
+          BUILD.BUILD_TYPE_RELEASE,
+          `./gradlew publishBrownfieldReleasePublicationToMavenLocal`,
+        ],
+      });
     });
 
     /**
@@ -186,26 +204,25 @@ describe('build:android command', () => {
      */
     it('should properly handle --all option', async () => {
       // Full version: --all
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['--repo', 'MavenLocal', '--dry-run', '--all'],
-        true,
-        [BUILD.BUILD_TYPE_ALL, `./gradlew publishBrownfieldAllPublicationToMavenLocal`]
-      );
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--dry-run', '--all'],
+        stdout: [BUILD.BUILD_TYPE_ALL, `./gradlew publishBrownfieldAllPublicationToMavenLocal`],
+      });
 
       // Short version: -a
-      await buildAndroidTest(TEMP_DIR_PREBUILD, ['--repo', 'MavenLocal', '--dry-run', '-a'], true, [
-        BUILD.BUILD_TYPE_ALL,
-        `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
-      ]);
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--dry-run', '-a'],
+        stdout: [BUILD.BUILD_TYPE_ALL, `./gradlew publishBrownfieldAllPublicationToMavenLocal`],
+      });
 
       // Combination of the two flags: --release/-r + --debug/-d
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['--repo', 'MavenLocal', '--dry-run', '--release', '-d'],
-        true,
-        [BUILD.BUILD_TYPE_ALL, `./gradlew publishBrownfieldAllPublicationToMavenLocal`]
-      );
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--dry-run', '--release', '-d'],
+        stdout: [BUILD.BUILD_TYPE_ALL, `./gradlew publishBrownfieldAllPublicationToMavenLocal`],
+      });
     });
 
     /**
@@ -214,20 +231,18 @@ describe('build:android command', () => {
      */
     it('should properly handle --library option', async () => {
       // Full version: --library
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['--repo', 'MavenLocal', '--dry-run', '--library', 'brownfieldlib'],
-        true,
-        [BUILD_ANDROID.LIBRARY, `./gradlew publishBrownfieldAllPublicationToMavenLocal`]
-      );
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--dry-run', '--library', 'brownfieldlib'],
+        stdout: [BUILD_ANDROID.LIBRARY, `./gradlew publishBrownfieldAllPublicationToMavenLocal`],
+      });
 
       // Short version: -l
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['--repo', 'MavenLocal', '--dry-run', '-l', 'brownfieldlib'],
-        true,
-        [BUILD_ANDROID.LIBRARY, `./gradlew publishBrownfieldAllPublicationToMavenLocal`]
-      );
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--dry-run', '-l', 'brownfieldlib'],
+        stdout: [BUILD_ANDROID.LIBRARY, `./gradlew publishBrownfieldAllPublicationToMavenLocal`],
+      });
     });
 
     /**
@@ -235,12 +250,11 @@ describe('build:android command', () => {
      * Expected behavior: The CLI should print the tasks configuration and execute correct tasks
      */
     it('should properly handle --task/-t option(s)', async () => {
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['--task', 'task1', '-t', 'task2', '--task', 'task3', '--dry-run'],
-        true,
-        [BUILD_ANDROID.TASKS, `./gradlew task1`, `./gradlew task2`, `./gradlew task3`]
-      );
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--task', 'task1', '-t', 'task2', '--task', 'task3', '--dry-run'],
+        stdout: [BUILD_ANDROID.TASKS, `./gradlew task1`, `./gradlew task2`, `./gradlew task3`],
+      });
     });
 
     /**
@@ -248,16 +262,15 @@ describe('build:android command', () => {
      * Expected behavior: The CLI should print the repositories configuration and execute correct tasks
      */
     it('should properly handle --repo/--repository option(s)', async () => {
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['--repo', 'MavenLocal', '--repository', 'CustomLocal', '--dry-run'],
-        true,
-        [
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--repository', 'CustomLocal', '--dry-run'],
+        stdout: [
           BUILD_ANDROID.REPOSTORIES,
           `./gradlew publishBrownfieldAllPublicationToMavenLocal`,
           `./gradlew publishBrownfieldAllPublicationToCustomLocalRepository`,
-        ]
-      );
+        ],
+      });
     });
 
     /**
@@ -265,12 +278,11 @@ describe('build:android command', () => {
      * Expected behavior: Tasks should take precedence over repositories. Correct task should be executed
      */
     it('tasks should take precedence over repositories', async () => {
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['--repo', 'MavenLocal', '--task', 'task1', '--dry-run'],
-        true,
-        [BUILD_ANDROID.TASK, `./gradlew task1`]
-      );
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--task', 'task1', '--dry-run'],
+        stdout: [BUILD_ANDROID.TASK, `./gradlew task1`],
+      });
     });
 
     /**
@@ -278,22 +290,20 @@ describe('build:android command', () => {
      * Expected behavior: Correct tasks should be constructed and executed
      */
     it('should properly construct and execute tasks for various configurations', async () => {
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['--repo', 'MavenLocal', '--debug', '--dry-run'],
-        true,
-        [BUILD.BUILD_TYPE_DEBUG, `./gradlew publishBrownfieldDebugPublicationToMavenLocal`]
-      );
-      await buildAndroidTest(
-        TEMP_DIR_PREBUILD,
-        ['--repo', 'CustomDir', '--repository', 'CustomLocal', '--release', '--dry-run'],
-        true,
-        [
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'MavenLocal', '--debug', '--dry-run'],
+        stdout: [BUILD.BUILD_TYPE_DEBUG, `./gradlew publishBrownfieldDebugPublicationToMavenLocal`],
+      });
+      await buildAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--repo', 'CustomDir', '--repository', 'CustomLocal', '--release', '--dry-run'],
+        stdout: [
           BUILD.BUILD_TYPE_RELEASE,
           `./gradlew publishBrownfieldReleasePublicationToCustomDirRepository`,
           `./gradlew publishBrownfieldReleasePublicationToCustomLocalRepository`,
-        ]
-      );
+        ],
+      });
     });
   });
 });

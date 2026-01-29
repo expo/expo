@@ -1,6 +1,6 @@
-import { ERROR, HELP_MESSAGE, TASKS_ANDROID } from '../utils/output';
-import { executeCLIASync } from '../utils/process';
+import { ERROR, TASKS_ANDROID } from '../utils/output';
 import { createTempProject, cleanUpProject } from '../utils/project';
+import { tasksAndroidTest } from '../utils/test';
 
 let TEMP_DIR: string;
 let TEMP_DIR_PREBUILD: string;
@@ -28,13 +28,16 @@ describe('tasks:android command', () => {
      */
     it('should display help message for --help/-h option', async () => {
       // Help message display shouldn't require prebuild
-      let result = await executeCLIASync(TEMP_DIR, ['tasks:android', '--help']);
-      expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain(HELP_MESSAGE.TASKS_ANDROID);
-
-      result = await executeCLIASync(TEMP_DIR, ['tasks:android', '-h']);
-      expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain(HELP_MESSAGE.TASKS_ANDROID);
+      await tasksAndroidTest({
+        directory: TEMP_DIR,
+        args: ['--help'],
+        useSnapshot: true,
+      });
+      await tasksAndroidTest({
+        directory: TEMP_DIR,
+        args: ['-h'],
+        useSnapshot: true,
+      });
     });
 
     /**
@@ -42,13 +45,12 @@ describe('tasks:android command', () => {
      * Expected behavior: The CLI should display the error message
      */
     it('should handle incorrect options', async () => {
-      const { exitCode, stderr } = await executeCLIASync(
-        TEMP_DIR,
-        ['tasks:android', '--invalid-flag'],
-        { ignoreErrors: true }
-      );
-      expect(exitCode).toBe(1);
-      expect(stderr).toContain(ERROR.UNKNOWN_OPTION('--invalid-flag'));
+      await tasksAndroidTest({
+        directory: TEMP_DIR,
+        args: ['--invalid-flag'],
+        successExit: false,
+        stderr: [ERROR.UNKNOWN_OPTION('--invalid-flag')],
+      });
     });
 
     /**
@@ -56,13 +58,12 @@ describe('tasks:android command', () => {
      * Expected behavior: The CLI should display the error message
      */
     it("shouldn't allow passing another command", async () => {
-      const { exitCode, stderr } = await executeCLIASync(
-        TEMP_DIR,
-        ['tasks:android', 'build:android'],
-        { ignoreErrors: true }
-      );
-      expect(exitCode).toBe(1);
-      expect(stderr).toContain(ERROR.ADDITIONAL_COMMAND('tasks:android'));
+      await tasksAndroidTest({
+        directory: TEMP_DIR,
+        args: ['build:android'],
+        successExit: false,
+        stderr: [ERROR.ADDITIONAL_COMMAND('tasks:android')],
+      });
     });
   });
 
@@ -83,10 +84,10 @@ describe('tasks:android command', () => {
      * Expected behavior: The CLI should properly list available publishing tasks
      */
     it('should properly list available tasks', async () => {
-      const { stdout, exitCode } = await executeCLIASync(TEMP_DIR_PREBUILD, ['tasks:android']);
-      expect(exitCode).toBe(0);
-      TASKS_ANDROID.RESULT.forEach((fragment) => {
-        expect(stdout).toContain(fragment);
+      await tasksAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run'],
+        stdout: TASKS_ANDROID.RESULT,
       });
     });
 
@@ -95,30 +96,23 @@ describe('tasks:android command', () => {
      * Expected behavior: The CLI should use the provided library name instead of inferring it
      */
     it('should properly handle --library/-l option', async () => {
-      let result = await executeCLIASync(TEMP_DIR_PREBUILD, [
-        'tasks:android',
-        '--library',
-        'brownfield',
-      ]);
-      expect(result.exitCode).toBe(0);
-      TASKS_ANDROID.RESULT.forEach((fragment) => {
-        expect(result.stdout).toContain(fragment);
+      await tasksAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '--library', 'brownfield'],
+        stdout: TASKS_ANDROID.RESULT,
       });
 
-      result = await executeCLIASync(TEMP_DIR_PREBUILD, ['tasks:android', '-l', 'brownfield']);
-      expect(result.exitCode).toBe(0);
-      TASKS_ANDROID.RESULT.forEach((fragment) => {
-        expect(result.stdout).toContain(fragment);
+      await tasksAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '-l', 'brownfield'],
+        stdout: TASKS_ANDROID.RESULT,
       });
 
-      result = await executeCLIASync(
-        TEMP_DIR_PREBUILD,
-        ['tasks:android', '-l', 'wrongbrownfield'],
-        { ignoreErrors: true }
-      );
-      expect(result.exitCode).not.toBe(0);
-      TASKS_ANDROID.RESULT.forEach((fragment) => {
-        expect(result.stdout).not.toContain(fragment);
+      await tasksAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '-l', 'wrongbrownfield'],
+        successExit: false,
+        stderr: new Set<string>(TASKS_ANDROID.RESULT),
       });
     });
 
@@ -127,10 +121,10 @@ describe('tasks:android command', () => {
      * Expected behavior: The CLI shouldn't print verbose output by default
      */
     it("shouldn't print verbose output by default", async () => {
-      const { stdout, exitCode } = await executeCLIASync(TEMP_DIR_PREBUILD, ['tasks:android']);
-      expect(exitCode).toBe(0);
-      TASKS_ANDROID.VERBOSE.forEach((fragment) => {
-        expect(stdout).not.toContain(fragment);
+      await tasksAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run'],
+        stdout: new Set<string>(TASKS_ANDROID.VERBOSE),
       });
     });
 
@@ -139,13 +133,10 @@ describe('tasks:android command', () => {
      * Expected behavior: The CLI should print verbose output
      */
     it('should properly handle --verbose option', async () => {
-      const { stdout, exitCode } = await executeCLIASync(TEMP_DIR_PREBUILD, [
-        'tasks:android',
-        '--verbose',
-      ]);
-      expect(exitCode).toBe(0);
-      TASKS_ANDROID.VERBOSE.forEach((fragment) => {
-        expect(stdout).toContain(fragment);
+      await tasksAndroidTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '--verbose'],
+        stdout: TASKS_ANDROID.VERBOSE,
       });
     });
   });

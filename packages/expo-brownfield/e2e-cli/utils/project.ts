@@ -121,5 +121,9 @@ const installPackage = async (projectRoot: string) => {
     force: true,
   });
 
-  await spawnAsync('npm', ['install', packageTarball], { cwd: projectRoot, stdio: 'pipe' });
+  // Use --legacy-peer-deps for better stability
+  await spawnAsync('npm', ['install', packageTarball, '--legacy-peer-deps'], {
+    cwd: projectRoot,
+    stdio: 'pipe',
+  });
 };

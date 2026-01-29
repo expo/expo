@@ -24,7 +24,7 @@ describe('--help option', () => {
   it('should return the correct help message', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['--help']);
     expect(exitCode).toBe(0);
-    expect(stdout).toContain(HELP_MESSAGE.GENERAL);
+    expect(stdout).toMatchSnapshot();
   });
 
   /**
@@ -34,7 +34,7 @@ describe('--help option', () => {
   it('should support the `-h` shorthand', async () => {
     const { stdout, exitCode } = await executeCLIASync(TEMP_DIR, ['-h']);
     expect(exitCode).toBe(0);
-    expect(stdout).toContain(HELP_MESSAGE.GENERAL_HEADER);
+    expect(stdout).toMatchSnapshot();
   });
 
   /**

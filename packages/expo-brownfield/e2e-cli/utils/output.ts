@@ -4,40 +4,8 @@ import path from 'node:path';
  * Help messages
  */
 export const HELP_MESSAGE = {
-  BUILD_ANDROID: `Usage: expo-brownfield build:android [<options>]\n
-Options:
-  --help, -h                    display help for 'build:android'
-  --debug, -d                   build in debug configuration
-  --release, -r                 build in release configuration
-  --verbose                     forward all output to the terminal
-  --all, -a                     build both debug and release configurations
-  --repository, --repo          maven repository for publishing artifacts (multiple can be passed)
-  --task, -t                    publishing task to be run (multiple can be passed)
-  --library, -l                 name of the brownfield library`,
-  BUILD_IOS: `Usage: expo-brownfield build:ios [<options>]\n
-Options:
-  --help, -h                    display help for 'build:ios'
-  --debug, -d                   build in debug configuration
-  --release, -r                 build in release configuration
-  --verbose                     forward all output to the terminal
-  --artifacts, -a               path to artifacts directory
-  --scheme, -s                  scheme to be built
-  --xcworkspace, -x             path to Xcode workspace (.xcworkspace)`,
-  GENERAL: `Usage: expo-brownfield <command> [<options>]\n
-Options:
-  --version, -v                 output the version number
-  --help, -h                    display help for command\n
-Commands:
-  build:android [<options>]     build and publish Android brownfield artifacts
-  build:ios [<options>]         build iOS brownfield artifacts
-  tasks:android [<options>]     list available publishing tasks and repositories for android`,
   GENERAL_HEADER: `Usage: expo-brownfield <command> [<options>]`,
-  TASKS_ANDROID: `Usage: expo-brownfield tasks:android [<options>]\n
-Options:
-  --help, -h                    display help for 'tasks:android'
-  --verbose                     output all subcommands output to the terminal
-  --library, -l                 name of the brownfield library`,
-} as const;
+};
 
 /**
  * Common build outputs
@@ -50,7 +18,7 @@ export const BUILD = {
   PREBUILD_WARNING: (platform: 'android' | 'ios') =>
     `Prebuild for platform: ${platform} is missing`,
   VERBOSE: `- Verbose: true`,
-} as const;
+};
 
 /**
  * Android build outputs
@@ -96,7 +64,7 @@ export const BUILD_IOS = {
     `-framework ${projectRoot}/ios/build/Build/Products/${configuration.toLowerCase()}-iphonesimulator/testapp${workspace}brownfield.framework`,
     `-output ${projectRoot}/artifacts/testapp${workspace}brownfield.xcframework`,
   ],
-} as const;
+};
 
 /**
  * Android tasks outputs
@@ -111,7 +79,7 @@ export const TASKS_ANDROID = {
     '- MavenLocal',
   ],
   VERBOSE: [`> Configure project`, `Publishing tasks\n----------------`, `BUILD SUCCESSFUL in`],
-} as const;
+};
 
 /**
  * Error outputs
@@ -125,7 +93,7 @@ npx expo-brownfield ${command} --help`,
   UNKNOWN_COMMAND: () => `Error: unknown command
 Supported commands: build:android, build:ios, tasks:android`,
   UNKNOWN_OPTION: (option: string) => `Error: unknown or unexpected option: ${option}`,
-} as const;
+};
 
 /**
  * CLI version (= package version)

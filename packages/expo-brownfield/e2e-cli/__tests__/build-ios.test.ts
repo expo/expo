@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { BUILD, BUILD_IOS, ERROR, HELP_MESSAGE } from '../utils/output';
+import { BUILD, BUILD_IOS, ERROR } from '../utils/output';
 import { executeCommandAsync } from '../utils/process';
 import { cleanUpProject, createTempProject } from '../utils/project';
 import { buildIosTest, expectPrebuild } from '../utils/test';
@@ -32,8 +32,16 @@ describe('build:ios command', () => {
      */
     it('should display help message for --help/-h option', async () => {
       // Help message display shouldn't require prebuild
-      await buildIosTest(TEMP_DIR, ['--help'], true, [HELP_MESSAGE.BUILD_IOS]);
-      await buildIosTest(TEMP_DIR, ['-h'], true, [HELP_MESSAGE.BUILD_IOS]);
+      await buildIosTest({
+        directory: TEMP_DIR,
+        args: ['--help'],
+        useSnapshot: true,
+      });
+      await buildIosTest({
+        directory: TEMP_DIR,
+        args: ['-h'],
+        useSnapshot: true,
+      });
     });
 
     /**
@@ -41,13 +49,12 @@ describe('build:ios command', () => {
      * Expected behavior: The CLI should display the error message
      */
     it('should handle incorrect options', async () => {
-      await buildIosTest(
-        TEMP_DIR,
-        ['--invalid-flag'],
-        false,
-        [],
-        [ERROR.UNKNOWN_OPTION('--invalid-flag')]
-      );
+      await buildIosTest({
+        directory: TEMP_DIR,
+        args: ['--invalid-flag'],
+        successExit: false,
+        stderr: [ERROR.UNKNOWN_OPTION('--invalid-flag')],
+      });
     });
 
     /**
@@ -55,13 +62,12 @@ describe('build:ios command', () => {
      * Expected behavior: The CLI should display the error message
      */
     it("shouldn't allow passing another command", async () => {
-      await buildIosTest(
-        TEMP_DIR,
-        ['build:android'],
-        false,
-        [],
-        [ERROR.ADDITIONAL_COMMAND('build:ios')]
-      );
+      await buildIosTest({
+        directory: TEMP_DIR,
+        args: ['build:android'],
+        successExit: false,
+        stderr: [ERROR.ADDITIONAL_COMMAND('build:ios')],
+      });
     });
 
     /**
@@ -108,12 +114,16 @@ describe('build:ios command', () => {
      * Expected behavior: The CLI should print the steps it would execute
      */
     it('should build the project', async () => {
-      await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run'], true, [
-        BUILD_IOS.ARTIFACT_CLEANUP,
-        ...BUILD_IOS.BUILD_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
-        ...BUILD_IOS.PACKAGE_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
-        BUILD_IOS.HERMES_COPYING,
-      ]);
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run'],
+        stdout: [
+          BUILD_IOS.ARTIFACT_CLEANUP,
+          ...BUILD_IOS.BUILD_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
+          ...BUILD_IOS.PACKAGE_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
+          BUILD_IOS.HERMES_COPYING,
+        ],
+      });
     });
 
     /**
@@ -121,9 +131,11 @@ describe('build:ios command', () => {
      * Expected behavior: The CLI should print the inferred build configuration
      */
     it('should infer and print build configuration', async () => {
-      await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run'], true, [
-        BUILD_IOS.CONFIGURATION(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME),
-      ]);
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run'],
+        stdout: [BUILD_IOS.CONFIGURATION(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME)],
+      });
     });
 
     /**
@@ -131,7 +143,11 @@ describe('build:ios command', () => {
      * Expected behavior: The CLI should print the verbose configuration
      */
     it('should properly handle --verbose option', async () => {
-      await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run', '--verbose'], true, [BUILD.VERBOSE]);
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '--verbose'],
+        stdout: [BUILD.VERBOSE],
+      });
     });
 
     /**
@@ -144,8 +160,16 @@ describe('build:ios command', () => {
         ...BUILD_IOS.PACKAGE_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Debug'),
         BUILD.BUILD_TYPE_DEBUG,
       ];
-      await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run', '--debug'], true, expectedOutput);
-      await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run', '-d'], true, expectedOutput);
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '--debug'],
+        stdout: expectedOutput,
+      });
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '-d'],
+        stdout: expectedOutput,
+      });
     });
 
     // release
@@ -159,8 +183,16 @@ describe('build:ios command', () => {
         ...BUILD_IOS.PACKAGE_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
         BUILD.BUILD_TYPE_RELEASE,
       ];
-      await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run', '--release'], true, expectedOutput);
-      await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run', '-r'], true, expectedOutput);
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '--release'],
+        stdout: expectedOutput,
+      });
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '-r'],
+        stdout: expectedOutput,
+      });
     });
 
     /**
@@ -172,12 +204,11 @@ describe('build:ios command', () => {
         ...BUILD_IOS.BUILD_COMMAND(TEMP_DIR_PREBUILD, PREBUILD_WORKSPACE_NAME, 'Release'),
         BUILD.BUILD_TYPE_RELEASE,
       ];
-      await buildIosTest(
-        TEMP_DIR_PREBUILD,
-        ['--dry-run', '--release', '-d', '-r', '--debug'],
-        true,
-        expectedOutput
-      );
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '--release', '-d', '-r', '--debug'],
+        stdout: expectedOutput,
+      });
     });
 
     /**
@@ -185,18 +216,16 @@ describe('build:ios command', () => {
      * Expected behavior: The CLI should print the build configuration with the correct workspace
      */
     it('should properly handle --xcworkspace option', async () => {
-      await buildIosTest(
-        TEMP_DIR_PREBUILD,
-        ['--dry-run', '-x', 'someworkspace.xcworkspace'],
-        true,
-        [`- Xcode Workspace: someworkspace.xcworkspace`]
-      );
-      await buildIosTest(
-        TEMP_DIR_PREBUILD,
-        ['--dry-run', '--xcworkspace', 'someworkspace.xcworkspace'],
-        true,
-        [`- Xcode Workspace: someworkspace.xcworkspace`]
-      );
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '-x', 'someworkspace.xcworkspace'],
+        stdout: [`- Xcode Workspace: someworkspace.xcworkspace`],
+      });
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '--xcworkspace', 'someworkspace.xcworkspace'],
+        stdout: [`- Xcode Workspace: someworkspace.xcworkspace`],
+      });
     });
 
     /**
@@ -204,12 +233,16 @@ describe('build:ios command', () => {
      * Expected behavior: The CLI should print the build configuration with the correct workspace
      */
     it('should properly handle --xcworkspace option', async () => {
-      await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run', '-s', 'somescheme'], true, [
-        `- Xcode Scheme: somescheme`,
-      ]);
-      await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run', '--scheme', 'somescheme'], true, [
-        `- Xcode Scheme: somescheme`,
-      ]);
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '-s', 'somescheme'],
+        stdout: [`- Xcode Scheme: somescheme`],
+      });
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '--scheme', 'somescheme'],
+        stdout: [`- Xcode Scheme: somescheme`],
+      });
     });
 
     /**
@@ -218,12 +251,16 @@ describe('build:ios command', () => {
      */
     it('should properly handle --artifacts option', async () => {
       const expectedPath = path.join(TEMP_DIR_PREBUILD, '../artifacts');
-      await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run', '-a', '../artifacts'], true, [
-        `- Artifacts directory: ${expectedPath}`,
-      ]);
-      await buildIosTest(TEMP_DIR_PREBUILD, ['--dry-run', '--artifacts', '../artifacts'], true, [
-        `- Artifacts directory: ${expectedPath}`,
-      ]);
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '-a', '../artifacts'],
+        stdout: [`- Artifacts directory: ${expectedPath}`],
+      });
+      await buildIosTest({
+        directory: TEMP_DIR_PREBUILD,
+        args: ['--dry-run', '--artifacts', '../artifacts'],
+        stdout: [`- Artifacts directory: ${expectedPath}`],
+      });
     });
   });
 });
