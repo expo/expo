@@ -51,10 +51,13 @@ export async function resolveLaunchPropsAsync(
   const mainActivity = await getMainActivityAsync(projectRoot);
   const packageName = await new AndroidAppIdResolver(projectRoot).getAppIdFromNativeAsync();
   const customAppId = options.appId;
+  const combinedMainActivity = mainActivity.startsWith('.')
+    ? `${packageName}${mainActivity}`
+    : mainActivity;
 
   const launchActivity =
     customAppId && customAppId !== packageName
-      ? `${customAppId}/${packageName}${mainActivity}`
+      ? `${customAppId}/${combinedMainActivity}`
       : `${packageName}/${mainActivity}`;
 
   return {

@@ -4,6 +4,7 @@ import { KeyPressHandler } from './KeyPressHandler';
 import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
 import { DevServerManagerActions } from './interactiveActions';
 import * as Log from '../../log';
+import { resolveLaunchPropsAsync as androidResolveOptions } from '../../run/android/resolveLaunchProps';
 import { openInEditorAsync } from '../../utils/editor';
 import { AbortCommandError } from '../../utils/errors';
 import { getAllSpinners, ora } from '../../utils/ora';
@@ -36,7 +37,7 @@ const PLATFORM_SETTINGS: Record<
 
 export async function startInterfaceAsync(
   devServerManager: DevServerManager,
-  options: Pick<StartOptions, 'devClient' | 'platforms' | 'mcpServer'>
+  options: Pick<StartOptions, 'devClient' | 'platforms' | 'mcpServer' | 'platformsOptions'>
 ) {
   const actions = new DevServerManagerActions(devServerManager, options);
 
@@ -126,7 +127,24 @@ export async function startInterfaceAsync(
         );
       } else {
         try {
-          await server.openPlatformAsync(settings.launchTarget, { shouldPrompt });
+          if (options.platformsOptions?.appId) {
+            const androidProps = await androidResolveOptions(
+              devServerManager.projectRoot,
+              options.platformsOptions
+            );
+
+            await server.openCustomRuntimeAsync(
+              settings.launchTarget,
+              {
+                applicationId: androidProps.packageName,
+                customAppId: androidProps.customAppId,
+                launchActivity: androidProps.launchActivity,
+              },
+              { shouldPrompt }
+            );
+          } else {
+            await server.openPlatformAsync(settings.launchTarget, { shouldPrompt });
+          }
           printHelp();
         } catch (error: any) {
           if (!(error instanceof AbortCommandError)) {
