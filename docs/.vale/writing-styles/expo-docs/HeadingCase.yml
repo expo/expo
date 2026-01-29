@@ -168,6 +168,7 @@ exceptions:
   - '.*Remote JS.*'
   - '.*Router.*'
   - ".*Router's.*"
+  - '.*RxDB.*'
   - '.*SAF.*'
   - '.*SASS.*'
   - '.*SDK.*'
@@ -293,3 +294,4 @@ exceptions:
   - Live Activities
   - Starting a Live Activity
   - Updating a Live Activity
+  - Hiding the Tab bar

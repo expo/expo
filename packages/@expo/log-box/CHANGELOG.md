@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- absolute position web content to prevent modifying body layout. ([#42565](https://github.com/expo/expo/pull/42565) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
+
+## 55.0.3 — 2026-01-27
+
+### 🐛 Bug fixes
+
+- absolute position web content to prevent modifying body layout. ([#42565](https://github.com/expo/expo/pull/42565) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 55.0.2 — 2026-01-26
 

@@ -273,7 +273,17 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
 
 class LinkZoomTransitionEnabler: LinkZoomExpoView {
   var zoomTransitionSourceIdentifier: String = ""
-  var dismissalBoundsRect: DismissalBoundsRect?
+  var dismissalBoundsRect: DismissalBoundsRect? {
+    didSet {
+      // When dismissalBoundsRect changes, re-setup the zoom transition
+      // to include/exclude interactiveDismissShouldBegin callback
+      if superview != nil {
+        DispatchQueue.main.async {
+          self.setupZoomTransition()
+        }
+      }
+    }
+  }
 
   override func didMoveToSuperview() {
     super.didMoveToSuperview()
@@ -318,18 +328,18 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
           }
           return rect
         }
-        options.interactiveDismissShouldBegin = { context in
-          // Check dismissal bounds rect if provided
-          if let rect = self.dismissalBoundsRect {
-              let location = context.location
-              // Check each optional bound independently
-              if let minX = rect.minX, location.x < minX { return false }
-              if let maxX = rect.maxX, location.x > maxX { return false }
-              if let minY = rect.minY, location.y < minY { return false }
-              if let maxY = rect.maxY, location.y > maxY { return false }
+        // Only set up interactiveDismissShouldBegin when dismissalBoundsRect is set
+        // If dismissalBoundsRect is nil, don't set the callback - iOS uses default behavior
+        if let rect = self.dismissalBoundsRect {
+          options.interactiveDismissShouldBegin = { context in
+            let location = context.location
+            // Check each optional bound independently
+            if let minX = rect.minX, location.x < minX { return false }
+            if let maxX = rect.maxX, location.x > maxX { return false }
+            if let minY = rect.minY, location.y < minY { return false }
+            if let maxY = rect.maxY, location.y > maxY { return false }
+            return true
           }
-
-          return true
         }
         controller.preferredTransition = .zoom(options: options) { _ in
           let sourceInfo = self.sourceRepository?.getSource(

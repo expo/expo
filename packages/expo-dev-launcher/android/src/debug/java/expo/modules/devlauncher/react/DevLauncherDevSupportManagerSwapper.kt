@@ -41,6 +41,8 @@ internal class DevLauncherDevSupportManagerSwapper {
         currentDevSupportManager
       )
 
+      DevMenuApi.uninstallDefaultShakeDetector(newDevSupportManager)
+
       ReactHostImpl::class.java.setProtectedDeclaredField(reactHost, "devSupportManager", newDevSupportManager)
 
       closeExistingConnection(devManagerClass, currentDevSupportManager)
@@ -60,7 +62,7 @@ internal class DevLauncherDevSupportManagerSwapper {
       enableOnCreate = true,
       redBoxHandler = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "redBoxHandler"),
       devBundleDownloadListener = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "devBundleDownloadListener"),
-      minNumShakes = 1,
+      minNumShakes = Int.MAX_VALUE / 10, // this is multiplied later by the RN code
       customPackagerCommandHandlers = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "customPackagerCommandHandlers")
     )
   }

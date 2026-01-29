@@ -171,6 +171,10 @@ class DevMenuViewModel: ObservableObject {
     return devMenuManager.shouldShowReactNativeDevMenu
   }
 
+  var configuration: DevMenuConfiguration {
+    return devMenuManager.configuration
+  }
+
   private func checkOnboardingStatus() {
     isOnboardingFinished = devMenuManager.isOnboardingFinished
   }
@@ -201,6 +205,7 @@ class DevMenuViewModel: ObservableObject {
       .receive(on: DispatchQueue.main)
       .sink { [weak self] _ in
         self?.loadAppInfo()
+        self?.loadDevSettings()
       }
       .store(in: &cancellables)
   }

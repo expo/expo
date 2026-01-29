@@ -12,11 +12,23 @@ export interface StackToolbarSearchBarSlotProps {
      */
     hidesSharedBackground?: boolean;
     /**
-     * Whether this search bar slot shares background with adjacent items.
+     * Whether this search bar slot has a separate background from adjacent items. When this prop is `true`, the search bar will always render as `integratedButton`.
+     *
+     * In order to render the search bar with a separate background, ensure that adjacent toolbar items have `separateBackground` set to `true` or use `Stack.Toolbar.Spacer` to create spacing.
+     *
+     * @example
+     * ```tsx
+     * <Stack.SearchBar onChangeText={()=>{}} />
+     * <Stack.Toolbar placement="bottom">
+     *   <Stack.Toolbar.SearchBarSlot />
+     *   <Stack.Toolbar.Spacer />
+     *   <Stack.Toolbar.Button icon="square.and.pencil" />
+     * </Stack.Toolbar>
+     * ```
      *
      * @platform iOS 26+
      */
-    sharesBackground?: boolean;
+    separateBackground?: boolean;
 }
 /**
  * A search bar slot for the bottom toolbar. This reserves space for the search bar

@@ -35,18 +35,8 @@ export interface SetupTypedRoutesOptions {
 }
 
 export async function setupTypedRoutes(options: SetupTypedRoutesOptions) {
-  /*
-   * In SDK 51, TypedRoutes was moved out of cli and into expo-router. For now we need to support both
-   * the legacy and new versions of TypedRoutes.
-   *
-   * TODO (@marklawlor): Remove this check in SDK 53, only support Expo Router v4 and above.
-   */
-  try {
-    const typedRoutesModule = require.resolve('@expo/router-server/build/typed-routes');
-    return typedRoutes(typedRoutesModule, options);
-  } catch {
-    return legacyTypedRoutes(options);
-  }
+  const typedRoutesModule = require.resolve('@expo/router-server/build/typed-routes');
+  return typedRoutes(typedRoutesModule, options);
 }
 
 async function typedRoutes(
@@ -88,65 +78,6 @@ async function typedRoutes(
   } else {
     typedRoutesModule.regenerateDeclarations(typesDirectory);
   }
-}
-
-async function legacyTypedRoutes({
-  server,
-  metro,
-  typesDirectory,
-  projectRoot,
-  routerDirectory,
-}: SetupTypedRoutesOptions) {
-  const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath, isRouteFile } =
-    getTypedRoutesUtils(routerDirectory);
-
-  // Typed Routes can be run with out Metro or a Server, e.g. `expo customize tsconfig.json`
-  if (metro && server) {
-    metroWatchTypeScriptFiles({
-      projectRoot,
-      server,
-      metro,
-      eventTypes: ['add', 'delete', 'change'],
-      async callback({ filePath, type }) {
-        if (!isRouteFile(filePath)) {
-          return;
-        }
-
-        let shouldRegenerate = false;
-
-        if (type === 'delete') {
-          const route = filePathToRoute(filePath);
-          staticRoutes.delete(route);
-          dynamicRoutes.delete(route);
-          shouldRegenerate = true;
-        } else {
-          shouldRegenerate = addFilePath(filePath);
-        }
-
-        if (shouldRegenerate) {
-          regenerateRouterDotTS(
-            typesDirectory,
-            new Set([...staticRoutes.values()].flatMap((v) => Array.from(v))),
-            new Set([...dynamicRoutes.values()].flatMap((v) => Array.from(v))),
-            new Set(dynamicRoutes.keys())
-          );
-        }
-      },
-    });
-  }
-
-  if (await directoryExistsAsync(routerDirectory)) {
-    // Do we need to walk the entire tree on startup?
-    // Idea: Store the list of files in the last write, then simply check Git for what files have changed
-    await walk(routerDirectory, addFilePath);
-  }
-
-  regenerateRouterDotTS(
-    typesDirectory,
-    new Set([...staticRoutes.values()].flatMap((v) => Array.from(v))),
-    new Set([...dynamicRoutes.values()].flatMap((v) => Array.from(v))),
-    new Set(dynamicRoutes.keys())
-  );
 }
 
 function debounce<U, T extends (this: U, ...args: any[]) => void>(fn: T, delay: number): T {

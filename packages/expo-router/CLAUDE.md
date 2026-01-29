@@ -233,6 +233,36 @@ After developing a feature, run these commands in `packages/expo-router`:
 
 When adding dependencies or changing static/server rendering, run e2e tests in `packages/@expo/cli` (time-consuming, run only when necessary).
 
+## Documentation
+
+There are two types of documentation for Expo Router:
+
+- **Guides** - mdx files in the `docs/` directory of the monorepo, covering concepts, tutorials, and how-tos.
+- **API Reference** - Generated from TypeScript types using `typedoc`
+
+When developing new features, make sure that both guides and API reference are updated accordingly.
+
+To update API reference, run:
+
+```bash
+et generate-docs-api-data --packageName expo-router
+```
+
+You can run this command for specific sdk if asked:
+
+```bash
+et generate-docs-api-data --packageName expo-router --sdk <VERSION>
+```
+
+### Testing docs changes
+
+To run the docs site locally run `yarn dev` in the `docs/` directory of the monorepo. The reference will be available at:
+
+- http://localhost:3002/versions/unversioned/sdk/router/ for main router
+- http://localhost:3002/versions/unversioned/sdk/router-native-tabs/ for native tabs
+- http://localhost:3002/versions/unversioned/sdk/router-split-view/ for split view
+- http://localhost:3002/versions/unversioned/sdk/router-ui/ for headless tabs
+
 ## Maintaining This Document
 
 When developing or planning features, document missing behaviors in this file. Update sections when implementations change or new patterns emerge.

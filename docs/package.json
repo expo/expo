@@ -29,10 +29,10 @@
   },
   "packageManager": "yarn@4.9.1",
   "dependencies": {
-    "@expo/styleguide": "^9.2.4",
+    "@expo/styleguide": "^9.3.1",
     "@expo/styleguide-base": "^2.0.5",
-    "@expo/styleguide-icons": "^2.3.3",
-    "@expo/styleguide-search-ui": "^3.2.7",
+    "@expo/styleguide-icons": "^2.3.4",
+    "@expo/styleguide-search-ui": "^3.3.1",
     "@kapaai/react-sdk": "^0.9.0",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/mdx": "^3.1.1",
@@ -52,7 +52,7 @@
     "front-matter": "^4.0.2",
     "github-slugger": "^2.0.0",
     "lodash": "^4.17.23",
-    "next": "^15.5.9",
+    "next": "^15.5.10",
     "nprogress": "0.2.0",
     "path-browserify": "^1.0.1",
     "prism-react-renderer": "^2.4.1",
@@ -152,6 +152,9 @@
       "tailwindcss": {},
       "autoprefixer": {}
     }
+  },
+  "resolutions": {
+    "baseline-browser-mapping": "2.9.15"
   },
   "volta": {
     "node": "22.13.1"

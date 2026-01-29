@@ -1,6 +1,6 @@
 {
   "name": "patch-project",
-  "version": "55.1.0",
+  "version": "55.1.1",
   "description": "An Expo config-plugin and tool to support patch-based CNG",
   "main": "build/withPatchPlugin.js",
   "types": "build/withPatchPlugin.d.ts",
@@ -42,7 +42,7 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/patch-project#readme",
   "devDependencies": {
-    "@expo/cli": "55.0.3",
+    "@expo/cli": "55.0.4",
     "expo-module-scripts": "^55.0.2",
     "memfs": "^3.2.0"
   },

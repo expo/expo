@@ -16,6 +16,10 @@ const jestConfig = {
     '^framer-motion$': '<rootDir>/node_modules/framer-motion/dist/cjs/index.js',
     '^@fingerprintjs/fingerprintjs-pro-react$':
       '<rootDir>/node_modules/@fingerprintjs/fingerprintjs-pro-react/dist/fp-pro-react.cjs.js',
+    '^@sanity/client$': '<rootDir>/node_modules/@sanity/client/dist/index.cjs',
+    '^nanoid/index.browser.js$': '<rootDir>/node_modules/nanoid/index.browser.cjs',
+    '^nanoid$': '<rootDir>/node_modules/nanoid/index.cjs',
+    '^nanoid/non-secure$': '<rootDir>/node_modules/nanoid/non-secure/index.cjs',
   },
   transform: {},
   extensionsToTreatAsEsm: ['.ts', '.tsx'],

@@ -31,31 +31,34 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 You can configure `expo-sharing` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
 
 <ConfigPluginExample>
-    The following example shows a configuration that allows sharing a single or multiple images on iOS and Android::
-  ```json app.json
-  {
-    "expo": {
-      "plugins": [
-        [
-          "expo-sharing",
-          {
-            "ios": {
-              "enabled": true,
-              "activationRule": {
-                "supportsImageWithMaxCount": 5
-              }
-            },
-            "android": {
-              "enabled": true,
-              "singleShareMimeTypes": ["image/*"],
-              "multipleShareMimeTypes": ["image/*"]
+
+The following example shows a configuration that allows sharing a single or multiple images on Android and iOS:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-sharing",
+        {
+          "ios": {
+            "enabled": true,
+            "activationRule": {
+              "supportsImageWithMaxCount": 5
             }
+          },
+          "android": {
+            "enabled": true,
+            "singleShareMimeTypes": ["image/*"],
+            "multipleShareMimeTypes": ["image/*"]
           }
-        ]
+        }
       ]
-    }
+    ]
   }
-  ```
+}
+```
+
 </ConfigPluginExample>
 
 <ConfigPluginProperties
@@ -105,13 +108,13 @@ You can configure `expo-sharing` using its built-in [config plugin](/config-plug
 
 ## Sharing to your app from other apps
 
-> **important** **Note**: This functionality is currently experimental. On iOS the share extension opens the main target, instead of processing the share in a sharing `ViewController`, which is not oficially supported by Apple and may stop working in a future iOS release.
+> **important** **Note**: This functionality is currently experimental. On iOS the share extension opens the main target, instead of processing the share in a sharing `ViewController`, which is not officially supported by Apple and may stop working in a future iOS release.
 
 When an app user shares content with your app, the operating system launches your app (also known as the process of bringing it to the foreground). To process this action, you need to configure your navigation to handle the incoming deep link.
 
 ### Expo Router
 
-If you are using [Expo Router](/router/introduction/), you can use the [`+native-intent.ts`](/router/advanced/native-intent/) file to handle the incoming share intent. This allows you to inspect the incoming path and redirect to a specific route.
+If you are using [Expo Router](/router/introduction/), you can use the [**+native-intent.ts**](/router/advanced/native-intent/) file to handle the incoming share intent. This allows you to inspect the incoming path and redirect to a specific route.
 
 ```tsx app/+native-intent.ts
 import { getSharedPayloads } from 'expo-sharing';

@@ -538,6 +538,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/router/reference/static-rendering/': '/router/web/static-rendering/',
   '/router/reference/async-routes/': '/router/web/async-routes/',
 
+  // After moving FAQ to EAS Update page
+  '/eas-update/faq/': '/eas-update/introduction/',
+
+  // After moving MetadataFAQ to EAS Metadata page
+  '/eas/metadata/faq/': '/eas/metadata/',
+
   // After creating EAS environment variables section
   '/eas/hosting/environment-variables/':
     '/eas/environment-variables/usage/#using-environment-variables-with-eas-hosting',

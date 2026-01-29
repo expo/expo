@@ -1,7 +1,10 @@
+import React from 'react';
 import { Text, View } from 'react-native';
 import { ScreenStackItem as _ScreenStackItem } from 'react-native-screens';
 
+import { NativeLinkPreviewAction } from '../../../link/preview/native';
 import { renderRouter, screen } from '../../../testing-library';
+import { RouterToolbarItem } from '../../../toolbar/native';
 import Stack from '../../Stack';
 
 jest.mock('react-native-screens', () => {
@@ -14,7 +17,34 @@ jest.mock('react-native-screens', () => {
   };
 });
 
+jest.mock('../../../toolbar/native', () => {
+  const { View } = require('react-native');
+  const actual = jest.requireActual(
+    '../../../toolbar/native'
+  ) as typeof import('../../../toolbar/native');
+  return {
+    ...actual,
+    RouterToolbarHost: jest.fn((props) => <View {...props} />),
+    RouterToolbarItem: jest.fn((props) => <View {...props} />),
+  };
+});
+
+jest.mock('../../../link/preview/native', () => {
+  const { View } = require('react-native');
+  const actual = jest.requireActual(
+    '../../../link/preview/native'
+  ) as typeof import('../../../link/preview/native');
+  return {
+    ...actual,
+    NativeLinkPreviewAction: jest.fn((props) => <View {...props} />),
+  };
+});
+
 const ScreenStackItem = _ScreenStackItem as jest.MockedFunction<typeof _ScreenStackItem>;
+const MockedRouterToolbarItem = RouterToolbarItem as jest.MockedFunction<typeof RouterToolbarItem>;
+const MockedNativeLinkPreviewAction = NativeLinkPreviewAction as jest.MockedFunction<
+  typeof NativeLinkPreviewAction
+>;
 
 let consoleWarnMock: jest.SpyInstance;
 beforeEach(() => {
@@ -266,6 +296,111 @@ describe('Stack.Toolbar unified API', () => {
       expect(leftItems).toHaveLength(1);
       expect(leftItems[0].type).toBe('button');
     });
+
+    describe('iconRenderingMode', () => {
+      it('passes iconRenderingMode="template" with image icon (templateSource)', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="left">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    iconRenderingMode="template"
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const leftItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerLeftBarButtonItems;
+        expect(leftItems[0].icon).toEqual({
+          type: 'templateSource',
+          templateSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
+
+      it('passes iconRenderingMode="original" with image icon (imageSource)', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="left">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    iconRenderingMode="original"
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const leftItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerLeftBarButtonItems;
+        expect(leftItems[0].icon).toEqual({
+          type: 'imageSource',
+          imageSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
+
+      it('defaults to template when tintColor is set', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="left">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    tintColor="red"
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const leftItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerLeftBarButtonItems;
+        expect(leftItems[0].icon).toEqual({
+          type: 'templateSource',
+          templateSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
+
+      it('defaults to original when no tintColor', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="left">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const leftItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerLeftBarButtonItems;
+        expect(leftItems[0].icon).toEqual({
+          type: 'imageSource',
+          imageSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
+    });
   });
 
   describe('Stack.Toolbar placement="right"', () => {
@@ -341,6 +476,111 @@ describe('Stack.Toolbar unified API', () => {
       expect(rightItems).toBeDefined();
       expect(rightItems).toHaveLength(1);
       expect(rightItems[0].type).toBe('button');
+    });
+
+    describe('iconRenderingMode', () => {
+      it('passes iconRenderingMode="template" with image icon (templateSource)', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="right">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    iconRenderingMode="template"
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const rightItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerRightBarButtonItems;
+        expect(rightItems[0].icon).toEqual({
+          type: 'templateSource',
+          templateSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
+
+      it('passes iconRenderingMode="original" with image icon (imageSource)', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="right">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    iconRenderingMode="original"
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const rightItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerRightBarButtonItems;
+        expect(rightItems[0].icon).toEqual({
+          type: 'imageSource',
+          imageSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
+
+      it('defaults to template when tintColor is set', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="right">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    tintColor="blue"
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const rightItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerRightBarButtonItems;
+        expect(rightItems[0].icon).toEqual({
+          type: 'templateSource',
+          templateSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
+
+      it('defaults to original when no tintColor', () => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement="right">
+                  <Stack.Toolbar.Button
+                    icon={{ uri: 'https://example.com/icon.png' }}
+                    onPress={() => {}}
+                  />
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        const rightItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerRightBarButtonItems;
+        expect(rightItems[0].icon).toEqual({
+          type: 'imageSource',
+          imageSource: { uri: 'https://example.com/icon.png' },
+        });
+      });
     });
   });
 
@@ -425,6 +665,97 @@ describe('Stack.Toolbar unified API', () => {
       expect(screen.getByTestId('index')).toBeVisible();
       // No error should occur
       expect(ScreenStackItem).toHaveBeenCalled();
+    });
+
+    describe('iconRenderingMode', () => {
+      it('passes imageRenderingMode="template" to RouterToolbarItem', () => {
+        renderRouter({
+          _layout: () => <Stack />,
+          index: () => (
+            <>
+              <Stack.Toolbar>
+                <Stack.Toolbar.Button icon="star" iconRenderingMode="template" onPress={() => {}} />
+              </Stack.Toolbar>
+              <Text testID="index">index</Text>
+            </>
+          ),
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(MockedRouterToolbarItem).toHaveBeenCalled();
+        // Find the call with the button props (not the spacer)
+        const buttonCall = MockedRouterToolbarItem.mock.calls.find(
+          (call) => call[0].systemImageName === 'star'
+        );
+        expect(buttonCall).toBeDefined();
+        expect(buttonCall![0].imageRenderingMode).toBe('template');
+      });
+
+      it('passes imageRenderingMode="original" to RouterToolbarItem', () => {
+        renderRouter({
+          _layout: () => <Stack />,
+          index: () => (
+            <>
+              <Stack.Toolbar>
+                <Stack.Toolbar.Button icon="star" iconRenderingMode="original" onPress={() => {}} />
+              </Stack.Toolbar>
+              <Text testID="index">index</Text>
+            </>
+          ),
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(MockedRouterToolbarItem).toHaveBeenCalled();
+        const buttonCall = MockedRouterToolbarItem.mock.calls.find(
+          (call) => call[0].systemImageName === 'star'
+        );
+        expect(buttonCall).toBeDefined();
+        expect(buttonCall![0].imageRenderingMode).toBe('original');
+      });
+
+      it('defaults to template when tintColor is set', () => {
+        renderRouter({
+          _layout: () => <Stack />,
+          index: () => (
+            <>
+              <Stack.Toolbar>
+                <Stack.Toolbar.Button icon="star" tintColor="green" onPress={() => {}} />
+              </Stack.Toolbar>
+              <Text testID="index">index</Text>
+            </>
+          ),
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(MockedRouterToolbarItem).toHaveBeenCalled();
+        const buttonCall = MockedRouterToolbarItem.mock.calls.find(
+          (call) => call[0].systemImageName === 'star'
+        );
+        expect(buttonCall).toBeDefined();
+        expect(buttonCall![0].imageRenderingMode).toBe('template');
+      });
+
+      it('defaults to original when no tintColor', () => {
+        renderRouter({
+          _layout: () => <Stack />,
+          index: () => (
+            <>
+              <Stack.Toolbar>
+                <Stack.Toolbar.Button icon="star" onPress={() => {}} />
+              </Stack.Toolbar>
+              <Text testID="index">index</Text>
+            </>
+          ),
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(MockedRouterToolbarItem).toHaveBeenCalled();
+        const buttonCall = MockedRouterToolbarItem.mock.calls.find(
+          (call) => call[0].systemImageName === 'star'
+        );
+        expect(buttonCall).toBeDefined();
+        expect(buttonCall![0].imageRenderingMode).toBe('original');
+      });
     });
   });
 
@@ -530,10 +861,76 @@ describe('Stack.Toolbar unified API', () => {
         expect.stringContaining('Spacer requires `width` when used in Left or Right')
       );
     });
+  });
 
-    // Note: Badge warning in Bottom placement is not yet implemented
-    // The native toolbar module doesn't support badges (iOS limitation)
-    // TODO: Consider adding runtime warning when Badge is used in Bottom placement
+  describe('Badge warnings in bottom toolbar', () => {
+    it('warns when Badge is used in Button with bottom placement', () => {
+      renderRouter({
+        _layout: () => <Stack />,
+        index: () => (
+          <>
+            <Stack.Toolbar>
+              <Stack.Toolbar.Button onPress={() => {}}>
+                <Stack.Toolbar.Badge>5</Stack.Toolbar.Badge>
+              </Stack.Toolbar.Button>
+            </Stack.Toolbar>
+            <Text testID="index">index</Text>
+          </>
+        ),
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(consoleWarnMock).toHaveBeenCalledWith(
+        expect.stringContaining('Stack.Toolbar.Badge is not supported in bottom toolbar')
+      );
+    });
+
+    it('warns when Badge is used in Menu with bottom placement', () => {
+      renderRouter({
+        _layout: () => <Stack />,
+        index: () => (
+          <>
+            <Stack.Toolbar>
+              <Stack.Toolbar.Menu icon="ellipsis.circle">
+                <Stack.Toolbar.Badge>5</Stack.Toolbar.Badge>
+                <Stack.Toolbar.MenuAction onPress={() => {}}>Action</Stack.Toolbar.MenuAction>
+              </Stack.Toolbar.Menu>
+            </Stack.Toolbar>
+            <Text testID="index">index</Text>
+          </>
+        ),
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(consoleWarnMock).toHaveBeenCalledWith(
+        expect.stringContaining('Stack.Toolbar.Badge is not supported in bottom toolbar')
+      );
+    });
+
+    it.each(['left', 'right'] as const)(
+      'does not warn when Badge is used in %s placement',
+      (placement) => {
+        renderRouter({
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="index">
+                <Stack.Toolbar placement={placement}>
+                  <Stack.Toolbar.Button onPress={() => {}}>
+                    <Stack.Toolbar.Badge>5</Stack.Toolbar.Badge>
+                  </Stack.Toolbar.Button>
+                </Stack.Toolbar>
+              </Stack.Screen>
+            </Stack>
+          ),
+          index: () => <Text testID="index">index</Text>,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(consoleWarnMock).not.toHaveBeenCalledWith(
+          expect.stringContaining('Stack.Toolbar.Badge is not supported')
+        );
+      }
+    );
   });
 
   describe('Hidden items', () => {
@@ -668,6 +1065,188 @@ describe('Stack.Toolbar unified API', () => {
       const rightItems = ScreenStackItem.mock.calls[0][0].headerConfig.headerRightBarButtonItems;
       expect(rightItems[0].menu.items[0].type).toBe('submenu');
       expect(rightItems[0].menu.items[0].displayAsPalette).toBe(true);
+    });
+  });
+
+  describe('Allowed children validation', () => {
+    describe('Button with Label, Icon, Badge children', () => {
+      it.each(['left', 'right'] as const)(
+        'accepts Label, Icon, Badge children and passes Icon to header items in %s placement',
+        (placement) => {
+          const headerKey =
+            placement === 'left' ? 'headerLeftBarButtonItems' : 'headerRightBarButtonItems';
+          // Verify that using Label, Icon, Badge as children does not throw
+          renderRouter({
+            _layout: () => (
+              <Stack>
+                <Stack.Screen name="index">
+                  <Stack.Toolbar placement={placement}>
+                    <Stack.Toolbar.Button onPress={() => {}}>
+                      <Stack.Toolbar.Icon sf="star" />
+                      <Stack.Toolbar.Label>Favorite</Stack.Toolbar.Label>
+                      <Stack.Toolbar.Badge>3</Stack.Toolbar.Badge>
+                    </Stack.Toolbar.Button>
+                  </Stack.Toolbar>
+                </Stack.Screen>
+              </Stack>
+            ),
+            index: () => <Text testID="index">index</Text>,
+          });
+
+          expect(screen.getByTestId('index')).toBeVisible();
+          const items = ScreenStackItem.mock.calls[0][0].headerConfig[headerKey];
+          expect(items).toHaveLength(1);
+          // Icon child is correctly extracted
+          expect(items[0].icon).toEqual({ type: 'sfSymbol', name: 'star' });
+        }
+      );
+
+      it('correctly passes Label and Icon to native component in bottom placement', () => {
+        renderRouter({
+          _layout: () => <Stack />,
+          index: () => (
+            <>
+              <Stack.Toolbar>
+                <Stack.Toolbar.Button onPress={() => {}}>
+                  <Stack.Toolbar.Icon sf="star" />
+                  <Stack.Toolbar.Label>Favorite</Stack.Toolbar.Label>
+                </Stack.Toolbar.Button>
+              </Stack.Toolbar>
+              <Text testID="index">index</Text>
+            </>
+          ),
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        // Verify MockedRouterToolbarItem was called with correct props
+        expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+          expect.objectContaining({
+            systemImageName: 'star',
+            title: 'Favorite',
+          }),
+          undefined
+        );
+      });
+
+      it.each(['left', 'right'] as const)(
+        'Icon child takes precedence over icon prop in %s placement',
+        (placement) => {
+          const headerKey =
+            placement === 'left' ? 'headerLeftBarButtonItems' : 'headerRightBarButtonItems';
+          renderRouter({
+            _layout: () => (
+              <Stack>
+                <Stack.Screen name="index">
+                  <Stack.Toolbar placement={placement}>
+                    <Stack.Toolbar.Button icon="heart" onPress={() => {}}>
+                      <Stack.Toolbar.Icon sf="star" />
+                    </Stack.Toolbar.Button>
+                  </Stack.Toolbar>
+                </Stack.Screen>
+              </Stack>
+            ),
+            index: () => <Text testID="index">index</Text>,
+          });
+
+          expect(screen.getByTestId('index')).toBeVisible();
+          const items = ScreenStackItem.mock.calls[0][0].headerConfig[headerKey];
+          // Icon child should take precedence
+          expect(items[0].icon).toEqual({ type: 'sfSymbol', name: 'star' });
+        }
+      );
+    });
+
+    describe('Menu with Label, Icon, Badge children', () => {
+      it.each(['left', 'right'] as const)(
+        'accepts Label, Icon, Badge children and passes Icon to header items in %s placement',
+        (placement) => {
+          const headerKey =
+            placement === 'left' ? 'headerLeftBarButtonItems' : 'headerRightBarButtonItems';
+          // Verify that using Label, Icon, Badge as children does not throw
+          renderRouter({
+            _layout: () => (
+              <Stack>
+                <Stack.Screen name="index">
+                  <Stack.Toolbar placement={placement}>
+                    <Stack.Toolbar.Menu title="Menu Title">
+                      <Stack.Toolbar.Icon sf="ellipsis.circle" />
+                      <Stack.Toolbar.Label>Options</Stack.Toolbar.Label>
+                      <Stack.Toolbar.Badge>3</Stack.Toolbar.Badge>
+                      <Stack.Toolbar.MenuAction onPress={() => {}}>Action</Stack.Toolbar.MenuAction>
+                    </Stack.Toolbar.Menu>
+                  </Stack.Toolbar>
+                </Stack.Screen>
+              </Stack>
+            ),
+            index: () => <Text testID="index">index</Text>,
+          });
+
+          expect(screen.getByTestId('index')).toBeVisible();
+          const items = ScreenStackItem.mock.calls[0][0].headerConfig[headerKey];
+          expect(items).toHaveLength(1);
+          // Icon child is correctly extracted
+          expect(items[0].icon).toEqual({ type: 'sfSymbol', name: 'ellipsis.circle' });
+          // Menu title is set
+          expect(items[0].menu.title).toBe('Menu Title');
+        }
+      );
+
+      it('correctly passes Label and Icon to native component in bottom placement', () => {
+        renderRouter({
+          _layout: () => <Stack />,
+          index: () => (
+            <>
+              <Stack.Toolbar>
+                <Stack.Toolbar.Menu title="Menu Title">
+                  <Stack.Toolbar.Icon sf="ellipsis.circle" />
+                  <Stack.Toolbar.Label>Options</Stack.Toolbar.Label>
+                  <Stack.Toolbar.MenuAction onPress={() => {}}>Action</Stack.Toolbar.MenuAction>
+                </Stack.Toolbar.Menu>
+              </Stack.Toolbar>
+              <Text testID="index">index</Text>
+            </>
+          ),
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        // Menu uses NativeLinkPreviewAction for bottom placement
+        expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+          expect.objectContaining({
+            icon: 'ellipsis.circle',
+            label: 'Options',
+            title: 'Menu Title',
+          }),
+          undefined
+        );
+      });
+
+      it.each(['left', 'right'] as const)(
+        'Icon child takes precedence over icon prop in %s placement',
+        (placement) => {
+          const headerKey =
+            placement === 'left' ? 'headerLeftBarButtonItems' : 'headerRightBarButtonItems';
+          renderRouter({
+            _layout: () => (
+              <Stack>
+                <Stack.Screen name="index">
+                  <Stack.Toolbar placement={placement}>
+                    <Stack.Toolbar.Menu icon="heart">
+                      <Stack.Toolbar.Icon sf="ellipsis.circle" />
+                      <Stack.Toolbar.MenuAction onPress={() => {}}>Action</Stack.Toolbar.MenuAction>
+                    </Stack.Toolbar.Menu>
+                  </Stack.Toolbar>
+                </Stack.Screen>
+              </Stack>
+            ),
+            index: () => <Text testID="index">index</Text>,
+          });
+
+          expect(screen.getByTestId('index')).toBeVisible();
+          const items = ScreenStackItem.mock.calls[0][0].headerConfig[headerKey];
+          // Icon child should take precedence
+          expect(items[0].icon).toEqual({ type: 'sfSymbol', name: 'ellipsis.circle' });
+        }
+      );
     });
   });
 });
