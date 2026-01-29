@@ -28,16 +28,6 @@ struct DevServersView: View {
   @State private var showingURLInput = false
   @State private var urlText = ""
 
-  /// Hide "Enter URL manually" in Expo Go on physical devices (not useful there)
-  private var shouldShowEnterUrl: Bool {
-    #if targetEnvironment(simulator)
-    return true
-    #else
-    // Hide in Expo Go on device - EXKernel only exists in Expo Go
-    return NSClassFromString("EXKernel") == nil
-    #endif
-  }
-
   private func connectToURL() {
     if !urlText.isEmpty {
       let sanitizedURL = sanitizeUrlString(urlText)
@@ -69,9 +59,7 @@ struct DevServersView: View {
             }
           }
         }
-        if shouldShowEnterUrl {
-          enterUrl
-        }
+        enterUrl
       }
     }
     .onAppear {
