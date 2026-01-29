@@ -83,6 +83,7 @@ open class DevMenuManager: NSObject {
   static public var wasInitilized = false
 
   private var contentDidAppearObserver: NSObjectProtocol?
+  private var bridgeDetectionObserver: NSObjectProtocol?
 
   /**
    Shared singleton instance.
@@ -109,11 +110,20 @@ open class DevMenuManager: NSObject {
 
   private var isNavigatingHome = false
 
+  /// Track if user tried to open menu before bridge was ready
+  private var pendingMenuOpen = false
+
   weak var hostDelegate: DevMenuHostDelegate?
 
   @objc
   public private(set) var currentBridge: RCTBridge? {
     didSet {
+      if currentBridge != nil {
+        print("[DevMenu] currentBridge set to non-nil")
+      } else {
+        print("[DevMenu] currentBridge set to nil")
+        pendingMenuOpen = false
+      }
       updateAutoLaunchObserver()
 
       if let currentBridge {
@@ -137,10 +147,29 @@ open class DevMenuManager: NSObject {
       object: nil,
       queue: .main
     ) { [weak self] _ in
-      self?.updateFABVisibility()
-      if let observer = self?.contentDidAppearObserver {
+      guard let self else { return }
+
+      // RCTContentDidAppear is the most reliable signal that JS is executing
+      // If bridge wasn't set explicitly by host app, try to get it now
+      if self.currentBridge == nil {
+        if let bridge = RCTBridge.current() {
+          print("[DevMenu] Auto-detected bridge from RCTContentDidAppear")
+          self.currentBridge = bridge
+        }
+      }
+
+      // If user tried to open menu before bridge was ready, open it now
+      if self.pendingMenuOpen {
+        print("[DevMenu] Fulfilling pending menu open request")
+        self.pendingMenuOpen = false
+        self.openMenu()
+      } else {
+        self.updateFABVisibility()
+      }
+
+      if let observer = self.contentDidAppearObserver {
         NotificationCenter.default.removeObserver(observer)
-        self?.contentDidAppearObserver = nil
+        self.contentDidAppearObserver = nil
       }
     }
   }
@@ -260,10 +289,40 @@ open class DevMenuManager: NSObject {
     self.packagerConnectionHandler?.setup()
     DevMenuPreferences.setup()
     self.readAutoLaunchDisabledState()
+    self.setupBridgeDetectionObserver()
+  }
+
+  /// Persistent observer for RCTContentDidAppear to auto-detect bridge if not set explicitly.
+  private func setupBridgeDetectionObserver() {
+    bridgeDetectionObserver = NotificationCenter.default.addObserver(
+      forName: NSNotification.Name.RCTContentDidAppear,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      guard let self else { return }
+
+      // If bridge wasn't set explicitly, try to get it now
+      if self.currentBridge == nil {
+        if let bridge = RCTBridge.current() {
+          print("[DevMenu] Auto-detected bridge from RCTContentDidAppear (persistent observer)")
+          self.currentBridge = bridge
+        }
+      }
+
+      // Fulfill pending menu open if there was one
+      if self.pendingMenuOpen && self.currentBridge != nil {
+        print("[DevMenu] Fulfilling pending menu open request (persistent observer)")
+        self.pendingMenuOpen = false
+        self.openMenu()
+      }
+    }
   }
 
   deinit {
     NotificationCenter.default.removeObserver(self)
+    if let observer = bridgeDetectionObserver {
+      NotificationCenter.default.removeObserver(observer)
+    }
   }
 
   /**
@@ -328,7 +387,10 @@ open class DevMenuManager: NSObject {
   @objc
   @discardableResult
   public func toggleMenu() -> Bool {
-    return isVisible ? closeMenu() : openMenu()
+    print("[DevMenu] toggleMenu() called, isVisible=\(isVisible)")
+    let result = isVisible ? closeMenu() : openMenu()
+    print("[DevMenu] toggleMenu() result=\(result)")
+    return result
   }
 
   @objc
@@ -356,6 +418,7 @@ open class DevMenuManager: NSObject {
     }
 
     isNavigatingHome = true
+    pendingMenuOpen = false
 
     #if !os(macOS) && !os(tvOS)
     fabWindow?.setVisible(false, animated: false)
@@ -397,12 +460,15 @@ open class DevMenuManager: NSObject {
    */
   func canChangeVisibility(to visible: Bool) -> Bool {
     if isVisible == visible {
+      print("[DevMenu] canChangeVisibility(\(visible)) = false: already \(visible ? "visible" : "hidden")")
       return false
     }
 
     // Don't allow dev menu to open when there's no active React Native bridge
     // This prevents the menu from appearing when the dev-launcher UI is visible
     if visible && currentBridge == nil {
+      print("[DevMenu] canChangeVisibility(\(visible)) = false: currentBridge is nil, queuing open request")
+      pendingMenuOpen = true
       return false
     }
 

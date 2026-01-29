@@ -339,12 +339,11 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     _hasHostEverLoaded = YES;
     [_versionManager hostFinishedLoading:self.reactHost];
 
-    // Update expo-dev-menu with the current bridge and manifest
-    if ([self enablesDeveloperTools]) {
-      [[DevMenuManager shared] updateCurrentBridge:[RCTBridge currentBridge]];
-      [[DevMenuManager shared] updateCurrentManifest:_appRecord.appLoader.manifest
-                                         manifestURL:_appRecord.appLoader.manifestUrl];
-    }
+    // Always update dev menu bridge - needed for all projects (dev and published)
+    // to enable features like "Go to Home" and reload
+    [[DevMenuManager shared] updateCurrentBridge:[RCTBridge currentBridge]];
+    [[DevMenuManager shared] updateCurrentManifest:_appRecord.appLoader.manifest
+                                       manifestURL:_appRecord.appLoader.manifestUrl];
 
     // TODO: temporary solution for hiding LoadingProgressWindow
     if (_appRecord.viewController) {
