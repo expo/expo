@@ -10,13 +10,17 @@ internal enum PresentationDetentPreset: String, Enumerable {
   case large
 }
 
-internal struct PresentationDetentItem: Record {
+internal struct PresentationDetentItem: Record, Equatable {
   @Field var fraction: Double?
   @Field var height: Double?
+    
+    static func ==(lhs: Self, rhs: Self) -> Bool {
+        return lhs.fraction == rhs.fraction && lhs.height == rhs.height
+    }
 }
 
 @available(iOS 16.0, tvOS 16.0, *)
-private func parsePresentationDetent(_ detent: Either<PresentationDetentPreset, PresentationDetentItem>) -> PresentationDetent? {
+func parsePresentationDetent(_ detent: Either<PresentationDetentPreset, PresentationDetentItem>) -> PresentationDetent? {
   if let preset: PresentationDetentPreset = detent.get() {
     switch preset {
     case .medium:
