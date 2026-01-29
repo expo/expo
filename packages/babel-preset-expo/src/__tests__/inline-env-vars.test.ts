@@ -214,3 +214,34 @@ function App() {
 
   expect(contents).toMatchSnapshot();
 });
+
+it(`handles bracket notation for EXPO_PUBLIC environment variables`, () => {
+  process.env.EXPO_PUBLIC_NODE_ENV = 'development';
+  process.env.EXPO_PUBLIC_FOO = 'bar';
+
+  const sourceCode = `
+const foo = process.env["EXPO_PUBLIC_URL"];
+const bar = process.env['EXPO_PUBLIC_NODE_ENV'];
+const baz = process.env[\`EXPO_PUBLIC_FOO\`];
+
+function App() {
+  console.log(process.env["EXPO_PUBLIC_URL"]);
+  console.log(process.env['EXPO_PUBLIC_NODE_ENV']);
+  console.log(process.env[\`EXPO_PUBLIC_FOO\`]);
+}
+`;
+
+  const contents = transformTest(sourceCode, {
+    caller: getCaller({
+      ...ENABLED_CALLER,
+      isDev: true,
+    }),
+  });
+
+  expect(contents.code).toMatch('expo/virtual/env');
+  expect(contents.metadata).toEqual({
+    publicEnvVars: ['EXPO_PUBLIC_URL', 'EXPO_PUBLIC_NODE_ENV', 'EXPO_PUBLIC_FOO'],
+  });
+
+  expect(contents).toMatchSnapshot();
+});
