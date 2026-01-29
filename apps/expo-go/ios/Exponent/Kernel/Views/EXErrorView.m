@@ -55,7 +55,7 @@
 - (void)setType:(EXFatalErrorType)type
 {
   _type = type;
-  NSString *appOwnerName = @"the requested app";
+  NSString *appOwnerName = @"the requested project";
   if (_appRecord) {
     if (_appRecord.appLoader.manifest && _appRecord.appLoader.manifest.name) {
       appOwnerName = [NSString stringWithFormat:@"\"%@\"", _appRecord.appLoader.manifest.name];
