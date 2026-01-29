@@ -1,6 +1,10 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#if !__building_module(ExpoModulesCore)
+#import <React/RCTBridgeModule.h>
+#else
 @class RCTBridge;
+#endif
 
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 

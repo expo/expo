@@ -4,7 +4,11 @@
 #import <ExpoModulesCore/EXSingletonModule.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
-#import <ExpoModulesCore/Swift.h>
+#import <React/RCTLog.h>
+
+// Forward declaration for LegacyModuleRegistry (Swift)
+// This allows SPM prebuilds to use the Swift-based registry
+@class EXLegacyModuleRegistry;
 
 static dispatch_once_t onceToken;
 static NSMutableSet<Class> *EXModuleClasses;
@@ -15,7 +19,7 @@ void (^EXinitializeGlobalModulesRegistry)(void) = ^{
   EXSingletonModuleClasses = [NSMutableSet set];
 
   // Also add temporary Swift modules from core
-  [EXModuleClasses addObject:[EXFileSystemLegacyUtilities class]];
+  [EXModuleClasses addObject: NSClassFromString(@"EXFileSystemLegacyUtilities")];
 };
 
 extern void EXRegisterModule(Class);
