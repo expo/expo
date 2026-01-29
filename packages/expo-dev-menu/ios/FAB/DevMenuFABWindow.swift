@@ -11,6 +11,7 @@ class DevMenuFABWindow: UIWindow {
   private var hostingController: UIHostingController<DevMenuFABView>?
   var fabFrame: CGRect = .zero
   private var currentAnimator: UIViewPropertyAnimator?
+  private var targetVisibility: Bool?
 
   init(manager: DevMenuManager, windowScene: UIWindowScene) {
     self.manager = manager
@@ -31,6 +32,7 @@ class DevMenuFABWindow: UIWindow {
 
     let fabView = DevMenuFABView(
       onOpenMenu: { [weak self] in
+        print("[DevMenu] FAB tapped")
         self?.manager?.openMenu()
       },
       onFrameChange: { [weak self] frame in
@@ -54,12 +56,19 @@ class DevMenuFABWindow: UIWindow {
   func setVisible(_ visible: Bool, animated: Bool = true) {
     print("[FAB] setVisible(\(visible))")
 
+    // Skip if already animating to the same state
+    if targetVisibility == visible {
+      return
+    }
+
     // Cancel any in-progress animation and reset to clean state
     if currentAnimator != nil {
       currentAnimator?.stopAnimation(true)
       currentAnimator = nil
       transform = .identity
     }
+
+    targetVisibility = visible
 
     if visible {
       isHidden = false
@@ -70,6 +79,9 @@ class DevMenuFABWindow: UIWindow {
         self.alpha = 1
         self.transform = .identity
       }
+      animator.addCompletion { [weak self] _ in
+        self?.targetVisibility = nil
+      }
       currentAnimator = animator
       animator.startAnimation()
     } else {
@@ -78,6 +90,7 @@ class DevMenuFABWindow: UIWindow {
         self.transform = self.edgeTranslation
       }
       animator.addCompletion { [weak self] position in
+        self?.targetVisibility = nil
         if position == .end {
           self?.isHidden = true
           self?.transform = .identity
