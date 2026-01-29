@@ -7,6 +7,7 @@ class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
   var splashScreenView: UIView?
   var splashImageView: UIImageView?
   var imageViewContainer: UIView?
+  var activityIndicator: UIActivityIndicatorView?
 
   @objc init(with manifest: EXManifests.Manifest) {
     configuration = SplashScreenConfigurationBuilder.parse(manifest: manifest)
@@ -37,6 +38,11 @@ class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
 
       splashScreenView?.backgroundColor = .white
       if let imageUrl = configuration?.imageUrl {
+        // Hide activity indicator when we have an image
+        activityIndicator?.stopAnimating()
+        activityIndicator?.removeFromSuperview()
+        activityIndicator = nil
+
         if previousConfiguration?.imageUrl != imageUrl ||
           previousConfiguration?.imageResizeMode != configuration?.imageResizeMode {
           imageViewContainer?.removeFromSuperview()
@@ -60,6 +66,18 @@ class ManagedAppSplashscreenViewProvider: NSObject, SplashScreenViewProvider {
             ])
           }
         }
+      } else if activityIndicator == nil, let splashScreenView {
+        // Show activity indicator when there's no app icon
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.color = .gray
+        indicator.startAnimating()
+        splashScreenView.addSubview(indicator)
+        NSLayoutConstraint.activate([
+          indicator.centerXAnchor.constraint(equalTo: splashScreenView.centerXAnchor),
+          indicator.centerYAnchor.constraint(equalTo: splashScreenView.centerYAnchor)
+        ])
+        activityIndicator = indicator
       }
     }
   }
