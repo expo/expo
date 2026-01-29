@@ -83,7 +83,7 @@ const i18n = new I18n({
 });
 
 // Set the locale once at the beginning of your app.
-i18n.locale = getLocales()[0].languageCode;
+i18n.locale = getLocales().at(0)?.languageCode ?? 'en' ; // you can also do getLocales()[0].languageCode ?? 'en'
 
 console.log(i18n.t('welcome'));
 ```
