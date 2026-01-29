@@ -69,6 +69,13 @@ public class SnackSessionClient {
     self.currentDependencies = hostedDependencies
   }
 
+  /// Resets currentFiles back to the original hostedFiles (discards edits)
+  func resetToOriginalFiles() {
+    if let hostedFiles = hostedFiles {
+      currentFiles = hostedFiles
+    }
+  }
+
   deinit {
     disconnect()
   }

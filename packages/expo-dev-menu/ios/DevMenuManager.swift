@@ -574,6 +574,8 @@ open class DevMenuManager: NSObject {
   }
 
   func reload() {
+    SourceMapService.clearCache()
+
     #if !os(macOS) && !os(tvOS)
     fabWindow?.setVisible(false, animated: false)
     #endif

@@ -22,6 +22,13 @@ class SourceMapService {
   private static var cachedSession: SnackSessionClient?
   private static var cachedSessionChannel: String?
 
+  /// Clears the cached snack session. Call this on app reload.
+  static func clearCache() {
+    cachedSession = nil
+    cachedSessionChannel = nil
+    SnackEditingSession.shared.resetFiles()
+  }
+
   // MARK: - Snack Detection
 
   /// Parses the manifest URL to extract Snack parameters
@@ -356,16 +363,16 @@ class SourceMapService {
     // Strategy 0: Check if running a Snack
     let (snackId, channel) = parseSnackParams()
 
-    // Strategy 0a: If we have a snack ID, fetch from Snack API
-    if let snackId = snackId {
-      if let snackSourceMap = try? await fetchSnackSourceMap(snackId: snackId) {
+    // Strategy 0a: If we have an active session with files, use those (preserves edits)
+    if let channel = channel {
+      if let snackSourceMap = try? await fetchSnackSourceMapFromSession(channel: channel) {
         return snackSourceMap
       }
     }
 
-    // Strategy 0b: If we have a channel (live session), connect to Snackpub
-    if let channel = channel {
-      if let snackSourceMap = try? await fetchSnackSourceMapFromSession(channel: channel) {
+    // Strategy 0b: If we have a snack ID but no session, fetch from Snack API
+    if let snackId = snackId {
+      if let snackSourceMap = try? await fetchSnackSourceMap(snackId: snackId) {
         return snackSourceMap
       }
     }
