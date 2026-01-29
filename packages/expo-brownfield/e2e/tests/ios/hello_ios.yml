@@ -1,0 +1,5 @@
+appId: host.exp.exponent.brownfieldtest.uikit
+---
+- launchApp
+- assertVisible:
+    text: "Hello UIKit!"
