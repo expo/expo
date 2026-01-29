@@ -50,6 +50,8 @@
     "start:stack": "E2E_ROUTER_SRC=stack expo start",
     "ios:stack": "E2E_ROUTER_SRC=stack expo run:ios",
     "android:stack": "E2E_ROUTER_SRC=stack expo run:android",
+    "start:helmet": "E2E_ROUTER_SRC=helmet expo start",
+    "export:helmet": "E2E_ROUTER_SRC=helmet expo export -p web",
     "lint": "expo lint __e2e__",
     "android": "expo run:android",
     "ios": "expo run:ios",
