@@ -5,6 +5,7 @@ import path from 'node:path';
 import tempDir from 'temp-dir';
 
 import { executeCreateExpoCLIAsync, executeExpoCLIAsync, sleep } from './process';
+import type { PluginProps, TemplateEntry } from './types';
 
 const PROJECT_NAME = 'testapp';
 const TEMP_DIR = process.env.EXPO_E2E_TEMP_DIR
@@ -26,7 +27,7 @@ export const createTempProject = async (
     await installPackage(projectRoot);
     if (prebuild) {
       await addPlugin(projectRoot);
-      await executeExpoCLIAsync(projectRoot, ['prebuild', '--clean']);
+      await prebuildProject(projectRoot);
     }
   } catch (error) {
     console.error(error);
@@ -47,16 +48,32 @@ export const cleanUpProject = async (suffix: string = ''): Promise<void> => {
 /**
  * Add the Expo Brownfield plugin to the project
  */
-const addPlugin = async (projectRoot: string) => {
+export const addPlugin = async (
+  projectRoot: string,
+  props?: PluginProps,
+  android: Record<string, any> = {}
+) => {
   const appJsonPath = path.join(projectRoot, 'app.json');
   if (!fs.existsSync(appJsonPath)) {
     throw new Error(`App.json not found: ${appJsonPath}`);
   }
 
   const appConfig = JSON.parse(await fs.promises.readFile(appJsonPath, 'utf8'));
-  appConfig.expo.plugins = appConfig?.expo?.plugins
-    ? [...appConfig.expo.plugins, 'expo-brownfield']
-    : ['expo-brownfield'];
+  if (!appConfig?.expo) {
+    throw new Error(`App.json is missing the 'expo' object`);
+  }
+
+  const plugins = filterOutPlugin(appConfig.expo.plugins);
+
+  const expoBrownfieldPlugin = props ? ['expo-brownfield', props] : 'expo-brownfield';
+  plugins.push(expoBrownfieldPlugin);
+
+  appConfig.expo.plugins = plugins;
+  appConfig.expo.android = {
+    ...appConfig.expo.android,
+    ...android,
+  };
+
   await fs.promises.writeFile(appJsonPath, JSON.stringify(appConfig, null, 2));
 };
 
@@ -106,7 +123,7 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
  * Install `expo-brownfield` package from a tarball
  */
 const installPackage = async (projectRoot: string) => {
-  const packageRoot = path.join(__dirname, '../..');
+  const packageRoot = path.join(__dirname, '../../');
   const tarballs = await glob('*.tgz', { cwd: packageRoot });
   if (tarballs.length !== 1) {
     throw new Error(
@@ -121,9 +138,68 @@ const installPackage = async (projectRoot: string) => {
     force: true,
   });
 
-  // Use --legacy-peer-deps for better stability
-  await spawnAsync('npm', ['install', packageTarball, '--legacy-peer-deps'], {
-    cwd: projectRoot,
-    stdio: 'pipe',
-  });
+  await spawnAsync('npm', ['install', packageTarball], { cwd: projectRoot, stdio: 'pipe' });
+};
+
+/**
+ * Prebuild the project
+ */
+export const prebuildProject = async (projectRoot: string, platform?: 'android' | 'ios') => {
+  let platformArgs = [];
+  if (platform) {
+    platformArgs = ['--platform', platform];
+  }
+
+  await executeExpoCLIAsync(projectRoot, ['prebuild', '--clean', ...platformArgs]);
+};
+
+/**
+ * Filters out the plugin from the app.json plugins array
+ */
+const filterOutPlugin = (plugins?: (any[] | string)[]) => {
+  if (!plugins || plugins.length === 0) {
+    return [];
+  }
+
+  return plugins.filter(
+    (plugin) =>
+      (Array.isArray(plugin) && plugin[0] !== 'expo-brownfield') ||
+      (!Array.isArray(plugin) && plugin !== 'expo-brownfield')
+  );
+};
+
+export const createTemplateOverrides = async (projectRoot: string, entries: TemplateEntry[]) => {
+  const templatesDir = path.join(projectRoot, '.brownfield-templates');
+  if (fs.existsSync(templatesDir)) {
+    await fs.promises.rm(templatesDir, { recursive: true, force: true });
+  }
+  await fs.promises.mkdir(templatesDir, { recursive: true });
+
+  for (const entry of entries) {
+    const subdirectoryPath = entry.subdirectory
+      ? path.join(templatesDir, entry.subdirectory)
+      : undefined;
+    if (subdirectoryPath && !fs.existsSync(subdirectoryPath)) {
+      await fs.promises.mkdir(subdirectoryPath);
+    }
+
+    const templatePath = path.join(subdirectoryPath ?? templatesDir, entry.filename);
+    await fs.promises.writeFile(templatePath, entry.content);
+  }
+};
+
+/**
+ * Create an .env file with specified values
+ */
+export const createEnvFile = async (projectRoot: string, variables: Record<string, string>) => {
+  const envFilePath = path.join(projectRoot, '.env');
+  if (fs.existsSync(envFilePath)) {
+    await fs.promises.rm(envFilePath, { force: true });
+  }
+  await fs.promises.writeFile(
+    envFilePath,
+    Object.entries(variables)
+      .map(([key, value]) => `${key}=${value}`)
+      .join('\n')
+  );
 };

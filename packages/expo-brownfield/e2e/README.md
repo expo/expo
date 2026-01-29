@@ -21,3 +21,4 @@ To run the tests manually make sure that you build the dependencies mentioned ab
 ```bash
 yarn test:e2e-cli
 ```
+

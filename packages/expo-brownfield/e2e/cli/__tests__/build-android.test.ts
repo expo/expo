@@ -1,7 +1,7 @@
-import { BUILD, BUILD_ANDROID, ERROR, HELP_MESSAGE } from '../utils/output';
-import { executeCommandAsync } from '../utils/process';
-import { cleanUpProject, createTempProject } from '../utils/project';
-import { buildAndroidTest, expectPrebuild } from '../utils/test';
+import { BUILD, BUILD_ANDROID, ERROR } from '../../utils/output';
+import { executeCommandAsync } from '../../utils/process';
+import { cleanUpProject, createTempProject } from '../../utils/project';
+import { buildAndroidTest, expectPrebuild } from '../../utils/test';
 
 let TEMP_DIR: string;
 let TEMP_DIR_PREBUILD: string;
