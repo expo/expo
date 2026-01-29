@@ -98,8 +98,7 @@
     "expo-modules-core": "55.0.5",
     "pretty-format": "^29.7.0",
     "react-refresh": "^0.14.2",
-    "whatwg-url-minimum": "^0.1.1",
-    "whatwg-url-without-unicode": "8.0.0-3"
+    "whatwg-url-minimum": "^0.1.1"
   },
   "devDependencies": {
     "@expo/dom-webview": "55.0.2",
