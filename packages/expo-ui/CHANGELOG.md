@@ -113,6 +113,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [Android] Add `variant` (filled/outlined), `label`, and `placeholder` props to TextField component. ([#40452](https://github.com/expo/expo/pull/40452) by [@akshayjadhav4](https://github.com/akshayjadhav4))
 - [iOS] Add `refreshable` modifier. ([#40201](https://github.com/expo/expo/pull/40201) by [@christianwooldridge](https://github.com/christianwooldridge))
 - [iOS] Add RTL support in swiftui. ([#40335](https://github.com/expo/expo/pull/40335) by [@kfirfitousi](https://github.com/kfirfitousi))
 - [Android] Add Carousel component. ([#40325](https://github.com/expo/expo/pull/40325) by [@aleqsio](https://github.com/aleqsio))
