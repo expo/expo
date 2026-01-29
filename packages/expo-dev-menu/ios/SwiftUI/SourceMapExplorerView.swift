@@ -464,12 +464,16 @@ struct CodeFileView: View {
   private func editingView() -> some View {
     #if os(tvOS)
     readOnlyView()
+    #elseif os(iOS)
+    CodeTextEditor(
+      text: $displayContent,
+      font: .monospacedSystemFont(ofSize: CGFloat(fontSize), weight: .regular),
+      textColor: UIColor(theme.plain),
+      backgroundColor: UIColor(theme.background)
+    )
     #else
     TextEditor(text: $displayContent)
       .font(.system(size: CGFloat(fontSize), weight: .regular, design: .monospaced))
-      #if os(iOS) || os(tvOS)
-      .textInputAutocapitalization(.never)
-      #endif
       .autocorrectionDisabled()
       .modifier(ScrollContentBackgroundModifier())
       .background(theme.background)
@@ -579,3 +583,55 @@ private extension View {
   }
 
 }
+
+#if os(iOS)
+/// A text editor configured for code editing - disables smart quotes, smart dashes, and autocorrection
+struct CodeTextEditor: UIViewRepresentable {
+  @Binding var text: String
+  var font: UIFont
+  var textColor: UIColor
+  var backgroundColor: UIColor
+
+  func makeUIView(context: Context) -> UITextView {
+    let textView = UITextView()
+    textView.delegate = context.coordinator
+    textView.font = font
+    textView.textColor = textColor
+    textView.backgroundColor = backgroundColor
+    textView.autocorrectionType = .no
+    textView.autocapitalizationType = .none
+    textView.smartQuotesType = .no
+    textView.smartDashesType = .no
+    textView.smartInsertDeleteType = .no
+    textView.spellCheckingType = .no
+    textView.keyboardType = .asciiCapable
+    return textView
+  }
+
+  func updateUIView(_ textView: UITextView, context: Context) {
+    if textView.text != text {
+      textView.text = text
+    }
+    textView.font = font
+    textView.textColor = textColor
+    textView.backgroundColor = backgroundColor
+  }
+
+  func makeCoordinator() -> Coordinator {
+    Coordinator(self)
+  }
+
+  class Coordinator: NSObject, UITextViewDelegate {
+    var parent: CodeTextEditor
+
+    init(_ parent: CodeTextEditor) {
+      self.parent = parent
+    }
+
+    func textViewDidChange(_ textView: UITextView) {
+      parent.text = textView.text
+    }
+  }
+}
+#endif
+
