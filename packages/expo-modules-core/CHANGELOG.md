@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- [macOS] Added `NSEdgeInsets.zero` extension to better match `UIEdgeInsets`.
+- [macOS] Added `NSEdgeInsets.zero` extension to better match `UIEdgeInsets`. ([#42675](https://github.com/expo/expo/pull/42675) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
