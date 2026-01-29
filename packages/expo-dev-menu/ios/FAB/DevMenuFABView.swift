@@ -62,9 +62,6 @@ struct FabPill: View {
           .transition(.opacity.combined(with: .scale(scale: 0.8)))
       }
     }
-    .saturation(isIdle ? 0 : 1)
-    .opacity(isIdle ? 0.5 : 1)
-    .animation(.easeInOut(duration: 0.3), value: isIdle)
     .task {
       // [Alan] This is poor practice but without it, the label is not included in the drag gesture
       // and remains in it's original posistion.
