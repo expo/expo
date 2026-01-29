@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
+- [Android][iOS] Add `url` field to HLS video tracks. ([#41681](https://github.com/expo/expo/pull/41681) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Update HLS video track fetching for iOS 26+. ([#41681](https://github.com/expo/expo/pull/41681) by [@behenate](https://github.com/behenate))
 
 ## 55.0.3 — 2026-01-27
 
@@ -52,6 +56,7 @@ _This version does not introduce any user-facing changes._
 - Add extract the object `VideoSource` type into separate `VideoSourceObject` type. ([#41514](https://github.com/expo/expo/pull/41514) by [@behenate](https://github.com/behenate))
 - [Android] Set property values on calling thread. ([#41533](https://github.com/expo/expo/pull/41533) by [@behenate](https://github.com/behenate))
 - Mark the video track `bitrate` field as deprecated. ([#41532](https://github.com/expo/expo/pull/41532) by [@behenate](https://github.com/behenate))
+- Update HLS video track fetching for iOS 26+. ([#41681](https://github.com/expo/expo/pull/41681) by [@behenate](https://github.com/behenate))
 
 ## 3.0.15 - 2025-12-05
 
