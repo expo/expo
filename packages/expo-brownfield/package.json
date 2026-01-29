@@ -22,6 +22,7 @@
     "lint:fix": "expo-module lint --fix && expo-module lint plugin --fix && expo-module lint cli --fix",
     "test": "expo-module test",
     "test:e2e-cli": "expo-module test --config e2e-cli/jest.config.js",
+    "test:e2e-plugin": "expo-module test --config e2e-plugin/jest.config.js",
     "prepare": "expo-module prepare",
     "prepack": "node scripts/resolve-symlinks.js resolve",
     "postpack": "node scripts/resolve-symlinks.js restore",
@@ -56,6 +57,7 @@
     "prompts": "^2.4.2"
   },
   "devDependencies": {
+    "@bacons/xcode": "1.0.0-alpha.29",
     "@types/diff": "^5.2.0",
     "expo-module-scripts": "^55.0.2"
   },
