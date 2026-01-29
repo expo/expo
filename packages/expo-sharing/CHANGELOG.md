@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the share into extension being enabled by default. ([#42661](https://github.com/expo/expo/pull/42661) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 55.0.4 — 2026-01-27

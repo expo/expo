@@ -18,8 +18,8 @@ type ShareExtensionConfigPlugin = ConfigPlugin<ShareExtensionConfigPluginProps>;
 
 const withShareExtension: ShareExtensionConfigPlugin = (config, props?) => {
   let plugins: (StaticPlugin | ConfigPlugin | string)[] = [];
-  const iosEnabled = props?.ios?.enabled ?? true;
-  const androidEnabled = props?.android?.enabled ?? true;
+  const iosEnabled = props?.ios?.enabled ?? false;
+  const androidEnabled = props?.android?.enabled ?? false;
 
   if (iosEnabled) {
     const deploymentTarget = '15.1';
