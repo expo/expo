@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [plugin] Fix the entitlements shape in eas config. ([#42663](https://github.com/expo/expo/pull/42663) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 55.0.4 — 2026-01-27
