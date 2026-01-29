@@ -23,6 +23,7 @@ struct DevServerRow: View {
             Text(server.url)
               .font(.caption)
               .foregroundColor(.secondary)
+              .lineLimit(1)
           }
         }
 
