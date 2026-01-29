@@ -30,6 +30,7 @@ export declare namespace AppleMaps {
     const MapColorScheme: typeof AppleTypes.AppleMapsColorScheme;
     type MapColorScheme = AppleTypes.AppleMapsColorScheme;
     type Marker = AppleTypes.AppleMapsMarker;
+    type Annotation = AppleTypes.AppleMapsAnnotation;
     type MapUISettings = AppleTypes.AppleMapsUISettings;
     type MapProperties = AppleTypes.AppleMapsProperties;
     type MapProps = AppleTypes.AppleMapsViewProps;
