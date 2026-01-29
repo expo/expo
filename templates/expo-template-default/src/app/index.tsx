@@ -20,7 +20,7 @@ function getDevMenuHint() {
       </ThemedText>
     );
   }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m' : 'cmd+d';
+  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
   return (
     <ThemedText type="small">
       press <ThemedText type="code">{shortcut}</ThemedText>
