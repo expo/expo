@@ -67,7 +67,9 @@ struct SourceMapExplorerView: View {
     }
     .navigationTitle(showNavigationBar ? "Source code explorer" : "")
     .inlineNavigationBar()
+#if !os(macOS)
     .navigationBarHidden(!showNavigationBar)
+#endif
     .modifier(ConditionalSearchable(isEnabled: showContent, text: $viewModel.searchText))
   }
 
@@ -90,6 +92,8 @@ struct SourceMapExplorerView: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     #if os(tvOS)
     .background(Color(uiColor: .systemGray))
+    #elseif os(macOS)
+    .background(Color(uiColor: .windowBackgroundColor))
     #else
     .background(Color(uiColor: .systemGroupedBackground))
     #endif
@@ -336,6 +340,8 @@ struct CodeFileView: View {
     .padding(.vertical, 10)
     #if os(tvOS)
     .background(Color(uiColor: .systemGray))
+    #elseif os(macOS)
+    .background(Color(uiColor: .controlBackgroundColor))
     #else
     .background(Color(uiColor: .secondarySystemBackground))
     #endif
@@ -359,6 +365,8 @@ struct CodeFileView: View {
     }
     #if os(tvOS)
     .background(theme.background)
+    #elseif os(macOS)
+    .background(isImageFile ? Color(uiColor: .windowBackgroundColor) : theme.background)
     #else
     .background(isImageFile ? Color(uiColor: .systemGroupedBackground) : theme.background)
     #endif

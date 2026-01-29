@@ -1,25 +1,25 @@
 import { useLoaderData, useLocalSearchParams, usePathname } from 'expo-router';
 import { Suspense } from 'react';
 
-import { Loading } from '../components/Loading';
-import { Table, TableRow } from '../components/Table';
-import { SiteLinks, SiteLink } from '../components/SiteLink';
+import { Loading } from '../../components/Loading';
+import { SiteLinks, SiteLink } from '../../components/SiteLink';
+import { Table, TableRow } from '../../components/Table';
 
 export async function loader() {
   return Promise.resolve({
-    data: 'root-index',
+    data: 'nested-index',
   });
 }
 
-export default function IndexRoute() {
+export default function NestedIndexRoute() {
   return (
     <Suspense fallback={<Loading />}>
-      <IndexScreen />
+      <NestedIndexScreen />
     </Suspense>
   );
 }
 
-const IndexScreen = () => {
+const NestedIndexScreen = () => {
   const pathname = usePathname();
   const localParams = useLocalSearchParams();
   const data = useLoaderData<typeof loader>();
@@ -33,17 +33,9 @@ const IndexScreen = () => {
       </Table>
 
       <SiteLinks>
+        <SiteLink href="/">Go to Index</SiteLink>
         <SiteLink href="/second">Go to Second</SiteLink>
-        <SiteLink href="/env">Go to Env</SiteLink>
-        <SiteLink href="/request">Go to Request</SiteLink>
-        <SiteLink href="/response">Go to Response</SiteLink>
-        <SiteLink href="/nested/">Go to Nested Index</SiteLink>
-        <SiteLink href="/posts/static-post-1">Go to static Post 1</SiteLink>
-        <SiteLink href="/posts/static-post-2">Go to static Post 2</SiteLink>
-        <SiteLink href="/error">Go to Error</SiteLink>
       </SiteLinks>
     </>
   );
 };
-
-
