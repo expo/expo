@@ -57,7 +57,7 @@ function computeMenuLabelAndTitle(children, title) {
  *
  * @platform ios
  */
-const StackToolbarMenu = ({ children, ...props }) => {
+const StackToolbarMenu = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
     if (placement !== 'bottom') {
         // For placement other than bottom, this component will not render, and should be
@@ -65,23 +65,25 @@ const StackToolbarMenu = ({ children, ...props }) => {
         // So if we reach here, it means we're not inside a toolbar or something else is wrong.
         throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
     }
-    const allowedChildren = (0, react_1.useMemo)(() => [
-        exports.StackToolbarMenu,
-        exports.StackToolbarMenuAction,
-        bottom_toolbar_native_elements_1.NativeToolbarMenu,
-        bottom_toolbar_native_elements_1.NativeToolbarMenuAction,
-        common_primitives_1.StackToolbarLabel,
-    ], [placement]);
-    const validChildren = (0, react_1.useMemo)(() => (0, children_1.filterAllowedChildrenElements)(children, allowedChildren), [children, allowedChildren]);
-    const { label: computedLabel, menuTitle: computedMenuTitle } = computeMenuLabelAndTitle(children, props.title);
+    const validChildren = (0, react_1.useMemo)(() => (0, children_1.filterAllowedChildrenElements)(props.children, ALLOWED_CHILDREN), [props.children]);
+    const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props);
+    const computedLabel = sharedProps?.label;
+    const computedMenuTitle = sharedProps?.menu?.title;
+    const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
     if (process.env.NODE_ENV !== 'production') {
-        const allChildren = react_1.Children.toArray(children);
+        const allChildren = react_1.Children.toArray(props.children);
         if (allChildren.length !== validChildren.length) {
-            throw new Error(`Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu and Stack.Toolbar.MenuAction as its children.`);
+            throw new Error(`Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu, Stack.Toolbar.MenuAction, Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`);
+        }
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        const hasBadge = (0, children_1.getFirstChildOfType)(props.children, common_primitives_1.StackToolbarBadge);
+        if (hasBadge) {
+            console.warn('Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.');
         }
     }
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    return (<bottom_toolbar_native_elements_1.NativeToolbarMenu {...props} image={props.image} imageRenderingMode={props.iconRenderingMode} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
+    return (<bottom_toolbar_native_elements_1.NativeToolbarMenu {...props} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
 };
 exports.StackToolbarMenu = StackToolbarMenu;
 function convertStackToolbarMenuPropsToRNHeaderItem(props) {
@@ -214,4 +216,13 @@ function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {
     }
     return item;
 }
+const ALLOWED_CHILDREN = [
+    exports.StackToolbarMenu,
+    exports.StackToolbarMenuAction,
+    bottom_toolbar_native_elements_1.NativeToolbarMenu,
+    bottom_toolbar_native_elements_1.NativeToolbarMenuAction,
+    common_primitives_1.StackToolbarLabel,
+    common_primitives_1.StackToolbarIcon,
+    common_primitives_1.StackToolbarBadge,
+];
 //# sourceMappingURL=StackToolbarMenu.js.map

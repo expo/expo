@@ -165,7 +165,7 @@ describe('Stack.Toolbar.Menu label and title logic', () => {
       // Label should come from the Label child
       expect(lastCall.label).toBe('Label From Child');
       // Menu title should be empty string
-      expect(lastCall.title).toBe('');
+      expect(lastCall.title).toBeUndefined();
     });
 
     it('uses Label child for label and title prop for menu title when both are provided', () => {
