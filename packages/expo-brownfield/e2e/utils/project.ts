@@ -138,7 +138,11 @@ const installPackage = async (projectRoot: string) => {
     force: true,
   });
 
-  await spawnAsync('npm', ['install', packageTarball], { cwd: projectRoot, stdio: 'pipe' });
+  // Use --legacy-peer-deps for better stability
+  await spawnAsync('npm', ['install', packageTarball, '--legacy-peer-deps'], {
+    cwd: projectRoot,
+    stdio: 'pipe',
+  });
 };
 
 /**
@@ -168,6 +172,9 @@ const filterOutPlugin = (plugins?: (any[] | string)[]) => {
   );
 };
 
+/**
+ * Create template overrides for the brownfield plugin
+ */
 export const createTemplateOverrides = async (projectRoot: string, entries: TemplateEntry[]) => {
   const templatesDir = path.join(projectRoot, '.brownfield-templates');
   if (fs.existsSync(templatesDir)) {

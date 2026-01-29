@@ -8,8 +8,8 @@ import {
   validateBuildPhases,
   validateBundleIdentifier,
   validateBuildSettings,
-} from '../utils/ios';
-import { createTempProject, cleanUpProject, prebuildProject, addPlugin } from '../utils/project';
+} from '../../utils/ios';
+import { createTempProject, cleanUpProject, prebuildProject, addPlugin } from '../../utils/project';
 
 let TEMP_DIR: string;
 

@@ -3,15 +3,15 @@ import {
   validateBrownfieldFiles,
   validateSettingsGradle,
   validateBuildGradle,
-} from '../utils/android';
+} from '../../utils/android';
 import {
   createTempProject,
   cleanUpProject,
   prebuildProject,
   addPlugin,
   createEnvFile,
-} from '../utils/project';
-import { expectFile } from '../utils/test';
+} from '../../utils/project';
+import { expectFile } from '../../utils/test';
 
 let TEMP_DIR: string;
 

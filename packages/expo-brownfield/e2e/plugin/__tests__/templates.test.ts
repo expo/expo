@@ -4,8 +4,8 @@ import {
   prebuildProject,
   addPlugin,
   createTemplateOverrides,
-} from '../utils/project';
-import { expectFile } from '../utils/test';
+} from '../../utils/project';
+import { expectFile } from '../../utils/test';
 
 let TEMP_DIR: string;
 
