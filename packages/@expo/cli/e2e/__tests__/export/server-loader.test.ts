@@ -49,6 +49,7 @@ describe.each(
     expect(files).not.toContain('request.html');
     expect(files).not.toContain('response.html');
     expect(files).not.toContain('second.html');
+    expect(files).not.toContain('nested/index.html');
     expect(files).not.toContain('nullish/[value].html');
     expect(files).not.toContain('nullish/null.html');
     expect(files).not.toContain('nullish/undefined.html');
@@ -57,9 +58,11 @@ describe.each(
     expect(files).not.toContain('posts/static-post-2.html');
 
     // Loader bundles should exist
+    expect(files).toContain('_expo/loaders/index.js');
     expect(files).toContain('_expo/loaders/env.js');
     expect(files).toContain('_expo/loaders/error.js');
     expect(files).toContain('_expo/loaders/meta.js');
+    expect(files).toContain('_expo/loaders/nested/index.js');
     expect(files).toContain('_expo/loaders/request.js');
     expect(files).toContain('_expo/loaders/response.js');
     expect(files).toContain('_expo/loaders/second.js');
@@ -80,7 +83,7 @@ describe.each(
   });
 
   it('returns 404 for loader endpoint when route has no loader', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/index');
+    const response = await server.fetchAsync('/_expo/loaders/no-loader');
     expect(response.status).toBe(404);
   });
 
@@ -97,8 +100,8 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/second'))(
-    'can access data for $url ($name)',
+  it.each(getPageAndLoaderData('/'))(
+    'can access data for root index route $url ($name)',
     async ({ getData, name, url }) => {
       const response = await server.fetchAsync(url);
       expect(response.status).toBe(200);
@@ -108,7 +111,29 @@ describe.each(
       }
 
       const data = await getData(response);
+      expect(data).toEqual({ data: 'root-index' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/second'))(
+    'can access data for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
       expect(data).toEqual({ data: 'second' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/nested'))(
+    'can access data for nested index route $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'nested-index' });
     }
   );
 

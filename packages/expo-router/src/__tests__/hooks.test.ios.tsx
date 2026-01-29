@@ -731,7 +731,7 @@ describe(useLoaderData, () => {
     const asyncLoader = async () => ({ data: 'test' });
 
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/index': { some: 'data' },
+      '/': { some: 'data' },
     };
 
     const { result } = renderHook(() => useLoaderData(asyncLoader), ['index'], {
@@ -747,7 +747,7 @@ describe(useLoaderData, () => {
     };
 
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/index': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
+      '/': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
     };
 
     type AsyncResult = Awaited<ReturnType<typeof asyncLoader>>;

@@ -48,6 +48,7 @@ describe.each(
     expect(files).toContain('request.html');
     expect(files).toContain('response.html');
     expect(files).toContain('second.html');
+    expect(files).toContain('nested/index.html');
     expect(files).toContain('nullish/[value].html');
     expect(files).toContain('nullish/null.html');
     expect(files).toContain('nullish/undefined.html');
@@ -56,11 +57,13 @@ describe.each(
     expect(files).toContain('posts/static-post-2.html');
 
     // Loader outputs are pre-generated JSON files
+    expect(files).toContain('_expo/loaders/index');
     expect(files).toContain('_expo/loaders/env');
     expect(files).toContain('_expo/loaders/meta');
     expect(files).toContain('_expo/loaders/request');
     expect(files).toContain('_expo/loaders/response');
     expect(files).toContain('_expo/loaders/second');
+    expect(files).toContain('_expo/loaders/nested');
     expect(files).toContain('_expo/loaders/nullish/[value]');
     expect(files).toContain('_expo/loaders/nullish/null');
     expect(files).toContain('_expo/loaders/nullish/undefined');
@@ -70,7 +73,7 @@ describe.each(
   });
 
   it('returns 404 for loader endpoint when route has no loader', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/index');
+    const response = await server.fetchAsync('/_expo/loaders/no-loader');
     expect(response.status).toBe(404);
   });
 
@@ -79,8 +82,8 @@ describe.each(
     expect(response.status).toBe(404);
   });
 
-  it.each(getPageAndLoaderData('/second'))(
-    'can access data for $url ($name)',
+  it.each(getPageAndLoaderData('/'))(
+    'can access data for root index route $url ($name)',
     async ({ getData, name, url }) => {
       const response = await server.fetchAsync(url);
       expect(response.status).toBe(200);
@@ -89,11 +92,32 @@ describe.each(
         // NOTE(@hassankhan): expo-server returns `application/octet-stream` for extensionless files,
         // but the content is still valid JSON.
         // expect(response.headers.get('content-type')).toContain('application/json');
-        // expect(response.headers.get('content-type')).toContain('application/json');
       }
 
       const data = await getData(response);
+      expect(data).toEqual({ data: 'root-index' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/second'))(
+    'can access data for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
       expect(data).toEqual({ data: 'second' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/nested'))(
+    'can access data for nested index route $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'nested-index' });
     }
   );
 
