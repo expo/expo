@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Reallow connections on `/expo-dev-plugins/broadcast` broadcast socket to local connections ([#42538](https://github.com/expo/expo/pull/42538) by [@kitten](https://github.com/kitten)), ([#42705](https://github.com/expo/expo/pull/42705) by [@vonovak](https://github.com/vonovak))
+- [web] Ensure `<Head>` component re-renders when focus changes ([#42713](https://github.com/expo/expo/pull/42713) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
