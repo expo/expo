@@ -3,15 +3,13 @@ import {
   validateBrownfieldFiles,
   validateSettingsGradle,
   validateBuildGradle,
+  setupPlugin,
+  getAndroidPaths,
+  getPublishingLines,
 } from '../../utils/android';
-import {
-  createTempProject,
-  cleanUpProject,
-  prebuildProject,
-  addPlugin,
-  createEnvFile,
-} from '../../utils/project';
-import { expectFile } from '../../utils/test';
+import { createTempProject, cleanUpProject, createEnvFile } from '../../utils/project';
+import { expectFile, expectFiles } from '../../utils/test';
+import { PluginProps } from '../../utils/types';
 
 let TEMP_DIR: string;
 
@@ -32,8 +30,7 @@ describe('plugin for android', () => {
    * - The brownfield library is created
    */
   it('should create the brownfield library', async () => {
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'android');
+    await setupPlugin(TEMP_DIR);
     validateBrownfieldLibrary(TEMP_DIR);
   });
 
@@ -42,25 +39,21 @@ describe('plugin for android', () => {
    * - All brownfield files are created
    */
   it('should create all brownfield files', async () => {
-    await addPlugin(TEMP_DIR, {
-      android: {
-        package: 'com.example.test.brownfield',
-      },
+    const PACKAGE = 'com.example.test.brownfield';
+    await setupPlugin(TEMP_DIR, {
+      package: PACKAGE,
     });
-    await prebuildProject(TEMP_DIR, 'android');
 
-    const SOURCES_PATH = 'src/main';
-    const PACKAGE_PATH = `${SOURCES_PATH}/java/com/example/test/brownfield`;
-
+    const { sourcesPath, packagePath } = getAndroidPaths(PACKAGE);
     const files = [
       'build.gradle.kts',
       'consumer-rules.pro',
       'proguard-rules.pro',
-      `${SOURCES_PATH}/AndroidManifest.xml`,
-      `${PACKAGE_PATH}/BrownfieldActivity.kt`,
-      `${PACKAGE_PATH}/ReactNativeHostManager.kt`,
-      `${PACKAGE_PATH}/ReactNativeViewFactory.kt`,
-      `${PACKAGE_PATH}/ReactNativeFragment.kt`,
+      `${sourcesPath}/AndroidManifest.xml`,
+      `${packagePath}/BrownfieldActivity.kt`,
+      `${packagePath}/ReactNativeHostManager.kt`,
+      `${packagePath}/ReactNativeViewFactory.kt`,
+      `${packagePath}/ReactNativeFragment.kt`,
     ];
 
     validateBrownfieldFiles(TEMP_DIR, files);
@@ -72,8 +65,7 @@ describe('plugin for android', () => {
    * - settings.gradle includes the brownfield gradle plugins
    */
   it('modifies settings.gradle', async () => {
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'android');
+    await setupPlugin(TEMP_DIR);
     validateSettingsGradle(TEMP_DIR);
   });
 
@@ -84,11 +76,8 @@ describe('plugin for android', () => {
    *   and publishing (repositories) configuration
    */
   it('modifies build.gradle', async () => {
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'android');
-
-    const publishingLines = ['localDefault {', 'type = "localMaven"'];
-    validateBuildGradle(TEMP_DIR, publishingLines);
+    await setupPlugin(TEMP_DIR);
+    validateBuildGradle(TEMP_DIR, getPublishingLines(TEMP_DIR, [{ type: 'localMaven' }]));
   });
 
   /**
@@ -101,26 +90,22 @@ describe('plugin for android', () => {
    *   - Publishing configuration
    */
   it('should properly infer values if no props are passed', async () => {
-    await addPlugin(TEMP_DIR, {}, { package: 'com.example.test.app' });
-    await prebuildProject(TEMP_DIR, 'android');
-
+    const PACKAGE = 'com.example.test.app';
+    await setupPlugin(TEMP_DIR, undefined, { package: PACKAGE });
     validateBrownfieldLibrary(TEMP_DIR);
-    const PACKAGE_PATH = `src/main/java/com/example/test/app/brownfield`;
+
+    const { packagePath } = getAndroidPaths(PACKAGE + '.brownfield');
     const files = [
-      `${PACKAGE_PATH}/ReactNativeHostManager.kt`,
-      `${PACKAGE_PATH}/ReactNativeFragment.kt`,
+      `${packagePath}/ReactNativeHostManager.kt`,
+      `${packagePath}/ReactNativeFragment.kt`,
     ];
     validateBrownfieldFiles(TEMP_DIR, files);
     expectFile({
       projectRoot: TEMP_DIR,
       fileName: 'build.gradle.kts',
-      content: ['group = "com.example.test.app"'],
+      content: ['group = "com.example.test.app"', 'version = "1.0.0"'],
     });
-    expectFile({
-      projectRoot: TEMP_DIR,
-      fileName: 'build.gradle.kts',
-      content: ['version = "1.0.0"'],
-    });
+
     const publishingLines = ['localDefault {', 'type = "localMaven"'];
     validateBuildGradle(TEMP_DIR, publishingLines);
   });
@@ -130,15 +115,13 @@ describe('plugin for android', () => {
    * - The library name is properly handled
    */
   it('should properly handle library name plugin prop', async () => {
-    await addPlugin(TEMP_DIR, {
-      android: {
-        libraryName: 'mybrownfield',
-      },
+    const LIBRARY_NAME = 'mybrownfield';
+    await setupPlugin(TEMP_DIR, {
+      libraryName: LIBRARY_NAME,
     });
-    await prebuildProject(TEMP_DIR, 'android');
 
     const files = ['build.gradle.kts', 'consumer-rules.pro', 'proguard-rules.pro'];
-    validateBrownfieldFiles(TEMP_DIR, files, 'mybrownfield');
+    validateBrownfieldFiles(TEMP_DIR, files, LIBRARY_NAME);
   });
 
   /**
@@ -146,29 +129,21 @@ describe('plugin for android', () => {
    * - The package identifier is properly handled
    */
   it('should properly handle package identifier plugin prop', async () => {
-    await addPlugin(TEMP_DIR, {
-      android: {
-        package: 'com.example.test.mybrownfield',
-      },
+    const PACKAGE = 'com.example.test.mybrownfield';
+    await setupPlugin(TEMP_DIR, {
+      package: PACKAGE,
     });
-    await prebuildProject(TEMP_DIR, 'android');
 
-    const PACKAGE_PATH = `src/main/java/com/example/test/mybrownfield`;
+    const { packagePath } = getAndroidPaths(PACKAGE);
     const files = [
-      `${PACKAGE_PATH}/ReactNativeHostManager.kt`,
-      `${PACKAGE_PATH}/ReactNativeFragment.kt`,
+      `${packagePath}/ReactNativeHostManager.kt`,
+      `${packagePath}/ReactNativeFragment.kt`,
     ];
     validateBrownfieldFiles(TEMP_DIR, files);
-
-    expectFile({
+    expectFiles({
       projectRoot: TEMP_DIR,
-      fileName: 'ReactNativeHostManager.kt',
-      content: ['package com.example.test.mybrownfield'],
-    });
-    expectFile({
-      projectRoot: TEMP_DIR,
-      fileName: 'ReactNativeViewFactory.kt',
-      content: ['package com.example.test.mybrownfield'],
+      fileNames: ['ReactNativeHostManager.kt', 'ReactNativeViewFactory.kt'],
+      content: 'package com.example.test.mybrownfield',
     });
   });
 
@@ -177,16 +152,15 @@ describe('plugin for android', () => {
    * - The group is properly handled
    */
   it('should properly handle group plugin prop', async () => {
-    await addPlugin(TEMP_DIR, {
-      android: {
-        group: 'com.example.test',
-      },
+    const GROUP = 'com.example.test';
+    await setupPlugin(TEMP_DIR, {
+      group: GROUP,
     });
-    await prebuildProject(TEMP_DIR, 'android');
+
     expectFile({
       projectRoot: TEMP_DIR,
       fileName: 'build.gradle.kts',
-      content: ['group = "com.example.test"'],
+      content: [`group = "${GROUP}"`],
     });
   });
 
@@ -195,16 +169,15 @@ describe('plugin for android', () => {
    * - The version is properly handled
    */
   it('should properly handle version plugin prop', async () => {
-    await addPlugin(TEMP_DIR, {
-      android: {
-        version: '1.2.345',
-      },
+    const VERSION = '1.2.345';
+    await setupPlugin(TEMP_DIR, {
+      version: VERSION,
     });
-    await prebuildProject(TEMP_DIR, 'android');
+
     expectFile({
       projectRoot: TEMP_DIR,
       fileName: 'build.gradle.kts',
-      content: ['version = "1.2.345"'],
+      content: [`version = "${VERSION}"`],
     });
   });
 
@@ -213,48 +186,30 @@ describe('plugin for android', () => {
    * - The publishing configuration is properly handled
    */
   it('should properly handle publishing configuration plugin prop', async () => {
-    await addPlugin(TEMP_DIR, {
-      android: {
-        publishing: [
-          {
-            type: 'localMaven',
-          },
-          {
-            type: 'localDirectory',
-            path: './local-maven-repo',
-          },
-          {
-            type: 'remotePublic',
-            url: 'https://example.com/repository',
-          },
-          {
-            type: 'remotePrivate',
-            url: 'https://example.com/private-repository',
-            username: 'myusername',
-            password: 'mypassword',
-          },
-        ],
+    const PUBLISHING = [
+      {
+        type: 'localMaven',
       },
+      {
+        type: 'localDirectory',
+        path: './local-maven-repo',
+      },
+      {
+        type: 'remotePublic',
+        url: 'https://example.com/repository',
+      },
+      {
+        type: 'remotePrivate',
+        url: 'https://example.com/private-repository',
+        username: 'myusername',
+        password: 'mypassword',
+      },
+    ] as PluginProps['android']['publishing'];
+    await setupPlugin(TEMP_DIR, {
+      publishing: PUBLISHING,
     });
-    await prebuildProject(TEMP_DIR, 'android');
 
-    const publishingLines = [
-      'localDefault {',
-      'type = "localMaven"',
-      'localDirectory1 {',
-      'type = "localDirectory"',
-      'url = "file://',
-      'testapppluginandroid/local-maven-repo"',
-      'remotePublic1 {',
-      'type = "remotePublic"',
-      'url = "https://example.com/repository"',
-      'remotePrivate1 {',
-      'type = "remotePrivate"',
-      'url = "https://example.com/private-repository"',
-      'username = "myusername"',
-      'password = "mypassword"',
-    ];
-    validateBuildGradle(TEMP_DIR, publishingLines);
+    validateBuildGradle(TEMP_DIR, getPublishingLines(TEMP_DIR, PUBLISHING));
   });
 
   /**
@@ -263,41 +218,27 @@ describe('plugin for android', () => {
    *   by prefixing publication names with numbers
    */
   it('should properly handle mulitple repos of the same type', async () => {
-    await addPlugin(TEMP_DIR, {
-      android: {
-        publishing: [
-          {
-            type: 'localMaven',
-          },
-          {
-            type: 'localMaven',
-          },
-          {
-            type: 'localDirectory',
-            path: './local-maven-repo',
-          },
-          {
-            type: 'localDirectory',
-            path: './local-maven-repo-2',
-          },
-        ],
+    const PUBLISHING = [
+      {
+        type: 'localMaven',
       },
+      {
+        type: 'localMaven',
+      },
+      {
+        type: 'localDirectory',
+        path: './local-maven-repo',
+      },
+      {
+        type: 'localDirectory',
+        path: './local-maven-repo-2',
+      },
+    ] as PluginProps['android']['publishing'];
+    await setupPlugin(TEMP_DIR, {
+      publishing: PUBLISHING,
     });
-    await prebuildProject(TEMP_DIR, 'android');
 
-    const publishingLines = [
-      'localDefault {',
-      'type = "localMaven"',
-      'localDirectory1 {',
-      'type = "localDirectory"',
-      'url = "file://',
-      'testapppluginandroid/local-maven-repo"',
-      'localDirectory2 {',
-      'type = "localDirectory"',
-      'url = "file://',
-      'testapppluginandroid/local-maven-repo-2"',
-    ];
-    validateBuildGradle(TEMP_DIR, publishingLines);
+    validateBuildGradle(TEMP_DIR, getPublishingLines(TEMP_DIR, PUBLISHING));
   });
 
   /**
@@ -305,43 +246,29 @@ describe('plugin for android', () => {
    * - Multiple repositories of the same type with different names are properly handled
    */
   it('should properly handle mulitple repos of the same type with different names', async () => {
-    await addPlugin(TEMP_DIR, {
-      android: {
-        publishing: [
-          {
-            type: 'localMaven',
-          },
-          {
-            type: 'localMaven',
-          },
-          {
-            type: 'localDirectory',
-            name: 'localMavenRepo',
-            path: './local-maven-repo',
-          },
-          {
-            type: 'localDirectory',
-            name: 'localMavenRepo256',
-            path: './local-maven-repo-2',
-          },
-        ],
+    const PUBLISHING = [
+      {
+        type: 'localMaven',
       },
+      {
+        type: 'localMaven',
+      },
+      {
+        type: 'localDirectory',
+        name: 'localMavenRepo',
+        path: './local-maven-repo',
+      },
+      {
+        type: 'localDirectory',
+        name: 'localMavenRepo256',
+        path: './local-maven-repo-2',
+      },
+    ] as PluginProps['android']['publishing'];
+    await setupPlugin(TEMP_DIR, {
+      publishing: PUBLISHING,
     });
-    await prebuildProject(TEMP_DIR, 'android');
 
-    const publishingLines = [
-      'localDefault {',
-      'type = "localMaven"',
-      'localMavenRepo {',
-      'type = "localDirectory"',
-      'url = "file://',
-      'testapppluginandroid/local-maven-repo"',
-      'localMavenRepo256 {',
-      'type = "localDirectory"',
-      'url = "file://',
-      'testapppluginandroid/local-maven-repo-2"',
-    ];
-    validateBuildGradle(TEMP_DIR, publishingLines);
+    validateBuildGradle(TEMP_DIR, getPublishingLines(TEMP_DIR, PUBLISHING));
   });
 
   /**
@@ -349,33 +276,21 @@ describe('plugin for android', () => {
    * - The path is properly resolved for localDirectory repositories
    */
   it('should properly resolve paths for localDirectory repositories', async () => {
-    await addPlugin(TEMP_DIR, {
-      android: {
-        publishing: [
-          {
-            type: 'localDirectory',
-            path: './local-maven-repo',
-          },
-          {
-            type: 'localDirectory',
-            path: '/tmp/local-maven-repo-home',
-          },
-        ],
+    const PUBLISHING = [
+      {
+        type: 'localDirectory',
+        path: './local-maven-repo',
       },
+      {
+        type: 'localDirectory',
+        path: '/tmp/local-maven-repo-home',
+      },
+    ] as PluginProps['android']['publishing'];
+    await setupPlugin(TEMP_DIR, {
+      publishing: PUBLISHING,
     });
-    await prebuildProject(TEMP_DIR, 'android');
 
-    const publishingLines = [
-      'localDirectory1 {',
-      'type = "localDirectory"',
-      'url = "file://',
-      'testapppluginandroid/local-maven-repo"',
-      'localDirectory2 {',
-      'type = "localDirectory"',
-      'url = "file://',
-      '/tmp/local-maven-repo-home"',
-    ];
-    validateBuildGradle(TEMP_DIR, publishingLines);
+    validateBuildGradle(TEMP_DIR, getPublishingLines(TEMP_DIR, PUBLISHING));
   });
 
   /**
@@ -383,39 +298,31 @@ describe('plugin for android', () => {
    * - Environment variables are properly handled in repository configuration
    */
   it('should properly handle environment variables in repository configuration', async () => {
-    await createEnvFile(TEMP_DIR, {
+    const ENV = {
       MAVEN_PUBLISHING_URL: 'https://example.com/secret-repository',
       MAVEN_PUBLISHING_USERNAME: 'secretusername1234',
       MAVEN_PUBLISHING_PASSWORD: 'secretpassword1234',
-    });
-    await addPlugin(TEMP_DIR, {
-      android: {
-        publishing: [
-          {
-            type: 'remotePrivate',
-            url: {
-              variable: 'MAVEN_PUBLISHING_URL',
-            },
-            username: {
-              variable: 'MAVEN_PUBLISHING_USERNAME',
-            },
-            password: {
-              variable: 'MAVEN_PUBLISHING_PASSWORD',
-            },
-          },
-        ],
+    };
+    const PUBLISHING = [
+      {
+        type: 'remotePrivate',
+        url: {
+          variable: 'MAVEN_PUBLISHING_URL',
+        },
+        username: {
+          variable: 'MAVEN_PUBLISHING_USERNAME',
+        },
+        password: {
+          variable: 'MAVEN_PUBLISHING_PASSWORD',
+        },
       },
+    ] as PluginProps['android']['publishing'];
+    await createEnvFile(TEMP_DIR, ENV);
+    await setupPlugin(TEMP_DIR, {
+      publishing: PUBLISHING,
     });
-    await prebuildProject(TEMP_DIR, 'android');
 
-    const publishingLines = [
-      'remotePrivate1 {',
-      'type = "remotePrivate"',
-      'url = "https://example.com/secret-repository"',
-      'username = "secretusername1234"',
-      'password = "secretpassword1234"',
-    ];
-    validateBuildGradle(TEMP_DIR, publishingLines);
+    validateBuildGradle(TEMP_DIR, getPublishingLines(TEMP_DIR, PUBLISHING, ENV));
   });
 
   /**
@@ -423,25 +330,17 @@ describe('plugin for android', () => {
    * - The allowInsecure option is properly handled
    */
   it('should properly handle allowInsecure option for repositories', async () => {
-    await addPlugin(TEMP_DIR, {
-      android: {
-        publishing: [
-          {
-            type: 'remotePublic',
-            url: 'http://example.com/public-repository',
-            allowInsecure: true,
-          },
-        ],
+    const PUBLISHING = [
+      {
+        type: 'remotePublic',
+        url: 'http://example.com/public-repository',
+        allowInsecure: true,
       },
+    ] as PluginProps['android']['publishing'];
+    await setupPlugin(TEMP_DIR, {
+      publishing: PUBLISHING,
     });
-    await prebuildProject(TEMP_DIR, 'android');
 
-    const publishingLines = [
-      'remotePublic1 {',
-      'type = "remotePublic"',
-      'url = "http://example.com/public-repository"',
-      'allowInsecure = true',
-    ];
-    validateBuildGradle(TEMP_DIR, publishingLines);
+    validateBuildGradle(TEMP_DIR, getPublishingLines(TEMP_DIR, PUBLISHING));
   });
 });

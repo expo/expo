@@ -8,8 +8,11 @@ import {
   XCBuildConfiguration,
   XCConfigurationList,
 } from '@bacons/xcode/json';
-import fs from 'fs';
+import fs from 'node:fs';
 import path from 'path';
+
+import { addPlugin, prebuildProject } from './project';
+import { PluginProps } from './types';
 
 // SECTION: Validation functions
 
@@ -250,6 +253,15 @@ export const parsePbxproj = (projectRoot: string) => {
   );
   const pbxproj = parse(fs.readFileSync(pbxprojPath, 'utf8'));
   return pbxproj;
+};
+
+/**
+ * Sets up the plugin for the project
+ */
+export const setupPlugin = async (projectRoot: string, pluginConfig?: PluginProps['ios']) => {
+  const props = pluginConfig ? { ios: pluginConfig } : undefined;
+  await addPlugin(projectRoot, props);
+  await prebuildProject(projectRoot, 'ios');
 };
 
 // END SECTION: Helper functions

@@ -159,7 +159,7 @@ interface ExpectFileOptions {
   projectRoot: string;
   fileName?: string;
   filePath?: string;
-  content?: string[];
+  content?: string[] | string;
 }
 
 export const expectFile = async ({
@@ -190,7 +190,46 @@ export const expectFile = async ({
   }
 
   const fileContent = fs.readFileSync(fullFilePath, 'utf-8');
-  content?.forEach((pattern) => {
-    expect(fileContent).toContain(pattern);
-  });
+  if (Array.isArray(content)) {
+    content?.forEach((pattern) => {
+      expect(fileContent).toContain(pattern);
+    });
+  } else {
+    expect(fileContent).toContain(content);
+  }
+};
+
+/**
+ * Wrapper around `expectFile` for cleaner calls
+ */
+interface ExpectedFileName {
+  fileName: string;
+  content: string[] | string;
+}
+
+type ExpectFilesOptions =
+  | {
+      projectRoot: string;
+      fileNames: string[];
+      content: string[] | string;
+    }
+  | {
+      projectRoot: string;
+      expected: ExpectedFileName[];
+    };
+
+export const expectFiles = async (options: ExpectFilesOptions) => {
+  if ('content' in options) {
+    options.fileNames.forEach((fileName) => {
+      expectFile({ projectRoot: options.projectRoot, fileName, content: options.content });
+    });
+  } else if ('expected' in options) {
+    options.expected.forEach((expected) => {
+      expectFile({
+        projectRoot: options.projectRoot,
+        fileName: expected.fileName,
+        content: expected.content,
+      });
+    });
+  }
 };

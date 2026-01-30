@@ -1,11 +1,7 @@
-import {
-  createTempProject,
-  cleanUpProject,
-  prebuildProject,
-  addPlugin,
-  createTemplateOverrides,
-} from '../../utils/project';
-import { expectFile } from '../../utils/test';
+import { setupPlugin as setupAndroidPlugin } from '../../utils/android';
+import { setupPlugin as setupIosPlugin } from '../../utils/ios';
+import { createTempProject, cleanUpProject, createTemplateOverrides } from '../../utils/project';
+import { expectFile, expectFiles } from '../../utils/test';
 
 let TEMP_DIR: string;
 
@@ -26,43 +22,29 @@ describe('plugin templates', () => {
    * - All interpolated values are resolved in the templates for android
    */
   it('resolves all interpolated values in templates for android', async () => {
-    await addPlugin(TEMP_DIR, {
-      android: {
-        package: 'com.example.test.mybrownfield',
-        group: 'io.example.test',
-        version: '2.56.173',
-      },
+    const PACKAGE = 'com.example.test.mybrownfield';
+    const GROUP = 'io.example.test';
+    const VERSION = '2.56.173';
+    await setupAndroidPlugin(TEMP_DIR, {
+      package: PACKAGE,
+      group: GROUP,
+      version: VERSION,
     });
-    await prebuildProject(TEMP_DIR, 'android');
 
     expectFile({
       projectRoot: TEMP_DIR,
       fileName: 'build.gradle.kts',
-      content: [
-        'group = "io.example.test"',
-        'version = "2.56.173"',
-        'namespace = "com.example.test.mybrownfield"',
+      content: [`group = "${GROUP}"`, `version = "${VERSION}"`, `namespace = "${PACKAGE}"`],
+    });
+    expectFiles({
+      projectRoot: TEMP_DIR,
+      fileNames: [
+        'BrownfieldActivity.kt',
+        'ReactNativeHostManager.kt',
+        'ReactNativeViewFactory.kt',
+        'ReactNativeFragment.kt',
       ],
-    });
-    expectFile({
-      projectRoot: TEMP_DIR,
-      fileName: 'BrownfieldActivity.kt',
-      content: ['package com.example.test.mybrownfield'],
-    });
-    expectFile({
-      projectRoot: TEMP_DIR,
-      fileName: 'ReactNativeHostManager.kt',
-      content: ['package com.example.test.mybrownfield'],
-    });
-    expectFile({
-      projectRoot: TEMP_DIR,
-      fileName: 'ReactNativeViewFactory.kt',
-      content: ['package com.example.test.mybrownfield'],
-    });
-    expectFile({
-      projectRoot: TEMP_DIR,
-      fileName: 'ReactNativeFragment.kt',
-      content: ['package com.example.test.mybrownfield'],
+      content: `package ${PACKAGE}`,
     });
   });
 
@@ -71,17 +53,16 @@ describe('plugin templates', () => {
    * - All interpolated values are resolved in the templates for ios
    */
   it('resolves all interpolated values in templates for ios', async () => {
-    await addPlugin(TEMP_DIR, {
-      ios: {
-        targetName: 'MyBrownfield',
-        bundleIdentifier: 'com.example.test.mybrownfield',
-      },
+    const TARGET_NAME = 'MyBrownfield';
+    const BUNDLE_IDENTIFIER = 'com.example.test.mybrownfield';
+    await setupIosPlugin(TEMP_DIR, {
+      targetName: TARGET_NAME,
+      bundleIdentifier: BUNDLE_IDENTIFIER,
     });
-    await prebuildProject(TEMP_DIR, 'ios');
     expectFile({
       projectRoot: TEMP_DIR,
       fileName: 'Info.plist',
-      content: ['<string>com.example.test.mybrownfield</string>', '<string>MyBrownfield</string>'],
+      content: [`<string>${BUNDLE_IDENTIFIER}</string>`, `<string>${TARGET_NAME}</string>`],
     });
   });
 
@@ -101,18 +82,14 @@ describe('plugin templates', () => {
         content: ReactNativeFragmentContent,
       },
     ]);
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'android');
+    await setupAndroidPlugin(TEMP_DIR);
 
-    expectFile({
+    expectFiles({
       projectRoot: TEMP_DIR,
-      fileName: 'ReactNativeHostManager.kt',
-      content: [ReactNativeHostManagerContent],
-    });
-    expectFile({
-      projectRoot: TEMP_DIR,
-      fileName: 'ReactNativeFragment.kt',
-      content: [ReactNativeFragmentContent],
+      expected: [
+        { fileName: 'ReactNativeHostManager.kt', content: ReactNativeHostManagerContent },
+        { fileName: 'ReactNativeFragment.kt', content: ReactNativeFragmentContent },
+      ],
     });
   });
 
@@ -132,18 +109,14 @@ describe('plugin templates', () => {
         content: ReactNativeDelegateContent,
       },
     ]);
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'ios');
+    await setupIosPlugin(TEMP_DIR);
 
-    expectFile({
+    expectFiles({
       projectRoot: TEMP_DIR,
-      fileName: 'ReactNativeHostManager.swift',
-      content: [ReactNativeHostManagerContent],
-    });
-    expectFile({
-      projectRoot: TEMP_DIR,
-      fileName: 'ReactNativeDelegate.swift',
-      content: [ReactNativeDelegateContent],
+      expected: [
+        { fileName: 'ReactNativeHostManager.swift', content: ReactNativeHostManagerContent },
+        { fileName: 'ReactNativeDelegate.swift', content: ReactNativeDelegateContent },
+      ],
     });
   });
 
@@ -164,13 +137,12 @@ describe('plugin templates', () => {
         content: ReactNativeHostManagerContent2,
       },
     ]);
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'ios');
+    await setupIosPlugin(TEMP_DIR);
 
     expectFile({
       projectRoot: TEMP_DIR,
       fileName: 'ReactNativeHostManager.swift',
-      content: [ReactNativeHostManagerContent1],
+      content: ReactNativeHostManagerContent1,
     });
   });
 
@@ -188,12 +160,11 @@ describe('plugin templates', () => {
         content: BuildGradleContent,
       },
     ]);
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'android');
+    await setupAndroidPlugin(TEMP_DIR);
     expectFile({
       projectRoot: TEMP_DIR,
       fileName: 'build.gradle.kts',
-      content: ['version = "1.0.0"'],
+      content: 'version = "1.0.0"',
     });
   });
 });

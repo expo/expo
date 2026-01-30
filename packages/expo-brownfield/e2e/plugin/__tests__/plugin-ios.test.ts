@@ -1,4 +1,5 @@
 import {
+  setupPlugin,
   validatePodfile,
   validateBuildProperties,
   validatePodfileProperties,
@@ -9,7 +10,7 @@ import {
   validateBundleIdentifier,
   validateBuildSettings,
 } from '../../utils/ios';
-import { createTempProject, cleanUpProject, prebuildProject, addPlugin } from '../../utils/project';
+import { createTempProject, cleanUpProject } from '../../utils/project';
 
 let TEMP_DIR: string;
 
@@ -31,8 +32,7 @@ describe('plugin for ios', () => {
    *   added via build properties plugin
    */
   it('modifies the build properties', async () => {
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'ios');
+    await setupPlugin(TEMP_DIR);
     validateBuildProperties(TEMP_DIR);
   });
 
@@ -44,8 +44,7 @@ describe('plugin for ios', () => {
    *   added via podfile plugin
    */
   it('modifies the podfile', async () => {
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'ios');
+    await setupPlugin(TEMP_DIR);
     validatePodfile(TEMP_DIR, 'testapppluginiosbrownfield');
   });
 
@@ -57,8 +56,7 @@ describe('plugin for ios', () => {
    *   added via podfile properties plugin
    */
   it('modifies the podfile properties', async () => {
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'ios');
+    await setupPlugin(TEMP_DIR);
     validatePodfileProperties(TEMP_DIR, {
       'ios.useFrameworks': 'static',
       'ios.brownfieldTargetName': 'testapppluginiosbrownfield',
@@ -71,8 +69,7 @@ describe('plugin for ios', () => {
    * - The group should be properly included in the Xcode project
    */
   it('should create a group for the brownfield framework', async () => {
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'ios');
+    await setupPlugin(TEMP_DIR);
     validateBrownfieldGroup(TEMP_DIR, 'testapppluginiosbrownfield');
   });
 
@@ -83,8 +80,7 @@ describe('plugin for ios', () => {
    * - The files are correctly included in the sources build phase
    */
   it('should create all brownfield files', async () => {
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'ios');
+    await setupPlugin(TEMP_DIR);
 
     const files = [
       'ExpoAppDelegate.swift',
@@ -96,7 +92,6 @@ describe('plugin for ios', () => {
       'ReactNativeViewController.swift',
       'testapppluginiosbrownfield.entitlements',
     ];
-
     validateBrownfieldFiles(TEMP_DIR, 'testapppluginiosbrownfield', files);
   });
 
@@ -105,8 +100,7 @@ describe('plugin for ios', () => {
    * - The app delegate is patched to import Expo with `internal`
    */
   it('should patch the app delegate', async () => {
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'ios');
+    await setupPlugin(TEMP_DIR);
     validateAppDelegatePatch(TEMP_DIR, 'testapppluginiosbrownfield');
   });
 
@@ -117,8 +111,7 @@ describe('plugin for ios', () => {
    *   - Referencing app project's bundle phase
    */
   it('should configure the build phases', async () => {
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'ios');
+    await setupPlugin(TEMP_DIR);
     validateBuildPhases(TEMP_DIR, 'testapppluginiosbrownfield');
   });
 
@@ -127,8 +120,7 @@ describe('plugin for ios', () => {
    * - The build settings are properly set up for the brownfield target
    */
   it('should properly set up build settings', async () => {
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'ios');
+    await setupPlugin(TEMP_DIR);
     validateBuildSettings(TEMP_DIR, 'testapppluginiosbrownfield');
   });
 
@@ -139,8 +131,7 @@ describe('plugin for ios', () => {
    *   - Bundle identifier
    */
   it('should properly infer values if no props are passed', async () => {
-    await addPlugin(TEMP_DIR);
-    await prebuildProject(TEMP_DIR, 'ios');
+    await setupPlugin(TEMP_DIR);
     validateBrownfieldGroup(TEMP_DIR, 'testapppluginiosbrownfield');
     validateBundleIdentifier(
       TEMP_DIR,
@@ -154,10 +145,11 @@ describe('plugin for ios', () => {
    * - Target name is properly handled
    */
   it('should properly handle target name plugin prop', async () => {
-    await addPlugin(TEMP_DIR, { ios: { targetName: 'MyBrownfield' } });
-    await prebuildProject(TEMP_DIR, 'ios');
-    validateBrownfieldGroup(TEMP_DIR, 'MyBrownfield');
-    validateBundleIdentifier(TEMP_DIR, new RegExp('[a-zA-Z0-9-]+\\.MyBrownfield'), 'MyBrownfield');
+    const TARGET_NAME = 'MyBrownfield';
+    await setupPlugin(TEMP_DIR, { targetName: TARGET_NAME });
+
+    validateBrownfieldGroup(TEMP_DIR, TARGET_NAME);
+    validateBundleIdentifier(TEMP_DIR, new RegExp(`[a-zA-Z0-9-]+\\.${TARGET_NAME}`), TARGET_NAME);
   });
 
   /**
@@ -165,14 +157,11 @@ describe('plugin for ios', () => {
    * - Bundle identifier is properly handled
    */
   it('should properly handle bundle identifier plugin prop', async () => {
-    await addPlugin(TEMP_DIR, {
-      ios: { bundleIdentifier: 'com.example.test.myapp.testapppluginiosbrownfield' },
+    const BUNDLE_IDENTIFIER = 'com.example.test.myapp.testapppluginiosbrownfield';
+    await setupPlugin(TEMP_DIR, {
+      bundleIdentifier: BUNDLE_IDENTIFIER,
     });
-    await prebuildProject(TEMP_DIR, 'ios');
-    validateBundleIdentifier(
-      TEMP_DIR,
-      'com.example.test.myapp.testapppluginiosbrownfield',
-      'testapppluginiosbrownfield'
-    );
+
+    validateBundleIdentifier(TEMP_DIR, BUNDLE_IDENTIFIER, 'testapppluginiosbrownfield');
   });
 });

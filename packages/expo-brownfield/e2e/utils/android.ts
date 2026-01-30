@@ -1,6 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 
+import { addPlugin, prebuildProject } from './project';
+import { PluginProps } from './types';
+
 // SECTION: Validation functions
 
 /**
@@ -86,3 +89,104 @@ export const validateBuildGradle = (
     expect(buildGradleContents).toContain(line);
   });
 };
+
+// END SECTION: Validation functions
+
+// SECTION: Helper functions
+
+/**
+ * Sets up the plugin for the project
+ */
+export const setupPlugin = async (
+  projectRoot: string,
+  pluginConfig?: PluginProps['android'],
+  android?: Record<string, any>
+) => {
+  const props = pluginConfig ? { android: pluginConfig } : undefined;
+  await addPlugin(projectRoot, props, android);
+  await prebuildProject(projectRoot, 'android');
+};
+
+/**
+ * Infers the paths for Android
+ */
+interface AndroidPaths {
+  packagePath: string;
+  sourcesPath: string;
+}
+
+export const getAndroidPaths = (packageId: string): AndroidPaths => {
+  const sourcesPath = 'src/main';
+  const paths = [sourcesPath, 'java'];
+
+  packageId.split('.').forEach((part) => {
+    paths.push(part);
+  });
+
+  return {
+    packagePath: paths.join('/'),
+    sourcesPath,
+  };
+};
+
+/**
+ * Gets the publishing lines for the build.gradle file
+ */
+export const getPublishingLines = (
+  projectRoot: string,
+  publishing: PluginProps['android']['publishing'],
+  env?: Record<string, string>
+): string[] => {
+  const lines = [];
+  const count = {
+    localMaven: 0,
+    localDirectory: 0,
+    remotePublic: 0,
+    remotePrivate: 0,
+  };
+
+  let name, url, username, password;
+  publishing.forEach((publication) => {
+    switch (publication.type) {
+      case 'localMaven':
+        lines.push('localDefault {', 'type = "localMaven"');
+        break;
+      case 'localDirectory':
+        name = publication.name ?? `localDirectory${count['localDirectory'] + 1} {`;
+        url = path.isAbsolute(publication.path)
+          ? publication.path
+          : path.join(projectRoot, publication.path);
+        lines.push(name, 'type = "localDirectory"', `url = "file://${url}"`);
+        break;
+      case 'remotePublic':
+        name = publication.name ?? `remotePublic${count['remotePublic'] + 1} {`;
+        url = publication.url;
+        lines.push(name, 'type = "remotePublic"', `url = "${url}"`);
+        if (publication.allowInsecure) {
+          lines.push('allowInsecure = true');
+        }
+        break;
+      case 'remotePrivate':
+        name = publication.name ?? `remotePrivate${count['remotePrivate'] + 1} {`;
+        url = typeof publication.url === 'object' ? env[publication.url.variable] : publication.url;
+        username =
+          typeof publication.username === 'object'
+            ? env[publication.username.variable]
+            : publication.username;
+        password =
+          typeof publication.password === 'object'
+            ? env[publication.password.variable]
+            : publication.password;
+        lines.push(name, 'type = "remotePrivate"', `url = "${url}"`);
+        lines.push(`username = "${username}"`, `password = "${password}"`);
+        if (publication.allowInsecure) {
+          lines.push('allowInsecure = true');
+        }
+        break;
+    }
+  });
+
+  return lines;
+};
+
+// END SECTION: Helper functions
