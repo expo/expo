@@ -20,6 +20,33 @@ packages/external/
     └── spm.config.json          # Example: SPM config for react-native-screens
 ```
 
+## Dependency Cache
+
+The prebuild system uses a centralized versioned cache at `packages/precompile/.cache/` for React Native dependencies (Hermes, ReactNativeDependencies, React). This replaces the old per-package `.dependencies` folder approach.
+
+### How It Works
+
+1. Dependencies are downloaded once to `packages/precompile/.cache/<artifact>/<version>-<flavor>/`
+2. Package.swift files reference the cache via relative paths
+3. Multiple versions can coexist (e.g., switching between Debug/Release)
+4. No copying to individual packages - saves disk space and build time
+
+### Cache Path Override
+
+You can override the cache location with `EXPO_PREBUILD_CACHE_PATH`:
+
+```bash
+EXPO_PREBUILD_CACHE_PATH=/custom/cache/path et prebuild-packages ...
+```
+
+### Cache Management Options
+
+| Flag | Effect |
+|------|--------|
+| `--clean-cache` | Wipes entire dependency cache (forces re-download) |
+| `--prune-cache` | Removes old cache versions, keeps current version |
+| `--clean-all` | Cleans package outputs only - does NOT touch cache |
+
 ## Key Concepts
 
 ### Source Resolution

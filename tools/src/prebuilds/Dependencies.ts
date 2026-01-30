@@ -165,19 +165,99 @@ export const Dependencies = {
   },
 
   /**
-   * Downloads all React Native dependencies (Hermes, ReactNativeDependencies, React Native).
+   * Prunes unused cached artifacts, keeping only the versions currently in use.
+   * Scans the cache directory and removes any version directories that don't match
+   * the current version+flavor combination.
+   *
+   * @param cachePath Path to the cache directory
+   * @param currentVersions Map of artifact names to their current version-flavor combos
+   */
+  pruneUnusedCacheAsync: async (
+    cachePath: string,
+    currentVersions: { hermes: string; reactNativeVersion: string; buildFlavor: BuildFlavor }
+  ): Promise<{ removed: string[]; keptCount: number }> => {
+    const removed: string[] = [];
+    let keptCount = 0;
+
+    if (!fs.existsSync(cachePath)) {
+      return { removed, keptCount };
+    }
+
+    // Map artifact folder names to their current version
+    const currentVersionMap: Record<string, string> = {
+      hermes: `${currentVersions.hermes}-${currentVersions.buildFlavor}`,
+      'react-native-dependencies': `${currentVersions.reactNativeVersion}-${currentVersions.buildFlavor}`,
+      react: `${currentVersions.reactNativeVersion}-${currentVersions.buildFlavor}`,
+    };
+
+    logger.info(`🧹 Pruning unused cache entries from ${chalk.gray(cachePath)}...`);
+
+    // Iterate through artifact directories (hermes, react-native-dependencies, react)
+    const artifactDirs = await fs.readdir(cachePath, { withFileTypes: true });
+
+    for (const artifactDir of artifactDirs) {
+      if (!artifactDir.isDirectory()) {
+        continue;
+      }
+
+      const artifactPath = path.join(cachePath, artifactDir.name);
+      const currentVersion = currentVersionMap[artifactDir.name];
+
+      if (!currentVersion) {
+        // Unknown artifact directory - skip it
+        continue;
+      }
+
+      // Check version subdirectories
+      const versionDirs = await fs.readdir(artifactPath, { withFileTypes: true });
+
+      for (const versionDir of versionDirs) {
+        if (!versionDir.isDirectory()) {
+          continue;
+        }
+
+        const versionPath = path.join(artifactPath, versionDir.name);
+
+        if (versionDir.name === currentVersion) {
+          // This is the current version - keep it
+          keptCount++;
+          logger.info(
+            `  ✓ Keeping ${chalk.green(artifactDir.name)}/${chalk.cyan(versionDir.name)}`
+          );
+        } else {
+          // Old version - remove it
+          logger.info(
+            `  🗑  Removing ${chalk.yellow(artifactDir.name)}/${chalk.gray(versionDir.name)}`
+          );
+          await fs.remove(versionPath);
+          removed.push(`${artifactDir.name}/${versionDir.name}`);
+        }
+      }
+    }
+
+    if (removed.length > 0) {
+      logger.info(`🧹 Pruned ${chalk.yellow(removed.length)} old cache entries`);
+    } else {
+      logger.info(`🧹 Cache is clean - no old entries to prune`);
+    }
+
+    return { removed, keptCount };
+  },
+
+  /**
+   * Downloads all React Native dependencies (Hermes, ReactNativeDependencies, React Native)
+   * to a centralized versioned cache. Each artifact is stored in a version-specific directory
+   * to allow multiple versions to coexist and prevent version conflicts.
+   *
+   * Cache structure: <cachePath>/<artifactName>/<version>-<flavor>/
    */
   downloadArtifactsAsync: async (
     options: DownloadDependenciesOptions
-  ): Promise<{
-    hermes: string;
-    reactNativeDependencies: string;
-    react: string;
-  }> => {
+  ): Promise<DownloadedDependencies> => {
     const {
       reactNativeVersion,
       hermesVersion,
-      artifactsPath: dependenciesPath,
+      artifactsPath: cachePath,
       buildFlavor: buildType,
       mavenRepoUrl,
       localTarballs,
@@ -185,27 +265,34 @@ export const Dependencies = {
     } = options;
 
     logger.info(
-      `⬇️  ${options.skipArtifacts ? 'Verifying' : 'Preparing'} common artifacts folder...`
+      `⬇️  ${options.skipArtifacts ? 'Verifying' : 'Preparing'} centralized cache at ${chalk.gray(path.relative(process.cwd(), cachePath))}...`
     );
 
-    // Ensure we have a valid output path for the dependencies
-    await fs.mkdir(dependenciesPath, { recursive: true });
+    // Ensure we have a valid cache path
+    await fs.mkdir(cachePath, { recursive: true });
 
-    // Create flavor-specific output paths so Debug and Release can coexist
-    const flavorPath = path.join(dependenciesPath, buildType.toLowerCase());
-
-    // Download dependencies sequentially
+    // Download dependencies to versioned paths
+    // Structure: <cache>/<artifact>/<version>-<flavor>/
     // Note: Hermes uses its own versioning separate from React Native
-    const hermesPath = await downloadHermesAsync(hermesVersion, path.join(flavorPath, 'hermes'), {
-      buildType,
-      mavenRepoUrl,
-      localTarballPath: localTarballs?.hermes,
-      skipArtifacts,
-    });
+    const hermesPath = await downloadHermesAsync(
+      hermesVersion,
+      Artifacts.getVersionedArtifactPath(cachePath, 'hermes', hermesVersion, buildType),
+      {
+        buildType,
+        mavenRepoUrl,
+        localTarballPath: localTarballs?.hermes,
+        skipArtifacts,
+      }
+    );
 
     const reactNativeDependenciesPath = await downloadReactNativeDependenciesAsync(
       reactNativeVersion,
-      path.join(flavorPath, 'react-native-dependencies'),
+      Artifacts.getVersionedArtifactPath(
+        cachePath,
+        'react-native-dependencies',
+        reactNativeVersion,
+        buildType
+      ),
       {
         buildType,
         mavenRepoUrl,
@@ -216,7 +303,7 @@ export const Dependencies = {
 
     const reactNativePath = await downloadReactNativeAsync(
       reactNativeVersion,
-      path.join(flavorPath, 'react-native'),
+      Artifacts.getVersionedArtifactPath(cachePath, 'react', reactNativeVersion, buildType),
       {
         buildType,
         mavenRepoUrl,
@@ -225,10 +312,17 @@ export const Dependencies = {
       }
     );
 
+    // Generate the VFS overlay file from the template (resolves ${ROOT_PATH} placeholders)
+    await resolveVFSOverlayTemplate(reactNativePath);
+
     return {
       hermes: hermesPath,
       reactNativeDependencies: reactNativeDependenciesPath,
       react: reactNativePath,
+      cachePath,
+      hermesVersion,
+      reactNativeVersion,
+      buildFlavor: buildType,
     };
   },
 

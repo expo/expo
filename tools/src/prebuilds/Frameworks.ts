@@ -261,7 +261,6 @@ const createModuleMapWithUmbrellaHeaderFilesAsync = async (
 
   // Check if product has excludeFromUmbrella patterns configured
   const excludeFromUmbrellaPatterns = product.excludeFromUmbrella ?? [];
-  const hasExcludePatterns = excludeFromUmbrellaPatterns.length > 0;
 
   // Helper to check if a header matches any pattern in a list
   const matchesPattern = (headerName: string, patterns: string[]): boolean => {

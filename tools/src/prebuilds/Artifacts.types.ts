@@ -147,10 +147,22 @@ export interface DownloadDependenciesOptions {
 }
 
 /**
- * Structure representing downloaded dependencies paths.
+ * Structure representing downloaded dependencies paths and metadata.
+ * Used by SPMPackage to compute relative paths from packages to the centralized cache.
  */
 export interface DownloadedDependencies {
+  /** Path to the downloaded Hermes artifacts */
   hermes: string;
+  /** Path to the downloaded ReactNativeDependencies artifacts */
   reactNativeDependencies: string;
+  /** Path to the downloaded React artifacts */
   react: string;
+  /** Base cache path where all artifacts are stored */
+  cachePath: string;
+  /** Version of Hermes that was downloaded */
+  hermesVersion: string;
+  /** Version of React Native that was downloaded */
+  reactNativeVersion: string;
+  /** Build flavor (Debug/Release) */
+  buildFlavor: BuildFlavor;
 }

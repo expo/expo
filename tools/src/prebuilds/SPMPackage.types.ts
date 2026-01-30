@@ -9,10 +9,16 @@ import { SPMProduct } from './SPMConfig.types';
  */
 export interface ExternalDependencyConfig {
   name: string;
+  /** Path to the xcframework (relative to Package.swift location for binary target) */
   path: string;
+  /** Include directories relative to the xcframework path */
   includeDirectories?: string[];
+  /** Absolute path to header map file (for compiler flags) */
   headerMapPath?: string;
+  /** Absolute path to VFS overlay file (for compiler flags) */
   vfsOverlayPath?: string;
+  /** Absolute base path to the artifact folder (for computing include paths) */
+  absoluteBasePath?: string;
 }
 
 /**
@@ -47,4 +53,10 @@ export interface PackageSwiftContext {
   swiftLanguageVersions?: string[];
   product: SPMProduct;
   targets: ResolvedTarget[];
+  /** Artifact paths from the centralized cache (optional for backward compatibility) */
+  artifactPaths?: {
+    hermes: string;
+    reactNativeDependencies: string;
+    react: string;
+  };
 }

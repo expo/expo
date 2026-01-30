@@ -144,10 +144,35 @@ export const Artifacts = {
         );
       } else {
         spinner.info(`${config.name}: Using local tarball`);
+
+        // Check if local tarball has changed since last extraction
+        // by comparing tarball mtime with a stored timestamp file
+        // Note: tarballPath === localTarballPath at this point, both are defined
+        const tarballTimestampPath = path.join(
+          outputPath,
+          `${config.name.toLowerCase()}.tarball-mtime`
+        );
+        const tarballStat = fs.statSync(tarballPath);
+        const tarballMtime = tarballStat.mtimeMs.toString();
+
+        if (
+          fs.existsSync(tarballTimestampPath) &&
+          fs.existsSync(config.getValidationPath(outputPath))
+        ) {
+          const storedMtime = fs.readFileSync(tarballTimestampPath, 'utf8').trim();
+          if (storedMtime === tarballMtime) {
+            spinner.succeed(`${config.name} - local tarball unchanged, using existing extraction`);
+            return outputPath;
+          }
+        }
+
         // Clean the output directory and recreate it when using a local tarball
         // to ensure we're starting fresh with the new tarball contents
         await fs.rm(outputPath, { recursive: true, force: true });
         await fs.mkdir(outputPath, { recursive: true });
+
+        // Store the tarball mtime after we recreate the directory (will be written after extraction)
+        // We'll write this after successful extraction below
       }
 
       // Custom post-extraction if provided
@@ -165,12 +190,20 @@ export const Artifacts = {
         await fs.unlink(tarballPath);
       }
 
-      // Write version.txt only after successful download and extraction
+      // Write version/timestamp tracking files after successful extraction
       if (!localTarballPath) {
         const resolvedVersion = `${version}-${buildType}`;
         await fs.writeFile(versionFilePath, resolvedVersion, 'utf8');
         spinner.succeed(`${config.name} ${version} (${buildType}) - downloaded and extracted`);
       } else {
+        // Write tarball mtime so we can detect changes on next run
+        // Note: tarballPath === localTarballPath at this point
+        const tarballTimestampPath = path.join(
+          outputPath,
+          `${config.name.toLowerCase()}.tarball-mtime`
+        );
+        const tarballStat = fs.statSync(tarballPath!);
+        await fs.writeFile(tarballTimestampPath, tarballStat.mtimeMs.toString(), 'utf8');
         spinner.succeed(`${config.name} - extracted from local tarball`);
       }
 
@@ -182,12 +215,41 @@ export const Artifacts = {
   },
 
   /**
+   * Returns the centralized cache path for downloading and storing external artifacts.
+   * Supports EXPO_PREBUILD_CACHE_PATH environment variable for custom cache locations.
+   * @param rootPath Root path of the prebuild packages
+   * @returns Path to the cache folder
+   */
+  getCachePath: (rootPath: string): string => {
+    return process.env.EXPO_PREBUILD_CACHE_PATH || path.join(rootPath, 'precompile', '.cache');
+  },
+
+  /**
+   * Returns a versioned path for a specific artifact within the cache.
+   * Structure: <cache>/<artifactName>/<version>-<flavor>/
+   * @param cachePath Base cache path
+   * @param artifactName Name of the artifact (e.g., 'hermes', 'react-native-dependencies', 'react')
+   * @param version Version string
+   * @param flavor Build flavor (Debug/Release)
+   * @returns Path to the versioned artifact folder
+   */
+  getVersionedArtifactPath: (
+    cachePath: string,
+    artifactName: string,
+    version: string,
+    flavor: BuildFlavor
+  ): string => {
+    return path.join(cachePath, artifactName, `${version}-${flavor.toLowerCase()}`);
+  },
+
+  /**
+   * @deprecated Use getCachePath instead. This function is kept for backward compatibility.
    * Returns the shared artifacts path for downloading and storing external artifacts.
    * @param rootPath Root path of the prebuild packages
    * @returns Path to the artifacts folder
    */
   getArtifactsPath: (rootPath: string) => {
-    return path.join(rootPath, '.artifacts');
+    return Artifacts.getCachePath(rootPath);
   },
 
   /**

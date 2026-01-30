@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
+import { PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
 import {
   BuildFlavor,
@@ -24,8 +25,7 @@ import { SPMVerify } from '../prebuilds/SPMVerify';
 type ActionOptions = {
   reactNativeVersion?: string;
   hermesVersion: string;
-  cleanArtifacts: boolean;
-  cleanDependencies: boolean;
+  cleanCache: boolean;
   cleanBuild: boolean;
   cleanGenerated: boolean;
   cleanAll: boolean;
@@ -41,6 +41,7 @@ type ActionOptions = {
   platform?: BuildPlatform;
   verify?: boolean;
   includeExternal?: boolean;
+  pruneCache?: boolean;
 };
 
 type BuildStatus = {
@@ -221,26 +222,22 @@ async function main(packageNames: string[], options: ActionOptions) {
     // Resolve other options
     const resolvedBuildFlavor = options.buildFlavor || 'Debug';
 
-    // Define paths
-    rootPath = path.resolve(path.join(packages[0].path, '..'));
+    // Define paths - always use PACKAGES_DIR for the cache, regardless of whether
+    // we're building local or external packages
+    rootPath = PACKAGES_DIR;
     const artifactsPath = Artifacts.getArtifactsPath(rootPath);
 
     /**
      * Prebuilding steps:
      */
 
-    // 1. Clear artifacts / dependencies / outputs if requested
-    if (options.cleanArtifacts || performCleanAll) {
+    // 1. Clear cache if explicitly requested (--clean-cache only, not --clean-all)
+    if (options.cleanCache) {
       await Dependencies.cleanArtifactsAsync(artifactsPath);
     }
 
-    if (options.cleanDependencies || performCleanAll) {
-      for (const pkg of packages) {
-        await Dependencies.cleanDependenciesFolderAsync(pkg);
-      }
-    }
-
-    // Clean xcframeworks and generated folders when --clean-all is used
+    // Clean xcframeworks, generated folders, and build folders when --clean-all is used
+    // Note: --clean-all does NOT clear the dependency cache - use --clean-cache for that
     if (performCleanAll) {
       for (const pkg of packages) {
         await Dependencies.cleanXCFrameworksFolderAsync(pkg);
@@ -249,6 +246,7 @@ async function main(packageNames: string[], options: ActionOptions) {
     }
 
     // 2. Download dependencies needed for building the packages - these are defined in the package spm.config.json
+    //    Dependencies are now downloaded to a centralized versioned cache (packages/external/.cache/)
     const artifacts = await Dependencies.downloadArtifactsAsync({
       reactNativeVersion,
       hermesVersion,
@@ -263,16 +261,19 @@ async function main(packageNames: string[], options: ActionOptions) {
       skipArtifacts: performAllSteps ? false : !options.artifacts,
     });
 
-    // 3. Generate/Build each package
-    for (const pkg of packages) {
-      // If we're building we need to copy dependencies first so that the Package.swift can find them
-      await Dependencies.copyOrCheckPackageDependencies(
-        pkg,
-        artifacts,
-        Dependencies.getPackageDependenciesPath(pkg),
-        options.artifacts || performAllSteps
-      );
+    // Optionally prune old cached versions to free up disk space
+    if (options.pruneCache) {
+      await Dependencies.pruneUnusedCacheAsync(artifactsPath, {
+        hermes: hermesVersion,
+        reactNativeVersion,
+        buildFlavor: resolvedBuildFlavor,
+      });
+    }
 
+    // 3. Generate/Build each package
+    //    Note: Dependencies are no longer copied to each package - Package.swift now references
+    //    the centralized cache directly via relative paths
+    for (const pkg of packages) {
       // Get config for the package
       const spmConfig = pkg.getSwiftPMConfiguration();
 
@@ -314,7 +315,13 @@ async function main(packageNames: string[], options: ActionOptions) {
             await SPMGenerator.generateIsolatedSourcesForTargetsAsync(pkg, product);
 
             // Generate Package.swift and vfs overlay for the package/product
-            await SPMGenerator.genereateSwiftPackageAsync(pkg, product, resolvedBuildFlavor);
+            // Pass artifacts so Package.swift can reference the centralized cache
+            await SPMGenerator.genereateSwiftPackageAsync(
+              pkg,
+              product,
+              resolvedBuildFlavor,
+              artifacts
+            );
             status.generate = 'success';
           } catch (error) {
             status.generate = 'failed';
@@ -568,8 +575,8 @@ export default (program: Command) => {
       'Optional local path to a React Native Dependencies tarball to use instead of downloading.'
     )
     .option(
-      '--clean-artifacts',
-      'Clears the artifacts folder before downloading dependencies.',
+      '--clean-cache',
+      'Clears the entire dependency cache, forcing a fresh download of all artifacts.',
       false
     )
     .option('--clean-build', 'Cleans the build folder before prebuilding packages.', false)
@@ -580,11 +587,6 @@ export default (program: Command) => {
     .option(
       '--platform <platform>',
       'Build platform (iOS, macOS, tvOS, watchOS). If not specified, builds for all platforms defined in the package.'
-    )
-    .option(
-      '--clean-dependencies',
-      'Cleans the dependencies folder in packages before prebuilding it.',
-      false
     )
     .option(
       '--product-name <name>',
@@ -602,12 +604,17 @@ export default (program: Command) => {
     )
     .option(
       '--clean-all',
-      'Cleans all build artifacts, dependencies, generated code, and build folders.',
+      'Cleans all package outputs (xcframeworks, generated code, build folders). Does not touch the dependency cache.',
       false
     )
     .option(
       '--include-external',
       'Include external (third-party) packages from packages/external/ in discovery and building.',
+      false
+    )
+    .option(
+      '--prune-cache',
+      'Remove old cached dependencies, keeping only the current version. Use this to free up disk space.',
       false
     )
     .asyncAction(main);
