@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import slugify from 'slugify';
 import { Readable } from 'stream';
+import { ReadableStream } from 'stream/web';
 
 import { CommandError } from './errors';
 import { extractStream } from './tar';
@@ -150,7 +151,11 @@ export async function extractNpmTarballFromUrlAsync(
   if (!response.ok || !response.body) {
     throw new Error(`Unexpected response: ${response.statusText}. From url: ${url}`);
   }
-  return await extractNpmTarballAsync(Readable.fromWeb(response.body), output, props);
+  return await extractNpmTarballAsync(
+    Readable.fromWeb(response.body as ReadableStream),
+    output,
+    props
+  );
 }
 
 export async function downloadAndExtractNpmModuleAsync(
