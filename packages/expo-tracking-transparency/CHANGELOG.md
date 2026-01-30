@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix web stub to prevent import error. ([#40383](https://github.com/expo/expo/pull/40383) by [@reichhartd](https://github.com/reichhartd))
+
 ### 💡 Others
 
 ## 55.0.3 — 2026-01-27
