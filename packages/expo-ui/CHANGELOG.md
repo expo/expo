@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [jetpack-compose] Added more views and modifiers. ([#42734](https://github.com/expo/expo/pull/42734) by [@kudo](https://github.com/kudo))
+
 ## 55.0.0-preview.6 — 2026-02-16
 
 ### 🎉 New features
