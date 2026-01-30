@@ -38,10 +38,10 @@ const native_1 = require("../../../toolbar/native");
  */
 const StackToolbarView = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
-    if (placement === 'bottom') {
-        return <NativeToolbarView {...props}>{props.children}</NativeToolbarView>;
+    if (placement !== 'bottom') {
+        throw new Error('Stack.Toolbar.View must be used inside a Stack.Toolbar');
     }
-    return null;
+    return <NativeToolbarView {...props}>{props.children}</NativeToolbarView>;
 };
 exports.StackToolbarView = StackToolbarView;
 function convertStackToolbarViewPropsToRNHeaderItem(props) {

@@ -66,13 +66,13 @@ const StackToolbarButton = (props) => {
             console.warn('Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.');
         }
     }
-    if (placement === 'bottom') {
-        const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props);
-        // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-        const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
-        return (<NativeToolbarButton {...sharedProps} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
+    if (placement !== 'bottom') {
+        throw new Error('Stack.Toolbar.Button must be used inside a Stack.Toolbar');
     }
-    return null;
+    const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props);
+    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+    const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
+    return (<NativeToolbarButton {...sharedProps} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
 };
 exports.StackToolbarButton = StackToolbarButton;
 function convertStackToolbarButtonPropsToRNHeaderItem(props) {

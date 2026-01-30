@@ -34,6 +34,7 @@ File-based routing library for React Native and web applications. Built on top o
 │   │   ├── Drawer.tsx         # Drawer navigator
 │   │   ├── withLayoutContext.tsx  # Layout context HOC
 │   │   └── stack-utils/       # Stack utilities
+│   │       ├── Agents.md  # Read this file before modifying components in this directory
 │   │       ├── StackScreen.tsx, StackSearchBar.tsx  # Screen and search bar components
 │   │       ├── screen/        # Title (StackScreenTitle) and BackButton (StackScreenBackButton)
 │   │       └── toolbar/       # StackToolbar* components
@@ -164,6 +165,36 @@ it('can navigate between routes', () => {
 - `.test.node.ts` - Node.js tests
 
 **RSC tests:** When adding new components, add RSC tests in `__rsc_tests__/` directories to verify they render correctly in React Server Components environment.
+
+When testing native primitives, mock them in tests using `jest.mock()`. When adding mocks use `typeof import('module-name')` to preserve types and ensure path correctness. Example:
+
+```ts
+jest.mock('react-native-screens', () => {
+  const actualScreens = jest.requireActual(
+    'react-native-screens'
+  ) as typeof import('react-native-screens');
+  return {
+    ...actualScreens,
+    ScreenStackItem: jest.fn((props) => <actualScreens.ScreenStackItem {...props} />),
+  };
+});
+```
+
+**Spies and console mocks:** Use `beforeEach`/`afterEach` with `mockRestore()`:
+
+```ts
+let spy: jest.SpyInstance;
+beforeEach(() => { spy = jest.spyOn(Module, 'fn'); }); // or jest.spyOn(console, 'warn').mockImplementation(() => {})
+afterEach(() => { spy.mockRestore(); });
+```
+
+**Mock call assertions:** Use array index access. Comment non-zero indices:
+
+```ts
+const props = MockedComponent.mock.calls[0][0];
+// [1] because first call is layout, second is screen
+const screenProps = MockedComponent.mock.calls[1][0];
+```
 
 ## Key Concepts
 

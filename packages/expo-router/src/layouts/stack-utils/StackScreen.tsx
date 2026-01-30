@@ -117,7 +117,7 @@ export function appendScreenStackPropsToOptions(
 
       if (placement === 'bottom') {
         throw new Error(
-          `Stack.Toolbar with placement="bottom" cannot be used inside Stack.Screen in _layout.tsx. Please move it to the page component.`
+          `Stack.Toolbar with placement="bottom" cannot be used inside Stack.Screen.`
         );
       }
 

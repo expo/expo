@@ -11,7 +11,6 @@ const shared_1 = require("./shared");
 const toolbar_primitives_1 = require("./toolbar-primitives");
 const elements_1 = require("../../../link/elements");
 const native_1 = require("../../../link/preview/native");
-const menu_1 = require("../../../primitives/menu");
 const children_1 = require("../../../utils/children");
 /**
  * Computes the label and menu title from children and title prop.
@@ -185,12 +184,12 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
  */
 const StackToolbarMenuAction = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
-    if (placement === 'bottom') {
-        // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-        const icon = typeof props.icon === 'string' ? props.icon : undefined;
-        return (<NativeToolbarMenuAction {...props} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
+    if (placement !== 'bottom') {
+        throw new Error('Stack.Toolbar.MenuAction must be used inside a Stack.Toolbar.Menu');
     }
-    return <menu_1.MenuAction {...props}/>;
+    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+    const icon = typeof props.icon === 'string' ? props.icon : undefined;
+    return (<NativeToolbarMenuAction {...props} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
 };
 exports.StackToolbarMenuAction = StackToolbarMenuAction;
 function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {

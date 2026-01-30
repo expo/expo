@@ -23,7 +23,6 @@ import {
 import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from './toolbar-primitives';
 import { LinkMenuAction } from '../../../link/elements';
 import { NativeLinkPreviewAction } from '../../../link/preview/native';
-import { MenuAction } from '../../../primitives/menu';
 import {
   filterAllowedChildrenElements,
   getFirstChildOfType,
@@ -448,20 +447,20 @@ export interface StackToolbarMenuActionProps {
 export const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps> = (props) => {
   const placement = useToolbarPlacement();
 
-  if (placement === 'bottom') {
-    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    const icon = typeof props.icon === 'string' ? props.icon : undefined;
-    return (
-      <NativeToolbarMenuAction
-        {...props}
-        icon={icon}
-        image={props.image}
-        imageRenderingMode={props.iconRenderingMode}
-      />
-    );
+  if (placement !== 'bottom') {
+    throw new Error('Stack.Toolbar.MenuAction must be used inside a Stack.Toolbar.Menu');
   }
 
-  return <MenuAction {...props} />;
+  // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+  const icon = typeof props.icon === 'string' ? props.icon : undefined;
+  return (
+    <NativeToolbarMenuAction
+      {...props}
+      icon={icon}
+      image={props.image}
+      imageRenderingMode={props.iconRenderingMode}
+    />
+  );
 };
 
 export function convertStackToolbarMenuActionPropsToRNHeaderItem(

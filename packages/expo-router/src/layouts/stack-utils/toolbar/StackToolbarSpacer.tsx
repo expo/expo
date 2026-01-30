@@ -79,11 +79,11 @@ export interface StackToolbarSpacerProps {
 export const StackToolbarSpacer: React.FC<StackToolbarSpacerProps> = (props) => {
   const placement = useToolbarPlacement();
 
-  if (placement === 'bottom') {
-    return <NativeToolbarSpacer {...props} hidesSharedBackground={!props.sharesBackground} />;
+  if (placement !== 'bottom') {
+    throw new Error('Stack.Toolbar.Spacer must be used inside a Stack.Toolbar');
   }
 
-  return null;
+  return <NativeToolbarSpacer {...props} hidesSharedBackground={!props.sharesBackground} />;
 };
 
 export function convertStackToolbarSpacerPropsToRNHeaderItem(
@@ -99,7 +99,7 @@ export function convertStackToolbarSpacerPropsToRNHeaderItem(
   if (width === undefined) {
     if (process.env.NODE_ENV !== 'production') {
       console.warn(
-        'Stack.Toolbar.Spacer requires `width` when used in Left or Right placement. Flexible spacers are only supported in Bottom placement.'
+        'Stack.Toolbar.Spacer requires `width` when used in left or right placement. Flexible spacers are only supported in Bottom placement.'
       );
     }
     return undefined;
