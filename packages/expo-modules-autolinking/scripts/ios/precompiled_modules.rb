@@ -61,18 +61,20 @@ module Expo
       def try_link_with_prebuilt_xcframework(spec)
         return false unless enabled?
 
-        # Get the podspec directory to find the xcframework
+        # Get the podspec directory - use fallback search since spec.defined_in_file
+        # is not available during podspec evaluation
         podspec_dir = get_podspec_dir(spec)
+
         unless podspec_dir
-          log_linking_status(spec.name, false, "could not determine podspec location")
+          log_linking_status(spec.name, false, "could not find podspec directory")
           return false
         end
 
-        # XCFramework is inside the package: .xcframeworks/<buildType>/<PodName>.xcframework
+        # XCFramework is relative to the podspec: .xcframeworks/<buildType>/<PodName>.xcframework
         xcframework_path = File.join(podspec_dir, XCFRAMEWORKS_DIR_NAME, build_flavor, "#{spec.name}.xcframework")
         framework_exists = File.exist?(xcframework_path)
 
-        log_linking_status(spec.name, framework_exists, xcframework_path)
+        log_linking_status(spec.name, framework_exists, "podspec_dir=#{podspec_dir}, xcframework=#{xcframework_path}")
 
         if framework_exists
           # XCFramework is inside the package, so relative path is simple:
@@ -109,8 +111,11 @@ module Expo
         package_name = pod_name_to_package_name(pod_name)
 
         # Search for the podspec in likely locations
+        # For each package location, also check the ios/ subdirectory (Expo packages have podspecs there)
         potential_locations = [
-          # Internal packages: packages/<package-name>/
+          # Internal packages: packages/<package-name>/ios/ (Expo packages)
+          File.join(repo_root, 'packages', package_name, 'ios'),
+          # Internal packages: packages/<package-name>/ (root level podspec)
           File.join(repo_root, 'packages', package_name),
           # External packages in packages/external/
           File.join(repo_root, 'packages', 'external', package_name),
@@ -548,6 +553,24 @@ module Expo
         when 'RNReanimated'
           'react-native-reanimated'
         else
+          # Handle EAS* prefix (e.g., EASClient -> expo-eas-client)
+          if pod_name.start_with?('EAS')
+            remainder = pod_name[3..-1]
+            return 'expo-eas-' + remainder
+              .gsub(/([A-Z]+)([A-Z][a-z])/, '\1-\2')
+              .gsub(/([a-z\d])([A-Z])/, '\1-\2')
+              .downcase
+          end
+
+          # Handle EX* prefix (e.g., EXManifests -> expo-manifests, EXConstants -> expo-constants)
+          if pod_name.start_with?('EX')
+            remainder = pod_name[2..-1]
+            return 'expo-' + remainder
+              .gsub(/([A-Z]+)([A-Z][a-z])/, '\1-\2')
+              .gsub(/([a-z\d])([A-Z])/, '\1-\2')
+              .downcase
+          end
+
           # General case: convert CamelCase to kebab-case
           # ExpoModulesCore -> expo-modules-core
           pod_name
