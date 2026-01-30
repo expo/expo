@@ -39,16 +39,19 @@
     "react-dom": "*",
     "expo": "*",
     "expo-constants": "^55.0.2",
-    "expo-font": "*",
+    "expo-font": "~55.0.3",
     "expo-router": "*",
-    "expo-server": "*",
+    "expo-server": "^55.0.2",
     "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1"
   },
   "peerDependenciesMeta": {
-    "react-dom": {
+    "@expo/metro-runtime": {
       "optional": true
     },
-    "react-native-web": {
+    "expo-router": {
+      "optional": true
+    },
+    "react-dom": {
       "optional": true
     },
     "react-server-dom-webpack": {
