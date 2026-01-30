@@ -53,7 +53,6 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
 
   'expo-router': {
     'expect/build/matchers': 'ignore-dev', // TODO: Unsure how to replace safely. Dep/Peer won't work. Globals and `@jest/globals` unclear
-    'expo-font': 'ignore-dev', // TODO: Remove
   },
 
   '@expo/image-utils': {
