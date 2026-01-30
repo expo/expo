@@ -11,5 +11,5 @@ data class DividerProps(
 
 @Composable
 fun FunctionalComposableScope.DividerContent(props: DividerProps) {
-  HorizontalDivider(modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope))
+  HorizontalDivider(modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher))
 }

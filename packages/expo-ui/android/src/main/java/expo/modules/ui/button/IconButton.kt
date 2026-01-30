@@ -1,7 +1,5 @@
 package expo.modules.ui.button
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.IconButton
@@ -102,11 +100,9 @@ fun FunctionalComposableScope.IconButtonContent(
     colors,
     disabled ?: false,
     onPress = { onButtonPressed(ButtonPressedEvent()) },
-    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope),
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
     shape = shapeFromShapeRecord(props.shape)
   ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-      Children(ComposableScope())
-    }
+    Children(ComposableScope())
   }
 }

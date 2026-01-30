@@ -55,14 +55,8 @@ export type PickerProps = {
     /** Modifiers for the individual buttons */
     buttonModifiers?: ExpoModifier[];
 };
-type NativePickerProps = PickerProps;
-/**
- * @hidden
- */
-export declare function transformPickerProps(props: PickerProps): NativePickerProps;
 /**
  * Displays a native picker component. Depending on the variant it can be a segmented button, an inline picker, a list of choices or a radio button.
  */
 export declare function Picker(props: PickerProps): import("react").JSX.Element;
-export {};
 //# sourceMappingURL=index.d.ts.map

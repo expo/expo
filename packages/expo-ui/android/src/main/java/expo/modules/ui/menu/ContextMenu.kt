@@ -152,7 +152,7 @@ fun FunctionalComposableScope.ContextMenuContent(
   // Provide expanded state to children via CompositionLocal
   // This allows Button children to trigger menu expansion
   CompositionLocalProvider(LocalContextMenuExpanded provides expanded) {
-    Box(modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)) {
+    Box(modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)) {
       // Trigger button - Button will automatically expand menu when clicked
       Children(ComposableScope())
 

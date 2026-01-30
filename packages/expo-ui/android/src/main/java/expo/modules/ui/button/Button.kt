@@ -174,7 +174,7 @@ fun FunctionalComposableScope.ButtonContent(
       // Also fire the button pressed event
       onButtonPressed(ButtonPressedEvent())
     },
-    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope),
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
     shape = shapeFromShapeRecord(props.shape)
   ) {
     Row(verticalAlignment = Alignment.CenterVertically) {

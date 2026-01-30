@@ -5,6 +5,7 @@ import { MaterialIcon } from './types';
 import { ExpoModifier, ViewEvent } from '../../types';
 import { getTextFromChildren } from '../../utils';
 import { parseJSXShape, ShapeJSXElement, ShapeRecordProps } from '../Shape';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
  * The built-in button styles available on Android.
@@ -96,12 +97,23 @@ const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeVi
  * @hidden
  */
 export function transformButtonProps(props: ButtonProps): NativeButtonProps {
-  const { children, onPress, leadingIcon, trailingIcon, systemImage, shape, ...restProps } = props;
+  const {
+    children,
+    onPress,
+    leadingIcon,
+    trailingIcon,
+    systemImage,
+    shape,
+    modifiers,
+    ...restProps
+  } = props;
 
   // Handle backward compatibility: systemImage maps to leadingIcon
   const finalLeadingIcon = leadingIcon ?? systemImage;
 
   return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     text: getTextFromChildren(children) ?? '',
     children: getTextFromChildren(children) !== undefined ? undefined : children,

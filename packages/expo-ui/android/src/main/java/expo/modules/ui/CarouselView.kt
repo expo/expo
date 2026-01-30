@@ -110,7 +110,7 @@ fun FunctionalComposableScope.CarouselContent(props: CarouselProps) {
     HorizontalMultiBrowseCarousel(
       state = carouselState,
       preferredItemWidth = preferredItemWidth,
-      modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope),
+      modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
       itemSpacing = itemSpacing,
       flingBehavior = flingBehavior,
       minSmallItemWidth = minSmallItemWidth,
@@ -126,7 +126,7 @@ fun FunctionalComposableScope.CarouselContent(props: CarouselProps) {
     HorizontalUncontainedCarousel(
       state = carouselState,
       itemWidth = itemWidth,
-      modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope),
+      modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
       itemSpacing = itemSpacing,
       flingBehavior = flingBehavior,
       contentPadding = contentPadding
