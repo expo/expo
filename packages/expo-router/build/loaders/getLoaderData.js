@@ -36,6 +36,7 @@ function getLoaderData({ resolvedPath, cache, fetcher, }) {
             cause: error,
         });
         cache.setError(resolvedPath, wrappedError);
+        cache.deleteData(resolvedPath);
         cache.deletePromise(resolvedPath);
         throw wrappedError;
     });

@@ -28,6 +28,9 @@ class LoaderCache {
     setData(path, value) {
         this.data.set(path, value);
     }
+    deleteData(path) {
+        this.data.delete(path);
+    }
     setError(path, error) {
         this.errors.set(path, error);
     }

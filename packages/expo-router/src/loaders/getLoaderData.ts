@@ -49,6 +49,7 @@ export function getLoaderData<T>({
         cause: error,
       });
       cache.setError(resolvedPath, wrappedError);
+      cache.deleteData(resolvedPath);
       cache.deletePromise(resolvedPath);
       throw wrappedError;
     });

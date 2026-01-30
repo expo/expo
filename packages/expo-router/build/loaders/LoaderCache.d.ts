@@ -14,6 +14,7 @@ export declare class LoaderCache {
     getError(path: string): Error | undefined;
     getPromise<T = unknown>(path: string): Promise<T> | undefined;
     setData(path: string, value: unknown): void;
+    deleteData(path: string): void;
     setError(path: string, error: Error): void;
     deleteError(path: string): void;
     setPromise(path: string, promise: Promise<unknown>): void;

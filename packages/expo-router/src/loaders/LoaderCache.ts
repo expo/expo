@@ -33,6 +33,10 @@ export class LoaderCache {
     this.data.set(path, value);
   }
 
+  deleteData(path: string) {
+    this.data.delete(path);
+  }
+
   setError(path: string, error: Error) {
     this.errors.set(path, error);
   }
