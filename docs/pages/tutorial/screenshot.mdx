@@ -37,10 +37,10 @@ An app that requires sensitive information, such as accessing a device's media l
 
 When the app loads for the first time and the permission status is neither granted nor denied, the value of the `permissionResponse` is `null`. When asked for permission, a user can either grant the permission or deny it. We can add a condition to check if it is not granted. If it is not granted, trigger the `requestPermission()` method. After getting the access, the value of the `permissionResponse` changes to `granted`.
 
-Add the following code snippet inside the **app/(tabs)/index.tsx**:
+Add the following code snippet inside the **src/app/(tabs)/index.tsx**:
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx
+```tsx src/app/(tabs)/index.tsx
 import { /* @tutinfo */useEffect/* @end */, useState } from 'react';
 /* @tutinfo Import <CODE>expo-media-library</CODE>. */import * as MediaLibrary from 'expo-media-library';/* @end */
 
@@ -75,7 +75,7 @@ We'll use `react-native-view-shot` to allow the user to take a screenshot within
 3. Wrap the `<ImageViewer>` and `<EmojiSticker>` components inside a `<View>` and then pass the reference variable to it.
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx|collapseHeight=440
+```tsx src/app/(tabs)/index.tsx|collapseHeight=440
 import { useEffect, useState, /* @tutinfo Import <CODE>useRef</CODE> hook from <CODE>react</CODE>. */useRef/* @end */ } from 'react';
 /* @tutinfo Import <CODE>captureRef</CODE> from <CODE>react-native-view-shot</CODE>. */import { captureRef } from 'react-native-view-shot';/* @end */
 
@@ -110,10 +110,10 @@ We can capture a screenshot of the view by calling the `captureRef()` method fro
 
 The `captureRef()` method also returns a promise that fulfills with the screenshot's URI. We will pass this URI as a parameter to [`MediaLibrary.saveToLibraryAsync()`](/versions/latest/sdk/media-library/#medialibrarysavetolibraryasynclocaluri) and save the screenshot to the device's media library.
 
-Inside **app/(tabs)/index.tsx**, update the `onSaveImageAsync()` function with the following code:
+Inside **src/app/(tabs)/index.tsx**, update the `onSaveImageAsync()` function with the following code:
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx|collapseHeight=440
+```tsx src/app/(tabs)/index.tsx|collapseHeight=440
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { useEffect, useRef, useState } from 'react';

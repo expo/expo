@@ -43,14 +43,14 @@ After installing it, make sure to restart the development server and press <kbd>
 
 ## Add platform-specific code
 
-Using `Platform` module from React Native, we can implement platform-specific behavior. Inside **app/(tabs)/index.tsx**:
+Using `Platform` module from React Native, we can implement platform-specific behavior. Inside **src/app/(tabs)/index.tsx**:
 
 1. Import the `Platform` module from `react-native`.
 2. Import the `domtoimage` library from `dom-to-image`.
 3. Update the `onSaveImageAsync()` function to check whether the current platform is `'web'` with the `Platform.OS` property. If it is `'web'`, we'll use the `domtoimage.toJpeg()` method to convert and capture the current `<View>` as a JPEG image. Otherwise, we'll keep using the same logic added for native platforms.
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx
+```tsx src/app/(tabs)/index.tsx
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { useEffect, useRef, useState } from 'react';
