@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;;AAAA,oDAAkC;AAClC,qCAA+E;AAAtE,wGAAA,aAAa,OAAA;AAAE,8HAAA,mCAAmC,OAAA","sourcesContent":["export * from './typeInformation';\nexport { generateMocks, getAllExpoModulesInWorkingDirectory } from './mockgen';\n"]}
