@@ -273,7 +273,9 @@ export const SPMGenerator = {
 
       // Generate exports file for Swift targets to re-export dependencies
       if (target.type === 'swift') {
-        const exportsFilePath = path.join(targetDestination, `${product.name}.swift`);
+        // Use a distinct filename to avoid collision with actual source files
+        // (e.g., ExpoBlob.swift source file vs ExpoBlob.swift re-export file)
+        const exportsFilePath = path.join(targetDestination, `${product.name}+Exports.swift`);
 
         // Re-export commonly used Apple frameworks so other files can just `import ProductName`
         const frameworkImports = (target.linkedFrameworks ?? []).map(
@@ -301,7 +303,7 @@ ${allImports.join('\n')}
           // Only write if content changed (preserves mtime for Xcode incremental builds)
           if (writeFileIfChanged(exportsFilePath, fileContent)) {
             spinner.info(
-              `Generated ${product.name}.swift for target ${loggerTitle + '/' + chalk.green(product.name) + '/' + chalk.green(target.name)}...`
+              `Generated ${product.name}+Exports.swift for target ${loggerTitle + '/' + chalk.green(product.name) + '/' + chalk.green(target.name)}...`
             );
           }
         }
