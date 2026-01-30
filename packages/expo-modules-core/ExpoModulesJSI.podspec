@@ -32,7 +32,19 @@ Pod::Spec.new do |s|
 
   should_use_prebuilt = ENV['EXPO_USE_PRECOMPILED_MODULES'] == '1'
   if (should_use_prebuilt)
+    # TODO(ExpoModulesJSI-xcframework): When ExpoModulesJSI.xcframework is built separately,
+    # replace this section with:
+    #   s.vendored_frameworks = ".xcframeworks/debug/ExpoModulesJSI.xcframework"
+    # and remove the configure_header_search_paths workaround in precompiled_modules.rb
+    #
+    # Currently, ExpoModulesJSI headers are bundled inside ExpoModulesCore.xcframework.
+    # Header search paths are configured globally in the post_install hook via
+    # Expo::PrecompiledModules.configure_header_search_paths.
     s.source_files = "dummy.c"
+
+    s.pod_target_xcconfig = {
+      'DEFINES_MODULE' => 'YES',
+    }
   else
     s.header_dir     = 'ExpoModulesJSI'
 
