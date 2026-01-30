@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Consolidate native toolbar components into StackToolbar* files ([#42712](https://github.com/expo/expo/pull/42712) by [@Ubax](https://github.com/Ubax))
+- remove warnings from Color API ([#42790](https://github.com/expo/expo/pull/42790) by [@Ubax](https://github.com/Ubax))
 
 ## 55.0.0-preview.5 — 2026-02-03
 
@@ -36,7 +37,6 @@
 
 - Deprecate undocumented `expo-router/rsc/headers` RSC API in favor of `expo-server`'s `requestHeaders` runtime API ([#42678](https://github.com/expo/expo/pull/42678) by [@hassankhan](https://github.com/hassankhan))
 - Refactor `useLoaderData` hook for better testability ([#42368](https://github.com/expo/expo/pull/42368) by [@hassankhan](https://github.com/hassankhan))
-- remove warnings from Color API ([#42790](https://github.com/expo/expo/pull/42790) by [@Ubax](https://github.com/Ubax))
 
 ## 55.0.0-beta.4 — 2026-01-27
 
