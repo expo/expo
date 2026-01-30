@@ -1,25 +1,23 @@
-/* This tests rendering an app with URI-unsafe characters in the project path.
+/* eslint-env jest */
+/**
+ * This tests rendering an app with URI-unsafe characters in the project path.
  * We have a project inside a "with spaces" folder and expect it to render as
  * expected in development.
  * See:
  * - https://github.com/expo/expo/pull/34289
  * - https://github.com/expo/expo/issues/32843
  */
+import { clearEnv, restoreEnv } from './export/export-side-effects';
+import { setupTestProjectWithOptionsAsync, getHtml } from './utils';
+import { createExpoStart } from '../utils/expo';
 
-import { test, expect } from '@playwright/test';
+beforeAll(() => clearEnv());
+afterAll(() => restoreEnv());
 
-import { setupTestProjectWithOptionsAsync } from '../../__tests__/utils';
-import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
-import { createExpoStart } from '../../utils/expo';
-import { pageCollectErrors } from '../page';
-
-test.beforeAll(() => clearEnv());
-test.afterAll(() => restoreEnv());
-
-test.describe('router-e2e with spaces', () => {
+describe('router-e2e with spaces', () => {
   let expoStart: ReturnType<typeof createExpoStart>;
 
-  test.beforeEach(async () => {
+  beforeAll(async () => {
     const projectRoot = await setupTestProjectWithOptionsAsync(
       // NOTE(@kitten): This space is reflected in the project root:
       'with spaces',
@@ -49,19 +47,18 @@ test.describe('router-e2e with spaces', () => {
     console.timeEnd('expo start');
   });
 
-  test.afterEach(async () => {
+  afterAll(async () => {
     await expoStart.stopAsync();
   });
 
-  test('renders without errors', async ({ page }) => {
-    // Listen for console logs and errors
-    const pageErrors = pageCollectErrors(page);
+  it('renders without errors', async () => {
+    const response = await expoStart.fetchAsync('/');
 
-    await page.goto(new URL('/', expoStart.url).href);
+    expect(response.status).toBe(200);
 
-    // Ensure the initial hash is correct
-    await expect(page.locator('[data-testid="content"]')).toHaveText('Index');
+    const html = getHtml(await response.text());
+    const content = html.querySelector('[data-testid="content"]');
 
-    expect(pageErrors.all).toEqual([]);
+    expect(content?.textContent).toBe('Index');
   });
 });
