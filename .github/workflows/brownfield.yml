@@ -46,7 +46,7 @@ jobs:
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-        
+
       - name: 🔎 Find Yarn Cache
         id: yarn-cache
         run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
@@ -58,7 +58,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      
+
       - name: 🧶 Install node modules in root dir
         run: yarn install --prefer-offline --frozen-lockfile
         env:
@@ -87,7 +87,7 @@ jobs:
 
       - name: 🧪 E2E Test Brownfield Config Plugin
         working-directory: packages/expo-brownfield
-        run: yarn test:e2e-plugin --testPathIgnorePatterns e2e/plugin/__tests__/build-ios.test.ts --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+        run: yarn test:e2e-plugin --testPathIgnorePatterns e2e/plugin/__tests__/plugin-ios.test.ts --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   jest-macos-cli:
     runs-on: macos-15
@@ -120,7 +120,7 @@ jobs:
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-        
+
       - name: 🔎 Find Yarn Cache
         id: yarn-cache
         run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
@@ -132,7 +132,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      
+
       - name: 🧶 Install node modules in root dir
         run: yarn install --prefer-offline --frozen-lockfile
         env:
@@ -158,7 +158,7 @@ jobs:
       - name: 🧪 E2E Test Brownfield CLI
         working-directory: packages/expo-brownfield
         run: yarn test:e2e-cli e2e/cli/__tests__/build-ios.test.ts
-      
+
       - name: 🧪 E2E Test Brownfield Config Plugin
         working-directory: packages/expo-brownfield
-        run: yarn test:e2e-plugin e2e/plugin/__tests__/build-ios.test.ts
+        run: yarn test:e2e-plugin e2e/plugin/__tests__/plugin-ios.test.ts
