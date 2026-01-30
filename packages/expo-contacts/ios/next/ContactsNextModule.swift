@@ -386,19 +386,19 @@ public class ContactsNextModule: Module {
       }
 
       StaticAsyncFunction("getPermissionsAsync") { (promise: Promise) in
-        appContext?.permissions?.getPermissionUsingRequesterClass(
-          ContactsPermissionRequester.self,
-          resolve: promise.resolver,
-          reject: promise.legacyRejecter
-        )
+//        appContext?.permissions?.getPermissionUsingRequesterClass(
+//          ContactsPermissionRequester.self,
+//          resolve: promise.resolver,
+//          reject: promise.legacyRejecter
+//        )
       }
 
       StaticAsyncFunction("requestPermissionsAsync") { (promise: Promise) in
-        appContext?.permissions?.askForPermission(
-          usingRequesterClass: ContactsPermissionRequester.self,
-          resolve: promise.resolver,
-          reject: promise.legacyRejecter
-        )
+//        appContext?.permissions?.askForPermission(
+//          usingRequesterClass: ContactsPermissionRequester.self,
+//          resolve: promise.resolver,
+//          reject: promise.legacyRejecter
+//        )
       }
     }
 

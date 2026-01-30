@@ -1,7 +1,9 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 public struct Promise: AnyArgument, Sendable {
-  public typealias ResolveClosure = @Sendable (Any?) -> Void
+  public typealias ResolveClosure = @Sendable ((any JSRepresentable)?) -> Void
   public typealias RejectClosure = @Sendable (Exception) -> Void
 
   internal weak var appContext: AppContext?
@@ -19,7 +21,7 @@ public struct Promise: AnyArgument, Sendable {
   }
 
   public func resolve(_ value: Any? = nil) {
-    resolver(value)
+    resolver(value as? JSRepresentable)
   }
 
   public func reject(_ error: Error) {

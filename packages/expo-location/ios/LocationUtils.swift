@@ -61,12 +61,12 @@ internal func getPermissionUsingRequester<Requester: EXPermissionsRequester>(
   guard let permissionsManager = appContext?.permissions else {
     throw Exceptions.PermissionsModuleNotFound()
   }
-  EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
-    permissionsManager,
-    withRequester: Requester.self,
-    resolve: promise.resolver,
-    reject: promise.legacyRejecter
-  )
+//  EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
+//    permissionsManager,
+//    withRequester: Requester.self,
+//    resolve: promise.resolver,
+//    reject: promise.legacyRejecter
+//  )
 }
 
 internal func askForPermissionUsingRequester<Requester: EXPermissionsRequester>(
@@ -77,12 +77,12 @@ internal func askForPermissionUsingRequester<Requester: EXPermissionsRequester>(
   guard let permissionsManager = appContext?.permissions else {
     throw Exceptions.PermissionsModuleNotFound()
   }
-  EXPermissionsMethodsDelegate.askForPermission(
-    withPermissionsManager: permissionsManager,
-    withRequester: Requester.self,
-    resolve: promise.resolver,
-    reject: promise.legacyRejecter
-  )
+//  EXPermissionsMethodsDelegate.askForPermission(
+//    withPermissionsManager: permissionsManager,
+//    withRequester: Requester.self,
+//    resolve: promise.resolver,
+//    reject: promise.legacyRejecter
+//  )
 }
 
 internal func checkPermissionWithRequester<Requester: EXPermissionsRequester>(

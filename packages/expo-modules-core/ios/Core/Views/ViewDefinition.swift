@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  A definition representing the native view to export to React.
  */
@@ -63,9 +65,9 @@ public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition, @unc
 #endif
         return AppleView.from(expoViewType.init(appContext: appContext))
       }
-      if let legacyViewType = ViewType.self as? EXLegacyExpoViewProtocol.Type {
-        return AppleView.from(legacyViewType.init(moduleRegistry: appContext.legacyModuleRegistry) as? UIView)
-      }
+//      if let legacyViewType = ViewType.self as? EXLegacyExpoViewProtocol.Type {
+//        return AppleView.from(legacyViewType.init(moduleRegistry: appContext.legacyModuleRegistry) as? UIView)
+//      }
       if let UIViewType = ViewType.self as? UIView.Type {
         return AppleView.from(UIViewType.init(frame: .zero))
       }

@@ -15,6 +15,11 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(addNumbers:(double)a b:(double)b)
   return number;
 }
 
+RCT_EXPORT_METHOD(asyncAddNumbers:(double)a b:(double)b resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+{
+  resolve([[NSNumber alloc] initWithDouble:a + b]);
+}
+
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(addStrings:(NSString *)a b:(NSString *)b)
 {
   NSMutableString* result = [[NSMutableString alloc] initWithString:a];

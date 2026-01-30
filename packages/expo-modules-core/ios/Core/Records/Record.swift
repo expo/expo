@@ -59,6 +59,25 @@ public extension Record {
     }
   }
 
+  @JavaScriptActor
+  func update(withObject object: consuming JavaScriptObject, appContext: AppContext) throws {
+    try fieldsOf(self).forEach { field in
+      guard let key = field.key else {
+        return
+      }
+      let jsValue = object.getProperty(key)
+
+      if jsValue.isUndefined() || jsValue.isNull() {
+        if field.isRequired {
+          try field.set(nil, appContext: appContext)
+        }
+        return
+      }
+      let value = try field.fieldType.cast(jsValue: jsValue, appContext: appContext)
+      try field.set(value, appContext: appContext)
+    }
+  }
+
   func toDictionary(appContext: AppContext? = nil) -> Dict {
     return fieldsOf(self).reduce(into: Dict()) { result, field in
       if let key = field.key {

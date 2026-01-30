@@ -1,3 +1,5 @@
+import ExpoModulesJSI
+
 let DEFAULT_MODULE_VIEW = "DEFAULT_MODULE_VIEW"
 
 /**
@@ -72,7 +74,7 @@ public final class ModuleDefinition: ObjectDefinition {
   @JavaScriptActor
   public override func build(appContext: AppContext) throws -> JavaScriptObject {
     // Create an instance of `global.expo.NativeModule`
-    let object = JSUtils.createNativeModuleObject(try appContext.runtime)
+    var object = try appContext.runtime.createNativeModuleObject()
 
     try super.decorate(object: object, appContext: appContext)
 

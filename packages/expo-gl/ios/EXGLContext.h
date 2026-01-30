@@ -4,9 +4,12 @@
 #import <ExpoGL/EXGLNativeApi.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXFileSystemInterface.h>
-#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
+//#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 
 @class EXGLContext;
+
+@interface EXJavaScriptRuntime : NSObject
+@end
 
 @protocol EXGLContextDelegate <NSObject>
 

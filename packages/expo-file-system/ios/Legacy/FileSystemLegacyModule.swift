@@ -48,15 +48,15 @@ public final class FileSystemLegacyModule: Module {
     }
 
     AsyncFunction("getInfoAsync") { (url: URL, options: InfoOptions, promise: Promise) in
-      let optionsDict = options.toDictionary(appContext: appContext)
-      switch url.scheme {
-      case "file":
-        EXFileSystemLocalFileHandler.getInfoForFile(url, withOptions: optionsDict, resolver: promise.resolver, rejecter: promise.legacyRejecter)
-      case "assets-library", "ph":
-        EXFileSystemAssetLibraryHandler.getInfoForFile(url, withOptions: optionsDict, resolver: promise.resolver, rejecter: promise.legacyRejecter)
-      default:
-        throw UnsupportedSchemeException(url.scheme)
-      }
+//      let optionsDict = options.toDictionary(appContext: appContext)
+//      switch url.scheme {
+//      case "file":
+//        EXFileSystemLocalFileHandler.getInfoForFile(url, withOptions: optionsDict, resolver: promise.resolver, rejecter: promise.legacyRejecter)
+//      case "assets-library", "ph":
+//        EXFileSystemAssetLibraryHandler.getInfoForFile(url, withOptions: optionsDict, resolver: promise.resolver, rejecter: promise.legacyRejecter)
+//      default:
+//        throw UnsupportedSchemeException(url.scheme)
+//      }
     }
 
     AsyncFunction("readAsStringAsync") { (url: URL, options: ReadingOptions) -> String in
@@ -142,13 +142,13 @@ public final class FileSystemLegacyModule: Module {
       try ensurePathPermission(appContext, path: fromUrl.path, flag: .read)
       try ensurePathPermission(appContext, path: toUrl.path, flag: .write)
 
-      if fromUrl.scheme == "file" {
-        EXFileSystemLocalFileHandler.copy(from: fromUrl, to: toUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
-      } else if ["ph", "assets-library"].contains(fromUrl.scheme) {
-        EXFileSystemAssetLibraryHandler.copy(from: fromUrl, to: toUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
-      } else {
-        throw InvalidFileUrlException(fromUrl)
-      }
+//      if fromUrl.scheme == "file" {
+//        EXFileSystemLocalFileHandler.copy(from: fromUrl, to: toUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
+//      } else if ["ph", "assets-library"].contains(fromUrl.scheme) {
+//        EXFileSystemAssetLibraryHandler.copy(from: fromUrl, to: toUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
+//      } else {
+//        throw InvalidFileUrlException(fromUrl)
+//      }
     }
 
     AsyncFunction("makeDirectoryAsync") { (url: URL, options: MakeDirectoryOptions) in
@@ -175,20 +175,20 @@ public final class FileSystemLegacyModule: Module {
 
       if sourceUrl.isFileURL {
         try ensurePathPermission(appContext, path: sourceUrl.path, flag: .read)
-        EXFileSystemLocalFileHandler.copy(from: sourceUrl, to: localUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
+//        EXFileSystemLocalFileHandler.copy(from: sourceUrl, to: localUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
         return
       }
       let session = options.sessionType == .background ? backgroundSession : foregroundSession
       let request = createUrlRequest(url: sourceUrl, headers: options.headers)
       let downloadTask = session.downloadTask(with: request)
-      let taskDelegate = EXSessionDownloadTaskDelegate(
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter,
-        localUrl: localUrl,
-        shouldCalculateMd5: options.md5
-      )
-
-      sessionTaskDispatcher.register(taskDelegate, for: downloadTask)
+//      let taskDelegate = EXSessionDownloadTaskDelegate(
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter,
+//        localUrl: localUrl,
+//        shouldCalculateMd5: options.md5
+//      )
+//
+//      sessionTaskDispatcher.register(taskDelegate, for: downloadTask)
       downloadTask.resume()
     }
 
@@ -201,9 +201,9 @@ public final class FileSystemLegacyModule: Module {
       }
       let session = options.sessionType == .background ? backgroundSession : foregroundSession
       let task = try createUploadTask(session: session, targetUrl: targetUrl, sourceUrl: localUrl, options: options)
-      let taskDelegate = EXSessionUploadTaskDelegate(resolve: promise.resolver, reject: promise.legacyRejecter)
-
-      sessionTaskDispatcher.register(taskDelegate, for: task)
+//      let taskDelegate = EXSessionUploadTaskDelegate(resolve: promise.resolver, reject: promise.legacyRejecter)
+//
+//      sessionTaskDispatcher.register(taskDelegate, for: task)
       task.resume()
     }
 
@@ -219,15 +219,15 @@ public final class FileSystemLegacyModule: Module {
           ]
         ])
       }
-      let taskDelegate = EXSessionCancelableUploadTaskDelegate(
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter,
-        onSendCallback: onSend,
-        resumableManager: taskHandlersManager,
-        uuid: uuid
-      )
+//      let taskDelegate = EXSessionCancelableUploadTaskDelegate(
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter,
+//        onSendCallback: onSend,
+//        resumableManager: taskHandlersManager,
+//        uuid: uuid
+//      )
 
-      sessionTaskDispatcher.register(taskDelegate, for: task)
+//      sessionTaskDispatcher.register(taskDelegate, for: task)
       taskHandlersManager.register(task, uuid: uuid)
       task.resume()
     }
@@ -256,19 +256,19 @@ public final class FileSystemLegacyModule: Module {
         task = session.downloadTask(with: request)
       }
 
-      let taskDelegate = EXSessionResumableDownloadTaskDelegate(
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter,
-        localUrl: localUrl,
-        shouldCalculateMd5: options.md5,
-        onWriteCallback: onWrite,
-        resumableManager: taskHandlersManager,
-        uuid: uuid
-      )
-
-      sessionTaskDispatcher.register(taskDelegate, for: task)
-      taskHandlersManager.register(task, uuid: uuid)
-      task.resume()
+//      let taskDelegate = EXSessionResumableDownloadTaskDelegate(
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter,
+//        localUrl: localUrl,
+//        shouldCalculateMd5: options.md5,
+//        onWriteCallback: onWrite,
+//        resumableManager: taskHandlersManager,
+//        uuid: uuid
+//      )
+//
+//      sessionTaskDispatcher.register(taskDelegate, for: task)
+//      taskHandlersManager.register(task, uuid: uuid)
+//      task.resume()
     }
 
     AsyncFunction("downloadResumablePauseAsync") { (id: String) -> [String: String?] in

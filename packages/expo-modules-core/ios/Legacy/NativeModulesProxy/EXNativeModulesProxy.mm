@@ -14,6 +14,7 @@
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/Swift.h>
+#import <ExpoModulesCore/ExpoBridgeModule.h>
 
 static const NSString *exportedMethodsNamesKeyPath = @"exportedMethods";
 static const NSString *viewManagersMetadataKeyPath = @"viewManagersMetadata";

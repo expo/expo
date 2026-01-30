@@ -1,9 +1,4 @@
-#ifdef __APPLE__
-#include <ExpoModulesJSI/JSIUtils.h>
-#else
-#include "JSIUtils.h"
-#endif
-
+#include "Utils.h"
 #include "EventEmitter.h"
 #include "LazyObject.h"
 

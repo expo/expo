@@ -1,7 +1,5 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesJSI/EXJavaScriptObject.h>
-
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
 #import <ExpoModulesCore/LazyObject.h>
 #import <ExpoModulesCore/Swift.h>
@@ -12,31 +10,32 @@ ExpoModulesHostObject::ExpoModulesHostObject(EXAppContext *appContext) : appCont
 
 ExpoModulesHostObject::~ExpoModulesHostObject() {
   modulesCache.clear();
-  appContext._runtime = nil;
+  [appContext destroy];
 }
 
 jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {
-  std::string moduleName = name.utf8(runtime);
-  NSString *nsModuleName = [NSString stringWithUTF8String:moduleName.c_str()];
-
-  if (![appContext hasModule:nsModuleName]) {
-    // The module object can already be cached but no longer registered — we remove it from the cache in that case.
-    modulesCache.erase(moduleName);
-    return jsi::Value::undefined();
-  }
-  if (UniqueJSIObject &cachedObject = modulesCache[moduleName]) {
-    return jsi::Value(runtime, *cachedObject);
-  }
-
-  // Create a lazy object for the specific module. It defers initialization of the final module object.
-  LazyObject::Shared moduleLazyObject = std::make_shared<LazyObject>(^SharedJSIObject(jsi::Runtime &runtime) {
-    return [[appContext getNativeModuleObject:nsModuleName] getShared];
-  });
-
-  // Save the module's lazy host object for later use.
-  modulesCache[moduleName] = std::make_unique<jsi::Object>(jsi::Object::createFromHostObject(runtime, moduleLazyObject));
-
-  return jsi::Value(runtime, *modulesCache[moduleName]);
+  return jsi::Value::undefined();
+//  std::string moduleName = name.utf8(runtime);
+//  NSString *nsModuleName = [NSString stringWithUTF8String:moduleName.c_str()];
+//
+//  if (![appContext hasModule:nsModuleName]) {
+//    // The module object can already be cached but no longer registered — we remove it from the cache in that case.
+//    modulesCache.erase(moduleName);
+//    return jsi::Value::undefined();
+//  }
+//  if (UniqueJSIObject &cachedObject = modulesCache[moduleName]) {
+//    return jsi::Value(runtime, *cachedObject);
+//  }
+//
+//  // Create a lazy object for the specific module. It defers initialization of the final module object.
+//  LazyObject::Shared moduleLazyObject = std::make_shared<LazyObject>(^SharedJSIObject(jsi::Runtime &runtime) {
+//    return [[appContext getNativeModuleObject:nsModuleName] getShared];
+//  });
+//
+//  // Save the module's lazy host object for later use.
+//  modulesCache[moduleName] = std::make_unique<jsi::Object>(jsi::Object::createFromHostObject(runtime, moduleLazyObject));
+//
+//  return jsi::Value(runtime, *modulesCache[moduleName]);
 }
 
 void ExpoModulesHostObject::set(jsi::Runtime &runtime, const jsi::PropNameID &name, const jsi::Value &value) {

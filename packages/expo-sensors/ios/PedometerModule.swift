@@ -40,27 +40,27 @@ public final class PedometerModule: Module {
       }
     }
 
-    AsyncFunction("getPermissionsAsync") { (promise: Promise) in
-      guard let permissionsManager = appContext?.permissions else {
-        return
-      }
-      permissionsManager.getPermissionUsingRequesterClass(
-        EXMotionPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
-    }
-
-    AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
-      guard let permissionsManager = appContext?.permissions else {
-        return
-      }
-      permissionsManager.askForPermission(
-        usingRequesterClass: EXMotionPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
-    }
+//    AsyncFunction("getPermissionsAsync") { (promise: Promise) in
+//      guard let permissionsManager = appContext?.permissions else {
+//        return
+//      }
+//      permissionsManager.getPermissionUsingRequesterClass(
+//        EXMotionPermissionRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
+//    }
+//
+//    AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
+//      guard let permissionsManager = appContext?.permissions else {
+//        return
+//      }
+//      permissionsManager.askForPermission(
+//        usingRequesterClass: EXMotionPermissionRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
+//    }
 
     OnCreate {
       guard let permissionsManager = appContext?.permissions else {

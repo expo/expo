@@ -5,12 +5,7 @@
 #ifdef __cplusplus
 
 #include <jsi/jsi.h>
-
-#ifdef __APPLE__
-#include <ExpoModulesJSI/JSIUtils.h>
-#else
-#include "JSIUtils.h"
-#endif
+#include "Global.h"
 
 namespace jsi = facebook::jsi;
 
@@ -20,7 +15,7 @@ namespace expo::NativeModule {
  Gets `expo.NativeModule` class in the given runtime.
  */
 inline jsi::Function getClass(jsi::Runtime &runtime) {
-  return common::getCoreObject(runtime).getPropertyAsFunction(runtime, "NativeModule");
+  return getCoreObject(runtime).getPropertyAsFunction(runtime, "NativeModule");
 }
 
 /**

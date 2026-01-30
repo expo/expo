@@ -29,42 +29,54 @@ internal final class CoreModule: Module {
     }
 
     Function("installOnUIRuntime") {
-      guard let appContext else {
-        throw Exceptions.AppContextLost()
-      }
+//      guard let appContext else {
+//        throw Exceptions.AppContextLost()
+//      }
+//
+//      // Check if was already installed
+//      if appContext._uiRuntime != nil {
+//        return
+//      }
+//
+//      let runtime = try appContext.runtime
+//      if !runtime.global().hasProperty(WORKLET_RUNTIME_KEY) {
+//        throw WorkletUIRuntimeException()
+//      }
+//
+//      let pointerHolder = runtime.global().getProperty(WORKLET_RUNTIME_KEY)
+//      if !pointerHolder.isObject() {
+//        throw WorkletUIRuntimeException()
+//      }
+//
+//      let uiRuntimePointer = WorkletRuntimeFactory.extractRuntimePointer(pointerHolder, runtime: runtime)
+//      if uiRuntimePointer == nil {
+//        throw WorkletUIRuntimePointerExtractionException()
+//      }
+//
+//      let block = {
+//        let workletRuntime = WorkletRuntimeFactory.createWorkletRuntime(appContext, fromPointer: uiRuntimePointer)
+//        appContext._uiRuntime = workletRuntime
+//      }
+//
+//      if Thread.isMainThread {
+//        block()
+//      } else {
+//        DispatchQueue.main.sync {
+//          block()
+//        }
+//      }
+    }
 
-      // Check if was already installed
-      if appContext._uiRuntime != nil {
-        return
-      }
+    Function("nothing") {}
 
-      let runtime = try appContext.runtime
-      if !runtime.global().hasProperty(WORKLET_RUNTIME_KEY) {
-        throw WorkletUIRuntimeException()
-      }
-
-      let pointerHolder = runtime.global().getProperty(WORKLET_RUNTIME_KEY)
-      if !pointerHolder.isObject() {
-        throw WorkletUIRuntimeException()
-      }
-
-      let uiRuntimePointer = WorkletRuntimeFactory.extractRuntimePointer(pointerHolder, runtime: runtime)
-      if uiRuntimePointer == nil {
-        throw WorkletUIRuntimePointerExtractionException()
-      }
-
-      let block = {
-        let workletRuntime = WorkletRuntimeFactory.createWorkletRuntime(appContext, fromPointer: uiRuntimePointer)
-        appContext._uiRuntime = workletRuntime
-      }
-
-      if Thread.isMainThread {
-        block()
-      } else {
-        DispatchQueue.main.sync {
-          block()
-        }
-      }
+    Function("addNumbers") { (a: Double, b: Double) in
+      return a + b
+    }
+    Function("addStrings") { (a: String, b: String) in
+      return a + b
+    }
+    AsyncFunction("asynchronous") {
+      return await 2137
     }
 
     // Expose some common classes and maybe even the `modules` host object in the future.

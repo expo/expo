@@ -6,53 +6,53 @@ type LogListener = {
   eventName: string;
 };
 
-if (
-  __DEV__ &&
-  typeof window !== 'undefined' &&
-  (process.env.EXPO_OS === 'android' || process.env.EXPO_OS === 'ios')
-) {
-  const NativeJSLogger = requireOptionalNativeModule('ExpoModulesCoreJSLogger');
-  if (NativeJSLogger) {
-    const onNewException: LogListener = {
-      eventName: 'ExpoModulesCoreJSLogger.onNewError',
-      action: console.error,
-    };
+// if (
+//   __DEV__ &&
+//   typeof window !== 'undefined' &&
+//   (process.env.EXPO_OS === 'android' || process.env.EXPO_OS === 'ios')
+// ) {
+//   const NativeJSLogger = requireOptionalNativeModule('ExpoModulesCoreJSLogger');
+//   if (NativeJSLogger) {
+//     const onNewException: LogListener = {
+//       eventName: 'ExpoModulesCoreJSLogger.onNewError',
+//       action: console.error,
+//     };
 
-    const onNewWarning: LogListener = {
-      eventName: 'ExpoModulesCoreJSLogger.onNewWarning',
-      action: console.warn,
-    };
+//     const onNewWarning: LogListener = {
+//       eventName: 'ExpoModulesCoreJSLogger.onNewWarning',
+//       action: console.warn,
+//     };
 
-    const onNewDebug: LogListener = {
-      eventName: 'ExpoModulesCoreJSLogger.onNewDebug',
-      action: console.debug,
-    };
+//     const onNewDebug: LogListener = {
+//       eventName: 'ExpoModulesCoreJSLogger.onNewDebug',
+//       action: console.debug,
+//     };
 
-    const onNewInfo: LogListener = {
-      eventName: 'ExpoModulesCoreJSLogger.onNewInfo',
-      action: console.info,
-    };
+//     const onNewInfo: LogListener = {
+//       eventName: 'ExpoModulesCoreJSLogger.onNewInfo',
+//       action: console.info,
+//     };
 
-    const onNewTrace: LogListener = {
-      eventName: 'ExpoModulesCoreJSLogger.onNewTrace',
-      action: console.trace,
-    };
+//     const onNewTrace: LogListener = {
+//       eventName: 'ExpoModulesCoreJSLogger.onNewTrace',
+//       action: console.trace,
+//     };
 
-    const listeners: LogListener[] = [
-      onNewException,
-      onNewWarning,
-      onNewDebug,
-      onNewInfo,
-      onNewTrace,
-    ];
+//     const listeners: LogListener[] = [
+//       onNewException,
+//       onNewWarning,
+//       onNewDebug,
+//       onNewInfo,
+//       onNewTrace,
+//     ];
 
-    for (const listener of listeners) {
-      NativeJSLogger.addListener(listener.eventName, ({ message }: { message: string }) => {
-        listener.action(message);
-      });
-    }
-  }
-}
+//     for (const listener of listeners) {
+//       NativeJSLogger.addListener(listener.eventName, ({ message }: { message: string }) => {
+//         listener.action(message);
+//       });
+//     }
+//   }
+// }
 
 declare namespace globalThis {
   let ExpoModulesCore_CodedError: undefined | typeof CodedError;

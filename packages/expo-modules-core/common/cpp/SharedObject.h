@@ -4,16 +4,9 @@
 
 #ifdef __cplusplus
 
-#ifdef __APPLE__
-#include <ExpoModulesJSI/JSIUtils.h>
-#include <ExpoModulesJSI/ObjectDeallocator.h>
-#else
-#include "JSIUtils.h"
-#include "ObjectDeallocator.h"
-#endif
-
 #include <jsi/jsi.h>
 
+#include "Utils.h"
 #include "EventEmitter.h"
 
 namespace jsi = facebook::jsi;
@@ -28,12 +21,12 @@ typedef long ObjectId;
 /**
  Defines an object releaser block of the shared object.
  */
-typedef std::function<void(const ObjectId)> ObjectReleaser;
+using ObjectReleaser = void(^)(const ObjectId objectId);
 
 /**
  Installs a base JavaScript class for all shared object with a shared release block.
  */
-void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser& releaser);
+void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser releaser);
 
 /**
  Returns the base JavaScript class for all shared objects, i.e. `global.expo.SharedObject`.

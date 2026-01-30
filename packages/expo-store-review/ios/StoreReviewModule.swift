@@ -9,20 +9,20 @@ public class StoreReviewModule: Module {
       return !isRunningFromTestFlight()
     }
 
-    AsyncFunction("requestReview") {
-      try await MainActor.run {
-        guard let currentScene = getForegroundActiveScene() else {
-          // If no valid foreground scene is found, throw an exception
-          // as the review prompt won't be visible in background
-          throw MissingCurrentWindowSceneException()
-        }
-        if #available(iOS 16.0, *) {
-          AppStore.requestReview(in: currentScene)
-        } else {
-          SKStoreReviewController.requestReview(in: currentScene)
-        }
-      }
-    }
+//    AsyncFunction("requestReview") {
+//      try await MainActor.run {
+//        guard let currentScene = getForegroundActiveScene() else {
+//          // If no valid foreground scene is found, throw an exception
+//          // as the review prompt won't be visible in background
+//          throw MissingCurrentWindowSceneException()
+//        }
+//        if #available(iOS 16.0, *) {
+//          AppStore.requestReview(in: currentScene)
+//        } else {
+//          SKStoreReviewController.requestReview(in: currentScene)
+//        }
+//      }
+//    }
   }
 
   private func getForegroundActiveScene() -> UIWindowScene? {

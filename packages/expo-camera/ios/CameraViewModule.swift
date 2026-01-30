@@ -355,39 +355,39 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     }
 
     AsyncFunction("getCameraPermissionsAsync") { (promise: Promise) in
-      EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
-        self.appContext?.permissions,
-        withRequester: CameraOnlyPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
+//        self.appContext?.permissions,
+//        withRequester: CameraOnlyPermissionRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("requestCameraPermissionsAsync") { (promise: Promise) in
-      EXPermissionsMethodsDelegate.askForPermission(
-        withPermissionsManager: self.appContext?.permissions,
-        withRequester: CameraOnlyPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      EXPermissionsMethodsDelegate.askForPermission(
+//        withPermissionsManager: self.appContext?.permissions,
+//        withRequester: CameraOnlyPermissionRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("getMicrophonePermissionsAsync") { (promise: Promise) in
-      EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
-        self.appContext?.permissions,
-        withRequester: CameraMicrophonePermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
+//        self.appContext?.permissions,
+//        withRequester: CameraMicrophonePermissionRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("requestMicrophonePermissionsAsync") { (promise: Promise) in
-      EXPermissionsMethodsDelegate.askForPermission(
-        withPermissionsManager: self.appContext?.permissions,
-        withRequester: CameraMicrophonePermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      EXPermissionsMethodsDelegate.askForPermission(
+//        withPermissionsManager: self.appContext?.permissions,
+//        withRequester: CameraMicrophonePermissionRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("getAvailableVideoCodecsAsync") { () -> [String] in

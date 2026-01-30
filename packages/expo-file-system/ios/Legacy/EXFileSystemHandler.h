@@ -1,6 +1,6 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/ExpoModulesCore.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 @protocol EXFileSystemHandler
 

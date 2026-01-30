@@ -6,7 +6,7 @@
 
 #include <ReactCommon/CallInvoker.h>
 
-#include <jsi/jsi.h>
+#include "jsi.h"
 
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;

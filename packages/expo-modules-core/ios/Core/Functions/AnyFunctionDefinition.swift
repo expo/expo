@@ -1,12 +1,14 @@
+import ExpoModulesJSI
+
 /**
- An alias to `Result<Any, Exception>` which can be passed to the function callback.
+ An alias to `Result<JavaScriptRef<JavaScriptValue>, Exception>` which can be passed to the function callback.
  */
-public typealias FunctionCallResult = Result<Any, Exception>
+public typealias FunctionCallResult = Result<JavaScriptRef<JavaScriptValue>, Exception>
 
 /**
  A protocol for any type-erased function.
  */
-internal protocol AnyFunctionDefinition: AnyDefinition, JavaScriptObjectBuilder {
+internal protocol AnyFunctionDefinition: AnyDefinition, JavaScriptObjectBuilder, ~Copyable {
   /**
    Name of the function. JavaScript refers to the function by this name.
    */
@@ -33,23 +35,20 @@ internal protocol AnyFunctionDefinition: AnyDefinition, JavaScriptObjectBuilder 
    */
   var takesOwner: Bool { get set }
 
-  /**
-   Calls the function with a given owner and arguments and returns a result through the callback block.
-   - Parameters:
-      - owner: An object that calls this function. If the `takesOwner` property is true
-      and type of the first argument matches the owner type, it's being passed as the argument.
-      - args: An array of arguments to pass to the function. They could be Swift primitives
-      when invoked through the bridge and in unit tests or `JavaScriptValue`s
-      when the function is called through the JSI.
-      - appContext: An app context where the function is being executed.
-      - callback: A callback that receives a result of the function execution.
-   */
-  func call(
-    by owner: AnyObject?,
-    withArguments args: [Any],
-    appContext: AppContext,
-    callback: @Sendable @escaping (FunctionCallResult) -> Void
-  )
+//  /**
+//   Calls the function with a given owner and arguments and returns a result through the callback block.
+//   - Parameters:
+//      - appContext: An app context where the function is being executed.
+//      - this: `JavaScriptValue` of the function caller.
+//      - arguments: A buffer of `JavaScriptValue` arguments to pass to the function.
+//      - callback: A callback that receives a result of the function execution.
+//   */
+//  func call(
+//    _ appContext: AppContext,
+//    this: borrowing JavaScriptValue,
+//    arguments: consuming JSValuesBuffer,
+//    callback: @Sendable @escaping (consuming FunctionCallResult) -> Void
+//  )
 }
 
 extension AnyFunctionDefinition {
@@ -68,15 +67,6 @@ extension AnyFunctionDefinition {
 
   var argumentsCount: Int {
     return dynamicArgumentTypes.count
-  }
-
-  /**
-   Calls the function just like `call(by:withArguments:appContext:callback:)`, but without an owner
-   and with an empty callback. Might be useful when you only want to call the function,
-   but don't care about the result.
-   */
-  func call(withArguments args: [Any], appContext: AppContext) {
-    call(by: nil, withArguments: args, appContext: appContext, callback: { _ in })
   }
 }
 

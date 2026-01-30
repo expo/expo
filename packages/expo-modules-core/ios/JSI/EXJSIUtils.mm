@@ -125,13 +125,48 @@ jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *messa
     });
 }
 
-#pragma mark - RuntimeScheduler
+#pragma mark - Runtime
+
+jsi::Runtime &createHermesRuntime() {
+  std::unique_ptr<facebook::hermes::HermesRuntime> runtime = facebook::hermes::makeHermesRuntime();
+
+  // This version of the Hermes uses a Promise implementation that is provided by the RN.
+  // The `setImmediate` function isn't defined, but is required by the Promise implementation.
+  // That's why we inject it here.
+  jsi::PropNameID setImmediatePropName = jsi::PropNameID::forUtf8(*runtime, "setImmediate");
+  jsi::Function setImmediateFunction = jsi::Function::createFromHostFunction(*runtime, setImmediatePropName, 1, [](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
+    args[0].asObject(rt).asFunction(rt).call(rt);
+    return jsi::Value::undefined();
+  });
+  runtime->global().setProperty(*runtime, setImmediatePropName, setImmediateFunction);
+
+  return *runtime.release();
+}
 
 std::shared_ptr<react::RuntimeScheduler> runtimeSchedulerFromRuntime(jsi::Runtime &runtime) {
   if (auto binding = react::RuntimeSchedulerBinding::getBinding(runtime)) {
     return binding->getRuntimeScheduler();
   }
   return nullptr;
+}
+
+#pragma mark - Host function
+
+jsi::Function createHostFunction(jsi::Runtime &runtime, const char *_Nonnull name, HostFunctionBlock block) {
+  jsi::PropNameID propName = jsi::PropNameID::forAscii(runtime, name);
+  return jsi::Function::createFromHostFunction(runtime, propName, 0, [block](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *_Nonnull args, size_t count) -> jsi::Value {
+    return block(runtime, thisValue, args, count);
+  });
+}
+
+#pragma mark - Other helpers
+
+jsi::Value valueFromFunction(jsi::Runtime &runtime, const jsi::Function &function) {
+  return jsi::Value(runtime, function);
+}
+
+std::shared_ptr<const jsi::Buffer> makeSharedStringBuffer(const std::string &source) noexcept {
+  return std::make_shared<jsi::StringBuffer>(source);
 }
 
 } // namespace expo

@@ -1,16 +1,15 @@
 @class RCTBundleURLProvider;
 
 #import <React/RCTHTTPRequestHandler.h>
+#import <ExpoModulesJSI/JavaScriptRuntimeProvider.h>
 
-#import <ExpoModulesCore/ExpoBridgeModule.h>
+//#import <ExpoModulesCore/ExpoBridgeModule.h>
 #import <ExpoModulesCore/CoreModuleHelper.h>
-#import <ExpoModulesCore/SwiftUIViewProps.h>
+//#import <ExpoModulesCore/SwiftUIViewProps.h>
 #import <ExpoModulesCore/SwiftUIVirtualViewObjC.h>
 #import <ExpoModulesCore/EXAppDefines.h>
 #import <ExpoModulesCore/EXDefines.h>
-#import <ExpoModulesCore/EXLegacyExpoViewProtocol.h>
-#import <ExpoModulesCore/ExpoModulesCore.h>
-#import <ExpoModulesCore/ExpoModulesCore.h>
+//#import <ExpoModulesCore/EXLegacyExpoViewProtocol.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
 #import <ExpoModulesCore/EXHostWrapper.h>
 #import <ExpoModulesCore/EXCameraInterface.h>
@@ -60,13 +59,13 @@
 #import <ExpoModulesCore/Platform.h>
 #import <ExpoModulesCore/RCTComponentData+Privates.h>
 #import <ExpoModulesCore/EXReactDelegateWrapper.h>
-#import <ExpoModulesCore/EventEmitter.h>
-#import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
-#import <ExpoModulesCore/ExpoViewEventEmitter.h>
-#import <ExpoModulesCore/ExpoViewProps.h>
-#import <ExpoModulesCore/ExpoViewShadowNode.h>
-#import <ExpoModulesCore/ExpoViewState.h>
-#import <ExpoModulesCore/LazyObject.h>
-#import <ExpoModulesCore/NativeModule.h>
-#import <ExpoModulesCore/SharedObject.h>
-#import <ExpoModulesCore/SharedRef.h>
+//#import <ExpoModulesCore/EventEmitter.h>
+//#import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
+//#import <ExpoModulesCore/ExpoViewEventEmitter.h>
+//#import <ExpoModulesCore/ExpoViewProps.h>
+//#import <ExpoModulesCore/ExpoViewShadowNode.h>
+//#import <ExpoModulesCore/ExpoViewState.h>
+//#import <ExpoModulesCore/LazyObject.h>
+//#import <ExpoModulesCore/NativeModule.h>
+//#import <ExpoModulesCore/SharedObject.h>
+//#import <ExpoModulesCore/SharedRef.h>

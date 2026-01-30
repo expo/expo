@@ -1,27 +1,30 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  A dynamic type representing various types of JavaScript values.
  */
 internal struct DynamicJavaScriptType: AnyDynamicType {
-  let innerType: AnyJavaScriptValue.Type
+  static let shared = DynamicJavaScriptType()
 
   func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
-    return innerType == InnerType.self
+    return type == JavaScriptValue.self
   }
 
   func equals(_ type: AnyDynamicType) -> Bool {
-    if let providedType = type as? Self {
-      return providedType.innerType == innerType
-    }
-    return false
+    return type is Self
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    return try innerType.convert(from: jsValue, appContext: appContext)
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
+    if #available(iOS 18.0, *) {
+      return self
+    } else {
+      fatalError()
+    }
   }
 
   var description: String {
-    return String(describing: innerType.self)
+    return "JavaScriptValue"
   }
 }

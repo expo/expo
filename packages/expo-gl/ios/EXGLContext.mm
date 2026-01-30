@@ -110,33 +110,33 @@
 
   __weak EXGLContext *weakSelf = self;
 
-  [_runtime schedule:^{
-    EXGLContext *self = weakSelf;
-    EXJavaScriptRuntime *runtime = [self runtime];
-
-    if (!self || !runtime) {
-      BLOCK_SAFE_RUN(callback, NO);
-      return;
-    }
-
-    EXGLContextSetDefaultFramebuffer(self->_contextId, [self defaultFramebuffer]);
-    EXGLContextPrepare([runtime get], self->_contextId, [self](){
-      [self flush];
-    });
-
-    if (enableExperimentalWorkletSupport) {
-      dispatch_sync(dispatch_get_main_queue(), ^{
-        EXGLContextPrepareWorklet(self->_contextId);
-      });
-    }
-    self.isContextReady = YES;
-
-    if ([self.delegate respondsToSelector:@selector(glContextInitialized:)]) {
-      [self.delegate glContextInitialized:self];
-    }
-
-    BLOCK_SAFE_RUN(callback, YES);
-  } priority:(int)react::SchedulerPriority::ImmediatePriority];
+//  [_runtime schedule:^{
+//    EXGLContext *self = weakSelf;
+//    EXJavaScriptRuntime *runtime = [self runtime];
+//
+//    if (!self || !runtime) {
+//      BLOCK_SAFE_RUN(callback, NO);
+//      return;
+//    }
+//
+//    EXGLContextSetDefaultFramebuffer(self->_contextId, [self defaultFramebuffer]);
+//    EXGLContextPrepare([runtime get], self->_contextId, [self](){
+//      [self flush];
+//    });
+//
+//    if (enableExperimentalWorkletSupport) {
+//      dispatch_sync(dispatch_get_main_queue(), ^{
+//        EXGLContextPrepareWorklet(self->_contextId);
+//      });
+//    }
+//    self.isContextReady = YES;
+//
+//    if ([self.delegate respondsToSelector:@selector(glContextInitialized:)]) {
+//      [self.delegate glContextInitialized:self];
+//    }
+//
+//    BLOCK_SAFE_RUN(callback, YES);
+//  } priority:(int)react::SchedulerPriority::ImmediatePriority];
 }
 
 - (void)flush
@@ -177,13 +177,13 @@
     // Flush all the stuff
     EXGLContextFlush(contextId);
 
-    [runtime schedule:^{
-      // Destroy JS binding
-      EXGLContextDestroy(contextId);
-
-      // Remove from dictionary of contexts
-      [[EXGLObjectManager shared] deleteContextWithId:@(contextId)];
-    } priority:(int)react::SchedulerPriority::ImmediatePriority];
+//    [runtime schedule:^{
+//      // Destroy JS binding
+//      EXGLContextDestroy(contextId);
+//
+//      // Remove from dictionary of contexts
+//      [[EXGLObjectManager shared] deleteContextWithId:@(contextId)];
+//    } priority:(int)react::SchedulerPriority::ImmediatePriority];
   }];
 }
 

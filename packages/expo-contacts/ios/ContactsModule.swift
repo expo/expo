@@ -345,19 +345,19 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
     }
 
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
-      appContext?.permissions?.getPermissionUsingRequesterClass(
-        ContactsPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      appContext?.permissions?.getPermissionUsingRequesterClass(
+//        ContactsPermissionRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
-      appContext?.permissions?.askForPermission(
-        usingRequesterClass: ContactsPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      appContext?.permissions?.askForPermission(
+//        usingRequesterClass: ContactsPermissionRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("presentAccessPickerAsync") { (promise: Promise) in

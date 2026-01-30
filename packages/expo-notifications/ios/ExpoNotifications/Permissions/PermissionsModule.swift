@@ -18,13 +18,13 @@ public class PermissionsModule: Module {
     }
 
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
-      appContext?
-        .permissions?
-        .getPermissionUsingRequesterClass(
-          ExpoNotificationsPermissionsRequester.self,
-          resolve: promise.resolver,
-          reject: promise.legacyRejecter
-        )
+//      appContext?
+//        .permissions?
+//        .getPermissionUsingRequesterClass(
+//          EXUserFacingNotificationsPermissionsRequester.self,
+//          resolve: promise.resolver,
+//          reject: promise.legacyRejecter
+//        )
     }
 
     AsyncFunction("requestPermissionsAsync") { (requestedPermissions: NotificationPermissionRecord, promise: Promise) in
@@ -34,13 +34,13 @@ public class PermissionsModule: Module {
         : defaultAuthorizationOptions
       requester.setAuthorizationOptions(options)
 
-      appContext?
-        .permissions?
-        .askForPermission(
-          usingRequesterClass: ExpoNotificationsPermissionsRequester.self,
-          resolve: promise.resolver,
-          reject: promise.legacyRejecter
-        )
+//      appContext?
+//        .permissions?
+//        .askForPermission(
+//          usingRequesterClass: EXUserFacingNotificationsPermissionsRequester.self,
+//          resolve: promise.resolver,
+//          reject: promise.legacyRejecter
+//        )
     }
   }
 }

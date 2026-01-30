@@ -20,22 +20,22 @@ public class BrightnessModule: Module {
       guard let permissions = appContext?.permissions else {
         throw Exceptions.PermissionsModuleNotFound()
       }
-      permissions.getPermissionUsingRequesterClass(
-        BrightnessPermissionsRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      permissions.getPermissionUsingRequesterClass(
+//        BrightnessPermissionsRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
       guard let permissions = appContext?.permissions else {
         throw Exceptions.PermissionsModuleNotFound()
       }
-      permissions.askForPermission(
-        usingRequesterClass: BrightnessPermissionsRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      permissions.askForPermission(
+//        usingRequesterClass: BrightnessPermissionsRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("setBrightnessAsync") { (brightnessValue: Double) in

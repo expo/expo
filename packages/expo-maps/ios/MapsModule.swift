@@ -17,22 +17,22 @@ public class MapsModule: Module {
       guard let permissionsManager = appContext?.permissions else {
         return
       }
-      permissionsManager.getPermissionUsingRequesterClass(
-        MapPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      permissionsManager.getPermissionUsingRequesterClass(
+//        MapPermissionRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
       guard let permissionsManager = appContext?.permissions else {
         return
       }
-      permissionsManager.askForPermission(
-        usingRequesterClass: MapPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      permissionsManager.askForPermission(
+//        usingRequesterClass: MapPermissionRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
   }
 }

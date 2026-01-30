@@ -13311,9 +13311,9 @@ react-native-edge-to-edge@1.6.0:
   integrity sha512-2WCNdE3Qd6Fwg9+4BpbATUxCLcouF6YRY7K+J36KJ4l3y+tWN6XCqAC4DuoGblAAbb2sLkhEDp4FOlbOIot2Og==
 
 react-native-edge-to-edge@~1.6.1:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/react-native-edge-to-edge/-/react-native-edge-to-edge-1.6.1.tgz#ddc2280c833546e3ed8931eed751bdabfa66f5f6"
-  integrity sha512-7qTDJdviUCnI0DDG0Ddt6KAjnajsmNZMpbXOxJuSeXtlFABO0/BfY7lmprh8Iu7hQ2zeUTTbRrK+lt/liWl9Pw==
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/react-native-edge-to-edge/-/react-native-edge-to-edge-1.6.2.tgz#5b93632b9afa8e7afaca1c0508807664820465fe"
+  integrity sha512-koEF6WRAfdGNelXlP7NtHrQhFGtplwciYNWLHOCTCk0Thc7dlxtqxHRYSA5vPJgWOEkVBFqxcoOqKwAtqOmLNw==
 
 react-native-fade-in-image@^1.6.1:
   version "1.6.1"

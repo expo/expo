@@ -11,8 +11,6 @@
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
 #import <ExpoModulesCore/SwiftUIViewProps.h>
 
-#import <ExpoModulesJSI/EXJSIConversions.h>
-
 #import <React/RCTAssert.h>
 #import <React/RCTComponentViewProtocol.h>
 
@@ -219,10 +217,10 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor::Flavor
     flavor = _componentFlavorsCache[className] = std::make_shared<std::string const>(className);
   }
 
-  ComponentName componentName = ComponentName { flavor->c_str() };
-  ComponentHandle componentHandle = reinterpret_cast<ComponentHandle>(componentName);
+  react::ComponentName componentName = react::ComponentName { flavor->c_str() };
+  react::ComponentHandle componentHandle = reinterpret_cast<react::ComponentHandle>(componentName);
 
-  return ComponentDescriptorProvider {
+  return react::ComponentDescriptorProvider {
     componentHandle,
     componentName,
     flavor,
@@ -247,13 +245,13 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor::Flavor
 
 - (void)updateProps:(const react::Props::Shared &)props oldProps:(const react::Props::Shared &)oldProps
 {
-  _props = std::static_pointer_cast<const ViewProps>(props);
+  _props = std::static_pointer_cast<const react::ViewProps>(props);
 }
 
 - (void)updateEventEmitter:(const react::EventEmitter::Shared &)eventEmitter
 {
-  assert(std::dynamic_pointer_cast<const ViewEventEmitter>(eventEmitter));
-  _eventEmitter = std::static_pointer_cast<const ViewEventEmitter>(eventEmitter);
+  assert(std::dynamic_pointer_cast<const react::ViewEventEmitter>(eventEmitter));
+  _eventEmitter = std::static_pointer_cast<const react::ViewEventEmitter>(eventEmitter);
 }
 
 - (void)handleCommand:(NSString *)commandName args:(NSArray *)args
@@ -329,9 +327,9 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor::Flavor
 {
   const auto &eventEmitter = static_cast<const expo::ExpoViewEventEmitter &>(*_eventEmitter);
 
-  eventEmitter.dispatch([normalizeEventName(eventName) UTF8String], [payload](jsi::Runtime &runtime) {
-    return jsi::Value(runtime, expo::convertObjCObjectToJSIValue(runtime, payload));
-  });
+//  eventEmitter.dispatch([normalizeEventName(eventName) UTF8String], [payload](jsi::Runtime &runtime) {
+//    return jsi::Value(runtime, expo::convertObjCObjectToJSIValue(runtime, payload));
+//  });
 }
 
 #pragma mark - Methods to override in Swift

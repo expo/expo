@@ -20,7 +20,7 @@ public final class VideoModule: Module {
     }
 
     AsyncFunction("clearVideoCacheAsync") {
-      return try await VideoCacheManager.shared.clearAllCache()
+//      return try await VideoCacheManager.shared.clearAllCache()
     }
 
     View(VideoView.self) {
@@ -342,8 +342,8 @@ public final class VideoModule: Module {
       }
 
       AsyncFunction("replaceAsync") { (player, source: Either<String, VideoSource>?) in
-        let videoSource = parseSource(source: source)
-        try await player.replaceCurrentItem(with: videoSource)
+//        let videoSource = parseSource(source: source)
+//        try await player.replaceCurrentItem(with: videoSource)
       }
 
       Function("seekBy") { (player, seconds: Double) in
@@ -358,18 +358,18 @@ public final class VideoModule: Module {
       }
 
       AsyncFunction("generateThumbnailsAsync") { (player: VideoPlayer, times: [CMTime]?, options: VideoThumbnailOptions?) -> [VideoThumbnail] in
-        guard let times, !times.isEmpty else {
+//        guard let times, !times.isEmpty else {
           return []
-        }
-        guard let asset = player.ref.currentItem?.asset else {
-          // TODO: We should throw here as nothing is playing
-          return []
-        }
-        return try await generateThumbnails(
-          asset: asset,
-          times: times,
-          options: options ?? .default
-        )
+//        }
+//        guard let asset = player.ref.currentItem?.asset else {
+//          // TODO: We should throw here as nothing is playing
+//          return []
+//        }
+//        return try await generateThumbnails(
+//          asset: asset,
+//          times: times,
+//          options: options ?? .default
+//        )
       }
     }
 

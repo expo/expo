@@ -1,5 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  A protocol that allows custom classes or structs to be used as function arguments.
  It requires static `convert(from:appContext:)` function that knows how to convert incoming

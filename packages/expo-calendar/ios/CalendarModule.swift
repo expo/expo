@@ -274,34 +274,34 @@ public class CalendarModule: Module {
     }
 
     AsyncFunction("getCalendarPermissionsAsync") { (promise: Promise) in
-      appContext?.permissions?.getPermissionUsingRequesterClass(
-        CalendarPermissionsRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      appContext?.permissions?.getPermissionUsingRequesterClass(
+//        CalendarPermissionsRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("requestCalendarPermissionsAsync") { (promise: Promise) in
-      appContext?.permissions?.askForPermission(
-        usingRequesterClass: CalendarPermissionsRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      appContext?.permissions?.askForPermission(
+//        usingRequesterClass: CalendarPermissionsRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("getRemindersPermissionsAsync") { (promise: Promise) in
-      appContext?.permissions?.getPermissionUsingRequesterClass(
-        RemindersPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      appContext?.permissions?.getPermissionUsingRequesterClass(
+//        RemindersPermissionRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("requestRemindersPermissionsAsync") { (promise: Promise) in
-      appContext?.permissions?.askForPermission(
-        usingRequesterClass: RemindersPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter)
+//      appContext?.permissions?.askForPermission(
+//        usingRequesterClass: RemindersPermissionRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter)
     }
 
     AsyncFunction("createEventInCalendarAsync") { (event: Event, promise: Promise) in

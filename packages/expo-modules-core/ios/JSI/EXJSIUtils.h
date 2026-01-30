@@ -4,12 +4,13 @@
 
 #import <functional>
 
-#import <jsi/jsi.h>
+#import "jsi.h"
 #import <React/RCTBridgeModule.h>
 #import <ReactCommon/TurboModuleUtils.h>
 #import <ReactCommon/CallInvoker.h>
 #import <react/bridging/CallbackWrapper.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#import <reacthermes/HermesExecutorFactory.h>
 
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;
@@ -49,9 +50,42 @@ namespace expo
 
     jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *message);
 
-#pragma mark - RuntimeScheduler
+#pragma mark - Runtime
+
+jsi::Runtime &createHermesRuntime();
 
 std::shared_ptr<react::RuntimeScheduler> runtimeSchedulerFromRuntime(jsi::Runtime &runtime);
+
+/**
+ Wrapper for RuntimeScheduler from React which for some reason cannot be constructed from Swift.
+ */
+class RuntimeScheduler {
+private:
+  std::shared_ptr<react::RuntimeScheduler> reactRuntimeScheduler;
+
+public:
+  RuntimeScheduler(jsi::Runtime &runtime) : reactRuntimeScheduler(runtimeSchedulerFromRuntime(runtime)) {}
+
+  using ScheduleTaskCallback = void (^_Nonnull)();
+
+  void scheduleTask(react::SchedulerPriority priority, ScheduleTaskCallback callback) noexcept {
+    reactRuntimeScheduler->scheduleTask(priority, [callback = std::move(callback)](jsi::Runtime &runtime) {
+      callback();
+    });
+  }
+} SWIFT_UNSAFE_REFERENCE;
+
+#pragma mark - Host functions
+
+typedef jsi::Value (^_Nonnull HostFunctionBlock)(jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *_Nonnull args, size_t argsCount);
+
+jsi::Function createHostFunction(jsi::Runtime &runtime, const char *_Nonnull name, HostFunctionBlock block);
+
+#pragma mark - Other helpers
+
+jsi::Value valueFromFunction(jsi::Runtime &runtime, const jsi::Function &function);
+
+std::shared_ptr<const jsi::Buffer> makeSharedStringBuffer(const std::string &source) noexcept;
 
 } // namespace expo
 

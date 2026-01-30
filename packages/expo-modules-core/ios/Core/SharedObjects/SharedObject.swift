@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 public protocol AnySharedObject: AnyArgument, AnyObject {
   var sharedObjectId: SharedObjectId { get }
 }
@@ -92,7 +94,7 @@ public extension SharedObject { // swiftlint:disable:this no_grouping_extension
         return Conversions.convertFunctionResult(argument, appContext: appContext, dynamicType: dynamicType)
       }
 
-      JSUtils.emitEvent(event, to: jsObject, withArguments: arguments, in: runtime)
+//      JSUtils.emitEvent(event, to: jsObject, withArguments: arguments, in: runtime)
     }
   }
   #else // swift(>=5.9)

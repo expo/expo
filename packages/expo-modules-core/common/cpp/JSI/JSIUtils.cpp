@@ -4,6 +4,8 @@
 #include <utility>
 #include "JSIUtils.h"
 
+namespace jsi = facebook::jsi;
+
 namespace expo::common {
 
 jsi::Function createClass(jsi::Runtime &runtime, const char *name, ClassConstructor constructor) {
@@ -35,7 +37,7 @@ jsi::Function createClass(jsi::Runtime &runtime, const char *name, ClassConstruc
   jsi::Object descriptor(runtime);
   descriptor.setProperty(runtime, "value", jsi::Value(runtime, nativeConstructor));
 
-  defineProperty(runtime, &prototype, nativeConstructorKey.c_str(), std::move(descriptor));
+  defineProperty(runtime, prototype, nativeConstructorKey.c_str(), std::move(descriptor));
 
   return klass.asFunction(runtime);
 }
@@ -84,7 +86,7 @@ std::vector<jsi::PropNameID> jsiArrayToPropNameIdsVector(jsi::Runtime &runtime, 
   return vector;
 }
 
-void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name, const PropertyDescriptor& descriptor) {
+void defineProperty(jsi::Runtime &runtime, const jsi::Object &object, const char *name, const PropertyDescriptor& descriptor) {
   jsi::Object jsDescriptor(runtime);
 
   // These three flags are all `false` by default, so set the property only when `true`.
@@ -131,14 +133,14 @@ void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name
   defineProperty(runtime, object, name, std::move(jsDescriptor));
 }
 
-void defineProperty(jsi::Runtime &runtime, jsi::Object *object, const char *name, jsi::Object descriptor) {
+void defineProperty(jsi::Runtime &runtime, const jsi::Object &object, const char *name, jsi::Object descriptor) {
   jsi::Object global = runtime.global();
   jsi::Object objectClass = global.getPropertyAsObject(runtime, "Object");
   jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(runtime, "defineProperty");
 
   // This call is basically the same as `Object.defineProperty(object, name, descriptor)` in JS
   definePropertyFunction.callWithThis(runtime, objectClass, {
-    jsi::Value(runtime, *object),
+    jsi::Value(runtime, object),
     jsi::String::createFromUtf8(runtime, name),
     std::move(descriptor),
   });

@@ -1,5 +1,5 @@
-import { requireNativeModule } from 'expo-modules-core';
-const AssetModule = requireNativeModule('ExpoAsset');
+import { requireOptionalNativeModule } from 'expo-modules-core';
+const AssetModule = requireOptionalNativeModule('ExpoAsset');
 /**
  * Downloads the asset from the given URL to a local cache and returns the local URL of the cached
  * file.

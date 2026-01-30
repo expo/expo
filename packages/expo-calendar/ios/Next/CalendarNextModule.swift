@@ -137,34 +137,34 @@ public final class CalendarNextModule: Module {
     }
 
     AsyncFunction("getCalendarPermissions") { (promise: Promise) in
-      appContext?.permissions?.getPermissionUsingRequesterClass(
-        CalendarPermissionsRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      appContext?.permissions?.getPermissionUsingRequesterClass(
+//        CalendarPermissionsRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("requestCalendarPermissions") { (promise: Promise) in
-      appContext?.permissions?.askForPermission(
-        usingRequesterClass: CalendarPermissionsRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      appContext?.permissions?.askForPermission(
+//        usingRequesterClass: CalendarPermissionsRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("getRemindersPermissions") { (promise: Promise) in
-      appContext?.permissions?.getPermissionUsingRequesterClass(
-        RemindersPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      appContext?.permissions?.getPermissionUsingRequesterClass(
+//        RemindersPermissionRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("requestRemindersPermissions") { (promise: Promise) in
-      appContext?.permissions?.askForPermission(
-        usingRequesterClass: RemindersPermissionRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter)
+//      appContext?.permissions?.askForPermission(
+//        usingRequesterClass: RemindersPermissionRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter)
     }
 
     Function("getSourcesSync") {

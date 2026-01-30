@@ -1,3 +1,5 @@
+import ExpoModulesJSI
+
 public struct Conversions {
   /**
    Converts an array to tuple. Because of tuples nature, it's not possible to convert an array of any size, so we can support only up to some fixed size.
@@ -242,7 +244,7 @@ public struct Conversions {
   /**
    An exception thrown when the JavaScript value cannot be converted to native value.
    */
-  internal final class ConversionToNativeFailedException: GenericException<(kind: JavaScriptValueKind, nativeType: Any.Type)> {
+  internal final class ConversionToNativeFailedException: GenericException<(kind: JavaScriptValue.Kind, nativeType: Any.Type)> {
     override var code: String {
       "ERR_CONVERTING_TO_NATIVE_FAILED"
     }
@@ -272,6 +274,24 @@ public struct Conversions {
     }
     override var reason: String {
       "Cannot cast '\(String(describing: param))' to \(TargetType.self)"
+    }
+  }
+
+  internal class CastingJSValueException<TargetType>: GenericException<JavaScriptValue.Kind>, @unchecked Sendable {
+    override var code: String {
+      "ERR_CASTING_JS_VALUE_FAILED"
+    }
+    override var reason: String {
+      "Cannot cast from JavaScript value of kind '\(param)' to \(TargetType.self)"
+    }
+  }
+
+  internal class UnexpectedValueType: GenericException<(received: JavaScriptValue.Kind, expected: JavaScriptValue.Kind)>, @unchecked Sendable {
+    override var code: String {
+      "ERR_UNEXPECTED_VALUE_TYPE"
+    }
+    override var reason: String {
+      "Received JavaScript value of type '\(param.received)', but expected '\(param.expected)'"
     }
   }
 

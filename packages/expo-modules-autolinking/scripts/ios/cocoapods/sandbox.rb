@@ -26,6 +26,16 @@ module Pod
         spec_json['pod_target_xcconfig'] ||= {}
         spec_json['pod_target_xcconfig']['DEFINES_MODULE'] = 'YES'
         patched_spec = Specification.from_json(spec_json.to_json)
+      elsif is_expo_module?(spec)
+        spec_json = JSON.parse(podspec.to_pretty_json)
+        spec_json['pod_target_xcconfig'] ||= {}
+        spec_json['pod_target_xcconfig']['OTHER_SWIFT_FLAGS'] ||= ''
+        spec_json['pod_target_xcconfig']['OTHER_SWIFT_FLAGS'] << ' -Xfrontend -clang-header-expose-decls=has-expose-attr'
+        # spec_json['pod_target_xcconfig']['SWIFT_OBJC_INTEROP_MODE'] ||= 'objcxx'
+        # spec_json['pod_target_xcconfig']['HEADER_SEARCH_PATHS'] ||= []
+        # spec_json['pod_target_xcconfig']['HEADER_SEARCH_PATHS'] << '"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header"'
+        # print spec_json
+        patched_spec = Specification.from_json(spec_json.to_json)
       end
 
       if patched_spec != nil
@@ -39,5 +49,8 @@ module Pod
       return spec
     end # define_method(:store_podspec)
 
+    def is_expo_module?(spec)
+      spec.dependencies.any? { |dependency| dependency.name == "ExpoModulesCore" }
+    end
   end # class Sandbox
 end # module Pod

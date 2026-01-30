@@ -1,9 +1,11 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/Platform.h>
+#import <ExpoModulesJSI/JavaScriptRuntimeProvider.h>
 
 #ifdef __cplusplus
 #import <ReactCommon/RCTHost.h>
+#import <jsi/jsi.h>
 #endif
 
 /**
@@ -22,3 +24,6 @@ NS_SWIFT_NAME(ExpoHostWrapper)
 
 @end
 
+@interface EXRuntimeWrapper : NSObject <JavaScriptRuntimeProvider>
+
+@end

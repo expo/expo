@@ -1,5 +1,7 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 internal struct DynamicViewType: AnyDynamicType {
   let innerType: UIView.Type
 
@@ -17,7 +19,7 @@ internal struct DynamicViewType: AnyDynamicType {
   /**
    Casts from the React component instance to the view tag (`Int`).
    */
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     guard let viewTag = findViewTag(jsValue) else {
       throw InvalidViewTagException()
     }
@@ -45,7 +47,7 @@ internal struct DynamicViewType: AnyDynamicType {
   }
 }
 
-private func findViewTag(_ value: JavaScriptValue) -> Int? {
+private func findViewTag(_ value: borrowing JavaScriptValue) -> Int? {
   if value.isNumber() {
     return value.getInt()
   }

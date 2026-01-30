@@ -13,9 +13,9 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms       = {
-    :ios => '15.1',
-    :osx => '11.0',
-    :tvos => '15.1'
+    :ios => '16.4',
+    :osx => '12.0',
+    :tvos => '16.4'
   }
   s.swift_version  = '6.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
@@ -46,23 +46,31 @@ Pod::Spec.new do |s|
     'USE_HEADERMAP' => 'YES',
     'DEFINES_MODULE' => 'YES',
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
+    # 'SWIFT_OBJC_INTEROP_MODE' => 'objcxx',
+    # 'OTHER_SWIFT_FLAGS' => '-Xfrontend -clang-header-expose-decls=has-expose-attr',
+    'GCC_PREPROCESSOR_DEFINITIONS' => 'EXPO_MODULES_JSI=1'
   }
 
-  if use_hermes
-    s.dependency 'hermes-engine'
-  else
-    s.dependency 'React-jsc'
-  end
-
+  s.dependency 'hermes-engine'
   s.dependency 'React-Core'
   s.dependency 'ReactCommon'
   s.dependency 'React-runtimescheduler'
 
-  s.source_files = ['ios/JSI/**/*.{h,m,mm,swift,cpp}', 'common/cpp/JSI/**/*.{h,cpp}']
+  if File.exist?("#{s.name}/#{s.name}.xcframework")
+    s.source_files = [
+      "ios/JSI/**/*.{h,hpp}",
+      "ios/JSI/JavaScriptRuntimeProvider.{h,mm}",
+      "common/cpp/JSI/**/*.{h,hpp}"
+    ]
+    s.vendored_frameworks = ["#{s.name}/#{s.name}.xcframework"]
+  else
+    s.source_files = ['ios/JSI/**/*.{h,m,mm,swift,hpp,cpp}', 'common/cpp/JSI/**/*.{h,hpp,cpp}']
+  end
+
   s.exclude_files = ['ios/JSI/Tests']
-  s.private_header_files = ['ios/JSI/**/*+Private.h', 'ios/JSI/**/Swift.h']
 
   s.test_spec 'Tests' do |test_spec|
-    test_spec.source_files = 'ios/JSI/Tests/**/*.{m,swift}'
+    test_spec.source_files = 'ExpoModulesJSI/Tests/**/*.swift'
   end
 end

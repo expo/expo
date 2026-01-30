@@ -20,6 +20,11 @@ RCT_EXPORT_MODULE()
   return number;
 }
 
+- (void)asyncAddNumbers:(double)a b:(double)b resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
+{
+  resolve([[NSNumber alloc] initWithDouble:a + b]);
+}
+
 - (NSString *)addStrings:(NSString *)a b:(NSString *)b
 {
   NSMutableString* result = [[NSMutableString alloc] initWithString:a];

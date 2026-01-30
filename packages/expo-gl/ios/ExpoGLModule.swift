@@ -7,12 +7,12 @@ public final class ExpoGLModule: Module {
     Name("ExpoGL")
 
     AsyncFunction("takeSnapshotAsync") { (contextId: UInt, options: [String: Any], promise: Promise) in
-      EXGLObjectManager.shared.takeSnapshot(
-        withContextId: contextId as NSNumber,
-        andOptions: options,
-        resolver: promise.resolver,
-        rejecter: promise.legacyRejecter
-      )
+//      EXGLObjectManager.shared.takeSnapshot(
+//        withContextId: contextId as NSNumber,
+//        andOptions: options,
+//        resolver: promise.resolver,
+//        rejecter: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("createContextAsync") { (promise: Promise) in
@@ -20,31 +20,31 @@ public final class ExpoGLModule: Module {
         promise.reject("E_GL_APP_CONTEXT_NOT_FOUND", "ExpoGL.createContextAsync: Unable to get the app context")
         return
       }
-      let glContext = EXGLContext(delegate: nil, runtime: runtime, fileSystem: fileSystem)
-
-      glContext.prepare({ success in
-        if success {
-          promise.resolve(["exglCtxId": glContext.contextId as NSNumber])
-        } else {
-          promise.reject("E_GL_CONTEXT_NOT_INITIALIZED", "ExpoGL.createContextAsync: Unexpected error occurred when initializing headless context")
-        }
-      }, andEnableExperimentalWorkletSupport: false)
+//      let glContext = EXGLContext(delegate: nil, runtime: runtime, fileSystem: fileSystem)
+//
+//      glContext.prepare({ success in
+//        if success {
+//          promise.resolve(["exglCtxId": glContext.contextId as NSNumber])
+//        } else {
+//          promise.reject("E_GL_CONTEXT_NOT_INITIALIZED", "ExpoGL.createContextAsync: Unexpected error occurred when initializing headless context")
+//        }
+//      }, andEnableExperimentalWorkletSupport: false)
     }
 
     AsyncFunction("destroyContextAsync") { (contextId: UInt, promise: Promise) in
-      EXGLObjectManager.shared.destroyContext(
-        withId: contextId as NSNumber,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      EXGLObjectManager.shared.destroyContext(
+//        withId: contextId as NSNumber,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("destroyObjectAsync") { (objectId: UInt, promise: Promise) in
-      EXGLObjectManager.shared.destroyObjectAsync(
-        objectId as NSNumber,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      EXGLObjectManager.shared.destroyObjectAsync(
+//        objectId as NSNumber,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
     }
 
     AsyncFunction("createCameraTextureAsync") { (contextId: UInt, cameraViewTag: Int, promise: Promise) in
@@ -52,12 +52,12 @@ public final class ExpoGLModule: Module {
         promise.reject("E_GL_BAD_CAMERA_VIEW_TAG", "ExpoGL.createCameraTextureAsync: Expected a camera view")
         return
       }
-      EXGLObjectManager.shared.createTextureForContext(
-        withId: contextId as NSNumber,
-        cameraView: cameraView,
-        resolver: promise.resolver,
-        rejecter: promise.legacyRejecter
-      )
+//      EXGLObjectManager.shared.createTextureForContext(
+//        withId: contextId as NSNumber,
+//        cameraView: cameraView,
+//        resolver: promise.resolver,
+//        rejecter: promise.legacyRejecter
+//      )
     }
     .runOnQueue(.main)
 

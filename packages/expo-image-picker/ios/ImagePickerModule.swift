@@ -74,10 +74,10 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     guard let permissions = self.appContext?.permissions else {
       return promise.reject(PermissionsModuleNotFoundException())
     }
-    switch operationType {
-    case .get: permissions.getPermissionUsingRequesterClass(requesterClass, resolve: promise.resolver, reject: promise.legacyRejecter)
-    case .ask: permissions.askForPermission(usingRequesterClass: requesterClass, resolve: promise.resolver, reject: promise.legacyRejecter)
-    }
+//    switch operationType {
+//    case .get: permissions.getPermissionUsingRequesterClass(requesterClass, resolve: promise.resolver, reject: promise.legacyRejecter)
+//    case .ask: permissions.askForPermission(usingRequesterClass: requesterClass, resolve: promise.resolver, reject: promise.legacyRejecter)
+//    }
   }
 
   private func getMediaLibraryPermissionRequester(_ writeOnly: Bool) -> AnyClass {

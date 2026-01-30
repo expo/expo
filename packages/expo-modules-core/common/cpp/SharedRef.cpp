@@ -1,6 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
 #include "SharedRef.h"
+#include "Global.h"
 
 namespace expo::SharedRef {
 
@@ -8,13 +9,11 @@ void installBaseClass(jsi::Runtime &runtime) {
   jsi::Function baseClass = SharedObject::getBaseClass(runtime);
   jsi::Function klass = expo::common::createInheritingClass(runtime, "SharedRef", baseClass);
 
-  common::getCoreObject(runtime)
-    .setProperty(runtime, "SharedRef", klass);
+  getCoreObject(runtime).setProperty(runtime, "SharedRef", klass);
 }
 
 jsi::Function getBaseClass(jsi::Runtime &runtime) {
-  return common::getCoreObject(runtime)
-    .getPropertyAsFunction(runtime, "SharedRef");
+  return getCoreObject(runtime).getPropertyAsFunction(runtime, "SharedRef");
 }
 
 jsi::Function createClass(jsi::Runtime &runtime, const char *className, common::ClassConstructor constructor) {

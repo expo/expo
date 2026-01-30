@@ -1,5 +1,7 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  A protocol whose intention is to wrap any type
  to keep its real signature and not type-erase it by the compiler.
@@ -20,7 +22,8 @@ public protocol AnyDynamicType: CustomStringConvertible, Sendable {
    Preliminarily casts the given JavaScriptValue to a non-JS value that the other `cast` function can handle.
    It **must** be run on the thread used by the JavaScript runtime.
    */
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any
+  @JavaScriptActor
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any
 
   /**
    Casts the given value to the wrapped type and returns it as `Any`.
@@ -39,8 +42,8 @@ public protocol AnyDynamicType: CustomStringConvertible, Sendable {
 }
 
 extension AnyDynamicType {
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    return jsValue.getRaw() as Any
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
+    return jsValue.getAny()
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
@@ -48,9 +51,10 @@ extension AnyDynamicType {
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
-    // This conversion isn't the most efficient way to convert Objective-C value to JS value.
-    // Better performance should be provided in dynamic type specializations.
-    return try JavaScriptValue.from(value, runtime: appContext.runtime)
+    if let value = value as? JSRepresentable {
+      return try JavaScriptValue.representing(value: value, in: appContext.runtime)
+    }
+    return .undefined()
   }
 
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {

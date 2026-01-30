@@ -17,5 +17,13 @@ public final class BenchmarkingExpoModule: Module {
     Function("foldArray") { (array: [Double]) in
       return array.reduce(0.0, +)
     }
+
+    AsyncFunction("asyncAddNumbers") { (a: Double, b: Double) in
+      return a + b
+    }
+
+    AsyncFunction("concurrentAddNumbers") { (a: Double, b: Double) async in
+      return a + b
+    }
   }
 }

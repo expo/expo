@@ -4,7 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import <jsi/jsi.h>
+#import "jsi.h"
 
 #import <React/RCTBridgeModule.h>
 #import <ReactCommon/CallInvoker.h>

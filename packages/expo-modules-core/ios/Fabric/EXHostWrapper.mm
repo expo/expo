@@ -32,3 +32,22 @@
 }
 
 @end
+
+@implementation EXRuntimeWrapper {
+  std::shared_ptr<facebook::jsi::Runtime> _runtime;
+}
+
+- (instancetype)init:(facebook::jsi::Runtime &)runtime
+{
+  if (self = [super init]) {
+    _runtime = std::shared_ptr<facebook::jsi::Runtime>(std::shared_ptr<facebook::jsi::Runtime>(), &runtime);
+  }
+  return self;
+}
+
+- (nonnull facebook::jsi::Runtime *)consume
+{
+  return _runtime.get();
+}
+
+@end

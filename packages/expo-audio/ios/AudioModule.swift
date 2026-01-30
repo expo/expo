@@ -37,11 +37,11 @@ public class AudioModule: Module {
 
     AsyncFunction("requestRecordingPermissionsAsync") { (promise: Promise) in
       #if os(iOS)
-      appContext?.permissions?.askForPermission(
-        usingRequesterClass: AudioRecordingRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      appContext?.permissions?.askForPermission(
+//        usingRequesterClass: AudioRecordingRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
       #else
       promise.reject(Exception.init(name: "UnsupportedOperation", description: "Audio recording is not supported on this platform."))
       #endif
@@ -49,11 +49,11 @@ public class AudioModule: Module {
 
     AsyncFunction("getRecordingPermissionsAsync") { (promise: Promise) in
       #if os(iOS)
-      appContext?.permissions?.getPermissionUsingRequesterClass(
-        AudioRecordingRequester.self,
-        resolve: promise.resolver,
-        reject: promise.legacyRejecter
-      )
+//      appContext?.permissions?.getPermissionUsingRequesterClass(
+//        AudioRecordingRequester.self,
+//        resolve: promise.resolver,
+//        reject: promise.legacyRejecter
+//      )
       #else
       promise.reject(Exception.init(name: "UnsupportedOperation", description: "Audio recording is not supported on this platform."))
       #endif
