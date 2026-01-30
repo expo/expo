@@ -5,8 +5,8 @@
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios"
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
@@ -14,6 +14,7 @@
     "@react-navigation/elements": "^2.8.1",
     "@react-navigation/native": "^7.1.28",
     "expo": "~55.0.0-preview.7",
+    "expo-brownfield": "~55.0.4",
     "expo-constants": "~55.0.2",
     "expo-device": "~55.0.3",
     "expo-font": "~55.0.3",

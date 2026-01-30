@@ -8,7 +8,8 @@
     "scheme": "brownfield",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "host.exp.exponent"
     },
     "android": {
       "adaptiveIcon": {
@@ -18,7 +19,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "host.exp.exponent"
     },
     "web": {
       "output": "static",
@@ -35,7 +37,8 @@
             "imageWidth": 76
           }
         }
-      ]
+      ],
+      "expo-brownfield"
     ],
     "experiments": {
       "typedRoutes": true,
