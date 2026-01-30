@@ -24,6 +24,29 @@ export interface FrameworkTarget {
 }
 
 /**
+ * A resource to include in the target bundle
+ */
+export interface TargetResource {
+  /** Path or glob pattern to the resource(s) relative to the target path */
+  path: string;
+  /** How to handle the resource: 'process' optimizes for platform, 'copy' includes as-is */
+  rule?: 'process' | 'copy';
+}
+
+/**
+ * Defines how files from a source location should be copied to a different destination
+ * This is useful when source files use include paths that don't match their actual location
+ */
+export interface FileMapping {
+  /** Glob pattern to match source files relative to the target path */
+  from: string;
+  /** Destination path relative to the generated target folder. Use '{filename}' as placeholder for the matched filename */
+  to: string;
+  /** Whether this is for header files (placed in include/) or source files (placed in target root), or symlink (creates directory symlink) */
+  type: 'source' | 'header' | 'symlink';
+}
+
+/**
  * Base interface for source targets (ObjC, Swift, C++)
  */
 export interface SourceTarget {
@@ -45,6 +68,21 @@ export interface SourceTarget {
   includeDirectories?: string[];
   /** System frameworks to link */
   linkedFrameworks?: string[];
+  /** Resources to bundle with the target (e.g., Metal shaders, assets) */
+  resources?: TargetResource[];
+  /** Additional compiler flags for C/C++/ObjC (e.g., ["-include", "Foundation/Foundation.h"]) */
+  compilerFlags?: string[];
+  /** File mappings to reorganize files during source generation. Files matching 'from' pattern
+   * will be copied to the 'to' location instead of preserving their original directory structure */
+  fileMapping?: FileMapping[];
+  /** Custom module.modulemap content for this target. If provided, this will be written to the
+   * include directory instead of letting Clang auto-generate one. Useful for C++ headers that
+   * have conflicting type definitions and need to be marked as 'textual header' */
+  moduleMapContent?: string;
+  /** Whether to expose headers as public module headers. Set to false to make headers private/internal,
+   * which prevents Clang from building a module from them. Useful for C++ headers with conflicting
+   * type definitions that can't be included together. Default is true. */
+  publicHeaders?: boolean;
 }
 
 /**
@@ -115,6 +153,18 @@ export interface SPMProduct {
   swiftLanguageVersions?: string[];
   /** List of targets included in this product */
   targets: SPMTarget[];
+  /** Glob patterns for headers that should be marked as 'textual' in the final xcframework modulemap.
+   * Textual headers are not compiled as part of the module, which is necessary for headers that
+   * have external dependencies (like React headers) that won't be available at module compile time.
+   * This allows Swift to import the module without needing those dependencies at compile time.
+   * Example: ["RCT*.h", "RNS*ComponentView.h"] */
+  textualHeaders?: string[];
+  /** Glob patterns for headers that should be excluded from the umbrella header.
+   * These headers won't be automatically imported when the module is imported.
+   * Use this for headers that extend external types (like React categories) or
+   * reference files that don't exist (like Swift bridging headers for non-Swift modules).
+   * Example: ["RCT*.h", "Swift-Bridging.h"] */
+  excludeFromUmbrella?: string[];
 }
 
 /**

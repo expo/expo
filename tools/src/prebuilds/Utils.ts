@@ -5,15 +5,34 @@ import path from 'path';
 
 import logger from '../Logger';
 import { getListOfPackagesAsync, getPackageByName, Package } from '../Packages';
+import {
+  discoverExternalPackagesAsync,
+  ExternalPackage,
+  getExternalPackageByName,
+  SPMPackageSource,
+} from './ExternalPackage';
 import { SPMProduct } from './SPMConfig.types';
 
 /**
- * Discovers all packages that have spm.config.json files.
+ * Discovers all Expo packages that have spm.config.json files.
  * @returns Array of Packages that have SPM configuration
  */
 export const discoverPackagesWithSPMConfigAsync = async (): Promise<Package[]> => {
   const allPackages = await getListOfPackagesAsync();
   return allPackages.filter((pkg) => pkg.hasSwiftPMConfiguration());
+};
+
+/**
+ * Discovers all packages (both Expo and external) that have spm.config.json files.
+ * @returns Array of SPMPackageSource (Package or ExternalPackage) with SPM configuration
+ */
+export const discoverAllSPMPackagesAsync = async (): Promise<SPMPackageSource[]> => {
+  const [expoPackages, externalPackages] = await Promise.all([
+    discoverPackagesWithSPMConfigAsync(),
+    discoverExternalPackagesAsync(),
+  ]);
+
+  return [...expoPackages, ...externalPackages];
 };
 
 /**
@@ -48,6 +67,71 @@ export const verifyPackagesAsync = async (packageNames: string[]): Promise<Packa
       }
 
       return pkg;
+    })
+  );
+};
+
+/**
+ * Verifies that all requested packages (Expo or external) exist and have spm-config.json files.
+ * If no package names are provided, discovers all packages with spm.config.json.
+ * @param packageNames Names of packages to verify (if empty, discovers all SPM packages)
+ * @param includeExternal Whether to include external packages in discovery (default: true)
+ * @returns Parsed SPMPackageSources that were verified
+ */
+export const verifyAllPackagesAsync = async (
+  packageNames: string[],
+  includeExternal: boolean = true
+): Promise<SPMPackageSource[]> => {
+  // If no package names provided, discover all packages with spm.config.json
+  if (packageNames.length === 0) {
+    const packages = includeExternal
+      ? await discoverAllSPMPackagesAsync()
+      : await discoverPackagesWithSPMConfigAsync();
+
+    if (packages.length === 0) {
+      throw new Error('No packages with spm.config.json found.');
+    }
+
+    const expoPackages = packages.filter((p) => p instanceof Package);
+    const externalPackages = packages.filter((p) => p instanceof ExternalPackage);
+
+    logger.info(`Discovered ${chalk.cyan(packages.length)} packages with spm.config.json:`);
+    if (expoPackages.length > 0) {
+      logger.info(
+        `  Expo packages (${expoPackages.length}): ${chalk.green(expoPackages.map((p) => p.packageName).join(', '))}`
+      );
+    }
+    if (externalPackages.length > 0) {
+      logger.info(
+        `  External packages (${externalPackages.length}): ${chalk.blue(externalPackages.map((p) => p.packageName).join(', '))}`
+      );
+    }
+
+    return packages;
+  }
+
+  // Look up each package by name
+  return Promise.all(
+    packageNames.map(async (name) => {
+      // First check if it's an Expo package
+      const expoPkg = getPackageByName(name);
+      if (expoPkg) {
+        if (!expoPkg.hasSwiftPMConfiguration()) {
+          throw new Error(`Package ${chalk.gray(name)} does not have a spm.config.json file.`);
+        }
+        return expoPkg;
+      }
+
+      // Then check if it's an external package
+      const externalPkg = getExternalPackageByName(name);
+      if (externalPkg) {
+        return externalPkg;
+      }
+
+      throw new Error(
+        `Package not found: ${chalk.red(name)}. ` +
+          `Make sure it exists in packages/ or has a config in packages/external/.`
+      );
     })
   );
 };
@@ -200,7 +284,7 @@ export const verifyLocalTarballPathsIfSetAsync = async (options: {
 const Prefix = '  ';
 const getPackageAndProductPrefix = (
   colorizer: (...text: unknown[]) => string,
-  pkg?: Package,
+  pkg?: SPMPackageSource,
   product?: SPMProduct
 ) => {
   return pkg
@@ -208,7 +292,11 @@ const getPackageAndProductPrefix = (
     : '';
 };
 
-export const createAsyncSpinner = (initialText: string, pkg?: Package, product?: SPMProduct) => {
+export const createAsyncSpinner = (
+  initialText: string,
+  pkg?: SPMPackageSource,
+  product?: SPMProduct
+) => {
   if (process.env.CI != null || process.stdout.isTTY === false) {
     return {
       succeed: (text?: string) => {

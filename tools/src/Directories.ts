@@ -22,6 +22,14 @@ export function getPackagesDir(): string {
   return path.join(getExpoRepositoryRootDir(), 'packages');
 }
 
+export function getExternalPackagesDir(): string {
+  return path.join(getPackagesDir(), 'external');
+}
+
+export function getNodeModulesDir(): string {
+  return path.join(getExpoRepositoryRootDir(), 'node_modules');
+}
+
 export function getExpoGoIosDir(): string {
   return path.join(getExpoGoDir(), 'ios');
 }

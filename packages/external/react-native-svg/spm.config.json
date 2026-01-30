@@ -1,0 +1,83 @@
+{
+    "$schema": "../../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "products": [
+        {
+            "name": "RNSVG",
+            "platforms": [
+                "iOS(.v15)"
+            ],
+            "externalDependencies": [
+                "ReactNativeDependencies",
+                "React",
+                "Hermes"
+            ],
+            "excludeFromUmbrella": [
+                "RCT*.h"
+            ],
+            "targets": [
+                {
+                    "type": "cpp",
+                    "name": "RNSVG_codegen_components",
+                    "moduleName": "rnsvg",
+                    "path": ".build/codegen/build/generated/ios/ReactCodegen/react/renderer/components/rnsvg",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "includeDirectories": [ "../../../.." ]
+                },
+                {
+                    "type": "objc",
+                    "name": "RNSVG_codegen_modules",
+                    "moduleName": "rnsvg",
+                    "path": ".build/codegen/build/generated/ios/ReactCodegen/rnsvg",
+                    "pattern": "**/*.mm",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "includeDirectories": [ ".." ]
+                },
+                {
+                    "type": "cpp",
+                    "name": "RNSVG_common_cpp",
+                    "moduleName": "rnsvg",
+                    "path": "common/cpp",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies",
+                        "RNSVG_codegen_components"
+                    ],
+                    "includeDirectories": [ ".", "../../.build/codegen/build/generated/ios/ReactCodegen" ]
+                },
+                {
+                    "type": "objc",
+                    "name": "RNSVG",
+                    "path": "apple",
+                    "pattern": "**/*.{m,mm}",
+                    "headerPattern": "**/*.h",
+                    "exclude": [ "**/*.macos.*", "RNSVG.xcodeproj/**" ],
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "RNSVG_codegen_components",
+                        "RNSVG_codegen_modules",
+                        "RNSVG_common_cpp"
+                    ],
+                    "includeDirectories": [ ".", "../.build/codegen/build/generated/ios/ReactCodegen" ],
+                    "linkedFrameworks": [ "Foundation", "UIKit", "CoreGraphics", "QuartzCore", "CoreText", "CoreImage", "Metal" ],
+                    "compilerFlags": [ "-include", "Foundation/Foundation.h" ],
+                    "resources": [
+                        { "path": "Filters/MetalCI/*.iphoneos.metallib", "rule": "copy" }
+                    ]
+                }
+            ]
+        }
+    ]
+}

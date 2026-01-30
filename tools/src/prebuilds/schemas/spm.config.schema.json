@@ -62,6 +62,14 @@
                     },
                     "default": [ ]
                 },
+                "textualHeaders": {
+                    "type": "array",
+                    "description": "Glob patterns for headers that should be marked as 'textual' in the final xcframework modulemap. Textual headers are not compiled as part of the module, which is necessary for headers that have external dependencies (like React headers) that won't be available at module compile time. This allows Swift to import the module without needing those dependencies at compile time.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [ ]
+                },
                 "targets": {
                     "type": "array",
                     "description": "List of targets included in this product",
@@ -172,6 +180,33 @@
                     "items": { "type": "string" },
                     "description": "System frameworks to link (e.g., 'Foundation', 'UIKit')",
                     "default": [ ]
+                },
+                "resources": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/resource" },
+                    "description": "Resources to bundle with the target (e.g., Metal shaders, assets)",
+                    "default": [ ]
+                },
+                "compilerFlags": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Additional compiler flags for C/C++/ObjC (e.g., [\"-include\", \"Foundation/Foundation.h\"])",
+                    "default": [ ]
+                },
+                "fileMapping": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/fileMapping" },
+                    "description": "File mappings to reorganize files during source generation. Files matching 'from' pattern will be copied to the 'to' location",
+                    "default": [ ]
+                },
+                "moduleMapContent": {
+                    "type": "string",
+                    "description": "Custom module.modulemap content for this target. If provided, this will be written to the include directory instead of letting Clang auto-generate one. Useful for C++ headers that have conflicting type definitions and need to be marked as 'textual header'"
+                },
+                "publicHeaders": {
+                    "type": "boolean",
+                    "description": "Whether to expose headers as public module headers. Set to false to make headers private/internal, which prevents Clang from building a module from them. Default is true.",
+                    "default": true
                 }
             },
             "required": [ "type", "name", "path" ],
@@ -228,6 +263,33 @@
                     "items": { "type": "string" },
                     "description": "System frameworks to link",
                     "default": [ ]
+                },
+                "resources": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/resource" },
+                    "description": "Resources to bundle with the target (e.g., Metal shaders, assets)",
+                    "default": [ ]
+                },
+                "compilerFlags": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Additional compiler flags for C/C++/ObjC (e.g., [\"-include\", \"Foundation/Foundation.h\"])",
+                    "default": [ ]
+                },
+                "fileMapping": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/fileMapping" },
+                    "description": "File mappings to reorganize files during source generation. Files matching 'from' pattern will be copied to the 'to' location",
+                    "default": [ ]
+                },
+                "moduleMapContent": {
+                    "type": "string",
+                    "description": "Custom module.modulemap content for this target. If provided, this will be written to the include directory instead of letting Clang auto-generate one. Useful for C++ headers that have conflicting type definitions and need to be marked as 'textual header'"
+                },
+                "publicHeaders": {
+                    "type": "boolean",
+                    "description": "Whether to expose headers as public module headers. Set to false to make headers private/internal, which prevents Clang from building a module from them. Default is true.",
+                    "default": true
                 }
             },
             "required": [ "type", "name", "path" ],
@@ -284,9 +346,75 @@
                     "items": { "type": "string" },
                     "description": "System frameworks to link",
                     "default": [ ]
+                },
+                "resources": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/resource" },
+                    "description": "Resources to bundle with the target (e.g., Metal shaders, assets)",
+                    "default": [ ]
+                },
+                "compilerFlags": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Additional compiler flags for C/C++/ObjC (e.g., [\"-include\", \"Foundation/Foundation.h\"])",
+                    "default": [ ]
+                },
+                "fileMapping": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/fileMapping" },
+                    "description": "File mappings to reorganize files during source generation. Files matching 'from' pattern will be copied to the 'to' location",
+                    "default": [ ]
+                },
+                "moduleMapContent": {
+                    "type": "string",
+                    "description": "Custom module.modulemap content for this target. If provided, this will be written to the include directory instead of letting Clang auto-generate one. Useful for C++ headers that have conflicting type definitions and need to be marked as 'textual header'"
+                },
+                "publicHeaders": {
+                    "type": "boolean",
+                    "description": "Whether to expose headers as public module headers. Set to false to make headers private/internal, which prevents Clang from building a module from them. Default is true.",
+                    "default": true
                 }
             },
             "required": [ "type", "name", "path" ],
+            "additionalProperties": false
+        },
+        "resource": {
+            "type": "object",
+            "description": "A resource to include in the target bundle",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "Path or glob pattern to the resource(s) relative to the target path"
+                },
+                "rule": {
+                    "type": "string",
+                    "enum": [ "process", "copy" ],
+                    "description": "How to handle the resource: 'process' optimizes for platform, 'copy' includes as-is",
+                    "default": "process"
+                }
+            },
+            "required": [ "path" ],
+            "additionalProperties": false
+        },
+        "fileMapping": {
+            "type": "object",
+            "description": "Defines how files from a source location should be copied to a different destination path during source generation",
+            "properties": {
+                "from": {
+                    "type": "string",
+                    "description": "Glob pattern to match source files relative to the target path, or source path for symlink type"
+                },
+                "to": {
+                    "type": "string",
+                    "description": "Destination path relative to the generated target folder. Use '{filename}' as placeholder for the matched filename"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [ "source", "header", "symlink" ],
+                    "description": "Whether this is for header files (placed in include/), source files (placed in target root), or symlink (creates directory symlink in include/)"
+                }
+            },
+            "required": [ "from", "to", "type" ],
             "additionalProperties": false
         }
     }

@@ -4,6 +4,7 @@ import path from 'path';
 
 import logger from '../Logger';
 import { Package } from '../Packages';
+import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
 import { getBuildPlatformsFromProductPlatform, SPMBuild } from './SPMBuild';
 import { BuiltFramework } from './SPMBuild.types';
@@ -22,7 +23,7 @@ export const Frameworks = {
    * @param platform Optional platform to filter on
    */
   composeXCFrameworkAsync: async (
-    pkg: Package,
+    pkg: SPMPackageSource,
     product: SPMProduct,
     buildType: BuildFlavor,
     platform?: BuildPlatform
@@ -48,8 +49,15 @@ export const Frameworks = {
     );
 
     // Collect and copy header files
-    const { headerFiles: collectedHeaderFiles, targetModuleNames } =
-      await collectAndCopyHeaderFilesFromBuiltFrameworksAsync(pkg, product, xcframeworkOutputPath);
+    const {
+      headerFiles: collectedHeaderFiles,
+      targetModuleNames,
+      textualHeaderModules,
+    } = await collectAndCopyHeaderFilesFromBuiltFrameworksAsync(
+      pkg,
+      product,
+      xcframeworkOutputPath
+    );
 
     // Check if this product has a Swift target
     const hasSwiftTarget = product.targets.some((target) => target?.type === 'swift');
@@ -64,7 +72,8 @@ export const Frameworks = {
       xcframeworkOutputPath,
       collectedHeaderFiles,
       hasSwiftTarget,
-      targetModuleNames
+      targetModuleNames,
+      textualHeaderModules
     );
 
     // Remove the toplevel Headers directory as it's no longer needed
@@ -73,22 +82,31 @@ export const Frameworks = {
 
   /**
    * Gets the output path for frameworks for the given package. The path should be inside the
-   * package's podspecPath/.xcframeworks/{buildType} folder
-   * @param pkgPath Package path (the directory of the package)
+   * package's podspecPath/.xcframeworks/{buildType} folder for Expo packages, or
+   * node_modules/<package-name>/.xcframeworks/{buildType} for external packages.
+   * @param pkgPath Package path (the directory of the package source)
    * @param buildType Build flavor
    * @returns Output path for frameworks
    */
   getFrameworksOutputPath: (pkgPath: string, buildType: BuildFlavor): string => {
-    const podspecPath = new Package(pkgPath).podspecPath;
-    if (!podspecPath) {
-      throw new Error(`Package at path ${pkgPath} does not have a podspecPath defined.`);
+    // Try to create a Package to get the podspecPath (works for Expo packages)
+    try {
+      const pkg = new Package(pkgPath);
+      const podspecPath = pkg.podspecPath;
+      if (podspecPath) {
+        return path.join(
+          path.join(pkgPath, path.dirname(podspecPath)),
+          '.xcframeworks',
+          buildType.toLowerCase()
+        );
+      }
+    } catch {
+      // Not an Expo package, fall through to external package handling
     }
 
-    return path.join(
-      path.join(pkgPath, path.dirname(podspecPath)),
-      '.xcframeworks',
-      buildType.toLowerCase()
-    );
+    // For external packages (or packages without podspec), put xcframeworks directly in the package path
+    // This handles node_modules/<package-name>/.xcframeworks/<buildType>/
+    return path.join(pkgPath, '.xcframeworks', buildType.toLowerCase());
   },
 
   /**
@@ -115,7 +133,7 @@ export const Frameworks = {
  * @returns Array of built framework information
  */
 const collectFrameworksForProduct = (
-  pkg: Package,
+  pkg: SPMPackageSource,
   product: SPMProduct,
   buildType: BuildFlavor,
   platform?: BuildPlatform
@@ -155,9 +173,10 @@ const collectFrameworksForProduct = (
  * @param collectedHeaderFiles Collected header files
  * @param hasSwiftTarget Whether the product has a Swift target
  * @param targetModuleNames Map of module names to their headers
+ * @param textualHeaderModules Set of module names that should use textual headers
  */
 const processXCFrameworkSlices = async (
-  pkg: Package,
+  pkg: SPMPackageSource,
   spmConfig: SPMConfig,
   product: SPMProduct,
   buildType: BuildFlavor,
@@ -165,7 +184,8 @@ const processXCFrameworkSlices = async (
   xcframeworkOutputPath: string,
   collectedHeaderFiles: string[],
   hasSwiftTarget: boolean,
-  targetModuleNames: Map<string, string[]>
+  targetModuleNames: Map<string, string[]>,
+  textualHeaderModules: Set<string> = new Set()
 ): Promise<void> => {
   const sourceHeadersPath = path.join(xcframeworkOutputPath, 'Headers');
   const submoduleNames = Array.from(targetModuleNames.keys());
@@ -184,7 +204,8 @@ const processXCFrameworkSlices = async (
       product,
       collectedHeaderFiles,
       hasSwiftTarget,
-      targetModuleNames
+      targetModuleNames,
+      textualHeaderModules
     );
 
     // Copy Swift-related artifacts if applicable
@@ -214,13 +235,15 @@ const processXCFrameworkSlices = async (
  * @param umbrellaHeaderFiles Collected umbrella header files (header names only, flat)
  * @param hasSwiftTarget Whether this product has a Swift target
  * @param targetModuleNames Map of moduleName to header files for creating virtual submodules
+ * @param textualHeaderModules Set of module names that should use textual headers (not compiled as part of module)
  */
 const createModuleMapWithUmbrellaHeaderFilesAsync = async (
   frameworkSlicePath: string,
   product: SPMProduct,
   umbrellaHeaderFiles: string[],
   hasSwiftTarget: boolean = false,
-  targetModuleNames: Map<string, string[]> = new Map()
+  targetModuleNames: Map<string, string[]> = new Map(),
+  textualHeaderModules: Set<string> = new Set()
 ): Promise<void> => {
   const hasObjCHeaders = umbrellaHeaderFiles.length > 0;
   const productName = product.name;
@@ -232,13 +255,81 @@ const createModuleMapWithUmbrellaHeaderFilesAsync = async (
 
   const umbrellaName = `${productName}_umbrella.h`;
 
+  // Check if product has textualHeaders patterns configured
+  const textualHeaderPatterns = product.textualHeaders ?? [];
+  const hasTextualPatterns = textualHeaderPatterns.length > 0;
+
+  // Check if product has excludeFromUmbrella patterns configured
+  const excludeFromUmbrellaPatterns = product.excludeFromUmbrella ?? [];
+  const hasExcludePatterns = excludeFromUmbrellaPatterns.length > 0;
+
+  // Helper to check if a header matches any pattern in a list
+  const matchesPattern = (headerName: string, patterns: string[]): boolean => {
+    if (patterns.length === 0) return false;
+    return patterns.some((pattern) => {
+      // Convert glob pattern to regex
+      const regexPattern = pattern.replace(/\./g, '\\.').replace(/\*/g, '.*').replace(/\?/g, '.');
+      return new RegExp(`^${regexPattern}$`).test(headerName);
+    });
+  };
+
+  // Helper to check if a header matches any textual pattern
+  const isTextualHeader = (headerName: string): boolean => {
+    return matchesPattern(headerName, textualHeaderPatterns);
+  };
+
+  // Helper to check if a header should be excluded from umbrella
+  const isExcludedFromUmbrella = (headerName: string): boolean => {
+    return matchesPattern(headerName, excludeFromUmbrellaPatterns);
+  };
+
   // Build the module map content
   let moduleMapContent = '';
 
   moduleMapContent += `framework module ${productName} {\n`;
 
-  // Only include umbrella header if we have ObjC headers
-  if (hasObjCHeaders) {
+  // Add `use` directives for external dependencies (like React)
+  // This tells the module system that this module requires these dependencies to compile
+  const externalDeps = product.externalDependencies ?? [];
+  for (const dep of externalDeps) {
+    // Only add `use` for React - it's needed for headers that import React types
+    if (dep === 'React') {
+      moduleMapContent += `    use React\n`;
+    }
+  }
+
+  // If we have textual header patterns, we need to list headers explicitly instead of using umbrella
+  if (hasTextualPatterns && hasObjCHeaders) {
+    // Separate headers into regular and textual
+    const regularHeaders: string[] = [];
+    const textualHeaders: string[] = [];
+
+    for (const header of umbrellaHeaderFiles) {
+      if (isTextualHeader(header)) {
+        textualHeaders.push(header);
+      } else {
+        regularHeaders.push(header);
+      }
+    }
+
+    // If ALL headers are textual, we need to add an empty umbrella header
+    // so Swift can import the module. A module with only textual headers
+    // has no compiled content and Swift can't import it.
+    if (regularHeaders.length === 0 && textualHeaders.length > 0) {
+      moduleMapContent += `    umbrella header "${umbrellaName}"\n`;
+    } else {
+      // Add regular headers
+      for (const header of regularHeaders) {
+        moduleMapContent += `    header "${header}"\n`;
+      }
+    }
+
+    // Add textual headers (won't be compiled as part of module)
+    for (const header of textualHeaders) {
+      moduleMapContent += `    textual header "${header}"\n`;
+    }
+  } else if (hasObjCHeaders) {
+    // Use umbrella header when no textual patterns are specified
     moduleMapContent += `    umbrella header "${umbrellaName}"\n`;
   }
 
@@ -251,9 +342,9 @@ const createModuleMapWithUmbrellaHeaderFilesAsync = async (
   moduleMapContent += `
     export *`;
 
-  // Only add inferred submodules when we have an umbrella header
+  // Only add inferred submodules when we have an umbrella header (no textual patterns)
   // The `module * { export * }` syntax requires an umbrella to enumerate submodules from
-  if (hasObjCHeaders) {
+  if (hasObjCHeaders && !hasTextualPatterns) {
     moduleMapContent += `
     module * { export * }`;
   }
@@ -267,13 +358,28 @@ const createModuleMapWithUmbrellaHeaderFilesAsync = async (
   // automatically available when importing the parent module
   for (const [moduleName, headers] of targetModuleNames.entries()) {
     if (headers.length > 0) {
+      // Check if this module should use textual headers (for C++ headers that can't be compiled independently)
+      // This can come from either: 1) moduleMapContent in the target, or 2) product.textualHeaders patterns
+      const moduleMarkedAsTextual = textualHeaderModules.has(moduleName);
+
       moduleMapContent += `
 
     module ${moduleName} {`;
       // List each header explicitly with proper path
       for (const header of headers) {
-        moduleMapContent += `
+        // Check both module-level setting and individual header against textualHeaders patterns
+        // The full path is "moduleName/header.h" so we check both the full path and just the filename
+        const headerPath = `${moduleName}/${header}`;
+        const useTextualForHeader =
+          moduleMarkedAsTextual || isTextualHeader(headerPath) || isTextualHeader(header);
+
+        if (useTextualForHeader) {
+          moduleMapContent += `
+        textual header "${moduleName}/${header}"`;
+        } else {
+          moduleMapContent += `
         header "${moduleName}/${header}"`;
+        }
       }
       moduleMapContent += `
         export *
@@ -316,11 +422,32 @@ module ${moduleName} {
 
   // Create the umbrella header file only if we have ObjC headers
   if (hasObjCHeaders) {
-    // Headers in subdirectories (other modules) are excluded from main umbrella
-    // Use angled imports for proper module resolution
-    const umbrellaHeaderContent = umbrellaHeaderFiles
-      .map((headerFile) => `#import <${productName}/${headerFile}>`)
-      .join('\n');
+    // Filter out headers excluded from umbrella
+    const umbrellaIncludedHeaders = umbrellaHeaderFiles.filter((h) => !isExcludedFromUmbrella(h));
+
+    // Check if all included headers are textual - if so, create an empty umbrella
+    const allHeadersTextual =
+      hasTextualPatterns && umbrellaIncludedHeaders.every((h) => isTextualHeader(h));
+
+    let umbrellaHeaderContent: string;
+    if (allHeadersTextual || umbrellaIncludedHeaders.length === 0) {
+      // Empty umbrella header - just a comment explaining why it's empty
+      // This is needed because Swift requires at least one non-textual header
+      // for the module to be importable
+      umbrellaHeaderContent = `// This is an empty umbrella header for Swift module compatibility.
+// All actual headers are marked as textual because they have dependencies
+// on external modules (like React) that aren't available at module compile time.
+// The textual headers will be included when needed by the including source file.
+`;
+    } else {
+      // Headers in subdirectories (other modules) are excluded from main umbrella
+      // Use quoted imports for headers in the same directory
+      // Filter out textual headers from umbrella - they're not compiled as part of module
+      umbrellaHeaderContent = umbrellaIncludedHeaders
+        .filter((h) => !isTextualHeader(h))
+        .map((headerFile) => `#import "${headerFile}"`)
+        .join('\n');
+    }
 
     const umbrellaHeaderPath = path.join(frameworkSlicePath, 'Headers', `${umbrellaName}`);
     await fs.writeFile(umbrellaHeaderPath, umbrellaHeaderContent, 'utf8');
@@ -335,7 +462,7 @@ module ${moduleName} {
  * @param outputFrameworkPath Output path for the composed XCFramework
  */
 const composeFrameworkWithXCodeAsync = async (
-  pkg: Package,
+  pkg: SPMPackageSource,
   product: SPMProduct,
   frameworks: BuiltFramework[],
   outputFrameworkPath: string
@@ -389,10 +516,10 @@ const composeFrameworkWithXCodeAsync = async (
  * include files to locate and copy the headers into the XCFramework's Headers directory.
  * @param pkg Package information
  * @param product SPM product information
- * @returns Collected header file paths
+ * @returns Collected header file paths, target module names map, and set of modules needing textual headers
  */
 const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
-  pkg: Package,
+  pkg: SPMPackageSource,
   product: SPMProduct,
   frameworkOutputPath: string
 ) => {
@@ -407,7 +534,8 @@ const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
   // Get header files and copy them to the Headers directory
   // Headers with moduleName different from product go into subdirectories
   const headerFilesCollected: string[] = [];
-  const targetModuleNames = new Map<string, string[]>(); // moduleName -> header files
+  const targetModuleNames = new Map<string, string[]>(); // moduleName -> header files (with relative paths)
+  const textualHeaderModules = new Set<string>(); // modules that need textual headers
 
   for (const target of product.targets) {
     if (target.type === 'swift') {
@@ -416,12 +544,49 @@ const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
     spinner.info(`Processing target ${target.name}...`);
 
     const targetHeaderFilesPath = SPMGenerator.getHeaderFilesPath(pkg, product, target);
-    const headerFiles = await fs.readdir(targetHeaderFilesPath);
+
+    // Recursively collect all header files including from subdirectories
+    const collectHeadersRecursively = async (
+      dir: string,
+      relativePath: string = ''
+    ): Promise<string[]> => {
+      const entries = await fs.readdir(dir, { withFileTypes: true });
+      const headers: string[] = [];
+
+      for (const entry of entries) {
+        const entryRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
+        if (entry.isDirectory()) {
+          // Recurse into subdirectory
+          const subHeaders = await collectHeadersRecursively(
+            path.join(dir, entry.name),
+            entryRelativePath
+          );
+          headers.push(...subHeaders);
+        } else if (entry.name.endsWith('.h')) {
+          headers.push(entryRelativePath);
+        }
+      }
+
+      return headers;
+    };
+
+    const headerFiles = await collectHeadersRecursively(targetHeaderFilesPath);
 
     // Check if this target has a moduleName that differs from the product name
     const moduleName =
       target.type !== 'framework' && target.moduleName ? target.moduleName : product.name;
     const useSubdirectory = moduleName !== product.name;
+
+    // Check if this target has moduleMapContent with 'textual header' - if so, mark the module
+    // as needing textual headers in the final framework modulemap
+    if (
+      useSubdirectory &&
+      'moduleMapContent' in target &&
+      target.moduleMapContent?.includes('textual header')
+    ) {
+      textualHeaderModules.add(moduleName);
+      spinner.info(`Target ${target.name} uses textual headers for module ${moduleName}`);
+    }
 
     for (const headerFile of headerFiles) {
       const sourceHeaderFilePath = path.join(targetHeaderFilesPath, headerFile);
@@ -430,12 +595,14 @@ const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
       spinner.info(`Copying header file ${path.basename(headerFile)}...`);
 
       if (useSubdirectory) {
-        // Put in subdirectory: Headers/ModuleName/Header.h
+        // Put in subdirectory: Headers/ModuleName/Header.h (preserving relative path)
         const subdirPath = path.join(frameworkHeadersPath, moduleName);
         await fs.mkdirp(subdirPath);
         destHeaderFilePath = path.join(subdirPath, headerFile);
+        // Ensure subdirectories exist (e.g., Headers/rnscreens/utils/)
+        await fs.mkdirp(path.dirname(destHeaderFilePath));
 
-        // Track headers for this moduleName
+        // Track headers for this moduleName (with relative path preserved)
         if (!targetModuleNames.has(moduleName)) {
           targetModuleNames.set(moduleName, []);
         }
@@ -443,6 +610,8 @@ const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
       } else {
         // Flat structure: Headers/Header.h
         destHeaderFilePath = path.join(frameworkHeadersPath, headerFile);
+        // Ensure subdirectories exist
+        await fs.mkdirp(path.dirname(destHeaderFilePath));
         headerFilesCollected.push(headerFile);
       }
 
@@ -458,7 +627,7 @@ const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
 
   spinner.succeed(`Copied header files for ${product.name}`);
 
-  return { headerFiles: headerFilesCollected, targetModuleNames };
+  return { headerFiles: headerFilesCollected, targetModuleNames, textualHeaderModules };
 };
 
 /**
@@ -499,7 +668,7 @@ const getBuildFolderPrefixForSlice = (slice: string): string | undefined => {
  * @param slicePath Path to the framework inside the slice
  */
 const copyGeneratedObjCSwiftHeaderAsync = async (
-  pkg: Package,
+  pkg: SPMPackageSource,
   spmConfig: SPMConfig,
   product: SPMProduct,
   slice: string,
@@ -556,7 +725,7 @@ const copyGeneratedObjCSwiftHeaderAsync = async (
  * @param submoduleNames Names of submodules whose types might be referenced in Swift interfaces
  */
 const copySwiftModuleInterfacesAsync = async (
-  pkg: Package,
+  pkg: SPMPackageSource,
   spmConfig: SPMConfig,
   product: SPMProduct,
   buildType: BuildFlavor,
@@ -571,7 +740,7 @@ const copySwiftModuleInterfacesAsync = async (
 
   if (!swiftTarget) {
     // No Swift target in this product, nothing to copy
-    spinner.fail(`No Swift target in ${product.name}, skipping Swift module copy`);
+    spinner.warn(`No Swift target in ${product.name}, skipping Swift module copy`);
     return;
   }
 

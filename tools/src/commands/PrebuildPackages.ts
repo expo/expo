@@ -4,13 +4,15 @@ import fs from 'fs';
 import path from 'path';
 
 import logger from '../Logger';
-import { Package } from '../Packages';
 import {
   BuildFlavor,
   BuildPlatform,
+  Codegen,
   getVersionsInfoAsync,
+  isExternalPackage,
+  SPMPackageSource,
+  verifyAllPackagesAsync,
   verifyLocalTarballPathsIfSetAsync,
-  verifyPackagesAsync,
   SPMGenerator,
   Frameworks,
   SPMBuild,
@@ -38,6 +40,7 @@ type ActionOptions = {
   productName?: string;
   platform?: BuildPlatform;
   verify?: boolean;
+  includeExternal?: boolean;
 };
 
 type BuildStatus = {
@@ -46,7 +49,7 @@ type BuildStatus = {
   generate: 'success' | 'failed' | 'skipped';
   build: 'success' | 'failed' | 'skipped';
   compose: 'success' | 'failed' | 'skipped';
-  verify: 'success' | 'failed' | 'skipped';
+  verify: 'success' | 'failed' | 'skipped' | 'warning';
 };
 
 type BuildError = {
@@ -60,9 +63,9 @@ type BuildError = {
  * Sorts packages in topological order based on their externalDependencies.
  * Packages with no dependencies come first, followed by packages that depend on them.
  */
-function sortPackagesByDependencies(packages: Package[]): Package[] {
+function sortPackagesByDependencies(packages: SPMPackageSource[]): SPMPackageSource[] {
   // Build a map of package name -> Package
-  const packageMap = new Map<string, Package>();
+  const packageMap = new Map<string, SPMPackageSource>();
   for (const pkg of packages) {
     packageMap.set(pkg.packageName, pkg);
   }
@@ -93,7 +96,7 @@ function sortPackagesByDependencies(packages: Package[]): Package[] {
   }
 
   // Topological sort using Kahn's algorithm
-  const sorted: Package[] = [];
+  const sorted: SPMPackageSource[] = [];
   const inDegree = new Map<string, number>();
 
   // Calculate in-degrees (number of dependencies each package has within our build set)
@@ -179,12 +182,14 @@ async function main(packageNames: string[], options: ActionOptions) {
       !options.verify;
 
     const performCleanAll = options.cleanAll;
+    const includeExternal = options.includeExternal ?? false;
 
     // Lets get started
     if (packageNames.length > 0) {
       logger.info(`Expo 📦 Prebuilding packages: ${chalk.green(packageNames.join(', '))}`);
     } else {
-      logger.info(`Expo 📦 Discovering packages with spm.config.json...`);
+      const externalNote = includeExternal ? ' (including external packages)' : '';
+      logger.info(`Expo 📦 Discovering packages with spm.config.json${externalNote}...`);
     }
 
     /**
@@ -192,10 +197,19 @@ async function main(packageNames: string[], options: ActionOptions) {
      */
 
     // 1. Check that packages exist and have spm.config.json (or discover all if none provided)
-    const unsortedPackages = await verifyPackagesAsync(packageNames);
+    //    Use verifyAllPackagesAsync to support both Expo and external packages
+    const unsortedPackages = await verifyAllPackagesAsync(packageNames, includeExternal);
 
     // 2. Sort packages by dependencies (packages with no deps first)
     const packages = sortPackagesByDependencies(unsortedPackages);
+
+    // Log external packages if any
+    const externalPackages = packages.filter((p) => isExternalPackage(p));
+    if (externalPackages.length > 0) {
+      logger.info(
+        `📦 External packages to build: ${chalk.blue(externalPackages.map((p) => p.packageName).join(', '))}`
+      );
+    }
 
     // 3. Get versions for React Native and Hermes - we're using bare-expo as the source of truth
     const { reactNativeVersion, hermesVersion } = await getVersionsInfoAsync(options);
@@ -215,7 +229,7 @@ async function main(packageNames: string[], options: ActionOptions) {
      * Prebuilding steps:
      */
 
-    // 1. Clear artifacts / dependencies if requested
+    // 1. Clear artifacts / dependencies / outputs if requested
     if (options.cleanArtifacts || performCleanAll) {
       await Dependencies.cleanArtifactsAsync(artifactsPath);
     }
@@ -223,6 +237,14 @@ async function main(packageNames: string[], options: ActionOptions) {
     if (options.cleanDependencies || performCleanAll) {
       for (const pkg of packages) {
         await Dependencies.cleanDependenciesFolderAsync(pkg);
+      }
+    }
+
+    // Clean xcframeworks and generated folders when --clean-all is used
+    if (performCleanAll) {
+      for (const pkg of packages) {
+        await Dependencies.cleanXCFrameworksFolderAsync(pkg);
+        await Dependencies.cleanGeneratedFolderAsync(pkg);
       }
     }
 
@@ -278,6 +300,16 @@ async function main(packageNames: string[], options: ActionOptions) {
 
         if (options.generate || performAllSteps) {
           try {
+            // Ensure codegen is generated for packages that need it (e.g., Fabric components)
+            if (Codegen.hasCodegen(pkg)) {
+              const generated = await Codegen.ensureCodegenAsync(pkg, (msg) => logger.info(msg));
+              if (generated) {
+                logger.info(`🔧 Generated codegen for ${chalk.green(pkg.packageName)}`);
+              } else if (Codegen.isCodegenGenerated(pkg)) {
+                logger.info(`🔧 Codegen already exists for ${chalk.green(pkg.packageName)}`);
+              }
+            }
+
             // Generate source code structure for the package/product
             await SPMGenerator.generateIsolatedSourcesForTargetsAsync(pkg, product);
 
@@ -356,8 +388,36 @@ async function main(packageNames: string[], options: ActionOptions) {
         if (options.verify || performAllSteps) {
           try {
             // Verify all products' xcframeworks for this package (logging is handled internally)
-            await SPMVerify.verifyXCFrameworkAsync(pkg, product, resolvedBuildFlavor);
-            status.verify = 'success';
+            const verifyResults = await SPMVerify.verifyXCFrameworkAsync(
+              pkg,
+              product,
+              resolvedBuildFlavor
+            );
+
+            // Check if verification actually passed by inspecting the returned reports
+            const verificationFailed = [...verifyResults.values()].some(
+              (report) => !report.overallSuccess
+            );
+
+            // Check for clang warnings (clang failed but overall passed)
+            const hasClangWarnings = [...verifyResults.values()].some(
+              (report) =>
+                report.overallSuccess && report.slices.some((s) => !s.clangModuleImport.success)
+            );
+
+            if (verificationFailed) {
+              status.verify = 'failed';
+              buildErrors.push({
+                packageName: pkg.packageName,
+                productName: product.name,
+                step: 'verify',
+                error: new Error('Verification failed - see above for details'),
+              });
+            } else if (hasClangWarnings) {
+              status.verify = 'warning';
+            } else {
+              status.verify = 'success';
+            }
           } catch (error) {
             status.verify = 'failed';
             const err = error instanceof Error ? error : new Error(String(error));
@@ -443,7 +503,14 @@ function printBuildSummary(statuses: BuildStatus[]) {
       generate: status.generate === 'success' ? '✅' : status.generate === 'failed' ? '❌' : '⏭️',
       build: status.build === 'success' ? '✅' : status.build === 'failed' ? '❌' : '⏭️',
       compose: status.compose === 'success' ? '✅' : status.compose === 'failed' ? '❌' : '⏭️',
-      verify: status.verify === 'success' ? '✅' : status.verify === 'failed' ? '❌' : '⏭️',
+      verify:
+        status.verify === 'success'
+          ? '✅'
+          : status.verify === 'warning'
+            ? '⚠️'
+            : status.verify === 'failed'
+              ? '❌'
+              : '⏭️',
     };
 
     const productDisplay =
@@ -461,14 +528,16 @@ function printBuildSummary(statuses: BuildStatus[]) {
       (s.generate === 'success' || s.generate === 'skipped') &&
       (s.build === 'success' || s.build === 'skipped') &&
       (s.compose === 'success' || s.compose === 'skipped') &&
-      (s.verify === 'success' || s.verify === 'skipped')
+      (s.verify === 'success' || s.verify === 'skipped' || s.verify === 'warning')
   ).length;
+  const warnings = statuses.filter((s) => s.verify === 'warning').length;
   const failed = statuses.length - successful;
 
   logger.info('─'.repeat(80));
+  const warningText = warnings > 0 ? ` | ${chalk.yellow(`⚠️  ${warnings} with warnings`)}` : '';
   const failedText = failed > 0 ? ` | ${chalk.red(`❌ ${failed} failed`)}` : '';
   logger.info(
-    `Total: ${statuses.length} | ${chalk.green(`✅ ${successful} successful`)}${failedText}`
+    `Total: ${statuses.length} | ${chalk.green(`✅ ${successful} successful`)}${warningText}${failedText}`
   );
 }
 
@@ -534,6 +603,11 @@ export default (program: Command) => {
     .option(
       '--clean-all',
       'Cleans all build artifacts, dependencies, generated code, and build folders.',
+      false
+    )
+    .option(
+      '--include-external',
+      'Include external (third-party) packages from packages/external/ in discovery and building.',
       false
     )
     .asyncAction(main);
