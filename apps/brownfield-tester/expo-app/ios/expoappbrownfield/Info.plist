@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleIdentifier</key>
-	<string>host.exp.brownfieldbrownfield</string>
+	<string>host.exp.expoappbrownfield</string>
 	<key>CFBundleName</key>
-	<string>brownfieldbrownfield</string>
+	<string>expoappbrownfield</string>
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>

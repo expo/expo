@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "brownfield",
-    "slug": "brownfield",
+    "name": "expo-app",
+    "slug": "expo-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "brownfield",
+    "scheme": "expo-app",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon",

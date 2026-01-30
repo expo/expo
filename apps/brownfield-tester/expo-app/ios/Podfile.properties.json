@@ -5,5 +5,5 @@
   "apple.privacyManifestAggregationEnabled": "true",
   "ios.buildReactNativeFromSource": "true",
   "ios.useFrameworks": "static",
-  "ios.brownfieldTargetName": "brownfieldbrownfield"
+  "ios.brownfieldTargetName": "expoappbrownfield"
 }
