@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { Package } from '../Packages';
+import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
 import { BuildPlatform, ProductPlatform, SPMProduct } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
@@ -18,7 +18,7 @@ export const SPMBuild = {
    * @param platform Optional activate platform to build for
    */
   buildSwiftPackageAsync: async (
-    pkg: Package,
+    pkg: SPMPackageSource,
     product: SPMProduct,
     buildType: BuildFlavor,
     platform?: BuildPlatform
@@ -54,7 +54,7 @@ export const SPMBuild = {
    * @param pkg Package
    * @param product Product
    */
-  cleanBuildFolderAsync: async (pkg: Package, product: SPMProduct): Promise<void> => {
+  cleanBuildFolderAsync: async (pkg: SPMPackageSource, product: SPMProduct): Promise<void> => {
     const buildFolderToClean = SPMBuild.getPackageBuildPath(pkg, product);
     logger.info(
       `🧹 Cleaning build folder ${chalk.green(path.relative(pkg.path, buildFolderToClean))}...`
@@ -68,7 +68,7 @@ export const SPMBuild = {
    * @param product Product
    * @returns Output path
    */
-  getPackageBuildPath: (pkg: Package, product: SPMProduct) => {
+  getPackageBuildPath: (pkg: SPMPackageSource, product: SPMProduct) => {
     return path.join(pkg.path, '.build', 'frameworks', pkg.packageName, product.name);
   },
 
@@ -81,7 +81,7 @@ export const SPMBuild = {
    * @returns Path to the folder where to find the built product and its bundles
    */
   getProductArtifactsPath: (
-    pkg: Package,
+    pkg: SPMPackageSource,
     product: SPMProduct,
     buildType: BuildFlavor,
     buildPlatform: BuildPlatform
@@ -102,7 +102,7 @@ export const SPMBuild = {
    * @returns Path to the folder where to find the built product framework is found
    */
   getProductFrameworkArtifactsPath: (
-    pkg: Package,
+    pkg: SPMPackageSource,
     product: SPMProduct,
     buildType: BuildFlavor,
     buildPlatform: BuildPlatform
@@ -126,7 +126,7 @@ export const SPMBuild = {
    * @returns Path to the folder where to find the built product framework's symbol bundle is found
    */
   getProductSymbolsBundleArtifactsPath: (
-    pkg: Package,
+    pkg: SPMPackageSource,
     product: SPMProduct,
     buildType: BuildFlavor,
     buildPlatform: BuildPlatform
@@ -165,7 +165,7 @@ const getBuildPlatformsForProduct = (
  * @returns Array of xcodebuild arguments
  */
 const buildXcodeBuildArgs = (
-  pkg: Package,
+  pkg: SPMPackageSource,
   product: SPMProduct,
   buildType: BuildFlavor,
   buildPlatform: BuildPlatform
@@ -198,7 +198,7 @@ const buildXcodeBuildArgs = (
  * @param packageSwiftPath Path to Package.swift
  */
 const buildForPlatformAsync = async (
-  pkg: Package,
+  pkg: SPMPackageSource,
   product: SPMProduct,
   buildType: BuildFlavor,
   buildPlatform: BuildPlatform,

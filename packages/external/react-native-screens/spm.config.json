@@ -1,0 +1,115 @@
+{
+    "$schema": "../../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "products": [
+        {
+            "name": "RNScreens",
+            "platforms": [
+                "iOS(.v15)"
+            ],
+            "externalDependencies": [
+                "ReactNativeDependencies",
+                "React",
+                "Hermes"
+            ],
+            "excludeFromUmbrella": [
+                "RCT*.h",
+                "Swift-Bridging.h",
+                "RNScreens-Bridging-Header.h"
+            ],
+            "targets": [
+                {
+                    "type": "cpp",
+                    "name": "RNScreens_codegen_components",
+                    "moduleName": "rnscreens",
+                    "path": ".build/codegen/build/generated/ios/ReactCodegen/react/renderer/components/rnscreens",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "includeDirectories": [ "../../../.." ]
+                },
+                {
+                    "type": "objc",
+                    "name": "RNScreens_codegen_modules",
+                    "moduleName": "rnscreens",
+                    "path": ".build/codegen/build/generated/ios/ReactCodegen/rnscreens",
+                    "pattern": "**/*.mm",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "includeDirectories": [ ".." ]
+                },
+                {
+                    "type": "cpp",
+                    "name": "RNScreens_common_cpp",
+                    "moduleName": "rnscreens",
+                    "path": "common/cpp",
+                    "pattern": "**/*.cpp",
+                    "exclude": [ "**/RNSScreenShadowNodeCommitHook.*" ],
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies",
+                        "RNScreens_codegen_components"
+                    ],
+                    "includeDirectories": [ "../../.build/codegen/build/generated/ios/ReactCodegen" ],
+                    "fileMapping": [
+                        {
+                            "from": "react/renderer/components/rnscreens/*.h",
+                            "to": "rnscreens/{filename}",
+                            "type": "header"
+                        },
+                        {
+                            "from": "react/renderer/components/rnscreens/utils/*.h",
+                            "to": "rnscreens/utils/{filename}",
+                            "type": "header"
+                        },
+                        {
+                            "from": "rnscreens",
+                            "to": "react/renderer/components/rnscreens",
+                            "type": "symlink"
+                        }
+                    ],
+                    "moduleMapContent": "module rnscreens {\n  requires cplusplus\n\n  // All headers are textual - they are not self-contained and cannot be precompiled independently.\n  // They rely on JSI_EXPORT macro and other types being defined by including translation units.\n  textual header \"rnscreens/FrameCorrectionModes.h\"\n  textual header \"rnscreens/RNSBottomTabsAccessoryComponentDescriptor.h\"\n  textual header \"rnscreens/RNSBottomTabsAccessoryShadowNode.h\"\n  textual header \"rnscreens/RNSBottomTabsAccessoryState.h\"\n  textual header \"rnscreens/RNSBottomTabsComponentDescriptor.h\"\n  textual header \"rnscreens/RNSBottomTabsShadowNode.h\"\n  textual header \"rnscreens/RNSBottomTabsState.h\"\n  textual header \"rnscreens/RNSFullWindowOverlayComponentDescriptor.h\"\n  textual header \"rnscreens/RNSFullWindowOverlayShadowNode.h\"\n  textual header \"rnscreens/RNSFullWindowOverlayState.h\"\n  textual header \"rnscreens/RNSModalScreenComponentDescriptor.h\"\n  textual header \"rnscreens/RNSModalScreenShadowNode.h\"\n  textual header \"rnscreens/RNSSafeAreaViewComponentDescriptor.h\"\n  textual header \"rnscreens/RNSSafeAreaViewShadowNode.h\"\n  textual header \"rnscreens/RNSSafeAreaViewState.h\"\n  textual header \"rnscreens/RNSScreenComponentDescriptor.h\"\n  textual header \"rnscreens/RNSScreenShadowNode.h\"\n  textual header \"rnscreens/RNSScreenStackHeaderConfigComponentDescriptor.h\"\n  textual header \"rnscreens/RNSScreenStackHeaderConfigShadowNode.h\"\n  textual header \"rnscreens/RNSScreenStackHeaderConfigState.h\"\n  textual header \"rnscreens/RNSScreenStackHeaderSubviewComponentDescriptor.h\"\n  textual header \"rnscreens/RNSScreenStackHeaderSubviewShadowNode.h\"\n  textual header \"rnscreens/RNSScreenStackHeaderSubviewState.h\"\n  textual header \"rnscreens/RNSScreenState.h\"\n  textual header \"rnscreens/RNSSplitViewScreenComponentDescriptor.h\"\n  textual header \"rnscreens/RNSSplitViewScreenShadowNode.h\"\n  textual header \"rnscreens/RNSSplitViewScreenState.h\"\n  textual header \"rnscreens/utils/RectUtil.h\"\n\n  export *\n}\n"
+                },
+                {
+                    "type": "cpp",
+                    "name": "RNScreens_cpp",
+                    "moduleName": "rnscreens_turbo",
+                    "path": "cpp",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "includeDirectories": [ "." ],
+                    "moduleMapContent": "module rnscreens_turbo {\n  requires cplusplus\n  textual header \"rnscreens_turbo/RNSScreenRemovalListener.h\"\n  textual header \"rnscreens_turbo/RNScreensTurboModule.h\"\n  export *\n}\n"
+                },
+                {
+                    "type": "objc",
+                    "name": "RNScreens",
+                    "path": "ios",
+                    "pattern": "**/*.{m,mm}",
+                    "headerPattern": "**/*.h",
+                    "exclude": [ "gamma/**", "RNScreens.xcodeproj/**" ],
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "RNScreens_codegen_components",
+                        "RNScreens_codegen_modules",
+                        "RNScreens_common_cpp",
+                        "RNScreens_cpp"
+                    ],
+                    "includeDirectories": [ ".", "../.build/codegen/build/generated/ios/ReactCodegen", "../cpp", "../.build/source/react-native-screens/RNScreens/RNScreens_common_cpp/include/rnscreens" ],
+                    "linkedFrameworks": [ "Foundation", "UIKit", "QuartzCore" ],
+                    "compilerFlags": [ "-include", "UIKit/UIKit.h" ]
+                }
+            ]
+        }
+    ]
+}

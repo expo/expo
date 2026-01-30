@@ -39,6 +39,10 @@ module Pod
       # Configure header search paths for prebuilt XCFrameworks
       # This ensures that pods can find ExpoModulesJSI headers when using prebuilt modules
       Expo::PrecompiledModules.configure_header_search_paths(self)
+
+      # Configure ReactCodegen to handle prebuilt modules properly.
+      # This removes codegen source files for prebuilt libraries and adds a cleanup script phase.
+      Expo::PrecompiledModules.configure_codegen_for_prebuilt_modules(self)
     end
 
     define_method(:run_podfile_pre_install_hooks) do

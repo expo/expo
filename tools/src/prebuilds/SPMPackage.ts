@@ -8,7 +8,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-import { Package } from '../Packages';
+import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import { BuildFlavor } from './Prebuilder.types';
 import { ObjcTarget, SwiftTarget, CppTarget, SPMProduct } from './SPMConfig.types';
@@ -30,7 +30,7 @@ export const SPMPackage = {
    * @returns The Package.swift content as a string
    */
   async generatePackageSwiftAsync(
-    pkg: Package,
+    pkg: SPMPackageSource,
     product: SPMProduct,
     buildType: BuildFlavor,
     packageSwiftPath: string,
@@ -58,7 +58,7 @@ export const SPMPackage = {
    * @param targetSourceCodePath Path to the target source code folder
    */
   async writePackageSwiftAsync(
-    pkg: Package,
+    pkg: SPMPackageSource,
     product: SPMProduct,
     buildType: BuildFlavor,
     packageSwiftPath: string,
@@ -89,7 +89,7 @@ export const SPMPackage = {
    * @param pkg The package
    * @returns Path to Package.new.swift
    */
-  getComparisonPackageSwiftPath(pkg: Package): string {
+  getComparisonPackageSwiftPath(pkg: SPMPackageSource): string {
     return path.join(pkg.path, 'Package.new.swift');
   },
 };
@@ -219,6 +219,15 @@ function generateTargetDeclaration(target: ResolvedTarget, comma: string): strin
     // Sources - exclude everything except the expected source files (must come before publicHeadersPath)
     lines.push(`            sources: nil,`);
 
+    // Resources
+    if (target.resources && target.resources.length > 0) {
+      lines.push(`            resources: [`);
+      for (const res of target.resources) {
+        lines.push(`                .${res.rule}("${res.path}"),`);
+      }
+      lines.push(`            ],`);
+    }
+
     // Public headers path for ObjC/C++ targets (required for module map generation)
     if ((target.type === 'objc' || target.type === 'cpp') && target.publicHeadersPath) {
       lines.push(`            publicHeadersPath: "${target.publicHeadersPath}",`);
@@ -283,7 +292,7 @@ function generateTargetDeclaration(target: ResolvedTarget, comma: string): strin
  */
 function resolveSourceTarget(
   target: ObjcTarget | SwiftTarget | CppTarget,
-  pkg: Package,
+  pkg: SPMPackageSource,
   productName: string,
   externalDeps: string[],
   packageSwiftPath: string,
@@ -317,12 +326,23 @@ function resolveSourceTarget(
     }
     // Set publicHeadersPath for ObjC/C++ targets (critical for module map generation)
     // SPM only supports a single publicHeadersPath, so we use 'include' as per old generator
-    resolved.publicHeadersPath = 'include';
+    // If publicHeaders is explicitly set to false, skip this to prevent module creation
+    if (target.publicHeaders !== false) {
+      resolved.publicHeadersPath = 'include';
+    }
   }
 
   // Linker settings for linked frameworks
   if (resolved.linkedFrameworks.length > 0) {
     resolved.linkerSettings = resolved.linkedFrameworks.map((fw) => `.linkedFramework("${fw}")`);
+  }
+
+  // Pass through resources if defined
+  if (target.resources && target.resources.length > 0) {
+    resolved.resources = target.resources.map((r) => ({
+      path: r.path,
+      rule: r.rule || 'process',
+    }));
   }
 
   return resolved;
@@ -433,6 +453,27 @@ function buildCSettings(
     cSettings.push(`.headerSearchPath("${moduleSubdir}")`);
     cxxSettings.push(`.headerSearchPath("${moduleSubdir}")`);
   }
+
+  // Add header search paths for file mappings (for local includes from mapped header locations)
+  // This allows source files to use #include "Header.h" for headers that were mapped to custom paths
+  if (target.fileMapping && target.fileMapping.length > 0) {
+    const mappedPaths = new Set<string>();
+    for (const mapping of target.fileMapping) {
+      if (mapping.type === 'header') {
+        // Extract the directory portion of the mapping destination
+        // e.g., "react/renderer/components/rnscreens/{filename}" -> "include/react/renderer/components/rnscreens"
+        const destDir = path.dirname(mapping.to);
+        if (destDir && destDir !== '.') {
+          mappedPaths.add(`include/${destDir}`);
+        }
+      }
+    }
+    for (const mappedPath of mappedPaths) {
+      cSettings.push(`.headerSearchPath("${mappedPath}")`);
+      cxxSettings.push(`.headerSearchPath("${mappedPath}")`);
+    }
+  }
+
   // Define package version macro (matches template line 689-695)
   if (packageVersion) {
     cSettings.push(`.define("EXPO_MODULES_CORE_VERSION", to: "${packageVersion}")`);
@@ -452,6 +493,27 @@ function buildCSettings(
   // This allows .m files to use C++ headers from React Native
   if (target.type === 'objc') {
     cSettings.push('.unsafeFlags(["-x", "objective-c++"])');
+  }
+
+  // Add target-specific include directories (relative to target path in the package root)
+  // These are used for targets that need to include headers from other locations (e.g., codegen)
+  if (target.includeDirectories && target.includeDirectories.length > 0) {
+    const includeFlags: string[] = [];
+    for (const includeDir of target.includeDirectories) {
+      const includePath = path.resolve(packageRootPath, target.path, includeDir);
+      includeFlags.push('-I', includePath);
+    }
+    const flagString = `[${includeFlags.map((f) => `"${f}"`).join(', ')}]`;
+    cSettings.push(`.unsafeFlags(${flagString})`);
+    cxxSettings.push(`.unsafeFlags(${flagString})`);
+  }
+
+  // Add custom compiler flags from config
+  // These are used for targets that need special handling (e.g., -include Foundation/Foundation.h)
+  if (target.compilerFlags && target.compilerFlags.length > 0) {
+    const flagString = `[${target.compilerFlags.map((f) => `"${f}"`).join(', ')}]`;
+    cSettings.push(`.unsafeFlags(${flagString})`);
+    cxxSettings.push(`.unsafeFlags(${flagString})`);
   }
 
   // Add VFS overlays and header maps for React if present
@@ -565,7 +627,7 @@ function collectVfsAndHeaderMapFlags(
  * Builds the complete context needed for Package.swift generation
  */
 async function buildPackageSwiftContext(
-  pkg: Package,
+  pkg: SPMPackageSource,
   product: SPMProduct,
   buildType: BuildFlavor,
   packageSwiftPath: string,

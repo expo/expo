@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
-import { Package } from '../Packages';
+import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
 import { SPMProduct, SPMTarget } from './SPMConfig.types';
 import { SPMPackage } from './SPMPackage';
@@ -60,7 +60,7 @@ export const SPMGenerator = {
    * @param buildType Build type (e.g., Debug, Release)
    */
   genereateSwiftPackageAsync: async (
-    pkg: Package,
+    pkg: SPMPackageSource,
     product: SPMProduct,
     buildType: BuildFlavor
   ): Promise<void> => {
@@ -86,7 +86,7 @@ export const SPMGenerator = {
    * @param pkg Package
    * @param product Product
    */
-  generateIsolatedSourcesForTargetsAsync: async (pkg: Package, product: SPMProduct) => {
+  generateIsolatedSourcesForTargetsAsync: async (pkg: SPMPackageSource, product: SPMProduct) => {
     const loggerTitle = `${chalk.green(pkg.packageName)}/${chalk.green(product.name)}`;
     logger.info(`📂 Generating files for ${loggerTitle}`);
 
@@ -115,10 +115,87 @@ export const SPMGenerator = {
             ? '**/*.{m,mm,c,cpp}'
             : '**/*.swift');
 
+      // Track files handled by fileMapping to exclude from regular copying
+      const mappedFiles = new Set<string>();
+
+      // Process file mappings first (if defined)
+      if (target.fileMapping && target.fileMapping.length > 0) {
+        for (const mapping of target.fileMapping) {
+          // Handle symlink type - creates a directory symlink
+          if (mapping.type === 'symlink') {
+            const headerBasePath = SPMGenerator.getHeaderFilesPath(pkg, product, target);
+            const headerRootPath = path.dirname(headerBasePath);
+            const symlinkPath = path.join(headerRootPath, mapping.to);
+            const targetPath = path.join(headerRootPath, mapping.from);
+
+            spinner.info(
+              `Creating symlink ${chalk.cyan(mapping.to)} → ${chalk.cyan(mapping.from)}...`
+            );
+
+            await fs.ensureDir(path.dirname(symlinkPath));
+            if (!fs.existsSync(symlinkPath)) {
+              // Create relative symlink
+              const relativePath = path.relative(path.dirname(symlinkPath), targetPath);
+              await fs.symlink(relativePath, symlinkPath);
+            }
+            continue;
+          }
+
+          const mappedSourceFiles = await glob(mapping.from, {
+            cwd: targetSourcePath,
+            ignore: targetExcludes,
+          });
+
+          for (const file of mappedSourceFiles) {
+            mappedFiles.add(file);
+            const sourceFilePath = path.join(targetSourcePath, file);
+            const filename = path.basename(file);
+
+            // Determine destination based on mapping type
+            let destinationFilePath: string;
+            if (mapping.type === 'header') {
+              // Headers go to include/<moduleName>/<to path>
+              const headerBasePath = SPMGenerator.getHeaderFilesPath(pkg, product, target);
+              // Remove the moduleName suffix since getHeaderFilesPath already adds it
+              const headerRootPath = path.dirname(headerBasePath);
+              const destPath = mapping.to.replace('{filename}', filename);
+              destinationFilePath = path.join(headerRootPath, destPath);
+            } else {
+              // Source files go to target root/<to path>
+              const destPath = mapping.to.replace('{filename}', filename);
+              destinationFilePath = path.join(targetDestination, destPath);
+            }
+
+            spinner.info(
+              `Mapping ${mapping.type} file ${chalk.cyan(file)} → ${chalk.cyan(path.relative(targetDestination, destinationFilePath))}...`
+            );
+
+            await fs.ensureDir(path.dirname(destinationFilePath));
+
+            if (mapping.type === 'header') {
+              // Copy headers (need actual files for XCFramework composition)
+              if (hasFileContentChanged(sourceFilePath, destinationFilePath)) {
+                await fs.copy(sourceFilePath, destinationFilePath, { overwrite: true });
+              }
+            } else {
+              // Symlink source files
+              if (!fs.existsSync(destinationFilePath)) {
+                await fs.symlink(sourceFilePath, destinationFilePath);
+              }
+            }
+          }
+        }
+      }
+
       // Use glob to get the source files
       const files = await glob(pattern, { cwd: targetSourcePath, ignore: targetExcludes });
 
       for (const file of files) {
+        // Skip files already handled by fileMapping
+        if (mappedFiles.has(file)) {
+          continue;
+        }
+
         // Create symlink to source file in the target source folder
         spinner.info(
           `Generating source for target ${chalk.green(target.name)} ${path.basename(file)}...`
@@ -142,6 +219,11 @@ export const SPMGenerator = {
 
         if (headerFiles.length > 0) {
           for (const file of headerFiles) {
+            // Skip files already handled by fileMapping
+            if (mappedFiles.has(file)) {
+              continue;
+            }
+
             const sourceFilePath = path.join(targetSourcePath, file);
             // Flatten destination and copy the file - we don't want a symlink here, since these files will be used
             // when composing the XCFrameworks later - and then we need the actual files present
@@ -159,6 +241,19 @@ export const SPMGenerator = {
               await fs.copy(sourceFilePath, destinationFilePath, { overwrite: true });
             }
           }
+        }
+      }
+
+      // Write custom module.modulemap if specified in the config
+      // This is useful for C++ headers that have conflicting type definitions
+      if (target.moduleMapContent) {
+        const includeDir = path.join(targetDestination, 'include');
+        const moduleMapPath = path.join(includeDir, 'module.modulemap');
+        await fs.ensureDir(includeDir);
+        if (writeFileIfChanged(moduleMapPath, target.moduleMapContent)) {
+          spinner.info(
+            `Generated custom module.modulemap for target ${chalk.green(target.name)}...`
+          );
         }
       }
 
@@ -206,7 +301,10 @@ ${allImports.join('\n')}
    * @param pkg Package
    * @param product Product
    */
-  cleanGeneratedSourceCodeFolderAsync: async (pkg: Package, product: SPMProduct): Promise<void> => {
+  cleanGeneratedSourceCodeFolderAsync: async (
+    pkg: SPMPackageSource,
+    product: SPMProduct
+  ): Promise<void> => {
     logger.info(
       `🧹 Cleaning generated source code for ${chalk.green(pkg.packageName)}/${chalk.green(product.name)}...`
     );
@@ -238,7 +336,7 @@ ${allImports.join('\n')}
    * @param product Product
    * @returns Path to generated files path
    */
-  getGeneratedProductFilesPath: (pkg: Package, product: SPMProduct): string => {
+  getGeneratedProductFilesPath: (pkg: SPMPackageSource, product: SPMProduct): string => {
     return path.join(pkg.path, '.build', 'source', pkg.packageName, product.name);
   },
 
@@ -249,7 +347,7 @@ ${allImports.join('\n')}
    * @param target Target
    * @returns List of paths to header files
    */
-  getHeaderFilesPath: (pkg: Package, product: SPMProduct, target: SPMTarget): string => {
+  getHeaderFilesPath: (pkg: SPMPackageSource, product: SPMProduct, target: SPMTarget): string => {
     const productPath = SPMGenerator.getGeneratedProductFilesPath(pkg, product);
     // Use target.moduleName if specified, otherwise fall back to product.name
     // This allows targets to specify their own module name for header organization,
@@ -270,7 +368,7 @@ ${allImports.join('\n')}
    * @param target Target
    * @returns Source code path for the target
    */
-  getTargetPath: (pkg: Package, product: SPMProduct, target: SPMTarget): string => {
+  getTargetPath: (pkg: SPMPackageSource, product: SPMProduct, target: SPMTarget): string => {
     const productPath = SPMGenerator.getGeneratedProductFilesPath(pkg, product);
     return path.join(productPath, target.name);
   },
@@ -282,7 +380,7 @@ ${allImports.join('\n')}
    * @param product Product
    * @returns string
    */
-  getSwiftPackagePath: (pkg: Package, product: SPMProduct): string => {
+  getSwiftPackagePath: (pkg: SPMPackageSource, product: SPMProduct): string => {
     const productPath = SPMGenerator.getGeneratedProductFilesPath(pkg, product);
     return path.join(productPath, 'Package.swift');
   },

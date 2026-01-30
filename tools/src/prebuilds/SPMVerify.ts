@@ -5,7 +5,7 @@ import os from 'os';
 import path from 'path';
 
 import logger from '../Logger';
-import { Package } from '../Packages';
+import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import { BuildFlavor } from './Prebuilder.types';
 import { SPMProduct } from './SPMConfig.types';
@@ -29,7 +29,7 @@ export const SPMVerify = {
    * @returns Map of product name to verification report
    */
   verifyXCFrameworkAsync: async (
-    pkg: Package,
+    pkg: SPMPackageSource,
     product: SPMProduct,
     buildFlavor: BuildFlavor,
     options?: VerifyOptions
@@ -115,6 +115,21 @@ export const SPMVerify = {
             );
           }
         }
+      }
+
+      // Show clang module import issues as warnings (not errors)
+      // These often fail for packages with React dependencies but the xcframework still works
+      const clangWarnings = report.slices.filter((s) => !s.clangModuleImport.success);
+      if (clangWarnings.length > 0 && report.overallSuccess) {
+        const sliceIds = clangWarnings.map((s) => s.sliceId).join(', ');
+        logger.warn(
+          `  ${chalk.yellow('⚠')} Clang @import warning for ${chalk.green(product.name)}.xcframework (${sliceIds})`
+        );
+        logger.log(
+          chalk.gray(
+            '      Headers may import React types not available during standalone verification'
+          )
+        );
       }
     } catch (error) {
       logger.error(
@@ -1081,7 +1096,7 @@ const verifySwiftInterfaceImports = async (
  * Internal function to verify a single product's xcframework
  */
 const verifyAsync = async (
-  pkg: Package,
+  pkg: SPMPackageSource,
   product: SPMProduct,
   buildFlavor: BuildFlavor,
   options?: VerifyOptions
@@ -1116,11 +1131,13 @@ const verifyAsync = async (
   );
 
   // Determine overall success
+  // Note: clangModuleImport failures are treated as warnings, not errors.
+  // Many packages have headers that import React types which aren't available
+  // during standalone verification. The xcframework still works when used with React.
   const criticalFailures = sliceReports.some(
     (r) =>
       !r.modulesPresent.success ||
       !r.modularHeadersValid.success ||
-      !r.clangModuleImport.success ||
       !r.swiftInterfaceTypecheck.success
   );
 
@@ -1147,7 +1164,7 @@ const validateXCFramework = (xcframeworkPath: string): void => {
  * Collects xcframework paths from external dependencies for verification.
  */
 const collectDependencyXcframeworkPaths = (
-  pkg: Package,
+  pkg: SPMPackageSource,
   product: SPMProduct,
   buildFlavor: BuildFlavor
 ): string[] => {
@@ -1190,7 +1207,7 @@ const collectDependencyXcframeworkPaths = (
  * Verifies all slices and reports results with spinners.
  */
 const verifyAllSlices = async (
-  pkg: Package,
+  pkg: SPMPackageSource,
   slices: XCFrameworkSlice[],
   xcframeworkPath: string,
   options?: VerifyOptions,

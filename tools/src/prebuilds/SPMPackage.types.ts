@@ -30,6 +30,8 @@ export interface ResolvedTarget {
   cxxSettings?: string[];
   swiftSettings?: string[];
   linkerSettings?: string[];
+  // Resources to include in the target
+  resources?: { path: string; rule: 'process' | 'copy' }[];
   // For binary targets
   includeDirectories?: string[];
 }

@@ -3,11 +3,152 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import logger from '../Logger';
-import { Artifacts } from './Artifacts';
 import { Package } from '../Packages';
+import { Artifacts } from './Artifacts';
 import type { DownloadDependenciesOptions, DownloadedDependencies } from './Artifacts.types';
+import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
 import { createAsyncSpinner, SpinnerError } from './Utils';
+
+/**
+ * Checks if file content has changed between source and destination.
+ * Uses fast checks first (existence, size, mtime), then falls back to content comparison.
+ * Returns true if destination doesn't exist or content differs.
+ */
+function hasFileContentChanged(sourcePath: string, destPath: string): boolean {
+  if (!fs.existsSync(destPath)) {
+    return true;
+  }
+
+  const sourceStat = fs.statSync(sourcePath);
+  const destStat = fs.statSync(destPath);
+
+  // Different size = different content (fast check)
+  if (sourceStat.size !== destStat.size) {
+    return true;
+  }
+
+  // Same mtime = same content (fast check for previously synced files)
+  if (sourceStat.mtimeMs === destStat.mtimeMs) {
+    return false;
+  }
+
+  // Same size but different mtime - need to compare content
+  // Use streaming comparison for large files, buffer comparison for small files
+  const SMALL_FILE_THRESHOLD = 64 * 1024; // 64KB
+
+  if (sourceStat.size <= SMALL_FILE_THRESHOLD) {
+    // Small file - read both into memory and compare
+    const srcBuf = fs.readFileSync(sourcePath);
+    const destBuf = fs.readFileSync(destPath);
+    return !srcBuf.equals(destBuf);
+  }
+
+  // Large file - compare in chunks to avoid memory issues
+  const CHUNK_SIZE = 64 * 1024;
+  const srcFd = fs.openSync(sourcePath, 'r');
+  const destFd = fs.openSync(destPath, 'r');
+
+  try {
+    const srcBuf = Buffer.alloc(CHUNK_SIZE);
+    const destBuf = Buffer.alloc(CHUNK_SIZE);
+    let position = 0;
+
+    while (position < sourceStat.size) {
+      const srcRead = fs.readSync(srcFd, srcBuf, 0, CHUNK_SIZE, position);
+      const destRead = fs.readSync(destFd, destBuf, 0, CHUNK_SIZE, position);
+
+      if (srcRead !== destRead) {
+        return true;
+      }
+
+      // Compare only the bytes that were read
+      for (let i = 0; i < srcRead; i++) {
+        if (srcBuf[i] !== destBuf[i]) {
+          return true;
+        }
+      }
+
+      position += srcRead;
+    }
+
+    return false;
+  } finally {
+    fs.closeSync(srcFd);
+    fs.closeSync(destFd);
+  }
+}
+
+/**
+ * Recursively syncs a source directory to a destination directory.
+ * Only copies files that have changed, preserving mtime for unchanged files.
+ * This enables incremental builds by not triggering xcodebuild rebuilds.
+ * @param srcDir Source directory
+ * @param destDir Destination directory
+ * @param preserveExtraFiles Files in destination that should not be deleted even if not in source
+ * @returns Number of files that were actually updated
+ */
+async function syncDirectoryAsync(
+  srcDir: string,
+  destDir: string,
+  preserveExtraFiles: Set<string> = new Set()
+): Promise<number> {
+  let updatedCount = 0;
+
+  // Ensure destination exists
+  await fs.ensureDir(destDir);
+
+  // Get all entries in source
+  const entries = await fs.readdir(srcDir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const srcPath = path.join(srcDir, entry.name);
+    const destPath = path.join(destDir, entry.name);
+
+    if (entry.isDirectory()) {
+      // Recursively sync subdirectories
+      updatedCount += await syncDirectoryAsync(srcPath, destPath, preserveExtraFiles);
+    } else if (entry.isSymbolicLink()) {
+      // Handle symlinks - recreate if target differs
+      const srcTarget = await fs.readlink(srcPath);
+      if (await fs.pathExists(destPath)) {
+        const destTarget = await fs.readlink(destPath).catch(() => null);
+        if (destTarget !== srcTarget) {
+          await fs.remove(destPath);
+          await fs.symlink(srcTarget, destPath);
+          updatedCount++;
+        }
+      } else {
+        await fs.symlink(srcTarget, destPath);
+        updatedCount++;
+      }
+    } else {
+      // Regular file - only copy if content changed
+      if (hasFileContentChanged(srcPath, destPath)) {
+        await fs.copy(srcPath, destPath, { overwrite: true, preserveTimestamps: true });
+        updatedCount++;
+      }
+    }
+  }
+
+  // Remove files in dest that don't exist in source (except preserved files)
+  if (await fs.pathExists(destDir)) {
+    const destEntries = await fs.readdir(destDir, { withFileTypes: true });
+    for (const destEntry of destEntries) {
+      const srcPath = path.join(srcDir, destEntry.name);
+      const destPath = path.join(destDir, destEntry.name);
+      // Skip deletion if file is in preserve list
+      if (preserveExtraFiles.has(destEntry.name)) {
+        continue;
+      }
+      if (!(await fs.pathExists(srcPath))) {
+        await fs.remove(destPath);
+      }
+    }
+  }
+
+  return updatedCount;
+}
 
 export const Dependencies = {
   /**
@@ -95,18 +236,20 @@ export const Dependencies = {
    * To avoid having to download dependencies for each package build,
    * we copy the downloaded dependencies into each package's Dependencies folder from
    * the shared artifacts folder in the dependencies download path.
+   * Uses smart syncing to only copy files that have changed, preserving mtimes
+   * for unchanged files to enable incremental xcodebuild builds.
    * @param pkg Package
    * @param artifacts: Downloaded artifacts' paths
    * @param depsDestinationPath Path to the package's Dependencies folder
    */
   copyOrCheckPackageDependencies: async (
-    pkg: Package,
+    pkg: SPMPackageSource,
     artifacts: DownloadedDependencies,
     depsDestinationPath: string,
     copyDependencies: boolean
   ): Promise<void> => {
     logger.info(
-      `📋 ${copyDependencies ? 'Copying' : 'Checking'} package dependencies for ${chalk.green(pkg.packageName)}`
+      `📋 ${copyDependencies ? 'Syncing' : 'Checking'} package dependencies for ${chalk.green(pkg.packageName)}`
     );
 
     // Symlink each dependency into the package's Dependencies folder
@@ -115,26 +258,33 @@ export const Dependencies = {
     const rnDest = path.join(depsDestinationPath, 'React-Core-prebuilt');
 
     if (copyDependencies) {
-      const spinner = createAsyncSpinner('Copying artifacts to local dependencies', pkg);
+      const spinner = createAsyncSpinner('Syncing artifacts to local dependencies', pkg);
 
-      // Delete folder if it exists
-      if (await fs.pathExists(depsDestinationPath)) {
-        await fs.remove(depsDestinationPath);
-      }
-      // Recreate the Dependencies folder
+      // Ensure the Dependencies folder exists
       await fs.mkdir(depsDestinationPath, { recursive: true });
 
-      // Copy directories
-      spinner.info('Copying Hermes...');
-      await fs.copy(artifacts.hermes, hermesDest);
+      // Generated files that should be preserved in destination (not deleted during sync)
+      // React-VFS.yaml is generated from React-VFS-template.yaml by resolveVFSOverlayTemplate
+      const preserveGeneratedFiles = new Set(['React-VFS.yaml']);
 
-      spinner.info('Copying ReactNativeDependencies...');
-      await fs.copy(artifacts.reactNativeDependencies, rnDepsDest);
+      // Sync directories (only copies changed files, preserves mtime for unchanged)
+      spinner.info('Syncing Hermes...');
+      const hermesUpdated = await syncDirectoryAsync(artifacts.hermes, hermesDest);
 
-      spinner.info('Copying React Native...');
-      await fs.copy(artifacts.react, rnDest);
+      spinner.info('Syncing ReactNativeDependencies...');
+      const rnDepsUpdated = await syncDirectoryAsync(artifacts.reactNativeDependencies, rnDepsDest);
 
-      spinner.succeed('Copied artifacts to local .dependencies folder');
+      spinner.info('Syncing React Native...');
+      const rnUpdated = await syncDirectoryAsync(artifacts.react, rnDest, preserveGeneratedFiles);
+
+      const totalUpdated = hermesUpdated + rnDepsUpdated + rnUpdated;
+      if (totalUpdated > 0) {
+        spinner.succeed(
+          `Synced artifacts to local .dependencies folder (${totalUpdated} files updated)`
+        );
+      } else {
+        spinner.succeed('Artifacts already up-to-date in local .dependencies folder');
+      }
 
       // Resolve the VFS overlay template with the correct paths
       await resolveVFSOverlayTemplate(rnDest);
@@ -159,10 +309,56 @@ export const Dependencies = {
    * Cleans the dependencies output folder for a given package
    * @param pkg Package
    */
-  cleanDependenciesFolderAsync: async (pkg: Package): Promise<void> => {
+  cleanDependenciesFolderAsync: async (pkg: SPMPackageSource): Promise<void> => {
     logger.info(`🧹 Cleaning dependencies folder for package ${chalk.green(pkg.packageName)}...`);
     const buildFolderToClean = Dependencies.getPackageDependenciesPath(pkg);
     await fs.remove(buildFolderToClean);
+  },
+
+  /**
+   * Cleans the xcframeworks output folder for a given package.
+   * This is where the final composed xcframeworks are stored.
+   * For Expo packages: podspecPath/.xcframeworks/ (e.g., packages/expo-font/ios/.xcframeworks/)
+   * For external packages: pkg.path/.xcframeworks/ (e.g., node_modules/react-native-svg/.xcframeworks/)
+   * @param pkg Package
+   */
+  cleanXCFrameworksFolderAsync: async (pkg: SPMPackageSource): Promise<void> => {
+    // Determine the correct xcframeworks path based on package type
+    let xcframeworksPath: string;
+
+    try {
+      // Try to treat it as an Expo package with a podspec
+      const expoPkg = new Package(pkg.path);
+      const podspecPath = expoPkg.podspecPath;
+      if (podspecPath) {
+        // Expo package: xcframeworks are next to the podspec
+        xcframeworksPath = path.join(pkg.path, path.dirname(podspecPath), '.xcframeworks');
+      } else {
+        // No podspec, use package root
+        xcframeworksPath = path.join(pkg.path, '.xcframeworks');
+      }
+    } catch {
+      // External package: xcframeworks are directly in package root
+      xcframeworksPath = path.join(pkg.path, '.xcframeworks');
+    }
+
+    if (fs.existsSync(xcframeworksPath)) {
+      logger.info(`🧹 Cleaning xcframeworks folder for package ${chalk.green(pkg.packageName)}...`);
+      await fs.remove(xcframeworksPath);
+    }
+  },
+
+  /**
+   * Cleans the generated code folder for a given package.
+   * This is where codegen output is stored.
+   * @param pkg Package
+   */
+  cleanGeneratedFolderAsync: async (pkg: SPMPackageSource): Promise<void> => {
+    const generatedPath = path.join(pkg.path, '.generated');
+    if (fs.existsSync(generatedPath)) {
+      logger.info(`🧹 Cleaning generated folder for package ${chalk.green(pkg.packageName)}...`);
+      await fs.remove(generatedPath);
+    }
   },
 
   /**
@@ -171,7 +367,7 @@ export const Dependencies = {
    * @param pkg Package
    * @returns Path to dependencies folder for the given package
    */
-  getPackageDependenciesPath: (pkg: Package) => {
+  getPackageDependenciesPath: (pkg: SPMPackageSource) => {
     return path.join(pkg.path, '.dependencies');
   },
 };
@@ -231,6 +427,7 @@ const downloadReactNativeAsync = async (
 /**
  * Resolves the VFS overlay template by replacing ${ROOT_PATH} placeholders
  * with the actual path to the React.xcframework.
+ * Only writes the file if content has changed to preserve mtime for incremental builds.
  */
 const resolveVFSOverlayTemplate = async (outputPath: string): Promise<void> => {
   const xcframeworkPath = path.join(outputPath, 'React.xcframework');
@@ -238,10 +435,21 @@ const resolveVFSOverlayTemplate = async (outputPath: string): Promise<void> => {
   const vfsOutputPath = path.join(outputPath, 'React-VFS.yaml');
 
   if (!fs.existsSync(vfsTemplatePath)) {
-    throw new Error(`VFS overlay template not found at ${vfsTemplatePath}`);
+    // VFS template may not exist in Maven artifacts - this is OK for builds that don't
+    // use the local React Native build (e.g., external packages using downloaded artifacts)
+    // The VFS overlay is only needed when building from react-native source
+    return;
   }
 
   const templateContent = fs.readFileSync(vfsTemplatePath, 'utf8');
   const resolvedContent = templateContent.replace(/\$\{ROOT_PATH\}/g, xcframeworkPath);
+
+  // Only write if content changed (preserves mtime for incremental builds)
+  if (fs.existsSync(vfsOutputPath)) {
+    const existingContent = fs.readFileSync(vfsOutputPath, 'utf8');
+    if (existingContent === resolvedContent) {
+      return; // No changes needed
+    }
+  }
   await fs.writeFile(vfsOutputPath, resolvedContent, 'utf8');
 };
