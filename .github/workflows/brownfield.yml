@@ -87,7 +87,7 @@ jobs:
 
       - name: 🧪 E2E Test Brownfield Config Plugin
         working-directory: packages/expo-brownfield
-        run: yarn test:e2e-plugin --testPathIgnorePatterns e2e/plugin/__tests__/plugin-ios.test.ts --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
+        run: yarn test:e2e-plugin --testPathIgnorePatterns e2e/plugin/__tests__/plugin-ios.test.ts --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }} --passWithNoTests
 
   jest-macos-cli:
     runs-on: macos-15
