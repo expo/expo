@@ -31,11 +31,32 @@ class VideoCache(context: Context) {
   private val databaseProvider: DatabaseProvider = StandaloneDatabaseProvider(context)
   private val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
   private var cacheEvictor = LeastRecentlyUsedCacheEvictor(getMaxCacheSize())
-  var instance = SimpleCache(getCacheDir(), cacheEvictor, databaseProvider)
+  var instance = createCache()
 
   // Function that gets the cache size from shared preferences
   private fun getMaxCacheSize(): Long {
     return sharedPreferences.getLong(CACHE_SIZE_KEY, DEFAULT_CACHE_SIZE)
+  }
+
+  /**
+   * Creates a SimpleCache instance with error recovery.
+   * If the cache directory is already locked by another instance (e.g., after an OTA update
+   * or runtime reload), generates a new directory to avoid conflicts.
+   */
+  private fun createCache(): SimpleCache {
+    return try {
+      SimpleCache(getCacheDir(), cacheEvictor, databaseProvider)
+    } catch (e: Exception) {
+      Log.w("ExpoVideo", "Failed to create cache, generating new cache directory", e)
+      // Directory is locked by another instance - generate a new directory
+      val newCacheName = generateCacheDirName()
+      sharedPreferences.edit().putString(VIDEO_CACHE_DIR_KEY, newCacheName).commit()
+      SimpleCache(getCacheDir(), cacheEvictor, databaseProvider)
+    }
+  }
+
+  fun release() {
+    instance.release()
   }
 
   fun setMaxCacheSize(size: Long) {
@@ -55,7 +76,8 @@ class VideoCache(context: Context) {
     // Weird structure, because kotlin marks the result of `getString` as nullable
     val videoCacheDirName = sharedPreferences.getString(VIDEO_CACHE_DIR_KEY, null) ?: run {
       val newCacheDirName = generateCacheDirName()
-      sharedPreferences.edit().putString(VIDEO_CACHE_DIR_KEY, newCacheDirName).apply()
+      // Using commit() instead of apply() to ensure synchronous write and avoid race conditions
+      sharedPreferences.edit().putString(VIDEO_CACHE_DIR_KEY, newCacheDirName).commit()
       newCacheDirName
     }
     val cacheParentDir = File(context.cacheDir, VIDEO_CACHE_PARENT_DIR)
