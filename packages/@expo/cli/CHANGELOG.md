@@ -17,6 +17,7 @@
 ### 💡 Others
 
 - Bump `@expo/xcpretty` ([#42485](https://github.com/expo/expo/pull/42485) by [@kitten](https://github.com/kitten))
+- Refactor to replace GraphQL fetch client ([#42556](https://github.com/expo/expo/pull/42556) by [@kitten](https://github.com/kitten))
 
 ## 55.0.4 — 2026-01-27
 
