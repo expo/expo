@@ -126,8 +126,7 @@ docs/pages/versions/*/react-native/*.diff
 /packages/**/*.spec.json
 /packages/**/Info-generated.plist
 /packages/**/.build/
-/packages/**/.dependencies/
-/packages/.artifacts/
+/packages/precompile/.cache/
 !crsqlite.xcframework
 
 # iOS

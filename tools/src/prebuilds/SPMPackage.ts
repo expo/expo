@@ -15,6 +15,13 @@ import { ObjcTarget, SwiftTarget, CppTarget, SPMProduct } from './SPMConfig.type
 import { ExternalDependencyConfig, PackageSwiftContext, ResolvedTarget } from './SPMPackage.types';
 import { createAsyncSpinner, SpinnerError } from './Utils';
 
+/** Artifact paths structure for dependency resolution */
+type ArtifactPaths = {
+  hermes: string;
+  reactNativeDependencies: string;
+  react: string;
+};
+
 // Main Export: SPMPackage
 
 export const SPMPackage = {
@@ -27,6 +34,7 @@ export const SPMPackage = {
    * @param buildType Debug or Release build flavor
    * @param packageSwiftPath Path to write the Package.swift file
    * @param targetSourceCodePath Path to the target source code folder
+   * @param artifactPaths Optional artifact paths from centralized cache
    * @returns The Package.swift content as a string
    */
   async generatePackageSwiftAsync(
@@ -34,7 +42,8 @@ export const SPMPackage = {
     product: SPMProduct,
     buildType: BuildFlavor,
     packageSwiftPath: string,
-    targetSourceCodePath: string
+    targetSourceCodePath: string,
+    artifactPaths?: ArtifactPaths
   ): Promise<string> {
     // Build context for Package.swift generation
     const context = await buildPackageSwiftContext(
@@ -42,7 +51,8 @@ export const SPMPackage = {
       product,
       buildType,
       packageSwiftPath,
-      targetSourceCodePath
+      targetSourceCodePath,
+      artifactPaths
     );
     return generatePackageSwiftContent(context);
   },
@@ -56,20 +66,23 @@ export const SPMPackage = {
    * @param buildType Debug or Release build flavor
    * @param packageSwiftPath Path to write the Package.swift file
    * @param targetSourceCodePath Path to the target source code folder
+   * @param artifactPaths Optional artifact paths from centralized cache
    */
   async writePackageSwiftAsync(
     pkg: SPMPackageSource,
     product: SPMProduct,
     buildType: BuildFlavor,
     packageSwiftPath: string,
-    targetSourceCodePath: string
+    targetSourceCodePath: string,
+    artifactPaths?: ArtifactPaths
   ): Promise<void> {
     const content = await SPMPackage.generatePackageSwiftAsync(
       pkg,
       product,
       buildType,
       packageSwiftPath,
-      targetSourceCodePath
+      targetSourceCodePath,
+      artifactPaths
     );
     await fs.ensureDir(path.dirname(packageSwiftPath));
 
@@ -97,31 +110,114 @@ export const SPMPackage = {
 // External Dependency Configurations
 
 /**
- * Returns the configuration for known external dependencies (Hermes, React, ReactNativeDependencies)
- * Paths are relative to the package root directory (where the package is located)
+ * Artifact paths within the cache structure (relative to the versioned artifact folder).
+ * These paths match the structure of downloaded/extracted Maven artifacts.
+ * Keys are lowercase for consistent lookup.
  */
-function getExternalDependencyConfig(dependencyName: string): ExternalDependencyConfig | undefined {
-  const configs: Record<string, ExternalDependencyConfig> = {
-    hermes: {
-      name: 'Hermes',
-      path: '.dependencies/Hermes/destroot/Library/Frameworks/universal/hermesvm.xcframework',
-      includeDirectories: ['../../../../include'],
-    },
-    react: {
-      name: 'React',
-      path: '.dependencies/React-Core-prebuilt/React.xcframework',
-      includeDirectories: ['Headers', 'React_Core'],
-      headerMapPath: '.dependencies/React-Core-prebuilt/React-Headers.hmap',
-      vfsOverlayPath: '.dependencies/React-Core-prebuilt/React-VFS.yaml',
-    },
-    reactnativedependencies: {
-      name: 'ReactNativeDependencies',
-      path: '.dependencies/ReactNativeDependencies/ReactNativeDependencies.xcframework',
-      includeDirectories: ['Headers'],
-    },
-  };
+const ARTIFACT_RELATIVE_PATHS: Record<
+  string,
+  {
+    xcframeworkPath: string;
+    includeDirectories: string[];
+    headerMapFile?: string;
+    vfsOverlayFile?: string;
+  }
+> = {
+  hermes: {
+    xcframeworkPath: 'destroot/Library/Frameworks/universal/hermesvm.xcframework',
+    includeDirectories: ['../../../../include'],
+  },
+  react: {
+    xcframeworkPath: 'React.xcframework',
+    includeDirectories: ['Headers', 'React_Core'],
+    headerMapFile: 'React-Headers.hmap',
+    vfsOverlayFile: 'React-VFS.yaml',
+  },
+  reactnativedependencies: {
+    xcframeworkPath: 'ReactNativeDependencies.xcframework',
+    includeDirectories: ['Headers'],
+  },
+};
 
-  return configs[dependencyName.toLowerCase()];
+/**
+ * Computes the external dependency configuration with paths relative to packageSwiftDir.
+ * This allows packages in any location (packages/ or node_modules/) to reference the centralized cache.
+ *
+ * @param dependencyName Name of the dependency (hermes, react, reactnativedependencies)
+ * @param artifactPaths Downloaded artifact paths from Dependencies.downloadArtifactsAsync
+ * @param packageSwiftDir Directory where Package.swift will be located
+ * @returns Configuration with paths relative to packageSwiftDir, or undefined if not a known dependency
+ */
+function getExternalDependencyConfig(
+  dependencyName: string,
+  artifactPaths: { hermes: string; reactNativeDependencies: string; react: string } | null,
+  packageSwiftDir: string
+): ExternalDependencyConfig | undefined {
+  const normalizedName = dependencyName.toLowerCase();
+
+  // If no artifact paths provided, return undefined (caller should handle this)
+  if (!artifactPaths) {
+    return undefined;
+  }
+
+  if (normalizedName === 'hermes') {
+    const artifactBasePath = artifactPaths.hermes;
+    const xcframeworkAbsPath = path.join(
+      artifactBasePath,
+      ARTIFACT_RELATIVE_PATHS.hermes.xcframeworkPath
+    );
+    const relativePath = path.relative(packageSwiftDir, xcframeworkAbsPath);
+
+    return {
+      name: 'Hermes',
+      path: relativePath,
+      // Include directories are relative to the xcframework path
+      includeDirectories: ARTIFACT_RELATIVE_PATHS.hermes.includeDirectories,
+      // Store absolute paths for compiler flags (they need absolute paths)
+      absoluteBasePath: artifactBasePath,
+    };
+  }
+
+  if (normalizedName === 'react') {
+    const artifactBasePath = artifactPaths.react;
+    const xcframeworkAbsPath = path.join(
+      artifactBasePath,
+      ARTIFACT_RELATIVE_PATHS.react.xcframeworkPath
+    );
+    const relativePath = path.relative(packageSwiftDir, xcframeworkAbsPath);
+
+    return {
+      name: 'React',
+      path: relativePath,
+      includeDirectories: ARTIFACT_RELATIVE_PATHS.react.includeDirectories,
+      // Header map and VFS overlay paths - relative to artifactBasePath
+      headerMapPath: ARTIFACT_RELATIVE_PATHS.react.headerMapFile
+        ? path.join(artifactBasePath, ARTIFACT_RELATIVE_PATHS.react.headerMapFile)
+        : undefined,
+      vfsOverlayPath: ARTIFACT_RELATIVE_PATHS.react.vfsOverlayFile
+        ? path.join(artifactBasePath, ARTIFACT_RELATIVE_PATHS.react.vfsOverlayFile)
+        : undefined,
+      absoluteBasePath: artifactBasePath,
+    };
+  }
+
+  if (normalizedName === 'reactnativedependencies') {
+    const artifactBasePath = artifactPaths.reactNativeDependencies;
+    const xcframeworkAbsPath = path.join(
+      artifactBasePath,
+      ARTIFACT_RELATIVE_PATHS.reactnativedependencies.xcframeworkPath
+    );
+    const relativePath = path.relative(packageSwiftDir, xcframeworkAbsPath);
+
+    return {
+      name: 'ReactNativeDependencies',
+      path: relativePath,
+      includeDirectories: ARTIFACT_RELATIVE_PATHS.reactnativedependencies.includeDirectories,
+      absoluteBasePath: artifactBasePath,
+    };
+  }
+
+  return undefined;
 }
 
 // Package.swift Generation
@@ -289,6 +385,7 @@ function generateTargetDeclaration(target: ResolvedTarget, comma: string): strin
  * @param externalDeps - External dependencies for this target
  * @param packageSwiftPath - Directory where Package.swift will be located
  * @param targetSourceCodePath - Path to the Package.swift file
+ * @param artifactPaths - Optional artifact paths from centralized cache
  */
 function resolveSourceTarget(
   target: ObjcTarget | SwiftTarget | CppTarget,
@@ -296,7 +393,8 @@ function resolveSourceTarget(
   productName: string,
   externalDeps: string[],
   packageSwiftPath: string,
-  targetSourceCodePath: string
+  targetSourceCodePath: string,
+  artifactPaths?: ArtifactPaths
 ): ResolvedTarget {
   // Get directory of Package.swift and create the target
   const packageSwiftDir = path.dirname(packageSwiftPath);
@@ -310,15 +408,20 @@ function resolveSourceTarget(
 
   // Build settings based on target type
   if (target.type === 'swift') {
-    resolved.swiftSettings = buildSwiftSettings(externalDeps, pkg.path, packageSwiftDir);
+    resolved.swiftSettings = buildSwiftSettings(
+      externalDeps,
+      artifactPaths || null,
+      packageSwiftDir
+    );
   } else if (target.type === 'objc' || target.type === 'cpp') {
     const { cSettings, cxxSettings } = buildCSettings(
       target,
       externalDeps,
-      pkg.path,
+      artifactPaths || null,
       packageSwiftDir,
       productName,
-      pkg.packageVersion
+      pkg.packageVersion,
+      pkg.path
     );
     resolved.cSettings = cSettings;
     if (target.type === 'cpp') {
@@ -349,40 +452,14 @@ function resolveSourceTarget(
 }
 
 /**
- * Resolves a binary framework target
- * @param name - Target name
- * @param frameworkPath - Path to the framework (relative to package root)
- * @param packageRootPath - Package root directory
- * @param packageSwiftDir - Directory where Package.swift is located
- */
-function resolveBinaryTarget(
-  name: string,
-  frameworkPath: string,
-  packageRootPath: string,
-  packageSwiftDir: string
-): ResolvedTarget {
-  // Calculate the relative path from Package.swift location to the framework
-  const absoluteFrameworkPath = path.resolve(packageRootPath, frameworkPath);
-  const relativePathFromPackageSwift = path.relative(packageSwiftDir, absoluteFrameworkPath);
-
-  return {
-    type: 'binary',
-    name,
-    path: relativePathFromPackageSwift,
-    dependencies: [],
-    linkedFrameworks: [],
-  };
-}
-
-/**
  * Builds Swift compiler settings for a Swift target
  * @param externalDeps - External dependencies
- * @param packageRootPath - Package root directory (where the package is located)
+ * @param artifactPaths - Paths to downloaded artifacts from centralized cache
  * @param packageSwiftDir - Directory where Package.swift will be located
  */
 function buildSwiftSettings(
   externalDeps: string[],
-  packageRootPath: string,
+  artifactPaths: ArtifactPaths | null,
   packageSwiftDir: string
 ): string[] {
   const settings: string[] = [];
@@ -398,7 +475,7 @@ function buildSwiftSettings(
 
   // Add VFS overlays and header maps for React if present
   // For Swift, each flag needs to be wrapped with -Xcc to pass it to the underlying Clang compiler
-  const vfsFlags = collectVfsAndHeaderMapFlags(externalDeps, packageRootPath, packageSwiftDir);
+  const vfsFlags = collectVfsAndHeaderMapFlags(externalDeps, artifactPaths, packageSwiftDir);
   for (const flag of vfsFlags) {
     cxxFlags.push('-Xcc', flag);
   }
@@ -414,7 +491,7 @@ function buildSwiftSettings(
  * Builds C/C++ compiler settings for ObjC and C++ targets
  * @param target - The target configuration
  * @param externalDeps - External dependencies
- * @param packageRootPath - Package root directory (where the package is located)
+ * @param artifactPaths - Paths to downloaded artifacts from centralized cache
  * @param packageSwiftDir - Directory where Package.swift will be located
  * @param productName - Product name for header search paths
  * @param packageVersion - Package version for defines
@@ -422,10 +499,11 @@ function buildSwiftSettings(
 function buildCSettings(
   target: ObjcTarget | CppTarget,
   externalDeps: string[],
-  packageRootPath: string,
+  artifactPaths: ArtifactPaths | null,
   packageSwiftDir: string,
   productName: string,
-  packageVersion: string
+  packageVersion: string,
+  pkgPath: string
 ): {
   cSettings: string[];
   cxxSettings: string[];
@@ -497,10 +575,15 @@ function buildCSettings(
 
   // Add target-specific include directories (relative to target path in the package root)
   // These are used for targets that need to include headers from other locations (e.g., codegen)
+  // The includeDirectories in the config are relative to the target's original path (target.path),
+  // which is relative to pkg.path. So we resolve: pkg.path + target.path + includeDir
   if (target.includeDirectories && target.includeDirectories.length > 0) {
     const includeFlags: string[] = [];
     for (const includeDir of target.includeDirectories) {
-      const includePath = path.resolve(packageRootPath, target.path, includeDir);
+      // Resolve relative to the original target path in the package source
+      // target.path is the path from config (e.g., ".build/codegen/build/generated/ios/ReactCodegen/react/renderer/components/rnsvg")
+      // includeDir is relative to that path (e.g., "../../../.." to get to ReactCodegen)
+      const includePath = path.resolve(pkgPath, target.path, includeDir);
       includeFlags.push('-I', includePath);
     }
     const flagString = `[${includeFlags.map((f) => `"${f}"`).join(', ')}]`;
@@ -517,7 +600,7 @@ function buildCSettings(
   }
 
   // Add VFS overlays and header maps for React if present
-  const vfsFlags = collectVfsAndHeaderMapFlags(externalDeps, packageRootPath, packageSwiftDir);
+  const vfsFlags = collectVfsAndHeaderMapFlags(externalDeps, artifactPaths, packageSwiftDir);
   if (vfsFlags.length > 0) {
     const flagString = `[${vfsFlags.map((f) => `"${f}"`).join(', ')}]`;
     cSettings.push(`.unsafeFlags(${flagString})`);
@@ -570,30 +653,36 @@ function extractVFSOverlayRootPath(vfsOverlayPath: string): string | null {
 /**
  * Collects VFS overlay, header map, and include directory flags for external dependencies
  * Mimics the template's resolveDependencies function to extract include paths from framework dependencies
- * Converts relative paths to absolute paths as required by the compiler
+ * Uses absolute paths as required by the compiler
  * @param externalDeps - External dependency names
- * @param packageRootPath - Package root directory where dependencies are located
- * @param packageSwiftDir - Directory where Package.swift is located (not used for compiler flags)
+ * @param artifactPaths - Paths to downloaded artifacts from centralized cache
+ * @param packageSwiftDir - Directory where Package.swift is located (for computing relative paths if needed)
  */
 function collectVfsAndHeaderMapFlags(
   externalDeps: string[],
-  packageRootPath: string,
+  artifactPaths: ArtifactPaths | null,
   packageSwiftDir: string
 ): string[] {
   const flags: string[] = [];
 
+  if (!artifactPaths) {
+    return flags;
+  }
+
   for (const depName of externalDeps) {
-    const config = getExternalDependencyConfig(depName.toLowerCase());
+    const config = getExternalDependencyConfig(
+      depName.toLowerCase(),
+      artifactPaths,
+      packageSwiftDir
+    );
     if (config) {
       // Add VFS overlay if present (must be absolute path)
-      // VFS overlay path is relative to packageRootPath (where dependencies are)
       if (config.vfsOverlayPath) {
-        const absolutePath = path.resolve(packageRootPath, config.vfsOverlayPath);
-        flags.push('-ivfsoverlay', absolutePath);
+        flags.push('-ivfsoverlay', config.vfsOverlayPath);
 
         // CRITICAL: Extract and add VFS root path as include directory
         // This is needed for proper module resolution when using VFS overlays
-        const vfsRootPath = extractVFSOverlayRootPath(absolutePath);
+        const vfsRootPath = extractVFSOverlayRootPath(config.vfsOverlayPath);
         if (vfsRootPath) {
           flags.push('-I', vfsRootPath);
         }
@@ -601,19 +690,22 @@ function collectVfsAndHeaderMapFlags(
 
       // Add include directories from the framework (e.g., Headers, React_Core)
       // This is critical - without these, headers like jsi/jsi.h won't be found
-      // config.path is relative to packageRootPath
-      if (config.includeDirectories) {
+      // Use absoluteBasePath if available, otherwise compute from path
+      if (config.includeDirectories && config.absoluteBasePath) {
+        const artifactConfig = ARTIFACT_RELATIVE_PATHS[depName.toLowerCase()];
+        const xcframeworkAbsPath = path.join(
+          config.absoluteBasePath,
+          artifactConfig?.xcframeworkPath || ''
+        );
         for (const includeDir of config.includeDirectories) {
-          const includePath = path.resolve(packageRootPath, config.path, includeDir);
+          const includePath = path.resolve(xcframeworkAbsPath, includeDir);
           flags.push('-I', includePath);
         }
       }
 
-      // Add header map if present (must be absolute path)
-      // Header map path is relative to packageRootPath
+      // Add header map if present (already absolute path)
       if (config.headerMapPath) {
-        const absolutePath = path.resolve(packageRootPath, config.headerMapPath);
-        flags.push('-I', absolutePath);
+        flags.push('-I', config.headerMapPath);
       }
     }
   }
@@ -631,7 +723,8 @@ async function buildPackageSwiftContext(
   product: SPMProduct,
   buildType: BuildFlavor,
   packageSwiftPath: string,
-  targetSourceCodePath: string
+  targetSourceCodePath: string,
+  artifactPaths?: ArtifactPaths
 ): Promise<PackageSwiftContext> {
   let spinner = createAsyncSpinner(`Build Package Swift context`, pkg, product);
 
@@ -650,11 +743,20 @@ async function buildPackageSwiftContext(
     spinner.info(`Resolving external dependency: ${depName}`);
 
     // Check if it's a known React Native ecosystem dependency
-    const externalConfig = getExternalDependencyConfig(normalizedName);
+    const externalConfig = getExternalDependencyConfig(
+      normalizedName,
+      artifactPaths || null,
+      packageSwiftDir
+    );
     if (externalConfig) {
-      resolvedTargets.push(
-        resolveBinaryTarget(externalConfig.name, externalConfig.path, pkg.path, packageSwiftDir)
-      );
+      // Path is already relative to packageSwiftDir
+      resolvedTargets.push({
+        type: 'binary',
+        name: externalConfig.name,
+        path: externalConfig.path,
+        dependencies: [],
+        linkedFrameworks: [],
+      });
       continue;
     }
 
@@ -709,7 +811,8 @@ async function buildPackageSwiftContext(
       product.name,
       target.dependencies || [],
       packageSwiftDir,
-      targetSourceCodePath
+      targetSourceCodePath,
+      artifactPaths
     );
     resolvedTargets.push(resolved);
     addedTargets.add(target.name);
@@ -725,5 +828,6 @@ async function buildPackageSwiftContext(
     swiftLanguageVersions: product.swiftLanguageVersions,
     product,
     targets: resolvedTargets,
+    artifactPaths,
   };
 }

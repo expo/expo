@@ -4,6 +4,7 @@ import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
+import type { DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
 import { SPMProduct, SPMTarget } from './SPMConfig.types';
@@ -58,11 +59,13 @@ export const SPMGenerator = {
    * @param pkg Package
    * @param product Product
    * @param buildType Build type (e.g., Debug, Release)
+   * @param artifacts Optional downloaded artifacts from centralized cache
    */
   genereateSwiftPackageAsync: async (
     pkg: SPMPackageSource,
     product: SPMProduct,
-    buildType: BuildFlavor
+    buildType: BuildFlavor,
+    artifacts?: DownloadedDependencies
   ): Promise<void> => {
     logger.info(
       `📦 Generating Package.swift for ${chalk.green(pkg.packageName)}/${chalk.green(product.name)}...`
@@ -70,12 +73,23 @@ export const SPMGenerator = {
     // Use SPMPackage to generate Package.swift
     const packageSwiftPath = SPMGenerator.getSwiftPackagePath(pkg, product);
     const targetSourceCodePath = SPMGenerator.getGeneratedProductFilesPath(pkg, product);
+
+    // Extract artifact paths if provided
+    const artifactPaths = artifacts
+      ? {
+          hermes: artifacts.hermes,
+          reactNativeDependencies: artifacts.reactNativeDependencies,
+          react: artifacts.react,
+        }
+      : undefined;
+
     await SPMPackage.writePackageSwiftAsync(
       pkg,
       product,
       buildType,
       packageSwiftPath,
-      targetSourceCodePath
+      targetSourceCodePath,
+      artifactPaths
     );
   },
 

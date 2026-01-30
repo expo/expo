@@ -213,6 +213,56 @@ et prebuild-packages --build-flavor Debug --react-native-tarball-path <path> --v
 
 ---
 
+## Dependency Cache
+
+The prebuild system uses a centralized versioned cache for React Native dependencies (Hermes, ReactNativeDependencies, React). This avoids downloading and copying dependencies for each package.
+
+### Cache Location
+
+```
+packages/precompile/.cache/
+├── hermes/
+│   └── 0.76.0-Debug/           # <version>-<flavor>
+│       └── Hermes.xcframework/
+├── react-native-dependencies/
+│   └── 0.76.7-Debug/
+│       ├── ReactNativeDependencies.xcframework/
+│       └── ...
+└── react/
+    └── 0.76.7-Debug/
+        ├── React.xcframework/
+        └── React-VFS.yaml
+```
+
+### Environment Variable
+
+You can override the cache location with `EXPO_PREBUILD_CACHE_PATH`:
+
+```bash
+EXPO_PREBUILD_CACHE_PATH=/custom/cache/path et prebuild-packages ...
+```
+
+### Cache Management Options
+
+| Flag | Effect |
+|------|--------|
+| `--clean-cache` | Wipes entire dependency cache (forces re-download) |
+| `--prune-cache` | Removes old cache versions, keeps current version |
+| `--clean-all` | Cleans package outputs only (xcframeworks, generated code, build folders) - does NOT touch cache |
+| `--clean-build` | Cleans just the `.build/` folders |
+| `--clean-generated` | Cleans just the generated source code |
+
+Example - free up disk space by removing old versions:
+```bash
+et prebuild-packages --build-flavor Debug --prune-cache <package-name>
+```
+
+### Local Tarball Caching
+
+When using `--react-native-tarball-path` (or similar) with a local tarball, the system tracks the tarball's modification time. If you run the command again with the same tarball, it will skip extraction and use the cached version. When you rebuild the tarball, it will automatically detect the change and re-extract.
+
+---
+
 ## spm.config.json Schema Reference
 
 ### Target Types
