@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Drop `react-native-web` and `react-dom` peers ([#42728](https://github.com/expo/expo/pull/42728) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.3 — 2026-01-27
