@@ -85,7 +85,10 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         }
 
         ForEach(props.polylines) { polyline in
-          MapPolyline(coordinates: polyline.clLocationCoordinates2D)
+          MapPolyline(
+            coordinates: polyline.clLocationCoordinates2D,
+            contourStyle: polyline.contourStyle.toContourStyle()
+          )
             .stroke(polyline.color, lineWidth: polyline.width)
             .tag(MapSelection<MKMapItem>(polyline.mapItem))
         }
@@ -189,6 +192,21 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
                 ]
               ])
             }
+          // Then check if we hit a polyline and send an event
+          else if let hit = polyline(at: coordinate) {
+            let coords = hit.coordinates.map {
+              [
+                "latitude": $0.latitude,
+                "longitude": $0.longitude
+              ]
+            }
+            props.onPolylineClick([
+              "id": hit.id,
+              "color": hit.color,
+              "width": hit.width,
+              "contourStyle": hit.contourStyle.rawValue,
+              "coordinates": coords
+            ])
           }
       )
       .mapControls {
