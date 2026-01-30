@@ -51,8 +51,7 @@ export async function resolveLocalTemplateAsync({
   }
 
   const stream = fs.createReadStream(templatePath);
-  return await extractNpmTarballAsync(stream, {
-    cwd: templateDirectory,
-    name: exp.name,
+  return await extractNpmTarballAsync(stream, templateDirectory, {
+    expName: exp.name,
   });
 }
