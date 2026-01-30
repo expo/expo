@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- Added more Jetpack Compose support. ([#42734](https://github.com/expo/expo/pull/42734) by [@kudo](https://github.com/kudo))
+
 ## 55.0.5 — 2026-01-27
 
 _This version does not introduce any user-facing changes._
