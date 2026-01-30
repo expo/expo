@@ -74,7 +74,9 @@ export default function JetpackComposePrimitivesScreen() {
             modifiers={[background('#ff0000'), weight(2), testID('nestedColumn1')]}
             verticalArrangement="center"
             horizontalAlignment="center">
-            <Text style={{ fontSize: 16, fontWeight: '500' }} modifiers={[testID('nestedColumn1Text')]}>
+            <Text
+              style={{ fontSize: 16, fontWeight: '500' }}
+              modifiers={[testID('nestedColumn1Text')]}>
               Nested
             </Text>
             <Text color="#333333" style={{ fontSize: 14 }}>
@@ -85,7 +87,9 @@ export default function JetpackComposePrimitivesScreen() {
             verticalArrangement="center"
             horizontalAlignment="center"
             modifiers={[testID('nestedColumn2')]}>
-            <Text style={{ fontSize: 16, fontWeight: '500' }} modifiers={[testID('nestedColumn2Text')]}>
+            <Text
+              style={{ fontSize: 16, fontWeight: '500' }}
+              modifiers={[testID('nestedColumn2Text')]}>
               Nested
             </Text>
             <Text color="#333333" style={{ fontSize: 14 }}>
@@ -96,7 +100,9 @@ export default function JetpackComposePrimitivesScreen() {
             modifiers={[background('#ff0000'), weight(4), testID('nestedColumn3')]}
             verticalArrangement="center"
             horizontalAlignment="center">
-            <Text style={{ fontSize: 16, fontWeight: '500' }} modifiers={[testID('nestedColumn2Text')]}>
+            <Text
+              style={{ fontSize: 16, fontWeight: '500' }}
+              modifiers={[testID('nestedColumn2Text')]}>
               Nested
             </Text>
             <Text color="#333333" style={{ fontSize: 14 }}>
@@ -107,7 +113,9 @@ export default function JetpackComposePrimitivesScreen() {
             verticalArrangement="center"
             horizontalAlignment="center"
             modifiers={[testID('nestedColumn4')]}>
-            <Text style={{ fontSize: 16, fontWeight: '500' }} modifiers={[testID('nestedColumn4text')]}>
+            <Text
+              style={{ fontSize: 16, fontWeight: '500' }}
+              modifiers={[testID('nestedColumn4text')]}>
               Nested
             </Text>
             <Text color="#333333" style={{ fontSize: 14 }}>
