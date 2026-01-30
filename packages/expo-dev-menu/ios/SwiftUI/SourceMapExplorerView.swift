@@ -453,7 +453,7 @@ struct CodeFileView: View {
 
   private func editingView() -> some View {
     #if os(tvOS)
-    Text(displayContent)
+    readOnlyView()
     #else
     TextEditor(text: $displayContent)
       .font(.system(size: fontSize, weight: .regular, design: .monospaced))
