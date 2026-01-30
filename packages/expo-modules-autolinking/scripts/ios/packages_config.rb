@@ -1,5 +1,5 @@
 require 'singleton'
-require_relative './cocoapods/precompiled_modules'
+require_relative './precompiled_modules'
 
 module Expo
   # This class is used to store the configuration of the packages that are being used in the project.

@@ -51,7 +51,7 @@ The precompiled modules system allows Expo packages to be distributed as prebuil
 | `SPMPackage.ts` | `tools/src/prebuilds/` | Generates Package.swift from config |
 | `Package.ts` | `tools/src/prebuilds/` | Expo package discovery and metadata |
 | `ExternalPackage.ts` | `tools/src/prebuilds/` | External (npm) package support |
-| `precompiled_modules.rb` | `packages/expo-modules-core/ios/ReactDelegates/PrecompiledModules/` | Runtime CocoaPods integration |
+| `precompiled_modules.rb` | `packages/expo-modules-autolinking/scripts/ios/` | Runtime CocoaPods integration |
 | `PackagesConfig.rb` | Same directory | Package configuration and linking |
 
 ## Adding SPM Prebuild Support to Expo Packages
@@ -477,7 +477,7 @@ Examine these files for implementation details:
 - `tools/src/prebuilds/Package.ts` - Expo package discovery
 - `tools/src/prebuilds/ExternalPackage.ts` - External package support
 - `tools/src/prebuilds/Codegen.ts` - Codegen handling
-- `packages/expo-modules-core/ios/ReactDelegates/PrecompiledModules/precompiled_modules.rb` - CocoaPods integration
-- `packages/expo-modules-core/ios/ReactDelegates/PrecompiledModules/packages_config.rb` - Package configuration
+- `packages/expo-modules-autolinking/scripts/ios/precompiled_modules.rb` - CocoaPods integration
+- `packages/expo-modules-autolinking/scripts/ios/packages_config.rb` - Package configuration
 - `packages/expo-modules-core/spm.config.json` - Complex multi-target example
 - `packages/expo-font/spm.config.json` - Simple Swift-only example

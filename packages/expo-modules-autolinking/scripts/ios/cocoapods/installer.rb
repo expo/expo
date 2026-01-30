@@ -6,7 +6,7 @@
 # React Native Core headers in their public headers, which causes issues when
 # building them as dynamic frameworks with modular headers enabled.
 
-require_relative './precompiled_modules'
+require_relative '../precompiled_modules'
 
 module Pod
   class Podfile
