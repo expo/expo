@@ -1,5 +1,5 @@
 import UIKit
-@_implementationOnly import ExpoModulesCore
+internal import ExpoModulesCore
 
 /**
  Allows classes extending `ExpoAppDelegateSubscriber` to hook into project's app delegate

@@ -24,6 +24,17 @@ export interface StackHeaderProps {
    */
   asChild?: boolean;
   /**
+   * Whether the header should be transparent.
+   * When `true`, the header is absolutely positioned and content scrolls underneath.
+   *
+   * Auto-enabled when:
+   * - `style.backgroundColor` is 'transparent'
+   * - `blurEffect` is set (required for blur to work)
+   *
+   * @default false
+   */
+  transparent?: boolean;
+  /**
    * The blur effect to apply to the header background on iOS.
    * Common values include 'regular', 'prominent', 'systemMaterial', etc.
    *
@@ -119,17 +130,37 @@ export function appendStackHeaderPropsToOptions(
     console.warn(`To render a custom header, set the 'asChild' prop to true on Stack.Header.`);
   }
 
+  // Determine if header should be transparent:
+  // 1. Explicitly set via `transparent` prop
+  // 2. Implicitly via backgroundColor === 'transparent'
+  // 3. Implicitly when blurEffect is set (required for blurEffect to work)
+  const isBackgroundTransparent = flattenedStyle?.backgroundColor === 'transparent';
+  const hasBlurEffect = props.blurEffect !== undefined;
+  const shouldBeTransparent =
+    props.transparent === true ||
+    (props.transparent !== false && (isBackgroundTransparent || hasBlurEffect));
+
+  // Warn if blurEffect is set but transparent is explicitly false
+  if (props.blurEffect && props.transparent === false) {
+    console.warn(`Stack.Header: 'blurEffect' requires 'transparent' to be enabled.`);
+  }
+
   return {
     ...options,
     headerShown: !props.hidden,
     headerBlurEffect: props.blurEffect,
+    ...(shouldBeTransparent && { headerTransparent: true }),
+    ...(props.transparent === false && { headerTransparent: false }),
+    ...(flattenedStyle?.color && { headerTintColor: flattenedStyle.color as string }),
     headerStyle: {
       backgroundColor: flattenedStyle?.backgroundColor as string | undefined,
     },
     headerLargeStyle: {
       backgroundColor: flattenedLargeStyle?.backgroundColor as string | undefined,
     },
-    headerShadowVisible: flattenedStyle?.shadowColor !== 'transparent',
-    headerLargeTitleShadowVisible: flattenedLargeStyle?.shadowColor !== 'transparent',
+    ...(flattenedStyle?.shadowColor === 'transparent' && { headerShadowVisible: false }),
+    ...(flattenedLargeStyle?.shadowColor === 'transparent' && {
+      headerLargeTitleShadowVisible: false,
+    }),
   };
 }

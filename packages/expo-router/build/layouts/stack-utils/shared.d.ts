@@ -14,6 +14,23 @@ export interface StackHeaderItemSharedProps {
     tintColor?: ColorValue;
     icon?: SFSymbol | ImageSourcePropType;
     /**
+     * Controls how image-based icons are rendered on iOS.
+     *
+     * - `'template'`: iOS applies tint color to the icon
+     * - `'original'`: Preserves original icon colors (useful for multi-color icons)
+     *
+     * **Default behavior:**
+     * - If `tintColor` is specified, defaults to `'template'`
+     * - If no `tintColor`, defaults to `'original'`
+     *
+     * This prop only affects image-based icons (not SF Symbols).
+     *
+     * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+     *
+     * @platform ios
+     */
+    iconRenderingMode?: 'template' | 'original';
+    /**
      * @default 'plain'
      */
     variant?: 'plain' | 'done' | 'prominent';

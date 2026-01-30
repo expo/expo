@@ -8,7 +8,7 @@ import {
   HStack,
   ColorPicker,
   Picker,
-  Switch,
+  Toggle,
   Rectangle,
   Slider,
   Capsule,
@@ -175,10 +175,10 @@ export default function ModifiersScreen() {
                 : []),
             ]}>
             <VStack spacing={20}>
-              <Switch
+              <Toggle
                 label="Enable Insets"
-                value={enableRowInsets.enabled}
-                onValueChange={(v) => setEnableRowInsets((prev) => ({ ...prev, enabled: v }))}
+                isOn={enableRowInsets.enabled}
+                onIsOnChange={(v) => setEnableRowInsets((prev) => ({ ...prev, enabled: v }))}
               />
               <HStack spacing={20}>
                 {[
@@ -187,11 +187,11 @@ export default function ModifiersScreen() {
                 ].map((group, i) => (
                   <VStack key={i} spacing={20}>
                     {group.map((key) => (
-                      <Switch
+                      <Toggle
                         key={key}
                         label={insets.find((inset) => inset.key === key)!.label}
-                        value={enableRowInsets[key as keyof typeof enableRowInsets]}
-                        onValueChange={(v) => setEnableRowInsets((prev) => ({ ...prev, [key]: v }))}
+                        isOn={enableRowInsets[key as keyof typeof enableRowInsets]}
+                        onIsOnChange={(v) => setEnableRowInsets((prev) => ({ ...prev, [key]: v }))}
                         modifiers={[disabled(!enableRowInsets.enabled)]}
                       />
                     ))}
@@ -233,10 +233,10 @@ export default function ModifiersScreen() {
                 </Text>
               ))}
             </Picker>
-            <Switch
+            <Toggle
               label="Allow Tightening"
-              value={allowTightening}
-              onValueChange={setAllowsTightening}
+              isOn={allowTightening}
+              onIsOnChange={setAllowsTightening}
             />
             <Text modifiers={[font({ size: 14 }), kerning(kerningValue)]}>Kerning Text</Text>
             <Slider min={0} max={10} onValueChange={setKerning} />
@@ -352,10 +352,10 @@ export default function ModifiersScreen() {
             </VStack>
 
             <VStack spacing={25}>
-              <Switch
+              <Toggle
                 label="Enable selection"
-                value={enabledSelection}
-                onValueChange={setEnabledSelection}
+                isOn={enabledSelection}
+                onIsOnChange={setEnabledSelection}
               />
               <Text
                 modifiers={[
@@ -392,10 +392,10 @@ export default function ModifiersScreen() {
           </Section>
           {/* Modifier usingscrollContentBackground and listRowBackground */}
           <Section title="Scroll Content Background Demo" modifiers={[listRowBackground(rowColor)]}>
-            <Switch
-              value={hideScrollBackground}
+            <Toggle
+              isOn={hideScrollBackground}
               label="Hide form background"
-              onValueChange={setHideScrollBackground}
+              onIsOnChange={setHideScrollBackground}
             />
             <ColorPicker
               label="Select a row color"
@@ -609,9 +609,9 @@ export default function ModifiersScreen() {
 
             {/* Disabled Modifier Demo */}
             <VStack spacing={8}>
-              <Switch
-                value={!isDisabled}
-                onValueChange={(value) => setIsDisabled(!value)}
+              <Toggle
+                isOn={!isDisabled}
+                onIsOnChange={(value) => setIsDisabled(!value)}
                 label="Enable Picker"
               />
               <Picker

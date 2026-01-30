@@ -20,8 +20,8 @@ export declare function useAwaitedScreensIcon(icon: NativeTabOptions['icon']): {
     src?: ImageSourcePropType;
     renderingMode?: "template" | "original";
 } | undefined;
-export declare function convertOptionsIconToRNScreensPropsIcon(icon: AwaitedIcon | undefined): TabsScreenProps['icon'];
-export declare function convertOptionsIconToIOSPropsIcon(icon: AwaitedIcon | undefined): PlatformIconIOS | undefined;
+export declare function convertOptionsIconToRNScreensPropsIcon(icon: AwaitedIcon | undefined, iconColor?: ColorValue): TabsScreenProps['icon'];
+export declare function convertOptionsIconToIOSPropsIcon(icon: AwaitedIcon | undefined, iconColor?: ColorValue): PlatformIconIOS | undefined;
 export declare function convertOptionsIconToAndroidPropsIcon(icon: AwaitedIcon): PlatformIconAndroid | undefined;
 export declare function convertComponentSrcToImageSource(src: React.ReactElement): {
     src: Promise<ImageSourcePropType | null>;

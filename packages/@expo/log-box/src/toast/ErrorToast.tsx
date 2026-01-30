@@ -12,7 +12,7 @@ import * as LogBoxData from '../Data/LogBoxData';
 import { LogBoxLog, useLogs } from '../Data/LogBoxLog';
 import { LogBoxMessage } from '../overlay/Message';
 import { parseUnexpectedThrownValue } from '../utils/parseUnexpectedThrownValue';
-import '../global.css';
+import '../overlay/Overlay.module.css';
 
 export function ErrorToastContainer() {
   useRejectionHandler();

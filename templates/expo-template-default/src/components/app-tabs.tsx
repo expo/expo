@@ -6,13 +6,13 @@ import {
   TabTriggerSlotProps,
   TabListProps,
 } from 'expo-router/ui';
+import { SymbolView } from 'expo-symbols';
 import React from 'react';
 import { Pressable, useColorScheme, View, StyleSheet } from 'react-native';
 
 import { ExternalLink } from './external-link';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
-import { IconSymbol } from './ui/icon-symbol';
 
 import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 
@@ -64,7 +64,11 @@ export function CustomTabList(props: TabListProps) {
         <ExternalLink href="https://docs.expo.dev" asChild>
           <Pressable style={styles.externalPressable}>
             <ThemedText type="link">Doc</ThemedText>
-            <IconSymbol color={colors.text} name="arrow.up.right.square" size={12} />
+            <SymbolView
+              tintColor={colors.text}
+              name={{ ios: 'arrow.up.right.square', web: 'link' }}
+              size={12}
+            />
           </Pressable>
         </ExternalLink>
       </ThemedView>

@@ -17,6 +17,7 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
+  s.dependency 'ExpoModulesJSI'
   s.dependency 'ReactCommon/turbomodule/core'
 
   s.compiler_flags = '-x objective-c++ -std=c++20'

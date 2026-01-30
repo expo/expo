@@ -21,7 +21,7 @@ export type SubmenuProps = {
      */
     button: ReactElement<ButtonProps>;
     /**
-     * Children of the submenu. Only `Button`, `Switch`, `Picker` and `Submenu` elements should be used.
+     * Children of the submenu. Only `Button`, `Toggle`, `Picker` and `Submenu` elements should be used.
      */
     children: ReactNode;
 };

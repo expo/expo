@@ -1,8 +1,10 @@
 import { useLoaderData, useLocalSearchParams, usePathname } from 'expo-router';
 import { ImmutableRequest } from 'expo-router/server';
-import { Container } from '../../components/Container';
-import { Table, TableRow } from '../../components/Table';
+import { Suspense } from 'react';
+
+import { Loading } from '../../components/Loading';;
 import { SiteLinks, SiteLink } from '../../components/SiteLink';
+import { Table, TableRow } from '../../components/Table';
 
 export async function generateStaticParams(params: {
   id: 'one' | 'two';
@@ -23,13 +25,21 @@ export async function loader(_: ImmutableRequest, params: Record<string, string 
   });
 }
 
-export default function PostById() {
+export default function PostByIdRoute() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <PostByIdScreen />
+    </Suspense>
+  );
+}
+
+const PostByIdScreen = () => {
   const pathname = usePathname();
   const localParams = useLocalSearchParams();
   const data = useLoaderData<typeof loader>();
 
   return (
-    <Container>
+    <>
       <Table>
         <TableRow label="Pathname" value={pathname} testID="pathname-result" />
         <TableRow label="Local Params" value={localParams} testID="localparams-result" />
@@ -40,6 +50,6 @@ export default function PostById() {
         <SiteLink href="/">Go to Index</SiteLink>
         <SiteLink href="/second">Go to Second</SiteLink>
       </SiteLinks>
-    </Container>
+    </>
   );
 }

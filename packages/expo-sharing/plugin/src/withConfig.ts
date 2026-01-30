@@ -61,7 +61,7 @@ export const withConfig: ConfigPlugin<{
                 {
                   targetName,
                   bundleIdentifier,
-                  entitlements: [],
+                  entitlements: {},
                 },
               ],
             },
@@ -69,7 +69,7 @@ export const withConfig: ConfigPlugin<{
         },
       },
     };
-    configIndex = 0;
+    configIndex = config.extra.eas.build.experimental.ios.appExtensions.length - 1;
   }
 
   if (config.extra) {

@@ -5,6 +5,7 @@ import { importMetaRegistry } from '../utils/importMetaRegistry';
 export interface RequestAPISetup extends RequestAPI {
   origin?: string;
   environment?: string | null;
+  requestHeaders?: Headers;
   waitUntil?(promise: Promise<unknown>): void;
 }
 
@@ -63,6 +64,7 @@ export function createRequestScope<F extends RequestContextFactory>(
       ...setup,
       origin: setup.origin,
       environment: setup.environment,
+      requestHeaders: setup.requestHeaders,
       waitUntil,
       deferTask: setup.deferTask,
       setResponseHeaders(updateHeaders) {

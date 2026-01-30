@@ -6,6 +6,7 @@ export type UpdateResponseHeaders =
 export interface RequestAPI {
   origin?: string;
   environment?: string | null;
+  requestHeaders?: Headers;
   waitUntil?(promise: Promise<unknown>): void;
   deferTask?(fn: () => Promise<unknown> | void): void;
   setResponseHeaders?(updateHeaders: UpdateResponseHeaders): void;

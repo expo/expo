@@ -1,7 +1,23 @@
 import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import React from 'react';
 import { type StyleProp, type TextStyle } from 'react-native';
 export type StackScreenTitleProps = {
-    children?: string;
+    /**
+     * The title content. Pass a string for a plain text title,
+     * or a custom component when `asChild` is enabled.
+     */
+    children?: React.ReactNode;
+    /**
+     * Use this to render a custom component as the header title.
+     *
+     * @example
+     * ```tsx
+     * <Stack.Screen.Title asChild>
+     *   <MyCustomTitle />
+     * </Stack.Screen.Title>
+     * ```
+     */
+    asChild?: boolean;
     style?: StyleProp<{
         fontFamily?: TextStyle['fontFamily'];
         fontSize?: TextStyle['fontSize'];
@@ -9,12 +25,22 @@ export type StackScreenTitleProps = {
         color?: string;
         textAlign?: 'left' | 'center';
     }>;
+    /**
+     * Style properties for the large title header.
+     *
+     * @platform ios
+     */
     largeStyle?: StyleProp<{
         fontFamily?: TextStyle['fontFamily'];
         fontSize?: TextStyle['fontSize'];
         fontWeight?: Exclude<TextStyle['fontWeight'], number>;
         color?: string;
     }>;
+    /**
+     * Enables large title mode.
+     *
+     * @platform ios
+     */
     large?: boolean;
 };
 /**
@@ -23,6 +49,7 @@ export type StackScreenTitleProps = {
  * Can be used inside Stack.Screen in a layout or directly inside a screen component.
  *
  * @example
+ * String title in a layout:
  * ```tsx
  * import { Stack } from 'expo-router';
  *
@@ -38,6 +65,7 @@ export type StackScreenTitleProps = {
  * ```
  *
  * @example
+ * String title inside a screen:
  * ```tsx
  * import { Stack } from 'expo-router';
  *
@@ -51,8 +79,24 @@ export type StackScreenTitleProps = {
  * }
  * ```
  *
- * @platform ios
+ * @example
+ * Custom component as the title using `asChild`:
+ * ```tsx
+ * import { Stack } from 'expo-router';
+ *
+ * export default function Layout() {
+ *   return (
+ *     <Stack>
+ *       <Stack.Screen name="index">
+ *         <Stack.Screen.Title asChild>
+ *           <MyCustomTitle />
+ *         </Stack.Screen.Title>
+ *       </Stack.Screen>
+ *     </Stack>
+ *   );
+ * }
+ * ```
  */
-export declare function StackScreenTitle(props: StackScreenTitleProps): import("react").JSX.Element;
+export declare function StackScreenTitle(props: StackScreenTitleProps): React.JSX.Element;
 export declare function appendStackScreenTitlePropsToOptions(options: NativeStackNavigationOptions, props: StackScreenTitleProps): NativeStackNavigationOptions;
 //# sourceMappingURL=StackScreenTitle.d.ts.map

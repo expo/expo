@@ -114,9 +114,9 @@ await contact.update({ givenName: 'John', familyName: 'Doe' });
 
 </Collapsible>
 
-<Collapsible summary="Retreiving contacts">
+<Collapsible summary="Retrieving contacts">
 
-```tsx Retreiving contacts
+```tsx Retrieving contacts
 const contactDetails = await Contact.getAllDetails([ContactField.FULL_NAME, ContactField.PHONES], {
   limit: 20,
   offset: 10,

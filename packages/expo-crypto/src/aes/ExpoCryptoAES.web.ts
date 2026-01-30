@@ -153,10 +153,10 @@ class SealedData {
     return useBase64 ? uint8ArrayToBase64(bytes) : bytes;
   }
   async ciphertext(options?: {
-    withTag?: boolean;
+    includeTag?: boolean;
     encoding?: 'bytes' | 'base64';
   }): Promise<Uint8Array | string> {
-    const includeTag = options?.withTag ?? false;
+    const includeTag = options?.includeTag ?? false;
     const useBase64 = options?.encoding === 'base64';
 
     const taggedCiphertextLength = this.combinedSize - this.ivSize;
@@ -233,7 +233,7 @@ class AesCryptoModule extends NativeModule {
         }
       : baseParams;
 
-    const taggedCiphertext = await sealedData.ciphertext({ withTag: true });
+    const taggedCiphertext = await sealedData.ciphertext({ includeTag: true });
     const plaintextBuffer = await crypto.subtle.decrypt(
       gcmParams,
       key.key,

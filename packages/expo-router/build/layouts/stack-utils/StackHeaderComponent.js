@@ -62,18 +62,35 @@ function appendStackHeaderPropsToOptions(options, props) {
     if (props.children && !props.asChild) {
         console.warn(`To render a custom header, set the 'asChild' prop to true on Stack.Header.`);
     }
+    // Determine if header should be transparent:
+    // 1. Explicitly set via `transparent` prop
+    // 2. Implicitly via backgroundColor === 'transparent'
+    // 3. Implicitly when blurEffect is set (required for blurEffect to work)
+    const isBackgroundTransparent = flattenedStyle?.backgroundColor === 'transparent';
+    const hasBlurEffect = props.blurEffect !== undefined;
+    const shouldBeTransparent = props.transparent === true ||
+        (props.transparent !== false && (isBackgroundTransparent || hasBlurEffect));
+    // Warn if blurEffect is set but transparent is explicitly false
+    if (props.blurEffect && props.transparent === false) {
+        console.warn(`Stack.Header: 'blurEffect' requires 'transparent' to be enabled.`);
+    }
     return {
         ...options,
         headerShown: !props.hidden,
         headerBlurEffect: props.blurEffect,
+        ...(shouldBeTransparent && { headerTransparent: true }),
+        ...(props.transparent === false && { headerTransparent: false }),
+        ...(flattenedStyle?.color && { headerTintColor: flattenedStyle.color }),
         headerStyle: {
             backgroundColor: flattenedStyle?.backgroundColor,
         },
         headerLargeStyle: {
             backgroundColor: flattenedLargeStyle?.backgroundColor,
         },
-        headerShadowVisible: flattenedStyle?.shadowColor !== 'transparent',
-        headerLargeTitleShadowVisible: flattenedLargeStyle?.shadowColor !== 'transparent',
+        ...(flattenedStyle?.shadowColor === 'transparent' && { headerShadowVisible: false }),
+        ...(flattenedLargeStyle?.shadowColor === 'transparent' && {
+            headerLargeTitleShadowVisible: false,
+        }),
     };
 }
 //# sourceMappingURL=StackHeaderComponent.js.map

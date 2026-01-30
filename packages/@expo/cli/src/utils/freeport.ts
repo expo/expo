@@ -15,17 +15,26 @@ async function testHostPortAsync(port: number, host: string | null): Promise<boo
   });
 }
 
-export async function testPortAsync(
-  port: number,
-  hostnames?: (string | null)[]
-): Promise<number | null> {
+export async function testPortAsync(port: number, hostnames?: (string | null)[]): Promise<boolean> {
   if (!hostnames?.length) {
     hostnames = [null];
   }
   for (const host of hostnames) {
     if (!(await testHostPortAsync(port, host))) {
-      return null;
+      return false;
     }
   }
-  return port;
+  return true;
+}
+
+export async function freePortAsync(
+  portStart: number,
+  hostnames?: (string | null)[]
+): Promise<number | null> {
+  for (let port = portStart; port <= 65_535; port++) {
+    if (await testPortAsync(port, hostnames)) {
+      return port;
+    }
+  }
+  return null;
 }

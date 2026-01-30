@@ -5,11 +5,16 @@ import SwiftUI
 internal let GLOBAL_EVENT_NAME = "onGlobalEvent"
 
 extension ExpoSwiftUI {
+  public enum IgnoreSafeArea: String, Enumerable {
+    case all
+    case keyboard
+  }
+
   /**
    Protocol for view props that support controlling safe area behavior of SwiftUI content. Used by HostView
    */
   public protocol SafeAreaControllable {
-    var ignoreSafeAreaKeyboardInsets: Bool { get set }
+    var ignoreSafeArea: IgnoreSafeArea? { get set }
   }
 
   /**

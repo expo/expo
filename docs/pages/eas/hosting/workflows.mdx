@@ -39,7 +39,7 @@ You can also test this workflow by triggering it manually:
 
 ## Create a PR preview workflow
 
-Add the following file to **.eas/workflows/pr-preview.yml**. This will automatically deploy a preview of your website whenever a pull request is created or updated, and post a comment to the PR with the preview URL.
+Add the following file to **.eas/workflows/pr-preview.yml**. This will automatically deploy a preview of your website whenever a pull request is created or updated, and post a comment to the PR with the deployment details.
 
 ```yaml .eas/workflows/pr-preview.yml
 name: PR Preview
@@ -55,8 +55,6 @@ jobs:
   comment:
     needs: [deploy]
     type: github-comment
-    params:
-      message: 'Preview URL: ${{ needs.deploy.outputs.deploy_url }}'
 ```
 
-This workflow will run whenever a pull request is opened, reopened, or synchronized. The `comment` job will automatically post the preview URL to the pull request, making it easy for reviewers to test your changes.
+This workflow will run whenever a pull request is opened, reopened, or synchronized. The `comment` job will automatically discover the deployment and post its details to the pull request, making it easy for reviewers to test your changes.

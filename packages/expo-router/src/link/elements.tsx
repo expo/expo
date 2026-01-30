@@ -70,6 +70,17 @@ export interface LinkMenuActionProps {
    */
   image?: ImageRef | null;
   /**
+   * Controls how image-based icons are rendered on iOS.
+   *
+   * - `'template'`: iOS applies tint color to the icon
+   * - `'original'`: Preserves original icon colors
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+   *
+   * @platform ios
+   */
+  imageRenderingMode?: 'template' | 'original';
+  /**
    * If `true`, the menu item will be displayed as selected.
    */
   isOn?: boolean;

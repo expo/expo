@@ -53,13 +53,18 @@ export interface SrcIcon {
         selected: ImageSourcePropType | React.ReactElement;
       };
   /**
-   * Controls how the icon is rendered on iOS.
+   * Controls how the image icon is rendered on iOS.
    *
-   * - `template` (default): Icon is rendered as a template image, allowing iOS to apply the selected/unselected tint color.
-   * - `original`: Icon is rendered with its original colors preserved, useful for icons with gradients or multiple colors.
+   * - `'template'`: iOS applies tint color to the icon (selected/unselected states)
+   * - `'original'`: Preserves original icon colors
+   *
+   * **Default behavior:**
+   * - If tab bar icon color is configured, defaults to `'template'`
+   * - If no icon color is set, defaults to `'original'`
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
    *
    * @platform ios
-   * @default "template"
    */
   renderingMode?: 'template' | 'original';
 }

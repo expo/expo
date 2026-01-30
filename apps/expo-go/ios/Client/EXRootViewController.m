@@ -353,6 +353,21 @@ NS_ASSUME_NONNULL_BEGIN
     if (isShowingApp && appRecord.appManager.reactHost) {
       [[DevMenuManager shared] updateCurrentBridge:[RCTBridge currentBridge]];
       [[DevMenuManager shared] updateCurrentManifest:appRecord.appLoader.manifest manifestURL:appRecord.appLoader.manifestUrl];
+
+      DevMenuConfiguration *config = [DevMenuManager shared].configuration;
+
+      BOOL isDev = appRecord.appLoader.manifest.isDevelopmentMode || appRecord.appLoader.manifest.isUsingDeveloperTool;
+      BOOL isSnack = [self _isSnackURL:appRecord.appLoader.manifestUrl];
+
+      if (!isDev) {
+        config.showDebuggingTip = NO;
+        config.showFastRefresh = NO;
+        config.showHostUrl = isSnack;
+      } else {
+        config.showDebuggingTip = YES;
+        config.showFastRefresh = YES;
+        config.showHostUrl = NO;
+      }
     }
   }
 
@@ -411,6 +426,15 @@ NS_ASSUME_NONNULL_BEGIN
     UIInterfaceOrientationMask orientationMask = [self supportedInterfaceOrientations];
     [ScreenOrientationRegistry.shared enforceDesiredDeviceOrientationWithOrientationMask:orientationMask];
   }
+}
+
+- (BOOL)_isSnackURL:(nullable NSURL *)url
+{
+  if (!url) {
+    return NO;
+  }
+  NSString *query = [url query];
+  return query && ([query containsString:@"snack"] || [query containsString:@"snack-channel"]);
 }
 
 @end

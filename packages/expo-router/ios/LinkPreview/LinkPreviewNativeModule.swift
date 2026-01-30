@@ -52,6 +52,9 @@ public class LinkPreviewNativeModule: Module {
       Prop("title") { (view: LinkPreviewNativeActionView, title: String) in
         view.title = title
       }
+      Prop("label") { (view: LinkPreviewNativeActionView, label: String?) in
+        view.label = label
+      }
       Prop("identifier") { (view: LinkPreviewNativeActionView, identifier: String) in
         view.identifier = identifier
       }
@@ -60,6 +63,9 @@ public class LinkPreviewNativeModule: Module {
       }
       Prop("image") { (view: LinkPreviewNativeActionView, image: SharedRef<UIImage>?) in
         view.customImage = image
+      }
+      Prop("imageRenderingMode") { (view: LinkPreviewNativeActionView, mode: ImageRenderingMode?) in
+        view.imageRenderingMode = mode
       }
       Prop("disabled") { (view: LinkPreviewNativeActionView, disabled: Bool?) in
         view.disabled = disabled ?? false

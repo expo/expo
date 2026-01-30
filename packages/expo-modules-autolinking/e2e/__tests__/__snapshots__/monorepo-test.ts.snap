@@ -8,7 +8,7 @@ exports[`monorepo generate-modules-provider { app: 'ejected', platform: 'apple' 
  * but only these that are written in Swift and use the new API for creating Expo modules.
  */
 
-@_implementationOnly import ExpoModulesCore
+internal import ExpoModulesCore
 
 
 @objc(file)
@@ -43,7 +43,7 @@ exports[`monorepo generate-modules-provider { app: 'managed', platform: 'apple' 
  * but only these that are written in Swift and use the new API for creating Expo modules.
  */
 
-@_implementationOnly import ExpoModulesCore
+internal import ExpoModulesCore
 
 
 @objc(file)
@@ -78,7 +78,7 @@ exports[`monorepo generate-modules-provider { app: 'with-sentry', platform: 'app
  * but only these that are written in Swift and use the new API for creating Expo modules.
  */
 
-@_implementationOnly import ExpoModulesCore
+internal import ExpoModulesCore
 
 
 @objc(file)

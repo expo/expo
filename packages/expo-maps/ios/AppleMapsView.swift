@@ -13,6 +13,7 @@ class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var cameraPosition: CameraPosition
   @Field var uiSettings: MapUISettings = MapUISettings()
   @Field var properties: MapProperties = MapProperties()
+  @Field var colorScheme: MapColorScheme = .automatic
   let onMapClick = EventDispatcher()
   let onMarkerClick = EventDispatcher()
   let onPolylineClick = EventDispatcher()

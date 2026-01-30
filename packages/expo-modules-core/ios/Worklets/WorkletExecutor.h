@@ -18,4 +18,18 @@ NS_SWIFT_NAME(WorkletExecutor)
 + (void)execute:(nonnull EXJavaScriptSerializable *)serializable
         runtime:(nonnull EXWorkletRuntime *)runtime;
 
+/**
+ Schedules the worklet to be executed asynchronously on the given runtime with arguments.
+ */
++ (void)schedule:(nonnull EXJavaScriptSerializable *)serializable
+         runtime:(nonnull EXWorkletRuntime *)runtime
+       arguments:(nonnull NSArray *)arguments;
+
+/**
+ Executes the worklet synchronously on the given runtime with arguments.
+ */
++ (void)execute:(nonnull EXJavaScriptSerializable *)serializable
+        runtime:(nonnull EXWorkletRuntime *)runtime
+      arguments:(nonnull NSArray *)arguments;
+
 @end

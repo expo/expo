@@ -353,17 +353,17 @@ describe('Icons', () => {
     },
     {
       src: { uri: 'some-uri' },
-      expectedIcon: { type: 'templateSource', templateSource: { uri: 'some-uri' } },
+      expectedIcon: { type: 'imageSource', imageSource: { uri: 'some-uri' } },
     },
     {
       src: { uri: 'some-uri' },
       drawable: 'ic_some_drawable',
-      expectedIcon: { type: 'templateSource', templateSource: { uri: 'some-uri' } },
+      expectedIcon: { type: 'imageSource', imageSource: { uri: 'some-uri' } },
     },
     {
       src: { uri: 'some-uri' },
       material: 'ic_some_drawable',
-      expectedIcon: { type: 'templateSource', templateSource: { uri: 'some-uri' } },
+      expectedIcon: { type: 'imageSource', imageSource: { uri: 'some-uri' } },
     },
   ] as (DrawableIcon &
     MaterialIcon &

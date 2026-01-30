@@ -99,12 +99,14 @@ export function convertTabPropsToOptions(
     unstable_nativeProps,
     disableAutomaticContentInsets,
     contentStyle,
+    disableTransparentOnScrollEdge,
   }: NativeTabTriggerProps,
   isDynamic: boolean = false
 ) {
   const initialOptions: NativeTabOptions = isDynamic
     ? {
         ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
+        ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
       }
     : {
         hidden: !!hidden,
@@ -118,6 +120,7 @@ export function convertTabPropsToOptions(
         role,
         nativeProps: unstable_nativeProps,
         disableAutomaticContentInsets,
+        ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
       };
   const allowedChildren = filterAllowedChildrenElements(children, [
     NativeTabsTriggerBadge,

@@ -209,8 +209,14 @@ function Screen(props: {
       tabBarItemBadgeTextColor={badgeTextColor}
       standardAppearance={standardAppearance}
       scrollEdgeAppearance={scrollEdgeAppearance}
-      icon={convertOptionsIconToRNScreensPropsIcon(icon)}
-      selectedIcon={convertOptionsIconToIOSPropsIcon(selectedIcon)}
+      icon={convertOptionsIconToRNScreensPropsIcon(
+        icon,
+        standardAppearance?.stacked?.normal?.tabBarItemIconColor
+      )}
+      selectedIcon={convertOptionsIconToIOSPropsIcon(
+        selectedIcon,
+        standardAppearance?.stacked?.selected?.tabBarItemIconColor
+      )}
       title={title}
       freezeContents={false}
       systemItem={options.role}

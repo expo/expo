@@ -30,6 +30,7 @@ const RouterToolbarItemView: React.ComponentType<
     title?: string;
     systemImageName?: SFSymbol;
     image?: number;
+    imageRenderingMode?: 'template' | 'original';
     type?: string;
     titleStyle?: {
       fontFamily?: string;

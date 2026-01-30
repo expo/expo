@@ -18,6 +18,7 @@ const generalArgs: Spec = {
 const buildCommonArgs: Spec = {
   // Types
   '--debug': arg.COUNT,
+  '--dry-run': arg.COUNT,
   '--help': arg.COUNT,
   '--release': arg.COUNT,
   '--verbose': arg.COUNT,

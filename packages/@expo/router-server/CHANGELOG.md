@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Deprecate undocumented `expo-router/rsc/headers` RSC API in favor of `expo-server`'s `requestHeaders` runtime API ([#42678](https://github.com/expo/expo/pull/42678) by [@hassankhan](https://github.com/hassankhan))
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.2 — 2026-01-23
 
 _This version does not introduce any user-facing changes._

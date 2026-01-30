@@ -144,6 +144,9 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 
 - (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload
 {
+  if (!_eventEmitter) {
+    return;
+  }
   const auto &eventEmitter = static_cast<const ExpoViewEventEmitter &>(*_eventEmitter);
 
   eventEmitter.dispatch([normalizeEventName(eventName) UTF8String], [payload](jsi::Runtime &runtime) {

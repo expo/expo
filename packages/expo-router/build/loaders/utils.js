@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getLoaderModulePath = getLoaderModulePath;
-exports.fetchLoaderModule = fetchLoaderModule;
+exports.fetchLoader = fetchLoader;
 const url_1 = require("../utils/url");
 /**
  * Convert a route's pathname to a loader module path.
@@ -27,7 +27,7 @@ function getLoaderModulePath(routePath) {
  * @see import('packages/@expo/cli/src/start/server/metro/createServerRouteMiddleware.ts').createRouteHandlerMiddleware
  * @see import('packages/expo-server/src/vendor/environment/common.ts').createEnvironment
  */
-async function fetchLoaderModule(routePath) {
+async function fetchLoader(routePath) {
     const loaderPath = getLoaderModulePath(routePath);
     const response = await fetch(loaderPath, {
         headers: {

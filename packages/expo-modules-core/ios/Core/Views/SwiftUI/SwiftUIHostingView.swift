@@ -125,8 +125,8 @@ extension ExpoSwiftUI {
 
       if !hasSafeAreaBeenConfigured,
          let safeAreaProps = props as? SafeAreaControllable,
-         safeAreaProps.ignoreSafeAreaKeyboardInsets {
-        hostingController.disableSafeArea()
+         let ignoreSafeArea = safeAreaProps.ignoreSafeArea {
+        hostingController.disableSafeArea(ignoreSafeArea)
         hasSafeAreaBeenConfigured = true
       }
     }
@@ -263,29 +263,44 @@ extension ExpoSwiftUI {
 }
 
 extension UIHostingController {
-    func disableSafeArea() {
-      if #available(iOS 16.4, tvOS 16.4, macOS 13.3, *) {
+  func disableSafeArea(_ mode: ExpoSwiftUI.IgnoreSafeArea) {
+    if #available(iOS 16.4, tvOS 16.4, macOS 13.3, *) {
+      switch mode {
+      case .all:
+        self.safeAreaRegions.remove(.all)
+      case .keyboard:
         self.safeAreaRegions.remove(.keyboard)
+      }
+    } else {
+      // For older versions
+      // https://gist.github.com/steipete/da72299613dcc91e8d729e48b4bb582c
+      // https://developer.apple.com/forums/thread/658432
+      guard let viewClass = object_getClass(view) else { return }
+
+      let suffix = mode == .all ? "_IgnoresSafeArea" : "_IgnoresKeyboard"
+      let viewSubclassName = String(cString: class_getName(viewClass)).appending(suffix)
+      if let viewSubclass = NSClassFromString(viewSubclassName) {
+          object_setClass(view, viewSubclass)
       } else {
-        // For older versions
-        // https://gist.github.com/steipete/da72299613dcc91e8d729e48b4bb582c
-        // https://developer.apple.com/forums/thread/658432
-        guard let viewClass = object_getClass(view) else { return }
+          guard let viewClassNameUtf8 = (viewSubclassName as NSString).utf8String else { return }
+          guard let viewSubclass = objc_allocateClassPair(viewClass, viewClassNameUtf8, 0) else { return }
 
-        let viewSubclassName = String(cString: class_getName(viewClass)).appending("_IgnoresKeyboard")
-        if let viewSubclass = NSClassFromString(viewSubclassName) {
-            object_setClass(view, viewSubclass)
-        } else {
-            guard let viewClassNameUtf8 = (viewSubclassName as NSString).utf8String else { return }
-            guard let viewSubclass = objc_allocateClassPair(viewClass, viewClassNameUtf8, 0) else { return }
+          if mode == .all,
+             let method = class_getInstanceMethod(UIView.self, #selector(getter: UIView.safeAreaInsets)) {
+              let safeAreaInsets: @convention(block) (AnyObject) -> UIEdgeInsets = { _ in
+                  return .zero
+              }
+              class_addMethod(viewSubclass, #selector(getter: UIView.safeAreaInsets),
+                              imp_implementationWithBlock(safeAreaInsets), method_getTypeEncoding(method))
+          }
 
-            if let method = class_getInstanceMethod(viewClass, NSSelectorFromString("keyboardWillShowWithNotification:")) {
-                let keyboardWillShow: @convention(block) (AnyObject, AnyObject) -> Void = { _, _ in }
-                class_addMethod(viewSubclass, NSSelectorFromString("keyboardWillShowWithNotification:"),
-                                imp_implementationWithBlock(keyboardWillShow), method_getTypeEncoding(method))
-            }
-            objc_registerClassPair(viewSubclass)
-            object_setClass(view, viewSubclass)
+          if let method = class_getInstanceMethod(viewClass, NSSelectorFromString("keyboardWillShowWithNotification:")) {
+              let keyboardWillShow: @convention(block) (AnyObject, AnyObject) -> Void = { _, _ in }
+              class_addMethod(viewSubclass, NSSelectorFromString("keyboardWillShowWithNotification:"),
+                              imp_implementationWithBlock(keyboardWillShow), method_getTypeEncoding(method))
+          }
+          objc_registerClassPair(viewSubclass)
+          object_setClass(view, viewSubclass)
         }
       }
     }

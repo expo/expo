@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`tasks:android command without prebuild should display help message for --help/-h option 1`] = `
+"Usage: expo-brownfield tasks:android [<options>]
+
+Options:
+  --help, -h                    display help for 'tasks:android'
+  --verbose                     output all subcommands output to the terminal
+  --library, -l                 name of the brownfield library"
+`;
+
+exports[`tasks:android command without prebuild should display help message for --help/-h option 2`] = `
+"Usage: expo-brownfield tasks:android [<options>]
+
+Options:
+  --help, -h                    display help for 'tasks:android'
+  --verbose                     output all subcommands output to the terminal
+  --library, -l                 name of the brownfield library"
+`;

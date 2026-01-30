@@ -249,3 +249,5 @@ rules:
     mentions: ['kadikraman']
   - patterns: ['tools/**']
     mentions: ['Kudo', 'tsapeta']
+  - patterns: ['packages/expo-widgets/**']
+    mentions: ['jakex7']

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseArgs = void 0;
+exports.getCommand = exports.parseArgs = void 0;
 const arg_1 = __importDefault(require("arg"));
 const constants_1 = require("../constants");
 const parseArgs = ({ spec, argv, stopAtPositional }) => {
@@ -19,3 +19,10 @@ const parseArgs = ({ spec, argv, stopAtPositional }) => {
     }
 };
 exports.parseArgs = parseArgs;
+const getCommand = (args) => {
+    if ('_' in args && args['_'].length > 0) {
+        return args['_'][0];
+    }
+    return '';
+};
+exports.getCommand = getCommand;

@@ -61,19 +61,21 @@ function isAwaitedIcon(icon: NativeTabOptions['icon']): icon is AwaitedIcon {
 }
 
 export function convertOptionsIconToRNScreensPropsIcon(
-  icon: AwaitedIcon | undefined
+  icon: AwaitedIcon | undefined,
+  iconColor?: ColorValue
 ): TabsScreenProps['icon'] {
   if (!icon) {
     return undefined;
   }
   return {
-    ios: convertOptionsIconToIOSPropsIcon(icon),
+    ios: convertOptionsIconToIOSPropsIcon(icon, iconColor),
     android: convertOptionsIconToAndroidPropsIcon(icon),
   };
 }
 
 export function convertOptionsIconToIOSPropsIcon(
-  icon: AwaitedIcon | undefined
+  icon: AwaitedIcon | undefined,
+  iconColor?: ColorValue
 ): PlatformIconIOS | undefined {
   if (icon && 'sf' in icon && icon.sf) {
     return {
@@ -82,7 +84,9 @@ export function convertOptionsIconToIOSPropsIcon(
     };
   }
   if (icon && 'src' in icon && icon.src) {
-    if (icon.renderingMode === 'original') {
+    const effectiveRenderingMode =
+      icon.renderingMode ?? (iconColor !== undefined ? 'template' : 'original');
+    if (effectiveRenderingMode === 'original') {
       return { type: 'imageSource', imageSource: icon.src };
     }
     return { type: 'templateSource', templateSource: icon.src };

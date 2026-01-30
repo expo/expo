@@ -3,9 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.convertBcp47ToResourceQualifier = convertBcp47ToResourceQualifier;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+function convertBcp47ToResourceQualifier(locale) {
+    return `b+${locale.replaceAll('-', '+')}`;
+}
 function withExpoLocalizationIos(config, data) {
     const mergedConfig = { ...config.extra, ...data };
     const supportedLocales = typeof mergedConfig.supportedLocales === 'object' &&
@@ -75,7 +79,8 @@ function withExpoLocalizationAndroid(config, data) {
         });
         config = (0, config_plugins_1.withAppBuildGradle)(config, (config) => {
             if (config.modResults.language === 'groovy') {
-                config.modResults.contents = config_plugins_1.AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(config.modResults.contents, 'defaultConfig', `    resourceConfigurations += [${supportedLocales.map((lang) => `"${lang}"`).join(', ')}]\n    `);
+                const resourceQualifiers = supportedLocales.map((locale) => convertBcp47ToResourceQualifier(locale));
+                config.modResults.contents = config_plugins_1.AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(config.modResults.contents, 'defaultConfig', `    resourceConfigurations += [${resourceQualifiers.map((qualifier) => `"${qualifier}"`).join(', ')}]\n    `);
             }
             else {
                 config_plugins_1.WarningAggregator.addWarningAndroid('expo-localization supportedLocales', `Cannot automatically configure app build.gradle if it's not groovy`);

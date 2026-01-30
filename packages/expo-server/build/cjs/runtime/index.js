@@ -46,6 +46,7 @@ function createRequestScope(scopeDefinition, makeRequestAPISetup) {
             ...setup,
             origin: setup.origin,
             environment: setup.environment,
+            requestHeaders: setup.requestHeaders,
             waitUntil,
             deferTask: setup.deferTask,
             setResponseHeaders(updateHeaders) {

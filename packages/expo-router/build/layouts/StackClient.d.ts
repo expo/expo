@@ -164,7 +164,7 @@ declare const Stack: ((props: ComponentProps<typeof RNStack>) => React.JSX.Eleme
     Header: typeof import("./stack-utils/StackHeaderComponent").StackHeaderComponent;
     SearchBar: typeof StackSearchBar;
     Toolbar: {
-        ({ children, placement, asChild }: import("./stack-utils").StackToolbarProps): React.JSX.Element;
+        (props: import("./stack-utils").StackToolbarProps): React.JSX.Element;
         Button: React.FC<import("./stack-utils").StackToolbarButtonProps>;
         Menu: React.FC<import("./stack-utils").StackToolbarMenuProps>;
         MenuAction: React.FC<import("./stack-utils").StackToolbarMenuActionProps>;

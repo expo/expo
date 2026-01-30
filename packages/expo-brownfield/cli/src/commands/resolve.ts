@@ -1,6 +1,6 @@
 import type { AndroidCommand, CommandEntry } from './types';
 import { Args, Errors } from '../constants';
-import { parseArgs } from '../utils';
+import { getCommand, parseArgs } from '../utils';
 import { Commands } from './commands';
 
 export const resolveCommand = (): CommandEntry => {
@@ -13,7 +13,11 @@ export const resolveCommand = (): CommandEntry => {
     return Commands.version;
   }
 
-  const command = args['_']?.length > 0 ? args['_'][0] : '';
+  if (!args['_']?.length) {
+    return Commands.help;
+  }
+
+  const command = getCommand(args);
   if (command === 'build:android' || command === 'tasks:android') {
     return resolveAndroid(command);
   }

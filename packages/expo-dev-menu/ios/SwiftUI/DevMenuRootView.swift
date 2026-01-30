@@ -17,7 +17,10 @@ struct DevMenuRootView: View {
 
         #if !os(tvOS)
         if !viewModel.isOnboardingFinished {
-          DevMenuOnboardingView(onFinish: viewModel.finishOnboarding)
+          DevMenuOnboardingView(
+            onFinish: viewModel.finishOnboarding,
+            appName: viewModel.configuration.onboardingAppName ?? "your development builds"
+          )
         }
         #endif
       }

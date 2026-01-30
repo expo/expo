@@ -12,10 +12,14 @@ export interface StackScreenBackButtonProps {
     style?: NativeStackNavigationOptions['headerBackTitleStyle'];
     /**
      * Whether to show a context menu when long pressing the back button.
+     *
+     * @platform ios
      */
     withMenu?: boolean;
     /**
      * The display mode for the back button.
+     *
+     * @platform ios
      */
     displayMode?: ScreenStackHeaderConfigProps['backButtonDisplayMode'];
     /**
@@ -60,8 +64,6 @@ export interface StackScreenBackButtonProps {
  *   );
  * }
  * ```
- *
- * @platform ios
  */
 export declare function StackScreenBackButton(props: StackScreenBackButtonProps): import("react").JSX.Element;
 export declare function appendStackScreenBackButtonPropsToOptions(options: NativeStackNavigationOptions, props: StackScreenBackButtonProps): NativeStackNavigationOptions;

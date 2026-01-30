@@ -11,6 +11,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.gson.Gson
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -523,29 +525,34 @@ class HomeAppViewModel(
   fun scanQR(
     context: Context,
     onSuccess: (String) -> Unit,
-    onError: (String) -> Unit = {}
+    onError: (String) -> Unit = {},
+    onNoPlayServices: () -> Unit
   ) {
-    val options = GmsBarcodeScannerOptions
-      .Builder()
-      .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-      .build()
+    if (isPlayServicesAvailable(context)) {
+      val options = GmsBarcodeScannerOptions
+        .Builder()
+        .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+        .build()
 
-    val scanner = GmsBarcodeScanning.getClient(context, options)
+      val scanner = GmsBarcodeScanning.getClient(context, options)
 
-    scanner.startScan()
-      .addOnSuccessListener { barcode ->
-        val url = barcode.rawValue ?: run {
-          onError("No QR code data found")
-          return@addOnSuccessListener
+      scanner.startScan()
+        .addOnSuccessListener { barcode ->
+          val url = barcode.rawValue ?: run {
+            onError("No QR code data found")
+            return@addOnSuccessListener
+          }
+          onSuccess(url)
         }
-        onSuccess(url)
-      }
-      .addOnCanceledListener {
-        onError("QR code scan cancelled")
-      }
-      .addOnFailureListener { exception ->
-        onError("QR code scan failed: ${exception.message ?: "Unknown error"}")
-      }
+        .addOnCanceledListener {
+          onError("QR code scan cancelled")
+        }
+        .addOnFailureListener { exception ->
+          onError("QR code scan failed: ${exception.message ?: "Unknown error"}")
+        }
+    } else {
+      onNoPlayServices()
+    }
   }
 
   /**
@@ -625,6 +632,12 @@ class HomeAppViewModel(
       }
       updateUserReviewState(apps.dataFlow.value.size, snacks.dataFlow.value.size)
     }
+  }
+
+  private fun isPlayServicesAvailable(context: Context): Boolean {
+    val googleApiAvailability = GoogleApiAvailability.getInstance()
+    val resultCode = googleApiAvailability.isGooglePlayServicesAvailable(context)
+    return resultCode == ConnectionResult.SUCCESS
   }
 }
 

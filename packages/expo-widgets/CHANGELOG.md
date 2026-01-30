@@ -6,7 +6,15 @@
 
 ### 🎉 New features
 
+- Add push-to-start token listener. ([#42721](https://github.com/expo/expo/pull/42721) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
+
+- Fix build issue with "ambiguous implicit access level for import" ([#42507](https://github.com/expo/expo/pull/42507) by [@garygcchiu](https://github.com/garygcchiu))
+
+### 💡 Others
+
+## 55.0.0-alpha.4 — 2026-01-27
 
 ### 💡 Others
 

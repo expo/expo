@@ -21,6 +21,17 @@ export interface StackHeaderProps {
      */
     asChild?: boolean;
     /**
+     * Whether the header should be transparent.
+     * When `true`, the header is absolutely positioned and content scrolls underneath.
+     *
+     * Auto-enabled when:
+     * - `style.backgroundColor` is 'transparent'
+     * - `blurEffect` is set (required for blur to work)
+     *
+     * @default false
+     */
+    transparent?: boolean;
+    /**
      * The blur effect to apply to the header background on iOS.
      * Common values include 'regular', 'prominent', 'systemMaterial', etc.
      *

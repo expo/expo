@@ -41,6 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import expo.modules.core.utilities.VRUtilities
 import expo.modules.devmenu.DevMenuPreferences
 import host.exp.exponent.generated.ExponentBuildConstants
 import host.exp.exponent.services.ThemeSetting
@@ -300,17 +301,20 @@ fun DeveloperMenuSection(
       iconPainter = painterResource(R.drawable.three_finger_long_press)
     )
 
-    HorizontalDivider()
+    // Hide FAB toggle on Quest devices since FAB is always on there
+    if (!VRUtilities.isQuest()) {
+      HorizontalDivider()
 
-    SwitchRow(
-      text = "Action button",
-      checked = showFab,
-      onCheckedChange = { newValue ->
-        showFab = newValue
-        devMenuPreference.showFab = newValue
-      },
-      iconPainter = painterResource(R.drawable.fab)
-    )
+      SwitchRow(
+        text = "Action button",
+        checked = showFab,
+        onCheckedChange = { newValue ->
+          showFab = newValue
+          devMenuPreference.showFab = newValue
+        },
+        iconPainter = painterResource(R.drawable.fab)
+      )
+    }
   }
 }
 

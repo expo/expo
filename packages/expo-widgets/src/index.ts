@@ -6,4 +6,5 @@ export {
   LiveActivityComponent,
   ExpoWidgetsEvents,
   UserInteractionEvent,
+  PushToStartTokenEvent,
 } from './Widgets.types';

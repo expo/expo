@@ -25,11 +25,26 @@ public class Worklet: AnySerializable {
   }
 
   /**
+   Schedules the worklet to be executed on the given runtime with arguments.
+   */
+  public func schedule(on runtime: WorkletRuntime, arguments: [Any]) {
+    WorkletExecutor.schedule(serializable.jsSerializable, runtime: runtime, arguments: arguments)
+  }
+
+  /**
    Executes the worklet synchronously on the given  runtime.
    This blocks the current thread until the worklet completes.
    */
   public func execute(on runtime: WorkletRuntime) {
     WorkletExecutor.execute(serializable.jsSerializable, runtime: runtime)
+  }
+
+  /**
+   Executes the worklet synchronously on the given runtime with arguments.
+   This blocks the current thread until the worklet completes.
+   */
+  public func execute(on runtime: WorkletRuntime, arguments: [Any]) {
+    WorkletExecutor.execute(serializable.jsSerializable, runtime: runtime, arguments: arguments)
   }
 
   public static func getDynamicType() -> AnyDynamicType {

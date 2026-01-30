@@ -12,9 +12,9 @@ const assert_1 = __importDefault(require("assert"));
 const chalk_1 = __importDefault(require("chalk"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
-const resolve_global_1 = __importDefault(require("resolve-global"));
 const semver_1 = __importDefault(require("semver"));
 const env_1 = require("./env");
+const resolveGlobal_1 = require("./resolveGlobal");
 const SHARP_HELP_PATTERN = /\n\nSpecify --help for available options/g;
 const SHARP_REQUIRED_VERSION = '^5.2.0';
 async function resizeBufferAsync(buffer, sizes) {
@@ -112,10 +112,13 @@ async function findSharpBinAsync() {
     if (_sharpBin)
         return _sharpBin;
     try {
-        const sharpCliPackagePath = resolve_global_1.default.silent('sharp-cli/package.json') ??
-            require.resolve('sharp-cli/package.json', {
-                paths: require.resolve.paths('sharp-cli') ?? undefined,
-            });
+        let sharpCliPackagePath;
+        try {
+            sharpCliPackagePath = (0, resolveGlobal_1.resolveGlobal)('sharp-cli/package.json');
+        }
+        catch {
+            sharpCliPackagePath = require.resolve('sharp-cli/package.json');
+        }
         const sharpCliPackage = require(sharpCliPackagePath);
         const sharpInstance = sharpCliPackagePath
             ? require((0, resolve_from_1.default)(sharpCliPackagePath, 'sharp'))

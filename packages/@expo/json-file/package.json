@@ -30,11 +30,11 @@
     "build"
   ],
   "dependencies": {
-    "@babel/code-frame": "~7.10.4",
+    "@babel/code-frame": "^7.20.0",
     "json5": "^2.2.3"
   },
   "devDependencies": {
-    "@types/babel__code-frame": "^7.0.1",
+    "@types/babel__code-frame": "^7.27.0",
     "@types/json5": "^2.2.0",
     "expo-module-scripts": "^55.0.2",
     "memfs": "^3.2.0"

@@ -12,7 +12,10 @@ const server :Workerd.Worker = (
     (name = "worker", esModule = embed "workerd.js"),
     (name = "_expo/server/render.js", commonJsModule = embed "_expo/server/render.js"),
     (name = "_expo/routes.json", text = embed "_expo/routes.json"),
+    (name = "_expo/loaders/index.js", commonJsModule = embed "_expo/loaders/index.js"),
     (name = "_expo/loaders/env.js", commonJsModule = embed "_expo/loaders/env.js"),
+    (name = "_expo/loaders/meta.js", commonJsModule = embed "_expo/loaders/meta.js"),
+    (name = "_expo/loaders/nested/index.js", commonJsModule = embed "_expo/loaders/nested/index.js"),
     (name = "_expo/loaders/second.js", commonJsModule = embed "_expo/loaders/second.js"),
     (name = "_expo/loaders/posts/[postId].js", commonJsModule = embed "_expo/loaders/posts/[postId].js"),
     (name = "_expo/loaders/nullish/[value].js", commonJsModule = embed "_expo/loaders/nullish/[value].js"),
@@ -20,7 +23,7 @@ const server :Workerd.Worker = (
     (name = "_expo/loaders/response.js", commonJsModule = embed "_expo/loaders/response.js"),
   ],
   bindings = [
-    (name = "TEST_SECRET_KEY", text = "test-secret-key"),
+    (name = "TEST_SECRET_RUNTIME_KEY", text = "runtime-secret-value"),
   ],
   compatibilityDate = "2025-05-05",
   compatibilityFlags = [

@@ -1,6 +1,15 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 
-import { StatusError, environment, origin, runTask, deferTask, setResponseHeaders } from '../api';
+import { ImmutableHeaders } from '../../ImmutableRequest';
+import {
+  StatusError,
+  environment,
+  origin,
+  runTask,
+  deferTask,
+  setResponseHeaders,
+  requestHeaders,
+} from '../api';
 import { createRequestScope } from '../index';
 
 const STORE = new AsyncLocalStorage();
@@ -45,6 +54,22 @@ it('provides specified origin as a global', async () => {
     return Response.json({ ok: true });
   });
   expect(result).toBeInstanceOf(Response);
+});
+
+describe('requestHeaders', () => {
+  it('returns an `ImmutableHeaders` object', async () => {
+    const run = createRequestScope(STORE, () => ({
+      requestHeaders: new Headers({ 'x-test': 'value', 'content-type': 'application/json' }),
+    }));
+
+    await run(async () => {
+      const headers = requestHeaders();
+      expect(headers).toBeInstanceOf(ImmutableHeaders);
+      expect(headers.get('x-test')).toBe('value');
+      expect(headers.get('content-type')).toBe('application/json');
+      return Response.json({ ok: true });
+    });
+  });
 });
 
 describe('runTask', () => {

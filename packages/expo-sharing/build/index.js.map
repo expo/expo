@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,gBAAgB,EAAE,MAAM,oBAAoB,CAAC;AAEtD,cAAc,WAAW,CAAC","sourcesContent":["export { useIncomingShare } from './useIncomingShare';\nexport type * from './Sharing.types';\nexport * from './Sharing';\n"]}

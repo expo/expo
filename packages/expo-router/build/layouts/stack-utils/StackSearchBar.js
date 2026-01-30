@@ -29,8 +29,6 @@ const Screen_1 = require("../../views/Screen");
  *   );
  * }
  * ```
- *
- * @platform ios
  */
 function StackSearchBar(props) {
     const updatedOptions = (0, react_1.useMemo)(() => appendStackSearchBarPropsToOptions({}, props), [props]);

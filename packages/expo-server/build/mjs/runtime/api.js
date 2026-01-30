@@ -1,3 +1,4 @@
+import { ImmutableHeaders } from '../ImmutableRequest';
 import { scopeRef } from './scope';
 function enforcedRequestScope() {
     const scope = scopeRef.current?.getStore();
@@ -24,6 +25,11 @@ export { StatusError } from './error';
  */
 export function origin() {
     return assertSupport('origin()', enforcedRequestScope().origin);
+}
+/** Returns an immutable copy of the current request's headers. */
+export function requestHeaders() {
+    const headers = assertSupport('requestHeaders', enforcedRequestScope().requestHeaders);
+    return new ImmutableHeaders(headers);
 }
 /** Returns the request's environment, if the server runtime supports this.
  *

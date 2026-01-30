@@ -14,6 +14,7 @@ export interface RouterToolbarItemProps {
   title?: string;
   systemImageName?: SFSymbol;
   image?: ImageRef | null;
+  imageRenderingMode?: 'template' | 'original';
   type?: 'normal' | 'fixedSpacer' | 'fluidSpacer' | 'searchBar';
   tintColor?: ColorValue;
   hidesSharedBackground?: boolean;

@@ -2,7 +2,7 @@ import {
   Button,
   Host,
   Picker,
-  Switch,
+  Toggle,
   ContextMenu,
   Text,
   Section as SwiftUISection,
@@ -22,8 +22,8 @@ const videoLink =
 
 export default function ContextMenuScreen() {
   const [selectedIndex, setSelectedIndex] = React.useState<number | undefined>(1);
-  const [switchChecked, setSwitchChecked] = React.useState<boolean>(true);
-  const [switch2Checked, setSwitch2Checked] = React.useState<boolean>(true);
+  const [toggleChecked, setToggleChecked] = React.useState<boolean>(true);
+  const [toggle2Checked, setToggle2Checked] = React.useState<boolean>(true);
 
   const player = useVideoPlayer(videoLink, (player) => {
     player.loop = true;
@@ -88,18 +88,16 @@ export default function ContextMenuScreen() {
         <Section title="Context Menu with Preview">
           <ContextMenu>
             <ContextMenu.Items>
-              <Switch
-                value={switchChecked}
+              <Toggle
+                isOn={toggleChecked}
                 label="Do u love doggos?"
-                variant="checkbox"
-                onValueChange={setSwitchChecked}
+                onIsOnChange={setToggleChecked}
               />
-              <Switch
-                value={switch2Checked}
-                variant="switch"
+              <Toggle
+                isOn={toggle2Checked}
                 label="Will u marry doggos?"
                 systemImage="heart.slash"
-                onValueChange={setSwitch2Checked}
+                onIsOnChange={setToggle2Checked}
               />
               <Button
                 role="destructive"

@@ -17,5 +17,5 @@ export declare function getLoaderModulePath(routePath: string): string;
  * @see import('packages/@expo/cli/src/start/server/metro/createServerRouteMiddleware.ts').createRouteHandlerMiddleware
  * @see import('packages/expo-server/src/vendor/environment/common.ts').createEnvironment
  */
-export declare function fetchLoaderModule(routePath: string): Promise<any>;
+export declare function fetchLoader(routePath: string): Promise<any>;
 //# sourceMappingURL=utils.d.ts.map

@@ -72,6 +72,15 @@ export const updateWidgetSnapshot = (name, widget, props, updateFunction // (tar
  * @return An event subscription that can be used to remove the listener.
  */
 export function addUserInteractionListener(listener) {
-    return ExpoWidgetModule.addListener('onUserInteraction', listener);
+    return ExpoWidgetModule.addListener('onExpoWidgetsUserInteraction', listener);
+}
+/**
+ * Adds a listener for push-to-start token events.
+ * This token can be used to start live activities remotely via APNs.
+ * @param listener Callback function to handle push-to-start token events.
+ * @return An event subscription that can be used to remove the listener.
+ */
+export function addPushToStartTokenListener(listener) {
+    return ExpoWidgetModule.addListener('onExpoWidgetsPushToStartTokenReceived', listener);
 }
 //# sourceMappingURL=Widgets.js.map

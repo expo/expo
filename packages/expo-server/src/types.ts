@@ -1,7 +1,13 @@
-import type { _ImmutableRequest } from './ImmutableRequest';
+import type { _ImmutableHeaders, _ImmutableRequest } from './ImmutableRequest';
 
-/** An immutable version of the Fetch API's `Request` as received by middleware functions.
- * It cannot be mutated or modified, its headers are immutable, and you won't have access to the request body.
+/**
+ * An immutable version of the Fetch API's `Headers` object. It cannot be mutated or modified.
+ */
+export interface ImmutableHeaders extends _ImmutableHeaders {}
+
+/**
+ * An immutable version of the Fetch API's `Request` object. It cannot be mutated or modified, its
+ * headers are immutable, and you won't have access to the request body.
  */
 export interface ImmutableRequest extends _ImmutableRequest {
   readonly url: string;

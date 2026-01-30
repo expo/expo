@@ -28,7 +28,6 @@ jest.mock('@expo/spawn-async');
 jest.mock('@expo/package-manager');
 jest.mock('resolve-from');
 jest.mock('ora');
-jest.mock('tar');
 // ... and more
 ```
 

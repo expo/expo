@@ -107,10 +107,25 @@ export type UserInteractionEvent = {
   type: 'ExpoWidgetsUserInteraction';
 };
 
+/**
+ * Event emitted when a push-to-start token is received.
+ */
+export type PushToStartTokenEvent = {
+  /**
+   * The push-to-start token for starting live activities remotely.
+   */
+  activityPushToStartToken: string;
+};
+
 export type ExpoWidgetsEvents = {
   /**
    * Function that is invoked when user interacts with a widget.
    * @param event Interaction event details.
    */
-  onUserInteraction: (event: UserInteractionEvent) => void;
+  onExpoWidgetsUserInteraction: (event: UserInteractionEvent) => void;
+  /**
+   * Function that is invoked when a push-to-start token is received.
+   * @param event Token event details.
+   */
+  onExpoWidgetsPushToStartTokenReceived: (event: PushToStartTokenEvent) => void;
 };

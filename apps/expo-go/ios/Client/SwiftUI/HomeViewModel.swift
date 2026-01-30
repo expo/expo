@@ -105,12 +105,14 @@ class HomeViewModel: ObservableObject {
 
   func signOut() {
     authService.signOut()
+    clearRecentlyOpenedApps()
     dataService.clearData()
     dataService.stopPolling()
   }
 
   func selectAccount(accountId: String) {
     authService.selectAccount(accountId: accountId)
+    clearRecentlyOpenedApps()
     if let account = selectedAccount {
       dataService.startPolling(accountName: account.name)
     }
