@@ -1,5 +1,4 @@
 import { vol } from 'memfs';
-import pLimit from 'p-limit';
 import path from 'path';
 
 import { normalizeOptionsAsync } from '../../Options';
@@ -48,7 +47,7 @@ describe(`createFileHashResultsAsync - use ReactImportsPatchTransform`, () => {
   });
 
   it(`should not use ReactImportsPatchTransform if no match platforms`, async () => {
-    const limiter = pLimit(1);
+    const limiter = createLimiter(1);
     const options = await normalizeOptionsAsync('/app', { debug: true, platforms: ['android'] });
     const files = {
       '/app/ios/HelloWorld/Info.plist': '',
@@ -70,7 +69,7 @@ describe(`createFileHashResultsAsync - use ReactImportsPatchTransform`, () => {
   });
 
   it(`should not use ReactImportsPatchTransform if no match files`, async () => {
-    const limiter = pLimit(1);
+    const limiter = createLimiter(1);
     const options = await normalizeOptionsAsync('/app', { debug: true, platforms: ['android'] });
     const files = {
       '/app/ios/HelloWorld/Info.plist': '',
