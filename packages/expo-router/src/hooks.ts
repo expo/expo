@@ -373,7 +373,7 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   const routeNode = useRouteNode();
   const params = useLocalSearchParams();
   const serverDataLoaderContext = use(ServerDataLoaderContext);
-  const loaderCache = React.useContext(LoaderCacheContext);
+  const loaderCache = use(LoaderCacheContext);
 
   if (!routeNode) {
     throw new Error('No route node found. This is likely a bug in expo-router.');

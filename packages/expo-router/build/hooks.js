@@ -268,7 +268,7 @@ function useLoaderData() {
     const routeNode = (0, Route_1.useRouteNode)();
     const params = useLocalSearchParams();
     const serverDataLoaderContext = (0, react_1.use)(ServerDataLoaderContext_1.ServerDataLoaderContext);
-    const loaderCache = react_1.default.useContext(LoaderCache_1.LoaderCacheContext);
+    const loaderCache = (0, react_1.use)(LoaderCache_1.LoaderCacheContext);
     if (!routeNode) {
         throw new Error('No route node found. This is likely a bug in expo-router.');
     }

@@ -40,6 +40,17 @@ describe(getLoaderData, () => {
     expect(cache.getData('/test')).toBe('ok');
   });
 
+  it('returns the same cached promise on subsequent calls', () => {
+    const cache = new LoaderCache();
+    const fetcher = jest.fn(async () => 'ok');
+
+    const result1 = getLoaderData({ resolvedPath: '/test', cache, fetcher });
+    const result2 = getLoaderData({ resolvedPath: '/test', cache, fetcher });
+
+    expect(result1).toBe(result2);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+
   it('wraps fetch errors and caches them', async () => {
     const cache = new LoaderCache();
     const fetcherError = new Error('Network failed');

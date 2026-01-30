@@ -755,6 +755,7 @@ describe(useLoaderData, () => {
   });
 
   it('retrieves server-side data from `ServerDataLoaderContext`', () => {
+    // Added to ensure that data is not fetched from global scope
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
       '/': { source: 'global' },
     };
@@ -774,13 +775,11 @@ describe(useLoaderData, () => {
   });
 
   it('retrieves server-injected data from `globalThis.__EXPO_ROUTER_LOADER_DATA__`', () => {
-    const asyncLoader = async () => ({ data: 'test' });
-
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
       '/': { some: 'data' },
     };
 
-    const { result } = renderHook(() => useLoaderData(asyncLoader), ['index'], {
+    const { result } = renderHook(() => useLoaderData(), ['index'], {
       initialUrl: '/',
     });
 
@@ -844,8 +843,7 @@ describe(useLoaderData, () => {
       '/': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
     };
 
-    type AsyncResult = Awaited<ReturnType<typeof asyncLoader>>;
-    const { result } = renderHook(() => useLoaderData<AsyncResult>(asyncLoader), ['index'], {
+    const { result } = renderHook(() => useLoaderData<typeof asyncLoader>(), ['index'], {
       initialUrl: '/',
     });
 
