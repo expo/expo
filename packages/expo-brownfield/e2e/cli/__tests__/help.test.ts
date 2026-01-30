@@ -1,6 +1,6 @@
-import { HELP_MESSAGE } from '../utils/output';
-import { executeCLIASync } from '../utils/process';
-import { createTempProject, cleanUpProject } from '../utils/project';
+import { HELP_MESSAGE } from '../../utils/output';
+import { executeCLIASync } from '../../utils/process';
+import { createTempProject, cleanUpProject } from '../../utils/project';
 
 let TEMP_DIR: string;
 

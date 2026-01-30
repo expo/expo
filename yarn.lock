@@ -1228,6 +1228,15 @@
     debug "^4.3.4"
     uuid "^8.3.2"
 
+"@bacons/xcode@1.0.0-alpha.29":
+  version "1.0.0-alpha.29"
+  resolved "https://registry.yarnpkg.com/@bacons/xcode/-/xcode-1.0.0-alpha.29.tgz#d85a2a8794ec55d456053dbfe90590ec22b8c0d1"
+  integrity sha512-b2P+Y6ovdlie3A8Tx6QBFlbfQPhXe0vDS83W0DVob6732e3TukgVMbVcE9umn36BaeGzmJVjMFtqEyhWetjRWg==
+  dependencies:
+    "@expo/plist" "^0.0.18"
+    debug "^4.3.4"
+    uuid "^8.3.2"
+
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"

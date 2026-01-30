@@ -1,6 +1,6 @@
-import { ERROR, TASKS_ANDROID } from '../utils/output';
-import { createTempProject, cleanUpProject } from '../utils/project';
-import { tasksAndroidTest } from '../utils/test';
+import { ERROR, TASKS_ANDROID } from '../../utils/output';
+import { createTempProject, cleanUpProject } from '../../utils/project';
+import { tasksAndroidTest } from '../../utils/test';
 
 let TEMP_DIR: string;
 let TEMP_DIR_PREBUILD: string;
