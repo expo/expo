@@ -43,5 +43,12 @@ export declare const updateWidgetSnapshot: <T extends object>(name: string, widg
  * @param listener Callback function to handle user interaction events.
  * @return An event subscription that can be used to remove the listener.
  */
-export declare function addUserInteractionListener(listener: ExpoWidgetsEvents['onUserInteraction']): EventSubscription;
+export declare function addUserInteractionListener(listener: ExpoWidgetsEvents['onExpoWidgetsUserInteraction']): EventSubscription;
+/**
+ * Adds a listener for push-to-start token events.
+ * This token can be used to start live activities remotely via APNs.
+ * @param listener Callback function to handle push-to-start token events.
+ * @return An event subscription that can be used to remove the listener.
+ */
+export declare function addPushToStartTokenListener(listener: ExpoWidgetsEvents['onExpoWidgetsPushToStartTokenReceived']): EventSubscription;
 //# sourceMappingURL=Widgets.d.ts.map
