@@ -77,7 +77,7 @@ const SPECIAL_DEPENDENCIES: Record<string, Record<string, IgnoreKind | void> | v
   },
 
   '@expo/log-box': {
-    'react-dom': 'ignore-dev', // TODO: temp
+    'react-dom': 'ignore-dev', // TODO: This peer dependency was removed due to this chain installing `react-dom`: `@expo/router-server -> @expo/log-box -> react-dom` which is not intended
   },
 
   'babel-preset-expo': {
