@@ -17,12 +17,12 @@ import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import { LoaderCache, LoaderCacheContext } from '../loaders/LoaderCache';
 import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
-import { fetchLoaderModule } from '../loaders/utils';
+import { fetchLoader } from '../loaders/utils';
 import { renderRouter } from '../testing-library';
 import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs';
 
 jest.mock('../loaders/utils', () => ({
-  fetchLoaderModule: jest.fn(),
+  fetchLoader: jest.fn(),
 }));
 
 /*
@@ -34,8 +34,8 @@ function renderHook<T>(
   routes: string[] = ['index'],
   {
     initialUrl = '/',
-    outerWrapper: OuterWrapper,
-  }: { initialUrl?: string; outerWrapper?: React.ComponentType<{ children: React.ReactNode }> } = {}
+    wrapper: RootWrapper,
+  }: { initialUrl?: string; wrapper?: React.ComponentType<{ children: React.ReactNode }> } = {}
 ) {
   return tlRenderHook(renderCallback, {
     wrapper: function Wrapper({ children }) {
@@ -51,7 +51,7 @@ function renderHook<T>(
         />
       );
 
-      return OuterWrapper ? <OuterWrapper>{root}</OuterWrapper> : root;
+      return RootWrapper ? <RootWrapper>{root}</RootWrapper> : root;
     },
   });
 }
@@ -767,7 +767,7 @@ describe(useLoaderData, () => {
 
     const { result } = renderHook(() => useLoaderData(), ['index'], {
       initialUrl: '/',
-      outerWrapper: ServerWrapper,
+      wrapper: ServerWrapper,
     });
 
     expect(result.current).toEqual({ source: 'server' });
@@ -788,10 +788,8 @@ describe(useLoaderData, () => {
   });
 
   it('retrieves fresh data from `fetchLoaderModule()`', async () => {
-    const fetchLoaderModuleMock = fetchLoaderModule as jest.MockedFunction<
-      typeof fetchLoaderModule
-    >;
-    fetchLoaderModuleMock.mockResolvedValue({ fromFetch: true });
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    fetchLoaderMock.mockResolvedValue({ fromFetch: true });
 
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
       '/': { home: true },
@@ -805,13 +803,13 @@ describe(useLoaderData, () => {
 
     renderHook(() => useLoaderData(), ['users/[id]'], {
       initialUrl: '/users/123',
-      outerWrapper: CacheWrapper,
+      wrapper: CacheWrapper,
     });
 
-    expect(fetchLoaderModuleMock).toHaveBeenCalledWith('/users/123');
+    expect(fetchLoaderMock).toHaveBeenCalledWith('/users/123');
 
     await act(async () => {
-      await fetchLoaderModuleMock.mock.results[0].value;
+      await fetchLoaderMock.mock.results[0].value;
     });
 
     expect(cache.getData('/users/123')).toEqual({ fromFetch: true });
@@ -831,7 +829,7 @@ describe(useLoaderData, () => {
 
     const { result } = renderHook(() => useLoaderData(), ['users/[id]'], {
       initialUrl: '/users/123',
-      outerWrapper: CacheWrapper,
+      wrapper: CacheWrapper,
     });
 
     expect(result.current).toEqual({ fromCache: true });

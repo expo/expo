@@ -13,7 +13,7 @@ import { usePreviewInfo } from './link/preview/PreviewRouteContext';
 import { LoaderCacheContext } from './loaders/LoaderCache';
 import { ServerDataLoaderContext } from './loaders/ServerDataLoaderContext';
 import { getLoaderData } from './loaders/getLoaderData';
-import { fetchLoaderModule } from './loaders/utils';
+import { fetchLoader } from './loaders/utils';
 import { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
 
 export { useRouteInfo };
@@ -399,7 +399,7 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   const result = getLoaderData<LoaderFunctionResult<T>>({
     resolvedPath: normalizedPath,
     cache: loaderCache,
-    fetcher: fetchLoaderModule,
+    fetcher: fetchLoader,
   });
 
   if (result instanceof Promise) {

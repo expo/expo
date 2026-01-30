@@ -289,7 +289,7 @@ function useLoaderData() {
     const result = (0, getLoaderData_1.getLoaderData)({
         resolvedPath: normalizedPath,
         cache: loaderCache,
-        fetcher: utils_1.fetchLoaderModule,
+        fetcher: utils_1.fetchLoader,
     });
     if (result instanceof Promise) {
         return (0, react_1.use)(result);
