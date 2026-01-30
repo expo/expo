@@ -130,7 +130,7 @@ function renameNpmTarballEntries(expName: string | undefined) {
  * Extracts a tarball stream to a directory and returns the checksum of the tarball.
  */
 export async function extractNpmTarballAsync(
-  stream: NodeJS.ReadableStream,
+  stream: ReadableStream,
   output: string,
   props: ExtractProps
 ): Promise<string> {
@@ -150,7 +150,7 @@ export async function extractNpmTarballFromUrlAsync(
   if (!response.ok || !response.body) {
     throw new Error(`Unexpected response: ${response.statusText}. From url: ${url}`);
   }
-  return await extractNpmTarballAsync(Readable.fromWeb(response.body), output, props);
+  return await extractNpmTarballAsync(response.body, output, props);
 }
 
 export async function downloadAndExtractNpmModuleAsync(
@@ -168,8 +168,11 @@ export async function extractLocalNpmTarballAsync(
   output: string,
   props: ExtractProps
 ): Promise<string> {
-  const readStream = fs.createReadStream(tarFilePath);
-  return await extractNpmTarballAsync(readStream, output, props);
+  return await extractNpmTarballAsync(
+    Readable.toWeb(fs.createReadStream(tarFilePath)) as ReadableStream,
+    output,
+    props
+  );
 }
 
 export async function packNpmTarballAsync(packageDir: string): Promise<string> {

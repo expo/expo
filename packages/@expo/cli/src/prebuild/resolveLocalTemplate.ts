@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { packNpmTarballAsync, extractNpmTarballAsync } from '../utils/npm';
+import { packNpmTarballAsync, extractLocalNpmTarballAsync } from '../utils/npm';
 
 const debug = require('debug')('expo:prebuild:resolveLocalTemplate') as typeof console.log;
 
@@ -50,8 +50,7 @@ export async function resolveLocalTemplateAsync({
     debug('Using local template from Expo package:', templatePath);
   }
 
-  const stream = fs.createReadStream(templatePath);
-  return await extractNpmTarballAsync(stream, templateDirectory, {
+  return await extractLocalNpmTarballAsync(templatePath, templateDirectory, {
     expName: exp.name,
   });
 }

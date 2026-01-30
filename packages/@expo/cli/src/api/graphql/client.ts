@@ -1,7 +1,5 @@
-import type { Response } from 'undici';
-
 import * as Log from '../../log';
-import { fetch } from '../../utils/fetch';
+import { fetch, type Response } from '../../utils/fetch';
 import { getExpoApiBaseUrl } from '../endpoint';
 import {
   getResponseDataOrThrow,
@@ -10,7 +8,6 @@ import {
 } from '../rest/client';
 import { FetchLike } from '../rest/client.types';
 import { wrapFetchWithOffline } from '../rest/wrapFetchWithOffline';
-import { wrapFetchWithProxy } from '../rest/wrapFetchWithProxy';
 import { wrapFetchWithUserAgent } from '../rest/wrapFetchWithUserAgent';
 import { getAccessToken, getSession } from '../user/UserSettings';
 
@@ -39,7 +36,7 @@ export const query = (() => {
   let _fetch: FetchLike | undefined;
   const wrappedFetch: FetchLike = (...args) => {
     if (!_fetch) {
-      _fetch = wrapFetchWithOffline(wrapFetchWithProxy(wrapFetchWithUserAgent(fetch)));
+      _fetch = wrapFetchWithOffline(wrapFetchWithUserAgent(fetch));
     }
     return _fetch(...args);
   };
@@ -130,7 +127,7 @@ export const query = (() => {
         // If we have a transient error, we retry immediately and discard the data
         // Otherwise, we store the first available error and get the data
         if ('errors' in json && Array.isArray(json.errors)) {
-          isTransient = json.errors.some((e) => e?.extensions?.isTransient);
+          isTransient = json.errors.some((e: any) => e?.extensions?.isTransient);
           if (isTransient) {
             data = undefined;
             continue;
