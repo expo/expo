@@ -63,6 +63,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/zstack': ['swift-ui/ZStack/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/spacer': ['swift-ui/Spacer/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/image': ['swift-ui/Image/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/scrollview': ['swift-ui/ScrollView/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/foreach': ['swift-ui/ForEach/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/textinput': ['jetpack-compose/TextInput/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/chip': ['jetpack-compose/Chip/index.tsx', 'expo-ui'],
