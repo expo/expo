@@ -1,6 +1,9 @@
 'use client';
-import { NativeToolbarSearchBarSlot } from './bottom-toolbar-native-elements';
+import { useId } from 'react';
+import { Platform } from 'react-native';
+
 import { useToolbarPlacement } from './context';
+import { RouterToolbarItem } from '../../../toolbar/native';
 
 export interface StackToolbarSearchBarSlotProps {
   /**
@@ -75,3 +78,39 @@ export const StackToolbarSearchBarSlot: React.FC<StackToolbarSearchBarSlotProps>
 
   return <NativeToolbarSearchBarSlot {...props} />;
 };
+
+// #region NativeToolbarSearchBarSlot
+
+interface NativeToolbarSearchBarSlotProps {
+  hidesSharedBackground?: boolean;
+  hidden?: boolean;
+  separateBackground?: boolean;
+}
+
+/**
+ * Native toolbar search bar slot for bottom toolbar (iOS 26+).
+ * Renders as RouterToolbarItem with type 'searchBar'.
+ */
+const NativeToolbarSearchBarSlot: React.FC<NativeToolbarSearchBarSlotProps> = ({
+  hidesSharedBackground,
+  hidden,
+  separateBackground,
+}) => {
+  const id = useId();
+  if (process.env.EXPO_OS !== 'ios' || parseInt(String(Platform.Version).split('.')[0], 10) < 26) {
+    return null;
+  }
+  if (hidden) {
+    return null;
+  }
+  return (
+    <RouterToolbarItem
+      hidesSharedBackground={hidesSharedBackground}
+      identifier={id}
+      sharesBackground={!separateBackground}
+      type="searchBar"
+    />
+  );
+};
+
+// #endregion

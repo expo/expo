@@ -1,4 +1,4 @@
-export { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel, type StackToolbarBadgeProps, type StackToolbarIconProps, type StackToolbarLabelProps, } from '../common-primitives';
+export { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel, type StackToolbarBadgeProps, type StackToolbarIconProps, type StackToolbarLabelProps, } from './toolbar-primitives';
 export { StackToolbar } from './StackToolbar';
 export { appendStackToolbarPropsToOptions, type StackToolbarProps } from './StackToolbarClient';
 export { StackToolbarButton, type StackToolbarButtonProps } from './StackToolbarButton';
@@ -7,4 +7,5 @@ export { StackToolbarSearchBarSlot, type StackToolbarSearchBarSlotProps, } from 
 export { StackToolbarSpacer, type StackToolbarSpacerProps } from './StackToolbarSpacer';
 export { StackToolbarView, type StackToolbarViewProps } from './StackToolbarView';
 export type { ToolbarPlacement } from './context';
+export type { StackHeaderItemSharedProps } from './shared';
 //# sourceMappingURL=index.d.ts.map

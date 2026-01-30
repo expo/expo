@@ -19,12 +19,12 @@ import {
 } from './StackToolbarSpacer';
 import { convertStackToolbarViewPropsToRNHeaderItem, StackToolbarView } from './StackToolbarView';
 import { ToolbarPlacementContext, useToolbarPlacement, type ToolbarPlacement } from './context';
+import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './toolbar-primitives';
 import { NativeMenuContext } from '../../../link/NativeMenuContext';
 import { RouterToolbarHost } from '../../../toolbar/native';
 import { useNavigation } from '../../../useNavigation';
 import { isChildOfType } from '../../../utils/children';
 import { Screen } from '../../../views/Screen';
-import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from '../common-primitives';
 
 export interface StackToolbarProps {
   /**

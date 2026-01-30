@@ -1,9 +1,9 @@
 import type { NativeStackHeaderItemMenu, NativeStackHeaderItemMenuAction } from '@react-navigation/native-stack';
 import type { ImageRef } from 'expo-image';
 import { type ReactNode } from 'react';
-import type { ImageSourcePropType } from 'react-native';
+import { type ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
-import { type StackHeaderItemSharedProps } from '../shared';
+import { type StackHeaderItemSharedProps } from './shared';
 export interface StackToolbarMenuProps {
     accessibilityLabel?: string;
     accessibilityHint?: string;

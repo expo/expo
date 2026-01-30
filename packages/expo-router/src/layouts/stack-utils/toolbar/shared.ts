@@ -3,9 +3,9 @@ import { Children, type ReactNode } from 'react';
 import { type ColorValue, type ImageSourcePropType, type StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './common-primitives';
-import { getFirstChildOfType } from '../../utils/children';
-import { convertTextStyleToRNTextStyle, type BasicTextStyle } from '../../utils/font';
+import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './toolbar-primitives';
+import { getFirstChildOfType } from '../../../utils/children';
+import { convertTextStyleToRNTextStyle, type BasicTextStyle } from '../../../utils/font';
 
 export interface StackHeaderItemSharedProps {
   children?: ReactNode;

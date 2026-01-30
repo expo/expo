@@ -44,12 +44,12 @@ const StackToolbarSearchBarSlot_1 = require("./StackToolbarSearchBarSlot");
 const StackToolbarSpacer_1 = require("./StackToolbarSpacer");
 const StackToolbarView_1 = require("./StackToolbarView");
 const context_1 = require("./context");
+const toolbar_primitives_1 = require("./toolbar-primitives");
 const NativeMenuContext_1 = require("../../../link/NativeMenuContext");
 const native_1 = require("../../../toolbar/native");
 const useNavigation_1 = require("../../../useNavigation");
 const children_1 = require("../../../utils/children");
 const Screen_1 = require("../../../views/Screen");
-const common_primitives_1 = require("../common-primitives");
 /**
  * The component used to configure the stack toolbar.
  *
@@ -223,8 +223,8 @@ exports.StackToolbar.MenuAction = StackToolbarMenu_1.StackToolbarMenuAction;
 exports.StackToolbar.SearchBarSlot = StackToolbarSearchBarSlot_1.StackToolbarSearchBarSlot;
 exports.StackToolbar.Spacer = StackToolbarSpacer_1.StackToolbarSpacer;
 exports.StackToolbar.View = StackToolbarView_1.StackToolbarView;
-exports.StackToolbar.Label = common_primitives_1.StackToolbarLabel;
-exports.StackToolbar.Icon = common_primitives_1.StackToolbarIcon;
-exports.StackToolbar.Badge = common_primitives_1.StackToolbarBadge;
+exports.StackToolbar.Label = toolbar_primitives_1.StackToolbarLabel;
+exports.StackToolbar.Icon = toolbar_primitives_1.StackToolbarIcon;
+exports.StackToolbar.Badge = toolbar_primitives_1.StackToolbarBadge;
 exports.default = exports.StackToolbar;
 //# sourceMappingURL=StackToolbarClient.js.map
