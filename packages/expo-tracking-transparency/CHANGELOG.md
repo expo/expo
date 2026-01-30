@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Implemented native `getPermissionsAsync()` and `requestPermissionsAsync()` for Android based on device's Limit Ad Tracking setting. ([#40384](https://github.com/expo/expo/pull/40384) by [@reichhartd](https://github.com/reichhartd))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
