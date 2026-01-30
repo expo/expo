@@ -189,6 +189,11 @@ open class DevMenuManager: NSObject {
   }
 
   @objc
+  public func setShowFloatingActionButton(_ enabled: Bool) {
+    DevMenuPreferences.showFloatingActionButton = enabled
+  }
+
+  @objc
   public func updateCurrentBridge(_ bridge: RCTBridge?) {
     currentBridge = bridge
     if bridge != nil {
