@@ -7,56 +7,56 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0D69F634FEDF965A97F50FE1 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E50FF84477EAC492BFF32E /* ExpoModulesProvider.swift */; };
-		137DDF2BABCB48BFBFD68C25 /* ReactNativeHostManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E05B075470040BDBCE177E5 /* ReactNativeHostManager.swift */; };
+		050A8F16FF35414EBCCF0727 /* ReactNativeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1C6D5CBF6C452C9DE502BC /* ReactNativeView.swift */; };
+		0628A5DA96C46C3629D9D2DF /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCF1DA86B64A681F2E209DDF /* ExpoModulesProvider.swift */; };
+		09CF86FB3529F0E352565A7F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 22609C1D6E8B1752DA3FC804 /* PrivacyInfo.xcprivacy */; };
+		0C15962362CD40A4BE81EA4E /* ExpoAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB732698529D4368ABA0D668 /* ExpoAppDelegate.swift */; };
+		1080009724CA25C85611E07A /* Pods_brownfield.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34837EA14E42D9535770A36D /* Pods_brownfield.framework */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		184BE6B943244FE7ABCF0655 /* ReactNativeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C743B6611C648C68E1DECDC /* ReactNativeViewController.swift */; };
-		2C2DFE549B7C49B1997748F7 /* ReactNativeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FA1DAD2A5A24427B0E71666 /* ReactNativeView.swift */; };
+		2CB3F80DB2704A4DB0B745AF /* expo.icon in Resources */ = {isa = PBXBuildFile; fileRef = 130D9F9B6C2042098F955CEB /* expo.icon */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		40D6FC17270A479EAD63E5EA /* ExpoAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16B910717064C93A482960E /* ExpoAppDelegate.swift */; };
-		49332E2A1C79B074347A7AC5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A0EBDDC9862740DD27B10344 /* PrivacyInfo.xcprivacy */; };
-		7D7DBFE8B045DA2587C126C9 /* Pods_brownfield_brownfieldbrownfield.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B84C30222AFF0ACFDBB9E70 /* Pods_brownfield_brownfieldbrownfield.framework */; };
-		82856EA48D5846B2AB80E1A8 /* ReactNativeDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA863A7EAC814422815B34FB /* ReactNativeDelegate.swift */; };
-		B9ED51C08F9D4FC2B7402820 /* Messaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 524C037792934D8B8FF8A1E2 /* Messaging.swift */; };
+		62F62F8B10F347CA80A7B6C0 /* Messaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA59254BC5BD4026A167B17C /* Messaging.swift */; };
+		73E1D3E13FDD4DCAA23155BE /* ReactNativeHostManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 704F16ECEBFA4F6BB5A1A747 /* ReactNativeHostManager.swift */; };
+		ACB4BF85DA97DE9C46C5FDD2 /* Pods_brownfield_brownfieldbrownfield.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDD73199EBD8DC4D81BABFCA /* Pods_brownfield_brownfieldbrownfield.framework */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		D2CEEFFC94E14935B7D9B570 /* expo.icon in Resources */ = {isa = PBXBuildFile; fileRef = F5C4AE6BA25348E2807BEEDD /* expo.icon */; };
-		F0C88DD2F4F0CDDA8FCB6BD1 /* Pods_brownfield.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90A9FA43ED6A1FBB293133B /* Pods_brownfield.framework */; };
+		CC927686BBD94776A4345757 /* ReactNativeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C086941BB7C14B2A91CE720E /* ReactNativeViewController.swift */; };
+		E57A77F0E1B043039F32CE3C /* ReactNativeDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD44453E3960482182DF3FCC /* ReactNativeDelegate.swift */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
-		FA6D8E1DFD91831DE95F9DDA /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBC0F80FC24F95EFEE16B95B /* ExpoModulesProvider.swift */; };
+		F61D38BB9E19641A8CD889B8 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475859D3F42E7833768A96F5 /* ExpoModulesProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		08FB6C2C7AA84FFBB022B4D6 /* ReactNativeView.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeView.swift; path = ReactNativeView.swift; sourceTree = "<group>"; };
+		046AA01BA3C7410ABF4C20E7 /* ExpoAppDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ExpoAppDelegate.swift; path = ExpoAppDelegate.swift; sourceTree = "<group>"; };
+		04C3033D3E534A8DBC29DBDA /* ReactNativeDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeDelegate.swift; path = ReactNativeDelegate.swift; sourceTree = "<group>"; };
+		130D9F9B6C2042098F955CEB /* expo.icon */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = expo.icon; path = brownfield/expo.icon; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* brownfield.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = brownfield.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = brownfield/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = brownfield/Info.plist; sourceTree = "<group>"; };
-		1FA1DAD2A5A24427B0E71666 /* ReactNativeView.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeView.swift; path = brownfieldbrownfield/ReactNativeView.swift; sourceTree = "<group>"; };
-		32978030CA4F7C3DA10610C8 /* Pods-brownfield.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-brownfield.release.xcconfig"; path = "Target Support Files/Pods-brownfield/Pods-brownfield.release.xcconfig"; sourceTree = "<group>"; };
-		489581AAE0F3ACED755AE288 /* Pods-brownfield-brownfieldbrownfield.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-brownfield-brownfieldbrownfield.release.xcconfig"; path = "Target Support Files/Pods-brownfield-brownfieldbrownfield/Pods-brownfield-brownfieldbrownfield.release.xcconfig"; sourceTree = "<group>"; };
-		524C037792934D8B8FF8A1E2 /* Messaging.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = Messaging.swift; path = brownfieldbrownfield/Messaging.swift; sourceTree = "<group>"; };
-		5C743B6611C648C68E1DECDC /* ReactNativeViewController.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeViewController.swift; path = brownfieldbrownfield/ReactNativeViewController.swift; sourceTree = "<group>"; };
-		6A0A87EFA2F17E7722685E4A /* Pods-brownfield.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-brownfield.debug.xcconfig"; path = "Target Support Files/Pods-brownfield/Pods-brownfield.debug.xcconfig"; sourceTree = "<group>"; };
-		7BC1882C0F74424AB9344646 /* ReactNativeViewController.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeViewController.swift; path = ReactNativeViewController.swift; sourceTree = "<group>"; };
-		7E05B075470040BDBCE177E5 /* ReactNativeHostManager.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeHostManager.swift; path = brownfieldbrownfield/ReactNativeHostManager.swift; sourceTree = "<group>"; };
-		7EC70DE9F62945A3878C4B78 /* Messaging.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = Messaging.swift; path = Messaging.swift; sourceTree = "<group>"; };
-		8B84C30222AFF0ACFDBB9E70 /* Pods_brownfield_brownfieldbrownfield.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_brownfield_brownfieldbrownfield.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		A0EBDDC9862740DD27B10344 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = brownfield/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		A90A9FA43ED6A1FBB293133B /* Pods_brownfield.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_brownfield.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		22609C1D6E8B1752DA3FC804 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = brownfield/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		30F716E8ED434991A0D940E2 /* Pods-brownfield.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-brownfield.release.xcconfig"; path = "Target Support Files/Pods-brownfield/Pods-brownfield.release.xcconfig"; sourceTree = "<group>"; };
+		34837EA14E42D9535770A36D /* Pods_brownfield.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_brownfield.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		40217283BB8D43F391AFB012 /* ReactNativeHostManager.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeHostManager.swift; path = ReactNativeHostManager.swift; sourceTree = "<group>"; };
+		453BEF00C12B41C681618AA7 /* Messaging.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = Messaging.swift; path = Messaging.swift; sourceTree = "<group>"; };
+		475859D3F42E7833768A96F5 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-brownfield-brownfieldbrownfield/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		4E587C1B7B24ADB038D6D58F /* Pods-brownfield-brownfieldbrownfield.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-brownfield-brownfieldbrownfield.release.xcconfig"; path = "Target Support Files/Pods-brownfield-brownfieldbrownfield/Pods-brownfield-brownfieldbrownfield.release.xcconfig"; sourceTree = "<group>"; };
+		59BF293BF09A43BCB04AE584 /* brownfieldbrownfield.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = undefined; name = brownfieldbrownfield.framework; path = brownfieldbrownfield.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6E03AB20C76C4A018944ED4D /* ReactNativeView.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeView.swift; path = ReactNativeView.swift; sourceTree = "<group>"; };
+		704F16ECEBFA4F6BB5A1A747 /* ReactNativeHostManager.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeHostManager.swift; path = brownfieldbrownfield/ReactNativeHostManager.swift; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = brownfield/SplashScreen.storyboard; sourceTree = "<group>"; };
-		BA863A7EAC814422815B34FB /* ReactNativeDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeDelegate.swift; path = brownfieldbrownfield/ReactNativeDelegate.swift; sourceTree = "<group>"; };
+		AF1C6D5CBF6C452C9DE502BC /* ReactNativeView.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeView.swift; path = brownfieldbrownfield/ReactNativeView.swift; sourceTree = "<group>"; };
+		B576E0BCD78CA612D4CF138C /* Pods-brownfield-brownfieldbrownfield.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-brownfield-brownfieldbrownfield.debug.xcconfig"; path = "Target Support Files/Pods-brownfield-brownfieldbrownfield/Pods-brownfield-brownfieldbrownfield.debug.xcconfig"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		BC67B87A08544DB5BEC829DB /* ExpoAppDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ExpoAppDelegate.swift; path = ExpoAppDelegate.swift; sourceTree = "<group>"; };
-		C16B910717064C93A482960E /* ExpoAppDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ExpoAppDelegate.swift; path = brownfieldbrownfield/ExpoAppDelegate.swift; sourceTree = "<group>"; };
-		C9E50FF84477EAC492BFF32E /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-brownfield-brownfieldbrownfield/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		CC08871F8FEE092D8010C850 /* Pods-brownfield-brownfieldbrownfield.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-brownfield-brownfieldbrownfield.debug.xcconfig"; path = "Target Support Files/Pods-brownfield-brownfieldbrownfield/Pods-brownfield-brownfieldbrownfield.debug.xcconfig"; sourceTree = "<group>"; };
-		DDDD1851316D454F9FF79688 /* ReactNativeHostManager.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeHostManager.swift; path = ReactNativeHostManager.swift; sourceTree = "<group>"; };
+		BCF1DA86B64A681F2E209DDF /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-brownfield/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		C08422DBAD56C7DAFF37DF7B /* Pods-brownfield.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-brownfield.debug.xcconfig"; path = "Target Support Files/Pods-brownfield/Pods-brownfield.debug.xcconfig"; sourceTree = "<group>"; };
+		C086941BB7C14B2A91CE720E /* ReactNativeViewController.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeViewController.swift; path = brownfieldbrownfield/ReactNativeViewController.swift; sourceTree = "<group>"; };
+		DDD73199EBD8DC4D81BABFCA /* Pods_brownfield_brownfieldbrownfield.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_brownfield_brownfieldbrownfield.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB732698529D4368ABA0D668 /* ExpoAppDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ExpoAppDelegate.swift; path = brownfieldbrownfield/ExpoAppDelegate.swift; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = brownfield/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* brownfield-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "brownfield-Bridging-Header.h"; path = "brownfield/brownfield-Bridging-Header.h"; sourceTree = "<group>"; };
-		F5C4AE6BA25348E2807BEEDD /* expo.icon */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = expo.icon; path = brownfield/expo.icon; sourceTree = "<group>"; };
-		FBC0F80FC24F95EFEE16B95B /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-brownfield/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		FC98193591BE4C1C89E20F15 /* brownfieldbrownfield.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = undefined; name = brownfieldbrownfield.framework; path = brownfieldbrownfield.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FE16E18D2E6944ECADD59052 /* ReactNativeDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeDelegate.swift; path = ReactNativeDelegate.swift; sourceTree = "<group>"; };
+		FA59254BC5BD4026A167B17C /* Messaging.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = Messaging.swift; path = brownfieldbrownfield/Messaging.swift; sourceTree = "<group>"; };
+		FB318ACBD3AE4077A2B99EC0 /* ReactNativeViewController.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeViewController.swift; path = ReactNativeViewController.swift; sourceTree = "<group>"; };
+		FD44453E3960482182DF3FCC /* ReactNativeDelegate.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = ReactNativeDelegate.swift; path = brownfieldbrownfield/ReactNativeDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,21 +64,43 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F0C88DD2F4F0CDDA8FCB6BD1 /* Pods_brownfield.framework in Frameworks */,
+				1080009724CA25C85611E07A /* Pods_brownfield.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		AD5A0ED81DC8E82C8DA36286 /* Frameworks */ = {
+		23D0DF271C892272967712DF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7D7DBFE8B045DA2587C126C9 /* Pods_brownfield_brownfieldbrownfield.framework in Frameworks */,
+				ACB4BF85DA97DE9C46C5FDD2 /* Pods_brownfield_brownfieldbrownfield.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0469DCCEE47353DBA3C69A1E /* brownfield */ = {
+			isa = PBXGroup;
+			children = (
+				BCF1DA86B64A681F2E209DDF /* ExpoModulesProvider.swift */,
+			);
+			name = brownfield;
+			sourceTree = "<group>";
+		};
+		047B1E87B2FD4EE5936034BA /* brownfieldbrownfield */ = {
+			isa = PBXGroup;
+			children = (
+				40217283BB8D43F391AFB012 /* ReactNativeHostManager.swift */,
+				453BEF00C12B41C681618AA7 /* Messaging.swift */,
+				6E03AB20C76C4A018944ED4D /* ReactNativeView.swift */,
+				FB318ACBD3AE4077A2B99EC0 /* ReactNativeViewController.swift */,
+				046AA01BA3C7410ABF4C20E7 /* ExpoAppDelegate.swift */,
+				04C3033D3E534A8DBC29DBDA /* ReactNativeDelegate.swift */,
+			);
+			name = brownfieldbrownfield;
+			path = /Users/patrykmleczek/Desktop/expo/apps/brownfield/ios/brownfieldbrownfield;
+			sourceTree = "<group>";
+		};
 		13B07FAE1A68108700A75B9A /* brownfield */ = {
 			isa = PBXGroup;
 			children = (
@@ -88,32 +110,29 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				F5C4AE6BA25348E2807BEEDD /* expo.icon */,
-				A0EBDDC9862740DD27B10344 /* PrivacyInfo.xcprivacy */,
+				130D9F9B6C2042098F955CEB /* expo.icon */,
+				22609C1D6E8B1752DA3FC804 /* PrivacyInfo.xcprivacy */,
 			);
 			name = brownfield;
-			sourceTree = "<group>";
-		};
-		24C12876B658BC71680A63AF /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				6A0A87EFA2F17E7722685E4A /* Pods-brownfield.debug.xcconfig */,
-				32978030CA4F7C3DA10610C8 /* Pods-brownfield.release.xcconfig */,
-				CC08871F8FEE092D8010C850 /* Pods-brownfield-brownfieldbrownfield.debug.xcconfig */,
-				489581AAE0F3ACED755AE288 /* Pods-brownfield-brownfieldbrownfield.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				A90A9FA43ED6A1FBB293133B /* Pods_brownfield.framework */,
-				8B84C30222AFF0ACFDBB9E70 /* Pods_brownfield_brownfieldbrownfield.framework */,
+				34837EA14E42D9535770A36D /* Pods_brownfield.framework */,
+				DDD73199EBD8DC4D81BABFCA /* Pods_brownfield_brownfieldbrownfield.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3E397606BD1E4AEFE1BF32E0 /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				0469DCCEE47353DBA3C69A1E /* brownfield */,
+				FCF53D6001E89CB2AAA460E6 /* brownfieldbrownfield */,
+			);
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -130,9 +149,9 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				982944137DBB44B8AF4B605E /* brownfieldbrownfield */,
-				24C12876B658BC71680A63AF /* Pods */,
-				D4CC953319D0137E6D47C6CE /* ExpoModulesProviders */,
+				047B1E87B2FD4EE5936034BA /* brownfieldbrownfield */,
+				963C3800B9D7527BFEE3F117 /* Pods */,
+				3E397606BD1E4AEFE1BF32E0 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -143,31 +162,21 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* brownfield.app */,
-				FC98193591BE4C1C89E20F15 /* brownfieldbrownfield.framework */,
+				59BF293BF09A43BCB04AE584 /* brownfieldbrownfield.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		982944137DBB44B8AF4B605E /* brownfieldbrownfield */ = {
+		963C3800B9D7527BFEE3F117 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				DDDD1851316D454F9FF79688 /* ReactNativeHostManager.swift */,
-				7EC70DE9F62945A3878C4B78 /* Messaging.swift */,
-				08FB6C2C7AA84FFBB022B4D6 /* ReactNativeView.swift */,
-				7BC1882C0F74424AB9344646 /* ReactNativeViewController.swift */,
-				BC67B87A08544DB5BEC829DB /* ExpoAppDelegate.swift */,
-				FE16E18D2E6944ECADD59052 /* ReactNativeDelegate.swift */,
+				C08422DBAD56C7DAFF37DF7B /* Pods-brownfield.debug.xcconfig */,
+				30F716E8ED434991A0D940E2 /* Pods-brownfield.release.xcconfig */,
+				B576E0BCD78CA612D4CF138C /* Pods-brownfield-brownfieldbrownfield.debug.xcconfig */,
+				4E587C1B7B24ADB038D6D58F /* Pods-brownfield-brownfieldbrownfield.release.xcconfig */,
 			);
-			name = brownfieldbrownfield;
-			path = /Users/patrykmleczek/Desktop/expo/apps/brownfield/ios/brownfieldbrownfield;
-			sourceTree = "<group>";
-		};
-		A0CAC113CFA9FCF8955FDD38 /* brownfield */ = {
-			isa = PBXGroup;
-			children = (
-				FBC0F80FC24F95EFEE16B95B /* ExpoModulesProvider.swift */,
-			);
-			name = brownfield;
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -179,21 +188,12 @@
 			path = brownfield/Supporting;
 			sourceTree = "<group>";
 		};
-		BBB278FF6E946D397BC82B8C /* brownfieldbrownfield */ = {
+		FCF53D6001E89CB2AAA460E6 /* brownfieldbrownfield */ = {
 			isa = PBXGroup;
 			children = (
-				C9E50FF84477EAC492BFF32E /* ExpoModulesProvider.swift */,
+				475859D3F42E7833768A96F5 /* ExpoModulesProvider.swift */,
 			);
 			name = brownfieldbrownfield;
-			sourceTree = "<group>";
-		};
-		D4CC953319D0137E6D47C6CE /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				A0CAC113CFA9FCF8955FDD38 /* brownfield */,
-				BBB278FF6E946D397BC82B8C /* brownfieldbrownfield */,
-			);
-			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -204,13 +204,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "brownfield" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				1C8B46F0596545E4B227021F /* [Expo] Configure project */,
+				B516B88A4520526D9932E6D0 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				0F2DC3F44E6BDBFD92AA6212 /* [CP] Embed Pods Frameworks */,
+				5B0841EF11669B70B1471D35 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -221,16 +221,16 @@
 			productReference = 13B07F961A680F5B00A75B9A /* brownfield.app */;
 			productType = "com.apple.product-type.application";
 		};
-		A80A4AC733D04C89B0D116A8 /* brownfieldbrownfield */ = {
+		606E0A8B6B634499AA915517 /* brownfieldbrownfield */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 82D768B859EE4645A023955B /* Build configuration list for PBXNativeTarget "brownfieldbrownfield" */;
+			buildConfigurationList = 425D247E94354D10BAFA759A /* Build configuration list for PBXNativeTarget "brownfieldbrownfield" */;
 			buildPhases = (
-				19EB0A84B168DEC6BA846291 /* [CP] Check Pods Manifest.lock */,
+				5218DC6DD5C2BC4BF13163C4 /* [CP] Check Pods Manifest.lock */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				C6129957117FCB2E7A236AB1 /* [Expo] Configure project */,
-				E127E4FA0B2F44859979918A /* Sources */,
-				AD5A0ED81DC8E82C8DA36286 /* Frameworks */,
-				06445430404A799D2D245B49 /* [CP] Copy Pods Resources */,
+				7C7CB474794ED3FF8C3FDE04 /* [Expo] Configure project */,
+				ED2CF319B9264C89AE966981 /* Sources */,
+				23D0DF271C892272967712DF /* Frameworks */,
+				53B541367B23D74F0811FCA6 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -238,7 +238,7 @@
 			);
 			name = brownfieldbrownfield;
 			productName = brownfieldbrownfield;
-			productReference = FC98193591BE4C1C89E20F15 /* brownfieldbrownfield.framework */;
+			productReference = 59BF293BF09A43BCB04AE584 /* brownfieldbrownfield.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -268,7 +268,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* brownfield */,
-				A80A4AC733D04C89B0D116A8 /* brownfieldbrownfield */,
+				606E0A8B6B634499AA915517 /* brownfieldbrownfield */,
 			);
 		};
 /* End PBXProject section */
@@ -281,8 +281,8 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				D2CEEFFC94E14935B7D9B570 /* expo.icon in Resources */,
-				49332E2A1C79B074347A7AC5 /* PrivacyInfo.xcprivacy in Resources */,
+				2CB3F80DB2704A4DB0B745AF /* expo.icon in Resources */,
+				09CF86FB3529F0E352565A7F /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -306,7 +306,51 @@
 			shellPath = /bin/sh;
 			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios absolute | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n# Source .xcode.env.updates if it exists to allow\n# SKIP_BUNDLING to be unset if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.updates\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.updates\"\nfi\n# Source local changes to allow overrides\n# if needed\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
 		};
-		06445430404A799D2D245B49 /* [CP] Copy Pods Resources */ = {
+		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-brownfield-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5218DC6DD5C2BC4BF13163C4 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-brownfield-brownfieldbrownfield-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		53B541367B23D74F0811FCA6 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -344,29 +388,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-brownfield-brownfieldbrownfield/Pods-brownfield-brownfieldbrownfield-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-brownfield-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		0F2DC3F44E6BDBFD92AA6212 /* [CP] Embed Pods Frameworks */ = {
+		5B0841EF11669B70B1471D35 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -384,29 +406,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-brownfield/Pods-brownfield-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		19EB0A84B168DEC6BA846291 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-brownfield-brownfieldbrownfield-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		1C8B46F0596545E4B227021F /* [Expo] Configure project */ = {
+		7C7CB474794ED3FF8C3FDE04 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -417,18 +417,18 @@
 			inputPaths = (
 				"$(SRCROOT)/.xcode.env",
 				"$(SRCROOT)/.xcode.env.local",
-				"$(SRCROOT)/brownfield/brownfield.entitlements",
-				"$(SRCROOT)/Pods/Target Support Files/Pods-brownfield/expo-configure-project.sh",
+				"$(SRCROOT)/brownfieldbrownfield/brownfieldbrownfield.entitlements",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-brownfield-brownfieldbrownfield/expo-configure-project.sh",
 			);
 			name = "[Expo] Configure project";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(SRCROOT)/Pods/Target Support Files/Pods-brownfield/ExpoModulesProvider.swift",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-brownfield-brownfieldbrownfield/ExpoModulesProvider.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-brownfield/expo-configure-project.sh\"\n";
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-brownfield-brownfieldbrownfield/expo-configure-project.sh\"\n";
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -468,7 +468,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-brownfield/Pods-brownfield-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C6129957117FCB2E7A236AB1 /* [Expo] Configure project */ = {
+		B516B88A4520526D9932E6D0 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -479,18 +479,18 @@
 			inputPaths = (
 				"$(SRCROOT)/.xcode.env",
 				"$(SRCROOT)/.xcode.env.local",
-				"$(SRCROOT)/brownfieldbrownfield/brownfieldbrownfield.entitlements",
-				"$(SRCROOT)/Pods/Target Support Files/Pods-brownfield-brownfieldbrownfield/expo-configure-project.sh",
+				"$(SRCROOT)/brownfield/brownfield.entitlements",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-brownfield/expo-configure-project.sh",
 			);
 			name = "[Expo] Configure project";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(SRCROOT)/Pods/Target Support Files/Pods-brownfield-brownfieldbrownfield/ExpoModulesProvider.swift",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-brownfield/ExpoModulesProvider.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-brownfield-brownfieldbrownfield/expo-configure-project.sh\"\n";
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-brownfield/expo-configure-project.sh\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -500,53 +500,30 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				FA6D8E1DFD91831DE95F9DDA /* ExpoModulesProvider.swift in Sources */,
+				0628A5DA96C46C3629D9D2DF /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E127E4FA0B2F44859979918A /* Sources */ = {
+		ED2CF319B9264C89AE966981 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				137DDF2BABCB48BFBFD68C25 /* ReactNativeHostManager.swift in Sources */,
-				B9ED51C08F9D4FC2B7402820 /* Messaging.swift in Sources */,
-				2C2DFE549B7C49B1997748F7 /* ReactNativeView.swift in Sources */,
-				184BE6B943244FE7ABCF0655 /* ReactNativeViewController.swift in Sources */,
-				40D6FC17270A479EAD63E5EA /* ExpoAppDelegate.swift in Sources */,
-				82856EA48D5846B2AB80E1A8 /* ReactNativeDelegate.swift in Sources */,
-				0D69F634FEDF965A97F50FE1 /* ExpoModulesProvider.swift in Sources */,
+				73E1D3E13FDD4DCAA23155BE /* ReactNativeHostManager.swift in Sources */,
+				62F62F8B10F347CA80A7B6C0 /* Messaging.swift in Sources */,
+				050A8F16FF35414EBCCF0727 /* ReactNativeView.swift in Sources */,
+				CC927686BBD94776A4345757 /* ReactNativeViewController.swift in Sources */,
+				0C15962362CD40A4BE81EA4E /* ExpoAppDelegate.swift in Sources */,
+				E57A77F0E1B043039F32CE3C /* ReactNativeDelegate.swift in Sources */,
+				F61D38BB9E19641A8CD889B8 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		09CC63B2CE0A4D559E5B8B98 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CC08871F8FEE092D8010C850 /* Pods-brownfield-brownfieldbrownfield.debug.xcconfig */;
-			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CODE_SIGN_ENTITLEMENTS = brownfieldbrownfield/brownfieldbrownfield.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
-				ENABLE_MODULE_VERIFIER = NO;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = brownfieldbrownfield/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = brownfieldbrownfield;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = host.exp.brownfieldbrownfield;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_SCRIPT_SANDBOXING = NO;
-			};
-			name = Debug;
-		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6A0A87EFA2F17E7722685E4A /* Pods-brownfield.debug.xcconfig */;
+			baseConfigurationReference = C08422DBAD56C7DAFF37DF7B /* Pods-brownfield.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = expo;
 				CLANG_ENABLE_MODULES = YES;
@@ -582,7 +559,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 32978030CA4F7C3DA10610C8 /* Pods-brownfield.release.xcconfig */;
+			baseConfigurationReference = 30F716E8ED434991A0D940E2 /* Pods-brownfield.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = expo;
 				CLANG_ENABLE_MODULES = YES;
@@ -607,29 +584,6 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = Release;
-		};
-		7D5E68F0B54E4CABA53B03A8 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 489581AAE0F3ACED755AE288 /* Pods-brownfield-brownfieldbrownfield.release.xcconfig */;
-			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CODE_SIGN_ENTITLEMENTS = brownfieldbrownfield/brownfieldbrownfield.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
-				ENABLE_MODULE_VERIFIER = NO;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = brownfieldbrownfield/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = brownfieldbrownfield;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = host.exp.brownfieldbrownfield;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_SCRIPT_SANDBOXING = NO;
 			};
 			name = Release;
 		};
@@ -779,6 +733,52 @@
 			};
 			name = Release;
 		};
+		E3F9B569F9DC42B684C326AB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B576E0BCD78CA612D4CF138C /* Pods-brownfield-brownfieldbrownfield.debug.xcconfig */;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_ENTITLEMENTS = brownfieldbrownfield/brownfieldbrownfield.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_MODULE_VERIFIER = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = brownfieldbrownfield/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = brownfieldbrownfield;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+				PRODUCT_BUNDLE_IDENTIFIER = host.exp.brownfieldbrownfield;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_SCRIPT_SANDBOXING = NO;
+			};
+			name = Debug;
+		};
+		F5674EFBDDF3485587E05228 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4E587C1B7B24ADB038D6D58F /* Pods-brownfield-brownfieldbrownfield.release.xcconfig */;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_ENTITLEMENTS = brownfieldbrownfield/brownfieldbrownfield.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_MODULE_VERIFIER = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = brownfieldbrownfield/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = brownfieldbrownfield;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
+				PRODUCT_BUNDLE_IDENTIFIER = host.exp.brownfieldbrownfield;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USER_SCRIPT_SANDBOXING = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -791,11 +791,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		82D768B859EE4645A023955B /* Build configuration list for PBXNativeTarget "brownfieldbrownfield" */ = {
+		425D247E94354D10BAFA759A /* Build configuration list for PBXNativeTarget "brownfieldbrownfield" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				09CC63B2CE0A4D559E5B8B98 /* Debug */,
-				7D5E68F0B54E4CABA53B03A8 /* Release */,
+				E3F9B569F9DC42B684C326AB /* Debug */,
+				F5674EFBDDF3485587E05228 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

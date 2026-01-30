@@ -17,6 +17,7 @@
     "expo-brownfield": "~55.0.4",
     "expo-constants": "~55.0.2",
     "expo-device": "~55.0.3",
+    "expo-dev-menu": "~55.0.3",
     "expo-font": "~55.0.3",
     "expo-glass-effect": "~55.0.3",
     "expo-image": "~55.0.3",
