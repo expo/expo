@@ -1,0 +1,18 @@
+{
+  "name": "compose-webview",
+  "version": "0.0.1",
+  "private": true,
+  "description": "WebView that supports jetpack-compose",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "homepage": "https://expo.dev",
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {},
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}
