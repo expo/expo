@@ -278,4 +278,4 @@ For implementation details, examine these files:
 - `tools/src/prebuilds/ExternalPackage.ts` - External package discovery and resolution
 - `tools/src/prebuilds/SPMPackage.ts` - SPM Package.swift generation
 - `tools/src/prebuilds/Codegen.ts` - Codegen handling
-- `packages/expo-modules-core/ios/ReactDelegates/PrecompiledModules/precompiled_modules.rb` - Ruby CocoaPods integration
+- `packages/expo-modules-autolinking/scripts/ios/precompiled_modules.rb` - Ruby CocoaPods integration
