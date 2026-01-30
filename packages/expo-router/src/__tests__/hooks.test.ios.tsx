@@ -15,8 +15,15 @@ import {
 } from '../hooks';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
+import { LoaderCache, LoaderCacheContext } from '../loaders/LoaderCache';
+import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
+import { fetchLoaderModule } from '../loaders/utils';
 import { renderRouter } from '../testing-library';
 import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs';
+
+jest.mock('../loaders/utils', () => ({
+  fetchLoaderModule: jest.fn(),
+}));
 
 /*
  * Creates an Expo Router context around the hook, where every router renders the hook
@@ -25,7 +32,10 @@ import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs
 function renderHook<T>(
   renderCallback: () => T,
   routes: string[] = ['index'],
-  { initialUrl = '/' }: { initialUrl?: string } = {}
+  {
+    initialUrl = '/',
+    outerWrapper: OuterWrapper,
+  }: { initialUrl?: string; outerWrapper?: React.ComponentType<{ children: React.ReactNode }> } = {}
 ) {
   return tlRenderHook(renderCallback, {
     wrapper: function Wrapper({ children }) {
@@ -34,12 +44,14 @@ function renderHook<T>(
         context[key] = () => <>{children}</>;
       }
 
-      return (
+      const root = (
         <ExpoRoot
           context={inMemoryContext(context)}
           location={new URL(initialUrl, 'test://test')}
         />
       );
+
+      return OuterWrapper ? <OuterWrapper>{root}</OuterWrapper> : root;
     },
   });
 }
@@ -727,7 +739,41 @@ describe(useLoaderData, () => {
     delete (globalThis as any).__EXPO_ROUTER_LOADER_DATA__;
   });
 
-  it('retrieves data from globalThis.__EXPO_ROUTER_LOADER_DATA__', () => {
+  it.each([
+    { route: 'index', initialUrl: '/', expectedPath: '/' },
+    { route: 'users/index', initialUrl: '/users', expectedPath: '/users' },
+    { route: '(group)/index', initialUrl: '/', expectedPath: '/(group)' },
+    { route: 'users/[id]', initialUrl: '/users/123', expectedPath: '/users/123' },
+  ])('resolves $route to $expectedPath', ({ route, initialUrl, expectedPath }) => {
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      [expectedPath]: { correct: true },
+    };
+
+    const { result } = renderHook(() => useLoaderData(), [route], { initialUrl });
+
+    expect(result.current).toEqual({ correct: true });
+  });
+
+  it('retrieves server-side data from `ServerDataLoaderContext`', () => {
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/': { source: 'global' },
+    };
+
+    const ServerWrapper = ({ children }: { children: React.ReactNode }) => (
+      <ServerDataLoaderContext value={{ '/': { source: 'server' } }}>
+        {children}
+      </ServerDataLoaderContext>
+    );
+
+    const { result } = renderHook(() => useLoaderData(), ['index'], {
+      initialUrl: '/',
+      outerWrapper: ServerWrapper,
+    });
+
+    expect(result.current).toEqual({ source: 'server' });
+  });
+
+  it('retrieves server-injected data from `globalThis.__EXPO_ROUTER_LOADER_DATA__`', () => {
     const asyncLoader = async () => ({ data: 'test' });
 
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
@@ -739,6 +785,56 @@ describe(useLoaderData, () => {
     });
 
     expect(result.current).toEqual({ some: 'data' });
+  });
+
+  it('retrieves fresh data from `fetchLoaderModule()`', async () => {
+    const fetchLoaderModuleMock = fetchLoaderModule as jest.MockedFunction<
+      typeof fetchLoaderModule
+    >;
+    fetchLoaderModuleMock.mockResolvedValue({ fromFetch: true });
+
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/': { home: true },
+    };
+
+    const cache = new LoaderCache();
+
+    const CacheWrapper = ({ children }: { children: React.ReactNode }) => (
+      <LoaderCacheContext value={cache}>{children}</LoaderCacheContext>
+    );
+
+    renderHook(() => useLoaderData(), ['users/[id]'], {
+      initialUrl: '/users/123',
+      outerWrapper: CacheWrapper,
+    });
+
+    expect(fetchLoaderModuleMock).toHaveBeenCalledWith('/users/123');
+
+    await act(async () => {
+      await fetchLoaderModuleMock.mock.results[0].value;
+    });
+
+    expect(cache.getData('/users/123')).toEqual({ fromFetch: true });
+  });
+
+  it('retrieves cached data from `LoaderCacheContext`', () => {
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/': { home: true },
+    };
+
+    const cache = new LoaderCache();
+    cache.setData('/users/123', { fromCache: true });
+
+    const CacheWrapper = ({ children }: { children: React.ReactNode }) => (
+      <LoaderCacheContext value={cache}>{children}</LoaderCacheContext>
+    );
+
+    const { result } = renderHook(() => useLoaderData(), ['users/[id]'], {
+      initialUrl: '/users/123',
+      outerWrapper: CacheWrapper,
+    });
+
+    expect(result.current).toEqual({ fromCache: true });
   });
 
   it(`uses the loader function's return types`, () => {
