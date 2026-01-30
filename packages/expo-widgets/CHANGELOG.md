@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add push-to-start token listener.
+- Add push-to-start token listener. ([#42721](https://github.com/expo/expo/pull/42721) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 

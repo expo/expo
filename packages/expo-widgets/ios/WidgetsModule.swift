@@ -3,6 +3,8 @@ import ActivityKit
 import WidgetKit
 import JavaScriptCore
 
+private let pushNotificationsEnabledKey: String = "ExpoWidgets_EnablePushNotifications"
+
 private let onUserInteraction = "onExpoWidgetsUserInteraction"
 private let onPushToStartTokenReceived = "onExpoWidgetsPushToStartTokenReceived"
 let onUserInteractionNotification = Notification.Name(onUserInteraction)
@@ -144,6 +146,6 @@ public final class WidgetsModule: Module {
   }
 
   private var pushNotificationsEnabled: Bool {
-    Bundle.main.object(forInfoDictionaryKey: "ExpoWidgets_EnablePushNotifications") as? Bool ?? false
+    Bundle.main.object(forInfoDictionaryKey: pushNotificationsEnabledKey) as? Bool ?? false
   }
 }
