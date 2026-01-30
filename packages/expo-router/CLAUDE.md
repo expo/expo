@@ -179,6 +179,22 @@ jest.mock('react-native-screens', () => {
 });
 ```
 
+**Spies and console mocks:** Use `beforeEach`/`afterEach` with `mockRestore()`:
+
+```ts
+let spy: jest.SpyInstance;
+beforeEach(() => { spy = jest.spyOn(Module, 'fn'); }); // or jest.spyOn(console, 'warn').mockImplementation(() => {})
+afterEach(() => { spy.mockRestore(); });
+```
+
+**Mock call assertions:** Use array index access. Comment non-zero indices:
+
+```ts
+const props = MockedComponent.mock.calls[0][0];
+// [1] because first call is layout, second is screen
+const screenProps = MockedComponent.mock.calls[1][0];
+```
+
 ## Key Concepts
 
 ### File-Based Routing Conventions

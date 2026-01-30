@@ -201,21 +201,21 @@ export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => 
     }
   }
 
-  if (placement === 'bottom') {
-    const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
-    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
-    return (
-      <NativeToolbarButton
-        {...sharedProps}
-        icon={icon}
-        image={props.image}
-        imageRenderingMode={props.iconRenderingMode}
-      />
-    );
+  if (placement !== 'bottom') {
+    throw new Error('Stack.Toolbar.Button must be used inside a Stack.Toolbar');
   }
 
-  return null;
+  const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
+  // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+  const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
+  return (
+    <NativeToolbarButton
+      {...sharedProps}
+      icon={icon}
+      image={props.image}
+      imageRenderingMode={props.iconRenderingMode}
+    />
+  );
 };
 
 export function convertStackToolbarButtonPropsToRNHeaderItem(
