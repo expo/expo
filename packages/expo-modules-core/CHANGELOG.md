@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fixed view updates for Jetpack Compose integration. ([#42732](https://github.com/expo/expo/pull/42732) by [@kudo](https://github.com/kudo))
+
 ## 55.0.9 — 2026-02-16
 
 ### 🐛 Bug fixes
