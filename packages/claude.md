@@ -481,3 +481,64 @@ Examine these files for implementation details:
 - `packages/expo-modules-autolinking/scripts/ios/packages_config.rb` - Package configuration
 - `packages/expo-modules-core/spm.config.json` - Complex multi-target example
 - `packages/expo-font/spm.config.json` - Simple Swift-only example
+
+---
+
+## Implementation Log
+
+### Phase 1 - January 30, 2026
+
+Attempted to add SPM prebuild support to multiple packages. Found significant limitations.
+
+#### ✅ Successfully Built
+
+| Package | Module Name | Notes |
+|---------|-------------|-------|
+| `expo-updates-interface` | `EXUpdatesInterface` | Swift-only package. Works because it doesn't have ObjC code importing ExpoModulesCore headers. |
+
+#### ❌ Failed - ObjC Importing ExpoModulesCore
+
+These packages have ObjC code that imports `<ExpoModulesCore/...>` headers. When SPM tries to build the ObjC target as a module, it fails with "non-modular header" errors because ExpoModulesCore has complex header dependencies on React Native internals (jsi.h, RCTBridgeModule, etc.).
+
+| Package | Error Type |
+|---------|------------|
+| `expo-application` | Non-modular header issues when ObjC imports ExpoModulesCore |
+| `expo-audio` | Same - ObjC AudioTapProcessor imports ExpoModulesCore |
+| `expo-location` | Same - ObjC requesters/consumers import ExpoModulesCore |
+
+#### ❌ Failed - No Linkable Symbols (Category-Only ObjC)
+
+These packages are pure Objective-C but only contain categories (extensions on existing classes). They have no class definitions, so the linker can't find any symbols.
+
+| Package | Error |
+|---------|-------|
+| `expo-json-utils` | `symbol(s) not found for architecture arm64` - only has NSDictionary category |
+| `expo-structured-headers` | `symbol(s) not found for architecture arm64` - same issue despite having EXStructuredHeadersParser class (needs investigation) |
+
+#### Key Findings
+
+1. **Swift-only packages work**: Packages that are 100% Swift and use `expo-modules-core/ExpoModulesCore` as a dependency work fine because Swift modules handle the ExpoModulesCore dependency differently.
+
+2. **ObjC + ExpoModulesCore = Broken**: Any package with ObjC code that does `#import <ExpoModulesCore/...>` will fail because:
+   - SPM compiles ObjC as modules with strict modular header requirements
+   - ExpoModulesCore's headers include non-modular React Native headers (jsi.h, RCTBridgeModule.h, etc.)
+   - This causes cascading "include of non-modular header inside framework module" errors
+
+3. **Category-only ObjC packages fail**: Pure ObjC packages that only define categories (like `NSDictionary+EXJSONUtils`) have no linkable symbols for the dynamic framework.
+
+#### Recommendations for Future Work
+
+1. **Focus on Swift-only packages** for SPM prebuild support
+2. **For mixed packages**: Either convert ObjC to Swift, or find a way to isolate ObjC code that doesn't need ExpoModulesCore imports
+3. **For category-only packages**: Add a dummy class to provide a linkable symbol, OR keep them as source-only
+
+5. **Podspec pattern**: Always use `Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s)` pattern. The method handles all the xcframework detection and linking. Source compilation settings go inside the `if (!...)` block.
+
+#### Packages Analyzed but Deferred
+
+During analysis, the following packages were identified for later phases:
+
+- **Phase 2**: `expo-file-system` (Legacy ObjC), `expo-ui` (ObjC++), `expo-widgets` (depends on expo-ui)
+- **Phase 3**: `expo-screen-orientation`, `expo-media-library`, `expo-router` (need React-Core linking)
+- **Phase 4**: `expo-constants` (script phase), `expo-task-manager` (UMAppLoader), `expo-insights` (EASClient)
+- **Ineligible**: `expo-camera` (ZXingObjC), `expo-image` (SDWebImage ecosystem), `expo-gl` (C++/JSI), `expo-updates` (complex), `expo-dev-*` (dev tooling)

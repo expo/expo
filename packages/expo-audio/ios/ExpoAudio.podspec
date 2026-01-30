@@ -20,13 +20,15 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
 
-  s.pod_target_xcconfig = {
-    'DEFINES_MODULE' => 'YES',
-    'SWIFT_COMPILATION_MODE' => 'wholemodule'
-  }
-  
-  s.source_files = "**/*.{h,m,swift}"
-  s.tvos.exclude_files = "**/AudioRecorder.swift",
-                         "**/AudioRecordingRequester.swift",
-                         "**/RecordingDelegate.swift"
+  if (!Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s))
+    s.static_framework = true
+    s.source_files = "**/*.{h,m,swift}"
+    s.tvos.exclude_files = "**/AudioRecorder.swift",
+                           "**/AudioRecordingRequester.swift",
+                           "**/RecordingDelegate.swift"
+    s.pod_target_xcconfig = {
+      'DEFINES_MODULE' => 'YES',
+      'SWIFT_COMPILATION_MODE' => 'wholemodule'
+    }
+  end
 end
