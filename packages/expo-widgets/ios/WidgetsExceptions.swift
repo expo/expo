@@ -11,3 +11,9 @@ internal final class StartLiveActivityException: GenericException<String>, @unch
     "Failed to start live activity: \(param)"
   }
 }
+
+internal final class LiveActivityNotFoundException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "Can't find live activity with id: \(param)"
+  }
+}
