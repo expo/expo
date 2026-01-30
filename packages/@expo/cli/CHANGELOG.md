@@ -13,6 +13,7 @@
 - Fix RSC support in development ([#42617](https://github.com/expo/expo/pull/42617) by [@hassankhan](https://github.com/hassankhan))
 - Fix loader URL resolution for nested `/index` paths ([#42629](https://github.com/expo/expo/pull/42629) by [@hassankhan](https://github.com/hassankhan))
 - [web] Ensure `<Head>` component re-renders when focus changes ([#42681](https://github.com/expo/expo/pull/42681) by [@hassankhan](https://github.com/hassankhan))
+- Mark `expo-router` as optional peer to prevent auto-installation ([#42728](https://github.com/expo/expo/pull/42728) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
