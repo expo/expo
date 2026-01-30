@@ -16,6 +16,10 @@
     "./jetpack-compose": {
       "types": "./build/jetpack-compose/index.d.ts",
       "default": "./src/jetpack-compose/index.ts"
+    },
+    "./jetpack-compose/modifiers": {
+      "types": "./build/jetpack-compose/modifiers/index.d.ts",
+      "default": "./src/jetpack-compose/modifiers/index.ts"
     }
   },
   "scripts": {
