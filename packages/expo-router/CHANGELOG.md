@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [web] Ensure `<Head>` component re-renders when focus changes ([#42713](https://github.com/expo/expo/pull/42713) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
 
 - Bump `react-server-dom-webpack` ([#42572](https://github.com/expo/expo/pull/42572) by [@vonovak](https://github.com/vonovak))
