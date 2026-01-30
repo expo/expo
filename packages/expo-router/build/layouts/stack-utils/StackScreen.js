@@ -82,7 +82,7 @@ function appendScreenStackPropsToOptions(options, props) {
         if ((0, children_1.isChildOfType)(child, toolbar_1.StackToolbar)) {
             const placement = child.props.placement ?? 'bottom';
             if (placement === 'bottom') {
-                throw new Error(`Stack.Toolbar with placement="bottom" cannot be used inside Stack.Screen in _layout.tsx. Please move it to the page component.`);
+                throw new Error(`Stack.Toolbar with placement="bottom" cannot be used inside Stack.Screen.`);
             }
             return (0, toolbar_1.appendStackToolbarPropsToOptions)(opts, child.props);
         }

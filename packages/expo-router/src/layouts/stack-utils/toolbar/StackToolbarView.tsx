@@ -68,11 +68,11 @@ export interface StackToolbarViewProps {
 export const StackToolbarView: React.FC<StackToolbarViewProps> = (props) => {
   const placement = useToolbarPlacement();
 
-  if (placement === 'bottom') {
-    return <NativeToolbarView {...props}>{props.children}</NativeToolbarView>;
+  if (placement !== 'bottom') {
+    throw new Error('Stack.Toolbar.View must be used inside a Stack.Toolbar');
   }
 
-  return null;
+  return <NativeToolbarView {...props}>{props.children}</NativeToolbarView>;
 };
 
 export function convertStackToolbarViewPropsToRNHeaderItem(

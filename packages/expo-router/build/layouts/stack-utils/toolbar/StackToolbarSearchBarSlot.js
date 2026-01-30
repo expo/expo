@@ -35,10 +35,7 @@ const native_1 = require("../../../toolbar/native");
 const StackToolbarSearchBarSlot = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
     if (placement !== 'bottom') {
-        if (process.env.NODE_ENV !== 'production') {
-            console.warn('Stack.Toolbar.SearchBarSlot is only available in Bottom placement. It will not render in Left or Right placement.');
-        }
-        return null;
+        throw new Error('Stack.Toolbar.SearchBarSlot must be used inside a Stack.Toolbar');
     }
     return <NativeToolbarSearchBarSlot {...props}/>;
 };
