@@ -2,23 +2,7 @@ import 'react-native';
 import { render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import {
-  B,
-  BlockQuote,
-  BR,
-  Pre,
-  Code,
-  Del,
-  EM,
-  I,
-  Mark,
-  P,
-  Q,
-  S,
-  Span,
-  Strong,
-  Time,
-} from '../Text';
+import { B, BlockQuote, Pre, Code, Del, EM, I, Mark, P, Q, S, Span, Strong, Time } from '../Text';
 
 it('renders P', () => {
   const { toJSON } = render(<P>demo</P>);
@@ -57,11 +41,6 @@ it('renders I', () => {
 
 it('renders EM', () => {
   const { toJSON } = render(<EM>demo</EM>);
-  expect(toJSON()).toMatchSnapshot();
-});
-
-it('renders BR', () => {
-  const { toJSON } = render(<BR />);
   expect(toJSON()).toMatchSnapshot();
 });
 
