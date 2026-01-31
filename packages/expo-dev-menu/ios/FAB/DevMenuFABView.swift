@@ -4,6 +4,10 @@
 
 import SwiftUI
 
+enum SnappedEdge {
+  case left, right
+}
+
 enum FABConstants {
   static let iconSize: CGFloat = 44
   static let margin: CGFloat = 10
@@ -133,12 +137,15 @@ struct DevMenuFABView: View {
   let onFrameChange: (CGRect) -> Void
 
   private let fabSize = CGSize(width: 72, height: FABConstants.iconSize + 50)
+  private let panelWidth: CGFloat = 180  // Width of panel portion (excluding gear)
 
   @State private var position: CGPoint = .zero
-  @State private var targetPosition: CGPoint = .zero
   @State private var isDragging = false
   @State private var isPressed = false
   @State private var dragStartPosition: CGPoint = .zero
+  @State private var isSnackSession = false
+  @State private var snackName = "Playground"
+  @State private var screenWidth: CGFloat = 0
 
   private let dragSpring: Animation = .spring(
     response: 0.35,
@@ -146,36 +153,118 @@ struct DevMenuFABView: View {
     blendDuration: 0
   )
 
-  private var currentFrame: CGRect {
-    CGRect(origin: position, size: fabSize)
+  /// Compute the hit test frame based on current state.
+  /// When panel is visible, extends from gear position to include the panel.
+  private func hitTestFrame(edge: SnappedEdge) -> CGRect {
+    let showingPanel = isSnackSession && !isDragging
+
+    if showingPanel {
+      // Panel extends inward from gear
+      let totalWidth = fabSize.width + panelWidth
+      let height = fabSize.height
+
+      if edge == .right {
+        // Gear on right, panel extends left
+        return CGRect(
+          x: position.x - panelWidth,
+          y: position.y,
+          width: totalWidth,
+          height: height
+        )
+      } else {
+        // Gear on left, panel extends right
+        return CGRect(
+          x: position.x,
+          y: position.y,
+          width: totalWidth,
+          height: height
+        )
+      }
+    } else {
+      return CGRect(origin: position, size: fabSize)
+    }
   }
 
   var body: some View {
     GeometryReader { geometry in
       let safeArea = geometry.safeAreaInsets
+      let edge: SnappedEdge = position.x < geometry.size.width / 2 ? .left : .right
 
-      FabPill(isPressed: $isPressed, isDragging: $isDragging)
-        .frame(width: fabSize.width, height: fabSize.height)
-        .position(x: currentFrame.midX, y: currentFrame.midY)
-        .gesture(dragGesture(bounds: geometry.size, safeArea: safeArea))
-        .onAppear {
-          let initialPos = defaultPosition(bounds: geometry.size, safeArea: safeArea)
-          position = initialPos
-          onFrameChange(CGRect(origin: initialPos, size: fabSize))
-        }
-        .onChange(of: geometry.size) { newSize in
-          let newPos = snapToEdge(
-            from: position,
-            velocity: .zero,
-            bounds: newSize,
-            safeArea: safeArea
+      // The content is positioned so the gear button stays at `position`
+      // When showing SnackFabPill, the panel extends from the gear via offset
+      Group {
+        if isSnackSession {
+          SnackFabPill(
+            isPressed: $isPressed,
+            isDragging: $isDragging,
+            snappedEdge: edge,
+            snackName: snackName,
+            onSave: handleSave
           )
-          position = newPos
-          onFrameChange(CGRect(origin: newPos, size: fabSize))
+        } else {
+          FabPill(isPressed: $isPressed, isDragging: $isDragging)
         }
-        .animation(isDragging ? dragSpring : FABConstants.snapAnimation, value: position)
+      }
+      .frame(width: fabSize.width, height: fabSize.height)
+      .position(
+        x: position.x + fabSize.width / 2,
+        y: position.y + fabSize.height / 2
+      )
+      .gesture(dragGesture(bounds: geometry.size, safeArea: safeArea))
+      .onAppear {
+        screenWidth = geometry.size.width
+        let initialPos = defaultPosition(bounds: geometry.size, safeArea: safeArea)
+        position = initialPos
+        onFrameChange(hitTestFrame(edge: .right))
+        updateSnackSessionState()
+      }
+      .onChange(of: geometry.size) { newSize in
+        screenWidth = newSize.width
+        let newPos = snapToEdge(
+          from: position,
+          velocity: .zero,
+          bounds: newSize,
+          safeArea: safeArea
+        )
+        position = newPos
+        let newEdge: SnappedEdge = newPos.x < newSize.width / 2 ? .left : .right
+        onFrameChange(hitTestFrame(edge: newEdge))
+      }
+      .onChange(of: isSnackSession) { _ in
+        onFrameChange(hitTestFrame(edge: edge))
+      }
+      .onChange(of: isDragging) { _ in
+        onFrameChange(hitTestFrame(edge: edge))
+      }
+      .animation(isDragging ? dragSpring : FABConstants.snapAnimation, value: position)
+      .onReceive(NotificationCenter.default.publisher(for: SnackEditingSession.sessionDidChangeNotification)) { _ in
+        updateSnackSessionState()
+      }
     }
     .ignoresSafeArea()
+  }
+
+  private func updateSnackSessionState() {
+    let session = SnackEditingSession.shared
+    isSnackSession = session.isReady
+    if let id = session.snackId {
+      // Extract a display name from the snack ID
+      // e.g., "@username/my-snack" -> "my-snack", "new" -> "Playground"
+      if id == "new" {
+        snackName = "Playground"
+      } else if let lastSlash = id.lastIndex(of: "/") {
+        snackName = String(id[id.index(after: lastSlash)...])
+      } else {
+        snackName = id
+      }
+    } else {
+      snackName = "Playground"
+    }
+  }
+
+  private func handleSave() {
+    // TODO: Implement save functionality
+    print("Save tapped for snack: \(snackName)")
   }
 
   private func dragGesture(bounds: CGSize, safeArea: EdgeInsets) -> some Gesture {
@@ -203,7 +292,7 @@ struct DevMenuFABView: View {
             x: rawX.clamped(to: minX...maxX),
             y: rawY.clamped(to: minY...maxY)
           )
-          onFrameChange(currentFrame)
+          onFrameChange(CGRect(origin: position, size: fabSize))
         }
       }
       .onEnded { value in
