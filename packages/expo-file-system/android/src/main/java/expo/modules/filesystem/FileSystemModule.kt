@@ -255,7 +255,7 @@ class FileSystemModule : Module() {
       Constructor { file: FileSystemFile ->
         FileSystemFileHandle(file)
       }
-      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Int ->
+      Function("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
         fileHandle.read(bytes)
       }
       Function("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->
