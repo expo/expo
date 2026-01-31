@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Remove more unused declarations when tree shaking. ([#42718](https://github.com/expo/expo/pull/42445) by [@tilgovi](https://github.com/tilgovi))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
