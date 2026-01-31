@@ -30,7 +30,7 @@ type ActionOptions = {
   cleanBuild: boolean;
   cleanGenerated: boolean;
   cleanAll: boolean;
-  buildFlavor: BuildFlavor;
+  buildFlavor?: BuildFlavor;
   reactNativeTarballPath?: string;
   hermesTarballPath?: string;
   reactNativeDependenciesTarballPath?: string;
@@ -173,6 +173,7 @@ async function main(packageNames: string[], options: ActionOptions) {
   const buildStatuses: BuildStatus[] = [];
   const buildErrors: BuildError[] = [];
   let rootPath = '';
+  const startTime = Date.now();
 
   try {
     // A convinience flag to perform all steps
@@ -223,8 +224,10 @@ async function main(packageNames: string[], options: ActionOptions) {
     //    and can be used to test out local Hermes, React Native or React Native Dependencies changes
     await verifyLocalTarballPathsIfSetAsync(options);
 
-    // Resolve other options
-    const resolvedBuildFlavor = options.buildFlavor || 'Debug';
+    // Resolve build flavors - if not specified, build both Debug and Release
+    const buildFlavors: BuildFlavor[] = options.buildFlavor
+      ? [options.buildFlavor]
+      : ['Debug', 'Release'];
 
     // Define paths - always use PACKAGES_DIR for the cache, regardless of whether
     // we're building local or external packages
@@ -249,203 +252,218 @@ async function main(packageNames: string[], options: ActionOptions) {
       }
     }
 
-    // 2. Download dependencies needed for building the packages - these are defined in the package spm.config.json
-    //    Dependencies are now downloaded to a centralized versioned cache (packages/external/.cache/)
-    const artifacts = await Dependencies.downloadArtifactsAsync({
-      reactNativeVersion,
-      hermesVersion,
-      artifactsPath,
-      buildFlavor: resolvedBuildFlavor,
-      localTarballs: {
-        reactNative: options.reactNativeTarballPath,
-        hermes: options.hermesTarballPath,
-        reactNativeDependencies: options.reactNativeDependenciesTarballPath,
-      },
-      // We'll skip downloading if any of the build/compose/generate options are false and --artifacts is not set to true
-      skipArtifacts: performAllSteps ? false : !options.artifacts,
-    });
-
-    // Optionally prune old cached versions to free up disk space
-    if (options.pruneCache) {
-      await Dependencies.pruneUnusedCacheAsync(artifactsPath, {
-        hermes: hermesVersion,
-        reactNativeVersion,
-        buildFlavor: resolvedBuildFlavor,
-      });
-    }
-
-    // 3. Generate/Build each package
+    // 2. Build each package (all flavors per package before moving to next)
     //    Note: Dependencies are no longer copied to each package - Package.swift now references
     //    the centralized cache directly via relative paths
+    const totalPackages = packages.length;
+    let packageIndex = 0;
+
     for (const pkg of packages) {
+      packageIndex++;
       // Get config for the package
       const spmConfig = pkg.getSwiftPMConfiguration();
 
-      for (const product of spmConfig.products) {
-        // If a specific product name is requested, skip other products
-        if (options.productName && options.productName !== product.name) {
-          continue;
+      // Log package header
+      const flavorInfo =
+        buildFlavors.length > 1 ? ` [${buildFlavors.join(' + ')}]` : ` [${buildFlavors[0]}]`;
+      logger.info(
+        `\n📦 [${packageIndex}/${totalPackages}] ${chalk.green(pkg.packageName)}${flavorInfo}`
+      );
+      logger.info(`${'─'.repeat(60)}`);
+
+      // Build all flavors for this package
+      for (const currentBuildFlavor of buildFlavors) {
+        // Download dependencies needed for building the packages - these are defined in the package spm.config.json
+        // Dependencies are now downloaded to a centralized versioned cache (packages/external/.cache/)
+        const artifacts = await Dependencies.downloadArtifactsAsync({
+          reactNativeVersion,
+          hermesVersion,
+          artifactsPath,
+          buildFlavor: currentBuildFlavor,
+          localTarballs: {
+            reactNative: options.reactNativeTarballPath,
+            hermes: options.hermesTarballPath,
+            reactNativeDependencies: options.reactNativeDependenciesTarballPath,
+          },
+          // We'll skip downloading if any of the build/compose/generate options are false and --artifacts is not set to true
+          skipArtifacts: performAllSteps ? false : !options.artifacts,
+        });
+
+        // Optionally prune old cached versions to free up disk space
+        if (options.pruneCache) {
+          await Dependencies.pruneUnusedCacheAsync(artifactsPath, {
+            hermes: hermesVersion,
+            reactNativeVersion,
+            buildFlavor: currentBuildFlavor,
+          });
         }
 
-        // Initialize build status for this package/product
-        const status: BuildStatus = {
-          packageName: pkg.packageName,
-          productName: product.name,
-          generate: 'skipped',
-          build: 'skipped',
-          compose: 'skipped',
-          verify: 'skipped',
-        };
-        buildStatuses.push(status);
+        for (const product of spmConfig.products) {
+          // If a specific product name is requested, skip other products
+          if (options.productName && options.productName !== product.name) {
+            continue;
+          }
 
-        if (options.cleanGenerated || performCleanAll) {
-          // Clean generated source code folder!
-          await SPMGenerator.cleanGeneratedSourceCodeFolderAsync(pkg, product);
-        }
+          // Initialize build status for this package/product/flavor
+          const status: BuildStatus = {
+            packageName: pkg.packageName,
+            productName: `${product.name} [${currentBuildFlavor}]`,
+            generate: 'skipped',
+            build: 'skipped',
+            compose: 'skipped',
+            verify: 'skipped',
+          };
+          buildStatuses.push(status);
 
-        if (options.generate || performAllSteps) {
-          try {
-            // Ensure codegen is generated for packages that need it (e.g., Fabric components)
-            if (Codegen.hasCodegen(pkg)) {
-              const generated = await Codegen.ensureCodegenAsync(pkg, (msg) => logger.info(msg));
-              if (generated) {
-                logger.info(`🔧 Generated codegen for ${chalk.green(pkg.packageName)}`);
-              } else if (Codegen.isCodegenGenerated(pkg)) {
-                logger.info(`🔧 Codegen already exists for ${chalk.green(pkg.packageName)}`);
+          if (options.cleanGenerated || performCleanAll) {
+            // Clean generated source code folder!
+            await SPMGenerator.cleanGeneratedSourceCodeFolderAsync(pkg, product);
+          }
+
+          if (options.generate || performAllSteps) {
+            try {
+              // Ensure codegen is generated for packages that need it (e.g., Fabric components)
+              if (Codegen.hasCodegen(pkg)) {
+                const generated = await Codegen.ensureCodegenAsync(pkg, (msg) => logger.info(msg));
+                if (generated) {
+                  logger.info(`🔧 Generated codegen for ${chalk.green(pkg.packageName)}`);
+                } else if (Codegen.isCodegenGenerated(pkg)) {
+                  logger.info(`🔧 Codegen already exists for ${chalk.green(pkg.packageName)}`);
+                }
               }
+
+              // Generate source code structure for the package/product
+              await SPMGenerator.generateIsolatedSourcesForTargetsAsync(pkg, product);
+
+              // Generate Package.swift and vfs overlay for the package/product
+              // Pass artifacts so Package.swift can reference the centralized cache
+              await SPMGenerator.genereateSwiftPackageAsync(
+                pkg,
+                product,
+                currentBuildFlavor,
+                artifacts
+              );
+              status.generate = 'success';
+            } catch (error) {
+              status.generate = 'failed';
+              const err = error instanceof Error ? error : new Error(String(error));
+              buildErrors.push({
+                packageName: pkg.packageName,
+                productName: product.name,
+                step: 'generate',
+                error: err,
+              });
+              logger.log(`❌ [${pkg.packageName}/${product.name}] Generate failed: ${err.message}`);
+              continue; // Skip to next product
             }
-
-            // Generate source code structure for the package/product
-            await SPMGenerator.generateIsolatedSourcesForTargetsAsync(pkg, product);
-
-            // Generate Package.swift and vfs overlay for the package/product
-            // Pass artifacts so Package.swift can reference the centralized cache
-            await SPMGenerator.genereateSwiftPackageAsync(
-              pkg,
-              product,
-              resolvedBuildFlavor,
-              artifacts
-            );
-            status.generate = 'success';
-          } catch (error) {
-            status.generate = 'failed';
-            const err = error instanceof Error ? error : new Error(String(error));
-            buildErrors.push({
-              packageName: pkg.packageName,
-              productName: product.name,
-              step: 'generate',
-              error: err,
-            });
-            logger.log(`❌ [${pkg.packageName}/${product.name}] Generate failed: ${err.message}`);
-            continue; // Skip to next product
           }
-        }
 
-        if (options.cleanBuild || performCleanAll) {
-          // Clean dependencies, build and output paths
-          await SPMBuild.cleanBuildFolderAsync(pkg, product);
-        }
-
-        if (options.build || performAllSteps) {
-          try {
-            // Build the swift package
-            await SPMBuild.buildSwiftPackageAsync(
-              pkg,
-              product,
-              resolvedBuildFlavor,
-              options.platform
-            );
-            status.build = 'success';
-          } catch (error) {
-            status.build = 'failed';
-            const err = error instanceof Error ? error : new Error(String(error));
-            buildErrors.push({
-              packageName: pkg.packageName,
-              productName: product.name,
-              step: 'build',
-              error: err,
-            });
-            logger.log(`❌ [${pkg.packageName}/${product.name}] Build failed: ${err.message}`);
-            continue; // Skip to next product
+          if (options.cleanBuild || performCleanAll) {
+            // Clean dependencies, build and output paths
+            await SPMBuild.cleanBuildFolderAsync(pkg, product);
           }
-        }
 
-        // Create xcframeworks from built frameworks
-        if (options.compose || performAllSteps) {
-          try {
-            // Let's compose those xcframeworks!
-            await Frameworks.composeXCFrameworkAsync(
-              pkg,
-              product,
-              resolvedBuildFlavor,
-              options.platform
-            );
-            status.compose = 'success';
-          } catch (error) {
-            status.compose = 'failed';
-            const err = error instanceof Error ? error : new Error(String(error));
-            buildErrors.push({
-              packageName: pkg.packageName,
-              productName: product.name,
-              step: 'compose',
-              error: err,
-            });
-            logger.log(`❌ [${pkg.packageName}/${product.name}] Compose failed: ${err.message}`);
-            continue; // Skip to next product
+          if (options.build || performAllSteps) {
+            try {
+              // Build the swift package
+              await SPMBuild.buildSwiftPackageAsync(
+                pkg,
+                product,
+                currentBuildFlavor,
+                options.platform
+              );
+              status.build = 'success';
+            } catch (error) {
+              status.build = 'failed';
+              const err = error instanceof Error ? error : new Error(String(error));
+              buildErrors.push({
+                packageName: pkg.packageName,
+                productName: product.name,
+                step: 'build',
+                error: err,
+              });
+              logger.log(`❌ [${pkg.packageName}/${product.name}] Build failed: ${err.message}`);
+              continue; // Skip to next product
+            }
           }
-        }
 
-        // Verify the built xcframeworks if requested
-        if (options.verify || performAllSteps) {
-          try {
-            // Verify all products' xcframeworks for this package (logging is handled internally)
-            const verifyResults = await SPMVerify.verifyXCFrameworkAsync(
-              pkg,
-              product,
-              resolvedBuildFlavor
-            );
+          // Create xcframeworks from built frameworks
+          if (options.compose || performAllSteps) {
+            try {
+              // Let's compose those xcframeworks!
+              await Frameworks.composeXCFrameworkAsync(
+                pkg,
+                product,
+                currentBuildFlavor,
+                options.platform
+              );
+              status.compose = 'success';
+            } catch (error) {
+              status.compose = 'failed';
+              const err = error instanceof Error ? error : new Error(String(error));
+              buildErrors.push({
+                packageName: pkg.packageName,
+                productName: product.name,
+                step: 'compose',
+                error: err,
+              });
+              logger.log(`❌ [${pkg.packageName}/${product.name}] Compose failed: ${err.message}`);
+              continue; // Skip to next product
+            }
+          }
 
-            // Check if verification actually passed by inspecting the returned reports
-            const verificationFailed = [...verifyResults.values()].some(
-              (report) => !report.overallSuccess
-            );
+          // Verify the built xcframeworks if requested
+          if (options.verify || performAllSteps) {
+            try {
+              // Verify all products' xcframeworks for this package (logging is handled internally)
+              const verifyResults = await SPMVerify.verifyXCFrameworkAsync(
+                pkg,
+                product,
+                currentBuildFlavor
+              );
 
-            // Check for clang warnings (clang failed but overall passed)
-            const hasClangWarnings = [...verifyResults.values()].some(
-              (report) =>
-                report.overallSuccess && report.slices.some((s) => !s.clangModuleImport.success)
-            );
+              // Check if verification actually passed by inspecting the returned reports
+              const verificationFailed = [...verifyResults.values()].some(
+                (report) => !report.overallSuccess
+              );
 
-            if (verificationFailed) {
+              // Check for clang warnings (clang failed but overall passed)
+              const hasClangWarnings = [...verifyResults.values()].some(
+                (report) =>
+                  report.overallSuccess && report.slices.some((s) => !s.clangModuleImport.success)
+              );
+
+              if (verificationFailed) {
+                status.verify = 'failed';
+                buildErrors.push({
+                  packageName: pkg.packageName,
+                  productName: product.name,
+                  step: 'verify',
+                  error: new Error('Verification failed - see above for details'),
+                });
+              } else if (hasClangWarnings) {
+                status.verify = 'warning';
+              } else {
+                status.verify = 'success';
+              }
+            } catch (error) {
               status.verify = 'failed';
+              const err = error instanceof Error ? error : new Error(String(error));
               buildErrors.push({
                 packageName: pkg.packageName,
                 productName: product.name,
                 step: 'verify',
-                error: new Error('Verification failed - see above for details'),
+                error: err,
               });
-            } else if (hasClangWarnings) {
-              status.verify = 'warning';
-            } else {
-              status.verify = 'success';
+              logger.log(`❌ [${pkg.packageName}/${product.name}] Verify failed: ${err.message}`);
             }
-          } catch (error) {
-            status.verify = 'failed';
-            const err = error instanceof Error ? error : new Error(String(error));
-            buildErrors.push({
-              packageName: pkg.packageName,
-              productName: product.name,
-              step: 'verify',
-              error: err,
-            });
-            logger.log(`❌ [${pkg.packageName}/${product.name}] Verify failed: ${err.message}`);
           }
         }
-      }
-    }
+      } // End of buildFlavors loop (per package)
+    } // End of packages loop
 
     // Print build summary
-    printBuildSummary(buildStatuses);
+    printBuildSummary(buildStatuses, Date.now() - startTime);
 
     // Write errors to log file if there were any
     if (buildErrors.length > 0) {
@@ -455,7 +473,7 @@ async function main(packageNames: string[], options: ActionOptions) {
     }
   } catch (error) {
     // Print build summary even on error
-    printBuildSummary(buildStatuses);
+    printBuildSummary(buildStatuses, Date.now() - startTime);
 
     // Write errors to log file
     if (buildErrors.length > 0 && rootPath) {
@@ -501,7 +519,26 @@ ${'='.repeat(80)}
   return logPath;
 }
 
-function printBuildSummary(statuses: BuildStatus[]) {
+function formatDuration(ms: number): string {
+  const seconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+
+  if (hours > 0) {
+    const remainingMinutes = minutes % 60;
+    const remainingSeconds = seconds % 60;
+    return `${hours}h ${remainingMinutes}m ${remainingSeconds}s`;
+  } else if (minutes > 0) {
+    const remainingSeconds = seconds % 60;
+    return `${minutes}m ${remainingSeconds}s`;
+  } else if (seconds > 0) {
+    return `${seconds}s`;
+  } else {
+    return `${ms}ms`;
+  }
+}
+
+function printBuildSummary(statuses: BuildStatus[], elapsedMs: number) {
   if (statuses.length === 0) {
     return;
   }
@@ -547,8 +584,9 @@ function printBuildSummary(statuses: BuildStatus[]) {
   logger.info('─'.repeat(80));
   const warningText = warnings > 0 ? ` | ${chalk.yellow(`⚠️  ${warnings} with warnings`)}` : '';
   const failedText = failed > 0 ? ` | ${chalk.red(`❌ ${failed} failed`)}` : '';
+  const timeText = chalk.blue(`⏱️  ${formatDuration(elapsedMs)}`);
   logger.info(
-    `Total: ${statuses.length} | ${chalk.green(`✅ ${successful} successful`)}${warningText}${failedText}`
+    `Total: ${statuses.length} | ${chalk.green(`✅ ${successful} successful`)}${warningText}${failedText} | ${timeText}`
   );
 }
 
@@ -565,7 +603,10 @@ export default (program: Command) => {
       'current react-native version for BareExpo'
     )
     .option('--hermes-version <version>', 'Provides the current Hermes version.')
-    .option('--build-flavor <flavor>', 'Build flavor (Debug or Release).', 'Debug')
+    .option(
+      '--build-flavor <flavor>',
+      'Build flavor (Debug or Release). If not specified, builds both.'
+    )
     .option(
       '--react-native-tarball-path <path>',
       'Optional local path to a React Native tarball to use instead of downloading.'
