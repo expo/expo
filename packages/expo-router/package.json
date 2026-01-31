@@ -143,6 +143,7 @@
     "debug": "^4.3.4",
     "escape-string-regexp": "^4.0.0",
     "expo-image": "55.0.3",
+    "expo-glass-effect": "^55.0.3",
     "expo-server": "^55.0.2",
     "expo-symbols": "^55.0.3",
     "fast-deep-equal": "^3.1.3",
