@@ -7,4 +7,7 @@ export {
   ExpoWidgetsEvents,
   UserInteractionEvent,
   PushToStartTokenEvent,
+  PushTokenEvent,
+  LiveActivityInfo,
+  LiveActivityDismissalPolicy,
 } from './Widgets.types';

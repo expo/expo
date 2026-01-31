@@ -1,6 +1,6 @@
 import { type EventSubscription } from 'expo-modules-core';
 import React from 'react';
-import { ExpoWidgetsEvents, LiveActivityComponent, WidgetBase } from './Widgets.types';
+import { ExpoWidgetsEvents, LiveActivityComponent, LiveActivityDismissalPolicy, LiveActivityInfo, WidgetBase } from './Widgets.types';
 /**
  * Starts a new Live Activity on iOS.
  * Live Activities display real-time information on the Lock Screen and in the Dynamic Island.
@@ -51,4 +51,27 @@ export declare function addUserInteractionListener(listener: ExpoWidgetsEvents['
  * @return An event subscription that can be used to remove the listener.
  */
 export declare function addPushToStartTokenListener(listener: ExpoWidgetsEvents['onExpoWidgetsPushToStartTokenReceived']): EventSubscription;
+/**
+ * Ends a live activity.
+ * @param activityId The ID of the live activity to end.
+ * @param dismissalPolicy How the live activity should be dismissed from the screen.
+ */
+export declare function endLiveActivity(activityId: string, dismissalPolicy?: LiveActivityDismissalPolicy): void;
+/**
+ * Adds a listener for push token updates.
+ * @param listener Callback function to handle push token updates.
+ * @return An event subscription that can be used to remove the listener.
+ */
+export declare function addPushTokenListener(listener: ExpoWidgetsEvents['onExpoWidgetsTokenReceived']): EventSubscription;
+/**
+ * Gets the push token for a specific live activity.
+ * @param activityId The ID of the live activity.
+ * @return A promise that resolves to the push token, or null if not available.
+ */
+export declare function getLiveActivityPushToken(activityId: string): Promise<string | null>;
+/**
+ * Gets all currently running live activities.
+ * @return An array of live activity information objects.
+ */
+export declare function getLiveActivities(): LiveActivityInfo[];
 //# sourceMappingURL=Widgets.d.ts.map
