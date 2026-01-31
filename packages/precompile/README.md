@@ -325,6 +325,32 @@ When using `--react-native-tarball-path` (or similar) with a local tarball, the 
 | `dependencies` | array | Target dependencies |
 | `linkedFrameworks` | array | System frameworks to link |
 | `includeDirectories` | array | Header search paths (objc/cpp only) |
+| `compilerFlags` | array or object | Compiler flags - see below for format options |
+
+#### Compiler Flags Format
+
+The `compilerFlags` field supports multiple formats:
+
+```json
+// Simple array: applied to all builds, both C and C++
+"compilerFlags": ["-DFOO=1", "-include", "Foundation/Foundation.h"]
+
+// Structured object with build variants
+"compilerFlags": {
+  "common": [...],    // Applied to all builds
+  "debug": [...],     // Applied only to Debug builds
+  "release": [...]    // Applied only to Release builds
+}
+
+// Separate C and C++ flags (useful for -fno-cxx-modules)
+"compilerFlags": {
+  "common": {
+    "c": ["-DFOO=1"],
+    "cxx": ["-fno-cxx-modules", "-DFOO=1"]
+  },
+  "debug": ["-DHERMES_ENABLE_DEBUGGER=1"]
+}
+```
 
 ### Product Options Reference
 

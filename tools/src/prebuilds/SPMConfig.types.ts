@@ -47,6 +47,39 @@ export interface FileMapping {
 }
 
 /**
+ * Compiler flags separated by language (C vs C++)
+ */
+export interface CompilerFlagsPerLanguage {
+  /** Flags for C/Objective-C compilation only */
+  c?: string[];
+  /** Flags for C++/Objective-C++ compilation only */
+  cxx?: string[];
+}
+
+/**
+ * A single variant of compiler flags - either an array (both C and C++) or per-language object
+ */
+export type CompilerFlagsVariant = string[] | CompilerFlagsPerLanguage;
+
+/**
+ * Structured compiler flags with build-type variants.
+ * Supports multiple shorthand forms:
+ * - Array: `["-DFOO=1"]` → applied to all builds, both C and C++
+ * - Object with common/debug/release: `{ common: [...], debug: [...] }`
+ * - Each variant can be array or per-language: `{ common: { c: [...], cxx: [...] } }`
+ */
+export type CompilerFlags =
+  | string[] // Shorthand: array = common flags for both c and cxx
+  | {
+      /** Flags applied to all builds (Debug and Release) */
+      common?: CompilerFlagsVariant;
+      /** Flags applied only to Debug builds */
+      debug?: CompilerFlagsVariant;
+      /** Flags applied only to Release builds */
+      release?: CompilerFlagsVariant;
+    };
+
+/**
  * Base interface for source targets (ObjC, Swift, C++)
  */
 export interface SourceTarget {
@@ -70,10 +103,10 @@ export interface SourceTarget {
   linkedFrameworks?: string[];
   /** Resources to bundle with the target (e.g., Metal shaders, assets) */
   resources?: TargetResource[];
-  /** Additional compiler flags for C/C++/ObjC (e.g., ["-include", "Foundation/Foundation.h"]) */
-  compilerFlags?: string[];
-  /** Additional compiler flags applied only for Debug builds (e.g., ["-DHERMES_ENABLE_DEBUGGER=1"]) */
-  debugCompilerFlags?: string[];
+  /** Compiler flags for C/C++/ObjC. Can be an array (applied to all builds) or an object
+   * with common/debug/release keys. Each key can be an array (both C and C++) or an object
+   * with c/cxx keys. */
+  compilerFlags?: CompilerFlags;
   /** File mappings to reorganize files during source generation. Files matching 'from' pattern
    * will be copied to the 'to' location instead of preserving their original directory structure */
   fileMapping?: FileMapping[];

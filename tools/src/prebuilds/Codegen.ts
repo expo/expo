@@ -212,7 +212,6 @@ export async function ensureCodegenAsync(
   }
 
   if (isCodegenGenerated(pkg)) {
-    onStatus?.(`Codegen already generated for ${pkg.packageName}`);
     return false;
   }
 

@@ -47,16 +47,24 @@
                         ".",
                         "../../.build/codegen/build/generated/ios/ReactCodegen"
                     ],
-                    "compilerFlags": [
-                        "-fno-cxx-modules",
-                        "-DWORKLETS_FEATURE_FLAGS=\\\"[RUNTIME_TEST_FLAG:false][IOS_DYNAMIC_FRAMERATE_ENABLED:true]\\\"",
-                        "-DWORKLETS_VERSION=0.7.1",
-                        "-DREACT_NATIVE_MINOR_VERSION=84",
-                        "-DHERMES_V1_ENABLED"
-                    ],
-                    "debugCompilerFlags": [
-                        "-DHERMES_ENABLE_DEBUGGER=1"
-                    ],
+                    "compilerFlags": {
+                        "common": {
+                            "c": [
+                                "-DWORKLETS_FEATURE_FLAGS=\"[RUNTIME_TEST_FLAG:false][IOS_DYNAMIC_FRAMERATE_ENABLED:true]\"",
+                                "-DWORKLETS_VERSION=0.7.1",
+                                "-DREACT_NATIVE_MINOR_VERSION=84",
+                                "-DHERMES_V1_ENABLED"
+                            ],
+                            "cxx": [
+                                "-fno-cxx-modules",
+                                "-DWORKLETS_FEATURE_FLAGS=\"[RUNTIME_TEST_FLAG:false][IOS_DYNAMIC_FRAMERATE_ENABLED:true]\"",
+                                "-DWORKLETS_VERSION=0.7.1",
+                                "-DREACT_NATIVE_MINOR_VERSION=84",
+                                "-DHERMES_V1_ENABLED"
+                            ]
+                        },
+                        "debug": [ "-DHERMES_ENABLE_DEBUGGER=1" ]
+                    },
                     "fileMapping": [
                         { "from": "AnimationFrameQueue/*.h", "to": "worklets/AnimationFrameQueue/{filename}", "type": "header" },
                         { "from": "NativeModules/*.h", "to": "worklets/NativeModules/{filename}", "type": "header" },
@@ -88,17 +96,17 @@
                         "../../.build/codegen/build/generated/ios/ReactCodegen"
                     ],
                     "linkedFrameworks": [ "Foundation", "UIKit", "QuartzCore" ],
-                    "compilerFlags": [
-                        "-include", "Foundation/Foundation.h",
-                        "-include", "UIKit/UIKit.h",
-                        "-DWORKLETS_FEATURE_FLAGS=\\\"[RUNTIME_TEST_FLAG:false][IOS_DYNAMIC_FRAMERATE_ENABLED:true]\\\"",
-                        "-DWORKLETS_VERSION=0.7.1",
-                        "-DREACT_NATIVE_MINOR_VERSION=84",
-                        "-DHERMES_V1_ENABLED"
-                    ],
-                    "debugCompilerFlags": [
-                        "-DHERMES_ENABLE_DEBUGGER=1"
-                    ],
+                    "compilerFlags": {
+                        "common": [
+                            "-include", "Foundation/Foundation.h",
+                            "-include", "UIKit/UIKit.h",
+                            "-DWORKLETS_FEATURE_FLAGS=\"[RUNTIME_TEST_FLAG:false][IOS_DYNAMIC_FRAMERATE_ENABLED:true]\"",
+                            "-DWORKLETS_VERSION=0.7.1",
+                            "-DREACT_NATIVE_MINOR_VERSION=84",
+                            "-DHERMES_V1_ENABLED"
+                        ],
+                        "debug": [ "-DHERMES_ENABLE_DEBUGGER=1" ]
+                    },
                     "fileMapping": [
                         { "from": "*.h", "to": "worklets/apple/{filename}", "type": "header" }
                     ]

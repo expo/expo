@@ -572,8 +572,7 @@ const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
     const headerFiles = await collectHeadersRecursively(targetHeaderFilesPath);
 
     // Check if this target has a moduleName that differs from the product name
-    const moduleName =
-      target.type !== 'framework' && target.moduleName ? target.moduleName : product.name;
+    const moduleName = target.moduleName ? target.moduleName : product.name;
     const useSubdirectory = moduleName !== product.name;
 
     // Check if this target has moduleMapContent with 'textual header' - if so, mark the module

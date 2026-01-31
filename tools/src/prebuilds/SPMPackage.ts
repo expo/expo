@@ -12,9 +12,69 @@ import type { SPMPackageSource } from './ExternalPackage';
 import { getExternalPackageByProductName } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import { BuildFlavor } from './Prebuilder.types';
-import { ObjcTarget, SwiftTarget, CppTarget, SPMProduct } from './SPMConfig.types';
+import {
+  ObjcTarget,
+  SwiftTarget,
+  CppTarget,
+  SPMProduct,
+  CompilerFlags,
+  CompilerFlagsVariant,
+} from './SPMConfig.types';
 import { ExternalDependencyConfig, PackageSwiftContext, ResolvedTarget } from './SPMPackage.types';
 import { createAsyncSpinner, SpinnerError } from './Utils';
+
+/**
+ * Escapes a string for use in a Swift string literal.
+ * Handles backslashes and double quotes.
+ */
+function escapeSwiftString(str: string): string {
+  return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+/**
+ * Resolves compiler flags from the various shorthand formats to normalized { c: string[], cxx: string[] }
+ *
+ * Supports:
+ * - Array shorthand: `["-DFOO=1"]` → common flags for both c and cxx
+ * - Object with common/debug/release: `{ common: [...], debug: [...], release: [...] }`
+ * - Each variant can be array (both c/cxx) or per-language: `{ c: [...], cxx: [...] }`
+ */
+function resolveCompilerFlags(
+  flags: CompilerFlags,
+  buildType: BuildFlavor
+): { c: string[]; cxx: string[] } {
+  const result = { c: [] as string[], cxx: [] as string[] };
+
+  // Helper to add a variant's flags to the result
+  const addVariant = (variant: CompilerFlagsVariant | undefined) => {
+    if (!variant) return;
+    if (Array.isArray(variant)) {
+      // Array shorthand: apply to both c and cxx
+      result.c.push(...variant);
+      result.cxx.push(...variant);
+    } else {
+      // Object with c/cxx keys
+      if (variant.c) result.c.push(...variant.c);
+      if (variant.cxx) result.cxx.push(...variant.cxx);
+    }
+  };
+
+  if (Array.isArray(flags)) {
+    // Top-level array shorthand: treat as common flags for both c and cxx
+    result.c.push(...flags);
+    result.cxx.push(...flags);
+  } else {
+    // Object with common/debug/release keys
+    addVariant(flags.common);
+    if (buildType === 'Debug') {
+      addVariant(flags.debug);
+    } else {
+      addVariant(flags.release);
+    }
+  }
+
+  return result;
+}
 
 /** Artifact paths structure for dependency resolution */
 type ArtifactPaths = {
@@ -599,19 +659,20 @@ function buildCSettings(
   }
 
   // Add custom compiler flags from config
-  // These are used for targets that need special handling (e.g., -include Foundation/Foundation.h)
-  if (target.compilerFlags && target.compilerFlags.length > 0) {
-    const flagString = `[${target.compilerFlags.map((f) => `"${f}"`).join(', ')}]`;
-    cSettings.push(`.unsafeFlags(${flagString})`);
-    cxxSettings.push(`.unsafeFlags(${flagString})`);
-  }
-
-  // Add debug-only compiler flags when building for Debug
-  // These are used for flags like -DHERMES_ENABLE_DEBUGGER=1 that should only be present in debug builds
-  if (buildType === 'Debug' && target.debugCompilerFlags && target.debugCompilerFlags.length > 0) {
-    const flagString = `[${target.debugCompilerFlags.map((f) => `"${f}"`).join(', ')}]`;
-    cSettings.push(`.unsafeFlags(${flagString})`);
-    cxxSettings.push(`.unsafeFlags(${flagString})`);
+  // Supports multiple formats:
+  // - Array shorthand: ["-DFOO=1"] → common flags for both c and cxx
+  // - Object with common/debug/release: { common: [...], debug: [...], release: [...] }
+  // - Each variant can be array or { c: [...], cxx: [...] }
+  if (target.compilerFlags) {
+    const resolvedFlags = resolveCompilerFlags(target.compilerFlags, buildType);
+    if (resolvedFlags.c.length > 0) {
+      const flagString = `[${resolvedFlags.c.map((f) => `"${escapeSwiftString(f)}"`).join(', ')}]`;
+      cSettings.push(`.unsafeFlags(${flagString})`);
+    }
+    if (resolvedFlags.cxx.length > 0) {
+      const flagString = `[${resolvedFlags.cxx.map((f) => `"${escapeSwiftString(f)}"`).join(', ')}]`;
+      cxxSettings.push(`.unsafeFlags(${flagString})`);
+    }
   }
 
   // Add VFS overlays and header maps for React if present
