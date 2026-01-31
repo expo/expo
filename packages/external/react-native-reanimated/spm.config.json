@@ -50,15 +50,22 @@
                         "../../.build/codegen/build/generated/ios/ReactCodegen",
                         "../../../../react-native-worklets/.xcframeworks/debug/RNWorklets.xcframework/ios-arm64/RNWorklets.framework/Headers"
                     ],
-                    "compilerFlags": [
-                        "-fno-cxx-modules",
-                        "-DREACT_NATIVE_MINOR_VERSION=84",
-                        "-DREANIMATED_VERSION=4.2.1",
-                        "-DREANIMATED_FEATURE_FLAGS=\\\"[RUNTIME_TEST_FLAG:false][DISABLE_COMMIT_PAUSING_MECHANISM:false][ANDROID_SYNCHRONOUSLY_UPDATE_UI_PROPS:false][IOS_SYNCHRONOUSLY_UPDATE_UI_PROPS:false][EXPERIMENTAL_CSS_ANIMATIONS_FOR_SVG_COMPONENTS:false][USE_SYNCHRONIZABLE_FOR_MUTABLES:false][USE_COMMIT_HOOK_ONLY_FOR_REACT_COMMITS:false][ENABLE_SHARED_ELEMENT_TRANSITIONS:false][FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS:false]\\\""
-                    ],
-                    "debugCompilerFlags": [
-                        "-DHERMES_ENABLE_DEBUGGER=1"
-                    ],
+                    "compilerFlags": {
+                        "common": {
+                            "c": [
+                                "-DREACT_NATIVE_MINOR_VERSION=84",
+                                "-DREANIMATED_VERSION=4.2.1",
+                                "-DREANIMATED_FEATURE_FLAGS=\"[RUNTIME_TEST_FLAG:false][DISABLE_COMMIT_PAUSING_MECHANISM:false][ANDROID_SYNCHRONOUSLY_UPDATE_UI_PROPS:false][IOS_SYNCHRONOUSLY_UPDATE_UI_PROPS:false][EXPERIMENTAL_CSS_ANIMATIONS_FOR_SVG_COMPONENTS:false][USE_SYNCHRONIZABLE_FOR_MUTABLES:false][USE_COMMIT_HOOK_ONLY_FOR_REACT_COMMITS:false][ENABLE_SHARED_ELEMENT_TRANSITIONS:false][FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS:false]\""
+                            ],
+                            "cxx": [
+                                "-fno-cxx-modules",
+                                "-DREACT_NATIVE_MINOR_VERSION=84",
+                                "-DREANIMATED_VERSION=4.2.1",
+                                "-DREANIMATED_FEATURE_FLAGS=\"[RUNTIME_TEST_FLAG:false][DISABLE_COMMIT_PAUSING_MECHANISM:false][ANDROID_SYNCHRONOUSLY_UPDATE_UI_PROPS:false][IOS_SYNCHRONOUSLY_UPDATE_UI_PROPS:false][EXPERIMENTAL_CSS_ANIMATIONS_FOR_SVG_COMPONENTS:false][USE_SYNCHRONIZABLE_FOR_MUTABLES:false][USE_COMMIT_HOOK_ONLY_FOR_REACT_COMMITS:false][ENABLE_SHARED_ELEMENT_TRANSITIONS:false][FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS:false]\""
+                            ]
+                        },
+                        "debug": [ "-DHERMES_ENABLE_DEBUGGER=1" ]
+                    },
                     "fileMapping": [
                         { "from": "AnimatedSensor/*.h", "to": "reanimated/AnimatedSensor/{filename}", "type": "header" },
                         { "from": "CSS/*.h", "to": "reanimated/CSS/{filename}", "type": "header" },

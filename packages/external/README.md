@@ -112,8 +112,7 @@ cat node_modules/<package-name>/package.json | grep -A 10 "codegenConfig"
 | `fileMapping` | Remap file locations | When headers need path prefixes for imports |
 | `moduleMapContent` | Custom module map | For complex C++ header exposure |
 | `includeDirectories` | Additional include paths | Paths relative to target's `path` field |
-| `compilerFlags` | Custom compiler flags | For defines, includes, warnings |
-| `debugCompilerFlags` | Debug-only flags | For flags like `-DHERMES_ENABLE_DEBUGGER=1` |
+| `compilerFlags` | Custom compiler flags | See [Compiler Flags](#compiler-flags) section below |
 
 #### Product-Level Fields (Required)
 
@@ -361,9 +360,49 @@ When including headers from a dependency package, use the xcframework headers pa
 
 **Why**: The xcframework headers include codegen headers and are properly organized. Source headers may have include paths that don't work outside their own build context.
 
-## Common Compiler Flags
+## Compiler Flags
 
-### UIKit/Foundation includes for Objective-C
+The `compilerFlags` field supports multiple formats for flexibility:
+
+### Simple Array (Applied to All Builds)
+
+```json
+{
+  "compilerFlags": ["-include", "Foundation/Foundation.h", "-DFOO=1"]
+}
+```
+
+### Structured Object with Build Variants
+
+```json
+{
+  "compilerFlags": {
+    "common": [...],   // Applied to all builds (Debug and Release)
+    "debug": [...],    // Applied only to Debug builds
+    "release": [...]   // Applied only to Release builds
+  }
+}
+```
+
+### Separate C and C++ Flags
+
+Use this when a flag should only apply to C++ (like `-fno-cxx-modules`):
+
+```json
+{
+  "compilerFlags": {
+    "common": {
+      "c": ["-DFOO=1"],
+      "cxx": ["-fno-cxx-modules", "-DFOO=1"]
+    },
+    "debug": ["-DHERMES_ENABLE_DEBUGGER=1"]
+  }
+}
+```
+
+### Common Patterns
+
+#### UIKit/Foundation includes for Objective-C
 
 When building Objective-C code that uses UIKit types (UIScreen, UIApplication, etc.) without importing UIKit explicitly:
 
@@ -377,19 +416,31 @@ When building Objective-C code that uses UIKit types (UIScreen, UIApplication, e
 }
 ```
 
-### Disable C++ modules for std::chrono issues
+#### Disable C++ modules for std::chrono issues
 
-If you see errors like `declaration of 'system_clock' must be imported from module 'std.chrono'`:
+If you see errors like `declaration of 'system_clock' must be imported from module 'std.chrono'`, use the cxx-specific flag:
 
 ```json
 {
-  "compilerFlags": [
-    "-fno-cxx-modules"
-  ]
+  "compilerFlags": {
+    "common": {
+      "cxx": ["-fno-cxx-modules"]
+    }
+  }
 }
 ```
 
-### Escaping quotes in compiler flags
+#### Debug-only Hermes debugger flag
+
+```json
+{
+  "compilerFlags": {
+    "debug": ["-DHERMES_ENABLE_DEBUGGER=1"]
+  }
+}
+```
+
+#### Escaping quotes in compiler flags
 
 For flags that contain quoted strings (like feature flags), use `\\\"` in JSON to get `\"` in the generated Swift:
 

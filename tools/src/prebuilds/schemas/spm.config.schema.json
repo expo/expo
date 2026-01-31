@@ -97,6 +97,63 @@
                 { "$ref": "#/definitions/cppTarget" }
             ]
         },
+        "compilerFlagsPerLanguage": {
+            "type": "object",
+            "description": "Compiler flags separated by language (C vs C++)",
+            "properties": {
+                "c": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Flags for C/Objective-C compilation only"
+                },
+                "cxx": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Flags for C++/Objective-C++ compilation only"
+                }
+            },
+            "additionalProperties": false
+        },
+        "compilerFlagsVariant": {
+            "oneOf": [
+                {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Array of flags applied to both C and C++ compilation"
+                },
+                {
+                    "$ref": "#/definitions/compilerFlagsPerLanguage"
+                }
+            ]
+        },
+        "compilerFlagsDefinition": {
+            "oneOf": [
+                {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Shorthand: Array of flags applied to all builds for both C and C++"
+                },
+                {
+                    "type": "object",
+                    "description": "Structured compiler flags with build-type variants",
+                    "properties": {
+                        "common": {
+                            "$ref": "#/definitions/compilerFlagsVariant",
+                            "description": "Flags applied to all builds (Debug and Release)"
+                        },
+                        "debug": {
+                            "$ref": "#/definitions/compilerFlagsVariant",
+                            "description": "Flags applied only to Debug builds"
+                        },
+                        "release": {
+                            "$ref": "#/definitions/compilerFlagsVariant",
+                            "description": "Flags applied only to Release builds"
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            ]
+        },
         "frameworkTarget": {
             "type": "object",
             "description": "A binary xcframework target",
@@ -196,16 +253,8 @@
                     "default": [ ]
                 },
                 "compilerFlags": {
-                    "type": "array",
-                    "items": { "type": "string" },
-                    "description": "Additional compiler flags for C/C++/ObjC (e.g., [\"-include\", \"Foundation/Foundation.h\"])",
-                    "default": [ ]
-                },
-                "debugCompilerFlags": {
-                    "type": "array",
-                    "items": { "type": "string" },
-                    "description": "Additional compiler flags applied only for Debug builds (e.g., [\"-DHERMES_ENABLE_DEBUGGER=1\"])",
-                    "default": [ ]
+                    "$ref": "#/definitions/compilerFlagsDefinition",
+                    "description": "Compiler flags for C/C++/ObjC. Can be an array (applied to all builds) or an object with common/debug/release keys. Each key can be an array (both C and C++) or an object with c/cxx keys."
                 },
                 "fileMapping": {
                     "type": "array",
@@ -285,16 +334,8 @@
                     "default": [ ]
                 },
                 "compilerFlags": {
-                    "type": "array",
-                    "items": { "type": "string" },
-                    "description": "Additional compiler flags for C/C++/ObjC (e.g., [\"-include\", \"Foundation/Foundation.h\"])",
-                    "default": [ ]
-                },
-                "debugCompilerFlags": {
-                    "type": "array",
-                    "items": { "type": "string" },
-                    "description": "Additional compiler flags applied only for Debug builds (e.g., [\"-DHERMES_ENABLE_DEBUGGER=1\"])",
-                    "default": [ ]
+                    "$ref": "#/definitions/compilerFlagsDefinition",
+                    "description": "Compiler flags for C/C++/ObjC. Can be an array (applied to all builds) or an object with common/debug/release keys. Each key can be an array (both C and C++) or an object with c/cxx keys."
                 },
                 "fileMapping": {
                     "type": "array",
@@ -374,16 +415,8 @@
                     "default": [ ]
                 },
                 "compilerFlags": {
-                    "type": "array",
-                    "items": { "type": "string" },
-                    "description": "Additional compiler flags for C/C++/ObjC (e.g., [\"-include\", \"Foundation/Foundation.h\"])",
-                    "default": [ ]
-                },
-                "debugCompilerFlags": {
-                    "type": "array",
-                    "items": { "type": "string" },
-                    "description": "Additional compiler flags applied only for Debug builds (e.g., [\"-DHERMES_ENABLE_DEBUGGER=1\"])",
-                    "default": [ ]
+                    "$ref": "#/definitions/compilerFlagsDefinition",
+                    "description": "Compiler flags for C/C++/ObjC. Can be an array (applied to all builds) or an object with common/debug/release keys. Each key can be an array (both C and C++) or an object with c/cxx keys."
                 },
                 "fileMapping": {
                     "type": "array",

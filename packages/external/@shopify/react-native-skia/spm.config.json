@@ -82,9 +82,11 @@
                         "ReactNativeDependencies"
                     ],
                     "includeDirectories": [ "../../../.." ],
-                    "compilerFlags": [
-                        "-fno-cxx-modules"
-                    ]
+                    "compilerFlags": {
+                        "common": {
+                            "cxx": [ "-fno-cxx-modules" ]
+                        }
+                    }
                 },
                 {
                     "type": "cpp",
@@ -127,16 +129,24 @@
                         "skia",
                         "../.build/codegen/build/generated/ios/ReactCodegen"
                     ],
-                    "compilerFlags": [
-                        "-fno-cxx-modules",
-                        "-DSK_METAL=1",
-                        "-DSK_GANESH=1",
-                        "-DSK_IMAGE_READ_PIXELS_DISABLE_LEGACY_API=1",
-                        "-DSK_DISABLE_LEGACY_SHAPER_FACTORY=1"
-                    ],
-                    "debugCompilerFlags": [
-                        "-DHERMES_ENABLE_DEBUGGER=1"
-                    ],
+                    "compilerFlags": {
+                        "common": {
+                            "c": [
+                                "-DSK_METAL=1",
+                                "-DSK_GANESH=1",
+                                "-DSK_IMAGE_READ_PIXELS_DISABLE_LEGACY_API=1",
+                                "-DSK_DISABLE_LEGACY_SHAPER_FACTORY=1"
+                            ],
+                            "cxx": [
+                                "-fno-cxx-modules",
+                                "-DSK_METAL=1",
+                                "-DSK_GANESH=1",
+                                "-DSK_IMAGE_READ_PIXELS_DISABLE_LEGACY_API=1",
+                                "-DSK_DISABLE_LEGACY_SHAPER_FACTORY=1"
+                            ]
+                        },
+                        "debug": [ "-DHERMES_ENABLE_DEBUGGER=1" ]
+                    },
                     "publicHeaders": false
                 },
                 {
