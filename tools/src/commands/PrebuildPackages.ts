@@ -12,6 +12,7 @@ import {
   getVersionsInfoAsync,
   isExternalPackage,
   SPMPackageSource,
+  validateAllPodNamesAsync,
   verifyAllPackagesAsync,
   verifyLocalTarballPathsIfSetAsync,
   SPMGenerator,
@@ -201,7 +202,10 @@ async function main(packageNames: string[], options: ActionOptions) {
     //    Use verifyAllPackagesAsync to support both Expo and external packages
     const unsortedPackages = await verifyAllPackagesAsync(packageNames, includeExternal);
 
-    // 2. Sort packages by dependencies (packages with no deps first)
+    // 2. Validate that podName in spm.config.json matches actual .podspec files
+    await validateAllPodNamesAsync(unsortedPackages);
+
+    // 3. Sort packages by dependencies (packages with no deps first)
     const packages = sortPackagesByDependencies(unsortedPackages);
 
     // Log external packages if any
@@ -212,10 +216,10 @@ async function main(packageNames: string[], options: ActionOptions) {
       );
     }
 
-    // 3. Get versions for React Native and Hermes - we're using bare-expo as the source of truth
+    // 4. Get versions for React Native and Hermes - we're using bare-expo as the source of truth
     const { reactNativeVersion, hermesVersion } = await getVersionsInfoAsync(options);
 
-    // 4. Verify that the tarball paths exist if provided - this is a way to test locally built tarballs,
+    // 5. Verify that the tarball paths exist if provided - this is a way to test locally built tarballs,
     //    and can be used to test out local Hermes, React Native or React Native Dependencies changes
     await verifyLocalTarballPathsIfSetAsync(options);
 

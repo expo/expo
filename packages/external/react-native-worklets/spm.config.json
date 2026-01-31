@@ -3,6 +3,8 @@
     "products": [
         {
             "name": "RNWorklets",
+            "podName": "RNWorklets",
+            "codegenName": "rnworklets",
             "platforms": [
                 "iOS(.v15)"
             ],

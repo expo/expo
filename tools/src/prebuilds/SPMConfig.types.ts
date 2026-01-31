@@ -147,6 +147,10 @@ export type ProductPlatform = 'iOS(.v15)' | 'macOS(.v11)' | 'tvOS(.v15)' | 'macC
 export interface SPMProduct {
   /** The name of the product */
   name: string;
+  /** The CocoaPods pod name for this product. Must match the name in the corresponding .podspec file. */
+  podName: string;
+  /** The React Native codegen module name (from package.json codegenConfig.name). Only required for packages that use React Native codegen. */
+  codegenName?: string;
   /** Supported platforms for this product */
   platforms: ProductPlatform[];
   /** List of external Swift Package dependencies for this product */

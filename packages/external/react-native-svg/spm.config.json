@@ -3,6 +3,8 @@
     "products": [
         {
             "name": "RNSVG",
+            "podName": "RNSVG",
+            "codegenName": "rnsvg",
             "platforms": [
                 "iOS(.v15)"
             ],

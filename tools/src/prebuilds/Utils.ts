@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import { glob } from 'glob';
 import ora from 'ora';
 import path from 'path';
 
@@ -9,6 +10,7 @@ import {
   discoverExternalPackagesAsync,
   ExternalPackage,
   getExternalPackageByName,
+  isExternalPackage,
   SPMPackageSource,
 } from './ExternalPackage';
 import { SPMProduct } from './SPMConfig.types';
@@ -33,6 +35,126 @@ export const discoverAllSPMPackagesAsync = async (): Promise<SPMPackageSource[]>
   ]);
 
   return [...expoPackages, ...externalPackages];
+};
+
+/**
+ * Validation error for podName mismatch
+ */
+export interface PodNameValidationError {
+  packageName: string;
+  productName: string;
+  declaredPodName: string;
+  expectedPodspecPath: string;
+  actualPodspecs: string[];
+}
+
+/**
+ * Validates that the podName in spm.config.json matches an actual .podspec file.
+ *
+ * For Expo packages: checks in both package root and ios/ subdirectory
+ * For external packages: checks in node_modules/<package-name>/
+ *
+ * @param pkg The package to validate
+ * @returns Array of validation errors (empty if all valid)
+ */
+export const validatePodNamesAsync = async (
+  pkg: SPMPackageSource
+): Promise<PodNameValidationError[]> => {
+  const errors: PodNameValidationError[] = [];
+  const config = pkg.getSwiftPMConfiguration();
+
+  for (const product of config.products) {
+    const podName = product.podName;
+    if (!podName) {
+      // podName is required by schema, but be defensive
+      continue;
+    }
+
+    let searchPath: string;
+    let podspecPattern: string;
+
+    if (isExternalPackage(pkg)) {
+      // External packages: podspec is in node_modules/<package-name>/
+      searchPath = pkg.path;
+      podspecPattern = `${podName}.podspec`;
+    } else {
+      // Expo packages: podspec could be in root or ios/ subdirectory
+      searchPath = pkg.path;
+      podspecPattern = `{${podName}.podspec,ios/${podName}.podspec}`;
+    }
+
+    // Look for matching podspec
+    const foundPodspecs = await glob(podspecPattern, {
+      cwd: searchPath,
+      absolute: false,
+    });
+
+    if (foundPodspecs.length === 0) {
+      // Find all podspecs in the package to help debug
+      const allPodspecs = await glob(
+        isExternalPackage(pkg) ? '*.podspec' : '{*.podspec,ios/*.podspec}',
+        {
+          cwd: searchPath,
+          absolute: false,
+        }
+      );
+
+      errors.push({
+        packageName: pkg.packageName,
+        productName: product.name,
+        declaredPodName: podName,
+        expectedPodspecPath: path.join(searchPath, `${podName}.podspec`),
+        actualPodspecs: allPodspecs,
+      });
+    }
+  }
+
+  return errors;
+};
+
+/**
+ * Validates podNames for all packages and logs/throws on errors.
+ *
+ * @param packages Packages to validate
+ * @param throwOnError If true, throws an error when validation fails
+ * @returns All validation errors found
+ */
+export const validateAllPodNamesAsync = async (
+  packages: SPMPackageSource[],
+  throwOnError: boolean = true
+): Promise<PodNameValidationError[]> => {
+  const allErrors: PodNameValidationError[] = [];
+
+  for (const pkg of packages) {
+    const errors = await validatePodNamesAsync(pkg);
+    allErrors.push(...errors);
+  }
+
+  if (allErrors.length > 0) {
+    logger.error(
+      chalk.red(`\n⚠️  podName validation failed for ${allErrors.length} product(s):\n`)
+    );
+
+    for (const error of allErrors) {
+      logger.error(
+        `  ${chalk.red('✗')} ${chalk.cyan(error.packageName)}/${chalk.yellow(error.productName)}: ` +
+          `podName "${chalk.red(error.declaredPodName)}" does not match any .podspec file`
+      );
+      if (error.actualPodspecs.length > 0) {
+        logger.error(`    Found podspecs: ${chalk.gray(error.actualPodspecs.join(', '))}`);
+      } else {
+        logger.error(`    No .podspec files found in package`);
+      }
+    }
+
+    if (throwOnError) {
+      throw new Error(
+        `podName validation failed. Ensure each product's podName matches the actual .podspec filename.`
+      );
+    }
+  }
+
+  return allErrors;
 };
 
 /**

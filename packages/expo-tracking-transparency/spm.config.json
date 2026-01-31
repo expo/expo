@@ -1,32 +1,36 @@
 {
-    "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
-    "products": [
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoTrackingTransparency",
+      "podName": "ExpoTrackingTransparency",
+      "platforms": [
+        "iOS(.v15)"
+      ],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore"
+      ],
+      "targets": [
         {
-            "name": "ExpoTrackingTransparency",
-            "platforms": [
-                "iOS(.v15)"
-            ],
-            "externalDependencies": [
-                "ReactNativeDependencies",
-                "React",
-                "Hermes",
-                "expo-modules-core/ExpoModulesCore"
-            ],
-            "targets": [
-                {
-                    "type": "swift",
-                    "name": "ExpoTrackingTransparency",
-                    "path": "ios",
-                    "pattern": "*.swift",
-                    "dependencies": [
-                        "Hermes",
-                        "React",
-                        "ReactNativeDependencies",
-                        "expo-modules-core/ExpoModulesCore"
-                    ],
-                    "linkedFrameworks": ["Foundation", "AppTrackingTransparency"]
-                }
-            ]
+          "type": "swift",
+          "name": "ExpoTrackingTransparency",
+          "path": "ios",
+          "pattern": "*.swift",
+          "dependencies": [
+            "Hermes",
+            "React",
+            "ReactNativeDependencies",
+            "expo-modules-core/ExpoModulesCore"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "AppTrackingTransparency"
+          ]
         }
-    ]
+      ]
+    }
+  ]
 }

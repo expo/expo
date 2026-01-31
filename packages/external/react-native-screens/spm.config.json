@@ -3,6 +3,8 @@
     "products": [
         {
             "name": "RNScreens",
+            "podName": "RNScreens",
+            "codegenName": "rnscreens",
             "platforms": [
                 "iOS(.v15)"
             ],
