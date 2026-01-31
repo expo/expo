@@ -11,6 +11,7 @@
 - [Android] Fix `null cannot be cast to non-null type expo.modules.devmenu.DevMenuFragment`. ([#42660](https://github.com/expo/expo/pull/42660) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Fix null current bridge in standalone mode ([#42666](https://github.com/expo/expo/pull/42666) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Fix `cmd + m` not opening the dev menu. ([#42701](https://github.com/expo/expo/pull/42701) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Restore dev menu on tvOS. ([#42737](https://github.com/expo/expo/pull/42737) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 

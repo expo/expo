@@ -12,6 +12,7 @@ struct DevMenuDeveloperTools: View {
         .foregroundColor(.primary.opacity(0.6))
 
       VStack(spacing: 0) {
+        #if !os(tvOS)
         NavigationLink(destination: SourceMapExplorerView()) {
           HStack {
             Image(systemName: "map")
@@ -34,7 +35,8 @@ struct DevMenuDeveloperTools: View {
         .buttonStyle(.plain)
 
         Divider()
-
+        #endif
+        
         DevMenuActionButton(
           title: "Toggle performance monitor",
           icon: "speedometer",

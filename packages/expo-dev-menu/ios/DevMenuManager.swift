@@ -446,6 +446,8 @@ open class DevMenuManager: NSObject {
       DispatchQueue.main.async {
 #if os(macOS)
         self.window?.makeKeyAndOrderFront(nil)
+#elseif os(tvOS)
+        self.window?.makeKeyAndVisible()
 #else
         self.updateFABVisibility()
 
