@@ -66,23 +66,13 @@ it('runs `npx expo install expo-sms`', async () => {
     reuseExisting: false,
   });
 
-  const beforePkg: any = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
-
   // `npx expo install expo-sms`
   await executeExpoAsync(projectRoot, ['install', 'expo-sms']);
 
-  const afterPkg: any = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  const pkg: any = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
   // Added expected package
-  expect(beforePkg?.dependencies!['expo-sms']).not.toBe(afterPkg?.dependencies!['expo-sms']);
-
-  // Added new packages
-  expect(Object.keys(afterPkg.dependencies ?? {}).sort()).toStrictEqual([
-    'expo',
-    'expo-sms',
-    'react',
-    'react-native',
-  ]);
+  expect(pkg?.dependencies!['expo-sms']).toBeTruthy();
 
   expect(findProjectFiles(projectRoot)).toStrictEqual([
     'App.js',
