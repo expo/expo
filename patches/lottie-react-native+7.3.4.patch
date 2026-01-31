@@ -1,0 +1,97 @@
+diff --git a/node_modules/lottie-react-native/ios/Fabric/LottieAnimationViewComponentView.mm b/node_modules/lottie-react-native/ios/Fabric/LottieAnimationViewComponentView.mm
+index de8b545..085eebf 100644
+--- a/node_modules/lottie-react-native/ios/Fabric/LottieAnimationViewComponentView.mm
++++ b/node_modules/lottie-react-native/ios/Fabric/LottieAnimationViewComponentView.mm
+@@ -5,7 +5,7 @@
+ #import <react/renderer/components/lottiereactnative/Props.h>
+ #import <react/renderer/components/lottiereactnative/RCTComponentViewHelpers.h>
+ 
+-#import "RCTFabricComponentsPlugins.h"
++#import <React/RCTFabricComponentsPlugins.h>
+ #import <React/RCTView.h>
+ #import "LottieContainerView.h"
+ #import "RNLottieFabricConversions.h"
+diff --git a/node_modules/lottie-react-native/lottie-react-native.podspec b/node_modules/lottie-react-native/lottie-react-native.podspec
+index e27d351..8d1eb3a 100644
+--- a/node_modules/lottie-react-native/lottie-react-native.podspec
++++ b/node_modules/lottie-react-native/lottie-react-native.podspec
+@@ -17,42 +17,47 @@ Pod::Spec.new do |s|
+   s.visionos.deployment_target = '1.0'
+ 
+   s.source                  = { :git => "https://github.com/lottie-react-native/lottie-react-native.git", :tag => "v#{s.version}" }
+-  s.source_files            = "ios/**/*.{h,m,mm,swift}"
+-  s.resource_bundles = {
+-    'Lottie_React_Native_Privacy' => ['ios/PrivacyInfo.xcprivacy'],
+-  }
+-
+-  s.dependency 'lottie-ios', '4.5.0'
+ 
+   s.swift_version = '5.9'
+ 
+-  if defined?(install_modules_dependencies) then
+-    Pod::UI.puts("[Lottie React Native] Using install_modules_dependencies")
+-    install_modules_dependencies(s)
+-    if !(ENV['RCT_NEW_ARCH_ENABLED'] == '1') then
+-      s.exclude_files = "ios/Fabric"
+-    end
+-  else
+-    Pod::UI.puts("[Lottie React Native] Installing manually")
+-    if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then
+-      folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
+-      s.compiler_flags = folly_compiler_flags + " -DRCT_NEW_ARCH_ENABLED=1"
+-      s.pod_target_xcconfig    = {
+-        "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
+-        "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
+-        "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+-        "DEFINES_MODULE" => "YES",
+-      }
+-
+-      s.dependency "React-RCTFabric"
+-      s.dependency "React-Codegen"
+-      s.dependency "RCT-Folly"
+-      s.dependency "RCTRequired"
+-      s.dependency "RCTTypeSafety"
+-      s.dependency "ReactCommon/turbomodule/core"
++  # Expo prebuilt xcframework support
++  if !Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s)
++    # Build from source
++    s.source_files            = "ios/**/*.{h,m,mm,swift}"
++    s.resource_bundles = {
++      'Lottie_React_Native_Privacy' => ['ios/PrivacyInfo.xcprivacy'],
++    }
++
++    s.dependency 'lottie-ios', '4.5.0'
++
++    if defined?(install_modules_dependencies) then
++      Pod::UI.puts("[Lottie React Native] Using install_modules_dependencies")
++      install_modules_dependencies(s)
++      if !(ENV['RCT_NEW_ARCH_ENABLED'] == '1') then
++        s.exclude_files = "ios/Fabric"
++      end
+     else
+-      s.dependency 'React-Core'
+-      s.exclude_files = "ios/Fabric"
++      Pod::UI.puts("[Lottie React Native] Installing manually")
++      if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then
++        folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
++        s.compiler_flags = folly_compiler_flags + " -DRCT_NEW_ARCH_ENABLED=1"
++        s.pod_target_xcconfig    = {
++          "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
++          "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1",
++          "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
++          "DEFINES_MODULE" => "YES",
++        }
++
++        s.dependency "React-RCTFabric"
++        s.dependency "React-Codegen"
++        s.dependency "RCT-Folly"
++        s.dependency "RCTRequired"
++        s.dependency "RCTTypeSafety"
++        s.dependency "ReactCommon/turbomodule/core"
++      else
++        s.dependency 'React-Core'
++        s.exclude_files = "ios/Fabric"
++      end
+     end
+   end
+ end

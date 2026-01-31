@@ -20,7 +20,14 @@ import {
   CompilerFlags,
   CompilerFlagsVariant,
 } from './SPMConfig.types';
-import { ExternalDependencyConfig, PackageSwiftContext, ResolvedTarget } from './SPMPackage.types';
+import {
+  ExternalDependencyConfig,
+  PackageSwiftContext,
+  ResolvedTarget,
+  ResolvedSPMPackage,
+  ResolvedTargetDependency,
+  SPMPackageVersion,
+} from './SPMPackage.types';
 import { createAsyncSpinner, SpinnerError } from './Utils';
 
 /**
@@ -29,6 +36,49 @@ import { createAsyncSpinner, SpinnerError } from './Utils';
  */
 function escapeSwiftString(str: string): string {
   return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+/**
+ * Formats a target dependency for Package.swift.
+ * Strings become quoted ("Hermes"), while product references become .product(name:, package:)
+ */
+function formatTargetDependency(dep: ResolvedTargetDependency): string {
+  if (typeof dep === 'string') {
+    return `"${dep}"`;
+  }
+  return `.product(name: "${dep.product}", package: "${dep.package}")`;
+}
+
+/**
+ * Formats an SPM package version requirement for Package.swift.
+ */
+function formatSPMVersionRequirement(version: SPMPackageVersion): string {
+  if ('exact' in version) {
+    return `exact: "${version.exact}"`;
+  }
+  if ('from' in version) {
+    return `from: "${version.from}"`;
+  }
+  if ('branch' in version) {
+    return `branch: "${version.branch}"`;
+  }
+  if ('revision' in version) {
+    return `revision: "${version.revision}"`;
+  }
+  throw new Error(`Invalid SPM version specification: ${JSON.stringify(version)}`);
+}
+
+/**
+ * Derives the package name from an SPM URL.
+ * e.g., "https://github.com/airbnb/lottie-spm.git" -> "lottie-spm"
+ */
+function derivePackageNameFromUrl(url: string): string {
+  const lastSlash = url.lastIndexOf('/');
+  let name = url.substring(lastSlash + 1);
+  if (name.endsWith('.git')) {
+    name = name.slice(0, -4);
+  }
+  return name;
 }
 
 /**
@@ -308,7 +358,7 @@ function generatePackageSwiftContent(context: PackageSwiftContext): string {
   lines.push('    ],');
   lines.push('');
 
-  // Products
+  // Products (must come before dependencies in SPM)
   lines.push('    products: [');
 
   const { product } = context;
@@ -321,6 +371,18 @@ function generatePackageSwiftContent(context: PackageSwiftContext): string {
   lines.push(`        )`);
   lines.push('    ],');
   lines.push('');
+
+  // Remote SPM package dependencies (if any)
+  if (context.spmPackages && context.spmPackages.length > 0) {
+    lines.push('    dependencies: [');
+    for (let i = 0; i < context.spmPackages.length; i++) {
+      const pkg = context.spmPackages[i];
+      const comma = i < context.spmPackages.length - 1 ? ',' : '';
+      lines.push(`        .package(url: "${pkg.url}", ${pkg.versionRequirement})${comma}`);
+    }
+    lines.push('    ],');
+    lines.push('');
+  }
 
   // Targets
   lines.push('    targets: [');
@@ -362,9 +424,9 @@ function generateTargetDeclaration(target: ResolvedTarget, comma: string): strin
     lines.push(`        .target(`);
     lines.push(`            name: "${target.name}",`);
 
-    // Dependencies
+    // Dependencies - can be strings (binary targets) or .product() references (SPM packages)
     if (target.dependencies.length > 0) {
-      const deps = target.dependencies.map((d) => `"${d}"`).join(', ');
+      const deps = target.dependencies.map((d) => formatTargetDependency(d)).join(', ');
       lines.push(`            dependencies: [${deps}],`);
     } else {
       lines.push(`            dependencies: [],`);
@@ -448,6 +510,7 @@ function generateTargetDeclaration(target: ResolvedTarget, comma: string): strin
  * @param targetSourceCodePath - Path to the Package.swift file
  * @param buildType - Debug or Release build flavor
  * @param artifactPaths - Optional artifact paths from centralized cache
+ * @param spmProductToPackage - Map of SPM product names to their package names
  */
 function resolveSourceTarget(
   target: ObjcTarget | SwiftTarget | CppTarget,
@@ -457,15 +520,31 @@ function resolveSourceTarget(
   packageSwiftPath: string,
   targetSourceCodePath: string,
   buildType: BuildFlavor,
-  artifactPaths?: ArtifactPaths
+  artifactPaths?: ArtifactPaths,
+  spmProductToPackage?: Map<string, string>
 ): ResolvedTarget {
   // Get directory of Package.swift and create the target
   const packageSwiftDir = path.dirname(packageSwiftPath);
+
+  // Convert dependencies to ResolvedTargetDependency format
+  // SPM package products become { product, package }, others stay as strings
+  const resolvedDependencies: ResolvedTargetDependency[] = (target.dependencies || []).map(
+    (dep) => {
+      const spmPackageName = spmProductToPackage?.get(dep);
+      if (spmPackageName) {
+        // This dependency comes from an SPM package
+        return { product: dep, package: spmPackageName };
+      }
+      // This is a binary target or local target dependency
+      return dep;
+    }
+  );
+
   const resolved: ResolvedTarget = {
     type: target.type,
     name: target.name,
     path: path.relative(packageSwiftDir, path.join(packageSwiftDir, target.name)),
-    dependencies: target.dependencies || [],
+    dependencies: resolvedDependencies,
     linkedFrameworks: target.linkedFrameworks || [],
   };
 
@@ -895,6 +974,31 @@ async function buildPackageSwiftContext(
 
   spinner.succeed('Resolved external dependencies');
 
+  // Resolve SPM package dependencies (remote packages fetched by SPM)
+  const resolvedSPMPackages: ResolvedSPMPackage[] = [];
+  const spmProductToPackage = new Map<string, string>(); // Maps product name -> package name
+
+  if (product.spmPackages && product.spmPackages.length > 0) {
+    spinner = createAsyncSpinner(`Resolving SPM packages`, pkg, product);
+    for (const spmPkg of product.spmPackages) {
+      const packageName = spmPkg.packageName || derivePackageNameFromUrl(spmPkg.url);
+      const versionRequirement = formatSPMVersionRequirement(spmPkg.version);
+
+      spinner.info(`Adding SPM package: ${packageName} (${spmPkg.productName})`);
+
+      resolvedSPMPackages.push({
+        url: spmPkg.url,
+        packageName,
+        productName: spmPkg.productName,
+        versionRequirement,
+      });
+
+      // Track the mapping so we can convert target dependencies later
+      spmProductToPackage.set(spmPkg.productName, packageName);
+    }
+    spinner.succeed('Resolved SPM packages');
+  }
+
   // Process framework targets first (vendored xcframeworks within the package)
   // These are binary targets that other source targets can depend on
   for (const target of product.targets) {
@@ -935,7 +1039,8 @@ async function buildPackageSwiftContext(
       packageSwiftDir,
       targetSourceCodePath,
       buildType,
-      artifactPaths
+      artifactPaths,
+      spmProductToPackage
     );
     resolvedTargets.push(resolved);
     addedTargets.add(target.name);
@@ -951,6 +1056,7 @@ async function buildPackageSwiftContext(
     swiftLanguageVersions: product.swiftLanguageVersions,
     product,
     targets: resolvedTargets,
+    spmPackages: resolvedSPMPackages.length > 0 ? resolvedSPMPackages : undefined,
     artifactPaths,
   };
 }

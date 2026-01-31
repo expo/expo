@@ -156,6 +156,31 @@ export type SPMTarget = FrameworkTarget | ObjcTarget | SwiftTarget | CppTarget;
 export type ExternalDependency = string;
 
 /**
+ * Version specification for an SPM package dependency.
+ * Use `exact` for reproducible builds (recommended).
+ */
+export type SPMPackageVersionConfig =
+  | { exact: string } // .package(url:, exact: "4.5.0")
+  | { from: string } // .package(url:, from: "4.0.0")
+  | { branch: string } // .package(url:, branch: "main")
+  | { revision: string }; // .package(url:, revision: "abc123")
+
+/**
+ * A remote SPM package dependency configuration.
+ * These are resolved by Swift Package Manager at build time.
+ */
+export interface SPMPackageDependencyConfig {
+  /** Git URL of the SPM package repository (e.g., "https://github.com/airbnb/lottie-spm.git") */
+  url: string;
+  /** The product name exported by the package (what you import, e.g., "Lottie") */
+  productName: string;
+  /** Package identifier for .product(package:) reference. Defaults to last URL path component without .git */
+  packageName?: string;
+  /** Version requirement. Use `exact` for reproducible builds. */
+  version: SPMPackageVersionConfig;
+}
+
+/**
  * Build platforms in the configuration
  */
 export type BuildPlatform =
@@ -186,8 +211,12 @@ export interface SPMProduct {
   codegenName?: string;
   /** Supported platforms for this product */
   platforms: ProductPlatform[];
-  /** List of external Swift Package dependencies for this product */
+  /** List of external Swift Package dependencies for this product (binary targets like Hermes, React) */
   externalDependencies?: ExternalDependency[];
+  /** Remote SPM package dependencies to be fetched by Swift Package Manager.
+   * Use this for third-party Swift packages that provide prebuilt binaries (like lottie-spm).
+   * Use exact versions for reproducible builds. */
+  spmPackages?: SPMPackageDependencyConfig[];
   /** Optional list of Swift language versions supported by this product */
   swiftLanguageVersions?: string[];
   /** List of targets included in this product */
