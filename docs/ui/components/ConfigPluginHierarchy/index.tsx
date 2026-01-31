@@ -9,7 +9,6 @@ import {
   BackgroundVariant,
 } from '@xyflow/react';
 import React from 'react';
-import '@xyflow/react/dist/style.css';
 
 type ConfigPluginHierarchyProps = {
   highlightedNodeId?: string;
