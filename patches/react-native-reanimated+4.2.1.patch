@@ -1,0 +1,32 @@
+diff --git a/node_modules/react-native-reanimated/RNReanimated.podspec b/node_modules/react-native-reanimated/RNReanimated.podspec
+index dba0fad..72e8428 100644
+--- a/node_modules/react-native-reanimated/RNReanimated.podspec
++++ b/node_modules/react-native-reanimated/RNReanimated.podspec
+@@ -36,15 +36,19 @@ Pod::Spec.new do |s|
+
+   s.dependency "RNWorklets"
+
+-  s.subspec "reanimated" do |ss|
+-    ss.source_files = "Common/cpp/reanimated/**/*.{cpp,h}"
+-    ss.header_dir = "reanimated"
+-    ss.header_mappings_dir = "Common/cpp/reanimated"
++  # Expo prebuilt xcframework support
++  if !Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s)
++    # Build from source
++    s.subspec "reanimated" do |ss|
++      ss.source_files = "Common/cpp/reanimated/**/*.{cpp,h}"
++      ss.header_dir = "reanimated"
++      ss.header_mappings_dir = "Common/cpp/reanimated"
+
+-    ss.subspec "apple" do |sss|
+-      sss.source_files = "apple/reanimated/**/*.{mm,h,m}"
+-      sss.header_dir = "reanimated"
+-      sss.header_mappings_dir = "apple/reanimated"
++      ss.subspec "apple" do |sss|
++        sss.source_files = "apple/reanimated/**/*.{mm,h,m}"
++        sss.header_dir = "reanimated"
++        sss.header_mappings_dir = "apple/reanimated"
++      end
+     end
+   end
+

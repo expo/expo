@@ -72,6 +72,8 @@ export interface SourceTarget {
   resources?: TargetResource[];
   /** Additional compiler flags for C/C++/ObjC (e.g., ["-include", "Foundation/Foundation.h"]) */
   compilerFlags?: string[];
+  /** Additional compiler flags applied only for Debug builds (e.g., ["-DHERMES_ENABLE_DEBUGGER=1"]) */
+  debugCompilerFlags?: string[];
   /** File mappings to reorganize files during source generation. Files matching 'from' pattern
    * will be copied to the 'to' location instead of preserving their original directory structure */
   fileMapping?: FileMapping[];

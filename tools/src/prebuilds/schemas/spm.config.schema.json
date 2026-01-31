@@ -193,6 +193,12 @@
                     "description": "Additional compiler flags for C/C++/ObjC (e.g., [\"-include\", \"Foundation/Foundation.h\"])",
                     "default": [ ]
                 },
+                "debugCompilerFlags": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Additional compiler flags applied only for Debug builds (e.g., [\"-DHERMES_ENABLE_DEBUGGER=1\"])",
+                    "default": [ ]
+                },
                 "fileMapping": {
                     "type": "array",
                     "items": { "$ref": "#/definitions/fileMapping" },
@@ -276,6 +282,12 @@
                     "description": "Additional compiler flags for C/C++/ObjC (e.g., [\"-include\", \"Foundation/Foundation.h\"])",
                     "default": [ ]
                 },
+                "debugCompilerFlags": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Additional compiler flags applied only for Debug builds (e.g., [\"-DHERMES_ENABLE_DEBUGGER=1\"])",
+                    "default": [ ]
+                },
                 "fileMapping": {
                     "type": "array",
                     "items": { "$ref": "#/definitions/fileMapping" },
@@ -357,6 +369,12 @@
                     "type": "array",
                     "items": { "type": "string" },
                     "description": "Additional compiler flags for C/C++/ObjC (e.g., [\"-include\", \"Foundation/Foundation.h\"])",
+                    "default": [ ]
+                },
+                "debugCompilerFlags": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Additional compiler flags applied only for Debug builds (e.g., [\"-DHERMES_ENABLE_DEBUGGER=1\"])",
                     "default": [ ]
                 },
                 "fileMapping": {

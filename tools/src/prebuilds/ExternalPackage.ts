@@ -160,6 +160,54 @@ export function getExternalPackageByName(packageName: string): ExternalPackage |
 }
 
 /**
+ * Finds an external package that provides a specific product (xcframework).
+ * Searches through all external packages' spm.config.json to find one that provides the product.
+ *
+ * @param productName The product name to search for (e.g., 'RNWorklets')
+ * @returns The ExternalPackage that provides this product, or null if not found
+ */
+export function getExternalPackageByProductName(productName: string): ExternalPackage | null {
+  const externalDir = getExternalPackagesDir();
+
+  // Check if external packages directory exists
+  if (!fs.existsSync(externalDir)) {
+    return null;
+  }
+
+  // Get all subdirectories in packages/external/
+  const entries = fs.readdirSync(externalDir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+
+    const configPath = path.join(externalDir, entry.name);
+    const spmConfigPath = path.join(configPath, SPMConfigFileName);
+
+    if (!fs.existsSync(spmConfigPath)) {
+      continue;
+    }
+
+    try {
+      const spmConfig: SPMConfig = require(spmConfigPath);
+
+      // Check if any product in this config matches the requested product name
+      for (const product of spmConfig.products || []) {
+        if (product.name === productName) {
+          return new ExternalPackage(configPath, entry.name);
+        }
+      }
+    } catch {
+      // Skip packages with invalid config
+      continue;
+    }
+  }
+
+  return null;
+}
+
+/**
  * Type guard to check if an SPMPackageSource is an ExternalPackage
  */
 export function isExternalPackage(pkg: SPMPackageSource): pkg is ExternalPackage {

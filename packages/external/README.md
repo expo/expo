@@ -109,11 +109,32 @@ cat node_modules/<package-name>/package.json | grep -A 10 "codegenConfig"
 | `sources` | Array of source directories | Paths relative to package root |
 | `publicHeadersPath` | Header search path | For Obj-C/C++ headers |
 | `resources` | Array of resource configs | For Metal shaders, assets, etc. |
-| `fileMapping` | Remap file locations | When sources need restructuring |
+| `fileMapping` | Remap file locations | When headers need path prefixes for imports |
 | `moduleMapContent` | Custom module map | For complex C++ header exposure |
 | `moduleName` | Codegen module name | **CRITICAL**: Must match `codegenConfig.name` |
+| `includeDirectories` | Additional include paths | Paths relative to target's `path` field |
+| `compilerFlags` | Custom compiler flags | For defines, includes, warnings |
+| `debugCompilerFlags` | Debug-only flags | For flags like `-DHERMES_ENABLE_DEBUGGER=1` |
 
-### Step 3: Handle Codegen Exclusion
+### Step 3: Header File Mapping
+
+When source code uses imports like `#import <modulename/subdir/Header.h>`, you need `fileMapping` to create the correct header structure:
+
+```json
+{
+  "fileMapping": [
+    { "from": "*.h", "to": "worklets/apple/{filename}", "type": "header" },
+    { "from": "subdir/*.h", "to": "worklets/apple/subdir/{filename}", "type": "header" }
+  ]
+}
+```
+
+**Key points:**
+- `from`: Glob pattern relative to target's `path`
+- `to`: Destination path with `{filename}` placeholder
+- `type`: `"header"` for header files, `"symlink"` for directory symlinks
+
+### Step 4: Handle Codegen Exclusion
 
 **CRITICAL**: When a package has codegen (fabric components), you MUST add a target that identifies the codegen module name. This ensures the codegen sources are excluded from ReactCodegen and built separately.
 
@@ -279,3 +300,135 @@ For implementation details, examine these files:
 - `tools/src/prebuilds/SPMPackage.ts` - SPM Package.swift generation
 - `tools/src/prebuilds/Codegen.ts` - Codegen handling
 - `packages/expo-modules-autolinking/scripts/ios/precompiled_modules.rb` - Ruby CocoaPods integration
+## Pod Name to Package Name Mapping
+
+When adding a new external package, you **must** add a mapping in `precompiled_modules.rb` for the Ruby code to find the package directory from the pod name. The mapping is in the `pod_name_to_package_name` function:
+
+```ruby
+# packages/expo-modules-autolinking/scripts/ios/precompiled_modules.rb
+case pod_name
+when 'RNSVG'
+  'react-native-svg'
+when 'RNScreens'
+  'react-native-screens'
+when 'RNGestureHandler'
+  'react-native-gesture-handler'
+when 'RNReanimated'
+  'react-native-reanimated'
+when 'RNWorklets'
+  'react-native-worklets'
+# Add new mappings here...
+```
+
+**Why this is needed**: The `try_link_with_prebuilt_xcframework` function needs to find the xcframework at `node_modules/<package-name>/.xcframeworks/<buildFlavor>/<PodName>.xcframework`. Without this mapping, pod install will fall back to building from source.
+
+## Cross-Package Dependencies
+
+When an external package depends on another external package's xcframework (e.g., react-native-reanimated depends on react-native-worklets):
+
+### 1. Add the dependency to externalDependencies
+
+```json
+{
+  "externalDependencies": [
+    "ReactNativeDependencies",
+    "React",
+    "Hermes",
+    "RNWorklets"  // <-- Add the product name (not package name)
+  ]
+}
+```
+
+### 2. The SPMPackage.ts resolves external package dependencies
+
+The `getExternalPackageByProductName` function in `ExternalPackage.ts` searches all external packages' `spm.config.json` files to find which package provides the requested product. It then returns the xcframework path.
+
+### 3. Use xcframework headers, not source headers
+
+When including headers from a dependency package, use the xcframework headers path instead of source paths:
+
+```json
+{
+  "includeDirectories": [
+    "../../../../react-native-worklets/.xcframeworks/debug/RNWorklets.xcframework/ios-arm64/RNWorklets.framework/Headers"
+  ]
+}
+```
+
+**Why**: The xcframework headers include codegen headers and are properly organized. Source headers may have include paths that don't work outside their own build context.
+
+## Common Compiler Flags
+
+### UIKit/Foundation includes for Objective-C
+
+When building Objective-C code that uses UIKit types (UIScreen, UIApplication, etc.) without importing UIKit explicitly:
+
+```json
+{
+  "compilerFlags": [
+    "-include", "Foundation/Foundation.h",
+    "-include", "UIKit/UIKit.h",
+    "-include", "QuartzCore/QuartzCore.h"
+  ]
+}
+```
+
+### Disable C++ modules for std::chrono issues
+
+If you see errors like `declaration of 'system_clock' must be imported from module 'std.chrono'`:
+
+```json
+{
+  "compilerFlags": [
+    "-fno-cxx-modules"
+  ]
+}
+```
+
+### Escaping quotes in compiler flags
+
+For flags that contain quoted strings (like feature flags), use `\\\"` in JSON to get `\"` in the generated Swift:
+
+```json
+{
+  "compilerFlags": [
+    "-DFEATURE_FLAGS=\\\"[FLAG1:true][FLAG2:false]\\\""
+  ]
+}
+```
+
+## Podspec Patch Pattern for External Packages
+
+External packages need their podspec patched to support prebuilt xcframeworks. Use this pattern:
+
+```ruby
+# In the podspec, wrap source compilation in this conditional:
+if !Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s)
+  # Original source compilation code goes here
+  s.source_files = "..."
+  s.subspec "..." do |ss|
+    # ...
+  end
+end
+```
+
+Create the patch with:
+```bash
+cd /path/to/expo
+npx patch-package <package-name>
+```
+
+## Build Order for Dependent Packages
+
+When packages have dependencies on each other, build them in dependency order:
+
+```bash
+# Build worklets first (no external package dependencies)
+et prebuild-packages --include-external react-native-worklets ...
+
+# Then build reanimated (depends on worklets)
+et prebuild-packages --include-external react-native-reanimated ...
+
+# Or build both together (the system handles ordering):
+et prebuild-packages --include-external react-native-worklets --include-external react-native-reanimated ...
+```

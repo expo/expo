@@ -1,0 +1,107 @@
+{
+    "$schema": "../../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "products": [
+        {
+            "name": "RNWorklets",
+            "platforms": [
+                "iOS(.v15)"
+            ],
+            "externalDependencies": [
+                "ReactNativeDependencies",
+                "React",
+                "Hermes"
+            ],
+            "excludeFromUmbrella": [
+                "RCT*.h",
+                "Swift-Bridging.h"
+            ],
+            "targets": [
+                {
+                    "type": "objc",
+                    "name": "RNWorklets_codegen_modules",
+                    "moduleName": "rnworklets",
+                    "path": ".build/codegen/build/generated/ios/ReactCodegen/rnworklets",
+                    "pattern": "**/*.mm",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "includeDirectories": [ ".." ]
+                },
+                {
+                    "type": "cpp",
+                    "name": "RNWorklets_cpp",
+                    "moduleName": "worklets",
+                    "path": "Common/cpp/worklets",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies",
+                        "Hermes"
+                    ],
+                    "includeDirectories": [
+                        ".",
+                        "../../.build/codegen/build/generated/ios/ReactCodegen"
+                    ],
+                    "compilerFlags": [
+                        "-fno-cxx-modules",
+                        "-DWORKLETS_FEATURE_FLAGS=\\\"[RUNTIME_TEST_FLAG:false][IOS_DYNAMIC_FRAMERATE_ENABLED:true]\\\"",
+                        "-DWORKLETS_VERSION=0.7.1",
+                        "-DREACT_NATIVE_MINOR_VERSION=84",
+                        "-DHERMES_V1_ENABLED"
+                    ],
+                    "debugCompilerFlags": [
+                        "-DHERMES_ENABLE_DEBUGGER=1"
+                    ],
+                    "fileMapping": [
+                        { "from": "AnimationFrameQueue/*.h", "to": "worklets/AnimationFrameQueue/{filename}", "type": "header" },
+                        { "from": "NativeModules/*.h", "to": "worklets/NativeModules/{filename}", "type": "header" },
+                        { "from": "Registries/*.h", "to": "worklets/Registries/{filename}", "type": "header" },
+                        { "from": "Resources/*.h", "to": "worklets/Resources/{filename}", "type": "header" },
+                        { "from": "RunLoop/*.h", "to": "worklets/RunLoop/{filename}", "type": "header" },
+                        { "from": "SharedItems/*.h", "to": "worklets/SharedItems/{filename}", "type": "header" },
+                        { "from": "Tools/*.h", "to": "worklets/Tools/{filename}", "type": "header" },
+                        { "from": "WorkletRuntime/*.h", "to": "worklets/WorkletRuntime/{filename}", "type": "header" }
+                    ]
+                },
+                {
+                    "type": "objc",
+                    "name": "RNWorklets",
+                    "moduleName": "worklets",
+                    "path": "apple/worklets/apple",
+                    "pattern": "**/*.{m,mm}",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "RNWorklets_codegen_modules",
+                        "RNWorklets_cpp"
+                    ],
+                    "includeDirectories": [
+                        ".",
+                        "../../../Common/cpp",
+                        "../../.build/codegen/build/generated/ios/ReactCodegen"
+                    ],
+                    "linkedFrameworks": [ "Foundation", "UIKit", "QuartzCore" ],
+                    "compilerFlags": [
+                        "-include", "Foundation/Foundation.h",
+                        "-include", "UIKit/UIKit.h",
+                        "-DWORKLETS_FEATURE_FLAGS=\\\"[RUNTIME_TEST_FLAG:false][IOS_DYNAMIC_FRAMERATE_ENABLED:true]\\\"",
+                        "-DWORKLETS_VERSION=0.7.1",
+                        "-DREACT_NATIVE_MINOR_VERSION=84",
+                        "-DHERMES_V1_ENABLED"
+                    ],
+                    "debugCompilerFlags": [
+                        "-DHERMES_ENABLE_DEBUGGER=1"
+                    ],
+                    "fileMapping": [
+                        { "from": "*.h", "to": "worklets/apple/{filename}", "type": "header" }
+                    ]
+                }
+            ]
+        }
+    ]
+}

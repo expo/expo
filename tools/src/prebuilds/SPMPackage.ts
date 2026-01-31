@@ -9,6 +9,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import type { SPMPackageSource } from './ExternalPackage';
+import { getExternalPackageByProductName } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import { BuildFlavor } from './Prebuilder.types';
 import { ObjcTarget, SwiftTarget, CppTarget, SPMProduct } from './SPMConfig.types';
@@ -385,6 +386,7 @@ function generateTargetDeclaration(target: ResolvedTarget, comma: string): strin
  * @param externalDeps - External dependencies for this target
  * @param packageSwiftPath - Directory where Package.swift will be located
  * @param targetSourceCodePath - Path to the Package.swift file
+ * @param buildType - Debug or Release build flavor
  * @param artifactPaths - Optional artifact paths from centralized cache
  */
 function resolveSourceTarget(
@@ -394,6 +396,7 @@ function resolveSourceTarget(
   externalDeps: string[],
   packageSwiftPath: string,
   targetSourceCodePath: string,
+  buildType: BuildFlavor,
   artifactPaths?: ArtifactPaths
 ): ResolvedTarget {
   // Get directory of Package.swift and create the target
@@ -421,7 +424,8 @@ function resolveSourceTarget(
       packageSwiftDir,
       productName,
       pkg.packageVersion,
-      pkg.path
+      pkg.path,
+      buildType
     );
     resolved.cSettings = cSettings;
     if (target.type === 'cpp') {
@@ -495,6 +499,8 @@ function buildSwiftSettings(
  * @param packageSwiftDir - Directory where Package.swift will be located
  * @param productName - Product name for header search paths
  * @param packageVersion - Package version for defines
+ * @param pkgPath - Path to the package source
+ * @param buildType - Debug or Release build flavor
  */
 function buildCSettings(
   target: ObjcTarget | CppTarget,
@@ -503,7 +509,8 @@ function buildCSettings(
   packageSwiftDir: string,
   productName: string,
   packageVersion: string,
-  pkgPath: string
+  pkgPath: string,
+  buildType: BuildFlavor
 ): {
   cSettings: string[];
   cxxSettings: string[];
@@ -595,6 +602,14 @@ function buildCSettings(
   // These are used for targets that need special handling (e.g., -include Foundation/Foundation.h)
   if (target.compilerFlags && target.compilerFlags.length > 0) {
     const flagString = `[${target.compilerFlags.map((f) => `"${f}"`).join(', ')}]`;
+    cSettings.push(`.unsafeFlags(${flagString})`);
+    cxxSettings.push(`.unsafeFlags(${flagString})`);
+  }
+
+  // Add debug-only compiler flags when building for Debug
+  // These are used for flags like -DHERMES_ENABLE_DEBUGGER=1 that should only be present in debug builds
+  if (buildType === 'Debug' && target.debugCompilerFlags && target.debugCompilerFlags.length > 0) {
+    const flagString = `[${target.debugCompilerFlags.map((f) => `"${f}"`).join(', ')}]`;
     cSettings.push(`.unsafeFlags(${flagString})`);
     cxxSettings.push(`.unsafeFlags(${flagString})`);
   }
@@ -760,7 +775,7 @@ async function buildPackageSwiftContext(
       continue;
     }
 
-    // Check if it's an expo package dependency
+    // Check if it's an expo package dependency (format: package/product)
     if (depName.includes('/')) {
       const parts = depName.split('/');
       const packageName = parts[0];
@@ -783,6 +798,34 @@ async function buildPackageSwiftContext(
       } else {
         throw new SpinnerError(
           `Could not find xcframework for external dependency ${depName} at expected path: ${xcframeworkPath}`,
+          spinner
+        );
+      }
+    }
+
+    // Check if it's an external package dependency (e.g., RNWorklets from react-native-worklets)
+    // This handles dependencies between external packages in node_modules
+    const externalPkg = getExternalPackageByProductName(depName);
+    if (externalPkg) {
+      const xcframeworkPath = Frameworks.getFrameworkPath(externalPkg.path, depName, buildType);
+
+      if (await fs.pathExists(xcframeworkPath)) {
+        spinner.info(
+          `Found external package ${externalPkg.packageName} providing ${depName} at ${xcframeworkPath}`
+        );
+        const frameworkRelativePath = path.relative(packageSwiftDir, xcframeworkPath);
+        resolvedTargets.push({
+          type: 'binary',
+          name: depName,
+          path: frameworkRelativePath,
+          dependencies: [],
+          linkedFrameworks: [],
+        });
+        continue;
+      } else {
+        throw new SpinnerError(
+          `External package ${externalPkg.packageName} provides ${depName} but xcframework not found at: ${xcframeworkPath}. ` +
+            `Please build ${externalPkg.packageName} first.`,
           spinner
         );
       }
@@ -812,6 +855,7 @@ async function buildPackageSwiftContext(
       target.dependencies || [],
       packageSwiftDir,
       targetSourceCodePath,
+      buildType,
       artifactPaths
     );
     resolvedTargets.push(resolved);
