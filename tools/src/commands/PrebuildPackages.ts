@@ -19,6 +19,7 @@ import {
   Frameworks,
   SPMBuild,
   Dependencies,
+  SigningOptions,
 } from '../prebuilds';
 import { Artifacts } from '../prebuilds/Artifacts';
 import { SPMVerify } from '../prebuilds/SPMVerify';
@@ -43,6 +44,8 @@ type ActionOptions = {
   verify?: boolean;
   includeExternal?: boolean;
   pruneCache?: boolean;
+  identity?: string;
+  noTimestamp?: boolean;
 };
 
 type BuildStatus = {
@@ -390,12 +393,21 @@ async function main(packageNames: string[], options: ActionOptions) {
           // Create xcframeworks from built frameworks
           if (options.compose || performAllSteps) {
             try {
+              // Build signing options if identity is provided
+              const signing: SigningOptions | undefined = options.identity
+                ? {
+                    identity: options.identity,
+                    useTimestamp: !options.noTimestamp,
+                  }
+                : undefined;
+
               // Let's compose those xcframeworks!
               await Frameworks.composeXCFrameworkAsync(
                 pkg,
                 product,
                 currentBuildFlavor,
-                options.platform
+                options.platform,
+                signing
               );
               status.compose = 'success';
             } catch (error) {
@@ -660,6 +672,15 @@ export default (program: Command) => {
     .option(
       '--prune-cache',
       'Remove old cached dependencies, keeping only the current version. Use this to free up disk space.',
+      false
+    )
+    .option(
+      '-i, --identity <identity>',
+      'Code signing identity (certificate name) to sign the XCFrameworks. If not provided, frameworks are left unsigned.'
+    )
+    .option(
+      '--no-timestamp',
+      'Disable secure timestamp when signing. By default, signing includes --timestamp for long-term signature validity.',
       false
     )
     .asyncAction(main);

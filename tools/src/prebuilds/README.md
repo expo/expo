@@ -131,6 +131,7 @@ Combines platform-specific frameworks into universal XCFrameworks:
 - Merges framework slices using \`xcodebuild -create-xcframework\`
 - Collects and flattens header files into each slice
 - Generates module maps and umbrella headers
+- Optionally signs the XCFramework with a code signing identity
 
 ### 5. Verification (\`--verify\`)
 
@@ -145,6 +146,31 @@ Validates the built XCFrameworks for correctness:
   - Verifies Modules directory and module.modulemap
   - Tests modular header compilation with clang
   - Typechecks Swift interface files with swift-frontend
+
+## Code Signing
+
+XCFrameworks can be signed with a code signing identity to provide integrity verification and source attribution.
+
+### Why Sign XCFrameworks?
+
+- **Integrity verification**: Proves the framework hasn't been tampered with after distribution
+- **Source attribution**: Confirms the framework came from a trusted source (e.g., Expo)
+- **Gatekeeper compatibility**: Avoids macOS warnings when extracting downloaded archives
+
+### Signing Behavior
+
+- **Signing is optional**: If no `--identity` is provided, frameworks are left unsigned
+- **Unsigned frameworks work fine**: Xcode re-signs all embedded frameworks when building your app
+- **Timestamp enabled by default**: The `--timestamp` flag ensures signatures remain valid after certificate expiry
+
+### Certificate Requirements
+
+Any valid Apple Developer Program signing certificate works:
+- Apple Development
+- Apple Distribution
+- Organization certificates (recommended for CI)
+
+For CI/CD, store your P12 certificate and password as secrets and use `apple-actions/import-codesign-certs@v3` to import into the keychain before building.
 
 ## Usage
 
@@ -181,6 +207,12 @@ et prebuild-packages --hermes-version 0.14.0 --verify expo-modules-core
 
 # Clean everything and rebuild
 et prebuild-packages --hermes-version 0.14.0 --clean-all expo-modules-core
+
+# Sign XCFrameworks with a code signing identity
+et prebuild-packages --hermes-version 0.14.0 --identity "Apple Development" expo-modules-core
+
+# Sign XCFrameworks without timestamp (for offline/testing scenarios)
+et prebuild-packages --hermes-version 0.14.0 --identity "Apple Development" --no-timestamp expo-modules-core
 \`\`\`
 
 ### CLI Options
@@ -204,6 +236,8 @@ et prebuild-packages --hermes-version 0.14.0 --clean-all expo-modules-core
 | \`--clean-build\` | Clear build folder before building |
 | \`--clean-generated\` | Clear generated source folder before generating |
 | \`--clean-all\` | Clear all artifacts, dependencies, generated code, and build folders |
+| \`-i, --identity <identity>\` | Code signing identity (certificate name) to sign XCFrameworks |
+| \`--no-timestamp\` | Disable secure timestamp when signing (timestamp enabled by default) |
 
 **Note:** If no step flags (\`--artifacts\`, \`--generate\`, \`--build\`, \`--compose\`, \`--verify\`) are provided, all steps are executed.
 

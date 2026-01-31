@@ -1,5 +1,5 @@
 export { Codegen } from './Codegen';
-export { Frameworks } from './Frameworks';
+export { Frameworks, type SigningOptions } from './Frameworks';
 export { Dependencies } from './Dependencies';
 export { BuildFlavor } from './Prebuilder.types';
 export { SPMBuild } from './SPMBuild';

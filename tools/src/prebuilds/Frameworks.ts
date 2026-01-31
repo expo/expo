@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { execSync } from 'child_process';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -13,20 +14,56 @@ import { SPMGenerator } from './SPMGenerator';
 import { createAsyncSpinner, SpinnerError } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
 
+/**
+ * Options for code signing XCFrameworks.
+ */
+export type SigningOptions = {
+  /** The code signing identity (certificate name) to use. If not provided, signing is skipped. */
+  identity?: string;
+  /** Whether to include a secure timestamp from Apple's timestamp server. Defaults to true. */
+  useTimestamp?: boolean;
+};
+
+/**
+ * Signs an XCFramework using the macOS codesign tool.
+ * @param xcframeworkPath Path to the XCFramework to sign
+ * @param identity Code signing identity (certificate name)
+ * @param useTimestamp Whether to include a secure timestamp (default: true)
+ */
+const signXCFramework = (
+  xcframeworkPath: string,
+  identity: string,
+  useTimestamp: boolean = true
+): void => {
+  logger.info(`🔏 Signing XCFramework with identity "${identity}"...`);
+
+  const timestampFlag = useTimestamp ? '--timestamp' : '';
+  const command = `codesign ${timestampFlag} --sign "${identity}" "${xcframeworkPath}"`.trim();
+
+  try {
+    execSync(command, { stdio: 'inherit' });
+    logger.info(`✅ Successfully signed ${path.basename(xcframeworkPath)}`);
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    throw new Error(`Failed to sign XCFramework: ${err.message}`);
+  }
+};
+
 export const Frameworks = {
   /**
    * Composes an XCFramework from the given built frameworks.
-   * TODO: Signing of the frameworks if needed.
    * @param pkg Package
    * @param product SPM product
    * @param buildType Build flavor (Debug or Release)
    * @param platform Optional platform to filter on
+   * @param signing Optional signing configuration. If identity is provided, the framework will be signed.
    */
   composeXCFrameworkAsync: async (
     pkg: SPMPackageSource,
     product: SPMProduct,
     buildType: BuildFlavor,
-    platform?: BuildPlatform
+    platform?: BuildPlatform,
+    signing?: SigningOptions
   ): Promise<void> => {
     const spmConfig = pkg.getSwiftPMConfiguration();
 
@@ -78,6 +115,11 @@ export const Frameworks = {
 
     // Remove the toplevel Headers directory as it's no longer needed
     await fs.remove(path.join(xcframeworkOutputPath, 'Headers'));
+
+    // Sign the XCFramework if a signing identity is provided
+    if (signing?.identity) {
+      signXCFramework(xcframeworkOutputPath, signing.identity, signing.useTimestamp ?? true);
+    }
   },
 
   /**
