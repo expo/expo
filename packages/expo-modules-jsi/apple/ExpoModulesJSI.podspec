@@ -1,6 +1,6 @@
 require 'json'
 
-package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
 use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 
@@ -47,8 +47,6 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
-    # 'SWIFT_OBJC_INTEROP_MODE' => 'objcxx',
-    # 'OTHER_SWIFT_FLAGS' => '-Xfrontend -clang-header-expose-decls=has-expose-attr',
     'GCC_PREPROCESSOR_DEFINITIONS' => 'EXPO_MODULES_JSI=1'
   }
 
@@ -59,18 +57,17 @@ Pod::Spec.new do |s|
 
   if File.exist?("#{s.name}/#{s.name}.xcframework")
     s.source_files = [
-      "ios/JSI/**/*.{h,hpp}",
-      "ios/JSI/JavaScriptRuntimeProvider.{h,mm}",
-      "common/cpp/JSI/**/*.{h,hpp}"
+      "JSI/**/*.{h,hpp}",
+      "JSI/JavaScriptRuntimeProvider.{h,mm}"
     ]
-    s.vendored_frameworks = ["#{s.name}/#{s.name}.xcframework"]
+    s.vendored_frameworks = ["#{s.name}.xcframework"]
   else
-    s.source_files = ['ios/JSI/**/*.{h,m,mm,swift,hpp,cpp}', 'common/cpp/JSI/**/*.{h,hpp,cpp}']
+    s.source_files = ['JSI/**/*.{h,m,mm,swift,hpp,cpp}']
   end
 
-  s.exclude_files = ['ios/JSI/Tests']
+  s.exclude_files = ['JSI/Tests']
 
   s.test_spec 'Tests' do |test_spec|
-    test_spec.source_files = 'ExpoModulesJSI/Tests/**/*.swift'
+    test_spec.source_files = 'Tests/**/*.swift'
   end
 end

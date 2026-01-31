@@ -570,12 +570,12 @@ PODS:
     - ReactNativeDependencies
     - RNWorklets
     - Yoga
-  - ExpoModulesJSI (55.0.7):
+  - ExpoModulesJSI (55.0.0):
     - hermes-engine
     - React-Core
     - React-runtimescheduler
     - ReactCommon
-  - ExpoModulesJSI/Tests (55.0.7):
+  - ExpoModulesJSI/Tests (55.0.0):
     - hermes-engine
     - React-Core
     - React-runtimescheduler
@@ -3266,8 +3266,8 @@ DEPENDENCIES:
   - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
-  - ExpoModulesJSI (from `../../../packages/expo-modules-core`)
-  - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-core`)
+  - ExpoModulesJSI (from `../../../packages/expo-modules-jsi/apple`)
+  - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
@@ -3574,7 +3574,7 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesJSI:
     inhibit_warnings: false
-    :path: "../../../packages/expo-modules-core"
+    :path: "../../../packages/expo-modules-jsi/apple"
   ExpoModulesTestCore:
     :path: "../../../packages/expo-modules-test-core/ios"
   ExpoNetwork:
@@ -3902,7 +3902,7 @@ SPEC CHECKSUMS:
   ExpoMediaLibrary: f31616ba12fe162567cb6ae60e8b07eef5bfc8c6
   ExpoMeshGradient: 813f5c2f7a4d6ab590a96845dd7ed433f07a1c71
   ExpoModulesCore: d8fbd55a4c6dc3c8af488eaf60e77ac673289cba
-  ExpoModulesJSI: 2b28e1904ec16242640680ade20dbd73292b4cbe
+  ExpoModulesJSI: eb9e105e6823ecbc27d175e4dc739442dd71d90e
   ExpoModulesTestCore: a26898b4464fda6f5d28198479f05373353156c4
   ExpoNetwork: e6fa5244c933860f341c9a7c539531919e542793
   ExpoNotifications: 23af18e94d33504d4c6bc0140073d32663eec249
