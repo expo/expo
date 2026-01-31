@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix disk cache not working when `uri` is empty ([#40644](https://github.com/expo/expo/pull/40644) by [@kosmydel](https://github.com/kosmydel))
+
 ### 💡 Others
 
 ## 55.0.3 — 2026-01-27
