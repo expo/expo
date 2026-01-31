@@ -1,13 +1,13 @@
 //  Copyright (c) 2020 650 Industries, Inc. All rights reserved.
 
-import XCTest
+import Testing
+
 @testable import EXUpdates
 
-/**
- * Tests for UpdatesMultipartStreamReader
- */
-class UpdatesMultipartStreamReaderSpec: XCTestCase {
-  func testSimpleCase() {
+@Suite("UpdatesMultipartStreamReader")
+struct UpdatesMultipartStreamReaderTests {
+  @Test
+  func `simple case`() {
     let response = "preamble, should be ignored\r\n" +
       "--sample_boundary\r\n" +
       "Content-Type: application/json; charset=utf-8\r\n" +
@@ -21,17 +21,18 @@ class UpdatesMultipartStreamReaderSpec: XCTestCase {
 
     var count = 0
     let success = reader.readAllParts { headers, content, done in
-      XCTAssertTrue(done)
-      XCTAssertEqual(headers?["Content-Type"] as? String, "application/json; charset=utf-8")
-      XCTAssertEqual(String(data: content!, encoding: .utf8), "{}")
+      #expect(done == true)
+      #expect(headers?["Content-Type"] as? String == "application/json; charset=utf-8")
+      #expect(String(data: content!, encoding: .utf8) == "{}")
       count += 1
     }
 
-    XCTAssertTrue(success)
-    XCTAssertEqual(count, 1)
+    #expect(success == true)
+    #expect(count == 1)
   }
 
-  func testMultipleParts() {
+  @Test
+  func `multiple parts`() {
     let response = "preamble, should be ignored\r\n" +
       "--sample_boundary\r\n" +
       "1\r\n" +
@@ -51,23 +52,21 @@ class UpdatesMultipartStreamReaderSpec: XCTestCase {
     let success = reader.readAllParts { _, content, done in
       if count < expectedContents.count {
         let expectedContent = expectedContents[count]
-        XCTAssertEqual(String(data: content!, encoding: .utf8), expectedContent)
-        XCTAssertEqual(done, count == expectedContents.count - 1)
+        #expect(String(data: content!, encoding: .utf8) == expectedContent)
+        #expect(done == (count == expectedContents.count - 1))
         count += 1
       }
     }
 
-    XCTAssertTrue(success)
-    XCTAssertEqual(count, 3)
+    #expect(success == true)
+    #expect(count == 3)
   }
 
-  func testNoDelimiter() {
+  @Test
+  func `no delimiter`() throws {
     let response = "content with no delimiter"
 
-    guard let responseData = response.data(using: .utf8) else {
-      XCTFail("Failed to convert response to UTF-8 data")
-      return
-    }
+    let responseData = try #require(response.data(using: .utf8))
     let inputStream = InputStream(data: responseData)
     let reader = UpdatesMultipartStreamReader(inputStream: inputStream, boundary: "sample_boundary")
 
@@ -76,67 +75,61 @@ class UpdatesMultipartStreamReaderSpec: XCTestCase {
       count += 1
     }
 
-    XCTAssertFalse(success)
-    XCTAssertEqual(count, 0)
+    #expect(success == false)
+    #expect(count == 0)
   }
 
-  func testEmptyContent() {
+  @Test
+  func `empty content`() throws {
     let response = "--sample_boundary\r\n" +
       "Content-Type: application/json\r\n" +
       "\r\n" +
       "\r\n" +
       "--sample_boundary--\r\n"
 
-    guard let responseData = response.data(using: .utf8) else {
-      XCTFail("Failed to convert response to UTF-8 data")
-      return
-    }
+    let responseData = try #require(response.data(using: .utf8))
     let inputStream = InputStream(data: responseData)
     let reader = UpdatesMultipartStreamReader(inputStream: inputStream, boundary: "sample_boundary")
 
     var count = 0
     let success = reader.readAllParts { headers, content, done in
-      XCTAssertTrue(done)
-      XCTAssertEqual(headers?["Content-Type"] as? String, "application/json")
-      guard let contentData = content else {
-        XCTFail("Content should not be nil")
-        return
+      #expect(done == true)
+      #expect(headers?["Content-Type"] as? String == "application/json")
+      #expect(content != nil)
+      if let contentData = content {
+        #expect(String(data: contentData, encoding: .utf8) == "")
       }
-      XCTAssertEqual(String(data: contentData, encoding: .utf8), "")
       count += 1
     }
 
-    XCTAssertTrue(success)
-    XCTAssertEqual(count, 1)
+    #expect(success == true)
+    #expect(count == 1)
   }
 
-  func testFirstBoundaryAsBoundary() {
+  @Test
+  func `first boundary as boundary`() throws {
     let response = "--sample_boundary\r\n" +
       "Content-Type: application/json\r\n" +
       "\r\n" +
       "{}\r\n" +
       "--sample_boundary--\r\n"
 
-    guard let responseData = response.data(using: .utf8) else {
-      XCTFail("Failed to convert response to UTF-8 data")
-      return
-    }
+    let responseData = try #require(response.data(using: .utf8))
     let inputStream = InputStream(data: responseData)
     let reader = UpdatesMultipartStreamReader(inputStream: inputStream, boundary: "sample_boundary")
 
     var count = 0
     let success = reader.readAllParts { headers, content, done in
-      XCTAssertTrue(done)
-      XCTAssertEqual(headers?["Content-Type"] as? String, "application/json")
-      guard let contentData = content else {
-        XCTFail("Content should not be nil")
-        return
+      #expect(done == true)
+      #expect(headers?["Content-Type"] as? String == "application/json")
+      #expect(content != nil)
+      if let contentData = content {
+        #expect(String(data: contentData, encoding: .utf8) == "{}")
       }
-      XCTAssertEqual(String(data: contentData, encoding: .utf8), "{}")
       count += 1
     }
 
-    XCTAssertTrue(success)
-    XCTAssertEqual(count, 1)
+    #expect(success == true)
+    #expect(count == 1)
   }
 }
