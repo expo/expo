@@ -21,6 +21,9 @@ export const GoogleMapsView = React.forwardRef(({ onMapLoaded, onMapClick, onMap
         setCameraPosition(config) {
             nativeRef.current?.setCameraPosition(config);
         },
+        async selectMarker(id, options) {
+            return nativeRef.current?.selectMarker(id, options);
+        },
     }));
     const onNativeMapLoaded = React.useCallback(() => {
         onMapLoaded?.();
