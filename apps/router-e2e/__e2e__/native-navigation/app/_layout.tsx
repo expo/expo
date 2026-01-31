@@ -16,5 +16,15 @@ unstable_navigationEvents.enable();
 unstable_navigationEvents.saveCurrentPathname();
 
 export default function Layout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name="header-items"
+        options={{
+          presentation: 'formSheet',
+          sheetAllowedDetents: [0.3, 0.5],
+        }}
+      />
+    </Stack>
+  );
 }
