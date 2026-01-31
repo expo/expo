@@ -8,6 +8,9 @@ import Foundation
 public class SnackEditingSession {
   public static let shared = SnackEditingSession()
 
+  /// Notification posted when session state changes (ready/cleared)
+  public static let sessionDidChangeNotification = Notification.Name("SnackEditingSessionDidChange")
+
   // MARK: - Properties
 
   /// The current channel ID
@@ -20,7 +23,13 @@ public class SnackEditingSession {
   public private(set) var sessionClient: SnackSessionClient?
 
   /// Whether the session is ready to respond to RESEND_CODE
-  public private(set) var isReady: Bool = false
+  public private(set) var isReady: Bool = false {
+    didSet {
+      if isReady != oldValue {
+        NotificationCenter.default.post(name: Self.sessionDidChangeNotification, object: nil)
+      }
+    }
+  }
 
   /// Error if session setup failed
   public private(set) var setupError: Error?
