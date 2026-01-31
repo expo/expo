@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { Ref } from 'react';
 
 import { ExpoModifier, ViewEvent } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
  * @hidden Not used anywhere yet.
@@ -96,12 +97,12 @@ const TextInputNativeView: React.ComponentType<NativeTextInputProps> = requireNa
   'TextInputView'
 );
 
-/**
- * @hidden
- */
 function transformTextInputProps(props: TextInputProps): NativeTextInputProps {
+  const { modifiers, ...restProps } = props;
   return {
-    ...props,
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
     onValueChanged: (event) => {
       props.onChangeText?.(event.nativeEvent.value);
     },

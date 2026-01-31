@@ -62,11 +62,11 @@ data class DateTimePickerProps(
 @Composable
 fun FunctionalComposableScope.DateTimePickerContent(props: DateTimePickerProps, onDateSelected: (DatePickerResult) -> Unit) {
   if (props.displayedComponents == DisplayedComponents.HOUR_AND_MINUTE) {
-    ExpoTimePicker(props = props, modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)) {
+    ExpoTimePicker(props = props, modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)) {
       onDateSelected(it)
     }
   } else {
-    ExpoDatePicker(props = props, modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)) {
+    ExpoDatePicker(props = props, modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)) {
       onDateSelected(it)
     }
   }

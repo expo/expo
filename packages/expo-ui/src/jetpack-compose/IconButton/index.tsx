@@ -4,6 +4,7 @@ import { type ColorValue } from 'react-native';
 import { ExpoModifier, ViewEvent } from '../../types';
 import { ButtonElementColors } from '../Button';
 import { parseJSXShape, ShapeJSXElement, ShapeRecordProps } from '../Shape';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
  * The built-in button styles available on Android.
@@ -59,13 +60,12 @@ const IconButtonNativeView: React.ComponentType<NativeIconButtonProps> = require
   'IconButton'
 );
 
-/**
- * @hidden
- */
-export function transformIconButtonProps(props: IconButtonProps): NativeIconButtonProps {
-  const { children, onPress, shape, ...restProps } = props;
+function transformIconButtonProps(props: IconButtonProps): NativeIconButtonProps {
+  const { children, onPress, shape, modifiers, ...restProps } = props;
 
   return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     children,
     shape: parseJSXShape(shape),

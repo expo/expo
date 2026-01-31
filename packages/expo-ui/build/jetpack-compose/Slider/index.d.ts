@@ -1,5 +1,5 @@
 import { type ColorValue } from 'react-native';
-import { ExpoModifier, ViewEvent } from '../../types';
+import { ExpoModifier } from '../../types';
 /**
  * Colors for slider's core elements.
  * @platform android
@@ -50,13 +50,5 @@ export type SliderProps = {
      */
     modifiers?: ExpoModifier[];
 };
-type NativeSliderProps = Omit<SliderProps, 'onValueChange'> & ViewEvent<'onValueChanged', {
-    value: number;
-}>;
-/**
- * @hidden
- */
-export declare function transformSliderProps(props: SliderProps): NativeSliderProps;
 export declare function Slider(props: SliderProps): import("react").JSX.Element;
-export {};
 //# sourceMappingURL=index.d.ts.map

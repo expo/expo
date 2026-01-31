@@ -19,6 +19,7 @@ android {
   defaultConfig {
     versionCode 1
     versionName "55.0.0-beta.3"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
   buildFeatures {
     compose true
@@ -26,14 +27,32 @@ android {
   lintOptions {
     abortOnError false
   }
+  testOptions {
+    unitTests {
+      includeAndroidResources = true
+    }
+  }
 }
 
 dependencies {
-  implementation 'androidx.compose.foundation:foundation-android:1.9.1'
-  implementation 'androidx.compose.ui:ui-android:1.9.1'
-  implementation "androidx.compose.material3:material3:1.5.0-alpha08"
-  implementation 'androidx.compose.material3:material3-android:1.5.0-alpha08'
-  implementation 'androidx.lifecycle:lifecycle-runtime:2.9.3'
+  implementation 'com.facebook.react:react-android'
+
+  implementation 'androidx.compose.foundation:foundation-android:1.10.2'
+  implementation 'androidx.compose.ui:ui-android:1.10.2'
+  implementation "androidx.compose.material3:material3:1.5.0-alpha13"
+  implementation 'androidx.compose.material3:material3-android:1.5.0-alpha11'
+  implementation 'androidx.lifecycle:lifecycle-runtime:2.10.0'
   implementation 'androidx.fragment:fragment-ktx:1.8.9'
-  implementation "androidx.graphics:graphics-shapes:1.0.1"
+  implementation "androidx.graphics:graphics-shapes:1.1.0"
+  implementation "com.squareup.okhttp3:okhttp:4.9.2"
+  implementation "androidx.core:core-ktx:1.17.0"
+
+  // Testing
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'com.google.truth:truth:1.4.5'
+  testImplementation 'org.robolectric:robolectric:4.16.1'
+  testImplementation 'androidx.test:core:1.7.0'
+  testImplementation 'androidx.test:runner:1.7.0'
+  testImplementation 'com.squareup.okhttp3:mockwebserver:4.9.2'
+  testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2'
 }

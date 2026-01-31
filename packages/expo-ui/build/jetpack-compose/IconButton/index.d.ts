@@ -47,10 +47,6 @@ export type NativeIconButtonProps = Omit<IconButtonProps, 'role' | 'onPress' | '
     shape?: ShapeRecordProps;
 } & ViewEvent<'onButtonPressed', void>;
 /**
- * @hidden
- */
-export declare function transformIconButtonProps(props: IconButtonProps): NativeIconButtonProps;
-/**
  * Displays a native button component.
  */
 export declare function IconButton(props: IconButtonProps): import("react").JSX.Element;

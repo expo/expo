@@ -1,8 +1,7 @@
 import { requireNativeView } from 'expo';
-import { ColorValue, Platform } from 'react-native';
 
 import { ExpoModifier } from '../types';
-import { getTextFromChildren } from '../utils';
+import { createViewModifierEventListener } from './modifiers/utils';
 
 export type PrimitiveBaseProps = {
   /**
@@ -17,16 +16,29 @@ export type HorizontalArrangement =
   | 'center'
   | 'spaceBetween'
   | 'spaceAround'
-  | 'spaceEvenly';
+  | 'spaceEvenly'
+  | { spacedBy: number };
 export type VerticalArrangement =
   | 'top'
   | 'bottom'
   | 'center'
   | 'spaceBetween'
   | 'spaceAround'
-  | 'spaceEvenly';
+  | 'spaceEvenly'
+  | { spacedBy: number };
 export type HorizontalAlignment = 'start' | 'end' | 'center';
 export type VerticalAlignment = 'top' | 'bottom' | 'center';
+export type ContentAlignment =
+  | 'topStart'
+  | 'topCenter'
+  | 'topEnd'
+  | 'centerStart'
+  | 'center'
+  | 'centerEnd'
+  | 'bottomStart'
+  | 'bottomCenter'
+  | 'bottomEnd';
+export type FloatingToolbarExitAlwaysScrollBehavior = 'top' | 'bottom' | 'start' | 'end';
 
 type LayoutBaseProps = {
   children?: React.ReactNode;
@@ -34,88 +46,61 @@ type LayoutBaseProps = {
   verticalArrangement?: VerticalArrangement;
   horizontalAlignment?: HorizontalAlignment;
   verticalAlignment?: VerticalAlignment;
+  contentAlignment?: ContentAlignment;
+  floatingToolbarExitAlwaysScrollBehavior?: FloatingToolbarExitAlwaysScrollBehavior;
   modifiers?: ExpoModifier[];
 } & PrimitiveBaseProps;
 
+function transformProps(props: LayoutBaseProps) {
+  const { modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  };
+}
+
 //#region Box Component
-export type BoxProps = Pick<LayoutBaseProps, 'children' | 'modifiers'>;
-const BoxNativeView: React.ComponentType<BoxProps> | null =
-  Platform.OS === 'android' ? requireNativeView('ExpoUI', 'BoxView') : null;
+export type BoxProps = Pick<
+  LayoutBaseProps,
+  'children' | 'modifiers' | 'contentAlignment' | 'floatingToolbarExitAlwaysScrollBehavior'
+>;
+const BoxNativeView: React.ComponentType<BoxProps> = requireNativeView('ExpoUI', 'BoxView');
+
 export function Box(props: BoxProps) {
-  if (!BoxNativeView) {
-    return null;
-  }
-  return <BoxNativeView {...props} />;
+  return <BoxNativeView {...transformProps(props)} />;
 }
 //#endregion
 
 //#region Row Component
 export type RowProps = LayoutBaseProps;
-const RowNativeView: React.ComponentType<RowProps> | null =
-  Platform.OS === 'android' ? requireNativeView('ExpoUI', 'RowView') : null;
+const RowNativeView: React.ComponentType<RowProps> = requireNativeView('ExpoUI', 'RowView');
 export function Row(props: RowProps) {
-  if (!RowNativeView) {
-    return null;
-  }
-  return <RowNativeView {...props} />;
+  return <RowNativeView {...transformProps(props)} />;
+}
+//#endregion
+
+//#region FlowRow Component
+export type FlowRowProps = Pick<
+  LayoutBaseProps,
+  'children' | 'modifiers' | 'horizontalArrangement' | 'verticalArrangement'
+>;
+const FlowRowNativeView: React.ComponentType<FlowRowProps> = requireNativeView(
+  'ExpoUI',
+  'FlowRowView'
+);
+export function FlowRow(props: FlowRowProps) {
+  return <FlowRowNativeView {...transformProps(props)} />;
 }
 //#endregion
 
 //#region Column Component
 export type ColumnProps = LayoutBaseProps;
-const ColumnNativeView: React.ComponentType<ColumnProps> | null =
-  Platform.OS === 'android' ? requireNativeView('ExpoUI', 'ColumnView') : null;
+const ColumnNativeView: React.ComponentType<ColumnProps> = requireNativeView(
+  'ExpoUI',
+  'ColumnView'
+);
 export function Column(props: ColumnProps) {
-  if (!ColumnNativeView) {
-    return null;
-  }
-  return <ColumnNativeView {...props} />;
-}
-//#endregion
-
-//#region Text Component
-
-export type TextFontWeight =
-  | 'normal'
-  | 'bold'
-  | '100'
-  | '200'
-  | '300'
-  | '400'
-  | '500'
-  | '600'
-  | '700'
-  | '800'
-  | '900';
-
-export type TextProps = {
-  /**
-   * The children of the text.
-   * Only string and number are supported.
-   */
-  children?: React.ReactNode;
-  color?: ColorValue;
-  fontSize?: number;
-  fontWeight?: TextFontWeight;
-} & PrimitiveBaseProps;
-
-const TextNativeView: React.ComponentType<Omit<TextProps, 'children'> & { text: string }> | null =
-  Platform.OS === 'android' ? requireNativeView('ExpoUI', 'TextView') : null;
-type NativeTextProps = Omit<TextProps, 'children'> & {
-  text: string;
-};
-function transformTextProps(props: TextProps): NativeTextProps {
-  const { children, ...restProps } = props;
-  const text = getTextFromChildren(children);
-  return {
-    ...restProps,
-    text: text ?? '',
-  };
-}
-export function Text(props: TextProps) {
-  if (!TextNativeView) {
-    return null;
-  }
-  return <TextNativeView {...transformTextProps(props)} />;
+  return <ColumnNativeView {...transformProps(props)} />;
 }
 //#endregion
