@@ -6,7 +6,10 @@ import ExpoModulesCore
 final class BottomSheetProps: UIBaseViewProps {
   @Field var isPresented: Bool = false
   @Field var fitToContents: Bool = false
+  @Field var detents: [Either<PresentationDetentPreset, PresentationDetentItem>]?
+  @Field var selectedDetent: Either<PresentationDetentPreset, PresentationDetentItem>?
   var onIsPresentedChange = EventDispatcher()
+  var onSelectedDetentChange = EventDispatcher()
 }
 
 struct SizePreferenceKey: PreferenceKey {
@@ -57,6 +60,92 @@ private struct BottomSheetSizeReader<Content: View>: View {
   }
 }
 
+// MARK: - iOS 16+ Sheet Content with Detent Selection
+
+@available(iOS 16.0, tvOS 16.0, *)
+private struct SheetContentWithDetents<Content: View>: View {
+  let content: Content
+  let props: BottomSheetProps
+  @State private var selectedDetent: PresentationDetent
+  let detentMapping: [PresentationDetent: Either<PresentationDetentPreset, PresentationDetentItem>]
+    
+    var selectedPreset: PresentationDetentPreset? {
+        props.selectedDetent?.get()
+    }
+    
+    var selectedItem: PresentationDetentItem? {
+        props.selectedDetent?.get()
+    }
+
+  init(content: Content, props: BottomSheetProps) {
+    self.content = content
+    self.props = props
+
+    // Build the detent mapping
+    var mapping: [PresentationDetent: Either<PresentationDetentPreset, PresentationDetentItem>] = [:]
+    if let detents = props.detents {
+      for detent in detents {
+        if let parsed = parsePresentationDetent(detent) {
+          mapping[parsed] = detent
+        }
+      }
+    }
+    self.detentMapping = mapping
+
+    // Set initial selected detent
+    if let initialDetent = props.selectedDetent, let parsed = parsePresentationDetent(initialDetent) {
+      self._selectedDetent = State(initialValue: parsed)
+    } else {
+      self._selectedDetent = State(initialValue: mapping.keys.first ?? .large)
+    }
+  }
+
+  var body: some View {
+    content
+      .presentationDetents(Set(detentMapping.keys), selection: $selectedDetent)
+      .onChange(of: selectedDetent) { newDetent in
+          if let detent = detentMapping[newDetent] {
+              if let selectedPreset: PresentationDetentPreset = detent.get() {
+                  props.onSelectedDetentChange([
+                    "detent": selectedPreset.rawValue
+                  ])
+              }
+              if let selectedItem: PresentationDetentItem = detent.get() {
+                  props.onSelectedDetentChange([
+                    "detent": selectedItem.toDictionary()
+                  ])
+              }
+          }
+      }
+      .onChange(of: selectedPreset) { newValue in
+          if let parsed = parsePresentationDetent(.init(newValue)) {
+              selectedDetent = parsed
+          }
+      }
+      .onChange(of: selectedItem) { newValue in
+          if let parsed = parsePresentationDetent(.init(newValue)) {
+              selectedDetent = parsed
+          }
+      }
+  }
+
+  private func parseDetents() -> Set<PresentationDetent> {
+    guard let detents = props.detents, !detents.isEmpty else {
+      return [.large]
+    }
+
+    var result: Set<PresentationDetent> = []
+    for detent in detents {
+      if let parsed = parsePresentationDetent(detent) {
+        result.insert(parsed)
+      }
+    }
+    return result.isEmpty ? [.large] : result
+  }
+}
+
+// MARK: - Main BottomSheetView
+
 struct BottomSheetView: ExpoSwiftUI.View {
   @ObservedObject var props: BottomSheetProps
   @State private var isPresented: Bool
@@ -85,7 +174,14 @@ struct BottomSheetView: ExpoSwiftUI.View {
         content
       }
     } else {
-      Children()
+      if #available(iOS 16.0, tvOS 16.0, *), props.detents != nil {
+        SheetContentWithDetents(
+          content: Children(),
+          props: props
+        )
+      } else {
+        Children()
+      }
     }
   }
 
