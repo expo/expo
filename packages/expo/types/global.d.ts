@@ -1,14 +1,4 @@
-/// <reference types="expo-modules-core/types" />
-
-// Extend the NodeJS namespace
-declare namespace NodeJS {
-  export interface ProcessEnv {
-    readonly NODE_ENV: 'development' | 'production' | 'test';
-  }
-  export interface Process {
-    env: ProcessEnv;
-  }
-}
+/* eslint-disable */
 
 // Create types for CSS modules
 declare module '*.module.css' {
