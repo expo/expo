@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add support in `expo start` for custom app ids. ([#42555](https://github.com/expo/expo/pull/42555) by [@sebryu](https://github.com/sebryu))
+
 ### 🐛 Bug fixes
 
 - Fix RSC support in development ([#42617](https://github.com/expo/expo/pull/42617) by [@hassankhan](https://github.com/hassankhan))
