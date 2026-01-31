@@ -166,6 +166,7 @@ declare const Stack: ((props: ComponentProps<typeof RNStack>) => React.JSX.Eleme
     Toolbar: {
         (props: import("./stack-utils").StackToolbarProps): React.JSX.Element;
         Button: React.FC<import("./stack-utils").StackToolbarButtonProps>;
+        Link: React.FC<import("./stack-utils").StackToolbarLinkProps>;
         Menu: React.FC<import("./stack-utils").StackToolbarMenuProps>;
         MenuAction: React.FC<import("./stack-utils").StackToolbarMenuActionProps>;
         SearchBarSlot: React.FC<import("./stack-utils").StackToolbarSearchBarSlotProps>;

@@ -34,6 +34,25 @@ class RouterToolbarItemView: RouterViewWithLogger {
   // This property is not applied in this component, but read by the host
   @ReactiveProp var routerHidden: Bool = false
 
+  var zoomTransitionSourceIdentifier: String? {
+    didSet {
+      guard zoomTransitionSourceIdentifier != oldValue else { return }
+      // Unregister old identifier
+      if let oldValue, !oldValue.isEmpty {
+        linkPreviewModule?.zoomBarButtonItemRepository.unregister(identifier: oldValue)
+      }
+      // Register new identifier with current bar button item
+      if let newId = zoomTransitionSourceIdentifier, !newId.isEmpty, let item = currentBarButtonItem {
+        linkPreviewModule?.zoomBarButtonItemRepository.register(identifier: newId, item: item)
+      }
+    }
+  }
+
+  private var linkPreviewModule: LinkPreviewNativeModule? {
+    appContext?.moduleRegistry.get(moduleWithName: LinkPreviewNativeModule.moduleName)
+      as? LinkPreviewNativeModule
+  }
+
   var host: RouterToolbarHostView?
   private var currentBarButtonItem: UIBarButtonItem?
 
@@ -86,7 +105,15 @@ class RouterToolbarItemView: RouterViewWithLogger {
     var item = UIBarButtonItem()
 
     if let customView {
-      item = UIBarButtonItem(customView: customView)
+      // UIBarButtonItem(customView:) does not fire target/action,
+      // so add a tap gesture recognizer to forward taps to handleAction.
+      let wrapper = customView
+      // Remove any previously added gesture recognizer from us
+      wrapper.gestureRecognizers?.removeAll { $0 is ToolbarItemTapGesture }
+      let tap = ToolbarItemTapGesture(target: self, action: #selector(handleAction))
+      wrapper.isUserInteractionEnabled = true
+      wrapper.addGestureRecognizer(tap)
+      item = UIBarButtonItem(customView: wrapper)
     } else if type == .fluidSpacer {
       item = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
     } else if type == .fixedSpacer {
@@ -125,6 +152,11 @@ class RouterToolbarItemView: RouterViewWithLogger {
     applyCommonProperties(to: item)
 
     currentBarButtonItem = item
+
+    // Register the bar button item for zoom transitions if an identifier is set
+    if let zoomId = zoomTransitionSourceIdentifier, !zoomId.isEmpty {
+      linkPreviewModule?.zoomBarButtonItemRepository.register(identifier: zoomId, item: item)
+    }
   }
 
   private func applyContentProperties(to item: UIBarButtonItem) {
@@ -199,6 +231,12 @@ class RouterToolbarItemView: RouterViewWithLogger {
     super.init(appContext: appContext)
   }
 
+  deinit {
+    if let zoomId = zoomTransitionSourceIdentifier, !zoomId.isEmpty {
+      linkPreviewModule?.zoomBarButtonItemRepository.unregister(identifier: zoomId)
+    }
+  }
+
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
     guard customView == nil else {
       logger?.warn(
@@ -216,6 +254,9 @@ class RouterToolbarItemView: RouterViewWithLogger {
     }
   }
 }
+
+/// Subclass used to identify tap gestures added by RouterToolbarItemView for custom view items.
+private class ToolbarItemTapGesture: UITapGestureRecognizer {}
 
 enum ItemType: String, Enumerable {
   case normal

@@ -1,5 +1,8 @@
 'use client';
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import type {
+  NativeStackHeaderItemButton,
+  NativeStackNavigationOptions,
+} from '@react-navigation/native-stack';
 import React, { Fragment, isValidElement, useEffect, type ReactNode } from 'react';
 import { useMemo } from 'react';
 
@@ -7,6 +10,7 @@ import {
   convertStackToolbarButtonPropsToRNHeaderItem,
   StackToolbarButton,
 } from './StackToolbarButton';
+import { StackToolbarLink } from './StackToolbarLink';
 import {
   convertStackToolbarMenuPropsToRNHeaderItem,
   StackToolbarMenu,
@@ -19,12 +23,14 @@ import {
 } from './StackToolbarSpacer';
 import { convertStackToolbarViewPropsToRNHeaderItem, StackToolbarView } from './StackToolbarView';
 import { ToolbarPlacementContext, useToolbarPlacement, type ToolbarPlacement } from './context';
+import { router } from '../../../imperative-api';
 import { NativeMenuContext } from '../../../link/NativeMenuContext';
 import { RouterToolbarHost } from '../../../toolbar/native';
 import { useNavigation } from '../../../useNavigation';
 import { isChildOfType } from '../../../utils/children';
 import { Screen } from '../../../views/Screen';
 import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from '../common-primitives';
+import { convertStackHeaderSharedPropsToRNSharedHeaderItem } from '../shared';
 
 export interface StackToolbarProps {
   /**
@@ -177,6 +183,7 @@ function convertToolbarChildrenToUnstableItems(
   const actions = allChildren.filter(
     (child) =>
       isChildOfType(child, StackToolbarButton) ||
+      isChildOfType(child, StackToolbarLink) ||
       isChildOfType(child, StackToolbarMenu) ||
       isChildOfType(child, StackToolbarSpacer) ||
       isChildOfType(child, StackToolbarView)
@@ -196,7 +203,7 @@ function convertToolbarChildrenToUnstableItems(
         return String(e);
       });
     console.warn(
-      `Stack.Toolbar with placement="${side}" only accepts <Stack.Toolbar.Button>, <Stack.Toolbar.Menu>, <Stack.Toolbar.View>, and <Stack.Toolbar.Spacer> as children. Found invalid children: ${otherElements.join(', ')}`
+      `Stack.Toolbar with placement="${side}" only accepts <Stack.Toolbar.Button>, <Stack.Toolbar.Link>, <Stack.Toolbar.Menu>, <Stack.Toolbar.View>, and <Stack.Toolbar.Spacer> as children. Found invalid children: ${otherElements.join(', ')}`
     );
   }
   return () =>
@@ -204,6 +211,8 @@ function convertToolbarChildrenToUnstableItems(
       .map((action) => {
         if (isChildOfType(action, StackToolbarButton)) {
           return convertStackToolbarButtonPropsToRNHeaderItem(action.props);
+        } else if (isChildOfType(action, StackToolbarLink)) {
+          return convertStackToolbarLinkPropsToRNHeaderItem(action.props);
         } else if (isChildOfType(action, StackToolbarMenu)) {
           return convertStackToolbarMenuPropsToRNHeaderItem(action.props);
         } else if (isChildOfType(action, StackToolbarSpacer)) {
@@ -256,7 +265,26 @@ export function appendStackToolbarPropsToOptions(
   };
 }
 
+function convertStackToolbarLinkPropsToRNHeaderItem(
+  props: import('./StackToolbarLink').StackToolbarLinkProps
+): NativeStackHeaderItemButton | undefined {
+  if (props.hidden) {
+    return undefined;
+  }
+
+  const action = props.action ?? 'push';
+  return {
+    ...convertStackHeaderSharedPropsToRNSharedHeaderItem(props),
+    type: 'button',
+    onPress: () => {
+      router[action](props.href);
+    },
+    selected: false,
+  };
+}
+
 StackToolbar.Button = StackToolbarButton;
+StackToolbar.Link = StackToolbarLink;
 StackToolbar.Menu = StackToolbarMenu;
 StackToolbar.MenuAction = StackToolbarMenuAction;
 StackToolbar.SearchBarSlot = StackToolbarSearchBarSlot;

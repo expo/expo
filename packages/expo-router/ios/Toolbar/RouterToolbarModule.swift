@@ -76,6 +76,9 @@ public class RouterToolbarModule: Module {
       Prop("disabled") { (view: RouterToolbarItemView, disabled: Bool?) in
         view.disabled = disabled ?? false
       }
+      Prop("zoomTransitionSourceIdentifier") { (view: RouterToolbarItemView, identifier: String?) in
+        view.zoomTransitionSourceIdentifier = identifier
+      }
 
       Events("onSelected")
     }

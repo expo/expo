@@ -39,6 +39,7 @@ const RouterToolbarItemView: React.ComponentType<
       color?: ColorValue;
     };
     tintColor?: ColorValue;
+    zoomTransitionSourceIdentifier?: string;
   }
 > = requireNativeView('ExpoRouterToolbarModule', 'RouterToolbarItemView');
 
@@ -51,5 +52,11 @@ export function RouterToolbarItem(props: RouterToolbarItemProps) {
         }
       | undefined
   )?.__expo_shared_object_id__;
-  return <RouterToolbarItemView {...props} image={imageObjectId} />;
+  return (
+    <RouterToolbarItemView
+      {...props}
+      image={imageObjectId}
+      zoomTransitionSourceIdentifier={props.zoomTransitionSourceIdentifier}
+    />
+  );
 }

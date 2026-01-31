@@ -13,6 +13,8 @@ export { appendStackToolbarPropsToOptions, type StackToolbarProps } from './Stac
 
 export { StackToolbarButton, type StackToolbarButtonProps } from './StackToolbarButton';
 
+export { StackToolbarLink, type StackToolbarLinkProps } from './StackToolbarLink';
+
 export {
   StackToolbarMenu,
   StackToolbarMenuAction,

@@ -79,6 +79,7 @@ export type {
   StackSearchBarProps,
   StackToolbarBadgeProps,
   StackToolbarButtonProps,
+  StackToolbarLinkProps,
   StackToolbarIconProps,
   StackToolbarLabelProps,
   StackToolbarMenuActionProps,
