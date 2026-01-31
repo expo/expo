@@ -32,6 +32,36 @@ Expo is primarily built with greenfield apps in mind, but we are increasingly in
 | [EAS Submit](/submit/introduction/) - a hosted service that uploads your app to stores               | Yes                  |
 | [EAS Update](/eas-update/introduction/) - instant updates of your app JavaScript and assets          | Yes                  |
 
+## Integrated vs Isolated approaches
+
+When you integrate React Native into an existing native app, you can choose between two main approaches: integrated and isolated. The best approach for you will depend on your project's structure, your team's workflow, and your long-term goals.
+
+### Integrated approach
+
+In the integrated approach, your React Native code lives inside your existing native project. This allows for a tight coupling between your React Native and native code.
+
+For example, you might add your existing Android or iOS native projects to a subdirectory of the React Native project. This is a common setup for projects that started with React Native and added native code later, but it can also be used for existing native apps. If you can't use the standard `android` and `ios` subdirectories for your native projects, you can configure a custom root folder for your React Native code, with a simple monorepo setup.
+
+**Choose this approach if:**
+
+- You need to frequently iterate on both native and React Native code together.
+- You have a single team that manages both native and React Native development.
+- Your project structure allows for adding a React Native project directly.
+
+### Isolated approach
+
+In the isolated approach, your React Native code is developed and maintained separately from your native project, and it can be maintained in a separate repository or in a monorepo.
+
+With this approach, you package your React Native app as a native library (using AAR for Android and XCFramework for iOS). Then, you integrate this library into your native app just like any other native dependency.
+
+This separation simplifies the workflow for native developers, as they don't need to set up a Node.js environment, or deal with React Native's build dependencies. They can just consume the React Native part of the app as a pre-built artifact.
+
+**Choose this approach if:**
+
+- You have separate teams for native and React Native development.
+- You want to minimize the impact of adding React Native on your existing native build process.
+- You prefer to treat the React Native part of your app as a self-contained module.
+
 ## Next steps
 
 <BoxLink
