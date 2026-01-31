@@ -1,9 +1,12 @@
-/// <reference types="node" />
+/// <reference types="expo-modules-core/types" />
 
 // Extend the NodeJS namespace
 declare namespace NodeJS {
-  interface ProcessEnv {
+  export interface ProcessEnv {
     readonly NODE_ENV: 'development' | 'production' | 'test';
+  }
+  export interface Process {
+    env: ProcessEnv;
   }
 }
 
