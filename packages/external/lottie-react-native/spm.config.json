@@ -1,0 +1,81 @@
+{
+    "$schema": "../../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "products": [
+        {
+            "name": "LottieReactNative",
+            "podName": "lottie-react-native",
+            "codegenName": "lottiereactnative",
+            "platforms": [ "iOS(.v15)" ],
+            "externalDependencies": [
+                "ReactNativeDependencies",
+                "React",
+                "Hermes"
+            ],
+            "spmPackages": [
+                {
+                    "url": "https://github.com/airbnb/lottie-spm.git",
+                    "productName": "Lottie",
+                    "version": { "exact": "4.5.0" }
+                }
+            ],
+            "targets": [
+                {
+                    "type": "cpp",
+                    "name": "LottieReactNative_codegen_components",
+                    "moduleName": "lottiereactnative",
+                    "path": ".build/codegen/build/generated/ios/ReactCodegen/react/renderer/components/lottiereactnative",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies",
+                        "Hermes"
+                    ],
+                    "includeDirectories": [ "../../../.." ]
+                },
+                {
+                    "type": "swift",
+                    "name": "LottieReactNative",
+                    "path": "ios/LottieReactNative",
+                    "pattern": "**/*.swift",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies",
+                        "Lottie",
+                        "LottieReactNative_objc"
+                    ],
+                    "linkedFrameworks": [ "UIKit", "Foundation" ]
+                },
+                {
+                    "type": "objc",
+                    "name": "LottieReactNative_objc",
+                    "path": "ios/LottieReactNative",
+                    "pattern": "**/*.m",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "linkedFrameworks": [ "UIKit", "Foundation" ]
+                },
+                {
+                    "type": "objc",
+                    "name": "LottieReactNative_fabric",
+                    "path": "ios/Fabric",
+                    "pattern": "**/*.mm",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies",
+                        "Lottie",
+                        "LottieReactNative",
+                        "LottieReactNative_codegen_components"
+                    ],
+                    "includeDirectories": [ "../../.build/codegen/build/generated/ios/ReactCodegen" ],
+                    "linkedFrameworks": [ "UIKit", "Foundation" ]
+                }
+            ]
+        }
+    ]
+}

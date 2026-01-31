@@ -19,6 +19,75 @@
     },
     "required": [ "products" ],
     "definitions": {
+        "spmPackageDependency": {
+            "type": "object",
+            "description": "A remote SPM package dependency fetched by Swift Package Manager",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "description": "Git URL of the SPM package (e.g., https://github.com/airbnb/lottie-spm.git)"
+                },
+                "productName": {
+                    "type": "string",
+                    "description": "The product name exported by the package (what you import, e.g., 'Lottie')"
+                },
+                "packageName": {
+                    "type": "string",
+                    "description": "Optional: Override the package name for .product(package:) reference. Defaults to last URL path component without .git"
+                },
+                "version": {
+                    "$ref": "#/definitions/spmPackageVersion"
+                }
+            },
+            "required": [ "url", "productName", "version" ],
+            "additionalProperties": false
+        },
+        "spmPackageVersion": {
+            "type": "object",
+            "description": "Version specification for an SPM package. Use 'exact' for reproducible builds (recommended).",
+            "oneOf": [
+                {
+                    "properties": {
+                        "exact": {
+                            "type": "string",
+                            "description": "Exact version (e.g., '4.5.0'). Recommended for reproducible builds."
+                        }
+                    },
+                    "required": [ "exact" ],
+                    "additionalProperties": false
+                },
+                {
+                    "properties": {
+                        "from": {
+                            "type": "string",
+                            "description": "Minimum version with semver major range (e.g., '4.0.0' means >=4.0.0, <5.0.0)"
+                        }
+                    },
+                    "required": [ "from" ],
+                    "additionalProperties": false
+                },
+                {
+                    "properties": {
+                        "branch": {
+                            "type": "string",
+                            "description": "Git branch name (e.g., 'main'). Not recommended for production."
+                        }
+                    },
+                    "required": [ "branch" ],
+                    "additionalProperties": false
+                },
+                {
+                    "properties": {
+                        "revision": {
+                            "type": "string",
+                            "description": "Git commit SHA (e.g., 'abc123')"
+                        }
+                    },
+                    "required": [ "revision" ],
+                    "additionalProperties": false
+                }
+            ]
+        },
         "productPlatform": {
             "type": "string",
             "description": "Supported platform versions",
@@ -59,6 +128,14 @@
                     "description": "List of external Swift Package dependencies for this product (e.g., 'Hermes', 'ReactNativeDependencies', 'React', or expo packages)",
                     "items": {
                         "type": "string"
+                    },
+                    "default": [ ]
+                },
+                "spmPackages": {
+                    "type": "array",
+                    "description": "Remote SPM package dependencies to be fetched by Swift Package Manager. Use this for third-party Swift packages that provide prebuilt binaries (like lottie-spm). Use exact versions for reproducible builds.",
+                    "items": {
+                        "$ref": "#/definitions/spmPackageDependency"
                     },
                     "default": [ ]
                 },

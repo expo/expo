@@ -293,6 +293,15 @@ pod install
 - Use `moduleMapContent` to create a custom module map
 - Use `fileMapping` to restructure source file locations
 
+### Undefined symbols for JSI (e.g., `facebook::jsi::NativeState::~NativeState()`)
+- Add `Hermes` to `externalDependencies` at the product level
+- Add `Hermes` to the `dependencies` array of the C++ codegen target
+- JSI symbols come from Hermes, which is required for any Fabric component codegen
+
+### Missing `RCTFabricComponentsPlugins.h` or React headers
+- Update imports in source code from `#import "RCTFabricComponentsPlugins.h"` to `#import <React/RCTFabricComponentsPlugins.h>`
+- This may require a patch file for the package
+
 ## Code References
 
 For implementation details, examine these files:
@@ -486,4 +495,206 @@ et prebuild-packages --include-external react-native-reanimated ...
 
 # Or build both together (the system handles ordering):
 et prebuild-packages --include-external react-native-worklets --include-external react-native-reanimated ...
+```
+
+## Remote SPM Package Dependencies
+
+For packages that depend on third-party Swift libraries with official SPM support (like lottie-ios), you can use `spmPackages` to let Swift Package Manager fetch them directly instead of managing xcframeworks yourself.
+
+### When to Use SPM Packages
+
+Use `spmPackages` when:
+- The dependency provides official prebuilt xcframeworks via SPM (like [lottie-spm](https://github.com/airbnb/lottie-spm))
+- You want SPM to handle version resolution and caching
+- The package is pure Swift and doesn't need custom build configuration
+
+### Configuration
+
+Add `spmPackages` at the product level:
+
+```json
+{
+  "products": [
+    {
+      "name": "LottieReactNative",
+      "podName": "lottie-react-native",
+      "codegenName": "lottiereactnative",
+      "platforms": ["iOS(.v15)"],
+      "externalDependencies": ["ReactNativeDependencies", "React"],
+      "spmPackages": [
+        {
+          "url": "https://github.com/airbnb/lottie-spm.git",
+          "productName": "Lottie",
+          "version": { "exact": "4.5.0" }
+        }
+      ],
+      "targets": [
+        {
+          "type": "swift",
+          "name": "MyTarget",
+          "path": "ios",
+          "dependencies": ["React", "ReactNativeDependencies", "Lottie"]
+        }
+      ]
+    }
+  ]
+}
+```
+
+### SPM Package Fields
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `url` | Yes | Git URL of the SPM package (e.g., `https://github.com/airbnb/lottie-spm.git`) |
+| `productName` | Yes | The product name exported by the package (what you import, e.g., `"Lottie"`) |
+| `packageName` | No | Override the package identifier. Defaults to last URL path component without `.git` |
+| `version` | Yes | Version requirement object (see below) |
+
+### Version Specifications
+
+**Always use `exact` versions for reproducible builds.** The version should match the version pinned in the upstream podspec.
+
+| Format | Example | SPM Output |
+|--------|---------|------------|
+| `{ "exact": "4.5.0" }` | Pin to exact version | `.package(url: "...", exact: "4.5.0")` |
+| `{ "from": "4.0.0" }` | Semver range (>=4.0.0, <5.0.0) | `.package(url: "...", from: "4.0.0")` |
+| `{ "branch": "main" }` | Git branch (not recommended) | `.package(url: "...", branch: "main")` |
+| `{ "revision": "abc123" }` | Git commit SHA | `.package(url: "...", revision: "abc123")` |
+
+### Complete Example: lottie-react-native
+
+This example shows a package with:
+- SPM remote dependency (lottie-spm for lottie-ios)
+- Fabric codegen components (C++)
+- Swift and Objective-C sources
+- Mixed target dependencies
+
+```json
+{
+    "$schema": "../../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "products": [
+        {
+            "name": "LottieReactNative",
+            "podName": "lottie-react-native",
+            "codegenName": "lottiereactnative",
+            "platforms": ["iOS(.v15)"],
+            "externalDependencies": [
+                "ReactNativeDependencies",
+                "React",
+                "Hermes"
+            ],
+            "spmPackages": [
+                {
+                    "url": "https://github.com/airbnb/lottie-spm.git",
+                    "productName": "Lottie",
+                    "version": { "exact": "4.5.0" }
+                }
+            ],
+            "targets": [
+                {
+                    "type": "cpp",
+                    "name": "LottieReactNative_codegen_components",
+                    "moduleName": "lottiereactnative",
+                    "path": ".build/codegen/build/generated/ios/ReactCodegen/react/renderer/components/lottiereactnative",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": ["React", "ReactNativeDependencies", "Hermes"],
+                    "includeDirectories": [ "../../../.." ]
+                },
+                {
+                    "type": "swift",
+                    "name": "LottieReactNative",
+                    "path": "ios/LottieReactNative",
+                    "pattern": "**/*.swift",
+                    "dependencies": ["React", "ReactNativeDependencies", "Lottie", "LottieReactNative_objc"],
+                    "linkedFrameworks": ["UIKit", "Foundation"]
+                },
+                {
+                    "type": "objc",
+                    "name": "LottieReactNative_objc",
+                    "path": "ios/LottieReactNative",
+                    "pattern": "**/*.m",
+                    "headerPattern": "**/*.h",
+                    "dependencies": ["React", "ReactNativeDependencies"],
+                    "linkedFrameworks": ["UIKit", "Foundation"]
+                },
+                {
+                    "type": "objc",
+                    "name": "LottieReactNative_fabric",
+                    "path": "ios/Fabric",
+                    "pattern": "**/*.mm",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React", "ReactNativeDependencies", "Lottie",
+                        "LottieReactNative", "LottieReactNative_codegen_components"
+                    ],
+                    "includeDirectories": [ "../../.build/codegen/build/generated/ios/ReactCodegen" ],
+                    "linkedFrameworks": ["UIKit", "Foundation"]
+                }
+            ]
+        }
+    ]
+}
+```
+
+**Key points:**
+- `Hermes` is required in both `externalDependencies` and codegen target `dependencies` for JSI symbols
+- `Lottie` from `spmPackages` is referenced directly in target `dependencies`
+- Swift target depends on `LottieReactNative_objc` for ObjC bridging
+- Fabric target depends on both Swift target and codegen components
+
+### Using SPM Products in Targets
+
+Add the SPM product name to your target's `dependencies` array. The build system automatically converts it to `.product(name:, package:)` syntax in Package.swift:
+
+```json
+{
+  "targets": [
+    {
+      "type": "swift",
+      "name": "MyTarget",
+      "dependencies": ["React", "Lottie"]  // "Lottie" comes from spmPackages
+    }
+  ]
+}
+```
+
+Generated Package.swift:
+```swift
+.target(
+    name: "MyTarget",
+    dependencies: [
+        "React",
+        .product(name: "Lottie", package: "lottie-spm")
+    ]
+)
+```
+
+### CI/Offline Build Considerations
+
+SPM fetches remote packages on first build, which requires network access. For CI environments:
+
+1. **Cache `~/.swiftpm`** between builds to avoid re-downloading packages
+2. **Or run `swift package resolve`** as a pre-step to download dependencies before the main build
+3. **Package.resolved is not committed** - rely on `exact` version pins for reproducibility
+
+### Version Management
+
+When updating packages:
+1. Check the upstream podspec for the pinned dependency version
+2. Update the `version.exact` field in `spm.config.json` to match
+3. Rebuild the xcframework
+
+Example: If lottie-react-native's podspec changes from `s.dependency 'lottie-ios', '4.5.0'` to `'4.6.0'`, update your config:
+
+```json
+{
+  "spmPackages": [
+    {
+      "url": "https://github.com/airbnb/lottie-spm.git",
+      "productName": "Lottie",
+      "version": { "exact": "4.6.0" }  // Updated to match podspec
+    }
+  ]
+}
 ```
