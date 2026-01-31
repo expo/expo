@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 6.0.23 — 2026-01-31
+
+### 🐛 Bug fixes
+
 - [web] Ensure `<Head>` component re-renders when focus changes ([#42713](https://github.com/expo/expo/pull/42713) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others

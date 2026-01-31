@@ -49,7 +49,7 @@ PODS:
   - EXNotifications/Tests (0.32.16):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.32):
+  - Expo (54.0.33):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -331,7 +331,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (54.0.32):
+  - Expo/Tests (54.0.33):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -405,7 +405,7 @@ PODS:
     - ExpoModulesCore
   - ExpoFont (14.0.11):
     - ExpoModulesCore
-  - ExpoGL (16.0.9):
+  - ExpoGL (16.0.10):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - ExpoGlassEffect (0.1.8):
@@ -3590,7 +3590,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 83ef0844fcf06d6099b12a7bdbd7d36fc0e1dd16
   EXNotifications: 2a3feb7af6194828d9aafda72f63a9a03866230a
-  Expo: b8d64eb9a496ebe8c71e3dae7eeb7f394b146b80
+  Expo: 7f5e64b5d18096dcec86814764b526b0cb97811c
   expo-dev-client: 12ef7d5b14d93e309922acea78dcd851db583a87
   expo-dev-launcher: 47994056008ffdc30a6a5e328a375b3e30a8db05
   expo-dev-menu: ea4fb803ace52e60d7cd8060c7cd379612a140b2
@@ -3617,7 +3617,7 @@ SPEC CHECKSUMS:
   ExpoDomWebView: 1feccb9bfbb3337d40465737b5c228edff51451b
   ExpoFileSystem: aefcd337b94b874f88752ebefc52813b84992fad
   ExpoFont: c625dbd97ed57e9089b172b2a7bb99003d074664
-  ExpoGL: 17a1f4d71a8b106b61105050ea41ecbadeecf9d7
+  ExpoGL: b1036f8b2ae216ffedd544ca75f27055cf9a8a51
   ExpoGlassEffect: 387b1124a00166283d9c762c4dc895e84fdb60e8
   ExpoHaptics: 7240781406f4563c3f4eb1e72864302a8c643fd0
   ExpoImage: f6bcd30bb98d4c484869668fbc32834bb3ee5bfb

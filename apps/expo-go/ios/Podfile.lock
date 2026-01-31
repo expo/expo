@@ -31,7 +31,7 @@ PODS:
   - EXNotifications/Tests (0.32.16):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (54.0.32):
+  - Expo (54.0.33):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -62,7 +62,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Expo/Tests (54.0.32):
+  - Expo/Tests (54.0.33):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -138,14 +138,14 @@ PODS:
     - ExpoModulesCore
   - ExpoFont (14.0.11):
     - ExpoModulesCore
-  - ExpoGL (16.0.9):
+  - ExpoGL (16.0.10):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - ExpoGlassEffect (0.1.8):
     - ExpoModulesCore
   - ExpoHaptics (15.0.8):
     - ExpoModulesCore
-  - ExpoHead (6.0.22):
+  - ExpoHead (6.0.23):
     - ExpoModulesCore
     - RNScreens
   - ExpoImage (3.0.11):
@@ -4315,7 +4315,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 1d3e4590438c3ee593684186007028a14b3686cd
   EXManifests: 83ef0844fcf06d6099b12a7bdbd7d36fc0e1dd16
   EXNotifications: 2a3feb7af6194828d9aafda72f63a9a03866230a
-  Expo: 5768fe32781472c6404d0c87310eea0a22cca4af
+  Expo: 8f20e31bd2c5a25e60261e248287cfecbcadc1c6
   ExpoAgeRange: 33b53a8e2b12c76c03c12ccfb2acd12f1b3cc742
   ExpoAppleAuthentication: 31bb6cdc57d7169e5d994fff7ec4b97c62423534
   ExpoAsset: d999f3bbd998a750f3b74cb913229848901b926b
@@ -4336,10 +4336,10 @@ SPEC CHECKSUMS:
   ExpoDomWebView: 1feccb9bfbb3337d40465737b5c228edff51451b
   ExpoFileSystem: aefcd337b94b874f88752ebefc52813b84992fad
   ExpoFont: c625dbd97ed57e9089b172b2a7bb99003d074664
-  ExpoGL: 17a1f4d71a8b106b61105050ea41ecbadeecf9d7
+  ExpoGL: b1036f8b2ae216ffedd544ca75f27055cf9a8a51
   ExpoGlassEffect: 387b1124a00166283d9c762c4dc895e84fdb60e8
   ExpoHaptics: 7240781406f4563c3f4eb1e72864302a8c643fd0
-  ExpoHead: b691a2ed7ab02ed820b6c6468941832d34969c29
+  ExpoHead: 3f6ed6cbda48f13bcaddae98f8e5dc525dcfb34f
   ExpoImage: f6bcd30bb98d4c484869668fbc32834bb3ee5bfb
   ExpoImageManipulator: 099b82d913588b3984253f186b84b129792cf2e3
   ExpoImagePicker: 115fada5d2e90bf900dea64151953ca39f67b47b
@@ -4393,7 +4393,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: 2edae2e4655735438fa60eb2869307fed67d5c1e
+  hermes-engine: b775e38aae65834cb803ca728aac4d16c7e31147
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
