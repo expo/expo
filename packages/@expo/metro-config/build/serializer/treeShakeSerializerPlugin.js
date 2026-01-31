@@ -49,55 +49,6 @@ function isEmptyModule(value) {
         return isModuleEmptyFor(accessAst(outputItem));
     });
 }
-// Collect a list of exports that are not used within the module.
-function getExportsThatAreNotUsedInModule(ast) {
-    const exportedIdentifiers = new Set();
-    const usedIdentifiers = new Set();
-    const unusedExports = [];
-    // First pass: collect all export identifiers
-    (0, core_1.traverse)(ast, {
-        ExportNamedDeclaration(path) {
-            const { declaration, specifiers } = path.node;
-            if (declaration) {
-                if ('declarations' in declaration && declaration.declarations) {
-                    declaration.declarations.forEach((decl) => {
-                        if (core_1.types.isIdentifier(decl.id)) {
-                            exportedIdentifiers.add(decl.id.name);
-                        }
-                    });
-                }
-                else if ('id' in declaration && core_1.types.isIdentifier(declaration.id)) {
-                    exportedIdentifiers.add(declaration.id.name);
-                }
-            }
-            specifiers.forEach((spec) => {
-                if (core_1.types.isIdentifier(spec.exported)) {
-                    exportedIdentifiers.add(spec.exported.name);
-                }
-            });
-        },
-        ExportDefaultDeclaration(path) {
-            // Default exports need to be handled separately
-            // Assuming the default export is a function or class declaration:
-            if ('id' in path.node.declaration && core_1.types.isIdentifier(path.node.declaration.id)) {
-                exportedIdentifiers.add(path.node.declaration.id.name);
-            }
-        },
-    });
-    // Second pass: find all used identifiers
-    (0, core_1.traverse)(ast, {
-        ReferencedIdentifier(path) {
-            usedIdentifiers.add(path.node.name);
-        },
-    });
-    // Determine which exports are unused
-    exportedIdentifiers.forEach((exported) => {
-        if (!usedIdentifiers.has(exported)) {
-            unusedExports.push(exported);
-        }
-    });
-    return unusedExports;
-}
 function populateModuleWithImportUsage(value) {
     for (const index in value.output) {
         const outputItem = value.output[index];
@@ -471,12 +422,24 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
             if (!ast) {
                 throw new Error('AST missing for module: ' + value.path);
             }
-            // Collect a list of exports that are not used within the module.
-            const possibleUnusedExports = getExportsThatAreNotUsedInModule(ast);
             // Traverse exports and mark them as used or unused based on if inverse dependencies are importing them.
             (0, core_1.traverse)(ast, {
+                Program(path) {
+                    path.scope.crawl();
+                },
                 ExportDefaultDeclaration(path) {
-                    if (possibleUnusedExports.includes('default') && !isExportUsed('default')) {
+                    const { declaration } = path.node;
+                    if ('id' in declaration && core_1.types.isIdentifier(declaration.id)) {
+                        const binding = path.scope.getBinding(declaration.id.name);
+                        if (binding &&
+                            binding.constant &&
+                            binding.references === 1 &&
+                            !isExportUsed('default')) {
+                            // TODO: Update source maps
+                            markUnused(path);
+                        }
+                    }
+                    else if (!isExportUsed('default')) {
                         // TODO: Update source maps
                         markUnused(path);
                     }
@@ -484,14 +447,25 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                 ExportNamedDeclaration(path) {
                     const importModuleId = path.node.source?.value;
                     // Remove specifiers, e.g. `export { Foo, Bar as Bax }`
-                    if (core_1.types.isExportNamedDeclaration(path.node)) {
-                        for (let i = 0; i < path.node.specifiers.length; i++) {
-                            const specifier = path.node.specifiers[i];
-                            if (core_1.types.isExportSpecifier(specifier) &&
-                                core_1.types.isIdentifier(specifier.local) &&
-                                core_1.types.isIdentifier(specifier.exported) &&
-                                possibleUnusedExports.includes(specifier.exported.name) &&
-                                !isExportUsed(specifier.exported.name)) {
+                    for (let i = 0; i < path.node.specifiers.length; i++) {
+                        const specifier = path.node.specifiers[i];
+                        if (core_1.types.isExportSpecifier(specifier)) {
+                            const exportedIdentifier = core_1.types.isIdentifier(specifier.exported)
+                                ? specifier.exported.name
+                                : specifier.exported.value;
+                            if (!isExportUsed(exportedIdentifier)) {
+                                // Remove a local declaration if it is not used
+                                if (!importModuleId) {
+                                    const binding = path.scope.getBinding(specifier.local.name);
+                                    if (binding &&
+                                        binding.constant &&
+                                        binding.references == 1 &&
+                                        !core_1.types.isImportDefaultSpecifier(binding.path.node) &&
+                                        !core_1.types.isImportNamespaceSpecifier(binding.path.node) &&
+                                        !core_1.types.isImportSpecifier(binding.path.node)) {
+                                        markUnused(binding.path);
+                                    }
+                                }
                                 // Remove specifier
                                 path.node.specifiers.splice(i, 1);
                                 needsImportReindex = true;
@@ -503,8 +477,12 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                     const declaration = path.node.declaration;
                     if (core_1.types.isVariableDeclaration(declaration)) {
                         declaration.declarations = declaration.declarations.filter((decl) => {
-                            if (decl.id.type === 'Identifier') {
-                                if (possibleUnusedExports.includes(decl.id.name) && !isExportUsed(decl.id.name)) {
+                            if (core_1.types.isIdentifier(decl.id)) {
+                                const binding = path.scope.getBinding(decl.id.name);
+                                if (binding &&
+                                    binding.constant &&
+                                    binding.references == 1 &&
+                                    !isExportUsed(decl.id.name)) {
                                     // TODO: Update source maps
                                     debug(`mark remove (type: var, depth: ${depth}):`, decl.id.name, 'from:', value.path);
                                     // Account for variables, and classes which may contain references to other exports.
@@ -521,7 +499,10 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                     }
                     else if (declaration && 'id' in declaration && core_1.types.isIdentifier(declaration.id)) {
                         // function, class, etc.
-                        if (possibleUnusedExports.includes(declaration.id.name) &&
+                        const binding = path.scope.getBinding(declaration.id.name);
+                        if (binding &&
+                            binding.constant &&
+                            binding.references == 1 &&
                             !isExportUsed(declaration.id.name)) {
                             debug(`mark remove (type: function, depth: ${depth}):`, declaration.id.name, 'from:', value.path);
                             // TODO: Update source maps
