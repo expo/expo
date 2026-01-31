@@ -49,51 +49,65 @@ function isEmptyModule(value) {
         return isModuleEmptyFor(accessAst(outputItem));
     });
 }
-// Collect a list of exports that are not used within the module.
+// Collect a map of unused identifiers to their exported names
+// Identifiers are only included in the map if they are exported
 function getExportsThatAreNotUsedInModule(ast) {
-    const exportedIdentifiers = new Set();
+    const exportedIdentifiers = new Map();
     const usedIdentifiers = new Set();
-    const unusedExports = [];
-    // First pass: collect all export identifiers
+    const unusedExports = new Map();
+    const recordIdentifier = (local, exported) => {
+        exportedIdentifiers.set(local, (exportedIdentifiers.get(local) ?? []).concat(exported));
+    };
     (0, core_1.traverse)(ast, {
-        ExportNamedDeclaration(path) {
-            const { declaration, specifiers } = path.node;
-            if (declaration) {
-                if ('declarations' in declaration && declaration.declarations) {
+        Declaration(path) {
+            const declaration = path.node;
+            if (core_1.types.isVariableDeclaration(declaration)) {
+                if (core_1.types.isExportNamedDeclaration(path.parent)) {
                     declaration.declarations.forEach((decl) => {
                         if (core_1.types.isIdentifier(decl.id)) {
-                            exportedIdentifiers.add(decl.id.name);
+                            recordIdentifier(decl.id.name, decl.id.name);
                         }
                     });
                 }
-                else if ('id' in declaration && core_1.types.isIdentifier(declaration.id)) {
-                    exportedIdentifiers.add(declaration.id.name);
+            }
+            else if ('id' in declaration && core_1.types.isIdentifier(declaration.id)) {
+                if (core_1.types.isExportNamedDeclaration(path.parent)) {
+                    recordIdentifier(declaration.id.name, declaration.id.name);
+                }
+                else if (core_1.types.isExportDefaultDeclaration(path.parent)) {
+                    recordIdentifier(declaration.id.name, 'default');
                 }
             }
-            specifiers.forEach((spec) => {
-                if (core_1.types.isIdentifier(spec.exported)) {
-                    exportedIdentifiers.add(spec.exported.name);
-                }
-            });
         },
-        ExportDefaultDeclaration(path) {
-            // Default exports need to be handled separately
-            // Assuming the default export is a function or class declaration:
-            if ('id' in path.node.declaration && core_1.types.isIdentifier(path.node.declaration.id)) {
-                exportedIdentifiers.add(path.node.declaration.id.name);
-            }
+        ExportSpecifier(path) {
+            const exportedIdentifier = core_1.types.isIdentifier(path.node.exported)
+                ? path.node.exported.name
+                : path.node.exported.value;
+            recordIdentifier(path.node.local.name, exportedIdentifier);
         },
-    });
-    // Second pass: find all used identifiers
-    (0, core_1.traverse)(ast, {
         ReferencedIdentifier(path) {
-            usedIdentifiers.add(path.node.name);
+            if (core_1.types.isExportSpecifier(path.parent)) {
+                const exportedIdentifier = core_1.types.isIdentifier(path.parent.exported)
+                    ? path.parent.exported.name
+                    : path.parent.exported.value;
+                recordIdentifier(path.parent.local.name, exportedIdentifier);
+            }
+            else if (core_1.types.isExportDefaultSpecifier(path.parent)) {
+                recordIdentifier(path.node.name, 'default');
+            }
+            else {
+                const binding = path.scope.getBinding(path.node.name);
+                const isModuleScope = binding && !binding.scope.parent;
+                if (isModuleScope) {
+                    usedIdentifiers.add(path.node.name);
+                }
+            }
         },
     });
     // Determine which exports are unused
-    exportedIdentifiers.forEach((exported) => {
-        if (!usedIdentifiers.has(exported)) {
-            unusedExports.push(exported);
+    exportedIdentifiers.forEach((exported, local) => {
+        if (!usedIdentifiers.has(local)) {
+            unusedExports.set(local, exported);
         }
     });
     return unusedExports;
@@ -473,87 +487,72 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
             }
             // Collect a list of exports that are not used within the module.
             const possibleUnusedExports = getExportsThatAreNotUsedInModule(ast);
-            // Traverse exports and mark them as used or unused based on if inverse dependencies are importing them.
+            // Remove declarations and specifiers referenced by exports if no inverse dependencies are importing them.
+            // While entering, removes variable declarators and export specifiers.
+            // While exiting, removes empty export named declarations and variable declarations.
             (0, core_1.traverse)(ast, {
-                ExportDefaultDeclaration(path) {
-                    if (possibleUnusedExports.includes('default') && !isExportUsed('default')) {
-                        // TODO: Update source maps
-                        markUnused(path);
-                    }
-                },
-                ExportNamedDeclaration(path) {
-                    const importModuleId = path.node.source?.value;
-                    // Remove specifiers, e.g. `export { Foo, Bar as Bax }`
-                    if (core_1.types.isExportNamedDeclaration(path.node)) {
-                        for (let i = 0; i < path.node.specifiers.length; i++) {
-                            const specifier = path.node.specifiers[i];
-                            if (core_1.types.isExportSpecifier(specifier) &&
-                                core_1.types.isIdentifier(specifier.local) &&
-                                core_1.types.isIdentifier(specifier.exported) &&
-                                possibleUnusedExports.includes(specifier.exported.name) &&
-                                !isExportUsed(specifier.exported.name)) {
-                                // Remove specifier
-                                path.node.specifiers.splice(i, 1);
-                                needsImportReindex = true;
-                                i--;
-                            }
-                        }
-                    }
-                    // Remove the entire node if the export has been completely removed.
-                    const declaration = path.node.declaration;
-                    if (core_1.types.isVariableDeclaration(declaration)) {
-                        declaration.declarations = declaration.declarations.filter((decl) => {
-                            if (decl.id.type === 'Identifier') {
-                                if (possibleUnusedExports.includes(decl.id.name) && !isExportUsed(decl.id.name)) {
+                Declaration: {
+                    enter(path) {
+                        const declaration = path.node;
+                        if ('id' in declaration && core_1.types.isIdentifier(declaration.id)) {
+                            const binding = path.scope.getBinding(declaration.id.name);
+                            const isModuleScope = binding && !binding.scope.parent;
+                            if (isModuleScope) {
+                                const exportedIdentifiers = possibleUnusedExports.get(declaration.id.name);
+                                if (exportedIdentifiers && !exportedIdentifiers.some(isExportUsed)) {
                                     // TODO: Update source maps
-                                    debug(`mark remove (type: var, depth: ${depth}):`, decl.id.name, 'from:', value.path);
-                                    // Account for variables, and classes which may contain references to other exports.
+                                    markUnused(path);
                                     shouldRecurseUnusedExports = true;
-                                    return false; // Remove this declaration
                                 }
                             }
-                            return true; // Keep this declaration
-                        });
-                        // If all declarations were removed, remove the entire path
-                        if (declaration.declarations.length === 0) {
-                            markUnused(path);
                         }
-                    }
-                    else if (declaration && 'id' in declaration && core_1.types.isIdentifier(declaration.id)) {
-                        // function, class, etc.
-                        if (possibleUnusedExports.includes(declaration.id.name) &&
-                            !isExportUsed(declaration.id.name)) {
-                            debug(`mark remove (type: function, depth: ${depth}):`, declaration.id.name, 'from:', value.path);
-                            // TODO: Update source maps
-                            markUnused(path);
-                            // Code inside of an unused export may affect other exports in the module.
-                            // e.g.
-                            //
-                            // export const a = () => {}
-                            //
-                            // // Removed `b` -> recurse for `a`
-                            // export const b = () => { a() };
-                            //
-                            shouldRecurseUnusedExports = true;
-                        }
-                    }
-                    // If export from import then check if we can remove the import.
-                    if (importModuleId) {
-                        if (path.node.specifiers.length === 0) {
-                            const removeRequest = disconnectGraphNode(value, importModuleId, {
-                                // Due to a quirk in how we've added tree shaking, export-all is expanded and could overlap with existing exports in the same module.
-                                // If we find that the existing export has a default export then we should skip removing the node entirely.
-                                bailOnDuplicateDefaultExport: true,
-                            });
-                            if (removeRequest.removed) {
-                                dirtyImports.push(removeRequest.path);
+                    },
+                },
+                ExportNamedDeclaration: {
+                    exit(path) {
+                        if (!path.node.declaration && path.node.specifiers.length === 0) {
+                            // If export from import then check if we can remove the import.
+                            const importModuleId = path.node.source?.value;
+                            if (importModuleId) {
+                                const removeRequest = disconnectGraphNode(value, importModuleId, {
+                                    // Due to a quirk in how we've added tree shaking, export-all is expanded and could overlap with existing exports in the same module.
+                                    // If we find that the existing export has a default export then we should skip removing the node entirely.
+                                    bailOnDuplicateDefaultExport: true,
+                                });
+                                if (removeRequest.removed) {
+                                    dirtyImports.push(removeRequest.path);
+                                }
                             }
                             // TODO: Update source maps
-                            // We still want to remove the empty `export {} from 'a'` declaration even if the graph node was kept
-                            // due to the duplicate default export
                             markUnused(path);
                         }
-                    }
+                    },
+                },
+                ExportSpecifier: {
+                    enter(path) {
+                        const specifier = path.node;
+                        const localIdentifier = specifier.local.name;
+                        const exportedIdentifier = core_1.types.isIdentifier(specifier.exported)
+                            ? specifier.exported.name
+                            : specifier.exported.value;
+                        if (possibleUnusedExports.has(localIdentifier) && !isExportUsed(exportedIdentifier)) {
+                            path.remove();
+                            needsImportReindex = true;
+                        }
+                    },
+                },
+                VariableDeclarator: {
+                    enter(path) {
+                        const isModuleScope = !path.scope.parent;
+                        if (isModuleScope && core_1.types.isIdentifier(path.node.id)) {
+                            const exportedIdentifiers = possibleUnusedExports.get(path.node.id.name);
+                            if (exportedIdentifiers && !exportedIdentifiers.some(isExportUsed)) {
+                                // TODO: Update source maps
+                                markUnused(path);
+                                shouldRecurseUnusedExports = true;
+                            }
+                        }
+                    },
                 },
             });
         }

@@ -1202,6 +1202,148 @@ it(`removes unused exports`, async () => {
   `);
 });
 
+it(`removes unused exports when shadowed`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+          import { bar } from './a';
+          bar();
+        `,
+    'a.js': `
+          export function foo() {
+            return "module scope";
+          }
+
+          export function bar() {
+            function foo() {
+              return "function scope";
+            }
+            foo();
+          }
+        `,
+  });
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/a.js' }),
+  ]);
+
+  expect(artifacts[0].source).not.toMatch('module scope');
+
+  expect(artifacts).toMatchInlineSnapshot(`
+    [
+      {
+        "filename": "_expo/static/js/web/index-a55206f80f2ea835753530bd2be412fe.js",
+        "metadata": {
+          "expoDomComponentReferences": [],
+          "isAsync": false,
+          "loaderReferences": [],
+          "modulePaths": [
+            "/app/index.js",
+            "/app/a.js",
+          ],
+          "paths": {},
+          "reactClientReferences": [],
+          "reactServerReferences": [],
+          "requires": [],
+        },
+        "originFilename": "index.js",
+        "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      (0, _$$_REQUIRE(_dependencyMap[0]).bar)();
+    },"/app/index.js",["/app/a.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      exports.bar = bar;
+      function bar() {
+        function foo() {
+          return "function scope";
+        }
+        foo();
+      }
+    },"/app/a.js",[]);
+    TEST_RUN_MODULE("/app/index.js");",
+        "type": "js",
+      },
+    ]
+  `);
+});
+
+it(`removes unused exports of referenced identifiers`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+          import { add } from './math';
+          console.log('keep', add(1, 2));
+        `,
+    'math.js': `
+          const PI = 3.14;
+
+          function add(a, b) {
+            return a + b;
+          }
+
+          function subtract(a, b) {
+            return a - b;
+          }
+
+          export { PI }
+          export { add, subtract };
+        `,
+  });
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/math.js' }),
+  ]);
+  expect(artifacts[0].source).not.toMatch('subtract');
+  expect(artifacts).toMatchInlineSnapshot(`
+    [
+      {
+        "filename": "_expo/static/js/web/index-88473bf92165059b6bcde24da7c7da0b.js",
+        "metadata": {
+          "expoDomComponentReferences": [],
+          "isAsync": false,
+          "loaderReferences": [],
+          "modulePaths": [
+            "/app/index.js",
+            "/app/math.js",
+          ],
+          "paths": {},
+          "reactClientReferences": [],
+          "reactServerReferences": [],
+          "requires": [],
+        },
+        "originFilename": "index.js",
+        "source": "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      console.log('keep', (0, _$$_REQUIRE(_dependencyMap[0]).add)(1, 2));
+    },"/app/index.js",["/app/math.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      Object.defineProperty(exports, "add", {
+        enumerable: true,
+        get: function () {
+          return add;
+        }
+      });
+      function add(a, b) {
+        return a + b;
+      }
+    },"/app/math.js",[]);
+    TEST_RUN_MODULE("/app/index.js");",
+        "type": "js",
+      },
+    ]
+  `);
+});
+
 // This test accounts for removing an unused export that references another unused export.
 it(`removes deeply nested unused exports`, async () => {
   const [, [artifact]] = await serializeShakingAsync(
@@ -1342,6 +1484,45 @@ it(`removes deeply nested unused exports until max depth`, async () => {
   expect(artifact.source).not.toMatch('x2');
   // The last export that couldn't be reached should still be there.
   expect(artifact.source).toMatch('x1');
+});
+
+it(`preserves remapped exports when an export with the name same is removed`, async () => {
+  const [, [artifact]] = await serializeShakingAsync({
+    'index.js': `
+        import {feature} from "./lib";
+        console.log(feature);
+        `,
+
+    'lib.js': `
+        export function feature() {
+          return;
+        }
+
+        export { feature as unstable_feature };
+        `,
+  });
+
+  expect(artifact.source).toMatch('function feature');
+  expect(artifact.source).not.toMatch('unstable_feature');
+  expect(artifact.source).toMatchInlineSnapshot(`
+    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      console.log(_$$_REQUIRE(_dependencyMap[0]).feature);
+    },"/app/index.js",["/app/lib.js"]);
+    __d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+      "use strict";
+
+      Object.defineProperty(exports, '__esModule', {
+        value: true
+      });
+      exports.feature = feature;
+      function feature() {
+        return;
+      }
+    },"/app/lib.js",[]);
+    TEST_RUN_MODULE("/app/index.js");"
+  `);
 });
 
 it(`preserves remapped imports when an import with the same name is removed`, async () => {
