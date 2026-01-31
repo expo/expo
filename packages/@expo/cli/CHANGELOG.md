@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Move `start` QR code to end of output. ([#42416](https://github.com/expo/expo/pull/42416)) by [@jonsamp](https://github.com/jonsamp)
+
 ### 🛠 Breaking changes
 
 - Remove legacy typed routes logic for SDK 51 projects ([#42604](https://github.com/expo/expo/pull/42604) by [@hassankhan](https://github.com/hassankhan))
