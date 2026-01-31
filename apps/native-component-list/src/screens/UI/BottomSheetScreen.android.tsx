@@ -18,13 +18,15 @@ export default function BottomSheetScreen() {
       </Host>
 
       <Text>isOpened: {isOpened ? 'yes' : 'no'}</Text>
-      <Host matchContents>
-        <BottomSheet isOpened={isOpened} onIsOpenedChange={(e) => setIsOpened(e)}>
-          <View style={{ padding: 20 }}>
-            <Text>Hello world</Text>
-          </View>
-        </BottomSheet>
-      </Host>
+      {isOpened && (
+        <Host matchContents>
+          <BottomSheet onDismissRequest={() => setIsOpened(false)}>
+            <View style={{ padding: 20 }}>
+              <Text>Hello world</Text>
+            </View>
+          </BottomSheet>
+        </Host>
+      )}
     </ScrollView>
   );
 }

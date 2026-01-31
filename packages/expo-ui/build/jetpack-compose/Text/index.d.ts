@@ -74,7 +74,7 @@ export type TextProps = {
     /**
      * The text content to display.
      */
-    children?: string | string[] | React.JSX.Element;
+    children?: React.ReactNode;
     /**
      * The color of the text.
      */
