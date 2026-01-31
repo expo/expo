@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.2.6 — 2026-01-31
+
+### 💡 Others
+
 - Bump `node-forge` dependency range to `^1.3.3` ([#41753](https://github.com/expo/expo/pull/41753) by [@kitten](https://github.com/kitten))
 
 ## 0.2.5 — 2025-07-03

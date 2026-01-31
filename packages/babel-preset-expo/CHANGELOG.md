@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Resolve app root for each file to support bun monorepos. ([#42315](https://github.com/expo/expo/pull/42315) by [@EvanBacon](https://github.com/EvanBacon)) ([#42351](https://github.com/expo/expo/pull/42351) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 13.2.5 — 2026-01-31
+
+### 🐛 Bug fixes
+
+- Resolve app root for each file to support bun monorepos. ([#42315](https://github.com/expo/expo/pull/42315) by [@EvanBacon](https://github.com/EvanBacon)) ([#42351](https://github.com/expo/expo/pull/42351) by [@kitten](https://github.com/kitten))
 
 ## 13.2.4 — 2025-08-22
 

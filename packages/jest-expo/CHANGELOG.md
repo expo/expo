@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 53.0.14 — 2026-01-31
+
+### 💡 Others
+
 - Bump `react-server-dom-webpack` ([#42573](https://github.com/expo/expo/pull/42573) by [@vonovak](https://github.com/vonovak))
 
 ## 53.0.13 — 2025-12-12
