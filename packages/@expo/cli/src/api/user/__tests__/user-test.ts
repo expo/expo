@@ -14,7 +14,7 @@ import {
   getUserAsync,
   loginAsync,
   logoutAsync,
-  ssoLoginAsync,
+  browserLoginAsync,
 } from '../user';
 
 jest.mock('../expoSsoLauncher', () => ({
@@ -125,11 +125,11 @@ describe(loginAsync, () => {
   });
 });
 
-describe(ssoLoginAsync, () => {
+describe(browserLoginAsync, () => {
   it('saves user data to ~/.expo/state.json', async () => {
     jest.mocked(getSessionUsingBrowserAuthFlowAsync).mockResolvedValue('SESSION_SECRET');
 
-    await ssoLoginAsync();
+    await browserLoginAsync({ sso: false });
 
     expect(await fs.promises.readFile(getSettingsFilePath(), 'utf8')).toMatchInlineSnapshot(`
       "{
@@ -142,6 +142,16 @@ describe(ssoLoginAsync, () => {
       }
       "
     `);
+  });
+
+  it('passes sso parameter to getSessionUsingBrowserAuthFlowAsync', async () => {
+    jest.mocked(getSessionUsingBrowserAuthFlowAsync).mockResolvedValue('SESSION_SECRET');
+
+    await browserLoginAsync({ sso: true });
+
+    expect(getSessionUsingBrowserAuthFlowAsync).toHaveBeenCalledWith(
+      expect.objectContaining({ sso: true })
+    );
   });
 });
 
