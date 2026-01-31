@@ -131,7 +131,10 @@ export async function discoverExternalPackagesAsync(): Promise<ExternalPackage[]
   }
 
   // Find all spm.config.json files in packages/external/
-  const configPaths = await glob(`*/${SPMConfigFileName}`, {
+  // Pattern matches both regular packages and scoped packages:
+  // - react-native-svg/spm.config.json
+  // - @shopify/react-native-skia/spm.config.json
+  const configPaths = await glob(`{*,@*/*}/${SPMConfigFileName}`, {
     cwd: externalDir,
   });
 
@@ -160,8 +163,42 @@ export function getExternalPackageByName(packageName: string): ExternalPackage |
 }
 
 /**
+ * Helper function to check if a package provides a specific product
+ */
+function checkPackageForProduct(
+  externalDir: string,
+  packageName: string,
+  productName: string
+): ExternalPackage | null {
+  const configPath = path.join(externalDir, packageName);
+  const spmConfigPath = path.join(configPath, SPMConfigFileName);
+
+  if (!fs.existsSync(spmConfigPath)) {
+    return null;
+  }
+
+  try {
+    // Clear require cache to ensure fresh read
+    delete require.cache[require.resolve(spmConfigPath)];
+    const spmConfig: SPMConfig = require(spmConfigPath);
+
+    // Check if any product in this config matches the requested product name
+    for (const product of spmConfig.products || []) {
+      if (product.name === productName) {
+        return new ExternalPackage(configPath, packageName);
+      }
+    }
+  } catch {
+    // Skip packages with invalid config
+  }
+
+  return null;
+}
+
+/**
  * Finds an external package that provides a specific product (xcframework).
  * Searches through all external packages' spm.config.json to find one that provides the product.
+ * Supports both regular packages and scoped packages (e.g., @shopify/react-native-skia).
  *
  * @param productName The product name to search for (e.g., 'RNWorklets')
  * @returns The ExternalPackage that provides this product, or null if not found
@@ -182,25 +219,28 @@ export function getExternalPackageByProductName(productName: string): ExternalPa
       continue;
     }
 
-    const configPath = path.join(externalDir, entry.name);
-    const spmConfigPath = path.join(configPath, SPMConfigFileName);
+    // Handle scoped packages (@scope directories)
+    if (entry.name.startsWith('@')) {
+      const scopeDir = path.join(externalDir, entry.name);
+      const scopedEntries = fs.readdirSync(scopeDir, { withFileTypes: true });
 
-    if (!fs.existsSync(spmConfigPath)) {
-      continue;
-    }
+      for (const scopedEntry of scopedEntries) {
+        if (!scopedEntry.isDirectory()) {
+          continue;
+        }
 
-    try {
-      const spmConfig: SPMConfig = require(spmConfigPath);
-
-      // Check if any product in this config matches the requested product name
-      for (const product of spmConfig.products || []) {
-        if (product.name === productName) {
-          return new ExternalPackage(configPath, entry.name);
+        const packageName = `${entry.name}/${scopedEntry.name}`;
+        const result = checkPackageForProduct(externalDir, packageName, productName);
+        if (result) {
+          return result;
         }
       }
-    } catch {
-      // Skip packages with invalid config
-      continue;
+    } else {
+      // Regular (non-scoped) package
+      const result = checkPackageForProduct(externalDir, entry.name, productName);
+      if (result) {
+        return result;
+      }
     }
   }
 

@@ -537,7 +537,7 @@ const collectAndCopyHeaderFilesFromBuiltFrameworksAsync = async (
   const textualHeaderModules = new Set<string>(); // modules that need textual headers
 
   for (const target of product.targets) {
-    if (target.type === 'swift') {
+    if (target.type === 'swift' || target.type === 'framework') {
       continue;
     }
     spinner.info(`Processing target ${target.name}...`);
