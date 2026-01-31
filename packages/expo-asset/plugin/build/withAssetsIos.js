@@ -22,24 +22,39 @@ function addAssetsToTarget(config, assets) {
         const validAssets = (0, utils_1.validateAssets)(resolvedAssets, 'ios');
         const project = config.modResults;
         const platformProjectRoot = config.modRequest.platformProjectRoot;
-        config_plugins_1.IOSConfig.XcodeUtils.ensureGroupRecursively(project, 'Resources');
         const images = validAssets.filter((asset) => utils_1.IMAGE_TYPES.includes(path_1.default.extname(asset)));
         const assetsForResourcesDir = validAssets.filter((asset) => !utils_1.IMAGE_TYPES.includes(path_1.default.extname(asset)));
         await addImageAssets(images, config.modRequest.projectRoot);
-        addResourceFiles(project, platformProjectRoot, assetsForResourcesDir);
+        await addResourceFiles(project, platformProjectRoot, path_1.default.join(platformProjectRoot, config.modRequest.projectName), assetsForResourcesDir);
         return config;
     });
 }
-function addResourceFiles(project, platformRoot, assets) {
-    for (const asset of assets) {
-        const assetPath = path_1.default.relative(platformRoot, asset);
-        config_plugins_1.IOSConfig.XcodeUtils.addResourceFileToGroup({
-            filepath: assetPath,
-            groupName: 'Resources',
-            project,
-            isBuildFile: true,
-            verbose: true,
-        });
+async function addResourceFiles(project, platformRoot, syncGroup, assets) {
+    if (!config_plugins_1.IOSConfig.XcodeUtils.isAppTargetUsingFileSystemSynchronizedGroups(project)) {
+        config_plugins_1.IOSConfig.XcodeUtils.ensureGroupRecursively(project, 'Resources');
+        // TODO: Deprecate support for non-synchronized groups after SDK 55.
+        for (const asset of assets) {
+            const assetPath = path_1.default.relative(platformRoot, asset);
+            config_plugins_1.IOSConfig.XcodeUtils.addResourceFileToGroup({
+                filepath: assetPath,
+                groupName: 'Resources',
+                project,
+                isBuildFile: true,
+                verbose: true,
+            });
+        }
+    }
+    else {
+        // Copy assets to app group
+        const assetsDirectory = path_1.default.join(syncGroup, 'assets');
+        await promises_1.default.mkdir(assetsDirectory, { recursive: true });
+        const projectRoot = path_1.default.join(platformRoot, '..');
+        for (const asset of assets) {
+            const relativeToProjectRoot = path_1.default.relative(projectRoot, asset);
+            const destPath = path_1.default.join(assetsDirectory, relativeToProjectRoot);
+            await promises_1.default.mkdir(path_1.default.dirname(destPath), { recursive: true });
+            await promises_1.default.copyFile(asset, destPath);
+        }
     }
 }
 async function addImageAssets(assets, root) {
