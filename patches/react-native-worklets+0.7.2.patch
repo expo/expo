@@ -1,0 +1,38 @@
+diff --git a/node_modules/react-native-worklets/RNWorklets.podspec b/node_modules/react-native-worklets/RNWorklets.podspec
+index d658b49..23bef68 100644
+--- a/node_modules/react-native-worklets/RNWorklets.podspec
++++ b/node_modules/react-native-worklets/RNWorklets.podspec
+@@ -24,18 +24,22 @@ Pod::Spec.new do |s|
+   s.platforms    = { :ios => ios_min_version, :tvos => "9.0", :osx => "10.14", :visionos => "1.0" }
+   s.source       = { :git => "https://github.com/software-mansion/react-native-reanimated.git", :tag => "#{s.version}" }
+
+-  s.subspec "worklets" do |ss|
+-    ss.source_files = "Common/cpp/worklets/**/*.{cpp,h}"
+-    ss.header_dir = "worklets"
+-    ss.header_mappings_dir = "Common/cpp/worklets"
++  # Expo prebuilt xcframework support
++  if !Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s)
++    # Build from source
++    s.subspec "worklets" do |ss|
++      ss.source_files = "Common/cpp/worklets/**/*.{cpp,h}"
++      ss.header_dir = "worklets"
++      ss.header_mappings_dir = "Common/cpp/worklets"
+
+-    ss.subspec "apple" do |sss|
+-      # Please be careful with the snakes.
+-      # 🐍🐍🐍
+-      # Thank you for your understanding.
+-      sss.source_files = "apple/worklets/**/*.{mm,h,m}"
+-      sss.header_dir = "worklets"
+-      sss.header_mappings_dir = "apple/worklets"
++      ss.subspec "apple" do |sss|
++        # Please be careful with the snakes.
++        # 🐍🐍🐍
++        # Thank you for your understanding.
++        sss.source_files = "apple/worklets/**/*.{mm,h,m}"
++        sss.header_dir = "worklets"
++        sss.header_mappings_dir = "apple/worklets"
++      end
+     end
+   end
+

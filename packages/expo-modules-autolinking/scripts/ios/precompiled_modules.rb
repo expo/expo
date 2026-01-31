@@ -552,6 +552,8 @@ module Expo
           'react-native-gesture-handler'
         when 'RNReanimated'
           'react-native-reanimated'
+        when 'RNWorklets'
+          'react-native-worklets'
         else
           # Handle EAS* prefix (e.g., EASClient -> expo-eas-client)
           if pod_name.start_with?('EAS')

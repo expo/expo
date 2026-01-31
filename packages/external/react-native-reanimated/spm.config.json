@@ -1,0 +1,133 @@
+{
+    "$schema": "../../../tools/src/prebuilds/schemas/spm.config.schema.json",
+    "products": [
+        {
+            "name": "RNReanimated",
+            "platforms": [
+                "iOS(.v15)"
+            ],
+            "externalDependencies": [
+                "ReactNativeDependencies",
+                "React",
+                "Hermes",
+                "RNWorklets"
+            ],
+            "excludeFromUmbrella": [
+                "RCT*.h",
+                "Swift-Bridging.h"
+            ],
+            "targets": [
+                {
+                    "type": "objc",
+                    "name": "RNReanimated_codegen_modules",
+                    "moduleName": "rnreanimated",
+                    "path": ".build/codegen/build/generated/ios/ReactCodegen/rnreanimated",
+                    "pattern": "**/*.mm",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies"
+                    ],
+                    "includeDirectories": [ ".." ]
+                },
+                {
+                    "type": "cpp",
+                    "name": "RNReanimated_cpp",
+                    "moduleName": "reanimated",
+                    "path": "Common/cpp/reanimated",
+                    "pattern": "**/*.cpp",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "React",
+                        "ReactNativeDependencies",
+                        "Hermes",
+                        "RNWorklets"
+                    ],
+                    "includeDirectories": [
+                        ".",
+                        "../../.build/codegen/build/generated/ios/ReactCodegen",
+                        "../../../../react-native-worklets/.xcframeworks/debug/RNWorklets.xcframework/ios-arm64/RNWorklets.framework/Headers"
+                    ],
+                    "compilerFlags": [
+                        "-fno-cxx-modules",
+                        "-DREACT_NATIVE_MINOR_VERSION=84",
+                        "-DREANIMATED_VERSION=4.2.1",
+                        "-DREANIMATED_FEATURE_FLAGS=\\\"[RUNTIME_TEST_FLAG:false][DISABLE_COMMIT_PAUSING_MECHANISM:false][ANDROID_SYNCHRONOUSLY_UPDATE_UI_PROPS:false][IOS_SYNCHRONOUSLY_UPDATE_UI_PROPS:false][EXPERIMENTAL_CSS_ANIMATIONS_FOR_SVG_COMPONENTS:false][USE_SYNCHRONIZABLE_FOR_MUTABLES:false][USE_COMMIT_HOOK_ONLY_FOR_REACT_COMMITS:false][ENABLE_SHARED_ELEMENT_TRANSITIONS:false][FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS:false]\\\""
+                    ],
+                    "debugCompilerFlags": [
+                        "-DHERMES_ENABLE_DEBUGGER=1"
+                    ],
+                    "fileMapping": [
+                        { "from": "AnimatedSensor/*.h", "to": "reanimated/AnimatedSensor/{filename}", "type": "header" },
+                        { "from": "CSS/*.h", "to": "reanimated/CSS/{filename}", "type": "header" },
+                        { "from": "CSS/common/*.h", "to": "reanimated/CSS/common/{filename}", "type": "header" },
+                        { "from": "CSS/common/filters/*.h", "to": "reanimated/CSS/common/filters/{filename}", "type": "header" },
+                        { "from": "CSS/common/transforms/*.h", "to": "reanimated/CSS/common/transforms/{filename}", "type": "header" },
+                        { "from": "CSS/common/values/*.h", "to": "reanimated/CSS/common/values/{filename}", "type": "header" },
+                        { "from": "CSS/common/values/complex/*.h", "to": "reanimated/CSS/common/values/complex/{filename}", "type": "header" },
+                        { "from": "CSS/configs/*.h", "to": "reanimated/CSS/configs/{filename}", "type": "header" },
+                        { "from": "CSS/core/*.h", "to": "reanimated/CSS/core/{filename}", "type": "header" },
+                        { "from": "CSS/easing/*.h", "to": "reanimated/CSS/easing/{filename}", "type": "header" },
+                        { "from": "CSS/interpolation/*.h", "to": "reanimated/CSS/interpolation/{filename}", "type": "header" },
+                        { "from": "CSS/interpolation/filters/*.h", "to": "reanimated/CSS/interpolation/filters/{filename}", "type": "header" },
+                        { "from": "CSS/interpolation/filters/operations/*.h", "to": "reanimated/CSS/interpolation/filters/operations/{filename}", "type": "header" },
+                        { "from": "CSS/interpolation/groups/*.h", "to": "reanimated/CSS/interpolation/groups/{filename}", "type": "header" },
+                        { "from": "CSS/interpolation/operations/*.h", "to": "reanimated/CSS/interpolation/operations/{filename}", "type": "header" },
+                        { "from": "CSS/interpolation/styles/*.h", "to": "reanimated/CSS/interpolation/styles/{filename}", "type": "header" },
+                        { "from": "CSS/interpolation/transforms/*.h", "to": "reanimated/CSS/interpolation/transforms/{filename}", "type": "header" },
+                        { "from": "CSS/interpolation/transforms/operations/*.h", "to": "reanimated/CSS/interpolation/transforms/operations/{filename}", "type": "header" },
+                        { "from": "CSS/interpolation/values/*.h", "to": "reanimated/CSS/interpolation/values/{filename}", "type": "header" },
+                        { "from": "CSS/misc/*.h", "to": "reanimated/CSS/misc/{filename}", "type": "header" },
+                        { "from": "CSS/progress/*.h", "to": "reanimated/CSS/progress/{filename}", "type": "header" },
+                        { "from": "CSS/registries/*.h", "to": "reanimated/CSS/registries/{filename}", "type": "header" },
+                        { "from": "CSS/svg/values/*.h", "to": "reanimated/CSS/svg/values/{filename}", "type": "header" },
+                        { "from": "CSS/utils/*.h", "to": "reanimated/CSS/utils/{filename}", "type": "header" },
+                        { "from": "Fabric/*.h", "to": "reanimated/Fabric/{filename}", "type": "header" },
+                        { "from": "Fabric/updates/*.h", "to": "reanimated/Fabric/updates/{filename}", "type": "header" },
+                        { "from": "LayoutAnimations/*.h", "to": "reanimated/LayoutAnimations/{filename}", "type": "header" },
+                        { "from": "NativeModules/*.h", "to": "reanimated/NativeModules/{filename}", "type": "header" },
+                        { "from": "RuntimeDecorators/*.h", "to": "reanimated/RuntimeDecorators/{filename}", "type": "header" },
+                        { "from": "Tools/*.h", "to": "reanimated/Tools/{filename}", "type": "header" }
+                    ]
+                },
+                {
+                    "type": "objc",
+                    "name": "RNReanimated",
+                    "moduleName": "reanimated",
+                    "path": "apple/reanimated/apple",
+                    "pattern": "**/*.{m,mm}",
+                    "headerPattern": "**/*.h",
+                    "dependencies": [
+                        "Hermes",
+                        "React",
+                        "ReactNativeDependencies",
+                        "RNWorklets",
+                        "RNReanimated_codegen_modules",
+                        "RNReanimated_cpp"
+                    ],
+                    "includeDirectories": [
+                        ".",
+                        "../../../Common/cpp",
+                        "../../.build/codegen/build/generated/ios/ReactCodegen",
+                        "../../../../react-native-worklets/.xcframeworks/debug/RNWorklets.xcframework/ios-arm64/RNWorklets.framework/Headers"
+                    ],
+                    "linkedFrameworks": [ "Foundation", "UIKit", "QuartzCore", "CoreMotion" ],
+                    "compilerFlags": [
+                        "-include", "Foundation/Foundation.h",
+                        "-include", "UIKit/UIKit.h",
+                        "-include", "QuartzCore/QuartzCore.h",
+                        "-DREACT_NATIVE_MINOR_VERSION=84",
+                        "-DREANIMATED_VERSION=4.2.1",
+                        "-DREANIMATED_FEATURE_FLAGS=\\\"[RUNTIME_TEST_FLAG:false][DISABLE_COMMIT_PAUSING_MECHANISM:false][ANDROID_SYNCHRONOUSLY_UPDATE_UI_PROPS:false][IOS_SYNCHRONOUSLY_UPDATE_UI_PROPS:false][EXPERIMENTAL_CSS_ANIMATIONS_FOR_SVG_COMPONENTS:false][USE_SYNCHRONIZABLE_FOR_MUTABLES:false][USE_COMMIT_HOOK_ONLY_FOR_REACT_COMMITS:false][ENABLE_SHARED_ELEMENT_TRANSITIONS:false][FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS:false]\\\""
+                    ],
+                    "fileMapping": [
+                        { "from": "*.h", "to": "reanimated/apple/{filename}", "type": "header" },
+                        { "from": "keyboardObserver/*.h", "to": "reanimated/apple/keyboardObserver/{filename}", "type": "header" },
+                        { "from": "native/*.h", "to": "reanimated/apple/native/{filename}", "type": "header" },
+                        { "from": "sensor/*.h", "to": "reanimated/apple/sensor/{filename}", "type": "header" }
+                    ]
+                }
+            ]
+        }
+    ]
+}
