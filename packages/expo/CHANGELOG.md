@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix global type declaration chain to point to `expo -> expo-modules-core/types -> ./build/global` rather than `types="node"` ([#42751](https://github.com/expo/expo/pull/42751) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.0-preview.8 — 2026-02-03
