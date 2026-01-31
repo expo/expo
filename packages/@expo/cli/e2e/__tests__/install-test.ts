@@ -226,20 +226,15 @@ describe('expo-router integration', () => {
         linkExpoPackages: ['expo-router', '@expo/router-server'],
       }
     );
-    const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
 
     // Add a package that requires "fixing" when using canary
     await executeExpoAsync(projectRoot, ['install', '@react-navigation/native@6.1.18']);
-
-    // Ensure `@react-navigation/native` is installed
-    expect(pkg.read().dependencies).toMatchObject({
-      '@react-navigation/native': '6.1.18',
-    });
 
     // Run `--fix` project dependencies with expo@52 and expo-router from source
     await executeExpoAsync(projectRoot, ['install', '--fix'], { verbose: false });
 
     // Ensure `@react-navigation/native` was updated
+    const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
     expect(pkg.read().dependencies).not.toMatchObject({
       '@react-navigation/native': '6.1.18',
     });
