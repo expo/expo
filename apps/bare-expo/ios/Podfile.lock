@@ -345,7 +345,7 @@ PODS:
     - ExpoModulesCore
   - ExpoBackgroundFetch (13.0.6):
     - ExpoModulesCore
-  - ExpoBackgroundTask (0.1.4):
+  - ExpoBackgroundTask (0.1.5):
     - ExpoModulesCore
   - ExpoBattery (9.0.2):
     - ExpoModulesCore
@@ -550,7 +550,7 @@ PODS:
   - EXTaskManager (12.0.6):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.27.4):
+  - EXUpdates (0.27.5):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -577,7 +577,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - EXUpdates/Tests (0.27.4):
+  - EXUpdates/Tests (0.27.5):
     - DoubleConversion
     - EASClient
     - EXManifests
@@ -3338,7 +3338,7 @@ SPEC CHECKSUMS:
   ExpoAsset: 0687fe05f5d051c4a34dd1f9440bd00858413cfe
   ExpoAudio: 59cfca1241442cd5f4bdc9ab1026f0452849fab0
   ExpoBackgroundFetch: 4973770f696e74dccc2f1b391cd04b23fbc51856
-  ExpoBackgroundTask: 1d0aa81c485ec8192d5aaf3d01243a4619596571
+  ExpoBackgroundTask: 78d31e5c8ebd8ca876b13293384d6ac2183b9bf7
   ExpoBattery: c04a49448ee6e84749df3b85e1421dac38584348
   ExpoBlur: 567af66164e3043a9a30069594aed1ddf0a88d97
   ExpoBrightness: d3f54a52ea62b6c4deb81bfb5569a8bc664487ab
@@ -3392,7 +3392,7 @@ SPEC CHECKSUMS:
   ExpoWebBrowser: 6890a769e6c9d83da938dceb9a03e764afc3ec9c
   EXStructuredHeaders: 09c70347b282e3d2507e25fb4c747b1b885f87f6
   EXTaskManager: e9e20f65855cbe0a38d6e2dc2e895e5928b30923
-  EXUpdates: 0b468b4a20b730aee58c5cd00e32a6da9d6f52a9
+  EXUpdates: 35cd2b61774c9805338fc863388589d8a93f73fc
   EXUpdatesInterface: 1dcebac98ac5dad4289e6ff2bd5616822e894397
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: 7605ea4810e0e10ae4815292433c09bf4324ba45

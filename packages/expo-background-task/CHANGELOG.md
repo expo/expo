@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.1.5 — 2026-01-31
+
+### 💡 Others
+
 - Exposed testing method for background tasks on both iOS and Android ([#36732](https://github.com/expo/expo/pull/36732) by [@chrfalch](https://github.com/chrfalch))
 - Simplified how workers are started and stopped. Removed battery constraint on Android. ([#36705](https://github.com/expo/expo/pull/36705) by [@chrfalch](https://github.com/chrfalch))
 
