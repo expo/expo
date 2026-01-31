@@ -34,6 +34,7 @@ object VideoManager {
 
   private var listeners = mutableListOf<WeakReference<VideoManagerListener>>()
 
+  @Synchronized
   fun onModuleCreated(appContext: AppContext) {
     val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
     this.appContext = WeakReference(appContext)
