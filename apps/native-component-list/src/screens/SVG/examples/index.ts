@@ -2,6 +2,7 @@ import Circle from './Circle';
 import Clipping from './Clipping';
 import Ellipse from './Ellipse';
 import Example from './Example';
+import Filters from './Filters';
 import G from './G';
 import Gradients from './Gradients';
 import Image from './Image';
@@ -32,6 +33,7 @@ const examples: { [key: string]: Example } = {
   G,
   Gradients,
   Clipping,
+  Filters,
   Image,
   TouchEvents,
   Reusable,
