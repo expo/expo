@@ -1,0 +1,64 @@
+diff --git a/node_modules/@shopify/react-native-skia/react-native-skia.podspec b/node_modules/@shopify/react-native-skia/react-native-skia.podspec
+index 30b9495..87cbaf8 100644
+--- a/node_modules/@shopify/react-native-skia/react-native-skia.podspec
++++ b/node_modules/@shopify/react-native-skia/react-native-skia.podspec
+@@ -71,32 +71,36 @@ Pod::Spec.new do |s|
+
+   s.frameworks = ['MetalKit', 'AVFoundation', 'AVKit', 'CoreMedia']
+
+-  s.vendored_frameworks = base_frameworks
++  # Expo prebuilt xcframework support
++  if !Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s)
++    # Build from source
++    s.vendored_frameworks = base_frameworks
+
+-  # All iOS cpp/h files
+-  s.source_files = [
+-    "apple/**/*.{h,c,cc,cpp,m,mm,swift}",
+-    "cpp/**/*.{h,cpp}"
+-  ]
++    # All iOS cpp/h files
++    s.source_files = [
++      "apple/**/*.{h,c,cc,cpp,m,mm,swift}",
++      "cpp/**/*.{h,cpp}"
++    ]
+
+-  graphite_exclusions = [
+-    'cpp/rnskia/RNDawnContext.h',
+-    'cpp/rnskia/RNDawnUtils.h',
+-    'cpp/rnskia/RNDawnWindowContext.h',
+-    'cpp/rnskia/RNDawnWindowContext.cpp',
+-    'cpp/rnskia/RNImageProvider.h'
+-  ]
+-  s.exclude_files = graphite_exclusions unless use_graphite
++    graphite_exclusions = [
++      'cpp/rnskia/RNDawnContext.h',
++      'cpp/rnskia/RNDawnUtils.h',
++      'cpp/rnskia/RNDawnWindowContext.h',
++      'cpp/rnskia/RNDawnWindowContext.cpp',
++      'cpp/rnskia/RNImageProvider.h'
++    ]
++    s.exclude_files = graphite_exclusions unless use_graphite
+
+-  if defined?(install_modules_dependencies()) != nil
+-    install_modules_dependencies(s)
+-    s.dependency "React"
+-    s.dependency "React-callinvoker"
+-    s.dependency "React-Core"
+-  else
+-    s.dependency "React"
+-    s.dependency "React-callinvoker"
+-    s.dependency "React-Core"
++    if defined?(install_modules_dependencies()) != nil
++      install_modules_dependencies(s)
++      s.dependency "React"
++      s.dependency "React-callinvoker"
++      s.dependency "React-Core"
++    else
++      s.dependency "React"
++      s.dependency "React-callinvoker"
++      s.dependency "React-Core"
++    end
+   end
+ end
+

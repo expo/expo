@@ -834,6 +834,24 @@ async function buildPackageSwiftContext(
 
   spinner.succeed('Resolved external dependencies');
 
+  // Process framework targets first (vendored xcframeworks within the package)
+  // These are binary targets that other source targets can depend on
+  for (const target of product.targets) {
+    if (target.type === 'framework') {
+      const frameworkPath = path.join(pkg.path, target.path);
+      const relativePath = path.relative(packageSwiftDir, frameworkPath);
+      spinner.info(`Adding vendored framework target: ${target.name} at ${relativePath}`);
+      resolvedTargets.push({
+        type: 'binary',
+        name: target.name,
+        path: relativePath,
+        dependencies: [],
+        linkedFrameworks: target.linkedFrameworks || [],
+      });
+      addedTargets.add(target.name);
+    }
+  }
+
   // Process each product's targets
   spinner = createAsyncSpinner(`Resolving product targets`, pkg, product);
   for (const target of product.targets) {
@@ -841,7 +859,7 @@ async function buildPackageSwiftContext(
       continue;
     }
 
-    // Skip framework targets from source targets - they're handled as external deps
+    // Skip framework targets - already processed above
     if (target.type === 'framework') {
       continue;
     }

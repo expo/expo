@@ -61,8 +61,10 @@ module Expo
           return false
         end
 
-        # XCFramework location: <xcframework_dir>/.xcframeworks/<buildType>/<PodName>.xcframework
-        xcframework_path = File.join(pod_info[:xcframework_dir], XCFRAMEWORKS_DIR_NAME, build_flavor, "#{spec.name}.xcframework")
+        # XCFramework location: <xcframework_dir>/.xcframeworks/<buildType>/<ProductName>.xcframework
+        # The xcframework is named after the SPM product name, not the pod name
+        product_name = pod_info[:product_name] || spec.name
+        xcframework_path = File.join(pod_info[:xcframework_dir], XCFRAMEWORKS_DIR_NAME, build_flavor, "#{product_name}.xcframework")
         framework_exists = File.exist?(xcframework_path)
 
         log_linking_status(spec.name, framework_exists, xcframework_path)
@@ -96,8 +98,14 @@ module Expo
           process_spm_config(config_path, :internal, repo_root)
         end
 
-        # Scan external packages: packages/external/*/spm.config.json
+        # Scan external packages: packages/external/*/spm.config.json (non-scoped)
         Dir.glob(File.join(repo_root, 'packages', 'external', '*', 'spm.config.json')).each do |config_path|
+          next if config_path.include?('/@') # Skip scoped packages in this pass
+          process_spm_config(config_path, :external, repo_root)
+        end
+
+        # Scan external packages: packages/external/@scope/*/spm.config.json (scoped)
+        Dir.glob(File.join(repo_root, 'packages', 'external', '@*', '*', 'spm.config.json')).each do |config_path|
           process_spm_config(config_path, :external, repo_root)
         end
 
@@ -109,13 +117,24 @@ module Expo
         begin
           config = JSON.parse(File.read(config_path))
           products = config['products'] || []
-          npm_package = File.basename(File.dirname(config_path))
+
+          # Extract npm_package name from path
+          # For scoped packages like packages/external/@shopify/react-native-skia/spm.config.json
+          # we need @shopify/react-native-skia, not just react-native-skia
+          package_dir = File.dirname(config_path)
+          if type == :external
+            external_dir = File.join(repo_root, 'packages', 'external')
+            npm_package = package_dir.sub("#{external_dir}/", '')
+          else
+            npm_package = File.basename(package_dir)
+          end
 
           products.each do |product|
             pod_name = product['podName']
             next unless pod_name
 
             codegen_name = product['codegenName']
+            product_name = product['name'] || pod_name  # Product name is used for xcframework naming
 
             # Determine podspec directory based on package type and conventions
             if type == :internal
@@ -146,7 +165,8 @@ module Expo
               npm_package: npm_package,
               podspec_dir: podspec_dir,
               xcframework_dir: xcframework_dir,
-              codegen_name: codegen_name
+              codegen_name: codegen_name,
+              product_name: product_name
             }
           end
         rescue JSON::ParserError, StandardError => e
@@ -195,11 +215,10 @@ module Expo
           next unless info[:codegen_name]
 
           # Check if the XCFramework actually exists before excluding codegen
-          xcframework_path = File.join(info[:xcframework_dir], XCFRAMEWORKS_DIR_NAME, build_flavor, "#{pod_name}.xcframework")
-          unless File.directory?(xcframework_path)
-            Pod::UI.info "[Expo-precompiled] Skipping codegen exclusion for '#{info[:npm_package]}' - XCFramework not built yet"
-            next
-          end
+          # Use product_name for xcframework path (xcframework is named after product, not pod)
+          product_name = info[:product_name] || pod_name
+          xcframework_path = File.join(info[:xcframework_dir], XCFRAMEWORKS_DIR_NAME, build_flavor, "#{product_name}.xcframework")
+          next unless File.directory?(xcframework_path)
 
           exclusions << info[:codegen_name]
           Pod::UI.info "[Expo-precompiled] Found external package '#{info[:npm_package]}' with codegen module: #{info[:codegen_name]}"
