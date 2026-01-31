@@ -208,6 +208,10 @@ export function useStore(
     rootComponent = Fragment;
   }
 
+  if (storeRef.current.state) {
+    initialState = storeRef.current.state;
+  }
+
   storeRef.current = {
     navigationRef,
     routeNode,

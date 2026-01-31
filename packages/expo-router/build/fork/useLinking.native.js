@@ -66,16 +66,20 @@ function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialU
             return undefined;
         }
         if (enabled !== false && linkingHandlers.length) {
-            console.error([
-                'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
-                "- You don't have multiple NavigationContainers in the app each with 'linking' enabled",
-                '- Only a single instance of the root component is rendered',
-                react_native_1.Platform.OS === 'android'
-                    ? "- You have set 'android:launchMode=singleTask' in the '<activity />' section of the 'AndroidManifest.xml' file to avoid launching multiple instances"
-                    : '',
-            ]
-                .join('\n')
-                .trim());
+            setTimeout(() => {
+                if (linkingHandlers.length > 1) {
+                    console.error([
+                        'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
+                        "- You don't have multiple NavigationContainers in the app each with 'linking' enabled",
+                        '- Only a single instance of the root component is rendered',
+                        react_native_1.Platform.OS === 'android'
+                            ? "- You have set 'android:launchMode=singleTask' in the '<activity />' section of the 'AndroidManifest.xml' file to avoid launching multiple instances"
+                            : '',
+                    ]
+                        .join('\n')
+                        .trim());
+                }
+            }, 1000);
         }
         const handler = Symbol();
         if (enabled !== false) {

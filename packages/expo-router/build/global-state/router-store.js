@@ -193,6 +193,9 @@ function useStore(context, linkingConfigOptions, serverUrl) {
         // In development, we will show the onboarding screen
         rootComponent = react_1.Fragment;
     }
+    if (storeRef.current.state) {
+        initialState = storeRef.current.state;
+    }
     storeRef.current = {
         navigationRef,
         routeNode,
