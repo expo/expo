@@ -1,32 +1,37 @@
 {
-    "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
-    "products": [
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoAppleAuthentication",
+      "podName": "ExpoAppleAuthentication",
+      "platforms": [
+        "iOS(.v15)"
+      ],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore"
+      ],
+      "targets": [
         {
-            "name": "ExpoAppleAuthentication",
-            "platforms": [
-                "iOS(.v15)"
-            ],
-            "externalDependencies": [
-                "ReactNativeDependencies",
-                "React",
-                "Hermes",
-                "expo-modules-core/ExpoModulesCore"
-            ],
-            "targets": [
-                {
-                    "type": "swift",
-                    "name": "ExpoAppleAuthentication",
-                    "path": "ios",
-                    "pattern": "*.swift",
-                    "dependencies": [
-                        "Hermes",
-                        "React",
-                        "ReactNativeDependencies",
-                        "expo-modules-core/ExpoModulesCore"
-                    ],
-                    "linkedFrameworks": ["Foundation", "UIKit", "AuthenticationServices"]
-                }
-            ]
+          "type": "swift",
+          "name": "ExpoAppleAuthentication",
+          "path": "ios",
+          "pattern": "*.swift",
+          "dependencies": [
+            "Hermes",
+            "React",
+            "ReactNativeDependencies",
+            "expo-modules-core/ExpoModulesCore"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit",
+            "AuthenticationServices"
+          ]
         }
-    ]
+      ]
+    }
+  ]
 }

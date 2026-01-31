@@ -1,32 +1,38 @@
 {
-    "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
-    "products": [
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoCalendar",
+      "podName": "ExpoCalendar",
+      "platforms": [
+        "iOS(.v15)"
+      ],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore"
+      ],
+      "targets": [
         {
-            "name": "ExpoCalendar",
-            "platforms": [
-                "iOS(.v15)"
-            ],
-            "externalDependencies": [
-                "ReactNativeDependencies",
-                "React",
-                "Hermes",
-                "expo-modules-core/ExpoModulesCore"
-            ],
-            "targets": [
-                {
-                    "type": "swift",
-                    "name": "ExpoCalendar",
-                    "path": "ios",
-                    "pattern": "**/*.swift",
-                    "dependencies": [
-                        "Hermes",
-                        "React",
-                        "ReactNativeDependencies",
-                        "expo-modules-core/ExpoModulesCore"
-                    ],
-                    "linkedFrameworks": [ "Foundation", "UIKit", "EventKit", "EventKitUI" ]
-                }
-            ]
+          "type": "swift",
+          "name": "ExpoCalendar",
+          "path": "ios",
+          "pattern": "**/*.swift",
+          "dependencies": [
+            "Hermes",
+            "React",
+            "ReactNativeDependencies",
+            "expo-modules-core/ExpoModulesCore"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit",
+            "EventKit",
+            "EventKitUI"
+          ]
         }
-    ]
+      ]
+    }
+  ]
 }

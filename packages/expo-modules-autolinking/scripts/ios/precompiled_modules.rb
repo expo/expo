@@ -19,21 +19,14 @@ module Expo
     # Environment variable for build flavor override
     BUILD_FLAVOR_ENV_VAR = 'EXPO_PRECOMPILED_FLAVOR'.freeze
 
-    # Environment variable for custom xcframeworks output path
-    XCFRAMEWORKS_OUTPUT_PATH_ENV_VAR = 'EXPO_PREBUILD_OUTPUT_PATH'.freeze
-
-    # The path to packages/external relative to the monorepo root
-    EXTERNAL_PACKAGES_DIR = 'packages/external'.freeze
-
     # The xcframeworks directory name inside each package
     # Structure: <package>/.xcframeworks/<buildType>/<PodName>.xcframework
     XCFRAMEWORKS_DIR_NAME = '.xcframeworks'.freeze
 
-    # Cache to track which pods have already been logged (to avoid duplicate output)
-    @logged_pods = {}
-
-    # Cache for the resolved xcframeworks base path
-    @xcframeworks_base_path = nil
+    # Module-level caches (initialized lazily)
+    @pod_lookup_map = nil
+    @repo_root = nil
+    @logged_pods = nil
 
     class << self
       # Returns the build flavor (debug/release) for precompiled modules.
@@ -61,25 +54,22 @@ module Expo
       def try_link_with_prebuilt_xcframework(spec)
         return false unless enabled?
 
-        # Get the podspec directory - use fallback search since spec.defined_in_file
-        # is not available during podspec evaluation
-        podspec_dir = get_podspec_dir(spec)
-
-        unless podspec_dir
-          log_linking_status(spec.name, false, "could not find podspec directory")
+        # Look up the package info from spm.config.json
+        pod_info = get_pod_lookup_map[spec.name]
+        unless pod_info
+          log_linking_status(spec.name, false, "not found in spm.config.json")
           return false
         end
 
-        # XCFramework is relative to the podspec: .xcframeworks/<buildType>/<PodName>.xcframework
-        xcframework_path = File.join(podspec_dir, XCFRAMEWORKS_DIR_NAME, build_flavor, "#{spec.name}.xcframework")
+        # XCFramework location: <xcframework_dir>/.xcframeworks/<buildType>/<PodName>.xcframework
+        xcframework_path = File.join(pod_info[:xcframework_dir], XCFRAMEWORKS_DIR_NAME, build_flavor, "#{spec.name}.xcframework")
         framework_exists = File.exist?(xcframework_path)
 
-        log_linking_status(spec.name, framework_exists, "podspec_dir=#{podspec_dir}, xcframework=#{xcframework_path}")
+        log_linking_status(spec.name, framework_exists, xcframework_path)
 
         if framework_exists
-          # XCFramework is inside the package, so relative path is simple:
-          # .xcframeworks/<buildType>/<PodName>.xcframework
-          relative_path = File.join(XCFRAMEWORKS_DIR_NAME, build_flavor, "#{spec.name}.xcframework")
+          # Calculate relative path from podspec directory to xcframework
+          relative_path = Pathname.new(xcframework_path).relative_path_from(Pathname.new(pod_info[:podspec_dir])).to_s
           spec.vendored_frameworks = relative_path
           return true
         end
@@ -87,57 +77,90 @@ module Expo
         false
       end
 
-      # Gets the podspec directory for a spec, trying multiple methods
-      def get_podspec_dir(spec)
-        # Try to get it from the spec first
-        begin
-          podspec_file = spec.defined_in_file || spec.send(:podspec_path)
-          return File.dirname(podspec_file) if podspec_file
-        rescue
-          # Ignore errors
+      # Builds and caches a map from pod names to package information.
+      # Scans all spm.config.json files in:
+      #   - packages/*/spm.config.json (internal Expo packages)
+      #   - packages/external/*/spm.config.json (external packages)
+      #
+      # @return [Hash] Map of podName -> { type:, npm_package:, podspec_dir:, xcframework_dir:, codegen_name: }
+      def get_pod_lookup_map
+        return @pod_lookup_map if @pod_lookup_map
+
+        @pod_lookup_map = {}
+        repo_root = find_repo_root
+        return @pod_lookup_map unless repo_root
+
+        # Scan internal packages: packages/*/spm.config.json
+        Dir.glob(File.join(repo_root, 'packages', '*', 'spm.config.json')).each do |config_path|
+          next if config_path.include?('/external/')
+          process_spm_config(config_path, :internal, repo_root)
         end
 
-        # Fall back to searching for the podspec file
-        find_podspec_dir_for(spec.name)
+        # Scan external packages: packages/external/*/spm.config.json
+        Dir.glob(File.join(repo_root, 'packages', 'external', '*', 'spm.config.json')).each do |config_path|
+          process_spm_config(config_path, :external, repo_root)
+        end
+
+        @pod_lookup_map
       end
 
-      # Finds the directory containing the podspec for a given pod name.
-      # Searches in standard locations within the monorepo structure.
-      # This helper is useful for both per-package xcframeworks and future SPM migration.
-      def find_podspec_dir_for(pod_name)
-        repo_root = find_repo_root
-        return nil unless repo_root
+      # Processes a single spm.config.json file and adds entries to the map.
+      def process_spm_config(config_path, type, repo_root)
+        begin
+          config = JSON.parse(File.read(config_path))
+          products = config['products'] || []
+          npm_package = File.basename(File.dirname(config_path))
 
-        package_name = pod_name_to_package_name(pod_name)
+          products.each do |product|
+            pod_name = product['podName']
+            next unless pod_name
 
-        # Search for the podspec in likely locations
-        # For each package location, also check the ios/ subdirectory (Expo packages have podspecs there)
-        potential_locations = [
-          # Internal packages: packages/<package-name>/ios/ (Expo packages)
-          File.join(repo_root, 'packages', package_name, 'ios'),
-          # Internal packages: packages/<package-name>/ (root level podspec)
-          File.join(repo_root, 'packages', package_name),
-          # External packages in packages/external/
-          File.join(repo_root, 'packages', 'external', package_name),
-          # node_modules (for external packages)
-          File.join(repo_root, 'node_modules', package_name),
-        ]
+            codegen_name = product['codegenName']
 
-        # Find a location that has a matching podspec
-        potential_locations.each do |dir|
-          podspec_files = Dir.glob(File.join(dir, "#{pod_name}.podspec*"))
-          if podspec_files.any? && File.exist?(podspec_files.first)
-            return dir
+            # Determine podspec directory based on package type and conventions
+            if type == :internal
+              # Internal packages: podspec in packages/<npm_package>/ios/ or packages/<npm_package>/
+              package_dir = File.join(repo_root, 'packages', npm_package)
+              ios_podspec = File.join(package_dir, 'ios', "#{pod_name}.podspec")
+              root_podspec = File.join(package_dir, "#{pod_name}.podspec")
+
+              podspec_dir = if File.exist?(ios_podspec)
+                File.join(package_dir, 'ios')
+              elsif File.exist?(root_podspec)
+                package_dir
+              else
+                # Fallback to ios/ directory (most common for Expo packages)
+                File.join(package_dir, 'ios')
+              end
+
+              # XCFrameworks are in the same directory as the podspec
+              xcframework_dir = podspec_dir
+            else
+              # External packages: podspec in node_modules/<npm_package>/
+              podspec_dir = File.join(repo_root, 'node_modules', npm_package)
+              xcframework_dir = podspec_dir
+            end
+
+            @pod_lookup_map[pod_name] = {
+              type: type,
+              npm_package: npm_package,
+              podspec_dir: podspec_dir,
+              xcframework_dir: xcframework_dir,
+              codegen_name: codegen_name
+            }
           end
+        rescue JSON::ParserError, StandardError => e
+          Pod::UI.warn "[Expo-precompiled] Failed to read spm.config.json at #{config_path}: #{e.message}"
         end
-
-        nil
       end
 
       # Finds the repository root by walking up from the current directory.
       # Looks for the 'packages' directory as a marker.
-      def find_repo_root
-        current_dir = Dir.pwd
+      #
+      # @param start_dir [String] Directory to start searching from (defaults to Dir.pwd)
+      # @return [String, nil] The repository root path, or nil if not found
+      def find_repo_root(start_dir = nil)
+        current_dir = start_dir || Dir.pwd
 
         loop do
           packages_path = File.join(current_dir, 'packages')
@@ -163,73 +186,26 @@ module Expo
       def get_codegen_exclusions(pod_targets)
         return [] unless enabled?
 
-        # Find the monorepo root by looking for packages/external
-        repo_root = find_monorepo_root(pod_targets)
-        unless repo_root
-          Pod::UI.warn "[Expo-precompiled] Could not find monorepo root"
-          return []
-        end
-
-        external_packages_path = File.join(repo_root, EXTERNAL_PACKAGES_DIR)
-        unless File.directory?(external_packages_path)
-          Pod::UI.warn "[Expo-precompiled] External packages directory not found: #{external_packages_path}"
-          return []
-        end
-
         exclusions = []
+        pod_map = get_pod_lookup_map
 
-        # Iterate through each package in packages/external
-        Dir.children(external_packages_path).each do |package_name|
-          package_dir = File.join(external_packages_path, package_name)
-          next unless File.directory?(package_dir)
-
-          spm_config_path = File.join(package_dir, 'spm.config.json')
-          next unless File.exist?(spm_config_path)
+        # Find external packages with codegen that have XCFrameworks built
+        pod_map.each do |pod_name, info|
+          next unless info[:type] == :external
+          next unless info[:codegen_name]
 
           # Check if the XCFramework actually exists before excluding codegen
-          # The XCFramework is in node_modules/<package_name>/.xcframeworks/<buildType>/<ProductName>.xcframework
-          node_modules_package_dir = File.join(repo_root, 'node_modules', package_name)
-          xcframework_exists = check_xcframework_exists_for_package(spm_config_path, node_modules_package_dir)
-
-          unless xcframework_exists
-            Pod::UI.info "[Expo-precompiled] Skipping codegen exclusion for '#{package_name}' - XCFramework not built yet"
+          xcframework_path = File.join(info[:xcframework_dir], XCFRAMEWORKS_DIR_NAME, build_flavor, "#{pod_name}.xcframework")
+          unless File.directory?(xcframework_path)
+            Pod::UI.info "[Expo-precompiled] Skipping codegen exclusion for '#{info[:npm_package]}' - XCFramework not built yet"
             next
           end
 
-          # Read the spm.config.json and extract codegen module names
-          codegen_names = get_codegen_names_from_spm_config(spm_config_path)
-          exclusions.concat(codegen_names)
-
-          Pod::UI.info "[Expo-precompiled] Found external package '#{package_name}' with codegen modules: #{codegen_names.join(', ')}" unless codegen_names.empty?
+          exclusions << info[:codegen_name]
+          Pod::UI.info "[Expo-precompiled] Found external package '#{info[:npm_package]}' with codegen module: #{info[:codegen_name]}"
         end
 
         exclusions.uniq
-      end
-
-      # Checks if the XCFramework exists for a package by reading its spm.config.json
-      # and looking for the expected XCFramework file in the package's .xcframeworks directory.
-      #
-      # @param spm_config_path [String] Path to the spm.config.json file
-      # @param package_dir [String] Path to the package in node_modules
-      # @return [Boolean] true if at least one product's XCFramework exists
-      def check_xcframework_exists_for_package(spm_config_path, package_dir)
-        begin
-          config = JSON.parse(File.read(spm_config_path))
-          products = config['products'] || []
-
-          products.each do |product|
-            product_name = product['name']
-            next unless product_name
-
-            # XCFramework location: <package>/.xcframeworks/<buildType>/<ProductName>.xcframework
-            xcframework_path = File.join(package_dir, XCFRAMEWORKS_DIR_NAME, build_flavor, "#{product_name}.xcframework")
-            return true if File.directory?(xcframework_path)
-          end
-        rescue JSON::ParserError, StandardError => e
-          Pod::UI.warn "[Expo-precompiled] Failed to check XCFramework for #{spm_config_path}: #{e.message}"
-        end
-
-        false
       end
 
       # TODO(ExpoModulesJSI-xcframework): Remove this method when ExpoModulesJSI.xcframework
@@ -534,112 +510,15 @@ module Expo
         paths
       end
 
-      # Converts a pod name to a package name (e.g., ExpoModulesCore -> expo-modules-core)
-      # This helper is useful for finding package directories and for future SPM migration.
-      def pod_name_to_package_name(pod_name)
-        # Common pattern: CamelCase to kebab-case with 'Expo' prefix becoming 'expo-'
-        # ExpoModulesCore -> expo-modules-core
-        # ExpoFont -> expo-font
-        # RNSVG -> react-native-svg (special case, handled below)
-
-        # Special cases for external packages
-        case pod_name
-        when 'RNSVG'
-          'react-native-svg'
-        when 'RNScreens'
-          'react-native-screens'
-        when 'RNGestureHandler'
-          'react-native-gesture-handler'
-        when 'RNReanimated'
-          'react-native-reanimated'
-        when 'RNWorklets'
-          'react-native-worklets'
-        else
-          # Handle EAS* prefix (e.g., EASClient -> expo-eas-client)
-          if pod_name.start_with?('EAS')
-            remainder = pod_name[3..-1]
-            return 'expo-eas-' + remainder
-              .gsub(/([A-Z]+)([A-Z][a-z])/, '\1-\2')
-              .gsub(/([a-z\d])([A-Z])/, '\1-\2')
-              .downcase
-          end
-
-          # Handle EX* prefix (e.g., EXManifests -> expo-manifests, EXConstants -> expo-constants)
-          if pod_name.start_with?('EX')
-            remainder = pod_name[2..-1]
-            return 'expo-' + remainder
-              .gsub(/([A-Z]+)([A-Z][a-z])/, '\1-\2')
-              .gsub(/([a-z\d])([A-Z])/, '\1-\2')
-              .downcase
-          end
-
-          # General case: convert CamelCase to kebab-case
-          # ExpoModulesCore -> expo-modules-core
-          pod_name
-            .gsub(/([A-Z]+)([A-Z][a-z])/, '\1-\2')  # Handle consecutive caps
-            .gsub(/([a-z\d])([A-Z])/, '\1-\2')      # Handle normal camelCase
-            .downcase
-        end
-      end
-
       # Logs the linking status for a pod (only once per pod to avoid duplicate output)
       def log_linking_status(pod_name, found, path)
         # Skip logging if we've already logged this pod
-        return if Expo::PrecompiledModules.instance_variable_get(:@logged_pods)[pod_name]
-        Expo::PrecompiledModules.instance_variable_get(:@logged_pods)[pod_name] = true
+        @logged_pods ||= {}
+        return if @logged_pods[pod_name]
+        @logged_pods[pod_name] = true
 
         status = found ? "" : "(⚠️ Build from source: framework not found #{path})"
         Pod::UI.info "#{"[Expo-precompiled] ".blue} 📦 #{pod_name.green} #{status}"
-      end
-
-      # Finds the monorepo root by searching for packages/external directory
-      def find_monorepo_root(pod_targets)
-        # Try to find the repo root from the sandbox
-        return nil if pod_targets.empty?
-
-        target = pod_targets.first
-        return nil unless target.sandbox
-
-        # Start from the sandbox root (Pods folder) and walk up
-        current_dir = target.sandbox.root.dirname # ios folder
-
-        # Walk up directories until we find packages/external or reach filesystem root
-        loop do
-          external_path = File.join(current_dir, EXTERNAL_PACKAGES_DIR)
-          return current_dir.to_s if File.directory?(external_path)
-
-          parent = File.dirname(current_dir)
-          break if parent == current_dir # Reached filesystem root
-          current_dir = parent
-        end
-
-        nil
-      end
-
-      # Reads spm.config.json and extracts codegen module names from targets
-      def get_codegen_names_from_spm_config(spm_config_path)
-        codegen_names = []
-
-        begin
-          config = JSON.parse(File.read(spm_config_path))
-          products = config['products'] || []
-
-          products.each do |product|
-            targets = product['targets'] || []
-            targets.each do |target|
-              # Look for codegen targets (they have moduleName field and name contains 'codegen')
-              module_name = target['moduleName']
-              target_name = target['name'] || ''
-              if module_name && target_name.downcase.include?('codegen')
-                codegen_names << module_name
-              end
-            end
-          end
-        rescue JSON::ParserError, StandardError => e
-          Pod::UI.warn "[Expo-precompiled] Failed to read spm.config.json at #{spm_config_path}: #{e.message}"
-        end
-
-        codegen_names
       end
     end
   end

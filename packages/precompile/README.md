@@ -106,6 +106,7 @@ Create `packages/<package-name>/spm.config.json`:
     "products": [
         {
             "name": "PackageName",
+            "podName": "PackageName",
             "platforms": ["iOS(.v15)"],
             "externalDependencies": [
                 "ReactNativeDependencies",
@@ -139,6 +140,7 @@ Create `packages/<package-name>/spm.config.json`:
 {
     "products": [{
         "name": "PackageName",
+        "podName": "PackageName",
         "platforms": ["iOS(.v15)"],
         "externalDependencies": ["ReactNativeDependencies", "React", "Hermes", "expo-modules-core/ExpoModulesCore"],
         "targets": [
@@ -323,6 +325,17 @@ When using `--react-native-tarball-path` (or similar) with a local tarball, the 
 | `dependencies` | array | Target dependencies |
 | `linkedFrameworks` | array | System frameworks to link |
 | `includeDirectories` | array | Header search paths (objc/cpp only) |
+
+### Product Options Reference
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `name` | string | Product/XCFramework name (required) |
+| `podName` | string | CocoaPods pod name from podspec (required) |
+| `codegenName` | string | Codegen module name from `codegenConfig.name` in package.json (optional, for Fabric components) |
+| `platforms` | array | SPM platforms, e.g., `["iOS(.v15)"]` |
+| `externalDependencies` | array | External package dependencies (React, Hermes, etc.) |
+| `targets` | array | Build targets for this product |
 
 ---
 

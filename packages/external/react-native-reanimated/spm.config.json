@@ -3,6 +3,8 @@
     "products": [
         {
             "name": "RNReanimated",
+            "podName": "RNReanimated",
+            "codegenName": "rnreanimated",
             "platforms": [
                 "iOS(.v15)"
             ],

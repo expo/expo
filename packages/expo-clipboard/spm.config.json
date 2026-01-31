@@ -1,33 +1,40 @@
 {
-    "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
-    "products": [
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoClipboard",
+      "podName": "ExpoClipboard",
+      "platforms": [
+        "iOS(.v15)"
+      ],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore"
+      ],
+      "targets": [
         {
-            "name": "ExpoClipboard",
-            "platforms": [
-                "iOS(.v15)"
-            ],
-            "externalDependencies": [
-                "ReactNativeDependencies",
-                "React",
-                "Hermes",
-                "expo-modules-core/ExpoModulesCore"
-            ],
-            "targets": [
-                {
-                    "type": "swift",
-                    "name": "ExpoClipboard",
-                    "path": "ios",
-                    "pattern": "**/*.swift",
-                    "exclude": ["Tests/**"],
-                    "dependencies": [
-                        "Hermes",
-                        "React",
-                        "ReactNativeDependencies",
-                        "expo-modules-core/ExpoModulesCore"
-                    ],
-                    "linkedFrameworks": ["Foundation", "UIKit", "UniformTypeIdentifiers"]
-                }
-            ]
+          "type": "swift",
+          "name": "ExpoClipboard",
+          "path": "ios",
+          "pattern": "**/*.swift",
+          "exclude": [
+            "Tests/**"
+          ],
+          "dependencies": [
+            "Hermes",
+            "React",
+            "ReactNativeDependencies",
+            "expo-modules-core/ExpoModulesCore"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit",
+            "UniformTypeIdentifiers"
+          ]
         }
-    ]
+      ]
+    }
+  ]
 }

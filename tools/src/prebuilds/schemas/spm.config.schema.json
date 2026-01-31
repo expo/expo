@@ -38,6 +38,14 @@
                     "type": "string",
                     "description": "The name of the product"
                 },
+                "podName": {
+                    "type": "string",
+                    "description": "The CocoaPods pod name for this product. Must match the name in the corresponding .podspec file."
+                },
+                "codegenName": {
+                    "type": "string",
+                    "description": "The React Native codegen module name (from package.json codegenConfig.name). Only required for packages that use React Native codegen."
+                },
                 "platforms": {
                     "type": "array",
                     "description": "Supported platforms for this product",
@@ -78,7 +86,7 @@
                     }
                 }
             },
-            "required": [ "name", "targets" ],
+            "required": [ "name", "podName", "targets" ],
             "additionalProperties": false
         },
         "target": {

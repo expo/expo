@@ -111,10 +111,16 @@ cat node_modules/<package-name>/package.json | grep -A 10 "codegenConfig"
 | `resources` | Array of resource configs | For Metal shaders, assets, etc. |
 | `fileMapping` | Remap file locations | When headers need path prefixes for imports |
 | `moduleMapContent` | Custom module map | For complex C++ header exposure |
-| `moduleName` | Codegen module name | **CRITICAL**: Must match `codegenConfig.name` |
 | `includeDirectories` | Additional include paths | Paths relative to target's `path` field |
 | `compilerFlags` | Custom compiler flags | For defines, includes, warnings |
 | `debugCompilerFlags` | Debug-only flags | For flags like `-DHERMES_ENABLE_DEBUGGER=1` |
+
+#### Product-Level Fields (Required)
+
+| Field | Purpose | When to Use |
+|-------|---------|-------------|
+| `podName` | CocoaPods pod name | **REQUIRED**: The exact name of the pod from the podspec |
+| `codegenName` | Codegen module name | When package has Fabric components. Must match `codegenConfig.name` |
 
 ### Step 3: Header File Mapping
 
@@ -136,35 +142,31 @@ When source code uses imports like `#import <modulename/subdir/Header.h>`, you n
 
 ### Step 4: Handle Codegen Exclusion
 
-**CRITICAL**: When a package has codegen (fabric components), you MUST add a target that identifies the codegen module name. This ensures the codegen sources are excluded from ReactCodegen and built separately.
-
-The Ruby code in `precompiled_modules.rb` reads targets where:
-- Target name contains `"codegen"` (case-insensitive)
-- Target has a `moduleName` field
+**CRITICAL**: When a package has codegen (fabric components), you MUST add `codegenName` at the **product level** to identify the codegen module. This ensures the codegen sources are excluded from ReactCodegen when the XCFramework is used.
 
 ```json
 {
-  "apple": {
-    "targets": [
-      {
-        "name": "rnsvg-codegen",
-        "comment": "This target identifies the codegen module for exclusion from ReactCodegen",
-        "moduleName": "rnsvg"
-      },
-      {
-        "name": "RNSVG",
-        "type": "library",
-        "sources": ["apple"],
-        "publicHeadersPath": "apple"
-      }
-    ]
-  }
+  "products": [
+    {
+      "name": "RNSVG",
+      "podName": "RNSVG",
+      "codegenName": "rnsvg",
+      "targets": [
+        {
+          "name": "RNSVG",
+          "type": "library",
+          "sources": ["apple"],
+          "publicHeadersPath": "apple"
+        }
+      ]
+    }
+  ]
 }
 ```
 
-**How to find the moduleName:**
+**How to find the codegenName:**
 ```bash
-# The moduleName must match codegenConfig.name in package.json
+# The codegenName must match codegenConfig.name in package.json
 cat node_modules/<package-name>/package.json | jq '.codegenConfig.name'
 ```
 
@@ -300,27 +302,29 @@ For implementation details, examine these files:
 - `tools/src/prebuilds/SPMPackage.ts` - SPM Package.swift generation
 - `tools/src/prebuilds/Codegen.ts` - Codegen handling
 - `packages/expo-modules-autolinking/scripts/ios/precompiled_modules.rb` - Ruby CocoaPods integration
-## Pod Name to Package Name Mapping
+## Pod Name Configuration
 
-When adding a new external package, you **must** add a mapping in `precompiled_modules.rb` for the Ruby code to find the package directory from the pod name. The mapping is in the `pod_name_to_package_name` function:
+The `podName` field in `spm.config.json` is **required** at the product level. This tells the Ruby code which CocoaPods pod name maps to this package:
 
-```ruby
-# packages/expo-modules-autolinking/scripts/ios/precompiled_modules.rb
-case pod_name
-when 'RNSVG'
-  'react-native-svg'
-when 'RNScreens'
-  'react-native-screens'
-when 'RNGestureHandler'
-  'react-native-gesture-handler'
-when 'RNReanimated'
-  'react-native-reanimated'
-when 'RNWorklets'
-  'react-native-worklets'
-# Add new mappings here...
+```json
+{
+  "products": [
+    {
+      "name": "RNSVG",
+      "podName": "RNSVG",
+      "targets": [...]
+    }
+  ]
+}
 ```
 
-**Why this is needed**: The `try_link_with_prebuilt_xcframework` function needs to find the xcframework at `node_modules/<package-name>/.xcframeworks/<buildFlavor>/<PodName>.xcframework`. Without this mapping, pod install will fall back to building from source.
+**Why this is needed**: The `try_link_with_prebuilt_xcframework` function pre-scans all `spm.config.json` files to build a lookup map from pod name → package directory. This allows it to find the xcframework at `node_modules/<package-name>/.xcframeworks/<buildFlavor>/<PodName>.xcframework`.
+
+**How to find the podName:**
+```bash
+# Check the podspec file for the spec name
+grep "spec.name" node_modules/<package-name>/*.podspec
+```
 
 ## Cross-Package Dependencies
 

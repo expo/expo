@@ -10,9 +10,12 @@ export {
   discoverAllSPMPackagesAsync,
   discoverPackagesWithSPMConfigAsync,
   getVersionsInfoAsync,
+  validateAllPodNamesAsync,
+  validatePodNamesAsync,
   verifyAllPackagesAsync,
   verifyLocalTarballPathsIfSetAsync,
   verifyPackagesAsync,
+  type PodNameValidationError,
 } from './Utils';
 export {
   discoverExternalPackagesAsync,
