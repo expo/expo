@@ -138,6 +138,12 @@ final class DynamicTypeSpec: ExpoSpec {
           expect(result).to(beAKindOf([Double].self))
           expect(result as? [Double]) == [value]
         }
+        it("arrayizes a single JS value") {
+          let jsInt = try appContext.runtime.eval("67")
+          let jsString = try appContext.runtime.eval("'Expo'")
+          expect(try (~[Int].self).cast(jsValue: jsInt, appContext: appContext) as? [Int]) == [67]
+          expect(try (~[String].self).cast(jsValue: jsString, appContext: appContext) as? [String]) == ["Expo"]
+        }
         it("arrayizes single element") {
           // The dynamic array type can arrayize the single element
           // if only the array element's dynamic type can cast it.
