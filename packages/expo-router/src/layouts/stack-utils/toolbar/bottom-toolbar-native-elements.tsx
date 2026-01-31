@@ -1,6 +1,6 @@
 'use client';
 import type { ImageRef } from 'expo-image';
-import { useId, type ReactNode } from 'react';
+import { useCallback, useId, type ReactNode } from 'react';
 import {
   Platform,
   StyleSheet,
@@ -10,9 +10,15 @@ import {
 } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import { router } from '../../../imperative-api';
 import { LinkMenuAction } from '../../../link/elements';
 import { NativeLinkPreviewAction } from '../../../link/preview/native';
+import {
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_BAR_BUTTON_ITEM_ID_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
+} from '../../../navigationParams';
 import { RouterToolbarItem } from '../../../toolbar/native';
+import type { Href } from '../../../types';
 import type { BasicTextStyle } from '../../../utils/font';
 
 // #region NativeToolbarMenu
@@ -259,6 +265,89 @@ export const NativeToolbarView: React.FC<NativeToolbarViewProps> = ({
       sharesBackground={!separateBackground}>
       {children}
     </RouterToolbarItem>
+  );
+};
+
+// #endregion
+
+// #region NativeToolbarLink
+
+export interface NativeToolbarLinkProps {
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+  disabled?: boolean;
+  hidden?: boolean;
+  hidesSharedBackground?: boolean;
+  href: Href;
+  action?: 'push' | 'navigate' | 'replace';
+  icon?: SFSymbol;
+  image?: ImageRef;
+  imageRenderingMode?: 'template' | 'original';
+  separateBackground?: boolean;
+  style?: StyleProp<BasicTextStyle>;
+  tintColor?: ColorValue;
+  variant?: 'plain' | 'done' | 'prominent';
+  label?: string;
+}
+
+function resolveHrefWithZoomParams(href: Href, zoomId: string): Href {
+  const zoomParams = {
+    [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]: zoomId,
+    [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_BAR_BUTTON_ITEM_ID_PARAM_NAME]: zoomId,
+  };
+
+  if (typeof href === 'string') {
+    return {
+      pathname: href,
+      params: zoomParams,
+    } as Href;
+  }
+
+  return {
+    pathname: (href as { pathname?: string }).pathname ?? '',
+    params: {
+      ...((href as { params?: Record<string, unknown> }).params ?? {}),
+      ...zoomParams,
+    },
+  } as Href;
+}
+
+/**
+ * Native toolbar link component for bottom toolbar.
+ * Renders as RouterToolbarItem and navigates with zoom transition on press.
+ */
+export const NativeToolbarLink: React.FC<NativeToolbarLinkProps> = (props) => {
+  const id = useId();
+  const zoomId = useId();
+
+  const handlePress = useCallback(() => {
+    const resolvedHref = resolveHrefWithZoomParams(props.href, zoomId);
+    const action = props.action ?? 'push';
+    router[action](resolvedHref);
+  }, [props.href, props.action, zoomId]);
+
+  const renderingMode =
+    props.imageRenderingMode ?? (props.tintColor !== undefined ? 'template' : 'original');
+
+  return (
+    <RouterToolbarItem
+      accessibilityHint={props.accessibilityHint}
+      accessibilityLabel={props.accessibilityLabel}
+      barButtonItemStyle={props.variant === 'done' ? 'prominent' : props.variant}
+      disabled={props.disabled}
+      hidden={props.hidden}
+      hidesSharedBackground={props.hidesSharedBackground}
+      identifier={id}
+      image={props.image}
+      imageRenderingMode={renderingMode}
+      onSelected={handlePress}
+      sharesBackground={!props.separateBackground}
+      systemImageName={props.icon}
+      title={props.label}
+      tintColor={props.tintColor}
+      titleStyle={StyleSheet.flatten(props.style)}
+      zoomTransitionSourceIdentifier={zoomId}
+    />
   );
 };
 

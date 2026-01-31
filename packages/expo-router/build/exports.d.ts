@@ -29,7 +29,7 @@ export type { SingularOptions } from './useScreens';
 export type * from './types';
 export * from './color';
 export { Badge, BadgeProps, Icon, IconProps, Label, LabelProps, VectorIcon, VectorIconProps, } from './primitives';
-export type { StackHeaderProps, StackHeaderItemSharedProps, StackScreenProps, StackScreenBackButtonProps, StackScreenTitleProps, StackSearchBarProps, StackToolbarBadgeProps, StackToolbarButtonProps, StackToolbarIconProps, StackToolbarLabelProps, StackToolbarMenuActionProps, StackToolbarMenuProps, StackToolbarProps, StackToolbarSearchBarSlotProps, StackToolbarSpacerProps, StackToolbarViewProps, } from './layouts/stack-utils';
+export type { StackHeaderProps, StackHeaderItemSharedProps, StackScreenProps, StackScreenBackButtonProps, StackScreenTitleProps, StackSearchBarProps, StackToolbarBadgeProps, StackToolbarButtonProps, StackToolbarLinkProps, StackToolbarIconProps, StackToolbarLabelProps, StackToolbarMenuActionProps, StackToolbarMenuProps, StackToolbarProps, StackToolbarSearchBarSlotProps, StackToolbarSpacerProps, StackToolbarViewProps, } from './layouts/stack-utils';
 export { unstable_navigationEvents } from './navigationEvents';
 export { Stack } from './layouts/Stack';
 export { Tabs } from './layouts/Tabs';

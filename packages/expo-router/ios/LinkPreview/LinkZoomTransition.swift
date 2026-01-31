@@ -89,6 +89,38 @@ class LinkZoomTransitionsSourceRepository {
   }
 }
 
+class LinkZoomTransitionsBarButtonItemRepository {
+  private var items: [String: WeakBarButtonItem] = [:]
+  private let lock = NSLock()
+
+  func register(identifier: String, item: UIBarButtonItem) {
+    lock.lock()
+    defer { lock.unlock() }
+    if !identifier.isEmpty {
+      items[identifier] = WeakBarButtonItem(item: item)
+    }
+  }
+
+  func unregister(identifier: String) {
+    lock.lock()
+    defer { lock.unlock() }
+    items.removeValue(forKey: identifier)
+  }
+
+  func get(identifier: String) -> UIBarButtonItem? {
+    lock.lock()
+    defer { lock.unlock() }
+    return items[identifier]?.item
+  }
+
+  private class WeakBarButtonItem {
+    weak var item: UIBarButtonItem?
+    init(item: UIBarButtonItem) {
+      self.item = item
+    }
+  }
+}
+
 class LinkZoomTransitionsAlignmentViewRepository {
   private var alignmentViews: [String: WeakUIView] = [:]
   private let lock = NSLock()
@@ -273,6 +305,7 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
 
 class LinkZoomTransitionEnabler: LinkZoomExpoView {
   var zoomTransitionSourceIdentifier: String = ""
+  var zoomTransitionSourceBarButtonItemIdentifier: String = ""
   var dismissalBoundsRect: DismissalBoundsRect? {
     didSet {
       // When dismissalBoundsRect changes, re-setup the zoom transition
@@ -301,6 +334,25 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
       return
     }
     if let controller = self.findViewController() {
+      // iOS 26+: Bar button item zoom transition (from toolbar items)
+      if #available(iOS 26.0, *), !self.zoomTransitionSourceBarButtonItemIdentifier.isEmpty {
+        let barOptions = UIViewController.Transition.ZoomOptions()
+        if let rect = self.dismissalBoundsRect {
+          barOptions.interactiveDismissShouldBegin = { context in
+            let location = context.location
+            if let minX = rect.minX, location.x < minX { return false }
+            if let maxX = rect.maxX, location.x > maxX { return false }
+            if let minY = rect.minY, location.y < minY { return false }
+            if let maxY = rect.maxY, location.y > maxY { return false }
+            return true
+          }
+        }
+        controller.preferredTransition = .zoom(options: barOptions) { _ in
+          return self.barButtonItemRepository?.get(identifier: self.zoomTransitionSourceBarButtonItemIdentifier)
+        }
+        return
+      }
+      // iOS 18+: View-based zoom transition (from Link.AppleZoom)
       if #available(iOS 18.0, *) {
         let options = UIViewController.Transition.ZoomOptions()
 
@@ -430,5 +482,13 @@ class LinkZoomExpoView: RouterViewWithLogger {
       return nil
     }
     return module.zoomAlignmentViewRepository
+  }
+
+  var barButtonItemRepository: LinkZoomTransitionsBarButtonItemRepository? {
+    guard let module else {
+      logger?.warn("[expo-router] LinkPreviewNativeModule not loaded. Make sure expo-router is properly configured.")
+      return nil
+    }
+    return module.zoomBarButtonItemRepository
   }
 }

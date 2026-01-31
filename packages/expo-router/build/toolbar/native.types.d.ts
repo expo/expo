@@ -30,5 +30,6 @@ export interface RouterToolbarItemProps {
     accessibilityHint?: string;
     disabled?: boolean;
     onSelected?: () => void;
+    zoomTransitionSourceIdentifier?: string;
 }
 //# sourceMappingURL=native.types.d.ts.map

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackToolbarView = exports.StackToolbarSpacer = exports.StackToolbarSearchBarSlot = exports.StackToolbarMenuAction = exports.StackToolbarMenu = exports.StackToolbarButton = exports.appendStackToolbarPropsToOptions = exports.StackToolbar = exports.StackToolbarLabel = exports.StackToolbarIcon = exports.StackToolbarBadge = void 0;
+exports.StackToolbarView = exports.StackToolbarSpacer = exports.StackToolbarSearchBarSlot = exports.StackToolbarMenuAction = exports.StackToolbarMenu = exports.StackToolbarLink = exports.StackToolbarButton = exports.appendStackToolbarPropsToOptions = exports.StackToolbar = exports.StackToolbarLabel = exports.StackToolbarIcon = exports.StackToolbarBadge = void 0;
 var common_primitives_1 = require("../common-primitives");
 Object.defineProperty(exports, "StackToolbarBadge", { enumerable: true, get: function () { return common_primitives_1.StackToolbarBadge; } });
 Object.defineProperty(exports, "StackToolbarIcon", { enumerable: true, get: function () { return common_primitives_1.StackToolbarIcon; } });
@@ -11,6 +11,8 @@ var StackToolbarClient_1 = require("./StackToolbarClient");
 Object.defineProperty(exports, "appendStackToolbarPropsToOptions", { enumerable: true, get: function () { return StackToolbarClient_1.appendStackToolbarPropsToOptions; } });
 var StackToolbarButton_1 = require("./StackToolbarButton");
 Object.defineProperty(exports, "StackToolbarButton", { enumerable: true, get: function () { return StackToolbarButton_1.StackToolbarButton; } });
+var StackToolbarLink_1 = require("./StackToolbarLink");
+Object.defineProperty(exports, "StackToolbarLink", { enumerable: true, get: function () { return StackToolbarLink_1.StackToolbarLink; } });
 var StackToolbarMenu_1 = require("./StackToolbarMenu");
 Object.defineProperty(exports, "StackToolbarMenu", { enumerable: true, get: function () { return StackToolbarMenu_1.StackToolbarMenu; } });
 Object.defineProperty(exports, "StackToolbarMenuAction", { enumerable: true, get: function () { return StackToolbarMenu_1.StackToolbarMenuAction; } });

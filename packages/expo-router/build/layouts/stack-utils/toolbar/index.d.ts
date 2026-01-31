@@ -2,6 +2,7 @@ export { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel, type StackToolb
 export { StackToolbar } from './StackToolbar';
 export { appendStackToolbarPropsToOptions, type StackToolbarProps } from './StackToolbarClient';
 export { StackToolbarButton, type StackToolbarButtonProps } from './StackToolbarButton';
+export { StackToolbarLink, type StackToolbarLinkProps } from './StackToolbarLink';
 export { StackToolbarMenu, StackToolbarMenuAction, type StackToolbarMenuProps, type StackToolbarMenuActionProps, } from './StackToolbarMenu';
 export { StackToolbarSearchBarSlot, type StackToolbarSearchBarSlotProps, } from './StackToolbarSearchBarSlot';
 export { StackToolbarSpacer, type StackToolbarSpacerProps } from './StackToolbarSpacer';

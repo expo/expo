@@ -34,6 +34,25 @@ class RouterToolbarItemView: RouterViewWithLogger {
   // This property is not applied in this component, but read by the host
   @ReactiveProp var routerHidden: Bool = false
 
+  var zoomTransitionSourceIdentifier: String? {
+    didSet {
+      guard zoomTransitionSourceIdentifier != oldValue else { return }
+      // Unregister old identifier
+      if let oldValue, !oldValue.isEmpty {
+        linkPreviewModule?.zoomBarButtonItemRepository.unregister(identifier: oldValue)
+      }
+      // Register new identifier with current bar button item
+      if let newId = zoomTransitionSourceIdentifier, !newId.isEmpty, let item = currentBarButtonItem {
+        linkPreviewModule?.zoomBarButtonItemRepository.register(identifier: newId, item: item)
+      }
+    }
+  }
+
+  private var linkPreviewModule: LinkPreviewNativeModule? {
+    appContext?.moduleRegistry.get(moduleWithName: LinkPreviewNativeModule.moduleName)
+      as? LinkPreviewNativeModule
+  }
+
   var host: RouterToolbarHostView?
   private var currentBarButtonItem: UIBarButtonItem?
 
@@ -125,6 +144,11 @@ class RouterToolbarItemView: RouterViewWithLogger {
     applyCommonProperties(to: item)
 
     currentBarButtonItem = item
+
+    // Register the bar button item for zoom transitions if an identifier is set
+    if let zoomId = zoomTransitionSourceIdentifier, !zoomId.isEmpty {
+      linkPreviewModule?.zoomBarButtonItemRepository.register(identifier: zoomId, item: item)
+    }
   }
 
   private func applyContentProperties(to item: UIBarButtonItem) {
@@ -197,6 +221,12 @@ class RouterToolbarItemView: RouterViewWithLogger {
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
+  }
+
+  deinit {
+    if let zoomId = zoomTransitionSourceIdentifier, !zoomId.isEmpty {
+      linkPreviewModule?.zoomBarButtonItemRepository.unregister(identifier: zoomId)
+    }
   }
 
   override func mountChildComponentView(_ childComponentView: UIView, index: Int) {

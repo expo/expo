@@ -39,17 +39,20 @@ exports.appendStackToolbarPropsToOptions = appendStackToolbarPropsToOptions;
 const react_1 = __importStar(require("react"));
 const react_2 = require("react");
 const StackToolbarButton_1 = require("./StackToolbarButton");
+const StackToolbarLink_1 = require("./StackToolbarLink");
 const StackToolbarMenu_1 = require("./StackToolbarMenu");
 const StackToolbarSearchBarSlot_1 = require("./StackToolbarSearchBarSlot");
 const StackToolbarSpacer_1 = require("./StackToolbarSpacer");
 const StackToolbarView_1 = require("./StackToolbarView");
 const context_1 = require("./context");
+const imperative_api_1 = require("../../../imperative-api");
 const NativeMenuContext_1 = require("../../../link/NativeMenuContext");
 const native_1 = require("../../../toolbar/native");
 const useNavigation_1 = require("../../../useNavigation");
 const children_1 = require("../../../utils/children");
 const Screen_1 = require("../../../views/Screen");
 const common_primitives_1 = require("../common-primitives");
+const shared_1 = require("../shared");
 /**
  * The component used to configure the stack toolbar.
  *
@@ -148,6 +151,7 @@ const StackToolbarHeader = ({ children, placement, asChild }) => {
 function convertToolbarChildrenToUnstableItems(children, side) {
     const allChildren = react_1.default.Children.toArray(children);
     const actions = allChildren.filter((child) => (0, children_1.isChildOfType)(child, StackToolbarButton_1.StackToolbarButton) ||
+        (0, children_1.isChildOfType)(child, StackToolbarLink_1.StackToolbarLink) ||
         (0, children_1.isChildOfType)(child, StackToolbarMenu_1.StackToolbarMenu) ||
         (0, children_1.isChildOfType)(child, StackToolbarSpacer_1.StackToolbarSpacer) ||
         (0, children_1.isChildOfType)(child, StackToolbarView_1.StackToolbarView));
@@ -165,12 +169,15 @@ function convertToolbarChildrenToUnstableItems(children, side) {
             }
             return String(e);
         });
-        console.warn(`Stack.Toolbar with placement="${side}" only accepts <Stack.Toolbar.Button>, <Stack.Toolbar.Menu>, <Stack.Toolbar.View>, and <Stack.Toolbar.Spacer> as children. Found invalid children: ${otherElements.join(', ')}`);
+        console.warn(`Stack.Toolbar with placement="${side}" only accepts <Stack.Toolbar.Button>, <Stack.Toolbar.Link>, <Stack.Toolbar.Menu>, <Stack.Toolbar.View>, and <Stack.Toolbar.Spacer> as children. Found invalid children: ${otherElements.join(', ')}`);
     }
     return () => actions
         .map((action) => {
         if ((0, children_1.isChildOfType)(action, StackToolbarButton_1.StackToolbarButton)) {
             return (0, StackToolbarButton_1.convertStackToolbarButtonPropsToRNHeaderItem)(action.props);
+        }
+        else if ((0, children_1.isChildOfType)(action, StackToolbarLink_1.StackToolbarLink)) {
+            return convertStackToolbarLinkPropsToRNHeaderItem(action.props);
         }
         else if ((0, children_1.isChildOfType)(action, StackToolbarMenu_1.StackToolbarMenu)) {
             return (0, StackToolbarMenu_1.convertStackToolbarMenuPropsToRNHeaderItem)(action.props);
@@ -217,7 +224,22 @@ function appendStackToolbarPropsToOptions(options, props) {
         unstable_headerRightItems: convertToolbarChildrenToUnstableItems(children, 'right'),
     };
 }
+function convertStackToolbarLinkPropsToRNHeaderItem(props) {
+    if (props.hidden) {
+        return undefined;
+    }
+    const action = props.action ?? 'push';
+    return {
+        ...(0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props),
+        type: 'button',
+        onPress: () => {
+            imperative_api_1.router[action](props.href);
+        },
+        selected: false,
+    };
+}
 exports.StackToolbar.Button = StackToolbarButton_1.StackToolbarButton;
+exports.StackToolbar.Link = StackToolbarLink_1.StackToolbarLink;
 exports.StackToolbar.Menu = StackToolbarMenu_1.StackToolbarMenu;
 exports.StackToolbar.MenuAction = StackToolbarMenu_1.StackToolbarMenuAction;
 exports.StackToolbar.SearchBarSlot = StackToolbarSearchBarSlot_1.StackToolbarSearchBarSlot;

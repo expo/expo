@@ -5,6 +5,7 @@ import { ZoomTransitionTargetContext } from './zoom-transition-context';
 import {
   getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_BAR_BUTTON_ITEM_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
 } from '../../navigationParams';
@@ -48,9 +49,15 @@ export function ZoomTransitionEnabler({ route }: ZoomTransitionEnablerProps) {
       const targetContext = use(ZoomTransitionTargetContext);
       const dismissalBoundsRect = targetContext.dismissalBoundsRect;
 
+      const barButtonItemId =
+        internalParams[INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_BAR_BUTTON_ITEM_ID_PARAM_NAME];
+
       return (
         <LinkZoomTransitionEnabler
           zoomTransitionSourceIdentifier={zoomTransitionId}
+          zoomTransitionSourceBarButtonItemIdentifier={
+            typeof barButtonItemId === 'string' ? barButtonItemId : undefined
+          }
           dismissalBoundsRect={dismissalBoundsRect}
         />
       );

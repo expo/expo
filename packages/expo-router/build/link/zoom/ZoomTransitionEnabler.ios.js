@@ -35,7 +35,8 @@ function ZoomTransitionEnabler({ route }) {
             // Read dismissalBoundsRect from context
             const targetContext = (0, react_1.use)(zoom_transition_context_1.ZoomTransitionTargetContext);
             const dismissalBoundsRect = targetContext.dismissalBoundsRect;
-            return (<native_1.LinkZoomTransitionEnabler zoomTransitionSourceIdentifier={zoomTransitionId} dismissalBoundsRect={dismissalBoundsRect}/>);
+            const barButtonItemId = internalParams[navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_BAR_BUTTON_ITEM_ID_PARAM_NAME];
+            return (<native_1.LinkZoomTransitionEnabler zoomTransitionSourceIdentifier={zoomTransitionId} zoomTransitionSourceBarButtonItemIdentifier={typeof barButtonItemId === 'string' ? barButtonItemId : undefined} dismissalBoundsRect={dismissalBoundsRect}/>);
         }
     }
     return null;

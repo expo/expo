@@ -4,6 +4,7 @@ public class LinkPreviewNativeModule: Module {
   static let moduleName: String = "ExpoRouterNativeLinkPreview"
   lazy var zoomSourceRepository = LinkZoomTransitionsSourceRepository(logger: appContext?.jsLogger)
   lazy var zoomAlignmentViewRepository = LinkZoomTransitionsAlignmentViewRepository()
+  lazy var zoomBarButtonItemRepository = LinkZoomTransitionsBarButtonItemRepository()
 
   public func definition() -> ModuleDefinition {
     Name(LinkPreviewNativeModule.moduleName)
@@ -156,6 +157,11 @@ public class LinkPreviewNativeModule: Module {
 
       Prop("dismissalBoundsRect") { (view: LinkZoomTransitionEnabler, rect: DismissalBoundsRect?) in
         view.dismissalBoundsRect = rect
+      }
+
+      Prop("zoomTransitionSourceBarButtonItemIdentifier") {
+        (view: LinkZoomTransitionEnabler, identifier: String?) in
+        view.zoomTransitionSourceBarButtonItemIdentifier = identifier ?? ""
       }
     }
 

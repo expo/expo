@@ -5,6 +5,8 @@ export const INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME =
   '__internal_expo_router_zoom_transition_source_id';
 export const INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME =
   '__internal_expo_router_zoom_transition_screen_id';
+export const INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_BAR_BUTTON_ITEM_ID_PARAM_NAME =
+  '__internal_expo_router_zoom_transition_bar_button_item_id';
 
 /**
  * Internal navigation option name used to control gesture-based dismissal independently
@@ -33,6 +35,7 @@ const internalExpoRouterParamNames = [
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_BAR_BUTTON_ITEM_ID_PARAM_NAME,
 ] as const;
 
 export type InternalExpoRouterParamName = (typeof internalExpoRouterParamNames)[number];

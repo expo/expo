@@ -135,12 +135,17 @@ interface DismissalBoundsRect {
   maxY?: number;
 }
 const LinkZoomTransitionEnablerNativeView: React.ComponentType<
-  ViewProps & { zoomTransitionSourceIdentifier: string; disableForceFlatten?: boolean }
+  ViewProps & {
+    zoomTransitionSourceIdentifier: string;
+    zoomTransitionSourceBarButtonItemIdentifier?: string;
+    disableForceFlatten?: boolean;
+  }
 > | null = areNativeViewsAvailable
   ? requireNativeView('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionEnabler')
   : null;
 export function LinkZoomTransitionEnabler(props: {
   zoomTransitionSourceIdentifier: string;
+  zoomTransitionSourceBarButtonItemIdentifier?: string;
   dismissalBoundsRect?: DismissalBoundsRect | null;
 }) {
   if (!LinkZoomTransitionEnablerNativeView) {

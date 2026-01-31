@@ -3,6 +3,7 @@ import { type ReactNode } from 'react';
 import { type ColorValue, type StyleProp, type TextStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import { LinkMenuAction } from '../../../link/elements';
+import type { Href } from '../../../types';
 import type { BasicTextStyle } from '../../../utils/font';
 export interface NativeToolbarMenuProps {
     accessibilityLabel?: string;
@@ -93,4 +94,26 @@ export interface NativeToolbarViewProps {
  * Renders as RouterToolbarItem with children.
  */
 export declare const NativeToolbarView: React.FC<NativeToolbarViewProps>;
+export interface NativeToolbarLinkProps {
+    accessibilityLabel?: string;
+    accessibilityHint?: string;
+    disabled?: boolean;
+    hidden?: boolean;
+    hidesSharedBackground?: boolean;
+    href: Href;
+    action?: 'push' | 'navigate' | 'replace';
+    icon?: SFSymbol;
+    image?: ImageRef;
+    imageRenderingMode?: 'template' | 'original';
+    separateBackground?: boolean;
+    style?: StyleProp<BasicTextStyle>;
+    tintColor?: ColorValue;
+    variant?: 'plain' | 'done' | 'prominent';
+    label?: string;
+}
+/**
+ * Native toolbar link component for bottom toolbar.
+ * Renders as RouterToolbarItem and navigates with zoom transition on press.
+ */
+export declare const NativeToolbarLink: React.FC<NativeToolbarLinkProps>;
 //# sourceMappingURL=bottom-toolbar-native-elements.d.ts.map
