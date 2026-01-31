@@ -275,6 +275,7 @@ export const NativeToolbarView: React.FC<NativeToolbarViewProps> = ({
 export interface NativeToolbarLinkProps {
   accessibilityLabel?: string;
   accessibilityHint?: string;
+  children?: ReactNode;
   disabled?: boolean;
   hidden?: boolean;
   hidesSharedBackground?: boolean;
@@ -346,8 +347,9 @@ export const NativeToolbarLink: React.FC<NativeToolbarLinkProps> = (props) => {
       title={props.label}
       tintColor={props.tintColor}
       titleStyle={StyleSheet.flatten(props.style)}
-      zoomTransitionSourceIdentifier={zoomId}
-    />
+      zoomTransitionSourceIdentifier={zoomId}>
+      {props.children}
+    </RouterToolbarItem>
   );
 };
 

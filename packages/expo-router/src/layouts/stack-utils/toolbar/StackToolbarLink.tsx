@@ -27,12 +27,28 @@ export interface StackToolbarLinkProps {
   accessibilityLabel?: string;
   accessibilityHint?: string;
   /**
-   * There are two ways to specify the content of the link:
+   * Content of the link. Can be:
    *
-   * - A string label as children
-   * - Composition of Stack.Toolbar.Icon, Stack.Toolbar.Label, and Stack.Toolbar.Badge
+   * - A string label
+   * - Composition of `Stack.Toolbar.Icon`, `Stack.Toolbar.Label`, and `Stack.Toolbar.Badge`
+   * - Arbitrary React elements (rendered as a custom view bar button item)
    *
-   * > **Note**: When icon is used, the label will not be shown and will be used for accessibility purposes only.
+   * When arbitrary children are provided, the link renders as a custom view toolbar item
+   * (like `Stack.Toolbar.View`) that navigates with a zoom transition on press.
+   *
+   * @example
+   * ```tsx
+   * // Using icon prop
+   * <Stack.Toolbar.Link href="/new-item" icon="plus" />
+   *
+   * // Using custom view children
+   * <Stack.Toolbar.Link href="/layers">
+   *   <View style={{ flexDirection: 'row', gap: 8 }}>
+   *     <Image source={'sf:square.3.layers.3d.down.right'} />
+   *     <Text>Layers</Text>
+   *   </View>
+   * </Stack.Toolbar.Link>
+   * ```
    */
   children?: ReactNode;
   disabled?: boolean;
@@ -100,6 +116,10 @@ export interface StackToolbarLinkProps {
 /**
  * A link used inside `Stack.Toolbar` that navigates with a zoom transition from the bar button item on iOS 26+.
  *
+ * Supports two modes:
+ * - **Icon/label mode**: Use `icon` prop or `Stack.Toolbar.Icon`/`Stack.Toolbar.Label` children for standard bar button items.
+ * - **Custom view mode**: Pass arbitrary React elements as children to render a custom view that navigates on press.
+ *
  * @example
  * ```tsx
  * import { Stack } from 'expo-router';
@@ -118,28 +138,55 @@ export interface StackToolbarLinkProps {
  * }
  * ```
  *
+ * @example
+ * ```tsx
+ * <Stack.Toolbar>
+ *   <Stack.Toolbar.Link href="/layers">
+ *     <View style={{ flexDirection: 'row', gap: 8 }}>
+ *       <Image source={'sf:square.3.layers.3d.down.right'} />
+ *       <Text>Layers</Text>
+ *     </View>
+ *   </Stack.Toolbar.Link>
+ * </Stack.Toolbar>
+ * ```
+ *
  * @platform ios
  */
 export const StackToolbarLink: React.FC<StackToolbarLinkProps> = (props) => {
   const placement = useToolbarPlacement();
 
-  const validChildren = useMemo(
-    () => filterAllowedChildrenElements(props.children, ALLOWED_CHILDREN),
+  const primitiveChildren = useMemo(
+    () => filterAllowedChildrenElements(props.children, PRIMITIVE_CHILDREN),
     [props.children]
   );
 
-  if (process.env.NODE_ENV !== 'production') {
-    if (typeof props.children !== 'string') {
-      const allChildren = Children.toArray(props.children);
-      if (allChildren.length !== validChildren.length) {
-        throw new Error(
-          `Stack.Toolbar.Link only accepts a single string or Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`
-        );
-      }
-    }
-  }
-
   if (placement === 'bottom') {
+    const allChildren = Children.toArray(props.children);
+    const hasCustomViewChildren =
+      allChildren.length > 0 &&
+      typeof props.children !== 'string' &&
+      primitiveChildren.length !== allChildren.length;
+
+    if (hasCustomViewChildren) {
+      // Custom view mode: pass children through to render as a custom view bar button item
+      return (
+        <NativeToolbarLink
+          accessibilityHint={props.accessibilityHint}
+          accessibilityLabel={props.accessibilityLabel}
+          href={props.href}
+          action={props.action}
+          disabled={props.disabled}
+          hidden={props.hidden}
+          hidesSharedBackground={props.hidesSharedBackground}
+          separateBackground={props.separateBackground}
+          tintColor={props.tintColor}
+          variant={props.variant}>
+          {props.children}
+        </NativeToolbarLink>
+      );
+    }
+
+    // Icon/label mode: convert primitive children to bar button item props
     const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
     const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
     return (
@@ -158,4 +205,4 @@ export const StackToolbarLink: React.FC<StackToolbarLinkProps> = (props) => {
   return null;
 };
 
-const ALLOWED_CHILDREN = [StackToolbarLabel, StackToolbarIcon, StackToolbarBadge];
+const PRIMITIVE_CHILDREN = [StackToolbarLabel, StackToolbarIcon, StackToolbarBadge];

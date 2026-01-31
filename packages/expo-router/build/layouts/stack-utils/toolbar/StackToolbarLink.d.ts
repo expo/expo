@@ -17,12 +17,28 @@ export interface StackToolbarLinkProps {
     accessibilityLabel?: string;
     accessibilityHint?: string;
     /**
-     * There are two ways to specify the content of the link:
+     * Content of the link. Can be:
      *
-     * - A string label as children
-     * - Composition of Stack.Toolbar.Icon, Stack.Toolbar.Label, and Stack.Toolbar.Badge
+     * - A string label
+     * - Composition of `Stack.Toolbar.Icon`, `Stack.Toolbar.Label`, and `Stack.Toolbar.Badge`
+     * - Arbitrary React elements (rendered as a custom view bar button item)
      *
-     * > **Note**: When icon is used, the label will not be shown and will be used for accessibility purposes only.
+     * When arbitrary children are provided, the link renders as a custom view toolbar item
+     * (like `Stack.Toolbar.View`) that navigates with a zoom transition on press.
+     *
+     * @example
+     * ```tsx
+     * // Using icon prop
+     * <Stack.Toolbar.Link href="/new-item" icon="plus" />
+     *
+     * // Using custom view children
+     * <Stack.Toolbar.Link href="/layers">
+     *   <View style={{ flexDirection: 'row', gap: 8 }}>
+     *     <Image source={'sf:square.3.layers.3d.down.right'} />
+     *     <Text>Layers</Text>
+     *   </View>
+     * </Stack.Toolbar.Link>
+     * ```
      */
     children?: ReactNode;
     disabled?: boolean;
@@ -89,6 +105,10 @@ export interface StackToolbarLinkProps {
 /**
  * A link used inside `Stack.Toolbar` that navigates with a zoom transition from the bar button item on iOS 26+.
  *
+ * Supports two modes:
+ * - **Icon/label mode**: Use `icon` prop or `Stack.Toolbar.Icon`/`Stack.Toolbar.Label` children for standard bar button items.
+ * - **Custom view mode**: Pass arbitrary React elements as children to render a custom view that navigates on press.
+ *
  * @example
  * ```tsx
  * import { Stack } from 'expo-router';
@@ -105,6 +125,18 @@ export interface StackToolbarLinkProps {
  *     </>
  *   );
  * }
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <Stack.Toolbar>
+ *   <Stack.Toolbar.Link href="/layers">
+ *     <View style={{ flexDirection: 'row', gap: 8 }}>
+ *       <Image source={'sf:square.3.layers.3d.down.right'} />
+ *       <Text>Layers</Text>
+ *     </View>
+ *   </Stack.Toolbar.Link>
+ * </Stack.Toolbar>
  * ```
  *
  * @platform ios

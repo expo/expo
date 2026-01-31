@@ -105,7 +105,9 @@ const NativeToolbarLink = (props) => {
         imperative_api_1.router[action](resolvedHref);
     }, [props.href, props.action, zoomId]);
     const renderingMode = props.imageRenderingMode ?? (props.tintColor !== undefined ? 'template' : 'original');
-    return (<native_2.RouterToolbarItem accessibilityHint={props.accessibilityHint} accessibilityLabel={props.accessibilityLabel} barButtonItemStyle={props.variant === 'done' ? 'prominent' : props.variant} disabled={props.disabled} hidden={props.hidden} hidesSharedBackground={props.hidesSharedBackground} identifier={id} image={props.image} imageRenderingMode={renderingMode} onSelected={handlePress} sharesBackground={!props.separateBackground} systemImageName={props.icon} title={props.label} tintColor={props.tintColor} titleStyle={react_native_1.StyleSheet.flatten(props.style)} zoomTransitionSourceIdentifier={zoomId}/>);
+    return (<native_2.RouterToolbarItem accessibilityHint={props.accessibilityHint} accessibilityLabel={props.accessibilityLabel} barButtonItemStyle={props.variant === 'done' ? 'prominent' : props.variant} disabled={props.disabled} hidden={props.hidden} hidesSharedBackground={props.hidesSharedBackground} identifier={id} image={props.image} imageRenderingMode={renderingMode} onSelected={handlePress} sharesBackground={!props.separateBackground} systemImageName={props.icon} title={props.label} tintColor={props.tintColor} titleStyle={react_native_1.StyleSheet.flatten(props.style)} zoomTransitionSourceIdentifier={zoomId}>
+      {props.children}
+    </native_2.RouterToolbarItem>);
 };
 exports.NativeToolbarLink = NativeToolbarLink;
 // #endregion

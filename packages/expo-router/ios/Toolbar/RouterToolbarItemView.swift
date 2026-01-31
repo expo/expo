@@ -105,7 +105,15 @@ class RouterToolbarItemView: RouterViewWithLogger {
     var item = UIBarButtonItem()
 
     if let customView {
-      item = UIBarButtonItem(customView: customView)
+      // UIBarButtonItem(customView:) does not fire target/action,
+      // so add a tap gesture recognizer to forward taps to handleAction.
+      let wrapper = customView
+      // Remove any previously added gesture recognizer from us
+      wrapper.gestureRecognizers?.removeAll { $0 is ToolbarItemTapGesture }
+      let tap = ToolbarItemTapGesture(target: self, action: #selector(handleAction))
+      wrapper.isUserInteractionEnabled = true
+      wrapper.addGestureRecognizer(tap)
+      item = UIBarButtonItem(customView: wrapper)
     } else if type == .fluidSpacer {
       item = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
     } else if type == .fixedSpacer {
@@ -246,6 +254,9 @@ class RouterToolbarItemView: RouterViewWithLogger {
     }
   }
 }
+
+/// Subclass used to identify tap gestures added by RouterToolbarItemView for custom view items.
+private class ToolbarItemTapGesture: UITapGestureRecognizer {}
 
 enum ItemType: String, Enumerable {
   case normal
