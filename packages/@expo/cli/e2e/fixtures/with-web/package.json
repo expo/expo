@@ -2,14 +2,13 @@
   "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "dependencies": {
-    "expo": "^52",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "expo": "^55 || ^55.0.0-0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
     "react-native": "0.83.1",
-    "react-native-web": "~0.20.0"
+    "react-native-web": "~0.21.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2",
     "@expo/webpack-config": "~19.0.1"
   }
 }

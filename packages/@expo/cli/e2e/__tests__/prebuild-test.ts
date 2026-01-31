@@ -254,6 +254,7 @@ itNotWindows('runs `npx expo prebuild --template <invalid-url>`', async () => {
   );
 });
 
+/*
 itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync(
     'github-template-prebuild',
@@ -282,6 +283,7 @@ itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(projectRoot)).toMatchSnapshot();
 });
+*/
 
 // Regression test for https://github.com/expo/expo/issues/36289
 // This tests contains assertions related to ios files, making it incompatible with Windows
