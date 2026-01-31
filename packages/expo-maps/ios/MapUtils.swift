@@ -3,14 +3,21 @@ import MapKit
 
 @available(iOS 17.0, *)
 func convertToMapCamera(position: CameraPosition) -> MapCameraPosition {
-  let coordinates = position.coordinates
+  let coordinate = CLLocationCoordinate2D(
+    latitude: position.coordinates.latitude,
+    longitude: position.coordinates.longitude
+  )
+  return convertToMapCameraPosition(coordinate: coordinate, zoom: position.zoom)
+}
 
-  let longitudeDelta = 360 / pow(2, position.zoom)
+@available(iOS 17.0, *)
+func convertToMapCameraPosition(coordinate: CLLocationCoordinate2D, zoom: Double) -> MapCameraPosition {
+  let longitudeDelta = 360 / pow(2, zoom)
   let latitudeDelta = longitudeDelta / cos(0 * .pi / 180)
 
   return MapCameraPosition.region(
     MKCoordinateRegion(
-      center: CLLocationCoordinate2D(latitude: coordinates.latitude, longitude: coordinates.longitude),
+      center: coordinate,
       span: MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
     )
   )

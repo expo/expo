@@ -56,6 +56,35 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
     state.lookAroundPresented = true
   }
 
+  func setSelection(config: SelectionConfig) {
+    let updateSelection = {
+      if let mapItem = config.mapItem {
+        self.state.selection = MapSelection(mapItem)
+        if config.moveCamera, let coordinate = config.coordinate {
+          if let zoom = config.zoom {
+            self.state.mapCameraPosition = convertToMapCameraPosition(coordinate: coordinate, zoom: zoom)
+          } else {
+            // Keep current zoom/distance, just center on coordinate
+            self.state.mapCameraPosition = .camera(
+              MapCamera(
+                centerCoordinate: coordinate,
+                distance: self.state.lastKnownDistance ?? 10000,
+                heading: self.state.lastKnownHeading,
+                pitch: self.state.lastKnownPitch
+              )
+            )
+          }
+        }
+      } else {
+        self.state.selection = nil
+      }
+    }
+
+    withAnimation {
+      updateSelection()
+    }
+  }
+
   var body: some View {
     let properties = props.properties
     let uiSettings = props.uiSettings
@@ -117,6 +146,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
                 .padding(5)
             }
           }
+          .tag(MapSelection(annotation.mapItem))
         }
 
         if props.properties.isMyLocationEnabled {
@@ -210,6 +240,10 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       }
       .onChange(of: state.selection, perform: handleSelectionChange)
       .onMapCameraChange(frequency: .onEnd) { context in
+        state.lastKnownDistance = context.camera.distance
+        state.lastKnownHeading = context.camera.heading
+        state.lastKnownPitch = context.camera.pitch
+
         let cameraPosition = context.region.center
         let longitudeDelta = context.region.span.longitudeDelta
         let latitudeDelta = context.region.span.latitudeDelta
@@ -267,6 +301,19 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         "coordinates": [
           "latitude": marker.coordinates.latitude,
           "longitude": marker.coordinates.longitude
+        ]
+      ])
+      return
+    }
+
+    if let annotation = props.annotations.first(where: { $0.mapItem == item }) {
+      props.onAnnotationClick([
+        "id": annotation.id,
+        "title": annotation.title,
+        "text": annotation.text,
+        "coordinates": [
+          "latitude": annotation.coordinates.latitude,
+          "longitude": annotation.coordinates.longitude
         ]
       ])
       return
