@@ -5,6 +5,7 @@ import Testing
 @testable import EXUpdates
 
 @Suite("CodeSigningConfiguration")
+@MainActor
 struct CodeSigningConfigurationTests {
   @Test
   func `works with separate certificate chain`() {
@@ -32,6 +33,7 @@ struct CodeSigningConfigurationTests {
   // MARK: - createAcceptSignatureHeader
 
   @Suite("createAcceptSignatureHeader")
+  @MainActor
   struct CreateAcceptSignatureHeaderTests {
     @Test
     func `creates signature header default values`() throws {
@@ -102,6 +104,7 @@ struct CodeSigningConfigurationTests {
   // MARK: - validateSignature
 
   @Suite("validateSignature")
+  @MainActor
   struct ValidateSignatureTests {
     @Test
     func `works for valid case`() throws {
