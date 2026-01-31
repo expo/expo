@@ -188,7 +188,7 @@ et prebuild-packages --hermes-version 0.14.0 --clean-all expo-modules-core
 | Option | Description |
 |--------|-------------|
 | \`--hermes-version <version>\` | Hermes version (required) |
-| \`--build-flavor <flavor>\` | Build flavor: \`Debug\` (default) or \`Release\` |
+| `--build-flavor <flavor>` | Build flavor: `Debug` or `Release`. If not specified, builds both |
 | \`--react-native-tarball-path <path>\` | Local React Native tarball path |
 | \`--hermes-tarball-path <path>\` | Local Hermes tarball path |
 | \`--react-native-dependencies-tarball-path <path>\` | Local React Native Dependencies tarball path |
