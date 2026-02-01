@@ -46,16 +46,27 @@ async function addImageAssets(assets, root) {
     const iosNamedProjectRoot = config_plugins_1.IOSConfig.Paths.getSourceRoot(root);
     for (const asset of assets) {
         const name = path_1.default.basename(asset, path_1.default.extname(asset));
-        const image = path_1.default.basename(asset);
+        const ext = path_1.default.extname(asset);
+        const isGif = ext.toLowerCase() === '.gif';
+        // As GIFs are not supported by iOS asset catalogs, convert to PNG; for others, use original extension
+        const outputImage = isGif ? `${name}.png` : path_1.default.basename(asset);
         const assetPath = path_1.default.resolve(iosNamedProjectRoot, `${IMAGE_DIR}/${name}.imageset`);
         await promises_1.default.mkdir(assetPath, { recursive: true });
-        const buffer = await (0, image_utils_1.generateImageAsync)({ projectRoot: root }, {
-            src: asset,
-        });
-        await promises_1.default.writeFile(path_1.default.resolve(assetPath, image), buffer.source);
+        if (isGif) {
+            // GIFs need to be converted to PNG since iOS asset catalogs don't support animated GIFs
+            // Use generateImageAsync to handle the conversion properly
+            const buffer = await (0, image_utils_1.generateImageAsync)({ projectRoot: root }, {
+                src: asset,
+            });
+            await promises_1.default.writeFile(path_1.default.resolve(assetPath, outputImage), buffer.source);
+        }
+        else {
+            // For PNG and JPG, copy the file directly to preserve all original properties including transparency
+            await promises_1.default.copyFile(asset, path_1.default.resolve(assetPath, outputImage));
+        }
         await writeContentsJsonFileAsync({
             assetPath,
-            image,
+            image: outputImage,
         });
     }
 }
