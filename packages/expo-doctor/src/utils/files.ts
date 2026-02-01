@@ -2,10 +2,27 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 
-import { isFileIgnoredByRules } from './isFileIgnoredByRules';
+import { parseIgnoreFiles } from './ignoreFiles';
 
-const EASIGNORE_FILENAME = '.easignore';
-const GITIGNORE_FILENAME = '.gitignore';
+async function isGitIgnored(filePath: string, rootPath = process.cwd()): Promise<boolean | null> {
+  let result: spawnAsync.SpawnPromise<spawnAsync.SpawnResult> | undefined;
+  try {
+    filePath = path.resolve(rootPath, filePath);
+    await (result = spawnAsync('git', ['check-ignore', '-q', filePath], {
+      cwd: path.normalize(rootPath),
+    }));
+    return true;
+  } catch (error) {
+    switch (result?.child?.exitCode) {
+      case 1:
+        return false;
+      // NOTE: 128 and other codes indicate that this isn't an initialized git repository
+      case 128:
+      default:
+        return null;
+    }
+  }
+}
 
 /**
  * Checks if a file exists and is not ignored by EAS (.easignore) or git (.gitignore).
@@ -30,38 +47,32 @@ export async function existsAndIsNotIgnoredAsync(
 export async function isFileIgnoredAsync(
   filePath: string,
   checkEasignore: boolean = true
-): Promise<boolean> {
-  const rootPath = await getRootPathAsync();
-  const easIgnorePath = path.join(rootPath, EASIGNORE_FILENAME);
-  const gitIgnorePath = path.join(rootPath, GITIGNORE_FILENAME);
+): Promise<boolean | null> {
+  let isIgnored: boolean | null | undefined;
 
-  try {
-    if (fs.existsSync(easIgnorePath) && checkEasignore) {
-      return isFileIgnoredByRules(filePath, easIgnorePath, rootPath);
-    } else if (fs.existsSync(gitIgnorePath)) {
-      // Try git command first for accuracy if git is available
-      try {
-        await spawnAsync('git', ['check-ignore', '-q', filePath], {
-          cwd: path.normalize(rootPath),
-        });
-        return true;
-      } catch {
-        // Fallback to parsing .gitignore manually if git command fails
-        return isFileIgnoredByRules(filePath, gitIgnorePath, rootPath);
-      }
+  // We first just check git. This will return a nullish value if the repo isn't initialized
+  isIgnored = await isGitIgnored(filePath);
+  if (isIgnored) {
+    return isIgnored;
+  }
+
+  // Otherwise, we use the ignore files manually
+  const ignoreFiles = await parseIgnoreFiles();
+  const relativePath = path.relative(process.cwd(), filePath);
+  // We only check git, if the `git check-ignore` command failed
+  if (isIgnored == null && (isIgnored = ignoreFiles.git?.(relativePath))) {
+    return true;
+  }
+
+  if (checkEasignore) {
+    // We always must check the .easignore, even if `isGitIgnored` was already run in this case,
+    // since it's an "overlay" on top of git-ignored files
+    const isEASIgnored = ignoreFiles.eas?.(relativePath);
+    if (isEASIgnored != null) {
+      return isEASIgnored;
     }
-    // If neither file exists, the file is not ignored
-    return false;
-  } catch {
-    return false;
   }
-}
 
-async function getRootPathAsync(): Promise<string> {
-  try {
-    return (await spawnAsync('git', ['rev-parse', '--show-toplevel'])).stdout.trim();
-  } catch {
-    // If git is not available, return the current working directory
-    return process.cwd();
-  }
+  // Will return `null` if the status of the file is unknown
+  return isIgnored ?? null;
 }
