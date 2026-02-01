@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add Bonjour service discovery ([#42384](https://github.com/expo/expo/pull/42384) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix sometimes two dev menus would open. ([#42567](https://github.com/expo/expo/pull/42567) by [@lukmccall](https://github.com/lukmccall))
