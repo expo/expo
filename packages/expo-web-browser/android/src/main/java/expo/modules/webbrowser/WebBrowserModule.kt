@@ -1,8 +1,10 @@
 package expo.modules.webbrowser
 
 import expo.modules.core.errors.CurrentActivityNotFoundException
+import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.os.bundleOf
@@ -19,6 +21,8 @@ private const val PREFERRED_BROWSER_PACKAGE = "preferredBrowserPackage"
 private const val DEFAULT_BROWSER_PACKAGE = "defaultBrowserPackage"
 
 private const val MODULE_NAME = "ExpoWebBrowser"
+private const val TAG = "ExpoWebBrowser"
+private const val MIN_SDK_FOR_EPHEMERAL_SESSION = 36
 
 class WebBrowserModule : Module() {
   private val context
@@ -127,6 +131,32 @@ class WebBrowserModule : Module() {
 
     if (options.enableDefaultShareMenuItem) {
       builder.setShareState(CustomTabsIntent.SHARE_STATE_ON)
+    }
+
+    if (options.preferEphemeralSession) {
+      if (Build.VERSION.SDK_INT >= MIN_SDK_FOR_EPHEMERAL_SESSION) {
+        try {
+          // Try to call setEphemeralBrowsingEnabled using reflection
+          // This ensures backward compatibility with older androidx.browser versions
+          val setEphemeralBrowsingEnabledMethod = CustomTabsIntent.Builder::class.java.getMethod(
+            "setEphemeralBrowsingEnabled",
+            Boolean::class.javaPrimitiveType
+          )
+          setEphemeralBrowsingEnabledMethod.invoke(builder, true)
+        } catch (e: NoSuchMethodException) {
+          Log.w(
+            TAG,
+            "preferEphemeralSession requires androidx.browser:browser:1.9.0 or higher. The option will be ignored."
+          )
+        } catch (e: Exception) {
+          Log.w(TAG, "Failed to set ephemeral session: ${e.message}")
+        }
+      } else {
+        Log.w(
+          TAG,
+          "preferEphemeralSession requires API level $MIN_SDK_FOR_EPHEMERAL_SESSION or higher (current: ${Build.VERSION.SDK_INT}). The option will be ignored."
+        )
+      }
     }
 
     builder.setUrlBarHidingEnabled(options.enableBarCollapsing)
