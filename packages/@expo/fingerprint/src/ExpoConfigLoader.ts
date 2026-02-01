@@ -23,12 +23,11 @@ async function runAsync(programName: string, args: string[] = []) {
   setNodeEnv('development');
   require('@expo/env').load(projectRoot);
 
-  // @ts-expect-error: module internal _cache
   const loadedModulesBefore = new Set(Object.keys(module._cache));
 
   const { getConfig } = require(resolveFrom(path.resolve(projectRoot), 'expo/config'));
   const config = await getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  // @ts-expect-error: module internal _cache
+
   const loadedModules = Object.keys(module._cache)
     .filter((modulePath) => !loadedModulesBefore.has(modulePath))
     .map((modulePath) => path.relative(projectRoot, modulePath));
