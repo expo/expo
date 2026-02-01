@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2025-12-18T17:56:11.644Z",
-    "cliVersion": "16.28.0"
+    "fetchedAt": "2026-01-30T20:04:13.501Z",
+    "cliVersion": "16.32.0"
   },
-  "totalCommands": 101,
+  "totalCommands": 102,
   "commands": [
     {
       "command": "eas account:login",
@@ -15,6 +15,11 @@
       "command": "eas account:logout",
       "description": "log out",
       "usage": "USAGE\n  $ eas account:logout\n\nDESCRIPTION\n  log out\n\nALIASES\n  $ eas logout"
+    },
+    {
+      "command": "eas account:usage [ACCOUNT_NAME]",
+      "description": "view account usage and billing for the current cycle",
+      "usage": "USAGE\n  $ eas account:usage [ACCOUNT_NAME] [--json] [--non-interactive]\n\nARGUMENTS\n  ACCOUNT_NAME  Account name to view usage for. If not provided, the account will be selected interactively (or defaults\n                to the only account if there is just one)\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  view account usage and billing for the current cycle"
     },
     {
       "command": "eas account:view",
@@ -394,7 +399,7 @@
     {
       "command": "eas update:list",
       "description": "view the recent updates",
-      "usage": "USAGE\n  $ eas update:list [--branch <value> | --all] [--offset <value>] [--limit <value>] [--json --non-interactive]\n\nFLAGS\n  --all              List updates on all branches\n  --branch=<value>   List updates only on this branch\n  --json             Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>    The number of items to fetch each query. Defaults to 25 and is capped at 50.\n  --non-interactive  Run the command in non-interactive mode.\n  --offset=<value>   Start queries from specified index. Use for paginating results. Defaults to 0.\n\nDESCRIPTION\n  view the recent updates"
+      "usage": "USAGE\n  $ eas update:list [--branch <value> | --all] [-p android|ios|all] [--runtime-version <value>] [--offset\n    <value>] [--limit <value>] [--json --non-interactive]\n\nFLAGS\n  -p, --platform=(android|ios|all)  Filter updates by platform\n  --all                             List updates on all branches\n  --branch=<value>                  List updates only on this branch\n  --json                            Enable JSON output, non-JSON messages will be printed to stderr.\n  --limit=<value>                   The number of items to fetch each query. Defaults to 25 and is capped at 50.\n  --non-interactive                 Run the command in non-interactive mode.\n  --offset=<value>                  Start queries from specified index. Use for paginating results. Defaults to 0.\n  --runtime-version=<value>         Filter updates by runtime version\n\nDESCRIPTION\n  view the recent updates"
     },
     {
       "command": "eas update:republish",
