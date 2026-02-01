@@ -305,3 +305,15 @@ export function getFiles(mode: string | undefined, { silent = false }: { silent?
 
   return getEnvFiles({ mode, silent });
 }
+
+/**
+ * Parses the contents of a single `.env` file, optionally expanding it immediately.
+ */
+export function parseEnv(contents: string, sourceEnv?: EnvOutput): EnvOutput {
+  try {
+    const env = parse(contents);
+    return expand(env, sourceEnv || {});
+  } catch {
+    return {};
+  }
+}
