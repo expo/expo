@@ -59,16 +59,15 @@ export async function isFileIgnoredAsync(
 
   // Otherwise, we use the ignore files manually
   const ignoreFiles = await parseIgnoreFiles(path.dirname(filePath));
-  const relativePath = path.relative(process.cwd(), filePath);
   // We only check git, if the `git check-ignore` command failed
-  if (isIgnored == null && (isIgnored = ignoreFiles.git?.(relativePath))) {
+  if (isIgnored == null && (isIgnored = ignoreFiles.git?.(filePath))) {
     return true;
   }
 
   if (checkEasignore) {
     // We always must check the .easignore, even if `isGitIgnored` was already run in this case,
     // since it's an "overlay" on top of git-ignored files
-    const isEASIgnored = ignoreFiles.eas?.(relativePath);
+    const isEASIgnored = ignoreFiles.eas?.(filePath);
     if (isEASIgnored != null) {
       return isEASIgnored;
     }

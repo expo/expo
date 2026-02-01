@@ -38,7 +38,7 @@ async function getRootPathAsync(root = process.cwd()): Promise<string> {
     (await getGitTopLevelAsync(root)) ||
     (await getGitRootPathAsync(root)) ||
     (await resolveWorkspaceRootAsync(root)) ||
-    root;
+    process.cwd();
   debug(`Using root path: ${rootPath}`);
   return rootPath;
 }
@@ -50,7 +50,7 @@ export interface IgnoreFiles {
 
 interface IgnoreFile {
   fromPath: string;
-  ignores(filePath: string): boolean;
+  filter(filePath: string): boolean;
 }
 
 const ignoreFileNames = {
@@ -76,10 +76,10 @@ export async function parseIgnoreFiles(root = process.cwd()): Promise<IgnoreFile
         if (contents) {
           // If we find an ignore file, we parse it and store its dirname
           debug(`Found ${ignoreFileName} file: ${ignoreFilePath}`);
-          const ignoreFile = ignore().add(contents);
+          const ignoreFile = ignore({ allowRelativePaths: true }).add(contents);
           result[ignoreKey].push({
             fromPath: dir,
-            ignores: ignoreFile.createFilter(),
+            filter: ignoreFile.createFilter(),
           });
         }
       } catch {
@@ -97,7 +97,7 @@ export async function parseIgnoreFiles(root = process.cwd()): Promise<IgnoreFile
       const resolvedPath = path.resolve(root, filePath);
       return ignores.some((ignore) => {
         const relativePath = path.relative(ignore.fromPath, resolvedPath);
-        return ignore.ignores(relativePath) || ignore.ignores(`${relativePath}/`);
+        return !ignore.filter(relativePath) || !ignore.filter(`${relativePath}/`);
       });
     };
   };
