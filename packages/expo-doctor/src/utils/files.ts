@@ -12,15 +12,10 @@ async function isGitIgnored(filePath: string, rootPath = process.cwd()): Promise
       cwd: path.normalize(rootPath),
     }));
     return true;
-  } catch (error) {
-    switch (result?.child?.exitCode) {
-      case 1:
-        return false;
-      // NOTE: 128 and other codes indicate that this isn't an initialized git repository
-      case 128:
-      default:
-        return null;
-    }
+  } catch {
+    // A non 0/1 satus code means that `git` isn't available, for example if the
+    // repository is uninitialized
+    return result?.child?.exitCode === 1 ? false : null;
   }
 }
 
