@@ -49,6 +49,7 @@ export async function isFileIgnoredAsync(
   checkEasignore: boolean = true
 ): Promise<boolean | null> {
   let isIgnored: boolean | null | undefined;
+  filePath = path.resolve(filePath);
 
   // We first just check git. This will return a nullish value if the repo isn't initialized
   isIgnored = await isGitIgnored(filePath);
@@ -57,7 +58,7 @@ export async function isFileIgnoredAsync(
   }
 
   // Otherwise, we use the ignore files manually
-  const ignoreFiles = await parseIgnoreFiles();
+  const ignoreFiles = await parseIgnoreFiles(path.dirname(filePath));
   const relativePath = path.relative(process.cwd(), filePath);
   // We only check git, if the `git check-ignore` command failed
   if (isIgnored == null && (isIgnored = ignoreFiles.git?.(relativePath))) {
