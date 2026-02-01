@@ -24,13 +24,13 @@ In this chapter, we'll address some app details before deploying our app to an a
 
 [`expo-status-bar`](/versions/latest/sdk/status-bar/) library comes pre-installed in every project created using `create-expo-app`. This library provides a `StatusBar` component to configure the app's status bar style.
 
-Inside **app/\_layout.tsx**:
+Inside **src/app/\_layout.tsx**:
 
 1. Import `StatusBar` from `expo-status-bar`.
 2. Group the `StatusBar` and existing `Stack` components with [React's Fragment component](https://react.dev/reference/react/Fragment).
 
 {/* prettier-ignore */}
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 /* @tutinfo */
 import { StatusBar } from 'expo-status-bar';
