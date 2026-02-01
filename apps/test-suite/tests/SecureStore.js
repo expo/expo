@@ -103,6 +103,38 @@ export function test(t) {
         });
       }
     );
+    t.describe(
+      'canUseDeviceCredentialsAuthentication correctly indicates if a value can be saved with fallback authentication',
+      () => {
+        const canSave = SecureStore.canUseDeviceCredentialsAuthentication();
+        t.it('canUseDeviceCredentialsAuthentication returns a boolean', async () => {
+          t.expect(typeof canSave).toBe('boolean');
+        });
+        const testDescription = `canUseDeviceCredentialsAuthentication is ${canSave} -> saving the value should ${
+          canSave ? 'succeed' : 'fail'
+        }`;
+        t.it(testDescription, async () => {
+          try {
+            try {
+              await SecureStore.setItemAsync(key, value, {
+                keychainService: 'fallback_service',
+                enableDeviceFallback: true,
+                requireAuthentication: true,
+              });
+              if (!canSave) {
+                t.fail('Expected SecureStore.setItemAsync to throw an error');
+              }
+            } catch {
+              if (canSave) {
+                t.fail('Expected SecureStore.setItemAsync to succeed');
+              }
+            }
+          } catch (e) {
+            t.fail(e);
+          }
+        });
+      }
+    );
     t.describe('store with empty key -> err:', () => {
       t.it('Sets a value with an empty key, expect error', async () => {
         try {

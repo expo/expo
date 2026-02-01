@@ -1,9 +1,10 @@
 package expo.modules.securestore.encryptors
 
-import android.annotation.TargetApi
+import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import androidx.annotation.RequiresApi
 import expo.modules.securestore.AuthenticationHelper
 import expo.modules.securestore.DecryptException
 import expo.modules.securestore.SecureStoreModule
@@ -33,6 +34,11 @@ import javax.crypto.spec.GCMParameterSpec
 class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
   override fun getKeyStoreAlias(options: SecureStoreOptions): String {
     val baseAlias = options.keychainService
+
+    if (baseAlias == SecureStoreModule.DEFAULT_KEYSTORE_ALIAS && options.enableDeviceFallback) {
+      return "$AES_CIPHER:${SecureStoreModule.DEFAULT_FALLBACK_KEYSTORE_ALIAS}"
+    }
+
     return "$AES_CIPHER:$baseAlias"
   }
 
@@ -50,17 +56,22 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     return "${getKeyStoreAlias(options)}:$suffix"
   }
 
-  @TargetApi(23)
+  @RequiresApi(Build.VERSION_CODES.R)
   @Throws(GeneralSecurityException::class)
   override fun initializeKeyStoreEntry(keyStore: KeyStore, options: SecureStoreOptions): KeyStore.SecretKeyEntry {
     val extendedKeystoreAlias = getExtendedKeyStoreAlias(options, options.requireAuthentication)
     val keyPurposes = KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+
+    val authType =
+      if (options.enableDeviceFallback) KeyProperties.AUTH_BIOMETRIC_STRONG or KeyProperties.AUTH_DEVICE_CREDENTIAL
+      else KeyProperties.AUTH_BIOMETRIC_STRONG
 
     val algorithmSpec: AlgorithmParameterSpec = KeyGenParameterSpec.Builder(extendedKeystoreAlias, keyPurposes)
       .setKeySize(AES_KEY_SIZE_BITS)
       .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
       .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
       .setUserAuthenticationRequired(options.requireAuthentication)
+      .setUserAuthenticationParameters(0, authType)
       .build()
 
     val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, keyStore.provider)
@@ -78,14 +89,15 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
     keyStoreEntry: KeyStore.SecretKeyEntry,
     requireAuthentication: Boolean,
     authenticationPrompt: String,
-    authenticationHelper: AuthenticationHelper
+    authenticationHelper: AuthenticationHelper,
+    enableDeviceFallback: Boolean,
   ): JSONObject {
     val secretKey = keyStoreEntry.secretKey
     val cipher = Cipher.getInstance(AES_CIPHER)
     cipher.init(Cipher.ENCRYPT_MODE, secretKey)
 
     val gcmSpec = cipher.parameters.getParameterSpec(GCMParameterSpec::class.java)
-    val authenticatedCipher = authenticationHelper.authenticateCipher(cipher, requireAuthentication, authenticationPrompt)
+    val authenticatedCipher = authenticationHelper.authenticateCipher(cipher, requireAuthentication, authenticationPrompt, enableDeviceFallback)
 
     return createEncryptedItemWithCipher(plaintextValue, authenticatedCipher, gcmSpec)
   }
@@ -128,7 +140,7 @@ class AESEncryptor : KeyBasedEncryptor<KeyStore.SecretKeyEntry> {
       throw DecryptException("Authentication tag length must be at least $MIN_GCM_AUTHENTICATION_TAG_LENGTH bits long", key, options.keychainService)
     }
     cipher.init(Cipher.DECRYPT_MODE, keyStoreEntry.secretKey, gcmSpec)
-    val unlockedCipher = authenticationHelper.authenticateCipher(cipher, requiresAuthentication, options.authenticationPrompt)
+    val unlockedCipher = authenticationHelper.authenticateCipher(cipher, requiresAuthentication, options.authenticationPrompt, options.enableDeviceFallback)
     return String(unlockedCipher.doFinal(ciphertextBytes), StandardCharsets.UTF_8)
   }
 
