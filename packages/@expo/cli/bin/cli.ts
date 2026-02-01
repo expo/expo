@@ -4,6 +4,10 @@ import chalk from 'chalk';
 import Debug from 'debug';
 import { boolish } from 'getenv';
 
+// JSONL interceptor - must be installed before any output occurs
+import { installJsonlInterceptor } from '../src/utils/jsonl';
+installJsonlInterceptor();
+
 // Setup before requiring `debug`.
 if (boolish('EXPO_DEBUG', false)) {
   Debug.enable('expo:*');

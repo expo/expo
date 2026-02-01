@@ -1,5 +1,7 @@
 import ProgressBar from 'progress';
 
+import { env } from './env';
+
 let currentProgress: ProgressBar | null = null;
 
 export function setProgressBar(bar: ProgressBar | null): void {
@@ -11,6 +13,11 @@ export function getProgressBar(): ProgressBar | null {
 }
 
 export function createProgressBar(barFormat: string, options: ProgressBar.ProgressBarOptions) {
+  // Disable progress bars in JSONL mode
+  if (env.EXPO_UNSTABLE_JSONL_OUTPUT) {
+    return null;
+  }
+
   if (process.stderr.clearLine == null) {
     return null;
   }
