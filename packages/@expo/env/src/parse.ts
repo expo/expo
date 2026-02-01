@@ -5,7 +5,10 @@ export interface EnvOutput {
 }
 
 export function parse<T extends EnvOutput = EnvOutput>(contents: string): T {
-  const env = parseEnv(contents) as EnvOutput;
+  const parsed = parseEnv(contents) as EnvOutput;
+  const env: EnvOutput = {};
+  // NOTE(@kitten): In Node <=20.20 some keys are not properly trimmed
+  for (const key in parsed) env[key.trim()] = parsed[key];
   return env as T;
 }
 
