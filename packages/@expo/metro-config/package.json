@@ -45,8 +45,6 @@
     "browserslist": "^4.25.0",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
-    "dotenv": "~16.4.5",
-    "dotenv-expand": "~11.0.6",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
     "hermes-parser": "^0.29.1",
