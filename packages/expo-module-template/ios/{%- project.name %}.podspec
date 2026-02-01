@@ -1,3 +1,4 @@
+<% if (!features.ios) { %>// __SKIP_FILE__<% } %>
 require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
