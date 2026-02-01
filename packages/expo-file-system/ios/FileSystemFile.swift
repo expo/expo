@@ -95,13 +95,13 @@ internal final class FileSystemFile: FileSystemPath {
   }
 
   func text() throws -> String {
-    return try withCorrectTypeAndScopedAccess(permission: .write) {
+    return try withCorrectTypeAndScopedAccess(permission: .read) {
       return try String(contentsOf: url)
     }
   }
 
   func bytes() throws -> Data {
-    return try withCorrectTypeAndScopedAccess(permission: .write) {
+    return try withCorrectTypeAndScopedAccess(permission: .read) {
       return try Data(contentsOf: url)
     }
   }
