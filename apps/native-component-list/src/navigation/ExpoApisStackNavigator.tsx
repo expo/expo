@@ -150,6 +150,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/inlineModules/InlineModulesScreen'));
+    },
+    name: 'InlineModules',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/Blob/BlobScreen'));
     },
     name: 'Blob',
