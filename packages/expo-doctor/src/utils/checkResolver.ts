@@ -25,6 +25,7 @@ import { ProjectSetupCheck } from '../checks/ProjectSetupCheck';
 import { ReactNativeDirectoryCheck } from '../checks/ReactNativeDirectoryCheck';
 import { StoreCompatibilityCheck } from '../checks/StoreCompatibilityCheck';
 import { SupportPackageVersionCheck } from '../checks/SupportPackageVersionCheck';
+import { TrustedDependencyCheck } from '../checks/TrustedDependencyCheck';
 import { DoctorCheck } from '../checks/checks.types';
 
 /**
@@ -49,6 +50,7 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
     new IllegalPackageCheck(),
     new GlobalPackageInstalledLocallyCheck(),
     new DirectPackageInstallCheck(),
+    new TrustedDependencyCheck(),
     new PeerDependencyChecks(),
     new AutolinkingDependencyDuplicatesCheck(),
 
