@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added ETC compressed texture support for the `compressedTexImage2D` and `compressedTexSubImage2D` WebGL methods. ([#35022](https://github.com/expo/expo/pull/35022) by [@hmallen99](https://github.com/hmallen99))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fixed a crash caused by the missing module registry. ([#42653](https://github.com/expo/expo/pull/42653) by [@tsapeta](https://github.com/tsapeta))
