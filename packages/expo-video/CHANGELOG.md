@@ -166,6 +166,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [iOS] Avoid type ambiguity in Swift async asset.load() for Xcode 26 ([#38137](https://github.com/expo/expo/pull/38137) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
 - [Android] Fix duration property resetting to 0 on video repeat. ([#37984](https://github.com/expo/expo/pull/37984) by [@Wenszel](https://github.com/Wenszel))
 - [Android] Fix accessing player.loop causes app to crash. ([#37928](https://github.com/expo/expo/pull/37928) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Setting `player.currentTime` doesn't seek to the correct time on some videos. ([#37672](https://github.com/expo/expo/pull/37300) by [@petrkonecny2](https://github.com/petrkonecny2))
