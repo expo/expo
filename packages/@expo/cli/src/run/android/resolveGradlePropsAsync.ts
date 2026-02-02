@@ -37,30 +37,34 @@ export async function resolveGradlePropsAsync(
 
   const apkDirectory = path.join(projectRoot, 'android', appName, 'build', 'outputs', 'apk');
 
-  // buildDeveloperTrust -> buildtype: trust, flavors: build, developer
+  // buildDeveloperTrust -> buildtype: trust, flavors: buildDeveloper
   // developmentDebug -> buildType: debug, flavors: development
   // productionRelease -> buildType: release, flavors: production
   // previewDebugOptimized -> buildType: debugOptimized, flavors: preview
-  // This won't work for non-standard flavor names like "myFlavor" would be treated as "my", "flavor".
-  let parts = variant.split(/(?=[A-Z])/).map((v) => v.toLowerCase());
+  const parts = variant.split(/(?=[A-Z])/);
 
-  // Special case: merge 'debug' and 'optimized' into 'debugOptimized'
-  if (parts.length >= 2 && parts[parts.length - 1] === 'optimized' && parts[parts.length - 2] === 'debug') {
-    parts = [...parts.slice(0, -2), 'debugOptimized'];
+  // Special case: merge 'Optimized' suffix with preceding part, e.g. into 'debugOptimized'
+  let buildType = parts.pop() ?? 'debug';
+  if (parts.length > 0 && buildType === 'Optimized') {
+    buildType = parts.pop()!.toLowerCase() + buildType;
+  } else {
+    buildType = buildType.toLowerCase();
   }
 
-  const flavors = parts.slice(0, -1);
-  const buildType = parts[parts.length - 1] ?? 'debug';
-
-  const apkVariantDirectory = path.join(apkDirectory, ...flavors, buildType);
-  const architectures = await getConnectedDeviceABIS(buildType, device, options.allArch);
+  let apkVariantDirectory: string;
+  if (parts.length > 0) {
+    const flavorPath = parts[0].toLowerCase() + parts.slice(1).join('');
+    apkVariantDirectory = path.join(apkDirectory, flavorPath, buildType);
+  } else {
+    apkVariantDirectory = path.join(apkDirectory, buildType);
+  }
 
   return {
     appName,
     buildType,
-    flavors,
+    flavors: parts.map((v) => v.toLowerCase()),
     apkVariantDirectory,
-    architectures,
+    architectures: await getConnectedDeviceABIS(buildType, device, options.allArch),
   };
 }
 
