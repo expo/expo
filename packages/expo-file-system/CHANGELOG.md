@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix copy/move support for SAF and content provider URIs.
+
 ### 💡 Others
 
 ## 55.0.9 — 2026-02-25
