@@ -14,6 +14,7 @@ import {
   Capsule,
   Stepper,
   Spacer,
+  Button,
 } from '@expo/ui/swift-ui';
 import {
   background,
@@ -64,7 +65,9 @@ import {
   font,
   lineLimit,
   contentShape,
+  strokeOverlay,
   shapes,
+  buttonStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import {
@@ -457,6 +460,171 @@ export default function ModifiersScreen() {
               // primary is a named color in SwiftUI
               modifiers={[foregroundStyle({ type: 'color', color: 'primary' })]}
             />
+          </Section>
+
+          {/* Stroke overlay */}
+          <Section title="Stroke Overlay Modifier">
+            <HStack alignment="center">
+              <Spacer />
+              <Button
+                modifiers={[
+                  buttonStyle('plain'),
+                  frame({ width: 60, height: 60 }),
+                  background('#E5E5EA'),
+                  clipShape('circle'),
+                  strokeOverlay({
+                    style: 'rgba(0,0,0,0.08)',
+                    shape: shapes.circle(),
+                    lineWidth: 0.5,
+                  }),
+                ]}>
+                <Text modifiers={[font({ size: 11 }), multilineTextAlignment('center')]}>
+                  {'Chill\nStroke'}
+                </Text>
+              </Button>
+              <Spacer />
+              <Button
+                modifiers={[
+                  buttonStyle('plain'),
+                  frame({ height: 60 }),
+                  padding({ horizontal: 24 }),
+                  background('#F8F9FA'),
+                  cornerRadius(16),
+                  strokeOverlay({
+                    style: 'rgba(0,0,0,0.15)',
+                    shape: shapes.roundedRectangle({ cornerRadius: 16 }),
+                    lineWidth: 1,
+                  }),
+                ]}>
+                <Text modifiers={[font({ size: 11 }), multilineTextAlignment('center')]}>
+                  {'Stroke\nStroke'}
+                </Text>
+              </Button>
+              <Spacer />
+            </HStack>
+
+            <HStack alignment="center">
+              <Spacer />
+              <Button
+                modifiers={[
+                  buttonStyle('plain'),
+                  frame({ height: 55 }),
+                  padding({ horizontal: 24 }),
+                  background('#E8F4FD'),
+                  cornerRadius(12),
+                  strokeOverlay({
+                    style: '#3498DB',
+                    shape: shapes.roundedRectangle({ cornerRadius: 12 }),
+                    lineWidth: 2,
+                    lineCap: 'round',
+                    dashPattern: [8, 4],
+                  }),
+                ]}>
+                <Text modifiers={[font({ size: 13 })]}>Dashed</Text>
+              </Button>
+              <Spacer />
+              <Button
+                modifiers={[
+                  buttonStyle('plain'),
+                  frame({ height: 55 }),
+                  padding({ horizontal: 24 }),
+                  background('#FFFBEB'),
+                  cornerRadius(12),
+                  strokeOverlay({
+                    style: '#F59E0B',
+                    shape: shapes.roundedRectangle({ cornerRadius: 12 }),
+                    lineWidth: 2,
+                    lineCap: 'round',
+                    dashPattern: [2, 6],
+                  }),
+                ]}>
+                <Text modifiers={[font({ size: 13 })]}>Dotted</Text>
+              </Button>
+              <Spacer />
+            </HStack>
+
+            <HStack alignment="center">
+              <Spacer />
+              <Button
+                modifiers={[
+                  buttonStyle('plain'),
+                  frame({ width: 70, height: 70 }),
+                  strokeOverlay({
+                    style: {
+                      type: 'linearGradient',
+                      colors: ['#FF6B6B', '#4ECDC4'],
+                      startPoint: { x: 0, y: 0 },
+                      endPoint: { x: 1, y: 1 },
+                    },
+                    shape: shapes.circle(),
+                    lineWidth: 3,
+                  }),
+                ]}>
+                <Text modifiers={[font({ size: 11 }), multilineTextAlignment('center')]}>
+                  {'Linear\nGradient'}
+                </Text>
+              </Button>
+              <Spacer />
+              <Button
+                modifiers={[
+                  buttonStyle('plain'),
+                  frame({ width: 70, height: 70 }),
+                  strokeOverlay({
+                    style: {
+                      type: 'radialGradient',
+                      colors: ['#FF0080', '#00FFFF'],
+                      center: { x: 0.5, y: 0.5 },
+                      startRadius: 0,
+                      endRadius: 50,
+                    },
+                    shape: shapes.circle(),
+                    lineWidth: 8,
+                  }),
+                ]}>
+                <Text modifiers={[font({ size: 11 }), multilineTextAlignment('center')]}>
+                  {'Radial\nGradient'}
+                </Text>
+              </Button>
+              <Spacer />
+              <Button
+                modifiers={[
+                  buttonStyle('plain'),
+                  frame({ width: 70, height: 70 }),
+                  strokeOverlay({
+                    style: {
+                      type: 'angularGradient',
+                      colors: ['#FF6B6B', '#4ECDC4', '#9B59B6', '#FF6B6B'],
+                      center: { x: 0.5, y: 0.5 },
+                    },
+                    shape: shapes.circle(),
+                    lineWidth: 3,
+                  }),
+                ]}>
+                <Text modifiers={[font({ size: 11 }), multilineTextAlignment('center')]}>
+                  {'Angular\nGradient'}
+                </Text>
+              </Button>
+              <Spacer />
+            </HStack>
+
+            <HStack alignment="center">
+              <Spacer />
+              <Button
+                modifiers={[
+                  buttonStyle('plain'),
+                  frame({ width: 140, height: 60 }),
+                  strokeOverlay({
+                    style: '#8B5CF6',
+                    shape: shapes.ellipse(),
+                    lineWidth: 2,
+                  }),
+                ]}>
+                <Text modifiers={[font({ size: 11 }), multilineTextAlignment('center')]}>
+                  {'Ellipse\nStroke'}
+                </Text>
+              </Button>
+              <Spacer />
+            </HStack>
           </Section>
 
           {/* New Modifier System Demo Section */}

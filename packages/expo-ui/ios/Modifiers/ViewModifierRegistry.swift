@@ -1924,5 +1924,9 @@ extension ViewModifierRegistry {
     register("environment") { params, appContext, _ in
       return try EnvironmentModifier(from: params, appContext: appContext)
     }
+
+    register("strokeOverlay") { params, appContext, _ in
+      return try StrokeOverlayModifier(from: params, appContext: appContext)
+    }
   }
 }

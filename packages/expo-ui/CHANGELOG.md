@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `strokeOverlay` modifier with full `StrokeStyle` support (lineCap, lineJoin, dash patterns) and gradient strokes. ([#42810](https://github.com/expo/expo/pull/42810) by [@BarakXYZ](https://github.com/BarakXYZ))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fixed missing dependency on RCTFabric in ExpoUI podspec. ([#42901](https://github.com/expo/expo/pull/42901) by [@chrfalch](https://github.com/chrfalch))
