@@ -111,7 +111,8 @@ export async function transform(
     isHosted
   );
 
-  if (isServerEnv || options.platform === 'web') {
+  const hasMultipleDescriptors = data.scales?.length > 1 && data.files?.length > 1;
+  if (isServerEnv || (options.platform === 'web' && !hasMultipleDescriptors)) {
     const type = !data.type ? '' : `.${data.type}`;
     let assetPath: string;
     if (useMd5Filename) {
