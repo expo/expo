@@ -99,6 +99,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Sync TextInput component',
+    route: 'ui/sync-textInput',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SyncTextInputScreen'));
+    },
+  },
+  {
     name: 'ProgressView component',
     route: 'ui/progress-view',
     options: {},
