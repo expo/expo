@@ -356,7 +356,7 @@ export declare class FileHandle {
    */
   close(): void;
   /*
-   * Reads the specified amount of bytes from the file at the current offset.
+   * Reads the specified amount of bytes from the file at the current offset. Max amount of bytes read at once is capped by ArrayBuffer max size (32 bit signed MAX_INT on Android and 64 bit on iOS), but you can read from a FileHandle multiple times.
    * @param length The number of bytes to read.
    */
   readBytes(length: number): Uint8Array<ArrayBuffer>;
