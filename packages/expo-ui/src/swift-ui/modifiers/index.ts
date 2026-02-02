@@ -1050,20 +1050,8 @@ export type ViewModifier = BuiltInModifier | ModifierConfig;
 // Utility Functions
 // =============================================================================
 
-/**
- * Creates a custom modifier for 3rd party libraries.
- * This function is exported so 3rd party packages can create their own modifiers.
- *
- * @example
- * ```ts
- * // In a 3rd party package
- * export const blurEffect = (params: { radius: number; style?: string }) =>
- *   createModifier('blurEffect', params);
- * ```
- */
-export { createModifier };
-
-export { createViewModifierEventListener } from './utils';
+export * from './createModifier';
+export * from './utils';
 
 /**
  * Type guard to check if a value is a valid modifier.

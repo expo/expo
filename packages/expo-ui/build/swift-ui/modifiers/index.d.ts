@@ -5,7 +5,7 @@
 import { animation } from './animation/index';
 import { background } from './background';
 import { containerShape } from './containerShape';
-import { createModifier, ModifierConfig } from './createModifier';
+import { ModifierConfig } from './createModifier';
 import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
@@ -784,19 +784,8 @@ export type BuiltInModifier = ReturnType<typeof listSectionSpacing> | ReturnType
  * @hidden
  */
 export type ViewModifier = BuiltInModifier | ModifierConfig;
-/**
- * Creates a custom modifier for 3rd party libraries.
- * This function is exported so 3rd party packages can create their own modifiers.
- *
- * @example
- * ```ts
- * // In a 3rd party package
- * export const blurEffect = (params: { radius: number; style?: string }) =>
- *   createModifier('blurEffect', params);
- * ```
- */
-export { createModifier };
-export { createViewModifierEventListener } from './utils';
+export * from './createModifier';
+export * from './utils';
 /**
  * Type guard to check if a value is a valid modifier.
  * @hidden

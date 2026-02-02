@@ -8,7 +8,9 @@ type GlobalEvent = {
 };
 
 /**
- * Create an event listener for a view modifier.
+ * Creates an event listener that routes native events to modifier event handlers.
+ *
+ * @param modifiers - An array of modifier configs to extract event listeners from.
  */
 export function createViewModifierEventListener(modifiers: ModifierConfig[]): GlobalEvent {
   const eventListeners: Record<string, (args: any) => void> = {};
