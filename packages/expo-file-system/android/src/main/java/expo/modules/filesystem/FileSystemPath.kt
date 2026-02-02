@@ -1,9 +1,13 @@
 package expo.modules.filesystem
 
+import android.content.Context
 import android.net.Uri
 import android.os.Build
+import android.provider.DocumentsContract
 import androidx.core.net.toUri
 import expo.modules.filesystem.unifiedfile.AssetFile
+import expo.modules.filesystem.unifiedfile.ContentProviderFile
+import expo.modules.filesystem.fsops.DestinationSpec
 import expo.modules.filesystem.unifiedfile.JavaFile
 import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
@@ -25,6 +29,12 @@ val Uri.isAssetUri
     return scheme == "asset"
   }
 
+// TODO: Is this correct?
+fun Uri.isSAFUri(context: Context): Boolean =
+  isContentUri && (
+    DocumentsContract.isDocumentUri(context, this) || DocumentsContract.isTreeUri(this)
+    )
+
 fun slashifyFilePath(path: String?): String? {
   return if (path == null) {
     null
@@ -44,16 +54,17 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
       if (currentAdapter?.uri == uri) {
         return currentAdapter
       }
-      val newAdapter = if (uri.isContentUri) {
-        SAFDocumentFile(appContext?.reactContext ?: throw Exception("No context"), uri)
-      } else if (uri.isAssetUri) {
-        AssetFile(appContext?.reactContext ?: throw Exception("No context"), uri)
-      } else {
-        JavaFile(uri)
+
+      val context = appContext?.reactContext ?: throw Exceptions.ReactContextLost()
+      val newAdapter = when {
+        uri.isSAFUri(context) -> SAFDocumentFile(context, uri)
+        uri.isContentUri -> ContentProviderFile(context, uri)
+        uri.isAssetUri -> AssetFile(context, uri)
+        else -> JavaFile(uri)
       }
-      fileAdapter = newAdapter
-      return newAdapter
+      return newAdapter.also { fileAdapter = it }
     }
+
   val javaFile: File
     get() =
       if (uri.isContentUri) {
@@ -141,7 +152,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     validatePermission(Permission.READ)
     to.validatePermission(Permission.WRITE)
 
-    javaFile.copyRecursively(getMoveOrCopyPath(to))
+    file.copyTo(to.asCopyOrMoveDestination())
   }
 
   fun move(to: FileSystemPath) {
@@ -150,15 +161,11 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     validatePermission(Permission.WRITE)
     to.validatePermission(Permission.WRITE)
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      val destination = getMoveOrCopyPath(to)
-      javaFile.toPath().moveTo(destination.toPath())
-      uri = destination.toUri()
-    } else {
-      javaFile.copyTo(getMoveOrCopyPath(to))
-      javaFile.delete()
-      uri = getMoveOrCopyPath(to).toUri()
-    }
+    // moveTo returns the URI of where the file was actually moved to
+    val finalUri = file.moveTo(to.asCopyOrMoveDestination())
+
+    // Update URI to reflect the new location
+    uri = finalUri
   }
 
   fun rename(newName: String) {
@@ -186,3 +193,9 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
       return file.creationTime
     }
 }
+
+fun FileSystemPath.asCopyOrMoveDestination(overwrite: Boolean = false) = DestinationSpec(
+  path = file,
+  overwrite = overwrite,
+  isDirectory = this is FileSystemDirectory
+)
