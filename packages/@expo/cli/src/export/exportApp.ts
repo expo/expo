@@ -142,7 +142,10 @@ export async function exportAppAsync(
 
   const bundles: Partial<Record<Platform, BundleOutput>> = {};
   const domComponentAssetsMetadata: Partial<Record<Platform, PlatformMetadata['assets']>> = {};
-
+  let scriptTags: {
+    platform: string;
+    src: string;
+  }[] = [];
   const spaPlatforms =
     // TODO: Support server and static rendering for server component exports.
     useServerRendering && !devServer.isReactServerComponentsEnabled
@@ -164,6 +167,9 @@ export async function exportAppAsync(
       // split. Hence, there's another separate `copyPublicFolderAsync` call below for `web`
       await copyPublicFolderAsync(publicPath, outputPath);
     }
+
+    const isServerHosted =
+      devServer.isReactServerComponentsEnabled || (hostedNative && useServerRendering);
 
     let templateHtml: string | undefined;
     // Can be empty during web-only SSG.
@@ -222,7 +228,17 @@ export async function exportAppAsync(
           getFilesFromSerialAssets(bundle.artifacts, {
             includeSourceMaps: sourceMaps,
             files,
-            isServerHosted: devServer.isReactServerComponentsEnabled || hostedNative,
+            isServerHosted,
+          });
+
+          bundle.artifacts.forEach((artifact) => {
+            if (artifact.type === 'js') {
+              // Add the script tag for the JS bundle.
+              scriptTags.push({
+                platform,
+                src: `/${artifact.filename}`,
+              });
+            }
           });
 
           // TODO: Remove duplicates...
@@ -309,6 +325,30 @@ export async function exportAppAsync(
         })
       );
 
+      // Clear the script tags if we are not using hosted native.
+      if (!hostedNative) {
+        scriptTags = [];
+      } else if (!files.has('index.html')) {
+        // If we already have an index.html file, we can inject the script tags into it.
+
+        files.set('index.html', {
+          targetDomain: devServer.isReactServerComponentsEnabled ? 'server' : 'client',
+          contents: injectScriptTags(`<html><head></head><body></body></html>`, scriptTags),
+        });
+      }
+
+      if (scriptTags.length > 0 && templateHtml) {
+        templateHtml = injectScriptTags(templateHtml, scriptTags);
+        if (files.has('index.html')) {
+          // If we already have an index.html file, we can inject the script tags into it.
+          const existingHtml = files.get('index.html')!;
+          files.set('index.html', {
+            ...existingHtml,
+            contents: injectScriptTags(existingHtml.contents as string, scriptTags),
+          });
+        }
+      }
+
       if (devServer.isReactServerComponentsEnabled) {
         const isWeb = platforms.includes('web');
 
@@ -378,7 +418,15 @@ export async function exportAppAsync(
         const placeholderIndex = path.resolve(outputPath, 'client/index.html');
         if (!fs.existsSync(placeholderIndex)) {
           files.set('index.html', {
-            contents: `<html><body></body></html>`,
+            contents: injectScriptTags(`<html><head></head><body></body></html>`, scriptTags),
+            targetDomain: 'client',
+          });
+        } else {
+          // If the index.html file exists, we assume it is a valid HTML file.
+          // We can inject the script tags into it.
+          const html = fs.readFileSync(placeholderIndex, 'utf8');
+          files.set('index.html', {
+            contents: injectScriptTags(html, scriptTags),
             targetDomain: 'client',
           });
         }
@@ -400,6 +448,7 @@ export async function exportAppAsync(
           maxWorkers,
           isExporting: true,
           exp: projectConfig.exp,
+          scriptTags,
         });
       }
     }

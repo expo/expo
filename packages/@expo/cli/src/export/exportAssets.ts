@@ -165,6 +165,17 @@ export async function exportAssetsAsync(
       outputDirectory: outputDir,
       baseUrl,
     });
+  } else if (hostedNative) {
+    // Do assets like export embed to support dev client + EAS Hosting.
+    await Promise.all(
+      Object.values(bundles).map((bundle) => {
+        return persistMetroAssetsAsync(projectRoot, bundle!.assets, {
+          platform: 'web',
+          outputDirectory: outputDir,
+          baseUrl,
+        });
+      })
+    );
   }
 
   if (hostedNative) {
