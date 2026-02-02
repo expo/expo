@@ -136,6 +136,7 @@ export async function stop(): Promise<void> {
 // @needsAudit
 /**
  * Pauses current speech. This method is not available on Android.
+ * @platform ios, web
  */
 export async function pause(): Promise<void> {
   if (!ExponentSpeech.pause) {
@@ -148,6 +149,7 @@ export async function pause(): Promise<void> {
 /**
  * Resumes speaking previously paused speech or does nothing if there's none. This method is not
  * available on Android.
+ * @platform ios, web
  */
 export async function resume(): Promise<void> {
   if (!ExponentSpeech.resume) {
