@@ -5,8 +5,8 @@ internal import ReactAppDependencyProvider
 import UIKit
 
 #if DEBUG && canImport(EXDevMenu) && canImport(EXManifests)
-@_implementationOnly import EXDevMenu
-@_implementationOnly import EXManifests
+internal import EXDevMenu
+internal import EXManifests
 #endif
 
 public class ReactNativeHostManager {
@@ -45,6 +45,13 @@ public class ReactNativeHostManager {
     initialProps: [AnyHashable: Any]?,
     launchOptions: [AnyHashable: Any]?
   ) throws -> UIView {
+    cleanupPreviousInstance()
+
+    let delegate = ReactNativeDelegate()
+    delegate.dependencyProvider = RCTAppDependencyProvider()
+    reactNativeFactory = ExpoReactNativeFactory(delegate: delegate)
+    reactNativeDelegate = delegate
+
     guard let reactNativeFactory else {
       fatalError("Trying to load view without initializing reactNativeFactory")
     }
@@ -71,7 +78,22 @@ public class ReactNativeHostManager {
     )
   }
 
+  /**
+   * Cleans up the previous instance of React Native
+   * to prevent memory leaks
+   */
+  public func cleanupPreviousInstance() {
+    if let rootViewFactory = reactNativeFactory?.rootViewFactory {
+      rootViewFactory.setValue(nil, forKey: "_reactHost")
+      reactNativeDelegate = nil
+      reactNativeFactory = nil
+    }
+  }
+
   #if DEBUG && canImport(EXDevMenu) && canImport(EXManifests)
+  /**
+   * Passes the dev menu manifest to dev menu manager
+   */
   private func setupDevMenuManifest(bundleURL: URL?) {
     guard let bundleURL else {
       print("⚠️ Bundle URL couldn't be retrieved")
