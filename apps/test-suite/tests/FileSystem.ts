@@ -287,6 +287,22 @@ export async function test({ describe, expect, it, ...t }) {
       expect(outputFile.exists).toBe(true);
     });
 
+    it('overwrites files by default when using write()', () => {
+      const file = new File(testDirectory, 'overwrite-test.txt');
+      file.write('First');
+      expect(file.textSync()).toBe('First');
+      file.write('Second');
+      expect(file.textSync()).toBe('Second');
+    });
+
+    it('overwrites a longer file with a shorter string', () => {
+      const file = new File(testDirectory, 'overwrite-shorter.txt');
+      file.write('This is a long string');
+      expect(file.textSync()).toBe('This is a long string');
+      file.write('Short');
+      expect(file.textSync()).toBe('Short');
+    });
+
     it('Writes a base64 encoded string to a file reference', () => {
       const outputFile = new File(testDirectory, 'file.txt');
       expect(outputFile.exists).toBe(false);
@@ -322,6 +338,14 @@ export async function test({ describe, expect, it, ...t }) {
         await FS.writeAsStringAsync(fileUri, ' world', { append: true });
         const content = await FS.readAsStringAsync(fileUri);
         expect(content).toBe('Hello world');
+      });
+
+      it('overwrites files by default when using writeAsStringAsync', async () => {
+        const fileUri = testDirectory + 'overwrite-legacy.txt';
+        await FS.writeAsStringAsync(fileUri, 'First');
+        expect(await FS.readAsStringAsync(fileUri)).toBe('First');
+        await FS.writeAsStringAsync(fileUri, 'Second');
+        expect(await FS.readAsStringAsync(fileUri)).toBe('Second');
       });
 
       it('appends a base64 string using legacy writeAsStringAsync', async () => {
