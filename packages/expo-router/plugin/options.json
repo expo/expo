@@ -172,6 +172,11 @@
           "description": "Disable synchronous layout updates for native screens.",
           "type": "boolean",
           "default": false
+        },
+        "adaptiveColors": {
+          "description": "Rerender the app on color scheme changes. When enabled, the app tree will rerender when the system theme changes (light/dark mode). Defaults to `true`.",
+          "type": "boolean",
+          "default": true
         }
       },
       "additionalProperties": false
