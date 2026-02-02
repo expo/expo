@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fix uninitialized `firstFrameEventGenerator` exception in VideoView when setting the `player` prop. ([#42615](https://github.com/expo/expo/pull/42615) by [@behenate](https://github.com/behenate))
+- [Android] Fix only one player getting released when reloading with multiple players present. ([#42780](https://github.com/expo/expo/pull/42780) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
