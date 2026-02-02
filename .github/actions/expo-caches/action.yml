@@ -50,7 +50,7 @@ inputs:
 outputs:
   yarn-workspace-hit:
     description: 'Returns true, if yarn workspace cache is up-to-date'
-    value: steps.workspace-modules-cache.outputs.cache-hit
+    value: ${{steps.workspace-modules-cache.outputs.cache-hit}}
   yarn-tools-hit:
     description: 'Returns true, if yarn /tools cache is up-to-date'
     value: steps.tools-modules-cache.outputs.cache-hit
