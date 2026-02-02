@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] strip com.facebook.react:hermes-android in [#42769](https://github.com/expo/expo/pull/42769) by [@pmleczek](https://github.com/pmleczek)
+
 ### 💡 Others
 
 - [test] Added E2E tests and improvements for CLI in [#42120](https://github.com/expo/expo/pull/42120) by [@pmleczek](https://github.com/pmleczek)
