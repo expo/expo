@@ -116,11 +116,12 @@ export declare const supportedCpuArchitectures: string[] | null;
  * Device.osName; // Android: "Android" or fingerprint string; iOS: "iOS" or "iPadOS"; web: "iOS", "Android", "Windows"
  * ```
  *
- * On android this option maps directly to [`android.os.Build.VERSION.BASE_OS`](https://developer.android.com/reference/android/os/Build.VERSION#BASE_OS) which on some devices is set to "Android"
- * and on others is a build fingerprint:
- * - on Xiaomi Poco X3 Pro - `POCO/vayu_eea/vayu:11/RKQ1.200826.002/V12.5.4.0.RJUEUXM:user/release-keys`
+ * On Android this option maps directly to [`android.os.Build.VERSION.BASE_OS`](https://developer.android.com/reference/android/os/Build.VERSION#BASE_OS) which on some devices is set to "Android"
+ * and on others is a build fingerprint.
  *
- * If you want to differentiate between iOS and Android consider using [`Platform.OS`](https://reactnative.dev/docs/platform#os) from `react-native`.
+ * For example on Xiaomi Poco X3 Pro the `Device.osName` is set to `POCO/vayu_eea/vayu:11/RKQ1.200826.002/V12.5.4.0.RJUEUXM:user/release-keys`
+ *
+ * If you want to differentiate between Android and iOS consider using [`Platform.OS`](https://reactnative.dev/docs/platform#os) from `react-native`.
  */
 export declare const osName: string | null;
 /**
