@@ -35,8 +35,8 @@ import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 
-import Button from '@/components/Button';
-import ImageViewer from '@/components/ImageViewer';
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 
@@ -101,10 +101,10 @@ const styles = StyleSheet.create({
 
 In the above snippet, we're rendering the `Button` component based on the value of `showAppOptions` and moving the buttons in the ternary operator block. When the value of `showAppOptions` is `true`, render an empty `<View>` component. We'll address this state in the next step.
 
-Now, we can remove the `alert` on the `Button` component and update the `onPress` prop when rendering the second button in the **src/components/Button.tsx**:
+Now, we can remove the `alert` on the `Button` component and update the `onPress` prop when rendering the second button in the **src/components/button.tsx**:
 
 {/* prettier-ignore */}
-```tsx src/components/Button.tsx
+```tsx src/components/button.tsx
 <Pressable style={styles.button} /* @tutinfo Replace the <CODE>alert()</CODE> with the <CODE>onPress</CODE>.*/ onPress={onPress}/* @end */>
 ```
 
@@ -124,9 +124,9 @@ Let's break down the layout of the option buttons we'll implement in this chapte
 
 It contains a parent `<View>` with three buttons aligned in a row. The button in the middle with the plus icon (+) will open the modal and is styled differently than the other two buttons.
 
-Inside the **src/components** directory, create a new **CircleButton.tsx** file with the following code:
+Inside the **src/components** directory, create a new **circle-button.tsx** file with the following code:
 
-```tsx src/components/CircleButton.tsx
+```tsx src/components/circle-button.tsx
 import { View, Pressable, StyleSheet } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -166,13 +166,13 @@ const styles = StyleSheet.create({
 
 To render the plus icon, this button uses the `<MaterialIcons>` icon set from the `@expo/vector-icons` library.
 
-The other two buttons also use `<MaterialIcons>` to display vertically aligned text labels and icons. Create a file named **IconButton.tsx** inside the **src/components** directory. This component accepts three props:
+The other two buttons also use `<MaterialIcons>` to display vertically aligned text labels and icons. Create a file named **icon-button.tsx** inside the **src/components** directory. This component accepts three props:
 
 - `icon`: the name corresponding to the `MaterialIcons` library icon.
 - `label`: the text label displayed on the button.
 - `onPress`: this function invokes when the user presses the button.
 
-```tsx src/components/IconButton.tsx
+```tsx src/components/icon-button.tsx
 import { Pressable, StyleSheet, Text } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -214,11 +214,11 @@ import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 
-import Button from '@/components/Button';
-import ImageViewer from '@/components/ImageViewer';
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
 /* @tutinfo Import <CODE>IconButton</CODE> and <CODE>CircleButton</CODE> components.*/
-import IconButton from '@/components/IconButton';
-import CircleButton from '@/components/CircleButton';
+import IconButton from '@/components/icon-button';
+import CircleButton from '@/components/circle-button';
 /* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
@@ -320,14 +320,14 @@ Let's take a look at our app on Android, iOS and the web:
 
 ## Create an emoji picker modal
 
-The modal allows the user to choose an emoji from a list of available emoji. Create an **EmojiPicker.tsx** file inside the **src/components** directory. This component accepts three props:
+The modal allows the user to choose an emoji from a list of available emoji. Create an **emoji-picker.tsx** file inside the **src/components** directory. This component accepts three props:
 
 - `isVisible`: a boolean to determine the state of the modal's visibility.
 - `onClose`: a function to close the modal.
 - `children`: used later to display a list of emoji.
 
 {/* prettier-ignore */}
-```tsx src/components/EmojiPicker.tsx|collapseHeight=430
+```tsx src/components/emoji-picker.tsx|collapseHeight=430
 import { Modal, View, Text, Pressable, StyleSheet } from 'react-native';
 import { PropsWithChildren } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -402,12 +402,12 @@ import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 
-import Button from '@/components/Button';
-import ImageViewer from '@/components/ImageViewer';
-import IconButton from '@/components/IconButton';
-import CircleButton from '@/components/CircleButton';
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
+import IconButton from '@/components/icon-button';
+import CircleButton from '@/components/circle-button';
 /* @tutinfo import the <CODE>EmojiPicker</CODE> component. */
-import EmojiPicker from '@/components/EmojiPicker';
+import EmojiPicker from '@/components/emoji-picker';
 /* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
@@ -519,10 +519,10 @@ Here is the result after this step:
 
 Let's add a horizontal list of emoji in the modal's content. We'll use the [`<FlatList>`](https://reactnative.dev/docs/flatlist) component from React Native for it.
 
-Create a **EmojiList.tsx** file inside the **src/components** directory and add the following code:
+Create an **emoji-list.tsx** file inside the **src/components** directory and add the following code:
 
 {/* prettier-ignore */}
-```tsx src/components/EmojiList.tsx
+```tsx src/components/emoji-list.tsx
 import { useState } from 'react';
 import { ImageSourcePropType, StyleSheet, FlatList, Platform, Pressable } from 'react-native';
 import { Image } from 'expo-image';
@@ -592,13 +592,13 @@ import { ImageSourcePropType, View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 
-import Button from '@/components/Button';
-import ImageViewer from '@/components/ImageViewer';
-import IconButton from '@/components/IconButton';
-import CircleButton from '@/components/CircleButton';
-import EmojiPicker from '@/components/EmojiPicker';
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
+import IconButton from '@/components/icon-button';
+import CircleButton from '@/components/circle-button';
+import EmojiPicker from '@/components/emoji-picker';
 /* @tutinfo Import the <CODE>EmojiList</CODE> component. */
-import EmojiList from '@/components/EmojiList';
+import EmojiList from '@/components/emoji-list';
 /* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
@@ -709,9 +709,9 @@ Let's take a look at our app on Android, iOS and the web:
 
 ## Display the selected emoji
 
-Now, we'll put the emoji sticker on the image. Create a new file in the **src/components** directory and call it **EmojiSticker.tsx**. Then, add the following code:
+Now, we'll put the emoji sticker on the image. Create a new file in the **src/components** directory and call it **emoji-sticker.tsx**. Then, add the following code:
 
-```tsx src/components/EmojiSticker.tsx|collapseHeight=300
+```tsx src/components/emoji-sticker.tsx|collapseHeight=300
 import { ImageSourcePropType, View } from 'react-native';
 import { Image } from 'expo-image';
 
@@ -742,13 +742,13 @@ import { ImageSourcePropType, View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 
-import Button from '@/components/Button';
-import ImageViewer from '@/components/ImageViewer';
-import IconButton from '@/components/IconButton';
-import CircleButton from '@/components/CircleButton';
-import EmojiPicker from '@/components/EmojiPicker';
-import EmojiList from '@/components/EmojiList';
-/* @tutinfo Import the <CODE>EmojiSticker</CODE> component. */import EmojiSticker from '@/components/EmojiSticker';/* @end */
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
+import IconButton from '@/components/icon-button';
+import CircleButton from '@/components/circle-button';
+import EmojiPicker from '@/components/emoji-picker';
+import EmojiList from '@/components/emoji-list';
+/* @tutinfo Import the <CODE>EmojiSticker</CODE> component. */import EmojiSticker from '@/components/emoji-sticker';/* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 

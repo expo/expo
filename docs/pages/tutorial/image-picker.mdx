@@ -81,10 +81,10 @@ Let's learn what the above code does:
 
 ## Update the button component
 
-On pressing the primary button, we'll call the `pickImageAsync()` function on the `Button` component. Update the `onPress` prop of the `Button` component in **src/components/Button.tsx**:
+On pressing the primary button, we'll call the `pickImageAsync()` function on the `Button` component. Update the `onPress` prop of the `Button` component in **src/components/button.tsx**:
 
 {/* prettier-ignore */}
-```tsx src/components/Button.tsx
+```tsx src/components/button.tsx
 import { StyleSheet, View, Pressable, Text } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
@@ -155,8 +155,8 @@ In **src/app/(tabs)/index.tsx**, add the `pickImageAsync()` function to the `onP
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
-import Button from '@/components/Button';
-import ImageViewer from '@/components/ImageViewer';
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 
@@ -302,8 +302,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 /* @end */
 
-import Button from '@/components/Button';
-import ImageViewer from '@/components/ImageViewer';
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 
@@ -360,12 +360,12 @@ const styles = StyleSheet.create({
 
 Pass the `selectedImage` prop to the `ImageViewer` component to display the selected image instead of a placeholder image.
 
-1. Modify the **src/components/ImageViewer.tsx** file to accept the `selectedImage` prop.
+1. Modify the **src/components/image-viewer.tsx** file to accept the `selectedImage` prop.
 2. The source of the image is getting long, so let's also move it to a separate variable called `imageSource`.
 3. Pass `imageSource` as the value of the `source` prop on the `Image` component.
 
 {/* prettier-ignore */}
-```tsx src/components/ImageViewer.tsx
+```tsx src/components/image-viewer.tsx
 import { ImageSourcePropType, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 
