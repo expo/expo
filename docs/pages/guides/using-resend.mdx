@@ -64,9 +64,9 @@ To enable using API Routes in your Expo project, you need to set the web.output 
 }
 ```
 
-Then, [create an API route](/router/web/api-routes/#create-an-api-route) to handle email submissions. Inside the **app** directory, create a new file called **api/audience+api.ts**. The `+api.ts` extension is used by Expo Router to identify the file as an API Route. To test the integration, you can add the minimal code below to send an email to a recipient using Resend SDK:
+Then, [create an API route](/router/web/api-routes/#create-an-api-route) to handle email submissions. Inside the **src/app** directory, create a new file called **api/audience+api.ts**. The `+api.ts` extension is used by Expo Router to identify the file as an API Route. To test the integration, you can add the minimal code below to send an email to a recipient using Resend SDK:
 
-```tsx app/api/audience+api.ts
+```tsx src/app/api/audience+api.ts
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -116,9 +116,9 @@ Note that only variables prefixed with `EXPO_PUBLIC_` can be used in the fronten
 
 ## Add a form to your Expo project
 
-The following example code shows a simple form to collect email addresses from app users. In a real-world scenario, you would want to add validation and error handling to the form. For example, the following code is added to the **app/index.tsx** file:
+The following example code shows a simple form to collect email addresses from app users. In a real-world scenario, you would want to add validation and error handling to the form. For example, the following code is added to the **src/app/index.tsx** file:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
@@ -227,7 +227,7 @@ The `eas deploy --prod` command will:
 - Automatically create an EAS project if you haven't already
 - Prompt you to choose the preview URL for your project. Ensure that this URL is the same as the value of `EXPO_PUBLIC_BASE_URL` in your **.env.local** file. This will make the API route accessible from your Expo app while deployed in production
 
-> **Note:** Before deployment, you need to use the `EXPO_PUBLIC_BASE_URL` as your hosted domain in your form screen (**app/index.tsx**).
+> **Note:** Before deployment, you need to use the `EXPO_PUBLIC_BASE_URL` as your hosted domain in your form screen (**src/app/index.tsx**).
 
 </Step>
 
