@@ -21,5 +21,6 @@ export { CodedError } from './errors/CodedError';
 export { UnavailabilityError } from './errors/UnavailabilityError';
 export { LegacyEventEmitter } from './LegacyEventEmitter';
 export { default as NativeModulesProxy } from './NativeModulesProxy';
-export { installOnUIRuntime } from './worklets';
+export { installOnUIRuntime, createWorkletCallback } from './worklets';
+export { useWorkletCallback } from './hooks/useWorkletCallback';
 //# sourceMappingURL=index.d.ts.map

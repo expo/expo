@@ -32,4 +32,11 @@ NS_SWIFT_NAME(WorkletExecutor)
         runtime:(nonnull EXWorkletRuntime *)runtime
       arguments:(nonnull NSArray *)arguments;
 
+/**
+ Executes the worklet synchronously on the given runtime with arguments and returns the result.
+ */
++ (nullable id)executeReturning:(nonnull EXJavaScriptSerializable *)serializable
+                        runtime:(nonnull EXWorkletRuntime *)runtime
+                      arguments:(nonnull NSArray *)arguments;
+
 @end

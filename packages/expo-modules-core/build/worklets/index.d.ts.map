@@ -1,1 +1,1 @@
-{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../src/worklets/index.ts"],"names":[],"mappings":"AAAA,wBAAgB,kBAAkB,SASjC"}
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../src/worklets/index.ts"],"names":[],"mappings":"AAAA,wBAAgB,kBAAkB,SASjC;AAED,eAAO,MAAM,qBAAqB,EAAE,CAAC,CAAC,iBAAiB,EAAE,OAAO,KAAK,GAAG,CAAC,GAAG,SACnC,CAAC"}

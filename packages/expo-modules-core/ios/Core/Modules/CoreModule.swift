@@ -67,6 +67,10 @@ internal final class CoreModule: Module {
       }
     }
 
+    Function("createWorkletCallback") { (worklet: Worklet) -> WorkletCallback in
+      return WorkletCallback(worklet: worklet)
+    }
+
     // Expose some common classes and maybe even the `modules` host object in the future.
     Function("uuidv4") { () -> String in
       return UUID().uuidString.lowercased()

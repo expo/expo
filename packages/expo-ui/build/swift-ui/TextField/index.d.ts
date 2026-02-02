@@ -91,8 +91,13 @@ export type TextFieldProps = {
      * @default false
      */
     autoFocus?: boolean;
+    /**
+     * A worklet callback triggered synchronously on the UI runtime when text changes.
+     * The function must include the `'worklet'` directive.
+     */
+    onChangeSync?: (value: string) => void;
 } & CommonViewModifierProps;
-export type NativeTextFieldProps = Omit<TextFieldProps, 'onChangeText' | 'onSubmit'> & {} & ViewEvent<'onValueChanged', {
+export type NativeTextFieldProps = Omit<TextFieldProps, 'onChangeText' | 'onSubmit' | 'onChangeSync'> & {} & ViewEvent<'onValueChanged', {
     value: string;
 }> & ViewEvent<'onFocusChanged', {
     value: boolean;
@@ -101,7 +106,9 @@ export type NativeTextFieldProps = Omit<TextFieldProps, 'onChangeText' | 'onSubm
     end: number;
 }> & ViewEvent<'onSubmit', {
     value: string;
-}>;
+}> & {
+    onChangeSync?: number;
+};
 /**
  * Renders a `TextField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
  */

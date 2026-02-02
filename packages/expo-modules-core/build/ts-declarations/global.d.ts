@@ -83,6 +83,12 @@ declare namespace ExpoGlobal {
      * @platform android
      */
     export function installOnUIRuntime(): void;
+    /**
+     * Creates a `WorkletCallback` SharedObject wrapping a worklet function,
+     * allowing it to be passed as a prop through React Fabric's serialization layer.
+     * @platform ios
+     */
+    export function createWorkletCallback(serializedWorklet: unknown): any;
 }
 declare global {
     namespace NodeJS {

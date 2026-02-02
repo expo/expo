@@ -95,6 +95,38 @@
   });
 }
 
++ (nullable id)executeReturning:(nonnull EXJavaScriptSerializable *)serializable
+                        runtime:(nonnull EXWorkletRuntime *)runtime
+                      arguments:(nonnull NSArray *)arguments
+{
+  auto workletRuntime = [runtime getWorkletRuntime];
+  if (!workletRuntime) {
+    return nil;
+  }
+
+  auto worklet = std::dynamic_pointer_cast<worklets::SerializableWorklet>([serializable getSerializable]);
+  if (!worklet) {
+    return nil;
+  }
+
+  id nativeResult = nil;
+
+  workletRuntime->runSync([&](jsi::Runtime &rt) {
+    auto workletValue = worklet->toJSValue(rt);
+    std::vector<jsi::Value> convertedArgs = expo::convertNSArrayToStdVector(rt, arguments);
+
+    auto result = workletValue.asObject(rt).asFunction(rt).call(
+      rt,
+      (const jsi::Value *)convertedArgs.data(),
+      convertedArgs.size()
+    );
+
+    nativeResult = expo::convertJSIValueToObjCObject(rt, result, nullptr);
+  });
+
+  return nativeResult;
+}
+
 @end
 
 #else
@@ -131,6 +163,15 @@
 + (void)execute:(nonnull EXJavaScriptSerializable *)serializable
         runtime:(nonnull EXWorkletRuntime *)runtime
       arguments:(nonnull NSArray *)arguments
+{
+  @throw [NSException exceptionWithName:@"WorkletException"
+                                 reason:@"Worklets integration is disabled"
+                               userInfo:nil];
+}
+
++ (nullable id)executeReturning:(nonnull EXJavaScriptSerializable *)serializable
+                        runtime:(nonnull EXWorkletRuntime *)runtime
+                      arguments:(nonnull NSArray *)arguments
 {
   @throw [NSException exceptionWithName:@"WorkletException"
                                  reason:@"Worklets integration is disabled"
