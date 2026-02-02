@@ -4,6 +4,7 @@ private var nextValue = 0
 
 private fun nextValue(): Int = (1 shl nextValue).also { nextValue++ }
 
+// Keep this in sync with  C++ enum in `ReturnType.h`.
 enum class ReturnType(val value: Int = nextValue()) {
   UNKNOWN(0),
   DOUBLE,
