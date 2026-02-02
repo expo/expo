@@ -113,7 +113,7 @@ export declare const supportedCpuArchitectures: string[] | null;
  *
  * @example
  * ```js
- * Device.osName; // Android: "Android" or fingerprint-like string; iOS: "iOS" or "iPadOS"; web: "iOS", "Android", "Windows"
+ * Device.osName; // Android: "Android" or fingerprint string; iOS: "iOS" or "iPadOS"; web: "iOS", "Android", "Windows"
  * ```
  *
  * On android this option maps directly to [`android.os.Build.VERSION.BASE_OS`](https://developer.android.com/reference/android/os/Build.VERSION#BASE_OS) which on some devices is set to "Android"
