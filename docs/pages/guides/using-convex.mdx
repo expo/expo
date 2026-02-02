@@ -68,7 +68,7 @@ import { query } from './_generated/server';
 
 export const get = query({
   args: {},
-  handler: async tx > {
+  handler: async ctx => {
     return await ctx.db.query('tasks').collect();
   },
 });
@@ -123,10 +123,9 @@ export default function Index() {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-      }}  {tasks?.map(({ _id, text }) => (
-        <Text key={_id}>{text}</Text (
-       >
-      )
+      }}>
+      {tasks?.map(({ _id, text }) => (
+        <Text key={_id}>{text}</Text>
       ))}
     </View>
   );
