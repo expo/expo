@@ -28,10 +28,9 @@ internal class FirstFrameEventGenerator(
   appContext: AppContext,
   videoPlayer: VideoPlayer,
   private val currentViewReference: MutableWeakReference<VideoView?>,
-  private val onFirstFrameRendered: () -> Unit
+  private var onFirstFrameRendered: (() -> Unit)?
 ) : Player.Listener, VideoPlayerListener {
   private val videoPlayerReference = WeakReference(videoPlayer)
-  private val weakAppContext = WeakReference(appContext)
   private var hasPendingOnFirstFrame = false
   internal var hasSentFirstFrameForCurrentMediaItem = false
     private set
@@ -45,12 +44,11 @@ internal class FirstFrameEventGenerator(
     }
   }
 
+  @MainThread
   fun release() {
     videoPlayerReference.get()?.removeListener(this)
-
-    weakAppContext.get()?.mainQueue?.launch {
-      videoPlayerReference.get()?.player?.removeListener(this@FirstFrameEventGenerator)
-    }
+    videoPlayerReference.get()?.player?.removeListener(this)
+    onFirstFrameRendered = null
   }
 
   override fun onRenderedFirstFrame() {
@@ -80,7 +78,7 @@ internal class FirstFrameEventGenerator(
   // We want to match the behavior across platforms, so we limit the number of event emissions.
   private fun maybeCallOnFirstFrameRendered() {
     if (!hasSentFirstFrameForCurrentMediaItem || !hasSentFirstFrameForCurrentVideoView) {
-      onFirstFrameRendered()
+      onFirstFrameRendered?.invoke()
     }
     hasPendingOnFirstFrame = false
     hasSentFirstFrameForCurrentMediaItem = true
