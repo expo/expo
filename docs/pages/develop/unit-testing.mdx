@@ -153,7 +153,7 @@ A unit test checks the smallest unit of code, usually a function. To write your 
 
 <Step label="1">
 
-Inside the **app** directory of your project, create a new file called **index.tsx**, and the following code to render a simple component:
+Inside the **src/app** directory of your project, create a new file called **index.tsx**, and the following code to render a simple component:
 
 ```tsx index.tsx
 import { PropsWithChildren } from 'react';
@@ -187,11 +187,11 @@ const styles = StyleSheet.create({
 
 <Step label="2">
 
-Create a **\_\_tests\_\_** directory at the root of your project's directory. If this directory already exists in your project, use that. Then, create a new file called **HomeScreen-test.tsx**. The `jest-expo` preset customizes the Jest configuration to also identify files with **-test.ts|tsx** extensions as tests.
+Create a **\_\_tests\_\_** directory at the root of your project's directory. If this directory already exists in your project, use that. Then, create a new file called **home-screen-test.tsx**. The `jest-expo` preset customizes the Jest configuration to also identify files with **-test.ts|tsx** extensions as tests.
 
-Add the following example code in **HomeScreen-test.tsx**:
+Add the following example code in **home-screen-test.tsx**:
 
-```tsx HomeScreen-test.tsx
+```tsx home-screen-test.tsx
 import { render } from '@testing-library/react-native';
 
 import HomeScreen, { CustomText } from '@/app/index';
@@ -227,9 +227,9 @@ An example structure of tests next to the **components** directory is shown belo
 
 <FileTree
   files={[
-    '__tests__/ThemedText-test.tsx',
-    'components/ThemedText.tsx',
-    'components/ThemedView.tsx',
+    '__tests__/themed-text-test.tsx',
+    'src/components/themed-text.tsx',
+    'src/components/themed-view.tsx',
   ]}
 />
 
@@ -237,10 +237,10 @@ Alternatively, you can have multiple **\_\_tests\_\_** sub-directories for diffe
 
 <FileTree
   files={[
-    'components/ThemedText.tsx',
-    'components/__tests__/ThemedText-test.tsx',
-    'utils/index.tsx',
-    'utils/__tests__/index-test.tsx',
+    'src/components/themed-text.tsx',
+    'src/components/__tests__/themed-text-test.tsx',
+    'src/utils/index.tsx',
+    'src/utils/__tests__/index-test.tsx',
   ]}
 />
 
@@ -252,9 +252,9 @@ It's all about preferences, and it is up to you to decide how you want to organi
 
 A [snapshot test](https://jestjs.io/docs/en/snapshot-testing) is used to make sure that UI stays consistent, especially when a project is working with global styles that are potentially shared across components.
 
-To add a snapshot test for `<HomeScreen />`, add the following code snippet in the `describe()` in **HomeScreen-test.tsx**:
+To add a snapshot test for `<HomeScreen />`, add the following code snippet in the `describe()` in **home-screen-test.tsx**:
 
-```tsx HomeScreen-test.tsx
+```tsx home-screen-test.tsx
 describe('<HomeScreen />', () => {
   /* @hide ... */ /* @end */
 
