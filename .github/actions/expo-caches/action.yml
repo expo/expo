@@ -94,19 +94,6 @@ runs:
           packages/@expo/*/node_modules
           react-native-lab/react-native/node_modules
         key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
-
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        path: |
-          node_modules
-          apps/*/node_modules
-          apps/*/__generated__/AppEntry.js
-          packages/*/node_modules
-          packages/@expo/*/node_modules
-          react-native-lab/react-native/node_modules
-        name: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
-
     - name: ♻️ Restore /tools node modules and bins
       if: inputs.yarn-tools == 'true'
       uses: actions/cache@v4

@@ -282,6 +282,7 @@ jobs:
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🧶 Postinstall workspace node modules
+        if: steps.expo-caches.outputs.yarn-workspace-hit == 'true'
         run: yarn postinstall
       - name: 🧶 Install image comparison server node modules
         run: yarn install --frozen-lockfile
