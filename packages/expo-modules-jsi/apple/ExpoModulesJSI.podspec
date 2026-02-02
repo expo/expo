@@ -55,7 +55,7 @@ Pod::Spec.new do |s|
   s.dependency 'ReactCommon'
   s.dependency 'React-runtimescheduler'
 
-  if File.exist?("#{s.name}/#{s.name}.xcframework")
+  if File.exist?("#{s.name}.xcframework")
     s.source_files = [
       "JSI/**/*.{h,hpp}",
       "JSI/JavaScriptRuntimeProvider.{h,mm}"

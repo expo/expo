@@ -195,6 +195,45 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptWeakObject(runtime, self)
   }
 
+  // MARK: - Native state
+
+  /**
+   Returns whether this object has native state previously set by `setNativeState`.
+   */
+  public func hasNativeState() -> Bool {
+    return expo.hasNativeState(runtime.pointee, pointee)
+  }
+
+  /**
+   Returns a native state previously set by `setNativeState`.
+   If `hasNativeState()` is false or object's native state is of unrelated type, this will return `nil`.
+   */
+  public func getNativeState<T: NativeState>(as: T.Type = NativeState.self) -> T? {
+    guard let cxxNativeState = expo.getNativeState(runtime.pointee, pointee) else {
+      return nil
+    }
+    return T.from(cxx: cxxNativeState)
+  }
+
+  /**
+   Sets the internal native state property of this object, overwriting any old value.
+   Creates a new shared_ptr to the object managed by state, which will live until the value at this property becomes unreachable.
+   - TODO: throw a type error if this object is a proxy or host object.
+   */
+  public func setNativeState<T: NativeState>(_ nativeState: T) {
+    guard let nativeStatePointee = nativeState.pointee else {
+      fatalError("Native state is already released")
+    }
+    expo.setNativeState(runtime.pointee, pointee, nativeStatePointee)
+  }
+
+  /**
+   Unsets the native state of this object.
+   */
+  public func unsetNativeState() {
+    expo.unsetNativeState(runtime.pointee, pointee)
+  }
+
   // MARK: - Deallocator
 
   public func setObjectDeallocator(_ deallocator: @escaping () -> Void) {

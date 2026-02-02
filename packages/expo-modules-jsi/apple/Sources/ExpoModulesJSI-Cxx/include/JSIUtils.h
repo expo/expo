@@ -7,6 +7,7 @@
 #include <hermes/hermes.h>
 #include "HostFunctionClosure.h"
 #include "CppError.h"
+#include "NativeState.h"
 
 namespace jsi = facebook::jsi;
 
@@ -91,6 +92,29 @@ inline jsi::Value callAsConstructor(jsi::Runtime &runtime, const jsi::Function &
   return expo::CppError::tryCatch(^{
     return function.callAsConstructor(runtime, args, count);
   });
+}
+
+// MARK: - Native state
+
+inline bool hasNativeState(jsi::Runtime &runtime, const jsi::Object &object) {
+  return object.hasNativeState<expo::NativeState>(runtime);
+}
+
+inline void setNativeState(jsi::Runtime &runtime, const jsi::Object &object, expo::NativeState &nativeState) {
+  std::shared_ptr<expo::NativeState> nativeStatePtr = std::shared_ptr<expo::NativeState>(&nativeState);
+  object.setNativeState(runtime, nativeStatePtr);
+}
+
+inline void unsetNativeState(jsi::Runtime &runtime, const jsi::Object &object) {
+  object.setNativeState(runtime, nullptr);
+}
+
+inline expo::NativeState *_Nullable getNativeState(jsi::Runtime &runtime, const jsi::Object &object) {
+  if (!object.hasNativeState<expo::NativeState>(runtime)) {
+    // JSI's implementation asserts if `hasNativeState` returns true, but we prefer to make it nullable.
+    return nullptr;
+  }
+  return object.getNativeState<expo::NativeState>(runtime).get();
 }
 
 } // namespace expo

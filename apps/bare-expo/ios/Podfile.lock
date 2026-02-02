@@ -3902,7 +3902,7 @@ SPEC CHECKSUMS:
   ExpoMediaLibrary: f31616ba12fe162567cb6ae60e8b07eef5bfc8c6
   ExpoMeshGradient: 813f5c2f7a4d6ab590a96845dd7ed433f07a1c71
   ExpoModulesCore: d8fbd55a4c6dc3c8af488eaf60e77ac673289cba
-  ExpoModulesJSI: eb9e105e6823ecbc27d175e4dc739442dd71d90e
+  ExpoModulesJSI: f688859a7b394355f6d8578e80053a9142f536ec
   ExpoModulesTestCore: a26898b4464fda6f5d28198479f05373353156c4
   ExpoNetwork: e6fa5244c933860f341c9a7c539531919e542793
   ExpoNotifications: 23af18e94d33504d4c6bc0140073d32663eec249
