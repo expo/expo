@@ -360,6 +360,8 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   suspend fun selectMarker(id: String?, options: SelectOptionsRecord?) {
     if (id == null) {
       markerState.value.forEach { it.second.hideInfoWindow() }
+      val cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraState.position)
+      cameraState.move(cameraUpdate)
       return
     }
     val (marker, state) = markerState.value.find { it.first.id == id } ?: return
