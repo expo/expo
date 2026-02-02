@@ -85,10 +85,11 @@ export function AskPageAIChatMessages({
         const trimmedLower = trimmedAnswer?.toLowerCase() ?? '';
         const fallbackLower = fallbackResponse.toLowerCase();
         const hasSources = Array.isArray(qa.sources) && qa.sources.length > 0;
+        const normalizedBasePath = basePath.replace(/\/+$/, '');
         const isOffPageAnswer =
           contextScope === 'page' &&
           hasSources &&
-          qa.sources!.some(source => !source.source_url.includes(basePath));
+          qa.sources!.every(source => !source.source_url.includes(normalizedBasePath));
         const sourcesForDisplay = isOffPageAnswer ? [] : (qa.sources ?? []);
         const isFallbackAnswer =
           trimmedLower.includes(fallbackLower) ||
