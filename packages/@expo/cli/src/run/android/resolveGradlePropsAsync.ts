@@ -40,9 +40,17 @@ export async function resolveGradlePropsAsync(
   // buildDeveloperTrust -> buildtype: trust, flavors: build, developer
   // developmentDebug -> buildType: debug, flavors: development
   // productionRelease -> buildType: release, flavors: production
+  // previewDebugOptimized -> buildType: debugOptimized, flavors: preview
   // This won't work for non-standard flavor names like "myFlavor" would be treated as "my", "flavor".
-  const flavors = variant.split(/(?=[A-Z])/).map((v) => v.toLowerCase());
-  const buildType = flavors.pop() ?? 'debug';
+  let parts = variant.split(/(?=[A-Z])/).map((v) => v.toLowerCase());
+
+  // Special case: merge 'debug' and 'optimized' into 'debugOptimized'
+  if (parts.length >= 2 && parts[parts.length - 1] === 'optimized' && parts[parts.length - 2] === 'debug') {
+    parts = [...parts.slice(0, -2), 'debugOptimized'];
+  }
+
+  const flavors = parts.slice(0, -1);
+  const buildType = parts[parts.length - 1] ?? 'debug';
 
   const apkVariantDirectory = path.join(apkDirectory, ...flavors, buildType);
   const architectures = await getConnectedDeviceABIS(buildType, device, options.allArch);
@@ -62,7 +70,9 @@ async function getConnectedDeviceABIS(
   allArch?: boolean
 ): Promise<string> {
   // Follow the same behavior as iOS, only enable this for debug builds
-  if (allArch || buildType !== 'debug') {
+  // Support both 'debug' and 'debugOptimized' build types
+  const isDebugBuild = buildType === 'debug' || buildType === 'debugOptimized';
+  if (allArch || !isDebugBuild) {
     return '';
   }
 
