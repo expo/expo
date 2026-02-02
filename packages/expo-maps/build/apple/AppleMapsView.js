@@ -24,8 +24,11 @@ export const AppleMapsView = React.forwardRef(({ onMapClick, onMarkerClick, onAn
         async openLookAroundAsync(coordinates) {
             return nativeRef.current?.openLookAroundAsync(coordinates);
         },
-        selectItem(id, options) {
-            return nativeRef.current?.selectItem(id, options);
+        selectMarker(id, options) {
+            return nativeRef.current?.selectMarker(id, options);
+        },
+        selectAnnotation(id, options) {
+            return nativeRef.current?.selectAnnotation(id, options);
         },
     }));
     const onNativeMapClick = useNativeEvent(onMapClick);

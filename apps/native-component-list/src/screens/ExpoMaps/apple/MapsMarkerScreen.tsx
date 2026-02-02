@@ -45,12 +45,12 @@ export default function MapsMarkerScreen() {
   const [selectedMarkerId, setSelectedMarkerId] = useState<string>();
 
   const handleMarkerSelect = (markerId: string) => {
-    mapRef.current?.selectItem(markerId, { moveCamera: true });
+    mapRef.current?.selectMarker(markerId, { moveCamera: true });
   };
 
   const clearSelection = () => {
     setSelectedMarkerId(undefined);
-    mapRef.current?.selectItem();
+    mapRef.current?.selectMarker();
   };
 
   const onMarkerClick = (marker: AppleMaps.Marker) => {

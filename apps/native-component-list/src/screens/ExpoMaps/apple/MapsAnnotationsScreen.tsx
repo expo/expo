@@ -50,12 +50,12 @@ export default function MapsAnnotationsScreen() {
   const [selectedAnnotationId, setSelectedAnnotationId] = useState<string>();
 
   const handleAnnotationSelect = (annotationId: string) => {
-    mapRef.current?.selectItem(annotationId);
+    mapRef.current?.selectAnnotation(annotationId);
   };
 
   const clearSelection = () => {
     setSelectedAnnotationId(undefined);
-    mapRef.current?.selectItem();
+    mapRef.current?.selectAnnotation();
   };
 
   const onAnnotationClick = (annotation: AppleMaps.Annotation) => {
