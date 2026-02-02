@@ -3,7 +3,11 @@ title: Color
 description: Access platform-specific colors with type safety in Expo Router.
 ---
 
-The `Color` API provides type-safe access to platform-specific colors on iOS and Android. It wraps React Native's `PlatformColor` with full TypeScript support, enabling autocomplete and compile-time type checking for system colors.
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+The `Color` API provides type-safe access to platform-specific colors on Android and iOS. It wraps React Native's `PlatformColor` with full TypeScript support, enabling autocomplete and compile-time type checking for system colors.
 
 ## Usage
 
@@ -13,27 +17,8 @@ import { Color } from 'expo-router';
 
 The `Color` object has two platform-specific namespaces:
 
-- `Color.ios.*` - iOS system colors from UIKit
 - `Color.android.*` - Android colors including base colors, attributes, and Material Design 3 colors
-
-## iOS colors
-
-Access iOS system colors through `Color.ios.*`. These map directly to UIKit's [standard colors](https://developer.apple.com/documentation/uikit/standard-colors) and [UI element colors](https://developer.apple.com/documentation/uikit/ui-element-colors).
-
-```tsx
-import { Color } from 'expo-router';
-import { View, Text } from 'react-native';
-
-function MyComponent() {
-  return (
-    <View style={{ backgroundColor: Color.ios.systemBackground }}>
-      <Text style={{ color: Color.ios.label }}>Hello, World!</Text>
-    </View>
-  );
-}
-```
-
-iOS colors automatically adapt to the system appearance (light/dark mode) and accessibility settings.
+- `Color.ios.*` - iOS system colors from UIKit
 
 ## Android colors
 
@@ -132,6 +117,25 @@ function MyComponent() {
 
 Without using `useColorScheme()`, the colors may not update when the user switches between light and dark mode.
 
+## iOS colors
+
+Access iOS system colors through `Color.ios.*`. These map directly to UIKit's [standard colors](https://developer.apple.com/documentation/uikit/standard-colors) and [UI element colors](https://developer.apple.com/documentation/uikit/ui-element-colors).
+
+```tsx
+import { Color } from 'expo-router';
+import { View, Text } from 'react-native';
+
+function MyComponent() {
+  return (
+    <View style={{ backgroundColor: Color.ios.systemBackground }}>
+      <Text style={{ color: Color.ios.label }}>Hello, World!</Text>
+    </View>
+  );
+}
+```
+
+iOS colors automatically adapt to the system appearance (light/dark mode) and accessibility settings.
+
 ## Cross-platform usage
 
 The `Color` API is platform-specific. Use `useMemo` to select the appropriate color for each platform:
@@ -163,4 +167,9 @@ function MyComponent() {
 
 ## API reference
 
-For the full list of available types and colors, see the [Color API reference](/versions/latest/sdk/router/#color).
+<BoxLink
+  title="Color API reference"
+  description="For the full list of available types and colors, see Expo Router's Color API reference."
+  href="/versions/latest/sdk/router/#color"
+  Icon={BookOpen02Icon}
+/>
