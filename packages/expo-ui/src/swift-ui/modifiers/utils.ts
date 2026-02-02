@@ -8,7 +8,7 @@ export type GlobalEvent = {
 };
 
 /**
- * Creates an event listener that routes native events to modifier event handlers.
+ * Create an event listener for a view modifier.
  *
  * @param modifiers - An array of modifier configs to extract event listeners from.
  */
