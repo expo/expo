@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android][expo-updates] Fixed `id` and `commitTime` not regenerating from manifest during build ([#39195](https://github.com/expo/expo/pull/39195) by [@RodolfoGS](https://github.com/RodolfoGS))
+
 ### 💡 Others
 
 ## 55.0.5 — 2026-01-27
