@@ -78,7 +78,7 @@ internal final class FileSystemFile: FileSystemPath {
   func write(_ content: String, append: Bool = false) throws {
     try withCorrectTypeAndScopedAccess(permission: .write) {
       if append, let data = content.data(using: .utf8) {
-        try append(data)
+        try writeAppending(data)
       } else {
         try content.write(to: url, atomically: false, encoding: .utf8) // TODO: better error handling
       }
@@ -88,7 +88,7 @@ internal final class FileSystemFile: FileSystemPath {
   func write(_ data: Data, append: Bool = false) throws {
     try withCorrectTypeAndScopedAccess(permission: .write) {
       if append {
-        try append(data)
+        try writeAppending(data)
       } else {
         try data.write(to: url)
       }
@@ -100,14 +100,14 @@ internal final class FileSystemFile: FileSystemPath {
     try withCorrectTypeAndScopedAccess(permission: .write) {
       let data = Data(bytes: content.rawPointer, count: content.byteLength)
       if append {
-        try append(data)
+        try writeAppending(data)
       } else {
         try data.write(to: url)
       }
     }
   }
 
-  private func append(_ data: Data) throws {
+  private func writeAppending(_ data: Data) throws {
     if !FileManager.default.fileExists(atPath: url.path) {
       try data.write(to: url)
       return
