@@ -43,4 +43,5 @@ enum WriteEncoding: String, Enumerable {
 
 struct WriteOptions: Record {
   @Field var encoding: WriteEncoding?
+  @Field var append: Bool = false
 }

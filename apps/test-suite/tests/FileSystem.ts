@@ -315,6 +315,48 @@ export async function test({ describe, expect, it, ...t }) {
       expect(contentSync).toBe('Hello world');
     });
 
+    describe('Append option', () => {
+      it('appends a string using legacy writeAsStringAsync', async () => {
+        const fileUri = testDirectory + 'legacy-append.txt';
+        await FS.writeAsStringAsync(fileUri, 'Hello');
+        await FS.writeAsStringAsync(fileUri, ' world', { append: true });
+        const content = await FS.readAsStringAsync(fileUri);
+        expect(content).toBe('Hello world');
+      });
+
+      it('appends a base64 string using legacy writeAsStringAsync', async () => {
+        const fileUri = testDirectory + 'legacy-append-base64.txt';
+        await FS.writeAsStringAsync(fileUri, 'Hello');
+        // ' world' in base64 is 'IHdvcmxk'
+        await FS.writeAsStringAsync(fileUri, 'IHdvcmxk', {
+          encoding: 'base64',
+          append: true,
+        });
+        const content = await FS.readAsStringAsync(fileUri);
+        expect(content).toBe('Hello world');
+      });
+
+      it('appends a string using File.write', async () => {
+        const file = new File(testDirectory, 'next-append.txt');
+        file.write('Hello');
+        file.write(' world', { append: true });
+        expect(file.textSync()).toBe('Hello world');
+      });
+
+      it('appends bytes using File.write', async () => {
+        const file = new File(testDirectory, 'next-append-bytes.txt');
+        file.write('Hello');
+        file.write(new Uint8Array([32, 119, 111, 114, 108, 100]), { append: true }); // ' world'
+        expect(file.textSync()).toBe('Hello world');
+      });
+
+      it('creates a new file if append is true but file does not exist', async () => {
+        const file = new File(testDirectory, 'new-file-append.txt');
+        file.write('Hello', { append: true });
+        expect(file.textSync()).toBe('Hello');
+      });
+    });
+
     it('Deletes a file reference', () => {
       const outputFile = new File(testDirectory, 'file3.txt');
       outputFile.write('Hello world');

@@ -75,23 +75,49 @@ internal final class FileSystemFile: FileSystemPath {
     return nil
   }
 
-  func write(_ content: String) throws {
+  func write(_ content: String, append: Bool = false) throws {
     try withCorrectTypeAndScopedAccess(permission: .write) {
-      try content.write(to: url, atomically: false, encoding: .utf8) // TODO: better error handling
+      if append, let data = content.data(using: .utf8) {
+        try append(data)
+      } else {
+        try content.write(to: url, atomically: false, encoding: .utf8) // TODO: better error handling
+      }
     }
   }
 
-  func write(_ data: Data) throws {
+  func write(_ data: Data, append: Bool = false) throws {
     try withCorrectTypeAndScopedAccess(permission: .write) {
-      try data.write(to: url)
+      if append {
+        try append(data)
+      } else {
+        try data.write(to: url)
+      }
     }
   }
 
   // TODO: blob support
-  func write(_ content: TypedArray) throws {
+  func write(_ content: TypedArray, append: Bool = false) throws {
     try withCorrectTypeAndScopedAccess(permission: .write) {
-      try Data(bytes: content.rawPointer, count: content.byteLength).write(to: url)
+      let data = Data(bytes: content.rawPointer, count: content.byteLength)
+      if append {
+        try append(data)
+      } else {
+        try data.write(to: url)
+      }
     }
+  }
+
+  private func append(_ data: Data) throws {
+    if !FileManager.default.fileExists(atPath: url.path) {
+      try data.write(to: url)
+      return
+    }
+    let fileHandle = try FileHandle(forWritingTo: url)
+    defer {
+      fileHandle.closeFile()
+    }
+    fileHandle.seekToEndOfFile()
+    fileHandle.write(data)
   }
 
   func text() throws -> String {
