@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow React Native TV projects. ([#42791](https://github.com/expo/expo/pull/42791) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 0.14.4 — 2026-02-03
