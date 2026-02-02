@@ -50,8 +50,11 @@ export const AppleMapsView = React.forwardRef<AppleMapsViewType, AppleMapsViewPr
       async openLookAroundAsync(coordinates: Coordinates) {
         return nativeRef.current?.openLookAroundAsync(coordinates);
       },
-      selectItem(id?: string, options?: { zoom?: number; moveCamera?: boolean }) {
-        return nativeRef.current?.selectItem(id, options);
+      selectMarker(id?: string, options?: { zoom?: number; moveCamera?: boolean }) {
+        return nativeRef.current?.selectMarker(id, options);
+      },
+      selectAnnotation(id?: string, options?: { zoom?: number; moveCamera?: boolean }) {
+        return nativeRef.current?.selectAnnotation(id, options);
       },
     }));
 

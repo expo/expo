@@ -18,12 +18,19 @@ public class AppleMapsModule: Module {
         view.setCameraPosition(config: config)
       }
 
-      AsyncFunction("openLookAroundAsync") { (view: AppleMapsViewWrapper, coordinates: Coordinate) in
+      AsyncFunction("openLookAroundAsync") {
+        (view: AppleMapsViewWrapper, coordinates: Coordinate) in
         try await view.openLookAround(coordinate: coordinates)
       }
 
-      AsyncFunction("selectItem") { (view: AppleMapsViewWrapper, id: String?, options: SelectOptions?) in
-        view.selectItem(id: id, options: options)
+      AsyncFunction("selectMarker") {
+        (view: AppleMapsViewWrapper, id: String?, options: SelectOptions?) in
+        view.selectMarker(id: id, options: options)
+      }
+
+      AsyncFunction("selectAnnotation") {
+        (view: AppleMapsViewWrapper, id: String?, options: SelectOptions?) in
+        view.selectAnnotation(id: id, options: options)
       }
     }
   }

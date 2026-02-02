@@ -56,49 +56,45 @@ struct AppleMapsViewWrapper: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView, Appl
     appleMapsView?.setSelection(config: config)
   }
 
-  func selectItem(id: String?, options: SelectOptions? = nil) {
+  private func applySelection(
+    mapItem: MKMapItem?, coordinate: CLLocationCoordinate2D?, options: SelectOptions?
+  ) {
     let moveCamera = options?.moveCamera ?? true
     let zoom = options?.zoom
+    appleMapsView?.setSelection(
+      config: SelectionConfig(
+        mapItem: mapItem,
+        coordinate: coordinate,
+        zoom: zoom,
+        moveCamera: moveCamera
+      ))
+  }
 
+  func selectMarker(id: String?, options: SelectOptions? = nil) {
     guard let id = id else {
-      appleMapsView?.setSelection(config: SelectionConfig(
-        mapItem: nil,
-        coordinate: nil,
-        zoom: nil,
-        moveCamera: moveCamera
-      ))
+      applySelection(mapItem: nil, coordinate: nil, options: options)
       return
     }
-
-    // Search markers first
     if let marker = props.markers.first(where: { $0.id == id }) {
-      appleMapsView?.setSelection(config: SelectionConfig(
-        mapItem: marker.mapItem,
-        coordinate: marker.clLocationCoordinate2D,
-        zoom: zoom,
-        moveCamera: moveCamera
-      ))
+      applySelection(
+        mapItem: marker.mapItem, coordinate: marker.clLocationCoordinate2D, options: options)
       return
     }
+    applySelection(mapItem: nil, coordinate: nil, options: options)
+  }
 
-    // Then search annotations
+  func selectAnnotation(id: String?, options: SelectOptions? = nil) {
+    guard let id = id else {
+      applySelection(mapItem: nil, coordinate: nil, options: options)
+      return
+    }
     if let annotation = props.annotations.first(where: { $0.id == id }) {
-      appleMapsView?.setSelection(config: SelectionConfig(
-        mapItem: annotation.mapItem,
-        coordinate: annotation.clLocationCoordinate2D,
-        zoom: zoom,
-        moveCamera: moveCamera
-      ))
+      applySelection(
+        mapItem: annotation.mapItem, coordinate: annotation.clLocationCoordinate2D, options: options
+      )
       return
     }
-
-    // ID not found, clear selection
-    appleMapsView?.setSelection(config: SelectionConfig(
-      mapItem: nil,
-      coordinate: nil,
-      zoom: nil,
-      moveCamera: moveCamera
-    ))
+    applySelection(mapItem: nil, coordinate: nil, options: options)
   }
 
   var body: some View {
