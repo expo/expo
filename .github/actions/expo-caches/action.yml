@@ -95,8 +95,6 @@ runs:
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
         key: ${{ runner.os }}-yarn-cache-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-cache-
 
     - name: ♻️ Restore workspace node modules
       if: inputs.yarn-workspace == 'true'
