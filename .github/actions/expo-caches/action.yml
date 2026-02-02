@@ -79,21 +79,33 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    # - name: ♻️ Restore workspace node modules
-    #   if: inputs.yarn-workspace == 'true'
-    #   uses: actions/cache@v4
-    #   id: workspace-modules-cache
-    #   with:
-    #     # See "workspaces" → "packages" in the root package.json for the source of truth of
-    #     # which node_modules are affected by the root yarn.lock
-    #     path: |
-    #       node_modules
-    #       apps/*/node_modules
-    #       apps/*/__generated__/AppEntry.js
-    #       packages/*/node_modules
-    #       packages/@expo/*/node_modules
-    #       react-native-lab/react-native/node_modules
-    #     key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
+    - name: ♻️ Restore workspace node modules
+      if: inputs.yarn-workspace == 'true'
+      uses: actions/cache@v4
+      id: workspace-modules-cache
+      with:
+        # See "workspaces" → "packages" in the root package.json for the source of truth of
+        # which node_modules are affected by the root yarn.lock
+        path: |
+          node_modules
+          apps/*/node_modules
+          apps/*/__generated__/AppEntry.js
+          packages/*/node_modules
+          packages/@expo/*/node_modules
+          react-native-lab/react-native/node_modules
+        key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        path: |
+          node_modules
+          apps/*/node_modules
+          apps/*/__generated__/AppEntry.js
+          packages/*/node_modules
+          packages/@expo/*/node_modules
+          react-native-lab/react-native/node_modules
+        name: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
 
     - name: ♻️ Restore /tools node modules and bins
       if: inputs.yarn-tools == 'true'
