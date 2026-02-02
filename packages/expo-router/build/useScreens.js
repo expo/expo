@@ -46,11 +46,12 @@ const native_1 = require("@react-navigation/native");
 const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const storeContext_1 = require("./global-state/storeContext");
+const utils_1 = require("./global-state/utils");
 const import_mode_1 = __importDefault(require("./import-mode"));
 const ZoomTransitionEnabler_1 = require("./link/zoom/ZoomTransitionEnabler");
 const zoom_transition_context_providers_1 = require("./link/zoom/zoom-transition-context-providers");
 const navigationEvents_1 = require("./navigationEvents");
-const utils_1 = require("./navigationEvents/utils");
+const utils_2 = require("./navigationEvents/utils");
 const navigationParams_1 = require("./navigationParams");
 const primitives_1 = require("./primitives");
 const EmptyRoute_1 = require("./views/EmptyRoute");
@@ -188,6 +189,10 @@ function getQualifiedRouteComponent(value) {
         const res = value.loadRoute();
         ScreenComponent = fromImport(value, res).default;
     }
+    const WrappedScreenComponent = (props) => {
+        (0, utils_1.useColorSchemeChangesIfNeeded)();
+        return <ScreenComponent {...props}/>;
+    };
     function BaseRoute({ 
     // Remove these React Navigation props to
     // enforce usage of expo-router hooks (where the query params are correct).
@@ -231,7 +236,7 @@ function getQualifiedRouteComponent(value) {
         <zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider route={route}>
           <ZoomTransitionEnabler_1.ZoomTransitionEnabler route={route}/>
           <react_1.default.Suspense fallback={<SuspenseFallback_1.SuspenseFallback route={value}/>}>
-            <ScreenComponent {...props} 
+            <WrappedScreenComponent {...props} 
         // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
         // the intention is to make it possible to deduce shared routes.
         segment={value.route}/>
@@ -249,12 +254,12 @@ function AnalyticsListeners({ navigation, screenId, }) {
     const stateForPath = (0, native_1.useStateForPath)();
     const isFirstRenderRef = react_1.default.useRef(true);
     const hasBlurredRef = react_1.default.useRef(true);
-    const stringUrl = (0, react_1.useMemo)(() => (0, utils_1.generateStringUrlForState)(stateForPath), [stateForPath]);
+    const stringUrl = (0, react_1.useMemo)(() => (0, utils_2.generateStringUrlForState)(stateForPath), [stateForPath]);
     if (isFirstRenderRef.current) {
         isFirstRenderRef.current = false;
         if (stringUrl) {
             navigationEvents_1.unstable_navigationEvents.emit('pageWillRender', {
-                ...(0, utils_1.getPathAndParamsFromStringUrl)(stringUrl),
+                ...(0, utils_2.getPathAndParamsFromStringUrl)(stringUrl),
                 screenId,
             });
         }
@@ -263,7 +268,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
         if (stringUrl) {
             return () => {
                 navigationEvents_1.unstable_navigationEvents.emit('pageRemoved', {
-                    ...(0, utils_1.getPathAndParamsFromStringUrl)(stringUrl),
+                    ...(0, utils_2.getPathAndParamsFromStringUrl)(stringUrl),
                     screenId,
                 });
             };
@@ -273,7 +278,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
     const isFocused = navigation.isFocused();
     if (isFocused && stringUrl) {
         navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
-            ...(0, utils_1.getPathAndParamsFromStringUrl)(stringUrl),
+            ...(0, utils_2.getPathAndParamsFromStringUrl)(stringUrl),
             screenId,
         });
         hasBlurredRef.current = false;
@@ -285,7 +290,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
                 // hasBlurredRef will be false when the screen was initially focused
                 if (hasBlurredRef.current) {
                     navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
-                        ...(0, utils_1.getPathAndParamsFromStringUrl)(stringUrl),
+                        ...(0, utils_2.getPathAndParamsFromStringUrl)(stringUrl),
                         screenId,
                     });
                     hasBlurredRef.current = false;
@@ -293,7 +298,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
             });
             const cleanBlur = navigation.addListener('blur', () => {
                 navigationEvents_1.unstable_navigationEvents.emit('pageBlurred', {
-                    ...(0, utils_1.getPathAndParamsFromStringUrl)(stringUrl),
+                    ...(0, utils_2.getPathAndParamsFromStringUrl)(stringUrl),
                     screenId,
                 });
                 hasBlurredRef.current = true;
