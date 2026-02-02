@@ -64,6 +64,7 @@ interface DismissalBoundsRect {
 }
 export declare function LinkZoomTransitionEnabler(props: {
     zoomTransitionSourceIdentifier: string;
+    zoomTransitionSourceBarButtonItemIdentifier?: string;
     dismissalBoundsRect?: DismissalBoundsRect | null;
 }): import("react").JSX.Element | null;
 interface LinkSourceAlignmentRect {

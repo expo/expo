@@ -18,6 +18,6 @@ const RouterToolbarItemView = (0, expo_1.requireNativeView)('ExpoRouterToolbarMo
 function RouterToolbarItem(props) {
     // Needed to pass shared object ID to native side
     const imageObjectId = props.image?.__expo_shared_object_id__;
-    return <RouterToolbarItemView {...props} image={imageObjectId}/>;
+    return (<RouterToolbarItemView {...props} image={imageObjectId} zoomTransitionSourceIdentifier={props.zoomTransitionSourceIdentifier}/>);
 }
 //# sourceMappingURL=native.ios.js.map

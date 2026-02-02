@@ -1,11 +1,13 @@
 "use strict";
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NativeToolbarView = exports.NativeToolbarSearchBarSlot = exports.NativeToolbarSpacer = exports.NativeToolbarButton = exports.NativeToolbarMenuAction = exports.NativeToolbarMenu = void 0;
+exports.NativeToolbarLink = exports.NativeToolbarView = exports.NativeToolbarSearchBarSlot = exports.NativeToolbarSpacer = exports.NativeToolbarButton = exports.NativeToolbarMenuAction = exports.NativeToolbarMenu = void 0;
 const react_1 = require("react");
 const react_native_1 = require("react-native");
+const imperative_api_1 = require("../../../imperative-api");
 const elements_1 = require("../../../link/elements");
 const native_1 = require("../../../link/preview/native");
+const navigationParams_1 = require("../../../navigationParams");
 const native_2 = require("../../../toolbar/native");
 /**
  * Native toolbar menu component for bottom toolbar.
@@ -71,5 +73,42 @@ const NativeToolbarView = ({ children, hidden, hidesSharedBackground, separateBa
     </native_2.RouterToolbarItem>);
 };
 exports.NativeToolbarView = NativeToolbarView;
+function resolveHrefWithZoomParams(href, zoomId) {
+    const zoomParams = {
+        [navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]: zoomId,
+        [navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_BAR_BUTTON_ITEM_ID_PARAM_NAME]: zoomId,
+    };
+    if (typeof href === 'string') {
+        return {
+            pathname: href,
+            params: zoomParams,
+        };
+    }
+    return {
+        pathname: href.pathname ?? '',
+        params: {
+            ...(href.params ?? {}),
+            ...zoomParams,
+        },
+    };
+}
+/**
+ * Native toolbar link component for bottom toolbar.
+ * Renders as RouterToolbarItem and navigates with zoom transition on press.
+ */
+const NativeToolbarLink = (props) => {
+    const id = (0, react_1.useId)();
+    const zoomId = (0, react_1.useId)();
+    const handlePress = (0, react_1.useCallback)(() => {
+        const resolvedHref = resolveHrefWithZoomParams(props.href, zoomId);
+        const action = props.action ?? 'push';
+        imperative_api_1.router[action](resolvedHref);
+    }, [props.href, props.action, zoomId]);
+    const renderingMode = props.imageRenderingMode ?? (props.tintColor !== undefined ? 'template' : 'original');
+    return (<native_2.RouterToolbarItem accessibilityHint={props.accessibilityHint} accessibilityLabel={props.accessibilityLabel} barButtonItemStyle={props.variant === 'done' ? 'prominent' : props.variant} disabled={props.disabled} hidden={props.hidden} hidesSharedBackground={props.hidesSharedBackground} identifier={id} image={props.image} imageRenderingMode={renderingMode} onSelected={handlePress} sharesBackground={!props.separateBackground} systemImageName={props.icon} title={props.label} tintColor={props.tintColor} titleStyle={react_native_1.StyleSheet.flatten(props.style)} zoomTransitionSourceIdentifier={zoomId}>
+      {props.children}
+    </native_2.RouterToolbarItem>);
+};
+exports.NativeToolbarLink = NativeToolbarLink;
 // #endregion
 //# sourceMappingURL=bottom-toolbar-native-elements.js.map

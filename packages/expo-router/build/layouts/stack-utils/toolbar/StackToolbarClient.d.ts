@@ -1,4 +1,4 @@
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import React, { type ReactNode } from 'react';
 import { type ToolbarPlacement } from './context';
 export interface StackToolbarProps {
@@ -90,6 +90,7 @@ export interface StackToolbarProps {
 export declare const StackToolbar: {
     (props: StackToolbarProps): React.JSX.Element;
     Button: React.FC<import("./StackToolbarButton").StackToolbarButtonProps>;
+    Link: React.FC<import("./StackToolbarLink").StackToolbarLinkProps>;
     Menu: React.FC<import("./StackToolbarMenu").StackToolbarMenuProps>;
     MenuAction: React.FC<import("./StackToolbarMenu").StackToolbarMenuActionProps>;
     SearchBarSlot: React.FC<import("./StackToolbarSearchBarSlot").StackToolbarSearchBarSlotProps>;
