@@ -113,7 +113,7 @@ export type TextFieldProps = {
    * A worklet callback triggered synchronously on the UI runtime when text changes.
    * The function must include the `'worklet'` directive.
    */
-  onChangeSync?: (value: string) => void;
+  onChangeSync?: (value: string) => string | void;
 } & CommonViewModifierProps;
 
 export type NativeTextFieldProps = Omit<
