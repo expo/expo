@@ -80,3 +80,7 @@ local.properties
 *.iml
 *.hprof
 .cxx/
+
+# Generated native projects
+android/
+ios/
