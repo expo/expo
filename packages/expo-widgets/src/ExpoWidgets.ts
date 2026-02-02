@@ -1,6 +1,6 @@
 import { NativeModule, requireNativeModule } from 'expo';
 
-import { ExpoWidgetsEvents } from './Widgets.types';
+import { ExpoWidgetsEvents, LiveActivityInfo } from './Widgets.types';
 
 declare class ExpoWidgetModule extends NativeModule<ExpoWidgetsEvents> {
   reloadWidget(timeline?: string): void;
@@ -12,6 +12,9 @@ declare class ExpoWidgetModule extends NativeModule<ExpoWidgetsEvents> {
   ): void;
   startLiveActivity(name: string, nodes: string, url?: string): string;
   updateLiveActivity(id: string, name: string, nodes: string): void;
+  endLiveActivity(id: string, dismissalPolicy?: string): void;
+  getLiveActivityPushToken(id: string): Promise<string | null>;
+  getLiveActivities(): LiveActivityInfo[];
 }
 
 export default requireNativeModule<ExpoWidgetModule>('ExpoWidgets');
