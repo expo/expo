@@ -1,4 +1,5 @@
-import { Host, Carousel, Box, background, size } from '@expo/ui/jetpack-compose';
+import { Host, Carousel, Box } from '@expo/ui/jetpack-compose';
+import { background, size } from '@expo/ui/jetpack-compose/modifiers';
 import { Image } from 'expo-image';
 import * as React from 'react';
 import { View } from 'react-native';

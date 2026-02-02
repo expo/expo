@@ -1,6 +1,6 @@
 import type { ImageRef } from 'expo-image';
 import { type ReactNode } from 'react';
-import { type ColorValue, type ImageSourcePropType, type StyleProp, type TextStyle } from 'react-native';
+import { type ColorValue, type StyleProp, type TextStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import { LinkMenuAction } from '../../../link/elements';
 import type { BasicTextStyle } from '../../../utils/font';
@@ -13,12 +13,14 @@ export interface NativeToolbarMenuProps {
     disabled?: boolean;
     hidden?: boolean;
     hidesSharedBackground?: boolean;
-    icon?: SFSymbol | ImageSourcePropType;
+    icon?: SFSymbol;
     /**
      * Image to display for the menu item.
      */
     image?: ImageRef;
+    imageRenderingMode?: 'template' | 'original';
     inline?: boolean;
+    label?: string;
     palette?: boolean;
     separateBackground?: boolean;
     style?: StyleProp<TextStyle>;
@@ -39,12 +41,12 @@ export declare const NativeToolbarMenuAction: typeof LinkMenuAction;
 export interface NativeToolbarButtonProps {
     accessibilityLabel?: string;
     accessibilityHint?: string;
-    children?: ReactNode;
     disabled?: boolean;
     hidden?: boolean;
     hidesSharedBackground?: boolean;
     icon?: SFSymbol;
     image?: ImageRef;
+    imageRenderingMode?: 'template' | 'original';
     onPress?: () => void;
     possibleTitles?: string[];
     selected?: boolean;
@@ -52,6 +54,7 @@ export interface NativeToolbarButtonProps {
     style?: StyleProp<BasicTextStyle>;
     tintColor?: ColorValue;
     variant?: 'plain' | 'done' | 'prominent';
+    label?: string;
 }
 /**
  * Native toolbar button component for bottom toolbar.
@@ -72,7 +75,7 @@ export declare const NativeToolbarSpacer: React.FC<NativeToolbarSpacerProps>;
 export interface NativeToolbarSearchBarSlotProps {
     hidesSharedBackground?: boolean;
     hidden?: boolean;
-    sharesBackground?: boolean;
+    separateBackground?: boolean;
 }
 /**
  * Native toolbar search bar slot for bottom toolbar (iOS 26+).

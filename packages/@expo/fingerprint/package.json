@@ -51,7 +51,6 @@
     "glob": "^13.0.0",
     "ignore": "^5.3.1",
     "minimatch": "^9.0.0",
-    "p-limit": "^3.1.0",
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0"
   },

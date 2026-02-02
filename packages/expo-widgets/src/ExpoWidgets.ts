@@ -11,7 +11,7 @@ declare class ExpoWidgetModule extends NativeModule<ExpoWidgetsEvents> {
     updateFunction?: string
   ): void;
   startLiveActivity(name: string, nodes: string, url?: string): string;
-  updateLiveActivity(id: string, name: string, nodes: string): string;
+  updateLiveActivity(id: string, name: string, nodes: string): void;
 }
 
 export default requireNativeModule<ExpoWidgetModule>('ExpoWidgets');

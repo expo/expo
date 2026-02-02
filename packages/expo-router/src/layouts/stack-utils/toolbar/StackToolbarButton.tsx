@@ -1,11 +1,13 @@
 'use client';
 import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
 import type { ImageRef } from 'expo-image';
-import type { ReactNode } from 'react';
+import { Children, useMemo, type ReactNode } from 'react';
 import type { StyleProp, TextStyle } from 'react-native';
 
 import { NativeToolbarButton } from './bottom-toolbar-native-elements';
 import { useToolbarPlacement } from './context';
+import { filterAllowedChildrenElements, getFirstChildOfType } from '../../../utils/children';
+import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from '../common-primitives';
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   type StackHeaderItemSharedProps,
@@ -84,6 +86,23 @@ export interface StackToolbarButtonProps {
    * > **Note**: This prop is only supported in toolbar with `placement="bottom"`.
    */
   image?: ImageRef;
+  /**
+   * Controls how image-based icons are rendered on iOS.
+   *
+   * - `'template'`: iOS applies tint color to the icon
+   * - `'original'`: Preserves original icon colors (useful for multi-color icons)
+   *
+   * **Default behavior:**
+   * - If `tintColor` is specified, defaults to `'template'`
+   * - If no `tintColor`, defaults to `'original'`
+   *
+   * This prop only affects image-based icons (not SF Symbols).
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+   *
+   * @platform ios
+   */
+  iconRenderingMode?: 'template' | 'original';
   onPress?: () => void;
   /**
    * Whether to separate the background of this item from other header items.
@@ -154,10 +173,44 @@ export interface StackToolbarButtonProps {
 export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => {
   const placement = useToolbarPlacement();
 
+  const validChildren = useMemo(
+    () => filterAllowedChildrenElements(props.children, ALLOWED_CHILDREN),
+    [props.children]
+  );
+
+  if (process.env.NODE_ENV !== 'production') {
+    // Skip validation for string children
+    if (typeof props.children !== 'string') {
+      const allChildren = Children.toArray(props.children);
+      if (allChildren.length !== validChildren.length) {
+        throw new Error(
+          `Stack.Toolbar.Button only accepts a single string or Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`
+        );
+      }
+    }
+  }
+
+  if (process.env.NODE_ENV !== 'production' && placement === 'bottom') {
+    const hasBadge = getFirstChildOfType(props.children, StackToolbarBadge);
+    if (hasBadge) {
+      console.warn(
+        'Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.'
+      );
+    }
+  }
+
   if (placement === 'bottom') {
+    const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(props);
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    const icon = typeof props.icon === 'string' ? props.icon : undefined;
-    return <NativeToolbarButton {...props} icon={icon} image={props.image} />;
+    const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
+    return (
+      <NativeToolbarButton
+        {...sharedProps}
+        icon={icon}
+        image={props.image}
+        imageRenderingMode={props.iconRenderingMode}
+      />
+    );
   }
 
   return null;
@@ -177,3 +230,5 @@ export function convertStackToolbarButtonPropsToRNHeaderItem(
     selected: !!props.selected,
   };
 }
+
+const ALLOWED_CHILDREN = [StackToolbarLabel, StackToolbarIcon, StackToolbarBadge];

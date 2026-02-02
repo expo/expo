@@ -11,14 +11,13 @@ test.afterAll(() => restoreEnv());
 const projectRoot = getRouterE2ERoot();
 const outputDir = 'dist-server-loader-playwright';
 
-test.describe('server loader (SSR) in production', () => {
-  test.describe.configure({ mode: 'serial' });
-
+test.describe('server loaders in production', () => {
   const expoServe = createExpoServe({
     cwd: projectRoot,
     env: {
       NODE_ENV: 'production',
       TEST_SECRET_KEY: 'test-secret-key',
+      TEST_THROW_ERROR: 'true',
     },
   });
 
@@ -31,65 +30,19 @@ test.describe('server loader (SSR) in production', () => {
         E2E_ROUTER_SRC: 'server-loader',
         E2E_ROUTER_SERVER_LOADERS: 'true',
         E2E_ROUTER_SERVER_RENDERING: 'true',
-        TEST_SECRET_KEY: 'test-secret-key',
       },
     });
     console.timeEnd('expo export');
 
-    console.time('npx serve');
+    console.time('expo serve');
     await expoServe.startAsync([outputDir]);
-    console.timeEnd('npx serve');
+    console.timeEnd('expo serve');
   });
   test.afterAll(async () => {
     await expoServe.stopAsync();
   });
 
-  test('loads and renders a route without a loader', async ({ page }) => {
-    const pageErrors = pageCollectErrors(page);
-    await page.goto(expoServe.url.href);
-
-    // Index route doesn't have a loader
-    const loaderDataScript = await page.evaluate(() => {
-      return globalThis.__EXPO_ROUTER_LOADER_DATA__;
-    });
-    expect(loaderDataScript).not.toBeDefined();
-
-    // Index route doesn't have a loader, so no loader-result element should exist
-    const loaderResult = page.locator('[data-testid="loader-result"]');
-    await expect(loaderResult).toHaveCount(0);
-
-    expect(pageErrors.all).toEqual([]);
-  });
-
-  test('SSR injects loader data into initial HTML', async ({ page }) => {
-    const pageErrors = pageCollectErrors(page);
-    await page.goto(expoServe.url.href + 'second');
-
-    // SSR should inject loader data into the page
-    const loaderDataScript = await page.evaluate(() => {
-      return globalThis.__EXPO_ROUTER_LOADER_DATA__;
-    });
-    expect(loaderDataScript).toBeDefined();
-
-    await page.waitForSelector('[data-testid="loader-result"]');
-    const loaderDataElement = await page.locator('[data-testid="loader-result"]');
-    await expect(loaderDataElement).toHaveText('{"data":"second"}');
-
-    expect(pageErrors.all).toEqual([]);
-  });
-
-  test('SSR renders dynamic route with params', async ({ page }) => {
-    const pageErrors = pageCollectErrors(page);
-    await page.goto(expoServe.url.href + 'posts/my-dynamic-post');
-
-    await page.waitForSelector('[data-testid="loader-result"]');
-    const loaderData = page.locator('[data-testid="loader-result"]');
-    await expect(loaderData).toContainText('"postId":"my-dynamic-post"');
-
-    expect(pageErrors.all).toEqual([]);
-  });
-
-  test('client-side navigation fetches loader data', async ({ page }) => {
+  test('loads loader data modules on client-side navigation', async ({ page }) => {
     const loaderRequests: string[] = [];
     page.on('request', (request) => {
       if (request.url().includes('/_expo/loaders/')) {
@@ -97,33 +50,15 @@ test.describe('server loader (SSR) in production', () => {
       }
     });
 
-    // Start at index (no loader)
     await page.goto(expoServe.url.href);
     expect(loaderRequests).toHaveLength(0);
 
-    // Navigate to a route with loader - should fetch loader data
     await page.click('a[href="/posts/static-post-1"]');
     await page.waitForSelector('[data-testid="loader-result"]');
     expect(loaderRequests).toContainEqual(expect.stringContaining('/_expo/loaders/posts'));
 
-    const loaderData = page.locator('[data-testid="loader-result"]');
-    await expect(loaderData).toContainText('"postId":"static-post-1"');
-  });
-
-  test('navigates from route without loader to route with loader', async ({ page }) => {
-    const pageErrors = pageCollectErrors(page);
-
-    // Start at index route (no loader)
-    await page.goto(expoServe.url.href);
-
-    // Navigate to second route (has loader)
-    await page.click('a[href="/second"]');
-    await page.waitForSelector('[data-testid="loader-result"]');
-
-    const loaderData = page.locator('[data-testid="loader-result"]');
-    await expect(loaderData).toHaveText('{"data":"second"}');
-
-    expect(pageErrors.all).toEqual([]);
+    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
+    expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
   });
 
   test('caches loader data for subsequent navigations', async ({ page }) => {
@@ -175,13 +110,30 @@ test.describe('server loader (SSR) in production', () => {
 
     await page.click('a[href="/posts/static-post-1"]');
 
-    const loaderResult = page.locator('[data-testid="loader-result"]');
+    const suspenseFallback = await page.locator('[data-testid="suspense-fallback"]');
+    await expect(suspenseFallback).toBeVisible();
 
-    // In production, `<SuspenseFallback>` returns null, but we can verify the Suspense boundary is
-    // working by checking that content is not rendered during loading
-    await expect(loaderResult).not.toBeVisible({ timeout: 100 });
+    await page.waitForSelector('[data-testid="loader-result"]');
+    await expect(suspenseFallback).not.toBeVisible();
+  });
 
-    await expect(loaderResult).toBeVisible({ timeout: 1000 });
+  test('navigates from route without loader to route with loader', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+
+    const url = new URL(expoServe.url.href);
+    url.pathname = '/no-loader';
+
+    // Start on no loader route
+    await page.goto(url.toString());
+
+    // Navigate to index route (has loader)
+    await page.click('a[href="/"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+
+    const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
+    expect(JSON.parse(loaderDataContent!)).toEqual({ data: 'root-index' });
+
+    expect(pageErrors.all).toEqual([]);
   });
 
   test('navigates from route with loader to another route with loader', async ({ page }) => {
@@ -194,14 +146,31 @@ test.describe('server loader (SSR) in production', () => {
     await page.goto(url.toString());
     await page.waitForSelector('[data-testid="loader-result"]');
 
-    await expect(page.locator('[data-testid="loader-result"]')).toHaveText('{"data":"second"}');
+    const secondLoaderDataContent = await page
+      .locator('[data-testid="loader-result"]')
+      .textContent();
+    expect(JSON.parse(secondLoaderDataContent!)).toEqual({ data: 'second' });
 
     // Navigate to posts route (has loader)
     await page.click('a[href="/posts/static-post-1"]');
-    await expect(page.locator('[data-testid="loader-result"]')).toContainText(
-      '"postId":"static-post-1"'
-    );
+    const postsLoaderDataContent = await page
+      .locator('[data-testid="loader-result"]')
+      .textContent();
+    expect(JSON.parse(postsLoaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
 
     expect(pageErrors.all).toEqual([]);
+  });
+
+  test('displays error boundary when loader throws on client-side navigation', async ({ page }) => {
+    await page.goto(expoServe.url.href);
+
+    // Navigate to error route
+    await page.click('a[href="/error"]');
+
+    await page.waitForSelector('[data-testid="error-message"]');
+    const errorMessage = await page.locator('[data-testid="error-message"]').textContent();
+
+    expect(errorMessage).toContain('Failed to load loader data for route: /error');
+    await expect(page.locator('[data-testid="should-not-render"]')).not.toBeVisible();
   });
 });

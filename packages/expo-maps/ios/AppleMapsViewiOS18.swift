@@ -246,6 +246,9 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
           state.hasInitializedCamera = true
         }
       }
+      .let(props.colorScheme.toColorScheme()) { view, colorScheme in
+        view.environment(\.colorScheme, colorScheme)
+      }
     }
   }
 

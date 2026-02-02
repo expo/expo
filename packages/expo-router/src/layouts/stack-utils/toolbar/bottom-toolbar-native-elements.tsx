@@ -5,7 +5,6 @@ import {
   Platform,
   StyleSheet,
   type ColorValue,
-  type ImageSourcePropType,
   type StyleProp,
   type TextStyle,
 } from 'react-native';
@@ -13,9 +12,7 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { LinkMenuAction } from '../../../link/elements';
 import { NativeLinkPreviewAction } from '../../../link/preview/native';
-import { Label, Icon } from '../../../primitives';
 import { RouterToolbarItem } from '../../../toolbar/native';
-import { getFirstChildOfType } from '../../../utils/children';
 import type { BasicTextStyle } from '../../../utils/font';
 
 // #region NativeToolbarMenu
@@ -29,13 +26,15 @@ export interface NativeToolbarMenuProps {
   disabled?: boolean;
   hidden?: boolean;
   hidesSharedBackground?: boolean;
-  icon?: SFSymbol | ImageSourcePropType;
+  icon?: SFSymbol;
   // TODO(@ubax): Add useImage support in a follow-up PR.
   /**
    * Image to display for the menu item.
    */
   image?: ImageRef;
+  imageRenderingMode?: 'template' | 'original';
   inline?: boolean;
+  label?: string;
   palette?: boolean;
   separateBackground?: boolean;
   style?: StyleProp<TextStyle>;
@@ -59,33 +58,30 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
   hidden,
   subtitle,
   title,
+  label,
   destructive,
   children,
   icon,
   image,
+  imageRenderingMode,
   tintColor,
   variant,
   style,
   elementSize,
 }) => {
   const identifier = useId();
-  const label = getFirstChildOfType(children, Label);
-  const iconComponent = getFirstChildOfType(children, Icon);
 
-  const computedTitle = title ?? label?.props.children ?? '';
-  const computedIcon =
-    icon ??
-    (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
-  const sf = typeof computedIcon === 'string' ? computedIcon : undefined;
   const titleStyle = StyleSheet.flatten(style);
+  const renderingMode = imageRenderingMode ?? (tintColor !== undefined ? 'template' : 'original');
   return (
     <NativeLinkPreviewAction
       sharesBackground={!separateBackground}
       hidesSharedBackground={hidesSharedBackground}
       hidden={hidden}
-      icon={sf}
+      icon={icon}
       // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
       image={image}
+      imageRenderingMode={renderingMode}
       destructive={destructive}
       subtitle={subtitle}
       accessibilityLabel={accessibilityLabel}
@@ -96,7 +92,8 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
       tintColor={tintColor}
       titleStyle={titleStyle}
       barButtonItemStyle={variant === 'done' ? 'prominent' : variant}
-      title={computedTitle}
+      title={title ?? ''}
+      label={label}
       onSelected={() => {}}
       children={children}
       identifier={identifier}
@@ -120,12 +117,12 @@ export const NativeToolbarMenuAction = LinkMenuAction;
 export interface NativeToolbarButtonProps {
   accessibilityLabel?: string;
   accessibilityHint?: string;
-  children?: ReactNode;
   disabled?: boolean;
   hidden?: boolean;
   hidesSharedBackground?: boolean;
   icon?: SFSymbol;
   image?: ImageRef;
+  imageRenderingMode?: 'template' | 'original';
   onPress?: () => void;
   possibleTitles?: string[];
   selected?: boolean;
@@ -133,6 +130,7 @@ export interface NativeToolbarButtonProps {
   style?: StyleProp<BasicTextStyle>;
   tintColor?: ColorValue;
   variant?: 'plain' | 'done' | 'prominent';
+  label?: string;
 }
 
 /**
@@ -141,16 +139,8 @@ export interface NativeToolbarButtonProps {
  */
 export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) => {
   const id = useId();
-  const areChildrenString = typeof props.children === 'string';
-  const label = areChildrenString
-    ? (props.children as string)
-    : getFirstChildOfType(props.children, Label)?.props.children;
-  const iconComponent =
-    !props.icon && !areChildrenString ? getFirstChildOfType(props.children, Icon) : undefined;
-  const icon =
-    props.icon ??
-    (iconComponent?.props && 'sf' in iconComponent.props ? iconComponent.props.sf : undefined);
-  const sf = typeof icon === 'string' ? icon : undefined;
+  const renderingMode =
+    props.imageRenderingMode ?? (props.tintColor !== undefined ? 'template' : 'original');
   return (
     <RouterToolbarItem
       accessibilityHint={props.accessibilityHint}
@@ -161,12 +151,13 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
       hidesSharedBackground={props.hidesSharedBackground}
       identifier={id}
       image={props.image}
+      imageRenderingMode={renderingMode}
       onSelected={props.onPress}
       possibleTitles={props.possibleTitles}
       selected={props.selected}
       sharesBackground={!props.separateBackground}
-      systemImageName={sf}
-      title={label}
+      systemImageName={props.icon}
+      title={props.label}
       tintColor={props.tintColor}
       titleStyle={StyleSheet.flatten(props.style)}
     />
@@ -209,7 +200,7 @@ export const NativeToolbarSpacer: React.FC<NativeToolbarSpacerProps> = (props) =
 export interface NativeToolbarSearchBarSlotProps {
   hidesSharedBackground?: boolean;
   hidden?: boolean;
-  sharesBackground?: boolean;
+  separateBackground?: boolean;
 }
 
 /**
@@ -219,7 +210,7 @@ export interface NativeToolbarSearchBarSlotProps {
 export const NativeToolbarSearchBarSlot: React.FC<NativeToolbarSearchBarSlotProps> = ({
   hidesSharedBackground,
   hidden,
-  sharesBackground,
+  separateBackground,
 }) => {
   const id = useId();
   if (process.env.EXPO_OS !== 'ios' || parseInt(String(Platform.Version).split('.')[0], 10) < 26) {
@@ -232,7 +223,7 @@ export const NativeToolbarSearchBarSlot: React.FC<NativeToolbarSearchBarSlotProp
     <RouterToolbarItem
       hidesSharedBackground={hidesSharedBackground}
       identifier={id}
-      sharesBackground={sharesBackground}
+      sharesBackground={!separateBackground}
       type="searchBar"
     />
   );
