@@ -39,6 +39,7 @@ NS_SWIFT_NAME(JavaScriptValue)
 - (BOOL)isSymbol;
 - (BOOL)isObject;
 - (BOOL)isFunction;
+- (BOOL)isArray;
 - (BOOL)isTypedArray;
 - (BOOL)isArrayBuffer;
 
