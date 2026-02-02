@@ -1,9 +1,9 @@
 import { type ModifierConfig } from './createModifier';
 
-type GlobalEventPayload = {
+export type GlobalEventPayload = {
   [eventName: string]: Record<string, any>;
 };
-type GlobalEvent = {
+export type GlobalEvent = {
   onGlobalEvent: (event: { nativeEvent: GlobalEventPayload }) => void;
 };
 
