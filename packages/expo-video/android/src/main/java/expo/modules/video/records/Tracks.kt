@@ -1,5 +1,6 @@
 package expo.modules.video.records
 
+import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.media3.common.Format
 import androidx.media3.common.util.UnstableApi
@@ -53,6 +54,7 @@ class AudioTrack(
 @OptIn(UnstableApi::class)
 class VideoTrack(
   @Field val id: String,
+  @Field val url: Uri?,
   @Field val size: VideoSize,
   @Field val mimeType: String?,
   @Field val isSupported: Boolean = true,
@@ -63,7 +65,7 @@ class VideoTrack(
   var format: Format? = null
 ) : Record, Serializable {
   companion object {
-    fun fromFormat(format: Format?, isSupported: Boolean): VideoTrack? {
+    fun fromFormat(format: Format?, isSupported: Boolean, variantUrl: Uri?): VideoTrack? {
       val id = format?.id ?: return null
       val size = VideoSize(format)
       val mimeType = format.sampleMimeType
@@ -73,6 +75,7 @@ class VideoTrack(
 
       return VideoTrack(
         id = id,
+        url = variantUrl,
         size = size,
         mimeType = mimeType,
         isSupported = isSupported,
