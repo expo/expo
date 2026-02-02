@@ -47,6 +47,9 @@ import expo.modules.video.records.VideoSource
 import expo.modules.video.utils.MutableWeakReference
 import expo.modules.video.records.VideoTrack
 import expo.modules.video.utils.buildBasicMediaSession
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
 import java.lang.ref.WeakReference
@@ -346,7 +349,17 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
   }
 
+  @kotlin.OptIn(DelicateCoroutinesApi::class)
   override fun close() {
+    // Releases the listeners from VideoPlayerKeepAwake
+    keepScreenOnWhilePlaying = false
+
+    intervalUpdateClock.interval = 0L
+
+    synchronized(listeners) {
+      listeners.clear()
+    }
+
     if (serviceConnection.isConnected) {
       appContext?.reactContext?.unbindService(serviceConnection)
     }
@@ -355,19 +368,19 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
     VideoManager.unregisterVideoPlayer(this@VideoPlayer)
 
-    appContext?.mainQueue?.launch {
+    // Run on global scope (not appContext.mainQueue) so that reloading doesn't cancel the release process
+    // https://github.com/expo/expo/blob/cdf592a7fea56fc01b0149e9b2e5dbd294bcdc4c/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt#L277-L279
+    GlobalScope.launch(Dispatchers.Main) {
       firstFrameEventGenerator.release()
       player.removeListener(playerListener)
       player.release()
     }
     uncommittedSource = null
     commitedSource = null
-    // Releases the listeners from VideoPlayerKeepAwake
-    keepScreenOnWhilePlaying = false
   }
 
-  override fun deallocate() {
-    super.deallocate()
+  override fun sharedObjectDidRelease() {
+    super.sharedObjectDidRelease()
     close()
   }
 
