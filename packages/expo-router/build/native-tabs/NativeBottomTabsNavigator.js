@@ -49,7 +49,7 @@ const children_1 = require("../utils/children");
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
 const defaultBackBehavior = 'initialRoute';
 exports.NativeTabsContext = react_1.default.createContext(false);
-function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, labelStyle, iconColor, blurEffect, backgroundColor, badgeBackgroundColor, indicatorColor, badgeTextColor, shadowColor, ...rest }) {
+function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, labelStyle, iconColor, blurEffect, backgroundColor, badgeBackgroundColor, indicatorColor, badgeTextColor, shadowColor, screenListeners, ...rest }) {
     if ((0, react_1.use)(exports.NativeTabsContext)) {
         throw new Error('Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.');
     }
@@ -66,6 +66,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
     const { state, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(NativeBottomTabsRouter_1.NativeBottomTabsRouter, {
         children,
         backBehavior,
+        screenListeners,
         screenOptions: {
             disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
             labelStyle: processedLabelStyle.default,
@@ -92,6 +93,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
         contentRenderer: () => descriptors[route.key].render(),
     })), [routes, descriptors]);
     const visibleFocusedTabIndex = (0, react_1.useMemo)(() => visibleTabs.findIndex((tab) => tab.routeKey === routes[state.index].key), [visibleTabs, routes, state.index]);
+    const visibleTabsKeys = (0, react_1.useMemo)(() => visibleTabs.map((tab) => tab.routeKey).join(';'), [visibleTabs]);
     if (visibleFocusedTabIndex < 0) {
         if (process.env.NODE_ENV !== 'production') {
             throw new Error(`The focused tab in NativeTabsView cannot be displayed. Make sure path is correct and the route is not hidden. Path: "${(0, linking_1.getPathFromState)(state)}"`);
@@ -118,7 +120,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
     }, [descriptors, navigation, state.key]);
     return (<NavigationContent>
       <exports.NativeTabsContext value>
-        <NativeTabsView_1.NativeTabsView {...rest} focusedIndex={focusedIndex} tabs={visibleTabs} onTabChange={onTabChange}/>
+        <NativeTabsView_1.NativeTabsView {...rest} key={visibleTabsKeys} focusedIndex={focusedIndex} tabs={visibleTabs} onTabChange={onTabChange}/>
       </exports.NativeTabsContext>
     </NavigationContent>);
 }

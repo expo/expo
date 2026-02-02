@@ -23,19 +23,11 @@ jest.mock('../expoSsoLauncher', () => ({
 
 jest.mock('../../../log');
 jest.unmock('../UserSettings');
-jest.mock('../../graphql/client', () => ({
-  graphqlClient: {
-    query: () => {
-      return {
-        toPromise: () =>
-          Promise.resolve({ data: { meUserActor: { id: 'USER_ID', username: 'USERNAME' } } }),
-      };
-    },
-  },
-}));
+jest.mock('../../graphql/client', () => ({ graphql: (x: string) => `${x}` }));
 jest.mock('../../graphql/queries/UserQuery', () => ({
   UserQuery: {
     currentUserAsync: async () => ({ __typename: 'User', username: 'USERNAME', id: 'USER_ID' }),
+    meUserActorAsync: async () => ({ id: 'USER_ID', username: 'USERNAME' }),
   },
 }));
 
@@ -48,7 +40,7 @@ const userStub: Actor = {
   id: 'userId',
   username: 'username',
   accounts: [],
-  isExpoAdmin: false,
+  primaryAccount: { id: 'stub' },
 };
 
 const ssoUserStub: Actor = {
@@ -56,7 +48,7 @@ const ssoUserStub: Actor = {
   id: 'userId',
   username: 'username',
   accounts: [],
-  isExpoAdmin: false,
+  primaryAccount: { id: 'stub' },
 };
 
 const robotStub: Actor = {
@@ -64,7 +56,6 @@ const robotStub: Actor = {
   id: 'userId',
   firstName: 'GLaDOS',
   accounts: [],
-  isExpoAdmin: false,
 };
 
 function mockLoginRequest() {

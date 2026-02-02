@@ -14,8 +14,10 @@ const areNativeViewsAvailable =
 export interface NativeLinkPreviewActionProps {
   identifier: string;
   title: string;
+  label?: string;
   icon?: string;
   image?: ImageRef | null;
+  imageRenderingMode?: 'template' | 'original';
   children?: React.ReactNode;
   disabled?: boolean;
   destructive?: boolean;

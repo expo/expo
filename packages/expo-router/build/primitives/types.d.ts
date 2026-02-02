@@ -12,6 +12,8 @@ export interface VectorIconProps<NameT extends string> {
      * ```tsx
      * import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
      * ```
+     *
+     * @hideType
      */
     family: {
         getImageSource: (name: NameT, size: number, color: ColorValue) => Promise<ImageSourcePropType | null>;

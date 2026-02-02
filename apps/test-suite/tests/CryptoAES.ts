@@ -259,10 +259,12 @@ export async function test({ describe, it, expect, beforeAll }) {
     describe('SealedData', () => {
       let key: AESEncryptionKey;
       let sealedData: AESSealedData;
+      let plaintextSize: number;
 
       beforeAll(async () => {
         key = await AESEncryptionKey.generate();
         const plaintext = new Uint8Array([1, 2, 3, 4, 5]);
+        plaintextSize = plaintext.byteLength;
         sealedData = await aesEncryptAsync(plaintext, key);
       });
 
@@ -270,9 +272,11 @@ export async function test({ describe, it, expect, beforeAll }) {
         expect(sealedData.ciphertext).toBeDefined();
         expect(sealedData.iv).toBeDefined();
         expect(sealedData.tag).toBeDefined();
-        expect(sealedData.combinedSize).toBeGreaterThan(0);
         expect(sealedData.ivSize).toBe(DEFAULT_IV_LENGTH);
         expect(sealedData.tagSize).toBe(DEFAULT_TAG_LENGTH);
+        expect(sealedData.combinedSize).toBe(
+          sealedData.ivSize + plaintextSize + sealedData.tagSize
+        );
       });
 
       it('exports as combined format', async () => {
@@ -313,6 +317,14 @@ export async function test({ describe, it, expect, beforeAll }) {
         expect(
           areArraysEqual(await reconstructed.ciphertext(), await customSealedData.ciphertext())
         ).toBe(true);
+      });
+
+      it('respects ciphertext config', async () => {
+        const ciphertext = await sealedData.ciphertext();
+        const ciphertextWithTag = await sealedData.ciphertext({ includeTag: true });
+
+        expect(ciphertext.byteLength).toBe(plaintextSize);
+        expect(ciphertextWithTag.byteLength).toBe(plaintextSize + sealedData.tagSize);
       });
     });
 

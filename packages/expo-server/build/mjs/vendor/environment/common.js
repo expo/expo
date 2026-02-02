@@ -30,14 +30,14 @@ export function createEnvironment(input) {
     let cachedManifest = null;
     let ssrRenderer = null;
     async function getCachedRoutesManifest() {
-        if (!cachedManifest) {
+        if (!cachedManifest || input.isDevelopment) {
             const json = await input.readJson('_expo/routes.json');
             cachedManifest = initManifestRegExp(json);
         }
         return cachedManifest;
     }
     async function getServerRenderer() {
-        if (ssrRenderer) {
+        if (ssrRenderer && !input.isDevelopment) {
             return ssrRenderer;
         }
         const manifest = await getCachedRoutesManifest();
@@ -71,7 +71,7 @@ export function createEnvironment(input) {
             throw new Error(`Loader module not found at: ${route.loader}`);
         }
         const params = parseParams(request, route);
-        return loaderModule.loader({ params, request: new ImmutableRequest(request) });
+        return loaderModule.loader(new ImmutableRequest(request), params);
     }
     return {
         async getRoutesManifest() {
@@ -83,11 +83,10 @@ export function createEnvironment(input) {
             if (renderer) {
                 let renderOptions;
                 try {
-                    const result = await executeLoader(request, route);
-                    if (result !== undefined) {
+                    if (route.loader) {
+                        const result = await executeLoader(request, route);
                         const data = isResponse(result) ? await result.json() : result;
-                        const normalizedData = data === undefined ? {} : data;
-                        renderOptions = { loader: { data: normalizedData } };
+                        renderOptions = { loader: { data: data ?? null } };
                     }
                     return await renderer(request, renderOptions);
                 }
@@ -127,8 +126,7 @@ export function createEnvironment(input) {
             if (isResponse(result)) {
                 return result;
             }
-            const data = result === undefined ? {} : result;
-            return Response.json(data);
+            return Response.json(result ?? null);
         },
     };
 }

@@ -26,29 +26,72 @@ function extractBottomToolbars(children: ReactNode): React.ReactElement<StackToo
   );
 }
 
-export function StackScreen({ children, options, ...rest }: StackScreenProps) {
-  // This component will only render when used inside a page.
-  const updatedOptions = useMemo(
-    () =>
-      appendScreenStackPropsToOptions(options ?? {}, {
-        children,
-      }),
-    [options, children]
-  );
+/**
+ * Component used to define a screen in a native stack navigator.
+ *
+ * Can be used in the `_layout.tsx` files, or directly in page components.
+ *
+ * When configuring header inside page components, prefer using `Stack.Toolbar`, `Stack.Header` and `Stack.Screen.*` components.
+ *
+ * @example
+ * ```tsx app/_layout.tsx
+ * import { Stack } from 'expo-router';
+ *
+ * export default function Layout() {
+ *   return (
+ *     <Stack>
+ *       <Stack.Screen
+ *         name="home"
+ *         options={{ title: 'Home' }}
+ *       />
+ *    </Stack>
+ *  );
+ * }
+ * ```
+ *
+ * @example
+ * ```tsx app/home.tsx
+ * import { Stack } from 'expo-router';
+ *
+ * export default function HomePage() {
+ *   return (
+ *     <>
+ *       <Stack.Screen
+ *         options={{ headerTransparent: true }}
+ *       />
+ *       <Stack.Screen.Title>Welcome Home</Stack.Screen.Title>
+ *       // Page content
+ *     </>
+ *   );
+ * }
+ * ```
+ */
+export const StackScreen = Object.assign(
+  function StackScreen({ children, options, ...rest }: StackScreenProps) {
+    // This component will only render when used inside a page.
+    const updatedOptions = useMemo(
+      () =>
+        appendScreenStackPropsToOptions(options ?? {}, {
+          children,
+        }),
+      [options, children]
+    );
 
-  const bottomToolbars = useMemo(() => extractBottomToolbars(children), [children]);
+    const bottomToolbars = useMemo(() => extractBottomToolbars(children), [children]);
 
-  return (
-    <>
-      <Screen {...rest} options={updatedOptions} />
-      {/* Bottom toolbar is a native component rendered separately */}
-      {bottomToolbars}
-    </>
-  );
-}
-
-StackScreen.Title = StackScreenTitle;
-StackScreen.BackButton = StackScreenBackButton;
+    return (
+      <>
+        <Screen {...rest} options={updatedOptions} />
+        {/* Bottom toolbar is a native component rendered separately */}
+        {bottomToolbars}
+      </>
+    );
+  },
+  {
+    Title: StackScreenTitle,
+    BackButton: StackScreenBackButton,
+  }
+);
 
 export function appendScreenStackPropsToOptions(
   options: NativeStackNavigationOptions,

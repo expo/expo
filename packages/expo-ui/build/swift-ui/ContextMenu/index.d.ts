@@ -1,7 +1,7 @@
 import { type ContextMenuProps } from './types';
 export { type ContextMenuProps } from './types';
 /**
- * Items visible inside the context menu. It could be `Section`, `Divider`, `Button`, `Switch`, `Picker` or even `ContextMenu` itself for nested menus. Remember to use components from the `@expo/ui/swift-ui` library.
+ * Items visible inside the context menu. It could be `Section`, `Divider`, `Button`, `Toggle`, `Picker` or even `ContextMenu` itself for nested menus. Remember to use components from the `@expo/ui/swift-ui` library.
  */
 export declare function Items(props: {
     children: React.ReactNode;

@@ -26,8 +26,7 @@ export default class DeviceSensor<Measurement> {
      */
     removeAllListeners(): void;
     /**
-     * Removes the given subscription.
-     * @param subscription A subscription to remove.
+     * @deprecated use subscription.remove() instead.
      */
     removeSubscription(subscription: EventSubscription): void;
     /**

@@ -25,7 +25,7 @@ class UpdatesConfigSpec : ExpoSpec {
         expect(config.checkOnLaunch) == .ErrorRecoveryOnly
         expect(config.codeSigningConfiguration).toNot(beNil())
         expect(config.enableExpoUpdatesProtocolV0CompatibilityMode) == false
-        expect(config.enableBsdiffPatchSupport) == true
+        expect(config.enableBsdiffPatchSupport) == false
         expect(config.runtimeVersion) == "fake-version-1"
         expect(config.hasEmbeddedUpdate) == true
       }

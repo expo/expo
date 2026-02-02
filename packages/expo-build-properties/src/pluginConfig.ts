@@ -1,4 +1,6 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import { validate, type JSONSchema } from '@expo/schema-utils';
+import fs from 'fs';
+import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
 /**
@@ -16,6 +18,13 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
     deploymentTarget: '15.1',
   },
 };
+
+/**
+ * The hermes-compiler version expected to use hermesV1 compiler version.
+ * Keep this in sync with the expected `react-native` version.
+ * @ignore
+ */
+const HERMES_V1_COMPILER_VERSION = '250829098.0.4';
 
 /**
  * Shared build configuration fields that can be set at the top level
@@ -595,7 +604,8 @@ export interface PluginConfigTypeAndroidQueriesData {
   mimeType?: string;
 }
 
-const schema: JSONSchemaType<PluginConfigType> = {
+const schema: JSONSchema<PluginConfigType> = {
+  title: 'expo-build-properties',
   type: 'object',
   properties: {
     buildReactNativeFromSource: { type: 'boolean', nullable: true },
@@ -839,22 +849,50 @@ function maybeThrowInvalidVersions(config: PluginConfigType) {
   }
 }
 
+/** Handle deprecated enableProguardInReleaseBuilds */
+const fixupDeprecatedEnableProguardInReleaseBuilds = (config: unknown) => {
+  if (
+    config &&
+    typeof config === 'object' &&
+    'android' in config &&
+    config.android &&
+    typeof config.android === 'object'
+  ) {
+    const androidConfig = config.android as PluginConfigTypeAndroid & Record<string, unknown>;
+    if (androidConfig.enableProguardInReleaseBuilds != null) {
+      if (androidConfig.enableMinifyInReleaseBuilds === undefined) {
+        androidConfig.enableMinifyInReleaseBuilds = !!androidConfig.enableProguardInReleaseBuilds;
+      }
+    }
+  }
+};
+
+/**
+ * Reads the hermes-compiler version from node_modules
+ * @ignore
+ */
+function getHermesCompilerVersion(projectRoot: string): string | null {
+  const reactNativePath = resolveFrom.silent(projectRoot, 'react-native/package.json');
+  const hermesCompilerPackageJsonPath =
+    reactNativePath && resolveFrom.silent(reactNativePath, 'hermes-compiler/package.json');
+  if (!hermesCompilerPackageJsonPath) {
+    return null;
+  }
+
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(hermesCompilerPackageJsonPath, 'utf8'));
+    return packageJson.version ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * @ignore
  */
-export function validateConfig(config: any): PluginConfigType {
-  const validate = new Ajv({ allowUnionTypes: true }).compile(schema);
-  // handle deprecated enableProguardInReleaseBuilds
-  if (
-    config.android?.enableProguardInReleaseBuilds !== undefined &&
-    config.android?.enableMinifyInReleaseBuilds === undefined
-  ) {
-    config.android.enableMinifyInReleaseBuilds = config.android.enableProguardInReleaseBuilds;
-  }
-  if (!validate(config)) {
-    throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
-  }
-
+export function validateConfig(config: unknown, projectRoot?: string): PluginConfigType {
+  fixupDeprecatedEnableProguardInReleaseBuilds(config);
+  validate(schema, config);
   maybeThrowInvalidVersions(config);
 
   if (
@@ -866,8 +904,22 @@ export function validateConfig(config: any): PluginConfigType {
     );
   }
 
-  // Validate useHermesV1 requires buildReactNativeFromSource for Android
   const androidUseHermesV1 = resolveConfigValue(config, 'android', 'useHermesV1');
+  const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1');
+
+  // TODO(gabrieldonadel): Revisit this before releasing SDK 56
+  // Hermes v1 requires a specific hermes-compiler version
+  if ((androidUseHermesV1 || iosUseHermesV1) && projectRoot) {
+    const hermesCompilerVersion = getHermesCompilerVersion(projectRoot);
+    if (hermesCompilerVersion && hermesCompilerVersion !== HERMES_V1_COMPILER_VERSION) {
+      throw new Error(
+        `\`useHermesV1\` requires setting the hermes-compiler version to ${HERMES_V1_COMPILER_VERSION} through resolutions. ` +
+          `Found version "${hermesCompilerVersion}" instead.`
+      );
+    }
+  }
+
+  // Validate useHermesV1 requires buildReactNativeFromSource for Android
   const androidBuildFromSource =
     resolveConfigValue(config, 'android', 'buildReactNativeFromSource') ??
     config.android?.buildFromSource; // Deprecated fallback
@@ -878,7 +930,6 @@ export function validateConfig(config: any): PluginConfigType {
   }
 
   // Validate useHermesV1 requires buildReactNativeFromSource for iOS
-  const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1');
   const iosBuildFromSource = resolveConfigValue(config, 'ios', 'buildReactNativeFromSource');
   if (iosUseHermesV1 === true && iosBuildFromSource !== true) {
     throw new Error('`useHermesV1` requires `buildReactNativeFromSource` to be `true` for iOS.');

@@ -6,6 +6,26 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [next] Add `asset.getShape()` ([#40110](https://github.com/expo/expo/pull/40110) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add `asset.getInfo()` ([#40146](https://github.com/expo/expo/pull/40146) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add exif support ([#39992](https://github.com/expo/expo/pull/39992) by [@Wenszel](https://github.com/Wenszel))
@@ -26,6 +46,7 @@
 - [next][android] Refactor permissions ([#40076](https://github.com/expo/expo/pull/40076) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add test screens ([#39951](https://github.com/expo/expo/pull/39951) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add documentation ([#39754](https://github.com/expo/expo/pull/39754) by [@Wenszel](https://github.com/Wenszel))
+- mark `removeSubscription` calls as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))
 - Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
 - [Android] Add `android:maxSdkVersion` annotation to  `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permissions. ([#40976](https://github.com/expo/expo/pull/40976) by [@behenate](https://github.com/behenate))
 

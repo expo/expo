@@ -1,5 +1,4 @@
 import { XcodeProject } from 'expo/config-plugins';
-import * as util from 'util';
 
 export function addBuildPhases(
   xcodeProject: XcodeProject,
@@ -47,7 +46,7 @@ export function addBuildPhases(
     .buildPhaseObject('PBXCopyFilesBuildPhase', groupName, productFile.target)
     .files.push({
       value: productFile.uuid,
-      comment: util.format('%s in %s', productFile.basename, productFile.group), // longComment(file);
+      comment: `${productFile.basename} in ${productFile.group}`,
     });
   xcodeProject.addToPbxBuildFileSection(productFile);
 

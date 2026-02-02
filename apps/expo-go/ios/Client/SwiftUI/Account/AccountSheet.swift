@@ -101,11 +101,6 @@ struct AccountSheet: View {
         signInButton
         signUpButton
       }
-
-      if viewModel.isAuthenticating {
-        ProgressView()
-          .scaleEffect(0.8)
-      }
     }
   }
 
@@ -116,12 +111,22 @@ struct AccountSheet: View {
         await viewModel.signIn()
       }
     } label: {
-      Text("Log In")
-        .font(.headline)
-        .fontWeight(.semibold)
-        .foregroundColor(.white)
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
+      HStack(spacing: 8) {
+        if viewModel.isAuthenticating {
+          ProgressView()
+            .tint(.white)
+            .scaleEffect(0.8)
+            .transition(.scale.combined(with: .opacity))
+        }
+
+        Text("Log In")
+          .font(.headline)
+          .fontWeight(.semibold)
+      }
+      .foregroundColor(.white)
+      .frame(maxWidth: .infinity)
+      .padding(.vertical, 12)
+      .animation(.easeInOut(duration: 0.2), value: viewModel.isAuthenticating)
     }
     .background(Color.black)
     .cornerRadius(12)

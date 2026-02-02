@@ -1,6 +1,4 @@
-import { GraphQLError } from '@0no-co/graphql.web';
 import { ExpoConfig, getConfig } from '@expo/config';
-import { CombinedError } from '@urql/core';
 import chalk from 'chalk';
 
 import { memoize } from './fn';
@@ -18,6 +16,7 @@ import {
   validatePackage,
   validatePackageWithWarning,
 } from './validateApplicationId';
+import { UnexpectedServerError, UnexpectedServerData } from '../api/graphql/client';
 import { AppQuery } from '../api/graphql/queries/AppQuery';
 import { getSettings } from '../api/user/UserSettings';
 import * as Log from '../log';
@@ -43,7 +42,7 @@ async function getRecommendedReverseDomainNameSecondPartAsync(
     const app = await AppQuery.byIdAsync(easProjectId);
     return app.ownerAccount.name;
   } catch (e) {
-    if (e instanceof GraphQLError || e instanceof CombinedError) {
+    if (e instanceof UnexpectedServerData || e instanceof UnexpectedServerError) {
       return null;
     }
     throw e;

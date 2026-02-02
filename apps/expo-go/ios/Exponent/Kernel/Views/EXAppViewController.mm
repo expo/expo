@@ -22,7 +22,9 @@
 #import <React/RCTAppearance.h>
 #import <React/RCTDevSettings.h>
 
+#if __has_include(<RNScreens/RNSScreenWindowTraits.h>)
 #import <RNScreens/RNSScreenWindowTraits.h>
+#endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -192,10 +194,6 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_main_queue(), ^{
       [self _showErrorWithType:kEXFatalErrorTypeLoading error:error];
     });
-  } else if ([domain isEqualToString:@"JSServer"] && [_appRecord.appManager enablesDeveloperTools]) {
-    // RCTRedBox already handled this
-  } else if ([domain rangeOfString:RCTErrorDomain].length > 0 && [_appRecord.appManager enablesDeveloperTools]) {
-    // RCTRedBox already handled this
   } else {
     dispatch_async(dispatch_get_main_queue(), ^{
       [self _showErrorWithType:kEXFatalErrorTypeException error:error];
@@ -533,7 +531,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldUseRNScreenOrientation
 {
+#if __has_include(<RNScreens/RNSScreenWindowTraits.h>)
   return [RNSScreenWindowTraits shouldAskScreensForScreenOrientationInViewController:self];
+#else
+  return NO;
+#endif
 }
 
 - (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault

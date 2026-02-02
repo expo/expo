@@ -28,9 +28,9 @@ import expo.modules.devmenu.compose.DevMenuState
 import expo.modules.devmenu.compose.DevMenuViewModel
 import expo.modules.devmenu.compose.newtheme.AppTheme
 import expo.modules.devmenu.compose.ui.DevMenuBottomSheet
+import expo.modules.devmenu.detectors.InterceptingWindowCallback
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
-import expo.modules.devmenu.detectors.TouchInterceptingWindowCallback
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import expo.modules.devmenu.fab.MovableFloatingActionButton
 import expo.modules.devmenu.helpers.isAcceptingText
@@ -45,13 +45,15 @@ class DevMenuFragment(
   private val reactHostHolder: WeakReference<ReactHost>,
   private val preferences: DevMenuPreferences,
   private val goToHomeAction: GoHomeAction?,
+  private val reloadAction: (() -> Unit)?,
   private val appInfoProvider: AppInfoProvider
 ) : Fragment() {
   val viewModel by viewModels<DevMenuViewModel> {
     DevMenuViewModel.Factory(
       reactHostHolder,
       preferences,
-      goToHomeAction
+      goToHomeAction,
+      reloadAction
     )
   }
   private val shakeDetector = ShakeDetector(this::onShakeDetected)
@@ -116,23 +118,29 @@ class DevMenuFragment(
 
     // Wrap window callback to intercept touch events at the window level
     activity?.window?.let { window ->
-      val detector = ThreeFingerLongPressDetector(
+      val fingerLongPressDetector = ThreeFingerLongPressDetector(
         lifecycleScope,
         ::onThreeFingerLongPressDetected
       )
+      val weakSelf = this.weak()
+      val keyEventDispatcher = { event: KeyEvent ->
+        weakSelf.get()?.onKeyUp(event.keyCode, event) ?: false
+      }
 
       val currentCallback = window.callback
       // Avoid wrapping multiple times
-      if (currentCallback !is TouchInterceptingWindowCallback) {
+      if (currentCallback !is InterceptingWindowCallback) {
         originalWindowCallback = currentCallback
         window.callback =
-          TouchInterceptingWindowCallback(
+          InterceptingWindowCallback(
             currentCallback,
-            detector
+            fingerLongPressDetector,
+            keyEventDispatcher
           )
       } else {
         // When user reloads the app, the fragment is restarted but the window callback remains the same
-        currentCallback.updateDetector(detector)
+        currentCallback.updateDetector(fingerLongPressDetector)
+        currentCallback.updateKeyEventDispatcher(keyEventDispatcher)
       }
     }
   }
@@ -260,6 +268,7 @@ class DevMenuFragment(
       reactHostHolder: WeakReference<ReactHost>,
       preferences: DevMenuPreferences,
       goToHomeAction: GoHomeAction?,
+      reloadAction: (() -> Unit)?,
       appInfoProvider: AppInfoProvider
     ): ViewGroup {
       val layout = object : FrameLayout(activity) {
@@ -275,6 +284,7 @@ class DevMenuFragment(
         reactHostHolder,
         preferences,
         goToHomeAction,
+        reloadAction,
         appInfoProvider
       )
 
@@ -287,6 +297,7 @@ class DevMenuFragment(
       reactHostHolder: WeakReference<ReactHost>,
       preferences: DevMenuPreferences,
       goToHomeAction: GoHomeAction?,
+      reloadAction: (() -> Unit)?,
       appInfoProvider: AppInfoProvider
     ) {
       val fragmentManager = (activity as FragmentActivity).supportFragmentManager
@@ -295,6 +306,7 @@ class DevMenuFragment(
         reactHostHolder,
         preferences,
         goToHomeAction,
+        reloadAction,
         appInfoProvider
       )
 
@@ -306,7 +318,7 @@ class DevMenuFragment(
 
     internal fun findIn(activity: Activity?): DevMenuFragment? {
       val activity = activity ?: return null
-      return (activity as FragmentActivity).supportFragmentManager.findFragmentByTag(TAG) as DevMenuFragment
+      return (activity as FragmentActivity).supportFragmentManager.findFragmentByTag(TAG) as? DevMenuFragment
     }
 
     private data class KeyCommand(val code: Int, val withShift: Boolean = false)

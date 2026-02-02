@@ -40,7 +40,7 @@ export function evalConfig(
 
     // Apply a code frame preview to the error if possible, sucrase doesn't do this by default.
     if (location) {
-      const { codeFrameColumns } = require('@babel/code-frame');
+      const { codeFrameColumns }: typeof import('@babel/code-frame') = require('@babel/code-frame');
       const codeFrame = codeFrameColumns(contents, { start: error.loc }, { highlightCode: true });
       error.codeFrame = codeFrame;
       error.message += `\n${codeFrame}`;

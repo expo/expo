@@ -2,6 +2,61 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+- Remove legacy typed routes logic for SDK 51 projects ([#42604](https://github.com/expo/expo/pull/42604) by [@hassankhan](https://github.com/hassankhan))
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fix RSC support in development ([#42617](https://github.com/expo/expo/pull/42617) by [@hassankhan](https://github.com/hassankhan))
+- Fix loader URL resolution for nested `/index` paths ([#42629](https://github.com/expo/expo/pull/42629) by [@hassankhan](https://github.com/hassankhan))
+- [web] Ensure `<Head>` component re-renders when focus changes ([#42681](https://github.com/expo/expo/pull/42681) by [@hassankhan](https://github.com/hassankhan))
+- Mark `expo-router` as optional peer to prevent auto-installation ([#42728](https://github.com/expo/expo/pull/42728) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Bump `@expo/xcpretty` ([#42485](https://github.com/expo/expo/pull/42485) by [@kitten](https://github.com/kitten))
+- Refactor to replace GraphQL fetch client ([#42556](https://github.com/expo/expo/pull/42556) by [@kitten](https://github.com/kitten))
+- Replace tar dependency and `multipart/mixed` logic with `multitars` package ([#42472](https://github.com/expo/expo/pull/42472) by [@kitten](https://github.com/kitten))
+- Improve global resolution for `ExternalModule` resolution ([#42513](https://github.com/expo/expo/pull/42513) by [@kitten](https://github.com/kitten))
+- Replace `undici` dependency with `fetch-nodeshim` and Node built-ins ([#42720](https://github.com/expo/expo/pull/42720) by [@kitten](https://github.com/kitten))
+
+## 55.0.4 — 2026-01-27
+
+### 🐛 Bug fixes
+
+- Reallow connections on `/expo-dev-plugins/broadcast` broadcast socket to local connections ([#42538](https://github.com/expo/expo/pull/42538) by [@kitten](https://github.com/kitten)), ([#42705](https://github.com/expo/expo/pull/42705) by [@vonovak](https://github.com/vonovak))
+- Fix `freeport-async` replacement ([#42509](https://github.com/expo/expo/pull/42509) by [@kitten](https://github.com/kitten))
+- Use `require.resolve` to resolve `@expo/router-server` path ([#42516](https://github.com/expo/expo/pull/42516) by [@hassankhan](https://github.com/hassankhan))
+
+## 55.0.3 — 2026-01-26
+
+### 🎉 New features
+
+- Add `--source-maps inline` option to `expo export` for embedding source maps in JavaScript bundles. ([#42492](https://github.com/expo/expo/pull/42492) by [@brentvatne](https://github.com/brentvatne))
+
+### 💡 Others
+
+- Add allowedValues validation for string-or-boolean args ([#42523](https://github.com/expo/expo/pull/42523) by [@brentvatne](https://github.com/brentvatne))
+- Drop `freeport-async` dependency ([#42478](https://github.com/expo/expo/pull/42478) by [@kitten](https://github.com/kitten))
+- Drop `pretty-bytes` for `Intl.NumberFormat` call with fallback ([#42482](https://github.com/expo/expo/pull/42482) by [@kitten](https://github.com/kitten))
+- Warn when `@expo/fingerprint` is missing during build cache check ([#41910](https://github.com/expo/expo/pull/41910) by [@gustavoharff](https://github.com/gustavoharff))
+
+## 55.0.2 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+### 🐛 Bug fixes
+
+- Treat both `null` and `undefined` loader responses as `null` ([#42419](https://github.com/expo/expo/pull/42419) by [@hassankhan](https://github.com/hassankhan))
+- Allow busting the cached manifest and SSR renderer during development ([#42411](https://github.com/expo/expo/pull/42411) by [@hassankhan](https://github.com/hassankhan))
+
+## 55.0.0 — 2026-01-21
+
 - Clarify Expo Go instructions for scanning QR Code. ([#34811](https://github.com/expo/expo/pull/34811) by [@betomoedano](https://github.com/betomoedano))
 
 ### 🛠 Breaking changes
@@ -62,13 +117,12 @@
 - Unify nullish value handling for data loaders ([#42070](https://github.com/expo/expo/pull/42070) by [@hassankhan](https://github.com/hassankhan))
 - Add internal `EXPO_OVERRIDE_METRO_CONFIG` environment variable ([#42082](https://github.com/expo/expo/pull/42082) by [@kitten](https://github.com/kitten))
 - Remove auto-adding of missing android/ios npm scripts from prebuild ([#41964](https://github.com/expo/expo/pull/41964) by [@kitten](https://github.com/kitten))
+- Change loader function signature to `(request, params)` ([#42318](https://github.com/expo/expo/pull/42318) by [@hassankhan](https://github.com/hassankhan))
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.82.x. ([#39678](https://github.com/expo/expo/pull/39678) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Added support for React Native 0.83.x. ([#41564](https://github.com/expo/expo/pull/41564) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 📚 3rd party library updates
 
 ## 54.0.18 - 2025-12-05
 

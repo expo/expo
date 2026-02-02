@@ -13,6 +13,7 @@ import { inferAndroidLibrary, inferScheme, inferXCWorkspace } from './infer';
 
 export const getCommonConfig = (args: Result<Spec>): BuildConfigCommon => {
   return {
+    dryRun: !!args['--dry-run'],
     help: !!args['--help'],
     verbose: !!args['--verbose'],
   };
@@ -42,14 +43,17 @@ export const getIosConfig = async (args: Result<Spec>): Promise<BuildConfigIos> 
     simulator: path.join(buildProductsPath, `${buildType}-iphonesimulator`),
     hermesFrameworkPath: args['--hermes-framework'] || Defaults.hermesFrameworkPath,
     scheme: args['--scheme'] || (await inferScheme()),
-    workspace: args['--workspace'] || (await inferXCWorkspace()),
+    workspace: args['--xcworkspace'] || (await inferXCWorkspace()),
   };
 };
 
 export const getTasksAndroidConfig = async (args: Result<Spec>) => {
+  const commonConfig = getCommonConfig(args);
+  const libraryName = !commonConfig.help ? args['--library'] || (await inferAndroidLibrary()) : '';
+
   return {
-    ...getCommonConfig(args),
-    libraryName: args['--library'] || (await inferAndroidLibrary()),
+    ...commonConfig,
+    libraryName,
   };
 };
 

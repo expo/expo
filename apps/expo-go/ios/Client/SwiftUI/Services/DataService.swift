@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
+
 @MainActor
 class DataService: ObservableObject {
   @Published var projects: [ExpoProject] = []
@@ -10,6 +11,7 @@ class DataService: ObservableObject {
 
   private let pollingInterval: TimeInterval = 10.0
   private var pollingTask: Task<Void, Never>?
+  private var hasCompletedInitialFetch = false
 
   func startPolling(accountName: String) {
     stopPolling()
@@ -29,9 +31,15 @@ class DataService: ObservableObject {
   }
 
   func fetchProjectsAndData(accountName: String) async {
-    isLoadingData = true
+    if !hasCompletedInitialFetch {
+      isLoadingData = true
+    }
     dataError = nil
-    defer { isLoadingData = false }
+
+    defer {
+      isLoadingData = false
+      hasCompletedInitialFetch = true
+    }
 
     do {
       let response: HomeScreenDataResponse = try await APIClient.shared.request(
@@ -46,9 +54,18 @@ class DataService: ObservableObject {
         return
       }
 
-      self.projects = response.data.account.byName.apps.map { $0.toExpoProject() }
-      self.snacks = response.data.account.byName.snacks
-      self.dataError = nil
+      let newProjects = response.data.account.byName.apps.map { $0.toExpoProject() }
+      let newSnacks = response.data.account.byName.snacks
+
+      if newProjects != self.projects {
+        self.projects = newProjects
+      }
+      if newSnacks != self.snacks {
+        self.snacks = newSnacks
+      }
+      if self.dataError != nil {
+        self.dataError = nil
+      }
     } catch is CancellationError {
       return
     } catch let error as APIError {
@@ -62,5 +79,6 @@ class DataService: ObservableObject {
     projects = []
     snacks = []
     dataError = nil
+    hasCompletedInitialFetch = false
   }
 }

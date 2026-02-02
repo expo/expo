@@ -571,6 +571,11 @@ function mapProtectedScreen(props: ProtectedProps): ProtectedProps {
   };
 }
 
+/**
+ * Renders a native stack navigator.
+ *
+ * @hideType
+ */
 const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
     const { isStackAnimationDisabled } = useLinkPreviewContext();

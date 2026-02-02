@@ -767,17 +767,6 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "type": "empty",
           },
-          {
-            "type": "comment",
-            "value": "Specifies whether the app is configured to use edge-to-edge via the app config or plugin
-# WARNING: This property has been deprecated and will be removed in Expo SDK 55. Use \`edgeToEdgeEnabled\` or \`react.edgeToEdgeEnabled\` to determine whether the project is using edge-to-edge.",
-          },
-          {
-            "key": "expo.edgeToEdgeEnabled",
-            "type": "property",
-            "value": "true
-",
-          },
         ],
         "manifest": {
           "manifest": {
@@ -990,11 +979,13 @@ exports[`built-in plugins introspects mods 1`] = `
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.READ_EXTERNAL_STORAGE",
                 },
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.WRITE_EXTERNAL_STORAGE",
                 },
               },
@@ -1724,29 +1715,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
         "gradleProperties": [
           {
-            "type": "comment",
-            "value": "Specifies whether the app is configured to use edge-to-edge via the app config or plugin
-# WARNING: This property has been deprecated and will be removed in Expo SDK 55. Use \`edgeToEdgeEnabled\` or \`react.edgeToEdgeEnabled\` to determine whether the project is using edge-to-edge.",
-          },
-          {
-            "key": "expo.edgeToEdgeEnabled",
-            "type": "property",
-            "value": "true
-",
-          },
-          {
-            "type": "comment",
-            "value": "Use this property to enable edge-to-edge display support.
-# This allows your app to draw behind system bars for an immersive UI.
-# Note: Only works with ReactActivity and should not be used with custom Activity.",
-          },
-          {
-            "key": "edgeToEdgeEnabled",
-            "type": "property",
-            "value": "true
-",
-          },
-          {
             "key": "hermesEnabled",
             "type": "property",
             "value": "true",
@@ -1964,11 +1932,13 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.READ_EXTERNAL_STORAGE",
                 },
               },
               {
                 "$": {
+                  "android:maxSdkVersion": "32",
                   "android:name": "android.permission.WRITE_EXTERNAL_STORAGE",
                 },
               },

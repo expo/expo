@@ -12,11 +12,14 @@ const resolveCommand = () => {
     if (args['--version']) {
         return commands_1.Commands.version;
     }
-    const command = args['_']?.length > 0 ? args['_'][0] : '';
-    if (command === 'build-android' || command === 'tasks-android') {
+    if (!args['_']?.length) {
+        return commands_1.Commands.help;
+    }
+    const command = (0, utils_1.getCommand)(args);
+    if (command === 'build:android' || command === 'tasks:android') {
         return (0, exports.resolveAndroid)(command);
     }
-    if (command === 'build-ios') {
+    if (command === 'build:ios') {
         return (0, exports.resolveIos)();
     }
     return constants_1.Errors.unknownCommand();
@@ -27,6 +30,6 @@ const resolveAndroid = (command) => {
 };
 exports.resolveAndroid = resolveAndroid;
 const resolveIos = () => {
-    return commands_1.Commands['build-ios'];
+    return commands_1.Commands['build:ios'];
 };
 exports.resolveIos = resolveIos;

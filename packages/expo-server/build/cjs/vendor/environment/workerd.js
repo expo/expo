@@ -59,10 +59,12 @@ function createWorkerdEnv(params) {
         readText,
         readJson,
         loadModule,
+        isDevelopment: params.isDevelopment ?? false,
     });
 }
 function createWorkerdRequestScope(scopeDefinition, params) {
     const makeRequestAPISetup = (request, _env, ctx) => ({
+        requestHeaders: request.headers,
         origin: request.headers.get('Origin') || 'null',
         environment: params.environment ?? null,
         waitUntil: ctx.waitUntil?.bind(ctx),

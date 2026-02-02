@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+- Loosen `@babel/code-frame` dependency range ([#42485](https://github.com/expo/expo/pull/42485) by [@kitten](https://github.com/kitten))
+
+## 55.0.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 💡 Others
+
 - Export sub-types from `@expo/config-types` ([#41453](https://github.com/expo/expo/pull/41453) by [@kitten](https://github.com/kitten))
 
 ## 12.0.11 - 2025-12-04

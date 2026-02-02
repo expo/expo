@@ -530,4 +530,4 @@ export interface PluginConfigTypeAndroidQueriesData {
 /**
  * @ignore
  */
-export declare function validateConfig(config: any): PluginConfigType;
+export declare function validateConfig(config: unknown, projectRoot?: string): PluginConfigType;

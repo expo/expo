@@ -7,9 +7,25 @@ exports.convertStackToolbarMenuActionPropsToRNHeaderItem = convertStackToolbarMe
 const react_1 = require("react");
 const bottom_toolbar_native_elements_1 = require("./bottom-toolbar-native-elements");
 const context_1 = require("./context");
-const primitives_1 = require("../../../primitives");
+const menu_1 = require("../../../primitives/menu");
 const children_1 = require("../../../utils/children");
+const common_primitives_1 = require("../common-primitives");
 const shared_1 = require("../shared");
+/**
+ * Computes the label and menu title from children and title prop.
+ *
+ * - If only `title` prop is provided, it is used for both the label (button text) and menu title
+ * - If only `.Label` child is provided, it is used for the label and the menu title is an empty string
+ * - If both `.Label` child and `title` prop are provided. `.Label` is used for the label, and `title` is used for the menu title
+ */
+function computeMenuLabelAndTitle(children, title) {
+    const labelChild = (0, children_1.getFirstChildOfType)(children, common_primitives_1.StackToolbarLabel);
+    const labelFromChild = labelChild?.props.children;
+    return {
+        label: labelFromChild ?? title ?? '',
+        menuTitle: title ?? '',
+    };
+}
 /**
  * Use as `Stack.Toolbar.Menu` to provide menus in iOS toolbar.
  * It accepts `Stack.Toolbar.MenuAction` and nested `Stack.Toolbar.Menu`
@@ -41,23 +57,33 @@ const shared_1 = require("../shared");
  *
  * @platform ios
  */
-const StackToolbarMenu = ({ children, ...props }) => {
+const StackToolbarMenu = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
-    const allowedChildren = (0, react_1.useMemo)(() => placement === 'bottom'
-        ? [exports.StackToolbarMenu, exports.StackToolbarMenuAction, bottom_toolbar_native_elements_1.NativeToolbarMenu, bottom_toolbar_native_elements_1.NativeToolbarMenuAction]
-        : [exports.StackToolbarMenu, exports.StackToolbarMenuAction], [placement]);
-    const validChildren = (0, react_1.useMemo)(() => (0, children_1.filterAllowedChildrenElements)(children, allowedChildren), [children, allowedChildren]);
+    if (placement !== 'bottom') {
+        // For placement other than bottom, this component will not render, and should be
+        // converted to RN header item using convertStackToolbarMenuPropsToRNHeaderItem.
+        // So if we reach here, it means we're not inside a toolbar or something else is wrong.
+        throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
+    }
+    const validChildren = (0, react_1.useMemo)(() => (0, children_1.filterAllowedChildrenElements)(props.children, ALLOWED_CHILDREN), [props.children]);
+    const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props);
+    const computedLabel = sharedProps?.label;
+    const computedMenuTitle = sharedProps?.menu?.title;
+    const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
     if (process.env.NODE_ENV !== 'production') {
-        const allChildren = react_1.Children.toArray(children);
+        const allChildren = react_1.Children.toArray(props.children);
         if (allChildren.length !== validChildren.length) {
-            throw new Error(`Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu and Stack.Toolbar.MenuAction as its children.`);
+            throw new Error(`Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu, Stack.Toolbar.MenuAction, Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`);
         }
     }
-    if (placement === 'bottom') {
-        // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-        return <bottom_toolbar_native_elements_1.NativeToolbarMenu {...props} image={props.image} children={validChildren}/>;
+    if (process.env.NODE_ENV !== 'production') {
+        const hasBadge = (0, children_1.getFirstChildOfType)(props.children, common_primitives_1.StackToolbarBadge);
+        if (hasBadge) {
+            console.warn('Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.');
+        }
     }
-    return <primitives_1.Menu {...props} children={validChildren}/>;
+    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+    return (<bottom_toolbar_native_elements_1.NativeToolbarMenu {...props} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
 };
 exports.StackToolbarMenu = StackToolbarMenu;
 function convertStackToolbarMenuPropsToRNHeaderItem(props) {
@@ -66,10 +92,14 @@ function convertStackToolbarMenuPropsToRNHeaderItem(props) {
     }
     const { title, ...rest } = props;
     const actions = react_1.Children.toArray(props.children).filter((child) => (0, children_1.isChildOfType)(child, exports.StackToolbarMenuAction) || (0, children_1.isChildOfType)(child, exports.StackToolbarMenu));
+    const { label: computedLabel, menuTitle: computedMenuTitle } = computeMenuLabelAndTitle(props.children, title);
+    const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(rest);
     const item = {
-        ...(0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(rest),
+        ...sharedProps,
+        label: computedLabel,
         type: 'menu',
         menu: {
+            multiselectable: true,
             items: actions
                 .map((action) => {
                 if ((0, children_1.isChildOfType)(action, exports.StackToolbarMenu)) {
@@ -80,8 +110,8 @@ function convertStackToolbarMenuPropsToRNHeaderItem(props) {
                 .filter((i) => !!i),
         },
     };
-    if (title) {
-        item.menu.title = title;
+    if (computedMenuTitle) {
+        item.menu.title = computedMenuTitle;
     }
     return item;
 }
@@ -91,8 +121,6 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
     }
     const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props);
     const actions = react_1.Children.toArray(props.children).filter((child) => (0, children_1.isChildOfType)(child, exports.StackToolbarMenuAction) || (0, children_1.isChildOfType)(child, exports.StackToolbarMenu));
-    // TODO: Remove  Pick<HeaderBarButtonItemSubmenu> when this PR is merged and released in react-navigation:
-    // https://github.com/react-navigation/react-navigation/pull/12895
     const item = {
         type: 'submenu',
         items: actions
@@ -104,12 +132,13 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
         })
             .filter((i) => !!i),
         label: sharedProps.label || props.title || '',
+        multiselectable: true,
     };
     if (props.inline !== undefined) {
-        item.displayInline = props.inline;
+        item.inline = props.inline;
     }
     if (props.palette !== undefined) {
-        item.displayAsPalette = props.palette;
+        item.layout = props.palette ? 'palette' : 'default';
     }
     if (props.destructive !== undefined) {
         item.destructive = props.destructive;
@@ -157,9 +186,9 @@ const StackToolbarMenuAction = (props) => {
     if (placement === 'bottom') {
         // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
         const icon = typeof props.icon === 'string' ? props.icon : undefined;
-        return <bottom_toolbar_native_elements_1.NativeToolbarMenuAction {...props} icon={icon} image={props.image}/>;
+        return (<bottom_toolbar_native_elements_1.NativeToolbarMenuAction {...props} icon={icon} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
     }
-    return <primitives_1.MenuAction {...props}/>;
+    return <menu_1.MenuAction {...props}/>;
 };
 exports.StackToolbarMenuAction = StackToolbarMenuAction;
 function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {
@@ -187,4 +216,13 @@ function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {
     }
     return item;
 }
+const ALLOWED_CHILDREN = [
+    exports.StackToolbarMenu,
+    exports.StackToolbarMenuAction,
+    bottom_toolbar_native_elements_1.NativeToolbarMenu,
+    bottom_toolbar_native_elements_1.NativeToolbarMenuAction,
+    common_primitives_1.StackToolbarLabel,
+    common_primitives_1.StackToolbarIcon,
+    common_primitives_1.StackToolbarBadge,
+];
 //# sourceMappingURL=StackToolbarMenu.js.map

@@ -65,9 +65,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forScopeKey:_appRecord.scopeKey];
 
-  if ([self _isProdHome]) {
-    RCTFatal(error);
-  }
+  [_appRecord.viewController maybeShowError:error];
 }
 
 - (void)updateJSExceptionWithMessage:(nullable NSString *)message
