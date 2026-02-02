@@ -23,7 +23,7 @@ public struct JSValuesBuffer: JavaScriptType, ~Copyable {
 
   internal/*!*/ init(_ runtime: JavaScriptRuntime, buffer: consuming UnsafeMutableBufferPointer<facebook.jsi.Value>) {
     self.runtime = runtime
-    self.bufferPointer = Self.copying(in: runtime, buffer: buffer)
+    self.bufferPointer = buffer
   }
 
   internal/*!*/ init(_ runtime: JavaScriptRuntime, start: consuming UnsafePointer<facebook.jsi.Value>?, count: Int) {
@@ -63,6 +63,15 @@ public struct JSValuesBuffer: JavaScriptType, ~Copyable {
       result.append(transformed)
     }
     return result
+  }
+
+  @JavaScriptActor
+  public func copy() -> JSValuesBuffer {
+    guard let runtime else {
+      JS.runtimeLostFatalError()
+    }
+    let bufferCopy = JSValuesBuffer.copying(in: runtime, buffer: bufferPointer)
+    return JSValuesBuffer(runtime, buffer: bufferCopy)
   }
 
   // MARK: - JavaScriptType
