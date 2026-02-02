@@ -4,7 +4,7 @@
 
 import SwiftUI
 
-/// Shared gear button used by both FabPill and SnackFabPill
+/// Shared gear button used by FabPill and rendered separately for snack sessions
 struct FabGearButton: View {
   let isPressed: Bool
 
@@ -26,72 +26,169 @@ struct FabGearButton: View {
   }
 }
 
-/// FAB variant that shows a snack action panel extending from the gear button.
-/// The panel contains the snack name and a save button.
-/// When dragging, the panel hides and only the gear moves.
-struct SnackFabPill: View {
-  @Binding var isPressed: Bool
-  @Binding var isDragging: Bool
+/// Standalone action panel for snack sessions.
+/// Rendered in overlay, completely separate from the gear button's animation hierarchy.
+/// The panel is a wide rectangle with the gear icon overlapping its corner.
+struct SnackActionPanel: View {
+  let isDragging: Bool
+  @Binding var snackName: String
+  @Binding var snackDescription: String
   let snappedEdge: SnappedEdge
-  let snackName: String
+  let gearPosition: CGPoint  // Top-left of gear frame
+  let screenWidth: CGFloat
   let onSave: () -> Void
 
-  @State private var showPanel = true
+  @FocusState private var isDescriptionFocused: Bool
+
+  // Panel dimensions
+  private let panelHeight: CGFloat = 140
+  private let screenEdgeMargin: CGFloat = 12
+
+  // The gearPosition is the top-left of the FAB frame (72x94).
+  // The gear icon (44x44) is centered within that frame.
+  private let fabFrameWidth: CGFloat = 72
+  private let fabFrameHeight: CGFloat = FABConstants.iconSize + 50  // 94
+
+  // Gear icon center within the screen
+  private var gearCenterX: CGFloat {
+    gearPosition.x + fabFrameWidth / 2
+  }
+
+  private var gearCenterY: CGFloat {
+    gearPosition.y + fabFrameHeight / 2
+  }
+
+  // Offsets to tuck panel under the gear more
+  private let verticalOffset: CGFloat = 10  // Panel moves down, gear appears higher
+  private let horizontalOverlap: CGFloat = 8  // Panel extends under gear more
+
+  // Panel width - extends slightly under the gear on both sides
+  private var panelWidth: CGFloat {
+    screenWidth - (screenEdgeMargin * 2) + (horizontalOverlap * 2)
+  }
+
+  // Panel X position - shifted inward to tuck under gear
+  private var panelX: CGFloat {
+    screenEdgeMargin - horizontalOverlap
+  }
+
+  // Panel Y position - shifted down so gear appears higher
+  private var panelY: CGFloat {
+    gearCenterY - FABConstants.iconSize / 2 + verticalOffset
+  }
+
+  // Padding for title row (same on both sides to center)
+  private let titlePadding: CGFloat = 65
+  private let normalPadding: CGFloat = 16
+  private let maxTitleLength = 45
+
+  private var shouldShow: Bool {
+    !isDragging && screenWidth > 0
+  }
 
   var body: some View {
-    // Use ZStack so the gear defines the frame size, panel overflows
-    ZStack {
-      // Gear button - this defines the view's size
-      FabGearButton(isPressed: isPressed)
-
-      // Panel positioned to the side using offset
-      if showPanel {
+    Group {
+      if shouldShow {
         panelContent
-          .fixedSize()
-          .offset(x: snappedEdge == .right ? -panelOffset : panelOffset)
+          .frame(width: panelWidth, height: panelHeight)
+          .position(
+            x: panelX + panelWidth / 2,
+            y: panelY + panelHeight / 2
+          )
           .transition(.asymmetric(
-            insertion: .opacity.combined(with: .scale(scale: 0.8, anchor: snappedEdge == .right ? .trailing : .leading)),
-            removal: .opacity.combined(with: .scale(scale: 0.9, anchor: snappedEdge == .right ? .trailing : .leading))
+            insertion: .opacity.combined(with: .scale(scale: 0.9, anchor: snappedEdge == .right ? .topTrailing : .topLeading)),
+            removal: .opacity.combined(with: .scale(scale: 0.95, anchor: snappedEdge == .right ? .topTrailing : .topLeading))
           ))
       }
     }
-    .onChange(of: isDragging) { dragging in
-      withAnimation(.easeInOut(duration: 0.15)) {
-        showPanel = !dragging
-      }
-    }
+    .animation(.easeOut(duration: 0.2), value: shouldShow)
   }
 
-  // Distance from gear center to panel center
-  private var panelOffset: CGFloat {
-    // Gear radius + gap + half panel width (estimated)
-    FABConstants.iconSize / 2 + 8 + 90
-  }
+  @FocusState private var isNameFocused: Bool
 
   private var panelContent: some View {
-    HStack(spacing: 10) {
-      Text(snackName)
-        .font(.system(size: 14, weight: .medium))
+    VStack(alignment: .leading, spacing: 0) {
+      // Snack name - centered, single line, editable
+      TextField("Snack name", text: $snackName)
+        .font(.system(size: 17, weight: .semibold))
         .foregroundColor(.primary)
+        .textFieldStyle(.plain)
+        .multilineTextAlignment(.center)
         .lineLimit(1)
-        .truncationMode(.middle)
-        .frame(maxWidth: 120)
+        .focused($isNameFocused)
+        .onChange(of: snackName) { newValue in
+          if newValue.count > maxTitleLength {
+            snackName = String(newValue.prefix(maxTitleLength))
+          }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, titlePadding)
+        .padding(.top, 20)
 
-      Button(action: onSave) {
-        Text("Save")
-          .font(.system(size: 12, weight: .semibold))
-          .padding(.horizontal, 12)
-          .padding(.vertical, 6)
-          .background(Color.blue)
-          .foregroundColor(.white)
-          .cornerRadius(6)
+      // Description row - centered, single line
+      TextField("Description", text: $snackDescription)
+        .font(.system(size: 14))
+        .foregroundColor(.secondary)
+        .textFieldStyle(.plain)
+        .lineLimit(1)
+        .multilineTextAlignment(.center)
+        .focused($isDescriptionFocused)
+        .submitLabel(.done)
+        .onSubmit {
+          isDescriptionFocused = false
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, titlePadding)
+        .padding(.top, 7)
+
+      Spacer()
+
+      // Save button at bottom right
+      HStack {
+        Spacer()
+        saveButton
       }
-      .buttonStyle(.plain)
+      .padding(.horizontal, normalPadding)
+      .padding(.bottom, 16)
     }
-    .padding(.leading, snappedEdge == .right ? 14 : 8)
-    .padding(.trailing, snappedEdge == .left ? 14 : 8)
-    .padding(.vertical, 10)
-    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 22))
+    .background(glassBackground)
+    .clipShape(RoundedRectangle(cornerRadius: 20))
+    .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 4)
+  }
+
+  private var saveButton: some View {
+    Button(action: onSave) {
+      HStack(spacing: 6) {
+        Image(systemName: "square.and.arrow.down")
+          .font(.system(size: 13, weight: .semibold))
+        Text("Save")
+          .font(.system(size: 14, weight: .semibold))
+      }
+      .foregroundColor(.white)
+      .padding(.horizontal, 16)
+      .padding(.vertical, 10)
+      .background(Color.blue, in: Capsule())
+    }
+    .buttonStyle(.plain)
+  }
+
+  private var glassBackground: some View {
+    ZStack {
+      // Ultra thin material for glass blur effect
+      Rectangle()
+        .fill(.ultraThinMaterial)
+
+      // Subtle gradient overlay for depth
+      LinearGradient(
+        colors: [
+          Color.blue.opacity(0.06),
+          Color.purple.opacity(0.03),
+          Color.clear
+        ],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+      )
+    }
   }
 }
 
