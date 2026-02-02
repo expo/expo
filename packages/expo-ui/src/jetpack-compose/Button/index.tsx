@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { type ColorValue } from 'react-native';
 
 import { MaterialIcon } from './types';
 import { ExpoModifier, ViewEvent } from '../../types';
@@ -16,10 +17,10 @@ export type ButtonVariant = 'default' | 'bordered' | 'borderless' | 'outlined' |
  * Colors for button's core elements.
  */
 export type ButtonElementColors = {
-  containerColor?: string;
-  contentColor?: string;
-  disabledContainerColor?: string;
-  disabledContentColor?: string;
+  containerColor?: ColorValue;
+  contentColor?: ColorValue;
+  disabledContainerColor?: ColorValue;
+  disabledContentColor?: ColorValue;
 };
 
 export type ButtonProps = {
@@ -59,7 +60,7 @@ export type ButtonProps = {
   /**
    * Button color.
    */
-  color?: string;
+  color?: ColorValue;
   shape?: ShapeJSXElement;
   /**
    * Disabled state of the button.

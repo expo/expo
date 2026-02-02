@@ -36,12 +36,10 @@
     "typescript-plugin-css-modules": "^5.2.0"
   },
   "peerDependencies": {
-    "@expo/dom-webview": "*",
+    "@expo/dom-webview": "^55.0.2",
     "expo": "*",
     "react": "*",
-    "react-dom": "*",
-    "react-native": "*",
-    "react-native-web": "*"
+    "react-native": "*"
   },
   "license": "MIT",
   "author": "Expo",

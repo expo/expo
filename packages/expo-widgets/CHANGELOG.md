@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Add push-to-start token listener. ([#42721](https://github.com/expo/expo/pull/42721) by [@jakex7](https://github.com/jakex7))
+- Add `onTokenReceived` event and additional Live Activities functions. ([#42724](https://github.com/expo/expo/pull/42724) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 - Fix build issue with "ambiguous implicit access level for import" ([#42507](https://github.com/expo/expo/pull/42507) by [@garygcchiu](https://github.com/garygcchiu))

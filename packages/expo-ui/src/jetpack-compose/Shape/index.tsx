@@ -1,4 +1,5 @@
 import { requireNativeView } from 'expo';
+import { type ColorValue } from 'react-native';
 
 import { ExpoModifier } from '../../types';
 
@@ -31,7 +32,7 @@ export type ShapeProps = {
    */
   radius?: number;
   /** Color of the shape */
-  color?: string;
+  color?: ColorValue;
   /**
    * Modifiers for the component.
    */

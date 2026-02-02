@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoViewComposableScope
+import expo.modules.kotlin.views.FunctionalComposableScope
 
 class PickerColors : Record {
   @Field
@@ -66,8 +66,8 @@ data class PickerProps(
   val selectedIndex: Int? = null,
   val elementColors: PickerColors = PickerColors(),
   val variant: String = "segmented",
-  val modifiers: List<ModifierConfig> = emptyList(),
-  val buttonModifiers: List<ModifierConfig> = emptyList()
+  val buttonModifiers: List<ModifierType> = emptyList(),
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 data class PickerOptionSelectedEvent(
@@ -76,7 +76,7 @@ data class PickerOptionSelectedEvent(
 ) : Record
 
 @Composable
-fun ExpoViewComposableScope.PickerContent(
+fun FunctionalComposableScope.PickerContent(
   props: PickerProps,
   onOptionSelected: (PickerOptionSelectedEvent) -> Unit
 ) {
@@ -88,7 +88,7 @@ fun ExpoViewComposableScope.PickerContent(
   @Composable
   fun SegmentedComposable() {
     SingleChoiceSegmentedButtonRow(
-      modifier = ModifierRegistry.applyModifiers(props.modifiers)
+      modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope)
     ) {
       options.forEachIndexed { index, label ->
         SegmentedButton(
@@ -99,7 +99,7 @@ fun ExpoViewComposableScope.PickerContent(
           onClick = {
             onOptionSelected(PickerOptionSelectedEvent(index, label))
           },
-          modifier = ModifierRegistry.applyModifiers(props.buttonModifiers),
+          modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope),
           selected = index == selectedIndex,
           label = { Text(label) },
           colors = SegmentedButtonDefaults.colors(

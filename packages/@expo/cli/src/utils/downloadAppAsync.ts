@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Readable, Stream } from 'stream';
-import { Agent } from 'undici';
+import type { ReadableStream } from 'stream/web';
 import { promisify } from 'util';
 
 import { createTempFilePath } from './createTempPath';
@@ -12,8 +12,6 @@ import { createCachedFetch, fetchAsync } from '../api/rest/client';
 import { FetchLike, ProgressCallback } from '../api/rest/client.types';
 
 const debug = require('debug')('expo:utils:downloadAppAsync') as typeof console.log;
-
-const TIMER_DURATION = 30000;
 
 const pipeline = promisify(Stream.pipeline);
 
@@ -42,7 +40,6 @@ async function downloadAsync({
   debug(`Downloading ${url} to ${outputPath}`);
   const res = await fetchInstance(url, {
     onProgress,
-    dispatcher: new Agent({ connectTimeout: TIMER_DURATION }),
   });
   if (!res.ok || !res.body) {
     throw new CommandError(
@@ -50,7 +47,7 @@ async function downloadAsync({
       `Unexpected response: ${res.statusText}. From url: ${url}`
     );
   }
-  return pipeline(Readable.fromWeb(res.body), fs.createWriteStream(outputPath));
+  return pipeline(Readable.fromWeb(res.body as ReadableStream), fs.createWriteStream(outputPath));
 }
 
 export async function downloadAppAsync({
