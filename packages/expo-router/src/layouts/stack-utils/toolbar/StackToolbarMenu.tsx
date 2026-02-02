@@ -11,12 +11,36 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { NativeToolbarMenu, NativeToolbarMenuAction } from './bottom-toolbar-native-elements';
 import { useToolbarPlacement } from './context';
-import { Menu, MenuAction } from '../../../primitives/menu';
-import { filterAllowedChildrenElements, isChildOfType } from '../../../utils/children';
+import { MenuAction } from '../../../primitives/menu';
+import {
+  filterAllowedChildrenElements,
+  getFirstChildOfType,
+  isChildOfType,
+} from '../../../utils/children';
+import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from '../common-primitives';
 import {
   convertStackHeaderSharedPropsToRNSharedHeaderItem,
   type StackHeaderItemSharedProps,
 } from '../shared';
+
+/**
+ * Computes the label and menu title from children and title prop.
+ *
+ * - If only `title` prop is provided, it is used for both the label (button text) and menu title
+ * - If only `.Label` child is provided, it is used for the label and the menu title is an empty string
+ * - If both `.Label` child and `title` prop are provided. `.Label` is used for the label, and `title` is used for the menu title
+ */
+function computeMenuLabelAndTitle(
+  children: ReactNode,
+  title: string | undefined
+): { label: string; menuTitle: string } {
+  const labelChild = getFirstChildOfType(children, StackToolbarLabel);
+  const labelFromChild = labelChild?.props.children;
+  return {
+    label: labelFromChild ?? title ?? '',
+    menuTitle: title ?? '',
+  };
+}
 
 export interface StackToolbarMenuProps {
   accessibilityLabel?: string;
@@ -70,6 +94,23 @@ export interface StackToolbarMenuProps {
    * > **Note**: When used in `placement="bottom"`, only string SFSymbols are supported. Use the `image` prop to provide custom images.
    */
   icon?: StackHeaderItemSharedProps['icon'];
+  /**
+   * Controls how image-based icons are rendered on iOS.
+   *
+   * - `'template'`: iOS applies tint color to the icon (useful for monochrome icons)
+   * - `'original'`: Preserves original icon colors (useful for multi-color icons)
+   *
+   * **Default behavior:**
+   * - If `tintColor` is specified, defaults to `'template'`
+   * - If no `tintColor`, defaults to `'original'`
+   *
+   * This prop only affects image-based icons (not SF Symbols).
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+   *
+   * @platform ios
+   */
+  iconRenderingMode?: 'template' | 'original';
   /**
    * If `true`, the menu will be displayed inline.
    * This means that the menu will not be collapsed
@@ -156,37 +197,57 @@ export interface StackToolbarMenuProps {
  *
  * @platform ios
  */
-export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = ({ children, ...props }) => {
+export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
   const placement = useToolbarPlacement();
 
-  const allowedChildren = useMemo(
-    () =>
-      placement === 'bottom'
-        ? [StackToolbarMenu, StackToolbarMenuAction, NativeToolbarMenu, NativeToolbarMenuAction]
-        : [StackToolbarMenu, StackToolbarMenuAction],
-    [placement]
-  );
+  if (placement !== 'bottom') {
+    // For placement other than bottom, this component will not render, and should be
+    // converted to RN header item using convertStackToolbarMenuPropsToRNHeaderItem.
+    // So if we reach here, it means we're not inside a toolbar or something else is wrong.
+    throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
+  }
 
   const validChildren = useMemo(
-    () => filterAllowedChildrenElements(children, allowedChildren),
-    [children, allowedChildren]
+    () => filterAllowedChildrenElements(props.children, ALLOWED_CHILDREN),
+    [props.children]
   );
 
+  const sharedProps = convertStackToolbarMenuPropsToRNHeaderItem(props);
+
+  const computedLabel = sharedProps?.label;
+  const computedMenuTitle = sharedProps?.menu?.title;
+  const icon = sharedProps?.icon?.type === 'sfSymbol' ? sharedProps.icon.name : undefined;
+
   if (process.env.NODE_ENV !== 'production') {
-    const allChildren = Children.toArray(children);
+    const allChildren = Children.toArray(props.children);
     if (allChildren.length !== validChildren.length) {
       throw new Error(
-        `Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu and Stack.Toolbar.MenuAction as its children.`
+        `Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu, Stack.Toolbar.MenuAction, Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.`
       );
     }
   }
 
-  if (placement === 'bottom') {
-    // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    return <NativeToolbarMenu {...props} image={props.image} children={validChildren} />;
+  if (process.env.NODE_ENV !== 'production') {
+    const hasBadge = getFirstChildOfType(props.children, StackToolbarBadge);
+    if (hasBadge) {
+      console.warn(
+        'Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.'
+      );
+    }
   }
 
-  return <Menu {...props} children={validChildren} />;
+  // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
+  return (
+    <NativeToolbarMenu
+      {...props}
+      icon={icon}
+      image={props.image}
+      imageRenderingMode={props.iconRenderingMode}
+      label={computedLabel}
+      title={computedMenuTitle}
+      children={validChildren}
+    />
+  );
 };
 
 export function convertStackToolbarMenuPropsToRNHeaderItem(
@@ -200,8 +261,17 @@ export function convertStackToolbarMenuPropsToRNHeaderItem(
     (child) =>
       isChildOfType(child, StackToolbarMenuAction) || isChildOfType(child, StackToolbarMenu)
   );
+
+  const { label: computedLabel, menuTitle: computedMenuTitle } = computeMenuLabelAndTitle(
+    props.children,
+    title
+  );
+
+  const sharedProps = convertStackHeaderSharedPropsToRNSharedHeaderItem(rest);
+
   const item: NativeStackHeaderItemMenu = {
-    ...convertStackHeaderSharedPropsToRNSharedHeaderItem(rest),
+    ...sharedProps,
+    label: computedLabel,
     type: 'menu',
     menu: {
       multiselectable: true,
@@ -215,8 +285,8 @@ export function convertStackToolbarMenuPropsToRNHeaderItem(
         .filter((i) => !!i),
     },
   };
-  if (title) {
-    item.menu.title = title;
+  if (computedMenuTitle) {
+    item.menu.title = computedMenuTitle;
   }
 
   return item;
@@ -294,6 +364,23 @@ export interface StackToolbarMenuActionProps {
    */
   image?: ImageRef;
   /**
+   * Controls how image-based icons are rendered on iOS.
+   *
+   * - `'template'`: iOS applies tint color to the icon (useful for monochrome icons)
+   * - `'original'`: Preserves original icon colors (useful for multi-color icons)
+   *
+   * **Default behavior:**
+   * - If `tintColor` is specified, defaults to `'template'`
+   * - If no `tintColor`, defaults to `'original'`
+   *
+   * This prop only affects image-based icons (not SF Symbols).
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+   *
+   * @platform ios
+   */
+  iconRenderingMode?: 'template' | 'original';
+  /**
    * If `true`, the menu item will be displayed as destructive.
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive) for more information.
@@ -357,7 +444,14 @@ export const StackToolbarMenuAction: React.FC<StackToolbarMenuActionProps> = (pr
   if (placement === 'bottom') {
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
     const icon = typeof props.icon === 'string' ? props.icon : undefined;
-    return <NativeToolbarMenuAction {...props} icon={icon} image={props.image} />;
+    return (
+      <NativeToolbarMenuAction
+        {...props}
+        icon={icon}
+        image={props.image}
+        imageRenderingMode={props.iconRenderingMode}
+      />
+    );
   }
 
   return <MenuAction {...props} />;
@@ -391,3 +485,13 @@ export function convertStackToolbarMenuActionPropsToRNHeaderItem(
   }
   return item;
 }
+
+const ALLOWED_CHILDREN = [
+  StackToolbarMenu,
+  StackToolbarMenuAction,
+  NativeToolbarMenu,
+  NativeToolbarMenuAction,
+  StackToolbarLabel,
+  StackToolbarIcon,
+  StackToolbarBadge,
+];

@@ -6,6 +6,10 @@ import com.facebook.react.packagerconnection.NotificationOnlyHandler
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import org.json.JSONObject
 import java.lang.ref.WeakReference
+import java.util.Date
+
+private object Mutex
+private var lastMessage = 0L
 
 class DevMenuCommandHandlersProvider(
   weakDevSupportManager: WeakReference<out DevSupportManager>
@@ -32,6 +36,8 @@ class DevMenuCommandHandlersProvider(
   }
 
   fun createCommandHandlers(): Map<String, NotificationOnlyHandler> {
+    lastMessage = Date().time
+
     return mapOf(
       "reload" to onReload,
       "devMenu" to onDevMenu,
@@ -42,7 +48,21 @@ class DevMenuCommandHandlersProvider(
   private fun createHandler(action: (params: Any?) -> Unit): NotificationOnlyHandler {
     return object : NotificationOnlyHandler() {
       override fun onNotification(params: Any?) {
-        action(params)
+        val currentTime = Date().time
+
+        synchronized(Mutex) {
+          val diff = currentTime - lastMessage
+          if (diff < 100) {
+            Log.w(
+              "DevMenu",
+              "Throttling incoming dev menu command. Time since last command: ${diff}ms"
+            )
+            return
+          }
+
+          action(params)
+          lastMessage = currentTime
+        }
       }
     }
   }

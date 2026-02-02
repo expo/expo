@@ -12,6 +12,7 @@ class DevMenuViewModel: ObservableObject {
   @Published var clipboardMessage: String?
   @Published var hostUrlCopiedMessage: String?
   @Published var isOnboardingFinished: Bool = true
+  @Published var showFloatingActionButton: Bool = false
 
   private let devMenuManager = DevMenuManager.shared
   private var cancellables = Set<AnyCancellable>()
@@ -27,6 +28,7 @@ class DevMenuViewModel: ObservableObject {
     loadAppInfo()
     loadDevSettings()
     loadRegisteredCallbacks()
+    loadFloatingActionButtonState()
   }
 
   private func loadAppInfo() {
@@ -109,7 +111,7 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func copyToClipboard(_ content: String) {
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(macOS)
     UIPasteboard.general.string = content
     hostUrlCopiedMessage = "Copied!"
 
@@ -120,7 +122,7 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func copyAppInfo() {
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(macOS)
     guard let appInfo = appInfo else {
       return
     }
@@ -165,6 +167,14 @@ class DevMenuViewModel: ObservableObject {
     return devMenuManager.canNavigateHome
   }
 
+  var shouldShowReactNativeDevMenu: Bool {
+    return devMenuManager.shouldShowReactNativeDevMenu
+  }
+
+  var configuration: DevMenuConfiguration {
+    return devMenuManager.configuration
+  }
+
   private func checkOnboardingStatus() {
     isOnboardingFinished = devMenuManager.isOnboardingFinished
   }
@@ -172,6 +182,15 @@ class DevMenuViewModel: ObservableObject {
   func finishOnboarding() {
     devMenuManager.setOnboardingFinished(true)
     isOnboardingFinished = true
+  }
+
+  private func loadFloatingActionButtonState() {
+    showFloatingActionButton = DevMenuPreferences.showFloatingActionButton
+  }
+
+  func toggleFloatingActionButton() {
+    showFloatingActionButton.toggle()
+    DevMenuPreferences.showFloatingActionButton = showFloatingActionButton
   }
 
   private func observeRegisteredCallbacks() {
@@ -186,6 +205,7 @@ class DevMenuViewModel: ObservableObject {
       .receive(on: DispatchQueue.main)
       .sink { [weak self] _ in
         self?.loadAppInfo()
+        self?.loadDevSettings()
       }
       .store(in: &cancellables)
   }

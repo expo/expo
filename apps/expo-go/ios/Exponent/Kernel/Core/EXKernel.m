@@ -62,6 +62,8 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
 
     [DevMenuManager.shared setDelegate:self];
+    [DevMenuManager shared].configuration.onboardingAppName = @"Expo Go";
+    [[DevMenuManager shared] setShowFloatingActionButton:YES];
 
     // Register keyboard commands (e.g., Cmd+D) for simulator
     [[EXKernelDevKeyCommands sharedInstance] registerDevCommands];
@@ -299,6 +301,10 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 - (void)devMenuToggleElementInspector {
   [[self visibleApp].appManager toggleElementInspector];
+}
+
+- (BOOL)devMenuShouldShowReactNativeDevMenu {
+  return NO;
 }
 
 @end

@@ -20,6 +20,11 @@ export type FontResource = {
    */
   display?: FontDisplay;
   default?: string;
+  /**
+   * Sets a custom test string passed to the [FontFace Observer](https://www.npmjs.com/package/fontfaceobserver).
+   * @platform web
+   */
+  testString?: string;
 };
 
 // @needsAudit

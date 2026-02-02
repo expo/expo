@@ -1,6 +1,6 @@
 {
   "name": "@expo/image-utils",
-  "version": "0.8.10",
+  "version": "0.8.11",
   "description": "A package used by Expo CLI for processing images",
   "main": "build/index.js",
   "scripts": {
@@ -37,7 +37,6 @@
     "jimp-compact": "0.16.1",
     "parse-png": "^2.1.0",
     "resolve-from": "^5.0.0",
-    "resolve-global": "^1.0.0",
     "semver": "^7.6.0"
   },
   "devDependencies": {

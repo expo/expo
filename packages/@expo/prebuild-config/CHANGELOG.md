@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- remove deprecated `edgeToEdgeEnabled` field ([#42518](https://github.com/expo/expo/pull/42518) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.2 — 2026-01-23
 
 _This version does not introduce any user-facing changes._

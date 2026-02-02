@@ -1146,7 +1146,7 @@ jobs:
 
 #### `github-comment`
 
-Automatically posts comprehensive reports of your workflow's completed builds and updates to GitHub pull requests or content provided by you. See [GitHub Comment job documentation](/eas/workflows/pre-packaged-jobs#github-comment) for detailed information and examples.
+Automatically posts comprehensive reports of your workflow's completed builds, updates, and deployments to GitHub pull requests or content provided by you. See [GitHub Comment job documentation](/eas/workflows/pre-packaged-jobs#github-comment) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1158,8 +1158,9 @@ jobs:
       message: string # optional - custom message to include in the report
       build_ids: string[] # optional - specific build IDs to include, defaults to all related to the running workflow
       update_group_ids: string[] # optional - specific update group IDs to include, defaults to all related to the workflow
+      deployment_ids: string[] # optional - specific deployment IDs to include, defaults to all related to the workflow
 
-  # instead of using message and the builds and updates table, you can also override the comment contents with `payload`
+  # instead of using message and the builds, updates, and deployments table, you can also override the comment contents with `payload`
   custom_github_comment:
     type: github-comment
     params:

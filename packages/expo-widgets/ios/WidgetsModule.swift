@@ -3,16 +3,21 @@ import ActivityKit
 import WidgetKit
 import JavaScriptCore
 
+private let pushNotificationsEnabledKey: String = "ExpoWidgets_EnablePushNotifications"
+
 private let onUserInteraction = "onExpoWidgetsUserInteraction"
+private let onPushToStartTokenReceived = "onExpoWidgetsPushToStartTokenReceived"
 let onUserInteractionNotification = Notification.Name(onUserInteraction)
 
 public final class WidgetsModule: Module {
+  var pushToStartTokenObserverTask: Task<Void, Never>?
+
   public func definition() -> ModuleDefinition {
     Name("ExpoWidgets")
 
-    Events(onUserInteraction)
+    Events(onPushToStartTokenReceived, onUserInteraction)
 
-    OnStartObserving {
+    OnStartObserving(onUserInteraction) {
       NotificationCenter.default.addObserver(
         self,
         selector: #selector(handleUserInteractionNotification),
@@ -21,12 +26,23 @@ public final class WidgetsModule: Module {
       )
     }
 
-    OnStopObserving {
+    OnStopObserving(onUserInteraction) {
       NotificationCenter.default.removeObserver(
         self,
         name: onUserInteractionNotification,
         object: nil
       )
+    }
+
+    OnStartObserving(onPushToStartTokenReceived) {
+      if pushNotificationsEnabled {
+        observePushToStartToken()
+      }
+    }
+    
+    OnStopObserving(onPushToStartTokenReceived) {
+      pushToStartTokenObserverTask?.cancel()
+      pushToStartTokenObserverTask = nil
     }
 
     Function("reloadWidget") { (timeline: String?) in
@@ -103,5 +119,33 @@ public final class WidgetsModule: Module {
           let eventData = userInfo["eventData"] as? [String: Any]
     else { return }
     self.sendEvent(onUserInteraction, eventData)
+  }
+  
+  private func sendPushToStartToken(activityPushToStartToken: String) {
+    sendEvent(
+      onPushToStartTokenReceived,
+      [
+        "activityPushToStartToken": activityPushToStartToken,
+      ]
+    )
+  }
+
+  private func observePushToStartToken() {
+    guard #available(iOS 17.2, *), ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+    
+    if let initialToken = (Activity<LiveActivityAttributes>.pushToStartToken?.reduce("") { $0 + String(format: "%02x", $1) }) {
+      sendPushToStartToken(activityPushToStartToken: initialToken)
+    }
+    
+    pushToStartTokenObserverTask = Task {
+      for await data in Activity<LiveActivityAttributes>.pushToStartTokenUpdates {
+        let token = data.reduce("") { $0 + String(format: "%02x", $1) }
+        sendPushToStartToken(activityPushToStartToken: token)
+      }
+    }
+  }
+
+  private var pushNotificationsEnabled: Bool {
+    Bundle.main.object(forInfoDictionaryKey: pushNotificationsEnabledKey) as? Bool ?? false
   }
 }

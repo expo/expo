@@ -16,8 +16,8 @@ const EXPO_SHARE_EXTENSION_TARGET_NAME = 'expo-sharing-extension';
 const pkg = require('expo-sharing/package.json');
 const withShareExtension = (config, props) => {
     let plugins = [];
-    const iosEnabled = props?.ios?.enabled ?? true;
-    const androidEnabled = props?.android?.enabled ?? true;
+    const iosEnabled = props?.ios?.enabled ?? false;
+    const androidEnabled = props?.android?.enabled ?? false;
     if (iosEnabled) {
         const deploymentTarget = '15.1';
         const bundleIdentifier = config.ios?.bundleIdentifier;

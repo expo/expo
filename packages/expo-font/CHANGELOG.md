@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
 ## 55.0.1 — 2026-01-22
 
 _This version does not introduce any user-facing changes._
@@ -18,6 +26,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- Add support for setting custom testStrings for FontObserver on the web. ([#42442](https://github.com/expo/expo/pull/42442) by [@aleqsio](https://github.com/aleqsio))
 - add support for line-height ([#41094](https://github.com/expo/expo/pull/41094) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes

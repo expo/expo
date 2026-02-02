@@ -11,7 +11,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoViewComposableScope
+import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
 
 open class IsOpenedChangeEvent(
@@ -36,11 +36,12 @@ fun BottomSheetComposable(skipPartiallyExpanded: Boolean, isOpened: Boolean, onI
 
 data class BottomSheetProps(
   val isOpened: Boolean = false,
-  val skipPartiallyExpanded: Boolean = false
+  val skipPartiallyExpanded: Boolean = false,
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @Composable
-fun ExpoViewComposableScope.BottomSheetContent(props: BottomSheetProps, onIsOpenedChange: (IsOpenedChangeEvent) -> Unit) {
+fun FunctionalComposableScope.BottomSheetContent(props: BottomSheetProps, onIsOpenedChange: (IsOpenedChangeEvent) -> Unit) {
   Box {
     BottomSheetComposable(
       props.skipPartiallyExpanded,

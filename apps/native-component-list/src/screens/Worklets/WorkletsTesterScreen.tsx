@@ -62,6 +62,44 @@ export default function WorkletsTesterScreen() {
     }
   };
 
+  const testExecuteWorkletWithArgs = () => {
+    try {
+      WorkletsTester.executeWorkletWithArgs((num, str, bool) => {
+        'worklet';
+        runOnJS(addResult)({
+          name: 'executeWorkletWithArgs',
+          success: true,
+          message: `Received args - Number: ${num}, String: ${str}, Boolean: ${bool}`,
+        });
+      });
+    } catch (error) {
+      addResult({
+        name: 'executeWorkletWithArgs',
+        success: false,
+        message: `Error: ${error instanceof Error ? error.message : String(error)}`,
+      });
+    }
+  };
+
+  const testScheduleWorkletWithArgs = () => {
+    try {
+      WorkletsTester.scheduleWorkletWithArgs((num, str, bool) => {
+        'worklet';
+        runOnJS(addResult)({
+          name: 'scheduleWorkletWithArgs',
+          success: true,
+          message: `Received args - Number: ${num}, String: ${str}, Boolean: ${bool}`,
+        });
+      });
+    } catch (error) {
+      addResult({
+        name: 'scheduleWorkletWithArgs',
+        success: false,
+        message: `Error: ${error instanceof Error ? error.message : String(error)}`,
+      });
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.buttonContainer}>
@@ -71,6 +109,14 @@ export default function WorkletsTesterScreen() {
 
         <TouchableOpacity style={styles.button} onPress={testScheduleWorklet}>
           <Text style={styles.buttonText}>Test scheduleWorklet</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={testExecuteWorkletWithArgs}>
+          <Text style={styles.buttonText}>Test executeWorkletWithArgs</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={testScheduleWorkletWithArgs}>
+          <Text style={styles.buttonText}>Test scheduleWorkletWithArgs</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={[styles.button, styles.clearButton]} onPress={clearResults}>

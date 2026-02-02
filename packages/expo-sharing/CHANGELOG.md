@@ -8,7 +8,18 @@
 
 ### 🐛 Bug fixes
 
+- Fix the share into extension being enabled by default. ([#42661](https://github.com/expo/expo/pull/42661) by [@behenate](https://github.com/behenate))
+- [plugin] Fix the entitlements shape in eas config. ([#42663](https://github.com/expo/expo/pull/42663) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
+
+## 55.0.4 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.2 — 2026-01-23
 

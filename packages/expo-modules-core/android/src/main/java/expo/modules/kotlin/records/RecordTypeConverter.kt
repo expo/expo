@@ -95,6 +95,49 @@ class RecordTypeConverter<T : Record>(
     return instance as T
   }
 
+  internal fun convertFromMap(map: Map<String, Any?>, context: AppContext? = null, forceConversion: Boolean = false): T {
+    val kClass = type.classifier as KClass<*>
+    val instance = getObjectConstructor(kClass).construct()
+
+    propertyDescriptors
+      .forEach { (property, descriptor) ->
+        val key = descriptor.fieldAnnotation.key.takeUnless { it.isBlank() } ?: property.name
+
+        if (!map.containsKey(key)) {
+          if (descriptor.isRequired) {
+            throw FieldRequiredException(property)
+          }
+
+          return@forEach
+        }
+
+        val rawValue = map[key]
+        // Normalize numeric types since JS numbers come as Double in Kotlin Maps
+        val value = if (rawValue is Number) {
+          when (property.returnType.classifier) {
+            Int::class -> rawValue.toInt()
+            Long::class -> rawValue.toLong()
+            Float::class -> rawValue.toFloat()
+            Double::class -> rawValue.toDouble()
+            else -> rawValue
+          }
+        } else {
+          rawValue
+        }
+        val javaField = property.javaField!!
+
+        val casted = exceptionDecorator({ cause -> FieldCastException(property.name, property.returnType, type, cause) }) {
+          descriptor.typeConverter.convert(value, context, forceConversion)
+        }
+
+        javaField.isAccessible = true
+        javaField.set(instance, casted)
+      }
+
+    @Suppress("UNCHECKED_CAST")
+    return instance as T
+  }
+
   private fun <T : Any> getObjectConstructor(clazz: KClass<T>): ObjectConstructor<T> {
     return objectConstructorFactory.get(clazz)
   }
@@ -104,4 +147,28 @@ class RecordTypeConverter<T : Record>(
     val fieldAnnotation: Field,
     val isRequired: Boolean
   )
+}
+
+/**
+ * Converts a Kotlin Map to a Record type.
+ *
+ * **Important:** The map should come from a converted JavaScript object (e.g., from props deserialization).
+ * The values in the map are expected to be JS primitive types:
+ * - Numbers (as Double)
+ * - Strings
+ * - Booleans
+ * - Nested Maps (for nested records)
+ * - Lists (for arrays)
+ *
+ * This function handles numeric type normalization since JS numbers come as Double in Kotlin Maps.
+ */
+@PublishedApi
+internal fun <T : Record> recordFromMap(map: Map<String, Any?>, converter: RecordTypeConverter<T>): T {
+  return converter.convertFromMap(map)
+}
+
+inline fun <reified T : Record> recordFromMap(map: Map<String, Any?>): T {
+  val converter = expo.modules.kotlin.types.TypeConverterProviderImpl.obtainTypeConverter(kotlin.reflect.typeOf<T>())
+  @Suppress("UNCHECKED_CAST")
+  return recordFromMap(map, converter as RecordTypeConverter<T>)
 }

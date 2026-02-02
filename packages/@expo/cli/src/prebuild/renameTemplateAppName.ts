@@ -81,15 +81,19 @@ export const defaultRenameConfig = [
  * The rename config is resolved in the order of preference:
  * Config provided as function param > defaultRenameConfig
  */
-export async function getTemplateFilesToRenameAsync({
-  cwd,
-  /**
-   * An array of patterns following the rename config format. If omitted, then
-   * we fall back to defaultRenameConfig.
-   * @see defaultRenameConfig
-   */
-  renameConfig: userConfig,
-}: Pick<ExtractProps, 'cwd'> & { renameConfig?: string[] }) {
+export async function getTemplateFilesToRenameAsync(
+  cwd: string,
+  {
+    renameConfig: userConfig,
+  }: {
+    /**
+     * An array of patterns following the rename config format. If omitted, then
+     * we fall back to defaultRenameConfig.
+     * @see defaultRenameConfig
+     */
+    renameConfig?: string[];
+  } = {}
+) {
   let config = userConfig ?? defaultRenameConfig;
 
   // Strip comments, trim whitespace, and remove empty lines.
@@ -110,18 +114,21 @@ export async function getTemplateFilesToRenameAsync({
   });
 }
 
-export async function renameTemplateAppNameAsync({
-  cwd,
-  name,
-  files,
-}: Pick<ExtractProps, 'cwd' | 'name'> & {
-  /**
-   * An array of files to transform. Usually provided by calling
-   * getTemplateFilesToRenameAsync().
-   * @see getTemplateFilesToRenameAsync
-   */
-  files: string[];
-}) {
+export async function renameTemplateAppNameAsync(
+  cwd: string,
+  {
+    expName: name,
+    files,
+  }: {
+    expName: string;
+    /**
+     * An array of files to transform. Usually provided by calling
+     * getTemplateFilesToRenameAsync().
+     * @see getTemplateFilesToRenameAsync
+     */
+    files: string[];
+  }
+) {
   debug(`Got files to transform: ${JSON.stringify(files)}`);
 
   await Promise.all(

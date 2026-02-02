@@ -11,6 +11,7 @@ class DataService: ObservableObject {
 
   private let pollingInterval: TimeInterval = 10.0
   private var pollingTask: Task<Void, Never>?
+  private var hasCompletedInitialFetch = false
 
   func startPolling(accountName: String) {
     stopPolling()
@@ -30,9 +31,15 @@ class DataService: ObservableObject {
   }
 
   func fetchProjectsAndData(accountName: String) async {
-    isLoadingData = true
+    if !hasCompletedInitialFetch {
+      isLoadingData = true
+    }
     dataError = nil
-    defer { isLoadingData = false }
+
+    defer {
+      isLoadingData = false
+      hasCompletedInitialFetch = true
+    }
 
     do {
       let response: HomeScreenDataResponse = try await APIClient.shared.request(
@@ -72,5 +79,6 @@ class DataService: ObservableObject {
     projects = []
     snacks = []
     dataError = nil
+    hasCompletedInitialFetch = false
   }
 }

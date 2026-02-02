@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+- [test] Added E2E tests and improvements for CLI in [#42120](https://github.com/expo/expo/pull/42120) by [@pmleczek](https://github.com/pmleczek)
+
+## 55.0.4 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-26
+
+### 💡 Others
+
+- Add script to resolve symlinks ([#42457](https://github.com/expo/expo/pull/42457) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 55.0.2 — 2026-01-22
+
+### 💡 Others
+
+- [iOS] Use internal import for Expo ([#42449](https://github.com/expo/expo/pull/42449) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 55.0.1 — 2026-01-22
 
 _This version does not introduce any user-facing changes._
@@ -33,3 +51,5 @@ _This version does not introduce any user-facing changes._
 - [iOS] Symlink ExpoAppDelegate to iOS template ([#42240](https://github.com/expo/expo/pull/42240) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Remove ExpoModulesProvider patch ([#42317](https://github.com/expo/expo/pull/42317) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Improved bundle loading failure handling in [#42469](https://github.com/expo/expo/pull/42469) by [@pmleczek](https://github.com/pmleczek)
+- Added `expo-dev-client` warning message in [#42564](https://github.com/expo/expo/pull/42564) by [@pmleczek](https://github.com/pmleczek)
+- Pass manifest from bundler to dev menu in isolated brownfield ([#42600](https://github.com/expo/expo/pull/42600) by [@pmleczek](https://github.com/pmleczek))
