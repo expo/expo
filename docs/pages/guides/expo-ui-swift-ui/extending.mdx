@@ -104,18 +104,29 @@ public class MyUiModule: Module {
 
 <Step label="5">
 
-Export your native view from the module's index file using `requireNativeView`:
+Create a wrapper component that connects modifiers with event handling. The `createViewModifierEventListener` utility enables event-based modifiers like `onTapGesture` and `onAppear` to work with your custom view:
 
-```ts my-ui/index.ts
+```tsx my-ui/src/MyCustomView.tsx
 import { requireNativeView } from 'expo';
 import { type CommonViewModifierProps } from '@expo/ui/swift-ui';
+import { createViewModifierEventListener } from '@expo/ui/swift-ui/modifiers';
 
 export interface MyCustomViewProps extends CommonViewModifierProps {
   title: string;
   children?: React.ReactNode;
 }
 
-export const MyCustomView = requireNativeView<MyCustomViewProps>('MyUi', 'MyCustomView');
+const NativeMyCustomView = requireNativeView<MyCustomViewProps>('MyUi', 'MyCustomView');
+
+export function MyCustomView({ modifiers, ...restProps }: MyCustomViewProps) {
+  return (
+    <NativeMyCustomView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+    />
+  );
+}
 ```
 
 </Step>
@@ -178,7 +189,7 @@ struct CustomBorderModifier: ViewModifier, Record {
 
 <Step label="2">
 
-Register your modifier with `ViewModifierRegistry` in your module definition. Use `OnCreate` to register and `OnDestroy` to unregister for proper cleanup:
+Register your modifier with `ViewModifierRegistry` in your module definition. Use `OnCreate` to register and `OnDestroy` to unregister to avoid race conditions with the SwiftUI render thread:
 
 ```swift my-ui/ios/MyUiModule.swift
 import ExpoModulesCore

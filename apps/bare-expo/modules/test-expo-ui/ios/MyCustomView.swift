@@ -9,7 +9,7 @@ final class MyCustomViewProps: UIBaseViewProps {
 }
 
 struct MyCustomView: ExpoSwiftUI.View {
-  @ObservedObject var props: MyCustomViewProps
+  @ObservedObject public var props: MyCustomViewProps
 
   var body: some View {
     VStack {

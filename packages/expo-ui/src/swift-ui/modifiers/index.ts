@@ -1063,6 +1063,8 @@ export type ViewModifier = BuiltInModifier | ModifierConfig;
  */
 export { createModifier };
 
+export { createViewModifierEventListener } from './utils';
+
 /**
  * Type guard to check if a value is a valid modifier.
  * @hidden

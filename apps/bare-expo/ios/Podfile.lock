@@ -3015,7 +3015,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets (0.7.1):
+  - RNWorklets (0.7.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3037,9 +3037,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/worklets (= 0.7.1)
+    - RNWorklets/worklets (= 0.7.2)
     - Yoga
-  - RNWorklets/worklets (0.7.1):
+  - RNWorklets/worklets (0.7.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3061,9 +3061,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/worklets/apple (= 0.7.1)
+    - RNWorklets/worklets/apple (= 0.7.2)
     - Yoga
-  - RNWorklets/worklets/apple (0.7.1):
+  - RNWorklets/worklets/apple (0.7.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3097,6 +3097,9 @@ PODS:
   - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
+  - TestExpoUi (1.0.0):
+    - ExpoModulesCore
+    - ExpoUI
   - UMAppLoader (6.0.7)
   - WorkletsTester (0.0.1):
     - ExpoModulesCore
@@ -3317,6 +3320,7 @@ DEPENDENCIES:
   - RNScreens (from `../../../node_modules/react-native-screens`)
   - RNSVG (from `../../../node_modules/react-native-svg`)
   - RNWorklets (from `../../../node_modules/react-native-worklets`)
+  - TestExpoUi (from `../modules/test-expo-ui/ios`)
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
   - WorkletsTester (from `../modules/worklets-tester/ios`)
   - Yoga (from `../../../node_modules/react-native/ReactCommon/yoga`)
@@ -3762,6 +3766,9 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native-svg"
   RNWorklets:
     :path: "../../../node_modules/react-native-worklets"
+  TestExpoUi:
+    inhibit_warnings: false
+    :path: "../modules/test-expo-ui/ios"
   UMAppLoader:
     inhibit_warnings: false
     :path: "../../../packages/unimodules-app-loader/ios"
@@ -3854,7 +3861,7 @@ SPEC CHECKSUMS:
   EXUpdates: 83e4d666a085b44149f3b21d5bd057ad37b2c3e5
   EXUpdatesInterface: 1436757deb0d574b84bba063bd024c315e0ec08b
   FBLazyVector: 3a7ea85f6009224ad89f7daeda516f189e6b5759
-  hermes-engine: f631dcabc3dc2d46dc5f32c6c79d48d1d9e9aac6
+  hermes-engine: d98d683c78209e3c5b12c1e3501ac9e7c7539e2d
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -3872,7 +3879,7 @@ SPEC CHECKSUMS:
   React: 4bc1f928568ad4bcfd147260f907b4ea5873a03b
   React-callinvoker: 8dd44c31888a314694efd0ef5f19ab7e0e855ef8
   React-Core: 0c1f3042e1204c0512b2e4263062c66550d7e6a3
-  React-Core-prebuilt: baa77ffa5636202bd80ae54a374df8b194f96ed6
+  React-Core-prebuilt: 712b6c8ce92b97551f61db896e8578b9976313f3
   React-CoreModules: f6a626221d52f21b5eb8df2d79780b96f20240e5
   React-cxxreact: 2e3990595049d43dd1d59ccd6cb35545f0dc6f03
   React-debug: 60be0767f5672afc81bfd6a50d996507430f7906
@@ -3942,7 +3949,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: bfb12ead469222b022a2024f32aba47ce50de512
   ReactCodegen: b9b0ea5c72e425fa5a89a031ada3e64dfd839771
   ReactCommon: 0084791d25c4deae3d8b77efd4440fb2d5c38746
-  ReactNativeDependencies: c5e58d6ef1758f36ac4ee8b97949e0fb78f31b21
+  ReactNativeDependencies: 8a162703337c6c4ad8e6a142c1cbe08b67bd77d9
   RNCAsyncStorage: e85a99325df9eb0191a6ee2b2a842644c7eb29f4
   RNCMaskedView: 3c9d7586e2b9bbab573591dcb823918bc4668005
   RNCPicker: e0149590451d5eae242cf686014a6f6d808f93c7
@@ -3951,11 +3958,12 @@ SPEC CHECKSUMS:
   RNReanimated: 61462806110686a6f5d7c45c6f910cf73cd57dd9
   RNScreens: dea74a9106daf3cbed39de1f5ce7ff4f96c5c722
   RNSVG: 81c64c70e69ce2a1180a2f7355cada5f8aee001c
-  RNWorklets: 78d1eb5df6aa27c762c1466aaaffba8774d807a8
+  RNWorklets: 87faff8e75d34d1240c75189e490e92901dd3544
   SDWebImage: f29024626962457f3470184232766516dee8dfea
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
+  TestExpoUi: 3c8a53d43492d7db3f4c94cf4a48cba7a82da424
   UMAppLoader: b649e542381c8abe788ffb13893e632d598910a5
   WorkletsTester: f76956000cdf163c71f8eb20fe09f1bfa21acbaf
   Yoga: 35d573dff66536d48493acb65a519482f8219fe8
