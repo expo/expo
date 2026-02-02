@@ -3,12 +3,13 @@ package expo.modules.filesystem.unifiedfile
 import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import expo.modules.filesystem.fsops.CopyMoveStrategy
 import expo.modules.kotlin.AppContext
 import java.io.InputStream
 import java.io.OutputStream
 
 class SAFDocumentFile(private val context: Context, override val uri: Uri) : UnifiedFileInterface {
-  private val documentFile: DocumentFile?
+  val documentFile: DocumentFile?
     get() {
       // Relying on singleUri.isDirectory did not work, and there's no explicit method for this, so we check path
       val pathSegment = uri.pathSegments.getOrNull(0) ?: "tree"
@@ -85,6 +86,21 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
     return documentFile?.length() ?: 0
   }
 
+  /**
+   * Finds a child file/directory by name.
+   * @return The child file if found, null otherwise
+   */
+  fun findFile(name: String): SAFDocumentFile? {
+    val child = documentFile?.findFile(name) ?: return null
+    return SAFDocumentFile(context, child.uri)
+  }
+
+  /**
+   * Internal property exposing the DocumentFile for use within the package
+   */
+  internal val document: DocumentFile?
+    get() = documentFile
+
   override fun walkTopDown(): Sequence<SAFDocumentFile> {
     return sequence {
       yield(this@SAFDocumentFile)
@@ -95,6 +111,8 @@ class SAFDocumentFile(private val context: Context, override val uri: Uri) : Uni
       }
     }
   }
+
+  override val copyMoveStrategy: CopyMoveStrategy = CopyMoveStrategy.SAF(this, context)
 }
 
 fun DocumentFile.deleteRecursively(): Boolean {
