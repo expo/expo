@@ -2,6 +2,10 @@ name: 'Expo Caches'
 description: 'Composite action to perform cache related tasks.'
 
 inputs:
+  yarn-cache:
+    description: 'Restore Yarn global cache'
+    default: 'true'
+    required: false
   yarn-workspace:
     description: 'Restore yarn workspace cache'
     required: false
@@ -79,6 +83,21 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    - name: Get yarn cache directory path
+      if: inputs.yarn-cache == 'true'
+      id: yarn-cache-dir-path
+      shell: bash
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+    - name: Restore Yarn cache
+      uses: actions/cache@v4
+      if: inputs.yarn-cache == 'true'
+      id: yarn-cache
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-cache-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-cache-
+
     - name: ♻️ Restore workspace node modules
       if: inputs.yarn-workspace == 'true'
       uses: actions/cache@v4

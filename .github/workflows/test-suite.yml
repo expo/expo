@@ -275,15 +275,13 @@ jobs:
         id: expo-caches
         with:
           gradle: 'true'
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
+          yarn-cache: 'true'
           react-native-gradle-downloads: 'true'
       - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🧶 Postinstall workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit == 'true'
-        run: yarn postinstall
+      # - name: 🧶 Postinstall workspace node modules
+      #   if: steps.expo-caches.outputs.yarn-workspace-hit == 'true'
+      #   run: yarn postinstall
       - name: 🧶 Install image comparison server node modules
         run: yarn install --frozen-lockfile
         working-directory: apps/bare-expo/e2e/image-comparison
