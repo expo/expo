@@ -278,7 +278,7 @@ jobs:
           yarn-cache: 'true'
           react-native-gradle-downloads: 'true'
       - name: 🧶 Install workspace node modules
-        run: yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile --prefer-offline
       # - name: 🧶 Postinstall workspace node modules
       #   if: steps.expo-caches.outputs.yarn-workspace-hit == 'true'
       #   run: yarn postinstall
