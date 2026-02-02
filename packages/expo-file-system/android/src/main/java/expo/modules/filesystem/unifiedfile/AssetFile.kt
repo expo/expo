@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import androidx.core.net.toUri
+import expo.modules.filesystem.fsops.CopyMoveStrategy
 import expo.modules.kotlin.AppContext
 import java.io.File
 import java.io.FileOutputStream
@@ -140,4 +141,6 @@ class AssetFile(private val context: Context, override val uri: Uri) : UnifiedFi
       }
     }
   }
+
+  override val copyMoveStrategy: CopyMoveStrategy = CopyMoveStrategy.Asset(this)
 }
