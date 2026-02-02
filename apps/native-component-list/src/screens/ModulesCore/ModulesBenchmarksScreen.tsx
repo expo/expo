@@ -260,11 +260,11 @@ export default function ModulesBenchmarksScreen() {
 
   const startBenchmarks = useCallback(() => {
     (async () => {
-      // setVoidTimes(runVoidBenchmark());
+      setVoidTimes(runVoidBenchmark());
       setNumberTimes(runNumberBenchmark());
       setAsyncNumberTimes(await runAsyncNumberBenchmark());
-      // setStringTimes(runStringsBenchmark());
-      // setArrayTimes(runArrayBenchmark());
+      setStringTimes(runStringsBenchmark());
+      setArrayTimes(runArrayBenchmark());
     })();
   }, []);
 
