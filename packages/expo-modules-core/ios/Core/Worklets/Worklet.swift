@@ -47,14 +47,6 @@ public class Worklet: AnySerializable {
     WorkletExecutor.execute(serializable.jsSerializable, runtime: runtime, arguments: arguments)
   }
 
-  /**
-   Executes the worklet synchronously on the given runtime with arguments and returns the result.
-   Returns nil for undefined/null results.
-   */
-  public func executeReturning(on runtime: WorkletRuntime, arguments: [Any]) -> Any? {
-    return WorkletExecutor.executeReturning(serializable.jsSerializable, runtime: runtime, arguments: arguments)
-  }
-
   public static func getDynamicType() -> AnyDynamicType {
     return DynamicWorkletType()
   }

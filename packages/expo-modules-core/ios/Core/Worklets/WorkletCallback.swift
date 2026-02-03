@@ -8,13 +8,13 @@ public class WorkletCallback: SharedObject {
     super.init()
   }
 
-  // Executes the worklet synchronously on the UI runtime and returns the result.
-  public func callReturning(arguments: [Any] = []) throws -> Any? {
+  // Executes the worklet synchronously on the UI runtime.
+  public func call(arguments: [Any] = []) throws {
     guard let appContext else {
       throw Exceptions.AppContextLost()
     }
     let uiRuntime = try appContext.uiRuntime
-    return worklet.executeReturning(on: uiRuntime, arguments: arguments)
+    worklet.execute(on: uiRuntime, arguments: arguments)
   }
 
 }
