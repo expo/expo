@@ -13,6 +13,7 @@ import {
   Slider,
   Capsule,
   Stepper,
+  Spacer,
 } from '@expo/ui/swift-ui';
 import {
   background,
@@ -62,9 +63,18 @@ import {
   tag,
   font,
   lineLimit,
+  contentShape,
+  shapes,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text as RNText,
+  View,
+  useWindowDimensions,
+  Alert,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ModifiersScreen() {
@@ -111,6 +121,7 @@ export default function ModifiersScreen() {
   const [badgeIndex, setBadgeIndex] = useState(0);
 
   const [containerRelativeFrameCount, setContainerRelativeFrameCount] = useState(1);
+  const [contentShapeButtonCounter, setcontentShapeButtonCounter] = useState(0);
 
   return (
     <ScrollView>
@@ -671,6 +682,55 @@ export default function ModifiersScreen() {
           </Section>
 
           <AppearSection />
+
+          <Section title="Content Shape Modifier">
+            {/* <VStack spacing={16}> */}
+            <Text>{'Try tapping the empty space between texts:'}</Text>
+            {/* <HStack
+                        spacing={0}
+                        modifiers={[
+                          padding({ vertical: 12, horizontal: 16 }),
+                          background('#FF6B6B20'),
+                          cornerRadius(8),
+                          onTapGesture(() => Alert.alert('Without contentShape', 'Tapped! (Only works on text)')),
+                        ]}
+                      >
+                        <Text>Left</Text>
+                        <Spacer />
+                        <Text>Right</Text>
+                      </HStack> */}
+            <HStack
+              modifiers={[
+                cornerRadius(8),
+                onTapGesture(() => {
+                  Alert.alert('Without contentShape', 'Tapped! (Only works on text)');
+                }),
+              ]}>
+              <Text>Left label</Text>
+              <Spacer />
+              <Text>Right label</Text>
+            </HStack>
+
+            <Text>{'WITH contentShape\nNow tap the empty space:'}</Text>
+            <HStack
+              spacing={0}
+              modifiers={[
+                contentShape(shapes.rectangle()),
+                onTapGesture(() => {
+                  setcontentShapeButtonCounter(contentShapeButtonCounter + 1);
+                  Alert.alert(
+                    'With contentShape',
+                    `Works everywhere! Count: ${contentShapeButtonCounter + 1}`
+                  );
+                }),
+              ]}>
+              <Text>Left label</Text>
+              <Spacer />
+              <Text>Right label</Text>
+            </HStack>
+            <Text>Taps: {contentShapeButtonCounter}</Text>
+            {/* </VStack> */}
+          </Section>
 
           <Section title="Misc">
             <VStack
