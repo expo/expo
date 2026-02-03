@@ -20,7 +20,7 @@ PODS:
   - EXManifests/Tests (55.0.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.0-preview.8):
+  - Expo (55.0.0-preview.9):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -113,7 +113,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Expo/Tests (55.0.0-preview.8):
+  - Expo/Tests (55.0.0-preview.9):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -181,7 +181,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCrypto (55.0.4):
     - ExpoModulesCore
-  - ExpoDevice (55.0.4):
+  - ExpoDevice (55.0.5):
     - ExpoModulesCore
   - ExpoDocumentPicker (55.0.4):
     - ExpoModulesCore
@@ -233,7 +233,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLocation (55.0.5):
     - ExpoModulesCore
-  - ExpoLogBox (55.0.4):
+  - ExpoLogBox (55.0.5):
     - React-Core
   - ExpoMailComposer (55.0.4):
     - ExpoModulesCore
@@ -246,7 +246,7 @@ PODS:
     - React-Core
   - ExpoMeshGradient (55.0.4):
     - ExpoModulesCore
-  - ExpoModulesCore (55.0.6):
+  - ExpoModulesCore (55.0.7):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -277,7 +277,7 @@ PODS:
     - RNWorklets
     - SocketRocket
     - Yoga
-  - ExpoModulesCore/Tests (55.0.6):
+  - ExpoModulesCore/Tests (55.0.7):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -309,11 +309,11 @@ PODS:
     - RNWorklets
     - SocketRocket
     - Yoga
-  - ExpoModulesJSI (55.0.6):
+  - ExpoModulesJSI (55.0.7):
     - hermes-engine
     - React-Core
     - ReactCommon
-  - ExpoModulesJSI/Tests (55.0.6):
+  - ExpoModulesJSI/Tests (55.0.7):
     - hermes-engine
     - React-Core
     - ReactCommon
@@ -331,7 +331,7 @@ PODS:
     - ExpoModulesTestCore
   - ExpoPrint (55.0.4):
     - ExpoModulesCore
-  - ExpoRouter (55.0.0-preview.5):
+  - ExpoRouter (55.0.0-preview.6):
     - ExpoModulesCore
     - RNScreens
   - ExpoScreenCapture (55.0.4):
@@ -4643,7 +4643,7 @@ SPEC CHECKSUMS:
   EXConstants: f1806fa0b1c512b88083d0031242eeb496eca244
   EXJSONUtils: 0080c14b673cfa9a6be5e3fe429768ffe3d42dfb
   EXManifests: 025fa616ecc6b004490736d95590c0e473d1203d
-  Expo: 46242798c71bf89fedb2c4c0b84964cbb64e5bdc
+  Expo: 64b8047c6420be10d7fda98cd359f9aa43ebe4aa
   expo-dev-menu: b895bf4088a351032b2ed40a8b5541455f21d7aa
   expo-dev-menu-interface: bf6f816d29b45bec038080790963c635e8d588c2
   ExpoAgeRange: fdc351e10b4ceca79ecc9f8754917487aaf5573c
@@ -4662,7 +4662,7 @@ SPEC CHECKSUMS:
   ExpoClipboard: d77ee7cd50df6fb533058dbbf0ff009826e6c249
   ExpoContacts: b0c5ce885532abcf80379ce4e6cf62c2fe3652d7
   ExpoCrypto: 6fbbc28867526ae2e97d89635ec96c259efb49f0
-  ExpoDevice: 41e2fabfdee72cd96fdb7907f849ec03b1fe5edd
+  ExpoDevice: 83484e5877d5e3222b423ddbe373904b1d8e113d
   ExpoDocumentPicker: 07da34b62852ea1283566b38988ea62073a157c4
   ExpoDomWebView: 2cb9e9bed46799fa8f36b6284ce7799f1dbff297
   ExpoFileSystem: 060c840182e3424df82a137974a45bf845e5ebd9
@@ -4680,17 +4680,17 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: 3d4d083c94ebec022ada6d4f73f03623b1811eb8
   ExpoLocalization: b9f7551d4dc914ffe3d888458df30bd668512d20
   ExpoLocation: 349c7659345bf8f52a733081ea8c5d7d5cf17f3b
-  ExpoLogBox: 18ba437efaef9d82c66f10e31a9756371635a0cd
+  ExpoLogBox: f382ea273f1ac0cacb13e976758a02bdfb3fee91
   ExpoMailComposer: d03273913ecb0ab1cd995648d48da4d2e6548b67
   ExpoMediaLibrary: 1933325111834d148e912c8d5f441a9342c67282
   ExpoMeshGradient: 446a2a4593c04d443331b2a733e2095fc0131974
-  ExpoModulesCore: c6a3219393924c019cc8ef7867a365be3a92828b
-  ExpoModulesJSI: 184cb0e4aca33c58ab0b09da01a1a0ab3cc33b91
+  ExpoModulesCore: edefc4695d2ac4d3866bc4ae056aec8dce1d7f29
+  ExpoModulesJSI: e0daca70b42ae5f0fb4b93c0b6cfe8865b590c36
   ExpoModulesTestCore: 266af467667c499db565ae20297511ccd3a1106c
   ExpoNetwork: 3c3dc905e4228f61c79fc2bf8728e3e57c1fa6fa
   ExpoNotifications: 510c8f72ea329f09433fd54a58cea2ec51eb57fb
   ExpoPrint: 9ebdcc8adac3a661ce2b7d6681a0f52d4af2e7fb
-  ExpoRouter: c7abd204452eaed07b60fe96462afb0ecffef4b2
+  ExpoRouter: d14183bbd349a62a2a3ffec59b501893cdcee575
   ExpoScreenCapture: 0c4bb50dbe1b72ab19e7c8506aa93300bb70e75e
   ExpoScreenOrientation: 90a9c546e54348ec87514eaa6cb50d67cd8326b3
   ExpoSecureStore: 190801e6f1dd21da9bf2423996b47a8ce5e76cf8

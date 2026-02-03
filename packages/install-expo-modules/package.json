@@ -1,6 +1,6 @@
 {
   "name": "install-expo-modules",
-  "version": "0.14.4",
+  "version": "0.14.5",
   "license": "MIT",
   "description": "Tools to install expo-modules for existing react-native projects",
   "keywords": [

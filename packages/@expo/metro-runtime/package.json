@@ -43,7 +43,7 @@
     }
   },
   "dependencies": {
-    "@expo/log-box": "55.0.4",
+    "@expo/log-box": "55.0.5",
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10",
     "pretty-format": "^29.7.0",
