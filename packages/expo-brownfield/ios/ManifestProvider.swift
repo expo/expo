@@ -1,26 +1,13 @@
-#if DEBUG && canImport(EXDevMenu) && canImport(EXManifests)
-  internal import EXDevMenu
-  internal import EXManifests
-#endif
-
 public class ManifestProvider {
-  public static func setupDevMenuManifest(bundleURL: URL?) {
-    #if DEBUG && canImport(EXDevMenu) && canImport(EXManifests)
-      guard let bundleURL else {
-        print("⚠️ Bundle URL couldn't be retrieved")
-        return
-      }
-
-      guard let scheme = bundleURL.scheme,
-        let host = bundleURL.host,
-        let port = bundleURL.port
-      else {
-        print("⚠️ Metro server URL couldn't be retrieved from bundle URL")
-        return
-      }
-
-      guard let manifestURL = URL(string: "\(scheme)://\(host):\(port)") else {
-        print("⚠️ Manifest URL couldn't be created")
+  /**
+  * Fetches the manifest for brownfield setup
+  */
+  public static func fetchManifest(
+    bundleURL: URL?,
+    completion: @escaping ([String: Any]?, URL?) -> Void
+  ) {
+    #if DEBUG
+      guard let manifestURL = resolveManifestURL(bundleURL) else {
         return
       }
 
@@ -31,7 +18,7 @@ public class ManifestProvider {
 
       print("📡 Fetching manifest for dev-menu from: \(manifestURL.absoluteString)")
 
-      let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+      let task = URLSession.shared.dataTask(with: request) { data, response, error in
         if let error = error {
           print("❌ Error fetching manifest: \(error.localizedDescription)")
           return
@@ -52,13 +39,34 @@ public class ManifestProvider {
         }
 
         print("✅ Successfully fetched manifest")
-        let manifest = ManifestFactory.manifest(forManifestJSON: json)
-        DevMenuManager.shared.updateCurrentManifest(manifest, manifestURL: manifestURL)
+        completion(json, manifestURL)
       }
 
       task.resume()
     #else
-      return
+      completion(nil, nil)
     #endif
+  }
+
+  private static func resolveManifestURL(_ bundleURL: URL?) -> URL? {
+    guard let bundleURL else {
+      print("⚠️ Bundle URL couldn't be retrieved")
+      return nil
+    }
+
+    guard let scheme = bundleURL.scheme,
+      let host = bundleURL.host,
+      let port = bundleURL.port
+    else {
+      print("⚠️ Metro server URL couldn't be retrieved from bundle URL")
+      return nil
+    }
+
+    guard let manifestURL = URL(string: "\(scheme)://\(host):\(port)") else {
+      print("⚠️ Manifest URL couldn't be created")
+      return nil
+    }
+
+    return manifestURL
   }
 }

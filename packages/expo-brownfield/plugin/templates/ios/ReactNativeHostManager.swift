@@ -1,10 +1,14 @@
 internal import Expo
 internal import ExpoBrownfield
+internal import EXManifests
 import Network
 internal import React
 internal import ReactAppDependencyProvider
 import UIKit
 
+#if DEBUG && canImport(EXDevMenu)
+internal import EXDevMenu
+#endif
 
 public class ReactNativeHostManager {
   public static let shared = ReactNativeHostManager()
@@ -18,18 +22,7 @@ public class ReactNativeHostManager {
    * Instance can be initialized only once
    */
   public func initialize() {
-    // Prevent multiple initializations
-    guard reactNativeDelegate == nil else {
-      return
-    }
-
-    let delegate = ReactNativeDelegate()
-    let factory = ExpoReactNativeFactory(delegate: delegate)
-    delegate.dependencyProvider = RCTAppDependencyProvider()
-
-    reactNativeDelegate = delegate
-    reactNativeFactory = factory
-
+    initializeInstance()
     // Ensure this won't get stripped by the Swift compiler
     _ = ExpoModulesProvider()
   }
@@ -43,34 +36,29 @@ public class ReactNativeHostManager {
     launchOptions: [AnyHashable: Any]?
   ) throws -> UIView {
     cleanupPreviousInstance()
-
-    let delegate = ReactNativeDelegate()
-    delegate.dependencyProvider = RCTAppDependencyProvider()
-    reactNativeFactory = ExpoReactNativeFactory(delegate: delegate)
-    reactNativeDelegate = delegate
+    initializeInstance()
 
     guard let reactNativeFactory else {
       fatalError("Trying to load view without initializing reactNativeFactory")
     }
 
-    // Needed to set up delegates (e.g. for expo-dev-menu)
-    if firstViewLoad {
-      firstViewLoad = false
-      reactNativeFactory.startReactNative(
-        withModuleName: moduleName,
-        in: nil,
-        launchOptions: nil
-      )
-
-      // No-op in release and without dev menu available
-      ManifestProvider.setupDevMenuManifest(bundleURL: reactNativeDelegate?.bundleURL())
-    }
+    setupDevMenu()
 
     return reactNativeFactory.rootViewFactory.view(
       withModuleName: moduleName,
       initialProperties: initialProps,
       launchOptions: launchOptions
     )
+  }
+
+ /**
+  * Initializes a React Native instance
+  */
+  public func initializeInstance() {
+    let delegate = ReactNativeDelegate()
+    reactNativeFactory = ExpoReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
+    reactNativeDelegate = delegate
   }
 
   /**
@@ -82,6 +70,35 @@ public class ReactNativeHostManager {
       rootViewFactory.setValue(nil, forKey: "_reactHost")
       reactNativeDelegate = nil
       reactNativeFactory = nil
+    }
+  }
+
+  private func setupDevMenu() {
+    if firstViewLoad {
+      guard let reactNativeFactory else {
+        fatalError("Trying to setup dev menu without initialized reactNativeFactory")
+      }
+
+      firstViewLoad = false
+      // Needed to set up delegates (e.g. for expo-dev-menu)
+      reactNativeFactory.startReactNative(
+        withModuleName: "main", // TOOD(pmleczek): Unhardcode module name
+        in: nil,
+        launchOptions: nil
+      )
+
+      #if DEBUG && canImport(EXDevMenu)
+      ManifestProvider.fetchManifest(bundleURL: reactNativeDelegate?.bundleURL()) { json, url in
+        if let json, let url {
+          let manifest = ManifestFactory.manifest(forManifestJSON: json)
+          DevMenuManager.shared.updateCurrentManifest(manifest, manifestURL: url)
+        }
+      }
+      // if let manifestJSON = ManifestProvider.fetchManifest(bundleURL: reactNativeDelegate?.bundleURL()),
+      //    let manifest = ManifestFactory.manifest(forManifestJSON: manifestJSON) {
+      //   DevMenuManager.shared.updateCurrentManifest(manifest, manifestURL: manifestURL)
+      // }
+      #endif
     }
   }
 }
