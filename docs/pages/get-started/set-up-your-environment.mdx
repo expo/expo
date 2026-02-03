@@ -1,4 +1,132 @@
----
+---📱 APP OVERVIEW (COPY)
+App Name:Liyu Equb Lehulu
+Lucky Draw App
+Description:
+This app registers customers using name and phone number, assigns a random lucky number, allows admin to send messages, and pick one or more winners.
+📄 PAGES (COPY)
+Page 1: Register Page (Public)
+Page Name:
+RegisterPage
+Purpose:
+Customers register for a lucky number.
+Page 2: Admin Page (Private)
+Page Name:
+AdminPage
+Purpose:
+Admin manages customers, sends SMS, and picks winners.
+Page 3: Feedback Page (Public)
+Page Name:
+FeedbackPage
+Purpose:
+Customers send messages or feedback.
+🧩 REGISTER PAGE UI (COPY)
+TextField 1
+Copy code
+
+Label: Full Name
+Hint: Enter your full name
+Required: Yes
+TextField 2
+Copy code
+
+Label: Phone Number
+Hint: 09XXXXXXXX
+Keyboard Type: Phone
+Required: Yes
+Button
+Copy code
+
+Button Text: Register
+🗄️ FIREBASE DATABASE (COPY EXACTLY)
+Collection: customers
+Copy code
+
+name        → String
+phone       → String
+luckyNumber → Int
+createdAt   → Timestamp
+Collection: feedback
+Copy code
+
+name        → String
+phone       → String
+message     → String
+createdAt   → Timestamp
+🎯 REGISTER BUTTON ACTION (COPY)
+Step 1: Generate Random Number
+Copy code
+
+Minimum: 1
+Maximum: 100000
+Step 2: Create Firestore Document
+Copy code
+
+Collection: customers
+
+name        = Full Name TextField value
+phone       = Phone Number TextField value
+luckyNumber = Generated Random Number
+createdAt   = Current Time
+Step 3: Show Snackbar
+Copy code
+
+Text: Registration successful. Good luck!
+🏆 PICK WINNER (ADMIN LOGIC – COPY)
+Copy code
+
+Query collection: customers
+Select random document
+Display:
+- Name
+- Phone
+- Lucky Number
+(Repeat action to pick multiple winners)
+📩 SEND SMS (COPY)
+Use Launch URL action:
+Copy code
+
+sms:+2519XXXXXXXX?body=Congratulations! You are a winner.
+📝 FEEDBACK PAGE UI (COPY)
+TextField
+Copy code
+
+Label: Full Name
+TextField
+Copy code
+
+Label: Phone Number
+Keyboard Type: Phone
+TextField
+Copy code
+
+Label: Message
+Max Lines: 4
+Button
+Copy code
+
+Button Text: Send Message
+Action: Save to feedback collection
+🔐 SECURITY (COPY)
+Copy code
+
+AdminPage: Email/Password Login
+RegisterPage: No Login (Public)
+FeedbackPage: No Login (Public)
+✅ IMPORTANT FACT (CLEAR)
+Copy code
+
+FlutterFlow DOES build the app.
+You design once → FlutterFlow generates the real app.
+You can publish to Google Play yourself.
+👉 NEXT STEP (TELL ME ONE)
+Reply with ONE number:
+Copy code
+
+1 – Firebase setup step-by-step
+2 – Exact FlutterFlow button clicks
+3 – Admin page design
+4 – Play Store publishing
+I’ll continue in the same clean, copy-paste style 💪
 title: Set up your environment
 description: Learn how to set up your development environment to start building with Expo.
 hideTOC: true
