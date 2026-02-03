@@ -1,8 +1,8 @@
 import { requireNativeView } from 'expo';
-import { type CommonViewModifierProps } from '../types';
+import { useReleasingSharedObject, createWorkletCallback } from 'expo-modules-core';
 import { createSerializable } from 'react-native-worklets';
 
-import { useReleasingSharedObject, createWorkletCallback } from 'expo-modules-core';
+import { type CommonViewModifierProps } from '../types';
 
 type SyncTextFieldProps = {
   onChangeTextSync?: (value: string) => void;
