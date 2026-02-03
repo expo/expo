@@ -1,44 +1,25 @@
 diff --git a/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt b/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt
-index a9fbbe7d70..c08d049299 100644
+index a9fbbe7d70..f7561327e7 100644
 --- a/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt
 +++ b/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt
-@@ -12,11 +12,35 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
+@@ -12,6 +12,16 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
  import com.facebook.react.modules.core.DeviceEventManagerModule
  import expo.modules.ExpoReactHostFactory
  import expo.modules.brownfield.BrownfieldNavigationState
 +// Dependencies needed to properly set up expo-dev-menu in brownfield
-+import android.util.Log
 +import android.view.ViewGroup
-+import com.facebook.react.common.ShakeDetector
-+import com.facebook.react.devsupport.DevServerHelper
 +import com.facebook.react.devsupport.DevSupportManagerBase
 +import com.facebook.react.devsupport.interfaces.DevSupportManager
-+import com.facebook.react.packagerconnection.JSPackagerClient
 +import expo.modules.devmenu.AppInfo
 +import expo.modules.devmenu.api.DevMenuApi
-+import expo.modules.manifests.core.ExpoUpdatesManifest
-+import expo.modules.manifests.core.Manifest
-+import java.io.IOException
 +import java.lang.ref.WeakReference
-+import java.net.URL
-+import java.util.concurrent.TimeUnit
-+import kotlinx.coroutines.CoroutineScope
-+import kotlinx.coroutines.Dispatchers
-+import kotlinx.coroutines.delay
-+import kotlinx.coroutines.launch
-+import okhttp3.OkHttpClient
-+import okhttp3.Request
-+import org.json.JSONObject
++import expo.modules.brownfield.fetchManifest
++import expo.modules.brownfield.closeAndReopenPackagerConnection
++import expo.modules.manifests.core.ExpoUpdatesManifest
  
  class ReactNativeHostManager {
    companion object {
-     val shared: ReactNativeHostManager by lazy { ReactNativeHostManager() }
-     private var reactHost: ReactHost? = null
-+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
-   }
- 
-   fun getReactHost(): ReactHost? {
-@@ -61,13 +85,103 @@ class ReactNativeHostManager {
+@@ -61,13 +71,44 @@ class ReactNativeHostManager {
        context = application.applicationContext,
        packageList = PackageList(application).packages
      )
@@ -51,65 +32,6 @@ index a9fbbe7d70..c08d049299 100644
 +          closeAndReopenPackagerConnection(devSupportManager)
 +        }
 +      }
-+    }
-+  }
-+
-+  private fun closeAndReopenPackagerConnection(devSupportManager: DevSupportManagerBase) {
-+    coroutineScope.launch {
-+      try {
-+        val devManagerClass = DevSupportManagerBase::class.java
-+        while (true) {
-+          // Invalidate shake detector - not doing that leads to memory leaks
-+          tryToStopShakeDetector(devSupportManager)
-+
-+          val devServerHelper: DevServerHelper = devManagerClass.getProtectedFieldValue(
-+            devSupportManager,
-+            "devServerHelper"
-+          )
-+  
-+          try {
-+            val packagerClient: JSPackagerClient? = DevServerHelper::class.java.getProtectedFieldValue(
-+              devServerHelper,
-+              "packagerClient"
-+            )
-+  
-+            if (packagerClient != null) {
-+              devServerHelper.closePackagerConnection()
-+              Log.d("ReactNativeHostManager", "Closed packager connection to install new handlers")
-+              // The connection will automatically reopen when dev support is enabled
-+              // or when the activity resumes, and it will use the updated customPackagerCommandHandlers
-+              return@launch
-+            }
-+          } catch (e: NoSuchFieldException) {
-+            Log.w("ReactNativeHostManager", "Couldn't close the packager connection", e)
-+            return@launch
-+          }
-+  
-+          delay(50)
-+        }
-+      } catch (e: Exception) {
-+        Log.w("ReactNativeHostManager", "Couldn't close packager connection: ${e.message}", e)
-+      }
-+    }
-+  }
-+  
-+  private fun <T, U> Class<out T>.getProtectedFieldValue(obj: T, fieldName: String): U {
-+    val field = getDeclaredField(fieldName)
-+    field.isAccessible = true
-+    @Suppress("UNCHECKED_CAST")
-+    return field.get(obj) as U
-+  }
-+
-+  private fun tryToStopShakeDetector(currentDevSupportManager: DevSupportManager) {
-+    try {
-+      val shakeDetector: ShakeDetector =
-+        DevSupportManagerBase::class.java.getProtectedFieldValue(
-+          currentDevSupportManager,
-+          "shakeDetector"
-+        )
-+      shakeDetector.stop()
-+    } catch (e: Exception) {
-+      Log.w("DevLauncher", "Couldn't stop shake detector.", e)
 +    }
    }
  }
@@ -144,7 +66,7 @@ index a9fbbe7d70..c08d049299 100644
    setUpNativeBackHandling()
  }
  
-@@ -97,3 +211,65 @@ fun Activity.setUpNativeBackHandling() {
+@@ -97,3 +138,30 @@ fun Activity.setUpNativeBackHandling() {
  
    componentActivity.onBackPressedDispatcher?.addCallback(componentActivity, backCallback)
  }
@@ -154,59 +76,24 @@ index a9fbbe7d70..c08d049299 100644
 +  reactHost: ReactHost?,
 +  activity: Activity
 +) {
-+  Thread {
-+    try {
-+      if (reactHost == null) {
-+        return@Thread
-+      }
++  if (reactHost == null) {
++    return
++  }
 +
-+      val defaultAppInfo = AppInfo.getAppInfo(application, reactHost)
-+      val sourceURL = reactHost.devSupportManager?.sourceUrl
-+      if (sourceURL == null) {
-+        return@Thread
-+      }
++  val defaultAppInfo = AppInfo.getAppInfo(application, reactHost)
++  fetchManifest(reactHost) { manifest, manifestUrl ->
++    if (manifest != null && manifestUrl != null) {
++      val updatedAppInfo = defaultAppInfo.copy(
++        appName = manifest.getName() ?: defaultAppInfo.appName,
++        appVersion = manifest.getVersion() ?: defaultAppInfo.appVersion,
++        sdkVersion = (manifest as? ExpoUpdatesManifest)?.getExpoGoSDKVersion() ?: defaultAppInfo.sdkVersion,
++        runtimeVersion = (manifest as? ExpoUpdatesManifest)?.getRuntimeVersion() ?: defaultAppInfo.runtimeVersion,
++        hostUrl = manifestUrl
++      )
 +
-+      val url = URL(sourceURL)
-+      val metroURL = "${url.protocol}://${url.host}:${url.port}"
-+      println("Fetching manifest for dev menu from: $metroURL")
-+
-+      val client = OkHttpClient.Builder()
-+        .connectTimeout(10, TimeUnit.SECONDS)
-+        .readTimeout(10, TimeUnit.SECONDS)
-+        .build()
-+
-+      val request = Request.Builder()
-+        .url("$metroURL")
-+        .addHeader("Accept", "application/expo+json,application/json")
-+        .addHeader("Expo-Platform", "android")
-+        .build()
-+
-+      val response = client.newCall(request).execute()
-+      if (response.isSuccessful) {
-+        val responseBody = response.body?.string()
-+        if (responseBody != null) {
-+          val manifestJson = JSONObject(responseBody)
-+          val manifest = Manifest.fromManifestJson(manifestJson)
-+
-+          val updatedAppInfo = defaultAppInfo.copy(
-+            appName = manifest.getName() ?: defaultAppInfo.appName,
-+            appVersion = manifest.getVersion() ?: defaultAppInfo.appVersion,
-+            sdkVersion = (manifest as? ExpoUpdatesManifest)?.getExpoGoSDKVersion() ?: defaultAppInfo.sdkVersion,
-+            runtimeVersion = (manifest as? ExpoUpdatesManifest)?.getRuntimeVersion() ?: defaultAppInfo.runtimeVersion,
-+            hostUrl = metroURL
-+          )
-+
-+          val viewModel = DevMenuApi.model { activity }.value
-+          viewModel?.updateAppInfo(updatedAppInfo)
-+          println("Successfully updated dev menu with info from manifest")
-+        }
-+      } else {
-+        println("Failed to fetch manifest: ${response.code}")
-+      }
-+    } catch (e: IOException) {
-+      println("Failed to connect to Metro: ${e.message}")
-+    } catch (e: Exception) {
-+      println("Failed to parse manifest: ${e.message}")
++      val viewModel = DevMenuApi.model { activity }.value
++      viewModel?.updateAppInfo(updatedAppInfo)
++      println("Successfully updated dev menu with info from manifest")
 +    }
-+  }.start()
++  }
 +}
