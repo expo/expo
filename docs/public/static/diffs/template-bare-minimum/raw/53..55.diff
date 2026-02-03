@@ -305,18 +305,22 @@ index 1b7513bd31b..8a390c764af 100644
  			name = "Bundle React Native code and images";
  			outputPaths = (
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
-index a7887e1e5b1..30f3962794c 100644
+index a7887e1e5b1..9670a1ff07e 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
-@@ -2,7 +2,7 @@ import Expo
+@@ -1,9 +1,9 @@
+-import Expo
++internal import Expo
  import React
  import ReactAppDependencyProvider
  
 -@UIApplicationMain
+-public class AppDelegate: ExpoAppDelegate {
 +@main
- public class AppDelegate: ExpoAppDelegate {
++class AppDelegate: ExpoAppDelegate {
    var window: UIWindow?
  
+   var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
 @@ -19,7 +19,6 @@ public class AppDelegate: ExpoAppDelegate {
  
      reactNativeDelegate = delegate
@@ -453,15 +457,15 @@ index 29503ff0cc1..03484edf156 100644
    end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 870e8456316..931f9e018a2 100644
+index 911f7ee9a53..418f51fd47a 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -2,7 +2,7 @@
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
--  "version": "53.0.40",
-+  "version": "55.0.1",
+-  "version": "53.0.41",
++  "version": "55.0.6",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -469,15 +473,15 @@ index 870e8456316..931f9e018a2 100644
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~53.0.24",
+-    "expo": "~53.0.26",
 -    "expo-status-bar": "~2.2.3",
 -    "react": "19.0.0",
 -    "react-native": "0.79.6"
 -  },
 -  "devDependencies": {
 -    "@babel/core": "^7.20.0"
-+    "expo": "~55.0.0-preview.2",
-+    "expo-status-bar": "~55.0.0",
++    "expo": "~55.0.0-preview.7",
++    "expo-status-bar": "~55.0.2",
 +    "react": "19.2.0",
 +    "react-native": "0.83.1"
    }

@@ -1090,16 +1090,16 @@ index b27f83286d2..00000000000
 -@end
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
 new file mode 100644
-index 00000000000..30f3962794c
+index 00000000000..9670a1ff07e
 --- /dev/null
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
 @@ -0,0 +1,69 @@
-+import Expo
++internal import Expo
 +import React
 +import ReactAppDependencyProvider
 +
 +@main
-+public class AppDelegate: ExpoAppDelegate {
++class AppDelegate: ExpoAppDelegate {
 +  var window: UIWindow?
 +
 +  var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
@@ -1534,7 +1534,7 @@ index 57c1dd38343..03484edf156 100644
    end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 563853071f0..931f9e018a2 100644
+index 563853071f0..418f51fd47a 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,8 @@
@@ -1543,7 +1543,7 @@ index 563853071f0..931f9e018a2 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "51.0.56",
 +  "license": "0BSD",
-+  "version": "55.0.1",
++  "version": "55.0.6",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -1558,8 +1558,8 @@ index 563853071f0..931f9e018a2 100644
 -  },
 -  "devDependencies": {
 -    "@babel/core": "^7.20.0"
-+    "expo": "~55.0.0-preview.2",
-+    "expo-status-bar": "~55.0.0",
++    "expo": "~55.0.0-preview.7",
++    "expo-status-bar": "~55.0.2",
 +    "react": "19.2.0",
 +    "react-native": "0.83.1"
    }

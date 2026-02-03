@@ -64,7 +64,7 @@ async function executeDiffCommand(diffDirPathRaw, sdkFrom: string, sdkTo: string
 
   const diff = await spawnAsync(
     'git',
-    ['diff', diffCommand, '--', 'templates/expo-template-bare-minimum'],
+    ['diff', diffCommand, '--', 'templates/expo-template-bare-minimum', ':!**/build/**'],
     {
       cwd: EXPO_DIR,
     }
