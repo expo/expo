@@ -50,7 +50,7 @@ jobs:
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 26.2
@@ -99,7 +99,7 @@ jobs:
           EXPO_DEBUG: 1
           NODE_ENV: production
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: bare-expo-macos-builds
           path: apps/bare-expo/macos/build/BareExpo.app

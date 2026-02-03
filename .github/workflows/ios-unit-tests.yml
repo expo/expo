@@ -41,7 +41,7 @@ jobs:
     timeout-minutes: 75
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 26.2

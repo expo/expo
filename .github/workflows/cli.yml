@@ -60,7 +60,7 @@ jobs:
         shard: [1, 2, 3, 4]
     steps:
       - name: 🏗️ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
 
@@ -72,7 +72,7 @@ jobs:
           bun-version: latest
 
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
@@ -84,7 +84,7 @@ jobs:
         run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
         shell: bash
       - name: ♻️ Restore Yarn Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
@@ -124,7 +124,7 @@ jobs:
       EXPO_E2E_TEMP_DIR: D:\_temp\expo-e2e
     steps:
       - name: 🏗️ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
 
@@ -143,7 +143,7 @@ jobs:
           git config --global core.eol lf
 
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
@@ -155,7 +155,7 @@ jobs:
         run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
         shell: bash
       - name: ♻️ Restore Yarn Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
@@ -185,7 +185,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: 🏗️ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
 
@@ -197,7 +197,7 @@ jobs:
           bun-version: latest
 
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
@@ -208,7 +208,7 @@ jobs:
         id: yarn-cache
         run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
       - name: ♻️ Restore Yarn Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
@@ -229,7 +229,7 @@ jobs:
         run: |
           echo "version=$(npm info @playwright/test version)" >> $GITHUB_OUTPUT
       - name: 🎭 Cache Playwright browser binaries
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: playwright-browser-cache
         with:
           path: ~/.cache/ms-playwright
@@ -244,7 +244,7 @@ jobs:
         run: yarn test:playwright
 
       - name: 🗄️ Upload playwright report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-report
@@ -270,7 +270,7 @@ jobs:
       EXPO_E2E_TEMP_DIR: D:\_temp\expo-e2e
     steps:
       - name: 🏗️ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
 
@@ -289,7 +289,7 @@ jobs:
           git config --global core.eol lf
 
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
@@ -301,7 +301,7 @@ jobs:
         run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
         shell: bash
       - name: ♻️ Restore Yarn Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
@@ -328,7 +328,7 @@ jobs:
           echo "version=$(npm info @playwright/test version)" >> $GITHUB_OUTPUT
           echo "dir=$(echo $PLAYWRIGHT_BROWSERS_PATH)" >> $GITHUB_OUTPUT
       - name: 🎭 Cache Playwright browser binaries
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: playwright-browser-cache
         with:
           path: ${{ steps.playwright-info.outputs.dir }}
@@ -343,7 +343,7 @@ jobs:
         run: yarn test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
       - name: 🗄️ Upload playwright report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-report

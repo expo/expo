@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: 🚚 Rename .gitignore
         run: mv ./templates/expo-template-default/gitignore ./templates/expo-template-default/.gitignore
       - name: 🚀 Push changes to the template repository

@@ -35,7 +35,7 @@ jobs:
       should_run_android: ${{ steps.changes.outputs.should_run_android }}
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: 🧐 Detect platform change
         id: changes
         uses: ./.github/actions/detect-platform-change
@@ -66,7 +66,7 @@ jobs:
       actions: write
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -152,7 +152,7 @@ jobs:
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           submodules: true
       - name: 🏗️ Setup Bun
@@ -166,7 +166,7 @@ jobs:
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🌠 Download builds
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: bare-expo-ios-builds
           path: apps/bare-expo/ios/build/BareExpo.app
@@ -214,7 +214,7 @@ jobs:
           mv ~/.maestro ~/maestroArtifacts
       - name: 📸 Store testing artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         id: upload-artifacts
         with:
           name: bare-expo-artifacts-ios
@@ -254,7 +254,7 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup Bun
@@ -264,7 +264,7 @@ jobs:
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
       - name: 🔨 Use JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -337,7 +337,7 @@ jobs:
         api-level: [36]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup Bun
@@ -347,7 +347,7 @@ jobs:
           # TODO(cedric): swap `latest` back once the issue is resolved
           bun-version: latest
       - name: 🌠 Download builds
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: bare-expo-android-builds
           path: apps/bare-expo/android/app/build/outputs/apk/release
@@ -387,7 +387,7 @@ jobs:
       - name: 📸 Store testing artifacts
         if: always()
         id: upload-artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: bare-expo-artifacts-android
           path: |

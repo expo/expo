@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 100
       - uses: dorny/paths-filter@v3
@@ -45,7 +45,7 @@ jobs:
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.base_ref || github.event.before || 'main' }}:${{ github.base_ref || github.event.before || 'main' }} --depth 100
         if: github.event_name == 'pull_request'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
       - name: 🏗️ Setup Bun
@@ -87,10 +87,10 @@ jobs:
     if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 100
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
       - name: 🏗️ Setup Bun

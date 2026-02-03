@@ -50,7 +50,7 @@ jobs:
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 26.2
@@ -81,7 +81,7 @@ jobs:
           NODE_ENV: production
           CONFIGURATION: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: ios-builds-${{ matrix.build-type }}
@@ -114,7 +114,7 @@ jobs:
         with:
           bun-version: latest
       - name: 🔨 Use JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -138,7 +138,7 @@ jobs:
           NODE_ENV: production
           VARIANT: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
           name: android-builds-${{ matrix.build-type }}

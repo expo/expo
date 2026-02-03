@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Cut release branch
         run: |
           git checkout -b sdk-${{ github.event.inputs.sdkVersion }}

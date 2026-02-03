@@ -30,11 +30,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 100
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
       - name: 🚀 Setup Bun
@@ -127,7 +127,7 @@ jobs:
             node ../expo/packages/@expo/fingerprint/bin/cli.js fingerprint:generate > ../expo/fingerprint-${{ matrix.os }}.json
           }
       - name: 📤 Upload fingerprint
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: fingerprint-${{ matrix.os }}
           path: fingerprint-${{ matrix.os }}.json
@@ -137,17 +137,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Download fingerprint (macos)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: fingerprint-macos-latest
 
       - name: 📥 Download fingerprint (ubuntu)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: fingerprint-ubuntu-latest
 
       - name: 📥 Download fingerprint (windows)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: fingerprint-windows-latest
 
