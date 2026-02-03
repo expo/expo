@@ -2,8 +2,10 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackToolbarSearchBarSlot = void 0;
-const bottom_toolbar_native_elements_1 = require("./bottom-toolbar-native-elements");
+const react_1 = require("react");
+const react_native_1 = require("react-native");
 const context_1 = require("./context");
+const native_1 = require("../../../toolbar/native");
 /**
  * A search bar slot for the bottom toolbar. This reserves space for the search bar
  * in the toolbar and allows positioning it among other toolbar items.
@@ -38,7 +40,22 @@ const StackToolbarSearchBarSlot = (props) => {
         }
         return null;
     }
-    return <bottom_toolbar_native_elements_1.NativeToolbarSearchBarSlot {...props}/>;
+    return <NativeToolbarSearchBarSlot {...props}/>;
 };
 exports.StackToolbarSearchBarSlot = StackToolbarSearchBarSlot;
+/**
+ * Native toolbar search bar slot for bottom toolbar (iOS 26+).
+ * Renders as RouterToolbarItem with type 'searchBar'.
+ */
+const NativeToolbarSearchBarSlot = ({ hidesSharedBackground, hidden, separateBackground, }) => {
+    const id = (0, react_1.useId)();
+    if (process.env.EXPO_OS !== 'ios' || parseInt(String(react_native_1.Platform.Version).split('.')[0], 10) < 26) {
+        return null;
+    }
+    if (hidden) {
+        return null;
+    }
+    return (<native_1.RouterToolbarItem hidesSharedBackground={hidesSharedBackground} identifier={id} sharesBackground={!separateBackground} type="searchBar"/>);
+};
+// #endregion
 //# sourceMappingURL=StackToolbarSearchBarSlot.js.map

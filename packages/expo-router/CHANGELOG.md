@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Consolidate native toolbar components into StackToolbar* files ([#42712](https://github.com/expo/expo/pull/42712) by [@Ubax](https://github.com/Ubax))
+
 ## 55.0.0-preview.5 — 2026-02-03
 
 ### 🎉 New features
